@@ -1,6 +1,6 @@
 var classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet =
 [
-    [ "AddRegion", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a0460490784db1dd5dbdc0619f417c74e", null ],
+    [ "AddRegion", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#ae6b3276bf6285bfd33fe4c7efa8b90dc", null ],
     [ "ApplyMask", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a319188d2d81776215ec095aa8ae92f0b", null ],
     [ "ApplyPremultiplyAlpha", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a4d352c40b4c8e243323726fc60396909", null ],
     [ "Dispose", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a8048a44ff4133047244f5f4e9e7b7876", null ],
@@ -11,6 +11,7 @@ var classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet =
     [ "GetFrame", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a218462ee9898722f377b95826f8161a1", null ],
     [ "GetImage", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a27a83b061bdc523d3a4371e810a25e18", null ],
     [ "GetRegion", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#ad2730cfc80015daf18fbce69b0de4890", null ],
+    [ "PersistImageToFile", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a18fef0acbadbb520dada7662d80d041c", null ],
     [ "RemoveRegion", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a57062c3c15f7c25353f12f83640a0148", null ],
     [ "ToByteArray", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a971d93cabf9046246996e2ae59073f41", null ],
     [ "AssetIdentifier", "classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a1cd8a11e3cc74568582bdc0fffe1dc13", null ],

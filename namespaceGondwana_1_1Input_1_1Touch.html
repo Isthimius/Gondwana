@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -118,7 +118,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides data for touch contact events raised by ITouchInput, including the touch point and engine tick associated with the event.  <a href="classGondwana_1_1Input_1_1Touch_1_1TouchEventArgs.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1TouchEventConfiguration.html">TouchEventConfiguration</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the configuration for touch event monitoring, including timing controls for event throttling and pause functionality. This configuration is used by TouchEventPoller to control how frequently touch events are raised and whether event processing is currently paused.  <a href="classGondwana_1_1Input_1_1Touch_1_1TouchEventConfiguration.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the configuration for touch event monitoring, including timing controls for movement-event throttling and pause functionality. This configuration is used by TouchEventPoller to control how frequently touch movement events are raised and whether event processing is currently paused.  <a href="classGondwana_1_1Input_1_1Touch_1_1TouchEventConfiguration.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html">TouchEventPoller</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides centralized polling and event management for touch input. This singleton class monitors touch adapter state each engine frame, detects contact transitions, and raises events with comprehensive touch point information, with support for event throttling and pause functionality.  <a href="classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#details">More...</a><br /></td></tr>
@@ -163,7 +163,7 @@ Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="ae45771976c0d97929be599f0dac9a837a95bfdefaaf01553cbf21ccd942855c69" name="ae45771976c0d97929be599f0dac9a837a95bfdefaaf01553cbf21ccd942855c69"></a>Moved&#160;</td><td class="fielddoc"><p>A finger or pointer that is already in contact moved across the surface. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ae45771976c0d97929be599f0dac9a837a5146a957bfa51752bd6020691fda598e" name="ae45771976c0d97929be599f0dac9a837a5146a957bfa51752bd6020691fda598e"></a>Stationary&#160;</td><td class="fielddoc"><p>A finger or pointer is in contact with the surface but has not moved since the last event. </p>
+<tr><td class="fieldname"><a id="ae45771976c0d97929be599f0dac9a837a5146a957bfa51752bd6020691fda598e" name="ae45771976c0d97929be599f0dac9a837a5146a957bfa51752bd6020691fda598e"></a>Stationary&#160;</td><td class="fielddoc"><p>A finger or pointer is in contact with the surface but has not moved since the last event. <a class="el" href="namespaceGondwana.html">Gondwana</a> currently retains this conventional phase for adapter and consumer compatibility, but TouchEventPoller does not raise a separate stationary event. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ae45771976c0d97929be599f0dac9a837a0157fbb99be9622bdaa6e544270c0622" name="ae45771976c0d97929be599f0dac9a837a0157fbb99be9622bdaa6e544270c0622"></a>Ended&#160;</td><td class="fielddoc"><p>A finger or pointer lifted from the surface, ending contact normally. </p>
 </td></tr>

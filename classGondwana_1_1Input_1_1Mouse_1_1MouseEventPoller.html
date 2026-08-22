@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -104,6 +104,12 @@ $(document).ready(function(){initNavTree('classGondwana_1_1Input_1_1Mouse_1_1Mou
 
 <p>Provides centralized polling and event management for mouse input, including button presses, cursor movement, and scroll wheel activity. This singleton class monitors mouse state and raises events with comprehensive information including button states, position data, scroll deltas, and keyboard modifier states, with support for event throttling and pause functionality.  
  <a href="classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.html#details">More...</a></p>
+<div class="dynheader">
+Inheritance diagram for Gondwana.Input.Mouse.MouseEventPoller:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.png" alt=""/>
+ </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -113,12 +119,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:affe11699c919122f54beeebc29fd90ba" id="r_affe11699c919122f54beeebc29fd90ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.html#affe11699c919122f54beeebc29fd90ba">StopMonitoringMouse</a> ()</td></tr>
 <tr class="memdesc:affe11699c919122f54beeebc29fd90ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops monitoring mouse input by clearing the configuration. After calling this method, mouse events will no longer be raised until StartMonitoringMouse is called again. This is useful for completely disabling mouse input, such as during specific game states or when transitioning between scenes.  <br /></td></tr>
 <tr class="separator:affe11699c919122f54beeebc29fd90ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac77c420dc9b67228818a8561f671cc92" id="r_ac77c420dc9b67228818a8561f671cc92"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.html#ac77c420dc9b67228818a8561f671cc92">Dispose</a> ()</td></tr>
+<tr class="memdesc:ac77c420dc9b67228818a8561f671cc92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases the current platform adapter when it supports disposal.  <br /></td></tr>
+<tr class="separator:ac77c420dc9b67228818a8561f671cc92"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a863a32be78e3091effe86a1fdf090ddc" id="r_a863a32be78e3091effe86a1fdf090ddc"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.html#a863a32be78e3091effe86a1fdf090ddc">Initialize</a> (<a class="el" href="interfaceGondwana_1_1Input_1_1Mouse_1_1IMouseAdapter.html">IMouseAdapter</a> adapter, <a class="el" href="classGondwana_1_1Input_1_1Mouse_1_1MouseEventConfiguration.html">MouseEventConfiguration</a>? mouseEventConfiguration=null)</td></tr>
 <tr class="memdesc:a863a32be78e3091effe86a1fdf090ddc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the singleton instance of the MouseEventPoller with the specified mouse adapter and optional configuration. This method replaces the existing instance and configures it to monitor mouse input through the provided adapter.  <br /></td></tr>
 <tr class="separator:a863a32be78e3091effe86a1fdf090ddc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07ced111706fffcf978a1e1084099a5a" id="r_a07ced111706fffcf978a1e1084099a5a"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.html#a07ced111706fffcf978a1e1084099a5a">Reset</a> ()</td></tr>
+<tr class="memdesc:a07ced111706fffcf978a1e1084099a5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disposes and clears the current singleton instance.  <br /></td></tr>
+<tr class="separator:a07ced111706fffcf978a1e1084099a5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
@@ -155,6 +167,27 @@ Events</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00012">12</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ac77c420dc9b67228818a8561f671cc92" name="ac77c420dc9b67228818a8561f671cc92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac77c420dc9b67228818a8561f671cc92">&#9670;&#160;</a></span>Dispose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Input.Mouse.MouseEventPoller.Dispose </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Releases the current platform adapter when it supports disposal. </p>
+
+<p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00244">244</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
+
+</div>
+</div>
 <a id="a863a32be78e3091effe86a1fdf090ddc" name="a863a32be78e3091effe86a1fdf090ddc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a863a32be78e3091effe86a1fdf090ddc">&#9670;&#160;</a></span>Initialize()</h2>
 
@@ -202,6 +235,35 @@ Events</h2></td></tr>
 
 </div>
 </div>
+<a id="a07ced111706fffcf978a1e1084099a5a" name="a07ced111706fffcf978a1e1084099a5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07ced111706fffcf978a1e1084099a5a">&#9670;&#160;</a></span>Reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void Gondwana.Input.Mouse.MouseEventPoller.Reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Disposes and clears the current singleton instance. </p>
+
+<p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00052">52</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
+
+</div>
+</div>
 <a id="a5a013ec1fc0742a7efd72631ad13ad68" name="a5a013ec1fc0742a7efd72631ad13ad68"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5a013ec1fc0742a7efd72631ad13ad68">&#9670;&#160;</a></span>StartMonitoringMouse()</h2>
 
@@ -244,7 +306,7 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00212">212</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00227">227</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
 
 </div>
 </div>
@@ -290,7 +352,7 @@ Events</h2></td></tr>
 
 <p>Gets the mouse adapter currently in use, which provides access to the underlying mouse hardware state including cursor position, pressed buttons, and scroll wheel data. Returns <code>null</code> if no adapter has been configured. </p>
 
-<p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00066">66</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00077">77</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
 
 </div>
 </div>
@@ -316,7 +378,7 @@ Events</h2></td></tr>
 
 <p>Gets a read-only dictionary containing the current state of all monitored mouse buttons, including whether each button is down, was just pressed, or was just released. This provides direct access to button states outside of event handling, useful for polling-based input checks in game loops or update methods. </p>
 
-<p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00095">95</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00106">106</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
 
 </div>
 </div>
@@ -342,7 +404,7 @@ Events</h2></td></tr>
 
 <p>Gets the current mouse event configuration, which controls movement tracking, throttling intervals, and pause state. Returns <code>null</code> if mouse monitoring has been stopped or not yet configured. </p>
 
-<p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00072">72</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00083">83</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
 
 </div>
 </div>
@@ -368,7 +430,7 @@ Events</h2></td></tr>
 
 <p>Gets the current state of keyboard modifier keys (Shift, Ctrl, Alt) at the time of the last poll. If no adapter is configured, returns KeyboardModifierState.None. This allows mouse event handlers to detect modified mouse operations like Ctrl+Click or Shift+Drag. </p>
 
-<p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00087">87</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00098">98</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
 
 </div>
 </div>
@@ -394,7 +456,7 @@ Events</h2></td></tr>
 
 <p>Gets the current position of the mouse cursor in screen or client coordinates. If no adapter is configured, returns the default Point value (0, 0). This property provides convenient access to the cursor position without requiring direct access to the adapter. </p>
 
-<p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00080">80</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00091">91</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
 
 </div>
 </div>
@@ -446,7 +508,7 @@ Events</h2></td></tr>
 
 <p>Gets the most recent scroll wheel delta value captured during the last poll. Positive values indicate upward scrolling, negative values indicate downward scrolling, and 0 indicates no scrolling. This provides direct access to scroll state outside of event handling. </p>
 
-<p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00103">103</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00114">114</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
 
 </div>
 </div>
@@ -465,7 +527,7 @@ Events</h2></td></tr>
 
 <p>Occurs when mouse input is detected and the configuration allows the event to be raised based on throttling settings. This event provides comprehensive mouse state information including button states (with press/release transitions), cursor position (current and previous), scroll wheel delta, and keyboard modifier states. Subscribe to this event to handle all mouse input in your application. </p>
 
-<p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00055">55</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MouseEventPoller_8cs_source.html#l00065">65</a> of file <a class="el" href="MouseEventPoller_8cs_source.html">MouseEventPoller.cs</a>.</p>
 
 </div>
 </div>

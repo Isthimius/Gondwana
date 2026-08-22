@@ -10,6 +10,6 @@ var searchData=
   ['touch_7',['Touch',['../namespaceGondwana_1_1Widgets.html#a4f23503be12c54428a2e6fb6efd473feaf0f31c9700c6b10d8a20dc487b2ae6a8',1,'Gondwana::Widgets']]],
   ['toward_8',['Toward',['../namespaceGondwana_1_1Physics_1_1Movement_1_1Scripted.html#abc873a0915213132165401dfcbee98d9acb0fb3355876c0965909ba98ea6fe562',1,'Gondwana::Physics::Movement::Scripted']]],
   ['triangle_9',['Triangle',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a1a5790cc5eebe65731a0f50061e04873a5e5500cb2b82eb72d550de644bd1b64b',1,'Gondwana::Drawing::Direct::TextBlock']]],
-  ['trigger_10',['Trigger',['../namespaceGondwana_1_1Physics_1_1Collisions.html#a37c66388b8160dcd6146a1a759e987a5af698f67f5666aff10729d8a1cb1c14d2',1,'Gondwana::Physics::Collisions']]],
+  ['trigger_10',['trigger',['../namespaceGondwana_1_1Physics_1_1Collisions.html#a37c66388b8160dcd6146a1a759e987a5af698f67f5666aff10729d8a1cb1c14d2',1,'Gondwana.Physics.Collisions.Trigger'],['../namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410caf698f67f5666aff10729d8a1cb1c14d2',1,'Gondwana.Physics.Collisions.Trigger']]],
   ['tweento_11',['TweenTo',['../namespaceGondwana_1_1Physics_1_1Movement_1_1Scripted.html#abc873a0915213132165401dfcbee98d9a8ce0528236865666054bae9a73851e0b',1,'Gondwana::Physics::Movement::Scripted']]]
 ];

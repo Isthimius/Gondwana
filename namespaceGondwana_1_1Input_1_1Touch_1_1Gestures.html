@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -131,6 +131,12 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:ac89a5051928081046ddb6e64f6cf563f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Identifies the kind of gesture carried by a GestureEventArgs.  <a href="namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#ac89a5051928081046ddb6e64f6cf563f">More...</a><br /></td></tr>
 <tr class="separator:ac89a5051928081046ddb6e64f6cf563f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2618e09d93b4f70dcc496cb140b8ed62" id="r_a2618e09d93b4f70dcc496cb140b8ed62"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#a2618e09d93b4f70dcc496cb140b8ed62">PinchPhase</a> { <a class="el" href="namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#a2618e09d93b4f70dcc496cb140b8ed62a7b81520329371177ede3ccbc307bc85d">Began</a>
+, <a class="el" href="namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#a2618e09d93b4f70dcc496cb140b8ed62aff0a3b7f3daef040faf89a88fdac01b7">Updated</a>
+, <a class="el" href="namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#a2618e09d93b4f70dcc496cb140b8ed62a0157fbb99be9622bdaa6e544270c0622">Ended</a>
+ }</td></tr>
+<tr class="memdesc:a2618e09d93b4f70dcc496cb140b8ed62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Identifies the lifecycle phase of a two-contact pinch gesture.  <a href="namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#a2618e09d93b4f70dcc496cb140b8ed62">More...</a><br /></td></tr>
+<tr class="separator:a2618e09d93b4f70dcc496cb140b8ed62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb1f79297125aec78556c8dd6ffa27f6" id="r_afb1f79297125aec78556c8dd6ffa27f6"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#afb1f79297125aec78556c8dd6ffa27f6">SwipeDirection</a> { <a class="el" href="namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#afb1f79297125aec78556c8dd6ffa27f6a92b09c7c48c520c3c55e497875da437c">Right</a>
 , <a class="el" href="namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#afb1f79297125aec78556c8dd6ffa27f6a945d5e233cf7d6240f6b783b36a374ff">Left</a>
 , <a class="el" href="namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#afb1f79297125aec78556c8dd6ffa27f6a258f49887ef8d14ac268c92b02503aaa">Up</a>
@@ -163,6 +169,32 @@ Enumerations</h2></td></tr>
 </table>
 
 <p class="definition">Definition at line <a class="el" href="GestureType_8cs_source.html#l00006">6</a> of file <a class="el" href="GestureType_8cs_source.html">GestureType.cs</a>.</p>
+
+</div>
+</div>
+<a id="a2618e09d93b4f70dcc496cb140b8ed62" name="a2618e09d93b4f70dcc496cb140b8ed62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2618e09d93b4f70dcc496cb140b8ed62">&#9670;&#160;</a></span>PinchPhase</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#a2618e09d93b4f70dcc496cb140b8ed62">Gondwana.Input.Touch.Gestures.PinchPhase</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Identifies the lifecycle phase of a two-contact pinch gesture. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a2618e09d93b4f70dcc496cb140b8ed62a7b81520329371177ede3ccbc307bc85d" name="a2618e09d93b4f70dcc496cb140b8ed62a7b81520329371177ede3ccbc307bc85d"></a>Began&#160;</td><td class="fielddoc"><p>Exactly two contacts became active and established the pinch baseline. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a2618e09d93b4f70dcc496cb140b8ed62aff0a3b7f3daef040faf89a88fdac01b7" name="a2618e09d93b4f70dcc496cb140b8ed62aff0a3b7f3daef040faf89a88fdac01b7"></a>Updated&#160;</td><td class="fielddoc"><p>The distance or focal point between the active contacts changed. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a2618e09d93b4f70dcc496cb140b8ed62a0157fbb99be9622bdaa6e544270c0622" name="a2618e09d93b4f70dcc496cb140b8ed62a0157fbb99be9622bdaa6e544270c0622"></a>Ended&#160;</td><td class="fielddoc"><p>The two-contact pinch ended or was interrupted by another contact. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="PinchPhase_8cs_source.html#l00006">6</a> of file <a class="el" href="PinchPhase_8cs_source.html">PinchPhase.cs</a>.</p>
 
 </div>
 </div>

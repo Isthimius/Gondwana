@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -120,9 +120,15 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="events" name="events"></a>
 Events</h2></td></tr>
+<tr class="memitem:abc17d0e09d8014757672e2ae41c24fc0" id="r_abc17d0e09d8014757672e2ae41c24fc0"><td class="memItemLeft" align="right" valign="top">EventHandler&lt; <a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html">PinchedEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchGestureRecognizer.html#abc17d0e09d8014757672e2ae41c24fc0">PinchStarted</a></td></tr>
+<tr class="memdesc:abc17d0e09d8014757672e2ae41c24fc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when exactly two contacts establish a pinch gesture.  <br /></td></tr>
+<tr class="separator:abc17d0e09d8014757672e2ae41c24fc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9db28285041f19812c3118d16f1a9df5" id="r_a9db28285041f19812c3118d16f1a9df5"><td class="memItemLeft" align="right" valign="top">EventHandler&lt; <a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html">PinchedEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchGestureRecognizer.html#a9db28285041f19812c3118d16f1a9df5">PinchUpdated</a></td></tr>
 <tr class="memdesc:a9db28285041f19812c3118d16f1a9df5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs whenever the distance between two active touch contact points changes during a pinch or spread gesture. The event data includes the relative scale delta and current distance.  <br /></td></tr>
 <tr class="separator:a9db28285041f19812c3118d16f1a9df5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5dd9a7cc21555f572ece2b66fecbaa88" id="r_a5dd9a7cc21555f572ece2b66fecbaa88"><td class="memItemLeft" align="right" valign="top">EventHandler&lt; <a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html">PinchedEventArgs</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchGestureRecognizer.html#a5dd9a7cc21555f572ece2b66fecbaa88">PinchEnded</a></td></tr>
+<tr class="memdesc:a5dd9a7cc21555f572ece2b66fecbaa88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the current two-contact pinch ends or is interrupted.  <br /></td></tr>
+<tr class="separator:a5dd9a7cc21555f572ece2b66fecbaa88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Recognizes two-finger pinch and spread gestures by listening to touch events from an ITouchInput source. Raises PinchUpdated each time the distance between the two active contact points changes, providing a relative scale delta. </p>
@@ -161,7 +167,7 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="PinchGestureRecognizer_8cs_source.html#l00046">46</a> of file <a class="el" href="PinchGestureRecognizer_8cs_source.html">PinchGestureRecognizer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PinchGestureRecognizer_8cs_source.html#l00053">53</a> of file <a class="el" href="PinchGestureRecognizer_8cs_source.html">PinchGestureRecognizer.cs</a>.</p>
 
 </div>
 </div>
@@ -183,11 +189,47 @@ Events</h2></td></tr>
 
 <p>Releases all resources held by this recognizer and unsubscribes from the touch input source. After disposal, no further PinchUpdated events will be raised. </p>
 
-<p class="definition">Definition at line <a class="el" href="PinchGestureRecognizer_8cs_source.html#l00120">120</a> of file <a class="el" href="PinchGestureRecognizer_8cs_source.html">PinchGestureRecognizer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PinchGestureRecognizer_8cs_source.html#l00178">178</a> of file <a class="el" href="PinchGestureRecognizer_8cs_source.html">PinchGestureRecognizer.cs</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Event Documentation</h2>
+<a id="a5dd9a7cc21555f572ece2b66fecbaa88" name="a5dd9a7cc21555f572ece2b66fecbaa88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5dd9a7cc21555f572ece2b66fecbaa88">&#9670;&#160;</a></span>PinchEnded</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">EventHandler&lt;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html">PinchedEventArgs</a>&gt;? Gondwana.Input.Touch.Gestures.PinchGestureRecognizer.PinchEnded</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Occurs when the current two-contact pinch ends or is interrupted. </p>
+
+<p class="definition">Definition at line <a class="el" href="PinchGestureRecognizer_8cs_source.html#l00041">41</a> of file <a class="el" href="PinchGestureRecognizer_8cs_source.html">PinchGestureRecognizer.cs</a>.</p>
+
+</div>
+</div>
+<a id="abc17d0e09d8014757672e2ae41c24fc0" name="abc17d0e09d8014757672e2ae41c24fc0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc17d0e09d8014757672e2ae41c24fc0">&#9670;&#160;</a></span>PinchStarted</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">EventHandler&lt;<a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html">PinchedEventArgs</a>&gt;? Gondwana.Input.Touch.Gestures.PinchGestureRecognizer.PinchStarted</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Occurs when exactly two contacts establish a pinch gesture. </p>
+
+<p class="definition">Definition at line <a class="el" href="PinchGestureRecognizer_8cs_source.html#l00032">32</a> of file <a class="el" href="PinchGestureRecognizer_8cs_source.html">PinchGestureRecognizer.cs</a>.</p>
+
+</div>
+</div>
 <a id="a9db28285041f19812c3118d16f1a9df5" name="a9db28285041f19812c3118d16f1a9df5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9db28285041f19812c3118d16f1a9df5">&#9670;&#160;</a></span>PinchUpdated</h2>
 
@@ -202,7 +244,7 @@ Events</h2></td></tr>
 
 <p>Occurs whenever the distance between two active touch contact points changes during a pinch or spread gesture. The event data includes the relative scale delta and current distance. </p>
 
-<p class="definition">Definition at line <a class="el" href="PinchGestureRecognizer_8cs_source.html#l00034">34</a> of file <a class="el" href="PinchGestureRecognizer_8cs_source.html">PinchGestureRecognizer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PinchGestureRecognizer_8cs_source.html#l00038">38</a> of file <a class="el" href="PinchGestureRecognizer_8cs_source.html">PinchGestureRecognizer.cs</a>.</p>
 
 </div>
 </div>

@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -114,15 +114,36 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a261363f0c112f9812a99750ae918fc53" id="r_a261363f0c112f9812a99750ae918fc53"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html#a261363f0c112f9812a99750ae918fc53">PinchedEventArgs</a> (double scaleDelta, double currentDistance)</td></tr>
 <tr class="memdesc:a261363f0c112f9812a99750ae918fc53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the PinchedEventArgs class.  <br /></td></tr>
 <tr class="separator:a261363f0c112f9812a99750ae918fc53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97872a51ee2bf968e2a49ed1276e6b22" id="r_a97872a51ee2bf968e2a49ed1276e6b22"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html#a97872a51ee2bf968e2a49ed1276e6b22">PinchedEventArgs</a> (<a class="el" href="namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#a2618e09d93b4f70dcc496cb140b8ed62">PinchPhase</a> phase, IReadOnlyList&lt; int &gt; touchIds, System.Drawing.PointF center, double startingDistance, double previousDistance, double currentDistance)</td></tr>
+<tr class="memdesc:a97872a51ee2bf968e2a49ed1276e6b22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes complete pinch lifecycle data.  <br /></td></tr>
+<tr class="separator:a97872a51ee2bf968e2a49ed1276e6b22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
+<tr class="memitem:a6a2aa7f7ee21a09efecf9d70b66d21c8" id="r_a6a2aa7f7ee21a09efecf9d70b66d21c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#a2618e09d93b4f70dcc496cb140b8ed62">PinchPhase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html#a6a2aa7f7ee21a09efecf9d70b66d21c8">Phase</a><code> [get]</code></td></tr>
+<tr class="memdesc:a6a2aa7f7ee21a09efecf9d70b66d21c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the lifecycle phase of this pinch event.  <br /></td></tr>
+<tr class="separator:a6a2aa7f7ee21a09efecf9d70b66d21c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e6a721b6ea28a1a00a1e676da24784b" id="r_a7e6a721b6ea28a1a00a1e676da24784b"><td class="memItemLeft" align="right" valign="top">IReadOnlyList&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html#a7e6a721b6ea28a1a00a1e676da24784b">TouchIds</a><code> [get]</code></td></tr>
+<tr class="memdesc:a7e6a721b6ea28a1a00a1e676da24784b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the two contact IDs participating in the gesture.  <br /></td></tr>
+<tr class="separator:a7e6a721b6ea28a1a00a1e676da24784b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3b80419a65608955954b00611f0e8e2" id="r_ab3b80419a65608955954b00611f0e8e2"><td class="memItemLeft" align="right" valign="top">System.Drawing.PointF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html#ab3b80419a65608955954b00611f0e8e2">Center</a><code> [get]</code></td></tr>
+<tr class="memdesc:ab3b80419a65608955954b00611f0e8e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the midpoint between the two contacts in client coordinates.  <br /></td></tr>
+<tr class="separator:ab3b80419a65608955954b00611f0e8e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07a6345aa03189799929ce34b1ae7542" id="r_a07a6345aa03189799929ce34b1ae7542"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html#a07a6345aa03189799929ce34b1ae7542">StartingDistance</a><code> [get]</code></td></tr>
+<tr class="memdesc:a07a6345aa03189799929ce34b1ae7542"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the distance at which this pinch gesture began.  <br /></td></tr>
+<tr class="separator:a07a6345aa03189799929ce34b1ae7542"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a711fb280553c18a7d647bc1f329914a5" id="r_a711fb280553c18a7d647bc1f329914a5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html#a711fb280553c18a7d647bc1f329914a5">PreviousDistance</a><code> [get]</code></td></tr>
+<tr class="memdesc:a711fb280553c18a7d647bc1f329914a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the distance reported by the preceding pinch event.  <br /></td></tr>
+<tr class="separator:a711fb280553c18a7d647bc1f329914a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6bbff7ce739eebcba20f0303bf52885b" id="r_a6bbff7ce739eebcba20f0303bf52885b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html#a6bbff7ce739eebcba20f0303bf52885b">ScaleDelta</a><code> [get]</code></td></tr>
 <tr class="memdesc:a6bbff7ce739eebcba20f0303bf52885b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the scale factor relative to the previous pinch update. A value greater than <code>1.0</code> indicates the fingers moved apart (zoom in / expand), while a value less than <code>1.0</code> indicates the fingers moved closer together (zoom out / contract). A value of exactly <code>1.0</code> means no change in finger separation occurred.  <br /></td></tr>
 <tr class="separator:a6bbff7ce739eebcba20f0303bf52885b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8163d4d4058c458910897a6e2c8fb5bd" id="r_a8163d4d4058c458910897a6e2c8fb5bd"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html#a8163d4d4058c458910897a6e2c8fb5bd">CurrentDistance</a><code> [get]</code></td></tr>
 <tr class="memdesc:a8163d4d4058c458910897a6e2c8fb5bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current distance in pixels between the two active touch contact points.  <br /></td></tr>
 <tr class="separator:a8163d4d4058c458910897a6e2c8fb5bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47fd03ef22e87c4b748d8f43b2c1228e" id="r_a47fd03ef22e87c4b748d8f43b2c1228e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchedEventArgs.html#a47fd03ef22e87c4b748d8f43b2c1228e">TotalScale</a><code> [get]</code></td></tr>
+<tr class="memdesc:a47fd03ef22e87c4b748d8f43b2c1228e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the scale relative to the beginning of the current pinch gesture.  <br /></td></tr>
+<tr class="separator:a47fd03ef22e87c4b748d8f43b2c1228e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Provides data for the PinchGestureRecognizer.PinchUpdated event, describing the change in scale produced by a two-finger pinch or spread gesture. </p>
@@ -130,7 +151,7 @@ Properties</h2></td></tr>
 <p class="definition">Definition at line <a class="el" href="PinchedEventArgs_8cs_source.html#l00007">7</a> of file <a class="el" href="PinchedEventArgs_8cs_source.html">PinchedEventArgs.cs</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a261363f0c112f9812a99750ae918fc53" name="a261363f0c112f9812a99750ae918fc53"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a261363f0c112f9812a99750ae918fc53">&#9670;&#160;</a></span>PinchedEventArgs()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a261363f0c112f9812a99750ae918fc53">&#9670;&#160;</a></span>PinchedEventArgs() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -164,11 +185,93 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="PinchedEventArgs_8cs_source.html#l00031">31</a> of file <a class="el" href="PinchedEventArgs_8cs_source.html">PinchedEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PinchedEventArgs_8cs_source.html#l00051">51</a> of file <a class="el" href="PinchedEventArgs_8cs_source.html">PinchedEventArgs.cs</a>.</p>
+
+</div>
+</div>
+<a id="a97872a51ee2bf968e2a49ed1276e6b22" name="a97872a51ee2bf968e2a49ed1276e6b22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97872a51ee2bf968e2a49ed1276e6b22">&#9670;&#160;</a></span>PinchedEventArgs() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Gondwana.Input.Touch.Gestures.PinchedEventArgs.PinchedEventArgs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#a2618e09d93b4f70dcc496cb140b8ed62">PinchPhase</a>&#160;</td>
+          <td class="paramname"><em>phase</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IReadOnlyList&lt; int &gt;&#160;</td>
+          <td class="paramname"><em>touchIds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">System::Drawing::PointF&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>startingDistance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>previousDistance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>currentDistance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initializes complete pinch lifecycle data. </p>
+
+<p class="definition">Definition at line <a class="el" href="PinchedEventArgs_8cs_source.html#l00066">66</a> of file <a class="el" href="PinchedEventArgs_8cs_source.html">PinchedEventArgs.cs</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Property Documentation</h2>
+<a id="ab3b80419a65608955954b00611f0e8e2" name="ab3b80419a65608955954b00611f0e8e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3b80419a65608955954b00611f0e8e2">&#9670;&#160;</a></span>Center</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">System.Drawing.PointF Gondwana.Input.Touch.Gestures.PinchedEventArgs.Center</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the midpoint between the two contacts in client coordinates. </p>
+
+<p class="definition">Definition at line <a class="el" href="PinchedEventArgs_8cs_source.html#l00016">16</a> of file <a class="el" href="PinchedEventArgs_8cs_source.html">PinchedEventArgs.cs</a>.</p>
+
+</div>
+</div>
 <a id="a8163d4d4058c458910897a6e2c8fb5bd" name="a8163d4d4058c458910897a6e2c8fb5bd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8163d4d4058c458910897a6e2c8fb5bd">&#9670;&#160;</a></span>CurrentDistance</h2>
 
@@ -191,7 +294,59 @@ Properties</h2></td></tr>
 
 <p>Gets the current distance in pixels between the two active touch contact points. </p>
 
-<p class="definition">Definition at line <a class="el" href="PinchedEventArgs_8cs_source.html#l00020">20</a> of file <a class="el" href="PinchedEventArgs_8cs_source.html">PinchedEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PinchedEventArgs_8cs_source.html#l00035">35</a> of file <a class="el" href="PinchedEventArgs_8cs_source.html">PinchedEventArgs.cs</a>.</p>
+
+</div>
+</div>
+<a id="a6a2aa7f7ee21a09efecf9d70b66d21c8" name="a6a2aa7f7ee21a09efecf9d70b66d21c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a2aa7f7ee21a09efecf9d70b66d21c8">&#9670;&#160;</a></span>Phase</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#a2618e09d93b4f70dcc496cb140b8ed62">PinchPhase</a> Gondwana.Input.Touch.Gestures.PinchedEventArgs.Phase</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the lifecycle phase of this pinch event. </p>
+
+<p class="definition">Definition at line <a class="el" href="PinchedEventArgs_8cs_source.html#l00010">10</a> of file <a class="el" href="PinchedEventArgs_8cs_source.html">PinchedEventArgs.cs</a>.</p>
+
+</div>
+</div>
+<a id="a711fb280553c18a7d647bc1f329914a5" name="a711fb280553c18a7d647bc1f329914a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a711fb280553c18a7d647bc1f329914a5">&#9670;&#160;</a></span>PreviousDistance</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Gondwana.Input.Touch.Gestures.PinchedEventArgs.PreviousDistance</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the distance reported by the preceding pinch event. </p>
+
+<p class="definition">Definition at line <a class="el" href="PinchedEventArgs_8cs_source.html#l00022">22</a> of file <a class="el" href="PinchedEventArgs_8cs_source.html">PinchedEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -217,7 +372,85 @@ Properties</h2></td></tr>
 
 <p>Gets the scale factor relative to the previous pinch update. A value greater than <code>1.0</code> indicates the fingers moved apart (zoom in / expand), while a value less than <code>1.0</code> indicates the fingers moved closer together (zoom out / contract). A value of exactly <code>1.0</code> means no change in finger separation occurred. </p>
 
-<p class="definition">Definition at line <a class="el" href="PinchedEventArgs_8cs_source.html#l00015">15</a> of file <a class="el" href="PinchedEventArgs_8cs_source.html">PinchedEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PinchedEventArgs_8cs_source.html#l00030">30</a> of file <a class="el" href="PinchedEventArgs_8cs_source.html">PinchedEventArgs.cs</a>.</p>
+
+</div>
+</div>
+<a id="a07a6345aa03189799929ce34b1ae7542" name="a07a6345aa03189799929ce34b1ae7542"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07a6345aa03189799929ce34b1ae7542">&#9670;&#160;</a></span>StartingDistance</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Gondwana.Input.Touch.Gestures.PinchedEventArgs.StartingDistance</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the distance at which this pinch gesture began. </p>
+
+<p class="definition">Definition at line <a class="el" href="PinchedEventArgs_8cs_source.html#l00019">19</a> of file <a class="el" href="PinchedEventArgs_8cs_source.html">PinchedEventArgs.cs</a>.</p>
+
+</div>
+</div>
+<a id="a47fd03ef22e87c4b748d8f43b2c1228e" name="a47fd03ef22e87c4b748d8f43b2c1228e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47fd03ef22e87c4b748d8f43b2c1228e">&#9670;&#160;</a></span>TotalScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Gondwana.Input.Touch.Gestures.PinchedEventArgs.TotalScale</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the scale relative to the beginning of the current pinch gesture. </p>
+
+<p class="definition">Definition at line <a class="el" href="PinchedEventArgs_8cs_source.html#l00040">40</a> of file <a class="el" href="PinchedEventArgs_8cs_source.html">PinchedEventArgs.cs</a>.</p>
+
+</div>
+</div>
+<a id="a7e6a721b6ea28a1a00a1e676da24784b" name="a7e6a721b6ea28a1a00a1e676da24784b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e6a721b6ea28a1a00a1e676da24784b">&#9670;&#160;</a></span>TouchIds</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">IReadOnlyList&lt;int&gt; Gondwana.Input.Touch.Gestures.PinchedEventArgs.TouchIds</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the two contact IDs participating in the gesture. </p>
+
+<p class="definition">Definition at line <a class="el" href="PinchedEventArgs_8cs_source.html#l00013">13</a> of file <a class="el" href="PinchedEventArgs_8cs_source.html">PinchedEventArgs.cs</a>.</p>
 
 </div>
 </div>

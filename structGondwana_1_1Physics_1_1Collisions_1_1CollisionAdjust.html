@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -102,7 +102,7 @@ $(document).ready(function(){initNavTree('structGondwana_1_1Physics_1_1Collision
 </div><!--header-->
 <div class="contents">
 
-<p>Pixel adjustments applied to visual bounds to produce a collision rectangle.  
+<p>Per-edge inset amounts applied to visual bounds to produce a collision rectangle.  
  <a href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Physics.Collisions.CollisionAdjust:</div>
@@ -144,23 +144,23 @@ Static Public Attributes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a128cee6b960c42a31a8eb2966b61eea5" id="r_a128cee6b960c42a31a8eb2966b61eea5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html#a128cee6b960c42a31a8eb2966b61eea5">Top</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a128cee6b960c42a31a8eb2966b61eea5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the pixel adjustment applied to the top edge.  <br /></td></tr>
+<tr class="memdesc:a128cee6b960c42a31a8eb2966b61eea5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the number of pixels by which to inset the top edge.  <br /></td></tr>
 <tr class="separator:a128cee6b960c42a31a8eb2966b61eea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaff69f970aa5073a5f2fe1d305a43e0b" id="r_aaff69f970aa5073a5f2fe1d305a43e0b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html#aaff69f970aa5073a5f2fe1d305a43e0b">Bottom</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:aaff69f970aa5073a5f2fe1d305a43e0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the pixel adjustment applied to the bottom edge.  <br /></td></tr>
+<tr class="memdesc:aaff69f970aa5073a5f2fe1d305a43e0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the number of pixels by which to inset the bottom edge.  <br /></td></tr>
 <tr class="separator:aaff69f970aa5073a5f2fe1d305a43e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a413c3858607b48ea32889c16ed9707d2" id="r_a413c3858607b48ea32889c16ed9707d2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html#a413c3858607b48ea32889c16ed9707d2">Left</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a413c3858607b48ea32889c16ed9707d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the pixel adjustment applied to the left edge.  <br /></td></tr>
+<tr class="memdesc:a413c3858607b48ea32889c16ed9707d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the number of pixels by which to inset the left edge.  <br /></td></tr>
 <tr class="separator:a413c3858607b48ea32889c16ed9707d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7e05dbb2e3e27e97984de9e05b54093" id="r_ae7e05dbb2e3e27e97984de9e05b54093"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html#ae7e05dbb2e3e27e97984de9e05b54093">Right</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:ae7e05dbb2e3e27e97984de9e05b54093"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the pixel adjustment applied to the right edge.  <br /></td></tr>
+<tr class="memdesc:ae7e05dbb2e3e27e97984de9e05b54093"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the number of pixels by which to inset the right edge.  <br /></td></tr>
 <tr class="separator:ae7e05dbb2e3e27e97984de9e05b54093"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Pixel adjustments applied to visual bounds to produce a collision rectangle. </p>
-<p>The top and left values move those edges relative to the visual rectangle. The bottom and right values adjust the rectangle's far edges. The same collision calculation is preserved. </p>
+<div class="textblock"><p>Per-edge inset amounts applied to visual bounds to produce a collision rectangle. </p>
+<p>Positive values move the corresponding edge inward toward the center of the rectangle. Negative values move the edge outward, expanding the rectangle. </p>
 
-<p class="definition">Definition at line <a class="el" href="CollisionAdjust_8cs_source.html#l00016">16</a> of file <a class="el" href="CollisionAdjust_8cs_source.html">CollisionAdjust.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CollisionAdjust_8cs_source.html#l00015">15</a> of file <a class="el" href="CollisionAdjust_8cs_source.html">CollisionAdjust.cs</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="af6e549178f6acdb862b4b183526cafa5" name="af6e549178f6acdb862b4b183526cafa5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af6e549178f6acdb862b4b183526cafa5">&#9670;&#160;</a></span>CollisionAdjust()</h2>
@@ -203,15 +203,15 @@ Properties</h2></td></tr>
 <p>Initializes a new instance of the CollisionAdjust struct. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">top</td><td>The pixel adjustment for the top edge.</td></tr>
-    <tr><td class="paramname">bottom</td><td>The pixel adjustment for the bottom edge.</td></tr>
-    <tr><td class="paramname">left</td><td>The pixel adjustment for the left edge.</td></tr>
-    <tr><td class="paramname">right</td><td>The pixel adjustment for the right edge.</td></tr>
+    <tr><td class="paramname">top</td><td>The signed inset amount for the top edge.</td></tr>
+    <tr><td class="paramname">bottom</td><td>The signed inset amount for the bottom edge.</td></tr>
+    <tr><td class="paramname">left</td><td>The signed inset amount for the left edge.</td></tr>
+    <tr><td class="paramname">right</td><td>The signed inset amount for the right edge.</td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="CollisionAdjust_8cs_source.html#l00054">54</a> of file <a class="el" href="CollisionAdjust_8cs_source.html">CollisionAdjust.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CollisionAdjust_8cs_source.html#l00053">53</a> of file <a class="el" href="CollisionAdjust_8cs_source.html">CollisionAdjust.cs</a>.</p>
 
 </div>
 </div>
@@ -241,7 +241,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The derived collision rectangle.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="CollisionAdjust_8cs_source.html#l00067">67</a> of file <a class="el" href="CollisionAdjust_8cs_source.html">CollisionAdjust.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CollisionAdjust_8cs_source.html#l00066">66</a> of file <a class="el" href="CollisionAdjust_8cs_source.html">CollisionAdjust.cs</a>.</p>
 
 </div>
 </div>
@@ -403,7 +403,7 @@ Properties</h2></td></tr>
 
 <p>Represents an adjustment with no pixel offsets. </p>
 
-<p class="definition">Definition at line <a class="el" href="CollisionAdjust_8cs_source.html#l00045">45</a> of file <a class="el" href="CollisionAdjust_8cs_source.html">CollisionAdjust.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CollisionAdjust_8cs_source.html#l00044">44</a> of file <a class="el" href="CollisionAdjust_8cs_source.html">CollisionAdjust.cs</a>.</p>
 
 </div>
 </div>
@@ -428,9 +428,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the pixel adjustment applied to the bottom edge. </p>
+<p>Gets or sets the number of pixels by which to inset the bottom edge. </p>
 
-<p class="definition">Definition at line <a class="el" href="CollisionAdjust_8cs_source.html#l00028">28</a> of file <a class="el" href="CollisionAdjust_8cs_source.html">CollisionAdjust.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CollisionAdjust_8cs_source.html#l00027">27</a> of file <a class="el" href="CollisionAdjust_8cs_source.html">CollisionAdjust.cs</a>.</p>
 
 </div>
 </div>
@@ -454,9 +454,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the pixel adjustment applied to the left edge. </p>
+<p>Gets or sets the number of pixels by which to inset the left edge. </p>
 
-<p class="definition">Definition at line <a class="el" href="CollisionAdjust_8cs_source.html#l00034">34</a> of file <a class="el" href="CollisionAdjust_8cs_source.html">CollisionAdjust.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CollisionAdjust_8cs_source.html#l00033">33</a> of file <a class="el" href="CollisionAdjust_8cs_source.html">CollisionAdjust.cs</a>.</p>
 
 </div>
 </div>
@@ -480,9 +480,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the pixel adjustment applied to the right edge. </p>
+<p>Gets or sets the number of pixels by which to inset the right edge. </p>
 
-<p class="definition">Definition at line <a class="el" href="CollisionAdjust_8cs_source.html#l00040">40</a> of file <a class="el" href="CollisionAdjust_8cs_source.html">CollisionAdjust.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CollisionAdjust_8cs_source.html#l00039">39</a> of file <a class="el" href="CollisionAdjust_8cs_source.html">CollisionAdjust.cs</a>.</p>
 
 </div>
 </div>
@@ -506,9 +506,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the pixel adjustment applied to the top edge. </p>
+<p>Gets or sets the number of pixels by which to inset the top edge. </p>
 
-<p class="definition">Definition at line <a class="el" href="CollisionAdjust_8cs_source.html#l00022">22</a> of file <a class="el" href="CollisionAdjust_8cs_source.html">CollisionAdjust.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CollisionAdjust_8cs_source.html#l00021">21</a> of file <a class="el" href="CollisionAdjust_8cs_source.html">CollisionAdjust.cs</a>.</p>
 
 </div>
 </div>

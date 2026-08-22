@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -125,7 +125,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a5818f4ecc490b08c4ee8ad606f0b1d9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the CompositeSprite class with the specified array of sprites.  <br /></td></tr>
 <tr class="separator:a5818f4ecc490b08c4ee8ad606f0b1d9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0324ee1701911bc779b8eb8da9671fb5" id="r_a0324ee1701911bc779b8eb8da9671fb5"><td class="memItemLeft" align="right" valign="top">Vector2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1CompositeSprite.html#a0324ee1701911bc779b8eb8da9671fb5">GetPosition</a> ()</td></tr>
-<tr class="memdesc:a0324ee1701911bc779b8eb8da9671fb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current position of the composite sprite based on its anchor mode.  <br /></td></tr>
+<tr class="memdesc:a0324ee1701911bc779b8eb8da9671fb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current position of the composite sprite in scene-layer grid coordinates, based on its anchor mode.  <br /></td></tr>
 <tr class="separator:a0324ee1701911bc779b8eb8da9671fb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38b96fa834102a8acfb90a7f7ca80f75" id="r_a38b96fa834102a8acfb90a7f7ca80f75"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1CompositeSprite.html#a38b96fa834102a8acfb90a7f7ca80f75">SetPosition</a> (Vector2 pos)</td></tr>
 <tr class="memdesc:a38b96fa834102a8acfb90a7f7ca80f75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the position of the composite sprite by moving all child sprites to maintain their relative positions.  <br /></td></tr>
@@ -140,7 +140,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a9bd56d55f33c31b9f2aca47667e9b1e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a sprite and place it at an absolute position (in the composite's PositionSpace).  <br /></td></tr>
 <tr class="separator:a9bd56d55f33c31b9f2aca47667e9b1e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a10cbb912d629bb890da2d0789e4c43fc" id="r_a10cbb912d629bb890da2d0789e4c43fc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1CompositeSprite.html#a10cbb912d629bb890da2d0789e4c43fc">AddChildWithOffset</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html">Sprite</a> sprite, Vector2 offsetFromCompositeAnchor)</td></tr>
-<tr class="memdesc:a10cbb912d629bb890da2d0789e4c43fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a sprite and place it by offset from the composite anchor. Offset is interpreted relative to the CURRENT composite anchor (derived from Range).  <br /></td></tr>
+<tr class="memdesc:a10cbb912d629bb890da2d0789e4c43fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a sprite and place it by offset from the composite anchor. Offset is interpreted in grid coordinates relative to the current composite anchor.  <br /></td></tr>
 <tr class="separator:a10cbb912d629bb890da2d0789e4c43fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaef4d0ec92bf946ee4b1cc55d4e8c67c" id="r_aaef4d0ec92bf946ee4b1cc55d4e8c67c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1CompositeSprite.html#aaef4d0ec92bf946ee4b1cc55d4e8c67c">Remove</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html">Sprite</a> sprite)</td></tr>
 <tr class="memdesc:aaef4d0ec92bf946ee4b1cc55d4e8c67c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a sprite from this composite.  <br /></td></tr>
@@ -280,7 +280,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="CompositeSprite_8cs_source.html#l00146">146</a> of file <a class="el" href="CompositeSprite_8cs_source.html">CompositeSprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CompositeSprite_8cs_source.html#l00152">152</a> of file <a class="el" href="CompositeSprite_8cs_source.html">CompositeSprite.cs</a>.</p>
 
 </div>
 </div>
@@ -326,7 +326,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="CompositeSprite_8cs_source.html#l00164">164</a> of file <a class="el" href="CompositeSprite_8cs_source.html">CompositeSprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CompositeSprite_8cs_source.html#l00170">170</a> of file <a class="el" href="CompositeSprite_8cs_source.html">CompositeSprite.cs</a>.</p>
 
 </div>
 </div>
@@ -356,7 +356,7 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Add a sprite and place it by offset from the composite anchor. Offset is interpreted relative to the CURRENT composite anchor (derived from Range). </p>
+<p>Add a sprite and place it by offset from the composite anchor. Offset is interpreted in grid coordinates relative to the current composite anchor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">sprite</td><td>The sprite to add to this composite.</td></tr>
@@ -372,7 +372,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="CompositeSprite_8cs_source.html#l00185">185</a> of file <a class="el" href="CompositeSprite_8cs_source.html">CompositeSprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CompositeSprite_8cs_source.html#l00191">191</a> of file <a class="el" href="CompositeSprite_8cs_source.html">CompositeSprite.cs</a>.</p>
 
 </div>
 </div>
@@ -391,12 +391,12 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Gets the current position of the composite sprite based on its anchor mode. </p>
-<dl class="section return"><dt>Returns</dt><dd>The position of the composite's anchor point.</dd></dl>
+<p>Gets the current position of the composite sprite in scene-layer grid coordinates, based on its anchor mode. </p>
+<dl class="section return"><dt>Returns</dt><dd>The grid-space position of the composite's anchor point.</dd></dl>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html#a99f6693c0559ff7909c3c16f7940042e">Gondwana.Physics.Movement.IMovable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="CompositeSprite_8cs_source.html#l00089">89</a> of file <a class="el" href="CompositeSprite_8cs_source.html">CompositeSprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CompositeSprite_8cs_source.html#l00090">90</a> of file <a class="el" href="CompositeSprite_8cs_source.html">CompositeSprite.cs</a>.</p>
 
 </div>
 </div>
@@ -424,7 +424,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="CompositeSprite_8cs_source.html#l00218">218</a> of file <a class="el" href="CompositeSprite_8cs_source.html">CompositeSprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CompositeSprite_8cs_source.html#l00224">224</a> of file <a class="el" href="CompositeSprite_8cs_source.html">CompositeSprite.cs</a>.</p>
 
 </div>
 </div>
@@ -454,7 +454,7 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html#aca8b41148697de4ccbe6f01d3bfda765">Gondwana.Physics.Movement.IMovable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="CompositeSprite_8cs_source.html#l00107">107</a> of file <a class="el" href="CompositeSprite_8cs_source.html">CompositeSprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CompositeSprite_8cs_source.html#l00113">113</a> of file <a class="el" href="CompositeSprite_8cs_source.html">CompositeSprite.cs</a>.</p>
 
 </div>
 </div>
@@ -482,7 +482,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="CompositeSprite_8cs_source.html#l00128">128</a> of file <a class="el" href="CompositeSprite_8cs_source.html">CompositeSprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CompositeSprite_8cs_source.html#l00134">134</a> of file <a class="el" href="CompositeSprite_8cs_source.html">CompositeSprite.cs</a>.</p>
 
 </div>
 </div>
@@ -535,7 +535,7 @@ Properties</h2></td></tr>
 
 <p>Gets a read-only collection of all child sprites in this composite. </p>
 
-<p class="definition">Definition at line <a class="el" href="CompositeSprite_8cs_source.html#l00258">258</a> of file <a class="el" href="CompositeSprite_8cs_source.html">CompositeSprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CompositeSprite_8cs_source.html#l00264">264</a> of file <a class="el" href="CompositeSprite_8cs_source.html">CompositeSprite.cs</a>.</p>
 
 </div>
 </div>
@@ -589,7 +589,7 @@ Properties</h2></td></tr>
 
 <p>Gets the bounding rectangle that encompasses all child sprites. Returns Rectangle.Empty if there are no children. </p>
 
-<p class="definition">Definition at line <a class="el" href="CompositeSprite_8cs_source.html#l00265">265</a> of file <a class="el" href="CompositeSprite_8cs_source.html">CompositeSprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CompositeSprite_8cs_source.html#l00271">271</a> of file <a class="el" href="CompositeSprite_8cs_source.html">CompositeSprite.cs</a>.</p>
 
 </div>
 </div>

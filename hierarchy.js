@@ -7,6 +7,8 @@ var hierarchy =
     [ "Gondwana.Rendering.Views.Camera", "classGondwana_1_1Rendering_1_1Views_1_1Camera.html", null ],
     [ "Gondwana.Physics.Collisions.ColliderRegistry", "classGondwana_1_1Physics_1_1Collisions_1_1ColliderRegistry.html", null ],
     [ "Gondwana.Physics.Collisions.CollisionGroupRegistry", "classGondwana_1_1Physics_1_1Collisions_1_1CollisionGroupRegistry.html", null ],
+    [ "Gondwana.Physics.Collisions.CollisionProfile", "classGondwana_1_1Physics_1_1Collisions_1_1CollisionProfile.html", null ],
+    [ "Gondwana.Physics.Collisions.CollisionProfileRegistry", "classGondwana_1_1Physics_1_1Collisions_1_1CollisionProfileRegistry.html", null ],
     [ "Control", null, [
       [ "Gondwana.Avalonia.Rendering.AvaloniaBitmapRenderSurfaceControl", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceControl.html", null ]
     ] ],
@@ -69,15 +71,39 @@ var hierarchy =
       ] ],
       [ "Gondwana.Drawing.Tile", "classGondwana_1_1Drawing_1_1Tile.html", null ]
     ] ],
+    [ "Gondwana.Drawing.Direct.IDirectCompositeContainer", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeContainer.html", [
+      [ "Gondwana.Drawing.Direct.DirectComposite", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html", [
+        [ "Gondwana.Widgets.WidgetBase", "classGondwana_1_1Widgets_1_1WidgetBase.html", [
+          [ "Gondwana.Widgets.ContainerWidget", "classGondwana_1_1Widgets_1_1ContainerWidget.html", [
+            [ "Gondwana.Widgets.DraggableContainerWidget", "classGondwana_1_1Widgets_1_1DraggableContainerWidget.html", [
+              [ "Gondwana.Widgets.Dialogs.DialogBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html", [
+                [ "Gondwana.Widgets.Dialogs.AboutBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox.html", null ]
+              ] ]
+            ] ],
+            [ "Gondwana.Widgets.Menus.MenuBarWidget", "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html", null ],
+            [ "Gondwana.Widgets.Menus.MenuDropDownWidget", "classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html", null ]
+          ] ],
+          [ "Gondwana.Widgets.Controls.ButtonWidget", "classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget.html", null ],
+          [ "Gondwana.Widgets.Controls.HyperlinkWidget", "classGondwana_1_1Widgets_1_1Controls_1_1HyperlinkWidget.html", null ],
+          [ "Gondwana.Widgets.DraggableWidgetBase", "classGondwana_1_1Widgets_1_1DraggableWidgetBase.html", null ],
+          [ "Gondwana.Widgets.Hud.HealthBarWidget", "classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget.html", null ],
+          [ "Gondwana.Widgets.Menus.MenuHeaderWidget", "classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget.html", null ],
+          [ "Gondwana.Widgets.Menus.MenuItemWidget", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html", null ],
+          [ "Gondwana.Widgets.Overlays.SplashScreen", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html", null ]
+        ] ]
+      ] ]
+    ] ],
     [ "IDisposable", null, [
       [ "Gondwana.Assets.AssetsFile", "classGondwana_1_1Assets_1_1AssetsFile.html", null ],
       [ "Gondwana.Audio.AudioResource", "classGondwana_1_1Audio_1_1AudioResource.html", null ],
       [ "Gondwana.Audio.AudioResourceManager", "classGondwana_1_1Audio_1_1AudioResourceManager.html", null ],
       [ "Gondwana.Avalonia.Input.Keyboard.AvaloniaKeyboardAdapter", "classGondwana_1_1Avalonia_1_1Input_1_1Keyboard_1_1AvaloniaKeyboardAdapter.html", null ],
+      [ "Gondwana.Avalonia.Input.Mouse.AvaloniaMouseAdapter", "classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html", null ],
       [ "Gondwana.Avalonia.Input.Touch.AvaloniaTouchInputAdapter", "classGondwana_1_1Avalonia_1_1Input_1_1Touch_1_1AvaloniaTouchInputAdapter.html", null ],
       [ "Gondwana.Avalonia.Rendering.AvaloniaBitmapRenderSurfaceAdapter", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceAdapter.html", null ],
       [ "Gondwana.Avalonia.Rendering.AvaloniaGpuRenderSurfaceAdapter", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaGpuRenderSurfaceAdapter.html", null ],
       [ "Gondwana.Blazor.Input.Keyboard.BlazorKeyboardAdapter", "classGondwana_1_1Blazor_1_1Input_1_1Keyboard_1_1BlazorKeyboardAdapter.html", null ],
+      [ "Gondwana.Blazor.Input.Mouse.BlazorMouseAdapter", "classGondwana_1_1Blazor_1_1Input_1_1Mouse_1_1BlazorMouseAdapter.html", null ],
       [ "Gondwana.Blazor.Input.Touch.BlazorTouchAdapter", "classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html", null ],
       [ "Gondwana.Blazor.Rendering.BlazorBitmapRenderSurfaceAdapter", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorBitmapRenderSurfaceAdapter.html", null ],
       [ "Gondwana.Blazor.Rendering.BlazorBitmapRenderSurfaceComponent", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorBitmapRenderSurfaceComponent.html", null ],
@@ -88,20 +114,7 @@ var hierarchy =
       [ "Gondwana.Drawing.Direct.IDirectDrawable", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html", [
         [ "Gondwana.Drawing.Direct.DirectDrawingBase", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html", null ],
         [ "Gondwana.Drawing.Direct.IDirectCompositeChild", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeChild.html", [
-          [ "Gondwana.Drawing.Direct.DirectComposite", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html", [
-            [ "Gondwana.Widgets.WidgetBase", "classGondwana_1_1Widgets_1_1WidgetBase.html", [
-              [ "Gondwana.Widgets.ContainerWidget", "classGondwana_1_1Widgets_1_1ContainerWidget.html", [
-                [ "Gondwana.Widgets.DraggableContainerWidget", "classGondwana_1_1Widgets_1_1DraggableContainerWidget.html", [
-                  [ "Gondwana.Widgets.Dialogs.DialogBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html", [
-                    [ "Gondwana.Widgets.Dialogs.AboutBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox.html", null ]
-                  ] ]
-                ] ]
-              ] ],
-              [ "Gondwana.Widgets.Controls.ButtonWidget", "classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget.html", null ],
-              [ "Gondwana.Widgets.DraggableWidgetBase", "classGondwana_1_1Widgets_1_1DraggableWidgetBase.html", null ],
-              [ "Gondwana.Widgets.Overlays.SplashScreen", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html", null ]
-            ] ]
-          ] ],
+          [ "Gondwana.Drawing.Direct.DirectComposite", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html", null ],
           [ "Gondwana.Drawing.Direct.DirectDrawingMovableBase", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html", null ]
         ] ]
       ] ],
@@ -123,9 +136,11 @@ var hierarchy =
           [ "Gondwana.WinForms.Hosting.WinFormsGpuGameHost", "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html", null ]
         ] ]
       ] ],
+      [ "Gondwana.Input.Mouse.MouseEventPoller", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.html", null ],
       [ "Gondwana.Input.Touch.Gestures.PinchGestureRecognizer", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchGestureRecognizer.html", null ],
       [ "Gondwana.Input.Touch.Gestures.SwipeGestureRecognizer", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer.html", null ],
       [ "Gondwana.Input.Touch.Gestures.TapGestureRecognizer", "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1TapGestureRecognizer.html", null ],
+      [ "Gondwana.Input.Touch.TouchEventPoller", "classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html", null ],
       [ "Gondwana.Physics.Movement.MovementController", "classGondwana_1_1Physics_1_1Movement_1_1MovementController.html", null ],
       [ "Gondwana.Rendering.Backbuffers.BackbufferBase", "classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html", [
         [ "Gondwana.Rendering.Backbuffers.BitmapBackbuffer", "classGondwana_1_1Rendering_1_1Backbuffers_1_1BitmapBackbuffer.html", null ],
@@ -143,6 +158,7 @@ var hierarchy =
       ] ],
       [ "Gondwana.Widgets.WidgetInputRouter", "classGondwana_1_1Widgets_1_1WidgetInputRouter.html", null ],
       [ "Gondwana.WinForms.Input.Keyboard.WinFormsKeyboardAdapter", "classGondwana_1_1WinForms_1_1Input_1_1Keyboard_1_1WinFormsKeyboardAdapter.html", null ],
+      [ "Gondwana.WinForms.Input.Mouse.WinFormsMouseAdapter", "classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html", null ],
       [ "Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceAdapter", "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceAdapter.html", null ],
       [ "Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceAdapter", "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceAdapter.html", null ]
     ] ],
@@ -163,6 +179,7 @@ var hierarchy =
       [ "Gondwana.Assets.AssetsFileEntry", "classGondwana_1_1Assets_1_1AssetsFileEntry.html", null ],
       [ "Gondwana.Physics.Collisions.CollisionAdjust", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html", null ]
     ] ],
+    [ "Gondwana.Widgets.Controls.IExternalUriLauncher", "interfaceGondwana_1_1Widgets_1_1Controls_1_1IExternalUriLauncher.html", null ],
     [ "Gondwana.Input.Gamepad.IGamepadAdapter", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadAdapter.html", [
       [ "Gondwana.Input.Gamepad.SDL2.SdlGamepadAdapter", "classGondwana_1_1Input_1_1Gamepad_1_1SDL2_1_1SdlGamepadAdapter.html", null ],
       [ "Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter", "classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadAdapter.html", null ]
@@ -219,8 +236,8 @@ var hierarchy =
       [ "Gondwana.UiDispatcher", "classGondwana_1_1UiDispatcher.html", null ]
     ] ],
     [ "Gondwana.Input.Keyboard.KeyboardEventPoller", "classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html", null ],
+    [ "Gondwana.Widgets.Menus.MenuBarMenu", "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarMenu.html", null ],
     [ "Gondwana.Input.Mouse.MouseButtonState", "structGondwana_1_1Input_1_1Mouse_1_1MouseButtonState.html", null ],
-    [ "Gondwana.Input.Mouse.MouseEventPoller", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.html", null ],
     [ "Gondwana.Physics.Movement.MovementState", "structGondwana_1_1Physics_1_1Movement_1_1MovementState.html", null ],
     [ "OpenGlControlBase", null, [
       [ "Gondwana.Avalonia.Rendering.AvaloniaGpuRenderSurfaceControl", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaGpuRenderSurfaceControl.html", null ]

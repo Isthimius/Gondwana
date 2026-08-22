@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -134,7 +134,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a82b50eb005624abf9f6bcf63bfcc727e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the position of this direct drawing to the specified pixel coordinates.  <br /></td></tr>
 <tr class="separator:a82b50eb005624abf9f6bcf63bfcc727e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a156e583528d8e747636d70e4972b81db" id="r_a156e583528d8e747636d70e4972b81db"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">override</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html#a156e583528d8e747636d70e4972b81db">Update</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">long</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">tick</a>)</td></tr>
-<tr class="memdesc:a156e583528d8e747636d70e4972b81db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs per-frame update logic, including fixed-timestep physics integration for movement.  <br /></td></tr>
+<tr class="memdesc:a156e583528d8e747636d70e4972b81db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances this direct drawing's movement using the elapsed time since its previous update, then performs the standard direct-drawing update logic.  <br /></td></tr>
 <tr class="separator:a156e583528d8e747636d70e4972b81db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html">Gondwana.Drawing.Direct.DirectDrawingBase</a></td></tr>
 <tr class="memitem:a5b34671e7d7598452fff9d87a97bf53c inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase" id="r_a5b34671e7d7598452fff9d87a97bf53c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">RectangleF</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a5b34671e7d7598452fff9d87a97bf53c">GetDrawLocationScreen</a> (<a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">view</a>)</td></tr>
@@ -199,7 +199,7 @@ Protected Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a863598c04cfc8878e31fe0ee0be28504" id="r_a863598c04cfc8878e31fe0ee0be28504"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Physics_1_1Movement_1_1MovementController.html">MovementController</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html#a863598c04cfc8878e31fe0ee0be28504">Movement</a><code> [get]</code></td></tr>
-<tr class="memdesc:a863598c04cfc8878e31fe0ee0be28504"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the movement controller that manages physics-based position, velocity, and forces for this direct drawing.  <br /></td></tr>
+<tr class="memdesc:a863598c04cfc8878e31fe0ee0be28504"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the movement controller responsible for changing this direct drawing's position over time.  <br /></td></tr>
 <tr class="separator:a863598c04cfc8878e31fe0ee0be28504"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7bf07b6c0b52e8bb2fd86252d8aae953" id="r_a7bf07b6c0b52e8bb2fd86252d8aae953"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Physics_1_1Movement.html#aa42d600d851164fae8a0aae23536186c">MovementSpace</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html#a7bf07b6c0b52e8bb2fd86252d8aae953">PositionSpace</a><code> [get]</code></td></tr>
 <tr class="memdesc:a7bf07b6c0b52e8bb2fd86252d8aae953"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the coordinate space in which this movable object's position is expressed.  <br /></td></tr>
@@ -421,7 +421,7 @@ Frame-rate independent physics with accumulator and substep clamping to prevent 
 <p>The constructor initializes the Movement controller with the drawing's initial position extracted from the provided bounds (either <em>worldBounds</em>  or <em>screenBounds</em>  depending on the mode). The movement controller is configured for pixel-space movement matching the drawing's coordinate system. </p>
 <p>After construction, use the Movement property to configure velocity, acceleration, friction, and other movement parameters. The drawing's position will automatically update each frame based on the movement controller's physics simulation. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectDrawingMovableBase_8cs_source.html#l00081">81</a> of file <a class="el" href="DirectDrawingMovableBase_8cs_source.html">DirectDrawingMovableBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectDrawingMovableBase_8cs_source.html#l00077">77</a> of file <a class="el" href="DirectDrawingMovableBase_8cs_source.html">DirectDrawingMovableBase.cs</a>.</p>
 
 </div>
 </div>
@@ -488,7 +488,7 @@ Marks the new position as dirty to ensure rendering occurs at the updated locati
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html#aca8b41148697de4ccbe6f01d3bfda765">Gondwana.Physics.Movement.IMovable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectDrawingMovableBase_8cs_source.html#l00188">188</a> of file <a class="el" href="DirectDrawingMovableBase_8cs_source.html">DirectDrawingMovableBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectDrawingMovableBase_8cs_source.html#l00201">201</a> of file <a class="el" href="DirectDrawingMovableBase_8cs_source.html">DirectDrawingMovableBase.cs</a>.</p>
 
 </div>
 </div>
@@ -516,34 +516,21 @@ Marks the new position as dirty to ensure rendering occurs at the updated locati
 </table>
 </div><div class="memdoc">
 
-<p>Performs per-frame update logic, including fixed-timestep physics integration for movement. </p>
+<p>Advances this direct drawing's movement using the elapsed time since its previous update, then performs the standard direct-drawing update logic. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">tick</td><td>The current engine tick value from HighResTimer.</td></tr>
+    <tr><td class="paramname">tick</td><td>The current engine tick value supplied by the direct-drawing update cycle. </td></tr>
   </table>
   </dd>
 </dl>
-<p>This method overrides DirectDrawingBase.Update to add physics integration via the Movement controller. It uses a fixed-timestep accumulator pattern to ensure stable, deterministic movement regardless of frame rate variations. </p>
-<p>The update process works as follows: </p><ol>
-<li>
-Calculates the elapsed time since the last frame, clamping large deltas (&gt;66ms) to prevent instability during frame rate drops, alt-tab, or debugger pauses. </li>
-<li>
-Accumulates the frame delta time and subdivides it into fixed timesteps of ~4.16ms (240 Hz). </li>
-<li>
-Integrates movement physics at the fixed timestep for up to 8 substeps per frame to prevent spiral of death. </li>
-<li>
-If the maximum substep limit is reached, discards remaining accumulated time to maintain real-time responsiveness. </li>
-<li>
-Calls <code>base.Update(tick)</code> to perform fade and reveal animations from DirectDrawingBase. </li>
-</ol>
-<p>The fixed timestep ensures that physics simulations produce consistent, reproducible results across different hardware and frame rates. The substep limit (8 steps) prevents performance degradation when the frame rate drops significantly, trading some physics accuracy for real-time responsiveness. </p>
-<p>Override this method in derived classes to add custom per-frame logic (such as AI updates or animation state changes). Always call <code>base.Update(tick)</code> to preserve movement integration and fade/reveal animations. </p>
+<p>Movement is advanced once per engine update using the actual elapsed duration calculated from _lastTick and <em>tick</em> . </p>
+<p>The base implementation is called afterward to advance inherited behavior, including fade and reveal animations, and to record the current tick. </p>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a52ae59743dbd89bda3f0c721321939f0">Gondwana.Drawing.Direct.DirectDrawingBase</a>.</p>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html#a801c259d59c101239fd5947109e542f1">Gondwana.Drawing.Direct.DirectRectangle</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#a32a603730f9086d770ec6888b4ac8525">Gondwana.Drawing.Direct.ImageLayer.ImageInstanceLayer</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html#a00256efd1a1f3ba03842fe5fff21ca19">Gondwana.Drawing.Direct.Particles.ParticleSurface</a>, and <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#aeeafdc57fe4de1b8b742fe4b31aa8ad7">Gondwana.Drawing.Direct.TextBlock</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectDrawingMovableBase_8cs_source.html#l00270">270</a> of file <a class="el" href="DirectDrawingMovableBase_8cs_source.html">DirectDrawingMovableBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectDrawingMovableBase_8cs_source.html#l00267">267</a> of file <a class="el" href="DirectDrawingMovableBase_8cs_source.html">DirectDrawingMovableBase.cs</a>.</p>
 
 </div>
 </div>
@@ -568,22 +555,21 @@ Calls <code>base.Update(tick)</code> to perform fade and reveal animations from 
 </table>
 </div><div class="memdoc">
 
-<p>Gets the movement controller that manages physics-based position, velocity, and forces for this direct drawing. </p>
-<p>A MovementController instance providing access to movement state, velocity, acceleration, friction, and other physics properties. </p>
-<p>Use the movement controller to: </p><ul>
+<p>Gets the movement controller responsible for changing this direct drawing's position over time. </p>
+<p>A MovementController configured to move this drawing in MovementSpace.Pixel. </p>
+<p>The controller supports follow, scripted, and integrated movement: </p>
+<ul>
 <li>
-Apply forces and impulses (e.g., <code>Movement.ApplyForce()</code>, <code>Movement.ApplyImpulse()</code>). </li>
+Follow movement continuously tracks a live pixel-space or grid-space target.   </li>
 <li>
-Set or query velocity (e.g., <code>Movement.Velocity</code>). </li>
+Scripted movement performs authored operations such as <code>MoveTo</code>, <code>MoveBy</code>, and <code>MoveToward</code>.   </li>
 <li>
-Configure friction, mass, and other physical properties. </li>
-<li>
-Enable or disable movement integration. </li>
+Integrated movement advances velocity, acceleration, maximum-speed limits, and linear damping over time.   </li>
 </ul>
-<p>The controller is automatically integrated each frame by Update using a fixed timestep (240 Hz). Position changes from the controller are synchronized to the drawing's bounds, triggering dirty-rectangle updates as needed. </p>
-<p>The controller operates in pixel space (MovementSpace.Pixel), matching the coordinate system used by the drawing's bounds (either world or screen coordinates depending on the mode). </p>
+<p>Movement coordinates represent the drawing's upper-left position. For DirectDrawingMode.SceneLayer drawings, they are world pixels. For DirectDrawingMode.View drawings, they are absolute screen pixels. </p>
+<p>The controller is advanced automatically by Update(long) once per engine update using the actual elapsed duration. Game code should configure movement through this property rather than calling <code>AdvanceMovement</code> directly. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectDrawingMovableBase_8cs_source.html#l00124">124</a> of file <a class="el" href="DirectDrawingMovableBase_8cs_source.html">DirectDrawingMovableBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectDrawingMovableBase_8cs_source.html#l00137">137</a> of file <a class="el" href="DirectDrawingMovableBase_8cs_source.html">DirectDrawingMovableBase.cs</a>.</p>
 
 </div>
 </div>
@@ -613,7 +599,7 @@ Enable or disable movement integration. </li>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html#ae0463d4183646dba328acbb1b5f568e6">Gondwana.Physics.Movement.IMovable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectDrawingMovableBase_8cs_source.html#l00137">137</a> of file <a class="el" href="DirectDrawingMovableBase_8cs_source.html">DirectDrawingMovableBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectDrawingMovableBase_8cs_source.html#l00150">150</a> of file <a class="el" href="DirectDrawingMovableBase_8cs_source.html">DirectDrawingMovableBase.cs</a>.</p>
 
 </div>
 </div>

@@ -1,8 +1,8 @@
 var classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite =
 [
     [ "DirectComposite", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ac1d38db515a995009946ec6c9ad1ff42", null ],
-    [ "Add", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a529ee1e469cb1c2e6ee92af487e3c3ec", null ],
-    [ "Clear", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a2cc588bc90fa2cf40c3d15318377660a", null ],
+    [ "Add", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ade89d167607c4cb7ff9e2c954ec0ac2f", null ],
+    [ "Clear", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#aa39a1233d310b325bc27a7c9a61c546b", null ],
     [ "Dispose", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ab4a9dddd84ec27a3a4701275077ef3e7", null ],
     [ "Draw", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ad03af0f91fcf18bbf7b4a791ba753518", null ],
     [ "FadeIn", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a42e9c50bacafef622c3ce6482b834b08", null ],
@@ -10,7 +10,9 @@ var classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite =
     [ "FadeTo", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a566f31c5c056f992a9b1e7e85c730c29", null ],
     [ "GetDrawLocationScreen", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a5d7ffb0ec48af52fa399038ff7e37912", null ],
     [ "GetPosition", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ad0a14525a23081d4a8d7a9ac480abd04", null ],
-    [ "Remove", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#aa0797bf1bb881fd4a3af14074100fd60", null ],
+    [ "OnChildAdded", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a247988c7659e3edfaf307e6247b455c0", null ],
+    [ "OnChildRemoved", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a3869e8da62376547c2c938f9d305114c", null ],
+    [ "Remove", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a133da57799b0fd9dc10a53d3bcdcadad", null ],
     [ "SetIsVisible", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a79b8af85ebdf0282a286f2bd7cc195dc", null ],
     [ "SetLocalOffset", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a76ea5a74615926cf8ec2e8a0df21a092", null ],
     [ "SetOpacity", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a6af29e472a9a1e6de2ef472d72af9dbb", null ],

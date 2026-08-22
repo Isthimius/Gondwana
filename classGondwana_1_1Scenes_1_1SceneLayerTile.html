@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -163,7 +163,7 @@ Properties</h2></td></tr>
 <tr class="memitem:aa2d4389c77e5845cfb7f9f67c49c4cb3 inherit properties_classGondwana_1_1Drawing_1_1Tile" id="r_aa2d4389c77e5845cfb7f9f67c49c4cb3"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#aa2d4389c77e5845cfb7f9f67c49c4cb3">Overhang</a><code> [get]</code></td></tr>
 <tr class="separator:aa2d4389c77e5845cfb7f9f67c49c4cb3 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a7a5eb292031f6d4c23291f31c9aa93 inherit properties_classGondwana_1_1Drawing_1_1Tile" id="r_a1a7a5eb292031f6d4c23291f31c9aa93"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structGondwana_1_1Drawing_1_1Frame.html">Frame</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a1a7a5eb292031f6d4c23291f31c9aa93">CurrentFrame</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a1a7a5eb292031f6d4c23291f31c9aa93 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the current frame. The initial frame supplies the tile's default collision adjustment. Later frame changes update collision bounds only when AdjustCollisionAreaByFrame is enabled.  <br /></td></tr>
+<tr class="memdesc:a1a7a5eb292031f6d4c23291f31c9aa93 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the current frame. The initial frame supplies the tile's default collision adjustment and collision type. Later frame changes update those values only when their corresponding by-frame options are enabled.  <br /></td></tr>
 <tr class="separator:a1a7a5eb292031f6d4c23291f31c9aa93 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe1c33a0aab3bfa09f748920e504b4ae inherit properties_classGondwana_1_1Drawing_1_1Tile" id="r_abe1c33a0aab3bfa09f748920e504b4ae"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1Animator.html">Animator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#abe1c33a0aab3bfa09f748920e504b4ae">TileAnimator</a><code> [get]</code></td></tr>
 <tr class="separator:abe1c33a0aab3bfa09f748920e504b4ae inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -184,6 +184,15 @@ Properties</h2></td></tr>
 <tr class="memitem:acf06592c3e663726e5b7b93effe52bdc inherit properties_classGondwana_1_1Drawing_1_1Tile" id="r_acf06592c3e663726e5b7b93effe52bdc"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#acf06592c3e663726e5b7b93effe52bdc">AdjustCollisionArea</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:acf06592c3e663726e5b7b93effe52bdc inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the collision adjustment used to derive CollisionArea.  <br /></td></tr>
 <tr class="separator:acf06592c3e663726e5b7b93effe52bdc inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6700b2afa0857083227bdb555d3a3639 inherit properties_classGondwana_1_1Drawing_1_1Tile" id="r_a6700b2afa0857083227bdb555d3a3639"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410c">TileCollisionType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a6700b2afa0857083227bdb555d3a3639">CollisionType</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a6700b2afa0857083227bdb555d3a3639 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the tile's collision behavior. This is initialized from the first assigned frame and may subsequently be overridden per tile.  <br /></td></tr>
+<tr class="separator:a6700b2afa0857083227bdb555d3a3639 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2c065918e956c6821707f74140a1527 inherit properties_classGondwana_1_1Drawing_1_1Tile" id="r_ae2c065918e956c6821707f74140a1527"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#ae2c065918e956c6821707f74140a1527">CollisionTypeByFrame</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:ae2c065918e956c6821707f74140a1527 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets whether frame changes replace this tile's collision type with the newly selected frame's effective collision type.  <br /></td></tr>
+<tr class="separator:ae2c065918e956c6821707f74140a1527 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab464869f423ed4cb7b52b599693f516 inherit properties_classGondwana_1_1Drawing_1_1Tile" id="r_aab464869f423ed4cb7b52b599693f516"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#aab464869f423ed4cb7b52b599693f516">CollisionProfileName</a><code> [get]</code></td></tr>
+<tr class="memdesc:aab464869f423ed4cb7b52b599693f516 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the scene-level collision profile currently associated with this tile.  <br /></td></tr>
+<tr class="separator:aab464869f423ed4cb7b52b599693f516 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04aecd48929540170b3fbe43cb5e06f8 inherit properties_classGondwana_1_1Drawing_1_1Tile" id="r_a04aecd48929540170b3fbe43cb5e06f8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a04aecd48929540170b3fbe43cb5e06f8">CollisionsEnabled</a><code> [get, set]</code></td></tr>
 <tr class="separator:a04aecd48929540170b3fbe43cb5e06f8 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a809ee69a8d25e7cf843f042c9b6298b6 inherit properties_classGondwana_1_1Drawing_1_1Tile" id="r_a809ee69a8d25e7cf843f042c9b6298b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1TypedValueBag.html">TypedValueBag</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a809ee69a8d25e7cf843f042c9b6298b6">ValueBag</a> = new()<code> [get]</code></td></tr>
@@ -202,14 +211,20 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a4927327e6c632c964beae3b3bcdcb69b inherit pub_methods_classGondwana_1_1Drawing_1_1Tile" id="r_a4927327e6c632c964beae3b3bcdcb69b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a4927327e6c632c964beae3b3bcdcb69b">Draw</a> (<a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
 <tr class="memdesc:a4927327e6c632c964beae3b3bcdcb69b inherit pub_methods_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws the object to the Backbuffer using the provided SCREEN-space destination rectangle. The rectangle is assumed to already be projected into screen-space; no world-to-screen conversion should occur within this method.  <br /></td></tr>
 <tr class="separator:a4927327e6c632c964beae3b3bcdcb69b inherit pub_methods_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e7657d4ab7cc877fb6b42a5b9f1e0ba inherit pub_methods_classGondwana_1_1Drawing_1_1Tile" id="r_a7e7657d4ab7cc877fb6b42a5b9f1e0ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a7e7657d4ab7cc877fb6b42a5b9f1e0ba">SetCollisionProfile</a> (string profileName)</td></tr>
+<tr class="memdesc:a7e7657d4ab7cc877fb6b42a5b9f1e0ba inherit pub_methods_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a named profile from this tile's parent scene. If the layer has not yet been attached to a scene, the name is retained and resolved later when the collider is attached or the profile is reapplied.  <br /></td></tr>
+<tr class="separator:a7e7657d4ab7cc877fb6b42a5b9f1e0ba inherit pub_methods_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88e851955c75d87fb4077eb257b32684 inherit pub_methods_classGondwana_1_1Drawing_1_1Tile" id="r_a88e851955c75d87fb4077eb257b32684"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a88e851955c75d87fb4077eb257b32684">CompareTo</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Tile.html">Tile</a>? tile)</td></tr>
 <tr class="separator:a88e851955c75d87fb4077eb257b32684 inherit pub_methods_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ca4859d010ae75a57af442c51e83022 inherit pub_methods_classGondwana_1_1Drawing_1_1Tile" id="r_a6ca4859d010ae75a57af442c51e83022"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a6ca4859d010ae75a57af442c51e83022">Dispose</a> ()</td></tr>
 <tr class="separator:a6ca4859d010ae75a57af442c51e83022 inherit pub_methods_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classGondwana_1_1Drawing_1_1Tile"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classGondwana_1_1Drawing_1_1Tile')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classGondwana_1_1Drawing_1_1Tile.html">Gondwana.Drawing.Tile</a></td></tr>
 <tr class="memitem:a565151265749a82230c3b5f4c32b5104 inherit pro_methods_classGondwana_1_1Drawing_1_1Tile" id="r_a565151265749a82230c3b5f4c32b5104"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a565151265749a82230c3b5f4c32b5104">CopyCollisionSettingsFrom</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Tile.html">Tile</a> source)</td></tr>
-<tr class="memdesc:a565151265749a82230c3b5f4c32b5104 inherit pro_methods_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies collision behavior and the effective collision adjustment from another tile.  <br /></td></tr>
+<tr class="memdesc:a565151265749a82230c3b5f4c32b5104 inherit pro_methods_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies collision behavior, profile, and effective frame metadata from another tile.  <br /></td></tr>
 <tr class="separator:a565151265749a82230c3b5f4c32b5104 inherit pro_methods_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ecd2b0efa88c81ae5a4f14fc5134f9a inherit pro_methods_classGondwana_1_1Drawing_1_1Tile" id="r_a2ecd2b0efa88c81ae5a4f14fc5134f9a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a2ecd2b0efa88c81ae5a4f14fc5134f9a">AttachCollider</a> (<a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html">ICollider</a> collider)</td></tr>
+<tr class="memdesc:a2ecd2b0efa88c81ae5a4f14fc5134f9a inherit pro_methods_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attaches this tile's collider and applies any collision state that was set before the collider became available.  <br /></td></tr>
+<tr class="separator:a2ecd2b0efa88c81ae5a4f14fc5134f9a inherit pro_methods_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classGondwana_1_1Drawing_1_1Tile"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classGondwana_1_1Drawing_1_1Tile')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classGondwana_1_1Drawing_1_1Tile.html">Gondwana.Drawing.Tile</a></td></tr>
 <tr class="memitem:a55b7cf5594bcb95ab5893c3c43842673 inherit pro_attribs_classGondwana_1_1Drawing_1_1Tile" id="r_a55b7cf5594bcb95ab5893c3c43842673"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a55b7cf5594bcb95ab5893c3c43842673">pauseAnimation</a></td></tr>
 <tr class="separator:a55b7cf5594bcb95ab5893c3c43842673 inherit pro_attribs_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -246,7 +261,7 @@ Additional Inherited Members</h2></td></tr>
 <p>This property uses the parent layer's coordinate system to transform the tile's grid coordinates into world-space pixel coordinates. The returned rectangle includes any overhang pixels defined by the tile's tilesheet, ensuring that tall or wide tiles (such as trees or buildings) are rendered with their full graphical extent. </p>
 <p>The coordinate transformation depends on the layer's active coordinate system type (orthogonal, isometric, hexagonal, etc.) and accounts for the layer's tile size, origin offset, and other rendering properties. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00098">98</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00110">110</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 
 </div>
 </div>
@@ -276,7 +291,7 @@ Additional Inherited Members</h2></td></tr>
 <p>The animator manages frame cycling for animated tiles, allowing tiles to display animated sequences defined by Cycle definitions. Animations are updated automatically during the engine's background update phase. </p>
 <p>Creating animators adds overhead, so this property should only be set to <code>true</code> for tiles that require animation. Static tiles should keep this property as <code>false</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00207">207</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00219">219</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 
 </div>
 </div>
@@ -305,7 +320,7 @@ Additional Inherited Members</h2></td></tr>
 <p>This property provides integer-based access to the tile's grid position, which is more appropriate for most tile-based operations than the floating-point SceneLayerCoordinates property. Grid coordinates are zero-based, with (0, 0) representing the top-left tile. </p>
 <p>Use this property when you need exact grid indices for array access, adjacency checks, or other grid-based calculations that require integer precision. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00162">162</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00174">174</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 
 </div>
 </div>
@@ -334,7 +349,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Scene layer tiles are fundamentally different from sprites in that they occupy fixed positions within the layer's tile grid. While the entire layer can be scrolled, individual tiles cannot move to arbitrary positions. This property distinguishes tiles from sprites for rendering and collision detection purposes. </p>
 <p>This property overrides <a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#af2c80d03dc7693f9ea706e9d426e30b0">Tile.IsPositionFixed</a> to reflect the fixed nature of tiles within scene layers. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00120">120</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00132">132</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 
 </div>
 </div>
@@ -363,7 +378,7 @@ Additional Inherited Members</h2></td></tr>
 <p>This property provides access to the tile's parent layer, which is useful for accessing layer-level properties such as tile size, coordinate system, parallax settings, and other rendering parameters that affect how the tile is displayed. </p>
 <p>Every scene layer tile is associated with exactly one parent layer, established when the layer is created. The relationship is immutable for the tile's lifetime. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00182">182</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00194">194</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 
 </div>
 </div>
@@ -392,7 +407,7 @@ Additional Inherited Members</h2></td></tr>
 <p>This property returns the tile's position in grid space (column, row), not pixel space. Grid coordinates are zero-based, with (0, 0) representing the top-left tile of the layer. </p>
 <p>For integer grid coordinates, use GridCoordinatesAbs instead. This property returns a <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">PointF</a> for compatibility with base class APIs that work with fractional coordinates. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00141">141</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00153">153</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 
 </div>
 </div>
@@ -422,7 +437,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#afe2fb2cda22db383aa386dc3c97af76c">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00075">75</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00087">87</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 
 </div>
 </div>

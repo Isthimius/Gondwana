@@ -1,7 +1,7 @@
 var classGondwana_1_1Scenes_1_1Scene =
 [
     [ "Scene", "classGondwana_1_1Scenes_1_1Scene.html#a254272a432b1d3a737e48a52750cdeff", null ],
-    [ "Scene", "classGondwana_1_1Scenes_1_1Scene.html#a40436a537d12b76716f02996202a9138", null ],
+    [ "Scene", "classGondwana_1_1Scenes_1_1Scene.html#aa80af6a78d45620afd025dc68722f3ff", null ],
     [ "AddLayer", "classGondwana_1_1Scenes_1_1Scene.html#aad4dc2ff1930c42d3ac8dc39bf89d084", null ],
     [ "AddLayer", "classGondwana_1_1Scenes_1_1Scene.html#a2c3a916c1541e0479a108d5a0fb29310", null ],
     [ "Dispose", "classGondwana_1_1Scenes_1_1Scene.html#a835d902d5621935b14b107c41acd8da2", null ],
@@ -14,6 +14,7 @@ var classGondwana_1_1Scenes_1_1Scene =
     [ "RemoveAllLayers", "classGondwana_1_1Scenes_1_1Scene.html#ac8e6956c491cbbf7a1197f4c378e7d7e", null ],
     [ "RemoveLayer", "classGondwana_1_1Scenes_1_1Scene.html#ab4a8de3e48467b6a52a08ee886f578af", null ],
     [ "CollisionGroups", "classGondwana_1_1Scenes_1_1Scene.html#a334bb5644cab120c1a6c02cb89b65bdd", null ],
+    [ "CollisionProfiles", "classGondwana_1_1Scenes_1_1Scene.html#aaaf1067aaddf0344fcf757cd33b48d22", null ],
     [ "Count", "classGondwana_1_1Scenes_1_1Scene.html#adcdad11fcc98c491f4edc90dbe32a71b", null ],
     [ "CountOfVisibleLayers", "classGondwana_1_1Scenes_1_1Scene.html#a9860887b89736db85032548e42d20bdd", null ],
     [ "FullRefreshNeeded", "classGondwana_1_1Scenes_1_1Scene.html#a4028379dbb7e8c28a6babd9f878044d2", null ],

@@ -95,6 +95,7 @@ var annotated_dup =
           [ "DirectSvg", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSvg.html", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSvg" ],
           [ "DirectVideo", "classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html", "classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo" ],
           [ "IDirectCompositeChild", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeChild.html", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeChild" ],
+          [ "IDirectCompositeContainer", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeContainer.html", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeContainer" ],
           [ "IDirectDrawable", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable" ],
           [ "TextBlock", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock" ]
         ] ],
@@ -182,6 +183,8 @@ var annotated_dup =
           [ "ColliderRegistry", "classGondwana_1_1Physics_1_1Collisions_1_1ColliderRegistry.html", "classGondwana_1_1Physics_1_1Collisions_1_1ColliderRegistry" ],
           [ "CollisionAdjust", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust" ],
           [ "CollisionGroupRegistry", "classGondwana_1_1Physics_1_1Collisions_1_1CollisionGroupRegistry.html", "classGondwana_1_1Physics_1_1Collisions_1_1CollisionGroupRegistry" ],
+          [ "CollisionProfile", "classGondwana_1_1Physics_1_1Collisions_1_1CollisionProfile.html", "classGondwana_1_1Physics_1_1Collisions_1_1CollisionProfile" ],
+          [ "CollisionProfileRegistry", "classGondwana_1_1Physics_1_1Collisions_1_1CollisionProfileRegistry.html", "classGondwana_1_1Physics_1_1Collisions_1_1CollisionProfileRegistry" ],
           [ "ICollider", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider" ],
           [ "ICollisionEntity", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionEntity.html", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionEntity" ],
           [ "ICollisionMovableEntity", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionMovableEntity.html", "interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionMovableEntity" ]
@@ -235,11 +238,23 @@ var annotated_dup =
       ] ],
       [ "Widgets", "namespaceGondwana_1_1Widgets.html", [
         [ "Controls", "namespaceGondwana_1_1Widgets_1_1Controls.html", [
-          [ "ButtonWidget", "classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget" ]
+          [ "ButtonWidget", "classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget" ],
+          [ "HyperlinkWidget", "classGondwana_1_1Widgets_1_1Controls_1_1HyperlinkWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1HyperlinkWidget" ],
+          [ "IExternalUriLauncher", "interfaceGondwana_1_1Widgets_1_1Controls_1_1IExternalUriLauncher.html", "interfaceGondwana_1_1Widgets_1_1Controls_1_1IExternalUriLauncher" ]
         ] ],
         [ "Dialogs", "namespaceGondwana_1_1Widgets_1_1Dialogs.html", [
           [ "AboutBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox.html", "classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox" ],
           [ "DialogBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox" ]
+        ] ],
+        [ "Hud", "namespaceGondwana_1_1Widgets_1_1Hud.html", [
+          [ "HealthBarWidget", "classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget.html", "classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget" ]
+        ] ],
+        [ "Menus", "namespaceGondwana_1_1Widgets_1_1Menus.html", [
+          [ "MenuBarMenu", "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarMenu.html", "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarMenu" ],
+          [ "MenuBarWidget", "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html", "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget" ],
+          [ "MenuDropDownWidget", "classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html", "classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget" ],
+          [ "MenuHeaderWidget", "classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget.html", "classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget" ],
+          [ "MenuItemWidget", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget" ]
         ] ],
         [ "Overlays", "namespaceGondwana_1_1Widgets_1_1Overlays.html", [
           [ "SplashScreen", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen" ]

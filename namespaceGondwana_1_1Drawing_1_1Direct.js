@@ -11,6 +11,7 @@ var namespaceGondwana_1_1Drawing_1_1Direct =
     [ "DirectSvg", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSvg.html", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSvg" ],
     [ "DirectVideo", "classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html", "classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo" ],
     [ "IDirectCompositeChild", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeChild.html", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeChild" ],
+    [ "IDirectCompositeContainer", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeContainer.html", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeContainer" ],
     [ "IDirectDrawable", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html", "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable" ],
     [ "TextBlock", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock" ],
     [ "DirectDrawingMode", "namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31", [

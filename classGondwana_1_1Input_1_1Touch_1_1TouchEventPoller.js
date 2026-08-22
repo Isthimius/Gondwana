@@ -1,5 +1,6 @@
 var classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller =
 [
+    [ "Dispose", "classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a613e609cc33fc8f587251d5f51133759", null ],
     [ "StartMonitoringTouch", "classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a9374cc6b8ca39d73c6c7a8c5f832ab8b", null ],
     [ "StopMonitoringTouch", "classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#ad736d5ad5e18bd222559180bfb1e1c79", null ],
     [ "ActiveTouches", "classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#ae33814f35dfd008279c544f89cefdb9b", null ],

@@ -1,7 +1,9 @@
 var classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer =
 [
     [ "ImageInstanceLayer", "classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#a99fc8cad5a93854460928c1807171e17", null ],
+    [ "ImageInstanceLayer", "classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#ace1a8aa7048ec8f133f1f386a39a6664", null ],
     [ "ImageInstanceLayer", "classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#a760d65e8a142f69802593ca0913cba06", null ],
+    [ "ImageInstanceLayer", "classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#abaf7822bc5a486b2dc2bbfbccde18394", null ],
     [ "Dispose", "classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#a05ae37f19bc436a11451bebeb0b2a22a", null ],
     [ "InitializeInstances", "classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#a7d830227802b73f01f003b2635701f9a", null ],
     [ "OnDraw", "classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#a47bf2f606f60f437bc6b81c6a9eb14f9", null ],

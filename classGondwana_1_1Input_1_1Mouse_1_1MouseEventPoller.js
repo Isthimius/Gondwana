@@ -1,5 +1,6 @@
 var classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller =
 [
+    [ "Dispose", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.html#ac77c420dc9b67228818a8561f671cc92", null ],
     [ "StartMonitoringMouse", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.html#a5a013ec1fc0742a7efd72631ad13ad68", null ],
     [ "StopMonitoringMouse", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.html#affe11699c919122f54beeebc29fd90ba", null ],
     [ "Adapter", "classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.html#ae57b5ff4b484f7cef22ceb8bc3c0efe3", null ],

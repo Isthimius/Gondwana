@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['mouseevent_0',['MouseEvent',['../classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.html#a90e3cd4a9c169d3201b7b4226d3d5cd2',1,'Gondwana::Input::Mouse::MouseEventPoller']]]
+  ['linkopened_0',['LinkOpened',['../classGondwana_1_1Widgets_1_1Controls_1_1HyperlinkWidget.html#a9b9328582b263d212efa520c95fd829c',1,'Gondwana::Widgets::Controls::HyperlinkWidget']]],
+  ['linkopenfailed_1',['LinkOpenFailed',['../classGondwana_1_1Widgets_1_1Controls_1_1HyperlinkWidget.html#aed77aee37fa2e4b879f1067bebdbd9ac',1,'Gondwana::Widgets::Controls::HyperlinkWidget']]]
 ];

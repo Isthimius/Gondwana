@@ -11,6 +11,7 @@ var classGondwana_1_1Scenes_1_1SceneLayer =
     [ "ColliderRegistry", "classGondwana_1_1Scenes_1_1SceneLayer.html#a57de1732566a17fe38238c4ddd6b526c", null ],
     [ "CollisionGroups", "classGondwana_1_1Scenes_1_1SceneLayer.html#a0f2fa3a90cd18f0a4b8fa9c95b95e755", null ],
     [ "CoordinateSystemType", "classGondwana_1_1Scenes_1_1SceneLayer.html#a3bc95f18b0758b5dc81a82c4f9f6683d", null ],
+    [ "DefaultTileCollisionProfile", "classGondwana_1_1Scenes_1_1SceneLayer.html#a873ad19f627fa499cde31aeb44c03990", null ],
     [ "GridColumnCount", "classGondwana_1_1Scenes_1_1SceneLayer.html#a958ed10b48f15930d257d8d7ddb46057", null ],
     [ "GridRowCount", "classGondwana_1_1Scenes_1_1SceneLayer.html#a66305751d643a83bd615591eefd480c1", null ],
     [ "ID", "classGondwana_1_1Scenes_1_1SceneLayer.html#a2d657e96220296392dd0819d66029e4e", null ],

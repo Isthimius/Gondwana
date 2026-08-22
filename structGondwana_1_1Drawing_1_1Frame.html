@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -112,6 +112,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a269d23cba68b8097b42ffd0d034b54ec" id="r_a269d23cba68b8097b42ffd0d034b54ec"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGondwana_1_1Drawing_1_1Frame.html#a269d23cba68b8097b42ffd0d034b54ec">Frame</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a> tilesheet, string regionName, int xTile, int yTile)</td></tr>
 <tr class="memdesc:a269d23cba68b8097b42ffd0d034b54ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the Frame struct with the specified tilesheet and tile coordinates.  <br /></td></tr>
 <tr class="separator:a269d23cba68b8097b42ffd0d034b54ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2826657b90c16eb70d231152f050acfe" id="r_a2826657b90c16eb70d231152f050acfe"><td class="memItemLeft" align="right" valign="top">readonly bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGondwana_1_1Drawing_1_1Frame.html#a2826657b90c16eb70d231152f050acfe">ClearCollisionAdjustOverride</a> ()</td></tr>
+<tr class="memdesc:a2826657b90c16eb70d231152f050acfe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes this frame's explicit collision adjustment so it once again inherits its region's <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a764f33f21e9f8d29079815898647faac" title="Gets or sets the collision adjustment inherited by frames that do not have an explicit frame-level ov...">TilesheetRegion.CollisionAdjust</a>.  <br /></td></tr>
+<tr class="separator:a2826657b90c16eb70d231152f050acfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23eb14c77e89048d5b74b822b62b31da" id="r_a23eb14c77e89048d5b74b822b62b31da"><td class="memItemLeft" align="right" valign="top">readonly bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGondwana_1_1Drawing_1_1Frame.html#a23eb14c77e89048d5b74b822b62b31da">ClearCollisionTypeOverride</a> ()</td></tr>
+<tr class="memdesc:a23eb14c77e89048d5b74b822b62b31da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes this frame's explicit collision type so it once again inherits its region's <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a165ac48925714329921e7549b84f5782" title="Gets or sets the collision type inherited by frames that do not have an explicit frame-level override...">TilesheetRegion.CollisionType</a>.  <br /></td></tr>
+<tr class="separator:a23eb14c77e89048d5b74b822b62b31da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -145,9 +151,18 @@ Properties</h2></td></tr>
 <tr class="memitem:a859e9b4a457c4825977915eee113b37c" id="r_a859e9b4a457c4825977915eee113b37c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGondwana_1_1Drawing_1_1Frame.html#a859e9b4a457c4825977915eee113b37c">CollisionAdjust</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a859e9b4a457c4825977915eee113b37c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the collision adjustment associated with this frame's region coordinates.  <br /></td></tr>
 <tr class="separator:a859e9b4a457c4825977915eee113b37c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd7fb6139c430adec8211e386639caec" id="r_abd7fb6139c430adec8211e386639caec"><td class="memItemLeft" align="right" valign="top">readonly bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGondwana_1_1Drawing_1_1Frame.html#abd7fb6139c430adec8211e386639caec">HasCollisionAdjustOverride</a><code> [get]</code></td></tr>
+<tr class="memdesc:abd7fb6139c430adec8211e386639caec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether this frame has an explicit collision adjustment rather than inheriting its region's <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a764f33f21e9f8d29079815898647faac" title="Gets or sets the collision adjustment inherited by frames that do not have an explicit frame-level ov...">TilesheetRegion.CollisionAdjust</a>.  <br /></td></tr>
+<tr class="separator:abd7fb6139c430adec8211e386639caec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6bf876c3d93801ce9d06796fb392eec0" id="r_a6bf876c3d93801ce9d06796fb392eec0"><td class="memItemLeft" align="right" valign="top">readonly Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGondwana_1_1Drawing_1_1Frame.html#a6bf876c3d93801ce9d06796fb392eec0">CollisionArea</a><code> [get]</code></td></tr>
 <tr class="memdesc:a6bf876c3d93801ce9d06796fb392eec0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the frame-local collision rectangle derived from TileSize and CollisionAdjust.  <br /></td></tr>
 <tr class="separator:a6bf876c3d93801ce9d06796fb392eec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acced779a2449301288376228a96278d2" id="r_acced779a2449301288376228a96278d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410c">TileCollisionType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGondwana_1_1Drawing_1_1Frame.html#acced779a2449301288376228a96278d2">CollisionType</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:acced779a2449301288376228a96278d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the effective collision type associated with this frame's region coordinates.  <br /></td></tr>
+<tr class="separator:acced779a2449301288376228a96278d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64f081ca1cb36045f6146e441670cce1" id="r_a64f081ca1cb36045f6146e441670cce1"><td class="memItemLeft" align="right" valign="top">readonly bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGondwana_1_1Drawing_1_1Frame.html#a64f081ca1cb36045f6146e441670cce1">HasCollisionTypeOverride</a><code> [get]</code></td></tr>
+<tr class="memdesc:a64f081ca1cb36045f6146e441670cce1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether this frame has an explicit collision type rather than inheriting its region's <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a165ac48925714329921e7549b84f5782" title="Gets or sets the collision type inherited by frames that do not have an explicit frame-level override...">TilesheetRegion.CollisionType</a>.  <br /></td></tr>
+<tr class="separator:a64f081ca1cb36045f6146e441670cce1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents the source Tilesheet and its coordinates to render on a destination. </p>
@@ -233,6 +248,49 @@ Properties</h2></td></tr>
 <p>Initializes a new instance of the Frame struct with the specified tilesheet and tile coordinates. </p>
 
 <p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00047">47</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a2826657b90c16eb70d231152f050acfe" name="a2826657b90c16eb70d231152f050acfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2826657b90c16eb70d231152f050acfe">&#9670;&#160;</a></span>ClearCollisionAdjustOverride()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">readonly bool Gondwana.Drawing.Frame.ClearCollisionAdjustOverride </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes this frame's explicit collision adjustment so it once again inherits its region's <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a764f33f21e9f8d29079815898647faac" title="Gets or sets the collision adjustment inherited by frames that do not have an explicit frame-level ov...">TilesheetRegion.CollisionAdjust</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00110">110</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+
+</div>
+</div>
+<a id="a23eb14c77e89048d5b74b822b62b31da" name="a23eb14c77e89048d5b74b822b62b31da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23eb14c77e89048d5b74b822b62b31da">&#9670;&#160;</a></span>ClearCollisionTypeOverride()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">readonly bool Gondwana.Drawing.Frame.ClearCollisionTypeOverride </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes this frame's explicit collision type so it once again inherits its region's <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a165ac48925714329921e7549b84f5782" title="Gets or sets the collision type inherited by frames that do not have an explicit frame-level override...">TilesheetRegion.CollisionType</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00157">157</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -359,7 +417,85 @@ Properties</h2></td></tr>
 
 <p>Gets the frame-local collision rectangle derived from TileSize and CollisionAdjust. </p>
 
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00123">123</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+
+</div>
+</div>
+<a id="acced779a2449301288376228a96278d2" name="acced779a2449301288376228a96278d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acced779a2449301288376228a96278d2">&#9670;&#160;</a></span>CollisionType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410c">TileCollisionType</a> Gondwana.Drawing.Frame.CollisionType</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span><span class="mlabel">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the effective collision type associated with this frame's region coordinates. </p>
+
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00129">129</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+
+</div>
+</div>
+<a id="abd7fb6139c430adec8211e386639caec" name="abd7fb6139c430adec8211e386639caec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd7fb6139c430adec8211e386639caec">&#9670;&#160;</a></span>HasCollisionAdjustOverride</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">readonly bool Gondwana.Drawing.Frame.HasCollisionAdjustOverride</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets whether this frame has an explicit collision adjustment rather than inheriting its region's <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a764f33f21e9f8d29079815898647faac" title="Gets or sets the collision adjustment inherited by frames that do not have an explicit frame-level ov...">TilesheetRegion.CollisionAdjust</a>. </p>
+
 <p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00100">100</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+
+</div>
+</div>
+<a id="a64f081ca1cb36045f6146e441670cce1" name="a64f081ca1cb36045f6146e441670cce1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64f081ca1cb36045f6146e441670cce1">&#9670;&#160;</a></span>HasCollisionTypeOverride</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">readonly bool Gondwana.Drawing.Frame.HasCollisionTypeOverride</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets whether this frame has an explicit collision type rather than inheriting its region's <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a165ac48925714329921e7549b84f5782" title="Gets or sets the collision type inherited by frames that do not have an explicit frame-level override...">TilesheetRegion.CollisionType</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00147">147</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>

@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -115,6 +115,9 @@ Inheritance diagram for Gondwana.Input.Touch.ITouchAdapter:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:ac7695647a22e9906a73a50121220589e" id="r_ac7695647a22e9906a73a50121220589e"><td class="memItemLeft" align="right" valign="top">IReadOnlyList&lt; <a class="el" href="namespaceGondwana_1_1Input_1_1Touch.html#aa34fb204d0b222197d7adec72b13924b">TouchPoint</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceGondwana_1_1Input_1_1Touch_1_1ITouchAdapter.html#ac7695647a22e9906a73a50121220589e">ConsumeBeganTouches</a> ()</td></tr>
+<tr class="memdesc:ac7695647a22e9906a73a50121220589e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drains and returns all touch contacts that began since the last call. Keeping beginnings in a queue prevents a short tap that begins and ends between two engine polls from being lost. Adapters that do not maintain a beginning queue may rely on the default empty implementation; the poller will still discover active contacts from ActiveTouches.  <br /></td></tr>
+<tr class="separator:ac7695647a22e9906a73a50121220589e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab5c0a640fe532d440668eb76b336e450" id="r_ab5c0a640fe532d440668eb76b336e450"><td class="memItemLeft" align="right" valign="top">IReadOnlyList&lt; <a class="el" href="namespaceGondwana_1_1Input_1_1Touch.html#aa34fb204d0b222197d7adec72b13924b">TouchPoint</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceGondwana_1_1Input_1_1Touch_1_1ITouchAdapter.html#ab5c0a640fe532d440668eb76b336e450">ConsumeEndedTouches</a> ()</td></tr>
 <tr class="memdesc:ab5c0a640fe532d440668eb76b336e450"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drains and returns all touch contacts that ended (lifted or cancelled) since the last call. Each entry preserves the original TouchPhase (TouchPhase.Ended or TouchPhase.Cancelled) so the poller can distinguish between the two. This method is intended to be called once per engine tick by the TouchEventPoller.  <br /></td></tr>
 <tr class="separator:ab5c0a640fe532d440668eb76b336e450"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -130,6 +133,27 @@ Properties</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="ITouchAdapter_8cs_source.html#l00009">9</a> of file <a class="el" href="ITouchAdapter_8cs_source.html">ITouchAdapter.cs</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ac7695647a22e9906a73a50121220589e" name="ac7695647a22e9906a73a50121220589e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7695647a22e9906a73a50121220589e">&#9670;&#160;</a></span>ConsumeBeganTouches()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IReadOnlyList&lt; <a class="el" href="namespaceGondwana_1_1Input_1_1Touch.html#aa34fb204d0b222197d7adec72b13924b">TouchPoint</a> &gt; Gondwana.Input.Touch.ITouchAdapter.ConsumeBeganTouches </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Drains and returns all touch contacts that began since the last call. Keeping beginnings in a queue prevents a short tap that begins and ends between two engine polls from being lost. Adapters that do not maintain a beginning queue may rely on the default empty implementation; the poller will still discover active contacts from ActiveTouches. </p>
+
+<p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Touch_1_1AvaloniaTouchInputAdapter.html#a6431dd7652a51f5151d0f9fa0bf47b39">Gondwana.Avalonia.Input.Touch.AvaloniaTouchInputAdapter</a>, and <a class="el" href="classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html#ade3759735eccf6020a4832d169957936">Gondwana.Blazor.Input.Touch.BlazorTouchAdapter</a>.</p>
+
+</div>
+</div>
 <a id="ab5c0a640fe532d440668eb76b336e450" name="ab5c0a640fe532d440668eb76b336e450"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab5c0a640fe532d440668eb76b336e450">&#9670;&#160;</a></span>ConsumeEndedTouches()</h2>
 
@@ -177,7 +201,7 @@ Properties</h2></td></tr>
 
 <p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Touch_1_1AvaloniaTouchInputAdapter.html#a12353ced690ce028d602f41c829846cd">Gondwana.Avalonia.Input.Touch.AvaloniaTouchInputAdapter</a>, and <a class="el" href="classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html#a4630be0ec39112e57bfe9c44b772d6ea">Gondwana.Blazor.Input.Touch.BlazorTouchAdapter</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ITouchAdapter_8cs_source.html#l00016">16</a> of file <a class="el" href="ITouchAdapter_8cs_source.html">ITouchAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ITouchAdapter_8cs_source.html#l00025">25</a> of file <a class="el" href="ITouchAdapter_8cs_source.html">ITouchAdapter.cs</a>.</p>
 
 </div>
 </div>

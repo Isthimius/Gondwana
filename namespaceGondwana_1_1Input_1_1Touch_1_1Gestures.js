@@ -12,6 +12,11 @@ var namespaceGondwana_1_1Input_1_1Touch_1_1Gestures =
       [ "Swipe", "namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#ac89a5051928081046ddb6e64f6cf563fa78076ce792c4640bf99c598c92bd69e7", null ],
       [ "Pinch", "namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#ac89a5051928081046ddb6e64f6cf563fa1e4ddf6f135e4c639929b4633c29d4f2", null ]
     ] ],
+    [ "PinchPhase", "namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#a2618e09d93b4f70dcc496cb140b8ed62", [
+      [ "Began", "namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#a2618e09d93b4f70dcc496cb140b8ed62a7b81520329371177ede3ccbc307bc85d", null ],
+      [ "Updated", "namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#a2618e09d93b4f70dcc496cb140b8ed62aff0a3b7f3daef040faf89a88fdac01b7", null ],
+      [ "Ended", "namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#a2618e09d93b4f70dcc496cb140b8ed62a0157fbb99be9622bdaa6e544270c0622", null ]
+    ] ],
     [ "SwipeDirection", "namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#afb1f79297125aec78556c8dd6ffa27f6", [
       [ "Right", "namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#afb1f79297125aec78556c8dd6ffa27f6a92b09c7c48c520c3c55e497875da437c", null ],
       [ "Left", "namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#afb1f79297125aec78556c8dd6ffa27f6a945d5e233cf7d6240f6b783b36a374ff", null ],

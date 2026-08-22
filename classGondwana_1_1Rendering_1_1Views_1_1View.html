@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -106,7 +106,7 @@ $(document).ready(function(){initNavTree('classGondwana_1_1Rendering_1_1Views_1_
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:af71865959fe62e046f3d168c73be2292" id="r_af71865959fe62e046f3d168c73be2292"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html#af71865959fe62e046f3d168c73be2292">ZoomAroundScreenPoint</a> (<a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">layer</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">PointF</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">screenPoint</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">float</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">targetZoom</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">float</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">durationSeconds</a>)</td></tr>
-<tr class="memdesc:af71865959fe62e046f3d168c73be2292"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smoothly zooms the view so that a given screen-space point appears to zoom in/out around a fixed world position beneath it, similar to map-style mouse-wheel zoom. Both the viewport zoom and camera position are animated over the specified duration.  <br /></td></tr>
+<tr class="memdesc:af71865959fe62e046f3d168c73be2292"><td class="mdescLeft">&#160;</td><td class="mdescRight">Zooms the view around a screen-space point while keeping the world point beneath that location fixed throughout the operation.  <br /></td></tr>
 <tr class="separator:af71865959fe62e046f3d168c73be2292"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ca7df6ee35057e1cb2e6aead6117230" id="r_a2ca7df6ee35057e1cb2e6aead6117230"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">PointF</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html#a2ca7df6ee35057e1cb2e6aead6117230">ScreenPxToWorldPx</a> (<a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">layer</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">PointF</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">screenPx</a>)</td></tr>
 <tr class="memdesc:a2ca7df6ee35057e1cb2e6aead6117230"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a screen-space pixel position into world-space coordinates for the specified scene layer, accounting for the view's camera position, viewport zoom, screen offsets, and the layer's parallax factor.  <br /></td></tr>
@@ -186,7 +186,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The grid coordinate (column/row or axial) under the screen pixel.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00204">204</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00268">268</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -225,11 +225,11 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The corresponding world-space pixel position. </dd></dl>
-<p>The transformation formula is: </p><div class="fragment"><div class="line"><a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">world</a> = <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">camera</a> * <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">parallax</a> + (<a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">screen</a> - <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">offset</a>) * <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">zoom</a></div>
+<p>The transformation formula is: </p><div class="fragment"><div class="line"><a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">world</a> = <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">camera</a> * <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">parallax</a> + (<a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">screen</a> - <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">offset</a>) / <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">zoom</a></div>
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1RenderSurfaceHost_html"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Gondwana.Rendering.RenderSurfaceHost</a></div><div class="ttdoc">Hosts a render surface and manages rendering of a scene to a backbuffer of the specified type....</div><div class="ttdef"><b>Definition</b> <a href="RenderSurfaceHost_8cs_source.html#l00027">RenderSurfaceHost.cs:29</a></div></div>
 </div><!-- fragment --><p> This is commonly used for mouse picking and screen-to-world raycasting. </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00147">147</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00211">211</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -260,9 +260,9 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Converts a screen-space rectangle (on the adapter) into a world-space rectangle for the given layer, respecting zoom, camera position, viewport offsets, and the layer's parallax factor. </p>
-<p>Inverse of: screen = offset + (world - camera * p) / zoom </p>
+<p>Inverse of: screen = offset + (world - camera * p) * zoom </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00256">256</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00319">319</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -301,10 +301,10 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The corresponding screen-space pixel position on the render surface. </dd></dl>
-<p>The transformation formula is: </p><div class="fragment"><div class="line"><a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">screen</a> = <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">offset</a> + (<a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">world</a> - <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">camera</a> * <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">parallax</a>) / <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">zoom</a></div>
+<p>The transformation formula is: </p><div class="fragment"><div class="line"><a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">screen</a> = <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">offset</a> + (<a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">world</a> - <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">camera</a> * <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">parallax</a>) * <a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">zoom</a></div>
 </div><!-- fragment --><p> This is commonly used for rendering world objects to screen coordinates and for UI elements that track world positions. </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00183">183</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00247">247</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -335,7 +335,7 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Converts a world-space pixel rectangle into a screen-space rectangle for this View, using the specified layer's parallax factor. </p>
-<p>Matches the render path: screen = offset + (world - camera * parallax) / zoom</p>
+<p>Matches the render path: screen = offset + (world - camera * parallax) * zoom</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">layer</td><td>Scene layer whose parallax should be applied.</td></tr>
@@ -345,7 +345,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Screen-space rectangle on the render surface.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00220">220</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00284">284</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -387,18 +387,19 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Smoothly zooms the view so that a given screen-space point appears to zoom in/out around a fixed world position beneath it, similar to map-style mouse-wheel zoom. Both the viewport zoom and camera position are animated over the specified duration. </p>
+<p>Zooms the view around a screen-space point while keeping the world point beneath that location fixed throughout the operation. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">layer</td><td>Reference layer whose parallax factor is used for the world-space transform. Typically the main gameplay layer (parallax = 1). </td></tr>
     <tr><td class="paramname">screenPoint</td><td>Mouse position in adapter/screen pixels relative to the render surface. </td></tr>
     <tr><td class="paramname">targetZoom</td><td>Desired zoom factor after the animation completes. </td></tr>
-    <tr><td class="paramname">durationSeconds</td><td>Approximate duration in seconds for the zoom + pan animation. Values &lt;= 0 snap immediately. </td></tr>
+    <tr><td class="paramname">durationSeconds</td><td>Duration in seconds for the zoom animation. Values &lt;= 0 snap immediately. </td></tr>
   </table>
   </dd>
 </dl>
+<p>During a smooth zoom, the viewport zoom is animated and the camera position is recomputed after every intermediate zoom update. This prevents the anchor point from drifting while zoom and camera movement are in progress. </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00087">87</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00093">93</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -426,7 +427,7 @@ Properties</h2></td></tr>
 <p>Gets the camera that controls the world-space position and following behavior for this view. The camera determines which part of the world is visible. </p>
 <p>The Views.Camera instance associated with this view. </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00031">31</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00035">35</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -453,7 +454,7 @@ Properties</h2></td></tr>
 <p>Gets the unique identifier for this view instance. </p>
 <p>A GUID that uniquely identifies this view throughout its lifetime. </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00022">22</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00026">26</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -479,7 +480,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the maximum zoom level allowed for this View. </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00057">57</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00061">61</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -505,7 +506,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the minimum zoom level allowed for this View. </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00052">52</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00056">56</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -532,7 +533,7 @@ Properties</h2></td></tr>
 <p>Gets the viewport that defines the screen-space rectangle, zoom level, and other rendering parameters for this view. The viewport controls how the camera's visible world region is mapped to screen pixels. </p>
 <p>The Views.Viewport instance associated with this view. </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00041">41</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00045">45</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -558,7 +559,7 @@ Properties</h2></td></tr>
 
 <p>Controls the draw order of this view relative to other views. Lower values are drawn first (behind); higher values are drawn later (in front). </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00047">47</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00051">51</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>

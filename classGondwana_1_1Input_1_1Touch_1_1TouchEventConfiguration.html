@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -99,7 +99,7 @@ $(document).ready(function(){initNavTree('classGondwana_1_1Input_1_1Touch_1_1Tou
 </div><!--header-->
 <div class="contents">
 
-<p>Represents the configuration for touch event monitoring, including timing controls for event throttling and pause functionality. This configuration is used by TouchEventPoller to control how frequently touch events are raised and whether event processing is currently paused.  
+<p>Represents the configuration for touch event monitoring, including timing controls for movement-event throttling and pause functionality. This configuration is used by TouchEventPoller to control how frequently touch movement events are raised and whether event processing is currently paused.  
  <a href="classGondwana_1_1Input_1_1Touch_1_1TouchEventConfiguration.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Input.Touch.TouchEventConfiguration:</div>
@@ -114,7 +114,7 @@ Inheritance diagram for Gondwana.Input.Touch.TouchEventConfiguration:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ac843323205fc4cc8b12246a912986d76" id="r_ac843323205fc4cc8b12246a912986d76"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1TouchEventConfiguration.html#ac843323205fc4cc8b12246a912986d76">TouchEventConfiguration</a> (double secondsBetweenEvents=0, bool isPaused=false)</td></tr>
-<tr class="memdesc:ac843323205fc4cc8b12246a912986d76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the TouchEventConfiguration class with the specified event timing and pause settings.  <br /></td></tr>
+<tr class="memdesc:ac843323205fc4cc8b12246a912986d76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the TouchEventConfiguration class with the specified movement-event timing and pause settings.  <br /></td></tr>
 <tr class="separator:ac843323205fc4cc8b12246a912986d76"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
@@ -132,7 +132,7 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a2963d70aa9cc5e0d335eecc21ecf15d2 inherit properties_classGondwana_1_1Input_1_1InputEventConfigurationBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Represents the configuration for touch event monitoring, including timing controls for event throttling and pause functionality. This configuration is used by TouchEventPoller to control how frequently touch events are raised and whether event processing is currently paused. </p>
+<div class="textblock"><p>Represents the configuration for touch event monitoring, including timing controls for movement-event throttling and pause functionality. This configuration is used by TouchEventPoller to control how frequently touch movement events are raised and whether event processing is currently paused. </p>
 
 <p class="definition">Definition at line <a class="el" href="TouchEventConfiguration_8cs_source.html#l00009">9</a> of file <a class="el" href="TouchEventConfiguration_8cs_source.html">TouchEventConfiguration.cs</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
@@ -162,10 +162,10 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes a new instance of the TouchEventConfiguration class with the specified event timing and pause settings. </p>
+<p>Initializes a new instance of the TouchEventConfiguration class with the specified movement-event timing and pause settings. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">secondsBetweenEvents</td><td>The minimum time interval in seconds that must elapse between consecutive touch events. Use this to throttle high-frequency touch input. A value of 0 means no throttling is applied, and events will be generated as frequently as the touch state changes. Default is 0. </td></tr>
+    <tr><td class="paramname">secondsBetweenEvents</td><td>The minimum time interval in seconds that must elapse between consecutive touch movement events. Began, ended, and cancelled transitions are never throttled. A value of 0 means no movement throttling is applied. Default is 0. </td></tr>
     <tr><td class="paramname">isPaused</td><td>A value indicating whether event processing for touch is initially paused. When paused, touch will not generate events even if contacts change. This is useful for temporarily disabling touch input, such as during cutscenes. Default is <code>false</code>. </td></tr>
   </table>
   </dd>

@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -108,7 +108,7 @@ Properties</h2></td></tr>
 <tr class="memdesc:a0d96b53613128a9fa12406c5ce22f3cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the bitmap rendered for this instance.  <br /></td></tr>
 <tr class="separator:a0d96b53613128a9fa12406c5ce22f3cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aee60c8dec234b69a49d79c8ab8a01c0f" id="r_aee60c8dec234b69a49d79c8ab8a01c0f"><td class="memItemLeft" align="right" valign="top">required RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstance.html#aee60c8dec234b69a49d79c8ab8a01c0f">Bounds</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:aee60c8dec234b69a49d79c8ab8a01c0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the destination bounds of the image in screen space.  <br /></td></tr>
+<tr class="memdesc:aee60c8dec234b69a49d79c8ab8a01c0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the destination bounds of the image in the coordinate space used by the containing ImageInstanceLayer.  <br /></td></tr>
 <tr class="separator:aee60c8dec234b69a49d79c8ab8a01c0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afaf001af99ce6c11d59ede4076deb97c" id="r_afaf001af99ce6c11d59ede4076deb97c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstance.html#afaf001af99ce6c11d59ede4076deb97c">VelocityX</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:afaf001af99ce6c11d59ede4076deb97c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the horizontal velocity in pixels per second.  <br /></td></tr>
@@ -158,7 +158,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the angular velocity in degrees per second. </p>
 
-<p class="definition">Definition at line <a class="el" href="ImageInstance_8cs_source.html#l00049">49</a> of file <a class="el" href="ImageInstance_8cs_source.html">ImageInstance.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ImageInstance_8cs_source.html#l00053">53</a> of file <a class="el" href="ImageInstance_8cs_source.html">ImageInstance.cs</a>.</p>
 
 </div>
 </div>
@@ -208,9 +208,10 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the destination bounds of the image in screen space. </p>
+<p>Gets or sets the destination bounds of the image in the coordinate space used by the containing ImageInstanceLayer. </p>
+<p>Bounds are world pixels in scene-layer mode and screen pixels in view mode. </p>
 
-<p class="definition">Definition at line <a class="el" href="ImageInstance_8cs_source.html#l00029">29</a> of file <a class="el" href="ImageInstance_8cs_source.html">ImageInstance.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ImageInstance_8cs_source.html#l00033">33</a> of file <a class="el" href="ImageInstance_8cs_source.html">ImageInstance.cs</a>.</p>
 
 </div>
 </div>
@@ -236,7 +237,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the current rotation in degrees. </p>
 
-<p class="definition">Definition at line <a class="el" href="ImageInstance_8cs_source.html#l00044">44</a> of file <a class="el" href="ImageInstance_8cs_source.html">ImageInstance.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ImageInstance_8cs_source.html#l00048">48</a> of file <a class="el" href="ImageInstance_8cs_source.html">ImageInstance.cs</a>.</p>
 
 </div>
 </div>
@@ -262,7 +263,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets an optional user-defined tag associated with this instance. </p>
 
-<p class="definition">Definition at line <a class="el" href="ImageInstance_8cs_source.html#l00063">63</a> of file <a class="el" href="ImageInstance_8cs_source.html">ImageInstance.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ImageInstance_8cs_source.html#l00067">67</a> of file <a class="el" href="ImageInstance_8cs_source.html">ImageInstance.cs</a>.</p>
 
 </div>
 </div>
@@ -289,7 +290,7 @@ Properties</h2></td></tr>
 <p>Gets or sets the tint applied when rendering the image. </p>
 <p>Defaults to white, which leaves the bitmap colors unchanged. Alpha may be used to apply transparency. </p>
 
-<p class="definition">Definition at line <a class="el" href="ImageInstance_8cs_source.html#l00058">58</a> of file <a class="el" href="ImageInstance_8cs_source.html">ImageInstance.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ImageInstance_8cs_source.html#l00062">62</a> of file <a class="el" href="ImageInstance_8cs_source.html">ImageInstance.cs</a>.</p>
 
 </div>
 </div>
@@ -315,7 +316,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the horizontal velocity in pixels per second. </p>
 
-<p class="definition">Definition at line <a class="el" href="ImageInstance_8cs_source.html#l00034">34</a> of file <a class="el" href="ImageInstance_8cs_source.html">ImageInstance.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ImageInstance_8cs_source.html#l00038">38</a> of file <a class="el" href="ImageInstance_8cs_source.html">ImageInstance.cs</a>.</p>
 
 </div>
 </div>
@@ -341,7 +342,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the vertical velocity in pixels per second. </p>
 
-<p class="definition">Definition at line <a class="el" href="ImageInstance_8cs_source.html#l00039">39</a> of file <a class="el" href="ImageInstance_8cs_source.html">ImageInstance.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ImageInstance_8cs_source.html#l00043">43</a> of file <a class="el" href="ImageInstance_8cs_source.html">ImageInstance.cs</a>.</p>
 
 </div>
 </div>

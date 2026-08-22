@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -140,94 +140,93 @@ $(document).ready(function(){initNavTree('SvgResource_8cs_source.html',''); init
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidOperationException(<span class="stringliteral">&quot;Failed to parse SVG content.&quot;</span>);</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        var cull = svg.Picture.CullRect;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        var intrinsic = <span class="keyword">new</span> SizeF(</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            cull.Width &gt; 0 ? cull.Width : 1f,</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            cull.Height &gt; 0 ? cull.Height : 1f);</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code hl_class" href="classGondwana_1_1Drawing_1_1SvgResource.html">SvgResource</a>(svg.Picture, intrinsic);</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    }</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classGondwana_1_1Drawing_1_1SvgResource.html#a76458a9438be273a5e9b251c42f71df0">   56</a></span>    <span class="keyword">public</span> SizeF <a class="code hl_property" href="classGondwana_1_1Drawing_1_1SvgResource.html#a76458a9438be273a5e9b251c42f71df0">IntrinsicSize</a> { <span class="keyword">get</span>; }</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="foldopen" id="foldopen00068" data-start="{" data-end="}">
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classGondwana_1_1Drawing_1_1SvgResource.html#a2874ff6a5d0948839057fb89d7193658">   68</a></span>    <span class="keyword">public</span> SKBitmap <a class="code hl_function" href="classGondwana_1_1Drawing_1_1SvgResource.html#a2874ff6a5d0948839057fb89d7193658">Rasterize</a>(<span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height)</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    {</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        ThrowIfDisposed();</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">if</span> (width &lt;= 0)</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> ArgumentOutOfRangeException(nameof(width), <span class="stringliteral">&quot;Width must be greater than 0.&quot;</span>);</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordflow">if</span> (height &lt;= 0)</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> ArgumentOutOfRangeException(nameof(height), <span class="stringliteral">&quot;Height must be greater than 0.&quot;</span>);</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        lock (_cacheLock)</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        {</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <span class="keywordflow">if</span> (_cachedBitmaps.TryGetValue((width, height), out var cachedBitmap))</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                <span class="keywordflow">return</span> cachedBitmap;</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            var bitmap = <span class="keyword">new</span> SKBitmap(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <span class="keyword">using </span>var canvas = <span class="keyword">new</span> SKCanvas(bitmap);</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            canvas.Clear(SKColors.Transparent);</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            var src = _picture.CullRect;</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            <span class="keywordflow">if</span> (src.Width &lt;= 0 || src.Height &lt;= 0)</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            {</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                src = <span class="keyword">new</span> SKRect(0, 0, Math.Max(1f, <a class="code hl_property" href="classGondwana_1_1Drawing_1_1SvgResource.html#a76458a9438be273a5e9b251c42f71df0">IntrinsicSize</a>.Width), Math.Max(1f, <a class="code hl_property" href="classGondwana_1_1Drawing_1_1SvgResource.html#a76458a9438be273a5e9b251c42f71df0">IntrinsicSize</a>.Height));</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            }</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            canvas.Scale(width / src.Width, height / src.Height);</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            canvas.DrawPicture(_picture);</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            canvas.Flush();</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            _cachedBitmaps[(width, height)] = bitmap;</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <span class="keywordflow">return</span> bitmap;</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        }</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    }</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        var intrinsic = <span class="keyword">new</span> SizeF(cull.Width &gt; 0 ? cull.Width : 1f,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                                  cull.Height &gt; 0 ? cull.Height : 1f);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code hl_class" href="classGondwana_1_1Drawing_1_1SvgResource.html">SvgResource</a>(svg.Picture, intrinsic);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    }</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classGondwana_1_1Drawing_1_1SvgResource.html#a76458a9438be273a5e9b251c42f71df0">   55</a></span>    <span class="keyword">public</span> SizeF <a class="code hl_property" href="classGondwana_1_1Drawing_1_1SvgResource.html#a76458a9438be273a5e9b251c42f71df0">IntrinsicSize</a> { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="foldopen" id="foldopen00067" data-start="{" data-end="}">
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classGondwana_1_1Drawing_1_1SvgResource.html#a2874ff6a5d0948839057fb89d7193658">   67</a></span>    <span class="keyword">public</span> SKBitmap <a class="code hl_function" href="classGondwana_1_1Drawing_1_1SvgResource.html#a2874ff6a5d0948839057fb89d7193658">Rasterize</a>(<span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height)</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        ThrowIfDisposed();</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordflow">if</span> (width &lt;= 0)</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> ArgumentOutOfRangeException(nameof(width), <span class="stringliteral">&quot;Width must be greater than 0.&quot;</span>);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordflow">if</span> (height &lt;= 0)</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> ArgumentOutOfRangeException(nameof(height), <span class="stringliteral">&quot;Height must be greater than 0.&quot;</span>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        lock (_cacheLock)</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keywordflow">if</span> (_cachedBitmaps.TryGetValue((width, height), out var cachedBitmap))</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                <span class="keywordflow">return</span> cachedBitmap;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            var bitmap = <span class="keyword">new</span> SKBitmap(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="keyword">using </span>var canvas = <span class="keyword">new</span> SKCanvas(bitmap);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            canvas.Clear(SKColors.Transparent);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            var src = _picture.CullRect;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <span class="keywordflow">if</span> (src.Width &lt;= 0 || src.Height &lt;= 0)</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            {</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                src = <span class="keyword">new</span> SKRect(0, 0, Math.Max(1f, <a class="code hl_property" href="classGondwana_1_1Drawing_1_1SvgResource.html#a76458a9438be273a5e9b251c42f71df0">IntrinsicSize</a>.Width), Math.Max(1f, <a class="code hl_property" href="classGondwana_1_1Drawing_1_1SvgResource.html#a76458a9438be273a5e9b251c42f71df0">IntrinsicSize</a>.Height));</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            }</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            canvas.Scale(width / src.Width, height / src.Height);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            canvas.DrawPicture(_picture);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            canvas.Flush();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            _cachedBitmaps[(width, height)] = bitmap;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            <span class="keywordflow">return</span> bitmap;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    }</div>
 </div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
-<div class="foldopen" id="foldopen00107" data-start="{" data-end="}">
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classGondwana_1_1Drawing_1_1SvgResource.html#a62225fe5f3bd4669139da3ddc404d6a3">  107</a></span>    <span class="keyword">public</span> SKBitmap <a class="code hl_function" href="classGondwana_1_1Drawing_1_1SvgResource.html#a62225fe5f3bd4669139da3ddc404d6a3">Rasterize</a>(<span class="keywordtype">float</span> scale = 1.0f)</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    {</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        ThrowIfDisposed();</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keywordflow">if</span> (scale &lt;= 0f)</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> ArgumentOutOfRangeException(nameof(scale), <span class="stringliteral">&quot;Scale must be greater than 0.&quot;</span>);</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keywordtype">int</span> width = Math.Max(1, (<span class="keywordtype">int</span>)MathF.Round(<a class="code hl_property" href="classGondwana_1_1Drawing_1_1SvgResource.html#a76458a9438be273a5e9b251c42f71df0">IntrinsicSize</a>.Width * scale));</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordtype">int</span> height = Math.Max(1, (<span class="keywordtype">int</span>)MathF.Round(<a class="code hl_property" href="classGondwana_1_1Drawing_1_1SvgResource.html#a76458a9438be273a5e9b251c42f71df0">IntrinsicSize</a>.Height * scale));</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classGondwana_1_1Drawing_1_1SvgResource.html#a2874ff6a5d0948839057fb89d7193658">Rasterize</a>(width, height);</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    }</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="foldopen" id="foldopen00106" data-start="{" data-end="}">
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classGondwana_1_1Drawing_1_1SvgResource.html#a62225fe5f3bd4669139da3ddc404d6a3">  106</a></span>    <span class="keyword">public</span> SKBitmap <a class="code hl_function" href="classGondwana_1_1Drawing_1_1SvgResource.html#a62225fe5f3bd4669139da3ddc404d6a3">Rasterize</a>(<span class="keywordtype">float</span> scale = 1.0f)</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        ThrowIfDisposed();</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keywordflow">if</span> (scale &lt;= 0f)</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> ArgumentOutOfRangeException(nameof(scale), <span class="stringliteral">&quot;Scale must be greater than 0.&quot;</span>);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordtype">int</span> width = Math.Max(1, (<span class="keywordtype">int</span>)MathF.Round(<a class="code hl_property" href="classGondwana_1_1Drawing_1_1SvgResource.html#a76458a9438be273a5e9b251c42f71df0">IntrinsicSize</a>.Width * scale));</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keywordtype">int</span> height = Math.Max(1, (<span class="keywordtype">int</span>)MathF.Round(<a class="code hl_property" href="classGondwana_1_1Drawing_1_1SvgResource.html#a76458a9438be273a5e9b251c42f71df0">IntrinsicSize</a>.Height * scale));</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classGondwana_1_1Drawing_1_1SvgResource.html#a2874ff6a5d0948839057fb89d7193658">Rasterize</a>(width, height);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    }</div>
 </div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
-<div class="foldopen" id="foldopen00120" data-start="{" data-end="}">
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="classGondwana_1_1Drawing_1_1SvgResource.html#a0aa53df6f3f537d5b50d345e1d3dde10">  120</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Drawing_1_1SvgResource.html#a0aa53df6f3f537d5b50d345e1d3dde10">Dispose</a>()</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    {</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        <span class="keywordflow">if</span> (_disposed)</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        lock (_cacheLock)</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        {</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            <span class="keywordflow">foreach</span> (var bitmap <span class="keywordflow">in</span> _cachedBitmaps.Values)</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                bitmap.Dispose();</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>            _cachedBitmaps.Clear();</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>            _picture.Dispose();</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>            _disposed = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        }</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    }</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="foldopen" id="foldopen00119" data-start="{" data-end="}">
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="classGondwana_1_1Drawing_1_1SvgResource.html#a0aa53df6f3f537d5b50d345e1d3dde10">  119</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Drawing_1_1SvgResource.html#a0aa53df6f3f537d5b50d345e1d3dde10">Dispose</a>()</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    {</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="keywordflow">if</span> (_disposed)</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        lock (_cacheLock)</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        {</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>            <span class="keywordflow">foreach</span> (var bitmap <span class="keywordflow">in</span> _cachedBitmaps.Values)</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                bitmap.Dispose();</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>            _cachedBitmaps.Clear();</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>            _picture.Dispose();</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>            _disposed = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        }</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    }</div>
 </div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> ThrowIfDisposed()</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    {</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        ObjectDisposedException.ThrowIf(_disposed, <span class="keyword">this</span>);</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    }</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>}</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> ThrowIfDisposed()</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    {</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        ObjectDisposedException.ThrowIf(_disposed, <span class="keyword">this</span>);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    }</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>}</div>
 </div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1SvgResource_html"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1SvgResource.html">Gondwana.Drawing.SvgResource</a></div><div class="ttdoc">Represents a loaded SVG asset that can be rasterized into cached bitmaps at requested sizes.</div><div class="ttdef"><b>Definition</b> <a href="SvgResource_8cs_source.html#l00010">SvgResource.cs:11</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Drawing_1_1SvgResource_html_a0aa53df6f3f537d5b50d345e1d3dde10"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1SvgResource.html#a0aa53df6f3f537d5b50d345e1d3dde10">Gondwana.Drawing.SvgResource.Dispose</a></div><div class="ttdeci">void Dispose()</div><div class="ttdef"><b>Definition</b> <a href="SvgResource_8cs_source.html#l00120">SvgResource.cs:120</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Drawing_1_1SvgResource_html_a2874ff6a5d0948839057fb89d7193658"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1SvgResource.html#a2874ff6a5d0948839057fb89d7193658">Gondwana.Drawing.SvgResource.Rasterize</a></div><div class="ttdeci">SKBitmap Rasterize(int width, int height)</div><div class="ttdoc">Rasterizes this SVG to an explicit pixel size.</div><div class="ttdef"><b>Definition</b> <a href="SvgResource_8cs_source.html#l00068">SvgResource.cs:68</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Drawing_1_1SvgResource_html_a62225fe5f3bd4669139da3ddc404d6a3"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1SvgResource.html#a62225fe5f3bd4669139da3ddc404d6a3">Gondwana.Drawing.SvgResource.Rasterize</a></div><div class="ttdeci">SKBitmap Rasterize(float scale=1.0f)</div><div class="ttdoc">Rasterizes this SVG to its intrinsic size multiplied by a scale factor.</div><div class="ttdef"><b>Definition</b> <a href="SvgResource_8cs_source.html#l00107">SvgResource.cs:107</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Drawing_1_1SvgResource_html_a76458a9438be273a5e9b251c42f71df0"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1SvgResource.html#a76458a9438be273a5e9b251c42f71df0">Gondwana.Drawing.SvgResource.IntrinsicSize</a></div><div class="ttdeci">SizeF IntrinsicSize</div><div class="ttdoc">Gets the intrinsic (unscaled) SVG size in pixels.</div><div class="ttdef"><b>Definition</b> <a href="SvgResource_8cs_source.html#l00056">SvgResource.cs:56</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Drawing_1_1SvgResource_html_a0aa53df6f3f537d5b50d345e1d3dde10"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1SvgResource.html#a0aa53df6f3f537d5b50d345e1d3dde10">Gondwana.Drawing.SvgResource.Dispose</a></div><div class="ttdeci">void Dispose()</div><div class="ttdef"><b>Definition</b> <a href="SvgResource_8cs_source.html#l00119">SvgResource.cs:119</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Drawing_1_1SvgResource_html_a2874ff6a5d0948839057fb89d7193658"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1SvgResource.html#a2874ff6a5d0948839057fb89d7193658">Gondwana.Drawing.SvgResource.Rasterize</a></div><div class="ttdeci">SKBitmap Rasterize(int width, int height)</div><div class="ttdoc">Rasterizes this SVG to an explicit pixel size.</div><div class="ttdef"><b>Definition</b> <a href="SvgResource_8cs_source.html#l00067">SvgResource.cs:67</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Drawing_1_1SvgResource_html_a62225fe5f3bd4669139da3ddc404d6a3"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1SvgResource.html#a62225fe5f3bd4669139da3ddc404d6a3">Gondwana.Drawing.SvgResource.Rasterize</a></div><div class="ttdeci">SKBitmap Rasterize(float scale=1.0f)</div><div class="ttdoc">Rasterizes this SVG to its intrinsic size multiplied by a scale factor.</div><div class="ttdef"><b>Definition</b> <a href="SvgResource_8cs_source.html#l00106">SvgResource.cs:106</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Drawing_1_1SvgResource_html_a76458a9438be273a5e9b251c42f71df0"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1SvgResource.html#a76458a9438be273a5e9b251c42f71df0">Gondwana.Drawing.SvgResource.IntrinsicSize</a></div><div class="ttdeci">SizeF IntrinsicSize</div><div class="ttdoc">Gets the intrinsic (unscaled) SVG size in pixels.</div><div class="ttdef"><b>Definition</b> <a href="SvgResource_8cs_source.html#l00055">SvgResource.cs:55</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1SvgResource_html_adcc9db6094c65581666ef65090f6876b"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1SvgResource.html#adcc9db6094c65581666ef65090f6876b">Gondwana.Drawing.SvgResource.Load</a></div><div class="ttdeci">static SvgResource Load(string path)</div><div class="ttdoc">Loads an SVG resource from a file path.</div><div class="ttdef"><b>Definition</b> <a href="SvgResource_8cs_source.html#l00028">SvgResource.cs:28</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_html"><div class="ttname"><a href="namespaceGondwana_1_1Drawing.html">Gondwana.Drawing</a></div><div class="ttdef"><b>Definition</b> <a href="DirectVideo_8cs_source.html#l00013">DirectVideo.cs:13</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

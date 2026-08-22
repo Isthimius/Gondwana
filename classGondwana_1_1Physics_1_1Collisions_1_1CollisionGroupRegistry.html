@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -114,6 +114,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a16ae25d5eff025add068e58d909e7ef1" id="r_a16ae25d5eff025add068e58d909e7ef1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Physics_1_1Collisions_1_1CollisionGroupRegistry.html#a16ae25d5eff025add068e58d909e7ef1">Get</a> (string name)</td></tr>
 <tr class="memdesc:a16ae25d5eff025add068e58d909e7ef1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the bit flag value for a previously defined collision group.  <br /></td></tr>
 <tr class="separator:a16ae25d5eff025add068e58d909e7ef1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a8eeacfe4c95ad416298dffb2f58de9" id="r_a0a8eeacfe4c95ad416298dffb2f58de9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Physics_1_1Collisions_1_1CollisionGroupRegistry.html#a0a8eeacfe4c95ad416298dffb2f58de9">GetMask</a> (IEnumerable&lt; string &gt; names)</td></tr>
+<tr class="memdesc:a0a8eeacfe4c95ad416298dffb2f58de9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Combines previously defined collision groups into one bit mask. An empty collection resolves to CollisionMasks.None.  <br /></td></tr>
+<tr class="separator:a0a8eeacfe4c95ad416298dffb2f58de9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54477e1cebdbc40ccde79511fc539a38" id="r_a54477e1cebdbc40ccde79511fc539a38"><td class="memItemLeft" align="right" valign="top">IReadOnlyCollection&lt; string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Physics_1_1Collisions_1_1CollisionGroupRegistry.html#a54477e1cebdbc40ccde79511fc539a38">GetGroupNames</a> ()</td></tr>
 <tr class="memdesc:a54477e1cebdbc40ccde79511fc539a38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a read-only collection of all defined collision group names.  <br /></td></tr>
 <tr class="separator:a54477e1cebdbc40ccde79511fc539a38"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -223,6 +226,28 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a id="a0a8eeacfe4c95ad416298dffb2f58de9" name="a0a8eeacfe4c95ad416298dffb2f58de9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a8eeacfe4c95ad416298dffb2f58de9">&#9670;&#160;</a></span>GetMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Gondwana.Physics.Collisions.CollisionGroupRegistry.GetMask </td>
+          <td>(</td>
+          <td class="paramtype">IEnumerable&lt; string &gt;&#160;</td>
+          <td class="paramname"><em>names</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Combines previously defined collision groups into one bit mask. An empty collection resolves to CollisionMasks.None. </p>
+
+<p class="definition">Definition at line <a class="el" href="CollisionGroupRegistry_8cs_source.html#l00079">79</a> of file <a class="el" href="CollisionGroupRegistry_8cs_source.html">CollisionGroupRegistry.cs</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Property Documentation</h2>
 <a id="a70255ac110997e09e264307a4ba11325" name="a70255ac110997e09e264307a4ba11325"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a70255ac110997e09e264307a4ba11325">&#9670;&#160;</a></span>Actors</h2>
@@ -246,7 +271,7 @@ Properties</h2></td></tr>
 
 <p>Gets the bit flag value for the Actors collision group. </p>
 
-<p class="definition">Definition at line <a class="el" href="CollisionGroupRegistry_8cs_source.html#l00088">88</a> of file <a class="el" href="CollisionGroupRegistry_8cs_source.html">CollisionGroupRegistry.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CollisionGroupRegistry_8cs_source.html#l00103">103</a> of file <a class="el" href="CollisionGroupRegistry_8cs_source.html">CollisionGroupRegistry.cs</a>.</p>
 
 </div>
 </div>
@@ -272,7 +297,7 @@ Properties</h2></td></tr>
 
 <p>Gets the bit flag value for the Projectiles collision group. </p>
 
-<p class="definition">Definition at line <a class="el" href="CollisionGroupRegistry_8cs_source.html#l00093">93</a> of file <a class="el" href="CollisionGroupRegistry_8cs_source.html">CollisionGroupRegistry.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CollisionGroupRegistry_8cs_source.html#l00108">108</a> of file <a class="el" href="CollisionGroupRegistry_8cs_source.html">CollisionGroupRegistry.cs</a>.</p>
 
 </div>
 </div>
@@ -298,7 +323,7 @@ Properties</h2></td></tr>
 
 <p>Gets the bit flag value for the Triggers collision group. </p>
 
-<p class="definition">Definition at line <a class="el" href="CollisionGroupRegistry_8cs_source.html#l00098">98</a> of file <a class="el" href="CollisionGroupRegistry_8cs_source.html">CollisionGroupRegistry.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CollisionGroupRegistry_8cs_source.html#l00113">113</a> of file <a class="el" href="CollisionGroupRegistry_8cs_source.html">CollisionGroupRegistry.cs</a>.</p>
 
 </div>
 </div>
@@ -324,7 +349,7 @@ Properties</h2></td></tr>
 
 <p>Gets the bit flag value for the WorldStatic collision group. </p>
 
-<p class="definition">Definition at line <a class="el" href="CollisionGroupRegistry_8cs_source.html#l00083">83</a> of file <a class="el" href="CollisionGroupRegistry_8cs_source.html">CollisionGroupRegistry.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CollisionGroupRegistry_8cs_source.html#l00098">98</a> of file <a class="el" href="CollisionGroupRegistry_8cs_source.html">CollisionGroupRegistry.cs</a>.</p>
 
 </div>
 </div>

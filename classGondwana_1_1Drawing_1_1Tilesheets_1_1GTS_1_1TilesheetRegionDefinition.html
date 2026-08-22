@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -122,11 +122,14 @@ Properties</h2></td></tr>
 <tr class="memitem:a3a46fa8ce742ef034c03c5cb2b5cc2d7" id="r_a3a46fa8ce742ef034c03c5cb2b5cc2d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html#a3a46fa8ce742ef034c03c5cb2b5cc2d7">Overhang</a> = Spacing.None<code> [get, set]</code></td></tr>
 <tr class="memdesc:a3a46fa8ce742ef034c03c5cb2b5cc2d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the visual overhang beyond the logical tile bounds.  <br /></td></tr>
 <tr class="separator:a3a46fa8ce742ef034c03c5cb2b5cc2d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4597b16cf71f14011fb93319d3e07fc4" id="r_a4597b16cf71f14011fb93319d3e07fc4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html#a4597b16cf71f14011fb93319d3e07fc4">CollisionAdjust</a><code> [get, set]</code></td></tr>
+<tr class="memitem:a4597b16cf71f14011fb93319d3e07fc4" id="r_a4597b16cf71f14011fb93319d3e07fc4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html#a4597b16cf71f14011fb93319d3e07fc4">CollisionAdjust</a> = CollisionAdjust.None<code> [get, set]</code></td></tr>
 <tr class="memdesc:a4597b16cf71f14011fb93319d3e07fc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the region-level collision adjustment applied to all frames by default.  <br /></td></tr>
 <tr class="separator:a4597b16cf71f14011fb93319d3e07fc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd01db426c4bf9668215d728e519c264" id="r_acd01db426c4bf9668215d728e519c264"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410c">TileCollisionType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html#acd01db426c4bf9668215d728e519c264">CollisionType</a> = TileCollisionType.None<code> [get, set]</code></td></tr>
+<tr class="memdesc:acd01db426c4bf9668215d728e519c264"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the region-level collision type inherited by frames without an explicit collision-type override.  <br /></td></tr>
+<tr class="separator:acd01db426c4bf9668215d728e519c264"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae56ef927ed6a1b5bb4cd0b26773332a9" id="r_ae56ef927ed6a1b5bb4cd0b26773332a9"><td class="memItemLeft" align="right" valign="top">List&lt; <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetFrameDefinition.html">TilesheetFrameDefinition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetRegionDefinition.html#ae56ef927ed6a1b5bb4cd0b26773332a9">Frames</a> = []<code> [get, set]</code></td></tr>
-<tr class="memdesc:ae56ef927ed6a1b5bb4cd0b26773332a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the final per-frame collision metadata for this region.  <br /></td></tr>
+<tr class="memdesc:ae56ef927ed6a1b5bb4cd0b26773332a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets per-frame collision metadata for this region. A missing collision property on a frame means that frame inherits the corresponding region value.  <br /></td></tr>
 <tr class="separator:ae56ef927ed6a1b5bb4cd0b26773332a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -170,7 +173,7 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a> Gondwana.Drawing.Tilesheets.GTS.TilesheetRegionDefinition.CollisionAdjust</td>
+          <td class="memname"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a> Gondwana.Drawing.Tilesheets.GTS.TilesheetRegionDefinition.CollisionAdjust = CollisionAdjust.None</td>
         </tr>
       </table>
   </td>
@@ -179,17 +182,36 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        <a class="code hl_namespace" href="namespaceGondwana.html">Gondwana</a>.<a class="code hl_namespace" href="namespaceGondwana_1_1Physics.html">Physics</a>.<a class="code hl_namespace" href="namespaceGondwana_1_1Physics_1_1Collisions.html">Collisions</a>.<a class="code hl_struct" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>.<a class="code hl_variable" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html#a31dae28e59b8d486a2153d0b263d7ecb">None</a></div>
-<div class="ttc" id="anamespaceGondwana_1_1Physics_1_1Collisions_html"><div class="ttname"><a href="namespaceGondwana_1_1Physics_1_1Collisions.html">Gondwana.Physics.Collisions</a></div><div class="ttdef"><b>Definition</b> <a href="Aabb_8cs_source.html#l00003">Aabb.cs:3</a></div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Physics_html"><div class="ttname"><a href="namespaceGondwana_1_1Physics.html">Gondwana.Physics</a></div><div class="ttdef"><b>Definition</b> <a href="Aabb_8cs_source.html#l00003">Aabb.cs:3</a></div></div>
-<div class="ttc" id="anamespaceGondwana_html"><div class="ttname"><a href="namespaceGondwana.html">Gondwana</a></div><div class="ttdef"><b>Definition</b> <a href="BrowserAudioInterop_8cs_source.html#l00004">BrowserAudioInterop.cs:4</a></div></div>
-<div class="ttc" id="astructGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust_html"><div class="ttname"><a href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">Gondwana.Physics.Collisions.CollisionAdjust</a></div><div class="ttdoc">Pixel adjustments applied to visual bounds to produce a collision rectangle.</div><div class="ttdef"><b>Definition</b> <a href="CollisionAdjust_8cs_source.html#l00016">CollisionAdjust.cs:17</a></div></div>
-<div class="ttc" id="astructGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust_html_a31dae28e59b8d486a2153d0b263d7ecb"><div class="ttname"><a href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html#a31dae28e59b8d486a2153d0b263d7ecb">Gondwana.Physics.Collisions.CollisionAdjust.None</a></div><div class="ttdeci">static readonly CollisionAdjust None</div><div class="ttdoc">Represents an adjustment with no pixel offsets.</div><div class="ttdef"><b>Definition</b> <a href="CollisionAdjust_8cs_source.html#l00045">CollisionAdjust.cs:45</a></div></div>
-</div><!-- fragment -->
+
 <p>Gets or sets the region-level collision adjustment applied to all frames by default. </p>
 
 <p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00044">44</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
+
+</div>
+</div>
+<a id="acd01db426c4bf9668215d728e519c264" name="acd01db426c4bf9668215d728e519c264"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd01db426c4bf9668215d728e519c264">&#9670;&#160;</a></span>CollisionType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410c">TileCollisionType</a> Gondwana.Drawing.Tilesheets.GTS.TilesheetRegionDefinition.CollisionType = TileCollisionType.None</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span><span class="mlabel">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the region-level collision type inherited by frames without an explicit collision-type override. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00050">50</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -213,9 +235,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the final per-frame collision metadata for this region. </p>
+<p>Gets or sets per-frame collision metadata for this region. A missing collision property on a frame means that frame inherits the corresponding region value. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00050">50</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegionDefinition_8cs_source.html#l00056">56</a> of file <a class="el" href="TilesheetRegionDefinition_8cs_source.html">TilesheetRegionDefinition.cs</a>.</p>
 
 </div>
 </div>

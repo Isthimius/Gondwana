@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -108,13 +108,22 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manages registration and querying of colliders, separating them into static and dynamic collections for efficient collision detection.  <a href="classGondwana_1_1Physics_1_1Collisions_1_1ColliderRegistry.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pixel adjustments applied to visual bounds to produce a collision rectangle.  <a href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-edge inset amounts applied to visual bounds to produce a collision rectangle.  <a href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Physics_1_1Collisions_1_1CollisionGroupRegistry.html">CollisionGroupRegistry</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manages collision group definitions and provides bitwise mask values for collision filtering. Groups are represented as bit flags to allow efficient collision detection using bitwise operations.  <a href="classGondwana_1_1Physics_1_1Collisions_1_1CollisionGroupRegistry.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>CollisionMasks</b></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides predefined collision mask constants for common collision filtering scenarios. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Physics_1_1Collisions_1_1CollisionProfile.html">CollisionProfile</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes a reusable, scene-level collision-filtering role using collision group names rather than scene-specific integer masks.  <a href="classGondwana_1_1Physics_1_1Collisions_1_1CollisionProfile.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>CollisionProfileNames</b></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides the names of the collision profiles installed in every scene by default. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Physics_1_1Collisions_1_1CollisionProfileRegistry.html">CollisionProfileRegistry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores named collision-filtering profiles for a scene. Profiles resolve their group names through the scene's CollisionGroupRegistry.  <a href="classGondwana_1_1Physics_1_1Collisions_1_1CollisionProfileRegistry.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>CollisionResolver</b></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simple collision resolution for dynamic colliders against colliders in the registry. <br /></td></tr>
@@ -136,6 +145,12 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a37c66388b8160dcd6146a1a759e987a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines how a collider responds to collisions with other colliders.  <a href="namespaceGondwana_1_1Physics_1_1Collisions.html#a37c66388b8160dcd6146a1a759e987a5">More...</a><br /></td></tr>
 <tr class="separator:a37c66388b8160dcd6146a1a759e987a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84746e66ff584652acc19981dd0b410c" id="r_a84746e66ff584652acc19981dd0b410c"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410c">TileCollisionType</a> { <a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410ca6adf97f83acf6453d4a6a4b1070f3754">None</a> = 0
+, <a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410cabd0ca6be53b0f3d2886fd53fcb52574e">Blocking</a> = 1
+, <a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410caf698f67f5666aff10729d8a1cb1c14d2">Trigger</a> = 2
+ }</td></tr>
+<tr class="memdesc:a84746e66ff584652acc19981dd0b410c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the default collision behavior associated with a tilesheet region, frame, or runtime tile.  <a href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410c">More...</a><br /></td></tr>
+<tr class="separator:a84746e66ff584652acc19981dd0b410c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="a37c66388b8160dcd6146a1a759e987a5" name="a37c66388b8160dcd6146a1a759e987a5"></a>
@@ -159,6 +174,32 @@ Enumerations</h2></td></tr>
 </table>
 
 <p class="definition">Definition at line <a class="el" href="CollisionResponseType_8cs_source.html#l00010">10</a> of file <a class="el" href="CollisionResponseType_8cs_source.html">CollisionResponseType.cs</a>.</p>
+
+</div>
+</div>
+<a id="a84746e66ff584652acc19981dd0b410c" name="a84746e66ff584652acc19981dd0b410c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84746e66ff584652acc19981dd0b410c">&#9670;&#160;</a></span>TileCollisionType</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410c">Gondwana.Physics.Collisions.TileCollisionType</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Defines the default collision behavior associated with a tilesheet region, frame, or runtime tile. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a84746e66ff584652acc19981dd0b410ca6adf97f83acf6453d4a6a4b1070f3754" name="a84746e66ff584652acc19981dd0b410ca6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"><p>Collision is disabled. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a84746e66ff584652acc19981dd0b410cabd0ca6be53b0f3d2886fd53fcb52574e" name="a84746e66ff584652acc19981dd0b410cabd0ca6be53b0f3d2886fd53fcb52574e"></a>Blocking&#160;</td><td class="fielddoc"><p>Collision is enabled and overlapping solid colliders block movement. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a84746e66ff584652acc19981dd0b410caf698f67f5666aff10729d8a1cb1c14d2" name="a84746e66ff584652acc19981dd0b410caf698f67f5666aff10729d8a1cb1c14d2"></a>Trigger&#160;</td><td class="fielddoc"><p>Collision is enabled and overlaps are reported without blocking movement. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="TileCollisionType_8cs_source.html#l00011">11</a> of file <a class="el" href="TileCollisionType_8cs_source.html">TileCollisionType.cs</a>.</p>
 
 </div>
 </div>

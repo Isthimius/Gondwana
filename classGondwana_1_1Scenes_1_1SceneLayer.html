@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -117,7 +117,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a2c55f9f0b71d6fc72cbfa3d9a0d0ed12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets both the width and height of tiles in this layer atomically, raising only a single SceneLayerTileSizeChanged event.  <br /></td></tr>
 <tr class="separator:a2c55f9f0b71d6fc72cbfa3d9a0d0ed12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e484b10fcc567050632269596c987d4" id="r_a8e484b10fcc567050632269596c987d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">PointF</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html#a8e484b10fcc567050632269596c987d4">GridToWorldPx</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">PointF</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">grid</a>)</td></tr>
-<tr class="memdesc:a8e484b10fcc567050632269596c987d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a grid coordinate (col,row) into the world-space pixel anchor where that tile begins. This returns the tile's top-left anchor in world pixels, not the tile center.  <br /></td></tr>
+<tr class="memdesc:a8e484b10fcc567050632269596c987d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a grid coordinate (col,row) into the projection-defined world-space pixel anchor for that tile. Rectangular and oblique systems use the top-left corner of the image bounds; isometric systems use the diamond's top vertex.  <br /></td></tr>
 <tr class="separator:a8e484b10fcc567050632269596c987d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a32b42fedf1dcf1365878805a4eeca1" id="r_a5a32b42fedf1dcf1365878805a4eeca1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">PointF</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html#a5a32b42fedf1dcf1365878805a4eeca1">WorldPxToGrid</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">PointF</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">worldPx</a>)</td></tr>
 <tr class="memdesc:a5a32b42fedf1dcf1365878805a4eeca1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a world-space pixel position into this layer's grid coordinates. This uses the layer's active coordinate system (square, iso, hex, etc.) and returns fractional grid values when the point lies between tiles.  <br /></td></tr>
@@ -197,6 +197,9 @@ Properties</h2></td></tr>
 <tr class="memitem:a0f2fa3a90cd18f0a4b8fa9c95b95e755" id="r_a0f2fa3a90cd18f0a4b8fa9c95b95e755"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Physics_1_1Collisions_1_1CollisionGroupRegistry.html">CollisionGroupRegistry</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html#a0f2fa3a90cd18f0a4b8fa9c95b95e755">CollisionGroups</a><code> [get]</code></td></tr>
 <tr class="memdesc:a0f2fa3a90cd18f0a4b8fa9c95b95e755"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the registry of collision groups used to organize and manage collision detection within the scene.  <br /></td></tr>
 <tr class="separator:a0f2fa3a90cd18f0a4b8fa9c95b95e755"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a873ad19f627fa499cde31aeb44c03990" id="r_a873ad19f627fa499cde31aeb44c03990"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html#a873ad19f627fa499cde31aeb44c03990">DefaultTileCollisionProfile</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a873ad19f627fa499cde31aeb44c03990"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the scene collision profile applied to fixed tiles on this layer. The default is CollisionProfileNames.World.  <br /></td></tr>
+<tr class="separator:a873ad19f627fa499cde31aeb44c03990"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a006600f06d81e49e4536ea25b301dfcb" id="r_a006600f06d81e49e4536ea25b301dfcb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Scenes_1_1SceneLayerTile.html">SceneLayerTile</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html#a006600f06d81e49e4536ea25b301dfcb">this[int x, int y]</a><code> [get]</code></td></tr>
 <tr class="memdesc:a006600f06d81e49e4536ea25b301dfcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the tile at the specified grid coordinates.  <br /></td></tr>
 <tr class="separator:a006600f06d81e49e4536ea25b301dfcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -246,7 +249,7 @@ Events</h2></td></tr>
 <p>Layers support both tile-based content and sprite rendering, with automatic management of dirty regions for efficient incremental rendering. They can also contain direct drawing instances for custom graphics overlays. </p>
 <p>Each layer maintains its own coordinate system transformation, allowing mixing of different projection types within the same scene. Layers can be configured to wrap horizontally or vertically for seamless tiling effects. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00038">38</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00037">37</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="ace850ea943a51dfd01a7b960ae9a96dc" name="ace850ea943a51dfd01a7b960ae9a96dc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ace850ea943a51dfd01a7b960ae9a96dc">&#9670;&#160;</a></span>Dispose()</h2>
@@ -284,7 +287,7 @@ Clearing all event subscriptions </li>
 <p>After disposal, the layer should not be used. This method can be overridden in derived classes to add custom cleanup logic, but the base implementation should be called to ensure proper resource release. </p>
 <p>This method suppresses finalization to prevent the finalizer from running, as cleanup has already been performed. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01010">1010</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01063">1063</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -364,7 +367,7 @@ Clearing all event subscriptions </li>
 
 <p>Computes the world-space pixel bounding rectangle for this SceneLayer. This uses the coordinate system to evaluate the pixel extents of the extreme grid tiles. Works for square, iso, hex, and any other supported projection. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00703">703</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00754">754</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -384,7 +387,7 @@ Clearing all event subscriptions </li>
       </table>
 </div><div class="memdoc">
 
-<p>Converts a grid coordinate (col,row) into the world-space pixel anchor where that tile begins. This returns the tile's top-left anchor in world pixels, not the tile center. </p>
+<p>Converts a grid coordinate (col,row) into the projection-defined world-space pixel anchor for that tile. Rectangular and oblique systems use the top-left corner of the image bounds; isometric systems use the diamond's top vertex. </p>
 
 </div>
 </div>
@@ -425,7 +428,7 @@ Clearing all event subscriptions </li>
 <p>This method is preferred over setting TileWidth and TileHeight separately, as it avoids triggering two change events and two scene refreshes. </p>
 <p>The method raises the SceneLayerTileSizeChanged event after updating both dimensions. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00655">655</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00689">689</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -467,7 +470,7 @@ Clearing all event subscriptions </li>
 
 <p>Wraps a grid coordinate around the layer's valid grid bounds using toroidal wrapping (0..max). Used by movement and map designs that loop at edges. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00688">688</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00739">739</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -496,7 +499,7 @@ Clearing all event subscriptions </li>
 <p>A ColliderRegistry instance managing collision data for this scene.</p>
 <p>The collision world maintains collision geometry, spatial partitioning structures, and collision detection state for all collidable entities within the scene. It is automatically created when the scene is initialized and is used by the engine's collision resolution system. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00620">620</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00623">623</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -523,7 +526,7 @@ Clearing all event subscriptions </li>
 <p>Gets the registry of collision groups used to organize and manage collision detection within the scene. </p>
 <p>Use this property to access the collection of collision groups for efficient grouping and handling of collision logic. The registry is initialized automatically and provides methods for adding, removing, and querying collision groups as needed. This is a shim that points to the same property on the parent Scene.</p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00633">633</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00636">636</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -562,11 +565,39 @@ CoordinateSystemTypes.HexAxialFlatTop - Hexagonal grid with flat-top orientation
 <li>
 CoordinateSystemTypes.HexAxialPointedTop - Hexagonal grid with pointed-top orientation </li>
 <li>
-CoordinateSystemTypes.Oblique - Oblique projection </li>
+CoordinateSystemTypes.ObliqueRight - Right-receding oblique projection </li>
+<li>
+CoordinateSystemTypes.ObliqueLeft - Left-receding oblique projection </li>
 </ul>
 <p>Changing the coordinate system after layer creation is supported but may produce unexpected visual results if tile content was designed for a different projection. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00230">230</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00231">231</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+
+</div>
+</div>
+<a id="a873ad19f627fa499cde31aeb44c03990" name="a873ad19f627fa499cde31aeb44c03990"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a873ad19f627fa499cde31aeb44c03990">&#9670;&#160;</a></span>DefaultTileCollisionProfile</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">string</a> Gondwana.Scenes.SceneLayer.DefaultTileCollisionProfile</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span><span class="mlabel">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the scene collision profile applied to fixed tiles on this layer. The default is CollisionProfileNames.World. </p>
+
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00643">643</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -607,7 +638,7 @@ ZOrder: int.MinValue </li>
 Parallax: 1.0 </li>
 </ul>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01053">1053</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01106">1106</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -635,7 +666,7 @@ Parallax: 1.0 </li>
 <p>The width of the tile grid in tiles.</p>
 <p>This value is determined at layer creation time and represents the horizontal extent of the tile array. Valid column indices range from 0 to <code>GridColumnCount - 1</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00454">454</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00457">457</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -663,7 +694,7 @@ Parallax: 1.0 </li>
 <p>The height of the tile grid in tiles.</p>
 <p>This value is determined at layer creation time and represents the vertical extent of the tile array. Valid row indices range from 0 to <code>GridRowCount - 1</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00465">465</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00468">468</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -691,7 +722,7 @@ Parallax: 1.0 </li>
 <p>A string representing the layer's unique ID, typically a GUID.</p>
 <p>The ID is automatically generated when a layer is created and is used to identify the layer within its parent scene. It can also be used to look up layers via Scene.GetSceneLayerByID or the scene's string indexer. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00270">270</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00273">273</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -720,7 +751,7 @@ Parallax: 1.0 </li>
 <p>The origin point allows shifting the entire layer as a block within world space, which is useful for creating offset parallax effects, layered UI elements, or special positioning requirements. Normally this is (0, 0), meaning the layer's grid coordinate (0, 0) maps to world pixel (0, 0). </p>
 <p>Setting this property raises the OriginPxChanged event and triggers a full scene refresh. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00599">599</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00602">602</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -757,7 +788,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 </ul>
 <p>Setting this property raises the ParallaxChanged event and triggers a full scene refresh. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00337">337</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00340">340</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -785,7 +816,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <p>The <a class="el" href="classGondwana_1_1Scenes_1_1Scene.html" title="Represents a game scene containing multiple layers of tiles, sprites, and game objects....">Gondwana.Scenes.Scene</a> that owns this layer, or <code>null</code> if the layer is not attached to a scene.</p>
 <p>This property is set automatically when the layer is added to a scene via Scene.AddLayer and cleared when the layer is removed. The scene reference provides access to scene-level resources such as the collision world. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00282">282</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00285">285</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -814,7 +845,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <p>This property provides direct access to the underlying tile array. The array is indexed by [x, y] or [column, row], where [0, 0] represents the top-left tile. </p>
 <p>For safer access with bounds checking and wrapping support, prefer using the layer's indexer properties (<code>layer[x, y]</code>, <code>layer[point]</code>, or <code>layer[pointf]</code>). </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00443">443</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00446">446</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -843,7 +874,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <p>Collision boxes provide a visual overlay showing the collision geometry of tiles and sprites, which is useful during development for debugging physics interactions, verifying collision boundaries, and tuning collision detection. </p>
 <p>Setting this property raises the ShowCollisionBoxesChanged event and triggers a full scene refresh. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00568">568</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00571">571</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -872,7 +903,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <p>Grid lines provide a visual overlay showing tile boundaries, which is useful during development for aligning content, debugging tile positions, and verifying coordinate system behavior. </p>
 <p>Setting this property raises the ShowGridLinesChanged event and triggers a full scene refresh. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00540">540</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00543">543</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -907,7 +938,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <dl class="section return"><dt>Returns</dt><dd>The SceneLayerTile at the specified position, or <code>null</code> if the coordinates are out of bounds. </dd></dl>
 <p>This indexer provides bounds-checked access to tiles in the layer's grid. Coordinates outside the valid range (0 to GridColumnCount-1, 0 to GridRowCount-1) return <code>null</code>. Wrapping is not applied; use WrapGrid first if wrapping behavior is desired. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00903">903</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00956">956</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -941,7 +972,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <dl class="section return"><dt>Returns</dt><dd>The SceneLayerTile at the specified position, or <code>null</code> if the coordinates are out of bounds. </dd></dl>
 <p>This indexer provides convenient point-based access to tiles and internally uses the [x, y] indexer. Coordinates outside the valid range return <code>null</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00917">917</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00970">970</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -975,7 +1006,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <dl class="section return"><dt>Returns</dt><dd>The SceneLayerTile at the truncated position, or <code>null</code> if the coordinates are out of bounds. </dd></dl>
 <p>This indexer provides convenient access when working with floating-point grid coordinates, such as results from WorldPxToGrid. The coordinates are cast to integers, truncating toward zero. Coordinates outside the valid range return <code>null</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00935">935</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00988">988</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -1004,7 +1035,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <p>This property defines the rendered height of tiles in this layer. Changes to tile height affect how tiles are positioned and rendered within the layer's coordinate system. </p>
 <p>Setting this property raises the SceneLayerTileSizeChanged event and triggers a full scene refresh. Consider using SetTileSize to update both width and height atomically with a single event. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00363">363</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00366">366</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -1033,7 +1064,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <p>This property defines the rendered width of tiles in this layer. Changes to tile width affect how tiles are positioned and rendered within the layer's coordinate system. </p>
 <p>Setting this property raises the SceneLayerTileSizeChanged event and triggers a full scene refresh. Consider using SetTileSize to update both width and height atomically with a single event. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00389">389</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00392">392</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -1090,7 +1121,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <p>Invisible layers are excluded from rendering but remain part of the scene structure. This is useful for temporarily hiding layers (such as background layers in cutscenes) without removing them from the scene. </p>
 <p>Setting this property raises the VisibleChanged event, invalidates the parent scene's visible layer cache, and triggers a full scene refresh. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00415">415</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00418">418</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -1119,7 +1150,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <p>When enabled, horizontal coordinates that exceed the grid boundaries wrap around to the opposite side, creating a seamless toroidal topology. This is useful for scrolling backgrounds, wrap-around game worlds, and continuous map designs. </p>
 <p>Setting this property raises the WrappingChanged event and triggers a full scene refresh. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00485">485</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00488">488</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -1148,7 +1179,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <p>When enabled, vertical coordinates that exceed the grid boundaries wrap around to the opposite side, creating a seamless toroidal topology. This is useful for scrolling backgrounds, wrap-around game worlds, and continuous map designs. </p>
 <p>Setting this property raises the WrappingChanged event and triggers a full scene refresh. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00513">513</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00516">516</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -1177,7 +1208,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <p>Z-order determines the rendering order of layers when multiple layers are present in a scene. Layers with lower z-order values are rendered first and appear behind layers with higher values. </p>
 <p>Setting this property raises the ZOrderChanged event and typically triggers a full scene refresh to ensure correct layer ordering. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00304">304</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00307">307</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -1195,9 +1226,9 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 </div><div class="memdoc">
 
 <p>Occurs when this layer is being disposed. </p>
-<p>This event is raised at the beginning of the <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a79de0e3f5a8fa04bd21c4007576b38fb" title="Releases all resources used by this RenderSurfaceHost&lt;TBackbuffer&gt; instance.">Dispose</a> method, before any tiles are disposed or resources are released. Subscribers can use this event to perform cleanup operations or save state before the layer is destroyed. </p>
+<p>This event is raised at the beginning of the <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a79f88c27799c59b82709dbe3994e0d6c" title="Releases resources used by this RenderSurfaceHostBase instance and unregisters it from the RenderSurf...">Dispose</a> method, before any tiles are disposed or resources are released. Subscribers can use this event to perform cleanup operations or save state before the layer is destroyed. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00131">131</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00130">130</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -1216,7 +1247,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <p>Occurs when the world-space origin point of this layer changes. </p>
 <p>This event is raised when the OriginPx property is modified. Origin changes shift the entire layer as a block within world space and require a full scene refresh to ensure all tiles and sprites are positioned correctly. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00121">121</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00120">120</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -1235,7 +1266,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <p>Occurs when the parallax scrolling factor of this layer changes. </p>
 <p>This event is raised when the Parallax property is modified. Parallax changes affect how the layer scrolls relative to the camera and require a full scene refresh to ensure correct positioning of all layer content. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00111">111</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00110">110</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -1254,7 +1285,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <p>Occurs when the tile dimensions of this layer change. </p>
 <p>This event is raised when either TileWidth or TileHeight is modified, or when SetTileSize is called. Changes to tile size typically require a full scene refresh to ensure correct rendering of all tiles and sprites. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00051">51</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00050">50</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -1273,7 +1304,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <p>Occurs when the collision box display setting changes. </p>
 <p>This event is raised when the ShowCollisionBoxes property is modified. Collision box visibility changes require a full scene refresh to add or remove collision box overlays from the rendering output, useful for debugging collision detection. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00091">91</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00090">90</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -1292,7 +1323,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <p>Occurs when the grid line display setting changes. </p>
 <p>This event is raised when the ShowGridLines property is modified. Grid line visibility changes require a full scene refresh to add or remove grid line overlays from the rendering output. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00081">81</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00080">80</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -1311,7 +1342,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <p>Occurs when the visibility state of this layer changes. </p>
 <p>This event is raised when the Visible property is modified. Visibility changes affect which layers are included in rendering and may trigger cache invalidation for visible layer collections in the parent scene. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00061">61</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00060">60</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -1330,7 +1361,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <p>Occurs when the wrapping configuration of this layer changes. </p>
 <p>This event is raised when either WrapHorizontally or WrapVertically is modified. Wrapping changes affect how the layer handles tile coordinates at boundaries and typically require a full scene refresh. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00071">71</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00070">70</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -1349,7 +1380,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <p>Occurs when the z-order (rendering depth) of this layer changes. </p>
 <p>This event is raised when the ZOrder property is modified. Z-order changes affect the rendering order of layers within the parent scene and typically require re-sorting the visible layer collection and a full scene refresh. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00101">101</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00100">100</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>

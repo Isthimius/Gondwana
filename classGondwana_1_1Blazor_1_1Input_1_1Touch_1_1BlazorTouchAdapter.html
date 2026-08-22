@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -117,6 +117,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a79fdccc49391b3f5f52615ddc9c5d539" id="r_a79fdccc49391b3f5f52615ddc9c5d539"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html#a79fdccc49391b3f5f52615ddc9c5d539">BlazorTouchAdapter</a> (<a class="el" href="classGondwana_1_1Blazor_1_1Rendering_1_1BlazorBitmapRenderSurfaceComponent.html">BlazorBitmapRenderSurfaceComponent</a> component)</td></tr>
 <tr class="memdesc:a79fdccc49391b3f5f52615ddc9c5d539"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of BlazorTouchAdapter and attaches it to the touch events on the specified render surface component.  <br /></td></tr>
 <tr class="separator:a79fdccc49391b3f5f52615ddc9c5d539"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade3759735eccf6020a4832d169957936" id="r_ade3759735eccf6020a4832d169957936"><td class="memItemLeft" align="right" valign="top">IReadOnlyList&lt; GondwanaTouchPoint &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html#ade3759735eccf6020a4832d169957936">ConsumeBeganTouches</a> ()</td></tr>
+<tr class="memdesc:ade3759735eccf6020a4832d169957936"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drains and returns all touch contacts that began since the last call. Keeping beginnings in a queue prevents a short tap that begins and ends between two engine polls from being lost. Adapters that do not maintain a beginning queue may rely on the default empty implementation; the poller will still discover active contacts from <a class="el" href="interfaceGondwana_1_1Input_1_1Touch_1_1ITouchAdapter.html#a601a6f3607954b68d6bc7b6d0dc77c56" title="Gets the list of touch contact points that are currently active (in contact with the surface)....">ActiveTouches</a>.  <br /></td></tr>
+<tr class="separator:ade3759735eccf6020a4832d169957936"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0902124207ce06c101f9e96ee78c8c7" id="r_af0902124207ce06c101f9e96ee78c8c7"><td class="memItemLeft" align="right" valign="top">IReadOnlyList&lt; GondwanaTouchPoint &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html#af0902124207ce06c101f9e96ee78c8c7">ConsumeEndedTouches</a> ()</td></tr>
 <tr class="memdesc:af0902124207ce06c101f9e96ee78c8c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drains and returns all touch contacts that ended (lifted or cancelled) since the last call. Each entry preserves the original <a class="el" href="namespaceGondwana_1_1Input_1_1Touch.html#ae45771976c0d97929be599f0dac9a837" title="Describes the current phase of a single touch contact point in its lifecycle.">TouchPhase</a> (<a class="el" href="namespaceGondwana_1_1Input_1_1Touch.html#ae45771976c0d97929be599f0dac9a837a0157fbb99be9622bdaa6e544270c0622" title="A finger or pointer lifted from the surface, ending contact normally.">TouchPhase.Ended</a> or <a class="el" href="namespaceGondwana_1_1Input_1_1Touch.html#ae45771976c0d97929be599f0dac9a837aa149e85a44aeec9140e92733d9ed694e" title="A finger or pointer contact was cancelled by the system (for example, an incoming call on a phone).">TouchPhase.Cancelled</a>) so the poller can distinguish between the two. This method is intended to be called once per engine tick by the <a class="el" href="classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html" title="Provides centralized polling and event management for touch input. This singleton class monitors touc...">TouchEventPoller</a>.<dl class="section return"><dt>Returns</dt><dd>A snapshot of all contacts that ended since the previous call to this method. The returned list is cleared from the adapter's internal queue on each call. </dd></dl>
   <br /></td></tr>
@@ -169,11 +172,34 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="BlazorTouchAdapter_8cs_source.html#l00045">45</a> of file <a class="el" href="BlazorTouchAdapter_8cs_source.html">BlazorTouchAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorTouchAdapter_8cs_source.html#l00046">46</a> of file <a class="el" href="BlazorTouchAdapter_8cs_source.html">BlazorTouchAdapter.cs</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="ade3759735eccf6020a4832d169957936" name="ade3759735eccf6020a4832d169957936"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade3759735eccf6020a4832d169957936">&#9670;&#160;</a></span>ConsumeBeganTouches()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IReadOnlyList&lt; GondwanaTouchPoint &gt; Gondwana.Blazor.Input.Touch.BlazorTouchAdapter.ConsumeBeganTouches </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Drains and returns all touch contacts that began since the last call. Keeping beginnings in a queue prevents a short tap that begins and ends between two engine polls from being lost. Adapters that do not maintain a beginning queue may rely on the default empty implementation; the poller will still discover active contacts from <a class="el" href="interfaceGondwana_1_1Input_1_1Touch_1_1ITouchAdapter.html#a601a6f3607954b68d6bc7b6d0dc77c56" title="Gets the list of touch contact points that are currently active (in contact with the surface)....">ActiveTouches</a>. </p>
+
+<p>Implements <a class="el" href="interfaceGondwana_1_1Input_1_1Touch_1_1ITouchAdapter.html#ac7695647a22e9906a73a50121220589e">Gondwana.Input.Touch.ITouchAdapter</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="BlazorTouchAdapter_8cs_source.html#l00109">109</a> of file <a class="el" href="BlazorTouchAdapter_8cs_source.html">BlazorTouchAdapter.cs</a>.</p>
+
+</div>
+</div>
 <a id="af0902124207ce06c101f9e96ee78c8c7" name="af0902124207ce06c101f9e96ee78c8c7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af0902124207ce06c101f9e96ee78c8c7">&#9670;&#160;</a></span>ConsumeEndedTouches()</h2>
 
@@ -194,7 +220,7 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Input_1_1Touch_1_1ITouchAdapter.html#ab5c0a640fe532d440668eb76b336e450">Gondwana.Input.Touch.ITouchAdapter</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorTouchAdapter_8cs_source.html#l00107">107</a> of file <a class="el" href="BlazorTouchAdapter_8cs_source.html">BlazorTouchAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorTouchAdapter_8cs_source.html#l00121">121</a> of file <a class="el" href="BlazorTouchAdapter_8cs_source.html">BlazorTouchAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -215,7 +241,7 @@ Properties</h2></td></tr>
 
 <p>Releases all resources and removes event handlers registered by this adapter. </p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorTouchAdapter_8cs_source.html#l00127">127</a> of file <a class="el" href="BlazorTouchAdapter_8cs_source.html">BlazorTouchAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorTouchAdapter_8cs_source.html#l00141">141</a> of file <a class="el" href="BlazorTouchAdapter_8cs_source.html">BlazorTouchAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -244,7 +270,7 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Input_1_1Touch_1_1ITouchAdapter.html#a601a6f3607954b68d6bc7b6d0dc77c56">Gondwana.Input.Touch.ITouchAdapter</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorTouchAdapter_8cs_source.html#l00037">37</a> of file <a class="el" href="BlazorTouchAdapter_8cs_source.html">BlazorTouchAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorTouchAdapter_8cs_source.html#l00038">38</a> of file <a class="el" href="BlazorTouchAdapter_8cs_source.html">BlazorTouchAdapter.cs</a>.</p>
 
 </div>
 </div>

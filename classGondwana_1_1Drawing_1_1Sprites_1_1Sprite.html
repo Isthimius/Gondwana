@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -123,6 +123,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aecb27b5190b87273097228a1aa4b5806"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a65e329846630306b9db34241ff8dd670" id="r_a65e329846630306b9db34241ff8dd670"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#a65e329846630306b9db34241ff8dd670">SetPosition</a> (Vector2 pos)</td></tr>
 <tr class="separator:a65e329846630306b9db34241ff8dd670"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaee03baa83dc3daebcc7ee24ec84949f" id="r_aaee03baa83dc3daebcc7ee24ec84949f"><td class="memItemLeft" align="right" valign="top">RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#aaee03baa83dc3daebcc7ee24ec84949f">GetVisualBoundsScreen</a> (<a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> view)</td></tr>
+<tr class="memdesc:aaee03baa83dc3daebcc7ee24ec84949f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the axis-aligned screen-pixel bounds enclosing the rotated sprite.  <br /></td></tr>
+<tr class="separator:aaee03baa83dc3daebcc7ee24ec84949f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0786f02005a6fa9358a26bcfe30b5144" id="r_a0786f02005a6fa9358a26bcfe30b5144"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#a0786f02005a6fa9358a26bcfe30b5144">TranslateWorldPx</a> (int dx, int dy)</td></tr>
 <tr class="memdesc:a0786f02005a6fa9358a26bcfe30b5144"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a world-pixel translation without rebuilding the absolute position from an integer rectangle, preserving fractional coordinates on the other axis.  <br /></td></tr>
 <tr class="separator:a0786f02005a6fa9358a26bcfe30b5144"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -167,6 +170,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4927327e6c632c964beae3b3bcdcb69b inherit pub_methods_classGondwana_1_1Drawing_1_1Tile" id="r_a4927327e6c632c964beae3b3bcdcb69b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a4927327e6c632c964beae3b3bcdcb69b">Draw</a> (<a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
 <tr class="memdesc:a4927327e6c632c964beae3b3bcdcb69b inherit pub_methods_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws the object to the Backbuffer using the provided SCREEN-space destination rectangle. The rectangle is assumed to already be projected into screen-space; no world-to-screen conversion should occur within this method.  <br /></td></tr>
 <tr class="separator:a4927327e6c632c964beae3b3bcdcb69b inherit pub_methods_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e7657d4ab7cc877fb6b42a5b9f1e0ba inherit pub_methods_classGondwana_1_1Drawing_1_1Tile" id="r_a7e7657d4ab7cc877fb6b42a5b9f1e0ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a7e7657d4ab7cc877fb6b42a5b9f1e0ba">SetCollisionProfile</a> (string profileName)</td></tr>
+<tr class="memdesc:a7e7657d4ab7cc877fb6b42a5b9f1e0ba inherit pub_methods_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a named profile from this tile's parent scene. If the layer has not yet been attached to a scene, the name is retained and resolved later when the collider is attached or the profile is reapplied.  <br /></td></tr>
+<tr class="separator:a7e7657d4ab7cc877fb6b42a5b9f1e0ba inherit pub_methods_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88e851955c75d87fb4077eb257b32684 inherit pub_methods_classGondwana_1_1Drawing_1_1Tile" id="r_a88e851955c75d87fb4077eb257b32684"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a88e851955c75d87fb4077eb257b32684">CompareTo</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Tile.html">Tile</a>? tile)</td></tr>
 <tr class="separator:a88e851955c75d87fb4077eb257b32684 inherit pub_methods_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -174,8 +180,19 @@ Public Member Functions</h2></td></tr>
 Properties</h2></td></tr>
 <tr class="memitem:a5af76c96faa97a96da6ce2c3059d4e8a" id="r_a5af76c96faa97a96da6ce2c3059d4e8a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Physics_1_1Movement.html#aa42d600d851164fae8a0aae23536186c">MovementSpace</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#a5af76c96faa97a96da6ce2c3059d4e8a">PositionSpace</a><code> [get]</code></td></tr>
 <tr class="separator:a5af76c96faa97a96da6ce2c3059d4e8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa105b664f4d2a3805446930d50ae285a" id="r_aa105b664f4d2a3805446930d50ae285a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#aa105b664f4d2a3805446930d50ae285a">Rotation</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:aa105b664f4d2a3805446930d50ae285a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the clockwise visual rotation, in degrees, around the center of the sprite's render rectangle.  <br /></td></tr>
+<tr class="separator:aa105b664f4d2a3805446930d50ae285a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad51f3c64b3ddff553d2366a7ad1634e2" id="r_ad51f3c64b3ddff553d2366a7ad1634e2"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#ad51f3c64b3ddff553d2366a7ad1634e2">VisualBoundsWorld</a><code> [get]</code></td></tr>
+<tr class="memdesc:ad51f3c64b3ddff553d2366a7ad1634e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the axis-aligned world-pixel bounds enclosing the rotated sprite.  <br /></td></tr>
+<tr class="separator:ad51f3c64b3ddff553d2366a7ad1634e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3fcf8c4787dc72a87346f30983c3264f" id="r_a3fcf8c4787dc72a87346f30983c3264f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Physics_1_1Movement_1_1MovementController.html">MovementController</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#a3fcf8c4787dc72a87346f30983c3264f">Movement</a><code> [get]</code></td></tr>
 <tr class="separator:a3fcf8c4787dc72a87346f30983c3264f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af319b8bb9389e1e1ec6891264e125e81" id="r_af319b8bb9389e1e1ec6891264e125e81"><td class="memItemLeft" align="right" valign="top">override <a class="el" href="structGondwana_1_1Drawing_1_1Frame.html">Frame</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#af319b8bb9389e1e1ec6891264e125e81">CurrentFrame</a><code> [get, set]</code></td></tr>
+<tr class="separator:af319b8bb9389e1e1ec6891264e125e81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f9b54dc574b97c48ea64dcdda188780" id="r_a4f9b54dc574b97c48ea64dcdda188780"><td class="memItemLeft" align="right" valign="top">override bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#a4f9b54dc574b97c48ea64dcdda188780">Visible</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a4f9b54dc574b97c48ea64dcdda188780"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the object is visible.  <br /></td></tr>
+<tr class="separator:a4f9b54dc574b97c48ea64dcdda188780"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0c9cb286ffdd480798244f9e07a66ab" id="r_aa0c9cb286ffdd480798244f9e07a66ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Drawing_1_1Sprites.html#ab3dde0a5b955ae7bce32212444fdf778">HorizontalAlignment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#aa0c9cb286ffdd480798244f9e07a66ab">HorizAlign</a><code> [get, set]</code></td></tr>
 <tr class="separator:aa0c9cb286ffdd480798244f9e07a66ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a328f0ff2cff30af2cba9390f828323ee" id="r_a328f0ff2cff30af2cba9390f828323ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Drawing_1_1Sprites.html#aaea16d478d36b47862f55443c2ac3587">VerticalAlignment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#a328f0ff2cff30af2cba9390f828323ee">VertAlign</a><code> [get, set]</code></td></tr>
@@ -194,9 +211,9 @@ Properties</h2></td></tr>
 <tr class="separator:ad340d5603c3fea7f053bbfb81e310399"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adf54b801271083c8d120f6290277dc99" id="r_adf54b801271083c8d120f6290277dc99"><td class="memItemLeft" align="right" valign="top">override <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#adf54b801271083c8d120f6290277dc99">SceneLayer</a><code> [get]</code></td></tr>
 <tr class="separator:adf54b801271083c8d120f6290277dc99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a263cdfc878e8fe4426ba3547c50ded2a" id="r_a263cdfc878e8fe4426ba3547c50ded2a"><td class="memItemLeft" align="right" valign="top">virtual new int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#a263cdfc878e8fe4426ba3547c50ded2a">ZOrder</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a263cdfc878e8fe4426ba3547c50ded2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the z-order of the element, which determines its visual stacking order relative to other elements. Higher z-order values are drawn on top of lower ones.  <br /></td></tr>
-<tr class="separator:a263cdfc878e8fe4426ba3547c50ded2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6f5a4229cd4a1d3085e202c1e6efc43" id="r_ae6f5a4229cd4a1d3085e202c1e6efc43"><td class="memItemLeft" align="right" valign="top">override int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#ae6f5a4229cd4a1d3085e202c1e6efc43">ZOrder</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:ae6f5a4229cd4a1d3085e202c1e6efc43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the z-order of the element, which determines its visual stacking order relative to other elements. Higher z-order values are drawn on top of lower ones.  <br /></td></tr>
+<tr class="separator:ae6f5a4229cd4a1d3085e202c1e6efc43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1f0bea84e224141f396048c6fa6b8d9" id="r_ab1f0bea84e224141f396048c6fa6b8d9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#ab1f0bea84e224141f396048c6fa6b8d9">IsJiggling</a><code> [get]</code></td></tr>
 <tr class="memdesc:ab1f0bea84e224141f396048c6fa6b8d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether the sprite is currently jiggling.  <br /></td></tr>
 <tr class="separator:ab1f0bea84e224141f396048c6fa6b8d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -233,7 +250,7 @@ Properties</h2></td></tr>
 <tr class="memitem:aa2d4389c77e5845cfb7f9f67c49c4cb3 inherit properties_classGondwana_1_1Drawing_1_1Tile" id="r_aa2d4389c77e5845cfb7f9f67c49c4cb3"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#aa2d4389c77e5845cfb7f9f67c49c4cb3">Overhang</a><code> [get]</code></td></tr>
 <tr class="separator:aa2d4389c77e5845cfb7f9f67c49c4cb3 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a7a5eb292031f6d4c23291f31c9aa93 inherit properties_classGondwana_1_1Drawing_1_1Tile" id="r_a1a7a5eb292031f6d4c23291f31c9aa93"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structGondwana_1_1Drawing_1_1Frame.html">Frame</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a1a7a5eb292031f6d4c23291f31c9aa93">CurrentFrame</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a1a7a5eb292031f6d4c23291f31c9aa93 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the current frame. The initial frame supplies the tile's default collision adjustment. Later frame changes update collision bounds only when AdjustCollisionAreaByFrame is enabled.  <br /></td></tr>
+<tr class="memdesc:a1a7a5eb292031f6d4c23291f31c9aa93 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the current frame. The initial frame supplies the tile's default collision adjustment and collision type. Later frame changes update those values only when their corresponding by-frame options are enabled.  <br /></td></tr>
 <tr class="separator:a1a7a5eb292031f6d4c23291f31c9aa93 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe1c33a0aab3bfa09f748920e504b4ae inherit properties_classGondwana_1_1Drawing_1_1Tile" id="r_abe1c33a0aab3bfa09f748920e504b4ae"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1Animator.html">Animator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#abe1c33a0aab3bfa09f748920e504b4ae">TileAnimator</a><code> [get]</code></td></tr>
 <tr class="separator:abe1c33a0aab3bfa09f748920e504b4ae inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -254,6 +271,15 @@ Properties</h2></td></tr>
 <tr class="memitem:acf06592c3e663726e5b7b93effe52bdc inherit properties_classGondwana_1_1Drawing_1_1Tile" id="r_acf06592c3e663726e5b7b93effe52bdc"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#acf06592c3e663726e5b7b93effe52bdc">AdjustCollisionArea</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:acf06592c3e663726e5b7b93effe52bdc inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the collision adjustment used to derive CollisionArea.  <br /></td></tr>
 <tr class="separator:acf06592c3e663726e5b7b93effe52bdc inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6700b2afa0857083227bdb555d3a3639 inherit properties_classGondwana_1_1Drawing_1_1Tile" id="r_a6700b2afa0857083227bdb555d3a3639"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410c">TileCollisionType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a6700b2afa0857083227bdb555d3a3639">CollisionType</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a6700b2afa0857083227bdb555d3a3639 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the tile's collision behavior. This is initialized from the first assigned frame and may subsequently be overridden per tile.  <br /></td></tr>
+<tr class="separator:a6700b2afa0857083227bdb555d3a3639 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2c065918e956c6821707f74140a1527 inherit properties_classGondwana_1_1Drawing_1_1Tile" id="r_ae2c065918e956c6821707f74140a1527"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#ae2c065918e956c6821707f74140a1527">CollisionTypeByFrame</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:ae2c065918e956c6821707f74140a1527 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets whether frame changes replace this tile's collision type with the newly selected frame's effective collision type.  <br /></td></tr>
+<tr class="separator:ae2c065918e956c6821707f74140a1527 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab464869f423ed4cb7b52b599693f516 inherit properties_classGondwana_1_1Drawing_1_1Tile" id="r_aab464869f423ed4cb7b52b599693f516"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#aab464869f423ed4cb7b52b599693f516">CollisionProfileName</a><code> [get]</code></td></tr>
+<tr class="memdesc:aab464869f423ed4cb7b52b599693f516 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the scene-level collision profile currently associated with this tile.  <br /></td></tr>
+<tr class="separator:aab464869f423ed4cb7b52b599693f516 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04aecd48929540170b3fbe43cb5e06f8 inherit properties_classGondwana_1_1Drawing_1_1Tile" id="r_a04aecd48929540170b3fbe43cb5e06f8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a04aecd48929540170b3fbe43cb5e06f8">CollisionsEnabled</a><code> [get, set]</code></td></tr>
 <tr class="separator:a04aecd48929540170b3fbe43cb5e06f8 inherit properties_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a809ee69a8d25e7cf843f042c9b6298b6 inherit properties_classGondwana_1_1Drawing_1_1Tile" id="r_a809ee69a8d25e7cf843f042c9b6298b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1TypedValueBag.html">TypedValueBag</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a809ee69a8d25e7cf843f042c9b6298b6">ValueBag</a> = new()<code> [get]</code></td></tr>
@@ -275,8 +301,11 @@ Events</h2></td></tr>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_methods_classGondwana_1_1Drawing_1_1Tile"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classGondwana_1_1Drawing_1_1Tile')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classGondwana_1_1Drawing_1_1Tile.html">Gondwana.Drawing.Tile</a></td></tr>
 <tr class="memitem:a565151265749a82230c3b5f4c32b5104 inherit pro_methods_classGondwana_1_1Drawing_1_1Tile" id="r_a565151265749a82230c3b5f4c32b5104"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a565151265749a82230c3b5f4c32b5104">CopyCollisionSettingsFrom</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Tile.html">Tile</a> source)</td></tr>
-<tr class="memdesc:a565151265749a82230c3b5f4c32b5104 inherit pro_methods_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies collision behavior and the effective collision adjustment from another tile.  <br /></td></tr>
+<tr class="memdesc:a565151265749a82230c3b5f4c32b5104 inherit pro_methods_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies collision behavior, profile, and effective frame metadata from another tile.  <br /></td></tr>
 <tr class="separator:a565151265749a82230c3b5f4c32b5104 inherit pro_methods_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ecd2b0efa88c81ae5a4f14fc5134f9a inherit pro_methods_classGondwana_1_1Drawing_1_1Tile" id="r_a2ecd2b0efa88c81ae5a4f14fc5134f9a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a2ecd2b0efa88c81ae5a4f14fc5134f9a">AttachCollider</a> (<a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html">ICollider</a> collider)</td></tr>
+<tr class="memdesc:a2ecd2b0efa88c81ae5a4f14fc5134f9a inherit pro_methods_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attaches this tile's collider and applies any collision state that was set before the collider became available.  <br /></td></tr>
+<tr class="separator:a2ecd2b0efa88c81ae5a4f14fc5134f9a inherit pro_methods_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classGondwana_1_1Drawing_1_1Tile"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classGondwana_1_1Drawing_1_1Tile')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classGondwana_1_1Drawing_1_1Tile.html">Gondwana.Drawing.Tile</a></td></tr>
 <tr class="memitem:a55b7cf5594bcb95ab5893c3c43842673 inherit pro_attribs_classGondwana_1_1Drawing_1_1Tile" id="r_a55b7cf5594bcb95ab5893c3c43842673"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a55b7cf5594bcb95ab5893c3c43842673">pauseAnimation</a></td></tr>
 <tr class="separator:a55b7cf5594bcb95ab5893c3c43842673 inherit pro_attribs_classGondwana_1_1Drawing_1_1Tile"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -288,7 +317,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Partial class containing resize and pulse animation members for Sprite.</p>
 <p>Partial class containing jiggle animation members for Sprite. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00017">17</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00018">18</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="ac6e9df3779449c4b2e6874eed9169c26" name="ac6e9df3779449c4b2e6874eed9169c26"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac6e9df3779449c4b2e6874eed9169c26">&#9670;&#160;</a></span>CancelResize()</h2>
@@ -348,7 +377,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionMovableEntity.html#aa8f60fe2d121a71d4dd053da9dba3903">Gondwana.Physics.Collisions.ICollisionMovableEntity</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00181">181</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00255">255</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -377,7 +406,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a6ca4859d010ae75a57af442c51e83022">Gondwana.Drawing.Tile</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00373">373</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00468">468</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -395,6 +424,26 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaee03baa83dc3daebcc7ee24ec84949f" name="aaee03baa83dc3daebcc7ee24ec84949f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaee03baa83dc3daebcc7ee24ec84949f">&#9670;&#160;</a></span>GetVisualBoundsScreen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RectangleF Gondwana.Drawing.Sprites.Sprite.GetVisualBoundsScreen </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a>&#160;</td>
+          <td class="paramname"><em>view</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the axis-aligned screen-pixel bounds enclosing the rotated sprite. </p>
 
 </div>
 </div>
@@ -622,7 +671,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00139">139</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00167">167</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -790,11 +839,35 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionMovableEntity.html#aa7ea1b97e38ffa3a5f33b71bdb4e1bbf">Gondwana.Physics.Collisions.ICollisionMovableEntity</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00159">159</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00233">233</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Property Documentation</h2>
+<a id="af319b8bb9389e1e1ec6891264e125e81" name="af319b8bb9389e1e1ec6891264e125e81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af319b8bb9389e1e1ec6891264e125e81">&#9670;&#160;</a></span>CurrentFrame</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">override <a class="el" href="structGondwana_1_1Drawing_1_1Frame.html">Frame</a> Gondwana.Drawing.Sprites.Sprite.CurrentFrame</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span><span class="mlabel">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00264">264</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+
+</div>
+</div>
 <a id="a2d3455a0c4a9659fa7419573c2a5c068" name="a2d3455a0c4a9659fa7419573c2a5c068"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2d3455a0c4a9659fa7419573c2a5c068">&#9670;&#160;</a></span>DrawLocationWorld</h2>
 
@@ -815,7 +888,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00291">291</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00382">382</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -839,7 +912,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00190">190</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00287">287</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -889,7 +962,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00328">328</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00419">419</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -965,7 +1038,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00187">187</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00261">261</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -989,7 +1062,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00230">230</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00325">325</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1013,7 +1086,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00250">250</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00344">344</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1037,7 +1110,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00134">134</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00162">162</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1061,7 +1134,34 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00270">270</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00363">363</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+
+</div>
+</div>
+<a id="aa105b664f4d2a3805446930d50ae285a" name="aa105b664f4d2a3805446930d50ae285a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa105b664f4d2a3805446930d50ae285a">&#9670;&#160;</a></span>Rotation</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Gondwana.Drawing.Sprites.Sprite.Rotation</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span><span class="mlabel">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the clockwise visual rotation, in degrees, around the center of the sprite's render rectangle. </p>
+<p>Rotation affects rendering and dirty-region bounds. Collision geometry remains axis-aligned and continues to use Tile.CollisionArea. </p>
+
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00192">192</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1085,7 +1185,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00334">334</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00425">425</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1109,7 +1209,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00331">331</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00422">422</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1133,12 +1233,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00210">210</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00306">306</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
-<a id="a263cdfc878e8fe4426ba3547c50ded2a" name="a263cdfc878e8fe4426ba3547c50ded2a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a263cdfc878e8fe4426ba3547c50ded2a">&#9670;&#160;</a></span>ZOrder</h2>
+<a id="a4f9b54dc574b97c48ea64dcdda188780" name="a4f9b54dc574b97c48ea64dcdda188780"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f9b54dc574b97c48ea64dcdda188780">&#9670;&#160;</a></span>Visible</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1147,7 +1247,61 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual new int Gondwana.Drawing.Sprites.Sprite.ZOrder</td>
+          <td class="memname">override bool Gondwana.Drawing.Sprites.Sprite.Visible</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span><span class="mlabel">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets a value indicating whether the object is visible. </p>
+
+<p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#a843ab6717c0e6887cf9d18f6240d6c2d">Gondwana.Drawing.IDrawable</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00276">276</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+
+</div>
+</div>
+<a id="ad51f3c64b3ddff553d2366a7ad1634e2" name="ad51f3c64b3ddff553d2366a7ad1634e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad51f3c64b3ddff553d2366a7ad1634e2">&#9670;&#160;</a></span>VisualBoundsWorld</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Rectangle Gondwana.Drawing.Sprites.Sprite.VisualBoundsWorld</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the axis-aligned world-pixel bounds enclosing the rotated sprite. </p>
+
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00217">217</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+
+</div>
+</div>
+<a id="ae6f5a4229cd4a1d3085e202c1e6efc43" name="ae6f5a4229cd4a1d3085e202c1e6efc43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6f5a4229cd4a1d3085e202c1e6efc43">&#9670;&#160;</a></span>ZOrder</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">override int Gondwana.Drawing.Sprites.Sprite.ZOrder</td>
         </tr>
       </table>
   </td>
@@ -1161,7 +1315,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#afe2fb2cda22db383aa386dc3c97af76c">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00337">337</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00428">428</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1178,7 +1332,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00020">20</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00021">21</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1212,7 +1366,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00019">19</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00020">20</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>

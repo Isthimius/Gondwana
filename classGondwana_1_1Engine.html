@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -215,7 +215,7 @@ Events</h2></td></tr>
 <tr class="memdesc:a587a18579b91b31848634e1586e38127"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs whenever cycles-per-second (CPS) and frames-per-second (FPS) metrics are calculated.  <br /></td></tr>
 <tr class="separator:a587a18579b91b31848634e1586e38127"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab80856e97f9f913863165bd99d719105" id="r_ab80856e97f9f913863165bd99d719105"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Engine.html#ab80856e97f9f913863165bd99d719105">Disposing</a></td></tr>
-<tr class="memdesc:ab80856e97f9f913863165bd99d719105"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raised when <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a79de0e3f5a8fa04bd21c4007576b38fb" title="Releases all resources used by this RenderSurfaceHost&lt;TBackbuffer&gt; instance.">Dispose()</a> begins the explicit disposal sequence.  <br /></td></tr>
+<tr class="memdesc:ab80856e97f9f913863165bd99d719105"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raised when <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a9eee1fb0d47a5b75e3f6457af9148703" title="Releases all resources used by this RenderSurfaceHostBase instance.">Dispose()</a> begins the explicit disposal sequence.  <br /></td></tr>
 <tr class="separator:ab80856e97f9f913863165bd99d719105"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00b0e4f9d003fbb6e1711f8fadc33bb8" id="r_a00b0e4f9d003fbb6e1711f8fadc33bb8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">Action</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Engine.html#a00b0e4f9d003fbb6e1711f8fadc33bb8">Disposed</a></td></tr>
 <tr class="memdesc:a00b0e4f9d003fbb6e1711f8fadc33bb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raised after the engine has completed explicit disposal.  <br /></td></tr>
@@ -224,7 +224,7 @@ Events</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents the core game engine singleton responsible for managing the main update loop, input systems, rendering, timing, and subsystem coordination. </p>
 <p>The Engine class is implemented as a thread-safe singleton and provides centralized access to all major engine subsystems including input polling, scene management, rendering, and collision detection. </p>
-<p>Typical usage involves calling Initialize to configure the engine, then Start(SynchronizationContext) to begin the main loop, and finally Stop followed by <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a79de0e3f5a8fa04bd21c4007576b38fb" title="Releases all resources used by this RenderSurfaceHost&lt;TBackbuffer&gt; instance.">Dispose</a> for cleanup. </p>
+<p>Typical usage involves calling Initialize to configure the engine, then Start(SynchronizationContext) to begin the main loop, and finally Stop followed by <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a79f88c27799c59b82709dbe3994e0d6c" title="Releases resources used by this RenderSurfaceHostBase instance and unregisters it from the RenderSurf...">Dispose</a> for cleanup. </p>
 
 <p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00035">35</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
@@ -255,7 +255,9 @@ Raising the Disposing event </li>
 <li>
 Cleaning up input subsystems </li>
 <li>
-Flushing asynchronous logs if configured </li>
+Saving configuration changes when automatic saving is enabled </li>
+<li>
+Stopping asynchronous logging and flushing queued entries if configured </li>
 <li>
 Clearing timers and state </li>
 <li>
@@ -263,7 +265,7 @@ Raising the Disposed event </li>
 </ul>
 <p>After disposal, the engine instance should not be used. To restart the engine, a new application session is required. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l01055">1055</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l01096">1096</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -354,7 +356,7 @@ Events that must run on the UI thread are dispatched through UiDispatcher if ava
 </dl>
 <dl class="section see"><dt>See also</dt><dd>Start(SynchronizationContext), Stop, EngineConfiguration, EngineState</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00273">273</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00274">274</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -384,7 +386,7 @@ Events that must run on the UI thread are dispatched through UiDispatcher if ava
 </dl>
 <dl class="section see"><dt>See also</dt><dd>Start(SynchronizationContext), Initialize, Stop</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00357">357</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00368">368</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -431,7 +433,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 </dl>
 <dl class="section see"><dt>See also</dt><dd>Initialize, Stop, Cycle, UiDispatcher</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00407">407</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00418">418</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -469,7 +471,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 </dl>
 <dl class="section see"><dt>See also</dt><dd>Tick, Start(SynchronizationContext), Stop</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00476">476</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00487">487</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -491,11 +493,11 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>Stops the Engine main loop and halts all ongoing processing. </p>
 <p>This method cleanly terminates the engine's background execution cycle started by Start(SynchronizationContext). It sets IsRunning to <code>false</code>, signaling the loop in Cycle to exit on the next iteration. </p>
 <p><b>Stop()</b> does not immediately dispose of resources or clear state. It simply halts ongoing updates and rendering, allowing the engine's subsystems (timers, surfaces, input pollers, etc.) to remain intact for later reuse or inspection. </p>
-<p>To fully clean up and release all managed resources, call <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a79de0e3f5a8fa04bd21c4007576b38fb" title="Releases all resources used by this RenderSurfaceHost&lt;TBackbuffer&gt; instance.">Dispose</a> after stopping the engine. </p>
+<p>To fully clean up and release all managed resources, call <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a79f88c27799c59b82709dbe3994e0d6c" title="Releases resources used by this RenderSurfaceHostBase instance and unregisters it from the RenderSurf...">Dispose</a> after stopping the engine. </p>
 <p>This method is thread-safe and may be called from any thread. </p>
-<dl class="section see"><dt>See also</dt><dd>Start(), Cycle, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a79de0e3f5a8fa04bd21c4007576b38fb" title="Releases all resources used by this RenderSurfaceHost&lt;TBackbuffer&gt; instance.">Dispose()</a>, IsRunning</dd></dl>
+<dl class="section see"><dt>See also</dt><dd>Start(), Cycle, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a9eee1fb0d47a5b75e3f6457af9148703" title="Releases all resources used by this RenderSurfaceHostBase instance.">Dispose()</a>, IsRunning</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00556">556</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00567">567</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -519,7 +521,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>If the engine is not currently running, this method returns immediately without performing any work. </p>
 <dl class="section see"><dt>See also</dt><dd>StartTimerDriven(SynchronizationContext), Stop</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00522">522</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00533">533</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -549,7 +551,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>This property provides thread-safe access to the engine's configuration, which is loaded during Initialize from a configuration file or default values. </p>
 <p>Configuration settings control behavior such as target frame rate, logging mode, sampling intervals, and other core engine parameters. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00724">724</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00735">735</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -578,7 +580,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>This metric reflects all calls to Cycle, regardless of whether a foreground render was performed. It represents the engine's update frequency for background tasks such as input polling, timers, and animations. </p>
 <p>This value is updated at the interval specified by <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#ac855c43adbb76108ebf60b3a4e607f37" title="Total number of seconds between Cycles Per Second (CPS) calculation. Default is 1....">EngineConfiguration.SamplingTimeForCPS</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00672">672</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00683">683</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -607,7 +609,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>This dispatcher allows external code to safely post work items that should execute on the engine's dedicated background thread, ensuring thread-safe access to engine state. </p>
 <dl class="section return"><dt>Returns</dt><dd>The result.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00606">606</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00617">617</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -636,7 +638,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>This metric reflects only cycles that resulted in a foreground render operation, as controlled by <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#aedc1761c6b8c8261ec99bd8bc1b17a33" title="Target screen refresh rate for the Engine. Setting the number lower allows more time for the processo...">EngineConfiguration.TargetFPS</a>. It represents the actual visual frame rate delivered to the user. </p>
 <p>This value is updated at the interval specified by <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#ac855c43adbb76108ebf60b3a4e607f37" title="Total number of seconds between Cycles Per Second (CPS) calculation. Default is 1....">EngineConfiguration.SamplingTimeForCPS</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00688">688</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00699">699</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -665,7 +667,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>This property provides centralized access to input event pollers and managers for keyboard, mouse, touch, and gamepad devices. Use the nested properties to access specific subsystems such as <a class="el" href="classGondwana_1_1EngineInputSystems.html#a42a45d1dff05513a565d6c760e96b75a" title="Gets the keyboard event polling subsystem, if initialized.">EngineInputSystems.KeyboardEventPoller</a>, <a class="el" href="classGondwana_1_1EngineInputSystems.html#a201f7fdd1abc5ef419a9391f06805119" title="Gets the mouse event polling subsystem, if initialized.">EngineInputSystems.MouseEventPoller</a>, <a class="el" href="classGondwana_1_1EngineInputSystems.html#a6cb1806f9ed4e915bfae5a82570e6f5f" title="Gets the touch event polling subsystem, if initialized.">EngineInputSystems.TouchEventPoller</a>, <a class="el" href="classGondwana_1_1EngineInputSystems.html#ac9312622d39edeaf6df5ff5c318fc6d2" title="Gets the gamepad event polling subsystem, if initialized.">EngineInputSystems.GamepadEventPoller</a>, and <a class="el" href="classGondwana_1_1EngineInputSystems.html#ae10f8d42f3de55ff3bc18e57d5d93c94" title="Gets or sets the gamepad manager responsible for handling gamepad input.">EngineInputSystems.GamepadManager</a>. </p>
 <p>Input adapters must be provided during Initialize for the corresponding input subsystems to become available. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00765">765</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00776">776</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -718,10 +720,10 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 </div><div class="memdoc">
 
 <p>Gets a value indicating whether the engine has been disposed. </p>
-<p><code>true</code> if <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a79de0e3f5a8fa04bd21c4007576b38fb" title="Releases all resources used by this RenderSurfaceHost&lt;TBackbuffer&gt; instance.">Dispose</a> has completed; otherwise, <code>false</code>.</p>
+<p><code>true</code> if <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a79f88c27799c59b82709dbe3994e0d6c" title="Releases resources used by this RenderSurfaceHostBase instance and unregisters it from the RenderSurf...">Dispose</a> has completed; otherwise, <code>false</code>.</p>
 <p>Once this property is <code>true</code>, the engine instance should not be used further. All managed resources have been released and subsystems have been shut down. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00775">775</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00786">786</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -747,9 +749,9 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 
 <p>Gets a value indicating whether the engine is currently executing its disposal sequence. </p>
 <p><code>true</code> if disposal is in progress; otherwise, <code>false</code>.</p>
-<p>This property is set to <code>true</code> at the start of <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a79de0e3f5a8fa04bd21c4007576b38fb" title="Releases all resources used by this RenderSurfaceHost&lt;TBackbuffer&gt; instance.">Dispose</a> and can be used by subsystems to detect when cleanup is underway. </p>
+<p>This property is set to <code>true</code> at the start of <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a79f88c27799c59b82709dbe3994e0d6c" title="Releases resources used by this RenderSurfaceHostBase instance and unregisters it from the RenderSurf...">Dispose</a> and can be used by subsystems to detect when cleanup is underway. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00785">785</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00796">796</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -777,7 +779,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p><code>true</code> if initialization is complete; otherwise, <code>false</code>.</p>
 <p>This property returns <code>true</code> after Initialize has successfully completed all setup operations and raised the InitializationComplete event. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00616">616</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00627">627</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -805,7 +807,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p><code>true</code> if initialization is in progress; otherwise, <code>false</code>.</p>
 <p>This property is <code>true</code> between the start of Initialize and the completion of all initialization steps. It is used to prevent concurrent initialization attempts. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00626">626</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00637">637</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -833,7 +835,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p><code>true</code> if the engine loop is active; otherwise, <code>false</code>.</p>
 <p>This property is set to <code>true</code> when Start(SynchronizationContext) is called and remains <code>true</code> until Stop is invoked or the engine is disposed. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00636">636</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00647">647</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -889,7 +891,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>An EngineManagers instance providing access to all engine resource managers.</p>
 <p>This property provides centralized access to subsystem managers responsible for loading and managing various types of game resources. Use the nested properties to access specific managers such as <a class="el" href="classGondwana_1_1EngineManagers.html#a4d78547eee177a9fee947d75f697de19" title="Gets the audio resource manager for loading and managing audio assets.">EngineManagers.AudioResources</a>, <a class="el" href="classGondwana_1_1EngineManagers.html#a2e0289b5d68de18132f152f0b666cdc8" title="Gets the SVG resource manager for loading and managing SVG assets.">EngineManagers.SvgResources</a>, <a class="el" href="classGondwana_1_1EngineManagers.html#a151b6ca4a77c51657bf3922d1fa1af61" title="Gets the sprite manager for managing sprite assets and rendering.">EngineManagers.Sprites</a>, <a class="el" href="classGondwana_1_1EngineManagers.html#a3730f4d935be727011143afa01eaf815" title="Gets the font manager for loading and managing font resources.">EngineManagers.Fonts</a>, <a class="el" href="classGondwana_1_1EngineManagers.html#a017184c71f7eddfee0e41f43a2092fd1" title="Gets the tilesheet registry for managing tilesheet resources.">EngineManagers.Tilesheets</a>, and <a class="el" href="classGondwana_1_1EngineManagers.html#a2247561795df59bb5d4697f8596e8d3d" title="Gets the direct drawing manager for immediate-mode rendering operations.">EngineManagers.DirectDrawings</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00744">744</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00755">755</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -918,7 +920,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>The State container provides a convenient mechanism for storing game-specific configuration, player progress, or other persistent data that should survive between application runs. </p>
 <p>State can be loaded from and saved to disk using the methods provided by the EngineState class. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00705">705</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00716">716</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -946,7 +948,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>The elapsed time in seconds as a floating-point value.</p>
 <p>This value is derived from TotalTicksEngineRunning and provides a convenient measure of total runtime duration. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00656">656</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00667">667</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -974,7 +976,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>The elapsed ticks as measured by HighResTimer.</p>
 <p>This value represents elapsed time in the native resolution of the high-resolution timer. Use TotalSecondsEngineRunning for a time value in seconds. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00646">646</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00657">657</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -1002,7 +1004,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>An IUiDispatcher instance if the engine was started with a valid <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a6df1d4dbd2be4ad06f17518294425948" title="Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...">SynchronizationContext</a>; otherwise, <code>null</code>. </p>
 <p>This dispatcher is established when Start(SynchronizationContext) is called and is used to post events and operations that must execute on the UI thread. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00595">595</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00606">606</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -1022,7 +1024,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>Occurs immediately after DoBackgroundTasks(long) has completed. </p>
 <p>Use this event to perform custom actions or monitoring after all background updates (timers, input, animations, surface refreshes, etc.) have been processed. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00153">153</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00154">154</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -1041,7 +1043,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>Occurs immediately after DoForegroundTasks(long) completes within each engine cycle. </p>
 <p>Use this event to perform logic that depends on a completed render frame, such as post-render effects, profiling, or scheduling background jobs. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00175">175</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00176">176</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -1060,7 +1062,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>Occurs immediately before DoBackgroundTasks(long) executes within each engine cycle. </p>
 <p>Use this event to inject custom background logic such as diagnostics, AI updates, or subsystem polling prior to the engine's own background operations. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00142">142</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00143">143</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -1079,7 +1081,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>Occurs immediately before DoForegroundTasks(long) executes within each engine cycle. </p>
 <p>Use this event to perform per-frame setup tasks prior to rendering or to update game state that must occur before foreground drawing. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00164">164</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00165">165</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -1099,7 +1101,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>Raised at a regular interval defined by <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#ac855c43adbb76108ebf60b3a4e607f37" title="Total number of seconds between Cycles Per Second (CPS) calculation. Default is 1....">EngineConfiguration.SamplingTimeForCPS</a>. Provides a snapshot of gross and net cycle rates, total elapsed time, and sample interval through a CyclesPerSecondCalculatedEventArgs payload. </p>
 <p>This event is posted to the UI thread when a UiDispatcher is available. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00190">190</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00191">191</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -1116,9 +1118,9 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 </div><div class="memdoc">
 
 <p>Raised after the engine has completed explicit disposal. </p>
-<p>Fired only when <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a79de0e3f5a8fa04bd21c4007576b38fb" title="Releases all resources used by this RenderSurfaceHost&lt;TBackbuffer&gt; instance.">Dispose()</a> is called (never from the finalizer). Indicates all managed cleanup has completed and IsDisposed is <code>true</code>. If a UiDispatcher is available, this event is posted to the UI thread. </p>
+<p>Fired only when <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a9eee1fb0d47a5b75e3f6457af9148703" title="Releases all resources used by this RenderSurfaceHostBase instance.">Dispose()</a> is called (never from the finalizer). Indicates all managed cleanup has completed and IsDisposed is <code>true</code>. If a UiDispatcher is available, this event is posted to the UI thread. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00210">210</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00211">211</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -1134,10 +1136,10 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
       </table>
 </div><div class="memdoc">
 
-<p>Raised when <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a79de0e3f5a8fa04bd21c4007576b38fb" title="Releases all resources used by this RenderSurfaceHost&lt;TBackbuffer&gt; instance.">Dispose()</a> begins the explicit disposal sequence. </p>
-<p>Fired only when <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a79de0e3f5a8fa04bd21c4007576b38fb" title="Releases all resources used by this RenderSurfaceHost&lt;TBackbuffer&gt; instance.">Dispose()</a> is called (never from the finalizer). Handlers run before managed cleanup while engine state is still readable. If a UiDispatcher is available, this event is posted to the UI thread. </p>
+<p>Raised when <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a9eee1fb0d47a5b75e3f6457af9148703" title="Releases all resources used by this RenderSurfaceHostBase instance.">Dispose()</a> begins the explicit disposal sequence. </p>
+<p>Fired only when <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a9eee1fb0d47a5b75e3f6457af9148703" title="Releases all resources used by this RenderSurfaceHostBase instance.">Dispose()</a> is called (never from the finalizer). Handlers run before managed cleanup while engine state is still readable. If a UiDispatcher is available, this event is posted to the UI thread. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00200">200</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00201">201</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -1157,7 +1159,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>This event is raised at the end of Initialize, every time the method is called. It signifies that the engine and its subsystems are fully active and ready for runtime operations. </p>
 <p>If a UiDispatcher is available, this event is posted to the UI thread; otherwise, it executes on the calling thread. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00131">131</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00132">132</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -1178,7 +1180,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>Use this event for post-initialization logic that depends on fully loaded engine settings but precedes runtime activation. </p>
 <p>If a UiDispatcher is available, this event is posted to the UI thread; otherwise, it executes on the calling thread. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00116">116</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00117">117</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>
@@ -1198,7 +1200,7 @@ The UiDispatcher guarantees that event notifications targeting the UI are execut
 <p>This event is raised once per engine lifetime, the first time Initialize is called. It provides an early hook for systems that must perform setup prior to configuration loading or input subsystem initialization. </p>
 <p>If a UiDispatcher is available, this event is posted to the UI thread; otherwise, it executes on the calling thread. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00096">96</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cs_source.html#l00097">97</a> of file <a class="el" href="Engine_8cs_source.html">Engine.cs</a>.</p>
 
 </div>
 </div>

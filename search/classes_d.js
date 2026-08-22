@@ -1,19 +1,8 @@
 var searchData=
 [
-  ['scene_0',['Scene',['../classGondwana_1_1Scenes_1_1Scene.html',1,'Gondwana::Scenes']]],
-  ['scenelayer_1',['SceneLayer',['../classGondwana_1_1Scenes_1_1SceneLayer.html',1,'Gondwana::Scenes']]],
-  ['scenelayertile_2',['SceneLayerTile',['../classGondwana_1_1Scenes_1_1SceneLayerTile.html',1,'Gondwana::Scenes']]],
-  ['scriptedmovement_3',['ScriptedMovement',['../structGondwana_1_1Physics_1_1Movement_1_1Scripted_1_1ScriptedMovement.html',1,'Gondwana::Physics::Movement::Scripted']]],
-  ['sdlgamepadadapter_4',['SdlGamepadAdapter',['../classGondwana_1_1Input_1_1Gamepad_1_1SDL2_1_1SdlGamepadAdapter.html',1,'Gondwana::Input::Gamepad::SDL2']]],
-  ['sdlgamepadmanager_5',['SdlGamepadManager',['../classGondwana_1_1Input_1_1Gamepad_1_1SDL2_1_1SdlGamepadManager.html',1,'Gondwana::Input::Gamepad::SDL2']]],
-  ['splashscreen_6',['SplashScreen',['../classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html',1,'Gondwana::Widgets::Overlays']]],
-  ['sprite_7',['Sprite',['../classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html',1,'Gondwana::Drawing::Sprites']]],
-  ['spritemanager_8',['SpriteManager',['../classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html',1,'Gondwana::Drawing::Sprites']]],
-  ['spritemovedeventargs_9',['SpriteMovedEventArgs',['../classGondwana_1_1Drawing_1_1Sprites_1_1SpriteMovedEventArgs.html',1,'Gondwana::Drawing::Sprites']]],
-  ['stereopansampleprovider_10',['StereoPanSampleProvider',['../classGondwana_1_1Audio_1_1StereoPanSampleProvider.html',1,'Gondwana::Audio']]],
-  ['svgresource_11',['SvgResource',['../classGondwana_1_1Drawing_1_1SvgResource.html',1,'Gondwana::Drawing']]],
-  ['svgresourcemanager_12',['SvgResourceManager',['../classGondwana_1_1Drawing_1_1SvgResourceManager.html',1,'Gondwana::Drawing']]],
-  ['swipedeventargs_13',['SwipedEventArgs',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipedEventArgs.html',1,'Gondwana::Input::Touch::Gestures']]],
-  ['swipegesturerecognizer_14',['SwipeGestureRecognizer',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer.html',1,'Gondwana::Input::Touch::Gestures']]],
-  ['synthesizersampleprovider_15',['SynthesizerSampleProvider',['../classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider.html',1,'Gondwana::Audio::Midi']]]
+  ['rendersurfaceadapterbase_0',['RenderSurfaceAdapterBase',['../classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html',1,'Gondwana::Rendering']]],
+  ['rendersurfaceadapterresizedeventargs_1',['RenderSurfaceAdapterResizedEventArgs',['../classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html',1,'Gondwana::Rendering']]],
+  ['rendersurfacehost_2',['RenderSurfaceHost',['../classGondwana_1_1Rendering_1_1RenderSurfaceHost.html',1,'Gondwana::Rendering']]],
+  ['rendersurfacehostbase_3',['RenderSurfaceHostBase',['../classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html',1,'Gondwana::Rendering']]],
+  ['rendersurfacehostbindeventargs_4',['RenderSurfaceHostBindEventArgs',['../classGondwana_1_1Rendering_1_1RenderSurfaceHostBindEventArgs.html',1,'Gondwana::Rendering']]]
 ];

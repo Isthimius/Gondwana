@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -124,6 +124,9 @@ Properties</h2></td></tr>
 <tr class="memitem:a4cac4780bcd33199ab7644d7204c1427" id="r_a4cac4780bcd33199ab7644d7204c1427"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer.html#a4cac4780bcd33199ab7644d7204c1427">MinimumSwipeSpeedPixelsPerSecond</a> = 200<code> [get, set]</code></td></tr>
 <tr class="memdesc:a4cac4780bcd33199ab7644d7204c1427"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the minimum average speed, in pixels per second, that a touch must reach when it ends in order to be recognized as a swipe. Slower contacts are not recognized. Default is <code>200</code> pixels per second.  <br /></td></tr>
 <tr class="separator:a4cac4780bcd33199ab7644d7204c1427"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c351e3eb03c183ea9c43afbdf35f52d" id="r_a1c351e3eb03c183ea9c43afbdf35f52d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer.html#a1c351e3eb03c183ea9c43afbdf35f52d">MinimumSwipeDistancePixels</a> = 30<code> [get, set]</code></td></tr>
+<tr class="memdesc:a1c351e3eb03c183ea9c43afbdf35f52d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the minimum straight-line travel distance required for a swipe. This prevents a short, fast tap from also being recognized as a swipe. Default is <code>30</code> pixels.  <br /></td></tr>
+<tr class="separator:a1c351e3eb03c183ea9c43afbdf35f52d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="events" name="events"></a>
 Events</h2></td></tr>
@@ -136,7 +139,7 @@ Events</h2></td></tr>
 <p>Subscribe to the Swiped event to receive notifications when a qualifying swipe is detected. </p>
 <p>A swipe is recognized when a touch contact ends and the average speed over the contact duration meets or exceeds MinimumSwipeSpeedPixelsPerSecond. </p>
 
-<p class="definition">Definition at line <a class="el" href="SwipeGestureRecognizer_8cs_source.html#l00019">19</a> of file <a class="el" href="SwipeGestureRecognizer_8cs_source.html">SwipeGestureRecognizer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SwipeGestureRecognizer_8cs_source.html#l00020">20</a> of file <a class="el" href="SwipeGestureRecognizer_8cs_source.html">SwipeGestureRecognizer.cs</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a004979294e9114ade9b0d956075185ae" name="a004979294e9114ade9b0d956075185ae"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a004979294e9114ade9b0d956075185ae">&#9670;&#160;</a></span>SwipeGestureRecognizer()</h2>
@@ -168,7 +171,7 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="SwipeGestureRecognizer_8cs_source.html#l00047">47</a> of file <a class="el" href="SwipeGestureRecognizer_8cs_source.html">SwipeGestureRecognizer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SwipeGestureRecognizer_8cs_source.html#l00057">57</a> of file <a class="el" href="SwipeGestureRecognizer_8cs_source.html">SwipeGestureRecognizer.cs</a>.</p>
 
 </div>
 </div>
@@ -190,11 +193,37 @@ Events</h2></td></tr>
 
 <p>Releases all resources held by this recognizer and unsubscribes from the touch input source. After disposal, no further Swiped events will be raised. </p>
 
-<p class="definition">Definition at line <a class="el" href="SwipeGestureRecognizer_8cs_source.html#l00096">96</a> of file <a class="el" href="SwipeGestureRecognizer_8cs_source.html">SwipeGestureRecognizer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SwipeGestureRecognizer_8cs_source.html#l00126">126</a> of file <a class="el" href="SwipeGestureRecognizer_8cs_source.html">SwipeGestureRecognizer.cs</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Property Documentation</h2>
+<a id="a1c351e3eb03c183ea9c43afbdf35f52d" name="a1c351e3eb03c183ea9c43afbdf35f52d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c351e3eb03c183ea9c43afbdf35f52d">&#9670;&#160;</a></span>MinimumSwipeDistancePixels</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Gondwana.Input.Touch.Gestures.SwipeGestureRecognizer.MinimumSwipeDistancePixels = 30</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span><span class="mlabel">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the minimum straight-line travel distance required for a swipe. This prevents a short, fast tap from also being recognized as a swipe. Default is <code>30</code> pixels. </p>
+
+<p class="definition">Definition at line <a class="el" href="SwipeGestureRecognizer_8cs_source.html#l00040">40</a> of file <a class="el" href="SwipeGestureRecognizer_8cs_source.html">SwipeGestureRecognizer.cs</a>.</p>
+
+</div>
+</div>
 <a id="a4cac4780bcd33199ab7644d7204c1427" name="a4cac4780bcd33199ab7644d7204c1427"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4cac4780bcd33199ab7644d7204c1427">&#9670;&#160;</a></span>MinimumSwipeSpeedPixelsPerSecond</h2>
 
@@ -217,7 +246,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the minimum average speed, in pixels per second, that a touch must reach when it ends in order to be recognized as a swipe. Slower contacts are not recognized. Default is <code>200</code> pixels per second. </p>
 
-<p class="definition">Definition at line <a class="el" href="SwipeGestureRecognizer_8cs_source.html#l00030">30</a> of file <a class="el" href="SwipeGestureRecognizer_8cs_source.html">SwipeGestureRecognizer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SwipeGestureRecognizer_8cs_source.html#l00033">33</a> of file <a class="el" href="SwipeGestureRecognizer_8cs_source.html">SwipeGestureRecognizer.cs</a>.</p>
 
 </div>
 </div>
@@ -236,7 +265,7 @@ Events</h2></td></tr>
 
 <p>Occurs when a qualifying swipe gesture is detected. </p>
 
-<p class="definition">Definition at line <a class="el" href="SwipeGestureRecognizer_8cs_source.html#l00035">35</a> of file <a class="el" href="SwipeGestureRecognizer_8cs_source.html">SwipeGestureRecognizer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SwipeGestureRecognizer_8cs_source.html#l00045">45</a> of file <a class="el" href="SwipeGestureRecognizer_8cs_source.html">SwipeGestureRecognizer.cs</a>.</p>
 
 </div>
 </div>

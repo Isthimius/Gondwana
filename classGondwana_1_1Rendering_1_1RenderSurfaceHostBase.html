@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -149,7 +149,7 @@ Properties</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a base class for hosting a render surface, providing functionality for managing rendering operations, backbuffer access, and integration with platform-specific adapters. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00012">12</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00013">13</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a05265ed2d40b4e9a2a40dff3573db2fe" name="a05265ed2d40b4e9a2a40dff3573db2fe"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a05265ed2d40b4e9a2a40dff3573db2fe">&#9670;&#160;</a></span>RenderSurfaceHostBase()</h2>
@@ -199,7 +199,7 @@ Properties</h2></td></tr>
 <p>This method unregisters the render surface host from the RenderSurfaceHostRegistry and releases any managed resources. Derived classes should override Dispose(bool) to release additional resources specific to their implementation. </p>
 <p>After calling Dispose(), this instance should not be used. Calling Dispose() multiple times is safe and has no additional effect. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00129">129</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00130">130</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -236,7 +236,7 @@ Properties</h2></td></tr>
 </dl>
 <p>This method always unregisters the instance from the registry. Derived classes should override this method to release additional resources but must call the base implementation to ensure proper unregistration. </p>
 
-<p>Reimplemented in <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a9529263e1140506cc65497c479b822d9">Gondwana.Rendering.RenderSurfaceHost&lt; TBackbuffer &gt;</a>.</p>
+<p>Reimplemented in <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html#a79f88c27799c59b82709dbe3994e0d6c">Gondwana.Rendering.RenderSurfaceHost&lt; TBackbuffer &gt;</a>.</p>
 
 </div>
 </div>
@@ -261,7 +261,7 @@ Properties</h2></td></tr>
 <p>Returns <code>null</code> when <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a18931760ccfbf7d8ee7aa962fec386d1" title="Gets a value indicating whether this backbuffer is rendered on the GL thread rather than the engine&#39;s...">BackbufferBase.IsGlThreadRendered</a> is <code>false</code> (i.e. this is not a GPU-rendered surface). </p>
 <dl class="section return"><dt>Returns</dt><dd>A GPU-backed SKImage snapshot of the rendered frame, or <code>null</code> if this surface does not use GL-thread rendering. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00086">86</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00087">87</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -288,7 +288,7 @@ Properties</h2></td></tr>
 
 <p>Gets the in-memory BackbufferBase associated with the current rendering context. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00033">33</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00034">34</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -314,7 +314,7 @@ Properties</h2></td></tr>
 
 <p>Gets the platform-specific RenderSurfaceAdapterBase responsible for rendering the image from the Backbuffer. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00044">44</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00045">45</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -340,7 +340,7 @@ Properties</h2></td></tr>
 
 <p>Gets the source Scenes.Scene used for rendering operations. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00038">38</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00039">39</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -368,7 +368,7 @@ Properties</h2></td></tr>
 <p>The ViewManager instance managing all views associated with this render surface host. </p>
 <p>The view manager enables split-screen, picture-in-picture, and minimap rendering by managing multiple views with independent cameras and viewports. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00057">57</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00058">58</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>

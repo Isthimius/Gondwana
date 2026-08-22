@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -123,12 +123,30 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a88f6068af0a9127725375b6aa8660a05" id="r_a88f6068af0a9127725375b6aa8660a05"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a88f6068af0a9127725375b6aa8660a05">GetFrameCollisionAdjust</a> (int x, int y)</td></tr>
 <tr class="memdesc:a88f6068af0a9127725375b6aa8660a05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the effective collision adjustment for one frame.  <br /></td></tr>
 <tr class="separator:a88f6068af0a9127725375b6aa8660a05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61672c6a0a53bd00a458e3433807592e" id="r_a61672c6a0a53bd00a458e3433807592e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a61672c6a0a53bd00a458e3433807592e">TryGetFrameCollisionAdjustOverride</a> (int x, int y, out <a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a> collisionAdjust)</td></tr>
+<tr class="memdesc:a61672c6a0a53bd00a458e3433807592e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempts to get the explicit collision adjustment assigned to one frame.  <br /></td></tr>
+<tr class="separator:a61672c6a0a53bd00a458e3433807592e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7085c20b0e8c651934e95027119ace9d" id="r_a7085c20b0e8c651934e95027119ace9d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a7085c20b0e8c651934e95027119ace9d">SetFrameCollisionAdjust</a> (int x, int y, <a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a> collisionAdjust)</td></tr>
 <tr class="memdesc:a7085c20b0e8c651934e95027119ace9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the collision adjustment for one frame and updates its cache entry.  <br /></td></tr>
 <tr class="separator:a7085c20b0e8c651934e95027119ace9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0de586adf0cb501987da930e94d3f1b" id="r_af0de586adf0cb501987da930e94d3f1b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#af0de586adf0cb501987da930e94d3f1b">ClearFrameCollisionAdjustOverride</a> (int x, int y)</td></tr>
+<tr class="memdesc:af0de586adf0cb501987da930e94d3f1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a frame-level collision adjustment so the frame once again inherits CollisionAdjust.  <br /></td></tr>
+<tr class="separator:af0de586adf0cb501987da930e94d3f1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83104cce2dcaf023028cf5850ef63b53" id="r_a83104cce2dcaf023028cf5850ef63b53"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a83104cce2dcaf023028cf5850ef63b53">GetFrameCollisionArea</a> (int x, int y)</td></tr>
 <tr class="memdesc:a83104cce2dcaf023028cf5850ef63b53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the frame-local collision rectangle for one frame.  <br /></td></tr>
 <tr class="separator:a83104cce2dcaf023028cf5850ef63b53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae01fb265bc8cb9b0fc09ca7a19b67a4e" id="r_ae01fb265bc8cb9b0fc09ca7a19b67a4e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410c">TileCollisionType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#ae01fb265bc8cb9b0fc09ca7a19b67a4e">GetFrameCollisionType</a> (int x, int y)</td></tr>
+<tr class="memdesc:ae01fb265bc8cb9b0fc09ca7a19b67a4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the effective collision type for one frame.  <br /></td></tr>
+<tr class="separator:ae01fb265bc8cb9b0fc09ca7a19b67a4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af809406fdde943b7bd522abdbed08a82" id="r_af809406fdde943b7bd522abdbed08a82"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#af809406fdde943b7bd522abdbed08a82">TryGetFrameCollisionTypeOverride</a> (int x, int y, out <a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410c">TileCollisionType</a> collisionType)</td></tr>
+<tr class="memdesc:af809406fdde943b7bd522abdbed08a82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempts to get the explicit collision type assigned to one frame.  <br /></td></tr>
+<tr class="separator:af809406fdde943b7bd522abdbed08a82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b03e481043457c107cc4a615e242f40" id="r_a7b03e481043457c107cc4a615e242f40"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a7b03e481043457c107cc4a615e242f40">SetFrameCollisionType</a> (int x, int y, <a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410c">TileCollisionType</a> collisionType)</td></tr>
+<tr class="memdesc:a7b03e481043457c107cc4a615e242f40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets an explicit collision type for one frame.  <br /></td></tr>
+<tr class="separator:a7b03e481043457c107cc4a615e242f40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add2e5c74c3f808242ac34bd979807ac7" id="r_add2e5c74c3f808242ac34bd979807ac7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#add2e5c74c3f808242ac34bd979807ac7">ClearFrameCollisionTypeOverride</a> (int x, int y)</td></tr>
+<tr class="memdesc:add2e5c74c3f808242ac34bd979807ac7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a frame-level collision type so the frame once again inherits CollisionType.  <br /></td></tr>
+<tr class="separator:add2e5c74c3f808242ac34bd979807ac7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aefb4133ea192c0a298134f2e7cebe729" id="r_aefb4133ea192c0a298134f2e7cebe729"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#aefb4133ea192c0a298134f2e7cebe729">Dispose</a> ()</td></tr>
 <tr class="separator:aefb4133ea192c0a298134f2e7cebe729"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -158,11 +176,14 @@ Properties</h2></td></tr>
 <tr class="memdesc:a59d41b78bcd54660b382a312452bb7ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets visual overhang. This affects rendering, not slicing.  <br /></td></tr>
 <tr class="separator:a59d41b78bcd54660b382a312452bb7ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a764f33f21e9f8d29079815898647faac" id="r_a764f33f21e9f8d29079815898647faac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a764f33f21e9f8d29079815898647faac">CollisionAdjust</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a764f33f21e9f8d29079815898647faac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the region-level collision adjustment. Assigning this value overwrites every frame adjustment in the region and updates cached metadata.  <br /></td></tr>
+<tr class="memdesc:a764f33f21e9f8d29079815898647faac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the collision adjustment inherited by frames that do not have an explicit frame-level override.  <br /></td></tr>
 <tr class="separator:a764f33f21e9f8d29079815898647faac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6602473f6853b688946c23b94bf542da" id="r_a6602473f6853b688946c23b94bf542da"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a6602473f6853b688946c23b94bf542da">CollisionArea</a><code> [get]</code></td></tr>
 <tr class="memdesc:a6602473f6853b688946c23b94bf542da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the region-default frame-local collision rectangle.  <br /></td></tr>
 <tr class="separator:a6602473f6853b688946c23b94bf542da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a165ac48925714329921e7549b84f5782" id="r_a165ac48925714329921e7549b84f5782"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410c">TileCollisionType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a165ac48925714329921e7549b84f5782">CollisionType</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a165ac48925714329921e7549b84f5782"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the collision type inherited by frames that do not have an explicit frame-level override.  <br /></td></tr>
+<tr class="separator:a165ac48925714329921e7549b84f5782"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c877739b31c4ea9c00b5cb0eee137a5" id="r_a7c877739b31c4ea9c00b5cb0eee137a5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a7c877739b31c4ea9c00b5cb0eee137a5">Columns</a><code> [get]</code></td></tr>
 <tr class="separator:a7c877739b31c4ea9c00b5cb0eee137a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a206c5cf6d83fc4ff6e6d29d4d0716477" id="r_a206c5cf6d83fc4ff6e6d29d4d0716477"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a206c5cf6d83fc4ff6e6d29d4d0716477">Rows</a><code> [get]</code></td></tr>
@@ -177,6 +198,71 @@ Properties</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00011">11</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="af0de586adf0cb501987da930e94d3f1b" name="af0de586adf0cb501987da930e94d3f1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0de586adf0cb501987da930e94d3f1b">&#9670;&#160;</a></span>ClearFrameCollisionAdjustOverride()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Gondwana.Drawing.Tilesheets.TilesheetRegion.ClearFrameCollisionAdjustOverride </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a frame-level collision adjustment so the frame once again inherits CollisionAdjust. </p>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> when an explicit frame override was removed; otherwise, <code>false</code>. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00309">309</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+
+</div>
+</div>
+<a id="add2e5c74c3f808242ac34bd979807ac7" name="add2e5c74c3f808242ac34bd979807ac7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add2e5c74c3f808242ac34bd979807ac7">&#9670;&#160;</a></span>ClearFrameCollisionTypeOverride()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Gondwana.Drawing.Tilesheets.TilesheetRegion.ClearFrameCollisionTypeOverride </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a frame-level collision type so the frame once again inherits CollisionType. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00400">400</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+
+</div>
+</div>
 <a id="aefb4133ea192c0a298134f2e7cebe729" name="aefb4133ea192c0a298134f2e7cebe729"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aefb4133ea192c0a298134f2e7cebe729">&#9670;&#160;</a></span>Dispose()</h2>
 
@@ -192,7 +278,7 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00431">431</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00595">595</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -211,7 +297,7 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00170">170</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00187">187</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -230,7 +316,7 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00193">193</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00210">210</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -260,7 +346,7 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00153">153</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00170">170</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -292,7 +378,7 @@ Properties</h2></td></tr>
 
 <p>Gets the effective collision adjustment for one frame. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00219">219</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00236">236</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -326,6 +412,38 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a id="ae01fb265bc8cb9b0fc09ca7a19b67a4e" name="ae01fb265bc8cb9b0fc09ca7a19b67a4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae01fb265bc8cb9b0fc09ca7a19b67a4e">&#9670;&#160;</a></span>GetFrameCollisionType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410c">TileCollisionType</a> Gondwana.Drawing.Tilesheets.TilesheetRegion.GetFrameCollisionType </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the effective collision type for one frame. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00342">342</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+
+</div>
+</div>
 <a id="a1f5a8a145a4db0265ec7d19f2de04d03" name="a1f5a8a145a4db0265ec7d19f2de04d03"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1f5a8a145a4db0265ec7d19f2de04d03">&#9670;&#160;</a></span>GetImage()</h2>
 
@@ -352,7 +470,7 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00136">136</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00153">153</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -390,7 +508,122 @@ Properties</h2></td></tr>
 
 <p>Sets the collision adjustment for one frame and updates its cache entry. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00235">235</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00281">281</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+
+</div>
+</div>
+<a id="a7b03e481043457c107cc4a615e242f40" name="a7b03e481043457c107cc4a615e242f40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b03e481043457c107cc4a615e242f40">&#9670;&#160;</a></span>SetFrameCollisionType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Drawing.Tilesheets.TilesheetRegion.SetFrameCollisionType </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410c">TileCollisionType</a>&#160;</td>
+          <td class="paramname"><em>collisionType</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets an explicit collision type for one frame. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00379">379</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+
+</div>
+</div>
+<a id="a61672c6a0a53bd00a458e3433807592e" name="a61672c6a0a53bd00a458e3433807592e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61672c6a0a53bd00a458e3433807592e">&#9670;&#160;</a></span>TryGetFrameCollisionAdjustOverride()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Gondwana.Drawing.Tilesheets.TilesheetRegion.TryGetFrameCollisionAdjustOverride </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">out <a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>&#160;</td>
+          <td class="paramname"><em>collisionAdjust</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Attempts to get the explicit collision adjustment assigned to one frame. </p>
+<p>Returns <code>true</code> when an explicit frame-level override exists. When <code>false</code>, no override exists (the frame inherits CollisionAdjust). The <em>collisionAdjust</em>  out parameter is only meaningful when the method returns <code>true</code>. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00257">257</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+
+</div>
+</div>
+<a id="af809406fdde943b7bd522abdbed08a82" name="af809406fdde943b7bd522abdbed08a82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af809406fdde943b7bd522abdbed08a82">&#9670;&#160;</a></span>TryGetFrameCollisionTypeOverride()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Gondwana.Drawing.Tilesheets.TilesheetRegion.TryGetFrameCollisionTypeOverride </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">out <a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410c">TileCollisionType</a>&#160;</td>
+          <td class="paramname"><em>collisionType</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Attempts to get the explicit collision type assigned to one frame. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00357">357</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -442,7 +675,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00064">64</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00068">68</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -466,9 +699,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the region-level collision adjustment. Assigning this value overwrites every frame adjustment in the region and updates cached metadata. </p>
+<p>Gets or sets the collision adjustment inherited by frames that do not have an explicit frame-level override. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00113">113</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00117">117</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -494,7 +727,33 @@ Properties</h2></td></tr>
 
 <p>Gets the region-default frame-local collision rectangle. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00128">128</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00131">131</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+
+</div>
+</div>
+<a id="a165ac48925714329921e7549b84f5782" name="a165ac48925714329921e7549b84f5782"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a165ac48925714329921e7549b84f5782">&#9670;&#160;</a></span>CollisionType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410c">TileCollisionType</a> Gondwana.Drawing.Tilesheets.TilesheetRegion.CollisionType</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span><span class="mlabel">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the collision type inherited by frames that do not have an explicit frame-level override. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00138">138</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -518,7 +777,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00131">131</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00148">148</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -544,7 +803,7 @@ Properties</h2></td></tr>
 
 <p>Gets the region name. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00062">62</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00066">66</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -570,7 +829,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets visual overhang. This affects rendering, not slicing. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00107">107</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00111">111</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -594,7 +853,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00094">94</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00098">98</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -618,7 +877,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00132">132</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00149">149</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -642,7 +901,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00134">134</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00151">151</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -666,7 +925,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00084">84</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00088">88</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -692,7 +951,7 @@ Properties</h2></td></tr>
 
 <p>Gets the tilesheet that owns this region. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00057">57</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00061">61</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -716,7 +975,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00074">74</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00078">78</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -740,7 +999,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00133">133</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00150">150</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>

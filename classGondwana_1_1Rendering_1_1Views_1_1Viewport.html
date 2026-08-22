@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="Gondwana.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.2</span>
+   <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;v2.5.3</span>
    </div>
    <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
   </td>
@@ -116,7 +116,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a6a5995b6f20f52463189967dc99e8e8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smoothly animates the zoom toward a target level using an exponential lerp rate in "per second" units. Values &lt;= 0 snap immediately.  <br /></td></tr>
 <tr class="separator:a6a5995b6f20f52463189967dc99e8e8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3666c8df5d79073a11b064a1ca878399" id="r_a3666c8df5d79073a11b064a1ca878399"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1Viewport.html#a3666c8df5d79073a11b064a1ca878399">ZoomToOverDuration</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">float</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">targetZoom</a>, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">float</a> <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost.html">durationSeconds</a>)</td></tr>
-<tr class="memdesc:a3666c8df5d79073a11b064a1ca878399"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smoothly animates the zoom so that it reaches ~99% of the target level over approximately the given duration in seconds. Values &lt;= 0 snap.  <br /></td></tr>
+<tr class="memdesc:a3666c8df5d79073a11b064a1ca878399"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smoothly animates the zoom using exponential easing and snaps exactly to the target when the requested duration has elapsed. Values &lt;= 0 snap.  <br /></td></tr>
 <tr class="separator:a3666c8df5d79073a11b064a1ca878399"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
@@ -183,7 +183,7 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00053">53</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00056">56</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
 
 </div>
 </div>
@@ -205,7 +205,7 @@ Events</h2></td></tr>
 
 <p>Instantly sets the zoom level, raising the ZoomChanged event. </p>
 
-<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00089">89</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00095">95</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
 
 </div>
 </div>
@@ -237,7 +237,7 @@ Events</h2></td></tr>
 
 <p>Smoothly animates the zoom toward a target level using an exponential lerp rate in "per second" units. Values &lt;= 0 snap immediately. </p>
 
-<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00100">100</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00110">110</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
 
 </div>
 </div>
@@ -267,9 +267,9 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Smoothly animates the zoom so that it reaches ~99% of the target level over approximately the given duration in seconds. Values &lt;= 0 snap. </p>
+<p>Smoothly animates the zoom using exponential easing and snaps exactly to the target when the requested duration has elapsed. Values &lt;= 0 snap. </p>
 
-<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00116">116</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00129">129</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
 
 </div>
 </div>
@@ -296,7 +296,7 @@ Events</h2></td></tr>
 
 <p>Optional per-view HUD/safe-area offset in screen pixels. </p>
 
-<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00079">79</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00082">82</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
 
 </div>
 </div>
@@ -322,7 +322,7 @@ Events</h2></td></tr>
 
 <p>Screen-space rectangle (in SCREEN / RenderSurface pixels) where this view is drawn. This defines the on-screen position and size of the viewport for this view. </p>
 
-<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00032">32</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00035">35</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
 
 </div>
 </div>
@@ -348,7 +348,7 @@ Events</h2></td></tr>
 
 <p>World size visible through this viewport (used for Camera clamping). </p>
 
-<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00082">82</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00085">85</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
 
 </div>
 </div>
@@ -374,7 +374,7 @@ Events</h2></td></tr>
 
 <p>Zoom factor applied to the world when rendering this view. Values greater than 1 zoom in, values between 0 and 1 zoom out. Used when converting between screen-space and world-space pixels. </p>
 
-<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00064">64</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00067">67</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
 
 </div>
 </div>
@@ -393,7 +393,7 @@ Events</h2></td></tr>
 
 <p>Fired whenever TargetRectPx changes (viewport resized or moved). Provides the Viewport instance and the old and new rectangles. </p>
 
-<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00021">21</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00024">24</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
 
 </div>
 </div>
@@ -411,7 +411,7 @@ Events</h2></td></tr>
 
 <p>Occurs when the zoom level of the viewport changes. </p>
 
-<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00026">26</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Viewport_8cs_source.html#l00029">29</a> of file <a class="el" href="Viewport_8cs_source.html">Viewport.cs</a>.</p>
 
 </div>
 </div>
