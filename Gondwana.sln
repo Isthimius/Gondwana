@@ -187,6 +187,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Tilesheets
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Flappy", "Demos\Gondwana.Flappy\Gondwana.Flappy.csproj", "{02A5433C-1A01-C200-451A-EF5786118425}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Pong", "Demos\Gondwana.Pong\Gondwana.Pong.csproj", "{9B447748-C9FD-4FB4-8689-BFCE5B351ED7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -689,6 +691,22 @@ Global
 		{4B2E7F9C-A30E-4F3E-BE30-659B1533C2AF}.Release|x64.Build.0 = Release|Any CPU
 		{4B2E7F9C-A30E-4F3E-BE30-659B1533C2AF}.Release|x86.ActiveCfg = Release|Any CPU
 		{4B2E7F9C-A30E-4F3E-BE30-659B1533C2AF}.Release|x86.Build.0 = Release|Any CPU
+		{9B447748-C9FD-4FB4-8689-BFCE5B351ED7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B447748-C9FD-4FB4-8689-BFCE5B351ED7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B447748-C9FD-4FB4-8689-BFCE5B351ED7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9B447748-C9FD-4FB4-8689-BFCE5B351ED7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9B447748-C9FD-4FB4-8689-BFCE5B351ED7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9B447748-C9FD-4FB4-8689-BFCE5B351ED7}.Debug|x64.Build.0 = Debug|Any CPU
+		{9B447748-C9FD-4FB4-8689-BFCE5B351ED7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9B447748-C9FD-4FB4-8689-BFCE5B351ED7}.Debug|x86.Build.0 = Debug|Any CPU
+		{9B447748-C9FD-4FB4-8689-BFCE5B351ED7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B447748-C9FD-4FB4-8689-BFCE5B351ED7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B447748-C9FD-4FB4-8689-BFCE5B351ED7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9B447748-C9FD-4FB4-8689-BFCE5B351ED7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9B447748-C9FD-4FB4-8689-BFCE5B351ED7}.Release|x64.ActiveCfg = Release|Any CPU
+		{9B447748-C9FD-4FB4-8689-BFCE5B351ED7}.Release|x64.Build.0 = Release|Any CPU
+		{9B447748-C9FD-4FB4-8689-BFCE5B351ED7}.Release|x86.ActiveCfg = Release|Any CPU
+		{9B447748-C9FD-4FB4-8689-BFCE5B351ED7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -717,6 +735,7 @@ Global
 		{453C4E9F-2237-4509-9ABD-F86645BC1741} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
 		{638853CB-A9E9-4229-80F4-C4FCB4E71333} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
 		{02A5433C-1A01-C200-451A-EF5786118425} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
+		{9B447748-C9FD-4FB4-8689-BFCE5B351ED7} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A027047D-3D9C-4015-B3E0-DEEAE46DA4CC}
