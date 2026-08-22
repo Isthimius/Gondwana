@@ -60,7 +60,7 @@ public sealed class GitHubRepositoryService
         }
 
         using JsonDocument commitDocument = await GetJsonAsync(
-            $"repos/{GondwanaMcpOptions.RepositoryFullName}/commits/{Uri.EscapeDataString(GondwanaMcpOptions.DefaultRef)}",
+            $"repos/{GondwanaMcpOptions.RepositoryFullName}/commits/{Uri.EscapeDataString(githubDefaultBranch)}",
             cancellationToken);
 
         string headSha =
