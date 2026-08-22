@@ -1,0 +1,12 @@
+interface:
+  display_name: "Debug a Gondwana Game"
+  short_description: "Diagnose Gondwana behavior from live source"
+  default_prompt: "Use $debug-gondwana-game to diagnose this Gondwana problem and propose the smallest correct fix."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "gondwana"
+      description: "Read-only Gondwana repository and wiki MCP server"
+      transport: "streamable_http"
+      url: "https://gondwana-mcp.onrender.com/mcp"

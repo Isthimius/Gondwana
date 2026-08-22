@@ -1,0 +1,20 @@
+{
+  "name": "gondwana",
+  "interface": {
+    "displayName": "Gondwana"
+  },
+  "plugins": [
+    {
+      "name": "gondwana-game-engine",
+      "source": {
+        "source": "local",
+        "path": "./plugins/gondwana-game-engine"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}
