@@ -65,6 +65,18 @@ app.MapGet("/health", () => Results.Ok(new
     access = "read-only"
 }));
 
+app.MapGet("/.well-known/openai-apps-challenge", (
+    Microsoft.Extensions.Options.IOptions<GondwanaMcpOptions> options) =>
+{
+    string? token = options.Value.OpenAiAppsChallengeToken;
+
+    if (string.IsNullOrWhiteSpace(token))
+        return Results.NotFound();
+
+    // OpenAI requires the challenge endpoint to return only the exact token.
+    return Results.Text(token, "text/plain; charset=utf-8");
+});
+
 app.MapMcp("/mcp");
 
 app.Run();

@@ -12,6 +12,7 @@ public sealed class GondwanaWikiTools
         Name = "list_wiki_pages",
         Title = "List Gondwana wiki pages",
         ReadOnly = true,
+        Destructive = false,
         Idempotent = true,
         OpenWorld = false,
         UseStructuredContent = true)]
@@ -27,6 +28,7 @@ public sealed class GondwanaWikiTools
         Name = "read_wiki_page",
         Title = "Read Gondwana wiki page",
         ReadOnly = true,
+        Destructive = false,
         Idempotent = true,
         OpenWorld = false,
         UseStructuredContent = true)]
@@ -44,6 +46,7 @@ public sealed class GondwanaWikiTools
         Name = "search_wiki",
         Title = "Search Gondwana wiki",
         ReadOnly = true,
+        Destructive = false,
         Idempotent = true,
         OpenWorld = false,
         UseStructuredContent = true)]

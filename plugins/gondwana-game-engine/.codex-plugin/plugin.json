@@ -1,7 +1,7 @@
 {
   "name": "gondwana-game-engine",
-  "version": "0.1.0",
-  "description": "Build, debug, and understand games using the Gondwana .NET game engine.",
+  "version": "0.1.1",
+  "description": "Build, debug, and understand games with the Gondwana C#/.NET game engine using current source and official documentation.",
   "author": {
     "name": "Hidden Worlds Games",
     "url": "https://github.com/Isthimius/Gondwana"
@@ -22,20 +22,23 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Gondwana Game Engine",
-    "shortDescription": "Build and debug games with Gondwana",
-    "longDescription": "Build, debug, and understand Gondwana games using Gondwana-specific workflows grounded in the current engine source, tests, demos, templates, and official wiki documentation.",
+    "shortDescription": "Build, debug, and learn Gondwana games",
+    "longDescription": "Build, debug, and understand Gondwana games with workflows that verify current engine APIs against the official repository, tests, demos, templates, and wiki. Includes read-only MCP access to current Gondwana source and documentation.",
     "developerName": "Hidden Worlds Games",
     "category": "Developer Tools",
     "capabilities": [
       "Interactive",
-      "Read"
+      "Read",
+      "Write"
     ],
     "websiteURL": "https://github.com/Isthimius/Gondwana",
     "defaultPrompt": [
-      "Build a simple game with Gondwana.",
-      "Debug this Gondwana game or engine behavior.",
-      "Explain how this Gondwana API works."
+      "Build Pong with Gondwana.",
+      "Debug why my Gondwana sprite is not colliding.",
+      "Explain how SceneLayer, View, Camera, and Viewport differ."
     ],
-    "screenshots": []
+    "screenshots": [],
+    "privacyPolicyURL": "https://github.com/Isthimius/Gondwana/blob/master/plugins/gondwana-game-engine/PRIVACY.md",
+    "termsOfServiceURL": "https://github.com/Isthimius/Gondwana/blob/master/plugins/gondwana-game-engine/TERMS.md"
   }
 }
