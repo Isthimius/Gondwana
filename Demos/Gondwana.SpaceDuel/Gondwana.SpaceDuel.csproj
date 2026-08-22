@@ -19,6 +19,13 @@
 
     <ItemGroup>
         <EmbeddedResource Include="Assets\ships.png" />
+
+        <!-- Reuse the exact Gondwana splash art used by the Spot WinForms demo
+             without duplicating the binary in source control. -->
+        <Content Include="..\Spot\assets\gondwana-logo-text.png">
+            <Link>assets\gondwana-logo-text.png</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
 </Project>

@@ -2,6 +2,7 @@ using System.Drawing;
 using System.Numerics;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
+using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Input.Keyboard;
@@ -17,10 +18,10 @@ using SpriteVerticalAlignment = Gondwana.Drawing.Sprites.VerticalAlignment;
 
 namespace Gondwana.Demos.SpaceDuel;
 
-internal sealed class SpaceDuelGameHost : WinFormsGameHost
+internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
 {
-    private const int WorldColumns = 30;
-    private const int WorldRows = 18;
+    private const int WorldColumns = 90;
+    private const int WorldRows = 54;
     private const int WorldTileSize = 64;
     private const float PlayerTurnSpeed = 190f;
     private const float EnemyTurnSpeed = 115f;
@@ -33,9 +34,11 @@ internal sealed class SpaceDuelGameHost : WinFormsGameHost
     private const float LaserSpeed = 10.5f;
     private const float LaserLifetime = 2.4f;
     private const float PlayerFireDelay = 0.24f;
-    private const float EnemyFireDelay = 0.85f;
-    private const float ShipHealth = 100f;
+    private const float EnemyFireDelay = 1.4f;
+    private const float PlayerStartingHealth = 500f;
+    private const float EnemyStartingHealth = 100f;
     private const float LaserDamage = 20f;
+    private const float ShipCollisionBounce = 0.7f;
 
     private static readonly Size ShipRenderSize = new(108, 108);
 
@@ -52,15 +55,27 @@ internal sealed class SpaceDuelGameHost : WinFormsGameHost
     private ShipState _player = null!;
     private TextBlock _hudText = null!;
     private TextBlock _messageText = null!;
+    private ParticleSurface _particleSurface = null!;
+    private TextBlock _performanceText = null!;
 
     private long _lastUpdateTick;
     private float _frameDelta;
-    private GameState _gameState = GameState.Playing;
+    private GameState _gameState = GameState.Starting;
     private string _lastHud = string.Empty;
 
-    internal SpaceDuelGameHost(WinFormBitmapRenderSurfaceControl renderSurface)
+    internal SpaceDuelGameHost(WinFormGpuRenderSurfaceControl renderSurface)
         : base(renderSurface)
     {
+    }
+
+    internal void BeginPostSplashStartup()
+    {
+        if (_gameState != GameState.Starting)
+            return;
+
+        _gameState = GameState.Playing;
+        _lastUpdateTick = HighResTimer.GetCurrentTick();
+        UpdateHud(force: true);
     }
 
     protected override void LoadTilesheets()
@@ -93,13 +108,13 @@ internal sealed class SpaceDuelGameHost : WinFormsGameHost
         PopulateStars(
             _farStarLayer,
             SpaceDuelArt.FarStarFrame,
-            count: 105,
+            count: 315,
             seed: 7319);
 
         PopulateStars(
             _nearStarLayer,
             SpaceDuelArt.NearStarFrame,
-            count: 54,
+            count: 162,
             seed: 1907);
 
         return scene;
@@ -162,7 +177,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGameHost
             var bar = new HealthBarWidget(
                 RenderSurface.Host,
                 ship.Sprite,
-                maximum: ShipHealth,
+                maximum: ship.MaxHealth,
                 size: new Size(72, 9),
                 nickname: $"{ship.Sprite.Nickname}-health");
 
@@ -173,6 +188,24 @@ internal sealed class SpaceDuelGameHost : WinFormsGameHost
             bar.Show();
             ship.HealthBar = bar;
         }
+
+        var worldBounds = Scene!.GetWorldBoundsPx();
+
+        _particleSurface = new ParticleSurface(
+            RenderSurface.Host,
+            _shipLayer,
+            Rectangle.FromLTRB(
+                (int)MathF.Floor(worldBounds.Left),
+                (int)MathF.Floor(worldBounds.Top),
+                (int)MathF.Ceiling(worldBounds.Right),
+                (int)MathF.Ceiling(worldBounds.Bottom)),
+            "space-duel-explosions",
+            maxParticles: 1400)
+        {
+            GravityX = 0f,
+            GravityY = 0f,
+            ZOrder = 60
+        };
 
         var view = RenderSurface.Host.ViewManager.Views[0];
 
@@ -220,6 +253,39 @@ internal sealed class SpaceDuelGameHost : WinFormsGameHost
         _messageText.Visible = false;
 
         UpdateHud(force: true);
+
+        var viewport = view.Viewport.TargetRectPx;
+
+        const int performanceWidth = 300;
+        const int performanceHeight = 42;
+        const int performanceMargin = 16;
+
+        _performanceText = new TextBlock(
+                RenderSurface.Host,
+                view,
+                new Rectangle(
+                    viewport.Right - performanceWidth - performanceMargin,
+                    viewport.Top + performanceMargin,
+                    performanceWidth,
+                    performanceHeight),
+                "space-duel-performance")
+            .SetFont(SKTypeface.Default, 18f)
+            .SetColors(SKColors.White, new SKColor(8, 18, 38, 180))
+            .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
+            .EnableWrapping(false)
+            .UseShadow();
+
+        _performanceText.ZOrder = 1200;
+
+        Engine.CPSCalculated += OnCpsCalculated;
+    }
+
+    private void OnCpsCalculated(CyclesPerSecondCalculatedEventArgs e)
+    {
+        double fps = e.GpuFps ?? e.NetCPS;
+
+        _performanceText.SetText(
+            $"CPS {e.GrossCPS:0.0}   FPS {fps:0.0}");
     }
 
     protected override void OnKeyboardAdapterInitialized()
@@ -233,7 +299,6 @@ internal sealed class SpaceDuelGameHost : WinFormsGameHost
 
     protected override void OnEngineInitialized()
     {
-        Engine.Configuration.TargetFPS = 60;
         _lastUpdateTick = HighResTimer.GetCurrentTick();
         Engine.BeforeBackgroundTasksExecute += BeforeBackgroundTasksExecute;
         Engine.AfterBackgroundTasksExecute += AfterBackgroundTasksExecute;
@@ -246,6 +311,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGameHost
 
         Engine.BeforeBackgroundTasksExecute -= BeforeBackgroundTasksExecute;
         Engine.AfterBackgroundTasksExecute -= AfterBackgroundTasksExecute;
+        Engine.CPSCalculated -= OnCpsCalculated;
     }
 
     private static Keys[] MonitoredKeys =>
@@ -378,8 +444,89 @@ internal sealed class SpaceDuelGameHost : WinFormsGameHost
             return;
 
         UpdateProjectiles(_frameDelta);
+        ResolveShipCollisions();
         ResolveProjectileHits();
         UpdateHud();
+    }
+
+    private void ResolveShipCollisions()
+    {
+        for (int firstIndex = 0; firstIndex < _ships.Count - 1; firstIndex++)
+        {
+            ShipState first = _ships[firstIndex];
+
+            if (!first.IsAlive)
+                continue;
+
+            for (int secondIndex = firstIndex + 1;
+                 secondIndex < _ships.Count;
+                 secondIndex++)
+            {
+                ShipState second = _ships[secondIndex];
+
+                if (!second.IsAlive)
+                    continue;
+
+                Rectangle firstBounds = first.Sprite.CollisionArea;
+                Rectangle secondBounds = second.Sprite.CollisionArea;
+
+                if (!firstBounds.IntersectsWith(secondBounds))
+                    continue;
+
+                SeparateAabbOverlap(
+                    first.Sprite,
+                    second.Sprite,
+                    firstBounds,
+                    secondBounds);
+
+                Vector2 firstVelocity =
+                    first.Sprite.Movement.MovementState.Velocity;
+                Vector2 secondVelocity =
+                    second.Sprite.Movement.MovementState.Velocity;
+
+                first.Sprite.Movement.SetVelocity(
+                    secondVelocity * ShipCollisionBounce);
+                second.Sprite.Movement.SetVelocity(
+                    firstVelocity * ShipCollisionBounce);
+            }
+        }
+    }
+
+    private static void SeparateAabbOverlap(
+        Sprite first,
+        Sprite second,
+        Rectangle firstBounds,
+        Rectangle secondBounds)
+    {
+        Rectangle overlap = Rectangle.Intersect(firstBounds, secondBounds);
+
+        if (overlap.Width <= 0 || overlap.Height <= 0)
+            return;
+
+        if (overlap.Width <= overlap.Height)
+        {
+            int totalSeparation = overlap.Width + 1;
+            int firstMove = totalSeparation / 2;
+            int secondMove = totalSeparation - firstMove;
+            bool firstIsLeft =
+                firstBounds.Left + firstBounds.Width * 0.5f <=
+                secondBounds.Left + secondBounds.Width * 0.5f;
+
+            first.TranslateWorldPx(firstIsLeft ? -firstMove : firstMove, 0);
+            second.TranslateWorldPx(firstIsLeft ? secondMove : -secondMove, 0);
+        }
+        else
+        {
+            int totalSeparation = overlap.Height + 1;
+            int firstMove = totalSeparation / 2;
+            int secondMove = totalSeparation - firstMove;
+            bool firstIsAbove =
+                firstBounds.Top + firstBounds.Height * 0.5f <=
+                secondBounds.Top + secondBounds.Height * 0.5f;
+
+            first.TranslateWorldPx(0, firstIsAbove ? -firstMove : firstMove);
+            second.TranslateWorldPx(0, firstIsAbove ? secondMove : -secondMove);
+        }
     }
 
     private void UpdatePlayerFlight(float dt)
@@ -533,6 +680,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGameHost
             if (target is null)
                 continue;
 
+            CreateHitExplosion(projectile.Sprite.CollisionArea);
             DamageShip(target, LaserDamage);
             RemoveProjectileAt(projectileIndex);
 
@@ -549,6 +697,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGameHost
         if (target.Health > 0f)
             return;
 
+        CreateDeathExplosion(target.Sprite.CollisionArea);
         target.Sprite.Movement.StopAllMovement();
         target.Sprite.Visible = false;
         target.HealthBar.Hide();
@@ -565,6 +714,65 @@ internal sealed class SpaceDuelGameHost : WinFormsGameHost
                 GameState.Won,
                 "SECTOR SECURED\nPress R for another duel");
         }
+    }
+
+    private void CreateHitExplosion(Rectangle collisionArea)
+    {
+        _particleSurface.Burst(
+            CreateExplosionEmitter(
+                collisionArea,
+                lifeRange: (0.18f, 0.42f),
+                velocityRange: 165f,
+                sizeRange: (2f, 5f),
+                color: new SKColor(255, 194, 72, 245)),
+            count: 22);
+    }
+
+    private void CreateDeathExplosion(Rectangle collisionArea)
+    {
+        _particleSurface.Burst(
+            CreateExplosionEmitter(
+                collisionArea,
+                lifeRange: (0.55f, 1.15f),
+                velocityRange: 430f,
+                sizeRange: (4f, 10f),
+                color: new SKColor(255, 102, 34, 255)),
+            count: 110);
+
+        _particleSurface.Burst(
+            CreateExplosionEmitter(
+                collisionArea,
+                lifeRange: (0.75f, 1.5f),
+                velocityRange: 260f,
+                sizeRange: (6f, 14f),
+                color: new SKColor(255, 214, 112, 220)),
+            count: 48);
+    }
+
+    private static ParticleEmitter CreateExplosionEmitter(
+        Rectangle collisionArea,
+        (float Min, float Max) lifeRange,
+        float velocityRange,
+        (float Min, float Max) sizeRange,
+        SKColor color)
+    {
+        return new ParticleEmitter
+        {
+            Position = new PointF(
+                collisionArea.Left + collisionArea.Width * 0.5f,
+                collisionArea.Top + collisionArea.Height * 0.5f),
+            EmitRate = 0f,
+            LifeRange = lifeRange,
+            VelocityRangeX = (-velocityRange, velocityRange),
+            VelocityRangeY = (-velocityRange, velocityRange),
+            SizeRange = sizeRange,
+            Color = color,
+            GravityX = 0f,
+            GravityY = 0f,
+            JitterX = collisionArea.Width * 0.2f,
+            JitterY = collisionArea.Height * 0.2f,
+            SpawnDistribution = ParticleSpawnDistribution.Gaussian
+        };
     }
 
     private void EndGame(GameState state, string message)
@@ -587,13 +795,13 @@ internal sealed class SpaceDuelGameHost : WinFormsGameHost
 
         foreach (ShipState ship in _ships)
         {
-            ship.Health = ShipHealth;
+            ship.Health = ship.MaxHealth;
             ship.FireCooldown = ship.IsPlayer ? 0f : EnemyFireDelay * 0.5f;
             ship.Sprite.Movement.StopAllMovement();
             ship.Sprite.SetPosition(ship.SpawnPosition);
             ship.Sprite.Rotation = ship.SpawnRotation;
             ship.Sprite.Visible = true;
-            ship.HealthBar.Value = ShipHealth;
+            ship.HealthBar.Value = ship.MaxHealth;
             ship.HealthBar.RefreshPosition();
             ship.HealthBar.Show();
         }
@@ -624,7 +832,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGameHost
         };
 
         string hud =
-            $"Hull {_player.Health:0}/{ShipHealth:0}   Raiders {enemiesRemaining}/3   {state}\n" +
+            $"Hull {_player.Health:0}/{_player.MaxHealth:0}   Raiders {enemiesRemaining}/3   {state}\n" +
             "A/D or ←/→ turn   W/↑ thrust   Space fire   R restart   Esc quit";
 
         if (!force && string.Equals(hud, _lastHud, StringComparison.Ordinal))
@@ -683,7 +891,10 @@ internal sealed class SpaceDuelGameHost : WinFormsGameHost
             SpawnPosition = spawnPosition;
             SpawnRotation = spawnRotation;
             IsPlayer = isPlayer;
-            Health = ShipHealth;
+            MaxHealth = isPlayer
+                ? PlayerStartingHealth
+                : EnemyStartingHealth;
+            Health = MaxHealth;
         }
 
         internal Sprite Sprite { get; }
@@ -691,6 +902,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGameHost
         internal float SpawnRotation { get; }
         internal bool IsPlayer { get; }
         internal HealthBarWidget HealthBar { get; set; } = null!;
+        internal float MaxHealth { get; }
         internal float Health { get; set; }
         internal float FireCooldown { get; set; }
         internal bool IsAlive => Health > 0f && Sprite.Visible;
@@ -711,6 +923,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGameHost
 
     private enum GameState
     {
+        Starting,
         Playing,
         Won,
         Lost
