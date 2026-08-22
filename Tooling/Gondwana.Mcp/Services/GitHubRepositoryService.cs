@@ -318,7 +318,7 @@ public sealed class GitHubRepositoryService
                 if (item.TryGetProperty("text_matches", out JsonElement textMatches) &&
                     textMatches.ValueKind == JsonValueKind.Array)
                 {
-                    fragment = string.Join(
+                    string joined = string.Join(
                         "\n...\n",
                         textMatches
                             .EnumerateArray()
@@ -328,9 +328,11 @@ public sealed class GitHubRepositoryService
                                     : null)
                             .Where(value => !string.IsNullOrWhiteSpace(value)));
 
-                    if (fragment.Length > 1_500)
+                    if (!string.IsNullOrWhiteSpace(joined))
                     {
-                        fragment = fragment[..1_500] + "…";
+                        fragment = joined.Length > 1_500
+                            ? joined[..1_500] + "…"
+                            : joined;
                     }
                 }
 
