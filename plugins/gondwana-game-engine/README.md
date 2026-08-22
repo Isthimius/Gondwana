@@ -29,19 +29,21 @@ Use when a developer asks how a Gondwana type, subsystem, architecture decision,
 
 The workflow uses the wiki for the mental model and verifies exact current behavior against source and tests.
 
-## MCP/app binding
+## MCP binding
 
-The plugin intentionally does not yet contain `.app.json` or `.mcp.json`.
+The plugin declares its read-only Gondwana MCP server in `.mcp.json`:
 
-Those files require a real deployed or tunneled Gondwana MCP endpoint and, for an app-backed ChatGPT connection, the actual registered app/connector identifier. Do not commit invented IDs or placeholder production URLs.
+`https://gondwana-mcp.onrender.com/mcp`
 
-Once `Tooling/Gondwana.Mcp` has a reachable HTTPS endpoint and is registered with the target OpenAI environment:
+Each bundled skill also declares the same Streamable HTTP MCP dependency in `agents/openai.yaml`. This gives compatible hosts a concrete, public source for current repository and wiki context without requiring an end-user GitHub token.
 
-1. add the real app/MCP binding,
-2. declare the corresponding `apps` and/or `mcpServers` path in `.codex-plugin/plugin.json`,
-3. add the MCP dependency to each skill's `agents/openai.yaml`,
-4. validate the complete plugin,
-5. test the same user prompts with and without explicit `@Gondwana` invocation.
+The MCP service authenticates to GitHub server-side and remains scoped to the official `Isthimius/Gondwana` repository and Gondwana wiki.
+
+## App binding
+
+The plugin intentionally does not yet contain `.app.json`.
+
+An app-backed ChatGPT connection requires the real registered app/connector identifier. Do not commit an invented ID or placeholder value. Add `.app.json` and the corresponding `apps` declaration in `.codex-plugin/plugin.json` only after the Gondwana MCP endpoint has been registered with the target OpenAI environment.
 
 ## Read-only boundary
 

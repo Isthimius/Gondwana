@@ -2,3 +2,11 @@ interface:
   display_name: "Explain Gondwana"
   short_description: "Explain current Gondwana APIs and architecture"
   default_prompt: "Use $explain-gondwana-api to explain how this Gondwana API or subsystem works."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "gondwana"
+      description: "Read-only Gondwana repository and wiki MCP server"
+      transport: "streamable_http"
+      url: "https://gondwana-mcp.onrender.com/mcp"
