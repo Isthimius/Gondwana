@@ -44,6 +44,8 @@ dotnet run
 
 For a guided introduction, see **[Make Your First Game in 1 Hour with Gondwana](https://github.com/Isthimius/Gondwana/wiki/Make-Your-First-Game-in-1-Hour)**.
 
+Prefer an AI-assisted workflow? See **[Using Gondwana with ChatGPT and Codex](https://github.com/Isthimius/Gondwana/wiki/Using-Gondwana-with-ChatGPT-and-Codex)**.
+
 > [!NOTE]
 > Gondwana is actively developed. Its public API is usable today, but breaking changes may occur as the engine and tooling mature.
 
