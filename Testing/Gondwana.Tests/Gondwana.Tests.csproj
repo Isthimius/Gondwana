@@ -11,6 +11,7 @@
 		<PackageReference Include="coverlet.collector" Version="6.0.4" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.6" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies"
 						  Version="3.119.2"
 						  PrivateAssets="all" />
@@ -22,6 +23,7 @@
 		<ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
 		<ProjectReference Include="..\..\Gondwana.Widgets\Gondwana.Widgets.csproj" />
 		<ProjectReference Include="..\..\Tooling\Gondwana.Cli\Gondwana.Cli.csproj" />
+		<ProjectReference Include="..\..\Tooling\Gondwana.Mcp\Gondwana.Mcp.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
