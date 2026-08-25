@@ -43,14 +43,17 @@ public sealed class EarthquakeEffect : DisplayEffect
     {
         _originalFactor = EffectTargetAccess.GetOffsetFactor(Target);
         _originalPixels = EffectTargetAccess.GetOffsetPixels(Target);
-        EffectTargetAccess.SetTransform(Target, PointF.Empty, PointF.Empty);
     }
 
     private protected override void ApplyProgress(float progress)
     {
         if (progress >= 1f || IntensityPx <= 0f)
         {
-            EffectTargetAccess.SetTransform(Target, PointF.Empty, PointF.Empty);
+            EffectTargetAccess.SetTransform(
+                Target,
+                _originalFactor,
+                _originalPixels);
+
             return;
         }
 
@@ -63,8 +66,10 @@ public sealed class EarthquakeEffect : DisplayEffect
 
         EffectTargetAccess.SetTransform(
             Target,
-            PointF.Empty,
-            new PointF(x, y));
+            _originalFactor,
+            new PointF(
+                _originalPixels.X + x,
+                _originalPixels.Y + y));
     }
 
     private protected override void RestoreOriginalState() =>

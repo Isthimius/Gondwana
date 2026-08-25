@@ -48,6 +48,7 @@ public abstract class SlideEffect : DisplayEffect
             _startFactor = IsNearlyZero(_originalFactor)
                 ? new PointF(-travel.X, -travel.Y)
                 : _originalFactor;
+
             _targetFactor = PointF.Empty;
         }
         else
@@ -56,7 +57,10 @@ public abstract class SlideEffect : DisplayEffect
             _targetFactor = travel;
         }
 
-        EffectTargetAccess.SetTransform(Target, _startFactor, PointF.Empty);
+        EffectTargetAccess.SetTransform(
+            Target,
+            _startFactor,
+            _originalPixels);
     }
 
     private protected override void ApplyProgress(float progress)
@@ -65,7 +69,11 @@ public abstract class SlideEffect : DisplayEffect
             _startFactor.X + (_targetFactor.X - _startFactor.X) * progress,
             _startFactor.Y + (_targetFactor.Y - _startFactor.Y) * progress);
 
-        EffectTargetAccess.SetTransform(Target, factor, PointF.Empty);
+        var pixels = new PointF(
+            _originalPixels.X * (1f - progress),
+            _originalPixels.Y * (1f - progress));
+
+        EffectTargetAccess.SetTransform(Target, factor, pixels);
     }
 
     private protected override void RestoreOriginalState() =>
