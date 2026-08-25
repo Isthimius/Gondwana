@@ -42,7 +42,7 @@ cd MyFirstGame
 dotnet run
 ```
 
-For a guided introduction, see **[Make Your First Game in 1 Hour with Gondwana](https://github.com/Isthimius/Gondwana/wiki/Make-Your-First-Game-in-1-Hour)**.
+For a guided introduction, see **[Make Your First Game in 30 Minutes with Gondwana](https://github.com/Isthimius/Gondwana/wiki/Make-Your-First-Game-in-30-Minutes)**.
 
 Prefer an AI-assisted workflow? See **[Using Gondwana with ChatGPT and Codex](https://github.com/Isthimius/Gondwana/wiki/Using-Gondwana-with-ChatGPT-and-Codex)**.
 
