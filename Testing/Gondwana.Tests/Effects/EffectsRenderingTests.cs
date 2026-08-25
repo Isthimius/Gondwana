@@ -11,6 +11,12 @@ namespace Gondwana.Tests.Effects;
 [Collection("Effects rendering")]
 public sealed class EffectsRenderingTests
 {
+    public EffectsRenderingTests()
+    {
+        Engine.Instance.EngineDispatcher.BindToCurrentThread();
+        Engine.Instance.EngineDispatcher.Drain();
+    }
+
     [Fact]
     public void BitmapPath_CompositesViewOpacity()
     {
