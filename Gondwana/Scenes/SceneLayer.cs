@@ -5,6 +5,7 @@ using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
+using Gondwana.Effects;
 using Gondwana.Physics.Collisions;
 using Gondwana.Rendering;
 using Newtonsoft.Json;
@@ -137,6 +138,21 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     private int _tileHeight;    // rendered height
     private bool _visible;      // is SceneLayer to be rendered; useful with multiple layers
     private string _defaultTileCollisionProfile = CollisionProfileNames.World;
+
+    [JsonIgnore]
+    internal float EffectOpacity { get; set; } = 1f;
+
+    [JsonIgnore]
+    internal float EffectReveal { get; set; } = 1f;
+
+    [JsonIgnore]
+    internal EffectDirection EffectRevealDirection { get; set; } = EffectDirection.FromLeftToRight;
+
+    [JsonIgnore]
+    internal PointF EffectOffsetFactor { get; set; } = PointF.Empty;
+
+    [JsonIgnore]
+    internal PointF EffectOffsetPx { get; set; } = PointF.Empty;
 
     #endregion private fields
 
@@ -803,6 +819,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         _visible = true;
 
         _originPx = Point.Empty;                  // layer world origin
+        EffectOpacity = 1f;
+        EffectReveal = 1f;
+        EffectRevealDirection = EffectDirection.FromLeftToRight;
+        EffectOffsetFactor = PointF.Empty;
+        EffectOffsetPx = PointF.Empty;
 
         CoordinateSystemType = coordinateSystem;
 

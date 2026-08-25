@@ -887,6 +887,10 @@ public sealed class Engine : IDisposable
         // raise event
         BeforeFrameRender?.Invoke();
 
+        // Effects are presentation state, so advance them on the foreground/render cadence.
+        foreach (var surface in RenderSurfaceHostRegistry.All)
+            surface.Effects.Update(tick);
+
         // update the DirectDrawing instances' states
         DirectDrawingManager.Instance.UpdateAll(tick);
 

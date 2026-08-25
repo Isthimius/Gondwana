@@ -445,9 +445,16 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     /// </remarks>
     public RectangleF GetDrawLocationScreen(View view)
     {
-        // View mode already returns _screenBounds
+        // View-mode drawings participate in View-level presentation transforms.
         if (Mode == DirectDrawingMode.View)
-            return _screenBounds;
+        {
+            PointF offset = view.GetEffectOffsetPx(layer: null);
+            return new RectangleF(
+                _screenBounds.Left + offset.X,
+                _screenBounds.Top + offset.Y,
+                _screenBounds.Width,
+                _screenBounds.Height);
+        }
 
         // translate world bounds to screen via view transform
         return view.WorldRectToScreenRect(SceneLayer!, _worldBounds);

@@ -1,4 +1,5 @@
-﻿using Gondwana.Rendering.Backbuffers;
+﻿using Gondwana.Effects;
+using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.Timers;
@@ -20,7 +21,11 @@ public abstract class RenderSurfaceHostBase : IDisposable
     /// Registration ensures the render surface host is tracked for lifecycle management and can be
     /// enumerated by other system components.
     /// </remarks>
-    protected RenderSurfaceHostBase() => RenderSurfaceHostRegistry.Register(this);
+    protected RenderSurfaceHostBase()
+    {
+        Effects = new EffectsManager(this);
+        RenderSurfaceHostRegistry.Register(this);
+    }
 
     /// <summary>
     /// Finalizes an instance of the <see cref="RenderSurfaceHostBase"/> class, ensuring resources
@@ -56,6 +61,11 @@ public abstract class RenderSurfaceHostBase : IDisposable
     /// multiple views with independent cameras and viewports.
     /// </remarks>
     public abstract ViewManager ViewManager { get; }
+
+    /// <summary>
+    /// Gets the manager that owns presentation effects for this render surface.
+    /// </summary>
+    public EffectsManager Effects { get; }
 
     /// <summary>
     /// Renders the current scene frame on the GL thread and returns a snapshot of the GPU backbuffer
@@ -146,5 +156,11 @@ public abstract class RenderSurfaceHostBase : IDisposable
     /// this method to release additional resources but must call the base implementation to ensure
     /// proper unregistration.
     /// </remarks>
-    protected virtual void Dispose(bool disposing) => RenderSurfaceHostRegistry.Unregister(this);
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+            Effects.Dispose();
+
+        RenderSurfaceHostRegistry.Unregister(this);
+    }
 }
