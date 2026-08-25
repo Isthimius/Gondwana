@@ -81,6 +81,7 @@ Gondwana is deliberately an engine and framework, not an all-encompassing visual
 - **Backbuffer abstraction** through `BitmapBackbuffer` and `GpuBackbuffer`
 - **WinForms, Avalonia, and Blazor adapters**, with ready-to-use hosts for Windows, Linux, macOS, and WebAssembly
 - **View-centric layered scenes** with multiple cameras, viewports, parallax, stable z-ordering, and world-space dirty-region tracking
+- **Host-owned display effects** for view- or layer-level fades, slides, directional fills/erases, view shake, and view zoom
 - **Multiple coordinate systems**: orthogonal, rhombic isometric, axial isometric, flat-top hex, pointy-top hex, and oblique
 - **Sprites and DirectDrawing** for reusable images, shapes, text, particles, overlays, effects, composites, and high-volume bitmap instances
 - **Reusable game UI widgets** with lifecycle events, automatic input registration, focus, keyboard and pointer routing, dragging, hit testing, and components such as `SplashScreen`
@@ -90,6 +91,25 @@ Gondwana is deliberately an engine and framework, not an all-encompassing visual
 - **Asset support** for tilesheets, sprites, fonts, audio, and packaged Gondwana asset files
 - **Unified keyboard, mouse, touch, and gamepad input**, with SDL2 gamepad support available as a dedicated package
 - **Audio, MIDI, browser audio, and experimental video integration** through optional packages
+
+---
+
+## Display effects
+
+Each render surface exposes an `EffectsManager` through `RenderSurfaceHostBase.Effects`:
+
+```csharp
+surface.Effects.Run(view, new FadeOutEffect(0.5f));
+surface.Effects.Run(layer, new SlideInEffect(
+    EffectDirection.FromLeftToRight,
+    durationSeconds: 0.75f));
+surface.Effects.Run(view, new EarthquakeEffect(0.4f, intensityPx: 10f));
+```
+
+Fade, slide, fill, and erase effects can target either a `View` or a `SceneLayer`.
+Earthquake and zoom effects target a `View`. Transform, opacity, reveal, and zoom
+are independent channels and can run together; starting a new effect on the same
+target and channel replaces the effect already running there.
 
 ---
 

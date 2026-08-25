@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using Gondwana.Drawing.Direct;
+using Gondwana.Effects;
 using Gondwana.Extensibility;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
@@ -343,6 +344,11 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             return;
         }
 
+        // A single clear lets translucent, wiped, or translated views reveal the
+        // views beneath them. Each view paints its own background as part of its
+        // presentation group below.
+        Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
+
         foreach (var view in ViewManager.Views)
         {
             RenderContext.Push(view, tick);
@@ -362,35 +368,61 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
                 foreach (var blocker in ViewManager.GetViewsAbove(view))
                 {
+                    if (!blocker.BlocksViewsBelow)
+                        continue;
+
                     var overlap = Rectangle.Intersect(vp, blocker.Viewport.TargetRectPx);
                     if (!overlap.IsEmpty)
                         Backbuffer.Canvas.ClipRect(overlap.ToSKRect(), SKClipOperation.Difference, antialias: false);
                 }
 
-                // 3) Clear the full viewport.
-                Backbuffer.ClearRect(vp);
+                int viewPresentation = BeginPresentation(
+                    view.GetPresentationBoundsPx(),
+                    view.EffectOpacity,
+                    view.EffectReveal,
+                    view.EffectRevealDirection);
 
-                // 4) Render every visible layer for the full viewport extent (layers are drawn
-                //    back-to-front by ascending Z-order, which VisibleSceneLayers already provides).
-                var sceneLayers = Scene.VisibleSceneLayers;
-
-                for (int i = 0; i < sceneLayers.Count; i++)
+                if (viewPresentation > 0)
                 {
-                    var layer = sceneLayers[i];
+                    // The view background belongs inside the group so it fades,
+                    // wipes, and slides with the rest of the view.
+                    Backbuffer.ClearRect(view.GetPresentationBoundsPx().ToPixelAlignedRect());
 
-                    // Compute the world-space rect visible through this viewport for this layer,
-                    // expanded by one tile in each direction to cover boundary rounding.
-                    var layerWorldRectF = view.ScreenRectToWorldRect(layer, vp);
-                    layerWorldRectF.Inflate(layer.TileWidth, layer.TileHeight);
-                    var layerWorldRect = layerWorldRectF.ToPixelAlignedRect();
+                    // 4) Render every visible layer for the full viewport extent (layers are drawn
+                    //    back-to-front by ascending Z-order, which VisibleSceneLayers already provides).
+                    var sceneLayers = Scene.VisibleSceneLayers;
 
-                    var drawables = layer.GetDrawablesInWorldRect(layerWorldRect);
-                    Backbuffer.DrawDrawables(view, drawables, vp);
+                    for (int i = 0; i < sceneLayers.Count; i++)
+                    {
+                        var layer = sceneLayers[i];
+
+                        int layerPresentation = BeginPresentation(
+                            GetLayerPresentationBounds(view, layer),
+                            layer.EffectOpacity,
+                            layer.EffectReveal,
+                            layer.EffectRevealDirection);
+
+                        if (layerPresentation == 0)
+                            continue;
+
+                        // Compute the world-space rect visible through this viewport for this layer,
+                        // expanded by one tile in each direction to cover boundary rounding.
+                        var layerWorldRectF = view.ScreenRectToWorldRect(layer, vp);
+                        layerWorldRectF.Inflate(layer.TileWidth, layer.TileHeight);
+                        var layerWorldRect = layerWorldRectF.ToPixelAlignedRect();
+
+                        var drawables = layer.GetDrawablesInWorldRect(layerWorldRect);
+                        Backbuffer.DrawDrawables(view, drawables, vp);
+
+                        EndPresentation(layerPresentation);
+                    }
+
+                    // 5) Render view-based DirectDrawings on top.
+                    for (int i = 0; i < overlays.Count; i++)
+                        overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));
+
+                    EndPresentation(viewPresentation);
                 }
-
-                // 5) Render view-based DirectDrawings on top.
-                for (int i = 0; i < overlays.Count; i++)
-                    overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));
 
                 Backbuffer.Canvas.Restore();
             }
@@ -452,6 +484,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             return;
         }
 
+        bool fullViewComposition = ViewManager.Views.Any(view => view.HasPresentationEffect);
+
         // 0) If there are no visible SceneLayers, just clear and publish the full frame.
         if (Scene.CountOfVisibleLayers == 0)
         {
@@ -462,7 +496,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         {
             // 1) Handle full scene refresh once (camera moved, zoom changed, etc.): clear and mark all layers as dirty.
             //    This already clears the whole backbuffer and enqueues a full rect per layer.
-            if (Scene.FullRefreshNeeded)
+            if (Scene.FullRefreshNeeded || (fullViewComposition && Scene.IsDirty))
             {
                 // this will mark the Scene.IsDirty flag as true
                 EnqueueFullSceneRefresh();
@@ -477,6 +511,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 }
             }
         }
+
+        if (fullViewComposition)
+            Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
 
         // 2) Render all views to Backbuffer. Draw layers back -> front (ascending Z).
         foreach (var view in ViewManager.Views)
@@ -506,27 +543,58 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 // clip exclusive to higher Z-order views
                 foreach (var blocker in ViewManager.GetViewsAbove(view))
                 {
+                    if (!blocker.BlocksViewsBelow)
+                        continue;
+
                     var overlap = Rectangle.Intersect(vp, blocker.Viewport.TargetRectPx);
                     if (!overlap.IsEmpty)
                         Backbuffer.Canvas.ClipRect(overlap.ToSKRect(), SKClipOperation.Difference, antialias: false);
                 }
 
-                // 2.4) Pre-clear dirty areas on backbuffer to Backbuffer.ClearColor
-                PreclearScreenAreas(view, dirtyScreenRects);
+                int viewPresentation = BeginPresentation(
+                    view.GetPresentationBoundsPx(),
+                    view.EffectOpacity,
+                    view.EffectReveal,
+                    view.EffectRevealDirection);
 
-                // 2.5) Render each visible layer's dirty regions for this view
-                //      this will draw SceneLayerTiles, Sprites, and SceneLayer-based DirectDrawings
-                var sceneLayers = Scene.VisibleSceneLayers;
-
-                for (int i = 0; i < sceneLayers.Count; i++)
+                if (viewPresentation > 0)
                 {
-                    var layer = sceneLayers[i];
-                    RenderLayerDirtyRegions(view, layer);
-                }
+                    if (fullViewComposition)
+                    {
+                        Backbuffer.ClearRect(view.GetPresentationBoundsPx().ToPixelAlignedRect());
+                    }
+                    else
+                    {
+                        // 2.4) Pre-clear dirty areas on backbuffer to Backbuffer.ClearColor
+                        PreclearScreenAreas(view, dirtyScreenRects);
+                    }
 
-                // 2.6) draw all View-based DirectDrawings for this view
-                for (int i = 0; i < overlays.Count; i++)
-                    overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));
+                    // 2.5) Render each visible layer's dirty regions for this view
+                    //      this will draw SceneLayerTiles, Sprites, and SceneLayer-based DirectDrawings
+                    var sceneLayers = Scene.VisibleSceneLayers;
+
+                    for (int i = 0; i < sceneLayers.Count; i++)
+                    {
+                        var layer = sceneLayers[i];
+                        int layerPresentation = BeginPresentation(
+                            GetLayerPresentationBounds(view, layer),
+                            layer.EffectOpacity,
+                            layer.EffectReveal,
+                            layer.EffectRevealDirection);
+
+                        if (layerPresentation == 0)
+                            continue;
+
+                        RenderLayerDirtyRegions(view, layer);
+                        EndPresentation(layerPresentation);
+                    }
+
+                    // 2.6) draw all View-based DirectDrawings for this view
+                    for (int i = 0; i < overlays.Count; i++)
+                        overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));
+
+                    EndPresentation(viewPresentation);
+                }
 
                 // 2.7) Restore from viewport clip
                 Backbuffer.Canvas.Restore();
@@ -663,6 +731,62 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
             Backbuffer.DrawDrawables(view, drawables, screenRect);
         }
+    }
+
+    private int BeginPresentation(
+        RectangleF bounds,
+        float opacity,
+        float reveal,
+        EffectDirection direction)
+    {
+        opacity = Math.Clamp(opacity, 0f, 1f);
+        reveal = Math.Clamp(reveal, 0f, 1f);
+
+        if (opacity <= 0.0001f || reveal <= 0.0001f || bounds.IsEmpty)
+            return 0;
+
+        int saveCount = 1;
+        Backbuffer.Canvas.Save();
+
+        if (reveal < 0.9999f)
+        {
+            RectangleF revealRect = EffectGeometry.GetRevealRect(bounds, direction, reveal);
+            Backbuffer.Canvas.ClipRect(
+                revealRect.ToSKRect(),
+                SKClipOperation.Intersect,
+                antialias: false);
+        }
+
+        if (opacity < 0.9999f)
+        {
+            using var paint = new SKPaint
+            {
+                Color = new SKColor(255, 255, 255, (byte)Math.Round(opacity * 255f))
+            };
+
+            Backbuffer.Canvas.SaveLayer(bounds.ToSKRect(), paint);
+            saveCount++;
+        }
+
+        return saveCount;
+    }
+
+    private void EndPresentation(int saveCount)
+    {
+        while (saveCount-- > 0)
+            Backbuffer.Canvas.Restore();
+    }
+
+    private static RectangleF GetLayerPresentationBounds(View view, SceneLayer layer)
+    {
+        RectangleF viewport = view.Viewport.TargetRectPx;
+        PointF offset = view.GetEffectOffsetPx(layer);
+
+        return new RectangleF(
+            viewport.Left + offset.X,
+            viewport.Top + offset.Y,
+            viewport.Width,
+            viewport.Height);
     }
 
     #endregion DrawRefreshQueueToBackbuffer helpers
