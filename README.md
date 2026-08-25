@@ -178,6 +178,7 @@ _Gondwana is actively evolving, with an emphasis on strengthening the engine and
 * [ ] Expanded 2D physics, including momentum, elasticity, and additional collision shapes
 * [ ] Native, first-class pathfinding
 * [ ] Initial client/server networking support
+* [ ] Android / iOS support via .NET MAUI adapters
 
 ---
 
