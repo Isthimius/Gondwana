@@ -42,7 +42,9 @@ cd MyFirstGame
 dotnet run
 ```
 
-For a guided introduction, see **[Make Your First Game in 1 Hour with Gondwana](https://github.com/Isthimius/Gondwana/wiki/Make-Your-First-Game-in-1-Hour)**.
+For a guided introduction, see **[Make Your First Game in 30 Minutes with Gondwana](https://github.com/Isthimius/Gondwana/wiki/Make-Your-First-Game-in-30-Minutes)**.
+
+Prefer an AI-assisted workflow? See **[Using Gondwana with ChatGPT and Codex](https://github.com/Isthimius/Gondwana/wiki/Using-Gondwana-with-ChatGPT-and-Codex)**.
 
 > [!NOTE]
 > Gondwana is actively developed. Its public API is usable today, but breaking changes may occur as the engine and tooling mature.
@@ -176,6 +178,7 @@ _Gondwana is actively evolving, with an emphasis on strengthening the engine and
 * [ ] Expanded 2D physics, including momentum, elasticity, and additional collision shapes
 * [ ] Native, first-class pathfinding
 * [ ] Initial client/server networking support
+* [ ] Android and iOS support via .NET MAUI adapters
 
 ---
 
