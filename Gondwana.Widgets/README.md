@@ -46,6 +46,59 @@ A typical widget can be used for in-game interface elements such as:
 
 Exact usage depends on the specific widget type being used.
 
+### Toast notifications
+
+```csharp
+var toast = new ToastWidget(
+    RenderSurface.Host,
+    view,
+    new Size(320, 72),
+    "Game saved",
+    WidgetAnchor.TopRight)
+{
+    Transition = ToastTransition.Slide,
+    SlideOrigin = ToastSlideOrigin.Right,
+    HoldDurationSec = 2.5f
+};
+
+toast.ShowToast();
+```
+
+Set `HoldDurationSec` to `null` for a toast that remains until `Dismiss()` is
+called. An explicit `Rectangle` constructor and `SourceLocationPx` allow exact
+screen-coordinate placement when the standard anchors are not appropriate.
+
+### Floating text and images
+
+```csharp
+var damage = new PopupWidget(
+        RenderSurface.Host,
+        targetSprite,
+        new Size(96, 36),
+        "-25",
+        WidgetAnchor.TopCenter)
+    .SetTextColor(SKColors.OrangeRed);
+
+damage.VelocityPxPerSec = new Vector2(0f, -64f);
+damage.ShowPopup();
+```
+
+`PopupWidget` also accepts view or scene-layer bounds and `SKImage`/`SKBitmap`
+content. Use `BindTo(sceneLayer, gridLocation)` to originate an effect from a
+fixed grid cell.
+
+### Image-filled rectangles
+
+```csharp
+panel.SetFillImage(
+    smallTileBitmap,
+    DirectRectangle.ImageFillMode.Repeat,
+    filterQuality: SKFilterQuality.None);
+```
+
+Image fills support `Stretch`, `Fit`, `Fill`, `Center`, `PixelPerfect`, and
+`Repeat`. The image is clipped to the rectangle, including rounded corners.
+
 ## Widget Scope
 
 `Gondwana.Widgets` is intended for **game UI**, not operating-system UI.
