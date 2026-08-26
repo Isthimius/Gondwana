@@ -648,12 +648,6 @@ public class DirectRectangle : DirectDrawingMovableBase
     {
         ArgumentNullException.ThrowIfNull(bitmap);
 
-        _fillImage = null;
-        _fillBitmap = null;
-
-        _fillPaint.Shader = null;
-        _fillShader?.Dispose();
-
         scale = float.IsFinite(scale) && scale > 0f
             ? scale
             : throw new ArgumentOutOfRangeException(nameof(scale), "Pattern scale must be finite and greater than zero.");
@@ -662,7 +656,15 @@ public class DirectRectangle : DirectDrawingMovableBase
         if (offsetPx is { } o)
             m = m.PostConcat(SKMatrix.CreateTranslation(o.X, o.Y));
 
-        _fillShader = SKShader.CreateBitmap(bitmap, tileX, tileY, m);
+        SKShader newShader = SKShader.CreateBitmap(bitmap, tileX, tileY, m);
+
+        _fillPaint.Shader = null;
+        _fillShader?.Dispose();
+        _fillShader = newShader;
+
+        _fillImage = null;
+        _fillBitmap = null;
+
         _fillPaint.Shader = _fillShader;
         _fillPaint.FilterQuality = filterQuality; // or Low/Medium/High
 
@@ -1020,15 +1022,12 @@ public class DirectRectangle : DirectDrawingMovableBase
         SKRect fillRect)
     {
         SKImage? image = _fillImage;
-        bool disposeImage = false;
+        SKBitmap? bitmap = _fillBitmap;
 
-        if (image is null && _fillBitmap is not null)
-        {
-            image = SKImage.FromBitmap(_fillBitmap);
-            disposeImage = true;
-        }
+        int sourceWidth = image?.Width ?? bitmap?.Width ?? 0;
+        int sourceHeight = image?.Height ?? bitmap?.Height ?? 0;
 
-        if (image is null || image.Width <= 0 || image.Height <= 0)
+        if (sourceWidth <= 0 || sourceHeight <= 0)
             return;
 
         canvas.Save();
@@ -1050,16 +1049,27 @@ public class DirectRectangle : DirectDrawingMovableBase
             var source = new SKRect(
                 0f,
                 0f,
-                image.Width,
-                image.Height);
+                sourceWidth,
+                sourceHeight);
 
             if (_imageFillMode == ImageFillMode.Repeat)
             {
-                DrawRepeatedImage(
-                    canvas,
-                    image,
-                    source,
-                    fillRect);
+                if (image is not null)
+                {
+                    DrawRepeatedImage(
+                        canvas,
+                        image,
+                        source,
+                        fillRect);
+                }
+                else
+                {
+                    DrawRepeatedBitmap(
+                        canvas,
+                        bitmap!,
+                        source,
+                        fillRect);
+                }
             }
             else
             {
@@ -1068,19 +1078,27 @@ public class DirectRectangle : DirectDrawingMovableBase
                     source,
                     _imageFillMode);
 
-                canvas.DrawImage(
-                    image,
-                    source,
-                    destination,
-                    _imagePaint);
+                if (image is not null)
+                {
+                    canvas.DrawImage(
+                        image,
+                        source,
+                        destination,
+                        _imagePaint);
+                }
+                else
+                {
+                    canvas.DrawBitmap(
+                        bitmap!,
+                        source,
+                        destination,
+                        _imagePaint);
+                }
             }
         }
         finally
         {
             canvas.Restore();
-
-            if (disposeImage)
-                image.Dispose();
         }
     }
 
@@ -1111,6 +1129,44 @@ public class DirectRectangle : DirectDrawingMovableBase
             {
                 canvas.DrawImage(
                     image,
+                    source,
+                    new SKRect(
+                        x,
+                        y,
+                        x + tileWidth,
+                        y + tileHeight),
+                    _imagePaint);
+            }
+        }
+    }
+
+    private void DrawRepeatedBitmap(
+        SKCanvas canvas,
+        SKBitmap bitmap,
+        SKRect source,
+        SKRect fillRect)
+    {
+        float tileWidth = bitmap.Width * _imageScale;
+        float tileHeight = bitmap.Height * _imageScale;
+
+        float offsetX = PositiveModulo(_imageOffsetPx.X, tileWidth);
+        float offsetY = PositiveModulo(_imageOffsetPx.Y, tileHeight);
+
+        float startX = fillRect.Left + offsetX;
+        float startY = fillRect.Top + offsetY;
+
+        if (startX > fillRect.Left)
+            startX -= tileWidth;
+
+        if (startY > fillRect.Top)
+            startY -= tileHeight;
+
+        for (float y = startY; y < fillRect.Bottom; y += tileHeight)
+        {
+            for (float x = startX; x < fillRect.Right; x += tileWidth)
+            {
+                canvas.DrawBitmap(
+                    bitmap,
                     source,
                     new SKRect(
                         x,

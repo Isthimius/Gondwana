@@ -66,6 +66,62 @@ public sealed class DirectRectangleImageFillTests
         Assert.Equal(SKColors.Blue, result.GetPixel(7, 2));
     }
 
+    [Fact]
+    public void SetFillPattern_InvalidScalePreservesExistingPattern()
+    {
+        using var host = new TestRenderSurfaceHost();
+        View view = AddView(host, new Rectangle(0, 0, 6, 4));
+        using var source = CreateTwoColorBitmap();
+        using var backbuffer = new BitmapBackbuffer(6, 4);
+        using var rectangle = new DirectRectangle(
+                Color.White,
+                host,
+                view,
+                new Rectangle(0, 0, 6, 4))
+            .SetStrokeWidth(0f)
+            .SetFillPattern(source);
+
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            rectangle.SetFillPattern(source, scale: 0f));
+
+        rectangle.Draw(backbuffer, new RectangleF(0, 0, 6, 4));
+
+        using SKImage snapshot = backbuffer.Snapshot();
+        using SKBitmap result = SKBitmap.FromImage(snapshot);
+
+        Assert.Equal(SKColors.Red, result.GetPixel(0, 0));
+        Assert.Equal(SKColors.Blue, result.GetPixel(1, 0));
+        Assert.Equal(SKColors.Red, result.GetPixel(2, 0));
+    }
+
+    [Fact]
+    public void SetFillImage_ImageSourceStillRenders()
+    {
+        using var host = new TestRenderSurfaceHost();
+        View view = AddView(host, new Rectangle(0, 0, 8, 4));
+        using var bitmap = CreateTwoColorBitmap();
+        using var source = SKImage.FromBitmap(bitmap);
+        using var backbuffer = new BitmapBackbuffer(8, 4);
+        using var rectangle = new DirectRectangle(
+                Color.White,
+                host,
+                view,
+                new Rectangle(0, 0, 8, 4))
+            .SetStrokeWidth(0f)
+            .SetFillImage(
+                source,
+                DirectRectangle.ImageFillMode.Stretch,
+                filterQuality: SKFilterQuality.None);
+
+        rectangle.Draw(backbuffer, new RectangleF(0, 0, 8, 4));
+
+        using SKImage snapshot = backbuffer.Snapshot();
+        using SKBitmap result = SKBitmap.FromImage(snapshot);
+
+        Assert.Equal(SKColors.Red, result.GetPixel(0, 2));
+        Assert.Equal(SKColors.Blue, result.GetPixel(7, 2));
+    }
+
     private static SKBitmap CreateTwoColorBitmap()
     {
         var bitmap = new SKBitmap(
