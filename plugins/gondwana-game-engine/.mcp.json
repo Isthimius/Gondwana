@@ -2,7 +2,7 @@
   "mcpServers": {
     "gondwana": {
       "type": "http",
-      "url": "https://gondwana-mcp.onrender.com/mcp"
+      "url": "https://mcp.hiddenworldsgames.com/mcp"
     }
   }
 }

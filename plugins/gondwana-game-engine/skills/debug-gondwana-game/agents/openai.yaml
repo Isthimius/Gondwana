@@ -9,4 +9,4 @@ dependencies:
       value: "gondwana"
       description: "Read-only Gondwana repository and wiki MCP server"
       transport: "streamable_http"
-      url: "https://gondwana-mcp.onrender.com/mcp"
+      url: "https://mcp.hiddenworldsgames.com/mcp"
