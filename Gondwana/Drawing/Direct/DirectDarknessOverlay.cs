@@ -433,7 +433,7 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
         ForceRefresh();
     }
 
-    private void OnTrackedLightChanged(object? sender, DirectRadialLight light)
+    private void OnTrackedLightChanged(DirectRadialLight light)
     {
         foreach (var tracked in _trackedLightReveals.Where(t => ReferenceEquals(t.Light, light)).ToArray())
             SyncTrackedLight(tracked);
@@ -445,13 +445,13 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
             UntrackLight(light);
     }
 
-    private void OnTrackedLayerLightAdded(object? sender, DirectRadialLight light)
+    private void OnTrackedLayerLightAdded(DirectRadialLight light)
     {
-        foreach (var trackedLayer in _trackedLightLayers.Where(t => ReferenceEquals(t.LightLayer, sender)).ToArray())
+        foreach (var trackedLayer in _trackedLightLayers.Where(t => t.LightLayer.Lights.Contains(light)).ToArray())
             TrackLight(light, trackedLayer.RadiusScale, trackedLayer.IntensityScale, trackedLayer.TrackIntensity);
     }
 
-    private void OnTrackedLayerLightRemoving(object? sender, DirectRadialLight light)
+    private void OnTrackedLayerLightRemoving(DirectRadialLight light)
     {
         UntrackLight(light);
     }

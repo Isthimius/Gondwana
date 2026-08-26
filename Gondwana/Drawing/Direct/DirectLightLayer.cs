@@ -26,12 +26,12 @@ public sealed class DirectLightLayer : IDisposable
     /// <summary>
     /// Occurs after a light has been added to this owner.
     /// </summary>
-    public event EventHandler<DirectRadialLight>? LightAdded;
+    public event Action<DirectRadialLight>? LightAdded;
 
     /// <summary>
     /// Occurs before a light is disposed and removed from this owner.
     /// </summary>
-    public event EventHandler<DirectRadialLight>? LightRemoving;
+    public event Action<DirectRadialLight>? LightRemoving;
 
     /// <summary>
     /// Initializes a new light owner for the given render surface and scene layer.
@@ -87,7 +87,7 @@ public sealed class DirectLightLayer : IDisposable
         };
 
         _lights.Add(light);
-        LightAdded?.Invoke(this, light);
+        LightAdded?.Invoke(light);
         return light;
     }
 
@@ -99,7 +99,7 @@ public sealed class DirectLightLayer : IDisposable
         if (!_lights.Remove(light))
             return false;
 
-        LightRemoving?.Invoke(this, light);
+        LightRemoving?.Invoke(light);
         light.Dispose();
         return true;
     }

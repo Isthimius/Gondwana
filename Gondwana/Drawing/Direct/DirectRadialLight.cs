@@ -55,7 +55,7 @@ public sealed class DirectRadialLight : DirectDrawingBase
     /// synchronized with a light's center, radius, and intensity without requiring game code to move
     /// two separate objects by hand.
     /// </remarks>
-    public event EventHandler<DirectRadialLight>? Changed;
+    public event Action<DirectRadialLight>? Changed;
 
     /// <summary>
     /// Initializes a new scene-layer radial light.
@@ -412,7 +412,7 @@ public sealed class DirectRadialLight : DirectDrawingBase
 
     private void OnChanged()
     {
-        Changed?.Invoke(this, this);
+        Changed?.Invoke(this);
     }
 
     private static Rectangle BoundsFromCenter(PointF centerWorldPx, float radiusWorldPx)
