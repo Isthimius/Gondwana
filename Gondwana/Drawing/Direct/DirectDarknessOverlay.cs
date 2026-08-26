@@ -421,7 +421,15 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
             if (screenRadius <= 0.01f)
                 continue;
 
-            using var revealPaint = BuildRevealPaint(centerScreen, screenRadius, source.Intensity);
+            using var revealShader = BuildRevealShader(centerScreen, screenRadius, source.Intensity);
+            using var revealPaint = new SKPaint
+            {
+                IsAntialias = true,
+                BlendMode = SKBlendMode.DstOut,
+                Shader = revealShader,
+                Style = SKPaintStyle.Fill
+            };
+
             canvas.DrawRect(destRect, revealPaint);
         }
 
@@ -486,12 +494,12 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
         _darknessPaint.Color = Color.FromArgb(_darknessOpacity, _darknessColor).ToSKColor();
     }
 
-    private SKPaint BuildRevealPaint(PointF centerScreenPx, float radiusScreenPx, float intensity)
+    private SKShader BuildRevealShader(PointF centerScreenPx, float radiusScreenPx, float intensity)
     {
         byte centerAlpha = (byte)Math.Clamp((int)Math.Round(255f * Math.Clamp(intensity, 0f, 1f)), 0, 255);
         byte midAlpha = (byte)Math.Clamp((int)Math.Round(255f * Math.Clamp(intensity, 0f, 1f) * _midpointStrength), 0, 255);
 
-        var shader = SKShader.CreateRadialGradient(
+        return SKShader.CreateRadialGradient(
             new SKPoint(centerScreenPx.X, centerScreenPx.Y),
             radiusScreenPx,
             colors:
@@ -509,14 +517,6 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
                 1f
             ],
             mode: SKShaderTileMode.Clamp);
-
-        return new SKPaint
-        {
-            IsAntialias = true,
-            BlendMode = SKBlendMode.DstOut,
-            Shader = shader,
-            Style = SKPaintStyle.Fill
-        };
     }
 
     /// <inheritdoc />
