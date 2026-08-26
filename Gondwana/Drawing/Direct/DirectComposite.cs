@@ -467,7 +467,7 @@ public class DirectComposite : IDirectCompositeChild, IDirectCompositeContainer
     /// This method uses the tick to calculate elapsed time and advance the movement controller.
     /// If the tick is less than or equal to the last processed tick, no update occurs.
     /// </remarks>
-    public void Update(long tick)
+    public virtual void Update(long tick)
     {
         if (_disposed || tick <= _lastTick)
             return;
