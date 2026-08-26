@@ -25,7 +25,7 @@ The plugin does not require `.app.json` for this submission. The public MCP serv
 ## MCP
 
 - **URL type:** Universal
-- **Production URL:** https://gondwana-mcp.onrender.com/mcp
+- **Production URL:** https://mcp.hiddenworldsgames.com/mcp
 - **End-user authentication:** none
 - **Scope:** official `Isthimius/Gondwana` repository and Gondwana GitHub wiki only
 - **Writes:** none
@@ -38,7 +38,7 @@ When the submission portal issues a verification token:
 
 1. Set `GondwanaMcp__OpenAiAppsChallengeToken` to the exact token in the production hosting environment.
 2. Redeploy the MCP service.
-3. Confirm that `https://gondwana-mcp.onrender.com/.well-known/openai-apps-challenge` returns only the token as plain text.
+3. Confirm that `https://mcp.hiddenworldsgames.com/.well-known/openai-apps-challenge` returns only the token as plain text.
 4. Complete domain verification in the portal.
 5. After verification, the token may be removed if OpenAI no longer requires the endpoint for later checks.
 

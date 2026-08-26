@@ -33,7 +33,7 @@ The workflow uses the wiki for the mental model and verifies exact current behav
 
 The plugin declares its read-only Gondwana MCP server in `.mcp.json`:
 
-`https://gondwana-mcp.onrender.com/mcp`
+`https://mcp.hiddenworldsgames.com/mcp`
 
 Each bundled skill also declares the same Streamable HTTP MCP dependency in `agents/openai.yaml`. This gives compatible hosts a concrete, public source for current repository and wiki context without requiring an end-user GitHub token.
 

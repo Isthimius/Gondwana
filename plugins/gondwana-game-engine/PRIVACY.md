@@ -2,7 +2,7 @@
 
 Last updated: August 22, 2026
 
-This policy covers the public Gondwana Game Engine plugin and the read-only Gondwana MCP service at `https://gondwana-mcp.onrender.com/mcp`.
+This policy covers the public Gondwana Game Engine plugin and the read-only Gondwana MCP service at `https://mcp.hiddenworldsgames.com/mcp`.
 
 ## What the service receives
 
