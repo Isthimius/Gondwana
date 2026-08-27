@@ -183,4 +183,4 @@ These cases are not portal negative-trigger tests. They exercise requests that m
 
 ## Initial release notes
 
-Initial public submission of the Gondwana Game Engine plugin. It combines three Gondwana-specific skills with a public, read-only MCP server that exposes the current Gondwana repository and official wiki. The MCP server is hard-scoped to `Isthimius/Gondwana`, requires no end-user authentication, exposes no write tools, and returns structured results for repository and documentation lookups.
+Initial public submission of the Gondwana plugin. It combines three Gondwana-specific skills with a public, read-only MCP server that exposes the current Gondwana repository and official wiki. The MCP server is hard-scoped to `Isthimius/Gondwana`, requires no end-user authentication, exposes no write tools, and returns structured results for repository and documentation lookups.
