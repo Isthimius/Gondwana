@@ -20,7 +20,17 @@ internal sealed class RenderContext
         View = view;
         Tick = tick;
 
-        var z = view?.Viewport?.Zoom ?? 1f;
+        // Capture every value used by the view's world/screen transform. GPU
+        // rendering occurs on the UI/GL thread while the engine thread continues
+        // updating cameras and animated viewports, so reading these values live
+        // while drawing can produce multiple transforms within one frame.
+        CameraPositionPx = view.Camera.PositionPx;
+        ViewportTargetRectPx = view.Viewport.TargetRectPx;
+        ViewportScreenOffsetPx = view.Viewport.ScreenOffsetPx;
+        ViewEffectOffsetFactor = view.EffectOffsetFactor;
+        ViewEffectOffsetPx = view.EffectOffsetPx;
+
+        var z = view.Viewport.Zoom;
         ViewportZoom = (z > 0f) ? z : 1f;
 
         _prior = prior;
@@ -28,7 +38,12 @@ internal sealed class RenderContext
 
     internal View View { get; }
     internal long Tick { get; }
+    internal System.Drawing.PointF CameraPositionPx { get; }
+    internal System.Drawing.Rectangle ViewportTargetRectPx { get; }
+    internal System.Drawing.PointF ViewportScreenOffsetPx { get; }
     internal float ViewportZoom { get; }
+    internal System.Drawing.PointF ViewEffectOffsetFactor { get; }
+    internal System.Drawing.PointF ViewEffectOffsetPx { get; }
 
     internal static void Push(View view, long tick)
     {

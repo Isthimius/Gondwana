@@ -207,6 +207,63 @@ public sealed class ViewCoordinateConversionTests
         AssertClose(expectedHeight, viewport.VisibleWorldSizePx.Height);
     }
 
+    [Fact]
+    public void RenderContext_KeepsViewTransformStableWhenLiveStateChanges()
+    {
+        using var scene = new Scene();
+        var layer = scene.AddLayer(100, 100, parallax: 0.75f);
+        var view = CreateView(
+            scene,
+            zoom: 1.5f,
+            targetRectPx: new Rectangle(100, 50, 800, 600),
+            screenOffsetPx: new PointF(12f, -8f),
+            cameraPositionPx: new PointF(120f, 80f));
+
+        var worldPoint = new PointF(410f, 260f);
+        var worldRect = new RectangleF(390f, 240f, 64f, 48f);
+        var screenRect = new RectangleF(250f, 180f, 96f, 72f);
+
+        PointF pointBefore;
+        PointF pointAfter;
+        RectangleF worldRectBefore;
+        RectangleF worldRectAfter;
+        RectangleF screenRectBefore;
+        RectangleF screenRectAfter;
+        Rectangle viewportBefore;
+        Rectangle viewportAfter;
+
+        Gondwana.Rendering.RenderContext.Push(view, tick: 1);
+        try
+        {
+            pointBefore = view.WorldPxToScreenPx(layer, worldPoint);
+            worldRectBefore = view.WorldRectToScreenRect(layer, worldRect);
+            screenRectBefore = view.ScreenRectToWorldRect(layer, screenRect);
+            viewportBefore = view.GetRenderViewportTargetRectPx();
+
+            view.Camera.SnapTo(new PointF(500f, 350f));
+            view.Viewport.Zoom = 2.5f;
+            view.Viewport.TargetRectPx = new Rectangle(300, 200, 1024, 768);
+            view.Viewport.ScreenOffsetPx = new PointF(-30f, 40f);
+
+            pointAfter = view.WorldPxToScreenPx(layer, worldPoint);
+            worldRectAfter = view.WorldRectToScreenRect(layer, worldRect);
+            screenRectAfter = view.ScreenRectToWorldRect(layer, screenRect);
+            viewportAfter = view.GetRenderViewportTargetRectPx();
+        }
+        finally
+        {
+            Gondwana.Rendering.RenderContext.Pop();
+        }
+
+        AssertClose(pointBefore, pointAfter);
+        AssertClose(worldRectBefore, worldRectAfter);
+        AssertClose(screenRectBefore, screenRectAfter);
+        Assert.Equal(viewportBefore, viewportAfter);
+
+        Assert.NotEqual(pointAfter, view.WorldPxToScreenPx(layer, worldPoint));
+        Assert.NotEqual(viewportAfter, view.GetRenderViewportTargetRectPx());
+    }
+
     private static View CreateView(
         Scene scene,
         float zoom,

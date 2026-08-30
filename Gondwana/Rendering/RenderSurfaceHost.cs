@@ -359,7 +359,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 // They must not enqueue dirty regions that GL rendering never consumes.
                 var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);
 
-                var vp = view.Viewport.TargetRectPx;
+                var vp = view.GetRenderViewportTargetRectPx();
 
                 // 2) Clip to this view's viewport, excluding areas covered by higher Z-order views.
                 Backbuffer.Canvas.Save();
@@ -371,7 +371,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                     if (!blocker.BlocksViewsBelow)
                         continue;
 
-                    var overlap = Rectangle.Intersect(vp, blocker.Viewport.TargetRectPx);
+                    var overlap = Rectangle.Intersect(vp, blocker.GetRenderViewportTargetRectPx());
                     if (!overlap.IsEmpty)
                         Backbuffer.Canvas.ClipRect(overlap.ToSKRect(), SKClipOperation.Difference, antialias: false);
                 }
@@ -533,7 +533,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 var dirtyScreenRects = CollectDirtyScreenArea(view);
 
                 // 2.3) Clip to this view's viewport
-                var vp = view.Viewport.TargetRectPx;
+                var vp = view.GetRenderViewportTargetRectPx();
 
                 // clip inclusive to current viewport
                 Backbuffer.Canvas.Save();
@@ -546,7 +546,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                     if (!blocker.BlocksViewsBelow)
                         continue;
 
-                    var overlap = Rectangle.Intersect(vp, blocker.Viewport.TargetRectPx);
+                    var overlap = Rectangle.Intersect(vp, blocker.GetRenderViewportTargetRectPx());
                     if (!overlap.IsEmpty)
                         Backbuffer.Canvas.ClipRect(overlap.ToSKRect(), SKClipOperation.Difference, antialias: false);
                 }
@@ -652,7 +652,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     private List<Rectangle> CollectDirtyScreenArea(View view)
     {
         var dirty = new List<Rectangle>(64);
-        var viewportRect = view.Viewport.TargetRectPx;
+        var viewportRect = view.GetRenderViewportTargetRectPx();
 
         foreach (var sceneLayer in Scene.VisibleSceneLayers)
         {
@@ -684,7 +684,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         foreach (var screenRect in screenRects)
         {
-            var screenRectViewport = Rectangle.Intersect(screenRect, view.Viewport.TargetRectPx);
+            var screenRectViewport = Rectangle.Intersect(screenRect, view.GetRenderViewportTargetRectPx());
 
             if (screenRectViewport.IsEmpty || screenRectViewport.Width <= 0 || screenRectViewport.Height <= 0)
                 continue;
@@ -698,7 +698,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private void EnqueueForOverlappingSceneLayers(View sourceView, Rectangle clearedScreenRect)
     {
-        var overlap = Rectangle.Intersect(clearedScreenRect, sourceView.Viewport.TargetRectPx);
+        var overlap = Rectangle.Intersect(clearedScreenRect, sourceView.GetRenderViewportTargetRectPx());
 
         if (overlap.IsEmpty)
             return;
@@ -779,7 +779,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private static RectangleF GetLayerPresentationBounds(View view, SceneLayer layer)
     {
-        RectangleF viewport = view.Viewport.TargetRectPx;
+        RectangleF viewport = view.GetRenderViewportTargetRectPx();
         PointF offset = view.GetEffectOffsetPx(layer);
 
         return new RectangleF(

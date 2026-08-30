@@ -233,16 +233,24 @@ public sealed class View
     /// </remarks>
     public PointF ScreenPxToWorldPx(SceneLayer layer, PointF screenPx)
     {
-        float zoom = Viewport.Zoom <= 0f ? 1f : Viewport.Zoom;
+        RenderContext? context = GetCurrentRenderContext();
+        float zoom = context?.ViewportZoom
+            ?? (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
+        Rectangle targetRect = context?.ViewportTargetRectPx
+            ?? Viewport.TargetRectPx;
+        PointF screenOffset = context?.ViewportScreenOffsetPx
+            ?? Viewport.ScreenOffsetPx;
+        PointF cameraPosition = context?.CameraPositionPx
+            ?? Camera.PositionPx;
         PointF effectOffset = GetEffectOffsetPx(layer);
-        float offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X + effectOffset.X;
-        float offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y + effectOffset.Y;
+        float offsetX = targetRect.Left + screenOffset.X + effectOffset.X;
+        float offsetY = targetRect.Top + screenOffset.Y + effectOffset.Y;
         float parallax = layer.Parallax;
 
-        float worldX = Camera.PositionPx.X * parallax
+        float worldX = cameraPosition.X * parallax
                      + (screenPx.X - offsetX) / zoom;
 
-        float worldY = Camera.PositionPx.Y * parallax
+        float worldY = cameraPosition.Y * parallax
                      + (screenPx.Y - offsetY) / zoom;
 
         return new PointF(worldX, worldY);
@@ -270,14 +278,22 @@ public sealed class View
     /// </remarks>
     public PointF WorldPxToScreenPx(SceneLayer layer, PointF worldPx)
     {
-        float zoom = Viewport.Zoom <= 0f ? 1f : Viewport.Zoom;
+        RenderContext? context = GetCurrentRenderContext();
+        float zoom = context?.ViewportZoom
+            ?? (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
+        Rectangle targetRect = context?.ViewportTargetRectPx
+            ?? Viewport.TargetRectPx;
+        PointF screenOffset = context?.ViewportScreenOffsetPx
+            ?? Viewport.ScreenOffsetPx;
+        PointF cameraPosition = context?.CameraPositionPx
+            ?? Camera.PositionPx;
         PointF effectOffset = GetEffectOffsetPx(layer);
-        float offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X + effectOffset.X;
-        float offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y + effectOffset.Y;
+        float offsetX = targetRect.Left + screenOffset.X + effectOffset.X;
+        float offsetY = targetRect.Top + screenOffset.Y + effectOffset.Y;
         float parallax = layer.Parallax;
 
-        float screenX = offsetX + (worldPx.X - Camera.PositionPx.X * parallax) * zoom;
-        float screenY = offsetY + (worldPx.Y - Camera.PositionPx.Y * parallax) * zoom;
+        float screenX = offsetX + (worldPx.X - cameraPosition.X * parallax) * zoom;
+        float screenY = offsetY + (worldPx.Y - cameraPosition.Y * parallax) * zoom;
 
         return new PointF(screenX, screenY);
     }
@@ -311,17 +327,25 @@ public sealed class View
         if (layer is null)
             throw new ArgumentNullException(nameof(layer));
 
-        float zoom = Viewport.Zoom <= 0f ? 1f : Viewport.Zoom;
+        RenderContext? context = GetCurrentRenderContext();
+        float zoom = context?.ViewportZoom
+            ?? (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
+        Rectangle targetRect = context?.ViewportTargetRectPx
+            ?? Viewport.TargetRectPx;
+        PointF screenOffset = context?.ViewportScreenOffsetPx
+            ?? Viewport.ScreenOffsetPx;
+        PointF cameraPosition = context?.CameraPositionPx
+            ?? Camera.PositionPx;
 
         PointF effectOffset = GetEffectOffsetPx(layer);
-        float offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X + effectOffset.X;
-        float offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y + effectOffset.Y;
+        float offsetX = targetRect.Left + screenOffset.X + effectOffset.X;
+        float offsetY = targetRect.Top + screenOffset.Y + effectOffset.Y;
 
         float parallax = layer.Parallax;
 
         // screen = offset + (world - camera * p) * zoom
-        float localLeft = worldRect.Left - Camera.PositionPx.X * parallax;
-        float localTop = worldRect.Top - Camera.PositionPx.Y * parallax;
+        float localLeft = worldRect.Left - cameraPosition.X * parallax;
+        float localTop = worldRect.Top - cameraPosition.Y * parallax;
 
         float scaledLeft = localLeft * zoom;
         float scaledTop = localTop * zoom;
@@ -347,11 +371,19 @@ public sealed class View
         if (layer is null)
             throw new ArgumentNullException(nameof(layer));
 
-        float zoom = Viewport.Zoom <= 0f ? 1f : Viewport.Zoom;
+        RenderContext? context = GetCurrentRenderContext();
+        float zoom = context?.ViewportZoom
+            ?? (Viewport.Zoom <= 0f ? 1f : Viewport.Zoom);
+        Rectangle targetRect = context?.ViewportTargetRectPx
+            ?? Viewport.TargetRectPx;
+        PointF screenOffset = context?.ViewportScreenOffsetPx
+            ?? Viewport.ScreenOffsetPx;
+        PointF cameraPosition = context?.CameraPositionPx
+            ?? Camera.PositionPx;
 
         PointF effectOffset = GetEffectOffsetPx(layer);
-        float offsetX = Viewport.TargetRectPx.Left + Viewport.ScreenOffsetPx.X + effectOffset.X;
-        float offsetY = Viewport.TargetRectPx.Top + Viewport.ScreenOffsetPx.Y + effectOffset.Y;
+        float offsetX = targetRect.Left + screenOffset.X + effectOffset.X;
+        float offsetY = targetRect.Top + screenOffset.Y + effectOffset.Y;
 
         float parallax = layer.Parallax;
 
@@ -360,8 +392,8 @@ public sealed class View
         float localTop = screenRect.Top - offsetY;
 
         // world = camera*parallax + local / zoom
-        float worldLeft = Camera.PositionPx.X * parallax + localLeft / zoom;
-        float worldTop = Camera.PositionPx.Y * parallax + localTop / zoom;
+        float worldLeft = cameraPosition.X * parallax + localLeft / zoom;
+        float worldTop = cameraPosition.Y * parallax + localTop / zoom;
 
         float worldWidth = screenRect.Width / zoom;
         float worldHeight = screenRect.Height / zoom;
@@ -371,8 +403,13 @@ public sealed class View
 
     internal PointF GetEffectOffsetPx(SceneLayer? layer)
     {
-        PointF factor = EffectOffsetFactor;
-        PointF pixels = EffectOffsetPx;
+        RenderContext? context = GetCurrentRenderContext();
+        PointF factor = context?.ViewEffectOffsetFactor
+            ?? EffectOffsetFactor;
+        PointF pixels = context?.ViewEffectOffsetPx
+            ?? EffectOffsetPx;
+        Rectangle targetRect = context?.ViewportTargetRectPx
+            ?? Viewport.TargetRectPx;
 
         if (layer is not null)
         {
@@ -385,20 +422,32 @@ public sealed class View
         }
 
         return new PointF(
-            pixels.X + factor.X * Viewport.TargetRectPx.Width,
-            pixels.Y + factor.Y * Viewport.TargetRectPx.Height);
+            pixels.X + factor.X * targetRect.Width,
+            pixels.Y + factor.Y * targetRect.Height);
     }
 
     internal RectangleF GetPresentationBoundsPx()
     {
         PointF offset = GetEffectOffsetPx(layer: null);
-        RectangleF viewport = Viewport.TargetRectPx;
+        RectangleF viewport = GetRenderViewportTargetRectPx();
 
         return new RectangleF(
             viewport.Left + offset.X,
             viewport.Top + offset.Y,
             viewport.Width,
             viewport.Height);
+    }
+
+    internal Rectangle GetRenderViewportTargetRectPx() =>
+        GetCurrentRenderContext()?.ViewportTargetRectPx
+        ?? Viewport.TargetRectPx;
+
+    private RenderContext? GetCurrentRenderContext()
+    {
+        RenderContext? context = RenderContext.Current;
+        return context is not null && ReferenceEquals(context.View, this)
+            ? context
+            : null;
     }
 
     #endregion Coordinate conversion methods
