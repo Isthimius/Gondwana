@@ -9,6 +9,9 @@
     <RootNamespace>Gondwana.ZeldaPrototype</RootNamespace>
     <AssemblyName>Gondwana.ZeldaPrototype</AssemblyName>
     <IsPackable>false</IsPackable>
+
+    <!-- Prefer this repository's projects when the demo is built in-place. -->
+    <GondwanaSourceRoot Condition="'$(GondwanaSourceRoot)' == '' and Exists('$(MSBuildThisFileDirectory)..\..\Gondwana\Gondwana.csproj')">$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)..\..'))</GondwanaSourceRoot>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +20,7 @@
     </Content>
   </ItemGroup>
 
-  <!-- Default: the same NuGet package path used by Gondwana's WinForms template. -->
+  <!-- Standalone fallback: use the same NuGet packages as the WinForms template. -->
   <ItemGroup Condition="'$(GondwanaSourceRoot)' == ''">
     <PackageReference Include="Gondwana" Version="2.*" />
     <PackageReference Include="Gondwana.Hosting" Version="2.*" />
@@ -25,7 +28,7 @@
     <PackageReference Include="Gondwana.WinForms.Hosting" Version="2.*" />
   </ItemGroup>
 
-  <!-- Optional: compile directly against a current Gondwana checkout. -->
+  <!-- In-repository or explicitly selected checkout: compile against current source. -->
   <ItemGroup Condition="'$(GondwanaSourceRoot)' != ''">
     <ProjectReference Include="$(GondwanaSourceRoot)\Gondwana\Gondwana.csproj" />
     <ProjectReference Include="$(GondwanaSourceRoot)\Gondwana.Hosting\Gondwana.Hosting.csproj" />
