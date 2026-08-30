@@ -205,7 +205,11 @@ internal sealed partial class ZeldaGameHost
     }
 
     private static string FormatEnemyName(string id) =>
-        id.Replace('-', ' ').Replace("one", "").Replace("two", "").Trim();
+        id.Replace("-one", "", StringComparison.Ordinal)
+            .Replace("-two", "", StringComparison.Ordinal)
+            .Replace("-three", "", StringComparison.Ordinal)
+            .Replace('-', ' ')
+            .Trim();
 
     private void ResolveEnemyContact()
     {
