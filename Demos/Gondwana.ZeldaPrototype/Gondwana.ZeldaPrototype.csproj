@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Gondwana.ZeldaPrototype</RootNamespace>
+    <AssemblyName>Gondwana.ZeldaPrototype</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="assets\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- Default: the same NuGet package path used by Gondwana's WinForms template. -->
+  <ItemGroup Condition="'$(GondwanaSourceRoot)' == ''">
+    <PackageReference Include="Gondwana" Version="2.*" />
+    <PackageReference Include="Gondwana.Hosting" Version="2.*" />
+    <PackageReference Include="Gondwana.WinForms" Version="2.*" />
+    <PackageReference Include="Gondwana.WinForms.Hosting" Version="2.*" />
+  </ItemGroup>
+
+  <!-- Optional: compile directly against a current Gondwana checkout. -->
+  <ItemGroup Condition="'$(GondwanaSourceRoot)' != ''">
+    <ProjectReference Include="$(GondwanaSourceRoot)\Gondwana\Gondwana.csproj" />
+    <ProjectReference Include="$(GondwanaSourceRoot)\Gondwana.Hosting\Gondwana.Hosting.csproj" />
+    <ProjectReference Include="$(GondwanaSourceRoot)\Gondwana.WinForms\Gondwana.WinForms.csproj" />
+    <ProjectReference Include="$(GondwanaSourceRoot)\Gondwana.WinForms.Hosting\Gondwana.WinForms.Hosting.csproj" />
+  </ItemGroup>
+
+</Project>

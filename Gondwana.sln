@@ -193,6 +193,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.TheGreatPlop", "De
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.RageToPro", "Demos\Gondwana.RageToPro\Gondwana.RageToPro.csproj", "{4E36CE30-B9F4-83BC-58B8-F7C1C3A98EFC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.SideScroller", "Demos\Gondwana.SideScroller\Gondwana.SideScroller.csproj", "{5EA9C963-1BC8-49B2-83DB-A41E481E51E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.ZeldaPrototype", "Demos\Gondwana.ZeldaPrototype\Gondwana.ZeldaPrototype.csproj", "{69EE3130-A7CC-6AE8-AB5B-414336CF3F3C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -743,6 +747,38 @@ Global
 		{4E36CE30-B9F4-83BC-58B8-F7C1C3A98EFC}.Release|x64.Build.0 = Release|Any CPU
 		{4E36CE30-B9F4-83BC-58B8-F7C1C3A98EFC}.Release|x86.ActiveCfg = Release|Any CPU
 		{4E36CE30-B9F4-83BC-58B8-F7C1C3A98EFC}.Release|x86.Build.0 = Release|Any CPU
+		{5EA9C963-1BC8-49B2-83DB-A41E481E51E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EA9C963-1BC8-49B2-83DB-A41E481E51E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EA9C963-1BC8-49B2-83DB-A41E481E51E2}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5EA9C963-1BC8-49B2-83DB-A41E481E51E2}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5EA9C963-1BC8-49B2-83DB-A41E481E51E2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5EA9C963-1BC8-49B2-83DB-A41E481E51E2}.Debug|x64.Build.0 = Debug|Any CPU
+		{5EA9C963-1BC8-49B2-83DB-A41E481E51E2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5EA9C963-1BC8-49B2-83DB-A41E481E51E2}.Debug|x86.Build.0 = Debug|Any CPU
+		{5EA9C963-1BC8-49B2-83DB-A41E481E51E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EA9C963-1BC8-49B2-83DB-A41E481E51E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EA9C963-1BC8-49B2-83DB-A41E481E51E2}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5EA9C963-1BC8-49B2-83DB-A41E481E51E2}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{5EA9C963-1BC8-49B2-83DB-A41E481E51E2}.Release|x64.ActiveCfg = Release|Any CPU
+		{5EA9C963-1BC8-49B2-83DB-A41E481E51E2}.Release|x64.Build.0 = Release|Any CPU
+		{5EA9C963-1BC8-49B2-83DB-A41E481E51E2}.Release|x86.ActiveCfg = Release|Any CPU
+		{5EA9C963-1BC8-49B2-83DB-A41E481E51E2}.Release|x86.Build.0 = Release|Any CPU
+		{69EE3130-A7CC-6AE8-AB5B-414336CF3F3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69EE3130-A7CC-6AE8-AB5B-414336CF3F3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69EE3130-A7CC-6AE8-AB5B-414336CF3F3C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{69EE3130-A7CC-6AE8-AB5B-414336CF3F3C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{69EE3130-A7CC-6AE8-AB5B-414336CF3F3C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{69EE3130-A7CC-6AE8-AB5B-414336CF3F3C}.Debug|x64.Build.0 = Debug|Any CPU
+		{69EE3130-A7CC-6AE8-AB5B-414336CF3F3C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{69EE3130-A7CC-6AE8-AB5B-414336CF3F3C}.Debug|x86.Build.0 = Debug|Any CPU
+		{69EE3130-A7CC-6AE8-AB5B-414336CF3F3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69EE3130-A7CC-6AE8-AB5B-414336CF3F3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69EE3130-A7CC-6AE8-AB5B-414336CF3F3C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{69EE3130-A7CC-6AE8-AB5B-414336CF3F3C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{69EE3130-A7CC-6AE8-AB5B-414336CF3F3C}.Release|x64.ActiveCfg = Release|Any CPU
+		{69EE3130-A7CC-6AE8-AB5B-414336CF3F3C}.Release|x64.Build.0 = Release|Any CPU
+		{69EE3130-A7CC-6AE8-AB5B-414336CF3F3C}.Release|x86.ActiveCfg = Release|Any CPU
+		{69EE3130-A7CC-6AE8-AB5B-414336CF3F3C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -774,6 +810,8 @@ Global
 		{9B447748-C9FD-4FB4-8689-BFCE5B351ED7} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
 		{795EE459-4ADC-0518-7B16-CB4FB271272A} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
 		{4E36CE30-B9F4-83BC-58B8-F7C1C3A98EFC} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
+		{5EA9C963-1BC8-49B2-83DB-A41E481E51E2} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
+		{69EE3130-A7CC-6AE8-AB5B-414336CF3F3C} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A027047D-3D9C-4015-B3E0-DEEAE46DA4CC}
