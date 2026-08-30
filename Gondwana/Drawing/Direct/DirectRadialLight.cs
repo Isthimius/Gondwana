@@ -48,12 +48,13 @@ public sealed class DirectRadialLight : DirectDrawingBase
     private long _lastFlickerRefreshTick;
 
     /// <summary>
-    /// Occurs when this light's effective visual state changes.
+    /// Occurs when this light changes in a way tracked darkness overlays care about.
     /// </summary>
     /// <remarks>
-    /// This event is used by <see cref="DirectDarknessOverlay"/> to optionally keep reveal sources
-    /// synchronized with a light's center, radius, and intensity without requiring game code to move
-    /// two separate objects by hand.
+    /// This event is primarily a synchronization hook for <see cref="DirectDarknessOverlay"/>
+    /// and <see cref="DirectSceneLayerDarknessOverlay"/>. It is raised when the light's center,
+    /// radius, base intensity, or effective flicker intensity changes. It is not intended to be a
+    /// complete "any paint setting changed" notification for every cosmetic property.
     /// </remarks>
     public event Action<DirectRadialLight>? Changed;
 
@@ -338,9 +339,24 @@ public sealed class DirectRadialLight : DirectDrawingBase
             return;
 
         var canvas = backbuffer.Canvas;
+        var worldBounds = WorldBounds;
+
+        if (worldBounds.Width <= 0 || worldBounds.Height <= 0)
+            return;
+
         var rect = new SKRect(destRectScreen.Left, destRectScreen.Top, destRectScreen.Right, destRectScreen.Bottom);
-        var center = new SKPoint(rect.MidX, rect.MidY);
-        var radius = Math.Max(rect.Width, rect.Height) * 0.5f;
+        float scaleX = destRectScreen.Width / worldBounds.Width;
+        float scaleY = destRectScreen.Height / worldBounds.Height;
+
+        // Use the actual world-space center/radius rather than the integer-rounded
+        // WorldBounds midpoint. The bounds are intentionally pixel-aligned for dirty
+        // rectangles, but the shader geometry should preserve sub-pixel light movement
+        // so a moving torch does not pop by ~0.5px as its bounds floor/ceil change.
+        var center = new SKPoint(
+            destRectScreen.Left + (_centerWorldPx.X - worldBounds.Left) * scaleX,
+            destRectScreen.Top + (_centerWorldPx.Y - worldBounds.Top) * scaleY);
+
+        var radius = Math.Max(Math.Abs(_radiusWorldPx * scaleX), Math.Abs(_radiusWorldPx * scaleY));
 
         if (radius <= 0f)
             return;

@@ -39,6 +39,69 @@ public sealed class DirectDarknessOverlayTests
         Assert.True(center.Red > corner.Red);
     }
 
+    [Fact]
+    public void TrackLight_WhenLightMoves_SyncsRevealSource()
+    {
+        using var host = new TestRenderSurfaceHost();
+        View view = AddView(host, new Rectangle(0, 0, 64, 64));
+        SceneLayer layer = host.Scene.AddLayer(
+            columnCount: 2,
+            rowCount: 2,
+            width: 32,
+            height: 32);
+
+        using var light = new DirectRadialLight(
+            Color.FromArgb(180, 255, 190, 80),
+            host,
+            layer,
+            new PointF(12f, 14f),
+            8f);
+
+        using var overlay = new DirectDarknessOverlay(host, view, layer);
+
+        var reveal = overlay.TrackLight(
+            light,
+            radiusScale: 1.5f,
+            intensityScale: 0.5f);
+
+        light.Intensity = 0.8f;
+        light.SetRadius(12f);
+        light.MoveTo(new PointF(24.25f, 28.5f));
+
+        Assert.Equal(new PointF(24.25f, 28.5f), reveal.CenterWorldPx);
+        Assert.InRange(reveal.RadiusWorldPx, 17.999f, 18.001f);
+        Assert.InRange(reveal.Intensity, 0.399f, 0.401f);
+    }
+
+    [Fact]
+    public void TrackLight_WhenLightIsDisposed_RemovesTrackedRevealSource()
+    {
+        using var host = new TestRenderSurfaceHost();
+        View view = AddView(host, new Rectangle(0, 0, 64, 64));
+        SceneLayer layer = host.Scene.AddLayer(
+            columnCount: 2,
+            rowCount: 2,
+            width: 32,
+            height: 32);
+
+        var light = new DirectRadialLight(
+            Color.FromArgb(180, 255, 190, 80),
+            host,
+            layer,
+            new PointF(12f, 14f),
+            8f);
+
+        using var overlay = new DirectDarknessOverlay(host, view, layer);
+
+        overlay.TrackLight(light);
+
+        Assert.Single(overlay.RevealSources);
+
+        light.Dispose();
+
+        Assert.Empty(overlay.RevealSources);
+    }
+
     private static View AddView(
         TestRenderSurfaceHost host,
         Rectangle bounds)

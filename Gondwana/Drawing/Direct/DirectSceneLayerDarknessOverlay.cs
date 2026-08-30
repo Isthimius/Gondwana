@@ -1,7 +1,6 @@
 using System.Drawing;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
-using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using SkiaSharp;
@@ -9,47 +8,27 @@ using SkiaSharp;
 namespace Gondwana.Drawing.Direct;
 
 /// <summary>
-/// Renders a view-space darkness / fog overlay with optional world-space reveal sources.
+/// Renders a world-bounded darkness/fog overlay as a scene-layer direct drawing.
 /// </summary>
 /// <remarks>
 /// <para>
-/// <see cref="DirectDarknessOverlay"/> is the "other half" of a localized lighting setup.
-/// It draws a semi-transparent darkness layer over an entire <see cref="View"/>, then carves
-/// out soft reveal regions based on one or more world-space <see cref="RevealSource"/> instances.
+/// <see cref="DirectSceneLayerDarknessOverlay"/> is the SceneLayer-bound sibling of
+/// <see cref="DirectDarknessOverlay"/>. Use it for darkness, mist, smoke, or fog that
+/// physically belongs to a specific <see cref="SceneLayer"/> instead of to a player/view.
 /// </para>
 /// <para>
-/// This is intentionally implemented as a <see cref="DirectDrawingBase"/> in
-/// <see cref="DirectDrawingMode.View"/> so it remains modular and take-it-or-leave-it:
-/// no renderer-wide lighting system is required.
+/// The overlay darkens only its own <see cref="WorldBounds"/> and only participates in
+/// the render pass of its own <see cref="SceneLayer"/>. It can track <see cref="DirectRadialLight"/>
+/// instances from that same layer, but it intentionally refuses lights from other layers. That keeps
+/// this helper modular and avoids introducing cross-layer light spill, shadows, or bouncing.
 /// </para>
 /// <para>
-/// Reveal sources can be controlled manually, can track individual <see cref="DirectRadialLight"/>
-/// instances, or can track every light in a <see cref="DirectLightLayer"/>. Tracking is optional;
-/// manual reveal sources remain useful for player vision, stealth cones, magic sight, and scripted fog.
-/// </para>
-/// <para>
-/// Dirty-rectangle behavior: because this is a full-view overlay, any visible change typically
-/// refreshes the full viewport. That is expected for this style of effect and keeps the feature
-/// self-contained.
+/// This class is useful for world effects such as swamp fog, dust clouds, magical darkness regions,
+/// poison haze, room-local darkness, and other atmosphere that should be visible to every view that
+/// can see that part of the layer.
 /// </para>
 /// </remarks>
-/// <example>
-/// <code>
-/// var lights = new DirectLightLayer(renderSurfaceHost, dungeonLayer);
-/// var torch = lights.AddTorchLight(new PointF(520, 320), 110f, nickname: "torch-01");
-///
-/// var darkness = new DirectDarknessOverlay(renderSurfaceHost, mainView, dungeonLayer, "dungeon-darkness")
-///     .SetDarknessColor(Color.Black)
-///     .SetDarknessOpacity(190);
-///
-/// darkness.TrackLight(torch);
-///
-/// // Later during gameplay:
-/// torch.MoveTo(playerWorldCenterPx);
-/// // The torch glow and darkness reveal now move together.
-/// </code>
-/// </example>
-public sealed class DirectDarknessOverlay : DirectDrawingBase
+public sealed class DirectSceneLayerDarknessOverlay : DirectDrawingBase
 {
     private readonly List<RevealSource> _revealSources = [];
     private readonly List<TrackedLightReveal> _trackedLightReveals = [];
@@ -69,41 +48,41 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     private float _midpointStrength = 0.45f;
 
     /// <summary>
-    /// Initializes a new darkness/fog overlay that covers a specific view.
+    /// Initializes a new scene-layer darkness/fog overlay.
     /// </summary>
-    /// <param name="renderSurfaceHost">The render surface host that owns the target scene and view.</param>
-    /// <param name="view">The target view whose viewport will receive the overlay.</param>
-    /// <param name="projectionLayer">
-    /// The scene layer used to project world-space reveal sources into screen-space.
-    /// In most games this should be the main gameplay/world layer.
-    /// </param>
+    /// <param name="renderSurfaceHost">The render surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The layer this darkness/fog belongs to.</param>
+    /// <param name="worldBounds">The world-space region affected by the darkness/fog.</param>
     /// <param name="nickname">Optional friendly name for debugging and lookup.</param>
-    public DirectDarknessOverlay(RenderSurfaceHostBase renderSurfaceHost,
-                                 View view,
-                                 SceneLayer projectionLayer,
-                                 string? nickname = null)
+    public DirectSceneLayerDarknessOverlay(RenderSurfaceHostBase renderSurfaceHost,
+                                           SceneLayer sceneLayer,
+                                           Rectangle worldBounds,
+                                           string? nickname = null)
         : base(renderSurfaceHost,
-               DirectDrawingMode.View,
-               sceneLayer: null,
-               view: view,
-               screenBounds: view.Viewport.TargetRectPx,
-               worldBounds: null,
+               DirectDrawingMode.SceneLayer,
+               sceneLayer,
+               view: null,
+               screenBounds: null,
+               worldBounds: worldBounds,
                nickname: nickname)
     {
-        ProjectionLayer = projectionLayer ?? throw new ArgumentNullException(nameof(projectionLayer));
         ZOrder = 20_000;
         RebuildDarknessPaint();
     }
 
     /// <summary>
-    /// Gets the scene layer used to project reveal source world positions into screen coordinates.
-    /// </summary>
-    public SceneLayer ProjectionLayer { get; }
-
-    /// <summary>
     /// Gets a live, ordered list of reveal sources used by this overlay.
     /// </summary>
     public IReadOnlyList<RevealSource> RevealSources => _revealSources;
+
+    /// <summary>
+    /// Gets or sets the world-space region affected by the darkness/fog.
+    /// </summary>
+    public Rectangle DarknessWorldBounds
+    {
+        get => WorldBounds;
+        set => WorldBounds = value;
+    }
 
     /// <summary>
     /// Gets or sets the tint color of the overlay.
@@ -142,10 +121,6 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     /// <summary>
     /// Gets or sets the radius ratio that remains fully revealed before falloff begins.
     /// </summary>
-    /// <remarks>
-    /// A value of 0 means reveal falloff begins immediately from the center.
-    /// A value near 1 means most of the reveal radius remains fully visible before fading.
-    /// </remarks>
     public float InnerClearRadiusRatio
     {
         get => _innerClearRadiusRatio;
@@ -185,9 +160,6 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     /// <summary>
     /// Gets or sets the removal strength at the midpoint stop.
     /// </summary>
-    /// <remarks>
-    /// 1.0 keeps the reveal strong deep into the radius; lower values produce a faster falloff.
-    /// </remarks>
     public float MidpointStrength
     {
         get => _midpointStrength;
@@ -214,22 +186,13 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     }
 
     /// <summary>
-    /// Adds a reveal source that automatically tracks a <see cref="DirectRadialLight"/>.
+    /// Adds a reveal source that automatically tracks a <see cref="DirectRadialLight"/> on this same SceneLayer.
     /// </summary>
-    /// <param name="light">The light whose center/radius/intensity should drive the reveal.</param>
-    /// <param name="radiusScale">Multiplier applied to the light radius when calculating reveal radius.</param>
-    /// <param name="intensityScale">Multiplier applied to the light intensity when calculating reveal intensity.</param>
-    /// <param name="trackIntensity">
-    /// When true, the reveal intensity follows <see cref="DirectRadialLight.EffectiveIntensity"/>.
-    /// When false, the reveal uses <paramref name="intensityScale"/> as a constant intensity.
-    /// </param>
-    /// <param name="nickname">Optional friendly name for the reveal source.</param>
     /// <remarks>
     /// Tracking is idempotent per light. If this overlay already tracks <paramref name="light"/>,
-    /// this method returns the existing <see cref="RevealSource"/> and leaves the existing
-    /// <paramref name="radiusScale"/>, <paramref name="intensityScale"/>, and
-    /// <paramref name="trackIntensity"/> settings unchanged. To change those settings, call
-    /// <see cref="UntrackLight"/> and then call <see cref="TrackLight"/> again.
+    /// this method returns the existing <see cref="RevealSource"/> and leaves the existing tracking
+    /// options unchanged. To change those options, call <see cref="UntrackLight"/> and then call
+    /// <see cref="TrackLight"/> again.
     /// </remarks>
     public RevealSource TrackLight(DirectRadialLight light,
                                    float radiusScale = 1f,
@@ -239,6 +202,8 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     {
         if (light is null)
             throw new ArgumentNullException(nameof(light));
+
+        EnsureSameSceneLayer(light);
 
         if (_trackedLightReveals.Any(t => ReferenceEquals(t.Light, light)))
             return _trackedLightReveals.First(t => ReferenceEquals(t.Light, light)).Source;
@@ -258,12 +223,8 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     }
 
     /// <summary>
-    /// Tracks every current and future light in a <see cref="DirectLightLayer"/>.
+    /// Tracks every current and future light in a <see cref="DirectLightLayer"/> attached to this same SceneLayer.
     /// </summary>
-    /// <remarks>
-    /// This is a convenience wrapper for games that want one logical light owner and one darkness overlay.
-    /// Existing lights are tracked immediately. Lights added to the layer later are tracked automatically.
-    /// </remarks>
     /// <remarks>
     /// Tracking is idempotent per light layer. Calling this method again for the same layer leaves
     /// the original tracking options in place.
@@ -275,6 +236,9 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     {
         if (lightLayer is null)
             throw new ArgumentNullException(nameof(lightLayer));
+
+        if (!ReferenceEquals(lightLayer.SceneLayer, SceneLayer))
+            throw new ArgumentException("SceneLayer-bound darkness can only track a DirectLightLayer attached to the same SceneLayer.", nameof(lightLayer));
 
         if (_trackedLightLayers.Any(t => ReferenceEquals(t.LightLayer, lightLayer)))
             return;
@@ -350,9 +314,18 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     }
 
     /// <summary>
+    /// Fluent helper to set the darkness/fog world bounds.
+    /// </summary>
+    public DirectSceneLayerDarknessOverlay SetDarknessWorldBounds(Rectangle worldBounds)
+    {
+        DarknessWorldBounds = worldBounds;
+        return this;
+    }
+
+    /// <summary>
     /// Fluent helper to set the darkness tint.
     /// </summary>
-    public DirectDarknessOverlay SetDarknessColor(Color color)
+    public DirectSceneLayerDarknessOverlay SetDarknessColor(Color color)
     {
         DarknessColor = color;
         return this;
@@ -361,7 +334,7 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     /// <summary>
     /// Fluent helper to set the darkness opacity.
     /// </summary>
-    public DirectDarknessOverlay SetDarknessOpacity(byte opacity)
+    public DirectSceneLayerDarknessOverlay SetDarknessOpacity(byte opacity)
     {
         DarknessOpacity = opacity;
         return this;
@@ -370,7 +343,7 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     /// <summary>
     /// Fluent helper to set the fully-revealed radius ratio.
     /// </summary>
-    public DirectDarknessOverlay SetInnerClearRadiusRatio(float ratio)
+    public DirectSceneLayerDarknessOverlay SetInnerClearRadiusRatio(float ratio)
     {
         InnerClearRadiusRatio = ratio;
         return this;
@@ -379,7 +352,7 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     /// <summary>
     /// Fluent helper to set the midpoint radius ratio.
     /// </summary>
-    public DirectDarknessOverlay SetMidpointRadiusRatio(float ratio)
+    public DirectSceneLayerDarknessOverlay SetMidpointRadiusRatio(float ratio)
     {
         MidpointRadiusRatio = ratio;
         return this;
@@ -388,31 +361,23 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     /// <summary>
     /// Fluent helper to set the midpoint reveal strength.
     /// </summary>
-    public DirectDarknessOverlay SetMidpointStrength(float strength)
+    public DirectSceneLayerDarknessOverlay SetMidpointStrength(float strength)
     {
         MidpointStrength = strength;
         return this;
     }
 
     /// <inheritdoc />
-    public override void Update(long tick)
-    {
-        // Keep the overlay pinned to the current viewport bounds.
-        var targetRect = View!.Viewport.TargetRectPx;
-        if (ScreenBounds != targetRect)
-            ScreenBounds = targetRect;
-
-        base.Update(tick);
-    }
-
-    /// <inheritdoc />
     protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
+        if (destRectScreen.Width <= 0f || destRectScreen.Height <= 0f || WorldBounds.Width <= 0 || WorldBounds.Height <= 0)
+            return;
+
         var canvas = backbuffer.Canvas;
         var destRect = destRectScreen.ToSKRect();
 
-        // Work in an isolated layer so "holes" reveal the already-rendered scene beneath,
-        // rather than clearing the backbuffer itself.
+        // Work in an isolated layer so DstOut reveal holes affect only this overlay,
+        // not the already-rendered scene content beneath it.
         canvas.SaveLayer(destRect, null);
 
         canvas.DrawRect(destRect, _darknessPaint);
@@ -423,16 +388,13 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
             if (!source.Enabled || source.RadiusWorldPx <= 0.01f || source.Intensity <= 0.001f)
                 continue;
 
-            var centerScreen = View!.WorldPxToScreenPx(ProjectionLayer, source.CenterWorldPx);
+            var centerScreen = WorldPointToDrawRect(source.CenterWorldPx, destRectScreen);
+            float radiusScreen = WorldRadiusToDrawRadius(source.RadiusWorldPx, destRectScreen);
 
-            var radiusProbeWorld = new PointF(source.CenterWorldPx.X + source.RadiusWorldPx, source.CenterWorldPx.Y);
-            var radiusProbeScreen = View.WorldPxToScreenPx(ProjectionLayer, radiusProbeWorld);
-            float screenRadius = Math.Abs(radiusProbeScreen.X - centerScreen.X);
-
-            if (screenRadius <= 0.01f)
+            if (radiusScreen <= 0.01f)
                 continue;
 
-            using var revealShader = BuildRevealShader(centerScreen, screenRadius, source.Intensity);
+            using var revealShader = BuildRevealShader(centerScreen, radiusScreen, source.Intensity);
             using var revealPaint = new SKPaint
             {
                 IsAntialias = true,
@@ -466,6 +428,9 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
 
     private void OnTrackedLayerLightAdded(DirectRadialLight light)
     {
+        if (!ReferenceEquals(light.SceneLayer, SceneLayer))
+            return;
+
         foreach (var trackedLayer in _trackedLightLayers.Where(t => t.LightLayer.Lights.Contains(light)).ToArray())
             TrackLight(light, trackedLayer.RadiusScale, trackedLayer.IntensityScale, trackedLayer.TrackIntensity);
     }
@@ -498,6 +463,30 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
             _revealSources.Remove(tracked.Source);
 
         ForceRefresh();
+    }
+
+    private void EnsureSameSceneLayer(DirectRadialLight light)
+    {
+        if (!ReferenceEquals(light.SceneLayer, SceneLayer))
+            throw new ArgumentException("SceneLayer-bound darkness can only track lights attached to the same SceneLayer.", nameof(light));
+    }
+
+    private PointF WorldPointToDrawRect(PointF worldPx, RectangleF destRectScreen)
+    {
+        float scaleX = destRectScreen.Width / WorldBounds.Width;
+        float scaleY = destRectScreen.Height / WorldBounds.Height;
+
+        return new PointF(
+            destRectScreen.Left + (worldPx.X - WorldBounds.Left) * scaleX,
+            destRectScreen.Top + (worldPx.Y - WorldBounds.Top) * scaleY);
+    }
+
+    private float WorldRadiusToDrawRadius(float radiusWorldPx, RectangleF destRectScreen)
+    {
+        float scaleX = destRectScreen.Width / WorldBounds.Width;
+        float scaleY = destRectScreen.Height / WorldBounds.Height;
+
+        return Math.Max(Math.Abs(radiusWorldPx * scaleX), Math.Abs(radiusWorldPx * scaleY));
     }
 
     private void RebuildDarknessPaint()
@@ -569,17 +558,17 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     }
 
     /// <summary>
-    /// Represents a single world-space reveal source used by a <see cref="DirectDarknessOverlay"/>.
+    /// Represents a single world-space reveal source used by a <see cref="DirectSceneLayerDarknessOverlay"/>.
     /// </summary>
     public sealed class RevealSource
     {
-        private readonly DirectDarknessOverlay _owner;
+        private readonly DirectSceneLayerDarknessOverlay _owner;
         private PointF _centerWorldPx;
         private float _radiusWorldPx;
         private float _intensity = 1f;
         private bool _enabled = true;
 
-        internal RevealSource(DirectDarknessOverlay owner, PointF centerWorldPx, float radiusWorldPx, string? nickname)
+        internal RevealSource(DirectSceneLayerDarknessOverlay owner, PointF centerWorldPx, float radiusWorldPx, string? nickname)
         {
             _owner = owner;
             _centerWorldPx = centerWorldPx;
@@ -644,9 +633,6 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
         /// <summary>
         /// Gets or sets the reveal intensity from 0..1.
         /// </summary>
-        /// <remarks>
-        /// 1 fully removes darkness at the center; lower values create weaker vision / dimmer reveal.
-        /// </remarks>
         public float Intensity
         {
             get => _intensity;
