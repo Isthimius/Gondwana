@@ -261,12 +261,14 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     /// Tracks every current and future light in a <see cref="DirectLightLayer"/>.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This is a convenience wrapper for games that want one logical light owner and one darkness overlay.
     /// Existing lights are tracked immediately. Lights added to the layer later are tracked automatically.
-    /// </remarks>
-    /// <remarks>
+    /// </para>
+    /// <para>
     /// Tracking is idempotent per light layer. Calling this method again for the same layer leaves
     /// the original tracking options in place.
+    /// </para>
     /// </remarks>
     public void TrackLightLayer(DirectLightLayer lightLayer,
                                 float radiusScale = 1f,
