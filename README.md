@@ -117,12 +117,6 @@ Gondwana is deliberately an engine and framework, not an all-encompassing visual
 
 ## 📂 Architecture
 
-At runtime, a central `Engine` loop advances timing, input, movement, animation, and game state before rendering active `View` instances into a platform backbuffer. CPU bitmap backbuffers can redraw only changed world-space regions, while GPU-backed surfaces use a full-viewport path. Platform adapters handle presentation and native input at the edges, keeping the core engine platform-agnostic.
-
-See the **[Engine Wiki](https://github.com/Isthimius/Gondwana/wiki)** for architecture guides, rendering-pipeline documentation, coordinate-space references, and subsystem walkthroughs.
-
-📂 Architecture
-
 Gondwana uses a central `Engine` cycle to advance timing, input, movement, animation, and game state. Active `View` instances then project and composite their `SceneLayer` contents through cameras and viewports into a platform backbuffer.
 
 CPU bitmap backbuffers support world-space dirty-region rendering, while GPU-backed surfaces render the full viewport. WinForms, Avalonia, and Blazor adapters handle presentation and native input at the edges, leaving the core engine platform-agnostic.
