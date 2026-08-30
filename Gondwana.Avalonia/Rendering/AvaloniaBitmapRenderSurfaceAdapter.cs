@@ -17,12 +17,16 @@ namespace Gondwana.Avalonia.Rendering;
 public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisposable
 {
     private readonly AvaloniaBitmapRenderSurfaceControl _control;
+    private readonly object _presentSync = new();
 
     // Owned by the UI thread: created/replaced in SetBitmap on the UI thread.
     private WriteableBitmap? _bitmap;
 
-    // Current rendered image; swapped lock-free from any thread.
+    // Current rendered image and accumulated dirty area; guarded by _presentSync.
     private SKImage? _currentImage;
+    private SKRectI _pendingSourceRect;
+    private bool _blitScheduled;
+
     // Images queued for disposal; written from any thread (Present), drained on UI thread.
     private readonly ConcurrentQueue<SKImage> _toDispose = new();
 
@@ -66,53 +70,133 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
     /// <param name="destRect">The destination rectangle on the render surface.</param>
     public override void Present(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)
     {
-        if (_disposed)
+        var sourceRect = SKRectI.Intersect(
+            bufferRect,
+            new SKRectI(0, 0, bufferImage.Width, bufferImage.Height));
+
+        if (sourceRect.IsEmpty)
         {
             bufferImage.Dispose();
             return;
         }
 
-        var old = _currentImage;
-        _currentImage = bufferImage;
-        if (!ReferenceEquals(old, _currentImage) && old is not null)
-            _toDispose.Enqueue(old);
+        bool scheduleBlit;
+        lock (_presentSync)
+        {
+            if (_disposed)
+            {
+                bufferImage.Dispose();
+                return;
+            }
 
-        // Schedule the pixel copy + repaint on the UI thread.
-        Dispatcher.UIThread.Post(BlitAndInvalidate, DispatcherPriority.Render);
+            var old = _currentImage;
+            _currentImage = bufferImage;
+            if (!ReferenceEquals(old, _currentImage) && old is not null)
+                _toDispose.Enqueue(old);
+
+            _pendingSourceRect = Union(_pendingSourceRect, sourceRect);
+            scheduleBlit = !_blitScheduled;
+            _blitScheduled = true;
+        }
+
+        // Several presents may arrive before the UI thread runs. One scheduled blit copies the
+        // union of their dirty regions from the newest (complete) backbuffer snapshot.
+        if (scheduleBlit)
+            Dispatcher.UIThread.Post(BlitAndInvalidate, DispatcherPriority.Render);
     }
 
     private void BlitAndInvalidate()
     {
-        if (_disposed) return;
+        SKImage? img;
+        SKRectI sourceRect;
 
-        var img = _currentImage;
+        lock (_presentSync)
+        {
+            if (_disposed)
+            {
+                _blitScheduled = false;
+                return;
+            }
+
+            img = _currentImage;
+            sourceRect = _pendingSourceRect;
+            _pendingSourceRect = SKRectI.Empty;
+            _blitScheduled = false;
+        }
+
         if (img == null) return;
 
-        var w = img.Width;
-        var h = img.Height;
-        if (w <= 0 || h <= 0) return;
-
-        // Recreate the writable bitmap only when dimensions change.
-        if (_bitmap == null || _bitmap.PixelSize.Width != w || _bitmap.PixelSize.Height != h)
+        try
         {
-            _bitmap?.Dispose();
-            _bitmap = new WriteableBitmap(
-                new PixelSize(w, h),
-                new Vector(96, 96),
-                PixelFormat.Bgra8888,
-                AlphaFormat.Premul);
-        }
+            var w = img.Width;
+            var h = img.Height;
+            if (w <= 0 || h <= 0) return;
 
-        // Read pixels from SKImage (BGRA8888 premul) straight into the writable bitmap.
-        using (var fb = _bitmap.Lock())
+            var imageBounds = new SKRectI(0, 0, w, h);
+            sourceRect = SKRectI.Intersect(sourceRect, imageBounds);
+            if (sourceRect.IsEmpty) return;
+
+            // A new bitmap has no retained pixels, so its first copy must cover the full image.
+            var bitmap = _bitmap;
+            if (bitmap == null || bitmap.PixelSize.Width != w || bitmap.PixelSize.Height != h)
+            {
+                bitmap?.Dispose();
+                bitmap = new WriteableBitmap(
+                    new PixelSize(w, h),
+                    new Vector(96, 96),
+                    PixelFormat.Bgra8888,
+                    AlphaFormat.Premul);
+
+                _bitmap = bitmap;
+                sourceRect = imageBounds;
+            }
+
+            // Copy only the accumulated dirty patch into its matching location in the bitmap.
+            bool copied;
+            using (var fb = bitmap.Lock())
+            {
+                var info = new SKImageInfo(
+                    sourceRect.Width,
+                    sourceRect.Height,
+                    SKColorType.Bgra8888,
+                    SKAlphaType.Premul);
+
+                var destinationOffset = checked((sourceRect.Top * fb.RowBytes) + (sourceRect.Left * 4));
+                var destination = IntPtr.Add(fb.Address, destinationOffset);
+
+                copied = img.ReadPixels(
+                    info,
+                    destination,
+                    fb.RowBytes,
+                    sourceRect.Left,
+                    sourceRect.Top);
+            }
+
+            if (!copied) return;
+
+            _control.SetBitmap(bitmap);
+            _control.InvalidateVisual();
+        }
+        finally
         {
-            var info = new SKImageInfo(w, h, SKColorType.Bgra8888, SKAlphaType.Premul);
-            img.ReadPixels(info, fb.Address, fb.RowBytes);
+            DisposeStaleImages();
         }
+    }
 
-        _control.SetBitmap(_bitmap);
-        _control.InvalidateVisual();
+    private static SKRectI Union(SKRectI left, SKRectI right)
+    {
+        if (left.IsEmpty) return right;
+        if (right.IsEmpty) return left;
 
+        return new SKRectI(
+            Math.Min(left.Left, right.Left),
+            Math.Min(left.Top, right.Top),
+            Math.Max(left.Right, right.Right),
+            Math.Max(left.Bottom, right.Bottom));
+    }
+
+    private void DisposeStaleImages()
+    {
         while (_toDispose.TryDequeue(out var stale))
             stale.Dispose();
     }
@@ -122,16 +206,23 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
     /// </summary>
     public void Dispose()
     {
-        if (_disposed) return;
-        _disposed = true;
+        SKImage? currentImage;
+        lock (_presentSync)
+        {
+            if (_disposed) return;
+            _disposed = true;
+
+            currentImage = _currentImage;
+            _currentImage = null;
+            _pendingSourceRect = SKRectI.Empty;
+            _blitScheduled = false;
+        }
 
         _control.SizeChanged -= OnSizeChanged;
 
-        while (_toDispose.TryDequeue(out var img))
-            img.Dispose();
+        DisposeStaleImages();
 
-        _currentImage?.Dispose();
-        _currentImage = null;
+        currentImage?.Dispose();
 
         _bitmap?.Dispose();
         _bitmap = null;
