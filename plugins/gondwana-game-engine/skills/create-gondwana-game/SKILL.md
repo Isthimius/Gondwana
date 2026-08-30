@@ -16,22 +16,37 @@ Before substantial implementation:
 1. If the Gondwana MCP tools are available, call `get_repository_info`.
 2. Read `AGENTS.md` from the current public/default Gondwana source unless the user explicitly names another ref.
 3. Read `docs/ai/README.md`.
-4. Inspect `Tooling/Gondwana.Templates/` for current project/startup conventions.
-5. Identify and inspect the closest current demo in `Demos/`.
-6. Search/read the source for the public types the implementation will use.
-7. Search/read the relevant wiki pages for the intended mental model.
+4. Identify the applicable project type and inspect its current template in `Tooling/Gondwana.Templates/`.
+5. Use that template as the baseline for project structure, dependencies, startup, hosting, lifecycle hooks, and rendering configuration.
+6. Only after establishing the template baseline, identify and inspect the closest current demo in `Demos/` for relevant gameplay and subsystem patterns.
+7. Search/read the source for the public types the implementation will use.
+8. Search/read the relevant wiki pages for the intended mental model.
 
 Do not invent an API because a similarly named method would be conventional in another game engine.
 
 If live Gondwana repository access is unavailable, say that exact API verification is unavailable before relying on uncertain signatures.
 
-## Choose the closest existing path
+## Start from the applicable template
 
-Prefer the nearest working Gondwana example:
+For a new game or project, choose and use the existing template that matches the requested host:
 
-- Windows/WinForms game startup: inspect the current WinForms template and Windows demos.
-- Avalonia desktop: inspect current Avalonia hosting/examples.
-- Blazor/WebAssembly: inspect the current Blazor hosting/examples.
+- Windows/WinForms: `Tooling/Gondwana.Templates/templates/gondwana-winforms/`.
+- Cross-platform Avalonia desktop: `Tooling/Gondwana.Templates/templates/gondwana-avalonia/`.
+- Blazor/WebAssembly: `Tooling/Gondwana.Templates/templates/gondwana-blazor/`.
+
+Scaffold from the applicable template when the environment permits. Otherwise, reproduce that template's current files and conventions as the starting point. Preserve its project layout, package references, host/window composition, lifecycle hooks, and backbuffer setup unless the user's request requires a deliberate change.
+
+After the template establishes the project shell, use demos as references for the requested mechanics and subsystems. Adapt those patterns into the template-derived structure; do not use a demo's older or specialized startup structure in place of the current template baseline.
+
+If the user is extending an existing game, preserve its chosen host and structure. Use the matching template as the current-conventions reference, then consult demos for the requested feature.
+
+## Choose the closest demo path
+
+After choosing the template baseline, prefer the nearest working Gondwana demo for feature-specific guidance:
+
+- Windows/WinForms behavior: inspect relevant Windows demos.
+- Avalonia desktop behavior: inspect relevant Avalonia demos.
+- Blazor/WebAssembly behavior: inspect relevant Blazor demos.
 - Platforming/collision gameplay: inspect `Demos/Gondwana.Platformer/`.
 - Ship movement/rotation/combat/HUD patterns: inspect `Demos/Gondwana.SpaceDuel/`.
 - Particles: inspect `Demos/Gondwana.ParticleTest/`.
@@ -71,7 +86,7 @@ Before claiming an implementation is correct:
 
 1. verify the exact public types/members used,
 2. check relevant tests,
-3. check the closest demo/template,
+3. check the applicable template first, then the closest demo,
 4. account for lifecycle/ownership implications,
 5. build/test when the environment permits it.
 

@@ -15,7 +15,7 @@ The repository remains the source of truth:
 
 Use when a developer asks to create a game, demo, sample, mechanic, or project using Gondwana.
 
-The workflow verifies current public APIs, checks templates and the closest demo, and prefers game-facing Gondwana abstractions over internal shortcuts.
+The workflow verifies current public APIs, uses the applicable current template as the project baseline, and then consults the closest demos for gameplay and subsystem patterns. It prefers game-facing Gondwana abstractions over internal shortcuts.
 
 ### `debug-gondwana-game`
 

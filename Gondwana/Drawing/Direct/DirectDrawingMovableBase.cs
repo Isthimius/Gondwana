@@ -266,6 +266,15 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IDirectCompo
     /// </remarks>
     public override void Update(long tick)
     {
+        // DirectDrawingBase registers the instance with DirectDrawingManager from
+        // its constructor. The update thread can therefore observe this derived
+        // instance before this constructor has assigned Movement.
+        if (Movement is null)
+        {
+            base.Update(tick);
+            return;
+        }
+
         if (tick <= _lastTick)
             return;
 
