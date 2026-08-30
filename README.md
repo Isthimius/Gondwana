@@ -81,7 +81,7 @@ Gondwana is deliberately an engine and framework, not an all-encompassing visual
 - **Backbuffer abstraction** through `BitmapBackbuffer` and `GpuBackbuffer`
 - **WinForms, Avalonia, and Blazor adapters**, with ready-to-use hosts for Windows, Linux, macOS, and WebAssembly
 - **View-centric layered scenes** with multiple cameras, viewports, parallax, stable z-ordering, and world-space dirty-region tracking
-- **Host-owned display effects** for view- and layer-level display effects, including fades, slides, directional fills and erases, view shake, and zoom
+- **Host-owned display effects** for view- and layer-level effects, including fades, slides, directional fills and erases, view shake, and zoom
 - **Modular lighting and fog-of-war primitives**, including radial lights, flicker, darkness overlays, and tracked world-space reveal areas
 - **Multiple coordinate systems**: orthogonal, rhombic isometric, axial isometric, flat-top hex, pointy-top hex, and oblique
 - **Sprites and DirectDrawing** for reusable images, shapes, text, particles, overlays, effects, composites, and high-volume bitmap instances
