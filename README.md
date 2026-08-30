@@ -81,7 +81,8 @@ Gondwana is deliberately an engine and framework, not an all-encompassing visual
 - **Backbuffer abstraction** through `BitmapBackbuffer` and `GpuBackbuffer`
 - **WinForms, Avalonia, and Blazor adapters**, with ready-to-use hosts for Windows, Linux, macOS, and WebAssembly
 - **View-centric layered scenes** with multiple cameras, viewports, parallax, stable z-ordering, and world-space dirty-region tracking
-- **Host-owned display effects** for view- or layer-level fades, slides, directional fills/erases, view shake, and view zoom
+- **Host-owned display effects** for view- and layer-level effects, including fades, slides, directional fills and erases, view shake, and zoom
+- **Modular lighting and fog-of-war primitives**, including radial lights, flicker, darkness overlays, and tracked world-space reveal areas
 - **Multiple coordinate systems**: orthogonal, rhombic isometric, axial isometric, flat-top hex, pointy-top hex, and oblique
 - **Sprites and DirectDrawing** for reusable images, shapes, text, particles, overlays, effects, composites, and high-volume bitmap instances
 - **Reusable game UI widgets** with lifecycle events, automatic input registration, focus, keyboard and pointer routing, dragging, hit testing, and components such as `SplashScreen`
@@ -91,25 +92,6 @@ Gondwana is deliberately an engine and framework, not an all-encompassing visual
 - **Asset support** for tilesheets, sprites, fonts, audio, and packaged Gondwana asset files
 - **Unified keyboard, mouse, touch, and gamepad input**, with SDL2 gamepad support available as a dedicated package
 - **Audio, MIDI, browser audio, and experimental video integration** through optional packages
-
----
-
-## Display effects
-
-Each render surface exposes an `EffectsManager` through `RenderSurfaceHostBase.Effects`:
-
-```csharp
-surface.Effects.Run(view, new FadeOutEffect(0.5f));
-surface.Effects.Run(layer, new SlideInEffect(
-    EffectDirection.FromLeftToRight,
-    durationSeconds: 0.75f));
-surface.Effects.Run(view, new EarthquakeEffect(0.4f, intensityPx: 10f));
-```
-
-Fade, slide, fill, and erase effects can target either a `View` or a `SceneLayer`.
-Earthquake and zoom effects target a `View`. Transform, opacity, reveal, and zoom
-are independent channels and can run together; starting a new effect on the same
-target and channel replaces the effect already running there.
 
 ---
 
@@ -135,9 +117,13 @@ target and channel replaces the effect already running there.
 
 ## 📂 Architecture
 
-At runtime, a central `Engine` loop advances timing, input, movement, animation, and game state before rendering active `View` instances into a platform backbuffer. CPU bitmap backbuffers can redraw only changed world-space regions, while GPU-backed surfaces use a full-viewport path. Platform adapters handle presentation and native input at the edges, keeping the core engine platform-agnostic.
+Gondwana uses a central `Engine` cycle to advance timing, input, movement, animation, and game state. Active `View` instances then project and composite their `SceneLayer` contents through cameras and viewports into a platform backbuffer.
 
-See the **[Engine Wiki](https://github.com/Isthimius/Gondwana/wiki)** for architecture guides, rendering-pipeline documentation, coordinate-space references, and subsystem walkthroughs.
+CPU bitmap backbuffers support world-space dirty-region rendering, while GPU-backed surfaces render the full viewport. WinForms, Avalonia, and Blazor adapters handle presentation and native input at the edges, leaving the core engine platform-agnostic.
+
+`Engine → Views and cameras → Scene layers and drawables → Backbuffer → Platform adapter`
+
+See the **[Engine Wiki](https://github.com/Isthimius/Gondwana/wiki)** for detailed rendering pipelines and subsystem documentation.
 
 ---
 
