@@ -18,19 +18,26 @@ internal sealed class GameWindow : Form
         KeyDown += (_, e) => { if (e.KeyCode == Keys.Escape) Close(); };
     }
 
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+
+        _gameHost = new SideScrollerGameHost(_renderSurface);
+        _gameHost.Engine.InitializationComplete += () =>
+        {
+            _gameHost.Engine.Configuration.TargetFPS = 0;
+            _gameHost.Engine.Configuration.VSync = true;
+            _gameHost.Engine.Configuration.MsaaSampleCount = 4;
+        };
+    }
+
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
+
         try
         {
-            _gameHost = new SideScrollerGameHost(_renderSurface);
-            _gameHost.Engine.InitializationComplete += () =>
-            {
-                _gameHost.Engine.Configuration.TargetFPS = 0;
-                _gameHost.Engine.Configuration.VSync = true;
-                _gameHost.Engine.Configuration.MsaaSampleCount = 4;
-            };
-            _gameHost.Initialize(logLevel: LogLevel.Warning);
+            _gameHost!.Initialize(logLevel: LogLevel.Warning);
             _gameHost.StartGame();
             _renderSurface.Focus();
         }
@@ -44,6 +51,7 @@ internal sealed class GameWindow : Form
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
         _gameHost?.Dispose();
+        _gameHost = null;
         base.OnFormClosed(e);
     }
 }

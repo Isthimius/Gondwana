@@ -5,7 +5,6 @@ using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Input.Keyboard;
-using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
 using Gondwana.Timers;
 using Gondwana.WinForms;
@@ -15,7 +14,7 @@ using SkiaSharp;
 
 namespace Gondwana.ZeldaPrototype;
 
-internal sealed partial class ZeldaGameHost : WinFormsGameHost
+internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
 {
     private const int WorldColumns = 80;
     private const int WorldRows = 30;
@@ -81,10 +80,9 @@ internal sealed partial class ZeldaGameHost : WinFormsGameHost
     private Facing _facing = Facing.Down;
     private string _lastHud = string.Empty;
 
-    internal ZeldaGameHost(WinFormBitmapRenderSurfaceControl renderSurface)
+    internal ZeldaGameHost(WinFormGpuRenderSurfaceControl renderSurface)
         : base(renderSurface)
     {
-        ((BitmapBackbuffer)renderSurface.Host.Backbuffer).FilterQuality = SKFilterQuality.None;
     }
 
     protected override void LoadTilesheets()
@@ -159,9 +157,10 @@ internal sealed partial class ZeldaGameHost : WinFormsGameHost
 
     protected override void OnEngineInitialized()
     {
-        Engine.Configuration.TargetFPS = 60;
+        //Engine.Configuration.TargetFPS = 60;
+        Engine.Configuration.VSync = true;
 
-        // WinFormsGameHost initializes XInput before Engine.Initialize(). The current
+        // WinFormsGpuGameHost initializes XInput before Engine.Initialize(). The current
         // Engine.Initialize signature assigns its optional gamepad argument afterward,
         // so reattaching here preserves the host's intended XInput manager.
         Engine.InitializeXInputGamepadManager();

@@ -94,7 +94,7 @@ The solution compiled successfully with .NET SDK 8.0.424 in both supported confi
 - the default public Gondwana `2.*` NuGet references
 - direct project references to the pinned Gondwana source checkout above
 
-Both builds completed with zero errors. The dependency graph emits existing compatibility warnings for OpenTK 3.1.0, OpenTK.GLControl 3.1.0, and SkiaSharp.Views.WindowsForms 3.119.2 targeting .NET Framework assets, plus an obsolete `SKFilterQuality` warning used by the current Gondwana bitmap template path. Runtime play-testing was not possible in the Linux validation environment because the prototype is a Windows Forms application.
+Both builds completed with zero errors. The dependency graph emits existing compatibility warnings for OpenTK 3.1.0, OpenTK.GLControl 3.1.0, and SkiaSharp.Views.WindowsForms 3.119.2 targeting .NET Framework assets. The host and render surface follow the WinForms GPU template path. Runtime play-testing was not possible in the Linux validation environment because the prototype is a Windows Forms application.
 
 ### Fixed-tile compatibility
 

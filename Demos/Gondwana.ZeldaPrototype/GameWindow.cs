@@ -9,7 +9,7 @@ internal sealed class GameWindow : Form
 {
     internal static readonly Size GameSize = new(960, 640);
 
-    private readonly WinFormBitmapRenderSurfaceControl _renderSurface = new();
+    private readonly WinFormGpuRenderSurfaceControl _renderSurface = new();
     private ZeldaGameHost? _gameHost;
 
     internal GameWindow()
@@ -66,4 +66,3 @@ internal sealed class GameWindow : Form
         base.OnFormClosed(e);
     }
 }
-
