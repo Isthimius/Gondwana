@@ -1,4 +1,5 @@
-﻿using Gondwana.Rendering;
+﻿using System.Collections.Concurrent;
+using Gondwana.Rendering;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 
@@ -10,10 +11,12 @@ namespace Gondwana.WinForms.Rendering;
 public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisposable
 {
     private readonly SKControl _control;
+    private readonly object _presentSync = new();
 
     private SKImage? _currentImage;
-    private readonly Queue<SKImage> _toDispose = new();
-    private SKRectI _sourceRect;
+    private readonly ConcurrentQueue<SKImage> _toDispose = new();
+    private SKRectI _pendingSourceRect;
+    private bool _disposed;
 
     //public SKColor ClearColor { get; set; } = SKColors.Black;
 
@@ -81,48 +84,106 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
             return;
         }
 
-        // Swap into current; old one queued for disposal after paint
-        var old = _currentImage;
-        _currentImage = bufferImage;
-        if (!ReferenceEquals(old, _currentImage) && old is not null)
-            _toDispose.Enqueue(old);
+        var sourceRect = SKRectI.Intersect(
+            bufferRect,
+            new SKRectI(0, 0, bufferImage.Width, bufferImage.Height));
 
-        _sourceRect = bufferRect;
+        var invalidateRect = global::System.Drawing.Rectangle.Intersect(
+            global::System.Drawing.Rectangle.FromLTRB(
+                sourceRect.Left,
+                sourceRect.Top,
+                sourceRect.Right,
+                sourceRect.Bottom),
+            _control.ClientRectangle);
 
-        _control.Invalidate();
+        if (sourceRect.IsEmpty || invalidateRect.IsEmpty)
+        {
+            bufferImage.Dispose();
+            return;
+        }
+
+        lock (_presentSync)
+        {
+            if (_disposed)
+            {
+                bufferImage.Dispose();
+                return;
+            }
+
+            // Swap into current; old one is disposed after the paint that consumes the newest
+            // complete snapshot. Coalesce dirty regions in case Windows combines invalidations.
+            var old = _currentImage;
+            _currentImage = bufferImage;
+            if (!ReferenceEquals(old, _currentImage) && old is not null)
+                _toDispose.Enqueue(old);
+
+            _pendingSourceRect = Union(_pendingSourceRect, sourceRect);
+        }
+
+        _control.Invalidate(invalidateRect);
     }
 
     private void OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
         var canvas = e.Surface.Canvas;
 
-        var img = _currentImage;
-        if (img == null) return;
+        SKImage? img;
+        SKRectI sourceRect;
+        lock (_presentSync)
+        {
+            img = _currentImage;
+            sourceRect = _pendingSourceRect;
+            _pendingSourceRect = SKRectI.Empty;
+        }
 
-        var srcI = SKRectI.Intersect(_sourceRect, new SKRectI(0, 0, img.Width, img.Height));
-        if (srcI.IsEmpty) return;
+        try
+        {
+            if (img == null) return;
 
-        var destI = new SKRectI(srcI.Left, srcI.Top, srcI.Right, srcI.Bottom);
+            var srcI = SKRectI.Intersect(sourceRect, new SKRectI(0, 0, img.Width, img.Height));
+            if (srcI.IsEmpty) return;
 
-        var boundsI = new SKRectI(0, 0, e.Info.Width, e.Info.Height);
-        var clippedDestI = SKRectI.Intersect(destI, boundsI);
-        if (clippedDestI.IsEmpty) return;
+            var destI = new SKRectI(srcI.Left, srcI.Top, srcI.Right, srcI.Bottom);
 
-        var dx = clippedDestI.Left - destI.Left;
-        var dy = clippedDestI.Top - destI.Top;
-        var clippedSrcI = new SKRectI(
-            srcI.Left + dx, srcI.Top + dy,
-            srcI.Left + dx + clippedDestI.Width,
-            srcI.Top + dy + clippedDestI.Height);
+            var boundsI = new SKRectI(0, 0, e.Info.Width, e.Info.Height);
+            var clippedDestI = SKRectI.Intersect(destI, boundsI);
+            if (clippedDestI.IsEmpty) return;
 
-        // clear the destination patch (overwrite)
-        canvas.DrawRect(clippedDestI, _clearPaint);
+            var dx = clippedDestI.Left - destI.Left;
+            var dy = clippedDestI.Top - destI.Top;
+            var clippedSrcI = new SKRectI(
+                srcI.Left + dx, srcI.Top + dy,
+                srcI.Left + dx + clippedDestI.Width,
+                srcI.Top + dy + clippedDestI.Height);
 
-        // blit the updated patch (overwrite)
-        canvas.DrawImage(img, clippedSrcI, clippedDestI, _presentPaint);
+            // clear the destination patch (overwrite)
+            canvas.DrawRect(clippedDestI, _clearPaint);
 
-        while (_toDispose.Count > 0)
-            _toDispose.Dequeue().Dispose();
+            // blit the updated patch (overwrite)
+            canvas.DrawImage(img, clippedSrcI, clippedDestI, _presentPaint);
+        }
+        finally
+        {
+            DisposeStaleImages();
+        }
+    }
+
+    private static SKRectI Union(SKRectI left, SKRectI right)
+    {
+        if (left.IsEmpty) return right;
+        if (right.IsEmpty) return left;
+
+        return new SKRectI(
+            Math.Min(left.Left, right.Left),
+            Math.Min(left.Top, right.Top),
+            Math.Max(left.Right, right.Right),
+            Math.Max(left.Bottom, right.Bottom));
+    }
+
+    private void DisposeStaleImages()
+    {
+        while (_toDispose.TryDequeue(out var stale))
+            stale.Dispose();
     }
 
     /// <summary>
@@ -130,6 +191,17 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
     /// </summary>
     public void Dispose()
     {
+        SKImage? currentImage;
+        lock (_presentSync)
+        {
+            if (_disposed) return;
+            _disposed = true;
+
+            currentImage = _currentImage;
+            _currentImage = null;
+            _pendingSourceRect = SKRectI.Empty;
+        }
+
         if (!_control.IsDisposed)
         {
             _control.PaintSurface -= OnPaintSurface;
@@ -137,10 +209,8 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
             _control.ClientSizeChanged -= OnSizeChanged;
         }
 
-        while (_toDispose.Count > 0)
-            _toDispose.Dequeue().Dispose();
+        DisposeStaleImages();
 
-        _currentImage?.Dispose();
-        _currentImage = null;
+        currentImage?.Dispose();
     }
 }
