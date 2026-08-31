@@ -203,3 +203,11 @@ Gondwana is available under the [MIT License](LICENSE).
 
 **Third-party libraries**  
 Gondwana uses **Skia** (© Google) through **SkiaSharp** (© Microsoft and contributors), licensed under the BSD 3-Clause license.
+
+---
+
+## Support Gondwana
+
+Gondwana is developed and maintained independently. If you find the engine useful and would like to support its continued development:
+
+[☕ Buy me a coffee](https://www.buymeacoffee.com/mikeleeisback)
