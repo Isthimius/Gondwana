@@ -1,5 +1,4 @@
 # Changelog
-
 All notable changes to this project will be documented in this file.
 
 
@@ -40,13 +39,8 @@ All notable changes to this project will be documented in this file.
 
 # v2.3.0 - May 20, 2026
 
-
-
-## Other Changes
-- Update README to remove installation section
-- Add first-class SVG asset support (`AssetTypes.Svg`) with `SvgResource` and `DirectSvg`
-
-
+## Documentation
+- Update the README for the current installation guidance and SVG asset support
 
 # v2.1.0 - April 20, 2026
 
@@ -55,6 +49,3 @@ All notable changes to this project will be documented in this file.
 ## Other Changes
 - Moving Gondwana.Assets.WinForms to actual new directory
 - Per project README files
-
-
-

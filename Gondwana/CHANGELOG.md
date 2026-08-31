@@ -98,143 +98,27 @@ All notable changes to this project will be documented in this file.
 
 # v2.3.0 - May 20, 2026
 
-
-
 ## Added
-- Expose TargetFps and VSync properties on GpuBackbuffer
-- Add actual GPU FPS tracking to GpuBackbuffer and CPSCalculated event
-- Add MSAA and VSync to GpuBackbuffer and EngineConfiguration
-- Add Engine.StartTimerDriven/Tick and AvaloniaGameHost WASM support
-- Add touch input adapter with gesture recognizers for Avalonia (Android/iOS)
-- Refactor touch to poll-driven pattern matching Mouse
-- Add TouchAdapter to EngineInputSystems and wire through Engine.Initialize
-- Add core engine/studio plugin infrastructure
-- Add studio editors and runtime asset loaders
-- Replace SpotSplashForm with platform-agnostic DirectImage splash
-- Add RenderBackbufferPostScene event and OnPostRenderCanvas plugin hook
+- Add the GPU backbuffer and GL-thread rendering path with configurable target FPS, VSync, MSAA, and measured GPU FPS
+- Add timer-driven engine execution through `Engine.StartTimerDriven` and `Engine.Tick` for browser hosts
+- Add poll-driven touch input, gesture events, and adapter integration through `EngineInputSystems`
+- Add engine/Studio plugin infrastructure and runtime loaders for animation, scene, and tilesheet assets
+- Add plugin pre-frame, post-frame, and post-scene canvas hooks
+- Add first-class SVG assets through `AssetTypes.Svg`, `SvgResource`, and `DirectSvg`
+- Add a platform-agnostic splash overlay
+- Add collision response helpers that cancel velocity only along blocked axes
 
-
+## Changed
+- Bypass dirty-rectangle accumulation on the GPU path and always render the full GPU surface
+- Make `Frame.DurationSeconds` immutable after construction
 
 ## Fixed
-- Fix for DirectComposite null Nickname
-- Fix jiggle artifacts
-- Fix for AssetsFile; new Gondwana.Assets.WinForms project
-- Fix for 2.1.1 patch
-- Guard RefreshQueue._worldRects with lock to prevent GL-thread / engine-thread race
-- Make SpriteManager thread-safe to prevent collection-modified exception
-- Thread-safe iteration snapshots and use pattern matching for cast in SpotGL
-- Bypass RefreshQueue for GpuBackbuffer, always re-render full surface
-- Correct StartTimerDriven XML exception docs — ArgumentNullException for null uiContext, InvalidOperationException for init-in-progress
-- Handle null SKSurface.Create in GpuBackbuffer; fall back to sampleCount=1 for unsupported MSAA
-- Address PR review feedback on touch gesture recognizers and adapter
-- Setter owns adapter disposal; callers assign via TouchAdapter only
-- TouchEnded always drains before throttle; _lastEventTick advances only on emitted events
-- Resolve studio build issues and finalize editor integration
-- Standardise color spelling in new XML docs and lifecycle doc
-
-
-
-## Refactoring
-- Skip DirtyRectangle accumulation on GPU path, remove dead ClearDirtyRectangle call from GlRenderAndSnapshot
-- Address code review feedback on gesture recognizers and touch adapter
-- Address code review feedback on TouchEventPoller and AvaloniaTouchInputAdapter
-- Address remaining code review feedback
-
-
-
-## Maintenance
-- Address validation feedback and finalize implementation
-
-
-
-## Other Changes
-- Merge from master v2.0.1
-- Updating version
-- Merge midi fix, GameHostBase
-- Moving assets to folder; minor cleanup; adding reference to Engine instance in GameHostBase
-- Spot particles on splash screen; updates to DirectDrawing Particles
-- Mapped SpotGameField to SceneLayer
-- NewGameDialog layout
-- New game instantiation, with grid and OffsetPx
-- Toggle music
-- Comment
-- Assets
-- Adding assets; adding font to Spot
-- Adding FontManager
-- Moving SpriteManager from static to singleton
-- Moved static Engine input methods to instance of EngineInputSystems
-- Scoping and fixing xml comments
-- Xml comments
-- Adding Pulse to Sprite Resize
-- Pulse loop
-- More Sprite.Resize; assets; window sizing
-- Alphabetize
-- SpotGame events
-- Spots on the field
-- Whitespace and comments
-- Troubleshooting ValueBag
-- Ditching json from TypedValueBag
-- Pulse working
-- Spot movement; suddenly an Input class appears
-- Jiggle it
-- OnPlayerTurn, jiggle
-- Throttling jiggle to framerate
-- Capture logic and animation
-- Rounded scores
-- Game Over message; shrink on horizontal line overflow
-- Text line elipsis for TextBlock; removed unneeded using
-- Sprite resize refresh queue padding
-- Clouds could use some optimization
-- Cloud optimization
-- Min fontSize; comments
-- AssetFile enhancements
-- One last touch up on AssetFile
-- Troubleshooting; comment
-- MouseEventArgs sugar
-- Tightening up CollisionGroupRegistry and TypedValueBag
-- Remove old using
-- New namespace Gondwana.Drawing.Direct.ImageLayer
-- Spelling
-- Updating "Related Packages"
-- Copying README; solution org
-- NuGet package updates
-- Project settings and files for NuGet publication
-- Logos and icons
-- Implement GpuBackbuffer, WinFormGpuRenderSurfaceAdapter, WinFormGpuRenderSurfaceControl
-- Address code review: split dispose lines, remove unused resize fields, add BeginFrame comment, document volatile semantics
-- Address PR review: fallback canvas/snapshot, DrawTileFrame guard, dimension guard, fix resize handler leak, zero-size guard
-- Remove _resizeFlag (superseded by _surface null-check), simplify BeginFrame, document resize timing in adapter
-- Round 3: raster GpuBackbuffer, adapter disposal, 0x0 resize guard, code style fixes
-- .md and misc cleanup
-- Warnings
-- Moving project tags explicitly to individual projects
-- Option A: move GpuBackbuffer rendering to GL thread
-- Address code review feedback: remove unused field, null-safe Canvas, readable Math.Max
-- Replace WinForms Timer with Engine.AfterFrameRender for GL invalidation sync
-- Comment clean up
-- Merge from master
-- Seed TargetFps from EngineConfiguration in GpuBackbuffer constructor
-- Make RenderSurfaceHostRegistry thread-safe with lock and Snapshot()
-- Clarify GpuBackbuffer thread-affinity docs to exempt VSync/MsaaSampleCount/TargetFps
-- Removing dead code
-- Adding ConfigurationSections
-- Add TouchAdapter setter to EngineInputSystems and wire through Engine.Initialize
-- Add GestureType, GestureEventArgs, and TouchEvent on TouchEventPoller
-- Document recognizer lifetime ownership on TouchEvent
-- Fix black content panels, add named tiles filter, per-frame durations, AllowDrop, plugin resolver, and other review fixes
-- Make Frame.DurationSeconds readonly for consistency with other fields
-- OnPreFrameRender and OnPostFrameRender to IEnginePlugin
-- Add XML documentation for public/protected members in touched C# files
-- Improve XML docs on new interfaces
-- Add first-class SVG asset support (`AssetTypes.Svg`) with `SvgResource` and `DirectSvg`
-- Fix SVG bitmap ownership and DirectSvg disposal issues
-- Avoid redundant bitmap copies in DirectSvg
-- Clarify DirectSvg bitmap ownership in dispose path
-- Ensure post-scene canvas hooks invalidate CPU backbuffers
-- Skip post-scene hooks when no views exist
-- Collision detection helper
-
-
+- Make `SpriteManager`, `RefreshQueue`, and render-surface host access safe across engine and GL threads
+- Fall back safely when an MSAA sample count is unsupported or an SKSurface cannot be created
+- Correct touch throttling, queue draining, gesture behavior, and adapter disposal ownership
+- Resolve Studio integration and runtime asset-loader issues
+- Correct SVG bitmap ownership and avoid redundant bitmap copies
+- Ensure post-scene canvas hooks invalidate CPU backbuffers and are skipped when no views exist
 
 # v2.0.1 - March 07, 2026
 
@@ -830,6 +714,5 @@ All notable changes to this project will be documented in this file.
 - CompositeSprite enhancements; xml comments
 - Committing for 2.0.1
 - Generate xml file
-
 
 

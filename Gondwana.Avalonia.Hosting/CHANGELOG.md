@@ -66,23 +66,10 @@ All notable changes to this project will be documented in this file.
 
 # v2.3.0 - May 20, 2026
 
-
-
 ## Added
-- Add Gondwana.Avalonia and Gondwana.Avalonia.Hosting projects
-- Add Engine.StartTimerDriven/Tick and AvaloniaGameHost WASM support
-- Add AvaloniaGpuRenderSurfaceControl, adapter, and AvaloniaGpuGameHost
-- Wire touch adapter into GameHost lifecycle same as keyboard and mouse
-
-
+- Introduce Avalonia hosting with bitmap and GPU game hosts
+- Add timer-driven browser support through `Engine.StartTimerDriven` and `Engine.Tick`
+- Integrate the touch adapter with the game-host lifecycle
 
 ## Fixed
-- Use TimeSpan.Zero for DispatcherTimer interval on WASM path
-
-
-
-## Other Changes
-- Update Gondwana.Avalonia.Hosting/AvaloniaGameHost.cs
-
-
-
+- Use a zero dispatcher-timer interval on the browser path
