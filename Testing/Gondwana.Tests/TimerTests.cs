@@ -46,6 +46,38 @@ public sealed class TimerTests : IDisposable
     }
 
     /// <summary>
+    /// Verifies that timer lengths must be finite, positive, and representable as high-resolution ticks.
+    /// </summary>
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-0.01)]
+    [InlineData(double.NaN)]
+    [InlineData(double.PositiveInfinity)]
+    [InlineData(double.NegativeInfinity)]
+    [InlineData(double.MaxValue)]
+    public void Add_WithInvalidLength_Throws(double length)
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            EngineTimer.Add("invalid", TimerType.PreCycle, TimerCycles.Repeating, length));
+
+        Assert.Equal(0, EngineTimer.Count);
+    }
+
+    /// <summary>
+    /// Verifies that a positive duration which truncates to zero high-resolution ticks is rejected.
+    /// </summary>
+    [Fact]
+    public void Add_WithSubTickLength_Throws()
+    {
+        double length = 0.5 / HighResTimer.TicksPerSecond;
+
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            EngineTimer.Add("sub-tick", TimerType.PreCycle, TimerCycles.Repeating, length));
+
+        Assert.Equal(0, EngineTimer.Count);
+    }
+
+    /// <summary>
     /// Verifies that removing an existing or missing timer identifier is safe.
     /// </summary>
     [Fact]
@@ -136,6 +168,23 @@ public sealed class TimerTests : IDisposable
 
         Assert.Equal(1, ticks);
         Assert.DoesNotContain("once", EngineTimer.TimerIDs);
+    }
+
+    /// <summary>
+    /// Verifies that an overdue once timer raises exactly one event instead of catching up like a repeating timer.
+    /// </summary>
+    [Fact]
+    public void RaiseTimerEvents_OverdueOnceTimerRaisesOnlyOneTick()
+    {
+        var timer = EngineTimer.Add("overdue-once", TimerType.PreCycle, TimerCycles.Once, 0.01);
+        var ticks = 0;
+        timer.Tick += () => ticks++;
+
+        var engineTick = GetLastEventTick(timer) + (timer.Length * 3);
+        InvokeRaiseTimerEvents(TimerType.PreCycle, engineTick);
+
+        Assert.Equal(1, ticks);
+        Assert.DoesNotContain("overdue-once", EngineTimer.TimerIDs);
     }
 
     /// <summary>
