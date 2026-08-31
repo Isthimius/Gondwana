@@ -52,10 +52,23 @@ public sealed class Timer : IDisposable
 
     private Timer(TimerType type, TimerCycles cycles, long startTick, double length)
     {
+        if (!double.IsFinite(length) || length <= 0)
+            throw new ArgumentOutOfRangeException(
+                nameof(length),
+                length,
+                "Timer length must be finite and greater than zero.");
+
+        double lengthInTicks = length * HighResTimer.TicksPerSecond;
+        if (lengthInTicks < 1 || lengthInTicks >= long.MaxValue)
+            throw new ArgumentOutOfRangeException(
+                nameof(length),
+                length,
+                "Timer length must convert to at least one high-resolution tick and fit in a positive Int64.");
+
         Type = type;
         Cycles = cycles;
         _lastEventTick = startTick;
-        Length = (long)(length * HighResTimer.TicksPerSecond);
+        Length = (long)lengthInTicks;
         Paused = false;
     }
 
@@ -224,7 +237,10 @@ public sealed class Timer : IDisposable
 
                 // check for any expired timers
                 if (timer.Cycles == TimerCycles.Once)
+                {
                     expired.Add(key);
+                    break;
+                }
             }
         }
 
