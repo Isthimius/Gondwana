@@ -1,5 +1,4 @@
 # Changelog
-
 All notable changes to this project will be documented in this file.
 
 
@@ -81,31 +80,15 @@ All notable changes to this project will be documented in this file.
 
 # v2.3.0 - May 20, 2026
 
-
-
 ## Added
-- Add Gondwana.Templates dotnet new template package
-- Add gondwana-avalonia template and CLI command
-- Add --backbuffer option to gondwana new winforms/avalonia commands
-- Add gondwana-blazor template, gondwana new blazor CLI command, docs (PR 2)
-- Wire touch adapter into GameHost lifecycle same as keyboard and mouse
-
-
+- Introduce the Gondwana project-template package
+- Add Avalonia and Blazor templates with selectable bitmap or GPU backbuffers
+- Integrate touch adapters with generated game hosts
 
 ## Fixed
-- Use 2.* package versions in template and add LogLevel tip comment
-- Remove redundant conditional using directives in template GameHost/GameWindow files
-- Address PR review feedback (App.cs BROWSER guard, duplicate JS, PS5.1 $IsWindows, dead code, doc fix)
-- Update stale first-game-in-15-minutes.md links across all templates and Gondwana.Templates README
-
-
+- Use compatible 2.x package references in generated projects
+- Remove redundant conditional imports and correct browser-specific guards and JavaScript wiring
+- Update stale first-game documentation links
 
 ## Documentation
-- Replace first-game-in-15-minutes.md with wiki page; add CLI method tutorial
-
-
-
-## Maintenance
-- Add dev install scripts for Gondwana.Cli and Gondwana.Templates
-
-
+- Link templates to the wiki-based first-game tutorial and CLI workflow

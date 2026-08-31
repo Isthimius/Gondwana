@@ -67,27 +67,11 @@ All notable changes to this project will be documented in this file.
 
 # v2.3.0 - May 20, 2026
 
-
-
 ## Added
-- Add SpotGL demo project (GPU-rendered Spot using GpuBackbuffer) and WinFormsGpuGameHost base class
-- Bring parity between WinFormGpuRenderSurface and WinFormBitmapRenderSurface control/adapter pairs
-- Wire touch adapter into GameHost lifecycle same as keyboard and mouse
-- Replace SpotSplashForm with platform-agnostic DirectImage splash
-
-
-
-## Fixed
-- Fix for 2.1.1 patch
-
-
-
-## Other Changes
-- Moving project tags explicitly to individual projects
-- Merge from master
-
-
-
+- Add `WinFormsGpuGameHost` and the GPU-rendered Spot demo
+- Bring the WinForms GPU and bitmap render-surface control/adapter pairs to feature parity
+- Integrate touch adapters with the game-host lifecycle
+- Add the platform-agnostic splash overlay
 # v2.1.0 - April 20, 2026
 
 
@@ -98,6 +82,5 @@ All notable changes to this project will be documented in this file.
 - Copying README; solution org
 - Project settings and files for NuGet publication
 - Per project README files
-
 
 

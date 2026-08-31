@@ -55,46 +55,17 @@ All notable changes to this project will be documented in this file.
 
 # v2.3.0 - May 20, 2026
 
-
-
 ## Added
-- Expose TargetFps and VSync properties on GpuBackbuffer
-- Bring parity between WinFormGpuRenderSurface and WinFormBitmapRenderSurface control/adapter pairs
-- Add actual GPU FPS tracking to GpuBackbuffer and CPSCalculated event
-
-
+- Add `GpuBackbuffer`, `WinFormGpuRenderSurfaceControl`, and the corresponding adapter
+- Move GPU rendering to the GL thread
+- Expose target FPS and VSync controls and report measured GPU FPS
+- Bring the GPU and bitmap render-surface control/adapter pairs to feature parity
 
 ## Fixed
-- Fix for 2.1.1 patch
-- Forward inner GLControl mouse events to outer WinFormGpuRenderSurfaceControl
-- Make SpriteManager thread-safe to prevent collection-modified exception
-
-
-
-## Tests
-- Testing
-
-
-
-## Other Changes
-- Implement GpuBackbuffer, WinFormGpuRenderSurfaceAdapter, WinFormGpuRenderSurfaceControl
-- Address PR review: fallback canvas/snapshot, DrawTileFrame guard, dimension guard, fix resize handler leak, zero-size guard
-- Remove _resizeFlag (superseded by _surface null-check), simplify BeginFrame, document resize timing in adapter
-- Round 3: raster GpuBackbuffer, adapter disposal, 0x0 resize guard, code style fixes
-- Moving project tags explicitly to individual projects
-- Option A: move GpuBackbuffer rendering to GL thread
-- Address code review feedback: remove unused field, null-safe Canvas, readable Math.Max
-- More debugging
-- Replace WinForms Timer with Engine.AfterFrameRender for GL invalidation sync
-- Throttle BeginInvoke(Invalidate) to at most one pending per GPU frame
-- Fix flicker: skip canvas.Clear before full-screen DrawImage in Option A GPU path
-- Remove legacy Present path from WinFormGpuRenderSurfaceAdapter
-- Replace BeginInvoke with UiDispatcher.Post for GL control invalidation
-- Comment clean up
-- Merge from master
-
-
-
+- Forward inner GL-control mouse events through the outer render-surface control
+- Correct resize, zero-size, fallback-surface, disposal, and frame-invalidation behavior on the GPU path
+- Prevent GPU-path flicker and throttle invalidation to one pending request per frame
+- Make `SpriteManager` iteration thread-safe
 # v2.1.0 - April 20, 2026
 
 
@@ -177,6 +148,5 @@ All notable changes to this project will be documented in this file.
 - Project settings and files for NuGet publication
 - Logos and icons
 - Per project README files
-
 
 
