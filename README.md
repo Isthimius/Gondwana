@@ -208,4 +208,4 @@ Gondwana uses **Skia** (© Google) through **SkiaSharp** (© Microsoft and contr
 
 ## ☕ Support Gondwana
 
-Gondwana is developed and maintained independently. If you find the engine useful and would like to support its continued development: [buy me a coffee](https://www.buymeacoffee.com/mikeleeisback)
+Gondwana is developed and maintained independently. If you find the engine useful, consider [buying me a coffee](https://www.buymeacoffee.com/mikeleeisback) to support its continued development.
