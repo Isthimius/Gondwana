@@ -10,6 +10,9 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'Tooling/scripts/Generate-Project-Changelogs.ps1'
+      - 'Tooling/scripts/Generate-Root-Changelog.ps1'
+      - 'Tooling/scripts/Changelog-ProjectGroups.ps1'
+      - 'Tooling/scripts/release.ps1'
       - 'cliff.toml'
       - '.github/workflows/changelog-master.yml'
 
@@ -30,10 +33,11 @@ jobs:
       - name: Install git-cliff
         uses: taiki-e/install-action@d8ae1fa96886bc82c05515b8ac15b41515da2c6d # git-cliff
 
-      - name: Preview project changelogs
+      - name: Preview changelogs
         shell: pwsh
         run: |
           $before = @(git status --porcelain --untracked-files=all)
+          ./Tooling/scripts/Generate-Root-Changelog.ps1 -PreviewOnly
           ./Tooling/scripts/Generate-Project-Changelogs.ps1 -PreviewOnly
           $after = @(git status --porcelain --untracked-files=all)
 
@@ -67,6 +71,7 @@ jobs:
 
           $gondwanaHistory = Get-ReleasedHistory ./Gondwana/CHANGELOG.md
           $cliHistory = Get-ReleasedHistory ./Tooling/Gondwana.Cli/CHANGELOG.md
+          ./Tooling/scripts/Generate-Root-Changelog.ps1
           ./Tooling/scripts/Generate-Project-Changelogs.ps1
 
           if ((Get-ReleasedHistory ./Gondwana/CHANGELOG.md) -cne $gondwanaHistory) {
@@ -82,6 +87,7 @@ jobs:
           Copy-Item ./Tooling/Gondwana.Cli/CHANGELOG.md "$env:RUNNER_TEMP/cli-first.md"
           Copy-Item ./Tooling/Gondwana.Mcp/CHANGELOG.md "$env:RUNNER_TEMP/mcp-first.md"
 
+          ./Tooling/scripts/Generate-Root-Changelog.ps1
           ./Tooling/scripts/Generate-Project-Changelogs.ps1
           $secondManifest = @(Get-ChangelogManifest)
 
@@ -95,6 +101,55 @@ jobs:
               Write-Host "MCP changelog first-vs-second diff:"
               & git diff --no-index -- "$env:RUNNER_TEMP/mcp-first.md" ./Tooling/Gondwana.Mcp/CHANGELOG.md
               throw "Generate-Project-Changelogs.ps1 is not idempotent."
+          }
+
+      - name: Validate grouped root changelog
+        shell: pwsh
+        run: |
+          git reset --hard HEAD
+          git clean -fd
+
+          function Get-ReleasedHistory {
+              param([string]$Content)
+              $firstRelease = [regex]::Match($Content, '(?m)^#\s+\[v?\d+\.\d+\.\d+\](?:\s|$)')
+              if (-not $firstRelease.Success) {
+                  throw "No released root changelog history was found."
+              }
+              return $Content.Substring($firstRelease.Index)
+          }
+
+          $before = Get-Content ./CHANGELOG.md -Raw
+          $releasedHistory = Get-ReleasedHistory $before
+
+          ./Tooling/scripts/Generate-Root-Changelog.ps1
+          $unreleased = Get-Content ./CHANGELOG.md -Raw
+
+          if ($unreleased -notmatch '(?m)^# \[Unreleased\]$') {
+              throw "Root changelog does not begin with an [Unreleased] section."
+          }
+          if ($unreleased -notmatch '(?m)^## Build / Repository$') {
+              throw "Root [Unreleased] section is not grouped by project/area."
+          }
+          if ((Get-ReleasedHistory $unreleased) -cne $releasedHistory) {
+              throw "Refreshing root [Unreleased] changed released history."
+          }
+
+          ./Tooling/scripts/Generate-Root-Changelog.ps1
+          if ((Get-Content ./CHANGELOG.md -Raw) -cne $unreleased) {
+              throw "Root changelog generation is not idempotent."
+          }
+
+          ./Tooling/scripts/Generate-Root-Changelog.ps1 -Tag v9.9.9
+          $tagged = Get-Content ./CHANGELOG.md -Raw
+
+          if ($tagged -notmatch '(?m)^# \[v9\.9\.9\] - \d{4}-\d{2}-\d{2}$') {
+              throw "Tagged root generation did not prepend v9.9.9."
+          }
+          if ($tagged -match '(?m)^# \[Unreleased\]$') {
+              throw "Tagged root generation left [Unreleased] behind."
+          }
+          if ((Get-ReleasedHistory $tagged) -cne $releasedHistory) {
+              throw "Tagged root generation changed existing released history."
           }
 
       - name: Validate missing changelog bootstrap
@@ -196,9 +251,11 @@ jobs:
       - name: Install git-cliff
         uses: taiki-e/install-action@d8ae1fa96886bc82c05515b8ac15b41515da2c6d # git-cliff
 
-      - name: Refresh project changelogs
+      - name: Refresh changelogs
         shell: pwsh
-        run: ./Tooling/scripts/Generate-Project-Changelogs.ps1
+        run: |
+          ./Tooling/scripts/Generate-Root-Changelog.ps1
+          ./Tooling/scripts/Generate-Project-Changelogs.ps1
 
       - name: Commit changelog updates
         shell: bash
@@ -210,10 +267,10 @@ jobs:
           validate_changes() {
             unexpected=$(git status --porcelain --untracked-files=all \
               | sed -E 's/^.. //' \
-              | grep -Ev '/CHANGELOG\.md$' || true)
+              | grep -Ev '(^|/)CHANGELOG\.md$' || true)
 
             if [ -n "$unexpected" ]; then
-              echo "Generator changed files other than project CHANGELOG.md files:"
+              echo "Generator changed files other than CHANGELOG.md files:"
               echo "$unexpected"
               exit 1
             fi
@@ -227,7 +284,7 @@ jobs:
           validate_changes
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- ':(glob)**/CHANGELOG.md' ':(exclude)CHANGELOG.md'
+          git add -- ':(glob)**/CHANGELOG.md'
           git commit -m "docs: update unreleased changelogs"
 
           # A second master push can land while this run is generating files.
@@ -239,6 +296,7 @@ jobs:
             git reset --hard origin/master
             git clean -fd
 
+            pwsh ./Tooling/scripts/Generate-Root-Changelog.ps1
             pwsh ./Tooling/scripts/Generate-Project-Changelogs.ps1
 
             if ! has_changes; then
@@ -247,7 +305,7 @@ jobs:
             fi
 
             validate_changes
-            git add -- ':(glob)**/CHANGELOG.md' ':(exclude)CHANGELOG.md'
+            git add -- ':(glob)**/CHANGELOG.md'
             git commit -m "docs: update unreleased changelogs"
             git push origin HEAD:master
           fi
