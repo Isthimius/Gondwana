@@ -156,7 +156,7 @@ function Remove-LeadingUnreleasedSection {
     return $before + [Environment]::NewLine + [Environment]::NewLine + $after
 }
 
-function Normalize-TopReleaseBoundary {
+function Normalize-ChangelogStructure {
     param(
         [Parameter(Mandatory = $true)]
         [AllowEmptyString()]
@@ -167,36 +167,49 @@ function Normalize-TopReleaseBoundary {
         return $Content
     }
 
-    # git-cliff's full-history and --prepend modes can differ by one blank line
-    # at the boundary between the generated current section and released history.
-    # Normalize only that top boundary so repeat generation produces identical bytes
-    # without rewriting spacing inside historical release sections.
+    # git-cliff's full-history and --prepend modes do not always produce the
+    # same surrounding blank-line counts. Canonicalize only the outer structure
+    # we own: header-to-first-release, first-to-second-release, and EOF. Spacing
+    # inside historical release sections is preserved verbatim.
     $releaseHeadingPattern = '(?m)^#\s+(?:\[Unreleased\]|\[?v?\d+\.\d+\.\d+)'
     $releaseHeadingRegex = New-Object System.Text.RegularExpressions.Regex($releaseHeadingPattern)
     $firstReleaseHeading = $releaseHeadingRegex.Match($Content)
 
     if (-not $firstReleaseHeading.Success) {
-        return $Content
+        return $Content.TrimEnd() + [Environment]::NewLine
     }
 
+    $prefix = $Content.Substring(0, $firstReleaseHeading.Index).TrimEnd()
+    $releaseContent = $Content.Substring($firstReleaseHeading.Index).Trim()
+
+    if ([string]::IsNullOrWhiteSpace($prefix)) {
+        $Content = $releaseContent
+    }
+    else {
+        $Content = $prefix + [Environment]::NewLine + [Environment]::NewLine + $releaseContent
+    }
+
+    # Normalize the boundary between the current top section and the next
+    # versioned section when one exists. This is the boundary that differs
+    # between a first full-history generation and subsequent --prepend runs.
+    $firstReleaseHeading = $releaseHeadingRegex.Match($Content)
     $secondReleaseHeading = $releaseHeadingRegex.Match(
         $Content,
         $firstReleaseHeading.Index + $firstReleaseHeading.Length
     )
 
-    if (-not $secondReleaseHeading.Success) {
-        return $Content
+    if ($secondReleaseHeading.Success) {
+        $boundaryStart = $secondReleaseHeading.Index
+        while ($boundaryStart -gt 0 -and [char]::IsWhiteSpace($Content[$boundaryStart - 1])) {
+            $boundaryStart--
+        }
+
+        $before = $Content.Substring(0, $boundaryStart).TrimEnd()
+        $after = $Content.Substring($secondReleaseHeading.Index).TrimStart()
+        $Content = $before + [Environment]::NewLine + [Environment]::NewLine + $after
     }
 
-    $boundaryStart = $secondReleaseHeading.Index
-    while ($boundaryStart -gt 0 -and [char]::IsWhiteSpace($Content[$boundaryStart - 1])) {
-        $boundaryStart--
-    }
-
-    $before = $Content.Substring(0, $boundaryStart).TrimEnd()
-    $after = $Content.Substring($secondReleaseHeading.Index).TrimStart()
-
-    return $before + [Environment]::NewLine + [Environment]::NewLine + $after
+    return $Content.TrimEnd() + [Environment]::NewLine
 }
 
 function Write-Utf8NoBom {
@@ -280,7 +293,7 @@ foreach ($project in $Projects) {
                 $generatedContent = ""
             }
 
-            $generatedContent = Normalize-TopReleaseBoundary -Content $generatedContent
+            $generatedContent = Normalize-ChangelogStructure -Content $generatedContent
             Write-Utf8NoBom -Path $changelogPath -Content $generatedContent
             Write-Host "  Written."
         }
@@ -334,7 +347,7 @@ foreach ($project in $Projects) {
             $generatedContent = ""
         }
 
-        $generatedContent = Normalize-TopReleaseBoundary -Content $generatedContent
+        $generatedContent = Normalize-ChangelogStructure -Content $generatedContent
         Write-Utf8NoBom -Path $changelogPath -Content $generatedContent
         Write-Host "  Written."
     }
