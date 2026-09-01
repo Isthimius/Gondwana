@@ -104,6 +104,7 @@ $ProjectChangelogGroups = @(
         IncludePaths = @(
             ".github/**/*",
             "Solution Items/**/*",
+            "Tooling/scripts/**/*",
             "Directory.Build.props",
             "Directory.Build.targets",
             "Directory.Packages.props",
