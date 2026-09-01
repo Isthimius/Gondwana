@@ -229,8 +229,6 @@ function Invoke-GitCliffToContent {
         [string]$Project
     )
 
-    # Use a path that does not exist yet. git-cliff's --output behavior differs
-    # when the destination already exists; GetTempFileName() creates the file.
     $tempChangelog = Join-Path `
         ([System.IO.Path]::GetTempPath()) `
         ("gondwana-changelog-" + [Guid]::NewGuid().ToString("N") + ".md")
@@ -306,16 +304,35 @@ foreach ($project in $Projects) {
 
     try {
         if ($changelogIsNew) {
-            # For a new/empty changelog, git-cliff provides the whole document:
-            # header, current [Unreleased] (or -Tag) section, and tagged history.
-            # Run that output through the same parser/composer used for refreshes
-            # so the initial file already has the canonical top-level boundaries.
+            # Bootstrap is intentionally a direct invocation. This mirrors the
+            # git-cliff command used to validate full-history generation and
+            # avoids routing first-run semantics through the incremental helper.
             $cliffArgs = @($baseCliffArgs)
             if ($Tag) {
                 $cliffArgs += "--tag", $Tag
             }
 
-            $generatedContent = Invoke-GitCliffToContent -Arguments $cliffArgs -Project $project
+            $tempBootstrap = Join-Path `
+                ([System.IO.Path]::GetTempPath()) `
+                ("gondwana-bootstrap-" + [Guid]::NewGuid().ToString("N") + ".md")
+
+            try {
+                & git-cliff @cliffArgs "--output" $tempBootstrap
+                if ($LASTEXITCODE -ne 0) {
+                    throw "git-cliff failed for project '$project' (exit $LASTEXITCODE)."
+                }
+
+                $generatedContent = Get-Content $tempBootstrap -Raw
+                if ($null -eq $generatedContent) {
+                    $generatedContent = ""
+                }
+            }
+            finally {
+                if (Test-Path $tempBootstrap) {
+                    Remove-Item $tempBootstrap -Force
+                }
+            }
+
             $generatedParts = Get-ChangelogParts -Content $generatedContent -CurrentTag $Tag
 
             if ([string]::IsNullOrWhiteSpace($generatedParts.CurrentSection)) {
