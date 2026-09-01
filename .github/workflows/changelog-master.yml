@@ -49,6 +49,8 @@ jobs:
           ./Tooling/scripts/Generate-Project-Changelogs.ps1
           $firstManifest = @(Get-ChangelogManifest)
           Copy-Item ./Gondwana/CHANGELOG.md "$env:RUNNER_TEMP/gondwana-first.md"
+          Copy-Item ./Tooling/Gondwana.Cli/CHANGELOG.md "$env:RUNNER_TEMP/cli-first.md"
+          Copy-Item ./Tooling/Gondwana.Mcp/CHANGELOG.md "$env:RUNNER_TEMP/mcp-first.md"
 
           ./Tooling/scripts/Generate-Project-Changelogs.ps1
           $secondManifest = @(Get-ChangelogManifest)
@@ -58,6 +60,10 @@ jobs:
               $difference | Format-Table | Out-String | Write-Host
               Write-Host "Gondwana changelog first-vs-second diff:"
               & git diff --no-index -- "$env:RUNNER_TEMP/gondwana-first.md" ./Gondwana/CHANGELOG.md
+              Write-Host "CLI changelog first-vs-second diff:"
+              & git diff --no-index -- "$env:RUNNER_TEMP/cli-first.md" ./Tooling/Gondwana.Cli/CHANGELOG.md
+              Write-Host "MCP changelog first-vs-second diff:"
+              & git diff --no-index -- "$env:RUNNER_TEMP/mcp-first.md" ./Tooling/Gondwana.Mcp/CHANGELOG.md
               throw "Generate-Project-Changelogs.ps1 is not idempotent."
           }
 
