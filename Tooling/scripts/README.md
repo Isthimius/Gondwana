@@ -7,6 +7,7 @@ This folder contains PowerShell helper scripts for building, publishing, and rel
 - [`Reinstall-Gondwana-Templates.ps1`](#reinstall-gondwana-templatesps1)
 - [`Generate-Project-Changelogs.ps1`](#generate-project-changelogsps1)
 - [`Generate-Root-Changelog.ps1`](#generate-root-changelogps1)
+- [`Changelog-ProjectGroups.ps1`](#changelog-projectgroupsps1-support-file)
 - [`release.ps1`](#releaseps1)
 
 ---
@@ -143,16 +144,6 @@ Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://
 >
 > Released history in an existing project changelog is treated as authoritative and is not regenerated during normal refreshes. The repository's canonical release history remains the root `CHANGELOG.md`, which includes all release changes across projects.
 
-### `Generate-Root-Changelog.ps1`
-
-Regenerates only the root changelog's leading derived section while preserving all existing released history exactly. Its entries are grouped by project/area in the same format used by release notes.
-
-- Without `-Tag`, current commits since the latest tag are written under `# [Unreleased]`.
-- With `-Tag`, the leading `[Unreleased]` block is removed and those same commits are written under the supplied version.
-- `-PreviewOnly` prints the complete result without modifying the file.
-
-The shared project/area definitions live in `Changelog-ProjectGroups.ps1`, so automatic `[Unreleased]` generation and release generation cannot drift into different groupings.
-
 **Prerequisites:**
 - [`git-cliff`](https://git-cliff.org/) on `PATH` — install with `winget install --id orhun.git-cliff`.
 - A `cliff.toml` config file at the repository root.
@@ -163,8 +154,8 @@ The shared project/area definitions live in `Changelog-ProjectGroups.ps1`, so au
 |---|---|---|
 | `-Tag` | Version tag to stamp on the current unreleased commits (e.g. `v1.2.3`). When omitted, they remain under `[Unreleased]`. | — |
 | `-PreviewOnly` | Print generated output to the console without writing any files. | — |
-| `-Projects` | Override the default project list (relative paths from repo root). | All library projects |
-| `-CliffConfigPath` | Path to the `cliff.toml` config. Relative paths are resolved from the repo root. | `cliff.toml` |
+| `-Projects` | Override the default project list using paths relative to the repository root. | All library/tooling projects |
+| `-CliffConfigPath` | Path to the `cliff.toml` config. Relative paths are resolved from the repository root. | `cliff.toml` |
 
 **Examples:**
 ```powershell
@@ -180,6 +171,59 @@ The shared project/area definitions live in `Changelog-ProjectGroups.ps1`, so au
 # Refresh a subset of projects only
 .\Generate-Project-Changelogs.ps1 -Projects @("Gondwana", "Gondwana.WinForms")
 ```
+
+---
+
+### `Generate-Root-Changelog.ps1`
+
+Regenerates only the repository-level `CHANGELOG.md`'s leading derived section while preserving all existing released history exactly. Its entries are grouped by project/area in the same format used by release notes. `.github/workflows/changelog-master.yml` runs this script alongside `Generate-Project-Changelogs.ps1` after non-changelog pushes to `master`.
+
+**What it does:**
+1. Loads the project/area definitions from `Changelog-ProjectGroups.ps1`.
+2. Uses `git-cliff` to collect commits since the latest tag for each matching project/area.
+3. Replaces any leading generated or manually edited `[Unreleased]` section.
+4. Without `-Tag`, writes the current grouped changes under `# [Unreleased]`.
+5. With `-Tag`, writes those same grouped changes under the supplied version and adds the full-changelog comparison link when a previous tag exists.
+6. Preserves the file header and every existing versioned section exactly.
+
+> The canonical root `CHANGELOG.md` must already exist and contain a recognized `[Unreleased]` or versioned release heading. Unlike the project generator, this script deliberately does not bootstrap missing root history.
+
+**Prerequisites:**
+- [`git-cliff`](https://git-cliff.org/) on `PATH` — install with `winget install --id orhun.git-cliff`.
+- A `cliff.toml` config file at the repository root.
+
+**Parameters:**
+
+| Parameter | Description | Default |
+|---|---|---|
+| `-Tag` | Version tag to stamp on the current unreleased commits (e.g. `v1.2.3`). When omitted, they remain under `[Unreleased]`. | — |
+| `-PreviewOnly` | Print the complete resulting root changelog without modifying the file. | — |
+| `-SectionOnly` | Internal mode used by `release.ps1` to return only the generated current section without modifying the file. | — |
+| `-ChangelogPath` | Path to the root changelog. Relative paths are resolved from the repository root. | `CHANGELOG.md` |
+| `-CliffConfigPath` | Path to the `cliff.toml` config. Relative paths are resolved from the repository root. | `cliff.toml` |
+
+**Examples:**
+```powershell
+# Refresh the grouped root [Unreleased] section
+.\Generate-Root-Changelog.ps1
+
+# Preview the complete resulting root changelog without touching disk
+.\Generate-Root-Changelog.ps1 -PreviewOnly
+
+# Convert the root [Unreleased] section into a versioned release section
+.\Generate-Root-Changelog.ps1 -Tag v1.2.3
+
+# Use a non-default root changelog path
+.\Generate-Root-Changelog.ps1 -ChangelogPath docs\CHANGELOG.md
+```
+
+---
+
+### `Changelog-ProjectGroups.ps1` (support file)
+
+Defines the project/area headings and `git-cliff` include paths used to build the grouped root changelog. It is dot-sourced by `Generate-Root-Changelog.ps1`; it is not intended to be executed directly.
+
+Keeping these definitions in one support file ensures that automatic `[Unreleased]` updates and versioned release generation use identical headings and path filters. A commit that matches multiple groups intentionally appears under each matching heading.
 
 ---
 
@@ -211,8 +255,8 @@ Creates a new versioned release of Gondwana: updates the changelog, commits it, 
 |---|---|---|
 | `-Remote` | Git remote name. | `origin` |
 | `-RequiredBranch` | Branch that must be checked out before tagging. | `master` |
-| `-ChangelogPath` | Path to the changelog file, relative to the script or absolute. | `CHANGELOG.md` |
-| `-CliffConfigPath` | Path to the `git-cliff` config file, relative to the script or absolute. | `cliff.toml` |
+| `-ChangelogPath` | Path to the changelog file, relative to the repository root or absolute. | `CHANGELOG.md` |
+| `-CliffConfigPath` | Path to the `git-cliff` config file, relative to the repository root or absolute. | `cliff.toml` |
 | `-PreviewOnly` | Generate and display the release notes preview without making any changes. | — |
 
 **Examples:**
