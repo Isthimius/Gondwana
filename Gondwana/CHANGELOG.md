@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 
 
+# [Unreleased]
+
+
+
+## Added
+- Add hyperlink widget and container refactor
+- Add oblique left coordinate system
+- Add collision adjustment and persistence
+- Add self-contained platformer demo
+- Add spaceduel demo
+- Add collision configuration support for Frame and .gts files
+- Add effect subsystem
+- Add popup and toast overlays
+- Add direct light rendering
+- Add side scroller and zelda prototypes
+- Add DirectSceneLayerDarknessOverlay
+
+
+
+## Fixed
+- Fix hex partial coordinate movement bug
+- Fix zoom calculations and movement timing
+- Fix sprite cloning composition
+- Persist engine config changes
+- Handle image instance layer updates
+- Support custom logger dependency injection
+- Correct view coordinate conversion on GPU path to address occasional tearing
+- Resolve timer edge case
+
+
+
+## Refactoring
+- Tighten touch and mouse polling behavior
+
+
+
+## Other Changes
+- Standardizing CollisionAdjust and Overlap values
+
 # v2.5.2 - July 26, 2026
 
 
