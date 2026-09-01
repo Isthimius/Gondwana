@@ -110,16 +110,25 @@ jobs:
           git clean -fd
 
           function Get-ReleasedHistory {
-              param([string]$Content)
-              $firstRelease = [regex]::Match($Content, '(?m)^#\s+\[v?\d+\.\d+\.\d+\](?:\s|$)')
+              param(
+                  [string]$Content,
+                  [string]$StartingVersion
+              )
+              $versionPattern = [regex]::Escape($StartingVersion)
+              $firstRelease = [regex]::Match($Content, "(?m)^#\s+\[$versionPattern\](?:\s|$)")
               if (-not $firstRelease.Success) {
-                  throw "No released root changelog history was found."
+                  throw "Root changelog release $StartingVersion was not found."
               }
               return $Content.Substring($firstRelease.Index)
           }
 
           $before = Get-Content ./CHANGELOG.md -Raw
-          $releasedHistory = Get-ReleasedHistory $before
+          $firstRelease = [regex]::Match($before, '(?m)^#\s+\[(?<Version>v?\d+\.\d+\.\d+)\](?:\s|$)')
+          if (-not $firstRelease.Success) {
+              throw "No released root changelog history was found."
+          }
+          $releasedVersion = $firstRelease.Groups['Version'].Value
+          $releasedHistory = Get-ReleasedHistory $before $releasedVersion
 
           ./Tooling/scripts/Generate-Root-Changelog.ps1
           $unreleased = Get-Content ./CHANGELOG.md -Raw
@@ -130,7 +139,7 @@ jobs:
           if ($unreleased -notmatch '(?m)^## Build / Repository$') {
               throw "Root [Unreleased] section is not grouped by project/area."
           }
-          if ((Get-ReleasedHistory $unreleased) -cne $releasedHistory) {
+          if ((Get-ReleasedHistory $unreleased $releasedVersion) -cne $releasedHistory) {
               throw "Refreshing root [Unreleased] changed released history."
           }
 
@@ -148,7 +157,7 @@ jobs:
           if ($tagged -match '(?m)^# \[Unreleased\]$') {
               throw "Tagged root generation left [Unreleased] behind."
           }
-          if ((Get-ReleasedHistory $tagged) -cne $releasedHistory) {
+          if ((Get-ReleasedHistory $tagged $releasedVersion) -cne $releasedHistory) {
               throw "Tagged root generation changed existing released history."
           }
 
