@@ -156,6 +156,49 @@ function Remove-LeadingUnreleasedSection {
     return $before + [Environment]::NewLine + [Environment]::NewLine + $after
 }
 
+function Normalize-TopReleaseBoundary {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [string]$Content
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Content)) {
+        return $Content
+    }
+
+    # git-cliff's full-history and --prepend modes can differ by one blank line
+    # at the boundary between the generated current section and released history.
+    # Normalize only that top boundary so repeat generation produces identical bytes
+    # without rewriting spacing inside historical release sections.
+    $releaseHeadingPattern = '(?m)^#\s+(?:\[Unreleased\]|\[?v?\d+\.\d+\.\d+)'
+    $releaseHeadingRegex = New-Object System.Text.RegularExpressions.Regex($releaseHeadingPattern)
+    $firstReleaseHeading = $releaseHeadingRegex.Match($Content)
+
+    if (-not $firstReleaseHeading.Success) {
+        return $Content
+    }
+
+    $secondReleaseHeading = $releaseHeadingRegex.Match(
+        $Content,
+        $firstReleaseHeading.Index + $firstReleaseHeading.Length
+    )
+
+    if (-not $secondReleaseHeading.Success) {
+        return $Content
+    }
+
+    $boundaryStart = $secondReleaseHeading.Index
+    while ($boundaryStart -gt 0 -and [char]::IsWhiteSpace($Content[$boundaryStart - 1])) {
+        $boundaryStart--
+    }
+
+    $before = $Content.Substring(0, $boundaryStart).TrimEnd()
+    $after = $Content.Substring($secondReleaseHeading.Index).TrimStart()
+
+    return $before + [Environment]::NewLine + [Environment]::NewLine + $after
+}
+
 function Write-Utf8NoBom {
     param(
         [Parameter(Mandatory = $true)]
@@ -237,6 +280,7 @@ foreach ($project in $Projects) {
                 $generatedContent = ""
             }
 
+            $generatedContent = Normalize-TopReleaseBoundary -Content $generatedContent
             Write-Utf8NoBom -Path $changelogPath -Content $generatedContent
             Write-Host "  Written."
         }
@@ -290,6 +334,7 @@ foreach ($project in $Projects) {
             $generatedContent = ""
         }
 
+        $generatedContent = Normalize-TopReleaseBoundary -Content $generatedContent
         Write-Utf8NoBom -Path $changelogPath -Content $generatedContent
         Write-Host "  Written."
     }
