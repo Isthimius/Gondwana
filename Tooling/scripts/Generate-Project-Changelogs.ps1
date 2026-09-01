@@ -145,8 +145,10 @@ function Get-ChangelogParts {
         }
     }
 
-    $matches = $releaseHeadingRegex.Matches($Content)
-    if ($matches.Count -eq 0) {
+    # Do not name this variable $matches: PowerShell variables are
+    # case-insensitive, and the -match operator writes to automatic $Matches.
+    $releaseMatches = $releaseHeadingRegex.Matches($Content)
+    if ($releaseMatches.Count -eq 0) {
         return [pscustomobject]@{
             Prefix          = $Content.Trim()
             CurrentSection  = ""
@@ -154,7 +156,7 @@ function Get-ChangelogParts {
         }
     }
 
-    $first = $matches[0]
+    $first = $releaseMatches[0]
     $prefix = $Content.Substring(0, $first.Index).Trim()
     $firstIsCurrent = ($first.Value -match '\[Unreleased\]') -or
                       (Test-HeadingMatchesTag -Heading $first.Value -CurrentTag $CurrentTag)
@@ -167,8 +169,8 @@ function Get-ChangelogParts {
         }
     }
 
-    if ($matches.Count -gt 1) {
-        $second = $matches[1]
+    if ($releaseMatches.Count -gt 1) {
+        $second = $releaseMatches[1]
         $currentSection = $Content.Substring($first.Index, $second.Index - $first.Index).Trim()
         $releasedHistory = $Content.Substring($second.Index).Trim()
     }
