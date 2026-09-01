@@ -306,6 +306,7 @@ jobs:
           git push origin HEAD:master
 
       - name: Close stale changelog automation pull requests
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |
