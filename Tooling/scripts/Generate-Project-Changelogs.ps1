@@ -126,9 +126,9 @@ function Remove-LeadingUnreleasedSection {
     }
 
     $versionHeadingPattern = '(?m)^#\s+\[?v?\d+\.\d+\.\d+'
-    $nextVersionHeading = [regex]::Match(
+    $versionHeadingRegex = New-Object System.Text.RegularExpressions.Regex($versionHeadingPattern)
+    $nextVersionHeading = $versionHeadingRegex.Match(
         $Content,
-        $versionHeadingPattern,
         $firstReleaseHeading.Index + $firstReleaseHeading.Length
     )
 
