@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 
 
+# [Unreleased]
+
+
+
+## Refactoring
+- Tighten touch and mouse polling behavior
+
 # v2.5.2 - July 26, 2026
 
 

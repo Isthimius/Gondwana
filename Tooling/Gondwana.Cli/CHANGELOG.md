@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 
 
+# [Unreleased]
+
+
+
+## Refactoring
+- Unify blazor detection, workload checks, and return values
+
 # v2.5.2 - July 26, 2026
 
 
