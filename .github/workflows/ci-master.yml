@@ -8,6 +8,7 @@ on:
       - '.github/workflows/docs.yml'
       - '.github/release.yml'
       - 'CHANGELOG.md'
+      - '**/CHANGELOG.md'
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     paths-ignore:
@@ -15,6 +16,7 @@ on:
       - '.github/workflows/docs.yml'
       - '.github/release.yml'
       - 'CHANGELOG.md'
+      - '**/CHANGELOG.md'
 
 permissions:
   contents: read

@@ -1,0 +1,320 @@
+name: Changelog (master)
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - 'CHANGELOG.md'
+      - '**/CHANGELOG.md'
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - 'Tooling/scripts/Generate-Project-Changelogs.ps1'
+      - 'Tooling/scripts/Generate-Root-Changelog.ps1'
+      - 'Tooling/scripts/Changelog-ProjectGroups.ps1'
+      - 'Tooling/scripts/release.ps1'
+      - 'cliff.toml'
+      - '.github/workflows/changelog-master.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-changelog-script:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install git-cliff
+        uses: taiki-e/install-action@d8ae1fa96886bc82c05515b8ac15b41515da2c6d # git-cliff
+
+      - name: Preview changelogs
+        shell: pwsh
+        run: |
+          $before = @(git status --porcelain --untracked-files=all)
+          ./Tooling/scripts/Generate-Root-Changelog.ps1 -PreviewOnly
+          ./Tooling/scripts/Generate-Project-Changelogs.ps1 -PreviewOnly
+          $after = @(git status --porcelain --untracked-files=all)
+
+          if (@(Compare-Object -ReferenceObject $before -DifferenceObject $after).Count -gt 0) {
+              throw "PreviewOnly modified the working tree."
+          }
+
+      - name: Validate repeat runs are idempotent
+        shell: pwsh
+        run: |
+          function Get-ChangelogManifest {
+              Get-ChildItem -Path . -Recurse -Filter CHANGELOG.md -File |
+                  Sort-Object FullName |
+                  ForEach-Object {
+                      $hash = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash
+                      "$($_.FullName)|$hash"
+                  }
+          }
+
+          function Get-ReleasedHistory {
+              param([string]$Path)
+
+              $content = Get-Content $Path -Raw
+              $firstRelease = [regex]::Match($content, '(?m)^#\s+v?\d+\.\d+\.\d+(?:\s|$)')
+              if (-not $firstRelease.Success) {
+                  throw "No released history found in $Path."
+              }
+
+              return $content.Substring($firstRelease.Index)
+          }
+
+          $gondwanaHistory = Get-ReleasedHistory ./Gondwana/CHANGELOG.md
+          $cliHistory = Get-ReleasedHistory ./Tooling/Gondwana.Cli/CHANGELOG.md
+          ./Tooling/scripts/Generate-Root-Changelog.ps1
+          ./Tooling/scripts/Generate-Project-Changelogs.ps1
+
+          if ((Get-ReleasedHistory ./Gondwana/CHANGELOG.md) -cne $gondwanaHistory) {
+              throw "Refreshing [Unreleased] changed Gondwana's released history."
+          }
+
+          if ((Get-ReleasedHistory ./Tooling/Gondwana.Cli/CHANGELOG.md) -cne $cliHistory) {
+              throw "Refreshing [Unreleased] changed the CLI's released history."
+          }
+
+          $firstManifest = @(Get-ChangelogManifest)
+          Copy-Item ./Gondwana/CHANGELOG.md "$env:RUNNER_TEMP/gondwana-first.md"
+          Copy-Item ./Tooling/Gondwana.Cli/CHANGELOG.md "$env:RUNNER_TEMP/cli-first.md"
+          Copy-Item ./Tooling/Gondwana.Mcp/CHANGELOG.md "$env:RUNNER_TEMP/mcp-first.md"
+
+          ./Tooling/scripts/Generate-Root-Changelog.ps1
+          ./Tooling/scripts/Generate-Project-Changelogs.ps1
+          $secondManifest = @(Get-ChangelogManifest)
+
+          $difference = @(Compare-Object -ReferenceObject $firstManifest -DifferenceObject $secondManifest)
+          if ($difference.Count -gt 0) {
+              $difference | Format-Table | Out-String | Write-Host
+              Write-Host "Gondwana changelog first-vs-second diff:"
+              & git diff --no-index -- "$env:RUNNER_TEMP/gondwana-first.md" ./Gondwana/CHANGELOG.md
+              Write-Host "CLI changelog first-vs-second diff:"
+              & git diff --no-index -- "$env:RUNNER_TEMP/cli-first.md" ./Tooling/Gondwana.Cli/CHANGELOG.md
+              Write-Host "MCP changelog first-vs-second diff:"
+              & git diff --no-index -- "$env:RUNNER_TEMP/mcp-first.md" ./Tooling/Gondwana.Mcp/CHANGELOG.md
+              throw "Generate-Project-Changelogs.ps1 is not idempotent."
+          }
+
+      - name: Validate grouped root changelog
+        shell: pwsh
+        run: |
+          git reset --hard HEAD
+          git clean -fd
+
+          function Get-ReleasedHistory {
+              param(
+                  [string]$Content,
+                  [string]$StartingVersion
+              )
+              $versionPattern = [regex]::Escape($StartingVersion)
+              $firstRelease = [regex]::Match($Content, "(?m)^#\s+\[$versionPattern\](?:\s|$)")
+              if (-not $firstRelease.Success) {
+                  throw "Root changelog release $StartingVersion was not found."
+              }
+              return $Content.Substring($firstRelease.Index)
+          }
+
+          $before = Get-Content ./CHANGELOG.md -Raw
+          $firstRelease = [regex]::Match($before, '(?m)^#\s+\[(?<Version>v?\d+\.\d+\.\d+)\](?:\s|$)')
+          if (-not $firstRelease.Success) {
+              throw "No released root changelog history was found."
+          }
+          $releasedVersion = $firstRelease.Groups['Version'].Value
+          $releasedHistory = Get-ReleasedHistory $before $releasedVersion
+
+          ./Tooling/scripts/Generate-Root-Changelog.ps1
+          $unreleased = Get-Content ./CHANGELOG.md -Raw
+
+          if ($unreleased -notmatch '(?m)^# \[Unreleased\]$') {
+              throw "Root changelog does not begin with an [Unreleased] section."
+          }
+          if ($unreleased -notmatch '(?m)^## Build / Repository$') {
+              throw "Root [Unreleased] section is not grouped by project/area."
+          }
+          if ((Get-ReleasedHistory $unreleased $releasedVersion) -cne $releasedHistory) {
+              throw "Refreshing root [Unreleased] changed released history."
+          }
+
+          ./Tooling/scripts/Generate-Root-Changelog.ps1
+          if ((Get-Content ./CHANGELOG.md -Raw) -cne $unreleased) {
+              throw "Root changelog generation is not idempotent."
+          }
+
+          ./Tooling/scripts/Generate-Root-Changelog.ps1 -Tag v9.9.9
+          $tagged = Get-Content ./CHANGELOG.md -Raw
+
+          if ($tagged -notmatch '(?m)^# \[v9\.9\.9\] - \d{4}-\d{2}-\d{2}$') {
+              throw "Tagged root generation did not prepend v9.9.9."
+          }
+          if ($tagged -match '(?m)^# \[Unreleased\]$') {
+              throw "Tagged root generation left [Unreleased] behind."
+          }
+          if ((Get-ReleasedHistory $tagged $releasedVersion) -cne $releasedHistory) {
+              throw "Tagged root generation changed existing released history."
+          }
+
+      - name: Validate missing changelog bootstrap
+        shell: pwsh
+        run: |
+          git reset --hard HEAD
+          git clean -fd
+          Remove-Item ./Gondwana/CHANGELOG.md -Force
+
+          ./Tooling/scripts/Generate-Project-Changelogs.ps1 -Projects @("Gondwana")
+          $content = Get-Content ./Gondwana/CHANGELOG.md -Raw
+
+          if ($content -notmatch '(?m)^# v2\.') {
+              throw "Bootstrapped changelog does not contain tagged release history."
+          }
+
+          if ($content -notmatch '(?m)^# \[Unreleased\]') {
+              Write-Host "Bootstrapped Gondwana changelog:"
+              Write-Host $content
+              throw "Bootstrapped changelog does not contain current unreleased changes."
+          }
+
+          ./Tooling/scripts/Generate-Project-Changelogs.ps1 -Projects @("Gondwana")
+          if ((Get-Content ./Gondwana/CHANGELOG.md -Raw) -cne $content) {
+              throw "Bootstrapped changelog changed on its first refresh."
+          }
+
+      - name: Validate missing changelog tagged bootstrap
+        shell: pwsh
+        run: |
+          git reset --hard HEAD
+          git clean -fd
+          Remove-Item ./Gondwana/CHANGELOG.md -Force
+
+          ./Tooling/scripts/Generate-Project-Changelogs.ps1 -Projects @("Gondwana") -Tag v9.9.9
+          $content = Get-Content ./Gondwana/CHANGELOG.md -Raw
+          $firstRelease = [regex]::Match($content, '(?m)^#\s+(?:\[Unreleased\]|v\d+\.\d+\.\d+).*').Value
+
+          if ($firstRelease -notmatch '^# v9\.9\.9(?:\s|$)') {
+              throw "Tagged bootstrap did not write v9.9.9 as the first release section."
+          }
+
+          if ($content -match '(?m)^# \[Unreleased\]') {
+              throw "Tagged bootstrap left an [Unreleased] section behind."
+          }
+
+          if ($content -notmatch '(?m)^# v2\.') {
+              throw "Tagged bootstrap does not contain released history."
+          }
+
+      - name: Validate tagged release generation
+        shell: pwsh
+        run: |
+          git reset --hard HEAD
+          git clean -fd
+
+          $before = Get-Content ./Gondwana/CHANGELOG.md -Raw
+          $historyStart = [regex]::Match($before, '(?m)^# (?<Version>v\d+\.\d+\.\d+)(?:\s|$)')
+          if (-not $historyStart.Success) {
+              throw "Could not find the existing released-history boundary."
+          }
+          $historyVersion = [regex]::Escape($historyStart.Groups['Version'].Value)
+          $releasedHistory = $before.Substring($historyStart.Index)
+
+          ./Tooling/scripts/Generate-Project-Changelogs.ps1 -Projects @("Gondwana") -Tag v9.9.9
+          $content = Get-Content ./Gondwana/CHANGELOG.md -Raw
+          $firstRelease = [regex]::Match($content, '(?m)^#\s+(?:\[Unreleased\]|v\d+\.\d+\.\d+).*').Value
+
+          if ($firstRelease -notmatch '^# v9\.9\.9(?:\s|$)') {
+              throw "Tagged generation did not prepend v9.9.9 as the first release section."
+          }
+
+          if ($content -match '(?m)^# \[Unreleased\]') {
+              throw "Tagged generation left an [Unreleased] section behind."
+          }
+
+          $afterHistoryStart = [regex]::Match($content, "(?m)^# $historyVersion(?:\s|$)")
+          if (-not $afterHistoryStart.Success -or
+              $content.Substring($afterHistoryStart.Index) -cne $releasedHistory) {
+              throw "Tagged generation changed existing released history."
+          }
+
+  update-changelogs:
+    if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: changelog-master
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout latest master
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Install git-cliff
+        uses: taiki-e/install-action@d8ae1fa96886bc82c05515b8ac15b41515da2c6d # git-cliff
+
+      - name: Refresh changelogs
+        shell: pwsh
+        run: |
+          ./Tooling/scripts/Generate-Root-Changelog.ps1
+          ./Tooling/scripts/Generate-Project-Changelogs.ps1
+
+      - name: Commit changelog updates
+        shell: bash
+        run: |
+          has_changes() {
+            [ -n "$(git status --porcelain --untracked-files=all)" ]
+          }
+
+          validate_changes() {
+            unexpected=$(git status --porcelain --untracked-files=all \
+              | sed -E 's/^.. //' \
+              | grep -Ev '(^|/)CHANGELOG\.md$' || true)
+
+            if [ -n "$unexpected" ]; then
+              echo "Generator changed files other than CHANGELOG.md files:"
+              echo "$unexpected"
+              exit 1
+            fi
+          }
+
+          if ! has_changes; then
+            echo "No changelog changes detected."
+            exit 0
+          fi
+
+          validate_changes
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- ':(glob)**/CHANGELOG.md'
+          git commit -m "docs: update unreleased changelogs"
+
+          # A second master push can land while this run is generating files.
+          # If that happens, discard the stale generated commit, regenerate
+          # against the newest master, and retry once.
+          if ! git push origin HEAD:master; then
+            echo "master advanced during changelog generation; regenerating against latest master."
+            git fetch origin master --tags
+            git reset --hard origin/master
+            git clean -fd
+
+            pwsh ./Tooling/scripts/Generate-Root-Changelog.ps1
+            pwsh ./Tooling/scripts/Generate-Project-Changelogs.ps1
+
+            if ! has_changes; then
+              echo "Latest master already contains the required changelog state."
+              exit 0
+            fi
+
+            validate_changes
+            git add -- ':(glob)**/CHANGELOG.md'
+            git commit -m "docs: update unreleased changelogs"
+            git push origin HEAD:master
+          fi

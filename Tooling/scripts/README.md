@@ -6,6 +6,7 @@ This folder contains PowerShell helper scripts for building, publishing, and rel
 - [`Reinstall-Gondwana-Cli.ps1`](#reinstall-gondwana-clips1)
 - [`Reinstall-Gondwana-Templates.ps1`](#reinstall-gondwana-templatesps1)
 - [`Generate-Project-Changelogs.ps1`](#generate-project-changelogsps1)
+- [`Generate-Root-Changelog.ps1`](#generate-root-changelogps1)
 - [`release.ps1`](#releaseps1)
 
 ---
@@ -129,17 +130,28 @@ Packs `Tooling/Gondwana.Templates` and reinstalls the exact freshly packed templ
 
 ### `Generate-Project-Changelogs.ps1`
 
-Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://git-cliff.org/), filtering commits by changed file paths so each project only shows the changes that affected it. This is the standard monorepo approach described in the git-cliff docs. `release.ps1` invokes this script as part of the release flow after updating the root changelog.
+Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://git-cliff.org/), filtering commits by changed file paths so each project only shows the changes that affected it. This is the standard monorepo approach described in the git-cliff docs. `release.ps1` invokes this script as part of the release flow, and `.github/workflows/changelog-master.yml` refreshes the running unreleased sections after non-changelog pushes to `master`.
 
 **What it does:**
 1. Iterates over the default set of library/tooling projects (all `Gondwana.*` projects and `Tooling/*` projects; Demos and `Gondwana.Tests` are excluded).
-2. Runs `git-cliff --include-path "Project/**/*"` for each project.
-3. Writes the result to `<ProjectFolder>/CHANGELOG.md`, using `--output` for new files and `--prepend` to add a new section to existing ones.
-4. Reports all failures at the end rather than stopping on the first.
+2. Filters each project's history with `git-cliff --include-path "Project/**/*"`.
+3. If a project has no `CHANGELOG.md` (or it is empty), generates the complete project history: existing Git tags become versioned sections and current untagged commits are included as `[Unreleased]`, unless `-Tag` is supplied.
+4. If a project already has a changelog, replaces any leading `[Unreleased]` section and regenerates the current commits since the latest tag. Without `-Tag`, those commits are prepended under `[Unreleased]`; with `-Tag`, they are prepended under that version.
+5. Writes through a temporary file so a failed `git-cliff` run does not destroy the existing changelog, and reports all project failures at the end.
 
 > A single commit that touches multiple projects will appear in each matching project changelog — correct behaviour for a monorepo.
 >
-> The repository's canonical release history remains the root `CHANGELOG.md`, which includes all release changes across projects.
+> Released history in an existing project changelog is treated as authoritative and is not regenerated during normal refreshes. The repository's canonical release history remains the root `CHANGELOG.md`, which includes all release changes across projects.
+
+### `Generate-Root-Changelog.ps1`
+
+Regenerates only the root changelog's leading derived section while preserving all existing released history exactly. Its entries are grouped by project/area in the same format used by release notes.
+
+- Without `-Tag`, current commits since the latest tag are written under `# [Unreleased]`.
+- With `-Tag`, the leading `[Unreleased]` block is removed and those same commits are written under the supplied version.
+- `-PreviewOnly` prints the complete result without modifying the file.
+
+The shared project/area definitions live in `Changelog-ProjectGroups.ps1`, so automatic `[Unreleased]` generation and release generation cannot drift into different groupings.
 
 **Prerequisites:**
 - [`git-cliff`](https://git-cliff.org/) on `PATH` — install with `winget install --id orhun.git-cliff`.
@@ -149,41 +161,40 @@ Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://
 
 | Parameter | Description | Default |
 |---|---|---|
-| `-Tag` | Version tag to stamp on unreleased commits (e.g. `v1.2.3`). | — |
-| `-Unreleased` | Pass `--unreleased` to git-cliff; only commits since the last tag are shown. | — |
-| `-PreviewOnly` | Print generated sections to the console without writing any files. | — |
+| `-Tag` | Version tag to stamp on the current unreleased commits (e.g. `v1.2.3`). When omitted, they remain under `[Unreleased]`. | — |
+| `-PreviewOnly` | Print generated output to the console without writing any files. | — |
 | `-Projects` | Override the default project list (relative paths from repo root). | All library projects |
 | `-CliffConfigPath` | Path to the `cliff.toml` config. Relative paths are resolved from the repo root. | `cliff.toml` |
 
 **Examples:**
 ```powershell
-# Preview unreleased changes for all projects without touching disk
-.\Generate-Project-Changelogs.ps1 -Unreleased -PreviewOnly
+# Refresh running [Unreleased] sections for all projects
+.\Generate-Project-Changelogs.ps1
 
-# Write changelogs for all projects (unreleased commits)
-.\Generate-Project-Changelogs.ps1 -Unreleased
+# Preview the current generated output without touching disk
+.\Generate-Project-Changelogs.ps1 -PreviewOnly
 
-# Generate changelogs for a specific release tag
-.\Generate-Project-Changelogs.ps1 -Tag v1.2.3 -Unreleased
+# Freeze the current unreleased commits under a release version
+.\Generate-Project-Changelogs.ps1 -Tag v1.2.3
 
-# Generate changelogs for a subset of projects only
-.\Generate-Project-Changelogs.ps1 -Projects @("Gondwana", "Gondwana.WinForms") -Unreleased
+# Refresh a subset of projects only
+.\Generate-Project-Changelogs.ps1 -Projects @("Gondwana", "Gondwana.WinForms")
 ```
 
 ---
 
 ### `release.ps1`
 
-Creates a new versioned release of Gondwana: updates the changelog, commits it, creates a Git tag, and pushes everything to trigger the GitHub Actions release workflow, which then publishes all packages to NuGet.
+Creates a new versioned release of Gondwana: updates the changelog, commits it, creates a Git tag, and atomically pushes the branch and tag to trigger the GitHub Actions release workflow, which then publishes all packages to NuGet.
 
 **What it does:**
 1. Validates that the working tree is clean, on the correct branch, and in sync with the remote.
 2. Runs `Gondwana.Tests` unit tests and stops immediately if any test fails.
 3. Resolves the next version using [`nbgv`](https://github.com/dotnet/Nerdbank.GitVersioning) (Nerdbank.GitVersioning).
 4. Previews the new changelog section generated by [`git-cliff`](https://git-cliff.org/) and prompts for confirmation.
-5. Prepends the new section to `CHANGELOG.md`.
-6. Runs `Generate-Project-Changelogs.ps1` to update per-project `CHANGELOG.md` files.
-7. Commits all changelog updates and creates/pushes a `vX.Y.Z` Git tag to trigger the GitHub Actions release workflow.
+5. Runs `Generate-Root-Changelog.ps1` with the resolved version tag, replacing the root `[Unreleased]` block with the versioned release section.
+6. Runs `Generate-Project-Changelogs.ps1` with the same tag to replace each project's running `[Unreleased]` section with its versioned release section.
+7. Commits all changelog updates, creates a `vX.Y.Z` Git tag, and atomically pushes the branch and tag so neither remote ref is updated unless both updates succeed.
 
 > **This is a destructive operation.** Once a version is published to NuGet it cannot be undone. Use `-PreviewOnly` to inspect the release notes before committing.
 
