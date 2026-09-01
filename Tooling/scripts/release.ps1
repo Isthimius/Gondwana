@@ -180,7 +180,6 @@ function Invoke-ProjectChangelogGeneration {
 
     & $projectChangelogScript `
         -Tag $TagName `
-        -Unreleased `
         -CliffConfigPath $CliffConfigPath
 
     if ($LASTEXITCODE -ne 0) {
