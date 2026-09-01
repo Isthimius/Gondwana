@@ -182,9 +182,7 @@ Regenerates only the repository-level `CHANGELOG.md`'s leading derived section w
 1. Loads the project/area definitions from `Changelog-ProjectGroups.ps1`.
 2. Uses `git-cliff` to collect commits since the latest tag for each matching project/area.
 3. Replaces any leading generated or manually edited `[Unreleased]` section.
-4. Without `-Tag`, writes the current grouped changes under `# [Unreleased]`.
-5. With `-Tag`, writes those same grouped changes under the supplied version and adds the full-changelog comparison link when a previous tag exists.
-6. Preserves the file header and every existing versioned section exactly.
+6. Preserves the file header and every existing versioned section’s contents, only normalizing whitespace around the inserted current section.
 
 > The canonical root `CHANGELOG.md` must already exist and contain a recognized `[Unreleased]` or versioned release heading. Unlike the project generator, this script deliberately does not bootstrap missing root history.
 
