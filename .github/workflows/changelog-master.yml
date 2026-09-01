@@ -28,11 +28,71 @@ jobs:
           fetch-depth: 0
 
       - name: Install git-cliff
-        uses: taiki-e/install-action@git-cliff
+        uses: taiki-e/install-action@d8ae1fa96886bc82c05515b8ac15b41515da2c6d # git-cliff
 
       - name: Preview project changelogs
         shell: pwsh
         run: ./Tooling/scripts/Generate-Project-Changelogs.ps1 -PreviewOnly
+
+      - name: Validate repeat runs are idempotent
+        shell: pwsh
+        run: |
+          function Get-ChangelogManifest {
+              Get-ChildItem -Path . -Recurse -Filter CHANGELOG.md -File |
+                  Sort-Object FullName |
+                  ForEach-Object {
+                      $hash = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash
+                      "$($_.FullName)|$hash"
+                  }
+          }
+
+          ./Tooling/scripts/Generate-Project-Changelogs.ps1
+          $firstManifest = @(Get-ChangelogManifest)
+
+          ./Tooling/scripts/Generate-Project-Changelogs.ps1
+          $secondManifest = @(Get-ChangelogManifest)
+
+          $difference = @(Compare-Object -ReferenceObject $firstManifest -DifferenceObject $secondManifest)
+          if ($difference.Count -gt 0) {
+              $difference | Format-Table | Out-String | Write-Host
+              throw "Generate-Project-Changelogs.ps1 is not idempotent."
+          }
+
+      - name: Validate missing changelog bootstrap
+        shell: pwsh
+        run: |
+          git reset --hard HEAD
+          git clean -fd
+          Remove-Item ./Gondwana/CHANGELOG.md -Force
+
+          ./Tooling/scripts/Generate-Project-Changelogs.ps1 -Projects @("Gondwana")
+          $content = Get-Content ./Gondwana/CHANGELOG.md -Raw
+
+          if ($content -notmatch '(?m)^# v2\.') {
+              throw "Bootstrapped changelog does not contain tagged release history."
+          }
+
+          if ($content -notmatch '(?m)^# \[Unreleased\]') {
+              throw "Bootstrapped changelog does not contain current unreleased changes."
+          }
+
+      - name: Validate tagged release generation
+        shell: pwsh
+        run: |
+          git reset --hard HEAD
+          git clean -fd
+
+          ./Tooling/scripts/Generate-Project-Changelogs.ps1 -Projects @("Gondwana") -Tag v9.9.9
+          $content = Get-Content ./Gondwana/CHANGELOG.md -Raw
+          $firstRelease = [regex]::Match($content, '(?m)^#\s+(?:\[Unreleased\]|v\d+\.\d+\.\d+).*').Value
+
+          if ($firstRelease -notmatch '^# v9\.9\.9(?:\s|$)') {
+              throw "Tagged generation did not prepend v9.9.9 as the first release section."
+          }
+
+          if ($content -match '(?m)^# \[Unreleased\]') {
+              throw "Tagged generation left an [Unreleased] section behind."
+          }
 
   update-changelogs:
     if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
@@ -51,7 +111,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install git-cliff
-        uses: taiki-e/install-action@git-cliff
+        uses: taiki-e/install-action@d8ae1fa96886bc82c05515b8ac15b41515da2c6d # git-cliff
 
       - name: Refresh project changelogs
         shell: pwsh
@@ -60,14 +120,31 @@ jobs:
       - name: Commit changelog updates
         shell: bash
         run: |
-          if git diff --quiet; then
+          has_changes() {
+            [ -n "$(git status --porcelain --untracked-files=all)" ]
+          }
+
+          validate_changes() {
+            unexpected=$(git status --porcelain --untracked-files=all \
+              | sed -E 's/^.. //' \
+              | grep -Ev '(^|/)CHANGELOG\.md$' || true)
+
+            if [ -n "$unexpected" ]; then
+              echo "Generator changed files other than project CHANGELOG.md files:"
+              echo "$unexpected"
+              exit 1
+            fi
+          }
+
+          if ! has_changes; then
             echo "No changelog changes detected."
             exit 0
           fi
 
+          validate_changes
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
+          git add -- ':(glob)**/CHANGELOG.md'
           git commit -m "docs: update unreleased changelogs"
 
           # A second master push can land while this run is generating files.
@@ -77,15 +154,17 @@ jobs:
             echo "master advanced during changelog generation; regenerating against latest master."
             git fetch origin master --tags
             git reset --hard origin/master
+            git clean -fd
 
             pwsh ./Tooling/scripts/Generate-Project-Changelogs.ps1
 
-            if git diff --quiet; then
+            if ! has_changes; then
               echo "Latest master already contains the required changelog state."
               exit 0
             fi
 
-            git add -A
+            validate_changes
+            git add -- ':(glob)**/CHANGELOG.md'
             git commit -m "docs: update unreleased changelogs"
             git push origin HEAD:master
           fi
