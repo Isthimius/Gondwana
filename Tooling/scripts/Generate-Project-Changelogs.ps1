@@ -108,85 +108,46 @@ if (-not (Get-Command git-cliff -ErrorAction SilentlyContinue)) {
     throw "git-cliff was not found on PATH. Install with: winget install --id orhun.git-cliff"
 }
 
-$releaseHeadingPattern = '(?m)^#\s+(?:\[Unreleased\]|\[?v?\d+\.\d+\.\d+)'
+$releaseHeadingPattern = '(?m)^#\s+(?<Version>\[Unreleased\]|v?\d+\.\d+\.\d+)(?:\s|$)'
 $releaseHeadingRegex = New-Object System.Text.RegularExpressions.Regex($releaseHeadingPattern)
 
-function Test-HeadingMatchesTag {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Heading,
-
-        [string]$CurrentTag
-    )
-
-    if ([string]::IsNullOrWhiteSpace($CurrentTag)) {
-        return $false
-    }
-
-    $version = $CurrentTag -replace '^v', ''
-    $escapedVersion = [regex]::Escape($version)
-    return $Heading -match "^#\s+\[?v?$escapedVersion(?:\]|\s|$)"
-}
-
-function Get-ChangelogParts {
+function Split-ExistingChangelog {
     param(
         [Parameter(Mandatory = $true)]
         [AllowEmptyString()]
-        [string]$Content,
-
-        [string]$CurrentTag
+        [string]$Content
     )
 
-    if ([string]::IsNullOrWhiteSpace($Content)) {
-        return [pscustomobject]@{
-            Prefix          = ""
-            CurrentSection  = ""
-            ReleasedHistory = ""
-        }
-    }
-
-    # Do not name this variable $matches: PowerShell variables are
-    # case-insensitive, and the -match operator writes to automatic $Matches.
     $releaseMatches = $releaseHeadingRegex.Matches($Content)
     if ($releaseMatches.Count -eq 0) {
         return [pscustomobject]@{
-            Prefix          = $Content.Trim()
-            CurrentSection  = ""
+            Prefix          = $Content
             ReleasedHistory = ""
         }
     }
 
     $first = $releaseMatches[0]
-    $prefix = $Content.Substring(0, $first.Index).Trim()
-    $firstIsCurrent = ($first.Value -match '\[Unreleased\]') -or
-                      (Test-HeadingMatchesTag -Heading $first.Value -CurrentTag $CurrentTag)
+    $prefix = $Content.Substring(0, $first.Index)
 
-    if (-not $firstIsCurrent) {
-        return [pscustomobject]@{
-            Prefix          = $prefix
-            CurrentSection  = ""
-            ReleasedHistory = $Content.Substring($first.Index).Trim()
+    if ($first.Groups["Version"].Value -eq "[Unreleased]") {
+        if ($releaseMatches.Count -gt 1) {
+            $releasedHistory = $Content.Substring($releaseMatches[1].Index)
+        }
+        else {
+            $releasedHistory = ""
         }
     }
-
-    if ($releaseMatches.Count -gt 1) {
-        $second = $releaseMatches[1]
-        $currentSection = $Content.Substring($first.Index, $second.Index - $first.Index).Trim()
-        $releasedHistory = $Content.Substring($second.Index).Trim()
-    }
     else {
-        $currentSection = $Content.Substring($first.Index).Trim()
-        $releasedHistory = ""
+        $releasedHistory = $Content.Substring($first.Index)
     }
 
     return [pscustomobject]@{
         Prefix          = $prefix
-        CurrentSection  = $currentSection
         ReleasedHistory = $releasedHistory
     }
 }
 
-function Join-ChangelogParts {
+function Join-ChangelogContent {
     param(
         [AllowEmptyString()]
         [string]$Prefix,
@@ -198,26 +159,60 @@ function Join-ChangelogParts {
         [string]$ReleasedHistory
     )
 
-    $parts = @()
-
-    if (-not [string]::IsNullOrWhiteSpace($Prefix)) {
-        $parts += $Prefix.Trim()
+    if ($Prefix.Contains("`r`n") -or $ReleasedHistory.Contains("`r`n")) {
+        $newLine = "`r`n"
+    }
+    else {
+        $newLine = "`n"
     }
 
-    if (-not [string]::IsNullOrWhiteSpace($CurrentSection)) {
-        $parts += $CurrentSection.Trim()
+    # Prefix and released history come from the existing changelog and are
+    # deliberately appended without trimming or normalization. Only the
+    # generated section and the boundaries around it are derived state.
+    $result = $Prefix
+    if (-not [string]::IsNullOrEmpty($result)) {
+        if ($result.EndsWith($newLine + $newLine)) {
+            # The prefix already has the desired blank line.
+        }
+        elseif ($result.EndsWith($newLine)) {
+            $result += $newLine
+        }
+        else {
+            $result += $newLine + $newLine
+        }
     }
 
-    if (-not [string]::IsNullOrWhiteSpace($ReleasedHistory)) {
-        $parts += $ReleasedHistory.Trim()
+    $result += $CurrentSection.Trim()
+
+    if (-not [string]::IsNullOrEmpty($ReleasedHistory)) {
+        $result += $newLine + $newLine + $ReleasedHistory
+        return $result
     }
 
-    if ($parts.Count -eq 0) {
+    return ($result + $newLine)
+}
+
+function Normalize-GeneratedContent {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [string]$Content
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Content)) {
         return ""
     }
 
-    $separator = [Environment]::NewLine + [Environment]::NewLine
-    return (($parts -join $separator).TrimEnd() + [Environment]::NewLine)
+    $newLine = if ($Content.Contains("`r`n")) { "`r`n" } else { "`n" }
+    $releaseBoundaryPattern = '(?:\r\n|\n|\r){3,}(?=^#\s+(?:\[Unreleased\]|v?\d+\.\d+\.\d+)(?:\s|$))'
+    $normalized = [regex]::Replace(
+        $Content.TrimEnd(),
+        $releaseBoundaryPattern,
+        $newLine + $newLine,
+        [System.Text.RegularExpressions.RegexOptions]::Multiline
+    )
+
+    return ($normalized + $newLine)
 }
 
 function Invoke-GitCliffToContent {
@@ -233,23 +228,29 @@ function Invoke-GitCliffToContent {
         ([System.IO.Path]::GetTempPath()) `
         ("gondwana-changelog-" + [Guid]::NewGuid().ToString("N") + ".md")
 
+    Push-Location $repoRoot
     try {
-        & git-cliff @Arguments "--output" $tempChangelog
-        if ($LASTEXITCODE -ne 0) {
-            throw "git-cliff failed for project '$Project' (exit $LASTEXITCODE)."
-        }
+        try {
+            & git-cliff @Arguments "--output" $tempChangelog
+            if ($LASTEXITCODE -ne 0) {
+                throw "git-cliff failed for project '$Project' (exit $LASTEXITCODE)."
+            }
 
-        $content = Get-Content $tempChangelog -Raw
-        if ($null -eq $content) {
-            return ""
-        }
+            $content = Get-Content $tempChangelog -Raw
+            if ($null -eq $content) {
+                return ""
+            }
 
-        return $content
+            return (Normalize-GeneratedContent -Content $content)
+        }
+        finally {
+            if (Test-Path $tempChangelog) {
+                Remove-Item $tempChangelog -Force
+            }
+        }
     }
     finally {
-        if (Test-Path $tempChangelog) {
-            Remove-Item $tempChangelog -Force
-        }
+        Pop-Location
     }
 }
 
@@ -278,7 +279,13 @@ foreach ($project in $Projects) {
 
     $includePath = "$($project -replace '\\', '/')/**/*"
     $changelogPath = Join-Path $projectFolder "CHANGELOG.md"
-    $changelogIsNew = (-not (Test-Path $changelogPath)) -or ((Get-Item $changelogPath).Length -eq 0)
+    $existingContent = if (Test-Path $changelogPath) {
+        Get-Content $changelogPath -Raw
+    }
+    else {
+        ""
+    }
+    $changelogIsNew = [string]::IsNullOrWhiteSpace($existingContent)
 
     if ($changelogIsNew) {
         $mode = "bootstrap full history"
@@ -298,97 +305,43 @@ foreach ($project in $Projects) {
 
     $baseCliffArgs = @(
         "--config", $CliffConfigPath,
-        "--repository", $repoRoot,
-        "--include-path", $includePath
+        "--repository", ".",
+        # Keep the glob in the same argv token as the option. PowerShell expands
+        # a splatted bare glob into matching working-tree paths before invoking
+        # a native command, which prevents git-cliff from grouping commits by tag.
+        "--include-path=$includePath"
     )
 
     try {
         if ($changelogIsNew) {
-            # Run bootstrap from the repository working directory. git-cliff's
-            # tag grouping is reliable with --repository .; using an absolute
-            # repository path causes all commits to be rendered as unreleased.
-            $tempBootstrap = Join-Path `
-                ([System.IO.Path]::GetTempPath()) `
-                ("gondwana-bootstrap-" + [Guid]::NewGuid().ToString("N") + ".md")
-
-            Push-Location $repoRoot
-            try {
-                if ($Tag) {
-                    & git-cliff `
-                        "--config" $CliffConfigPath `
-                        "--repository" "." `
-                        "--include-path" $includePath `
-                        "--tag" $Tag `
-                        "--output" $tempBootstrap
-                }
-                else {
-                    & git-cliff `
-                        "--config" $CliffConfigPath `
-                        "--repository" "." `
-                        "--include-path" $includePath `
-                        "--output" $tempBootstrap
-                }
-
-                if ($LASTEXITCODE -ne 0) {
-                    throw "git-cliff failed for project '$project' (exit $LASTEXITCODE)."
-                }
-
-                $generatedContent = Get-Content $tempBootstrap -Raw
-                if ($null -eq $generatedContent) {
-                    $generatedContent = ""
-                }
-            }
-            finally {
-                Pop-Location
-                if (Test-Path $tempBootstrap) {
-                    Remove-Item $tempBootstrap -Force
-                }
-            }
-
-            $generatedParts = Get-ChangelogParts -Content $generatedContent -CurrentTag $Tag
-
-            if ([string]::IsNullOrWhiteSpace($generatedParts.CurrentSection)) {
-                throw "git-cliff did not generate a current changelog section for project '$project'."
-            }
-
-            $finalContent = Join-ChangelogParts `
-                -Prefix $generatedParts.Prefix `
-                -CurrentSection $generatedParts.CurrentSection `
-                -ReleasedHistory $generatedParts.ReleasedHistory
-        }
-        else {
-            # Existing changelog: released history is authoritative. Strip only
-            # a leading generated [Unreleased] section (or the same -Tag section
-            # from a repeated release attempt), generate the current range into a
-            # separate buffer, then compose the document ourselves. Do not use
-            # git-cliff --prepend: it can inject a second document header.
-            $existingContent = Get-Content $changelogPath -Raw
-            if ($null -eq $existingContent) {
-                $existingContent = ""
-            }
-
-            $existingParts = Get-ChangelogParts -Content $existingContent -CurrentTag $Tag
-
-            $cliffArgs = @($baseCliffArgs) + "--unreleased"
+            # For bootstrap, git-cliff already has exactly the required behavior:
+            # full tagged history plus [Unreleased], or the supplied -Tag.
+            $cliffArgs = @($baseCliffArgs)
             if ($Tag) {
                 $cliffArgs += "--tag", $Tag
             }
 
-            $generatedContent = Invoke-GitCliffToContent -Arguments $cliffArgs -Project $project
-            $generatedParts = Get-ChangelogParts -Content $generatedContent -CurrentTag $Tag
+            $finalContent = Invoke-GitCliffToContent -Arguments $cliffArgs -Project $project
+        }
+        else {
+            # Existing released content is immutable. Split away only a leading
+            # [Unreleased] section, generate its replacement without git-cliff's
+            # document header, and put the untouched released history back.
+            $existingParts = Split-ExistingChangelog -Content $existingContent
 
-            if ([string]::IsNullOrWhiteSpace($generatedParts.CurrentSection)) {
+            $cliffArgs = @($baseCliffArgs) + @("--unreleased", "--strip", "header")
+            if ($Tag) {
+                $cliffArgs += "--tag", $Tag
+            }
+
+            $currentSection = Invoke-GitCliffToContent -Arguments $cliffArgs -Project $project
+            if ([string]::IsNullOrWhiteSpace($currentSection)) {
                 throw "git-cliff did not generate a current changelog section for project '$project'."
             }
 
-            $prefix = $existingParts.Prefix
-            if ([string]::IsNullOrWhiteSpace($prefix)) {
-                $prefix = $generatedParts.Prefix
-            }
-
-            $finalContent = Join-ChangelogParts `
-                -Prefix $prefix `
-                -CurrentSection $generatedParts.CurrentSection `
+            $finalContent = Join-ChangelogContent `
+                -Prefix $existingParts.Prefix `
+                -CurrentSection $currentSection `
                 -ReleasedHistory $existingParts.ReleasedHistory
         }
 

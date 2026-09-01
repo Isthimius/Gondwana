@@ -32,7 +32,14 @@ jobs:
 
       - name: Preview project changelogs
         shell: pwsh
-        run: ./Tooling/scripts/Generate-Project-Changelogs.ps1 -PreviewOnly
+        run: |
+          $before = @(git status --porcelain --untracked-files=all)
+          ./Tooling/scripts/Generate-Project-Changelogs.ps1 -PreviewOnly
+          $after = @(git status --porcelain --untracked-files=all)
+
+          if (@(Compare-Object -ReferenceObject $before -DifferenceObject $after).Count -gt 0) {
+              throw "PreviewOnly modified the working tree."
+          }
 
       - name: Validate repeat runs are idempotent
         shell: pwsh
@@ -46,7 +53,30 @@ jobs:
                   }
           }
 
+          function Get-ReleasedHistory {
+              param([string]$Path)
+
+              $content = Get-Content $Path -Raw
+              $firstRelease = [regex]::Match($content, '(?m)^#\s+v?\d+\.\d+\.\d+(?:\s|$)')
+              if (-not $firstRelease.Success) {
+                  throw "No released history found in $Path."
+              }
+
+              return $content.Substring($firstRelease.Index)
+          }
+
+          $gondwanaHistory = Get-ReleasedHistory ./Gondwana/CHANGELOG.md
+          $cliHistory = Get-ReleasedHistory ./Tooling/Gondwana.Cli/CHANGELOG.md
           ./Tooling/scripts/Generate-Project-Changelogs.ps1
+
+          if ((Get-ReleasedHistory ./Gondwana/CHANGELOG.md) -cne $gondwanaHistory) {
+              throw "Refreshing [Unreleased] changed Gondwana's released history."
+          }
+
+          if ((Get-ReleasedHistory ./Tooling/Gondwana.Cli/CHANGELOG.md) -cne $cliHistory) {
+              throw "Refreshing [Unreleased] changed the CLI's released history."
+          }
+
           $firstManifest = @(Get-ChangelogManifest)
           Copy-Item ./Gondwana/CHANGELOG.md "$env:RUNNER_TEMP/gondwana-first.md"
           Copy-Item ./Tooling/Gondwana.Cli/CHANGELOG.md "$env:RUNNER_TEMP/cli-first.md"
@@ -78,21 +108,6 @@ jobs:
           $content = Get-Content ./Gondwana/CHANGELOG.md -Raw
 
           if ($content -notmatch '(?m)^# v2\.') {
-              Write-Host "Latest reachable version tag:"
-              & git describe --tags --abbrev=0 --match "v[0-9]*" HEAD
-              Write-Host "Bootstrapped Gondwana changelog:"
-              Write-Host $content
-
-              $barePath = "$env:RUNNER_TEMP/bare-full.md"
-              & git-cliff --config ./cliff.toml --repository . --include-path "Gondwana/**/*" --output $barePath
-              Write-Host "Bare git-cliff release headings:"
-              Get-Content $barePath | Where-Object { $_ -match '^# (?:\[Unreleased\]|v\d+\.\d+\.\d+)' } | Write-Host
-
-              $tagPath = "$env:RUNNER_TEMP/latest-tag.md"
-              & git-cliff --config ./cliff.toml --repository . --include-path "Gondwana/**/*" v2.5.2 --output $tagPath
-              Write-Host "git-cliff v2.5.2 release headings:"
-              Get-Content $tagPath | Where-Object { $_ -match '^# (?:\[Unreleased\]|v\d+\.\d+\.\d+)' } | Write-Host
-
               throw "Bootstrapped changelog does not contain tagged release history."
           }
 
@@ -102,11 +117,47 @@ jobs:
               throw "Bootstrapped changelog does not contain current unreleased changes."
           }
 
+          ./Tooling/scripts/Generate-Project-Changelogs.ps1 -Projects @("Gondwana")
+          if ((Get-Content ./Gondwana/CHANGELOG.md -Raw) -cne $content) {
+              throw "Bootstrapped changelog changed on its first refresh."
+          }
+
+      - name: Validate missing changelog tagged bootstrap
+        shell: pwsh
+        run: |
+          git reset --hard HEAD
+          git clean -fd
+          Remove-Item ./Gondwana/CHANGELOG.md -Force
+
+          ./Tooling/scripts/Generate-Project-Changelogs.ps1 -Projects @("Gondwana") -Tag v9.9.9
+          $content = Get-Content ./Gondwana/CHANGELOG.md -Raw
+          $firstRelease = [regex]::Match($content, '(?m)^#\s+(?:\[Unreleased\]|v\d+\.\d+\.\d+).*').Value
+
+          if ($firstRelease -notmatch '^# v9\.9\.9(?:\s|$)') {
+              throw "Tagged bootstrap did not write v9.9.9 as the first release section."
+          }
+
+          if ($content -match '(?m)^# \[Unreleased\]') {
+              throw "Tagged bootstrap left an [Unreleased] section behind."
+          }
+
+          if ($content -notmatch '(?m)^# v2\.') {
+              throw "Tagged bootstrap does not contain released history."
+          }
+
       - name: Validate tagged release generation
         shell: pwsh
         run: |
           git reset --hard HEAD
           git clean -fd
+
+          $before = Get-Content ./Gondwana/CHANGELOG.md -Raw
+          $historyStart = [regex]::Match($before, '(?m)^# (?<Version>v\d+\.\d+\.\d+)(?:\s|$)')
+          if (-not $historyStart.Success) {
+              throw "Could not find the existing released-history boundary."
+          }
+          $historyVersion = [regex]::Escape($historyStart.Groups['Version'].Value)
+          $releasedHistory = $before.Substring($historyStart.Index)
 
           ./Tooling/scripts/Generate-Project-Changelogs.ps1 -Projects @("Gondwana") -Tag v9.9.9
           $content = Get-Content ./Gondwana/CHANGELOG.md -Raw
@@ -118,6 +169,12 @@ jobs:
 
           if ($content -match '(?m)^# \[Unreleased\]') {
               throw "Tagged generation left an [Unreleased] section behind."
+          }
+
+          $afterHistoryStart = [regex]::Match($content, "(?m)^# $historyVersion(?:\s|$)")
+          if (-not $afterHistoryStart.Success -or
+              $content.Substring($afterHistoryStart.Index) -cne $releasedHistory) {
+              throw "Tagged generation changed existing released history."
           }
 
   update-changelogs:
