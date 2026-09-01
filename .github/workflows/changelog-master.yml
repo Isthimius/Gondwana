@@ -295,20 +295,38 @@ jobs:
           validate_changes
           echo "has_changes=true" >> "$GITHUB_OUTPUT"
 
-      - name: Open changelog update pull request
+      - name: Commit and push changelog updates
         if: steps.changes.outputs.has_changes == 'true'
-        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- CHANGELOG.md ':(glob)**/CHANGELOG.md'
+          git commit -m "docs: update unreleased changelogs [skip release notes]"
+          git push origin HEAD:master
+
+      - name: Close stale changelog automation pull requests
+        uses: actions/github-script@v7
         with:
-          token: ${{ github.token }}
-          branch: automation/update-changelogs
-          base: master
-          delete-branch: true
-          commit-message: "docs: update unreleased changelogs"
-          title: "docs: update unreleased changelogs"
-          body: |
-            Automated changelog refresh for commits merged into `master`.
-          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          add-paths: |
-            CHANGELOG.md
-            **/CHANGELOG.md
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const head = `${owner}:automation/update-changelogs`;
+            const { data: pulls } = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: "open",
+              head,
+              base: "master",
+              per_page: 100
+            });
+
+            for (const pull of pulls) {
+              core.info(`Closing stale changelog PR #${pull.number}`);
+              await github.rest.pulls.update({
+                owner,
+                repo,
+                pull_number: pull.number,
+                state: "closed"
+              });
+            }
