@@ -229,7 +229,12 @@ function Invoke-GitCliffToContent {
         [string]$Project
     )
 
-    $tempChangelog = [System.IO.Path]::GetTempFileName()
+    # Use a path that does not exist yet. git-cliff's --output behavior differs
+    # when the destination already exists; GetTempFileName() creates the file.
+    $tempChangelog = Join-Path `
+        ([System.IO.Path]::GetTempPath()) `
+        ("gondwana-changelog-" + [Guid]::NewGuid().ToString("N") + ".md")
+
     try {
         & git-cliff @Arguments "--output" $tempChangelog
         if ($LASTEXITCODE -ne 0) {
