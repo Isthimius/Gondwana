@@ -304,20 +304,31 @@ foreach ($project in $Projects) {
 
     try {
         if ($changelogIsNew) {
-            # Bootstrap is intentionally a direct invocation. This mirrors the
-            # git-cliff command used to validate full-history generation and
-            # avoids routing first-run semantics through the incremental helper.
-            $cliffArgs = @($baseCliffArgs)
-            if ($Tag) {
-                $cliffArgs += "--tag", $Tag
-            }
-
+            # Run bootstrap from the repository working directory. git-cliff's
+            # tag grouping is reliable with --repository .; using an absolute
+            # repository path causes all commits to be rendered as unreleased.
             $tempBootstrap = Join-Path `
                 ([System.IO.Path]::GetTempPath()) `
                 ("gondwana-bootstrap-" + [Guid]::NewGuid().ToString("N") + ".md")
 
+            Push-Location $repoRoot
             try {
-                & git-cliff @cliffArgs "--output" $tempBootstrap
+                if ($Tag) {
+                    & git-cliff `
+                        "--config" $CliffConfigPath `
+                        "--repository" "." `
+                        "--include-path" $includePath `
+                        "--tag" $Tag `
+                        "--output" $tempBootstrap
+                }
+                else {
+                    & git-cliff `
+                        "--config" $CliffConfigPath `
+                        "--repository" "." `
+                        "--include-path" $includePath `
+                        "--output" $tempBootstrap
+                }
+
                 if ($LASTEXITCODE -ne 0) {
                     throw "git-cliff failed for project '$project' (exit $LASTEXITCODE)."
                 }
@@ -328,6 +339,7 @@ foreach ($project in $Projects) {
                 }
             }
             finally {
+                Pop-Location
                 if (Test-Path $tempBootstrap) {
                     Remove-Item $tempBootstrap -Force
                 }
