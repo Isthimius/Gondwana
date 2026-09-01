@@ -568,7 +568,6 @@ if ($projectChangelogPaths.Count -gt 0) {
 git diff --cached --quiet
 if ($LASTEXITCODE -ne 0) {
     Invoke-Git @("commit", "-m", "docs: update changelog for $tagName")
-    Invoke-Git @("push", $Remote, $RequiredBranch)
 
     # Re-resolve version after the changelog commit. Stable NBGV releases should remain unchanged.
     $versionAfterChangelogCommit = Get-NbgvPackageVersion
@@ -607,10 +606,6 @@ if ($localTagExists -or $remoteTagExists) {
     if ($localTagExists) {
         Invoke-Git @("tag", "-d", $tagName)
     }
-
-    if ($remoteTagExists) {
-        Invoke-Git @("push", $Remote, ":refs/tags/$tagName")
-    }
 }
 else {
     Write-Host "Tag $tagName does not exist. Creating it."
@@ -619,8 +614,18 @@ else {
 # Create tag at current HEAD
 Invoke-Git @("tag", $tagName)
 
-# Push tag
-Invoke-Git @("push", $Remote, $tagName)
+# Publish the release commit and tag as one transaction. If either ref is
+# rejected, an atomic push leaves both remote refs unchanged, preventing a
+# versioned changelog section from reaching the branch without its Git tag.
+$branchRefSpec = "HEAD:refs/heads/$RequiredBranch"
+if ($remoteTagExists) {
+    $tagRefSpec = "+refs/tags/${tagName}:refs/tags/${tagName}"
+}
+else {
+    $tagRefSpec = "refs/tags/${tagName}:refs/tags/${tagName}"
+}
+
+Invoke-Git @("push", "--atomic", $Remote, $branchRefSpec, $tagRefSpec)
 
 Write-Host ""
-Write-Host "Done. Updated $ChangelogPath, pushed '$tagName' to '$Remote', and handed off to GitHub Actions."
+Write-Host "Done. Atomically pushed $RequiredBranch and '$tagName' to '$Remote', then handed off to GitHub Actions."
