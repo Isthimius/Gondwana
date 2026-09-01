@@ -179,11 +179,21 @@ foreach ($project in $Projects) {
     $changelogPath = Join-Path $projectFolder "CHANGELOG.md"
     $changelogIsNew = (-not (Test-Path $changelogPath)) -or ((Get-Item $changelogPath).Length -eq 0)
 
+    if ($changelogIsNew) {
+        $mode = "bootstrap full history"
+    }
+    elseif ($Tag) {
+        $mode = "release $Tag"
+    }
+    else {
+        $mode = "refresh [Unreleased]"
+    }
+
     Write-Host ""
     Write-Host "--- $project ---"
     Write-Host "  include-path : $includePath"
     Write-Host "  changelog    : $changelogPath"
-    Write-Host "  mode         : $(if ($changelogIsNew) { 'bootstrap full history' } elseif ($Tag) { "release $Tag" } else { 'refresh [Unreleased]' })"
+    Write-Host "  mode         : $mode"
 
     $cliffArgs = @(
         "--config", $CliffConfigPath,
@@ -219,6 +229,10 @@ foreach ($project in $Projects) {
             }
 
             $generatedContent = Get-Content $tempChangelog -Raw
+            if ($null -eq $generatedContent) {
+                $generatedContent = ""
+            }
+
             Write-Utf8NoBom -Path $changelogPath -Content $generatedContent
             Write-Host "  Written."
         }
@@ -250,6 +264,10 @@ foreach ($project in $Projects) {
     }
 
     $existingContent = Get-Content $changelogPath -Raw
+    if ($null -eq $existingContent) {
+        $existingContent = ""
+    }
+
     $baseContent = Remove-LeadingUnreleasedSection -Content $existingContent
     $tempChangelog = [System.IO.Path]::GetTempFileName()
 
@@ -264,6 +282,10 @@ foreach ($project in $Projects) {
         }
 
         $generatedContent = Get-Content $tempChangelog -Raw
+        if ($null -eq $generatedContent) {
+            $generatedContent = ""
+        }
+
         Write-Utf8NoBom -Path $changelogPath -Content $generatedContent
         Write-Host "  Written."
     }
