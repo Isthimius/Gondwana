@@ -48,6 +48,7 @@ jobs:
 
           ./Tooling/scripts/Generate-Project-Changelogs.ps1
           $firstManifest = @(Get-ChangelogManifest)
+          Copy-Item ./Gondwana/CHANGELOG.md "$env:RUNNER_TEMP/gondwana-first.md"
 
           ./Tooling/scripts/Generate-Project-Changelogs.ps1
           $secondManifest = @(Get-ChangelogManifest)
@@ -55,6 +56,8 @@ jobs:
           $difference = @(Compare-Object -ReferenceObject $firstManifest -DifferenceObject $secondManifest)
           if ($difference.Count -gt 0) {
               $difference | Format-Table | Out-String | Write-Host
+              Write-Host "Gondwana changelog first-vs-second diff:"
+              & git diff --no-index -- "$env:RUNNER_TEMP/gondwana-first.md" ./Gondwana/CHANGELOG.md
               throw "Generate-Project-Changelogs.ps1 is not idempotent."
           }
 
