@@ -11,9 +11,9 @@
     Excluded from generation: Demos and test-only projects.
 
     Behaviour:
-      - If the project's CHANGELOG.md is new/empty, the complete project history
-        is generated. Existing Git tags become versioned sections and current
-        untagged commits are emitted as [Unreleased], unless -Tag is supplied.
+      - If the project's CHANGELOG.md is new/empty, released history is rebuilt
+        through the latest reachable version tag and current untagged commits are
+        emitted as [Unreleased], unless -Tag is supplied.
       - If the changelog already exists, released history is preserved and the
         leading generated current section is replaced from commits since the
         latest Git tag.
@@ -250,6 +250,20 @@ function Invoke-GitCliffToContent {
     }
 }
 
+function Get-LatestVersionTag {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$RepositoryRoot
+    )
+
+    $latestTag = & git -C $RepositoryRoot describe --tags --abbrev=0 --match "v[0-9]*" HEAD 2>$null
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($latestTag)) {
+        return ""
+    }
+
+    return ([string]$latestTag).Trim()
+}
+
 function Write-Utf8NoBom {
     param(
         [Parameter(Mandatory = $true)]
@@ -264,6 +278,7 @@ function Write-Utf8NoBom {
     [System.IO.File]::WriteAllText($Path, $Content, $utf8NoBom)
 }
 
+$latestVersionTag = Get-LatestVersionTag -RepositoryRoot $repoRoot
 $failed = @()
 
 foreach ($project in $Projects) {
@@ -301,21 +316,43 @@ foreach ($project in $Projects) {
 
     try {
         if ($changelogIsNew) {
-            # Bootstrap from the complete project history. Parse and recompose
-            # git-cliff's output immediately so the first run has the exact same
-            # structure as all later incremental refreshes.
-            $cliffArgs = @($baseCliffArgs)
+            # Bootstrap explicitly from two ranges rather than relying on
+            # git-cliff's implicit all-history range selection:
+            #   1. current commits since the latest tag
+            #   2. released history ending at the latest reachable version tag
+            $currentCliffArgs = @($baseCliffArgs) + "--unreleased"
             if ($Tag) {
-                $cliffArgs += "--tag", $Tag
+                $currentCliffArgs += "--tag", $Tag
             }
 
-            $generatedContent = Invoke-GitCliffToContent -Arguments $cliffArgs -Project $project
-            $generatedParts = Get-ChangelogParts -Content $generatedContent -CurrentTag $Tag
+            $currentContent = Invoke-GitCliffToContent -Arguments $currentCliffArgs -Project $project
+            $currentParts = Get-ChangelogParts -Content $currentContent -CurrentTag $Tag
+
+            if ([string]::IsNullOrWhiteSpace($currentParts.CurrentSection)) {
+                throw "git-cliff did not generate a current changelog section for project '$project'."
+            }
+
+            $prefix = $currentParts.Prefix
+            $releasedHistory = ""
+
+            if (-not [string]::IsNullOrWhiteSpace($latestVersionTag)) {
+                # A single Git revision denotes that commit and its reachable
+                # ancestors, so this reconstructs every release through the
+                # latest version tag while excluding today's unreleased range.
+                $releasedCliffArgs = @($baseCliffArgs) + $latestVersionTag
+                $releasedContent = Invoke-GitCliffToContent -Arguments $releasedCliffArgs -Project $project
+                $releasedParts = Get-ChangelogParts -Content $releasedContent -CurrentTag ""
+                $releasedHistory = $releasedParts.ReleasedHistory
+
+                if ([string]::IsNullOrWhiteSpace($prefix)) {
+                    $prefix = $releasedParts.Prefix
+                }
+            }
 
             $finalContent = Join-ChangelogParts `
-                -Prefix $generatedParts.Prefix `
-                -CurrentSection $generatedParts.CurrentSection `
-                -ReleasedHistory $generatedParts.ReleasedHistory
+                -Prefix $prefix `
+                -CurrentSection $currentParts.CurrentSection `
+                -ReleasedHistory $releasedHistory
         }
         else {
             # Existing changelog: released history is authoritative. Strip only
