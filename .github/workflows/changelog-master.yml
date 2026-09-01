@@ -82,6 +82,17 @@ jobs:
               & git describe --tags --abbrev=0 --match "v[0-9]*" HEAD
               Write-Host "Bootstrapped Gondwana changelog:"
               Write-Host $content
+
+              $barePath = "$env:RUNNER_TEMP/bare-full.md"
+              & git-cliff --config ./cliff.toml --repository . --include-path "Gondwana/**/*" --output $barePath
+              Write-Host "Bare git-cliff release headings:"
+              Get-Content $barePath | Where-Object { $_ -match '^# (?:\[Unreleased\]|v\d+\.\d+\.\d+)' } | Write-Host
+
+              $tagPath = "$env:RUNNER_TEMP/latest-tag.md"
+              & git-cliff --config ./cliff.toml --repository . --include-path "Gondwana/**/*" v2.5.2 --output $tagPath
+              Write-Host "git-cliff v2.5.2 release headings:"
+              Get-Content $tagPath | Where-Object { $_ -match '^# (?:\[Unreleased\]|v\d+\.\d+\.\d+)' } | Write-Host
+
               throw "Bootstrapped changelog does not contain tagged release history."
           }
 
