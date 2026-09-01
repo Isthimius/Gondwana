@@ -6,17 +6,17 @@
 .DESCRIPTION
     Runs git-cliff once per library project, filtering commits by changed file
     paths via --include-path. Each project gets its own CHANGELOG.md placed in
-    its project folder. This is the standard monorepo approach described in the
-    git-cliff docs.
+    its project folder.
 
-    Excluded from generation: Demos, Gondwana.Tests (test-only project).
+    Excluded from generation: Demos and test-only projects.
 
     Behaviour:
       - If the project's CHANGELOG.md is new/empty, the complete project history
         is generated. Existing Git tags become versioned sections and current
         untagged commits are emitted as [Unreleased], unless -Tag is supplied.
-      - If the changelog already exists, a leading [Unreleased] section from a
-        previous run is removed and regenerated from commits since the latest tag.
+      - If the changelog already exists, released history is preserved and the
+        leading generated current section is replaced from commits since the
+        latest Git tag.
       - With -Tag, current unreleased commits are written under that version tag.
       - Without -Tag, current unreleased commits are written under [Unreleased].
 
@@ -25,8 +25,8 @@
     When omitted, current unreleased commits remain under [Unreleased].
 
 .PARAMETER PreviewOnly
-    Print the generated changelog output to the console instead of writing to
-    disk. Nothing is modified on disk when this switch is set.
+    Print the final generated changelog output to the console instead of writing
+    to disk. Nothing is modified on disk when this switch is set.
 
 .PARAMETER Projects
     Override the default list of project folder paths (relative to repo root).
@@ -40,7 +40,7 @@
     .\Generate-Project-Changelogs.ps1
 
 .EXAMPLE
-    # Preview the current unreleased changes without touching disk
+    # Preview the current generated changelogs without touching disk
     .\Generate-Project-Changelogs.ps1 -PreviewOnly
 
 .EXAMPLE
@@ -108,108 +108,144 @@ if (-not (Get-Command git-cliff -ErrorAction SilentlyContinue)) {
     throw "git-cliff was not found on PATH. Install with: winget install --id orhun.git-cliff"
 }
 
-function Remove-LeadingUnreleasedSection {
+$releaseHeadingPattern = '(?m)^#\s+(?:\[Unreleased\]|\[?v?\d+\.\d+\.\d+)'
+$releaseHeadingRegex = New-Object System.Text.RegularExpressions.Regex($releaseHeadingPattern)
+
+function Test-HeadingMatchesTag {
     param(
         [Parameter(Mandatory = $true)]
-        [AllowEmptyString()]
-        [string]$Content
+        [string]$Heading,
+
+        [string]$CurrentTag
     )
 
-    if ([string]::IsNullOrWhiteSpace($Content)) {
-        return $Content
+    if ([string]::IsNullOrWhiteSpace($CurrentTag)) {
+        return $false
     }
 
-    # Only remove [Unreleased] when it is the first release-like top-level
-    # heading. This preserves released history even if unusual text appears
-    # elsewhere in the document.
-    $releaseHeadingPattern = '(?m)^#\s+(?:\[Unreleased\]|\[?v?\d+\.\d+\.\d+)'
-    $firstReleaseHeading = [regex]::Match($Content, $releaseHeadingPattern)
-
-    if (-not $firstReleaseHeading.Success -or $firstReleaseHeading.Value -notmatch '\[Unreleased\]') {
-        return $Content
-    }
-
-    $versionHeadingPattern = '(?m)^#\s+\[?v?\d+\.\d+\.\d+'
-    $versionHeadingRegex = New-Object System.Text.RegularExpressions.Regex($versionHeadingPattern)
-    $nextVersionHeading = $versionHeadingRegex.Match(
-        $Content,
-        $firstReleaseHeading.Index + $firstReleaseHeading.Length
-    )
-
-    $before = $Content.Substring(0, $firstReleaseHeading.Index).TrimEnd()
-
-    if ($nextVersionHeading.Success) {
-        $after = $Content.Substring($nextVersionHeading.Index).TrimStart()
-    }
-    else {
-        $after = ""
-    }
-
-    if ([string]::IsNullOrWhiteSpace($before)) {
-        return $after
-    }
-
-    if ([string]::IsNullOrWhiteSpace($after)) {
-        return $before + [Environment]::NewLine
-    }
-
-    return $before + [Environment]::NewLine + [Environment]::NewLine + $after
+    $version = $CurrentTag -replace '^v', ''
+    $escapedVersion = [regex]::Escape($version)
+    return $Heading -match "^#\s+\[?v?$escapedVersion(?:\]|\s|$)"
 }
 
-function Normalize-ChangelogStructure {
+function Get-ChangelogParts {
     param(
         [Parameter(Mandatory = $true)]
         [AllowEmptyString()]
-        [string]$Content
+        [string]$Content,
+
+        [string]$CurrentTag
     )
 
     if ([string]::IsNullOrWhiteSpace($Content)) {
-        return $Content
+        return [pscustomobject]@{
+            Prefix          = ""
+            CurrentSection  = ""
+            ReleasedHistory = ""
+        }
     }
 
-    # git-cliff's full-history and --prepend modes do not always produce the
-    # same surrounding blank-line counts. Canonicalize only the outer structure
-    # we own: header-to-first-release, first-to-second-release, and EOF. Spacing
-    # inside historical release sections is preserved verbatim.
-    $releaseHeadingPattern = '(?m)^#\s+(?:\[Unreleased\]|\[?v?\d+\.\d+\.\d+)'
-    $releaseHeadingRegex = New-Object System.Text.RegularExpressions.Regex($releaseHeadingPattern)
-    $firstReleaseHeading = $releaseHeadingRegex.Match($Content)
-
-    if (-not $firstReleaseHeading.Success) {
-        return $Content.TrimEnd() + [Environment]::NewLine
+    $matches = $releaseHeadingRegex.Matches($Content)
+    if ($matches.Count -eq 0) {
+        return [pscustomobject]@{
+            Prefix          = $Content.Trim()
+            CurrentSection  = ""
+            ReleasedHistory = ""
+        }
     }
 
-    $prefix = $Content.Substring(0, $firstReleaseHeading.Index).TrimEnd()
-    $releaseContent = $Content.Substring($firstReleaseHeading.Index).Trim()
+    $first = $matches[0]
+    $prefix = $Content.Substring(0, $first.Index).Trim()
+    $firstIsCurrent = ($first.Value -match '\[Unreleased\]') -or
+                      (Test-HeadingMatchesTag -Heading $first.Value -CurrentTag $CurrentTag)
 
-    if ([string]::IsNullOrWhiteSpace($prefix)) {
-        $Content = $releaseContent
+    if (-not $firstIsCurrent) {
+        return [pscustomobject]@{
+            Prefix          = $prefix
+            CurrentSection  = ""
+            ReleasedHistory = $Content.Substring($first.Index).Trim()
+        }
+    }
+
+    if ($matches.Count -gt 1) {
+        $second = $matches[1]
+        $currentSection = $Content.Substring($first.Index, $second.Index - $first.Index).Trim()
+        $releasedHistory = $Content.Substring($second.Index).Trim()
     }
     else {
-        $Content = $prefix + [Environment]::NewLine + [Environment]::NewLine + $releaseContent
+        $currentSection = $Content.Substring($first.Index).Trim()
+        $releasedHistory = ""
     }
 
-    # Normalize the boundary between the current top section and the next
-    # versioned section when one exists. This is the boundary that differs
-    # between a first full-history generation and subsequent --prepend runs.
-    $firstReleaseHeading = $releaseHeadingRegex.Match($Content)
-    $secondReleaseHeading = $releaseHeadingRegex.Match(
-        $Content,
-        $firstReleaseHeading.Index + $firstReleaseHeading.Length
+    return [pscustomobject]@{
+        Prefix          = $prefix
+        CurrentSection  = $currentSection
+        ReleasedHistory = $releasedHistory
+    }
+}
+
+function Join-ChangelogParts {
+    param(
+        [AllowEmptyString()]
+        [string]$Prefix,
+
+        [AllowEmptyString()]
+        [string]$CurrentSection,
+
+        [AllowEmptyString()]
+        [string]$ReleasedHistory
     )
 
-    if ($secondReleaseHeading.Success) {
-        $boundaryStart = $secondReleaseHeading.Index
-        while ($boundaryStart -gt 0 -and [char]::IsWhiteSpace($Content[$boundaryStart - 1])) {
-            $boundaryStart--
-        }
+    $parts = @()
 
-        $before = $Content.Substring(0, $boundaryStart).TrimEnd()
-        $after = $Content.Substring($secondReleaseHeading.Index).TrimStart()
-        $Content = $before + [Environment]::NewLine + [Environment]::NewLine + $after
+    if (-not [string]::IsNullOrWhiteSpace($Prefix)) {
+        $parts += $Prefix.Trim()
     }
 
-    return $Content.TrimEnd() + [Environment]::NewLine
+    if (-not [string]::IsNullOrWhiteSpace($CurrentSection)) {
+        $parts += $CurrentSection.Trim()
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($ReleasedHistory)) {
+        $parts += $ReleasedHistory.Trim()
+    }
+
+    if ($parts.Count -eq 0) {
+        return ""
+    }
+
+    $separator = [Environment]::NewLine + [Environment]::NewLine
+    return (($parts -join $separator).TrimEnd() + [Environment]::NewLine)
+}
+
+function Invoke-GitCliffToContent {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string[]]$Arguments,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Project
+    )
+
+    $tempChangelog = [System.IO.Path]::GetTempFileName()
+    try {
+        & git-cliff @Arguments "--output" $tempChangelog
+        if ($LASTEXITCODE -ne 0) {
+            throw "git-cliff failed for project '$Project' (exit $LASTEXITCODE)."
+        }
+
+        $content = Get-Content $tempChangelog -Raw
+        if ($null -eq $content) {
+            return ""
+        }
+
+        return $content
+    }
+    finally {
+        if (Test-Path $tempChangelog) {
+            Remove-Item $tempChangelog -Force
+        }
+    }
 }
 
 function Write-Utf8NoBom {
@@ -255,106 +291,78 @@ foreach ($project in $Projects) {
     Write-Host "  changelog    : $changelogPath"
     Write-Host "  mode         : $mode"
 
-    $cliffArgs = @(
+    $baseCliffArgs = @(
         "--config", $CliffConfigPath,
         "--repository", $repoRoot,
         "--include-path", $includePath
     )
 
-    if ($changelogIsNew) {
-        # No changelog exists yet: build the complete history. git-cliff includes
-        # current untagged commits as [Unreleased] by default; supplying --tag
-        # stamps those commits with the requested release version instead.
-        if ($Tag) {
-            $cliffArgs += "--tag", $Tag
+    try {
+        if ($changelogIsNew) {
+            # Bootstrap from the complete project history. Parse and recompose
+            # git-cliff's output immediately so the first run has the exact same
+            # structure as all later incremental refreshes.
+            $cliffArgs = @($baseCliffArgs)
+            if ($Tag) {
+                $cliffArgs += "--tag", $Tag
+            }
+
+            $generatedContent = Invoke-GitCliffToContent -Arguments $cliffArgs -Project $project
+            $generatedParts = Get-ChangelogParts -Content $generatedContent -CurrentTag $Tag
+
+            $finalContent = Join-ChangelogParts `
+                -Prefix $generatedParts.Prefix `
+                -CurrentSection $generatedParts.CurrentSection `
+                -ReleasedHistory $generatedParts.ReleasedHistory
+        }
+        else {
+            # Existing changelog: released history is authoritative. Strip only
+            # a leading generated [Unreleased] section (or the same -Tag section
+            # from a repeated release attempt), generate the current range into a
+            # separate buffer, then compose the document ourselves. Do not use
+            # git-cliff --prepend: it can inject a second document header.
+            $existingContent = Get-Content $changelogPath -Raw
+            if ($null -eq $existingContent) {
+                $existingContent = ""
+            }
+
+            $existingParts = Get-ChangelogParts -Content $existingContent -CurrentTag $Tag
+
+            $cliffArgs = @($baseCliffArgs) + "--unreleased"
+            if ($Tag) {
+                $cliffArgs += "--tag", $Tag
+            }
+
+            $generatedContent = Invoke-GitCliffToContent -Arguments $cliffArgs -Project $project
+            $generatedParts = Get-ChangelogParts -Content $generatedContent -CurrentTag $Tag
+
+            if ([string]::IsNullOrWhiteSpace($generatedParts.CurrentSection)) {
+                throw "git-cliff did not generate a current changelog section for project '$project'."
+            }
+
+            $prefix = $existingParts.Prefix
+            if ([string]::IsNullOrWhiteSpace($prefix)) {
+                $prefix = $generatedParts.Prefix
+            }
+
+            $finalContent = Join-ChangelogParts `
+                -Prefix $prefix `
+                -CurrentSection $generatedParts.CurrentSection `
+                -ReleasedHistory $existingParts.ReleasedHistory
         }
 
         if ($PreviewOnly) {
             Write-Host "  (preview only)"
-            & git-cliff @cliffArgs
-            if ($LASTEXITCODE -ne 0) {
-                Write-Warning "git-cliff failed for project '$project' (exit $LASTEXITCODE)."
-                $failed += $project
-            }
-            continue
+            Write-Host $finalContent
         }
-
-        $tempChangelog = [System.IO.Path]::GetTempFileName()
-        try {
-            & git-cliff @cliffArgs "--output" $tempChangelog
-            if ($LASTEXITCODE -ne 0) {
-                Write-Warning "git-cliff failed for project '$project' (exit $LASTEXITCODE)."
-                $failed += $project
-                continue
-            }
-
-            $generatedContent = Get-Content $tempChangelog -Raw
-            if ($null -eq $generatedContent) {
-                $generatedContent = ""
-            }
-
-            $generatedContent = Normalize-ChangelogStructure -Content $generatedContent
-            Write-Utf8NoBom -Path $changelogPath -Content $generatedContent
+        else {
+            Write-Utf8NoBom -Path $changelogPath -Content $finalContent
             Write-Host "  Written."
         }
-        finally {
-            if (Test-Path $tempChangelog) {
-                Remove-Item $tempChangelog -Force
-            }
-        }
-
-        continue
     }
-
-    # Existing changelog: released history is authoritative. Regenerate only
-    # the current range since the latest tag and replace any previous top
-    # [Unreleased] section instead of stacking duplicate generated sections.
-    $cliffArgs += "--unreleased"
-    if ($Tag) {
-        $cliffArgs += "--tag", $Tag
-    }
-
-    if ($PreviewOnly) {
-        Write-Host "  (preview only)"
-        & git-cliff @cliffArgs
-        if ($LASTEXITCODE -ne 0) {
-            Write-Warning "git-cliff failed for project '$project' (exit $LASTEXITCODE)."
-            $failed += $project
-        }
-        continue
-    }
-
-    $existingContent = Get-Content $changelogPath -Raw
-    if ($null -eq $existingContent) {
-        $existingContent = ""
-    }
-
-    $baseContent = Remove-LeadingUnreleasedSection -Content $existingContent
-    $tempChangelog = [System.IO.Path]::GetTempFileName()
-
-    try {
-        Write-Utf8NoBom -Path $tempChangelog -Content $baseContent
-
-        & git-cliff @cliffArgs "--prepend" $tempChangelog
-        if ($LASTEXITCODE -ne 0) {
-            Write-Warning "git-cliff failed for project '$project' (exit $LASTEXITCODE)."
-            $failed += $project
-            continue
-        }
-
-        $generatedContent = Get-Content $tempChangelog -Raw
-        if ($null -eq $generatedContent) {
-            $generatedContent = ""
-        }
-
-        $generatedContent = Normalize-ChangelogStructure -Content $generatedContent
-        Write-Utf8NoBom -Path $changelogPath -Content $generatedContent
-        Write-Host "  Written."
-    }
-    finally {
-        if (Test-Path $tempChangelog) {
-            Remove-Item $tempChangelog -Force
-        }
+    catch {
+        Write-Warning $_.Exception.Message
+        $failed += $project
     }
 }
 
