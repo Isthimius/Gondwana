@@ -72,8 +72,8 @@ $ProjectChangelogGroups = @(
         IncludePaths = @("Tooling/Gondwana.Cli/**/*")
     },
     [pscustomobject]@{
-        Name         = "Tooling / Gondwana.Tooling.Studio"
-        IncludePaths = @("Tooling/Gondwana.Tooling.Studio/**/*")
+        Name         = "Tooling / Gondwana.Mcp"
+        IncludePaths = @("Tooling/Gondwana.Mcp/**/*")
     },
     [pscustomobject]@{
         Name         = "Tooling / Gondwana.Templates"
@@ -82,6 +82,22 @@ $ProjectChangelogGroups = @(
     [pscustomobject]@{
         Name         = "Tooling / Gondwana.Tooling.Assets.WinForms"
         IncludePaths = @("Tooling/Gondwana.Tooling.Assets.WinForms/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Tooling / Gondwana.Tooling.Studio.Avalonia"
+        IncludePaths = @("Tooling/Gondwana.Tooling.Studio.Avalonia/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Tooling / Gondwana.Tooling.Studio.Core"
+        IncludePaths = @("Tooling/Gondwana.Tooling.Studio.Core/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Tooling / Gondwana.Tooling.Studio.WinForms"
+        IncludePaths = @("Tooling/Gondwana.Tooling.Studio.WinForms/**/*")
+    },
+    [pscustomobject]@{
+        Name         = "Tooling / Gondwana.Tooling.Tilesheets.WinForms"
+        IncludePaths = @("Tooling/Gondwana.Tooling.Tilesheets.WinForms/**/*")
     },
     [pscustomobject]@{
         Name         = "Build / Repository"
@@ -193,7 +209,7 @@ Require-Command nbgv "Install with: dotnet tool install -g nbgv"
 Require-Command git-cliff "Install with: winget install --id orhun.git-cliff"
 
 # Resolve relative paths against the repo root (two levels above this script:
-# Solution Items/scripts/ → root) so the script works correctly when invoked
+# Tooling/scripts/ -> Tooling/ -> root) so the script works correctly when invoked
 # from any working directory inside (or outside) the repo.
 $repoRoot = (Get-Item (Join-Path $PSScriptRoot '../..')).FullName
 if (-not [System.IO.Path]::IsPathRooted($CliffConfigPath)) {
