@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 
 
+# [Unreleased]
+
+
+
+## Added
+- Add hyperlink widget and container refactor
+- Add menubar and dropdown menu widgets
+- Add spaceduel demo
+- Add popup and toast overlays
+
+
+
+## Refactoring
+- Tighten touch and mouse polling behavior
+
 # v2.5.2 - July 26, 2026
 
 

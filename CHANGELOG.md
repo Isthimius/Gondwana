@@ -2,6 +2,171 @@
 
 All notable changes to this project will be documented in this file.
 
+# [Unreleased]
+
+## Gondwana
+
+### Added
+- Add hyperlink widget and container refactor
+- Add oblique left coordinate system
+- Add collision adjustment and persistence
+- Add self-contained platformer demo
+- Add spaceduel demo
+- Add collision configuration support for Frame and .gts files
+- Add effect subsystem
+- Add popup and toast overlays
+- Add direct light rendering
+- Add side scroller and zelda prototypes
+- Add DirectSceneLayerDarknessOverlay
+
+
+
+### Fixed
+- Fix hex partial coordinate movement bug
+- Fix zoom calculations and movement timing
+- Fix sprite cloning composition
+- Persist engine config changes
+- Handle image instance layer updates
+- Support custom logger dependency injection
+- Correct view coordinate conversion on GPU path to address occasional tearing
+- Resolve timer edge case
+
+
+
+### Refactoring
+- Tighten touch and mouse polling behavior
+
+
+
+### Other Changes
+- Standardizing CollisionAdjust and Overlap values
+
+## Gondwana.Avalonia
+
+### Fixed
+- Improve bitmap render adapters
+
+
+
+### Refactoring
+- Tighten touch and mouse polling behavior
+
+## Gondwana.Blazor
+
+### Refactoring
+- Tighten touch and mouse polling behavior
+
+## Gondwana.Widgets
+
+### Added
+- Add hyperlink widget and container refactor
+- Add menubar and dropdown menu widgets
+- Add spaceduel demo
+- Add popup and toast overlays
+
+
+
+### Refactoring
+- Tighten touch and mouse polling behavior
+
+## Gondwana.WinForms
+
+### Fixed
+- Improve bitmap render adapters
+
+
+
+### Refactoring
+- Tighten touch and mouse polling behavior
+
+## Tooling / Gondwana.Cli
+
+### Refactoring
+- Unify blazor detection, workload checks, and return values
+
+## Tooling / Gondwana.Mcp
+
+### Added
+- Add mcp service and ai plugins
+- Add agent plugin compliance docs
+
+## Tooling / Gondwana.Tooling.Assets.WinForms
+
+### Maintenance
+- Rename tooling projects and files
+
+## Tooling / Gondwana.Tooling.Studio.Avalonia
+
+### Maintenance
+- Rename tooling projects and files
+
+## Tooling / Gondwana.Tooling.Studio.Core
+
+### Maintenance
+- Rename tooling projects and files
+
+## Tooling / Gondwana.Tooling.Studio.WinForms
+
+### Maintenance
+- Rename tooling projects and files
+
+## Tooling / Gondwana.Tooling.Tilesheets.WinForms
+
+### Maintenance
+- Rename tooling projects and files
+
+## Build / Repository
+
+### Added
+- Add menubar and dropdown menu widgets
+- Add collision adjustment and persistence
+- Add self-contained platformer demo
+- Add spaceduel demo
+- Add flappy bird demo
+- Add mcp service and ai plugins
+- Add two user-generated demo games, TheGreatPlop and RageToPro
+- Add effect subsystem
+- Add side scroller and zelda prototypes
+
+
+
+### Fixed
+- Add explicit permissions block
+
+
+
+### Documentation
+- Simplify roadmap description
+- Revise roadmap wording
+- Refine the README content for clarity and structure
+- Add ai-assisted workflow section to repository README
+- Update game introduction duration
+- Add android/ios support to README Roadmap
+- Refresh project overview
+- Add support section
+
+
+
+### Maintenance
+- Rename tooling projects and files
+
+
+
+### Other Changes
+- Version bump
+- Revise README for clarity and feature updates
+- Rename Gondwana.Movement to Gondwana.Physics.Movement
+- Update GitHub Actions workflow for PR title and body
+- Update link text for Engine Wiki in README
+- Add Platformer Demo section to README
+- Add Space Shooter Demo to README
+- Add Discussions link to README
+- Refactor support section in README
+- Revise support section title and link text
+- Update wording in support section of README
+- Update funding sources in FUNDING.yml
+- Add buy_me_a_coffee funding option
+
 # [v2.5.2] - 2026-07-26
 
 ## Gondwana
