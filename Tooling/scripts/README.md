@@ -135,7 +135,7 @@ Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://
 1. Iterates over the default set of library/tooling projects (all `Gondwana.*` projects and `Tooling/*` projects; Demos and `Gondwana.Tests` are excluded).
 2. Filters each project's history with `git-cliff --include-path "Project/**/*"`.
 3. If a project has no `CHANGELOG.md` (or it is empty), generates the complete project history: existing Git tags become versioned sections and current untagged commits are included as `[Unreleased]`, unless `-Tag` is supplied.
-4. If a project already has a changelog, removes only a leading generated `[Unreleased]` section and regenerates the current commits since the latest tag. Without `-Tag`, those commits are prepended under `[Unreleased]`; with `-Tag`, they are prepended under that version.
+4. If a project already has a changelog, replaces any leading `[Unreleased]` section and regenerates the current commits since the latest tag. Without `-Tag`, those commits are prepended under `[Unreleased]`; with `-Tag`, they are prepended under that version.
 5. Writes through a temporary file so a failed `git-cliff` run does not destroy the existing changelog, and reports all project failures at the end.
 
 > A single commit that touches multiple projects will appear in each matching project changelog — correct behaviour for a monorepo.

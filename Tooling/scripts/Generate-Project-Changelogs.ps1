@@ -14,9 +14,9 @@
       - If the project's CHANGELOG.md is new/empty, the complete project history
         is generated. Existing Git tags become versioned sections and current
         untagged commits are emitted as [Unreleased], unless -Tag is supplied.
-      - If the changelog already exists, released history is preserved and the
-        leading generated current section is replaced from commits since the
-        latest Git tag.
+      - If the changelog already exists, released history is preserved and any
+        leading [Unreleased] section is replaced from commits since the latest
+        Git tag.
       - With -Tag, current unreleased commits are written under that version tag.
       - Without -Tag, current unreleased commits are written under [Unreleased].
 

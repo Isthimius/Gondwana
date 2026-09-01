@@ -210,7 +210,7 @@ jobs:
           validate_changes() {
             unexpected=$(git status --porcelain --untracked-files=all \
               | sed -E 's/^.. //' \
-              | grep -Ev '(^|/)CHANGELOG\.md$' || true)
+              | grep -Ev '/CHANGELOG\.md$' || true)
 
             if [ -n "$unexpected" ]; then
               echo "Generator changed files other than project CHANGELOG.md files:"
@@ -227,7 +227,7 @@ jobs:
           validate_changes
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- ':(glob)**/CHANGELOG.md'
+          git add -- ':(glob)**/CHANGELOG.md' ':(exclude)CHANGELOG.md'
           git commit -m "docs: update unreleased changelogs"
 
           # A second master push can land while this run is generating files.
@@ -247,7 +247,7 @@ jobs:
             fi
 
             validate_changes
-            git add -- ':(glob)**/CHANGELOG.md'
+            git add -- ':(glob)**/CHANGELOG.md' ':(exclude)CHANGELOG.md'
             git commit -m "docs: update unreleased changelogs"
             git push origin HEAD:master
           fi
