@@ -220,6 +220,47 @@ function Join-ChangelogParts {
     return (($parts -join $separator).TrimEnd() + [Environment]::NewLine)
 }
 
+function Normalize-ReleaseBoundaries {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [string]$Content
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Content)) {
+        return ""
+    }
+
+    # Bootstrap output comes directly from git-cliff and may contain a different
+    # number of blank lines before top-level release headings than incremental
+    # composition. Canonicalize only those outer boundaries, from bottom to top,
+    # so the first generated file is byte-stable on every subsequent run.
+    $normalized = $Content.TrimEnd()
+    $releaseMatches = $releaseHeadingRegex.Matches($normalized)
+    $separator = [Environment]::NewLine + [Environment]::NewLine
+
+    for ($i = $releaseMatches.Count - 1; $i -ge 0; $i--) {
+        $headingIndex = $releaseMatches[$i].Index
+        $boundaryStart = $headingIndex
+
+        while ($boundaryStart -gt 0 -and [char]::IsWhiteSpace($normalized[$boundaryStart - 1])) {
+            $boundaryStart--
+        }
+
+        $before = $normalized.Substring(0, $boundaryStart).TrimEnd()
+        $after = $normalized.Substring($headingIndex).TrimStart()
+
+        if ([string]::IsNullOrWhiteSpace($before)) {
+            $normalized = $after
+        }
+        else {
+            $normalized = $before + $separator + $after
+        }
+    }
+
+    return $normalized.TrimEnd() + [Environment]::NewLine
+}
+
 function Invoke-GitCliffToContent {
     param(
         [Parameter(Mandatory = $true)]
@@ -304,15 +345,13 @@ foreach ($project in $Projects) {
             # For a new/empty changelog, git-cliff already provides the exact
             # source of truth we need in one pass: document header, current
             # [Unreleased] (or -Tag) section, and all reachable tagged history.
-            # Do not split and recompose this first-run output; doing so adds
-            # complexity without adding information.
             $cliffArgs = @($baseCliffArgs)
             if ($Tag) {
                 $cliffArgs += "--tag", $Tag
             }
 
             $generatedContent = Invoke-GitCliffToContent -Arguments $cliffArgs -Project $project
-            $finalContent = $generatedContent.TrimEnd() + [Environment]::NewLine
+            $finalContent = Normalize-ReleaseBoundaries -Content $generatedContent
         }
         else {
             # Existing changelog: released history is authoritative. Strip only
