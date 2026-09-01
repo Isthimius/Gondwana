@@ -78,10 +78,16 @@ jobs:
           $content = Get-Content ./Gondwana/CHANGELOG.md -Raw
 
           if ($content -notmatch '(?m)^# v2\.') {
+              Write-Host "Latest reachable version tag:"
+              & git describe --tags --abbrev=0 --match "v[0-9]*" HEAD
+              Write-Host "Bootstrapped Gondwana changelog:"
+              Write-Host $content
               throw "Bootstrapped changelog does not contain tagged release history."
           }
 
           if ($content -notmatch '(?m)^# \[Unreleased\]') {
+              Write-Host "Bootstrapped Gondwana changelog:"
+              Write-Host $content
               throw "Bootstrapped changelog does not contain current unreleased changes."
           }
 
