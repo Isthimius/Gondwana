@@ -61,7 +61,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 # ---------------------------------------------------------------------------
-# Default project list — all library projects (not Demos or Gondwana.Tests).
+# Default project list — all library/tooling projects (not Demos or tests).
 # Paths are relative to the repo root.
 # ---------------------------------------------------------------------------
 $DefaultProjects = @(
@@ -79,9 +79,13 @@ $DefaultProjects = @(
     "Gondwana.WinForms",
     "Gondwana.WinForms.Hosting",
     "Tooling/Gondwana.Cli",
-    "Tooling/Gondwana.Tooling.Studio",
+    "Tooling/Gondwana.Mcp",
     "Tooling/Gondwana.Templates",
-    "Tooling/Gondwana.Tooling.Assets.WinForms"
+    "Tooling/Gondwana.Tooling.Assets.WinForms",
+    "Tooling/Gondwana.Tooling.Studio.Avalonia",
+    "Tooling/Gondwana.Tooling.Studio.Core",
+    "Tooling/Gondwana.Tooling.Studio.WinForms",
+    "Tooling/Gondwana.Tooling.Tilesheets.WinForms"
 )
 
 if (-not $Projects) {
