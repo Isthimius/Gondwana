@@ -297,13 +297,14 @@ jobs:
 
       - name: Open changelog update pull request
         if: steps.changes.outputs.has_changes == 'true'
+        id: changelog_pr
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           token: ${{ github.token }}
           branch: automation/update-changelogs
           base: master
           delete-branch: true
-          commit-message: "docs: update unreleased changelogs"
+          commit-message: "docs: update unreleased changelogs [skip release notes]"
           title: "docs: update unreleased changelogs"
           body: |
             Automated changelog refresh for commits merged into `master`.
@@ -312,3 +313,65 @@ jobs:
           add-paths: |
             CHANGELOG.md
             **/CHANGELOG.md
+
+      - name: Enable auto-merge for changelog pull request
+        if: steps.changes.outputs.has_changes == 'true' && steps.changelog_pr.outputs.pull-request-number != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const pull_number = Number("${{ steps.changelog_pr.outputs.pull-request-number }}");
+            const { data: pull } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number
+            });
+
+            if (pull.state !== "open") {
+              core.info(`Changelog PR #${pull_number} is not open; skipping auto-merge enablement.`);
+              return;
+            }
+
+            if (pull.auto_merge) {
+              core.info(`Auto-merge already enabled for changelog PR #${pull_number}.`);
+              return;
+            }
+
+            await github.graphql(
+              `mutation EnableAutoMerge($pullRequestId: ID!) {
+                enablePullRequestAutoMerge(input: { pullRequestId: $pullRequestId, mergeMethod: SQUASH }) {
+                  pullRequest { number }
+                }
+              }`,
+              { pullRequestId: pull.node_id }
+            );
+
+            core.info(`Enabled auto-merge for changelog PR #${pull_number}.`);
+
+      - name: Close stale changelog automation pull requests
+        if: steps.changes.outputs.has_changes != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const head = `${owner}:automation/update-changelogs`;
+            const { data: pulls } = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: "open",
+              head,
+              base: "master",
+              per_page: 100
+            });
+
+            for (const pull of pulls) {
+              core.info(`Closing stale changelog PR #${pull.number}`);
+              await github.rest.pulls.update({
+                owner,
+                repo,
+                pull_number: pull.number,
+                state: "closed"
+              });
+            }
