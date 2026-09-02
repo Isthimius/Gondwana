@@ -171,7 +171,7 @@ All notable changes to this project will be documented in this file.
 ## Fixed
 - Fix for smooth movement
 - Fix for startup mis-rendering; removing RecreateBackbufferOnResize
-- Fixed TargeFPS not updating
+- Fixed TargetFPS not updating
 - Fix for SpriteManager _lastTick; fixes "fast" movement
 - Fix for the diagsquare
 - Fixed DirectDrawing refresh issue
