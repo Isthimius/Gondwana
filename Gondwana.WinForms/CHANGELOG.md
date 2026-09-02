@@ -80,85 +80,15 @@ All notable changes to this project will be documented in this file.
 - Make `SpriteManager` iteration thread-safe
 # v2.1.0 - April 20, 2026
 
+## Added
+- Add `WinFormsKeyboardAdapter.GetKeyFromString` for case-insensitive conversion from configured key names
 
+## Changed
+- Route WinForms engine extensions through the instance-based `Engine.Input` APIs
+- Move SDL2 gamepad integration into the dedicated Gondwana.Input.SDL2 package
 
-## Fixed
-- Fix for arrow keys being seen by the KeyboardAdapter
-- Fix for occasional race condition in KeyboardEventPoller
+## Documentation
+- Expand XML documentation for WinForms keyboard, mouse, gamepad, audio, and rendering adapters
 
-
-
-## Refactoring
-- Refactoring RenderSurfactHost; simplifying RenderToBackbuffer; namespace organizing
-
-
-
-## Other Changes
-- Adding Gondwana.WinForms
-- KeyboardManager, with WinFormsKeyboardAdapter
-- Added XInput for WinForms
-- Few more touchups for XInputGamepad
-- Log info, and remove dead code
-- SoundResource refactoring; still need to smooth out PlatformAudioFactory / temp files
-- Minor code organization
-- Audio stuff done for now (still needs real-world testing); also creating static EngineExtensions class
-- Hmmm... KeyboardHandler not firing
-- Okay, got Keyboard firing; need to clean up references, add Manager classes
-- Keyboard and Gamepad cleanup
-- Comments, mostly
-- Namespace fix
-- Misc cleanup
-- More misc stuff
-- Hello, RenderSurfaceHost
-- Class renaming, misc updates
-- Rendering forms
-- Cleaning up Tilesheet and Frame
-- Renaming, and new WinForm controls
-- Starting to try and wire up revised Puzzle
-- This, that, and other things
-- Debugging...
-- Still debugging; confirmed BitmapBackbuffer is being drawn, rendered when stepping through; logic error somewhere in cycle
-- Getting closer...
-- More testing and misc adjustments
-- Ugh WinForm events... Resize not bubbling up in WinFormBitmapRenderSurfaceControl.cs
-- Move Matrix binding from BackbufferBase to RenderSurfaceHost;
-- Adding "generic" SDL2 Gamepad support / WinForms implementation
-- Modify SDL2 Gamepad support to use SDL_GameController internally
-- EngineExtensions
-- *** finally got images, but with issues. and it's gnarly. ***
-- Semantic cleanup
-- Oh we're back, baby...
-- Ohmygosh mouse polling across threads works
-- UiDispatcher implementation
-- Beginning GPU adapter
-- Trying to get Resize to fire
-- Resize successful! but still exception if resizing too small in Puzzle
-- Tidying
-- Working on resize backbuffer issue
-- More troubleshooting; fix for dirty rectangle bug
-- Almost fixed...
-- Finally jitter and sizing fixed, with Backbuffer resize
-- *** massive CodeMaid cleanup ***
-- More random cleanup; marking GPU backbuffer and adapter with NotImplementedException
-- Starting CoordinateTest
-- CoordinateTest, and it's almost a template
-- Camera debugging
-- More camera move debugging
-- Misc refactor / cleanup; using Keys enum
-- Zoom lerp
-- The chickens are back
-- Tweaks and collision testing
-- Last tweaks before breaking the engine...
-- The ghost is no longer in the shell
-- Clean up; minor debug
-- Committing for 2.0.1
-- Merge from master v2.0.1
-- New test ParticleEmitters, and adapter xml comments
-- Moved static Engine input methods to instance of EngineInputSystems
-- Spot movement; suddenly an Input class appears
-- MouseEventArgs sugar
-- Project settings and files for NuGet publication
-- Logos and icons
-- Per project README files
-
-
+## Packaging
+- Add package-specific NuGet metadata, README, and icons
