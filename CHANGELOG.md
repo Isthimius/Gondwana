@@ -149,6 +149,7 @@ All notable changes to this project will be documented in this file.
 
 ### Maintenance
 - Rename tooling projects and files
+- Remove manual funding configuration
 
 
 
@@ -166,6 +167,7 @@ All notable changes to this project will be documented in this file.
 - Update wording in support section of README
 - Update funding sources in FUNDING.yml
 - Add buy_me_a_coffee funding option
+- Add funding usernames to FUNDING.yml
 
 # [v2.5.2] - 2026-07-26
 
