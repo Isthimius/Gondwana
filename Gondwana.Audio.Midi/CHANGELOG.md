@@ -52,7 +52,7 @@ All notable changes to this project will be documented in this file.
 # v2.1.0 - April 20, 2026
 
 ## Fixed
-- Render playback and seek-forward operations through the MIDI sequencer so MIDI events advance correctly
+- Route playback and seek-forward operations through the MIDI sequencer so MIDI events advance correctly
 
 ## Changed
 - Update NAudio to 2.3.0
