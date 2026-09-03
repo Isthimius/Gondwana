@@ -196,7 +196,7 @@ public sealed class Engine : IDisposable
     /// Raised when <see cref="Dispose()"/> begins the explicit disposal sequence.
     /// </summary>
     /// <remarks>
-    /// Fired only when <see cref="Dispose()"/> is called (never from the finalizer).
+    /// Fired only when <see cref="Dispose"/> is called (never from the finalizer).
     /// Handlers run before managed cleanup while engine state is still readable.
     /// If a <see cref="UiDispatcher"/> is available, this event is posted to the UI thread.
     /// </remarks>
@@ -206,7 +206,7 @@ public sealed class Engine : IDisposable
     /// Raised after the engine has completed explicit disposal.
     /// </summary>
     /// <remarks>
-    /// Fired only when <see cref="Dispose()"/> is called (never from the finalizer).
+    /// Fired only when <see cref="Dispose"/> is called (never from the finalizer).
     /// Indicates all managed cleanup has completed and <see cref="IsDisposed"/> is <c>true</c>.
     /// If a <see cref="UiDispatcher"/> is available, this event is posted to the UI thread.
     /// </remarks>
@@ -553,6 +553,8 @@ public sealed class Engine : IDisposable
             return;
         }
 
+        EngineDispatcher.Drain();
+
         long driverTick = HighResTimer.GetCurrentTick();
         var batch = _timerDrivenSteps.Advance(
             driverTick,
@@ -564,8 +566,6 @@ public sealed class Engine : IDisposable
 
         if (batch.StepCount == 0)
         {
-            EngineDispatcher.Drain();
-
             if (render)
                 RenderFrame(driverTick, frameDelta);
 
@@ -617,7 +617,7 @@ public sealed class Engine : IDisposable
     /// </remarks>
     /// <seealso cref="Start()"/>
     /// <seealso cref="Cycle"/>
-    /// <seealso cref="Dispose()"/>
+    /// <seealso cref="Dispose"/>
     /// <seealso cref="IsRunning"/>
     public void Stop()
     {
@@ -859,6 +859,8 @@ public sealed class Engine : IDisposable
 
     private void Cycle()
     {
+        EngineDispatcher.Drain();
+
         long tick = HighResTimer.GetCurrentTick();
         var deltaMs = HighResTimer.GetDuration(_lastCycleTick, tick);
         _lastCycleTick = tick;
@@ -880,8 +882,6 @@ public sealed class Engine : IDisposable
         double frameDelta,
         bool sampleCps)
     {
-        EngineDispatcher.Drain();
-
         EnginePluginRegistry.InvokePreCycle(this, simulationDelta);
 
         DoBackgroundTasks(simulationTick);
