@@ -67,6 +67,8 @@ public sealed class Engine : IDisposable
     private long _lastBackgroundTick = HighResTimer.GetCurrentTick();
     private long _lastForegroundTick = HighResTimer.GetCurrentTick();
     private long _lastCycleTick = HighResTimer.GetCurrentTick();
+    private readonly FixedStepAccumulator _timerDrivenSteps = new();
+    private bool _isTimerDriven;
 
     private long _grossCyclesThisMeasure = 0;
     private long _netCyclesThisMeasure = 0;
@@ -434,6 +436,8 @@ public sealed class Engine : IDisposable
             }
         }
 
+        _isTimerDriven = false;
+        EngineSimulationClock.UseWallClock();
         IsRunning = true;
 
         _startTick = HighResTimer.GetCurrentTick();
@@ -462,8 +466,9 @@ public sealed class Engine : IDisposable
     /// such as single-threaded WebAssembly (WASM) runtimes. Instead of spawning a
     /// <see cref="Task"/> to drive the loop, it binds the <see cref="EngineDispatcher"/>
     /// to the calling thread and returns immediately. The caller is then responsible for
-    /// advancing the engine by calling <see cref="Tick"/> on each timer tick (e.g. via
-    /// a platform-specific timer such as <c>DispatcherTimer</c>).
+    /// advancing the engine by calling <see cref="Tick"/> for each presentation opportunity
+    /// (for example, browser <c>requestAnimationFrame</c>). Each call may perform multiple fixed
+    /// simulation updates but no more than one foreground render.
     /// </para>
     /// <para>
     /// Unlike <see cref="Start(SynchronizationContext)"/>, this method will throw if
@@ -504,24 +509,31 @@ public sealed class Engine : IDisposable
         // Bind the dispatcher to the calling (UI) thread — Tick() will be called from here.
         EngineDispatcher.BindToCurrentThread();
 
-        IsRunning = true;
-
         _startTick = HighResTimer.GetCurrentTick();
         _lastCPSSamplingTick = _startTick;
         _lastCycleTick = _startTick;
+        _lastBackgroundTick = _startTick;
+        _lastForegroundTick = _startTick;
+        _timerDrivenSteps.Reset(_startTick);
+        EngineSimulationClock.BeginTimerDriven(_startTick);
+
+        _isTimerDriven = true;
+        IsRunning = true;
 
         // _cycleTask is intentionally left null; the caller drives the loop via Tick().
     }
 
     /// <summary>
-    /// Advances the engine by one cycle.
+    /// Advances the timer-driven engine by one externally presented frame.
     /// </summary>
     /// <remarks>
     /// <para>
     /// This method is intended for use with the timer-driven startup path initiated by
     /// <see cref="StartTimerDriven(SynchronizationContext)"/>. The caller (typically a
-    /// platform timer such as a <c>DispatcherTimer</c>) should invoke this method once per
-    /// timer tick to drive the engine loop.
+    /// platform timer or browser <c>requestAnimationFrame</c>) should invoke this method once per
+    /// presentation opportunity. Elapsed time is accumulated into zero or more fixed simulation
+    /// steps, capped by <see cref="EngineConfiguration.MaxTimerDrivenSimulationSteps"/>, followed
+    /// by at most one foreground render.
     /// </para>
     /// <para>
     /// If the engine is not currently running, this method returns immediately without
@@ -535,7 +547,50 @@ public sealed class Engine : IDisposable
         if (!IsRunning)
             return;
 
-        Cycle();
+        if (!_isTimerDriven)
+        {
+            Cycle();
+            return;
+        }
+
+        long driverTick = HighResTimer.GetCurrentTick();
+        var batch = _timerDrivenSteps.Advance(
+            driverTick,
+            Configuration.TimerDrivenSimulationRate,
+            Configuration.MaxTimerDrivenSimulationSteps);
+
+        bool render = IsForegroundDue(driverTick);
+        double frameDelta = HighResTimer.GetDuration(_lastForegroundTick, driverTick);
+
+        if (batch.StepCount == 0)
+        {
+            EngineDispatcher.Drain();
+
+            if (render)
+                RenderFrame(driverTick, frameDelta);
+
+            if (Configuration.SamplingTimeForCPS > 0)
+                CalculateCPS(driverTick);
+
+            return;
+        }
+
+        double fixedDelta = batch.StepTicks / (double)HighResTimer.TicksPerSecond;
+
+        for (int step = 0; step < batch.StepCount && IsRunning; step++)
+        {
+            long simulationTick = batch.GetStepTick(step);
+            EngineSimulationClock.SetTimerDrivenTick(simulationTick);
+
+            bool isLastStep = step == batch.StepCount - 1;
+            RunSimulationCycle(
+                simulationTick,
+                fixedDelta,
+                render && isLastStep,
+                driverTick,
+                frameDelta,
+                sampleCps: isLastStep);
+        }
     }
 
     /// <summary>
@@ -570,6 +625,8 @@ public sealed class Engine : IDisposable
             return;
 
         IsRunning = false;
+        _isTimerDriven = false;
+        EngineSimulationClock.UseWallClock();
         InvokeShutdownAfterCycleStops();
     }
 
@@ -672,9 +729,10 @@ public sealed class Engine : IDisposable
     /// <value>The number of complete engine cycles executed per second, including throttled cycles.</value>
     /// <remarks>
     /// <para>
-    /// This metric reflects all calls to <see cref="Cycle"/>, regardless of whether
-    /// a foreground render was performed. It represents the engine's update frequency
-    /// for background tasks such as input polling, timers, and animations.
+    /// This metric reflects all simulation updates, regardless of whether a foreground render
+    /// was performed. In timer-driven mode a single <see cref="Tick"/> may contribute zero or
+    /// multiple updates. It represents the update frequency for background tasks such as input
+    /// polling, timers, and animations.
     /// </para>
     /// <para>
     /// This value is updated at the interval specified by <see cref="EngineConfiguration.SamplingTimeForCPS"/>.
@@ -801,40 +859,58 @@ public sealed class Engine : IDisposable
 
     private void Cycle()
     {
-        EngineDispatcher.Drain();
-
         long tick = HighResTimer.GetCurrentTick();
         var deltaMs = HighResTimer.GetDuration(_lastCycleTick, tick);
         _lastCycleTick = tick;
 
-        EnginePluginRegistry.InvokePreCycle(this, deltaMs);
+        RunSimulationCycle(
+            tick,
+            deltaMs,
+            IsForegroundDue(tick),
+            tick,
+            deltaMs,
+            sampleCps: true);
+    }
 
-        DoBackgroundTasks(tick);
+    private void RunSimulationCycle(
+        long simulationTick,
+        double simulationDelta,
+        bool render,
+        long renderTick,
+        double frameDelta,
+        bool sampleCps)
+    {
+        EngineDispatcher.Drain();
 
-        // if TargetFPS <= 0, render to screen unbounded
-        // otherwise, check if throttle time has passed since last tick...
-        if ((Configuration.TargetFPS <= 0)
-            || (tick - _lastForegroundTick) >= HighResTimer.TicksPerSecond / Configuration.TargetFPS)
-        {
-            EnginePluginRegistry.InvokePreFrameRender(this, deltaMs);
+        EnginePluginRegistry.InvokePreCycle(this, simulationDelta);
 
-            DoForegroundTasks(tick);
+        DoBackgroundTasks(simulationTick);
 
-            EnginePluginRegistry.InvokePostFrameRender(this, deltaMs);
+        if (render)
+            RenderFrame(renderTick, frameDelta);
 
-            // save time of this last tick; increment CPS counter
-            _lastForegroundTick = tick;
-            _netCyclesThisMeasure++;
-        }
-
-        // increment CPS counter
         _grossCyclesThisMeasure++;
 
-        // if 0 or negative, sampling is turned off
-        if (Configuration.SamplingTimeForCPS > 0)
-            CalculateCPS(tick);
+        if (sampleCps && Configuration.SamplingTimeForCPS > 0)
+            CalculateCPS(renderTick);
 
-        EnginePluginRegistry.InvokePostCycle(this, deltaMs);
+        EnginePluginRegistry.InvokePostCycle(this, simulationDelta);
+    }
+
+    private bool IsForegroundDue(long tick) =>
+        Configuration.TargetFPS <= 0
+        || (tick - _lastForegroundTick) >= HighResTimer.TicksPerSecond / Configuration.TargetFPS;
+
+    private void RenderFrame(long tick, double delta)
+    {
+        EnginePluginRegistry.InvokePreFrameRender(this, delta);
+
+        DoForegroundTasks(tick);
+
+        EnginePluginRegistry.InvokePostFrameRender(this, delta);
+
+        _lastForegroundTick = tick;
+        _netCyclesThisMeasure++;
     }
 
     private void DoBackgroundTasks(long tick)

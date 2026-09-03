@@ -24,7 +24,7 @@ public sealed class SpriteManager : IDisposable
     internal readonly List<Sprite> _spriteList = new();
     private readonly object _spriteListLock = new();
 
-    private long _lastTick = HighResTimer.GetCurrentTick();
+    private long _lastTick = EngineSimulationClock.GetCurrentTick();
 
     /// <summary>
     /// Event raised when a new sprite is created.

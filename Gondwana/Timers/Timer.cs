@@ -136,7 +136,11 @@ public sealed class Timer : IDisposable
     /// <returns>The newly created <see cref="Timer"/> instance.</returns>
     public static Timer Add(string timerID, TimerType type, TimerCycles cycles, double length)
     {
-        var timer = new Timer(type, cycles, HighResTimer.GetCurrentTick(), length)
+        long startTick = type == TimerType.PreCycle
+            ? EngineSimulationClock.GetCurrentTick()
+            : HighResTimer.GetCurrentTick();
+
+        var timer = new Timer(type, cycles, startTick, length)
         {
             TimerID = timerID
         };

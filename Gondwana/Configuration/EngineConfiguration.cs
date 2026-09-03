@@ -42,6 +42,33 @@ public partial class EngineConfiguration
         }
     }
 
+    private int _timerDrivenSimulationRate = 120;
+
+    /// <summary>
+    /// Gets or sets the number of fixed simulation updates performed per second in timer-driven
+    /// mode. The browser render cadence remains controlled independently by <see cref="TargetFPS"/>.
+    /// </summary>
+    /// <value>The fixed update rate in hertz. Values below one are clamped to one. The default is 120.</value>
+    public int TimerDrivenSimulationRate
+    {
+        get => _timerDrivenSimulationRate;
+        set => _timerDrivenSimulationRate = Math.Max(1, value);
+    }
+
+    private int _maxTimerDrivenSimulationSteps = 8;
+
+    /// <summary>
+    /// Gets or sets the maximum number of fixed simulation updates that one externally driven
+    /// <c>Tick()</c> call may perform. Excess accumulated time is discarded to keep a delayed
+    /// browser frame from entering an unbounded catch-up loop.
+    /// </summary>
+    /// <value>The maximum updates per tick. Values below one are clamped to one. The default is 8.</value>
+    public int MaxTimerDrivenSimulationSteps
+    {
+        get => _maxTimerDrivenSimulationSteps;
+        set => _maxTimerDrivenSimulationSteps = Math.Max(1, value);
+    }
+
     private bool _vSync = true;
 
     /// <summary>
