@@ -196,7 +196,7 @@ public sealed class Engine : IDisposable
     /// Raised when <see cref="Dispose()"/> begins the explicit disposal sequence.
     /// </summary>
     /// <remarks>
-    /// Fired only when <see cref="Dispose"/> is called (never from the finalizer).
+    /// Fired only when <see cref="Dispose()"/> is called (never from the finalizer).
     /// Handlers run before managed cleanup while engine state is still readable.
     /// If a <see cref="UiDispatcher"/> is available, this event is posted to the UI thread.
     /// </remarks>
@@ -206,7 +206,7 @@ public sealed class Engine : IDisposable
     /// Raised after the engine has completed explicit disposal.
     /// </summary>
     /// <remarks>
-    /// Fired only when <see cref="Dispose"/> is called (never from the finalizer).
+    /// Fired only when <see cref="Dispose()"/> is called (never from the finalizer).
     /// Indicates all managed cleanup has completed and <see cref="IsDisposed"/> is <c>true</c>.
     /// If a <see cref="UiDispatcher"/> is available, this event is posted to the UI thread.
     /// </remarks>
@@ -617,7 +617,7 @@ public sealed class Engine : IDisposable
     /// </remarks>
     /// <seealso cref="Start()"/>
     /// <seealso cref="Cycle"/>
-    /// <seealso cref="Dispose"/>
+    /// <seealso cref="Dispose()"/>
     /// <seealso cref="IsRunning"/>
     public void Stop()
     {
@@ -815,7 +815,7 @@ public sealed class Engine : IDisposable
     /// <summary>
     /// Gets the collection of input subsystems for keyboard, mouse, touch, and gamepad input.
     /// </summary>
-    /// <value>An <see cref="EngineInputSystems"/> instance providing access to all input subsystems.</value>
+    /// <value>An <see cref="EngineInputSystems"/> instance providing access to all engine input subsystems.</value>
     /// <remarks>
     /// <para>
     /// This property provides centralized access to input event pollers and managers
