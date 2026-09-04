@@ -20,7 +20,7 @@ internal sealed class FixedStepAccumulator
     }
 
     /// <summary>
-    /// Accumulates driver time and returns the fixed steps due for the next browser frame.
+    /// Accumulates driver time and returns the fixed steps due for the next presentation opportunity.
     /// Excess backlog is discarded after <paramref name="maxSteps"/> steps to prevent a spiral
     /// of death after throttling or tab suspension.
     /// </summary>
