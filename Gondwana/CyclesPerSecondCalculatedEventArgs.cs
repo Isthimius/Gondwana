@@ -40,10 +40,12 @@ public class CyclesPerSecondCalculatedEventArgs : EventArgs
     public double NetCPS;
 
     /// <summary>
-    /// The actual GPU-rendered frames per second, measured by counting <c>PaintSurface</c> callbacks
-    /// over the same sampling window used for <see cref="NetCPS"/>.  This reflects the true render
-    /// throughput for GPU-rendered surfaces (e.g. <c>GpuBackbuffer</c>), which run independently of
-    /// the engine's background loop.
+    /// The actual GPU presentation rate, measured by counting successful GPU
+    /// <c>PaintSurface</c> callbacks over the same sampling window used for <see cref="NetCPS"/>.
+    /// On platforms where presentation cadence is independent of Gondwana's foreground cadence,
+    /// this value can differ from <see cref="NetCPS"/>. For example, the Blazor WebGL path may
+    /// re-present the current GPU backbuffer on a browser animation frame without rendering a new
+    /// Gondwana scene frame.
     /// <para/>
     /// <c>null</c> when no GPU-rendered surfaces are registered (i.e. when only
     /// <c>BitmapBackbuffer</c> surfaces are in use).
@@ -76,7 +78,7 @@ public class CyclesPerSecondCalculatedEventArgs : EventArgs
     /// The duration of the sampling period in seconds.
     /// </param>
     /// <param name="gpuFps">
-    /// The actual GPU-rendered frames per second, or <c>null</c> when no GPU surfaces are active.
+    /// The actual GPU presentation rate, or <c>null</c> when no GPU surfaces are active.
     /// </param>
     public CyclesPerSecondCalculatedEventArgs(long totalGross, long totalNet, double grossCPS, double netCPS, double sampleTime, double? gpuFps = null)
     {
