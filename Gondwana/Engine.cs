@@ -862,15 +862,15 @@ public sealed class Engine : IDisposable
         EngineDispatcher.Drain();
 
         long tick = HighResTimer.GetCurrentTick();
-        var deltaMs = HighResTimer.GetDuration(_lastCycleTick, tick);
+        var deltaSeconds = HighResTimer.GetDuration(_lastCycleTick, tick);
         _lastCycleTick = tick;
 
         RunSimulationCycle(
             tick,
-            deltaMs,
+            deltaSeconds,
             IsForegroundDue(tick),
             tick,
-            deltaMs,
+            deltaSeconds,
             sampleCps: true);
     }
 
