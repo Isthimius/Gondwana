@@ -64,20 +64,20 @@ public static class EnginePluginRegistry
     internal static void InvokeInitialize(Engine engine) =>
         Invoke(engine, p => p.OnInitialize(engine), "OnInitialize");
 
-    internal static void InvokePreCycle(Engine engine, double deltaMs) =>
-        Invoke(engine, p => p.OnPreCycle(engine, deltaMs), "OnPreCycle");
+    internal static void InvokePreCycle(Engine engine, double deltaSeconds) =>
+        Invoke(engine, p => p.OnPreCycle(engine, deltaSeconds), "OnPreCycle");
 
-    internal static void InvokePreFrameRender(Engine engine, double deltaMs) =>
-        Invoke(engine, p => p.OnPreFrameRender(engine, deltaMs), "OnPreFrameRender");
+    internal static void InvokePreFrameRender(Engine engine, double deltaSeconds) =>
+        Invoke(engine, p => p.OnPreFrameRender(engine, deltaSeconds), "OnPreFrameRender");
 
-    internal static void InvokePostFrameRender(Engine engine, double deltaMs) =>
-        Invoke(engine, p => p.OnPostFrameRender(engine, deltaMs), "OnPostFrameRender");
+    internal static void InvokePostFrameRender(Engine engine, double deltaSeconds) =>
+        Invoke(engine, p => p.OnPostFrameRender(engine, deltaSeconds), "OnPostFrameRender");
 
     internal static void InvokePostRenderCanvas(Engine engine, RenderSurfaceHostBase host, SKCanvas canvas) =>
         Invoke(engine, p => p.OnPostRenderCanvas(engine, host, canvas), "OnPostRenderCanvas");
 
-    internal static void InvokePostCycle(Engine engine, double deltaMs) =>
-        Invoke(engine, p => p.OnPostCycle(engine, deltaMs), "OnPostCycle");
+    internal static void InvokePostCycle(Engine engine, double deltaSeconds) =>
+        Invoke(engine, p => p.OnPostCycle(engine, deltaSeconds), "OnPostCycle");
 
     internal static void InvokeShutdown(Engine engine) =>
         Invoke(engine, p => p.OnShutdown(engine), "OnShutdown");

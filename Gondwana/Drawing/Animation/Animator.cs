@@ -30,7 +30,7 @@ public class Animator : IDisposable
 
     private readonly Tile parent;
     private bool cycling = false;
-    private long LastTick = HighResTimer.GetCurrentTick();
+    private long LastTick = EngineSimulationClock.GetCurrentTick();
 
     #endregion private/internal fields
 

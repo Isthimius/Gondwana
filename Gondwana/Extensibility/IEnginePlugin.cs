@@ -4,11 +4,18 @@ using SkiaSharp;
 namespace Gondwana.Extensibility;
 
 /// <summary>
-/// Defines lifecycle hooks for extending engine startup, update, render, and shutdown behavior.
+/// Defines lifecycle hooks for extending engine startup, simulation, rendering, and shutdown behavior.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Implementations can register with <see cref="EnginePluginRegistry"/> to observe engine events
-/// and run custom logic before or after key phases of the engine loop.
+/// and run custom logic before or after key phases of engine execution.
+/// </para>
+/// <para>
+/// Cycle hooks correspond to simulation updates, while frame-render hooks correspond to presentation
+/// frames. In timer-driven mode, a single external <see cref="Engine.Tick"/> may execute zero or more
+/// simulation cycles but no more than one rendered frame.
+/// </para>
 /// </remarks>
 public interface IEnginePlugin
 {
@@ -29,32 +36,38 @@ public interface IEnginePlugin
     void OnInitialize(Engine engine);
 
     /// <summary>
-    /// Called before each engine cycle.
+    /// Called before each simulation cycle.
     /// </summary>
-    /// <param name="engine">The engine running the cycle.</param>
-    /// <param name="deltaMs">The elapsed time since the previous cycle, in milliseconds.</param>
-    void OnPreCycle(Engine engine, double deltaMs);
+    /// <param name="engine">The engine running the simulation cycle.</param>
+    /// <param name="deltaSeconds">
+    /// The simulation delta for this cycle, in seconds. In timer-driven mode this is the fixed-step
+    /// duration; in the normal desktop loop it is the elapsed wall-clock time since the previous cycle.
+    /// </param>
+    void OnPreCycle(Engine engine, double deltaSeconds);
 
     /// <summary>
     /// Called before a frame is rendered.
     /// </summary>
     /// <param name="engine">The engine preparing to render.</param>
-    /// <param name="deltaMs">The elapsed time since the previous frame render, in milliseconds.</param>
-    void OnPreFrameRender(Engine engine, double deltaMs);
+    /// <param name="deltaSeconds">The elapsed wall-clock time since the previous frame render, in seconds.</param>
+    void OnPreFrameRender(Engine engine, double deltaSeconds);
 
     /// <summary>
     /// Called after a frame has been rendered.
     /// </summary>
     /// <param name="engine">The engine that rendered the frame.</param>
-    /// <param name="deltaMs">The elapsed time since the previous frame render, in milliseconds.</param>
-    void OnPostFrameRender(Engine engine, double deltaMs);
+    /// <param name="deltaSeconds">The elapsed wall-clock time since the previous frame render, in seconds.</param>
+    void OnPostFrameRender(Engine engine, double deltaSeconds);
 
     /// <summary>
-    /// Called after each engine cycle completes.
+    /// Called after each simulation cycle completes.
     /// </summary>
-    /// <param name="engine">The engine that completed the cycle.</param>
-    /// <param name="deltaMs">The elapsed time since the previous cycle, in milliseconds.</param>
-    void OnPostCycle(Engine engine, double deltaMs);
+    /// <param name="engine">The engine that completed the simulation cycle.</param>
+    /// <param name="deltaSeconds">
+    /// The simulation delta for this cycle, in seconds. In timer-driven mode this is the fixed-step
+    /// duration; in the normal desktop loop it is the elapsed wall-clock time since the previous cycle.
+    /// </param>
+    void OnPostCycle(Engine engine, double deltaSeconds);
 
     /// <summary>
     /// Called after all scene content for a surface has been drawn to the backbuffer canvas,
@@ -75,15 +88,16 @@ public interface IEnginePlugin
     /// </param>
     /// <remarks>
     /// <para>
-    /// This hook fires on the same thread that owns the canvas:
+    /// This hook fires on the thread that owns the canvas:
     /// <list type="bullet">
     /// <item><description>
-    ///   <strong>CPU/bitmap surfaces</strong> — called on the engine background thread.
+    ///   <strong>CPU/bitmap surfaces</strong> — called on the engine thread. In the normal desktop
+    ///   loop this is the engine background thread; in timer-driven mode it is the thread driving
+    ///   <see cref="Engine.Tick"/>.
     /// </description></item>
     /// <item><description>
-    ///   <strong>GPU/GL surfaces</strong> — called on the GL thread from within
-    ///   <c>PaintSurface</c>, while the <c>GRContext</c> is current.
-    ///   Do not marshal GPU operations to a different thread.
+    ///   <strong>GPU/GL surfaces</strong> — called from the GL paint callback while the
+    ///   <c>GRContext</c> is current. Do not marshal GPU operations to a different thread.
     /// </description></item>
     /// </list>
     /// </para>
