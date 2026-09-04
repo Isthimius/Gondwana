@@ -9,7 +9,7 @@ It is the Blazor equivalent of `Gondwana.WinForms.Hosting` and `Gondwana.Avaloni
 
 - `BlazorGpuGameHost` – WebGL/GPU host using `BlazorGpuRenderSurfaceComponent`
 - `BlazorGameHost` – preserved Canvas 2D/bitmap host using `BlazorBitmapRenderSurfaceComponent`
-- Browser-driven engine loop using `requestAnimationFrame` for single-threaded Blazor WASM
+- Timer-driven browser engine execution: WebGL uses `SKGLView`'s `requestAnimationFrame` loop directly, while the bitmap path retains Gondwana's JavaScript render loop
 - Works with both Blazor WebAssembly and Blazor Server
 
 ## Installation

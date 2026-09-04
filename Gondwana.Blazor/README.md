@@ -49,14 +49,17 @@ Then initialize your game host in the component's `OnAfterRenderAsync`:
 }
 ```
 
-Derive the host from `BlazorGpuGameHost`. The component uses an engine-driven, coalesced
-invalidating strategy and renders only from the `SKGLView` paint callback while its WebGL context
-is current.
+Derive the host from `BlazorGpuGameHost`. The WebGL component uses `SKGLView`'s animation loop as
+the single browser `requestAnimationFrame` source. Each WebGL paint callback advances the timer-driven
+engine and renders a new scene frame only when Gondwana's foreground cadence requires one; otherwise
+it re-presents the current GPU backbuffer. Rendering remains entirely inside the WebGL paint callback
+while its GPU context is current.
 
 ### Bitmap compatibility path
 
 The original Canvas 2D path remains available. Use `BlazorBitmapRenderSurfaceComponent` with a
 host derived from `BlazorGameHost` when CPU-backed rendering or bitmap frame inspection is needed.
+The bitmap path retains Gondwana's JavaScript `requestAnimationFrame` loop.
 
 ### Key codes
 

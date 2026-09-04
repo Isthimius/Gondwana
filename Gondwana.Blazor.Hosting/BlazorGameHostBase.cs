@@ -11,9 +11,11 @@ namespace Gondwana.Blazor.Hosting;
 /// Provides the shared Gondwana lifecycle integration for Blazor bitmap and WebGL game hosts.
 /// </summary>
 /// <remarks>
-/// Browser/WASM targets use JavaScript <c>requestAnimationFrame</c> to call
-/// <see cref="OnAnimationFrame"/>. Non-browser targets retain the standard background engine
-/// loop supplied by <see cref="GameHostBase"/>.
+/// Browser/WASM targets use timer-driven engine execution. Bitmap hosts are driven by Gondwana's
+/// JavaScript <c>requestAnimationFrame</c> loop, while WebGL hosts are driven directly by the
+/// <c>SKGLView</c> animation loop so engine advancement and GPU presentation share one browser
+/// animation-frame callback. Non-browser targets retain the standard background engine loop
+/// supplied by <see cref="GameHostBase"/>.
 /// </remarks>
 public abstract class BlazorGameHostBase : GameHostBase
 {
@@ -24,7 +26,7 @@ public abstract class BlazorGameHostBase : GameHostBase
     /// <summary>
     /// Initializes a new instance of <see cref="BlazorGameHostBase"/>.
     /// </summary>
-    /// <param name="jsRuntime">The JavaScript runtime used to drive browser animation frames.</param>
+    /// <param name="jsRuntime">The JavaScript runtime used for browser interop.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="jsRuntime"/> is null.</exception>
     protected BlazorGameHostBase(IJSRuntime jsRuntime)
     {
@@ -36,6 +38,18 @@ public abstract class BlazorGameHostBase : GameHostBase
 
     /// <summary>Gets the render-surface host used for scene binding and widget input.</summary>
     protected abstract RenderSurfaceHostBase RenderSurfaceHost { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the render surface itself supplies the browser animation
+    /// callback that drives the timer-driven engine.
+    /// </summary>
+    /// <remarks>
+    /// The bitmap path returns <see langword="false"/> and uses Gondwana's JavaScript animation
+    /// loop. The WebGL path returns <see langword="true"/> because <c>SKGLView</c> owns the browser
+    /// <c>requestAnimationFrame</c> loop and calls <see cref="Gondwana.Engine.Tick"/> from its paint
+    /// callback.
+    /// </remarks>
+    protected virtual bool RenderSurfaceDrivesBrowserFrames => false;
 
     /// <summary>Binds a scene to the concrete typed render-surface host.</summary>
     /// <param name="scene">The scene to bind.</param>
@@ -107,7 +121,10 @@ public abstract class BlazorGameHostBase : GameHostBase
         if (OperatingSystem.IsBrowser())
         {
             Engine.StartTimerDriven(syncContext);
-            _ = StartBrowserRenderLoopAsync();
+
+            if (!RenderSurfaceDrivesBrowserFrames)
+                _ = StartBrowserRenderLoopAsync();
+
             return;
         }
 
@@ -126,7 +143,7 @@ public abstract class BlazorGameHostBase : GameHostBase
         await module.InvokeVoidAsync("startRenderLoop", _dotNetRef);
     }
 
-    /// <summary>Advances the timer-driven engine from a browser animation frame.</summary>
+    /// <summary>Advances the timer-driven bitmap path from Gondwana's browser animation loop.</summary>
     [JSInvokable]
     public void OnAnimationFrame()
     {

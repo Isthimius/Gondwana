@@ -115,6 +115,7 @@
             var assetData = await LoadAssetDataAsync();
 
             _host = new SpotBlazorGameHost(_renderSurface, JS, assetData);
+            _host.Engine.CPSCalculated += OnCpsCalculated;
 
             _host.Engine.InitializationComplete += () =>
             {
@@ -135,6 +136,16 @@
             _assetsLoading = false;
             StateHasChanged();
         }
+    }
+
+    private static void OnCpsCalculated(CyclesPerSecondCalculatedEventArgs e)
+    {
+        var gpuFps = e.GpuFps.HasValue
+            ? e.GpuFps.Value.ToString("0.0")
+            : "n/a";
+
+        Console.WriteLine(
+            $"Gondwana: CPS {e.GrossCPS:0.0} | engine FPS {e.NetCPS:0.0} | GPU FPS {gpuFps}");
     }
 
     private async Task<Dictionary<string, byte[]>> LoadAssetDataAsync()
@@ -197,7 +208,11 @@
 
     public void Dispose()
     {
-        _host?.Dispose();
-        _host = null;
+        if (_host is not null)
+        {
+            _host.Engine.CPSCalculated -= OnCpsCalculated;
+            _host.Dispose();
+            _host = null;
+        }
     }
 }

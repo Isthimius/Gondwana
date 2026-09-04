@@ -13,9 +13,15 @@ namespace Gondwana.Blazor.Rendering;
 /// </summary>
 /// <remarks>
 /// <para>
-/// The component uses <see cref="SKGLView"/> with its built-in continuous loop disabled. The
-/// engine requests frames at its foreground cadence, and duplicate invalidations are coalesced
-/// until the browser delivers the corresponding WebGL paint callback.
+/// The component uses <see cref="SKGLView"/>'s built-in animation loop as the single browser
+/// <c>requestAnimationFrame</c> source for the WebGL path. Each paint callback advances the
+/// timer-driven engine and, when the engine's foreground cadence requests a new scene frame,
+/// renders that frame immediately while the WebGL context is current.
+/// </para>
+/// <para>
+/// Browser animation frames that do not require a new Gondwana scene render simply re-blit the
+/// current GPU backbuffer. This preserves <see cref="Gondwana.Configuration.EngineConfiguration.TargetFPS"/>
+/// semantics without introducing a second animation-frame scheduler or a CPU pixel transfer.
 /// </para>
 /// <para>
 /// The GPU context is obtained from <see cref="SKPaintGLSurfaceEventArgs.Surface"/> while the
@@ -32,6 +38,7 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
     private GRContext? _grContext;
     private IReadOnlyDictionary<string, object>? _gpuCanvasAttributes;
     private string _canvasId = string.Empty;
+    private bool _backbufferNeedsRender = true;
     private bool _disposed;
 
     /// <summary>Gets the adapter that coordinates engine frame requests with this component.</summary>
@@ -46,7 +53,7 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        Adapter = new BlazorGpuRenderSurfaceAdapter(RequestRender);
+        Adapter = new BlazorGpuRenderSurfaceAdapter();
         Host = new RenderSurfaceHost<GpuBackbuffer>(Adapter);
         Adapter.AttachToEngine();
     }
@@ -95,12 +102,6 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
         }
     }
 
-    private void RequestRender()
-    {
-        if (!_disposed)
-            _glView?.Invalidate();
-    }
-
     private void HandlePaintSurface(SKPaintGLSurfaceEventArgs e)
     {
         if (_disposed)
@@ -123,9 +124,27 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
         {
             _grContext = grContext;
             backbuffer.Initialize(grContext, width, height);
+            _backbufferNeedsRender = true;
         }
 
-        using var image = Host.GlRenderAndSnapshot();
+        var engine = Engine.Instance;
+        if (!engine.IsRunning)
+        {
+            e.Surface.Canvas.Clear(backbuffer.ClearColor);
+            return;
+        }
+
+        // SKGLView owns the browser rAF for the GPU path. Advance simulation first so a
+        // foreground frame request, when due, can be rendered in this same paint callback.
+        engine.Tick();
+
+        bool engineFrameRequested = Adapter.ConsumeFrameRequest();
+        bool renderScene = _backbufferNeedsRender || engineFrameRequested;
+
+        using var image = renderScene
+            ? Host.GlRenderAndSnapshot()
+            : Host.GlSnapshotCurrentFrame();
+
         if (image is null)
         {
             e.Surface.Canvas.Clear(backbuffer.ClearColor);
@@ -133,6 +152,12 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
         }
 
         e.Surface.Canvas.DrawImage(image, SKRect.Create(0, 0, width, height));
+
+        if (renderScene)
+            _backbufferNeedsRender = false;
+
+        // Count successful WebGL paint/presentation callbacks. This intentionally measures the
+        // browser GPU presentation cadence, which may differ from the engine's TargetFPS.
         backbuffer.RecordFrame();
     }
 
