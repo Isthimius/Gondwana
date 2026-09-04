@@ -9,7 +9,8 @@ Avalonia UI.
 
 ## Features
 
-- Bitmap rendering surface using a browser `<canvas>` element via the Canvas 2D API (no platform-specific SkiaSharp view package required)
+- WebGL rendering through `SKGLView` and `GpuBackbuffer`, with no per-frame pixel transfer to JavaScript
+- Preserved bitmap rendering through Canvas 2D for compatibility and diagnostics
 - Keyboard input integration via Blazor keyboard events on the canvas element
 - Mouse / pointer input integration
 - Touch input integration
@@ -23,20 +24,20 @@ dotnet add package Gondwana.Blazor
 
 ## Usage
 
-Add `<BlazorBitmapRenderSurfaceComponent>` to your Blazor page or layout and capture a reference
+Add `<BlazorGpuRenderSurfaceComponent>` to your Blazor page or layout and capture a reference
 to it using `@ref`:
 
 ```razor
 @using Gondwana.Blazor.Rendering
 
-<BlazorBitmapRenderSurfaceComponent @ref="_surface" style="width: 800px; height: 600px;" />
+<BlazorGpuRenderSurfaceComponent @ref="_surface" style="width: 800px; height: 600px;" />
 ```
 
 Then initialize your game host in the component's `OnAfterRenderAsync`:
 
 ```csharp
 @code {
-    private BlazorBitmapRenderSurfaceComponent _surface = null!;
+    private BlazorGpuRenderSurfaceComponent _surface = null!;
     private MyGameHost? _host;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -47,6 +48,15 @@ Then initialize your game host in the component's `OnAfterRenderAsync`:
     }
 }
 ```
+
+Derive the host from `BlazorGpuGameHost`. The component uses an engine-driven, coalesced
+invalidating strategy and renders only from the `SKGLView` paint callback while its WebGL context
+is current.
+
+### Bitmap compatibility path
+
+The original Canvas 2D path remains available. Use `BlazorBitmapRenderSurfaceComponent` with a
+host derived from `BlazorGameHost` when CPU-backed rendering or bitmap frame inspection is needed.
 
 ### Key codes
 

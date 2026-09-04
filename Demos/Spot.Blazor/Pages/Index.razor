@@ -10,7 +10,7 @@
 <PageTitle>Spot!</PageTitle>
 
 <div class="game-wrapper">
-    <BlazorBitmapRenderSurfaceComponent @ref="_renderSurface" style="position: absolute; inset: 0;" />
+    <BlazorGpuRenderSurfaceComponent @ref="_renderSurface" style="position: absolute; inset: 0;" />
 
     @if (_showOverlay)
     {
@@ -83,7 +83,7 @@
 </div>
 
 @code {
-    private BlazorBitmapRenderSurfaceComponent? _renderSurface;
+    private BlazorGpuRenderSurfaceComponent? _renderSurface;
     private SpotBlazorGameHost? _host;
 
     private bool _showOverlay   = true;

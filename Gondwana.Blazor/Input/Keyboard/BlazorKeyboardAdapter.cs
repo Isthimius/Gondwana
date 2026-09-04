@@ -19,7 +19,7 @@ namespace Gondwana.Blazor.Input.Keyboard;
 /// </para>
 /// <para>
 /// Keyboard events are captured on the canvas element owned by
-/// <see cref="BlazorBitmapRenderSurfaceComponent"/>. The canvas must have focus for events to
+/// <see cref="BlazorRenderSurfaceComponentBase"/>. The canvas must have focus for events to
 /// be received; the component requests focus automatically on first render.
 /// </para>
 /// </remarks>
@@ -27,7 +27,7 @@ public sealed class BlazorKeyboardAdapter : IKeyboardAdapter, IDisposable
 {
     private static readonly int KeyArraySize = Enum.GetValues<BlazorKey>().Cast<int>().Max() + 1;
 
-    private readonly BlazorBitmapRenderSurfaceComponent _component;
+    private readonly BlazorRenderSurfaceComponentBase _component;
     private readonly int[] _down;
     private int _modsBits;
     private bool _isDisposed;
@@ -43,6 +43,17 @@ public sealed class BlazorKeyboardAdapter : IKeyboardAdapter, IDisposable
     /// <param name="component">The render surface component to capture keyboard input from.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="component"/> is null.</exception>
     public BlazorKeyboardAdapter(BlazorBitmapRenderSurfaceComponent component)
+        : this((BlazorRenderSurfaceComponentBase)component)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of <see cref="BlazorKeyboardAdapter"/> for any Gondwana
+    /// Blazor render surface.
+    /// </summary>
+    /// <param name="component">The render surface component to capture keyboard input from.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="component"/> is null.</exception>
+    public BlazorKeyboardAdapter(BlazorRenderSurfaceComponentBase component)
     {
         _component = component ?? throw new ArgumentNullException(nameof(component));
         _down = new int[KeyArraySize];

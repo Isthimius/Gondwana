@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using Gondwana.Blazor.Rendering;
 using Gondwana.Rendering;
 using Gondwana.Scenes;
@@ -6,24 +7,22 @@ using Microsoft.JSInterop;
 namespace Gondwana.Blazor.Hosting;
 
 /// <summary>
-/// Provides a base class for Gondwana Blazor games rendered through the CPU-backed bitmap path.
+/// Provides a base class for Gondwana Blazor games rendered through WebGL and
+/// <see cref="Gondwana.Rendering.Backbuffers.GpuBackbuffer"/>.
 /// </summary>
-/// <remarks>
-/// This type preserves the original Blazor hosting API. Use <see cref="BlazorGpuGameHost"/> with
-/// <see cref="BlazorGpuRenderSurfaceComponent"/> for WebGL-backed rendering.
-/// </remarks>
-public abstract class BlazorGameHost : BlazorGameHostBase
+[SupportedOSPlatform("browser")]
+public abstract class BlazorGpuGameHost : BlazorGameHostBase
 {
-    /// <summary>Gets the bitmap render surface used for displaying game content.</summary>
-    public BlazorBitmapRenderSurfaceComponent RenderSurface { get; }
+    /// <summary>Gets the WebGL render surface used for displaying game content.</summary>
+    public BlazorGpuRenderSurfaceComponent RenderSurface { get; }
 
     /// <summary>
-    /// Initializes a new instance of <see cref="BlazorGameHost"/>.
+    /// Initializes a new instance of <see cref="BlazorGpuGameHost"/>.
     /// </summary>
-    /// <param name="renderSurface">The bitmap render surface component.</param>
+    /// <param name="renderSurface">The WebGL render surface component.</param>
     /// <param name="jsRuntime">The JavaScript runtime used to drive browser animation frames.</param>
-    protected BlazorGameHost(
-        BlazorBitmapRenderSurfaceComponent renderSurface,
+    protected BlazorGpuGameHost(
+        BlazorGpuRenderSurfaceComponent renderSurface,
         IJSRuntime jsRuntime)
         : base(jsRuntime)
     {

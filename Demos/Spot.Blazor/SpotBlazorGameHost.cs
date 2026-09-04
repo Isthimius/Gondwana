@@ -23,11 +23,11 @@ using Gondwana.Demos.SpotBlazor.Game;
 namespace Gondwana.Demos.SpotBlazor;
 
 /// <summary>
-/// Game host for Spot.Blazor. Extends <see cref="BlazorGameHost"/> and uses
-/// <see cref="BlazorBitmapRenderSurfaceComponent"/> (BitmapBackbuffer) to render the game.
+/// Game host for Spot.Blazor. Extends <see cref="BlazorGpuGameHost"/> and uses
+/// <see cref="BlazorGpuRenderSurfaceComponent"/> (GpuBackbuffer) to render the game.
 /// Assets are loaded from streams obtained via <see cref="HttpClient"/> before initialization.
 /// </summary>
-internal sealed class SpotBlazorGameHost : BlazorGameHost
+internal sealed class SpotBlazorGameHost : BlazorGpuGameHost
 {
     private readonly Dictionary<string, byte[]> _assetData;
 
@@ -64,10 +64,10 @@ internal sealed class SpotBlazorGameHost : BlazorGameHost
     /// <summary>
     /// Initializes a new instance of <see cref="SpotBlazorGameHost"/>.
     /// </summary>
-    /// <param name="renderSurface">The Blazor bitmap render surface component.</param>
+    /// <param name="renderSurface">The Blazor WebGL render surface component.</param>
     /// <param name="jsRuntime">The JavaScript runtime for interop.</param>
     /// <param name="assetData">Pre-loaded asset byte arrays keyed by filename (e.g. "spot_defaults.png").</param>
-    internal SpotBlazorGameHost(BlazorBitmapRenderSurfaceComponent renderSurface, IJSRuntime jsRuntime, Dictionary<string, byte[]> assetData)
+    internal SpotBlazorGameHost(BlazorGpuRenderSurfaceComponent renderSurface, IJSRuntime jsRuntime, Dictionary<string, byte[]> assetData)
         : base(renderSurface, jsRuntime)
     {
         _assetData = assetData;

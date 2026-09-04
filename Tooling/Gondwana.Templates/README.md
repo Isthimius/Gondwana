@@ -100,8 +100,8 @@ This scaffolds a Blazor WebAssembly project containing:
 - `Program.cs` — Blazor WebAssembly entry point with audio module import
 - `App.razor` — Root Blazor Router component
 - `Pages/Index.razor` — Main page (routed to "/") containing the game
-- `GameRenderSurface.razor` — Blazor component wrapping `BlazorBitmapRenderSurfaceComponent`
-- `MyGameHost.cs` — `BlazorGameHost` subclass with `// TODO` stubs for loading assets and building the scene
+- `GameRenderSurface.razor` — Blazor component wrapping `BlazorGpuRenderSurfaceComponent`
+- `MyGameHost.cs` — `BlazorGpuGameHost` subclass with `// TODO` stubs for loading assets and building the scene
 - `wwwroot/index.html` — HTML host page with loading indicator
 - `assets/README.txt` — instructions for adding sprites and other assets
 

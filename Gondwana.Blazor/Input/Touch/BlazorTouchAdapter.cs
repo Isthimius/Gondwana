@@ -27,7 +27,7 @@ namespace Gondwana.Blazor.Input.Touch;
 /// </remarks>
 public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
 {
-    private readonly BlazorBitmapRenderSurfaceComponent _component;
+    private readonly BlazorRenderSurfaceComponentBase _component;
     private readonly Dictionary<long, GondwanaTouchPoint> _activeTouches = new();
     private GondwanaTouchPoint[] _activeTouchesSnapshot = Array.Empty<GondwanaTouchPoint>();
     private readonly ConcurrentQueue<GondwanaTouchPoint> _pendingBegins = new();
@@ -44,6 +44,17 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
     /// <param name="component">The render surface component to capture touch input from.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="component"/> is null.</exception>
     public BlazorTouchAdapter(BlazorBitmapRenderSurfaceComponent component)
+        : this((BlazorRenderSurfaceComponentBase)component)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of <see cref="BlazorTouchAdapter"/> for any Gondwana Blazor
+    /// render surface.
+    /// </summary>
+    /// <param name="component">The render surface component to capture touch input from.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="component"/> is null.</exception>
+    public BlazorTouchAdapter(BlazorRenderSurfaceComponentBase component)
     {
         _component = component ?? throw new ArgumentNullException(nameof(component));
 

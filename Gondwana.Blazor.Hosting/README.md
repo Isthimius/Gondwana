@@ -1,14 +1,15 @@
 # Gondwana.Blazor.Hosting
 
-**Gondwana.Blazor.Hosting** provides the `BlazorGameHost` base class, which wires the Gondwana
+**Gondwana.Blazor.Hosting** provides GPU and bitmap game-host base classes that wire the Gondwana
 engine lifecycle into a Blazor WebAssembly application.
 
 It is the Blazor equivalent of `Gondwana.WinForms.Hosting` and `Gondwana.Avalonia.Hosting`.
 
 ## Features
 
-- `BlazorGameHost` – abstract base class handling engine init, input adapters, scene binding, and lifecycle management
-- Timer-driven engine loop via `PeriodicTimer` for single-threaded Blazor WASM
+- `BlazorGpuGameHost` – WebGL/GPU host using `BlazorGpuRenderSurfaceComponent`
+- `BlazorGameHost` – preserved Canvas 2D/bitmap host using `BlazorBitmapRenderSurfaceComponent`
+- Browser-driven engine loop using `requestAnimationFrame` for single-threaded Blazor WASM
 - Works with both Blazor WebAssembly and Blazor Server
 
 ## Installation
@@ -20,9 +21,10 @@ dotnet add package Gondwana.Blazor.Hosting
 ## Usage
 
 ```csharp
-public class MyGameHost : BlazorGameHost
+public class MyGameHost : BlazorGpuGameHost
 {
-    public MyGameHost(BlazorBitmapRenderSurfaceComponent surface) : base(surface) { }
+    public MyGameHost(BlazorGpuRenderSurfaceComponent surface, IJSRuntime jsRuntime)
+        : base(surface, jsRuntime) { }
 
     protected override Scene CreateInitialScene() => new MyGameScene();
     protected override void CreateSprites() { /* populate scene */ }
@@ -33,7 +35,7 @@ Then in your Blazor page's `OnAfterRenderAsync`:
 
 ```csharp
 @code {
-    private BlazorBitmapRenderSurfaceComponent _surface = null!;
+    private BlazorGpuRenderSurfaceComponent _surface = null!;
     private MyGameHost? _host;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -44,6 +46,9 @@ Then in your Blazor page's `OnAfterRenderAsync`:
     }
 }
 ```
+
+For the bitmap compatibility path, substitute `BlazorGameHost` and
+`BlazorBitmapRenderSurfaceComponent`.
 
 ## Documentation
 

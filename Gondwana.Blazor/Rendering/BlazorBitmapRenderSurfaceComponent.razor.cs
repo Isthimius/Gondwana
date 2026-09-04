@@ -24,24 +24,12 @@ namespace Gondwana.Blazor.Rendering;
 /// on first render; games may also call <c>element.focus()</c> from JavaScript as needed.
 /// </para>
 /// </remarks>
-public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
+public sealed partial class BlazorBitmapRenderSurfaceComponent : BlazorRenderSurfaceComponentBase
 {
     private ElementReference _canvasRef;
     private IJSObjectReference? _module;
     private DotNetObjectReference<BlazorBitmapRenderSurfaceComponent>? _dotNetRef;
     private bool _moduleLoaded;
-
-    // Internal events consumed by input adapters (subscribed via BlazorGameHost / EngineExtensions).
-    internal event Action<KeyboardEventArgs>? KeyDown;
-    internal event Action<KeyboardEventArgs>? KeyUp;
-    internal event Action<MouseEventArgs>? MouseMove;
-    internal event Action<MouseEventArgs>? MouseDown;
-    internal event Action<MouseEventArgs>? MouseUp;
-    internal event Action<WheelEventArgs>? Wheel;
-    internal event Action<TouchEventArgs>? TouchStart;
-    internal event Action<TouchEventArgs>? TouchMove;
-    internal event Action<TouchEventArgs>? TouchEnd;
-    internal event Action<TouchEventArgs>? TouchCancel;
 
     /// <summary>Gets the render surface adapter that drives this component.</summary>
     public BlazorBitmapRenderSurfaceAdapter Adapter { get; private set; } = null!;
@@ -151,19 +139,8 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
         });
     }
 
-    private void HandleKeyDown(KeyboardEventArgs e) => KeyDown?.Invoke(e);
-    private void HandleKeyUp(KeyboardEventArgs e) => KeyUp?.Invoke(e);
-    private void HandleMouseMove(MouseEventArgs e) => MouseMove?.Invoke(e);
-    private void HandleMouseDown(MouseEventArgs e) => MouseDown?.Invoke(e);
-    private void HandleMouseUp(MouseEventArgs e) => MouseUp?.Invoke(e);
-    private void HandleWheel(WheelEventArgs e) => Wheel?.Invoke(e);
-    private void HandleTouchStart(TouchEventArgs e) => TouchStart?.Invoke(e);
-    private void HandleTouchMove(TouchEventArgs e) => TouchMove?.Invoke(e);
-    private void HandleTouchEnd(TouchEventArgs e) => TouchEnd?.Invoke(e);
-    private void HandleTouchCancel(TouchEventArgs e) => TouchCancel?.Invoke(e);
-
     /// <inheritdoc/>
-    public void Dispose()
+    public override void Dispose()
     {
         if (_moduleLoaded && _module is not null)
         {
@@ -189,6 +166,9 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : IDisposable
         _ = _module?.DisposeAsync();
         _module = null;
         _moduleLoaded = false;
+
+        Adapter?.Dispose();
+        Host?.Dispose();
     }
 
     private sealed class CanvasSize

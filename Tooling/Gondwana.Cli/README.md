@@ -130,8 +130,8 @@ The scaffolded project contains:
 - `Program.cs` — Blazor WebAssembly entry point that imports the Gondwana browser audio module (`/gondwana-audio.js`)
 - `App.razor` — root Blazor app component
 - `Pages/Index.razor` — the default page hosting the game canvas
-- `GameRenderSurface.razor` — thin Blazor component wrapping `BlazorBitmapRenderSurfaceComponent`
-- `MyGameHost.cs` — `BlazorGameHost` subclass with `// TODO` stubs for assets, scene setup, and input
+- `GameRenderSurface.razor` — thin Blazor component wrapping `BlazorGpuRenderSurfaceComponent`
+- `MyGameHost.cs` — `BlazorGpuGameHost` subclass with `// TODO` stubs for assets, scene setup, and input
 - `wwwroot/index.html` — the Blazor host page
 - `assets/README.txt` — instructions for adding sprites and other assets
 

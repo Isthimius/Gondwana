@@ -1,0 +1,21 @@
+@namespace Gondwana.Blazor.Rendering
+@inherits BlazorRenderSurfaceComponentBase
+@using Gondwana.Blazor.Rendering
+@inject IJSRuntime JS
+
+<BlazorSkiaGlView @ref="_glView"
+          IgnorePixelScaling="true"
+          EnableRenderLoop="false"
+          tabindex="0"
+          style="@CanvasStyle"
+          @attributes="GpuCanvasAttributes"
+          @onkeydown="HandleKeyDown"
+          @onkeyup="HandleKeyUp"
+          @onmousemove="HandleMouseMove"
+          @onmousedown="HandleMouseDown"
+          @onmouseup="HandleMouseUp"
+          @onwheel="HandleWheel"
+          @ontouchstart="HandleTouchStart"
+          @ontouchmove="HandleTouchMove"
+          @ontouchend="HandleTouchEnd"
+          @ontouchcancel="HandleTouchCancel" />

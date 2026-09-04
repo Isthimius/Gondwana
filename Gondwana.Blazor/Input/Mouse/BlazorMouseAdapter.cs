@@ -14,7 +14,7 @@ namespace Gondwana.Blazor.Input.Mouse;
 /// </summary>
 public sealed class BlazorMouseAdapter : IMouseAdapter, IDisposable
 {
-    private readonly BlazorBitmapRenderSurfaceComponent _component;
+    private readonly BlazorRenderSurfaceComponentBase _component;
     private readonly HashSet<GondwanaMouseButton> _pressed = new();
     private readonly object _pressedLock = new();
     private Point _currentPosition;
@@ -46,6 +46,17 @@ public sealed class BlazorMouseAdapter : IMouseAdapter, IDisposable
     /// <param name="component">The render surface component to capture mouse input from.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="component"/> is null.</exception>
     public BlazorMouseAdapter(BlazorBitmapRenderSurfaceComponent component)
+        : this((BlazorRenderSurfaceComponentBase)component)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of <see cref="BlazorMouseAdapter"/> for any Gondwana Blazor
+    /// render surface.
+    /// </summary>
+    /// <param name="component">The render surface component to capture mouse input from.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="component"/> is null.</exception>
+    public BlazorMouseAdapter(BlazorRenderSurfaceComponentBase component)
     {
         ArgumentNullException.ThrowIfNull(component);
         _component = component;
