@@ -36,6 +36,7 @@ All notable changes to this project will be documented in this file.
 
 ## Refactoring
 - Tighten touch and mouse polling behavior
+- Use fixed-step simulation timing
 
 
 
