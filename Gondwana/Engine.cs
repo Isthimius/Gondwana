@@ -68,6 +68,9 @@ public sealed class Engine : IDisposable
     private long _lastForegroundTick = HighResTimer.GetCurrentTick();
     private long _lastCycleTick = HighResTimer.GetCurrentTick();
     private readonly FixedStepAccumulator _timerDrivenSteps = new();
+    private long _timerDrivenForegroundAccumulatedTicks;
+    private long _lastTimerDrivenForegroundDriverTick;
+    private int _timerDrivenForegroundTargetFps;
     private bool _isTimerDriven;
 
     private long _grossCyclesThisMeasure = 0;
@@ -515,6 +518,9 @@ public sealed class Engine : IDisposable
         _lastBackgroundTick = _startTick;
         _lastForegroundTick = _startTick;
         _timerDrivenSteps.Reset(_startTick);
+        _timerDrivenForegroundAccumulatedTicks = 0;
+        _lastTimerDrivenForegroundDriverTick = _startTick;
+        _timerDrivenForegroundTargetFps = Configuration.TargetFPS;
         EngineSimulationClock.BeginTimerDriven(_startTick);
 
         _isTimerDriven = true;
@@ -561,7 +567,7 @@ public sealed class Engine : IDisposable
             Configuration.TimerDrivenSimulationRate,
             Configuration.MaxTimerDrivenSimulationSteps);
 
-        bool render = IsForegroundDue(driverTick);
+        bool render = IsTimerDrivenForegroundDue(driverTick);
         double frameDelta = HighResTimer.GetDuration(_lastForegroundTick, driverTick);
 
         if (batch.StepCount == 0)
@@ -900,6 +906,39 @@ public sealed class Engine : IDisposable
     private bool IsForegroundDue(long tick) =>
         Configuration.TargetFPS <= 0
         || (tick - _lastForegroundTick) >= HighResTimer.TicksPerSecond / Configuration.TargetFPS;
+
+    private bool IsTimerDrivenForegroundDue(long tick)
+    {
+        int targetFps = Configuration.TargetFPS;
+        long elapsedTicks = Math.Max(0, tick - _lastTimerDrivenForegroundDriverTick);
+        _lastTimerDrivenForegroundDriverTick = tick;
+
+        if (targetFps <= 0)
+        {
+            _timerDrivenForegroundAccumulatedTicks = 0;
+            _timerDrivenForegroundTargetFps = targetFps;
+            return true;
+        }
+
+        if (_timerDrivenForegroundTargetFps != targetFps)
+        {
+            _timerDrivenForegroundTargetFps = targetFps;
+            _timerDrivenForegroundAccumulatedTicks = 0;
+        }
+
+        _timerDrivenForegroundAccumulatedTicks += elapsedTicks;
+
+        long frameIntervalTicks = Math.Max(1, HighResTimer.TicksPerSecond / targetFps);
+        if (_timerDrivenForegroundAccumulatedTicks < frameIntervalTicks)
+            return false;
+
+        // Render at most once per externally driven Tick(), but preserve the fractional
+        // remainder so small requestAnimationFrame timing jitter cannot permanently lower
+        // the effective render rate. Whole missed intervals are discarded rather than
+        // causing an unbounded render catch-up sequence after a long browser stall.
+        _timerDrivenForegroundAccumulatedTicks %= frameIntervalTicks;
+        return true;
+    }
 
     private void RenderFrame(long tick, double delta)
     {
