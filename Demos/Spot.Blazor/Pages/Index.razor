@@ -121,6 +121,7 @@
             _host.Engine.InitializationComplete += () =>
             {
                 _host.Engine.Configuration.TargetFPS = 60;
+                _host.Engine.Configuration.TimerDrivenSimulationRate = 60;
                 _engineReady = true;
                 InvokeAsync(StateHasChanged);
             };
