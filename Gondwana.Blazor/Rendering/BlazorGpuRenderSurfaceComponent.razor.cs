@@ -25,8 +25,8 @@ namespace Gondwana.Blazor.Rendering;
 /// </para>
 /// <para>
 /// The GPU context is obtained from <see cref="SKPaintGLSurfaceEventArgs.Surface"/> while the
-/// WebGL context is current. Scene rendering and the final GPU-to-GPU blit both occur
-/// synchronously inside that callback.
+/// WebGL context is current. Scene rendering and the final GPU-to-GPU surface draw both occur
+/// synchronously inside that callback without allocating a per-frame <see cref="SKImage"/> snapshot.
 /// </para>
 /// </remarks>
 [SupportedOSPlatform("browser")]
@@ -141,17 +141,15 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
         bool engineFrameRequested = Adapter.ConsumeFrameRequest();
         bool renderScene = _backbufferNeedsRender || engineFrameRequested;
 
-        using var image = renderScene
-            ? Host.GlRenderAndSnapshot()
-            : Host.GlSnapshotCurrentFrame();
+        bool presented = renderScene
+            ? Host.GlRenderToCanvas(e.Surface.Canvas)
+            : Host.GlDrawCurrentFrameToCanvas(e.Surface.Canvas);
 
-        if (image is null)
+        if (!presented)
         {
             e.Surface.Canvas.Clear(backbuffer.ClearColor);
             return;
         }
-
-        e.Surface.Canvas.DrawImage(image, SKRect.Create(0, 0, width, height));
 
         if (renderScene)
             _backbufferNeedsRender = false;
