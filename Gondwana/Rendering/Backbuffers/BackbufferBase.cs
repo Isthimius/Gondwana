@@ -2,6 +2,7 @@
 using Gondwana.Drawing.Sprites;
 using Gondwana.Rendering.Views;
 using Gondwana.SkiaSharp;
+using Gondwana.Timers;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using System.Drawing;
@@ -20,6 +21,17 @@ public abstract class BackbufferBase : IDisposable
 {
     private int _width;
     private int _height;
+
+    // Temporary browser/GPU profiling counters. These stay dormant on desktop and bitmap paths.
+    private long _webGlPerfWindowStartTick = HighResTimer.GetCurrentTick();
+    private long _webGlLocateTicks;
+    private long _webGlDrawTicks;
+    private long _webGlBoundsTicks;
+    private long _webGlPostTilesTicks;
+    private long _webGlTotalTicks;
+    private long _webGlDrawableCount;
+    private long _webGlTileCount;
+    private int _webGlDrawCalls;
 
     private BackbufferBase()
     { }
@@ -310,6 +322,13 @@ public abstract class BackbufferBase : IDisposable
 
     internal void DrawDrawables(View view, IEnumerable<IDrawable> drawables, Rectangle clipRect)
     {
+        bool traceWebGl = OperatingSystem.IsBrowser() && IsGlThreadRendered;
+        long callStartTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
+        long locateTicks = 0;
+        long drawTicks = 0;
+        long boundsTicks = 0;
+        int drawableCount = 0;
+
         Canvas.Save();
         Canvas.ClipRect(clipRect.ToSKRect());
 
@@ -320,12 +339,17 @@ public abstract class BackbufferBase : IDisposable
             if (!drawable.Visible)
                 continue;
 
+            long locateStartTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
+
             var destRectScreen = drawable.GetDrawLocationScreen(view);
             if (drawable is Sprite sprite)
             {
                 destRectScreen = sprite.ApplyJiggleToDestRect(destRectScreen);
             }
+
+            long drawStartTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
             drawable.Draw(this, destRectScreen);
+            long drawEndTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
 
             RectangleF visualBoundsScreen = drawable is Sprite drawnSprite
                 ? drawnSprite.GetVisualBoundsScreen(destRectScreen)
@@ -335,11 +359,68 @@ public abstract class BackbufferBase : IDisposable
 
             if (drawable is Tile tile)
                 tiles.Add(tile);
+
+            if (traceWebGl)
+            {
+                long boundsEndTick = HighResTimer.GetCurrentTick();
+                locateTicks += Math.Max(0, drawStartTick - locateStartTick);
+                drawTicks += Math.Max(0, drawEndTick - drawStartTick);
+                boundsTicks += Math.Max(0, boundsEndTick - drawEndTick);
+                drawableCount++;
+            }
         }
 
+        long postTilesStartTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
         PostDrawTiles(view, tiles);
+        long postTilesEndTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
 
         Canvas.Restore();
+
+        if (traceWebGl)
+        {
+            _webGlLocateTicks += locateTicks;
+            _webGlDrawTicks += drawTicks;
+            _webGlBoundsTicks += boundsTicks;
+            _webGlPostTilesTicks += Math.Max(0, postTilesEndTick - postTilesStartTick);
+            _webGlTotalTicks += Math.Max(0, postTilesEndTick - callStartTick);
+            _webGlDrawableCount += drawableCount;
+            _webGlTileCount += tiles.Count;
+            _webGlDrawCalls++;
+
+            TraceWebGlDrawPerformanceIfDue(postTilesEndTick);
+        }
+    }
+
+    private void TraceWebGlDrawPerformanceIfDue(long now)
+    {
+        long elapsedTicks = now - _webGlPerfWindowStartTick;
+        if (elapsedTicks < HighResTimer.TicksPerSecond || _webGlDrawCalls == 0)
+            return;
+
+        Console.WriteLine(
+            $"Gondwana WebGL draw perf: Locate {FormatWebGlAverageMs(_webGlLocateTicks)} | " +
+            $"Draw {FormatWebGlAverageMs(_webGlDrawTicks)} | " +
+            $"Bounds {FormatWebGlAverageMs(_webGlBoundsTicks)} | " +
+            $"PostTiles {FormatWebGlAverageMs(_webGlPostTilesTicks)} | " +
+            $"Total {FormatWebGlAverageMs(_webGlTotalTicks)} | " +
+            $"calls={_webGlDrawCalls} drawables/call={_webGlDrawableCount / (double)_webGlDrawCalls:0.0} " +
+            $"tiles/call={_webGlTileCount / (double)_webGlDrawCalls:0.0}");
+
+        _webGlPerfWindowStartTick = now;
+        _webGlLocateTicks = 0;
+        _webGlDrawTicks = 0;
+        _webGlBoundsTicks = 0;
+        _webGlPostTilesTicks = 0;
+        _webGlTotalTicks = 0;
+        _webGlDrawableCount = 0;
+        _webGlTileCount = 0;
+        _webGlDrawCalls = 0;
+    }
+
+    private string FormatWebGlAverageMs(long ticks)
+    {
+        double milliseconds = ticks * 1000.0 / HighResTimer.TicksPerSecond / _webGlDrawCalls;
+        return $"{milliseconds:0.00} ms";
     }
 
     private void PostDrawTiles(View view, List<Tile> tiles)
