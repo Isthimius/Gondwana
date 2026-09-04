@@ -1,6 +1,7 @@
 using System.Runtime.Versioning;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
+using Gondwana.Timers;
 using Microsoft.JSInterop;
 using SkiaSharp;
 using SkiaSharp.Views.Blazor;
@@ -41,6 +42,22 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
     private bool _backbufferNeedsRender = true;
     private bool _disposed;
 
+    // Lightweight WebGL phase tracing. Values are aggregated for roughly one second so tracing
+    // itself does not add a Console.WriteLine call to every browser animation frame.
+    private long _performanceWindowStartTick = HighResTimer.GetCurrentTick();
+    private long _sceneRenderStartTick;
+    private long _lastSceneRenderTicks;
+    private long _tickTicks;
+    private long _sceneRenderTicks;
+    private long _newFramePresentTicks;
+    private long _cachedPresentTicks;
+    private long _paintTicks;
+    private int _tickSamples;
+    private int _sceneRenderSamples;
+    private int _newFramePresentSamples;
+    private int _cachedPresentSamples;
+    private int _paintSamples;
+
     /// <summary>Gets the adapter that coordinates engine frame requests with this component.</summary>
     public BlazorGpuRenderSurfaceAdapter Adapter { get; private set; } = null!;
 
@@ -55,6 +72,8 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
     {
         Adapter = new BlazorGpuRenderSurfaceAdapter();
         Host = new RenderSurfaceHost<GpuBackbuffer>(Adapter);
+        Host.RenderBackbufferBegin += HandleRenderBackbufferBegin;
+        Host.RenderBackbufferEnd += HandleRenderBackbufferEnd;
         Adapter.AttachToEngine();
     }
 
@@ -107,6 +126,8 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
         if (_disposed)
             return;
 
+        long paintStartTick = HighResTimer.GetCurrentTick();
+
         var width = e.Info.Width;
         var height = e.Info.Height;
         Adapter.BeginPaint(width, height);
@@ -136,14 +157,37 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
 
         // SKGLView owns the browser rAF for the GPU path. Advance simulation first so a
         // foreground frame request, when due, can be rendered in this same paint callback.
+        long tickStartTick = HighResTimer.GetCurrentTick();
         engine.Tick();
+        long tickEndTick = HighResTimer.GetCurrentTick();
+        _tickTicks += Math.Max(0, tickEndTick - tickStartTick);
+        _tickSamples++;
 
         bool engineFrameRequested = Adapter.ConsumeFrameRequest();
         bool renderScene = _backbufferNeedsRender || engineFrameRequested;
 
+        if (renderScene)
+            _lastSceneRenderTicks = 0;
+
+        long presentStartTick = HighResTimer.GetCurrentTick();
         bool presented = renderScene
             ? Host.GlRenderToCanvas(e.Surface.Canvas)
             : Host.GlDrawCurrentFrameToCanvas(e.Surface.Canvas);
+        long presentEndTick = HighResTimer.GetCurrentTick();
+
+        long presentCallTicks = Math.Max(0, presentEndTick - presentStartTick);
+        if (renderScene)
+        {
+            // RenderBackbufferBegin/End measures RenderToBackbuffer itself. Subtracting that
+            // leaves EndFrame/flush + direct DrawSurface + BeginFrame presentation overhead.
+            _newFramePresentTicks += Math.Max(0, presentCallTicks - _lastSceneRenderTicks);
+            _newFramePresentSamples++;
+        }
+        else
+        {
+            _cachedPresentTicks += presentCallTicks;
+            _cachedPresentSamples++;
+        }
 
         if (!presented)
         {
@@ -157,6 +201,64 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
         // Count successful WebGL paint/presentation callbacks. This intentionally measures the
         // browser GPU presentation cadence, which may differ from the engine's TargetFPS.
         backbuffer.RecordFrame();
+
+        long paintEndTick = HighResTimer.GetCurrentTick();
+        _paintTicks += Math.Max(0, paintEndTick - paintStartTick);
+        _paintSamples++;
+        TracePerformanceIfDue(paintEndTick);
+    }
+
+    private void HandleRenderBackbufferBegin()
+    {
+        _sceneRenderStartTick = HighResTimer.GetCurrentTick();
+    }
+
+    private void HandleRenderBackbufferEnd()
+    {
+        if (_sceneRenderStartTick == 0)
+            return;
+
+        long endTick = HighResTimer.GetCurrentTick();
+        _lastSceneRenderTicks = Math.Max(0, endTick - _sceneRenderStartTick);
+        _sceneRenderTicks += _lastSceneRenderTicks;
+        _sceneRenderSamples++;
+        _sceneRenderStartTick = 0;
+    }
+
+    private void TracePerformanceIfDue(long now)
+    {
+        long elapsedTicks = now - _performanceWindowStartTick;
+        if (elapsedTicks < HighResTimer.TicksPerSecond)
+            return;
+
+        Console.WriteLine(
+            $"Gondwana WebGL perf: Tick {FormatAverageMs(_tickTicks, _tickSamples)} | " +
+            $"Scene {FormatAverageMs(_sceneRenderTicks, _sceneRenderSamples)} | " +
+            $"Present {FormatAverageMs(_newFramePresentTicks, _newFramePresentSamples)} | " +
+            $"Cached {FormatAverageMs(_cachedPresentTicks, _cachedPresentSamples)} | " +
+            $"Paint {FormatAverageMs(_paintTicks, _paintSamples)} | " +
+            $"samples tick={_tickSamples} scene={_sceneRenderSamples} cached={_cachedPresentSamples}");
+
+        _performanceWindowStartTick = now;
+        _tickTicks = 0;
+        _sceneRenderTicks = 0;
+        _newFramePresentTicks = 0;
+        _cachedPresentTicks = 0;
+        _paintTicks = 0;
+        _tickSamples = 0;
+        _sceneRenderSamples = 0;
+        _newFramePresentSamples = 0;
+        _cachedPresentSamples = 0;
+        _paintSamples = 0;
+    }
+
+    private static string FormatAverageMs(long ticks, int samples)
+    {
+        if (samples <= 0)
+            return "n/a";
+
+        double milliseconds = ticks * 1000.0 / HighResTimer.TicksPerSecond / samples;
+        return $"{milliseconds:0.00} ms";
     }
 
     /// <inheritdoc/>
@@ -166,6 +268,12 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
             return;
 
         _disposed = true;
+
+        if (Host is not null)
+        {
+            Host.RenderBackbufferBegin -= HandleRenderBackbufferBegin;
+            Host.RenderBackbufferEnd -= HandleRenderBackbufferEnd;
+        }
 
         Adapter?.Dispose();
         Host?.Dispose();
