@@ -39,35 +39,35 @@ public interface IEnginePlugin
     /// Called before each simulation cycle.
     /// </summary>
     /// <param name="engine">The engine running the simulation cycle.</param>
-    /// <param name="deltaMs">
+    /// <param name="deltaSeconds">
     /// The simulation delta for this cycle, in seconds. In timer-driven mode this is the fixed-step
     /// duration; in the normal desktop loop it is the elapsed wall-clock time since the previous cycle.
     /// </param>
-    void OnPreCycle(Engine engine, double deltaMs);
+    void OnPreCycle(Engine engine, double deltaSeconds);
 
     /// <summary>
     /// Called before a frame is rendered.
     /// </summary>
     /// <param name="engine">The engine preparing to render.</param>
-    /// <param name="deltaMs">The elapsed wall-clock time since the previous frame render, in seconds.</param>
-    void OnPreFrameRender(Engine engine, double deltaMs);
+    /// <param name="deltaSeconds">The elapsed wall-clock time since the previous frame render, in seconds.</param>
+    void OnPreFrameRender(Engine engine, double deltaSeconds);
 
     /// <summary>
     /// Called after a frame has been rendered.
     /// </summary>
     /// <param name="engine">The engine that rendered the frame.</param>
-    /// <param name="deltaMs">The elapsed wall-clock time since the previous frame render, in seconds.</param>
-    void OnPostFrameRender(Engine engine, double deltaMs);
+    /// <param name="deltaSeconds">The elapsed wall-clock time since the previous frame render, in seconds.</param>
+    void OnPostFrameRender(Engine engine, double deltaSeconds);
 
     /// <summary>
     /// Called after each simulation cycle completes.
     /// </summary>
     /// <param name="engine">The engine that completed the simulation cycle.</param>
-    /// <param name="deltaMs">
+    /// <param name="deltaSeconds">
     /// The simulation delta for this cycle, in seconds. In timer-driven mode this is the fixed-step
     /// duration; in the normal desktop loop it is the elapsed wall-clock time since the previous cycle.
     /// </param>
-    void OnPostCycle(Engine engine, double deltaMs);
+    void OnPostCycle(Engine engine, double deltaSeconds);
 
     /// <summary>
     /// Called after all scene content for a surface has been drawn to the backbuffer canvas,
