@@ -95,6 +95,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Add WebGL GPU rendering path
+- Align blazor tooling with webgl workflow
 
 
 
@@ -111,6 +112,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Add WebGL GPU rendering path
+- Align blazor tooling with webgl workflow
 
 ## Tooling / Gondwana.Tooling.Assets.WinForms
 

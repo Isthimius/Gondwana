@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ## Added
 - Add WebGL GPU rendering path
+- Align blazor tooling with webgl workflow
 
 # v2.5.2 - July 26, 2026
 
