@@ -314,8 +314,9 @@ public abstract class BackbufferBase : IDisposable
         // Rect is expected to be in the current canvas coordinate space.
         Canvas.DrawRect(rectPx.ToSKRect(), _fillPaint);
 
-        // mark area as dirty so it gets presented to the UI adapter
-        AddToBackbufferDirtyRectangle(rectPx);
+        // GL surfaces always present the full backbuffer and do not maintain dirty regions.
+        if (!IsGlThreadRendered)
+            AddToBackbufferDirtyRectangle(rectPx);
 
         Canvas.Restore();
     }
@@ -351,11 +352,16 @@ public abstract class BackbufferBase : IDisposable
             drawable.Draw(this, destRectScreen);
             long drawEndTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
 
-            RectangleF visualBoundsScreen = drawable is Sprite drawnSprite
-                ? drawnSprite.GetVisualBoundsScreen(destRectScreen)
-                : destRectScreen;
+            // GPU/GL surfaces always present the complete backbuffer. Avoid calculating visual
+            // bounds just to pass them to dirty-region tracking that the GPU path never consumes.
+            if (!IsGlThreadRendered)
+            {
+                RectangleF visualBoundsScreen = drawable is Sprite drawnSprite
+                    ? drawnSprite.GetVisualBoundsScreen(destRectScreen)
+                    : destRectScreen;
 
-            AddToBackbufferDirtyRectangle(visualBoundsScreen.ToPixelAlignedRect());
+                AddToBackbufferDirtyRectangle(visualBoundsScreen.ToPixelAlignedRect());
+            }
 
             if (drawable is Tile tile)
                 tiles.Add(tile);
@@ -493,14 +499,10 @@ public abstract class BackbufferBase : IDisposable
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This method should be called after the backbuffer has been successfully presented to the
-    /// UI adapter to reset dirty region tracking for the next frame. The dirty rectangle accumulates
-    /// all regions that have been modified during rendering and must be cleared at the start of
-    /// each frame or after presentation.
+    /// This method should be called after the backbuffer has been successfully presented to the UI adapter to reset dirty region tracking for the next frame. The dirty rectangle accumulates all regions that have been modified during rendering and must be cleared at the start of each frame or after presentation.
     /// </para>
     /// <para>
-    /// Failure to clear the dirty rectangle will result in incorrect dirty region tracking and
-    /// potential over-rendering or visual artifacts.
+    /// Failure to clear the dirty rectangle will result in incorrect dirty region tracking and potential over-rendering or visual artifacts.
     /// </para>
     /// </remarks>
     protected internal void ClearDirtyRectangle()
