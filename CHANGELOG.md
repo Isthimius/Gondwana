@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 - Add direct light rendering
 - Add side scroller and zelda prototypes
 - Add DirectSceneLayerDarknessOverlay
+- Add WebGL GPU rendering path
 
 
 
@@ -54,8 +55,18 @@ All notable changes to this project will be documented in this file.
 
 ## Gondwana.Blazor
 
+### Added
+- Add WebGL GPU rendering path
+
+
+
 ### Refactoring
 - Tighten touch and mouse polling behavior
+
+## Gondwana.Blazor.Hosting
+
+### Added
+- Add WebGL GPU rendering path
 
 ## Gondwana.Widgets
 
@@ -82,6 +93,11 @@ All notable changes to this project will be documented in this file.
 
 ## Tooling / Gondwana.Cli
 
+### Added
+- Add WebGL GPU rendering path
+
+
+
 ### Refactoring
 - Unify blazor detection, workload checks, and return values
 
@@ -90,6 +106,11 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add mcp service and ai plugins
 - Add agent plugin compliance docs
+
+## Tooling / Gondwana.Templates
+
+### Added
+- Add WebGL GPU rendering path
 
 ## Tooling / Gondwana.Tooling.Assets.WinForms
 
