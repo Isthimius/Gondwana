@@ -8,7 +8,6 @@ using Gondwana.Drawing.Sprites;
 using Gondwana.Effects;
 using Gondwana.Physics.Collisions;
 using Gondwana.Rendering;
-using Gondwana.Timers;
 using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;
@@ -139,20 +138,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     private int _tileHeight;    // rendered height
     private bool _visible;      // is SceneLayer to be rendered; useful with multiple layers
     private string _defaultTileCollisionProfile = CollisionProfileNames.World;
-
-    // Temporary browser query profiling counters. Static aggregation keeps all visible layers in one sample.
-    private static long _webGlQueryPerfWindowStartTick = HighResTimer.GetCurrentTick();
-    private static long _webGlQueryTileRangeTicks;
-    private static long _webGlQueryTileFilterTicks;
-    private static long _webGlQuerySpriteTicks;
-    private static long _webGlQueryDirectTicks;
-    private static long _webGlQuerySortTicks;
-    private static long _webGlQueryTotalTicks;
-    private static long _webGlQueryTileCandidateCount;
-    private static long _webGlQuerySpriteCandidateCount;
-    private static long _webGlQueryDirectCandidateCount;
-    private static long _webGlQueryResultCount;
-    private static int _webGlQueryCalls;
 
     [JsonIgnore]
     internal float EffectOpacity { get; set; } = 1f;
@@ -879,9 +864,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     internal virtual List<IDrawable> GetDrawablesInWorldRect(Rectangle worldRect, bool includeOverhang = true)
     {
-        bool traceWebGl = OperatingSystem.IsBrowser();
-        long callStartTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
-
         // Make selection rect covering so we never miss the edge tile.
         // Drawing is still clipped later, so over-selecting is safe.
         var queryRect = worldRect;
@@ -892,14 +874,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         var list = new List<IDrawable>(64);
 
         // 1) Grid tiles
-        long tileRangeStartTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
         var sceneLayerTiles = CoordinateSystem.GetSceneLayerTilesInPixelRange(
             this,
             worldRect,
             includeOverhang: includeOverhang);
-        long tileRangeEndTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
 
-        long tileFilterStartTick = tileRangeEndTick;
         if (sceneLayerTiles != null)
         {
             for (int i = 0; i < sceneLayerTiles.Count; i++)
@@ -919,10 +898,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 list.Add(tile);
             }
         }
-        long tileFilterEndTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
 
         // 2) Sprites
-        long spriteStartTick = tileFilterEndTick;
         var sprites = SpriteManager.Instance.GetSpritesInWorldRectRange(queryRect, this, fullEnclosures: false);
 
         for (int i = 0; i < sprites.Count; i++)
@@ -938,10 +915,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
             list.Add(sprite);
         }
-        long spriteEndTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
 
         // 3) DirectDrawing instances
-        long directStartTick = spriteEndTick;
         var drawings = DirectDrawingManager.Instance.GetDrawingsForLayer(this);
 
         for (int i = 0; i < drawings.Count; i++)
@@ -961,78 +936,10 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
             list.Add(drawing);
         }
-        long directEndTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
 
         // 4) Sort using Tile.CompareTo
-        long sortStartTick = directEndTick;
         list.Sort(CompareDrawables); // ← this calls Tile.CompareTo internally
-        long callEndTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
-
-        if (traceWebGl)
-        {
-            _webGlQueryTileRangeTicks += Math.Max(0, tileRangeEndTick - tileRangeStartTick);
-            _webGlQueryTileFilterTicks += Math.Max(0, tileFilterEndTick - tileFilterStartTick);
-            _webGlQuerySpriteTicks += Math.Max(0, spriteEndTick - spriteStartTick);
-            _webGlQueryDirectTicks += Math.Max(0, directEndTick - directStartTick);
-            _webGlQuerySortTicks += Math.Max(0, callEndTick - sortStartTick);
-            _webGlQueryTotalTicks += Math.Max(0, callEndTick - callStartTick);
-            _webGlQueryTileCandidateCount += sceneLayerTiles?.Count ?? 0;
-            _webGlQuerySpriteCandidateCount += sprites.Count;
-            _webGlQueryDirectCandidateCount += drawings.Count;
-            _webGlQueryResultCount += list.Count;
-            _webGlQueryCalls++;
-
-            TraceWebGlQueryPerformanceIfDue(callEndTick);
-        }
-
         return list;
-    }
-
-    private static void TraceWebGlQueryPerformanceIfDue(long now)
-    {
-        long elapsedTicks = now - _webGlQueryPerfWindowStartTick;
-        if (elapsedTicks < HighResTimer.TicksPerSecond || _webGlQueryCalls == 0)
-            return;
-
-        long measuredTicks = _webGlQueryTileRangeTicks
-            + _webGlQueryTileFilterTicks
-            + _webGlQuerySpriteTicks
-            + _webGlQueryDirectTicks
-            + _webGlQuerySortTicks;
-        long otherTicks = Math.Max(0, _webGlQueryTotalTicks - measuredTicks);
-
-        Console.WriteLine(
-            $"Gondwana WebGL query perf: TileRange {FormatWebGlQueryAverageMs(_webGlQueryTileRangeTicks)} | " +
-            $"TileFilter {FormatWebGlQueryAverageMs(_webGlQueryTileFilterTicks)} | " +
-            $"SpriteQuery {FormatWebGlQueryAverageMs(_webGlQuerySpriteTicks)} | " +
-            $"DirectQuery {FormatWebGlQueryAverageMs(_webGlQueryDirectTicks)} | " +
-            $"Sort {FormatWebGlQueryAverageMs(_webGlQuerySortTicks)} | " +
-            $"Other {FormatWebGlQueryAverageMs(otherTicks)} | " +
-            $"Total {FormatWebGlQueryAverageMs(_webGlQueryTotalTicks)} | " +
-            $"calls={_webGlQueryCalls} candidates/call=" +
-            $"tiles:{_webGlQueryTileCandidateCount / (double)_webGlQueryCalls:0.0} " +
-            $"sprites:{_webGlQuerySpriteCandidateCount / (double)_webGlQueryCalls:0.0} " +
-            $"direct:{_webGlQueryDirectCandidateCount / (double)_webGlQueryCalls:0.0} " +
-            $"results:{_webGlQueryResultCount / (double)_webGlQueryCalls:0.0}");
-
-        _webGlQueryPerfWindowStartTick = now;
-        _webGlQueryTileRangeTicks = 0;
-        _webGlQueryTileFilterTicks = 0;
-        _webGlQuerySpriteTicks = 0;
-        _webGlQueryDirectTicks = 0;
-        _webGlQuerySortTicks = 0;
-        _webGlQueryTotalTicks = 0;
-        _webGlQueryTileCandidateCount = 0;
-        _webGlQuerySpriteCandidateCount = 0;
-        _webGlQueryDirectCandidateCount = 0;
-        _webGlQueryResultCount = 0;
-        _webGlQueryCalls = 0;
-    }
-
-    private static string FormatWebGlQueryAverageMs(long ticks)
-    {
-        double milliseconds = ticks * 1000.0 / HighResTimer.TicksPerSecond / _webGlQueryCalls;
-        return $"{milliseconds:0.00} ms";
     }
 
     private static int CompareDrawables(IDrawable a, IDrawable b)
@@ -1078,7 +985,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// are out of bounds.
     /// </returns>
     /// <remarks>
-    /// This indexer provides convenient point-based access and internally uses the
+    /// This indexer provides convenient point-based access to tiles and internally uses the
     /// [x, y] indexer. Coordinates outside the valid range return <c>null</c>.
     /// </remarks>
     public SceneLayerTile? this[Point pt] => this[pt.X, pt.Y];
@@ -1220,15 +1127,15 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     public static SceneLayer Empty { get; } = new EmptySceneLayer();
 
     private sealed class EmptySceneLayer : SceneLayer
+{
+    internal EmptySceneLayer()
+        : base(columnCount: 0, rowCount: 0, width: 1, height: 1)
     {
-        internal EmptySceneLayer()
-            : base(columnCount: 0, rowCount: 0, width: 1, height: 1)
-        {
-            Visible = false;
-            ZOrder = int.MinValue;
-            Parallax = 1f;
-        }
+        Visible = false;
+        ZOrder = int.MinValue;
+        Parallax = 1f;
     }
+}
 
     #endregion empty SceneLayer
 }

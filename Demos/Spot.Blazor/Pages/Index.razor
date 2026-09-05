@@ -140,14 +140,17 @@
         }
     }
 
-    private static void OnCpsCalculated(CyclesPerSecondCalculatedEventArgs e)
+    private void OnCpsCalculated(CyclesPerSecondCalculatedEventArgs e)
     {
         var gpuFps = e.GpuFps.HasValue
             ? e.GpuFps.Value.ToString("0.0")
             : "n/a";
 
-        Console.WriteLine(
-            $"Gondwana: CPS {e.GrossCPS:0.0} | engine FPS {e.NetCPS:0.0} | GPU FPS {gpuFps}");
+        Logger.LogTrace(
+            "Gondwana: CPS {Cps:0.0} | engine FPS {EngineFps:0.0} | GPU FPS {GpuFps}",
+            e.GrossCPS,
+            e.NetCPS,
+            gpuFps);
     }
 
     private async Task<Dictionary<string, byte[]>> LoadAssetDataAsync()
