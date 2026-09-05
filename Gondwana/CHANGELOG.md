@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file.
 - Add direct light rendering
 - Add side scroller and zelda prototypes
 - Add DirectSceneLayerDarknessOverlay
+- Add WebGL GPU rendering path
 
 
 

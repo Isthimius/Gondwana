@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+## Added
+- Add WebGL GPU rendering path
+
+
+
 ## Refactoring
 - Unify blazor detection, workload checks, and return values
 
