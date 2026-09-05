@@ -18,8 +18,16 @@ internal sealed class PublishBlazorCommand : Command<PublishBlazorCommand.Settin
         [DefaultValue("Release")]
         public string Configuration { get; init; } = "Release";
 
+        [CommandOption("-f|--framework")]
+        [Description("Browser target framework. Auto-detected when the project has a single browser target.")]
+        public string? Framework { get; init; }
+
+        [CommandOption("--base-href")]
+        [Description("Override the published <base href> for subdirectory/static hosting, for example /games/mygame/ or ./.")]
+        public string? BaseHref { get; init; }
+
         [CommandOption("--skip-workload")]
-        [Description("Skip 'dotnet workload install wasm-tools'. Use when the workload is already installed.")]
+        [Description("Skip checking/installing the wasm-tools workload. Use when the environment is already prepared.")]
         public bool SkipWorkload { get; init; }
     }
 
@@ -39,10 +47,22 @@ internal sealed class PublishBlazorCommand : Command<PublishBlazorCommand.Settin
             AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or a Gondwana.Blazor package/project reference. Continuing anyway...[/]");
         }
 
-        var projectName = Path.GetFileNameWithoutExtension(csprojPath);
-        AnsiConsole.MarkupLine($"Publishing [bold]{Markup.Escape(projectName!)}[/] for Blazor WebAssembly...");
+        if (!ProjectHelper.TryResolveBrowserFramework(csprojPath!, settings.Framework, out var framework, out error))
+        {
+            AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
+            return 1;
+        }
 
-        var publishExit = ProjectHelper.PublishBlazorProject(csprojPath!, settings.Configuration, settings.SkipWorkload, out var wwwroot);
+        var projectName = Path.GetFileNameWithoutExtension(csprojPath);
+        AnsiConsole.MarkupLine($"Publishing [bold]{Markup.Escape(projectName!)}[/] for Blazor WebAssembly/WebGL ({Markup.Escape(framework!)})...");
+
+        var publishExit = ProjectHelper.PublishBlazorProject(
+            csprojPath!,
+            settings.Configuration,
+            framework!,
+            settings.SkipWorkload,
+            settings.BaseHref,
+            out var wwwroot);
         if (publishExit != 0)
             return publishExit;
 
@@ -54,7 +74,7 @@ internal sealed class PublishBlazorCommand : Command<PublishBlazorCommand.Settin
         else
         {
             AnsiConsole.MarkupLine("[yellow]Warning:[/] Publish succeeded but wwwroot output could not be located.");
-            AnsiConsole.MarkupLine("[dim]Expected output at: bin/<Configuration>/net8.0/publish/wwwroot/[/]");
+            AnsiConsole.MarkupLine($"[dim]Expected output at: bin/{Markup.Escape(settings.Configuration)}/{Markup.Escape(framework!)}/publish/wwwroot/[/]");
         }
 
         return 0;

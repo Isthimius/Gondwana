@@ -201,7 +201,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     private static void FixWasmTools()
     {
-        ProcessHelper.RunLive("dotnet", ["workload", "install", "wasm-tools"]);
+        ProjectHelper.EnsureBlazorWasmToolsInstalled(skipWorkload: false);
     }
 
     private static void FixGitCliff()
@@ -231,7 +231,6 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             return;
         }
 
-        // Determine the broth CDN platform slug and executable name.
         var architecture = RuntimeInformation.ProcessArchitecture switch
         {
             Architecture.X64 => "amd64",
@@ -264,7 +263,6 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                 $"Unsupported operating system for butler installation: {RuntimeInformation.OSDescription} ({RuntimeInformation.ProcessArchitecture}).");
         }
 
-        // Install to a user-local directory so no elevated permissions are needed.
         var installDir = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
             ? Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -292,7 +290,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                 AnsiConsole.MarkupLine($"[dim]Downloading butler from {Markup.Escape(url)}...[/]");
                 try
                 {
-                    try { if (File.Exists(zipPath)) File.Delete(zipPath); } catch { /* ignore cleanup errors */ }
+                    try { if (File.Exists(zipPath)) File.Delete(zipPath); } catch { }
 
                     using var request = new HttpRequestMessage(HttpMethod.Get, url);
                     using var response = http.SendAsync(
@@ -321,7 +319,6 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
             var butlerExe = Path.Combine(installDir, exe);
 
-            // Set executable bit on non-Windows platforms.
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 File.SetUnixFileMode(butlerExe,
@@ -330,7 +327,6 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                     UnixFileMode.OtherRead   | UnixFileMode.OtherExecute);
             }
 
-            // Add the install directory to the current process PATH so the re-check finds butler.
             AddDirectoryToProcessPath(installDir);
 
             AnsiConsole.MarkupLine($"[green]butler installed to {Markup.Escape(installDir)}.[/]");
@@ -344,7 +340,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         }
         finally
         {
-            try { if (File.Exists(zipPath)) File.Delete(zipPath); } catch { /* ignore cleanup errors */ }
+            try { if (File.Exists(zipPath)) File.Delete(zipPath); } catch { }
         }
     }
 
@@ -374,9 +370,6 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
         ProcessHelper.RunLive("winget", ["install", "--id", packageId, "--exact", "--silent", "--accept-source-agreements", "--accept-package-agreements"]);
 
-        // Refresh PATH so the newly installed tool is visible to subsequent checks,
-        // mirroring Setup-Gondwana-Dev.ps1's $env:PATH refresh after winget installs,
-        // while preserving any entries that exist only in the current process.
         var processPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process) ?? string.Empty;
         var machinePath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine) ?? string.Empty;
         var userPath    = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.User)    ?? string.Empty;
@@ -409,7 +402,6 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     private static CheckResult CheckNbgv()
     {
-        // nbgv is a local .NET tool restored from .config/dotnet-tools.json.
         var output = ProcessHelper.Run("dotnet", "tool list", out int exitCode);
         if (exitCode != 0)
             return CheckResult.Fail($"dotnet tool list failed (exit {exitCode}).");
@@ -417,7 +409,6 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         if (!output.Contains("nbgv", StringComparison.OrdinalIgnoreCase))
             return CheckResult.Fail("nbgv local tool not found. Run: dotnet tool restore");
 
-        // Extract version from the tool list line, e.g. "nbgv    3.9.50    nbgv"
         var line = output.Split('\n')
             .FirstOrDefault(l => l.Contains("nbgv", StringComparison.OrdinalIgnoreCase));
         var version = line?.Split(' ', StringSplitOptions.RemoveEmptyEntries).ElementAtOrDefault(1);
@@ -490,17 +481,15 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     private static CheckResult CheckWasmTools()
     {
-        var output = ProcessHelper.Run("dotnet", "workload list", out int exitCode);
-        if (exitCode != 0)
-            return CheckResult.Fail($"dotnet workload list failed (exit {exitCode}).");
+        if (!ProjectHelper.TryGetInstalledWorkloadVersion("wasm-tools", out var version, out var error))
+            return CheckResult.Fail(error);
 
-        if (!output.Contains("wasm-tools", StringComparison.OrdinalIgnoreCase))
-            return CheckResult.Fail("wasm-tools workload not installed. Run: dotnet workload install wasm-tools");
+        if (!string.IsNullOrWhiteSpace(version))
+            return CheckResult.Ok(version);
 
-        var version = GetWorkloadManifestVersion(output, "wasm-tools");
-        return CheckResult.Ok(string.IsNullOrWhiteSpace(version)
-            ? "wasm-tools installed"
-            : version);
+        return ProjectHelper.IsCurrentDirectoryBlazorWebAssemblyProject()
+            ? CheckResult.Fail("wasm-tools workload not installed. Required for this Blazor/WASM project. Run: dotnet workload install wasm-tools")
+            : CheckResult.Warning("wasm-tools not installed; optional unless you build/publish Blazor/WASM projects.");
     }
 
     private static CheckResult CheckGitCliff()
@@ -536,7 +525,6 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     private static CheckResult CheckSkiaSharp()
     {
-        // Probe for the native SkiaSharp library by attempting to load it directly.
         string[] candidates;
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -557,9 +545,6 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             }
         }
 
-        // SkiaSharp is typically installed via NuGet and bundled into the project output
-        // at build time — its native DLL is never placed on the system PATH.
-        // Check the NuGet global packages cache so that a NuGet install is recognised.
         var cachedVersion = GetLatestNuGetPackageVersion("skiasharp");
         if (!string.IsNullOrWhiteSpace(cachedVersion))
             return CheckResult.Ok($"{cachedVersion} (NuGet cache)");
@@ -569,7 +554,6 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     private static CheckResult CheckSdl2()
     {
-        // Try to find SDL2 native library on the system.
         string[] candidates = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
             ? ["SDL2.dll"]
             : RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
@@ -580,7 +564,6 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         {
             if (NativeLibraryProbe.CanLoad(candidate))
             {
-                // Gondwana.Input.SDL2 references the ppy.SDL2-CS package.
                 var version = GetLatestNuGetPackageVersion("ppy.sdl2-cs");
                 return CheckResult.Ok(string.IsNullOrWhiteSpace(version)
                     ? candidate
@@ -595,8 +578,6 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            // Check both the PATH-resolvable name and well-known VLC install directories,
-            // since the VLC installer does not add itself to the system PATH by default.
             var windowsCandidates = new List<string> { "libvlc.dll" };
 
             foreach (var programFiles in new[]
@@ -614,7 +595,6 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
                 }
                 catch (ArgumentException)
                 {
-                    // Skip if the environment variable contains invalid path characters.
                 }
             }
 
@@ -647,29 +627,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             }
         }
 
-        // LibVLC is optional; only needed if Gondwana.Video is used.
         return CheckResult.Skip();
-    }
-
-    private static string? GetWorkloadManifestVersion(string workloadListOutput, string workloadId)
-    {
-        foreach (var rawLine in workloadListOutput.Replace("\r", string.Empty).Split('\n'))
-        {
-            var line = rawLine.Trim();
-            if (line.Length == 0)
-                continue;
-
-            var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length < 2)
-                continue;
-
-            if (!string.Equals(parts[0], workloadId, StringComparison.OrdinalIgnoreCase))
-                continue;
-
-            return parts[1];
-        }
-
-        return null;
     }
 
     private static string? GetLatestNuGetPackageVersion(string packageId)
@@ -789,7 +747,6 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             }
             catch (ArgumentException)
             {
-                // Skip malformed directories in PATH/environment values.
             }
         }
 
@@ -815,7 +772,6 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         }
         catch
         {
-            // Version metadata is optional for native libraries on some platforms.
         }
 
         return null;

@@ -18,6 +18,14 @@ internal sealed class DeployBlazorCommand : Command<DeployBlazorCommand.Settings
         [DefaultValue("Release")]
         public string Configuration { get; init; } = "Release";
 
+        [CommandOption("-f|--framework")]
+        [Description("Browser target framework. Auto-detected when the project has a single browser target.")]
+        public string? Framework { get; init; }
+
+        [CommandOption("--base-href")]
+        [Description("Override the deployed <base href> for the public URL path, for example /games/mygame/ or ./.")]
+        public string? BaseHref { get; init; }
+
         [CommandOption("--web-root")]
         [Description("Local destination directory for the published wwwroot contents.")]
         public string? WebRoot { get; init; }
@@ -35,7 +43,7 @@ internal sealed class DeployBlazorCommand : Command<DeployBlazorCommand.Settings
         public bool SkipBuild { get; init; }
 
         [CommandOption("--skip-workload")]
-        [Description("Skip 'dotnet workload install wasm-tools' during the publish step.")]
+        [Description("Skip checking/installing the wasm-tools workload during the publish step.")]
         public bool SkipWorkload { get; init; }
 
         [CommandOption("--no-mirror")]
@@ -74,7 +82,20 @@ internal sealed class DeployBlazorCommand : Command<DeployBlazorCommand.Settings
             AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or a Gondwana.Blazor package/project reference. Continuing anyway...[/]");
         }
 
-        var publishOutput = ProjectHelper.TryGetBlazorPublishRoot(csprojPath!, settings.Configuration, settings.SkipBuild, settings.SkipWorkload, out var exitCode);
+        if (!ProjectHelper.TryResolveBrowserFramework(csprojPath!, settings.Framework, out var framework, out error))
+        {
+            AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
+            return 1;
+        }
+
+        var publishOutput = ProjectHelper.TryGetBlazorPublishRoot(
+            csprojPath!,
+            settings.Configuration,
+            framework!,
+            settings.SkipBuild,
+            settings.SkipWorkload,
+            settings.BaseHref,
+            out var exitCode);
         if (exitCode != 0)
             return exitCode;
 
@@ -109,49 +130,46 @@ internal sealed class DeployBlazorCommand : Command<DeployBlazorCommand.Settings
             }
 
             AnsiConsole.MarkupLine("[green]Deployment complete.[/]");
-            PrintServerReminder();
+            PrintHostingReminder(settings.BaseHref);
             return 0;
         }
 
-        if (useRemote)
+        ProcessHelper.Run("rsync", "--version", out var rsyncCheckExit);
+        if (rsyncCheckExit != 0)
         {
-            ProcessHelper.Run("rsync", "--version", out var rsyncCheckExit);
-            if (rsyncCheckExit != 0)
-            {
-                AnsiConsole.MarkupLine("[red]rsync not found on PATH.[/]");
-                AnsiConsole.MarkupLine("[dim]Install rsync (available on Linux/macOS natively, or via WSL / Git Bash on Windows).[/]");
-                return 1;
-            }
-
-            AnsiConsole.MarkupLine($"[dim]Deploying to {Markup.Escape(settings.RemoteHost!)}:{Markup.Escape(settings.RemotePath!)}[/]");
-
-            var rsyncArgs = settings.NoMirror
-                ? new[] { "-avz", $"{publishOutput}/", $"{settings.RemoteHost}:{settings.RemotePath}/" }
-                : new[] { "-avz", "--delete", $"{publishOutput}/", $"{settings.RemoteHost}:{settings.RemotePath}/" };
-
-            var rsyncExit = ProcessHelper.RunLive("rsync", rsyncArgs);
-
-            if (rsyncExit == 0)
-            {
-                AnsiConsole.MarkupLine("[green]Deployment complete.[/]");
-                PrintServerReminder();
-            }
-            else
-            {
-                AnsiConsole.MarkupLine("[red]rsync deployment failed.[/]");
-            }
-
-            return rsyncExit;
+            AnsiConsole.MarkupLine("[red]rsync not found on PATH.[/]");
+            AnsiConsole.MarkupLine("[dim]Install rsync (available on Linux/macOS natively, or via WSL / Git Bash on Windows).[/]");
+            return 1;
         }
 
-        return 0;
+        AnsiConsole.MarkupLine($"[dim]Deploying to {Markup.Escape(settings.RemoteHost!)}:{Markup.Escape(settings.RemotePath!)}[/]");
+
+        var rsyncArgs = settings.NoMirror
+            ? new[] { "-avz", $"{publishOutput}/", $"{settings.RemoteHost}:{settings.RemotePath}/" }
+            : new[] { "-avz", "--delete", $"{publishOutput}/", $"{settings.RemoteHost}:{settings.RemotePath}/" };
+
+        var rsyncExit = ProcessHelper.RunLive("rsync", rsyncArgs);
+
+        if (rsyncExit == 0)
+        {
+            AnsiConsole.MarkupLine("[green]Deployment complete.[/]");
+            PrintHostingReminder(settings.BaseHref);
+        }
+        else
+        {
+            AnsiConsole.MarkupLine("[red]rsync deployment failed.[/]");
+        }
+
+        return rsyncExit;
     }
 
-    private static void PrintServerReminder()
+    private static void PrintHostingReminder(string? baseHref)
     {
-        AnsiConsole.MarkupLine("[yellow]Reminder:[/] your web server must send these headers on every request for .NET WASM threading to work:");
-        AnsiConsole.MarkupLine("  [dim]Cross-Origin-Opener-Policy:   same-origin[/]");
-        AnsiConsole.MarkupLine("  [dim]Cross-Origin-Embedder-Policy: require-corp[/]");
-        AnsiConsole.MarkupLine("[yellow]The site must also be served over HTTPS.[/]");
+        if (string.IsNullOrWhiteSpace(baseHref))
+            AnsiConsole.MarkupLine("[dim]If the game is hosted below the site root, republish/deploy with --base-href matching its public URL path.[/]");
+        else
+            AnsiConsole.MarkupLine($"[dim]Published base href: {Markup.Escape(ProjectHelper.NormalizeBaseHref(baseHref))}[/]");
+
+        AnsiConsole.MarkupLine("[dim]COOP/COEP headers are only needed if the application explicitly enables .NET WASM multithreading; Gondwana's default browser/WebGL path does not require them.[/]");
     }
 }

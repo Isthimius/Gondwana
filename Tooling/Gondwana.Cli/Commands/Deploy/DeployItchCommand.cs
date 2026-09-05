@@ -27,12 +27,20 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
         [DefaultValue("Release")]
         public string Configuration { get; init; } = "Release";
 
+        [CommandOption("-f|--framework")]
+        [Description("Browser target framework. Auto-detected when the project has a single browser target.")]
+        public string? Framework { get; init; }
+
+        [CommandOption("--base-href")]
+        [Description("Override the packaged <base href>. No itch.io-specific value is assumed automatically.")]
+        public string? BaseHref { get; init; }
+
         [CommandOption("--skip-build")]
         [Description("Skip the dotnet publish step and deploy an existing Blazor publish output.")]
         public bool SkipBuild { get; init; }
 
         [CommandOption("--skip-workload")]
-        [Description("Skip 'dotnet workload install wasm-tools' during the publish step.")]
+        [Description("Skip checking/installing the wasm-tools workload during the publish step.")]
         public bool SkipWorkload { get; init; }
 
         public override ValidationResult Validate()
@@ -63,7 +71,13 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
             AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or a Gondwana.Blazor package/project reference. Continuing anyway...[/]");
         }
 
-        var butlerCheck = ProcessHelper.Run("butler", "--version", out var butlerExit);
+        if (!ProjectHelper.TryResolveBrowserFramework(csprojPath!, settings.Framework, out var framework, out error))
+        {
+            AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
+            return 1;
+        }
+
+        ProcessHelper.Run("butler", "--version", out var butlerExit);
         if (butlerExit != 0)
         {
             AnsiConsole.MarkupLine("[red]butler not found on PATH.[/]");
@@ -72,7 +86,15 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
         }
 
         var zipPath = Path.Combine(Path.GetTempPath(), $"gondwana-blazor-{Path.GetRandomFileName()}.zip");
-        var createdZipPath = ProjectHelper.CreateBlazorItchPackage(csprojPath!, settings.Configuration, settings.SkipBuild, settings.SkipWorkload, zipPath, out var exitCode);
+        var createdZipPath = ProjectHelper.CreateBlazorItchPackage(
+            csprojPath!,
+            settings.Configuration,
+            framework!,
+            settings.SkipBuild,
+            settings.SkipWorkload,
+            settings.BaseHref,
+            zipPath,
+            out var exitCode);
         if (exitCode != 0)
             return exitCode;
 

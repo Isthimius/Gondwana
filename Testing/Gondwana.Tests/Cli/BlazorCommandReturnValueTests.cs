@@ -1,6 +1,7 @@
+using System.IO.Compression;
+using Gondwana.Cli.Commands;
 using Gondwana.Cli.Commands.Deploy;
 using Gondwana.Cli.Commands.Publish;
-using Gondwana.Cli.Commands;
 using Spectre.Console.Cli;
 
 namespace Gondwana.Tests.Cli;
@@ -9,23 +10,50 @@ public sealed class BlazorCommandReturnValueTests
 {
     private static readonly object PathLock = new();
 
-    //[Fact]
-    //public void PublishBlazorCommand_ReturnsZero_WhenPublishSucceeds()
-    //{
-    //    using var fixture = CliCommandFixture.Create();
-    //    var projectPath = fixture.CreateBuildableBlazorProject();
+    [Fact]
+    public void PublishBlazorCommand_ReturnsZero_WhenPublishSucceeds()
+    {
+        using var fixture = CliCommandFixture.Create();
+        var projectPath = fixture.CreateBuildableBlazorProject();
 
-    //    var exitCode = fixture.Run(config => config.AddCommand<PublishBlazorCommand>("publish-blazor"),
-    //        "publish-blazor",
-    //        "--project", projectPath,
-    //        "--configuration", "Release",
-    //        "--skip-workload");
+        var exitCode = fixture.Run(config => config.AddCommand<PublishBlazorCommand>("publish-blazor"),
+            "publish-blazor",
+            "--project", projectPath,
+            "--configuration", "Release",
+            "--framework", "net8.0-browser",
+            "--skip-workload");
 
-    //    Assert.Equal(0, exitCode);
-    //    var wwwroot = ProjectHelper.TryLocateBlazorPublishRoot(projectPath, "Release");
-    //    Assert.NotNull(wwwroot);
-    //    Assert.True(File.Exists(Path.Combine(wwwroot!, "index.html")));
-    //}
+        Assert.Equal(0, exitCode);
+        var wwwroot = ProjectHelper.TryLocateBlazorPublishRoot(projectPath, "Release", "net8.0-browser");
+        Assert.NotNull(wwwroot);
+        Assert.True(File.Exists(Path.Combine(wwwroot!, "index.html")));
+    }
+
+    [Fact]
+    public void ProjectHelper_ResolvesBrowserFramework_FromProjectTarget()
+    {
+        using var fixture = CliCommandFixture.Create();
+        var projectPath = fixture.CreatePublishedBlazorProject();
+
+        var resolved = ProjectHelper.TryResolveBrowserFramework(projectPath, null, out var framework, out var error);
+
+        Assert.True(resolved, error);
+        Assert.Equal("net8.0-browser", framework);
+    }
+
+    [Fact]
+    public void ProjectHelper_AppliesBaseHref_ToPublishedIndex()
+    {
+        using var fixture = CliCommandFixture.Create();
+        var projectPath = fixture.CreatePublishedBlazorProject();
+        var wwwroot = ProjectHelper.TryLocateBlazorPublishRoot(projectPath, "Release", "net8.0-browser");
+
+        Assert.NotNull(wwwroot);
+        var applied = ProjectHelper.TryApplyBlazorBaseHref(wwwroot!, "/games/mygame", out var error);
+
+        Assert.True(applied, error);
+        Assert.Contains("<base href=\"/games/mygame/\"", File.ReadAllText(Path.Combine(wwwroot!, "index.html")));
+    }
 
     [Fact]
     public void PublishItchCommand_ReturnsZero_WhenPackageSucceeds()
@@ -38,11 +66,19 @@ public sealed class BlazorCommandReturnValueTests
             "publish-itch",
             "--project", projectPath,
             "--configuration", "Release",
+            "--framework", "net8.0-browser",
             "--skip-build",
+            "--base-href", "./",
             "--output", zipPath);
 
         Assert.Equal(0, exitCode);
         Assert.True(File.Exists(zipPath));
+
+        using var archive = ZipFile.OpenRead(zipPath);
+        var indexEntry = archive.GetEntry("index.html");
+        Assert.NotNull(indexEntry);
+        using var reader = new StreamReader(indexEntry!.Open());
+        Assert.Contains("<base href=\"./\"", reader.ReadToEnd());
     }
 
     [Fact]
@@ -56,11 +92,14 @@ public sealed class BlazorCommandReturnValueTests
             "deploy-blazor",
             "--project", projectPath,
             "--configuration", "Release",
+            "--framework", "net8.0-browser",
             "--skip-build",
+            "--base-href", "/mygame/",
             "--web-root", webRoot);
 
         Assert.Equal(0, exitCode);
         Assert.True(File.Exists(Path.Combine(webRoot, "index.html")));
+        Assert.Contains("<base href=\"/mygame/\"", File.ReadAllText(Path.Combine(webRoot, "index.html")));
     }
 
     [Fact]
@@ -73,6 +112,7 @@ public sealed class BlazorCommandReturnValueTests
             "deploy-itch",
             "--project", projectPath,
             "--configuration", "Release",
+            "--framework", "net8.0-browser",
             "--skip-build",
             "--itch-game", "user/game");
 
@@ -123,9 +163,9 @@ public sealed class BlazorCommandReturnValueTests
             var projectPath = Path.Combine(projectDirectory, "Game.csproj");
             File.WriteAllText(projectPath,
                 """
-                <Project Sdk="Microsoft.NET.Sdk">
+                <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
                   <PropertyGroup>
-                    <TargetFramework>net8.0</TargetFramework>
+                    <TargetFramework>net8.0-browser</TargetFramework>
                   </PropertyGroup>
                   <ItemGroup>
                     <PackageReference Include="Gondwana.Blazor" Version="2.0.0" />
@@ -135,7 +175,7 @@ public sealed class BlazorCommandReturnValueTests
 
             var publishDirectory = Path.Combine(projectDirectory, "bin", "Release", "net8.0-browser", "publish", "wwwroot");
             Directory.CreateDirectory(publishDirectory);
-            File.WriteAllText(Path.Combine(publishDirectory, "index.html"), "<html><body>ok</body></html>");
+            File.WriteAllText(Path.Combine(publishDirectory, "index.html"), "<html><head><base href=\"/\" /></head><body>ok</body></html>");
 
             return projectPath;
         }
@@ -152,7 +192,7 @@ public sealed class BlazorCommandReturnValueTests
                 """
                 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
                   <PropertyGroup>
-                    <TargetFramework>net8.0</TargetFramework>
+                    <TargetFramework>net8.0-browser</TargetFramework>
                     <Nullable>enable</Nullable>
                     <ImplicitUsings>enable</ImplicitUsings>
                   </PropertyGroup>

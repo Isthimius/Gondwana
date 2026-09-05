@@ -18,8 +18,12 @@ internal sealed class RunBlazorCommand : Command<RunBlazorCommand.Settings>
         [DefaultValue("Debug")]
         public string Configuration { get; init; } = "Debug";
 
+        [CommandOption("-f|--framework")]
+        [Description("Browser target framework. Auto-detected when the project has a single browser target.")]
+        public string? Framework { get; init; }
+
         [CommandOption("--skip-workload")]
-        [Description("Skip 'dotnet workload install wasm-tools'. Use when the workload is already installed.")]
+        [Description("Skip checking/installing the wasm-tools workload. Use when the environment is already prepared.")]
         public bool SkipWorkload { get; init; }
     }
 
@@ -39,7 +43,13 @@ internal sealed class RunBlazorCommand : Command<RunBlazorCommand.Settings>
             AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or a Gondwana.Blazor package/project reference. Continuing anyway...[/]");
         }
 
-        AnsiConsole.MarkupLine($"Running [bold]{Markup.Escape(Path.GetFileNameWithoutExtension(csprojPath!))}[/] in the browser...");
+        if (!ProjectHelper.TryResolveBrowserFramework(csprojPath!, settings.Framework, out var framework, out error))
+        {
+            AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
+            return 1;
+        }
+
+        AnsiConsole.MarkupLine($"Running [bold]{Markup.Escape(Path.GetFileNameWithoutExtension(csprojPath!))}[/] with Gondwana WebGL in the browser...");
 
         var workloadExit = ProjectHelper.EnsureBlazorWasmToolsInstalled(settings.SkipWorkload);
         if (workloadExit != 0)
@@ -51,6 +61,7 @@ internal sealed class RunBlazorCommand : Command<RunBlazorCommand.Settings>
             "run",
             "--project", csprojPath!,
             "-c", settings.Configuration,
+            "-f", framework!,
         };
 
         return ProcessHelper.RunLiveAndOpenUrl("dotnet", runArgs);

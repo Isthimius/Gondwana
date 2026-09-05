@@ -18,16 +18,24 @@ internal sealed class PublishItchCommand : Command<PublishItchCommand.Settings>
         [DefaultValue("Release")]
         public string Configuration { get; init; } = "Release";
 
+        [CommandOption("-f|--framework")]
+        [Description("Browser target framework. Auto-detected when the project has a single browser target.")]
+        public string? Framework { get; init; }
+
         [CommandOption("-o|--output")]
-        [Description("Output zip path. Defaults to bin/<Configuration>/<TargetFramework>/publish/<ProjectName>-itch.zip.")]
+        [Description("Output zip path. Defaults beside the browser publish output as <ProjectName>-itch.zip.")]
         public string? Output { get; init; }
+
+        [CommandOption("--base-href")]
+        [Description("Override the packaged <base href>, for example ./ or /games/mygame/. No override is applied by default.")]
+        public string? BaseHref { get; init; }
 
         [CommandOption("--skip-build")]
         [Description("Skip the dotnet publish step and package an existing Blazor publish output.")]
         public bool SkipBuild { get; init; }
 
         [CommandOption("--skip-workload")]
-        [Description("Skip 'dotnet workload install wasm-tools' during the publish step.")]
+        [Description("Skip checking/installing the wasm-tools workload during the publish step.")]
         public bool SkipWorkload { get; init; }
     }
 
@@ -47,10 +55,24 @@ internal sealed class PublishItchCommand : Command<PublishItchCommand.Settings>
             AnsiConsole.MarkupLine("[dim]Expected Sdk=\"Microsoft.NET.Sdk.BlazorWebAssembly\" or a Gondwana.Blazor package/project reference. Continuing anyway...[/]");
         }
 
-        var projectName = Path.GetFileNameWithoutExtension(csprojPath!);
-        AnsiConsole.MarkupLine($"Packaging [bold]{Markup.Escape(projectName)}[/] for itch.io...");
+        if (!ProjectHelper.TryResolveBrowserFramework(csprojPath!, settings.Framework, out var framework, out error))
+        {
+            AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
+            return 1;
+        }
 
-        var zipPath = ProjectHelper.CreateBlazorItchPackage(csprojPath!, settings.Configuration, settings.SkipBuild, settings.SkipWorkload, settings.Output, out var exitCode);
+        var projectName = Path.GetFileNameWithoutExtension(csprojPath!);
+        AnsiConsole.MarkupLine($"Packaging [bold]{Markup.Escape(projectName)}[/] for itch.io from {Markup.Escape(framework!)}...");
+
+        var zipPath = ProjectHelper.CreateBlazorItchPackage(
+            csprojPath!,
+            settings.Configuration,
+            framework!,
+            settings.SkipBuild,
+            settings.SkipWorkload,
+            settings.BaseHref,
+            settings.Output,
+            out var exitCode);
         if (exitCode != 0)
             return exitCode;
 

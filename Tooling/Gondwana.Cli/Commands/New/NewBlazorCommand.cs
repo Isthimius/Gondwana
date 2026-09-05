@@ -33,7 +33,7 @@ internal sealed class NewBlazorCommand : Command<NewBlazorCommand.Settings>
             args.Add(settings.Output);
         }
 
-        AnsiConsole.MarkupLine($"Creating Gondwana Blazor WebAssembly project: [bold]{Markup.Escape(settings.Name)}[/]");
+        AnsiConsole.MarkupLine($"Creating Gondwana Blazor WebAssembly/WebGL project: [bold]{Markup.Escape(settings.Name)}[/]");
 
         var exitCode = ProcessHelper.RunLive("dotnet", args);
 
@@ -41,8 +41,8 @@ internal sealed class NewBlazorCommand : Command<NewBlazorCommand.Settings>
         {
             NewSolutionHelper.CreateHoldingSolution(settings.Name, settings.Output ?? settings.Name);
             AnsiConsole.MarkupLine($"[green]Project '{Markup.Escape(settings.Name)}' created successfully.[/]");
-            AnsiConsole.MarkupLine($"[dim]Run: cd {Markup.Escape(settings.Output ?? settings.Name)} && dotnet run[/]");
-            AnsiConsole.MarkupLine($"[dim]Publish: dotnet workload install wasm-tools && dotnet publish -c Release[/]");
+            AnsiConsole.MarkupLine($"[dim]Run: cd {Markup.Escape(settings.Output ?? settings.Name)} && gondwana run blazor[/]");
+            AnsiConsole.MarkupLine($"[dim]Publish: cd {Markup.Escape(settings.Output ?? settings.Name)} && gondwana publish blazor[/]");
         }
         else
         {

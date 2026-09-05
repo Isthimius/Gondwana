@@ -1,12 +1,12 @@
 {
   "$schema": "http://json.schemastore.org/template",
   "author": "Michael Adkins",
-  "classifications": [ "Games", "Blazor", "WebAssembly", "WASM", "Browser", "Gondwana" ],
+  "classifications": [ "Games", "Blazor", "WebAssembly", "WASM", "WebGL", "Browser", "Gondwana" ],
   "identity": "Gondwana.Templates.Blazor.Wasm.CSharp",
   "groupIdentity": "Gondwana.Templates.Blazor",
   "name": "Gondwana Blazor WebAssembly Game",
   "shortName": "gondwana-blazor",
-  "description": "A starter Blazor WebAssembly project for building a browser-based 2D game with the Gondwana Game Engine, targeting WebAssembly via net8.0-browser.",
+  "description": "A starter Blazor WebAssembly project for building a browser-based 2D game with the Gondwana Game Engine using its GPU-backed WebGL rendering path.",
   "tags": {
     "language": "C#",
     "type": "project"
