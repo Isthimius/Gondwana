@@ -8,6 +8,7 @@ using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
+using Gondwana.Timers;
 
 namespace Gondwana.Rendering;
 
@@ -33,6 +34,17 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private readonly RenderSurfaceAdapterBase _renderSurfaceAdapter;
     private readonly ViewManager _viewManager;
+
+    // Temporary browser/GPU scene profiling counters. These stay dormant on desktop and bitmap paths.
+    private long _webGlScenePerfWindowStartTick = HighResTimer.GetCurrentTick();
+    private long _webGlSceneClearTicks;
+    private long _webGlSceneQueryTicks;
+    private long _webGlSceneDrawTicks;
+    private long _webGlSceneOverlayTicks;
+    private long _webGlSceneHookTicks;
+    private long _webGlSceneTotalTicks;
+    private long _webGlSceneLayerCount;
+    private int _webGlSceneFrames;
 
     /// <summary>
     /// Occurs when a scene is bound to or unbound from this render surface host.
@@ -227,8 +239,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// <remarks>
     /// <para>
     /// Binding a scene unregisters event handlers from the previous scene (if any), registers handlers
-    /// with the new scene, and triggers a full refresh on the next frame. The <see cref="BindToScene"/>
-    /// event fires after the binding operation completes.
+    /// with the new scene, and triggers a full refresh on the next frame. The <see cref="BindToScene"/> event fires after the binding operation completes.
     /// </para>
     /// <para>
     /// If the specified scene is already bound, this method returns immediately without performing
@@ -334,6 +345,15 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// </remarks>
     private void RenderToBackbufferGpuFull(long tick)
     {
+        bool traceWebGl = OperatingSystem.IsBrowser();
+        long frameStartTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
+        long clearTicks = 0;
+        long queryTicks = 0;
+        long drawTicks = 0;
+        long overlayTicks = 0;
+        long hookTicks = 0;
+        int renderedLayerCount = 0;
+
         // When there are no views at all, clear the whole surface and bail.
         // If there ARE views but no scene layers, we fall through so view-mode
         // DirectDrawings (e.g. a splash screen overlay) are still rendered.
@@ -347,7 +367,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // A single clear lets translucent, wiped, or translated views reveal the
         // views beneath them. Each view paints its own background as part of its
         // presentation group below.
+        long clearStartTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
         Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
+        if (traceWebGl)
+            clearTicks += Math.Max(0, HighResTimer.GetCurrentTick() - clearStartTick);
 
         foreach (var view in ViewManager.Views)
         {
@@ -386,7 +409,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 {
                     // The view background belongs inside the group so it fades,
                     // wipes, and slides with the rest of the view.
+                    clearStartTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
                     Backbuffer.ClearRect(view.GetPresentationBoundsPx().ToPixelAlignedRect());
+                    if (traceWebGl)
+                        clearTicks += Math.Max(0, HighResTimer.GetCurrentTick() - clearStartTick);
 
                     // 4) Render every visible layer for the full viewport extent (layers are drawn
                     //    back-to-front by ascending Z-order, which VisibleSceneLayers already provides).
@@ -405,6 +431,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                         if (layerPresentation == 0)
                             continue;
 
+                        long queryStartTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
+
                         // Compute the world-space rect visible through this viewport for this layer,
                         // expanded by one tile in each direction to cover boundary rounding.
                         var layerWorldRectF = view.ScreenRectToWorldRect(layer, vp);
@@ -412,14 +440,25 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                         var layerWorldRect = layerWorldRectF.ToPixelAlignedRect();
 
                         var drawables = layer.GetDrawablesInWorldRect(layerWorldRect);
-                        Backbuffer.DrawDrawables(view, drawables, vp);
 
+                        if (traceWebGl)
+                            queryTicks += Math.Max(0, HighResTimer.GetCurrentTick() - queryStartTick);
+
+                        long drawStartTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
+                        Backbuffer.DrawDrawables(view, drawables, vp);
+                        if (traceWebGl)
+                            drawTicks += Math.Max(0, HighResTimer.GetCurrentTick() - drawStartTick);
+
+                        renderedLayerCount++;
                         EndPresentation(layerPresentation);
                     }
 
                     // 5) Render view-based DirectDrawings on top.
+                    long overlayStartTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
                     for (int i = 0; i < overlays.Count; i++)
                         overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));
+                    if (traceWebGl)
+                        overlayTicks += Math.Max(0, HighResTimer.GetCurrentTick() - overlayStartTick);
 
                     EndPresentation(viewPresentation);
                 }
@@ -437,7 +476,80 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // Notify subscribers that all scene content has been drawn and the canvas is ready for
         // post-scene effects.  For GPU surfaces this runs on the GL thread while GRContext is
         // current, so subscribers may safely issue Skia GPU draw calls.
+        long hookStartTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
         InvokePostSceneCanvasHooks();
+        long frameEndTick = traceWebGl ? HighResTimer.GetCurrentTick() : 0;
+
+        if (traceWebGl)
+        {
+            hookTicks += Math.Max(0, frameEndTick - hookStartTick);
+            TraceWebGlScenePerformance(
+                frameStartTick,
+                frameEndTick,
+                clearTicks,
+                queryTicks,
+                drawTicks,
+                overlayTicks,
+                hookTicks,
+                renderedLayerCount);
+        }
+    }
+
+    private void TraceWebGlScenePerformance(
+        long frameStartTick,
+        long frameEndTick,
+        long clearTicks,
+        long queryTicks,
+        long drawTicks,
+        long overlayTicks,
+        long hookTicks,
+        int renderedLayerCount)
+    {
+        _webGlSceneClearTicks += clearTicks;
+        _webGlSceneQueryTicks += queryTicks;
+        _webGlSceneDrawTicks += drawTicks;
+        _webGlSceneOverlayTicks += overlayTicks;
+        _webGlSceneHookTicks += hookTicks;
+        _webGlSceneTotalTicks += Math.Max(0, frameEndTick - frameStartTick);
+        _webGlSceneLayerCount += renderedLayerCount;
+        _webGlSceneFrames++;
+
+        long elapsedTicks = frameEndTick - _webGlScenePerfWindowStartTick;
+        if (elapsedTicks < HighResTimer.TicksPerSecond || _webGlSceneFrames == 0)
+            return;
+
+        long measuredTicks = _webGlSceneClearTicks
+            + _webGlSceneQueryTicks
+            + _webGlSceneDrawTicks
+            + _webGlSceneOverlayTicks
+            + _webGlSceneHookTicks;
+        long viewOtherTicks = Math.Max(0, _webGlSceneTotalTicks - measuredTicks);
+
+        Console.WriteLine(
+            $"Gondwana WebGL scene perf: Clear {FormatWebGlSceneAverageMs(_webGlSceneClearTicks)} | " +
+            $"Query {FormatWebGlSceneAverageMs(_webGlSceneQueryTicks)} | " +
+            $"Drawables {FormatWebGlSceneAverageMs(_webGlSceneDrawTicks)} | " +
+            $"Overlays {FormatWebGlSceneAverageMs(_webGlSceneOverlayTicks)} | " +
+            $"Hooks {FormatWebGlSceneAverageMs(_webGlSceneHookTicks)} | " +
+            $"View/Other {FormatWebGlSceneAverageMs(viewOtherTicks)} | " +
+            $"Total {FormatWebGlSceneAverageMs(_webGlSceneTotalTicks)} | " +
+            $"frames={_webGlSceneFrames} layers/frame={_webGlSceneLayerCount / (double)_webGlSceneFrames:0.0}");
+
+        _webGlScenePerfWindowStartTick = frameEndTick;
+        _webGlSceneClearTicks = 0;
+        _webGlSceneQueryTicks = 0;
+        _webGlSceneDrawTicks = 0;
+        _webGlSceneOverlayTicks = 0;
+        _webGlSceneHookTicks = 0;
+        _webGlSceneTotalTicks = 0;
+        _webGlSceneLayerCount = 0;
+        _webGlSceneFrames = 0;
+    }
+
+    private string FormatWebGlSceneAverageMs(long ticks)
+    {
+        double milliseconds = ticks * 1000.0 / HighResTimer.TicksPerSecond / _webGlSceneFrames;
+        return $"{milliseconds:0.00} ms";
     }
 
     /// <summary>
