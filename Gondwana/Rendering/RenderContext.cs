@@ -11,12 +11,15 @@ internal sealed class RenderContext
 {
     [ThreadStatic]
     private static RenderContext? _current;
+    private static long _nextPassId;
+
     internal static RenderContext? Current => _current;
 
     private readonly RenderContext? _prior;
 
     private RenderContext(View view, long tick, RenderContext? prior)
     {
+        PassId = System.Threading.Interlocked.Increment(ref _nextPassId);
         View = view;
         Tick = tick;
 
@@ -36,6 +39,7 @@ internal sealed class RenderContext
         _prior = prior;
     }
 
+    internal long PassId { get; }
     internal View View { get; }
     internal long Tick { get; }
     internal System.Drawing.PointF CameraPositionPx { get; }

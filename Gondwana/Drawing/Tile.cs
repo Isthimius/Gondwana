@@ -46,7 +46,7 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
     private bool _collisionTypeExplicitlySet;
     private bool _collisionsEnabled;
     private string? _collisionProfileName;
-    private RenderContext? _sortKeyRenderContext;
+    private long _sortKeyRenderPassId;
     private TileSortKey _sortKey;
 
     #endregion fields
@@ -450,10 +450,11 @@ public void SetCollisionProfile(string profileName)
         if (renderContext is null)
             return CaptureSortKey();
 
-        if (!ReferenceEquals(_sortKeyRenderContext, renderContext))
+        long renderPassId = renderContext.PassId;
+        if (_sortKeyRenderPassId != renderPassId)
         {
             _sortKey = CaptureSortKey();
-            _sortKeyRenderContext = renderContext;
+            _sortKeyRenderPassId = renderPassId;
         }
 
         return _sortKey;
