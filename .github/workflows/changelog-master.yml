@@ -1,20 +1,12 @@
 name: Changelog (master)
 
+# Refresh the incoming branch before merging; squash merge includes these files
+# in the same master commit as the actual change. Direct master pushes are not
+# refreshed by this workflow.
 on:
-  push:
-    branches: [ master ]
-    paths-ignore:
-      - 'CHANGELOG.md'
-      - '**/CHANGELOG.md'
   pull_request:
+    branches: [ master ]
     types: [opened, synchronize, reopened, ready_for_review]
-    paths:
-      - 'Tooling/scripts/Generate-Project-Changelogs.ps1'
-      - 'Tooling/scripts/Generate-Root-Changelog.ps1'
-      - 'Tooling/scripts/Changelog-ProjectGroups.ps1'
-      - 'Tooling/scripts/release.ps1'
-      - 'cliff.toml'
-      - '.github/workflows/changelog-master.yml'
 
 permissions:
   contents: read
@@ -242,21 +234,35 @@ jobs:
           }
 
   update-changelogs:
-    if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
+    needs: validate-changelog-script
+    # Forks do not receive a write token. Never use pull_request_target to run
+    # generators from an untrusted PR checkout with repository credentials.
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      !github.event.pull_request.draft &&
+      github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
     concurrency:
-      group: changelog-master
+      group: changelog-pr-${{ github.event.pull_request.number }}
       cancel-in-progress: true
 
     steps:
-      - name: Checkout latest master
+      - name: Require token that triggers checks on the generated commit
+        shell: bash
+        env:
+          PUSH_TOKEN: ${{ secrets.CHANGELOG_PUSH_TOKEN }}
+        run: |
+          if [ -z "$PUSH_TOKEN" ]; then
+            echo "::error::Set CHANGELOG_PUSH_TOKEN to an App token or fine-grained PAT with Contents read/write access to this repository. The default GITHUB_TOKEN does not trigger CI on bot pushes."
+            exit 1
+          fi
+
+      - name: Checkout exact pull request head
         uses: actions/checkout@v4
         with:
-          ref: master
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Install git-cliff
         uses: taiki-e/install-action@d8ae1fa96886bc82c05515b8ac15b41515da2c6d # git-cliff
@@ -267,111 +273,26 @@ jobs:
           ./Tooling/scripts/Generate-Root-Changelog.ps1
           ./Tooling/scripts/Generate-Project-Changelogs.ps1
 
-      - name: Validate changelog updates
-        id: changes
+      - name: Commit changelogs to the pull request branch
         shell: bash
+        env:
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+          PUSH_TOKEN: ${{ secrets.CHANGELOG_PUSH_TOKEN }}
         run: |
-          has_changes() {
-            [ -n "$(git status --porcelain --untracked-files=all)" ]
-          }
-
-          validate_changes() {
-            unexpected=$(git status --porcelain --untracked-files=all \
-              | sed -E 's/^.. //' \
-              | grep -Ev '(^|/)CHANGELOG\.md$' || true)
-
-            if [ -n "$unexpected" ]; then
-              echo "Generator changed files other than CHANGELOG.md files:"
-              echo "$unexpected"
-              exit 1
-            fi
-          }
-
-          if ! has_changes; then
-            echo "has_changes=false" >> "$GITHUB_OUTPUT"
-            echo "No changelog changes detected."
+          # Stage only changelogs, including any bootstrapped project files.
+          git add -- CHANGELOG.md '**/CHANGELOG.md'
+          if ! git diff --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]; then
+            echo "::error::Generator changed files other than CHANGELOG.md files."
+            exit 1
+          fi
+          if git diff --cached --quiet; then
+            echo "Changelogs are already current."
             exit 0
           fi
-          validate_changes
-          echo "has_changes=true" >> "$GITHUB_OUTPUT"
 
-      - name: Open changelog update pull request
-        if: steps.changes.outputs.has_changes == 'true'
-        id: changelog_pr
-        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
-        with:
-          token: ${{ github.token }}
-          branch: automation/update-changelogs
-          base: master
-          delete-branch: true
-          commit-message: "docs: update unreleased changelogs [skip release notes]"
-          title: "docs: update unreleased changelogs"
-          body: |
-            Automated changelog refresh for commits merged into `master`.
-          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          add-paths: |
-            CHANGELOG.md
-            **/CHANGELOG.md
-
-      - name: Enable auto-merge for changelog pull request
-        if: steps.changes.outputs.has_changes == 'true' && steps.changelog_pr.outputs.pull-request-number != ''
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const pull_number = Number("${{ steps.changelog_pr.outputs.pull-request-number }}");
-            const { data: pull } = await github.rest.pulls.get({
-              owner,
-              repo,
-              pull_number
-            });
-
-            if (pull.state !== "open") {
-              core.info(`Changelog PR #${pull_number} is not open; skipping auto-merge enablement.`);
-              return;
-            }
-
-            if (pull.auto_merge) {
-              core.info(`Auto-merge already enabled for changelog PR #${pull_number}.`);
-              return;
-            }
-
-            await github.graphql(
-              `mutation EnableAutoMerge($pullRequestId: ID!) {
-                enablePullRequestAutoMerge(input: { pullRequestId: $pullRequestId, mergeMethod: SQUASH }) {
-                  pullRequest { number }
-                }
-              }`,
-              { pullRequestId: pull.node_id }
-            );
-
-            core.info(`Enabled auto-merge for changelog PR #${pull_number}.`);
-
-      - name: Close stale changelog automation pull requests
-        if: steps.changes.outputs.has_changes != 'true'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const head = `${owner}:automation/update-changelogs`;
-            const { data: pulls } = await github.rest.pulls.list({
-              owner,
-              repo,
-              state: "open",
-              head,
-              base: "master",
-              per_page: 100
-            });
-
-            for (const pull of pulls) {
-              core.info(`Closing stale changelog PR #${pull.number}`);
-              await github.rest.pulls.update({
-                owner,
-                repo,
-                pull_number: pull.number,
-                state: "closed"
-              });
-            }
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'docs: update unreleased changelogs [skip release notes]'
+          # A normal push rejects concurrent changes instead of overwriting them.
+          # This commit is excluded by cliff.toml, so its synchronize run is a no-op.
+          git push "https://x-access-token:${PUSH_TOKEN}@github.com/${{ github.repository }}.git" "HEAD:refs/heads/$HEAD_BRANCH"
