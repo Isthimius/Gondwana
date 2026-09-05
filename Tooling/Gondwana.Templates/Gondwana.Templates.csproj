@@ -20,8 +20,8 @@
         <PackageId>Gondwana.Templates</PackageId>
         <PackageType>Template</PackageType>
         <Title>Gondwana Project Templates</Title>
-        <Description>dotnet new templates for the Gondwana Game Engine. Scaffold a ready-to-run WinForms game project with one command: dotnet new gondwana-winforms -n MyGame</Description>
-        <PackageTags>game-engine gamedev csharp dotnet template winforms gondwana scaffold</PackageTags>
+        <Description>dotnet new templates for the Gondwana Game Engine. Scaffold ready-to-run WinForms, Avalonia, and Blazor WebAssembly games, including GPU-backed WebGL browser projects.</Description>
+        <PackageTags>game-engine gamedev csharp dotnet template gondwana scaffold winforms avalonia blazor wasm webassembly webgl</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageIcon>gondwana-logo.png</PackageIcon>
 		<PackageReleaseNotes>Full changelog: https://github.com/Isthimius/Gondwana/blob/master/CHANGELOG.md</PackageReleaseNotes>
