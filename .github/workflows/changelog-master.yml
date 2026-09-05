@@ -262,7 +262,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
-          token: ${{ secrets.CHANGELOG_PUSH_TOKEN }}
+          persist-credentials: false
 
       - name: Install git-cliff
         uses: taiki-e/install-action@d8ae1fa96886bc82c05515b8ac15b41515da2c6d # git-cliff
@@ -277,6 +277,7 @@ jobs:
         shell: bash
         env:
           HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+          PUSH_TOKEN: ${{ secrets.CHANGELOG_PUSH_TOKEN }}
         run: |
           # Stage only changelogs, including any bootstrapped project files.
           git add -- CHANGELOG.md '**/CHANGELOG.md'
@@ -294,4 +295,4 @@ jobs:
           git commit -m 'docs: update unreleased changelogs [skip release notes]'
           # A normal push rejects concurrent changes instead of overwriting them.
           # This commit is excluded by cliff.toml, so its synchronize run is a no-op.
-          git push origin "HEAD:refs/heads/$HEAD_BRANCH"
+          git push "https://x-access-token:${PUSH_TOKEN}@github.com/${{ github.repository }}.git" "HEAD:refs/heads/$HEAD_BRANCH"
