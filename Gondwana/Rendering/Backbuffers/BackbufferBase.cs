@@ -1,4 +1,4 @@
-﻿using Gondwana.Drawing;
+using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Rendering.Views;
 using Gondwana.SkiaSharp;
@@ -14,7 +14,7 @@ namespace Gondwana.Rendering.Backbuffers;
 /// rendering operations are performed before being presented to the display.
 /// </summary>
 /// <remarks>This abstract class serves as the foundation for backbuffer implementations, offering methods and
-/// properties to facilitate rendering operations, manage graphical state, and interact with graphical elements such as
+/// properties to facilitate rendering, manage graphical state, and interact with graphical elements such as
 /// tiles. Derived classes must implement the <see cref="Canvas"/>, <see cref="DrawTileFrame(Tile, RectangleF)"/>, and <see
 /// cref="Snapshot"/> members to define specific rendering behavior.</remarks>
 public abstract class BackbufferBase : IDisposable
@@ -433,42 +433,69 @@ public abstract class BackbufferBase : IDisposable
     {
         foreach (var tile in tiles)
         {
-            // WORLD -> SCREEN conversion
-            var worldPts = tile.OutlinePointsWorld;
-            var ptsScreen = new SKPoint[worldPts.Length];
+            var layer = tile.SceneLayer;
+            bool drawFog = tile.EnableFog;
+            bool drawGrid = layer.ShowGridLines && tile.Visible && tile.IsPositionFixed;
+            bool drawCollision = layer.ShowCollisionBoxes && tile.Visible && tile.CollisionsEnabled;
 
-            for (int i = 0; i < worldPts.Length; i++)
+            if (!drawFog && !drawGrid && !drawCollision)
+                continue;
+
+            // Orthogonal grid outlines are rectangles. Avoid building two transient point arrays
+            // and performing four point-wise world-to-screen transforms for every fixed tile.
+            // Rectangle conversion uses the same view transform while preserving the grid cell
+            // bounds (includeOverhang: false) used by the legacy polygon path.
+            if (drawGrid
+                && !drawFog
+                && layer.CoordinateSystemType == Gondwana.Drawing.Coordinates.CoordinateSystemTypes.Orthogonal)
             {
-                var p = worldPts[i];
-                var sp = view.WorldPxToScreenPx(
-                    tile.SceneLayer,
-                    new PointF(p.X, p.Y)
-                );
+                var worldRect = layer.CoordinateSystem.GetPixelRangeForTile(tile, includeOverhang: false);
+                var screenRect = view.WorldRectToScreenRect(layer, worldRect);
+                Canvas.DrawRect(screenRect.ToSKRect(), GridLinePaint);
 
-                ptsScreen[i] = new SKPoint(sp.X, sp.Y);
+                if (drawCollision)
+                {
+                    var colRectScreen = tile.GetCollisionAreaScreen(view).ToSKRect();
+                    Canvas.DrawRect(colRectScreen, CollisionBoxPaint);
+                }
+
+                continue;
             }
 
-            // close polygon when needed
-            static SKPoint[] Enclose(SKPoint[] pts)
+            // Polygon geometry is only needed for fog or non-orthogonal grid outlines.
+            if (drawFog || drawGrid)
             {
-                if (pts.Length == 0) return pts;
-                var arr = new SKPoint[pts.Length + 1];
-                Array.Copy(pts, arr, pts.Length);
-                arr[^1] = pts[0];
-                return arr;
+                var worldPts = tile.OutlinePointsWorld;
+                var ptsScreen = new SKPoint[worldPts.Length];
+
+                for (int i = 0; i < worldPts.Length; i++)
+                {
+                    var p = worldPts[i];
+                    var sp = view.WorldPxToScreenPx(
+                        layer,
+                        new PointF(p.X, p.Y)
+                    );
+
+                    ptsScreen[i] = new SKPoint(sp.X, sp.Y);
+                }
+
+                if (drawFog)
+                {
+                    using var path = new SKPath();
+                    path.AddPoly(ptsScreen, close: true);
+                    Canvas.DrawPath(path, FogPaint);
+                }
+
+                if (drawGrid)
+                {
+                    var enclosed = new SKPoint[ptsScreen.Length + 1];
+                    Array.Copy(ptsScreen, enclosed, ptsScreen.Length);
+                    enclosed[^1] = ptsScreen[0];
+                    Canvas.DrawPoints(SKPointMode.Polygon, enclosed, GridLinePaint);
+                }
             }
 
-            if (tile.EnableFog)
-            {
-                using var path = new SKPath();
-                path.AddPoly(ptsScreen, close: true);
-                Canvas.DrawPath(path, FogPaint);
-            }
-
-            if (tile.SceneLayer.ShowGridLines && tile.Visible && tile.IsPositionFixed)
-                Canvas.DrawPoints(SKPointMode.Polygon, Enclose(ptsScreen), GridLinePaint);
-
-            if (tile.SceneLayer.ShowCollisionBoxes && tile.Visible && tile.CollisionsEnabled)
+            if (drawCollision)
             {
                 var colRectScreen = tile.GetCollisionAreaScreen(view).ToSKRect();
                 Canvas.DrawRect(colRectScreen, CollisionBoxPaint);
