@@ -166,6 +166,7 @@ All notable changes to this project will be documented in this file.
 - Add android/ios support to README Roadmap
 - Refresh project overview
 - Add support section
+- Mark blazor WebGL rendering adapter complete
 
 
 
