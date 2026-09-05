@@ -345,7 +345,17 @@ internal static class ProjectHelper
         string? outputPath,
         out int exitCode)
     {
-        var wwwroot = TryGetBlazorPublishRoot(csprojPath, configuration, framework, skipBuild, skipWorkload, baseHref, out exitCode);
+        // The itch package is a derived artifact. Do not apply --base-href to the
+        // publish directory itself, particularly when --skip-build reuses an
+        // existing output that may also be deployed elsewhere.
+        var wwwroot = TryGetBlazorPublishRoot(
+            csprojPath,
+            configuration,
+            framework,
+            skipBuild,
+            skipWorkload,
+            baseHref: null,
+            out exitCode);
         if (exitCode != 0)
             return null;
 
@@ -354,7 +364,16 @@ internal static class ProjectHelper
 
         var projectName = Path.GetFileNameWithoutExtension(csprojPath);
         var defaultZipPath = Path.Combine(Path.GetDirectoryName(wwwroot)!, $"{projectName}-itch.zip");
-        return CreateZipFromDirectoryContents(wwwroot, outputPath ?? defaultZipPath);
+        var zipPath = outputPath ?? defaultZipPath;
+
+        if (!TryCreateBlazorPackageArchive(wwwroot, zipPath, baseHref, out var error))
+        {
+            AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
+            exitCode = 1;
+            return null;
+        }
+
+        return Path.GetFullPath(zipPath);
     }
 
     public static string NormalizeBaseHref(string baseHref)
@@ -374,13 +393,6 @@ internal static class ProjectHelper
         if (string.IsNullOrWhiteSpace(baseHref))
             return true;
 
-        var normalized = NormalizeBaseHref(baseHref);
-        if (normalized.Contains('"') || normalized.Contains('\''))
-        {
-            error = "--base-href cannot contain quote characters.";
-            return false;
-        }
-
         var indexPath = Path.Combine(wwwroot, "index.html");
         if (!File.Exists(indexPath))
         {
@@ -389,16 +401,11 @@ internal static class ProjectHelper
         }
 
         var html = File.ReadAllText(indexPath);
-        var basePattern = new Regex("(<base\\s+href\\s*=\\s*[\\\"'])([^\\\"']*)([\\\"'])", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-        if (!basePattern.IsMatch(html))
-        {
-            error = "Cannot apply --base-href because the published index.html does not contain a <base href=...> element.";
+        if (!TryRewriteBlazorBaseHref(html, baseHref, out var rewrittenHtml, out error))
             return false;
-        }
 
-        html = basePattern.Replace(html, match => $"{match.Groups[1].Value}{normalized}{match.Groups[3].Value}", 1);
-        File.WriteAllText(indexPath, html);
-        AnsiConsole.MarkupLine($"[dim]Published base href: {Markup.Escape(normalized)}[/]");
+        File.WriteAllText(indexPath, rewrittenHtml);
+        AnsiConsole.MarkupLine($"[dim]Published base href: {Markup.Escape(NormalizeBaseHref(baseHref))}[/]");
         return true;
     }
 
@@ -463,6 +470,104 @@ internal static class ProjectHelper
             .Where(d => d.Contains($"{Path.DirectorySeparatorChar}{framework}{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(Directory.GetLastWriteTimeUtc)
             .FirstOrDefault();
+    }
+
+    private static bool TryCreateBlazorPackageArchive(
+        string sourceDirectory,
+        string zipPath,
+        string? baseHref,
+        out string? error)
+    {
+        error = null;
+        var fullSource = Path.GetFullPath(sourceDirectory);
+        var fullZip = Path.GetFullPath(zipPath);
+        string? rewrittenIndex = null;
+
+        if (!string.IsNullOrWhiteSpace(baseHref))
+        {
+            var indexPath = Path.Combine(fullSource, "index.html");
+            if (!File.Exists(indexPath))
+            {
+                error = $"Cannot apply --base-href because index.html was not found in '{sourceDirectory}'.";
+                return false;
+            }
+
+            var html = File.ReadAllText(indexPath);
+            if (!TryRewriteBlazorBaseHref(html, baseHref, out rewrittenIndex, out error))
+                return false;
+        }
+
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(fullZip)!);
+            if (File.Exists(fullZip))
+                File.Delete(fullZip);
+
+            using var archive = ZipFile.Open(fullZip, ZipArchiveMode.Create);
+            foreach (var file in Directory.GetFiles(fullSource, "*", SearchOption.AllDirectories))
+            {
+                var entryName = Path.GetRelativePath(fullSource, file).Replace('\\', '/');
+                if (rewrittenIndex is not null && string.Equals(entryName, "index.html", StringComparison.OrdinalIgnoreCase))
+                {
+                    var entry = archive.CreateEntry(entryName, CompressionLevel.Optimal);
+                    using var writer = new StreamWriter(entry.Open());
+                    writer.Write(rewrittenIndex);
+                    continue;
+                }
+
+                archive.CreateEntryFromFile(file, entryName, CompressionLevel.Optimal);
+            }
+
+            if (!string.IsNullOrWhiteSpace(baseHref))
+                AnsiConsole.MarkupLine($"[dim]Packaged base href: {Markup.Escape(NormalizeBaseHref(baseHref))}[/]");
+
+            return true;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            try
+            {
+                if (File.Exists(fullZip))
+                    File.Delete(fullZip);
+            }
+            catch
+            {
+                // Best-effort cleanup of a partial package.
+            }
+
+            error = $"Failed to create browser package: {ex.Message}";
+            return false;
+        }
+    }
+
+    private static bool TryRewriteBlazorBaseHref(
+        string html,
+        string baseHref,
+        out string rewrittenHtml,
+        out string? error)
+    {
+        rewrittenHtml = html;
+        error = null;
+
+        var normalized = NormalizeBaseHref(baseHref);
+        if (normalized.Contains('"') || normalized.Contains('\''))
+        {
+            error = "--base-href cannot contain quote characters.";
+            return false;
+        }
+
+        var basePattern = new Regex("(<base\\s+href\\s*=\\s*[\\\"'])([^\\\"']*)([\\\"'])", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        if (!basePattern.IsMatch(html))
+        {
+            error = "Cannot apply --base-href because the published index.html does not contain a <base href=...> element.";
+            return false;
+        }
+
+        rewrittenHtml = basePattern.Replace(
+            html,
+            match => $"{match.Groups[1].Value}{normalized}{match.Groups[3].Value}",
+            1);
+        return true;
     }
 
     private static string? GetWorkloadManifestVersion(string workloadListOutput, string workloadId)
