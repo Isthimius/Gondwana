@@ -28,8 +28,6 @@ butler               OK  v17.0.0, built on ...
 SkiaSharp            OK  3.119.2 (NuGet cache)
 SDL2                 OK  1.0.82 (SDL2.dll)
 LibVLC               Not checked
-
-1 issue found.
 ```
 
 Checks performed:
@@ -38,7 +36,7 @@ Checks performed:
 - `nbgv` local tool restored
 - Gondwana CLI global tool installed
 - Gondwana templates (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-blazor`) installed
-- `wasm-tools` .NET workload installed
+- `wasm-tools` .NET workload installed when needed for Blazor/WASM work; if the current directory is not a Blazor project, a missing workload is reported only as an optional warning
 - `git-cliff` installed
 - `butler` installed (from `PATH` or the default user install directory used by `gondwana doctor --fix`)
 - SkiaSharp native binaries
@@ -54,7 +52,7 @@ gondwana doctor --fix
 Currently auto-fixable:
 - **Gondwana CLI** not installed → runs `dotnet tool install -g Gondwana.Cli`
 - **Gondwana Templates** missing → runs `dotnet new install Gondwana.Templates`; if already installed, `--fix` runs `dotnet new update` instead so newer local template packages are retained rather than downgraded
-- **wasm-tools** not installed → runs `dotnet workload install wasm-tools`
+- **wasm-tools** missing while working in a Blazor/WASM project → runs `dotnet workload install wasm-tools`
 - **git-cliff** on Windows → runs `winget install/upgrade --id orhun.git-cliff`
 - **butler** not installed → downloads the latest binary from the [itch.io broth CDN](https://itch.io/docs/butler/installing.html), trying `broth.itch.ovh` first and `broth.itch.zone` as fallback, then installs it to `%LOCALAPPDATA%\itch\butler` (Windows) or `~/.itch/butler` (Linux/macOS). Run `butler login` after installation to authenticate with itch.io.
 
@@ -93,7 +91,7 @@ gondwana new avalonia MyGame -o ./projects/MyGame
 gondwana new winforms MyGame -o ./projects/MyGame
 ```
 
-Both commands accept an optional `--backbuffer` / `-b` flag to choose the rendering backbuffer:
+Both desktop commands accept an optional `--backbuffer` / `-b` flag to choose the rendering backbuffer:
 
 | Value | Description |
 |---|---|
@@ -109,7 +107,7 @@ gondwana new avalonia MyGame -b gpu
 
 ### `gondwana new blazor <name>`
 
-Scaffolds a new Gondwana project that targets **browser/WASM** using Blazor WebAssembly.
+Scaffolds a new Gondwana project that targets **browser/WASM** using Blazor WebAssembly and Gondwana's GPU-backed WebGL renderer.
 
 ```bash
 gondwana new blazor MyGame
@@ -135,28 +133,24 @@ The scaffolded project contains:
 - `wwwroot/index.html` — the Blazor host page
 - `assets/README.txt` — instructions for adding sprites and other assets
 
+The generated Blazor project uses WebGL as the normal rendering path. Gondwana retains its CPU bitmap Blazor renderer as a compatibility/diagnostic path, but the CLI does not expose it as a normal project option.
+
 After scaffolding, start the Blazor dev server:
 
 ```bash
 cd MyGame
-dotnet run
+gondwana run blazor
 ```
 
 Build and publish for deployment:
 
 ```bash
 cd MyGame
-dotnet workload install wasm-tools   # one-time per machine
-dotnet publish -c Release
-# Output: bin/Release/net8.0/publish/wwwroot/
-```
-
-Or use the CLI shorthand:
-
-```bash
-cd MyGame
 gondwana publish blazor
+# Output: bin/Release/net8.0-browser/publish/wwwroot/
 ```
+
+The CLI checks whether `wasm-tools` is already installed and installs it only when needed. Use `--skip-workload` when the environment is already managed externally.
 
 ---
 
@@ -183,11 +177,12 @@ Equivalent to `dotnet run --project <path> -c <configuration>`.
 
 ### `gondwana run blazor`
 
-Installs the `wasm-tools` workload (unless `--skip-workload`) then starts the Blazor WebAssembly dev server, opening the game in the default browser.
+Ensures the `wasm-tools` workload is available (unless `--skip-workload`) and starts the Blazor WebAssembly dev server, opening the GPU-backed WebGL game in the default browser.
 
 ```bash
 gondwana run blazor
 gondwana run blazor --project ./src/MyGame
+gondwana run blazor --framework net8.0-browser
 gondwana run blazor --skip-workload
 ```
 
@@ -195,19 +190,23 @@ gondwana run blazor --skip-workload
 |---|---|---|---|
 | `--project <path>` | `-p` | *(cwd)* | Path to the `.csproj` or its parent directory. |
 | `--configuration <name>` | `-c` | `Debug` | Build configuration. |
-| `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools`. |
+| `--framework <tfm>` | `-f` | *(auto)* | Browser target framework. Required only when auto-detection is ambiguous. |
+| `--skip-workload` | | `false` | Skip checking/installing `wasm-tools`. |
 
-Equivalent to `dotnet run --project <path> -c <configuration>` for a `Microsoft.NET.Sdk.BlazorWebAssembly` project. The Blazor dev server starts automatically and opens the game in the browser at the address printed to the console.
+Equivalent to `dotnet run --project <path> -c <configuration> -f <framework>` for the resolved Blazor WebAssembly target. The dev server starts automatically and opens the game in the browser at the address printed to the console.
 
 ---
 
 ### `gondwana publish blazor`
 
-Builds and publishes the Blazor WebAssembly project in the current directory (or `--project`).
+Builds and publishes the Blazor WebAssembly/WebGL project in the current directory (or `--project`).
 
 ```bash
 gondwana publish blazor
 gondwana publish blazor --project ./src/MyGame
+gondwana publish blazor --framework net8.0-browser
+gondwana publish blazor --base-href /games/mygame/
+gondwana publish blazor --base-href ./
 gondwana publish blazor --skip-workload
 gondwana publish blazor --configuration Debug
 ```
@@ -216,9 +215,11 @@ gondwana publish blazor --configuration Debug
 |---|---|---|---|
 | `--project <path>` | `-p` | *(cwd)* | Path to the `.csproj` or its parent directory. |
 | `--configuration <name>` | `-c` | `Release` | Build configuration. |
-| `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools`. |
+| `--framework <tfm>` | `-f` | *(auto)* | Browser target framework. Required only when auto-detection is ambiguous. |
+| `--base-href <href>` | | *(unchanged)* | Rewrite the published `index.html` `<base href>` for subdirectory/static hosting. Values such as `/games/mygame/` and `./` are supported. |
+| `--skip-workload` | | `false` | Skip checking/installing `wasm-tools`. |
 
-The published output is placed at `bin/<Configuration>/net8.0/publish/wwwroot/`.
+The published output is placed at `bin/<Configuration>/<BrowserTargetFramework>/publish/wwwroot/`.
 On success, the command prints the wwwroot path as a plain line (machine-friendly).
 If publish succeeds but the wwwroot output cannot be located, a warning is printed.
 
@@ -259,12 +260,14 @@ On success, the command prints the publish output directory as a plain line (mac
 
 ### `gondwana publish itch`
 
-Publishes the Blazor WebAssembly project (unless `--skip-build`) and packages the published `wwwroot` contents as an itch.io-ready zip with `index.html` at the zip root.
+Publishes the Blazor WebAssembly/WebGL project (unless `--skip-build`) and packages the published `wwwroot` contents as an itch.io-ready zip with `index.html` at the zip root.
 
 ```bash
 gondwana publish itch
 gondwana publish itch --project ./src/MyGame
+gondwana publish itch --framework net8.0-browser
 gondwana publish itch --skip-build
+gondwana publish itch --base-href ./
 gondwana publish itch --output ./artifacts/MyGame-itch.zip
 ```
 
@@ -272,9 +275,11 @@ gondwana publish itch --output ./artifacts/MyGame-itch.zip
 |---|---|---|---|
 | `--project <path>` | `-p` | *(cwd)* | Path to the `.csproj` or its parent directory. |
 | `--configuration <name>` | `-c` | `Release` | Build configuration. |
-| `--output <path>` | `-o` | `bin/<Configuration>/net8.0-browser/publish/<ProjectName>-itch.zip` | Output zip path. |
+| `--framework <tfm>` | `-f` | *(auto)* | Browser target framework. |
+| `--output <path>` | `-o` | beside the browser publish output | Output zip path. |
+| `--base-href <href>` | | *(unchanged)* | Optional `<base href>` override applied before packaging. Gondwana does not assume an itch.io-specific value automatically. |
 | `--skip-build` | | `false` | Skip the dotnet publish step and package an existing Blazor publish output. |
-| `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools` during the publish step. |
+| `--skip-workload` | | `false` | Skip checking/installing `wasm-tools` during the publish step. |
 
 On success, the command prints the zip path as a plain line (machine-friendly).
 
@@ -282,39 +287,35 @@ On success, the command prints the zip path as a plain line (machine-friendly).
 
 ### `gondwana deploy`
 
-Deploys the project for browser/WASM to a static web host. This is the default form of `gondwana deploy`.
+Deploys the Blazor WebAssembly/WebGL project to a static web host. This is the default form of `gondwana deploy`.
 
 ```bash
 gondwana deploy --web-root ./dist/MyGame
 gondwana deploy --project ./src/MyGame --web-root ./dist/MyGame
-gondwana deploy --remote-host deploy@example.com --remote-path /var/www/html/mygame
-gondwana deploy --skip-build --web-root ./dist/MyGame
+gondwana deploy --remote-host deploy@example.com --remote-path /var/www/html/mygame --base-href /mygame/
+gondwana deploy --skip-build --web-root ./dist/MyGame --base-href ./
 ```
 
 | Option | Short | Default | Description |
 |---|---|---|---|
 | `--project <path>` | `-p` | *(cwd)* | Path to the `.csproj` or its parent directory. |
 | `--configuration <name>` | `-c` | `Release` | Build configuration. |
+| `--framework <tfm>` | `-f` | *(auto)* | Browser target framework. |
+| `--base-href <href>` | | *(unchanged)* | Rewrite the deployed `index.html` `<base href>` to match the public URL path. |
 | `--web-root <path>` | | *(none)* | Local destination directory for the publish wwwroot contents. |
 | `--remote-host <user@host>` | | *(none)* | SSH remote, used with `--remote-path`. |
 | `--remote-path <path>` | | *(none)* | Remote destination path, used with `--remote-host`. |
-| `--skip-build` | | `false` | Skip the dotnet publish step and deploy an existing publish output. |
-| `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools` during the publish step. |
+| `--skip-build` | | `false` | Skip the dotnet publish step and deploy an existing Blazor publish output. |
+| `--skip-workload` | | `false` | Skip checking/installing `wasm-tools` during the publish step. |
 | `--no-mirror` | | `false` | Do not remove stale files from the destination (no mirroring). By default the destination is mirrored (stale files are deleted). |
+
 Specify either `--web-root` or `--remote-host` + `--remote-path`, not both.
 
 Remote deployment uses `rsync -avz --delete` (requires `rsync` on `PATH`). Pass `--no-mirror` to omit `--delete`.
 
-After a successful deployment, the command reminds you of the HTTP headers your server must send on every request for .NET WASM threading (`SharedArrayBuffer`) to work:
+If the game is hosted below the web-site root, use `--base-href` to match the public URL path. For example, a game served at `https://example.com/games/mygame/` should normally use `--base-href /games/mygame/`. A relative value such as `./` is also supported where appropriate.
 
-```text
-Cross-Origin-Opener-Policy:   same-origin
-Cross-Origin-Embedder-Policy: require-corp
-```
-
-The site must also be served over HTTPS.
-
-On success, the command prints the deploy destination as a plain line (machine-friendly): the absolute local path when using `--web-root`, or `user@host:/remote/path/` when using `--remote-host`/`--remote-path`.
+Gondwana's default Blazor/WebGL path is single-threaded and does **not** require COOP/COEP headers. Those headers become relevant only if an application explicitly enables .NET WASM multithreading/`SharedArrayBuffer` support.
 
 ---
 
@@ -326,13 +327,14 @@ Alias of `gondwana deploy`; same behavior and options.
 
 ### `gondwana deploy itch`
 
-Publishes the Blazor WebAssembly project (unless `--skip-build`), packages the published `wwwroot`, and uploads it to itch.io using `butler`.
+Publishes the Blazor WebAssembly/WebGL project (unless `--skip-build`), packages the published `wwwroot`, and uploads it to itch.io using `butler`.
 
 ```bash
 gondwana deploy itch --itch-game user/mygame
 gondwana deploy itch --project ./src/MyGame --itch-game user/mygame
 gondwana deploy itch --itch-game user/mygame --itch-channel html5-beta
 gondwana deploy itch --skip-build --itch-game user/mygame
+gondwana deploy itch --itch-game user/mygame --base-href ./
 ```
 
 | Option | Short | Default | Description |
@@ -341,8 +343,10 @@ gondwana deploy itch --skip-build --itch-game user/mygame
 | `--itch-game <user/game>` | | *(required)* | The itch.io game slug. |
 | `--itch-channel <name>` | | `html5` | The itch.io release channel name. |
 | `--configuration <name>` | `-c` | `Release` | Build configuration. |
+| `--framework <tfm>` | `-f` | *(auto)* | Browser target framework. |
+| `--base-href <href>` | | *(unchanged)* | Optional `<base href>` override. No itch.io-specific value is assumed automatically. |
 | `--skip-build` | | `false` | Skip the dotnet publish step and deploy an existing Blazor publish output. |
-| `--skip-workload` | | `false` | Skip `dotnet workload install wasm-tools` during the publish step. |
+| `--skip-workload` | | `false` | Skip checking/installing `wasm-tools` during the publish step. |
 
 Prerequisites:
 - `butler` on `PATH`
@@ -519,7 +523,7 @@ Assets:
 -   `Gondwana.Audio.Midi` --- MIDI playback and sequencing support
 -   `Gondwana.Avalonia` --- Avalonia rendering and input adapters
 -   `Gondwana.Avalonia.Hosting` --- Avalonia-specific game host that integrates rendering and input into the Gondwana lifecycle
--   `Gondwana.Blazor` --- Web assembly rendering and input adapters
+-   `Gondwana.Blazor` --- Blazor WebAssembly rendering and input adapters, including the GPU-backed WebGL path and bitmap compatibility renderer
 -   `Gondwana.Blazor.Hosting` --- Blazor-specific game host that integrates rendering and input into the Gondwana lifecycle
 -   `Gondwana.Hosting` --- Standard platform-agnostic scaffolding for initializing and running Gondwana games
 -   `Gondwana.Input.SDL2` --- SDL2-based input handling

@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Spectre.Console;
 
@@ -92,6 +93,67 @@ internal static class ProjectHelper
         }
     }
 
+    public static bool IsCurrentDirectoryBlazorWebAssemblyProject()
+    {
+        try
+        {
+            var projects = Directory.GetFiles(Directory.GetCurrentDirectory(), "*.csproj");
+            return projects.Length == 1 && IsBlazorWebAssemblyProject(projects[0]);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public static bool TryResolveBrowserFramework(string csprojPath, string? requestedFramework, out string? framework, out string? error)
+    {
+        var frameworks = GetTargetFrameworks(csprojPath);
+
+        if (!string.IsNullOrWhiteSpace(requestedFramework))
+        {
+            if (frameworks.Count > 0 && !frameworks.Contains(requestedFramework, StringComparer.OrdinalIgnoreCase))
+            {
+                framework = null;
+                error = $"Target framework '{requestedFramework}' is not declared by the project.";
+                return false;
+            }
+
+            framework = requestedFramework;
+            error = null;
+            return true;
+        }
+
+        var browserFrameworks = frameworks
+            .Where(f => f.Contains("browser", StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+
+        if (browserFrameworks.Length == 1)
+        {
+            framework = browserFrameworks[0];
+            error = null;
+            return true;
+        }
+
+        if (browserFrameworks.Length > 1)
+        {
+            framework = null;
+            error = "Multiple browser target frameworks found. Pass -f|--framework to specify one.";
+            return false;
+        }
+
+        if (IsBlazorWebAssemblyProject(csprojPath) && frameworks.Count == 1)
+        {
+            framework = frameworks[0];
+            error = null;
+            return true;
+        }
+
+        framework = null;
+        error = "No browser target framework found. Use a Blazor WebAssembly project or pass -f|--framework explicitly.";
+        return false;
+    }
+
     public static bool TryResolveDesktopFramework(string csprojPath, string? requestedFramework, out string? framework, out string? error)
     {
         if (!string.IsNullOrWhiteSpace(requestedFramework))
@@ -172,12 +234,39 @@ internal static class ProjectHelper
         return fullZip;
     }
 
+    public static bool TryGetInstalledWorkloadVersion(string workloadId, out string? version, out string? error)
+    {
+        var output = ProcessHelper.Run("dotnet", "workload list", out int exitCode);
+        if (exitCode != 0)
+        {
+            version = null;
+            error = $"dotnet workload list failed (exit {exitCode}).";
+            return false;
+        }
+
+        version = GetWorkloadManifestVersion(output, workloadId);
+        error = null;
+        return true;
+    }
+
     public static int EnsureBlazorWasmToolsInstalled(bool skipWorkload)
     {
         if (skipWorkload)
             return 0;
 
-        AnsiConsole.MarkupLine("[dim]Installing wasm-tools workload...[/]");
+        if (!TryGetInstalledWorkloadVersion("wasm-tools", out var version, out var error))
+        {
+            AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
+            return 1;
+        }
+
+        if (!string.IsNullOrWhiteSpace(version))
+        {
+            AnsiConsole.MarkupLine($"[dim]wasm-tools already installed ({Markup.Escape(version)}).[/]");
+            return 0;
+        }
+
+        AnsiConsole.MarkupLine("[dim]wasm-tools is not installed; installing workload...[/]");
         var workloadExit = ProcessHelper.RunLive("dotnet", "workload install wasm-tools");
         if (workloadExit != 0)
             AnsiConsole.MarkupLine("[red]dotnet workload install wasm-tools failed.[/]");
@@ -185,7 +274,13 @@ internal static class ProjectHelper
         return workloadExit;
     }
 
-    public static int PublishBlazorProject(string csprojPath, string configuration, bool skipWorkload, out string? wwwroot)
+    public static int PublishBlazorProject(
+        string csprojPath,
+        string configuration,
+        string framework,
+        bool skipWorkload,
+        string? baseHref,
+        out string? wwwroot)
     {
         wwwroot = null;
 
@@ -193,35 +288,64 @@ internal static class ProjectHelper
         if (workloadExit != 0)
             return workloadExit;
 
-        AnsiConsole.MarkupLine($"[dim]Publishing in {configuration} configuration...[/]");
-        var publishExit = ProcessHelper.RunLive("dotnet", ["publish", csprojPath, "-c", configuration]);
+        AnsiConsole.MarkupLine($"[dim]Publishing {framework} in {configuration} configuration...[/]");
+        var publishExit = ProcessHelper.RunLive("dotnet", ["publish", csprojPath, "-c", configuration, "-f", framework]);
         if (publishExit != 0)
         {
             AnsiConsole.MarkupLine("[red]dotnet publish failed.[/]");
             return publishExit;
         }
 
-        wwwroot = TryLocateBlazorPublishRoot(csprojPath, configuration);
+        wwwroot = TryLocateBlazorPublishRoot(csprojPath, configuration, framework);
+        if (wwwroot is not null && !TryApplyBlazorBaseHref(wwwroot, baseHref, out var baseHrefError))
+        {
+            AnsiConsole.MarkupLine($"[red]{Markup.Escape(baseHrefError!)}[/]");
+            return 1;
+        }
+
         return 0;
     }
 
-    public static string? TryGetBlazorPublishRoot(string csprojPath, string configuration, bool skipBuild, bool skipWorkload, out int exitCode)
+    public static string? TryGetBlazorPublishRoot(
+        string csprojPath,
+        string configuration,
+        string framework,
+        bool skipBuild,
+        bool skipWorkload,
+        string? baseHref,
+        out int exitCode)
     {
         exitCode = 0;
 
         if (!skipBuild)
         {
-            var publishExit = PublishBlazorProject(csprojPath, configuration, skipWorkload, out var wwwroot);
+            var publishExit = PublishBlazorProject(csprojPath, configuration, framework, skipWorkload, baseHref, out var wwwroot);
             exitCode = publishExit;
             return publishExit == 0 ? wwwroot : null;
         }
 
-        return TryLocateBlazorPublishRoot(csprojPath, configuration);
+        var existing = TryLocateBlazorPublishRoot(csprojPath, configuration, framework);
+        if (existing is not null && !TryApplyBlazorBaseHref(existing, baseHref, out var error))
+        {
+            AnsiConsole.MarkupLine($"[red]{Markup.Escape(error!)}[/]");
+            exitCode = 1;
+            return null;
+        }
+
+        return existing;
     }
 
-    public static string? CreateBlazorItchPackage(string csprojPath, string configuration, bool skipBuild, bool skipWorkload, string? outputPath, out int exitCode)
+    public static string? CreateBlazorItchPackage(
+        string csprojPath,
+        string configuration,
+        string framework,
+        bool skipBuild,
+        bool skipWorkload,
+        string? baseHref,
+        string? outputPath,
+        out int exitCode)
     {
-        var wwwroot = TryGetBlazorPublishRoot(csprojPath, configuration, skipBuild, skipWorkload, out exitCode);
+        var wwwroot = TryGetBlazorPublishRoot(csprojPath, configuration, framework, skipBuild, skipWorkload, baseHref, out exitCode);
         if (exitCode != 0)
             return null;
 
@@ -231,6 +355,51 @@ internal static class ProjectHelper
         var projectName = Path.GetFileNameWithoutExtension(csprojPath);
         var defaultZipPath = Path.Combine(Path.GetDirectoryName(wwwroot)!, $"{projectName}-itch.zip");
         return CreateZipFromDirectoryContents(wwwroot, outputPath ?? defaultZipPath);
+    }
+
+    public static string NormalizeBaseHref(string baseHref)
+    {
+        var normalized = baseHref.Trim();
+        if (normalized.Length == 0)
+            return normalized;
+
+        return normalized.EndsWith("/", StringComparison.Ordinal)
+            ? normalized
+            : normalized + "/";
+    }
+
+    public static bool TryApplyBlazorBaseHref(string wwwroot, string? baseHref, out string? error)
+    {
+        error = null;
+        if (string.IsNullOrWhiteSpace(baseHref))
+            return true;
+
+        var normalized = NormalizeBaseHref(baseHref);
+        if (normalized.Contains('"') || normalized.Contains('\''))
+        {
+            error = "--base-href cannot contain quote characters.";
+            return false;
+        }
+
+        var indexPath = Path.Combine(wwwroot, "index.html");
+        if (!File.Exists(indexPath))
+        {
+            error = $"Cannot apply --base-href because index.html was not found in '{wwwroot}'.";
+            return false;
+        }
+
+        var html = File.ReadAllText(indexPath);
+        var basePattern = new Regex("(<base\\s+href\\s*=\\s*[\\\"'])([^\\\"']*)([\\\"'])", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        if (!basePattern.IsMatch(html))
+        {
+            error = "Cannot apply --base-href because the published index.html does not contain a <base href=...> element.";
+            return false;
+        }
+
+        html = basePattern.Replace(html, match => $"{match.Groups[1].Value}{normalized}{match.Groups[3].Value}", 1);
+        File.WriteAllText(indexPath, html);
+        AnsiConsole.MarkupLine($"[dim]Published base href: {Markup.Escape(normalized)}[/]");
+        return true;
     }
 
     public static void MirrorDirectory(string sourceDirectory, string destinationDirectory)
@@ -271,29 +440,47 @@ internal static class ProjectHelper
         }
     }
 
-    internal static string? TryLocateBlazorPublishRoot(string csprojPath, string configuration)
+    internal static string? TryLocateBlazorPublishRoot(string csprojPath, string configuration, string? framework = null)
     {
+        if (string.IsNullOrWhiteSpace(framework) &&
+            !TryResolveBrowserFramework(csprojPath, null, out framework, out _))
+        {
+            return null;
+        }
+
         var projectDir = Path.GetDirectoryName(csprojPath)!;
+        var wwwroot = Path.Combine(projectDir, "bin", configuration, framework!, "publish", "wwwroot");
+        if (Directory.Exists(wwwroot) && File.Exists(Path.Combine(wwwroot, "index.html")))
+            return wwwroot;
 
-        // Probe net8.0-browser first (gondwana-blazor template default), then net8.0
-        foreach (var framework in new[] { "net8.0-browser", "net8.0" })
-        {
-            var wwwroot = Path.Combine(projectDir, "bin", configuration, framework, "publish", "wwwroot");
-            if (Directory.Exists(wwwroot) && File.Exists(Path.Combine(wwwroot, "index.html")))
-                return wwwroot;
-        }
-
-        // Fallback: search for wwwroot directories
         var binDir = Path.Combine(projectDir, "bin");
-        if (Directory.Exists(binDir))
+        if (!Directory.Exists(binDir))
+            return null;
+
+        return Directory.GetDirectories(binDir, "wwwroot", SearchOption.AllDirectories)
+            .Where(d => File.Exists(Path.Combine(d, "index.html")))
+            .Where(d => d.Contains($"{Path.DirectorySeparatorChar}{configuration}{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+            .Where(d => d.Contains($"{Path.DirectorySeparatorChar}{framework}{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(Directory.GetLastWriteTimeUtc)
+            .FirstOrDefault();
+    }
+
+    private static string? GetWorkloadManifestVersion(string workloadListOutput, string workloadId)
+    {
+        foreach (var rawLine in workloadListOutput.Replace("\r", string.Empty).Split('\n'))
         {
-            var candidates = Directory.GetDirectories(binDir, "wwwroot", SearchOption.AllDirectories)
-                                      .Where(d => File.Exists(Path.Combine(d, "index.html")))
-                                      .ToList();
-            if (candidates.Count > 0)
-                return candidates[0];
+            var line = rawLine.Trim();
+            if (line.Length == 0)
+                continue;
+
+            var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length < 2)
+                continue;
+
+            if (string.Equals(parts[0], workloadId, StringComparison.OrdinalIgnoreCase))
+                return parts[1];
         }
-        
+
         return null;
     }
 }

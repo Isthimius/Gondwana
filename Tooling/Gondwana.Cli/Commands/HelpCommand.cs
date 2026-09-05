@@ -18,10 +18,10 @@ internal sealed class HelpCommand : Command
         table.AddRow("[cyan]gondwana info[/]",                    "Show information about the Gondwana project in the current directory.");
         table.AddRow("[cyan]gondwana new winforms <name>[/]",     "Scaffold a new WinForms Gondwana project.");
         table.AddRow("[cyan]gondwana new avalonia <name>[/]",     "Scaffold a new Avalonia Gondwana project (Windows, macOS, Linux).");
-        table.AddRow("[cyan]gondwana new blazor <name>[/]",       "Scaffold a new Blazor WebAssembly Gondwana project for browser play.");
+        table.AddRow("[cyan]gondwana new blazor <name>[/]",       "Scaffold a Blazor WebAssembly Gondwana project using GPU-backed WebGL.");
         table.AddRow("[cyan]gondwana run[/]",                     "Run the desktop build of the project in the current directory.");
-        table.AddRow("[cyan]gondwana run blazor[/]",              "Build and run the Blazor WebAssembly project in the browser.");
-        table.AddRow("[cyan]gondwana publish blazor[/]",          "Publish a Gondwana Blazor WebAssembly project for browser deployment.");
+        table.AddRow("[cyan]gondwana run blazor[/]",              "Build and run the Blazor WebAssembly/WebGL project in the browser.");
+        table.AddRow("[cyan]gondwana publish blazor[/]",          "Publish a Gondwana Blazor WebAssembly/WebGL project for browser deployment.");
         table.AddRow("[cyan]gondwana templates install[/]",       "Install Gondwana.Templates, or check for updates if already installed.");
         table.AddRow("[cyan]gondwana templates update[/]",        "Check installed Gondwana templates for updates without downgrading newer local versions.");
         table.AddRow("[cyan]gondwana templates list[/]",          "List installed Gondwana templates.");

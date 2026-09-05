@@ -42,7 +42,7 @@ app.Configure(config =>
               .WithExample("new", "avalonia", "MyGame");
 
         branch.AddCommand<NewBlazorCommand>("blazor")
-              .WithDescription("Create a new Blazor WebAssembly Gondwana project for browser/WASM.")
+              .WithDescription("Create a new Blazor WebAssembly Gondwana project using the GPU-backed WebGL path.")
               .WithExample("new", "blazor", "MyGame");
     });
 
@@ -71,14 +71,14 @@ app.Configure(config =>
         branch.SetDefaultCommand<PublishDesktopCommand>();
 
         branch.AddCommand<PublishItchCommand>("itch")
-              .WithDescription("Package a browser/WASM build as an itch.io-ready zip.")
+              .WithDescription("Package a Blazor WebAssembly/WebGL build as an itch.io-ready zip.")
               .WithExample("publish", "itch")
               .WithExample("publish", "itch", "--project", "./src/MyGame", "--skip-build");
 
         branch.AddCommand<PublishBlazorCommand>("blazor")
-              .WithDescription("Publish a Gondwana Blazor WebAssembly project for browser deployment.")
+              .WithDescription("Publish a Gondwana Blazor WebAssembly/WebGL project for browser deployment.")
               .WithExample("publish", "blazor")
-              .WithExample("publish", "blazor", "--project", "./src/MyGame", "--skip-workload");
+              .WithExample("publish", "blazor", "--project", "./src/MyGame", "--base-href", "/games/mygame/");
     });
 
     config.AddBranch("run", branch =>
@@ -88,9 +88,9 @@ app.Configure(config =>
         branch.SetDefaultCommand<RunDesktopCommand>();
 
         branch.AddCommand<RunBlazorCommand>("blazor")
-              .WithDescription("Build and run the Blazor WebAssembly project in the browser.")
+              .WithDescription("Build and run the Blazor WebAssembly/WebGL project in the browser.")
               .WithExample("run", "blazor")
-              .WithExample("run", "blazor", "--skip-workload");
+              .WithExample("run", "blazor", "--framework", "net8.0-browser");
     });
 
     config.AddBranch("deploy", branch =>
@@ -100,13 +100,13 @@ app.Configure(config =>
         branch.SetDefaultCommand<DeployBlazorCommand>();
 
         branch.AddCommand<DeployBlazorCommand>("blazor")
-              .WithDescription("Deploy a published Blazor WebAssembly project to a web server or local path.")
+              .WithDescription("Deploy a published Blazor WebAssembly/WebGL project to a web server or local path.")
               .WithExample("deploy", "blazor", "--web-root", "./dist")
-              .WithExample("deploy", "blazor", "--remote-host", "user@example.com", "--remote-path", "/var/www/game");
+              .WithExample("deploy", "blazor", "--remote-host", "user@example.com", "--remote-path", "/var/www/game", "--base-href", "/game/");
 
         branch.AddCommand<DeployItchCommand>("itch")
-              .WithDescription("Deploy a browser/WASM build to itch.io via butler.")
-              .WithExample("deploy", "itch", "--user", "myuser", "--game", "mygame");
+              .WithDescription("Deploy a Blazor WebAssembly/WebGL build to itch.io via butler.")
+              .WithExample("deploy", "itch", "--itch-game", "myuser/mygame");
     });
 });
 
