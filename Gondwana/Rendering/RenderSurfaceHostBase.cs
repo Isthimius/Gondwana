@@ -68,21 +68,20 @@ public abstract class RenderSurfaceHostBase : IDisposable
     public EffectsManager Effects { get; }
 
     /// <summary>
-    /// Renders the current scene frame on the GL thread and returns a snapshot of the GPU backbuffer
-    /// ready to be drawn to the window surface.
+    /// Renders the current scene frame on the active GL/WebGL thread and returns a snapshot of the
+    /// GPU backbuffer ready to be drawn to the platform surface.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This method is intended to be called from <c>SKGLControl.PaintSurface</c> (the GL thread)
-    /// by a <c>WinFormGpuRenderSurfaceAdapter</c> that has been set as the host's adapter.
-    /// It is the Option-A equivalent of the engine loop's <c>RenderToBackbuffer</c> +
-    /// <c>PresentBackbufferToAdapter</c> pair; both operations happen synchronously on the GL
-    /// thread, with no cross-thread posting.
+    /// This method is intended to be called from the platform GPU paint callback while its
+    /// <see cref="GRContext"/> is current. It is the GPU equivalent of the engine loop's
+    /// <c>RenderToBackbuffer</c> + <c>PresentBackbufferToAdapter</c> pair; rendering and snapshot
+    /// creation happen synchronously on the GPU-owning thread, with no CPU pixel transfer.
     /// </para>
     /// <para>
     /// The returned <see cref="SKImage"/> is a lightweight GPU-backed view of the backbuffer
-    /// texture.  The caller <strong>must dispose</strong> it after drawing (typically with a
-    /// <c>using</c> statement), and must do so within the same <c>PaintSurface</c> call to avoid
+    /// texture. The caller <strong>must dispose</strong> it after drawing (typically with a
+    /// <c>using</c> statement), and must do so within the same GPU paint callback to avoid
     /// aliasing with the next frame's rendering pass.
     /// </para>
     /// <para>
@@ -109,6 +108,89 @@ public abstract class RenderSurfaceHostBase : IDisposable
         Backbuffer.BeginFrame();
 
         return img;
+    }
+
+    /// <summary>
+    /// Renders the current scene frame and draws the GPU backbuffer surface directly to another
+    /// GPU canvas without creating an intermediate <see cref="SKImage"/> snapshot.
+    /// </summary>
+    /// <remarks>
+    /// Call only from the active GPU paint callback while both surfaces share the current
+    /// <see cref="GRContext"/>. The destination is drawn at the origin using the destination
+    /// canvas's current transform. The current Blazor WebGL path keeps the backbuffer and logical
+    /// destination dimensions equal.
+    /// </remarks>
+    /// <param name="destinationCanvas">The active platform GPU canvas.</param>
+    /// <returns><see langword="true"/> when a GPU surface was rendered and drawn; otherwise <see langword="false"/>.</returns>
+    public bool GlRenderToCanvas(SKCanvas destinationCanvas)
+    {
+        ArgumentNullException.ThrowIfNull(destinationCanvas);
+
+        if (!Backbuffer.IsGlThreadRendered)
+            return false;
+
+        var tick = HighResTimer.GetCurrentTick();
+
+        RenderToBackbuffer(tick);
+        Backbuffer.EndFrame();
+
+        try
+        {
+            destinationCanvas.DrawSurface(Backbuffer.Canvas.Surface, 0, 0);
+            return true;
+        }
+        finally
+        {
+            Backbuffer.BeginFrame();
+        }
+    }
+
+    /// <summary>
+    /// Draws the existing GPU backbuffer surface directly to another GPU canvas without rendering
+    /// a new scene frame or creating an intermediate <see cref="SKImage"/> snapshot.
+    /// </summary>
+    /// <remarks>
+    /// Call only from the active GPU paint callback while both surfaces share the current
+    /// <see cref="GRContext"/>. This is intended for presentation loops that run more frequently
+    /// than Gondwana's configured foreground/render cadence.
+    /// </remarks>
+    /// <param name="destinationCanvas">The active platform GPU canvas.</param>
+    /// <returns><see langword="true"/> when the current GPU surface was drawn; otherwise <see langword="false"/>.</returns>
+    public bool GlDrawCurrentFrameToCanvas(SKCanvas destinationCanvas)
+    {
+        ArgumentNullException.ThrowIfNull(destinationCanvas);
+
+        if (!Backbuffer.IsGlThreadRendered)
+            return false;
+
+        destinationCanvas.DrawSurface(Backbuffer.Canvas.Surface, 0, 0);
+        return true;
+    }
+
+    /// <summary>
+    /// Returns a snapshot of the current GPU backbuffer without rendering a new scene frame.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is intended for GPU presentation loops that run more frequently than Gondwana's
+    /// configured foreground/render cadence. It allows the platform surface to re-blit the most
+    /// recently rendered backbuffer while preserving <see cref="Gondwana.Configuration.EngineConfiguration.TargetFPS"/>.
+    /// </para>
+    /// <para>
+    /// Call only from the active GPU paint callback while the backbuffer's <see cref="GRContext"/>
+    /// is current. The returned <see cref="SKImage"/> must be disposed before that callback returns.
+    /// </para>
+    /// </remarks>
+    /// <returns>
+    /// A GPU-backed snapshot of the current backbuffer, or <see langword="null"/> when the surface
+    /// does not use GL-thread rendering.
+    /// </returns>
+    public SKImage? GlSnapshotCurrentFrame()
+    {
+        if (!Backbuffer.IsGlThreadRendered)
+            return null;
+
+        return Backbuffer.Snapshot();
     }
 
     /// <summary>

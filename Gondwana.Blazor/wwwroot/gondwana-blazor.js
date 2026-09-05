@@ -5,6 +5,31 @@ let animationFrameId = null;
 let tickCallback = null;
 
 /**
+ * Focuses an element without scrolling it into view.
+ * @param {string} elementId - The target element ID.
+ */
+export function focusElementById(elementId) {
+    document.getElementById(elementId)?.focus({ preventScroll: true });
+}
+
+/**
+ * Prevents browser scrolling and navigation gestures on a Gondwana input canvas.
+ * Component event modifiers cannot be forwarded through SKGLView's unmatched attributes,
+ * so the WebGL path installs the equivalent native listeners once the canvas exists.
+ * @param {string} elementId - The target canvas element ID.
+ */
+export function suppressBrowserInputDefaultsById(elementId) {
+    const canvas = document.getElementById(elementId);
+    if (!canvas || canvas.__gondwanaInputDefaultsSuppressed) return;
+
+    for (const eventName of ['keydown', 'wheel', 'touchstart']) {
+        canvas.addEventListener(eventName, event => event.preventDefault(), { passive: false });
+    }
+
+    canvas.__gondwanaInputDefaultsSuppressed = true;
+}
+
+/**
  * Gets the client (CSS) dimensions of the canvas element.
  * @param {HTMLCanvasElement} canvas - The target canvas element.
  * @returns {{width: number, height: number}} The client width and height.

@@ -17,9 +17,9 @@ namespace MyGame;
 /// and the 1-hour guide at
 /// <see href="https://github.com/Isthimius/Gondwana/wiki/Make-Your-First-Game-in-1-Hour">Make Your First Game in 1 Hour</see>.
 /// </remarks>
-internal sealed class MyGameHost : BlazorGameHost
+internal sealed class MyGameHost : BlazorGpuGameHost
 {
-    internal MyGameHost(BlazorBitmapRenderSurfaceComponent renderSurface, IJSRuntime jsRuntime)
+    internal MyGameHost(BlazorGpuRenderSurfaceComponent renderSurface, IJSRuntime jsRuntime)
         : base(renderSurface, jsRuntime)
     {
     }

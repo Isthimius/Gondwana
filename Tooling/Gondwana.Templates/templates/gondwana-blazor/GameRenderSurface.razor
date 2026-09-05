@@ -6,11 +6,11 @@
 @inject IJSRuntime JsRuntime
 
 <div class="render-surface-container">
-    <BlazorBitmapRenderSurfaceComponent @ref="_renderSurface" />
+    <BlazorGpuRenderSurfaceComponent @ref="_renderSurface" />
 </div>
 
 @code {
-    private BlazorBitmapRenderSurfaceComponent? _renderSurface;
+    private BlazorGpuRenderSurfaceComponent? _renderSurface;
     private MyGameHost? _host;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

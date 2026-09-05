@@ -21,6 +21,15 @@ public static class EngineExtensions
     /// <param name="component">The render surface component to capture keyboard input from.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="component"/> is null.</exception>
     public static void InitializeBlazorKeyboardAdapter(this Engine engine, BlazorBitmapRenderSurfaceComponent component)
+        => InitializeBlazorKeyboardAdapter(engine, (BlazorRenderSurfaceComponentBase)component);
+
+    /// <summary>
+    /// Initializes the Blazor keyboard adapter for any Gondwana Blazor render surface.
+    /// </summary>
+    /// <param name="engine">The engine instance to configure.</param>
+    /// <param name="component">The render surface component to capture keyboard input from.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="component"/> is null.</exception>
+    public static void InitializeBlazorKeyboardAdapter(this Engine engine, BlazorRenderSurfaceComponentBase component)
     {
         Engine.Logger.LogInformation("Initializing BlazorKeyboardAdapter...");
 
@@ -41,6 +50,16 @@ public static class EngineExtensions
     /// <param name="mouseEventConfiguration">Optional configuration for mouse event handling.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="component"/> is null.</exception>
     public static void InitializeBlazorMouseAdapter(this Engine engine, BlazorBitmapRenderSurfaceComponent component, MouseEventConfiguration? mouseEventConfiguration = null)
+        => InitializeBlazorMouseAdapter(engine, (BlazorRenderSurfaceComponentBase)component, mouseEventConfiguration);
+
+    /// <summary>
+    /// Initializes the Blazor mouse adapter for any Gondwana Blazor render surface.
+    /// </summary>
+    /// <param name="engine">The engine instance to configure.</param>
+    /// <param name="component">The render surface component to capture mouse input from.</param>
+    /// <param name="mouseEventConfiguration">Optional configuration for mouse event handling.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="component"/> is null.</exception>
+    public static void InitializeBlazorMouseAdapter(this Engine engine, BlazorRenderSurfaceComponentBase component, MouseEventConfiguration? mouseEventConfiguration = null)
     {
         Engine.Logger.LogInformation("Initializing BlazorMouseAdapter...");
 
@@ -61,6 +80,15 @@ public static class EngineExtensions
     /// <param name="component">The render surface component to capture touch input from.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="component"/> is null.</exception>
     public static void InitializeBlazorTouchAdapter(this Engine engine, BlazorBitmapRenderSurfaceComponent component)
+        => InitializeBlazorTouchAdapter(engine, (BlazorRenderSurfaceComponentBase)component);
+
+    /// <summary>
+    /// Initializes the Blazor touch adapter for any Gondwana Blazor render surface.
+    /// </summary>
+    /// <param name="engine">The engine instance to configure.</param>
+    /// <param name="component">The render surface component to capture touch input from.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="component"/> is null.</exception>
+    public static void InitializeBlazorTouchAdapter(this Engine engine, BlazorRenderSurfaceComponentBase component)
     {
         Engine.Logger.LogInformation("Initializing BlazorTouchAdapter...");
 
