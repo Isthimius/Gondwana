@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Collisions;
 using Gondwana.Physics.Collisions;
+using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
@@ -45,6 +46,8 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
     private bool _collisionTypeExplicitlySet;
     private bool _collisionsEnabled;
     private string? _collisionProfileName;
+    private RenderContext? _sortKeyRenderContext;
+    private TileSortKey _sortKey;
 
     #endregion fields
 
@@ -424,23 +427,59 @@ public void SetCollisionProfile(string profileName)
         if (tile is null)
             return -1;
 
-        float thisLoc = GetTileLocForCompare(this);
-        float tileLoc = GetTileLocForCompare(tile);
+        var thisKey = GetSortKeyForCompare();
+        var tileKey = tile.GetSortKeyForCompare();
 
-        if (IsPositionFixed && !tile.IsPositionFixed)
+        if (thisKey.IsPositionFixed && !tileKey.IsPositionFixed)
             return -1;
 
-        if (!IsPositionFixed && tile.IsPositionFixed)
+        if (!thisKey.IsPositionFixed && tileKey.IsPositionFixed)
             return 1;
 
-        return (thisLoc, zOrder, SceneLayerCoordinates.X)
-            .CompareTo((tileLoc, tile.zOrder, tile.SceneLayerCoordinates.X));
+        return (thisKey.Location, thisKey.ZOrder, thisKey.SceneLayerX)
+            .CompareTo((tileKey.Location, tileKey.ZOrder, tileKey.SceneLayerX));
     }
 
-    private static float GetTileLocForCompare(Tile tile) =>
-        tile.IsPositionFixed
-            ? tile.DrawLocationWorld.Top + tile.Overhang.Top
-            : tile.DrawLocationWorld.Bottom - tile.Overhang.Bottom - 1;
+    private TileSortKey GetSortKeyForCompare()
+    {
+        var renderContext = RenderContext.Current;
+
+        // Outside an active render pass preserve the historical live comparison
+        // semantics. During rendering, capture the expensive virtual/property values
+        // once per tile and reuse them for every comparison in this sort pass.
+        if (renderContext is null)
+            return CaptureSortKey();
+
+        if (!ReferenceEquals(_sortKeyRenderContext, renderContext))
+        {
+            _sortKey = CaptureSortKey();
+            _sortKeyRenderContext = renderContext;
+        }
+
+        return _sortKey;
+    }
+
+    private TileSortKey CaptureSortKey()
+    {
+        bool isPositionFixed = IsPositionFixed;
+        Rectangle drawLocationWorld = DrawLocationWorld;
+        Spacing overhang = Overhang;
+        float location = isPositionFixed
+            ? drawLocationWorld.Top + overhang.Top
+            : drawLocationWorld.Bottom - overhang.Bottom - 1;
+
+        return new TileSortKey(
+            isPositionFixed,
+            location,
+            zOrder,
+            SceneLayerCoordinates.X);
+    }
+
+    private readonly record struct TileSortKey(
+        bool IsPositionFixed,
+        float Location,
+        int ZOrder,
+        float SceneLayerX);
 
     #endregion IComparable<Tile> Members
 
