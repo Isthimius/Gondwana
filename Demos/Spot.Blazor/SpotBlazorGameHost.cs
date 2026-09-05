@@ -58,8 +58,8 @@ internal sealed class SpotBlazorGameHost : BlazorGpuGameHost
 
     internal bool MusicEnabled { get; private set; } = true;
     internal bool SoundEffectsEnabled { get; private set; } = true;
-    internal bool JiggleEnabled { get; private set; } = false;
-    internal bool CloudsEnabled { get; private set; } = false;
+    internal bool JiggleEnabled { get; private set; } = true;
+    internal bool CloudsEnabled { get; private set; } = true;
 
     /// <summary>
     /// Initializes a new instance of <see cref="SpotBlazorGameHost"/>.
