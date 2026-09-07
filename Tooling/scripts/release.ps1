@@ -271,14 +271,10 @@ Invoke-ProjectChangelogGeneration `
 
 # Stage and commit changelog updates.
 Invoke-Git @("add", "--", $ChangelogPath)
+. (Join-Path $PSScriptRoot "Changelog-ProjectGroups.ps1")
 $projectChangelogPaths = @(
-    Get-ChildItem -Path $repoRoot -Directory -Filter "Gondwana*" -ErrorAction SilentlyContinue | ForEach-Object {
-        $changelogFile = Join-Path $_.FullName "CHANGELOG.md"
-        if (Test-Path -LiteralPath $changelogFile) { $changelogFile }
-    }
-
-    Get-ChildItem -Path (Join-Path $repoRoot "Tooling") -Directory -ErrorAction SilentlyContinue | ForEach-Object {
-        $changelogFile = Join-Path $_.FullName "CHANGELOG.md"
+    $ChangelogProjects | Where-Object { $_.GenerateChangelog } | ForEach-Object {
+        $changelogFile = Join-Path $repoRoot "$($_.Path)/CHANGELOG.md"
         if (Test-Path -LiteralPath $changelogFile) { $changelogFile }
     }
 ) | Sort-Object -Unique

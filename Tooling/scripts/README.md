@@ -136,7 +136,7 @@ Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://
 PR provenance is handled by the shared `cliff.toml` configuration. Squash-merged commits already contain GitHub's `(#NNN)` suffix, which is converted directly into a link to the originating PR. Before the current PR is merged, the workflow supplies the current PR number plus the exact set of commits in that PR through `CHANGELOG_PR_NUMBER` and `CHANGELOG_PR_COMMITS`; `cliff.toml` uses that context to link only those entries. Normal local changelog and release generation require no GitHub API access and leave direct, non-PR commits unlinked.
 
 **What it does:**
-1. Iterates over the default set of library/tooling projects (all `Gondwana.*` projects and `Tooling/*` projects; Demos and `Gondwana.Tests` are excluded).
+1. Loads `Changelog-ProjectGroups.ps1` and selects entries with `GenerateChangelog = $true` (optionally narrowed by `-Projects`).
 2. Filters each project's history with `git-cliff --include-path "Project/**/*"`.
 3. If a project has no `CHANGELOG.md` (or it is empty), generates the complete project history: existing Git tags become versioned sections and current untagged commits are included as `[Unreleased]`, unless `-Tag` is supplied.
 4. If a project already has a changelog, replaces any leading `[Unreleased]` section and regenerates the current commits since the latest tag. Without `-Tag`, those commits are prepended under `[Unreleased]`; with `-Tag`, they are prepended under that version.
@@ -144,7 +144,7 @@ PR provenance is handled by the shared `cliff.toml` configuration. Squash-merged
 
 > A single commit that touches multiple projects will appear in each matching project changelog — correct behaviour for a monorepo.
 >
-> Released history in an existing project changelog is treated as authoritative and is not regenerated during normal refreshes. The repository's canonical release history remains the root `CHANGELOG.md`, which includes all release changes across projects.
+> Released history in an existing project changelog is treated as authoritative and is not regenerated during normal refreshes. The repository's canonical release history remains the root `CHANGELOG.md`, which includes changes from root-enabled projects and areas.
 
 **Prerequisites:**
 - [`git-cliff`](https://git-cliff.org/) on `PATH` — install with `winget install --id orhun.git-cliff`.
@@ -156,7 +156,7 @@ PR provenance is handled by the shared `cliff.toml` configuration. Squash-merged
 |---|---|---|
 | `-Tag` | Version tag to stamp on the current unreleased commits (e.g. `v1.2.3`). When omitted, they remain under `[Unreleased]`. | — |
 | `-PreviewOnly` | Print generated output to the console without writing any files. | — |
-| `-Projects` | Override the default project list using paths relative to the repository root. | All library/tooling projects |
+| `-Projects` | Select configured paths relative to the repository root; disabled entries are skipped and unknown paths are rejected. | All entries with `GenerateChangelog = $true` |
 | `-CliffConfigPath` | Path to the `cliff.toml` config. Relative paths are resolved from the repository root. | `cliff.toml` |
 
 **Examples:**
@@ -181,9 +181,9 @@ PR provenance is handled by the shared `cliff.toml` configuration. Squash-merged
 Regenerates only the repository-level `CHANGELOG.md`'s leading derived section while preserving all existing released history exactly. Its entries are grouped by project/area in the same format used by release notes. `.github/workflows/changelog-master.yml` runs this script alongside `Generate-Project-Changelogs.ps1` on the incoming pull-request branch before merge. The same shared PR-link behavior described above applies to root changelog entries.
 
 **What it does:**
-1. Loads the project/area definitions from `Changelog-ProjectGroups.ps1`.
-2. Uses `git-cliff` to collect commits since the latest tag for each matching project/area.
-3. Replaces any leading generated or manually edited `[Unreleased]` section.
+1. Loads entries with `IncludeInRootChangelog = $true` from `Changelog-ProjectGroups.ps1`.
+2. Uses `git-cliff` to collect commits since the latest tag from configured paths, independently of whether any project-level `CHANGELOG.md` exists.
+3. Replaces any leading generated or manually edited `[Unreleased]` section when root-visible entries exist. If none exist, succeeds without writing the file, including in tagged mode; `-SectionOnly` returns no section. An existing `[Unreleased]` block is left untouched in this no-op case.
 4. Preserves the file header and every existing versioned section’s contents, only normalizing whitespace around the inserted current section.
 
 > The canonical root `CHANGELOG.md` must already exist and contain a recognized `[Unreleased]` or versioned release heading. Unlike the project generator, this script deliberately does not bootstrap missing root history.
@@ -221,9 +221,39 @@ Regenerates only the repository-level `CHANGELOG.md`'s leading derived section w
 
 ### `Changelog-ProjectGroups.ps1` (support file)
 
-Defines the project/area headings and `git-cliff` include paths used to build the grouped root changelog. It is dot-sourced by `Generate-Root-Changelog.ps1`; it is not intended to be executed directly.
+The single authoritative `$ChangelogProjects` array controls both generators and release staging. Existing library/tooling projects retain both outputs; `Build / Repository` remains root-only. Demos, tests, and other unlisted paths remain excluded.
 
-Keeping these definitions in one support file ensures that automatic `[Unreleased]` updates and versioned release generation use identical headings and path filters. A commit that matches multiple groups intentionally appears under each matching heading.
+```powershell
+[pscustomobject]@{
+    Path = "Tooling/SomeProject"
+    RootName = "Tooling / SomeProject"
+    GenerateChangelog = $true
+    IncludeInRootChangelog = $false
+}
+```
+
+`Path` is the repository-relative project folder and determines both the project output location and the derived `Path/**/*` Git history filter. `RootName` is the root section heading. Set the two Boolean properties independently:
+
+| GenerateChangelog | IncludeInRootChangelog | Result |
+|---|---|---|
+| `$true` | `$true` | Project CHANGELOG and root entries |
+| `$true` | `$false` | Project CHANGELOG only |
+| `$false` | `$true` | Root entries only; no project CHANGELOG required |
+| `$false` | `$false` | Neither output |
+
+Root-only areas such as `Build / Repository` use `Path = $null` and explicit `IncludePaths` globs. They must have `GenerateChangelog = $false`. A commit matching multiple enabled groups appears in each. Existing headings, order, and path filters are preserved.
+
+Disabling project generation leaves any existing project CHANGELOG untouched; it does not delete historical files. `-Projects` is now a selection of configured paths, not an escape hatch for arbitrary folders or disabled generation. Register a new project here first. Root visibility changes apply to newly generated sections only; released history is never rewritten. If no visible entries remain, the root file is left unchanged, so removing a stale derived block after a policy change requires an intentional edit.
+
+The PR workflow accepts project-only, root-only, both, and no-output updates. Staging enumerates existing CHANGELOG files and tolerates no project files. Release staging selects enabled project outputs from this metadata. A release with no root-visible changes produces no new root section. `release.ps1` retains its existing guard against publishing empty release notes and stops before committing or tagging; automatic PR refreshes still succeed.
+
+Run the isolated integration suite with PowerShell 7 and `git-cliff` on PATH:
+
+```powershell
+./Tooling/scripts/Test-ChangelogConfiguration.ps1
+```
+
+It creates temporary Git history and exercises all four combinations, missing-file bootstrap, preview safety, selection policy, PR links, repeated refreshes, tagged generation, released-history preservation, and excluded-only root no-ops. The PR workflow runs it alongside previews against the real repository.
 
 ---
 
