@@ -200,7 +200,6 @@ All notable changes to this project will be documented in this file.
 - Update funding sources in FUNDING.yml
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
-- Fix PreviewOnly output for empty root section ([#319](https://github.com/Isthimius/Gondwana/pull/319))
 
 # [v2.5.2] - 2026-07-26
 
