@@ -16,10 +16,14 @@ body = """
 # [Unreleased]
 {% endif %}
 
+{% set open_pr_number = get_env(name="CHANGELOG_PR_NUMBER", default="") -%}
+{% set open_pr_commits = get_env(name="CHANGELOG_PR_COMMITS", default="") -%}
 {% for group, commits in commits | group_by(attribute="group") %}
 ## {{ group | striptags | trim | upper_first }}
 {% for commit in commits -%}
-- {{ commit.message | split(pat="\n") | first | trim | upper_first }}
+{% set first_line = commit.message | split(pat="\n") | first | trim | upper_first -%}
+{% set commit_marker = "|" ~ commit.id ~ "|" -%}
+- {{ first_line }}{% if open_pr_number != "" and commit_marker in open_pr_commits and "github.com/Isthimius/Gondwana/pull/" not in first_line %} ([#{{ open_pr_number }}](https://github.com/Isthimius/Gondwana/pull/{{ open_pr_number }})){% endif %}
 {% endfor %}
 
 {% endfor %}
@@ -37,9 +41,11 @@ filter_commits = false
 sort_commits = "oldest"
 tag_pattern = "v[0-9].*"
 
-# Strip author/co-author trailer lines (added by GitHub Copilot and GitHub itself).
+# Convert GitHub squash-merge PR suffixes to links, then strip author/co-author trailers.
+# Open PR commits do not have the (#123) suffix yet; the PR workflow supplies the
+# current PR number and exact commit set through CHANGELOG_PR_* environment variables.
 commit_preprocessors = [
-    { pattern = "\\A([^\\r\\n]*?)\\s*\\(#\\d+\\)(\\r?\\n|$)", replace = "$1$2" },
+    { pattern = "\\A([^\\r\\n]*?)\\s*\\(#(\\d+)\\)(\\r?\\n|$)", replace = "$1 ([#$2](https://github.com/Isthimius/Gondwana/pull/$2))$3" },
     { pattern = "(?m)^Co-authored-by:.*\r?\n?", replace = "" },
     { pattern = "(?m)^Agent-Logs-Url:.*\r?\n?", replace = "" },
     { pattern = "(?m)^Signed-off-by:.*\r?\n?", replace = "" },

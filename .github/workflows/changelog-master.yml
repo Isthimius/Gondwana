@@ -22,8 +22,51 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set pull request changelog context
+        shell: pwsh
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          $commits = @(git rev-list "$env:PR_BASE_SHA..$env:PR_HEAD_SHA")
+          if ($LASTEXITCODE -ne 0) {
+              throw "Could not enumerate commits in the pull request."
+          }
+          if ($commits.Count -eq 0) {
+              throw "The pull request contains no commits to associate with changelog entries."
+          }
+
+          Add-Content -Path $env:GITHUB_ENV -Encoding utf8 -Value "CHANGELOG_PR_NUMBER=$env:PR_NUMBER"
+          Add-Content -Path $env:GITHUB_ENV -Encoding utf8 -Value "CHANGELOG_PR_COMMITS=|$($commits -join '|')|"
+
       - name: Install git-cliff
         uses: taiki-e/install-action@d8ae1fa96886bc82c05515b8ac15b41515da2c6d # git-cliff
+
+      - name: Validate pull request link rendering
+        shell: pwsh
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          $range = "$env:PR_BASE_SHA..$env:PR_HEAD_SHA"
+          $preview = @(& git-cliff --config cliff.toml --repository . --strip header $range)
+          if ($LASTEXITCODE -ne 0) {
+              throw "git-cliff failed while validating pull request link rendering."
+          }
+
+          $content = $preview -join "`n"
+          $expectedLink = "([#$env:CHANGELOG_PR_NUMBER](https://github.com/Isthimius/Gondwana/pull/$env:CHANGELOG_PR_NUMBER))"
+          if ($content -notmatch [regex]::Escape($expectedLink)) {
+              Write-Host "Generated pull request preview:"
+              Write-Host $content
+              throw "Current pull request link was not rendered in the changelog preview."
+          }
+
+          $escapedLink = [regex]::Escape($expectedLink)
+          if ($content -match "(?m)^- .*${escapedLink}.*${escapedLink}") {
+              throw "Current pull request link was rendered more than once on a changelog entry."
+          }
 
       - name: Preview changelogs
         shell: pwsh
@@ -263,6 +306,24 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Set pull request changelog context
+        shell: pwsh
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          $commits = @(git rev-list "$env:PR_BASE_SHA..$env:PR_HEAD_SHA")
+          if ($LASTEXITCODE -ne 0) {
+              throw "Could not enumerate commits in the pull request."
+          }
+          if ($commits.Count -eq 0) {
+              throw "The pull request contains no commits to associate with changelog entries."
+          }
+
+          Add-Content -Path $env:GITHUB_ENV -Encoding utf8 -Value "CHANGELOG_PR_NUMBER=$env:PR_NUMBER"
+          Add-Content -Path $env:GITHUB_ENV -Encoding utf8 -Value "CHANGELOG_PR_COMMITS=|$($commits -join '|')|"
 
       - name: Install git-cliff
         uses: taiki-e/install-action@d8ae1fa96886bc82c05515b8ac15b41515da2c6d # git-cliff

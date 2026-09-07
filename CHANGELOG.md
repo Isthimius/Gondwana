@@ -7,36 +7,36 @@ All notable changes to this project will be documented in this file.
 ## Gondwana
 
 ### Added
-- Add hyperlink widget and container refactor
-- Add oblique left coordinate system
-- Add collision adjustment and persistence
-- Add self-contained platformer demo
-- Add spaceduel demo
-- Add collision configuration support for Frame and .gts files
-- Add effect subsystem
-- Add popup and toast overlays
-- Add direct light rendering
-- Add side scroller and zelda prototypes
-- Add DirectSceneLayerDarknessOverlay
-- Add WebGL GPU rendering path
+- Add hyperlink widget and container refactor ([#252](https://github.com/Isthimius/Gondwana/pull/252))
+- Add oblique left coordinate system ([#256](https://github.com/Isthimius/Gondwana/pull/256))
+- Add collision adjustment and persistence ([#257](https://github.com/Isthimius/Gondwana/pull/257))
+- Add self-contained platformer demo ([#258](https://github.com/Isthimius/Gondwana/pull/258))
+- Add spaceduel demo ([#263](https://github.com/Isthimius/Gondwana/pull/263))
+- Add collision configuration support for Frame and .gts files ([#264](https://github.com/Isthimius/Gondwana/pull/264))
+- Add effect subsystem ([#280](https://github.com/Isthimius/Gondwana/pull/280))
+- Add popup and toast overlays ([#281](https://github.com/Isthimius/Gondwana/pull/281))
+- Add direct light rendering ([#282](https://github.com/Isthimius/Gondwana/pull/282))
+- Add side scroller and zelda prototypes ([#289](https://github.com/Isthimius/Gondwana/pull/289))
+- Add DirectSceneLayerDarknessOverlay ([#293](https://github.com/Isthimius/Gondwana/pull/293))
+- Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 
 
 
 ### Fixed
-- Fix hex partial coordinate movement bug
-- Fix zoom calculations and movement timing
-- Fix sprite cloning composition
-- Persist engine config changes
-- Handle image instance layer updates
-- Support custom logger dependency injection
-- Correct view coordinate conversion on GPU path to address occasional tearing
-- Resolve timer edge case
+- Fix hex partial coordinate movement bug ([#251](https://github.com/Isthimius/Gondwana/pull/251))
+- Fix zoom calculations and movement timing ([#253](https://github.com/Isthimius/Gondwana/pull/253))
+- Fix sprite cloning composition ([#259](https://github.com/Isthimius/Gondwana/pull/259))
+- Persist engine config changes ([#260](https://github.com/Isthimius/Gondwana/pull/260))
+- Handle image instance layer updates ([#261](https://github.com/Isthimius/Gondwana/pull/261))
+- Support custom logger dependency injection ([#270](https://github.com/Isthimius/Gondwana/pull/270))
+- Correct view coordinate conversion on GPU path to address occasional tearing ([#290](https://github.com/Isthimius/Gondwana/pull/290))
+- Resolve timer edge case ([#295](https://github.com/Isthimius/Gondwana/pull/295))
 
 
 
 ### Refactoring
-- Tighten touch and mouse polling behavior
-- Use fixed-step simulation timing
+- Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
+- Use fixed-step simulation timing ([#305](https://github.com/Isthimius/Gondwana/pull/305))
 
 
 
@@ -46,148 +46,149 @@ All notable changes to this project will be documented in this file.
 ## Gondwana.Avalonia
 
 ### Fixed
-- Improve bitmap render adapters
+- Improve bitmap render adapters ([#291](https://github.com/Isthimius/Gondwana/pull/291))
 
 
 
 ### Refactoring
-- Tighten touch and mouse polling behavior
+- Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
 
 ## Gondwana.Blazor
 
 ### Added
-- Add WebGL GPU rendering path
+- Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 
 
 
 ### Refactoring
-- Tighten touch and mouse polling behavior
+- Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
 
 ## Gondwana.Blazor.Hosting
 
 ### Added
-- Add WebGL GPU rendering path
+- Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 
 ## Gondwana.Widgets
 
 ### Added
-- Add hyperlink widget and container refactor
-- Add menubar and dropdown menu widgets
-- Add spaceduel demo
-- Add popup and toast overlays
+- Add hyperlink widget and container refactor ([#252](https://github.com/Isthimius/Gondwana/pull/252))
+- Add menubar and dropdown menu widgets ([#255](https://github.com/Isthimius/Gondwana/pull/255))
+- Add spaceduel demo ([#263](https://github.com/Isthimius/Gondwana/pull/263))
+- Add popup and toast overlays ([#281](https://github.com/Isthimius/Gondwana/pull/281))
 
 
 
 ### Refactoring
-- Tighten touch and mouse polling behavior
+- Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
 
 ## Gondwana.WinForms
 
 ### Fixed
-- Improve bitmap render adapters
+- Improve bitmap render adapters ([#291](https://github.com/Isthimius/Gondwana/pull/291))
 
 
 
 ### Refactoring
-- Tighten touch and mouse polling behavior
+- Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
 
 ## Tooling / Gondwana.Cli
 
 ### Added
-- Add WebGL GPU rendering path
-- Align blazor tooling with webgl workflow
+- Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
+- Align blazor tooling with webgl workflow ([#311](https://github.com/Isthimius/Gondwana/pull/311))
 
 
 
 ### Refactoring
-- Unify blazor detection, workload checks, and return values
+- Unify blazor detection, workload checks, and return values ([#250](https://github.com/Isthimius/Gondwana/pull/250))
 
 ## Tooling / Gondwana.Mcp
 
 ### Added
-- Add mcp service and ai plugins
-- Add agent plugin compliance docs
+- Add mcp service and ai plugins ([#274](https://github.com/Isthimius/Gondwana/pull/274))
+- Add agent plugin compliance docs ([#276](https://github.com/Isthimius/Gondwana/pull/276))
 
 ## Tooling / Gondwana.Templates
 
 ### Added
-- Add WebGL GPU rendering path
-- Align blazor tooling with webgl workflow
+- Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
+- Align blazor tooling with webgl workflow ([#311](https://github.com/Isthimius/Gondwana/pull/311))
 
 ## Tooling / Gondwana.Tooling.Assets.WinForms
 
 ### Maintenance
-- Rename tooling projects and files
+- Rename tooling projects and files ([#262](https://github.com/Isthimius/Gondwana/pull/262))
 
 ## Tooling / Gondwana.Tooling.Studio.Avalonia
 
 ### Maintenance
-- Rename tooling projects and files
+- Rename tooling projects and files ([#262](https://github.com/Isthimius/Gondwana/pull/262))
 
 ## Tooling / Gondwana.Tooling.Studio.Core
 
 ### Maintenance
-- Rename tooling projects and files
+- Rename tooling projects and files ([#262](https://github.com/Isthimius/Gondwana/pull/262))
 
 ## Tooling / Gondwana.Tooling.Studio.WinForms
 
 ### Maintenance
-- Rename tooling projects and files
+- Rename tooling projects and files ([#262](https://github.com/Isthimius/Gondwana/pull/262))
 
 ## Tooling / Gondwana.Tooling.Tilesheets.WinForms
 
 ### Maintenance
-- Rename tooling projects and files
+- Rename tooling projects and files ([#262](https://github.com/Isthimius/Gondwana/pull/262))
 
 ## Build / Repository
 
 ### Added
-- Add menubar and dropdown menu widgets
-- Add collision adjustment and persistence
-- Add self-contained platformer demo
-- Add spaceduel demo
-- Add flappy bird demo
-- Add mcp service and ai plugins
-- Add two user-generated demo games, TheGreatPlop and RageToPro
-- Add effect subsystem
-- Add side scroller and zelda prototypes
+- Add menubar and dropdown menu widgets ([#255](https://github.com/Isthimius/Gondwana/pull/255))
+- Add collision adjustment and persistence ([#257](https://github.com/Isthimius/Gondwana/pull/257))
+- Add self-contained platformer demo ([#258](https://github.com/Isthimius/Gondwana/pull/258))
+- Add spaceduel demo ([#263](https://github.com/Isthimius/Gondwana/pull/263))
+- Add flappy bird demo ([#272](https://github.com/Isthimius/Gondwana/pull/272))
+- Add mcp service and ai plugins ([#274](https://github.com/Isthimius/Gondwana/pull/274))
+- Add two user-generated demo games, TheGreatPlop and RageToPro ([#279](https://github.com/Isthimius/Gondwana/pull/279))
+- Add effect subsystem ([#280](https://github.com/Isthimius/Gondwana/pull/280))
+- Add side scroller and zelda prototypes ([#289](https://github.com/Isthimius/Gondwana/pull/289))
 
 
 
 ### Fixed
-- Add explicit permissions block
+- Add explicit permissions block ([#266](https://github.com/Isthimius/Gondwana/pull/266))
 
 
 
 ### Documentation
-- Simplify roadmap description
-- Revise roadmap wording
-- Refine the README content for clarity and structure
-- Add ai-assisted workflow section to repository README
-- Update game introduction duration
-- Add android/ios support to README Roadmap
-- Refresh project overview
-- Add support section
-- Mark blazor WebGL rendering adapter complete
+- Simplify roadmap description ([#265](https://github.com/Isthimius/Gondwana/pull/265))
+- Revise roadmap wording ([#268](https://github.com/Isthimius/Gondwana/pull/268))
+- Refine the README content for clarity and structure ([#269](https://github.com/Isthimius/Gondwana/pull/269))
+- Add ai-assisted workflow section to repository README ([#275](https://github.com/Isthimius/Gondwana/pull/275))
+- Update game introduction duration ([#277](https://github.com/Isthimius/Gondwana/pull/277))
+- Add android/ios support to README Roadmap ([#278](https://github.com/Isthimius/Gondwana/pull/278))
+- Refresh project overview ([#292](https://github.com/Isthimius/Gondwana/pull/292))
+- Add support section ([#296](https://github.com/Isthimius/Gondwana/pull/296))
+- Mark blazor WebGL rendering adapter complete ([#309](https://github.com/Isthimius/Gondwana/pull/309))
+- Add repository mirrors section ([#317](https://github.com/Isthimius/Gondwana/pull/317))
 
 
 
 ### CI
-- Add sourceforge mirror workflow
+- Add sourceforge mirror workflow ([#314](https://github.com/Isthimius/Gondwana/pull/314))
 
 
 
 ### Maintenance
-- Rename tooling projects and files
-- Remove manual funding configuration
-- Update pull request
+- Rename tooling projects and files ([#262](https://github.com/Isthimius/Gondwana/pull/262))
+- Remove manual funding configuration ([#302](https://github.com/Isthimius/Gondwana/pull/302))
+- Update pull request ([#316](https://github.com/Isthimius/Gondwana/pull/316))
 
 
 
 ### Other Changes
 - Version bump
-- Revise README for clarity and feature updates
-- Rename Gondwana.Movement to Gondwana.Physics.Movement
+- Revise README for clarity and feature updates ([#247](https://github.com/Isthimius/Gondwana/pull/247))
+- Rename Gondwana.Movement to Gondwana.Physics.Movement ([#248](https://github.com/Isthimius/Gondwana/pull/248))
 - Update GitHub Actions workflow for PR title and body
 - Update link text for Engine Wiki in README
 - Add Platformer Demo section to README
@@ -199,8 +200,7 @@ All notable changes to this project will be documented in this file.
 - Update funding sources in FUNDING.yml
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
-- Add repository mirrors section to README
-- Fix capitalization in GitHub repository link
+- Adding projects from scripts into .sln ([#318](https://github.com/Isthimius/Gondwana/pull/318))
 
 # [v2.5.2] - 2026-07-26
 

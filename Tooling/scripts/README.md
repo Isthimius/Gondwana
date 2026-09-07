@@ -131,7 +131,9 @@ Packs `Tooling/Gondwana.Templates` and reinstalls the exact freshly packed templ
 
 ### `Generate-Project-Changelogs.ps1`
 
-Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://git-cliff.org/), filtering commits by changed file paths so each project only shows the changes that affected it. This is the standard monorepo approach described in the git-cliff docs. `release.ps1` invokes this script as part of the release flow, and `.github/workflows/changelog-master.yml` refreshes the running unreleased sections after non-changelog pushes to `master` before opening/updating an automation PR that is configured for auto-merge.
+Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://git-cliff.org/), filtering commits by changed file paths so each project only shows the changes that affected it. This is the standard monorepo approach described in the git-cliff docs. `release.ps1` invokes this script as part of the release flow, and `.github/workflows/changelog-master.yml` refreshes the incoming pull-request branch before merge so the generated changelog updates are included in the same eventual squash commit as the change itself.
+
+PR provenance is handled by the shared `cliff.toml` configuration. Squash-merged commits already contain GitHub's `(#NNN)` suffix, which is converted directly into a link to the originating PR. Before the current PR is merged, the workflow supplies the current PR number plus the exact set of commits in that PR through `CHANGELOG_PR_NUMBER` and `CHANGELOG_PR_COMMITS`; `cliff.toml` uses that context to link only those entries. Normal local changelog and release generation require no GitHub API access and leave direct, non-PR commits unlinked.
 
 **What it does:**
 1. Iterates over the default set of library/tooling projects (all `Gondwana.*` projects and `Tooling/*` projects; Demos and `Gondwana.Tests` are excluded).
@@ -176,7 +178,7 @@ Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://
 
 ### `Generate-Root-Changelog.ps1`
 
-Regenerates only the repository-level `CHANGELOG.md`'s leading derived section while preserving all existing released history exactly. Its entries are grouped by project/area in the same format used by release notes. `.github/workflows/changelog-master.yml` runs this script alongside `Generate-Project-Changelogs.ps1` after non-changelog pushes to `master` before opening/updating an automation PR that is configured for auto-merge.
+Regenerates only the repository-level `CHANGELOG.md`'s leading derived section while preserving all existing released history exactly. Its entries are grouped by project/area in the same format used by release notes. `.github/workflows/changelog-master.yml` runs this script alongside `Generate-Project-Changelogs.ps1` on the incoming pull-request branch before merge. The same shared PR-link behavior described above applies to root changelog entries.
 
 **What it does:**
 1. Loads the project/area definitions from `Changelog-ProjectGroups.ps1`.

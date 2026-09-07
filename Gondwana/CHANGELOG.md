@@ -8,36 +8,36 @@ All notable changes to this project will be documented in this file.
 
 
 ## Added
-- Add hyperlink widget and container refactor
-- Add oblique left coordinate system
-- Add collision adjustment and persistence
-- Add self-contained platformer demo
-- Add spaceduel demo
-- Add collision configuration support for Frame and .gts files
-- Add effect subsystem
-- Add popup and toast overlays
-- Add direct light rendering
-- Add side scroller and zelda prototypes
-- Add DirectSceneLayerDarknessOverlay
-- Add WebGL GPU rendering path
+- Add hyperlink widget and container refactor ([#252](https://github.com/Isthimius/Gondwana/pull/252))
+- Add oblique left coordinate system ([#256](https://github.com/Isthimius/Gondwana/pull/256))
+- Add collision adjustment and persistence ([#257](https://github.com/Isthimius/Gondwana/pull/257))
+- Add self-contained platformer demo ([#258](https://github.com/Isthimius/Gondwana/pull/258))
+- Add spaceduel demo ([#263](https://github.com/Isthimius/Gondwana/pull/263))
+- Add collision configuration support for Frame and .gts files ([#264](https://github.com/Isthimius/Gondwana/pull/264))
+- Add effect subsystem ([#280](https://github.com/Isthimius/Gondwana/pull/280))
+- Add popup and toast overlays ([#281](https://github.com/Isthimius/Gondwana/pull/281))
+- Add direct light rendering ([#282](https://github.com/Isthimius/Gondwana/pull/282))
+- Add side scroller and zelda prototypes ([#289](https://github.com/Isthimius/Gondwana/pull/289))
+- Add DirectSceneLayerDarknessOverlay ([#293](https://github.com/Isthimius/Gondwana/pull/293))
+- Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 
 
 
 ## Fixed
-- Fix hex partial coordinate movement bug
-- Fix zoom calculations and movement timing
-- Fix sprite cloning composition
-- Persist engine config changes
-- Handle image instance layer updates
-- Support custom logger dependency injection
-- Correct view coordinate conversion on GPU path to address occasional tearing
-- Resolve timer edge case
+- Fix hex partial coordinate movement bug ([#251](https://github.com/Isthimius/Gondwana/pull/251))
+- Fix zoom calculations and movement timing ([#253](https://github.com/Isthimius/Gondwana/pull/253))
+- Fix sprite cloning composition ([#259](https://github.com/Isthimius/Gondwana/pull/259))
+- Persist engine config changes ([#260](https://github.com/Isthimius/Gondwana/pull/260))
+- Handle image instance layer updates ([#261](https://github.com/Isthimius/Gondwana/pull/261))
+- Support custom logger dependency injection ([#270](https://github.com/Isthimius/Gondwana/pull/270))
+- Correct view coordinate conversion on GPU path to address occasional tearing ([#290](https://github.com/Isthimius/Gondwana/pull/290))
+- Resolve timer edge case ([#295](https://github.com/Isthimius/Gondwana/pull/295))
 
 
 
 ## Refactoring
-- Tighten touch and mouse polling behavior
-- Use fixed-step simulation timing
+- Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
+- Use fixed-step simulation timing ([#305](https://github.com/Isthimius/Gondwana/pull/305))
 
 
 
