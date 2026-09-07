@@ -61,6 +61,16 @@ Prefer an AI-assisted workflow? See **[Using Gondwana with ChatGPT and Codex](ht
 
 ---
 
+## 🌐 Repository Mirrors
+
+GitHub is the canonical repository for [Gondwana](https://github.com/isthimius/gondwana). Issues, pull requests, discussions, and development activity should be submitted there.
+
+Read-only mirrors are maintained for availability and discoverability:
+
+- **[SourceForge](https://sourceforge.net/projects/gondwana/)** — source mirror and release downloads
+
+---
+
 ## 🎯 Who Gondwana Is For
 
 Gondwana is for .NET developers who want to build games in C# rather than assemble them entirely through an editor. It is a good fit when you value:
