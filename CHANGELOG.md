@@ -193,6 +193,7 @@ All notable changes to this project will be documented in this file.
 - Update funding sources in FUNDING.yml
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
+- Yml workflow to mirror to SourceForge
 
 # [v2.5.2] - 2026-07-26
 
