@@ -8,12 +8,12 @@ All notable changes to this project will be documented in this file.
 
 
 ## Added
-- Add WebGL GPU rendering path
+- Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 
 
 
 ## Refactoring
-- Tighten touch and mouse polling behavior
+- Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
 
 # v2.5.2 - July 26, 2026
 

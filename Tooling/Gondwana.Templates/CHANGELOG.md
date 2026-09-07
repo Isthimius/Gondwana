@@ -7,8 +7,8 @@ All notable changes to this project will be documented in this file.
 
 
 ## Added
-- Add WebGL GPU rendering path
-- Align blazor tooling with webgl workflow
+- Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
+- Align blazor tooling with webgl workflow ([#311](https://github.com/Isthimius/Gondwana/pull/311))
 
 # v2.5.2 - July 26, 2026
 
