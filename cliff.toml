@@ -16,11 +16,14 @@ body = """
 # [Unreleased]
 {% endif %}
 
+{% set open_pr_number = get_env(name="CHANGELOG_PR_NUMBER", default="") -%}
+{% set open_pr_commits = get_env(name="CHANGELOG_PR_COMMITS", default="") -%}
 {% for group, commits in commits | group_by(attribute="group") %}
 ## {{ group | striptags | trim | upper_first }}
 {% for commit in commits -%}
 {% set first_line = commit.message | split(pat="\n") | first | trim | upper_first -%}
-- {{ first_line }}{% if commit.remote.pr_number and "github.com/Isthimius/Gondwana/pull/" not in first_line %} ([#{{ commit.remote.pr_number }}](https://github.com/Isthimius/Gondwana/pull/{{ commit.remote.pr_number }})){% endif %}
+{% set commit_marker = "|" ~ commit.id ~ "|" -%}
+- {{ first_line }}{% if open_pr_number != "" and commit_marker in open_pr_commits and "github.com/Isthimius/Gondwana/pull/" not in first_line %} ([#{{ open_pr_number }}](https://github.com/Isthimius/Gondwana/pull/{{ open_pr_number }})){% endif %}
 {% endfor %}
 
 {% endfor %}
@@ -39,8 +42,8 @@ sort_commits = "oldest"
 tag_pattern = "v[0-9].*"
 
 # Convert GitHub squash-merge PR suffixes to links, then strip author/co-author trailers.
-# Open PR commits do not have the (#123) suffix yet; GitHub Actions enables remote
-# metadata below so the changelog template can append their PR link instead.
+# Open PR commits do not have the (#123) suffix yet; the PR workflow supplies the
+# current PR number and exact commit set through CHANGELOG_PR_* environment variables.
 commit_preprocessors = [
     { pattern = "\\A([^\\r\\n]*?)\\s*\\(#(\\d+)\\)(\\r?\\n|$)", replace = "$1 ([#$2](https://github.com/Isthimius/Gondwana/pull/$2))$3" },
     { pattern = "(?m)^Co-authored-by:.*\r?\n?", replace = "" },
@@ -68,13 +71,3 @@ commit_parsers = [
     { message = "^Merge (pull request|branch)", skip = true },
     { message = ".*", group = "<!-- 99 -->Other Changes" },
 ]
-
-# Keep local changelog/release generation deterministic and independent of GitHub.
-# The PR workflow overrides remote.offline and supplies its read-only GITHUB_TOKEN
-# so git-cliff can resolve the number of an open PR before it is squash-merged.
-[remote]
-offline = true
-
-[remote.github]
-owner = "Isthimius"
-repo = "Gondwana"
