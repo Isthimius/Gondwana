@@ -2,6 +2,10 @@ name: Mirror to SourceForge
 
 on:
   push:
+    branches:
+      - master
+    tags:
+      - '*'
   delete:
   workflow_dispatch:
 
@@ -14,6 +18,7 @@ concurrency:
 
 jobs:
   mirror:
+    if: github.event_name != 'delete' || github.event.ref_type == 'tag'
     name: Mirror repository
     runs-on: ubuntu-latest
 
@@ -44,7 +49,10 @@ jobs:
 
           cd repository.git
 
+          git push \
+            ssh://isthimius@git.code.sf.net/p/gondwana/code \
+            '+refs/heads/master:refs/heads/master'
+
           git push --prune \
             ssh://isthimius@git.code.sf.net/p/gondwana/code \
-            '+refs/heads/*:refs/heads/*' \
             '+refs/tags/*:refs/tags/*'
