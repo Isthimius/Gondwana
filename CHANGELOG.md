@@ -172,6 +172,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+### CI
+- Add sourceforge mirror workflow
+
+
+
 ### Maintenance
 - Rename tooling projects and files
 - Remove manual funding configuration
@@ -194,6 +199,7 @@ All notable changes to this project will be documented in this file.
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
 - Yml workflow to mirror to SourceForge
+- Run workflow only when pushing to master
 
 # [v2.5.2] - 2026-07-26
 
