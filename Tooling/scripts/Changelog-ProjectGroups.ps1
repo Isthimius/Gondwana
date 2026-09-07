@@ -1,29 +1,33 @@
-# Shared changelog groups used by root changelog generation and releases.
+# Authoritative project metadata for both generators and releases.
+# Paths are repository-relative; omitted projects generate neither output.
 # A commit touching more than one group intentionally appears under each one.
-$ProjectChangelogGroups = @(
-    [pscustomobject]@{ Name = "Gondwana"; IncludePaths = @("Gondwana/**/*") },
-    [pscustomobject]@{ Name = "Gondwana.Audio.Browser"; IncludePaths = @("Gondwana.Audio.Browser/**/*") },
-    [pscustomobject]@{ Name = "Gondwana.Audio.Midi"; IncludePaths = @("Gondwana.Audio.Midi/**/*") },
-    [pscustomobject]@{ Name = "Gondwana.Avalonia"; IncludePaths = @("Gondwana.Avalonia/**/*") },
-    [pscustomobject]@{ Name = "Gondwana.Avalonia.Hosting"; IncludePaths = @("Gondwana.Avalonia.Hosting/**/*") },
-    [pscustomobject]@{ Name = "Gondwana.Blazor"; IncludePaths = @("Gondwana.Blazor/**/*") },
-    [pscustomobject]@{ Name = "Gondwana.Blazor.Hosting"; IncludePaths = @("Gondwana.Blazor.Hosting/**/*") },
-    [pscustomobject]@{ Name = "Gondwana.Hosting"; IncludePaths = @("Gondwana.Hosting/**/*") },
-    [pscustomobject]@{ Name = "Gondwana.Input.SDL2"; IncludePaths = @("Gondwana.Input.SDL2/**/*") },
-    [pscustomobject]@{ Name = "Gondwana.Video"; IncludePaths = @("Gondwana.Video/**/*") },
-    [pscustomobject]@{ Name = "Gondwana.Widgets"; IncludePaths = @("Gondwana.Widgets/**/*") },
-    [pscustomobject]@{ Name = "Gondwana.WinForms"; IncludePaths = @("Gondwana.WinForms/**/*") },
-    [pscustomobject]@{ Name = "Gondwana.WinForms.Hosting"; IncludePaths = @("Gondwana.WinForms.Hosting/**/*") },
-    [pscustomobject]@{ Name = "Tooling / Gondwana.Cli"; IncludePaths = @("Tooling/Gondwana.Cli/**/*") },
-    [pscustomobject]@{ Name = "Tooling / Gondwana.Mcp"; IncludePaths = @("Tooling/Gondwana.Mcp/**/*") },
-    [pscustomobject]@{ Name = "Tooling / Gondwana.Templates"; IncludePaths = @("Tooling/Gondwana.Templates/**/*") },
-    [pscustomobject]@{ Name = "Tooling / Gondwana.Tooling.Assets.WinForms"; IncludePaths = @("Tooling/Gondwana.Tooling.Assets.WinForms/**/*") },
-    [pscustomobject]@{ Name = "Tooling / Gondwana.Tooling.Studio.Avalonia"; IncludePaths = @("Tooling/Gondwana.Tooling.Studio.Avalonia/**/*") },
-    [pscustomobject]@{ Name = "Tooling / Gondwana.Tooling.Studio.Core"; IncludePaths = @("Tooling/Gondwana.Tooling.Studio.Core/**/*") },
-    [pscustomobject]@{ Name = "Tooling / Gondwana.Tooling.Studio.WinForms"; IncludePaths = @("Tooling/Gondwana.Tooling.Studio.WinForms/**/*") },
-    [pscustomobject]@{ Name = "Tooling / Gondwana.Tooling.Tilesheets.WinForms"; IncludePaths = @("Tooling/Gondwana.Tooling.Tilesheets.WinForms/**/*") },
+$ChangelogProjects = @(
+    [pscustomobject]@{ Path = "Gondwana"; RootName = "Gondwana"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Gondwana.Audio.Browser"; RootName = "Gondwana.Audio.Browser"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Gondwana.Audio.Midi"; RootName = "Gondwana.Audio.Midi"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Gondwana.Avalonia"; RootName = "Gondwana.Avalonia"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Gondwana.Avalonia.Hosting"; RootName = "Gondwana.Avalonia.Hosting"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Gondwana.Blazor"; RootName = "Gondwana.Blazor"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Gondwana.Blazor.Hosting"; RootName = "Gondwana.Blazor.Hosting"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Gondwana.Hosting"; RootName = "Gondwana.Hosting"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Gondwana.Input.SDL2"; RootName = "Gondwana.Input.SDL2"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Gondwana.Video"; RootName = "Gondwana.Video"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Gondwana.Widgets"; RootName = "Gondwana.Widgets"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Gondwana.WinForms"; RootName = "Gondwana.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Gondwana.WinForms.Hosting"; RootName = "Gondwana.WinForms.Hosting"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Gondwana.Cli"; RootName = "Tooling / Gondwana.Cli"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Gondwana.Mcp"; RootName = "Tooling / Gondwana.Mcp"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Gondwana.Templates"; RootName = "Tooling / Gondwana.Templates"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Assets.WinForms"; RootName = "Tooling / Gondwana.Tooling.Assets.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.Avalonia"; RootName = "Tooling / Gondwana.Tooling.Studio.Avalonia"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.Core"; RootName = "Tooling / Gondwana.Tooling.Studio.Core"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Tilesheets.WinForms"; RootName = "Tooling / Gondwana.Tooling.Tilesheets.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{
-        Name = "Build / Repository"
+        Path = $null
+        RootName = "Build / Repository"
+        GenerateChangelog = $false
+        IncludeInRootChangelog = $true
         IncludePaths = @(
             ".github/**/*",
             "Solution Items/**/*",
@@ -42,3 +46,10 @@ $ProjectChangelogGroups = @(
         )
     }
 )
+
+# Root-only areas can supply multiple globs; project globs derive from Path.
+foreach ($project in $ChangelogProjects) {
+    if ($project.Path) {
+        $project | Add-Member -NotePropertyName IncludePaths -NotePropertyValue @("$($project.Path)/**/*")
+    }
+}

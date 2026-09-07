@@ -29,7 +29,8 @@
     to disk. Nothing is modified on disk when this switch is set.
 
 .PARAMETER Projects
-    Override the default list of project folder paths (relative to repo root).
+    Select configured project folder paths (relative to repo root).
+    GenerateChangelog must still be true; unknown paths are rejected.
     Accepts an array of strings, e.g. @("Gondwana", "Gondwana.Audio.Midi").
 
 .PARAMETER CliffConfigPath
@@ -60,37 +61,19 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-# ---------------------------------------------------------------------------
-# Default project list — all library/tooling projects (not Demos or tests).
-# Paths are relative to the repo root.
-# ---------------------------------------------------------------------------
-$DefaultProjects = @(
-    "Gondwana",
-    "Gondwana.Audio.Browser",
-    "Gondwana.Audio.Midi",
-    "Gondwana.Avalonia",
-    "Gondwana.Avalonia.Hosting",
-    "Gondwana.Blazor",
-    "Gondwana.Blazor.Hosting",
-    "Gondwana.Hosting",
-    "Gondwana.Input.SDL2",
-    "Gondwana.Video",
-    "Gondwana.Widgets",
-    "Gondwana.WinForms",
-    "Gondwana.WinForms.Hosting",
-    "Tooling/Gondwana.Cli",
-    "Tooling/Gondwana.Mcp",
-    "Tooling/Gondwana.Templates",
-    "Tooling/Gondwana.Tooling.Assets.WinForms",
-    "Tooling/Gondwana.Tooling.Studio.Avalonia",
-    "Tooling/Gondwana.Tooling.Studio.Core",
-    "Tooling/Gondwana.Tooling.Studio.WinForms",
-    "Tooling/Gondwana.Tooling.Tilesheets.WinForms"
-)
-
-if (-not $Projects) {
-    $Projects = $DefaultProjects
+# -Projects selects configured paths; it never overrides generation policy.
+. (Join-Path $PSScriptRoot "Changelog-ProjectGroups.ps1")
+if ($Projects) {
+    $Projects = @($Projects | ForEach-Object { $_.Replace('\', '/').TrimEnd('/') })
+    foreach ($path in $Projects) {
+        if ($path -notin $ChangelogProjects.Path) {
+            throw "Unknown changelog project '$path'. Add it to Changelog-ProjectGroups.ps1 first."
+        }
+    }
 }
+$Projects = @($ChangelogProjects | Where-Object {
+    $_.GenerateChangelog -and (-not $Projects -or $_.Path -in $Projects)
+} | ForEach-Object { $_.Path })
 
 # Resolve the repo root from the script's location:
 # Tooling/scripts/ -> Tooling/ -> root

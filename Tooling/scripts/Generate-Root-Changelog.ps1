@@ -90,7 +90,7 @@ function Get-ProjectBody {
     try {
         & git-cliff @arguments
         if ($LASTEXITCODE -ne 0) {
-            throw "git-cliff failed for root changelog group '$($ProjectGroup.Name)'."
+            throw "git-cliff failed for root changelog group '$($ProjectGroup.RootName)'."
         }
         $body = Get-GeneratedSectionBody -GeneratedChangelogPath $tempPath
     }
@@ -119,7 +119,7 @@ function New-CurrentSection {
     }
 
     $hasChanges = $false
-    foreach ($projectGroup in $ProjectChangelogGroups) {
+    foreach ($projectGroup in @($ChangelogProjects | Where-Object { $_.IncludeInRootChangelog })) {
         $body = Get-ProjectBody -ProjectGroup $projectGroup
         if ([string]::IsNullOrWhiteSpace($body)) {
             continue
@@ -127,7 +127,7 @@ function New-CurrentSection {
 
         $hasChanges = $true
         $lines += ""
-        $lines += "## $($projectGroup.Name)"
+        $lines += "## $($projectGroup.RootName)"
         $lines += ""
         $lines += $body
     }
@@ -191,7 +191,8 @@ function Join-RootChangelog {
 
 $currentSection = New-CurrentSection
 if ([string]::IsNullOrWhiteSpace($currentSection)) {
-    throw "No root changelog entries were generated."
+    Write-Host "No root-visible changes; leaving the root changelog unchanged."
+    exit 0
 }
 
 if ($SectionOnly) {
