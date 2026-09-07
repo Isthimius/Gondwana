@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   validate-changelog-script:
@@ -24,6 +25,34 @@ jobs:
 
       - name: Install git-cliff
         uses: taiki-e/install-action@d8ae1fa96886bc82c05515b8ac15b41515da2c6d # git-cliff
+
+      - name: Validate pull request link rendering
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GIT_CLIFF__REMOTE__OFFLINE: "false"
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          $range = "$env:PR_BASE_SHA..$env:PR_HEAD_SHA"
+          $preview = @(& git-cliff --config cliff.toml --repository . --strip header $range)
+          if ($LASTEXITCODE -ne 0) {
+              throw "git-cliff failed while validating pull request link rendering."
+          }
+
+          $content = $preview -join "`n"
+          $expectedLink = "([#$env:PR_NUMBER](https://github.com/Isthimius/Gondwana/pull/$env:PR_NUMBER))"
+          if ($content -notmatch [regex]::Escape($expectedLink)) {
+              Write-Host "Generated pull request preview:"
+              Write-Host $content
+              throw "Current pull request link was not rendered in the changelog preview."
+          }
+
+          $escapedLink = [regex]::Escape($expectedLink)
+          if ($content -match "(?m)^- .*${escapedLink}.*${escapedLink}") {
+              throw "Current pull request link was rendered more than once on a changelog entry."
+          }
 
       - name: Preview changelogs
         shell: pwsh
@@ -269,6 +298,9 @@ jobs:
 
       - name: Refresh changelogs
         shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GIT_CLIFF__REMOTE__OFFLINE: "false"
         run: |
           ./Tooling/scripts/Generate-Root-Changelog.ps1
           ./Tooling/scripts/Generate-Project-Changelogs.ps1
