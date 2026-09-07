@@ -25,7 +25,7 @@ Idempotent one-shot setup script for new contributors to the Gondwana project. R
 4. Restores NuGet packages for the solution with dependency reevaluation.
 5. Builds the solution in `Release` configuration.
 6. Installs/updates the `Gondwana.Cli` global tool (`gondwana`).
-7. Installs `Gondwana.Templates` (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-blazor`) when missing, otherwise checks for template updates and keeps a newer already-installed local package instead of downgrading it.
+7. Installs `Gondwana.Templates` (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-wasm`) when missing, otherwise checks for template updates and keeps a newer already-installed local package instead of downgrading it.
 8. Installs the `dotnet wasm-tools` workload for WebAssembly support and updates installed workloads when it is already present.
 9. Checks for SDL2 native binaries (required by `Gondwana.Input.SDL2`) and prints install guidance (including the official SDL releases page) if missing.
 10. Checks for LibVLC native binaries (required by `Gondwana.Video`); installs VLC via `winget` if missing on Windows.
