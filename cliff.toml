@@ -19,7 +19,7 @@ body = """
 {% for group, commits in commits | group_by(attribute="group") %}
 ## {{ group | striptags | trim | upper_first }}
 {% for commit in commits -%}
-- {{ commit.message | split(pat="\n") | first | trim | upper_first }}
+- {{ commit.message | split(pat="\n") | first | trim | upper_first }}{% if commit.remote.pr_number and commit.message is not containing(pat="github.com/Isthimius/Gondwana/pull/") %} ([#{{ commit.remote.pr_number }}](https://github.com/Isthimius/Gondwana/pull/{{ commit.remote.pr_number }})){% endif %}
 {% endfor %}
 
 {% endfor %}
@@ -37,9 +37,11 @@ filter_commits = false
 sort_commits = "oldest"
 tag_pattern = "v[0-9].*"
 
-# Strip author/co-author trailer lines (added by GitHub Copilot and GitHub itself).
+# Convert GitHub squash-merge PR suffixes to links, then strip author/co-author trailers.
+# Open PR commits do not have the (#123) suffix yet; GitHub Actions enables remote
+# metadata below so the changelog template can append their PR link instead.
 commit_preprocessors = [
-    { pattern = "\\A([^\\r\\n]*?)\\s*\\(#\\d+\\)(\\r?\\n|$)", replace = "$1$2" },
+    { pattern = "\\A([^\\r\\n]*?)\\s*\\(#(\\d+)\\)(\\r?\\n|$)", replace = "$1 ([#$2](https://github.com/Isthimius/Gondwana/pull/$2))$3" },
     { pattern = "(?m)^Co-authored-by:.*\r?\n?", replace = "" },
     { pattern = "(?m)^Agent-Logs-Url:.*\r?\n?", replace = "" },
     { pattern = "(?m)^Signed-off-by:.*\r?\n?", replace = "" },
@@ -65,3 +67,13 @@ commit_parsers = [
     { message = "^Merge (pull request|branch)", skip = true },
     { message = ".*", group = "<!-- 99 -->Other Changes" },
 ]
+
+# Keep local changelog/release generation deterministic and independent of GitHub.
+# The PR workflow overrides remote.offline and supplies its read-only GITHUB_TOKEN
+# so git-cliff can resolve the number of an open PR before it is squash-merged.
+[remote]
+offline = true
+
+[remote.github]
+owner = "Isthimius"
+repo = "Gondwana"
