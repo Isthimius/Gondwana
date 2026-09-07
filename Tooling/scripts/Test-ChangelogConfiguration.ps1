@@ -28,9 +28,9 @@ try {
         Set-Content "$name/code.txt" 'initial'
         $generate = $name -in @('Both', 'ProjectOnly')
         $include = $name -in @('Both', 'RootOnly')
-        $metadata += "[pscustomobject]@{ Path = '$name'; RootName = '$name'; GenerateChangelog = `$$generate; IncludeInRootChangelog = `$$include }`n"
+        $metadata += "[pscustomobject]@{ Path = '$name'; RootName = '$name'; GenerateChangelog = `$$generate; IncludeInRootChangelog = `$$include; IncludePaths = @('$name/**/*') }`n"
     }
-    $metadata += ')' + "`n" + (Get-Content "$PSScriptRoot/Changelog-ProjectGroups.ps1" -Raw).Split('# Root-only areas')[1].Insert(0, '# Root-only areas')
+    $metadata += ')'
     Set-Content Tooling/scripts/Changelog-ProjectGroups.ps1 $metadata
     Invoke-TestGit add .
     Invoke-TestGit commit -qm 'feat: initial fixture'
