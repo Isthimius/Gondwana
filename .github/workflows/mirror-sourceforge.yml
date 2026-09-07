@@ -1,0 +1,50 @@
+name: Mirror to SourceForge
+
+on:
+  push:
+  delete:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sourceforge-mirror
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    name: Mirror repository
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SOURCEFORGE_SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SOURCEFORGE_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+
+          install -m 700 -d "$HOME/.ssh"
+
+          printf '%s\n' "$SSH_PRIVATE_KEY" > "$HOME/.ssh/id_ed25519"
+          chmod 600 "$HOME/.ssh/id_ed25519"
+
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 644 "$HOME/.ssh/known_hosts"
+
+      - name: Clone GitHub repository
+        run: |
+          set -euo pipefail
+          git clone --bare "https://github.com/${GITHUB_REPOSITORY}.git" repository.git
+
+      - name: Mirror branches and tags to SourceForge
+        run: |
+          set -euo pipefail
+
+          cd repository.git
+
+          git push --prune \
+            ssh://isthimius@git.code.sf.net/p/gondwana/code \
+            '+refs/heads/*:refs/heads/*' \
+            '+refs/tags/*:refs/tags/*'
