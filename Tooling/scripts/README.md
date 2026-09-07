@@ -25,7 +25,7 @@ Idempotent one-shot setup script for new contributors to the Gondwana project. R
 4. Restores NuGet packages for the solution with dependency reevaluation.
 5. Builds the solution in `Release` configuration.
 6. Installs/updates the `Gondwana.Cli` global tool (`gondwana`).
-7. Installs `Gondwana.Templates` (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-wasm`) when missing, otherwise checks for template updates and keeps a newer already-installed local package instead of downgrading it.
+7. Installs `Gondwana.Templates` (`gondwana-winforms`, `gondwana-avalonia`, `gondwana-blazor`) when missing, otherwise checks for template updates and keeps a newer already-installed local package instead of downgrading it.
 8. Installs the `dotnet wasm-tools` workload for WebAssembly support and updates installed workloads when it is already present.
 9. Checks for SDL2 native binaries (required by `Gondwana.Input.SDL2`) and prints install guidance (including the official SDL releases page) if missing.
 10. Checks for LibVLC native binaries (required by `Gondwana.Video`); installs VLC via `winget` if missing on Windows.
@@ -131,7 +131,9 @@ Packs `Tooling/Gondwana.Templates` and reinstalls the exact freshly packed templ
 
 ### `Generate-Project-Changelogs.ps1`
 
-Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://git-cliff.org/), filtering commits by changed file paths so each project only shows the changes that affected it. This is the standard monorepo approach described in the git-cliff docs. `release.ps1` invokes this script as part of the release flow, and `.github/workflows/changelog-master.yml` refreshes the running unreleased sections after non-changelog pushes to `master` before opening/updating an automation PR that is configured for auto-merge.
+Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://git-cliff.org/), filtering commits by changed file paths so each project only shows the changes that affected it. This is the standard monorepo approach described in the git-cliff docs. `release.ps1` invokes this script as part of the release flow, and `.github/workflows/changelog-master.yml` refreshes the incoming pull-request branch before merge so the generated changelog updates are included in the same eventual squash commit as the change itself.
+
+PR provenance is handled by the shared `cliff.toml` configuration. Squash-merged commits already contain GitHub's `(#NNN)` suffix, which is converted directly into a link to the originating PR. Before the current PR is merged, the workflow temporarily enables git-cliff's GitHub metadata integration so the same link can be rendered from the open PR. Remote metadata is offline by default, so normal local changelog and release generation do not depend on GitHub API access.
 
 **What it does:**
 1. Iterates over the default set of library/tooling projects (all `Gondwana.*` projects and `Tooling/*` projects; Demos and `Gondwana.Tests` are excluded).
@@ -176,7 +178,7 @@ Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://
 
 ### `Generate-Root-Changelog.ps1`
 
-Regenerates only the repository-level `CHANGELOG.md`'s leading derived section while preserving all existing released history exactly. Its entries are grouped by project/area in the same format used by release notes. `.github/workflows/changelog-master.yml` runs this script alongside `Generate-Project-Changelogs.ps1` after non-changelog pushes to `master` before opening/updating an automation PR that is configured for auto-merge.
+Regenerates only the repository-level `CHANGELOG.md`'s leading derived section while preserving all existing released history exactly. Its entries are grouped by project/area in the same format used by release notes. `.github/workflows/changelog-master.yml` runs this script alongside `Generate-Project-Changelogs.ps1` on the incoming pull-request branch before merge. The same shared PR-link behavior described above applies to root changelog entries.
 
 **What it does:**
 1. Loads the project/area definitions from `Changelog-ProjectGroups.ps1`.
