@@ -216,56 +216,36 @@ jobs:
             echo "::warning::One or more GitHub Packages uploads failed, but continuing."
           fi
 
-      # ---------------------------
-      # Docs (Doxygen)
-      # ---------------------------
+  api-docs:
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout tagged source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - name: Validate stable release tag
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "Only vX.Y.Z tags publish stable API documentation"
+            exit 1
+          fi
+
       - name: Install Doxygen
         run: sudo apt-get update && sudo apt-get install -y doxygen
 
-      - name: Inject version into Doxyfile
-        run: |
-          sed "s/@PROJECT_VERSION@/v${VERSION}/g" docs/doxy/Gondwana_doxy > docs/doxy/Gondwana_doxy.gen
+      - name: Generate tagged API docs
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: python3 Tooling/scripts/api-docs/build.py --version "Version ${RELEASE_TAG#v}" --output "$RUNNER_TEMP/api-build"
 
-      - name: Generate docs
-        run: |
-          cd docs/doxy
-          doxygen Gondwana_doxy.gen
-
-      - name: Publish docs to gh-pages
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-
-          temp_dir=$(mktemp -d)
-          cp -R docs/. "$temp_dir"/
-
-          ghpages_dir=$(mktemp -d)
-
-          git fetch origin gh-pages || true
-
-          if git ls-remote --exit-code --heads origin gh-pages; then
-            git worktree add "$ghpages_dir" origin/gh-pages
-          else
-            git worktree add --detach "$ghpages_dir"
-            (
-              cd "$ghpages_dir"
-              git checkout --orphan gh-pages
-              git rm -rf . || true
-            )
-          fi
-
-          find "$ghpages_dir" -mindepth 1 -maxdepth 1 \
-            ! -name '.git' \
-            -exec rm -rf {} +
-
-          cp -R "$temp_dir"/. "$ghpages_dir"/
-          touch "$ghpages_dir/.nojekyll"
-
-          (
-            cd "$ghpages_dir"
-            git add .
-            git commit -m "Update docs for version $VERSION" || echo "No changes"
-            git push origin HEAD:gh-pages --force
-          )
-
-          git worktree remove "$ghpages_dir" --force
+      - name: Publish immutable release and stable entry point
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: bash Tooling/scripts/api-docs/publish.sh "$RUNNER_TEMP/api-build/html" "$RELEASE_TAG"
