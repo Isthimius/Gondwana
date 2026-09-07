@@ -191,6 +191,11 @@ function Join-RootChangelog {
 
 $currentSection = New-CurrentSection
 if ([string]::IsNullOrWhiteSpace($currentSection)) {
+    if ($PreviewOnly) {
+        Write-Host (Get-Content $ChangelogPath -Raw)
+        exit 0
+    }
+
     Write-Host "No root-visible changes; leaving the root changelog unchanged."
     exit 0
 }
