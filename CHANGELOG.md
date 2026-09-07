@@ -151,7 +151,7 @@ All notable changes to this project will be documented in this file.
 - Add two user-generated demo games, TheGreatPlop and RageToPro ([#279](https://github.com/Isthimius/Gondwana/pull/279))
 - Add effect subsystem ([#280](https://github.com/Isthimius/Gondwana/pull/280))
 - Add side scroller and zelda prototypes ([#289](https://github.com/Isthimius/Gondwana/pull/289))
-- Publish immutable API releases with development track and version selector ([#320](https://github.com/Isthimius/Gondwana/pull/320))
+- Publish immutable api releases ([#320](https://github.com/Isthimius/Gondwana/pull/320))
 
 
 
