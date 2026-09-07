@@ -17,7 +17,7 @@ Use the resource that owns the kind of truth you need:
 | Build, test, pack, and CI behavior | `.github/workflows/` and project files |
 | Public engine identity and supported packages | `README.md` |
 | Architectural explanation and usage documentation | [Gondwana wiki](https://github.com/Isthimius/Gondwana/wiki) |
-| Current API signatures | Source code, then the [generated API reference](https://isthimius.github.io/Gondwana/) |
+| Current API signatures | Source code, then the [development API reference](https://isthimius.github.io/Gondwana/api/latest/) |
 | Working examples of public APIs | `Demos/` and `Tooling/Gondwana.Templates/` |
 | Tooling implementation | `Tooling/` |
 | Released-history context | `CHANGELOG.md` |

@@ -151,6 +151,7 @@ All notable changes to this project will be documented in this file.
 - Add two user-generated demo games, TheGreatPlop and RageToPro ([#279](https://github.com/Isthimius/Gondwana/pull/279))
 - Add effect subsystem ([#280](https://github.com/Isthimius/Gondwana/pull/280))
 - Add side scroller and zelda prototypes ([#289](https://github.com/Isthimius/Gondwana/pull/289))
+- Publish immutable API releases with development track and version selector ([#320](https://github.com/Isthimius/Gondwana/pull/320))
 
 
 
@@ -200,7 +201,10 @@ All notable changes to this project will be documented in this file.
 - Update funding sources in FUNDING.yml
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
+<<<<<<< ours
 - Remove non-game demos from list ([#321](https://github.com/Isthimius/Gondwana/pull/321))
+=======
+>>>>>>> theirs
 
 # [v2.5.2] - 2026-07-26
 

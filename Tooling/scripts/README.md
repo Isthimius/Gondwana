@@ -300,3 +300,6 @@ Creates a new versioned release of Gondwana: updates the changelog, commits it, 
 # Target a different remote or branch
 .\release.ps1 -Remote upstream -RequiredBranch main
 ```
+## API documentation publishing
+
+See [Versioned API documentation](api-docs/README.md) for the stable `/api/`, development `/api/latest/`, historical version selector, publishing rules, and local validation.
