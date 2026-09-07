@@ -19,7 +19,8 @@ body = """
 {% for group, commits in commits | group_by(attribute="group") %}
 ## {{ group | striptags | trim | upper_first }}
 {% for commit in commits -%}
-- {{ commit.message | split(pat="\n") | first | trim | upper_first }}{% if commit.remote.pr_number and commit.message is not containing(pat="github.com/Isthimius/Gondwana/pull/") %} ([#{{ commit.remote.pr_number }}](https://github.com/Isthimius/Gondwana/pull/{{ commit.remote.pr_number }})){% endif %}
+{% set first_line = commit.message | split(pat="\n") | first | trim | upper_first -%}
+- {{ first_line }}{% if commit.remote.pr_number and "github.com/Isthimius/Gondwana/pull/" not in first_line %} ([#{{ commit.remote.pr_number }}](https://github.com/Isthimius/Gondwana/pull/{{ commit.remote.pr_number }})){% endif %}
 {% endfor %}
 
 {% endfor %}
