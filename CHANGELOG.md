@@ -180,6 +180,7 @@ All notable changes to this project will be documented in this file.
 ### Maintenance
 - Rename tooling projects and files
 - Remove manual funding configuration
+- Update pull request
 
 
 
@@ -198,7 +199,8 @@ All notable changes to this project will be documented in this file.
 - Update funding sources in FUNDING.yml
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
-- Corrected yml
+- Add repository mirrors section to README
+- Fix capitalization in GitHub repository link
 
 # [v2.5.2] - 2026-07-26
 
