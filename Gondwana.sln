@@ -167,7 +167,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "old", "old", "{02EA681E-C7D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{B3863636-AEE0-487D-91B4-A12328913A48}"
 	ProjectSection(SolutionItems) = preProject
+		Tooling\scripts\Changelog-ProjectGroups.ps1 = Tooling\scripts\Changelog-ProjectGroups.ps1
 		Tooling\scripts\Generate-Project-Changelogs.ps1 = Tooling\scripts\Generate-Project-Changelogs.ps1
+		Tooling\scripts\Generate-Root-Changelog.ps1 = Tooling\scripts\Generate-Root-Changelog.ps1
 		Tooling\scripts\README.md = Tooling\scripts\README.md
 		Tooling\scripts\Reinstall-Gondwana-Cli.ps1 = Tooling\scripts\Reinstall-Gondwana-Cli.ps1
 		Tooling\scripts\Reinstall-Gondwana-Templates.ps1 = Tooling\scripts\Reinstall-Gondwana-Templates.ps1
