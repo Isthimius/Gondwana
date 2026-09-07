@@ -4,7 +4,7 @@
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Gondwana)](https://www.nuget.org/packages/Gondwana)
 [![License](https://img.shields.io/github/license/Isthimius/Gondwana)](https://github.com/Isthimius/Gondwana/blob/master/LICENSE)
 [![Docs](https://img.shields.io/badge/docs-wiki-blue)](https://github.com/Isthimius/Gondwana/wiki)
-[![API](https://img.shields.io/badge/api-reference-blue)](https://isthimius.github.io/Gondwana/)
+[![API](https://img.shields.io/badge/api-reference-blue)](https://isthimius.github.io/Gondwana/api/)
 ![.NET](https://img.shields.io/badge/.NET-8.0-purple)
 ![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20macOS%20%7C%20WebAssembly-blue)
 
@@ -52,7 +52,7 @@ Prefer an AI-assisted workflow? See **[Using Gondwana with ChatGPT and Codex](ht
 ## Documentation & Resources
 
 - 📘 **[Engine Wiki](https://github.com/Isthimius/Gondwana/wiki)**
-- 📚 **[API Reference](https://isthimius.github.io/Gondwana/)**
+- 📚 **[API Reference — stable](https://isthimius.github.io/Gondwana/api/)** · [Development (`master`)](https://isthimius.github.io/Gondwana/api/latest/) · Historical releases are available in the API version selector.
 - 📦 **[NuGet Package](https://www.nuget.org/packages/Gondwana)**
 - 🏷️ **[GitHub Releases](https://github.com/Isthimius/Gondwana/releases)**
 - 📜 **[Release History](https://github.com/Isthimius/Gondwana/blob/master/CHANGELOG.md)**

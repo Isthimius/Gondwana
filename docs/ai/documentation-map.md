@@ -6,7 +6,7 @@ https://github.com/Isthimius/Gondwana/wiki
 
 Generated API reference:
 
-https://isthimius.github.io/Gondwana/
+https://isthimius.github.io/Gondwana/api/ (stable). Current `master`: https://isthimius.github.io/Gondwana/api/latest/. Historical releases are available through the API version selector.
 
 Use the wiki for mental models, terminology, intended usage, and architectural explanations. Use current source and tests to verify exact present-day behavior and signatures.
 
