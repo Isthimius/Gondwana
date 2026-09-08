@@ -67,6 +67,7 @@ GitHub is the canonical repository for [Gondwana](https://github.com/Isthimius/G
 
 Read-only mirrors are maintained for availability and discoverability:
 
+- **[Codeberg](https://codeberg.org/Isthimius/Gondwana)** — source mirror
 - **[SourceForge](https://sourceforge.net/projects/gondwana/)** — source mirror and release downloads
 
 ---
