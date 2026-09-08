@@ -42,6 +42,17 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 - Standardizing CollisionAdjust and Overlap values
+- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+## Gondwana.Audio.Browser
+
+### Other Changes
+- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+## Gondwana.Audio.Midi
+
+### Other Changes
+- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 
 ## Gondwana.Avalonia
 
@@ -53,6 +64,16 @@ All notable changes to this project will be documented in this file.
 ### Refactoring
 - Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
 
+
+
+### Other Changes
+- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+## Gondwana.Avalonia.Hosting
+
+### Other Changes
+- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
 ## Gondwana.Blazor
 
 ### Added
@@ -63,10 +84,35 @@ All notable changes to this project will be documented in this file.
 ### Refactoring
 - Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
 
+
+
+### Other Changes
+- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
 ## Gondwana.Blazor.Hosting
 
 ### Added
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
+
+
+
+### Other Changes
+- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+## Gondwana.Hosting
+
+### Other Changes
+- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+## Gondwana.Input.SDL2
+
+### Other Changes
+- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+## Gondwana.Video
+
+### Other Changes
+- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 
 ## Gondwana.Widgets
 
@@ -81,6 +127,11 @@ All notable changes to this project will be documented in this file.
 ### Refactoring
 - Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
 
+
+
+### Other Changes
+- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
 ## Gondwana.WinForms
 
 ### Fixed
@@ -90,6 +141,16 @@ All notable changes to this project will be documented in this file.
 
 ### Refactoring
 - Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
+
+
+
+### Other Changes
+- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+## Gondwana.WinForms.Hosting
+
+### Other Changes
+- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 
 ## Tooling / Gondwana.Cli
 
@@ -101,6 +162,11 @@ All notable changes to this project will be documented in this file.
 
 ### Refactoring
 - Unify blazor detection, workload checks, and return values ([#250](https://github.com/Isthimius/Gondwana/pull/250))
+
+
+
+### Other Changes
+- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 
 ## Tooling / Gondwana.Mcp
 
@@ -114,10 +180,20 @@ All notable changes to this project will be documented in this file.
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 - Align blazor tooling with webgl workflow ([#311](https://github.com/Isthimius/Gondwana/pull/311))
 
+
+
+### Other Changes
+- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
 ## Tooling / Gondwana.Tooling.Assets.WinForms
 
 ### Maintenance
 - Rename tooling projects and files ([#262](https://github.com/Isthimius/Gondwana/pull/262))
+
+
+
+### Other Changes
+- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 
 ## Tooling / Gondwana.Tooling.Studio.Avalonia
 
@@ -171,6 +247,7 @@ All notable changes to this project will be documented in this file.
 - Add support section ([#296](https://github.com/Isthimius/Gondwana/pull/296))
 - Mark blazor WebGL rendering adapter complete ([#309](https://github.com/Isthimius/Gondwana/pull/309))
 - Add repository mirrors section ([#317](https://github.com/Isthimius/Gondwana/pull/317))
+- Add codeberg as source mirror ([#324](https://github.com/Isthimius/Gondwana/pull/324))
 
 
 
@@ -203,7 +280,8 @@ All notable changes to this project will be documented in this file.
 - Update funding sources in FUNDING.yml
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
-- Add Codeberg as a source mirror in README ([#324](https://github.com/Isthimius/Gondwana/pull/324))
+- Add guarded one-time API history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 
 # [v2.5.2] - 2026-07-26
 
