@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 - Add side scroller and zelda prototypes ([#289](https://github.com/Isthimius/Gondwana/pull/289))
 - Add DirectSceneLayerDarknessOverlay ([#293](https://github.com/Isthimius/Gondwana/pull/293))
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
+- Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 
 
 
@@ -43,7 +44,6 @@ All notable changes to this project will be documented in this file.
 
 ## Other Changes
 - Standardizing CollisionAdjust and Overlap values
-- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 
 # v2.5.2 - July 26, 2026
 

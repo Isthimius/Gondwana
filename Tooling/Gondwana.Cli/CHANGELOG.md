@@ -9,16 +9,12 @@ All notable changes to this project will be documented in this file.
 ## Added
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 - Align blazor tooling with webgl workflow ([#311](https://github.com/Isthimius/Gondwana/pull/311))
+- Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 
 
 
 ## Refactoring
 - Unify blazor detection, workload checks, and return values ([#250](https://github.com/Isthimius/Gondwana/pull/250))
-
-
-
-## Other Changes
-- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 
 # v2.5.2 - July 26, 2026
 

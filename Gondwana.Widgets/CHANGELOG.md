@@ -12,16 +12,12 @@ All notable changes to this project will be documented in this file.
 - Add menubar and dropdown menu widgets ([#255](https://github.com/Isthimius/Gondwana/pull/255))
 - Add spaceduel demo ([#263](https://github.com/Isthimius/Gondwana/pull/263))
 - Add popup and toast overlays ([#281](https://github.com/Isthimius/Gondwana/pull/281))
+- Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 
 
 
 ## Refactoring
 - Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
-
-
-
-## Other Changes
-- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 
 # v2.5.2 - July 26, 2026
 
