@@ -23,7 +23,7 @@ on:
       - '.github/workflows/docs.yml'
 
 concurrency:
-  group: api-docs-development
+  group: api-docs-publication
   cancel-in-progress: false
 
 jobs:
@@ -33,6 +33,7 @@ jobs:
 
     permissions:
       contents: write
+      pages: write
 
     steps:
       - name: Checkout (full history for NBGV)
@@ -66,3 +67,8 @@ jobs:
 
       - name: Publish development API docs
         run: bash Tooling/scripts/api-docs/publish.sh "$RUNNER_TEMP/api-build/html" latest
+
+      - name: Request Pages build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds"

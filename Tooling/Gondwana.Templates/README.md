@@ -113,7 +113,7 @@ The Blazor template intentionally uses WebGL as the default and expected browser
 
 -   **[Source Code](https://github.com/isthimius/Gondwana)**
 -   **[Architecture & Guides](https://github.com/isthimius/Gondwana/wiki)**
--   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/)**
+-   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/api/)**
 -   **[Release History](https://github.com/Isthimius/Gondwana/blob/master/Tooling/Gondwana.Templates/CHANGELOG.md)**
 
 ## Related Packages

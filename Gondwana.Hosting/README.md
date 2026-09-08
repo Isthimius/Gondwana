@@ -36,7 +36,7 @@ public class MyGameHost : GameHostBase
 
 -   **[Source Code](https://github.com/isthimius/Gondwana)**
 -   **[Architecture & Guides](https://github.com/isthimius/Gondwana/wiki)**
--   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/)**
+-   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/api/)**
 -   **[Release History](https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Hosting/CHANGELOG.md)**
 
 ## Related Packages
