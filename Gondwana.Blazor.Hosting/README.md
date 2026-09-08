@@ -54,7 +54,7 @@ For the bitmap compatibility path, substitute `BlazorGameHost` and
 
 -   **[Source Code](https://github.com/isthimius/Gondwana)**
 -   **[Architecture & Guides](https://github.com/isthimius/Gondwana/wiki)**
--   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/)**
+-   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/api/)**
 -   **[Release History](https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Blazor.Hosting/CHANGELOG.md)**
 
 ## Related Packages

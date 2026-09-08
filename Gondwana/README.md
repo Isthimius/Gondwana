@@ -30,7 +30,7 @@ dotnet add package Gondwana
 
 -   **[Source Code](https://github.com/isthimius/Gondwana)**
 -   **[Architecture & Guides](https://github.com/isthimius/Gondwana/wiki)**
--   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/)**
+-   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/api/)**
 -   **[Release History](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/CHANGELOG.md)**
 
 ## Related Packages

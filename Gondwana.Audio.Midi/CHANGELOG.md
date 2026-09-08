@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
+
+
+## Other Changes
+- Document archive validation and recovery; update API links ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
 # v2.5.2 - July 26, 2026
 
 
