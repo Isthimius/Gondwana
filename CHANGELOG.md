@@ -171,6 +171,7 @@ All notable changes to this project will be documented in this file.
 - Add support section ([#296](https://github.com/Isthimius/Gondwana/pull/296))
 - Mark blazor WebGL rendering adapter complete ([#309](https://github.com/Isthimius/Gondwana/pull/309))
 - Add repository mirrors section ([#317](https://github.com/Isthimius/Gondwana/pull/317))
+- Add codeberg as source mirror ([#324](https://github.com/Isthimius/Gondwana/pull/324))
 
 
 
@@ -203,7 +204,7 @@ All notable changes to this project will be documented in this file.
 - Update funding sources in FUNDING.yml
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
-- Add Codeberg as a source mirror in README ([#324](https://github.com/Isthimius/Gondwana/pull/324))
+- Adding gitlab mirror ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
 # [v2.5.2] - 2026-07-26
 
