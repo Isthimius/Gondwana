@@ -176,6 +176,7 @@ All notable changes to this project will be documented in this file.
 
 ### CI
 - Add sourceforge mirror workflow ([#314](https://github.com/Isthimius/Gondwana/pull/314))
+- Mirror repo to codeberg ([#323](https://github.com/Isthimius/Gondwana/pull/323))
 
 
 
@@ -202,7 +203,7 @@ All notable changes to this project will be documented in this file.
 - Update funding sources in FUNDING.yml
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
-- Codeberg mirror ([#323](https://github.com/Isthimius/Gondwana/pull/323))
+- Add Codeberg as a source mirror in README ([#324](https://github.com/Isthimius/Gondwana/pull/324))
 
 # [v2.5.2] - 2026-07-26
 
