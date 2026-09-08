@@ -183,6 +183,7 @@ All notable changes to this project will be documented in this file.
 - Rename tooling projects and files ([#262](https://github.com/Isthimius/Gondwana/pull/262))
 - Remove manual funding configuration ([#302](https://github.com/Isthimius/Gondwana/pull/302))
 - Update pull request ([#316](https://github.com/Isthimius/Gondwana/pull/316))
+- Bump version to 2.6.0 ([#322](https://github.com/Isthimius/Gondwana/pull/322))
 
 
 
@@ -201,7 +202,7 @@ All notable changes to this project will be documented in this file.
 - Update funding sources in FUNDING.yml
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
-- Bump version to 2.6.0 ([#322](https://github.com/Isthimius/Gondwana/pull/322))
+- Codeberg mirror ([#323](https://github.com/Isthimius/Gondwana/pull/323))
 
 # [v2.5.2] - 2026-07-26
 
