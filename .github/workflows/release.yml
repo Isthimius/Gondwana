@@ -218,9 +218,13 @@ jobs:
 
   api-docs:
     needs: release
+    concurrency:
+      group: api-docs-publication
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pages: write
     steps:
       - name: Checkout tagged source
         uses: actions/checkout@v4
@@ -249,3 +253,8 @@ jobs:
         env:
           RELEASE_TAG: ${{ github.ref_name }}
         run: bash Tooling/scripts/api-docs/publish.sh "$RUNNER_TEMP/api-build/html" "$RELEASE_TAG"
+
+      - name: Request Pages build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds"
