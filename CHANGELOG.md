@@ -202,6 +202,7 @@ All notable changes to this project will be documented in this file.
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
 - Codeberg mirror ([#323](https://github.com/Isthimius/Gondwana/pull/323))
+- Bump version to 2.6.0 ([#322](https://github.com/Isthimius/Gondwana/pull/322))
 
 # [v2.5.2] - 2026-07-26
 
