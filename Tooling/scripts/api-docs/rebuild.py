@@ -168,6 +168,7 @@ def validate_site(site, record):
         if path.read_text(encoding='utf-8') != redirect(target):
             raise ValueError('Invalid automatic redirect: ' + str(path))
     for version in (*EXPECTED, 'latest'):
+        print('Validating ' + version, flush=True)
         folder = api / version
         for asset in ('index.html', 'api-versions.js', 'api-versions.css'):
             if not (folder / asset).is_file():

@@ -31,7 +31,7 @@ assets.Save();
     https://github.com/isthimius/Gondwana/wiki
 
 -   **API Reference (Doxygen)**\
-    https://isthimius.github.io/Gondwana/
+    https://isthimius.github.io/Gondwana/api/
 
 ## Related Packages
 
