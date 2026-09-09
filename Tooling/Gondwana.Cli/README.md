@@ -10,6 +10,154 @@ dotnet tool install --global Gondwana.Cli
 
 ## Commands
 
+### Project health and package management
+
+`doctor` checks the machine and toolchain. `check` checks an existing project.
+All three project commands below accept `-p|--project <csproj-or-directory>`;
+without it, the current directory must contain exactly one `.csproj`.
+
+```bash
+gondwana check
+gondwana check --project ./src/MyGame
+gondwana check --fix
+gondwana upgrade --dry-run
+gondwana upgrade --version 2.6.0 --dry-run
+gondwana upgrade --version 2.6.0 -p ./src/MyGame/MyGame.csproj
+gondwana add widgets
+gondwana add hosting --project ./src/MyGame
+```
+
+`check` reports project name, locally declared frameworks, detected platform,
+Gondwana package and project references, version mismatches, optional hosting,
+missing literal file references, browser configuration, asset bundles, and `.gts`
+files. It excludes `bin`, `obj`, `.git`, `.vs`, `node_modules`, and directory links
+from asset discovery. Failures return exit code 1; warnings alone return 0.
+Conditional/imported settings and potentially build-generated resources are not
+treated as definite errors. Protected bundles produce a warning; inspect them with
+`assets validate --password` separately.
+
+`check --fix` aligns older Gondwana package references to the project's explicitly
+declared stable **Gondwana core** version when no Gondwana reference is newer.
+It prints the changes and reruns checks. It never downgrades another reference,
+selects a release track, adds optional hosting automatically, or rewrites source.
+When no unambiguous fix exists, use `upgrade --version` or edit the project manually.
+
+`upgrade` without `--version` queries nuget.org and selects the newest stable
+version available for **every referenced Gondwana package**. It refuses automatic
+downgrades and changes from a prerelease track. `--version` accepts an explicit
+version (including prereleases), works offline, and leaves package availability
+and framework compatibility to the next normal NuGet restore. Only referenced
+Gondwana packages change. `--dry-run` prints each package's old/new version and
+owning file without writing anything.
+
+Package edits support version attributes, `<Version>` children, simple shared
+version properties, `VersionOverride`, and straightforward central package
+management in the nearest `Directory.Packages.props`. Central edits affect every
+project consuming that central entry; their file path appears in the upgrade
+preview. Whitespace, comments, BOM, and unrelated package references are preserved
+as far as XML serialization permits. No restore/build runs implicitly.
+
+For safety, edits refuse explicit MSBuild imports, conditional or duplicate
+Gondwana references, unresolved/ranged versions, Update-only package references,
+mixed source/package references, and properties also used by unrelated content.
+This is literal project inspection, not full MSBuild evaluation. Source-reference-only
+projects can be checked but must manage package versions in their source repository.
+
+| Feature | Package selected on current master |
+| --- | --- |
+| `widgets` | `Gondwana.Widgets` |
+| `audio` | `Gondwana.Audio.Browser` for Blazor; desktop audio is already in `Gondwana` core |
+| `midi` | `Gondwana.Audio.Midi` (desktop) |
+| `gamepad` | `Gondwana.Input.SDL2` (desktop; requires native SDL2) |
+| `video` | `Gondwana.Video` (desktop; requires native LibVLC) |
+| `hosting` | `Gondwana.WinForms.Hosting`, `Gondwana.Avalonia.Hosting`, or `Gondwana.Blazor.Hosting`, based on an unambiguous adapter |
+
+`add` uses the existing aligned Gondwana version and makes no change if the
+feature is already referenced. It refuses to guess a version for non-Gondwana
+projects. It adds references only; application setup remains in your code.
+
+### Asset inspection and validation
+
+```bash
+gondwana assets pack ./Assets ./game.assets
+gondwana pack ./Assets ./game.assets
+gondwana assets list ./game.assets
+gondwana assets inspect ./game.assets
+gondwana assets validate ./game.assets
+gondwana assets validate ./game.assets --password secret
+gondwana assets unpack ./game.assets ./Extracted
+gondwana assets unpack ./game.assets ./Extracted --overwrite --type Image
+```
+
+Top-level `pack` remains an alias with its existing options and overwrite behavior.
+`assets extract` remains available as an alias for `assets unpack`, and
+`assets generate-keys` is registered alongside the other asset commands.
+`list` and `inspect` display native asset type, name/path, and uncompressed bytes;
+`inspect` also shows the bundle path, total entry count, and bundle file size.
+`list`, `inspect`, and `unpack` accept `-t|--type` and `-p|--password`.
+
+Validation checks ZIP integrity/decryption, native entry keys, duplicate keys,
+portable safe paths, and packed GTS definitions using their containing bundle for
+image references. Other binary assets are integrity checked, not decoded as media.
+Invalid bundles return 1. Extraction preflights all paths and refuses traversal,
+symbolic links/junctions, ambiguous destination names, and existing files unless
+`--overwrite` is supplied. Paths are preserved using the names stored in the
+bundle (the engine writes lowercase names). A failed preflight writes no files;
+an I/O failure during extraction can leave already-extracted files.
+
+### Tilesheet inspection and validation
+
+```bash
+gondwana tilesheet info ./Assets/forest.gts
+gondwana tilesheet validate ./Assets/forest.gts
+```
+
+These commands use the engine's GTS serializer and shared layout validator.
+Information includes image source/header dimensions, region and tile dimensions,
+frame grid sizes, explicit frame metadata counts, collision defaults, overhang,
+mask presence, and alpha handling. Validation reports malformed definitions,
+missing/unreadable image sources, ambiguous image references, region bounds,
+invalid dimensions/padding/margins, negative overhang, inverted collision
+rectangles, duplicate region names/frame coordinates, invalid collision types,
+and frame metadata outside the grid. Negative collision insets are valid expansion;
+zero-sized collision geometry is permitted. Image header inspection does not
+validate every encoded pixel. No runtime tilesheet is registered or changed.
+
+Loose image/bundle paths resolve relative to the GTS directory. Packed definitions
+use the containing bundle and resolve external paths relative to its directory,
+matching the engine. A loose definition with only `Image.AssetEntryName` requires
+bundle context: validate the packed bundle instead. An externally referenced
+protected image bundle cannot currently receive a separate password. Failures
+return 1 and produce actionable diagnostics; successful validation returns 0.
+
+### Serve an existing published browser build
+
+```bash
+gondwana publish blazor
+gondwana serve
+gondwana serve --project ./src/MyGame --port 5001 --no-open
+gondwana serve --configuration Release --framework net8.0-browser
+gondwana serve --root ./artifacts/publish/wwwroot --no-open
+```
+
+`serve` locates `bin/Release/<framework>/publish/wwwroot` (including RID layouts)
+and opens `http://localhost:5000` in the browser. Use `--port` to choose another
+port, `--no-open` to suppress browser launch, `-c|--configuration` (default Release),
+or `-f|--framework` for a multi-target project. `--root` accepts a custom published
+wwwroot containing `index.html`. Discovery never selects an ordinary build's
+wwwroot and **never publishes automatically**. Missing output suggests
+`gondwana publish blazor`.
+
+The built-in .NET HTTP server listens on localhost, sends `Cross-Origin-Opener-Policy:
+same-origin` and `Cross-Origin-Embedder-Policy: require-corp`, serves WASM with the
+correct MIME type, supports GET/HEAD and local absolute base-href subpaths, and
+stops cleanly with Ctrl+C. It needs no Node or Python installation. It serves the
+uncompressed published files; production compression negotiation, SPA fallback,
+HTTPS, and remote hosting belong to a production server. Use `run blazor` for the
+development server instead.
+
+---
+
 ### `gondwana doctor`
 
 Validates your local Gondwana development environment.
