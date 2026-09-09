@@ -466,6 +466,7 @@ internal static class ProjectHelper
 
         return Directory.GetDirectories(binDir, "wwwroot", SearchOption.AllDirectories)
             .Where(d => File.Exists(Path.Combine(d, "index.html")))
+            .Where(d => string.Equals(Path.GetFileName(Path.GetDirectoryName(d)), "publish", StringComparison.OrdinalIgnoreCase))
             .Where(d => d.Contains($"{Path.DirectorySeparatorChar}{configuration}{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
             .Where(d => d.Contains($"{Path.DirectorySeparatorChar}{framework}{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(Directory.GetLastWriteTimeUtc)

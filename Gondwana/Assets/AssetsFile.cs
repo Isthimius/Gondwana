@@ -40,6 +40,29 @@ public sealed class AssetsFile : IDisposable
 
     private bool _isLoaded;
 
+    /// <summary>
+    /// Strictly validates an existing bundle's entry keys and archive integrity.
+    /// Unlike runtime loading, rejects unrecognized and duplicate entries.
+    /// </summary>
+    /// <param name="path">Existing bundle to inspect.</param>
+    /// <param name="password">Optional password for protected entries.</param>
+    /// <param name="testData">Whether to decompress and verify all payload data; false checks structure and keys only.</param>
+    public static void Validate(string path, string? password = null, bool testData = true)
+    {
+        using var archive = new ZipFile(File.OpenRead(path));
+        archive.Password = password;
+        var keys = new HashSet<AssetsFileEntry>();
+        foreach (ZipEntry entry in archive)
+        {
+            if (!entry.IsFile) continue;
+            var key = AssetsFileEntry.FromString(entry.Name);
+            if (key is null || !Enum.IsDefined(key.AssetType) || string.IsNullOrWhiteSpace(key.AssetName))
+                throw new InvalidDataException($"Invalid bundle entry key: {entry.Name}");
+            if (!keys.Add(key)) throw new InvalidDataException($"Duplicate bundle entry key: {entry.Name}");
+        }
+        if (!archive.TestArchive(testData)) throw new InvalidDataException("Bundle integrity check failed. Check the password and archive contents.");
+    }
+
     [JsonConstructor]
     private AssetsFile()
     {
@@ -105,7 +128,7 @@ public sealed class AssetsFile : IDisposable
 
         try
         {
-            Engine.Logger.LogInformation("Loading assets file: {FilePath}", FilePath);
+            Engine.Logger.LogInformation("Loading assets file.");
 
             _zipFile?.Close();
             _zipFile = null;
@@ -363,8 +386,7 @@ public sealed class AssetsFile : IDisposable
         }
 
         Engine.Logger.LogInformation(
-            "Assets file saved: {FilePath} (Encrypted: {Encrypted})",
-            FilePath,
+            "Assets file saved (Encrypted: {Encrypted}).",
             UseEncryption);
 
         // Keep the in-memory copy as the source of truth.

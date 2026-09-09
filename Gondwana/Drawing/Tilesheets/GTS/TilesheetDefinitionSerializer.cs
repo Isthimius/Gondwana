@@ -174,7 +174,11 @@ public static class TilesheetDefinitionSerializer
             // and tolerate explicit null collection values from hand-authored JSON.
             definition.Regions ??= [];
             foreach (var region in definition.Regions)
+            {
+                if (region is null)
+                    throw new InvalidDataException("GTS Regions cannot contain null entries.");
                 region.Frames ??= [];
+            }
 
             return definition;
         }

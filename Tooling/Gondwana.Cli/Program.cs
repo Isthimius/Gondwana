@@ -5,6 +5,7 @@ using Gondwana.Cli.Commands.New;
 using Gondwana.Cli.Commands.Publish;
 using Gondwana.Cli.Commands.Run;
 using Gondwana.Cli.Commands.Templates;
+using Gondwana.Cli.Commands.Tilesheets;
 using Gondwana.Logging;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
@@ -28,6 +29,30 @@ app.Configure(config =>
 
     config.AddCommand<InfoCommand>("info")
           .WithDescription("Show information about the Gondwana project in the current directory.");
+
+    config.AddCommand<CheckCommand>("check").WithDescription("Validate a Gondwana project's packages, resources, and configuration.");
+    config.AddCommand<UpgradeCommand>("upgrade").WithDescription("Upgrade the referenced Gondwana package family together.");
+    config.AddCommand<AddCommand>("add").WithDescription("Add a Gondwana feature at the project's existing version.");
+    config.AddCommand<ServeCommand>("serve").WithDescription("Serve an existing published browser build locally with WASM isolation headers.");
+
+    config.AddBranch("assets", branch =>
+    {
+        branch.SetDescription("Pack, inspect, validate, and unpack asset bundles.");
+        branch.AddCommand<AssetsPackCommand>("pack").WithDescription("Pack a directory into a bundle (also available as gondwana pack).");
+        branch.AddCommand<AssetsListCommand>("list").WithDescription("List bundle entries and byte sizes.");
+        branch.AddCommand<AssetsInspectCommand>("inspect").WithDescription("Show bundle summary and entries.");
+        branch.AddCommand<AssetsExtractCommand>("unpack").WithDescription("Safely extract bundle entries; use --overwrite to replace files.");
+        branch.AddCommand<AssetsExtractCommand>("extract").WithDescription("Alias for assets unpack.");
+        branch.AddCommand<AssetsValidateCommand>("validate").WithDescription("Validate bundle integrity and tilesheet contents.");
+        branch.AddCommand<AssetsGenerateKeysCommand>("generate-keys").WithDescription("Generate C# asset key constants.");
+    });
+
+    config.AddBranch("tilesheet", branch =>
+    {
+        branch.SetDescription("Inspect and validate Gondwana .gts files.");
+        branch.AddCommand<TilesheetInfoCommand>("info").WithDescription("Show image, region, frame, and collision metadata.");
+        branch.AddCommand<TilesheetValidateCommand>("validate").WithDescription("Validate image references, layouts, and frame metadata.");
+    });
 
     config.AddBranch("new", branch =>
     {
