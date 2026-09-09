@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 
 ## Fixed
 - Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
+- Constrain inspected paths and harden project asset scanning ([#332](https://github.com/Isthimius/Gondwana/pull/332))
 
 
 
