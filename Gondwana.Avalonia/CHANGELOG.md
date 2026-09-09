@@ -31,6 +31,11 @@ All notable changes to this project will be documented in this file.
 ## CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
+
+
+## Maintenance
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
+
 # v2.5.2 - July 26, 2026
 
 

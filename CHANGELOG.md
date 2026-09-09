@@ -52,6 +52,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+### Maintenance
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
+
+
+
 ### Other Changes
 - Standardizing CollisionAdjust and Overlap values
 
@@ -75,6 +80,11 @@ All notable changes to this project will be documented in this file.
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
+
+
+### Maintenance
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
+
 ## Gondwana.Audio.Midi
 
 ### Added
@@ -94,6 +104,11 @@ All notable changes to this project will be documented in this file.
 
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+
+
+
+### Maintenance
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
 
 ## Gondwana.Avalonia
 
@@ -121,6 +136,11 @@ All notable changes to this project will be documented in this file.
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
+
+
+### Maintenance
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
+
 ## Gondwana.Avalonia.Hosting
 
 ### Added
@@ -140,6 +160,11 @@ All notable changes to this project will be documented in this file.
 
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+
+
+
+### Maintenance
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
 
 ## Gondwana.Blazor
 
@@ -167,6 +192,11 @@ All notable changes to this project will be documented in this file.
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
+
+
+### Maintenance
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
+
 ## Gondwana.Blazor.Hosting
 
 ### Added
@@ -188,6 +218,11 @@ All notable changes to this project will be documented in this file.
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
+
+
+### Maintenance
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
+
 ## Gondwana.Hosting
 
 ### Added
@@ -207,6 +242,11 @@ All notable changes to this project will be documented in this file.
 
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+
+
+
+### Maintenance
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
 
 ## Gondwana.Input.SDL2
 
@@ -228,6 +268,11 @@ All notable changes to this project will be documented in this file.
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
+
+
+### Maintenance
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
+
 ## Gondwana.Video
 
 ### Added
@@ -247,6 +292,11 @@ All notable changes to this project will be documented in this file.
 
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+
+
+
+### Maintenance
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
 
 ## Gondwana.Widgets
 
@@ -277,6 +327,11 @@ All notable changes to this project will be documented in this file.
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
+
+
+### Maintenance
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
+
 ## Gondwana.WinForms
 
 ### Added
@@ -303,6 +358,11 @@ All notable changes to this project will be documented in this file.
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
+
+
+### Maintenance
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
+
 ## Gondwana.WinForms.Hosting
 
 ### Added
@@ -322,6 +382,11 @@ All notable changes to this project will be documented in this file.
 
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+
+
+
+### Maintenance
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
 
 ## Tooling / Gondwana.Cli
 
@@ -349,6 +414,11 @@ All notable changes to this project will be documented in this file.
 
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+
+
+
+### Maintenance
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
 
 ## Tooling / Gondwana.Mcp
 
@@ -378,6 +448,11 @@ All notable changes to this project will be documented in this file.
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
+
+
+### Maintenance
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
+
 ## Tooling / Gondwana.Tooling.Assets.WinForms
 
 ### Added
@@ -402,6 +477,7 @@ All notable changes to this project will be documented in this file.
 
 ### Maintenance
 - Rename tooling projects and files ([#262](https://github.com/Isthimius/Gondwana/pull/262))
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
 
 ## Tooling / Gondwana.Tooling.Studio.Avalonia
 
@@ -474,6 +550,7 @@ All notable changes to this project will be documented in this file.
 - Remove manual funding configuration ([#302](https://github.com/Isthimius/Gondwana/pull/302))
 - Update pull request ([#316](https://github.com/Isthimius/Gondwana/pull/316))
 - Bump version to 2.6.0 ([#322](https://github.com/Isthimius/Gondwana/pull/322))
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
 
 
 
@@ -493,7 +570,7 @@ All notable changes to this project will be documented in this file.
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
 - Adding bitbucket mirror
-- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
+- Enhance README with Skia and SkiaSharp details ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 # [v2.5.2] - 2026-07-26
 
