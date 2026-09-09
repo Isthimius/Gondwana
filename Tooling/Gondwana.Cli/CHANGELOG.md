@@ -16,6 +16,11 @@ All notable changes to this project will be documented in this file.
 ## Refactoring
 - Unify blazor detection, workload checks, and return values ([#250](https://github.com/Isthimius/Gondwana/pull/250))
 
+
+
+## CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+
 # v2.5.2 - July 26, 2026
 
 

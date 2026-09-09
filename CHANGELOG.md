@@ -41,6 +41,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+### CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+
+
+
 ### Other Changes
 - Standardizing CollisionAdjust and Overlap values
 
@@ -49,10 +54,20 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 
+
+
+### CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+
 ## Gondwana.Audio.Midi
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
 ## Gondwana.Avalonia
 
@@ -69,10 +84,20 @@ All notable changes to this project will be documented in this file.
 ### Refactoring
 - Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
 
+
+
+### CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+
 ## Gondwana.Avalonia.Hosting
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
 ## Gondwana.Blazor
 
@@ -85,26 +110,51 @@ All notable changes to this project will be documented in this file.
 ### Refactoring
 - Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
 
+
+
+### CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+
 ## Gondwana.Blazor.Hosting
 
 ### Added
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 
+
+
+### CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+
 ## Gondwana.Hosting
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
 ## Gondwana.Input.SDL2
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 
+
+
+### CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+
 ## Gondwana.Video
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
 ## Gondwana.Widgets
 
@@ -119,6 +169,11 @@ All notable changes to this project will be documented in this file.
 
 ### Refactoring
 - Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
+
+
+
+### CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
 ## Gondwana.WinForms
 
@@ -135,10 +190,20 @@ All notable changes to this project will be documented in this file.
 ### Refactoring
 - Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
 
+
+
+### CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+
 ## Gondwana.WinForms.Hosting
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
 ## Tooling / Gondwana.Cli
 
@@ -151,6 +216,11 @@ All notable changes to this project will be documented in this file.
 
 ### Refactoring
 - Unify blazor detection, workload checks, and return values ([#250](https://github.com/Isthimius/Gondwana/pull/250))
+
+
+
+### CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
 ## Tooling / Gondwana.Mcp
 
@@ -165,10 +235,20 @@ All notable changes to this project will be documented in this file.
 - Align blazor tooling with webgl workflow ([#311](https://github.com/Isthimius/Gondwana/pull/311))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 
+
+
+### CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+
 ## Tooling / Gondwana.Tooling.Assets.WinForms
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
 
 
@@ -235,6 +315,7 @@ All notable changes to this project will be documented in this file.
 ### CI
 - Add sourceforge mirror workflow ([#314](https://github.com/Isthimius/Gondwana/pull/314))
 - Mirror repo to codeberg ([#323](https://github.com/Isthimius/Gondwana/pull/323))
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
 
 
@@ -261,7 +342,8 @@ All notable changes to this project will be documented in this file.
 - Update funding sources in FUNDING.yml
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
-- Adding gitlab mirror ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+- Adding bitbucket mirror
+- Enhance README with releases and GitLab mirror ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 
 # [v2.5.2] - 2026-07-26
 
