@@ -77,7 +77,7 @@ internal static class ProcessHelper
         return url.StartsWith("http", StringComparison.OrdinalIgnoreCase) ? url : null;
     }
 
-    private static void OpenBrowser(string url)
+    internal static void OpenBrowser(string url)
     {
         try
         {

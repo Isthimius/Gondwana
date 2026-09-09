@@ -40,6 +40,26 @@ public sealed class AssetsFile : IDisposable
 
     private bool _isLoaded;
 
+    /// <summary>
+    /// Strictly validates an existing bundle's entry keys and archive integrity.
+    /// Unlike runtime loading, rejects unrecognized and duplicate entries.
+    /// </summary>
+    public static void Validate(string path, string? password = null)
+    {
+        using var archive = new ZipFile(File.OpenRead(path));
+        archive.Password = password;
+        var keys = new HashSet<AssetsFileEntry>();
+        foreach (ZipEntry entry in archive)
+        {
+            if (!entry.IsFile) continue;
+            var key = AssetsFileEntry.FromString(entry.Name);
+            if (key is null || !Enum.IsDefined(key.AssetType) || string.IsNullOrWhiteSpace(key.AssetName))
+                throw new InvalidDataException($"Invalid bundle entry key: {entry.Name}");
+            if (!keys.Add(key)) throw new InvalidDataException($"Duplicate bundle entry key: {entry.Name}");
+        }
+        if (!archive.TestArchive(testData: true)) throw new InvalidDataException("Bundle integrity check failed. Check the password and archive contents.");
+    }
+
     [JsonConstructor]
     private AssetsFile()
     {
