@@ -110,3 +110,20 @@ chore:
     - all-globs-to-any-file:
       - '*.json'
       - '!**/CHANGELOG.md'
+
+# Audio projects at any depth, including future Gondwana.Audio variants.
+audio:
+  - changed-files:
+    - all-globs-to-any-file:
+      - '**/*Gondwana.Audio*/**'
+      - '!**/CHANGELOG.md'
+
+# Cover the current test tree and future Gondwana.Testing projects.
+testing:
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Testing/**'
+      - '!**/CHANGELOG.md'
+    - all-globs-to-any-file:
+      - '**/Gondwana.Testing*/**'
+      - '!**/CHANGELOG.md'
