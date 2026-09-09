@@ -51,8 +51,9 @@ changelog:
         - gondwana-winforms
         - Gondwana.WinForms
 
-    - title: Gondwana.Audio.Midi
+    - title: Audio
       labels:
+        - audio
         - gondwana-audio
         - Gondwana.Audio.Midi
 
@@ -71,12 +72,20 @@ changelog:
         - gondwana-video
         - Gondwana.Video
 
+    - title: Testing
+      labels:
+        - testing
+
+    # Before Tooling because template PRs also receive the tooling label.
+    - title: Templates
+      labels:
+        - gondwana-templates
+        - Gondwana.Templates
+
     - title: Tooling
       labels:
         - gondwana-cli
-        - gondwana-templates
         - Gondwana.Cli
-        - Gondwana.Templates
         - tooling
 
     - title: Demos
