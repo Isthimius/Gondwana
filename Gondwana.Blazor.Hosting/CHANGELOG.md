@@ -11,6 +11,11 @@ All notable changes to this project will be documented in this file.
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 
+
+
+## CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+
 # v2.5.2 - July 26, 2026
 
 

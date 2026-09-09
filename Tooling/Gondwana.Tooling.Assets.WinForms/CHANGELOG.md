@@ -11,6 +11,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+## CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+
+
+
 ## Maintenance
 - Rename tooling projects and files ([#262](https://github.com/Isthimius/Gondwana/pull/262))
 

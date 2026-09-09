@@ -19,6 +19,11 @@ All notable changes to this project will be documented in this file.
 ## Refactoring
 - Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
 
+
+
+## CI
+- Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
+
 # v2.5.2 - July 26, 2026
 
 
