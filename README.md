@@ -215,7 +215,7 @@ Contributions are welcome.
 Gondwana is available under the [MIT License](LICENSE).
 
 **Third-party libraries**  
-Gondwana uses **Skia** (© Google) through **SkiaSharp** (© Microsoft and contributors), licensed under the BSD 3-Clause license.
+Gondwana uses **[Skia](https://skia.org/)** (© Google), licensed under the [BSD 3-Clause License](https://opensource.org/license/bsd-3-clause), through **[SkiaSharp](https://github.com/mono/SkiaSharp)** (© Microsoft and contributors), licensed under the [MIT License](https://opensource.org/license/mit).
 
 ---
 
