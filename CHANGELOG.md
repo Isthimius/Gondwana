@@ -44,6 +44,7 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+- Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 
 
@@ -74,6 +75,7 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+- Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 
 
@@ -99,6 +101,7 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+- Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 
 
@@ -130,6 +133,7 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+- Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 
 
@@ -155,6 +159,7 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+- Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 
 
@@ -186,6 +191,7 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+- Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 
 
@@ -212,6 +218,7 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+- Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 
 
@@ -237,6 +244,7 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+- Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 
 
@@ -262,6 +270,7 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+- Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 
 
@@ -287,6 +296,7 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+- Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 
 
@@ -321,6 +331,7 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+- Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 
 
@@ -352,6 +363,7 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+- Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 
 
@@ -377,6 +389,7 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+- Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 
 
@@ -409,6 +422,7 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+- Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 
 
@@ -442,6 +456,7 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+- Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 
 
@@ -467,6 +482,7 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+- Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 
 
@@ -535,6 +551,7 @@ All notable changes to this project will be documented in this file.
 - Add repository mirrors section ([#317](https://github.com/Isthimius/Gondwana/pull/317))
 - Add codeberg as source mirror ([#324](https://github.com/Isthimius/Gondwana/pull/324))
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+- Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 
 
@@ -570,7 +587,6 @@ All notable changes to this project will be documented in this file.
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
 - Adding bitbucket mirror
-- Enhance README with Skia and SkiaSharp details ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 
 # [v2.5.2] - 2026-07-26
 
