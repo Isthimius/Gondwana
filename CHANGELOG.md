@@ -41,6 +41,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+### Documentation
+- Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+
+
+
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
@@ -56,6 +61,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+### Documentation
+- Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+
+
+
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
@@ -63,6 +73,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### Documentation
+- Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 
 
 
@@ -86,6 +101,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+### Documentation
+- Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+
+
+
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
@@ -93,6 +113,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### Documentation
+- Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 
 
 
@@ -112,6 +137,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+### Documentation
+- Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+
+
+
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
@@ -120,6 +150,11 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### Documentation
+- Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 
 
 
@@ -133,6 +168,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+### Documentation
+- Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+
+
+
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
@@ -143,6 +183,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+### Documentation
+- Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+
+
+
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
@@ -150,6 +195,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### Documentation
+- Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 
 
 
@@ -169,6 +219,11 @@ All notable changes to this project will be documented in this file.
 
 ### Refactoring
 - Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
+
+
+
+### Documentation
+- Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 
 
 
@@ -192,6 +247,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+### Documentation
+- Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+
+
+
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
@@ -199,6 +259,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### Documentation
+- Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 
 
 
@@ -216,6 +281,11 @@ All notable changes to this project will be documented in this file.
 
 ### Refactoring
 - Unify blazor detection, workload checks, and return values ([#250](https://github.com/Isthimius/Gondwana/pull/250))
+
+
+
+### Documentation
+- Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 
 
 
@@ -237,6 +307,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+### Documentation
+- Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
+
+
+
 ### CI
 - Add gitlab mirror workflow ([#326](https://github.com/Isthimius/Gondwana/pull/326))
 
@@ -244,6 +319,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### Documentation
+- Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 
 
 
@@ -294,6 +374,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Add explicit permissions block ([#266](https://github.com/Isthimius/Gondwana/pull/266))
+- Correct Linux API source encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
 
 
 
@@ -309,6 +390,7 @@ All notable changes to this project will be documented in this file.
 - Mark blazor WebGL rendering adapter complete ([#309](https://github.com/Isthimius/Gondwana/pull/309))
 - Add repository mirrors section ([#317](https://github.com/Isthimius/Gondwana/pull/317))
 - Add codeberg as source mirror ([#324](https://github.com/Isthimius/Gondwana/pull/324))
+- Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 
 
 
@@ -343,7 +425,6 @@ All notable changes to this project will be documented in this file.
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
 - Adding bitbucket mirror
-- Enhance README with releases and GitLab mirror ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 
 # [v2.5.2] - 2026-07-26
 

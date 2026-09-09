@@ -13,7 +13,9 @@ The header displays the injected Doxygen `PROJECT_NUMBER`: `Version X.Y.Z` for a
 
 The release workflow's separate `api-docs` job runs after successful release publication, checks out the triggering tag, and accepts only canonical stable `vX.Y.Z` tags. It injects the tag version rather than guessing from NBGV. Failed documentation jobs can be retried independently of successful packaging jobs.
 
-`build.py` generates the installed Doxygen's default header with `doxygen -w html`, adds the version navigation, and uses supported `HTML_HEADER`, `HTML_EXTRA_FILES`, and `HTML_EXTRA_STYLESHEET` settings. `--source-root` changes only the source input; configuration, branding, CSS, JavaScript, and header customization always come from the tooling checkout. UTF-8 is the default; non-UTF-8 C# files receive Doxygen Windows-1252 input overrides for legacy punctuation without modifying source files. Generated output must be empty and outside the source directory. No Doxygen fork or third-party UI library is required. See [Doxygen configuration](https://www.doxygen.nl/manual/config.html).
+All three API workflows use `install-doxygen.sh` to install the official Linux x64 **Doxygen 1.14.0** archive, verify its pinned SHA-256 before extraction, and check the executable version and configuration generation before adding it to PATH. Do not replace this with the distribution's unpinned `apt` package. To upgrade, review the official archive and checksum and rerun the real-Doxygen encoding and complete historical-site browser tests on Linux.
+
+`build.py` generates the installed Doxygen's default header with `doxygen -w html`, adds the version navigation, and uses supported `HTML_HEADER`, `HTML_EXTRA_FILES`, and `HTML_EXTRA_STYLESHEET` settings. `--source-root` changes only the source input; configuration, branding, CSS, JavaScript, and header customization always come from the tooling checkout. UTF-8 is the default. When legacy C# files are detected, the supported `INPUT_FILTER` mechanism runs `source_filter.py`: valid UTF-8 is passed through unchanged and Windows-1252 is strictly transcoded to UTF-8 on stdout, including source listings. Source snapshots are never rewritten. This avoids Doxygen's lowercasing of `INPUT_FILE_ENCODING` patterns, which fails to match mixed-case paths on case-sensitive Linux. Every build validates all generated HTML as strict UTF-8 before any publishing; failures report the exact page and byte offset. Generated output must be empty and outside the source directory. No Doxygen fork or third-party UI library is required. See [Doxygen configuration](https://www.doxygen.nl/manual/config.html).
 
 `publish.sh` fetches the latest `gh-pages`, applies `publish.py` to a disposable worktree, and performs a normal fast-forward push. On a concurrent update it fetches again and reapplies the scoped update, up to five times. Normal publishing never replaces the whole branch. Development, release documentation, and migration share the `api-docs-publication` concurrency group. The workflows explicitly request a Pages build after pushing because a `GITHUB_TOKEN` push does not itself trigger one. Pages must be configured to deploy from `gh-pages`, `/`.
 
@@ -68,7 +70,7 @@ When v2.6.0 is released, the ordinary release job creates `/api/v2.6.0/`, update
 
 ## Local validation
 
-Requires Python 3, Node.js, and Doxygen for the build smoke test:
+Requires Python 3, Node.js, and Doxygen 1.14.0 for the build smoke test. On Linux x64, run `bash Tooling/scripts/api-docs/install-doxygen.sh` and apply the printed PATH export. The Python suite includes a real-Doxygen regression for mixed UTF-8/Windows-1252 sources, mixed-case paths, duplicate filenames and spaces; it is skipped if Doxygen is absent, so CI installs Doxygen before running the suite.
 
 ```sh
 python3 -m unittest discover -s Tooling/scripts/api-docs -p 'test_*.py' -v

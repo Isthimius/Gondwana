@@ -242,7 +242,10 @@ jobs:
           fi
 
       - name: Install Doxygen
-        run: sudo apt-get update && sudo apt-get install -y doxygen
+        run: bash Tooling/scripts/api-docs/install-doxygen.sh
+
+      - name: Validate API publisher
+        run: python3 -m unittest discover -s Tooling/scripts/api-docs -p 'test_*.py' -v
 
       - name: Generate tagged API docs
         env:

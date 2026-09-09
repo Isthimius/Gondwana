@@ -2,18 +2,31 @@
 import argparse
 import os
 import re
+import shlex
 import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 DOXY = ROOT / 'docs/doxy'
 
 
+def read_html(path):
+    """Keep decoding strict, but identify the version/page that needs repair."""
+    try:
+        return Path(path).read_text(encoding='utf-8')
+    except UnicodeDecodeError as error:
+        raise ValueError(
+            f'Invalid UTF-8 in generated HTML {path} at byte {error.start}: '
+            f'{error.reason}. Check the Doxygen version and source input filter.'
+        ) from error
+
+
 def source_encodings(source_root):
-    # Older Windows-authored C# comments contain CP1252 punctuation. Let
-    # Doxygen decode those files, without rewriting the exact tag snapshot.
-    # UTF-8 remains the default for every file that can be decoded as UTF-8.
-    overrides = []
+    # Doxygen 1.14.0 lowercases INPUT_FILE_ENCODING patterns, but compares
+    # case-sensitively on Linux. Mixed-case paths therefore miss the override.
+    # Use its supported input filter instead; exact tag snapshots stay intact.
+    legacy = False
     for directory, _, names in os.walk(source_root):
         for name in names:
             if not name.endswith('.cs'):
@@ -24,9 +37,15 @@ def source_encodings(source_root):
                 data.decode('utf-8')
             except UnicodeDecodeError:
                 data.decode('cp1252')  # Fail if this supported fallback is invalid too.
-                print('Doxygen input encoding Windows-1252: ' + str(path), flush=True)
-                overrides.append('"' + path.as_posix() + '=WINDOWS-1252"')
-    return '\nINPUT_FILE_ENCODING += ' + ' '.join(overrides) + '\n' if overrides else ''
+                print('Doxygen input filter Windows-1252: ' + str(path), flush=True)
+                legacy = True
+    if not legacy:
+        return ''
+    args = [sys.executable, '-S', str(Path(__file__).with_name('source_filter.py'))]
+    command = subprocess.list2cmdline(args) if os.name == 'nt' else shlex.join(args)
+    command = command.replace('\\', '\\\\').replace('"', '\\"')
+    return ('\nINPUT_ENCODING = UTF-8\nINPUT_FILE_ENCODING =\n'
+            f'INPUT_FILTER = "{command}"\nFILTER_SOURCE_FILES = YES\n')
 
 
 def build(version, output, source_root=ROOT):
@@ -66,6 +85,9 @@ def build(version, output, source_root=ROOT):
     subprocess.run(['doxygen', str(generated)], cwd=DOXY, check=True)
     if not (output / 'html/index.html').is_file():
         raise RuntimeError('Doxygen produced no API home page')
+    # Also protect normal development/release publishing, not only migration.
+    for page in (output / 'html').rglob('*.html'):
+        read_html(page)
 
 
 if __name__ == '__main__':
