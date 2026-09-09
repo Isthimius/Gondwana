@@ -11,5 +11,5 @@ var searchData=
   ['digit7_8',['Digit7',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a81d5745c4198bf83761e4e7beea0cea8',1,'Gondwana::Blazor::Input::Keyboard']]],
   ['digit8_9',['Digit8',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864ade5fd0dcf1793076a0b24b7db4bb749f',1,'Gondwana::Blazor::Input::Keyboard']]],
   ['digit9_10',['Digit9',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864aa9296fb8a66948e9094d45022b8212ca',1,'Gondwana::Blazor::Input::Keyboard']]],
-  ['down_11',['down',['../namespaceGondwana_1_1Input_1_1Gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92a08a38277b0309070706f6652eeae9a53',1,'Gondwana.Input.Gamepad.Down'],['../namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#afb1f79297125aec78556c8dd6ffa27f6a08a38277b0309070706f6652eeae9a53',1,'Gondwana.Input.Touch.Gestures.Down']]]
+  ['down_11',['Down',['../namespaceGondwana_1_1Input_1_1Gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92a08a38277b0309070706f6652eeae9a53',1,'Gondwana.Input.Gamepad.Down'],['../namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#afb1f79297125aec78556c8dd6ffa27f6a08a38277b0309070706f6652eeae9a53',1,'Gondwana.Input.Touch.Gestures.Down']]]
 ];

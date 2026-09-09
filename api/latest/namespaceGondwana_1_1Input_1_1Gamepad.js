@@ -6,7 +6,7 @@ var namespaceGondwana_1_1Input_1_1Gamepad =
     [ "GamepadEventPoller", "classGondwana_1_1Input_1_1Gamepad_1_1GamepadEventPoller.html", "classGondwana_1_1Input_1_1Gamepad_1_1GamepadEventPoller" ],
     [ "GamepadStickState", "structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html", "structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState" ],
     [ "IGamepadAdapter", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadAdapter.html", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadAdapter" ],
-    [ "IGamepadManager", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadManager.html", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadManager" ],
+    [ "IGamepadManager< out T >", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadManager-1-g.html", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadManager-1-g" ],
     [ "StickDirection", "namespaceGondwana_1_1Input_1_1Gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92", [
       [ "None", "namespaceGondwana_1_1Input_1_1Gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92a6adf97f83acf6453d4a6a4b1070f3754", null ],
       [ "Up", "namespaceGondwana_1_1Input_1_1Gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92a258f49887ef8d14ac268c92b02503aaa", null ],

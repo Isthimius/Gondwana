@@ -183,7 +183,7 @@ var hierarchy =
         [ "Gondwana.Rendering.Backbuffers.GpuBackbuffer", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html", null ]
       ] ],
       [ "Gondwana.Rendering.RenderSurfaceHostBase", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html", [
-        [ "Gondwana.Rendering.RenderSurfaceHost< TBackbuffer >", "classGondwana_1_1Rendering_1_1RenderSurfaceHost.html", null ]
+        [ "Gondwana.Rendering.RenderSurfaceHost< TBackbuffer >", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html", null ]
       ] ],
       [ "Gondwana.Rendering.Text.FontManager", "classGondwana_1_1Rendering_1_1Text_1_1FontManager.html", null ],
       [ "Gondwana.Scenes.Scene", "classGondwana_1_1Scenes_1_1Scene.html", null ],
@@ -220,12 +220,8 @@ var hierarchy =
       [ "Gondwana.Input.Gamepad.SDL2.SdlGamepadAdapter", "classGondwana_1_1Input_1_1Gamepad_1_1SDL2_1_1SdlGamepadAdapter.html", null ],
       [ "Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter", "classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadAdapter.html", null ]
     ] ],
-    [ "Gondwana.Input.Gamepad.IGamepadManager< out T >", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadManager.html", null ],
-    [ "Gondwana.Input.Gamepad.IGamepadManager< IGamepadAdapter >", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadManager.html", null ],
-    [ "Gondwana.Input.Gamepad.IGamepadManager< SdlGamepadAdapter >", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadManager.html", [
-      [ "Gondwana.Input.Gamepad.SDL2.SdlGamepadManager", "classGondwana_1_1Input_1_1Gamepad_1_1SDL2_1_1SdlGamepadManager.html", null ]
-    ] ],
-    [ "Gondwana.Input.Gamepad.IGamepadManager< XInputGamepadAdapter >", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadManager.html", [
+    [ "Gondwana.Input.Gamepad.IGamepadManager< out T >", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadManager-1-g.html", [
+      [ "Gondwana.Input.Gamepad.SDL2.SdlGamepadManager", "classGondwana_1_1Input_1_1Gamepad_1_1SDL2_1_1SdlGamepadManager.html", null ],
       [ "Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadManager", "classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadManager.html", null ]
     ] ],
     [ "Gondwana.Input.Keyboard.IKeyboardAdapter", "interfaceGondwana_1_1Input_1_1Keyboard_1_1IKeyboardAdapter.html", [

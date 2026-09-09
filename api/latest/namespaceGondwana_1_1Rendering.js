@@ -5,7 +5,7 @@ var namespaceGondwana_1_1Rendering =
     [ "Views", "namespaceGondwana_1_1Rendering_1_1Views.html", "namespaceGondwana_1_1Rendering_1_1Views" ],
     [ "RenderSurfaceAdapterBase", "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html", "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase" ],
     [ "RenderSurfaceAdapterResizedEventArgs", "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html", "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs" ],
-    [ "RenderSurfaceHost", "classGondwana_1_1Rendering_1_1RenderSurfaceHost.html", "classGondwana_1_1Rendering_1_1RenderSurfaceHost" ],
+    [ "RenderSurfaceHost< TBackbuffer >", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g" ],
     [ "RenderSurfaceHostBase", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBase" ],
     [ "RenderSurfaceHostBindEventArgs", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBindEventArgs.html", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBindEventArgs" ]
 ];

@@ -168,7 +168,7 @@ var annotated_dup =
           [ "GamepadEventPoller", "classGondwana_1_1Input_1_1Gamepad_1_1GamepadEventPoller.html", "classGondwana_1_1Input_1_1Gamepad_1_1GamepadEventPoller" ],
           [ "GamepadStickState", "structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html", "structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState" ],
           [ "IGamepadAdapter", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadAdapter.html", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadAdapter" ],
-          [ "IGamepadManager", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadManager.html", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadManager" ]
+          [ "IGamepadManager< out T >", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadManager-1-g.html", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadManager-1-g" ]
         ] ],
         [ "Keyboard", "namespaceGondwana_1_1Input_1_1Keyboard.html", [
           [ "IKeyboardAdapter", "interfaceGondwana_1_1Input_1_1Keyboard_1_1IKeyboardAdapter.html", "interfaceGondwana_1_1Input_1_1Keyboard_1_1IKeyboardAdapter" ],
@@ -245,7 +245,7 @@ var annotated_dup =
         ] ],
         [ "RenderSurfaceAdapterBase", "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html", "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase" ],
         [ "RenderSurfaceAdapterResizedEventArgs", "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html", "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs" ],
-        [ "RenderSurfaceHost", "classGondwana_1_1Rendering_1_1RenderSurfaceHost.html", "classGondwana_1_1Rendering_1_1RenderSurfaceHost" ],
+        [ "RenderSurfaceHost< TBackbuffer >", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g" ],
         [ "RenderSurfaceHostBase", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBase" ],
         [ "RenderSurfaceHostBindEventArgs", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBindEventArgs.html", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBindEventArgs" ]
       ] ],
