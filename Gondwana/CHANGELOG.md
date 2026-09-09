@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
 - Add DirectSceneLayerDarknessOverlay ([#293](https://github.com/Isthimius/Gondwana/pull/293))
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+- Validate projects and assets and serve published browser builds ([#332](https://github.com/Isthimius/Gondwana/pull/332))
 
 
 

@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 - Align blazor tooling with webgl workflow ([#311](https://github.com/Isthimius/Gondwana/pull/311))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+- Manage Gondwana package versions and feature references ([#332](https://github.com/Isthimius/Gondwana/pull/332))
+- Validate projects and assets and serve published browser builds ([#332](https://github.com/Isthimius/Gondwana/pull/332))
 
 
 
@@ -26,6 +28,7 @@ All notable changes to this project will be documented in this file.
 ## Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 - Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
+- Document project lifecycle commands and safety boundaries ([#332](https://github.com/Isthimius/Gondwana/pull/332))
 
 
 

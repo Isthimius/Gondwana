@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 - Add DirectSceneLayerDarknessOverlay ([#293](https://github.com/Isthimius/Gondwana/pull/293))
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+- Validate projects and assets and serve published browser builds ([#332](https://github.com/Isthimius/Gondwana/pull/332))
 
 
 
@@ -407,6 +408,8 @@ All notable changes to this project will be documented in this file.
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 - Align blazor tooling with webgl workflow ([#311](https://github.com/Isthimius/Gondwana/pull/311))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+- Manage Gondwana package versions and feature references ([#332](https://github.com/Isthimius/Gondwana/pull/332))
+- Validate projects and assets and serve published browser builds ([#332](https://github.com/Isthimius/Gondwana/pull/332))
 
 
 
@@ -423,6 +426,7 @@ All notable changes to this project will be documented in this file.
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 - Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
+- Document project lifecycle commands and safety boundaries ([#332](https://github.com/Isthimius/Gondwana/pull/332))
 
 
 
@@ -529,7 +533,6 @@ All notable changes to this project will be documented in this file.
 - Add side scroller and zelda prototypes ([#289](https://github.com/Isthimius/Gondwana/pull/289))
 - Publish immutable api releases ([#320](https://github.com/Isthimius/Gondwana/pull/320))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
-- Categorize audio testing and templates in release notes ([#331](https://github.com/Isthimius/Gondwana/pull/331))
 
 
 
