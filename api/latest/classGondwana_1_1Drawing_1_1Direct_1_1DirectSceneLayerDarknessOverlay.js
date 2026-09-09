@@ -1,0 +1,26 @@
+var classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay =
+[
+    [ "RevealSource", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay_1_1RevealSource.html", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay_1_1RevealSource" ],
+    [ "DirectSceneLayerDarknessOverlay", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#a0593fb21e768944174b87369544769dd", null ],
+    [ "AddRevealSource", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#ae32b007dc5edffb21a9a9bc35b8931eb", null ],
+    [ "ClearRevealSources", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#a42e31e99d8e296280adc67d12f1fb9cc", null ],
+    [ "Dispose", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#ac9352ed6c7ef4ff3c70d2cea9ef061d6", null ],
+    [ "OnDraw", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#a8a7abf3797b3ddc619dd5ad530916d19", null ],
+    [ "RemoveRevealSource", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#a1b3d1a195300201f26f53f801394549a", null ],
+    [ "SetDarknessColor", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#aa57fd0fd508b3c59147667f8da3c4a3a", null ],
+    [ "SetDarknessOpacity", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#aaf92f4ab755f608da99d0baea3951357", null ],
+    [ "SetDarknessWorldBounds", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#a9e4e743488e5188a1a7826f56b263cc8", null ],
+    [ "SetInnerClearRadiusRatio", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#ac99313b5ed0ac8df74ebfcfad91dad36", null ],
+    [ "SetMidpointRadiusRatio", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#afefc24004b9782b8d2f5d0fa544e5205", null ],
+    [ "SetMidpointStrength", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#a15816989f8198d1a6ffe155a7ee4750b", null ],
+    [ "TrackLight", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#a06d198ebd4bc3e3f0efa7d4582d21a67", null ],
+    [ "TrackLightLayer", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#a77399ebf9b6c1665e229bafbf0ba285b", null ],
+    [ "UntrackLight", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#ad3e18ab2ba9067b212b2fd10cdf6fb24", null ],
+    [ "DarknessColor", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#abfaddce792a2295b3f86b3fb4339352a", null ],
+    [ "DarknessOpacity", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#a348cae0603b76bd98218ff725f7e9887", null ],
+    [ "DarknessWorldBounds", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#a5076794d136d0508389c95a6ec5fa91e", null ],
+    [ "InnerClearRadiusRatio", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#a70444e5d468dee6f5edafbb1fbbb5d2b", null ],
+    [ "MidpointRadiusRatio", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#aa3939d8daf4b4dd842e9de8afe829162", null ],
+    [ "MidpointStrength", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#a675cb316d31825d17468c7c2bebaef55", null ],
+    [ "RevealSources", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#a72dabb27e4bd5783e7b249960e66c5fa", null ]
+];
