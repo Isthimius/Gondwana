@@ -16,3 +16,5 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           configuration-path: .github/labeler.yml
+          # Preserve existing/manual labels; apply these rules going forward only.
+          sync-labels: false

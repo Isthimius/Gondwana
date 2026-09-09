@@ -1,71 +1,129 @@
+# Match a non-CHANGELOG file within each rule, not the generated changelogs.
+# Keep each positive glob paired with its exclusion so mixed PRs still match.
 gondwana-core:
   - changed-files:
-    - any-glob-to-any-file: 'Gondwana/**'
-  
+    - all-globs-to-any-file:
+      - 'Gondwana/**'
+      - '!**/CHANGELOG.md'
+
 gondwana-widgets:
   - changed-files:
-    - any-glob-to-any-file: 'Gondwana.Widgets/**'
+    - all-globs-to-any-file:
+      - 'Gondwana.Widgets/**'
+      - '!**/CHANGELOG.md'
 
 gondwana-avalonia:
   - changed-files:
-    - any-glob-to-any-file:
+    - all-globs-to-any-file:
       - 'Gondwana.Avalonia/**'
+      - '!**/CHANGELOG.md'
+    - all-globs-to-any-file:
       - 'Gondwana.Avalonia.Hosting/**'
+      - '!**/CHANGELOG.md'
 
 gondwana-blazor:
   - changed-files:
-    - any-glob-to-any-file:
+    - all-globs-to-any-file:
       - 'Gondwana.Blazor/**'
+      - '!**/CHANGELOG.md'
+    - all-globs-to-any-file:
       - 'Gondwana.Blazor.Hosting/**'
+      - '!**/CHANGELOG.md'
 
 gondwana-winforms:
   - changed-files:
-    - any-glob-to-any-file:
+    - all-globs-to-any-file:
       - 'Gondwana.WinForms/**'
+      - '!**/CHANGELOG.md'
+    - all-globs-to-any-file:
       - 'Gondwana.WinForms.Hosting/**'
+      - '!**/CHANGELOG.md'
 
 gondwana-audio:
   - changed-files:
-    - any-glob-to-any-file: 'Gondwana.Audio.Midi/**'
+    - all-globs-to-any-file:
+      - 'Gondwana.Audio.Midi/**'
+      - '!**/CHANGELOG.md'
 
 gondwana-hosting:
   - changed-files:
-    - any-glob-to-any-file: 'Gondwana.Hosting/**'
+    - all-globs-to-any-file:
+      - 'Gondwana.Hosting/**'
+      - '!**/CHANGELOG.md'
 
 gondwana-input:
   - changed-files:
-    - any-glob-to-any-file: 'Gondwana.Input.SDL2/**'
+    - all-globs-to-any-file:
+      - 'Gondwana.Input.SDL2/**'
+      - '!**/CHANGELOG.md'
 
 gondwana-video:
   - changed-files:
-    - any-glob-to-any-file: 'Gondwana.Video/**'
+    - all-globs-to-any-file:
+      - 'Gondwana.Video/**'
+      - '!**/CHANGELOG.md'
 
 gondwana-cli:
   - changed-files:
-    - any-glob-to-any-file: 'Tooling/Gondwana.Cli/**'
+    - all-globs-to-any-file:
+      - 'Tooling/Gondwana.Cli/**'
+      - '!**/CHANGELOG.md'
 
 gondwana-templates:
   - changed-files:
-    - any-glob-to-any-file: 'Tooling/Gondwana.Templates/**'
+    - all-globs-to-any-file:
+      - 'Tooling/Gondwana.Templates/**'
+      - '!**/CHANGELOG.md'
 
 tooling:
   - changed-files:
-    - any-glob-to-any-file: 'Tooling/**'
+    - all-globs-to-any-file:
+      - 'Tooling/**'
+      - '!**/CHANGELOG.md'
 
 demo:
   - changed-files:
-    - any-glob-to-any-file: 'Demos/**'
+    - all-globs-to-any-file:
+      - 'Demos/**'
+      - '!**/CHANGELOG.md'
 
 documentation:
   - changed-files:
-    - any-glob-to-any-file:
+    - all-globs-to-any-file:
       - 'docs/**'
+      - '!**/CHANGELOG.md'
+    - all-globs-to-any-file:
       - '*.md'
+      - '!**/CHANGELOG.md'
+    - all-globs-to-any-file:
       - '**/*.md'
+      - '!**/CHANGELOG.md'
 
 chore:
   - changed-files:
-    - any-glob-to-any-file:
+    - all-globs-to-any-file:
       - '.github/**'
+      - '!**/CHANGELOG.md'
+    - all-globs-to-any-file:
       - '*.props'
+      - '!**/CHANGELOG.md'
+    - all-globs-to-any-file:
       - '*.json'
+      - '!**/CHANGELOG.md'
+
+# Audio projects at any depth, including future Gondwana.Audio variants.
+audio:
+  - changed-files:
+    - all-globs-to-any-file:
+      - '**/*Gondwana.Audio*/**'
+      - '!**/CHANGELOG.md'
+
+# Cover the current test tree and future Gondwana.Testing projects.
+testing:
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'Testing/**'
+      - '!**/CHANGELOG.md'
+    - all-globs-to-any-file:
+      - '**/Gondwana.Testing*/**'
+      - '!**/CHANGELOG.md'
