@@ -76,6 +76,25 @@ internal sealed class ServeCommand : AsyncCommand<ServeCommand.Settings>
 
 internal static class PublishedServer
 {
+    internal sealed record PublishedFile(string RelativePath, string FullPath);
+
+    internal static IReadOnlyDictionary<string, PublishedFile> IndexFiles(string root)
+    {
+        var files = new Dictionary<string, PublishedFile>(StringComparer.Ordinal);
+        var options = new EnumerationOptions
+        {
+            RecurseSubdirectories = true,
+            AttributesToSkip = FileAttributes.ReparsePoint,
+            IgnoreInaccessible = false
+        };
+        foreach (var file in Directory.EnumerateFiles(root, "*", options))
+        {
+            var relative = Path.GetRelativePath(root, file).Replace('\\', '/');
+            files.Add(relative, new PublishedFile(relative, SafeFilePath.Resolve(root, relative)));
+        }
+        return files;
+    }
+
     internal static string BasePath(string root)
     {
         var html = File.ReadAllText(Path.Combine(root, "index.html"));
@@ -91,6 +110,7 @@ internal static class PublishedServer
     public static async Task Run(string root, int port, Action<string> ready, CancellationToken cancellationToken)
     {
         var basePath = BasePath(root);
+        var files = IndexFiles(root);
         using var listener = new HttpListener();
         listener.Prefixes.Add($"http://localhost:{port}/");
         listener.Start();
@@ -103,7 +123,7 @@ internal static class PublishedServer
             {
                 var context = await listener.GetContextAsync().WaitAsync(cancellationToken);
                 requests.RemoveAll(t => t.IsCompleted);
-                requests.Add(Respond(context, root, basePath, cancellationToken));
+                requests.Add(Respond(context, root, basePath, files, cancellationToken));
             }
         }
         catch (Exception ex) when (cancellationToken.IsCancellationRequested && ex is HttpListenerException or ObjectDisposedException or OperationCanceledException) { }
@@ -114,7 +134,7 @@ internal static class PublishedServer
         }
     }
 
-    private static async Task Respond(HttpListenerContext context, string root, string basePath, CancellationToken cancellationToken)
+    private static async Task Respond(HttpListenerContext context, string root, string basePath, IReadOnlyDictionary<string, PublishedFile> files, CancellationToken cancellationToken)
     {
         var response = context.Response;
         try
@@ -130,7 +150,13 @@ internal static class PublishedServer
             if (!urlPath.StartsWith(basePath, StringComparison.Ordinal)) { response.StatusCode = 404; return; }
             var name = Uri.UnescapeDataString(urlPath[basePath.Length..]);
             if (name.Length == 0) name = "index.html";
-            var path = SafeFilePath.Resolve(root, name);
+            SafeFilePath.ValidateRelative(name);
+            // Only filesystem-discovered values reach file APIs. Request data is
+            // a lookup key, never a component of a filesystem path.
+            if (!files.TryGetValue(name, out var file)) { response.StatusCode = 404; return; }
+            // Recheck link ancestry in case the published tree changed after indexing.
+            SafeFilePath.Resolve(root, file.RelativePath);
+            var path = file.FullPath;
             if (!File.Exists(path)) { response.StatusCode = 404; return; }
             response.ContentType = ContentType(path);
             using var stream = File.OpenRead(path);

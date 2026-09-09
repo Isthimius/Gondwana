@@ -35,7 +35,7 @@ internal sealed class AssetsListCommand : Command<AssetsListCommand.Settings>
                     throw new ArgumentException("Unknown asset type: " + settings.TypeFilter);
                 filter = parsed;
             }
-            using var bundle = BundleHelper.Open(settings.File, settings.Password);
+            using var bundle = BundleHelper.Open(settings.File, settings.Password, testData: false);
             var entries = bundle.GetAllEntries().OrderBy(e => e.AssetType).ThenBy(e => e.AssetName, StringComparer.Ordinal).ToArray();
             if (summary)
             {

@@ -164,4 +164,27 @@ public sealed class ProjectDevelopmentTests : IDisposable
         Assert.Equal("2.6.0", version);
         await Assert.ThrowsAsync<InvalidOperationException>(() => PackageVersions.LatestCommonStable(["Gondwana"], _ => Task.FromResult(new[] { "3.0.0-beta" })));
     }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void AssetScan_ReportsUnreadableDirectory_AndContinuesWithSiblings(bool denied)
+    {
+        var blocked = Directory.CreateDirectory(Path.Combine(root, "blocked")).FullName;
+        var readable = Directory.CreateDirectory(Path.Combine(root, "readable")).FullName;
+        var asset = Path.Combine(readable, "valid.gts");
+        File.WriteAllText(asset, "fixture");
+        var warnings = new List<string>();
+        var files = ProjectHealth.SourceFiles(root, (path, _) => warnings.Add(path), path =>
+        {
+            if (path == blocked)
+            {
+                if (denied) throw new UnauthorizedAccessException("Access denied");
+                throw new IOException("Directory disappeared");
+            }
+            return new DirectoryInfo(path).GetFileSystemInfos();
+        }).ToArray();
+        Assert.Equal(new[] { blocked }, warnings);
+        Assert.Equal(new[] { asset }, files);
+    }
 }

@@ -49,7 +49,7 @@ internal static class ProjectHealth
             if (!File.Exists(path) && !Directory.Exists(path)) Report("Referenced file", item.Name.LocalName == "ProjectReference" ? "Fail" : "Warning", $"Missing {include}" + (item.Name.LocalName == "ProjectReference" ? "" : " (may be generated during build)"));
         }
         int bundles = 0, sheets = 0;
-        foreach (var file in SourceFiles(root))
+        foreach (var file in SourceFiles(root, (path, error) => Report(Path.GetRelativePath(root, path), "Warning", "Asset scan incomplete: " + error)))
         {
             var extension = Path.GetExtension(file).ToLowerInvariant();
             if (extension is not (".gts" or ".gaf" or ".assets")) continue;
@@ -78,14 +78,22 @@ internal static class ProjectHealth
         return results;
     }
 
-    private static IEnumerable<string> SourceFiles(string directory)
+    internal static IEnumerable<string> SourceFiles(string directory, Action<string, string> warning, Func<string, FileSystemInfo[]>? readEntries = null)
     {
-        foreach (var file in Directory.EnumerateFiles(directory).OrderBy(p => p, StringComparer.Ordinal))
-            if ((File.GetAttributes(file) & FileAttributes.ReparsePoint) == 0) yield return file;
-        foreach (var child in Directory.EnumerateDirectories(directory).OrderBy(p => p, StringComparer.Ordinal))
+        readEntries ??= path => new DirectoryInfo(path).GetFileSystemInfos();
+        FileSystemInfo[]? entries = null;
+        try { entries = readEntries(directory); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { warning(directory, ex.Message); }
+        if (entries is null) yield break;
+        foreach (var entry in entries.OrderBy(e => e.FullName, StringComparer.Ordinal))
         {
-            if (new[] { "bin", "obj", ".git", ".vs", "node_modules" }.Contains(Path.GetFileName(child), StringComparer.OrdinalIgnoreCase) || (File.GetAttributes(child) & FileAttributes.ReparsePoint) != 0) continue;
-            foreach (var file in SourceFiles(child)) yield return file;
+            FileAttributes? attributes = null;
+            try { attributes = entry.Attributes; }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { warning(entry.FullName, ex.Message); }
+            if (attributes is null || (attributes & FileAttributes.ReparsePoint) != 0) continue;
+            if ((attributes & FileAttributes.Directory) == 0) { yield return entry.FullName; continue; }
+            if (new[] { "bin", "obj", ".git", ".vs", "node_modules" }.Contains(entry.Name, StringComparer.OrdinalIgnoreCase)) continue;
+            foreach (var file in SourceFiles(entry.FullName, warning, readEntries)) yield return file;
         }
     }
 

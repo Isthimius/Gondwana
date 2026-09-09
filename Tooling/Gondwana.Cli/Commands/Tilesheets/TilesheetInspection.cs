@@ -1,4 +1,5 @@
 using Gondwana.Assets;
+using Gondwana.Cli.Commands.Assets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using SkiaSharp;
 
@@ -62,5 +63,5 @@ internal sealed record TilesheetInspection(TilesheetDefinition? Definition, int?
         return new(definition, width, height, errors);
     }
 
-    private static string Resolve(string root, string path) => Path.GetFullPath(Path.Combine(root, path.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar)));
+    private static string Resolve(string root, string path) => SafeFilePath.Resolve(root, path);
 }

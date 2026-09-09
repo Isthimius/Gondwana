@@ -193,4 +193,48 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         Assert.Equal(0, Run("validate", file));
         Assert.Equal(1, Run("validate", Bundle("TilesheetDefinition_bad.gts")));
     }
+
+    [Theory]
+    [InlineData("../image.png")]
+    [InlineData("..\\image.png")]
+    [InlineData("/image.png")]
+    [InlineData("C:\\image.png")]
+    public void Tilesheet_RejectsEscapingImageAndBundleReferences(string reference)
+    {
+        var definition = Definition();
+        var path = Path.Combine(root, "untrusted.gts");
+        foreach (var image in new[] { new TilesheetImageDefinition { FilePath = reference }, new TilesheetImageDefinition { AssetsFilePath = reference, AssetEntryName = "image.png" } })
+        {
+            definition.Image = image;
+            TilesheetDefinitionSerializer.Save(path, definition);
+            var result = TilesheetInspection.FromFile(path);
+            Assert.Null(result.Width);
+            Assert.Contains(result.Errors, e => e.Contains("Unsafe asset path"));
+            var packed = Path.Combine(root, "untrusted.assets");
+            using (var bundle = AssetsFile.LoadOrCreate(packed))
+            {
+                bundle.Add(AssetTypes.TilesheetDefinition, path, "untrusted.gts");
+                bundle.Save();
+            }
+            Assert.Contains(BundleHelper.ValidateContents(packed, null), e => e.Contains("Unsafe asset path"));
+        }
+    }
+
+    [Fact]
+    public void Inspection_SkipsPayloadIntegrityPass_WhileValidationAndExtractionEnforceIt()
+    {
+        var path = Path.Combine(root, "bad-crc.assets");
+        using (var zip = ZipFile.Open(path, ZipArchiveMode.Create))
+        using (var writer = new StreamWriter(zip.CreateEntry("Misc_data.txt", CompressionLevel.NoCompression).Open())) writer.Write("original payload");
+        var bytes = File.ReadAllBytes(path);
+        var offset = bytes.AsSpan().IndexOf(System.Text.Encoding.UTF8.GetBytes("original payload"));
+        Assert.True(offset >= 0);
+        bytes[offset] = (byte)'X';
+        File.WriteAllBytes(path, bytes);
+        Assert.Equal(0, Run("inspect", path));
+        Assert.Equal(1, Run("validate", path));
+        var output = Path.Combine(root, "out");
+        Assert.Equal(1, Run("unpack", path, output));
+        Assert.False(Directory.Exists(output));
+    }
 }

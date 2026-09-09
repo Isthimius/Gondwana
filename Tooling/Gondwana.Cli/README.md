@@ -32,6 +32,7 @@ Gondwana package and project references, version mismatches, optional hosting,
 missing literal file references, browser configuration, asset bundles, and `.gts`
 files. It excludes `bin`, `obj`, `.git`, `.vs`, `node_modules`, and directory links
 from asset discovery. Failures return exit code 1; warnings alone return 0.
+Unreadable scan directories or entries produce warnings; other directories are still scanned.
 Conditional/imported settings and potentially build-generated resources are not
 treated as definite errors. Protected bundles produce a warning; inspect them with
 `assets validate --password` separately.
@@ -94,6 +95,8 @@ Top-level `pack` remains an alias with its existing options and overwrite behavi
 `assets generate-keys` is registered alongside the other asset commands.
 `list` and `inspect` display native asset type, name/path, and uncompressed bytes;
 `inspect` also shows the bundle path, total entry count, and bundle file size.
+Listing and inspection check archive structure and keys but skip the full integrity-data
+pass; use `assets validate` for that check. The engine still loads entry data once.
 `list`, `inspect`, and `unpack` accept `-t|--type` and `-p|--password`.
 
 Validation checks ZIP integrity/decryption, native entry keys, duplicate keys,
@@ -123,9 +126,12 @@ and frame metadata outside the grid. Negative collision insets are valid expansi
 zero-sized collision geometry is permitted. Image header inspection does not
 validate every encoded pixel. No runtime tilesheet is registered or changed.
 
-Loose image/bundle paths resolve relative to the GTS directory. Packed definitions
-use the containing bundle and resolve external paths relative to its directory,
-matching the engine. A loose definition with only `Image.AssetEntryName` requires
+During CLI inspection, loose image/bundle paths must stay within the GTS directory.
+Packed definitions use the containing bundle and resolve relative paths within its
+directory. Absolute paths, parent traversal, and links are rejected before opening
+the referenced image or bundle. This is stricter than runtime engine loading so
+inspecting an untrusted definition cannot open arbitrary external files.
+A loose definition with only `Image.AssetEntryName` requires
 bundle context: validate the packed bundle instead. An externally referenced
 protected image bundle cannot currently receive a separate password. Failures
 return 1 and produce actionable diagnostics; successful validation returns 0.
@@ -155,6 +161,9 @@ stops cleanly with Ctrl+C. It needs no Node or Python installation. It serves th
 uncompressed published files; production compression negotiation, SPA fallback,
 HTTPS, and remote hosting belong to a production server. Use `run blazor` for the
 development server instead.
+Files are indexed at startup; requests can only select an indexed published file.
+Restart `serve` after publishing files with new names. Directory and file links
+are excluded from the index, and link ancestry is checked again before serving.
 
 ---
 

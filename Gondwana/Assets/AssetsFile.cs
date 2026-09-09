@@ -44,7 +44,10 @@ public sealed class AssetsFile : IDisposable
     /// Strictly validates an existing bundle's entry keys and archive integrity.
     /// Unlike runtime loading, rejects unrecognized and duplicate entries.
     /// </summary>
-    public static void Validate(string path, string? password = null)
+    /// <param name="path">Existing bundle to inspect.</param>
+    /// <param name="password">Optional password for protected entries.</param>
+    /// <param name="testData">Whether to decompress and verify all payload data; false checks structure and keys only.</param>
+    public static void Validate(string path, string? password = null, bool testData = true)
     {
         using var archive = new ZipFile(File.OpenRead(path));
         archive.Password = password;
@@ -57,7 +60,7 @@ public sealed class AssetsFile : IDisposable
                 throw new InvalidDataException($"Invalid bundle entry key: {entry.Name}");
             if (!keys.Add(key)) throw new InvalidDataException($"Duplicate bundle entry key: {entry.Name}");
         }
-        if (!archive.TestArchive(testData: true)) throw new InvalidDataException("Bundle integrity check failed. Check the password and archive contents.");
+        if (!archive.TestArchive(testData)) throw new InvalidDataException("Bundle integrity check failed. Check the password and archive contents.");
     }
 
     [JsonConstructor]

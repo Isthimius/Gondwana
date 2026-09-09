@@ -38,6 +38,8 @@ public sealed class PublishedServerTests : IDisposable
     {
         File.WriteAllText(Path.Combine(root, "index.html"), "<base href=\"/game/\">fixture");
         File.WriteAllBytes(Path.Combine(root, "test.wasm"), [0, 97, 115, 109]);
+        Directory.CreateDirectory(Path.Combine(root, "nested"));
+        File.WriteAllText(Path.Combine(root, "nested", "a b.js"), "nested asset");
         var probe = new TcpListener(IPAddress.Loopback, 0);
         probe.Start();
         var port = ((IPEndPoint)probe.LocalEndpoint).Port;
@@ -51,6 +53,7 @@ public sealed class PublishedServerTests : IDisposable
             if (first == server) await server; // Preserve bind failure details.
             var url = await ready.Task.WaitAsync(stop.Token);
             using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
+            File.WriteAllText(Path.Combine(root, "late.txt"), "not part of the published index");
             using var response = await client.GetAsync(url + "test.wasm");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("application/wasm", response.Content.Headers.ContentType!.MediaType);
@@ -63,8 +66,17 @@ public sealed class PublishedServerTests : IDisposable
             using var missing = await client.GetAsync(url + "missing.wasm");
             Assert.Equal(HttpStatusCode.NotFound, missing.StatusCode);
             Assert.True(missing.Headers.Contains("Cross-Origin-Embedder-Policy"));
-            using var unsafePath = await client.GetAsync(url + "%2e%2e%5csecret.txt");
-            Assert.Equal(HttpStatusCode.BadRequest, unsafePath.StatusCode);
+            using var nested = await client.GetAsync(url + "nested/a%20b.js");
+            Assert.Equal("nested asset", await nested.Content.ReadAsStringAsync());
+            using var late = await client.GetAsync(url + "late.txt");
+            Assert.Equal(HttpStatusCode.NotFound, late.StatusCode);
+            foreach (var name in new[] { "%2e%2e%5csecret.txt", "nested%2f..%2fsecret.txt", "%2fsecret.txt", "C%3a%5csecret.txt", "test.wasm%3astream" })
+            {
+                using var unsafePath = await client.GetAsync(url + name);
+                Assert.Equal(HttpStatusCode.BadRequest, unsafePath.StatusCode);
+            }
+            using var doubleEncoded = await client.GetAsync(url + "%252e%252e%255csecret.txt");
+            Assert.Equal(HttpStatusCode.NotFound, doubleEncoded.StatusCode);
         }
         finally { stop.Cancel(); await server.WaitAsync(TimeSpan.FromSeconds(5)); }
     }

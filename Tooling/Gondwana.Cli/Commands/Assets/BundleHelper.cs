@@ -12,11 +12,11 @@ internal static class BundleHelper
         return archive.Cast<ZipEntry>().Any(e => e.IsCrypted);
     }
 
-    public static AssetsFile Open(string path, string? password)
+    public static AssetsFile Open(string path, string? password, bool testData = true)
     {
         // Validate before loading because the runtime intentionally ignores unknown
         // entries and collapses duplicate keys for ordinary application usage.
-        AssetsFile.Validate(path, password);
+        AssetsFile.Validate(path, password, testData);
         var bundle = AssetsFile.LoadOrCreate(path, password);
         try
         {
