@@ -529,6 +529,7 @@ All notable changes to this project will be documented in this file.
 - Add side scroller and zelda prototypes ([#289](https://github.com/Isthimius/Gondwana/pull/289))
 - Publish immutable api releases ([#320](https://github.com/Isthimius/Gondwana/pull/320))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+- Categorize audio testing and templates in release notes ([#331](https://github.com/Isthimius/Gondwana/pull/331))
 
 
 
