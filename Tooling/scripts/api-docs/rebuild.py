@@ -11,7 +11,7 @@ import sys
 import tarfile
 import tempfile
 
-from build import ROOT
+from build import ROOT, read_html
 from publish import publish, redirect, RELEASE
 
 EXPECTED = tuple('v' + v for v in (
@@ -23,6 +23,9 @@ REVIEWED_LEGACY = 'b67c960918d46858a1c5f166350322060dede084'
 PAGES = 'refs/heads/gh-pages'
 MAX_SITE = 750 * 1024 * 1024
 MAX_FILE = 100 * 1024 * 1024
+# New standard assets emitted by the pinned 1.14.0 development publisher.
+# Keep this explicit: arbitrary new api/latest files must still stop migration.
+DOXYGEN_114_ASSETS = {'clipboard.js', 'cookie.js', 'doxygen_crawl.html'}
 
 
 def git(*args, cwd=ROOT):
@@ -78,7 +81,8 @@ def audit_legacy(commit):
         generated_name = re.fullmatch(
             r'(?:(?:class|struct|interface|namespace|dir_)[A-Za-z0-9_-]+|[A-Za-z0-9_]+_8cs_source)\.(?:html|js|png|svg)', relative)
         search_asset = re.fullmatch(r'search/[a-z0-9_]+\.(?:js|html|css|png|svg)', relative)
-        if not entry.startswith('100644 blob ') or not (path in reviewed or generated_name or search_asset):
+        if not entry.startswith('100644 blob ') or not (
+                path in reviewed or generated_name or search_asset or relative in DOXYGEN_114_ASSETS):
             changes.append(path)
     if changes:
         raise ValueError('Unreviewed Pages content; stop and review: ' + repr(changes))
@@ -184,7 +188,7 @@ def validate_site(site, record):
         if provenance != dict(version=version, commit=expected_sha):
             raise ValueError('Source provenance mismatch')
         for page in folder.rglob('*.html'):
-            html = page.read_text(encoding='utf-8')
+            html = read_html(page)
             if 'v2.5.3' in html or 'Version 2.5.3' in html:
                 raise ValueError('Fictional release label in ' + str(page))
         for page in [folder / 'index.html', *pages]:
@@ -219,10 +223,18 @@ def build_history(state, destination):
             label = ('Development (master) - ' + json.loads((source / 'version.json').read_text())['version'] + '-unreleased'
                      if version == 'latest' else 'Version ' + version[1:])
             output = temporary / 'build'
-            with (destination / (version + '.log')).open('w', encoding='utf-8') as log:
-                subprocess.run([sys.executable, str(ROOT / 'Tooling/scripts/api-docs/build.py'),
-                                '--version', label, '--source-root', str(source), '--output', str(output)],
-                               stdout=log, stderr=subprocess.STDOUT, check=True)
+            log_path = destination / (version + '.log')
+            try:
+                with log_path.open('w', encoding='utf-8') as log:
+                    subprocess.run([sys.executable, str(ROOT / 'Tooling/scripts/api-docs/build.py'),
+                                    '--version', label, '--source-root', str(source), '--output', str(output)],
+                                   stdout=log, stderr=subprocess.STDOUT, check=True)
+            except subprocess.CalledProcessError:
+                # Make the failed page visible directly in Actions; retain the
+                # full log as before. Only log display tolerates invalid bytes.
+                print(f'Build failed for {version}; last lines of {log_path}:', flush=True)
+                print('\n'.join(log_path.read_text(encoding='utf-8', errors='replace').splitlines()[-30:]), flush=True)
+                raise
             write_json(output / 'html/source.json', dict(version=version, commit=commit))
             publish(site, output / 'html', version)
     result = validate_site(site, record)

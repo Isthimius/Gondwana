@@ -56,11 +56,11 @@ jobs:
       - name: Get version from NBGV
         run: echo "VERSION=$(nbgv get-version -v NuGetPackageVersion)" >> $GITHUB_ENV
 
+      - name: Install Doxygen
+        run: bash Tooling/scripts/api-docs/install-doxygen.sh
+
       - name: Validate API publisher
         run: python3 -m unittest discover -s Tooling/scripts/api-docs -p 'test_*.py' -v
-
-      - name: Install Doxygen
-        run: sudo apt-get update && sudo apt-get install -y doxygen
 
       - name: Generate development API docs
         run: python3 Tooling/scripts/api-docs/build.py --version "Development (master) - ${VERSION}" --output "$RUNNER_TEMP/api-build"
