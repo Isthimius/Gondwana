@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 
 ## Fixed
 - Improve bitmap render adapters ([#291](https://github.com/Isthimius/Gondwana/pull/291))
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
 
 
 
