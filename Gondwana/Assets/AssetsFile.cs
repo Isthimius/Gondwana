@@ -128,7 +128,7 @@ public sealed class AssetsFile : IDisposable
 
         try
         {
-            Engine.Logger.LogInformation("Loading assets file: {FilePath}", FilePath);
+            Engine.Logger.LogInformation("Loading assets file.");
 
             _zipFile?.Close();
             _zipFile = null;
@@ -386,8 +386,7 @@ public sealed class AssetsFile : IDisposable
         }
 
         Engine.Logger.LogInformation(
-            "Assets file saved: {FilePath} (Encrypted: {Encrypted})",
-            FilePath,
+            "Assets file saved (Encrypted: {Encrypted}).",
             UseEncryption);
 
         // Keep the in-memory copy as the source of truth.
