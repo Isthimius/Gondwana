@@ -32,6 +32,7 @@ All notable changes to this project will be documented in this file.
 - Support custom logger dependency injection ([#270](https://github.com/Isthimius/Gondwana/pull/270))
 - Correct view coordinate conversion on GPU path to address occasional tearing ([#290](https://github.com/Isthimius/Gondwana/pull/290))
 - Resolve timer edge case ([#295](https://github.com/Isthimius/Gondwana/pull/295))
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
 
 
 
@@ -61,6 +62,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+### Fixed
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
+
+
+
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 
@@ -73,6 +79,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### Fixed
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
 
 
 
@@ -93,6 +104,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Improve bitmap render adapters ([#291](https://github.com/Isthimius/Gondwana/pull/291))
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
 
 
 
@@ -116,6 +128,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+### Fixed
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
+
+
+
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 
@@ -129,6 +146,11 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### Fixed
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
 
 
 
@@ -153,6 +175,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+### Fixed
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
+
+
+
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 
@@ -165,6 +192,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### Fixed
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
 
 
 
@@ -183,6 +215,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+### Fixed
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
+
+
+
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 
@@ -195,6 +232,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### Fixed
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
 
 
 
@@ -214,6 +256,11 @@ All notable changes to this project will be documented in this file.
 - Add spaceduel demo ([#263](https://github.com/Isthimius/Gondwana/pull/263))
 - Add popup and toast overlays ([#281](https://github.com/Isthimius/Gondwana/pull/281))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### Fixed
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
 
 
 
@@ -239,6 +286,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Improve bitmap render adapters ([#291](https://github.com/Isthimius/Gondwana/pull/291))
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
 
 
 
@@ -262,6 +310,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+### Fixed
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
+
+
+
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 
@@ -276,6 +329,11 @@ All notable changes to this project will be documented in this file.
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 - Align blazor tooling with webgl workflow ([#311](https://github.com/Isthimius/Gondwana/pull/311))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### Fixed
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
 
 
 
@@ -307,6 +365,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+### Fixed
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
+
+
+
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 
@@ -319,6 +382,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+
+
+
+### Fixed
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
 
 
 
@@ -374,7 +442,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Add explicit permissions block ([#266](https://github.com/Isthimius/Gondwana/pull/266))
-- Correct Linux API source encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
 
 
 
@@ -425,6 +493,7 @@ All notable changes to this project will be documented in this file.
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
 - Adding bitbucket mirror
+- Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
 
 # [v2.5.2] - 2026-07-26
 

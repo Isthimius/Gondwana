@@ -33,6 +33,7 @@ All notable changes to this project will be documented in this file.
 - Support custom logger dependency injection ([#270](https://github.com/Isthimius/Gondwana/pull/270))
 - Correct view coordinate conversion on GPU path to address occasional tearing ([#290](https://github.com/Isthimius/Gondwana/pull/290))
 - Resolve timer edge case ([#295](https://github.com/Isthimius/Gondwana/pull/295))
+- Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
 
 
 
