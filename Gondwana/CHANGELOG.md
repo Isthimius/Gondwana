@@ -40,6 +40,7 @@ All notable changes to this project will be documented in this file.
 ## Refactoring
 - Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
 - Use fixed-step simulation timing ([#305](https://github.com/Isthimius/Gondwana/pull/305))
+- Use seconds float for init wait timeout ([#336](https://github.com/Isthimius/Gondwana/pull/336))
 
 
 
@@ -61,6 +62,8 @@ All notable changes to this project will be documented in this file.
 
 ## Other Changes
 - Standardizing CollisionAdjust and Overlap values
+- Fix Engine initialization exception safety and add regression tests ([#336](https://github.com/Isthimius/Gondwana/pull/336))
+- Make Engine start init wait timeout configurable ([#336](https://github.com/Isthimius/Gondwana/pull/336))
 
 # v2.5.2 - July 26, 2026
 
