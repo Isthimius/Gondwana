@@ -434,10 +434,11 @@ public sealed class Engine : IDisposable
         {
             if (IsInitializing)
             {
-                var initializationWaitTimeout = Configuration.StartInitializationWaitTimeout;
+                var initializationWaitTimeoutSeconds = Configuration.StartInitializationWaitTimeout;
+                var initializationWaitTimeout = TimeSpan.FromSeconds(initializationWaitTimeoutSeconds);
                 if (!_initDone.Wait(initializationWaitTimeout))
                     throw new InvalidOperationException(
-                        $"Engine initialization did not complete within '{initializationWaitTimeout:c}'.");
+                        $"Engine initialization did not complete within {initializationWaitTimeoutSeconds:0.###} seconds.");
 
                 if (!IsInitialized)
                     throw new InvalidOperationException(

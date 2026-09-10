@@ -58,7 +58,7 @@ public sealed class EngineInitializationTests
 
         try
         {
-            engine.Configuration.StartInitializationWaitTimeout = TimeSpan.FromMilliseconds(1);
+            engine.Configuration.StartInitializationWaitTimeout = 0.001f;
             SetInitializationState(engine, isInitializing: true, isInitialized: false);
             GetInitDoneEvent(engine).Reset();
 
@@ -66,6 +66,7 @@ public sealed class EngineInitializationTests
                 () => engine.Start(new SynchronizationContext()));
 
             Assert.Contains("did not complete within", exception.Message);
+            Assert.Contains("0.001 seconds", exception.Message);
         }
         finally
         {

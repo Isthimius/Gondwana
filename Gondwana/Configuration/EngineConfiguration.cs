@@ -69,22 +69,21 @@ public partial class EngineConfiguration
         set => _maxTimerDrivenSimulationSteps = Math.Max(1, value);
     }
 
-    private TimeSpan _startInitializationWaitTimeout = TimeSpan.FromSeconds(30);
+    private float _startInitializationWaitTimeout = 30f;
 
     /// <summary>
     /// Gets or sets how long <see cref="Engine.Start(SynchronizationContext)"/> waits when
     /// another thread is already running <see cref="Engine.Initialize"/>.
     /// </summary>
     /// <value>
-    /// A positive timeout value. Values less than or equal to <see cref="TimeSpan.Zero"/> are
-    /// clamped to <see cref="TimeSpan.FromMilliseconds(double)"/> with a value of 1.
-    /// The default is 30 seconds.
+    /// A positive timeout in seconds. Values less than or equal to <c>0</c> are clamped to
+    /// <c>0.001</c> seconds (1 millisecond). The default is 30 seconds.
     /// </value>
-    public TimeSpan StartInitializationWaitTimeout
+    public float StartInitializationWaitTimeout
     {
         get => _startInitializationWaitTimeout;
         set => _startInitializationWaitTimeout =
-            value <= TimeSpan.Zero ? TimeSpan.FromMilliseconds(1) : value;
+            value <= 0f ? 0.001f : value;
     }
 
     private bool _vSync = true;

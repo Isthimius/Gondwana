@@ -69,12 +69,12 @@ public sealed class FixedStepAccumulatorTests
         {
             TimerDrivenSimulationRate = 0,
             MaxTimerDrivenSimulationSteps = -1,
-            StartInitializationWaitTimeout = TimeSpan.Zero
+            StartInitializationWaitTimeout = 0
         };
 
         Assert.Equal(1, configuration.TimerDrivenSimulationRate);
         Assert.Equal(1, configuration.MaxTimerDrivenSimulationSteps);
-        Assert.Equal(TimeSpan.FromMilliseconds(1), configuration.StartInitializationWaitTimeout);
+        Assert.Equal(0.001f, configuration.StartInitializationWaitTimeout);
     }
 
     private static long GetStepTicks() =>
