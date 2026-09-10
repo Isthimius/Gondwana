@@ -291,62 +291,65 @@ public sealed class Engine : IDisposable
         _initDone.Reset();
 
         _isInitializing = true;
-
-        if (UiDispatcher == null)
-            PreInitialization?.Invoke();
-        else
-            UiDispatcher!.Post(() => PreInitialization?.Invoke());
-
         try
         {
-            _configurationFile?.Dispose();
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error saving the engine configuration during initialization.");
-        }
+            if (UiDispatcher == null)
+                PreInitialization?.Invoke();
+            else
+                UiDispatcher!.Post(() => PreInitialization?.Invoke());
 
-        _configurationFile = EngineConfigurationFile.Load(configFileName, autoSaveConfig);
-        Configuration = _configurationFile.EngineConfig;
-
-        ConfigureLogging(Configuration);
-
-        if (Configuration.StateFiles?.Any() ?? false)
-        {
-            foreach (var stateFile in Configuration.StateFiles)
+            try
             {
-                EngineState.MergeFromFile(stateFile.File, stateFile.IsCompressed, stateFile.OverwriteExisting, stateFile.EngineStateParts);
+                _configurationFile?.Dispose();
             }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error saving the engine configuration during initialization.");
+            }
+
+            _configurationFile = EngineConfigurationFile.Load(configFileName, autoSaveConfig);
+            Configuration = _configurationFile.EngineConfig;
+
+            ConfigureLogging(Configuration);
+
+            if (Configuration.StateFiles?.Any() ?? false)
+            {
+                foreach (var stateFile in Configuration.StateFiles)
+                {
+                    EngineState.MergeFromFile(stateFile.File, stateFile.IsCompressed, stateFile.OverwriteExisting, stateFile.EngineStateParts);
+                }
+            }
+
+            if (keyboardAdapter != null)
+                KeyboardEventPoller.Initialize(keyboardAdapter);
+
+            if (mouseAdapter != null)
+                MouseEventPoller.Initialize(mouseAdapter);
+
+            if (touchAdapter != null)
+                Input.TouchAdapter = touchAdapter;
+
+            Input.GamepadManager = gamepadManager;
+
+            if (UiDispatcher == null)
+                PostInitialization?.Invoke();
+            else
+                UiDispatcher!.Post(() => PostInitialization?.Invoke());
+
+            EnginePluginRegistry.InvokeInitialize(this);
+
+            _isInitialized = true;
+
+            if (UiDispatcher == null)
+                InitializationComplete?.Invoke();
+            else
+                UiDispatcher!.Post(() => InitializationComplete?.Invoke());
         }
-
-        if (keyboardAdapter != null)
-            KeyboardEventPoller.Initialize(keyboardAdapter);
-
-        if (mouseAdapter != null)
-            MouseEventPoller.Initialize(mouseAdapter);
-
-        if (touchAdapter != null)
-            Input.TouchAdapter = touchAdapter;
-
-        Input.GamepadManager = gamepadManager;
-
-        if (UiDispatcher == null)
-            PostInitialization?.Invoke();
-        else
-            UiDispatcher!.Post(() => PostInitialization?.Invoke());
-
-        EnginePluginRegistry.InvokeInitialize(this);
-
-        _isInitializing = false;
-        _isInitialized = true;
-
-        if (UiDispatcher == null)
-            InitializationComplete?.Invoke();
-        else
-            UiDispatcher!.Post(() => InitializationComplete?.Invoke());
-
-        // signal that init is done
-        _initDone.Set();
+        finally
+        {
+            _isInitializing = false;
+            _initDone.Set();
+        }
     }
 
     /// <summary>
@@ -431,12 +434,23 @@ public sealed class Engine : IDisposable
         {
             if (IsInitializing)
             {
-                _initDone.Wait();        // someone else is initializing—wait for it
+                var initializationWaitTimeoutSeconds = Configuration.StartInitializationWaitTimeout;
+                var initializationWaitTimeout = TimeSpan.FromSeconds(initializationWaitTimeoutSeconds);
+                if (!_initDone.Wait(initializationWaitTimeout))
+                    throw new InvalidOperationException(
+                        $"Engine initialization did not complete within {initializationWaitTimeoutSeconds:0.###} seconds.");
+
+                if (!IsInitialized)
+                    throw new InvalidOperationException(
+                        "Engine initialization failed on another thread. Call Initialize() again and resolve the initialization error.");
             }
             else
             {
                 Initialize();            // we're the initializer—do it now
             }
+
+            if (!IsInitialized)
+                throw new InvalidOperationException("Engine failed to initialize.");
         }
 
         _isTimerDriven = false;
