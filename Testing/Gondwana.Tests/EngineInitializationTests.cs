@@ -8,7 +8,7 @@ public sealed class EngineInitializationTests
     [Fact]
     public void Initialize_WhenInitializationThrows_ResetsInitializationStateAndSignalsCompletion()
     {
-        using var engine = CreateEngineInstance();
+        var engine = CreateEngineInstance();
         var invalidConfigPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.json");
         File.WriteAllText(invalidConfigPath, "{");
 
@@ -22,6 +22,7 @@ public sealed class EngineInitializationTests
         }
         finally
         {
+            GC.SuppressFinalize(engine);
             File.Delete(invalidConfigPath);
         }
     }
@@ -29,7 +30,7 @@ public sealed class EngineInitializationTests
     [Fact]
     public void Initialize_WhenPreviousInitializationFailed_CanRetrySuccessfully()
     {
-        using var engine = CreateEngineInstance();
+        var engine = CreateEngineInstance();
         var invalidConfigPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.json");
         File.WriteAllText(invalidConfigPath, "{");
 
@@ -45,6 +46,7 @@ public sealed class EngineInitializationTests
         }
         finally
         {
+            GC.SuppressFinalize(engine);
             File.Delete(invalidConfigPath);
         }
     }
