@@ -20,7 +20,6 @@ All notable changes to this project will be documented in this file.
 - Add DirectSceneLayerDarknessOverlay ([#293](https://github.com/Isthimius/Gondwana/pull/293))
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
-- Validate projects and assets and serve published browser builds ([#332](https://github.com/Isthimius/Gondwana/pull/332))
 
 
 
@@ -34,8 +33,6 @@ All notable changes to this project will be documented in this file.
 - Correct view coordinate conversion on GPU path to address occasional tearing ([#290](https://github.com/Isthimius/Gondwana/pull/290))
 - Resolve timer edge case ([#295](https://github.com/Isthimius/Gondwana/pull/295))
 - Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
-- Constrain inspected paths and harden project asset scanning ([#332](https://github.com/Isthimius/Gondwana/pull/332))
-- Omit filesystem paths from routine bundle logs ([#332](https://github.com/Isthimius/Gondwana/pull/332))
 
 
 
@@ -410,14 +407,11 @@ All notable changes to this project will be documented in this file.
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 - Align blazor tooling with webgl workflow ([#311](https://github.com/Isthimius/Gondwana/pull/311))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
-- Manage Gondwana package versions and feature references ([#332](https://github.com/Isthimius/Gondwana/pull/332))
-- Validate projects and assets and serve published browser builds ([#332](https://github.com/Isthimius/Gondwana/pull/332))
 
 
 
 ### Fixed
 - Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
-- Constrain inspected paths and harden project asset scanning ([#332](https://github.com/Isthimius/Gondwana/pull/332))
 
 
 
@@ -429,7 +423,6 @@ All notable changes to this project will be documented in this file.
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 - Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
-- Document project lifecycle commands and safety boundaries ([#332](https://github.com/Isthimius/Gondwana/pull/332))
 
 
 
@@ -542,6 +535,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Add explicit permissions block ([#266](https://github.com/Isthimius/Gondwana/pull/266))
 - Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
+- Stop requiring retired API history workflow in publisher tests ([#333](https://github.com/Isthimius/Gondwana/pull/333))
 
 
 
