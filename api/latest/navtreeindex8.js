@@ -1,5 +1,7 @@
 var NAVTREEINDEX8 =
 {
+"classGondwana_1_1Effects_1_1EarthquakeEffect.html#ade146934fdb118ebecfda08559f54608":[1,0,0,6,1,3],
+"classGondwana_1_1Effects_1_1EarthquakeEffect.html#ae453e1a28b0f4426a50a726f49292458":[0,0,0,6,1,4],
 "classGondwana_1_1Effects_1_1EarthquakeEffect.html#ae453e1a28b0f4426a50a726f49292458":[1,0,0,6,1,4],
 "classGondwana_1_1Effects_1_1EffectsManager.html":[0,0,0,6,2],
 "classGondwana_1_1Effects_1_1EffectsManager.html":[1,0,0,6,2],
@@ -247,7 +249,5 @@ var NAVTREEINDEX8 =
 "classGondwana_1_1Hosting_1_1GameHostBase.html#a332c71dfd84ee52dc7bdb2aabc9f3905":[1,0,0,8,0,31],
 "classGondwana_1_1Hosting_1_1GameHostBase.html#a33aefd7ff2427402e075af995563d111":[0,0,0,8,0,37],
 "classGondwana_1_1Hosting_1_1GameHostBase.html#a33aefd7ff2427402e075af995563d111":[1,0,0,8,0,37],
-"classGondwana_1_1Hosting_1_1GameHostBase.html#a38c70b8d3afe90cb0c3837957448a88c":[0,0,0,8,0,14],
-"classGondwana_1_1Hosting_1_1GameHostBase.html#a38c70b8d3afe90cb0c3837957448a88c":[1,0,0,8,0,14],
-"classGondwana_1_1Hosting_1_1GameHostBase.html#a3f34005c50744e316edad63029186c3c":[0,0,0,8,0,28]
+"classGondwana_1_1Hosting_1_1GameHostBase.html#a38c70b8d3afe90cb0c3837957448a88c":[0,0,0,8,0,14]
 };

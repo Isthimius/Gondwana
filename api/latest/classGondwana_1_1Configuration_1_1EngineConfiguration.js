@@ -18,6 +18,7 @@ var classGondwana_1_1Configuration_1_1EngineConfiguration =
     [ "MsaaSampleCount", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#ab614f324c6124fb90cbd818886755602", null ],
     [ "SamplingTimeForCPS", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#ac855c43adbb76108ebf60b3a4e607f37", null ],
     [ "SamplingTimeForCPSTicks", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a54425e8fee2e8de5f3bb71b94fa9bcbc", null ],
+    [ "StartInitializationWaitTimeout", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a99240603db61bfb9d1f4222f9a9322fa", null ],
     [ "StateFiles", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a9b0e346219ec6961dcdfb9425538bc55", null ],
     [ "TargetFPS", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#aedc1761c6b8c8261ec99bd8bc1b17a33", null ],
     [ "this[string section, string key]", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a386b698cf8ebe1fe937f980e6b51b3b7", null ],

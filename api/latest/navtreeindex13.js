@@ -1,5 +1,7 @@
 var NAVTREEINDEX13 =
 {
+"classGondwana_1_1TypedValueBag.html#a1aecaf38c23c6f2702f1c92c2f298918":[1,0,0,26,4],
+"classGondwana_1_1TypedValueBag.html#a31034c42886d93f50f6d0d0bde6c9be7":[0,0,0,27,11],
 "classGondwana_1_1TypedValueBag.html#a31034c42886d93f50f6d0d0bde6c9be7":[1,0,0,26,11],
 "classGondwana_1_1TypedValueBag.html#a37b2e5a4289bb731a75ea77fb904f481":[0,0,0,27,0],
 "classGondwana_1_1TypedValueBag.html#a37b2e5a4289bb731a75ea77fb904f481":[1,0,0,26,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX13 =
 "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#adfd8a31281d9a356c4d1793abf6f399e":[1,0,0,16,1,1,18],
 "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#ae1e275a44ea43355fb66e1d6da49edb0":[0,0,0,17,1,1,17],
 "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#ae1e275a44ea43355fb66e1d6da49edb0":[1,0,0,16,1,1,17],
-"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#af43320a015c59398665954d09c3f38e1":[0,0,0,17,1,1,6],
-"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#af43320a015c59398665954d09c3f38e1":[1,0,0,16,1,1,6],
-"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#af90a73236139110fa16e0a3b86aa4721":[0,0,0,17,1,1,10]
+"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#af43320a015c59398665954d09c3f38e1":[0,0,0,17,1,1,6]
 };

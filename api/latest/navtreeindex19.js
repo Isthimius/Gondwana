@@ -1,5 +1,7 @@
 var NAVTREEINDEX19 =
 {
+"namespaceGondwana_1_1Input_1_1Gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92a945d5e233cf7d6240f6b783b36a374ff":[0,0,0,9,0,7,3],
+"namespaceGondwana_1_1Input_1_1Gamepad_1_1SDL2.html":[0,0,0,9,0,0],
 "namespaceGondwana_1_1Input_1_1Keyboard.html":[0,0,0,9,1],
 "namespaceGondwana_1_1Input_1_1Keyboard.html#a9a26020facee161978f965f4c451a92e":[0,0,0,9,1,5],
 "namespaceGondwana_1_1Input_1_1Keyboard.html#a9a26020facee161978f965f4c451a92ea2b61e0d5977f2e38f06e16281c802b47":[0,0,0,9,1,5,2],
@@ -247,7 +249,5 @@ var NAVTREEINDEX19 =
 "structGondwana_1_1Drawing_1_1Frame.html#ab487a23fe686579c18ce47c8da420a04":[1,0,0,5,5,4],
 "structGondwana_1_1Drawing_1_1Frame.html#ab51bd0c4cc46a9b63a7d998ff4506fa8":[0,0,0,5,6,6],
 "structGondwana_1_1Drawing_1_1Frame.html#ab51bd0c4cc46a9b63a7d998ff4506fa8":[1,0,0,5,5,6],
-"structGondwana_1_1Drawing_1_1Frame.html#ab53f41f950e96e17b2c06986fff37739":[0,0,0,5,6,15],
-"structGondwana_1_1Drawing_1_1Frame.html#ab53f41f950e96e17b2c06986fff37739":[1,0,0,5,5,15],
-"structGondwana_1_1Drawing_1_1Frame.html#abb6185314c900dc1669db5aeb8b69538":[0,0,0,5,6,0]
+"structGondwana_1_1Drawing_1_1Frame.html#ab53f41f950e96e17b2c06986fff37739":[0,0,0,5,6,15]
 };
