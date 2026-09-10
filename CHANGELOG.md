@@ -588,6 +588,7 @@ All notable changes to this project will be documented in this file.
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
 - Adding bitbucket mirror
+- Add unittest assertion for workflow validation ([#333](https://github.com/Isthimius/Gondwana/pull/333))
 
 # [v2.5.2] - 2026-07-26
 
