@@ -83,7 +83,9 @@ public partial class EngineConfiguration
     {
         get => _startInitializationWaitTimeout;
         set => _startInitializationWaitTimeout =
-            value <= 0f ? 0.001f : value;
+            !float.IsFinite(value) || value <= 0f
+                ? 0.001f
+                : Math.Min(value, (float)TimeSpan.MaxValue.TotalSeconds);
     }
 
     private bool _vSync = true;
