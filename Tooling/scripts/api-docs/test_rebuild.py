@@ -13,12 +13,15 @@ from source_filter import filtered_source
 
 class RebuildTests(unittest.TestCase):
     def test_every_api_workflow_uses_pinned_installer_before_tests(self):
-        for name in ('docs.yml', 'release.yml', 'api-history-rebuild.yml'):
-            workflow = (rebuild.ROOT / '.github/workflows' / name).read_text()
-            installer = 'bash Tooling/scripts/api-docs/install-doxygen.sh'
-            self.assertIn(installer, workflow)
-            self.assertNotIn('apt-get install -y doxygen', workflow)
-            self.assertLess(workflow.index(installer), workflow.index('python3 -m unittest'))
+        # The one-time history rebuild workflow was retired after migration.
+        # Keep both permanent publishers mandatory rather than skipping missing files.
+        for name in ('docs.yml', 'release.yml'):
+            with self.subTest(workflow=name):
+                workflow = (rebuild.ROOT / '.github/workflows' / name).read_text(encoding='utf-8')
+                installer = 'bash Tooling/scripts/api-docs/install-doxygen.sh'
+                self.assertIn(installer, workflow)
+                self.assertNotIn('apt-get install -y doxygen', workflow)
+                self.assertLess(workflow.index(installer), workflow.index('python3 -m unittest'))
 
     def test_build_rejects_invalid_generated_html(self):
         with tempfile.TemporaryDirectory() as temp:
