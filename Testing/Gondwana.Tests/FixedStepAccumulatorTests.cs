@@ -68,11 +68,13 @@ public sealed class FixedStepAccumulatorTests
         var configuration = new EngineConfiguration
         {
             TimerDrivenSimulationRate = 0,
-            MaxTimerDrivenSimulationSteps = -1
+            MaxTimerDrivenSimulationSteps = -1,
+            StartInitializationWaitTimeout = TimeSpan.Zero
         };
 
         Assert.Equal(1, configuration.TimerDrivenSimulationRate);
         Assert.Equal(1, configuration.MaxTimerDrivenSimulationSteps);
+        Assert.Equal(TimeSpan.FromMilliseconds(1), configuration.StartInitializationWaitTimeout);
     }
 
     private static long GetStepTicks() =>

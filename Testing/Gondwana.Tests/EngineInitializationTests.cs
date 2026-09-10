@@ -51,6 +51,28 @@ public sealed class EngineInitializationTests
         }
     }
 
+    [Fact]
+    public void Start_WhenInitializationInProgress_UsesConfiguredWaitTimeout()
+    {
+        var engine = CreateEngineInstance();
+
+        try
+        {
+            engine.Configuration.StartInitializationWaitTimeout = TimeSpan.FromMilliseconds(1);
+            SetInitializationState(engine, isInitializing: true, isInitialized: false);
+            GetInitDoneEvent(engine).Reset();
+
+            var exception = Assert.Throws<InvalidOperationException>(
+                () => engine.Start(new SynchronizationContext()));
+
+            Assert.Contains("did not complete within", exception.Message);
+        }
+        finally
+        {
+            GC.SuppressFinalize(engine);
+        }
+    }
+
     private static Engine CreateEngineInstance() =>
         (Engine)Activator.CreateInstance(typeof(Engine), nonPublic: true)!;
 
@@ -63,5 +85,21 @@ public sealed class EngineInitializationTests
 
         return (ManualResetEventSlim)(field.GetValue(engine)
             ?? throw new InvalidOperationException("Engine._initDone is null."));
+    }
+
+    private static void SetInitializationState(Engine engine, bool isInitializing, bool isInitialized)
+    {
+        var initializingField = typeof(Engine).GetField(
+            "_isInitializing",
+            BindingFlags.Instance | BindingFlags.NonPublic)
+            ?? throw new InvalidOperationException("Could not find Engine._isInitializing via reflection.");
+
+        var initializedField = typeof(Engine).GetField(
+            "_isInitialized",
+            BindingFlags.Instance | BindingFlags.NonPublic)
+            ?? throw new InvalidOperationException("Could not find Engine._isInitialized via reflection.");
+
+        initializingField.SetValue(engine, isInitializing);
+        initializedField.SetValue(engine, isInitialized);
     }
 }

@@ -222,7 +222,6 @@ public sealed class Engine : IDisposable
     private volatile bool _isInitialized = false;
     private volatile bool _isInitializing = false;
     private readonly ManualResetEventSlim _initDone = new(false);
-    private static readonly TimeSpan _startInitializationWaitTimeout = TimeSpan.FromSeconds(30);
 
     /// <summary>
     /// Performs one-time or on-demand initialization of the <see cref="Engine"/> instance, 
@@ -435,9 +434,10 @@ public sealed class Engine : IDisposable
         {
             if (IsInitializing)
             {
-                if (!_initDone.Wait(_startInitializationWaitTimeout))
+                var initializationWaitTimeout = Configuration.StartInitializationWaitTimeout;
+                if (!_initDone.Wait(initializationWaitTimeout))
                     throw new InvalidOperationException(
-                        $"Engine initialization did not complete within {_startInitializationWaitTimeout.TotalSeconds:0} seconds.");
+                        $"Engine initialization did not complete within '{initializationWaitTimeout:c}'.");
 
                 if (!IsInitialized)
                     throw new InvalidOperationException(
