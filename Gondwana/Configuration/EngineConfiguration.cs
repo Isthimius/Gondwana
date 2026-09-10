@@ -1,4 +1,4 @@
-﻿using Gondwana.Logging;
+using Gondwana.Logging;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Timers;
@@ -12,6 +12,52 @@ namespace Gondwana.Configuration;
 [JsonObject]
 public partial class EngineConfiguration
 {
+    private float _renderScale = 1f;
+
+    /// <summary>
+    /// Establishes logical Backbuffer dimensions from current adapter dimensions. Default is one;
+    /// values above one enable supersampling. Later adapter resizes affect presentation only.
+    /// Changing this value requests a new resolution on each surface's rendering thread.
+    /// </summary>
+    public float RenderScale
+    {
+        get => _renderScale;
+        set
+        {
+            if (!float.IsFinite(value) || value <= 0)
+                throw new ArgumentOutOfRangeException(nameof(value), "RenderScale must be finite and positive.");
+            if (_renderScale == value) return;
+            var surfaces = RenderSurfaceHostRegistry.Snapshot();
+            // Validate every dimension before publishing intent or queuing any changes.
+            foreach (var surface in surfaces)
+            {
+                if (surface.RenderSurfaceAdapter is { } adapter)
+                {
+                    PresentationTransform.ScaleDimension(adapter.Width, value);
+                    PresentationTransform.ScaleDimension(adapter.Height, value);
+                }
+            }
+            _renderScale = value;
+            foreach (var surface in surfaces)
+                surface.RequestRenderScale(value);
+        }
+    }
+
+    private RenderScalingFilter _renderScalingFilter = RenderScalingFilter.Linear;
+
+    /// <summary>Filtering for the finished Backbuffer image; independent of View.Zoom and tile filtering.</summary>
+    public RenderScalingFilter RenderScalingFilter
+    {
+        get => _renderScalingFilter;
+        set
+        {
+            if (!Enum.IsDefined(value)) throw new ArgumentOutOfRangeException(nameof(value));
+            _renderScalingFilter = value;
+            foreach (var surface in RenderSurfaceHostRegistry.Snapshot())
+                surface.InvalidatePresentation();
+        }
+    }
+
     private int _targetFPS = 60;
 
     /// <summary>
@@ -127,7 +173,7 @@ public partial class EngineConfiguration
     /// <see cref="GpuBackbuffer"/> instances created after this property is set.  Because the
     /// GPU render-target surface must be recreated to change the sample count, the new value takes
     /// effect the next time <see cref="GpuBackbuffer.Initialize"/> is called on each surface
-    /// (e.g. on the next window resize).
+    /// (e.g. on an explicit render-resolution change).
     /// </para>
     /// <para>
     /// A value of <c>1</c> disables MSAA.  Common higher values are <c>2</c>, <c>4</c>, and

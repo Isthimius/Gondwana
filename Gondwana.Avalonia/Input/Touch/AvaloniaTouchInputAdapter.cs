@@ -182,7 +182,7 @@ public sealed class AvaloniaTouchInputAdapter : ITouchAdapter, IDisposable
     private static Point GetPosition(PointerEventArgs e, Control? relativeTo)
     {
         var pos = e.GetPosition(relativeTo);
-        return new Point((int)pos.X, (int)pos.Y);
+        return PointerCoordinates.ToScreenPx(relativeTo, new PointF((float)pos.X, (float)pos.Y));
     }
 
     /// <summary>

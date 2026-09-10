@@ -126,8 +126,10 @@ public sealed class LoggingIntegrationRegressionTests
 [Collection("Global engine state")]
 public sealed class RenderSurfacePresentationRegressionTests
 {
-    [Fact]
-    public void PresentBackbufferRect_ClampsDirtyRectangleToBackbufferBounds()
+    [Theory]
+    [InlineData(100, 80, 70, 50, 30, 30)]
+    [InlineData(200, 200, 140, 120, 60, 60)]
+    public void PresentBackbufferRect_ClampsDirtyRectangleToBackbufferBounds(int width, int height, int left, int top, int destWidth, int destHeight)
     {
         var engine = Engine.Instance;
         var uiDispatcherProperty = typeof(Engine).GetProperty(
@@ -145,6 +147,10 @@ public sealed class RenderSurfacePresentationRegressionTests
             var adapter = new RecordingAdapter(100, 80);
             using var host = new RenderSurfaceHost<BitmapBackbuffer>(adapter);
 
+            adapter.Resize(width, height);
+            // First presentation establishes the complete retained image, including margins.
+            host.PresentBackbufferToAdapter();
+
             // Dirty tracking inflates by the supplied rectangle's dimensions,
             // producing (70, 50, 60, 60), which extends beyond the 100x80 backbuffer.
             host.Backbuffer.AddToBackbufferDirtyRectangle(
@@ -152,12 +158,12 @@ public sealed class RenderSurfacePresentationRegressionTests
 
             host.PresentBackbufferToAdapter();
 
-            Assert.Equal(1, adapter.PresentCount);
+            Assert.Equal(2, adapter.PresentCount);
             Assert.Equal(
                 new SKRectI(70, 50, 100, 80),
                 adapter.BufferRect!.Value);
             Assert.Equal(
-                SKRect.Create(70, 50, 30, 30),
+                SKRect.Create(left, top, destWidth, destHeight),
                 adapter.DestinationRect!.Value);
         }
         finally
@@ -171,6 +177,7 @@ public sealed class RenderSurfacePresentationRegressionTests
     private sealed class RecordingAdapter(int width, int height)
         : RenderSurfaceAdapterBase(width, height)
     {
+        internal void Resize(int width, int height) => SetDestinationSize(width, height);
         public int PresentCount { get; private set; }
         public SKRectI? BufferRect { get; private set; }
         public SKRect? DestinationRect { get; private set; }
@@ -183,6 +190,7 @@ public sealed class RenderSurfacePresentationRegressionTests
             PresentCount++;
             BufferRect = bufferRect;
             DestinationRect = destRect;
+            bufferImage.Dispose();
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using Gondwana.Input.Keyboard;
+using Gondwana.Input.Keyboard;
+using Gondwana.WinForms.Rendering;
 using Gondwana.Input.Mouse;
 
 namespace Gondwana.WinForms.Input.Mouse;
@@ -18,7 +19,12 @@ public sealed class WinFormsMouseAdapter : IMouseAdapter, IDisposable
     /// <summary>
     /// Gets the current position of the mouse cursor.
     /// </summary>
-    public Point CurrentPosition => _currentPosition;
+    public Point CurrentPosition => _control switch
+    {
+        WinFormGpuRenderSurfaceControl gpu => gpu.Adapter?.AdapterPxToScreenPx(_currentPosition) ?? _currentPosition,
+        WinFormBitmapRenderSurfaceControl bitmap => bitmap.Adapter.AdapterPxToScreenPx(_currentPosition),
+        _ => _currentPosition
+    };
     
     /// <summary>
     /// Gets the set of currently pressed mouse buttons, reconciled against the actual OS button

@@ -69,20 +69,6 @@ public partial class WinFormGpuRenderSurfaceControl : UserControl
         _adapter = new WinFormGpuRenderSurfaceAdapter(_glControl);
         Host = new RenderSurfaceHost<GpuBackbuffer>(_adapter);
 
-        var gpuBackbuffer = (GpuBackbuffer)Host.Backbuffer;
-
-        // Called once from the GL thread when the GRContext becomes available for the first time.
-        _adapter.GrContextFirstAvailable += (grContext) =>
-        {
-            gpuBackbuffer.Initialize(grContext, _adapter.Width, _adapter.Height);
-        };
-
-        // Called from the GL thread whenever the control is resized and the GRContext is ready.
-        _adapter.ResizeRequested += (grContext, w, h) =>
-        {
-            gpuBackbuffer.Initialize(grContext, w, h);
-        };
-
         // Register the host so the adapter drives all rendering on the GL thread.
         _adapter.SetHost(Host);
     }

@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using Gondwana.Blazor.Rendering;
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
@@ -17,12 +17,12 @@ public sealed class BlazorMouseAdapter : IMouseAdapter, IDisposable
     private readonly BlazorRenderSurfaceComponentBase _component;
     private readonly HashSet<GondwanaMouseButton> _pressed = new();
     private readonly object _pressedLock = new();
-    private Point _currentPosition;
+    private PointF _currentPosition;
     private KeyboardModifierState _modifiers;
     private int _scrollDelta;
 
     /// <inheritdoc/>
-    public Point CurrentPosition => _currentPosition;
+    public Point CurrentPosition => _component.ToScreenPx(_currentPosition.X, _currentPosition.Y);
 
     /// <inheritdoc/>
     public HashSet<GondwanaMouseButton> PressedButtons
@@ -92,7 +92,7 @@ public sealed class BlazorMouseAdapter : IMouseAdapter, IDisposable
 
     private void UpdatePosition(BrowserMouseEventArgs e)
     {
-        _currentPosition = new Point((int)e.OffsetX, (int)e.OffsetY);
+        _currentPosition = new PointF((float)e.OffsetX, (float)e.OffsetY);
 
         _modifiers = KeyboardModifierState.None;
         if (e.ShiftKey) _modifiers |= KeyboardModifierState.Shift;

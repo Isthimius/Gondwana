@@ -1,4 +1,4 @@
-﻿using Gondwana.Effects;
+using Gondwana.Effects;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
@@ -37,6 +37,12 @@ public abstract class RenderSurfaceHostBase : IDisposable
     /// Gets the in-memory <see cref="BackbufferBase"/> associated with the current rendering context.
     /// </summary>
     public abstract BackbufferBase Backbuffer { get; }
+
+    /// <summary>Actual scale used to fit this Backbuffer into its current adapter.</summary>
+    public float PresentationScale => RenderSurfaceAdapter?.PresentationScale ?? 0f;
+
+    internal virtual void RequestRenderScale(float scale) { }
+    internal virtual void InvalidatePresentation() { }
 
     /// <summary>
     /// Gets the source <see cref="Scenes.Scene"/> used for rendering operations.
@@ -112,13 +118,13 @@ public abstract class RenderSurfaceHostBase : IDisposable
 
     /// <summary>
     /// Renders the current scene frame and draws the GPU backbuffer surface directly to another
-    /// GPU canvas without creating an intermediate <see cref="SKImage"/> snapshot.
+    /// GPU canvas. Linear scaling uses a scoped GPU texture snapshot because direct surface drawing
+    /// does not support sampling options. No CPU pixel transfer is performed.
     /// </summary>
     /// <remarks>
     /// Call only from the active GPU paint callback while both surfaces share the current
     /// <see cref="GRContext"/>. The destination is drawn at the origin using the destination
-    /// canvas's current transform. The current Blazor WebGL path keeps the backbuffer and logical
-    /// destination dimensions equal.
+    /// canvas's current transform, followed by the adapter's aspect-preserving presentation transform.
     /// </remarks>
     /// <param name="destinationCanvas">The active platform GPU canvas.</param>
     /// <returns><see langword="true"/> when a GPU surface was rendered and drawn; otherwise <see langword="false"/>.</returns>
@@ -136,7 +142,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
 
         try
         {
-            destinationCanvas.DrawSurface(Backbuffer.Canvas.Surface, 0, 0);
+            DrawCurrentSurface(destinationCanvas);
             return true;
         }
         finally
@@ -147,7 +153,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
 
     /// <summary>
     /// Draws the existing GPU backbuffer surface directly to another GPU canvas without rendering
-    /// a new scene frame or creating an intermediate <see cref="SKImage"/> snapshot.
+    /// a new scene frame. Linear scaling uses a scoped GPU texture snapshot without CPU pixel transfer.
     /// </summary>
     /// <remarks>
     /// Call only from the active GPU paint callback while both surfaces share the current
@@ -163,8 +169,37 @@ public abstract class RenderSurfaceHostBase : IDisposable
         if (!Backbuffer.IsGlThreadRendered)
             return false;
 
-        destinationCanvas.DrawSurface(Backbuffer.Canvas.Surface, 0, 0);
+        DrawCurrentSurface(destinationCanvas);
         return true;
+    }
+
+    private void DrawCurrentSurface(SKCanvas canvas)
+    {
+        var presentation = RenderSurfaceAdapter?.Presentation ?? default;
+        canvas.Clear(Backbuffer.ClearColor);
+        if (presentation.Scale <= 0) return;
+        canvas.Save();
+        try
+        {
+            canvas.Translate(presentation.DestinationRect.Left, presentation.DestinationRect.Top);
+            canvas.Scale(presentation.Scale);
+            bool needsLinearSampling = Engine.Instance.Configuration.RenderScalingFilter == RenderScalingFilter.Linear &&
+                (presentation.Scale != 1f ||
+                 presentation.DestinationRect.Left != MathF.Floor(presentation.DestinationRect.Left) ||
+                 presentation.DestinationRect.Top != MathF.Floor(presentation.DestinationRect.Top));
+            if (needsLinearSampling)
+            {
+                // Skia's DrawSurface does not expose sampling and ignores SKPaint.FilterQuality.
+                // A scoped snapshot is a GPU texture view, not a readback or an intermediate copy.
+                using var image = Backbuffer.Snapshot();
+                canvas.DrawImage(image, 0, 0, RenderSurfaceAdapterBase.PresentationSampling);
+            }
+            else
+            {
+                canvas.DrawSurface(Backbuffer.Canvas.Surface, 0, 0);
+            }
+        }
+        finally { canvas.Restore(); }
     }
 
     /// <summary>

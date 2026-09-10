@@ -12,7 +12,7 @@ namespace Gondwana.Avalonia.Rendering;
 /// <remarks>
 /// <para>
 /// The adapter's primary role is to track the physical-pixel dimensions of the render target
-/// (consumed by <see cref="RenderSurfaceHost{T}"/> when computing the scene viewport) and to
+/// (used to fit the logical Backbuffer into the physical presentation surface) and to
 /// post <c>RequestNextFrameRendering()</c> to the UI thread after each engine foreground cycle.
 /// All actual GL operations — surface creation, rendering, and presentation — are handled by
 /// <see cref="AvaloniaGpuRenderSurfaceControl"/>.
@@ -43,20 +43,20 @@ public sealed class AvaloniaGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, 
     /// <param name="initialWidth">Initial width in physical pixels.</param>
     /// <param name="initialHeight">Initial height in physical pixels.</param>
     internal AvaloniaGpuRenderSurfaceAdapter(int initialWidth, int initialHeight)
-        : base(Math.Max(1, initialWidth), Math.Max(1, initialHeight))
+        : base(Math.Max(1, initialWidth), Math.Max(1, initialHeight), initialSizeAvailable: false)
     {
     }
 
     /// <summary>
     /// Updates the adapter's reported physical-pixel dimensions so that the
-    /// <see cref="RenderSurfaceHost{T}"/> computes the correct scene viewport.
+    /// presentation transform follows the current physical framebuffer.
     /// Called from <see cref="AvaloniaGpuRenderSurfaceControl"/> on each
     /// <c>OnOpenGlRender</c> before scene rendering begins.
     /// </summary>
     internal void UpdateDimensions(int physW, int physH)
     {
         if (!_disposed)
-            SetDestinationSize(Math.Max(1, physW), Math.Max(1, physH));
+            SetDestinationSize(Math.Max(0, physW), Math.Max(0, physH));
     }
 
     /// <summary>

@@ -19,10 +19,8 @@ public sealed class BitmapBackbuffer : BackbufferBase
     private SKSurface? _surface;
     private bool _disposed;
 
-    // resize request (written by UI thread, read by render thread)
-    private int _reqW, _reqH;           // 0 means "no request"
-
-    private int _resizeFlag;            // 0 = none, 1 = pending
+    private sealed record Resolution(int Width, int Height);
+    private Resolution? _requestedResolution;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BitmapBackbuffer"/> class with the specified dimensions.
@@ -52,9 +50,7 @@ public sealed class BitmapBackbuffer : BackbufferBase
     /// </remarks>
     protected internal override void RequestResize(int width, int height)
     {
-        Volatile.Write(ref _reqW, width);
-        Volatile.Write(ref _reqH, height);
-        Interlocked.Exchange(ref _resizeFlag, 1); // coalesce requests
+        Interlocked.Exchange(ref _requestedResolution, new(width, height));
     }
 
     /// <summary>
@@ -106,12 +102,12 @@ public sealed class BitmapBackbuffer : BackbufferBase
     protected internal override void BeginFrame()
     {
         // if a resize was requested, do it now (render thread only)...
-        if (Interlocked.Exchange(ref _resizeFlag, 0) == 1)
+        if (Interlocked.Exchange(ref _requestedResolution, null) is { } request)
         {
-            var w = Volatile.Read(ref _reqW);
-            var h = Volatile.Read(ref _reqH);
+            var w = request.Width;
+            var h = request.Height;
 
-            if (w > 0 && h > 0)
+            if (w > 0 && h > 0 && (w != Width || h != Height))
             {
                 lock (_gate)
                 {

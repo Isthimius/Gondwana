@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Gondwana.Input.Keyboard;
@@ -15,14 +15,14 @@ public sealed class AvaloniaMouseAdapter : IMouseAdapter, IDisposable
 {
     private readonly Control _control;
     private readonly HashSet<GondwanaMouseButton> _pressed = new();
-    private Point _currentPosition;
+    private PointF _currentPosition;
     private KeyboardModifierState _modifiers;
     private int _scrollDelta;
 
     /// <summary>
     /// Gets the current position of the pointer cursor in client (control-local) coordinates.
     /// </summary>
-    public Point CurrentPosition => _currentPosition;
+    public Point CurrentPosition => PointerCoordinates.ToScreenPx(_control, _currentPosition);
 
     /// <summary>
     /// Gets the set of currently pressed mouse buttons.
@@ -75,7 +75,7 @@ public sealed class AvaloniaMouseAdapter : IMouseAdapter, IDisposable
     private void UpdatePosition(PointerEventArgs e, Control? relativeTo)
     {
         var pos = e.GetPosition(relativeTo);
-        _currentPosition = new Point((int)pos.X, (int)pos.Y);
+        _currentPosition = new PointF((float)pos.X, (float)pos.Y);
 
         _modifiers = KeyboardModifierState.None;
         var km = e.KeyModifiers;

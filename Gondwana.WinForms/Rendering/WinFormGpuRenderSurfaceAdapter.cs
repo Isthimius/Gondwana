@@ -61,8 +61,8 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     /// <summary>
     /// Raised on the GL thread when the control has been resized and a valid
     /// <see cref="GRContext"/> is available.  The arguments are the context and the new
-    /// width and height in pixels.  Subscribe to call
-    /// <see cref="GpuBackbuffer.Initialize"/> with the new dimensions.
+    /// width and height in adapter pixels. This event is for presentation resources;
+    /// it must not be used to resize the logical Backbuffer.
     /// </summary>
     public event Action<GRContext, int, int>? ResizeRequested;
 
@@ -186,7 +186,7 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
             }
             else if (Interlocked.Exchange(ref _pendingResize, 0) == 1)
             {
-                // Subsequent resize: reinitialize the backbuffer's GPU resources on the GL thread.
+                // Notify consumers about presentation resource resize on the GL thread.
                 // WinForms controls can report zero size while minimized or before layout completes;
                 // suppress invalid resize requests so downstream GPU initialization is not attempted
                 // with non-positive dimensions.
@@ -196,6 +196,8 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
                     ResizeRequested?.Invoke(GrContext, width, height);
             }
         }
+
+        if (GrContext != null) _gpuBackbuffer?.EnsureInitialized(GrContext);
 
         var canvas = e.Surface.Canvas;
 
@@ -208,14 +210,7 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
             using var img = _host.GlRenderAndSnapshot();
             if (img != null)
             {
-                // DrawImage covers the full render target, so no pre-clear is needed.
-                // Clearing the window surface before blitting would cause a black flash
-                // that is visible when VSync is off (the monitor may scan between the
-                // clear and the blit, seeing the cleared back buffer).
-                var dst = SKRect.Create(0, 0,
-                    e.BackendRenderTarget.Width,
-                    e.BackendRenderTarget.Height);
-                canvas.DrawImage(img, dst);
+                DrawImage(canvas, img, ClearColor);
             }
             else
             {

@@ -13,6 +13,12 @@ namespace Gondwana.Blazor.Rendering;
 /// </remarks>
 public abstract class BlazorRenderSurfaceComponentBase : ComponentBase, IDisposable
 {
+    internal virtual Gondwana.Rendering.RenderSurfaceAdapterBase? InputSurfaceAdapter => null;
+
+    internal System.Drawing.Point ToScreenPx(double x, double y)
+        => InputSurfaceAdapter?.AdapterPxToScreenPx(new System.Drawing.PointF((float)x, (float)y))
+           ?? new System.Drawing.Point((int)Math.Floor(x), (int)Math.Floor(y));
+
     private const string DefaultCanvasStyle =
         "width: 100%; height: 100%; display: block; outline: none;";
 
@@ -82,14 +88,29 @@ public abstract class BlazorRenderSurfaceComponentBase : ComponentBase, IDisposa
     /// <summary>Forwards a browser wheel event to registered input adapters.</summary>
     protected void HandleWheel(WheelEventArgs e) => Wheel?.Invoke(e);
 
+    internal readonly record struct CanvasOffset(float Left, float Top);
+    internal virtual ValueTask<CanvasOffset> GetCanvasOffsetAsync() => ValueTask.FromResult(default(CanvasOffset));
+
+    private async Task ForwardTouch(TouchEventArgs args, Action<TouchEventArgs>? handler)
+    {
+        if (handler is null) return;
+        var offset = await GetCanvasOffsetAsync();
+        foreach (var point in args.ChangedTouches)
+        {
+            point.ClientX -= offset.Left;
+            point.ClientY -= offset.Top;
+        }
+        handler(args);
+    }
+
     /// <summary>Forwards a browser touch-start event to registered input adapters.</summary>
-    protected void HandleTouchStart(TouchEventArgs e) => TouchStart?.Invoke(e);
+    protected Task HandleTouchStart(TouchEventArgs e) => ForwardTouch(e, TouchStart);
 
     /// <summary>Forwards a browser touch-move event to registered input adapters.</summary>
-    protected void HandleTouchMove(TouchEventArgs e) => TouchMove?.Invoke(e);
+    protected Task HandleTouchMove(TouchEventArgs e) => ForwardTouch(e, TouchMove);
 
     /// <summary>Forwards a browser touch-end event to registered input adapters.</summary>
-    protected void HandleTouchEnd(TouchEventArgs e) => TouchEnd?.Invoke(e);
+    protected Task HandleTouchEnd(TouchEventArgs e) => ForwardTouch(e, TouchEnd);
 
     /// <summary>Forwards a browser touch-cancel event to registered input adapters.</summary>
     protected void HandleTouchCancel(TouchEventArgs e) => TouchCancel?.Invoke(e);

@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using Gondwana.Effects;
 using Gondwana.Logging;
 using Gondwana.Scenes;
@@ -96,7 +96,7 @@ public sealed class View
     /// Typically the main gameplay layer (parallax = 1).
     /// </param>
     /// <param name="screenPoint">
-    /// Mouse position in adapter/screen pixels relative to the render surface.
+    /// Mouse position in logical Backbuffer ScreenPx, after adapter input normalization.
     /// </param>
     /// <param name="targetZoom">
     /// Desired zoom factor after the animation completes.
@@ -359,7 +359,7 @@ public sealed class View
     }
 
     /// <summary>
-    /// Converts a screen-space rectangle (on the adapter) into a world-space rectangle
+    /// Converts a screen-space rectangle (on the logical Backbuffer) into a world-space rectangle
     /// for the given layer, respecting zoom, camera position, viewport offsets,
     /// and the layer's parallax factor.
     ///

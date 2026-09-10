@@ -38,7 +38,7 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
     /// <param name="control">The <see cref="AvaloniaBitmapRenderSurfaceControl"/> to target.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="control"/> is null.</exception>
     public AvaloniaBitmapRenderSurfaceAdapter(AvaloniaBitmapRenderSurfaceControl control)
-        : base(Math.Max(1, (int)control.Bounds.Width), Math.Max(1, (int)control.Bounds.Height))
+        : base(Math.Max(1, (int)control.Bounds.Width), Math.Max(1, (int)control.Bounds.Height), initialSizeAvailable: false)
     {
         _control = control ?? throw new ArgumentNullException(nameof(control));
         _control.SizeChanged += OnSizeChanged;
