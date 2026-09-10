@@ -21,6 +21,7 @@ class RebuildTests(unittest.TestCase):
                 installer = 'bash Tooling/scripts/api-docs/install-doxygen.sh'
                 self.assertIn(installer, workflow)
                 self.assertNotIn('apt-get install -y doxygen', workflow)
+                self.assertIn('python3 -m unittest', workflow)
                 self.assertLess(workflow.index(installer), workflow.index('python3 -m unittest'))
 
     def test_build_rejects_invalid_generated_html(self):
