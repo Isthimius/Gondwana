@@ -66,7 +66,9 @@ public sealed class EngineInitializationTests
                 () => engine.Start(new SynchronizationContext()));
 
             Assert.Contains("did not complete within", exception.Message);
-            Assert.Contains("0.001 seconds", exception.Message);
+            var expectedSeconds = engine.Configuration.StartInitializationWaitTimeout
+                .ToString("0.###", System.Globalization.CultureInfo.CurrentCulture);
+            Assert.Contains($"{expectedSeconds} seconds", exception.Message);
         }
         finally
         {
