@@ -192,7 +192,7 @@ _Gondwana is actively evolving, with an emphasis on strengthening the engine and
 
 * [x] WebAssembly support through Blazor
 * [ ] Tilesheet and SceneLayer tooling, including TMX support
-* [ ] Full platformer sample
+* [x] Full platformer sample
 * [x] WebGL-backed Blazor rendering adapter
 * [ ] Expanded 2D physics, including momentum, elasticity, and additional collision shapes
 * [ ] Native, first-class pathfinding

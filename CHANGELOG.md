@@ -535,7 +535,6 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Add explicit permissions block ([#266](https://github.com/Isthimius/Gondwana/pull/266))
 - Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
-- Stop requiring retired API history workflow in publisher tests ([#333](https://github.com/Isthimius/Gondwana/pull/333))
 
 
 
@@ -588,7 +587,7 @@ All notable changes to this project will be documented in this file.
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
 - Adding bitbucket mirror
-- Add unittest assertion for workflow validation ([#333](https://github.com/Isthimius/Gondwana/pull/333))
+- Mark item complete ([#334](https://github.com/Isthimius/Gondwana/pull/334))
 
 # [v2.5.2] - 2026-07-26
 
