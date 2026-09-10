@@ -140,6 +140,16 @@ See the **[Engine Wiki](https://github.com/Isthimius/Gondwana/wiki)** for detail
 
 ---
 
+### Render resolution and window resizing
+
+`Engine.Instance.Configuration.RenderScale` establishes the logical Backbuffer resolution
+(default `1f`; values above one enable supersampling). Window/canvas resize now fits the existing
+Backbuffer with centered letterboxing instead of resizing it. Explicitly changing RenderScale
+requests a new resolution from the current adapter size. PresentationScale is read-only, and
+RenderScalingFilter selects Linear (default) or NearestNeighbor. See the
+[viewport scaling migration and validation notes](docs/viewport-scaling.md) for input coordinates,
+backend behavior, and Bitmap performance measurements.
+
 ## 📦 Packages
 
 Runtime packages are available on NuGet. Install only the pieces your project needs.
