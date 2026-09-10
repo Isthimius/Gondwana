@@ -63,6 +63,7 @@ All notable changes to this project will be documented in this file.
 - Standardizing CollisionAdjust and Overlap values
 - Fix Engine initialization exception safety and add regression tests ([#336](https://github.com/Isthimius/Gondwana/pull/336))
 - Make Engine start init wait timeout configurable ([#336](https://github.com/Isthimius/Gondwana/pull/336))
+- Refactor EngineConfiguration timeout setter logic ([#336](https://github.com/Isthimius/Gondwana/pull/336))
 
 ## Gondwana.Audio.Browser
 
