@@ -320,6 +320,9 @@ public string DefaultCollisionProfile
 
         foreach (var sprite in snapshot)
         {
+            if (sprite is null)
+                continue;
+
             if (ReferenceEquals(sprite.SceneLayer, sceneLayer))
                 sprite.RefreshCollisionProfile();
         }
