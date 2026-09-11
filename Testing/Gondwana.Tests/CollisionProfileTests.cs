@@ -121,6 +121,23 @@ public sealed class CollisionProfileTests
         }
     }
 
+    [Fact]
+    public void SceneAddLayer_IgnoresUnexpectedNullSpriteEntries()
+    {
+        SpriteManager.Instance._spriteList.Add(null!);
+
+        try
+        {
+            using var scene = new Scene();
+            var layer = new SceneLayer(1, 1, 16, 16);
+            scene.AddLayer(layer);
+        }
+        finally
+        {
+            SpriteManager.Instance._spriteList.RemoveAll(sprite => sprite is null);
+        }
+    }
+
     private sealed class DeferredColliderTile : Tile
     {
         private readonly SceneLayer _sceneLayer;
