@@ -40,6 +40,7 @@ All notable changes to this project will be documented in this file.
 ### Refactoring
 - Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
 - Use fixed-step simulation timing ([#305](https://github.com/Isthimius/Gondwana/pull/305))
+- Use seconds float for init wait timeout ([#336](https://github.com/Isthimius/Gondwana/pull/336))
 
 
 
@@ -61,6 +62,9 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 - Standardizing CollisionAdjust and Overlap values
+- Fix Engine initialization exception safety and add regression tests ([#336](https://github.com/Isthimius/Gondwana/pull/336))
+- Make Engine start init wait timeout configurable ([#336](https://github.com/Isthimius/Gondwana/pull/336))
+- Refactor EngineConfiguration timeout setter logic ([#336](https://github.com/Isthimius/Gondwana/pull/336))
 
 ## Gondwana.Audio.Browser
 
@@ -562,6 +566,7 @@ All notable changes to this project will be documented in this file.
 - Add codeberg as source mirror ([#324](https://github.com/Isthimius/Gondwana/pull/324))
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 - Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
+- Mark item complete ([#334](https://github.com/Isthimius/Gondwana/pull/334))
 - Mark item complete ([#334](https://github.com/Isthimius/Gondwana/pull/334))
 
 
