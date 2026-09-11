@@ -356,66 +356,69 @@ $(function(){initNavTree('SpriteManager_8cs_source.html','',''); });
 <div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span> </div>
 <div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>        <span class="keywordflow">foreach</span> (var sprite <span class="keywordflow">in</span> snapshot)</div>
 <div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>        {</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>            <span class="keywordflow">if</span> (ReferenceEquals(sprite.SceneLayer, sceneLayer))</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>                sprite.RefreshCollisionProfile();</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>        }</div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    }</div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span> </div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    <span class="keyword">internal</span> <span class="keywordtype">void</span> MoveSprites(<span class="keywordtype">long</span> tick)</div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>    {</div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>        <span class="keywordflow">if</span> (tick &lt;= _lastTick)</div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span> </div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        <span class="keywordtype">float</span> duration = HighResTimer.GetDuration(_lastTick, tick);</div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span> </div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>        lock (_spriteListLock)</div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>        {</div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; _spriteList.Count; i++)</div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>            {</div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>                var sprite = _spriteList[i];</div>
-<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span> </div>
-<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>                <span class="keywordflow">if</span> (sprite._pendingDispose)</div>
-<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>                    <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>            <span class="keywordflow">if</span> (sprite is <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span> </div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>            <span class="keywordflow">if</span> (ReferenceEquals(sprite.SceneLayer, sceneLayer))</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>                sprite.RefreshCollisionProfile();</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>        }</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>    }</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span> </div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>    <span class="keyword">internal</span> <span class="keywordtype">void</span> MoveSprites(<span class="keywordtype">long</span> tick)</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>    {</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        <span class="keywordflow">if</span> (tick &lt;= _lastTick)</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span> </div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>        <span class="keywordtype">float</span> duration = HighResTimer.GetDuration(_lastTick, tick);</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span> </div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>        lock (_spriteListLock)</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>        {</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; _spriteList.Count; i++)</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>            {</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>                var sprite = _spriteList[i];</div>
 <div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span> </div>
-<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>                sprite.Movement.AdvanceMovement(duration);</div>
-<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>                sprite.AdvanceResize(duration);</div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>                sprite.AdvanceJiggle(duration);</div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>            }</div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span> </div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>            SweepDisposedSprites();</div>
-<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>        }</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>                <span class="keywordflow">if</span> (sprite._pendingDispose)</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>                    <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span> </div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>                sprite.Movement.AdvanceMovement(duration);</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>                sprite.AdvanceResize(duration);</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>                sprite.AdvanceJiggle(duration);</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>            }</div>
 <div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span> </div>
-<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>        _lastTick = tick;</div>
-<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>    }</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>            SweepDisposedSprites();</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>        }</div>
 <div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span> </div>
-<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> SweepDisposedSprites()</div>
-<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    {</div>
-<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>        <span class="keywordtype">int</span> i = 0;</div>
-<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>        <span class="keywordflow">while</span> (i &lt; _spriteList.Count)</div>
-<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>        {</div>
-<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>            <span class="keywordflow">if</span> (!_spriteList[i]._pendingDispose)</div>
-<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>            {</div>
-<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>                i++;</div>
-<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>                <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>            }</div>
-<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span> </div>
-<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>            _spriteList[i].DisposeImmediate();</div>
-<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span> </div>
-<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>            <span class="keywordtype">int</span> last = _spriteList.Count - 1;</div>
-<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>            _spriteList[i] = _spriteList[last];</div>
-<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>            _spriteList.RemoveAt(last);</div>
-<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>        }</div>
-<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>    }</div>
-<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span> </div>
-<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span><span class="preprocessor">    #endregion internal methods</span></div>
-<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span></div>
-<div class="foldopen" id="foldopen00379" data-start="{" data-end="}">
-<div class="line"><a id="l00379" name="l00379"></a><span class="lineno"><a class="line" href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a6a9bb942a76a0ba21eedc9f582226cb2">  379</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a6a9bb942a76a0ba21eedc9f582226cb2">Dispose</a>()</div>
-<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>    {</div>
-<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>        <a class="code hl_function" href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a6256d6cf76f2c5237b6cb57f82048447">Clear</a>();</div>
-<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>    }</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>        _lastTick = tick;</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    }</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span> </div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> SweepDisposedSprites()</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>    {</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>        <span class="keywordtype">int</span> i = 0;</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>        <span class="keywordflow">while</span> (i &lt; _spriteList.Count)</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>        {</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>            <span class="keywordflow">if</span> (!_spriteList[i]._pendingDispose)</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>            {</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>                i++;</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>            }</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span> </div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>            _spriteList[i].DisposeImmediate();</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span> </div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>            <span class="keywordtype">int</span> last = _spriteList.Count - 1;</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>            _spriteList[i] = _spriteList[last];</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>            _spriteList.RemoveAt(last);</div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>        }</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>    }</div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span> </div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span><span class="preprocessor">    #endregion internal methods</span></div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span></div>
+<div class="foldopen" id="foldopen00382" data-start="{" data-end="}">
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno"><a class="line" href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a6a9bb942a76a0ba21eedc9f582226cb2">  382</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a6a9bb942a76a0ba21eedc9f582226cb2">Dispose</a>()</div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>    {</div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>        <a class="code hl_function" href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a6256d6cf76f2c5237b6cb57f82048447">Clear</a>();</div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>    }</div>
 </div>
-<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>}</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>}</div>
 </div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager_html_a0defa489406ca25400815d4449df97ad"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a0defa489406ca25400815d4449df97ad">Gondwana.Drawing.Sprites.SpriteManager.GetSpriteByID</a></div><div class="ttdeci">Sprite? GetSpriteByID(string ID)</div><div class="ttdoc">Retrieves a sprite by its ID/nickname.</div><div class="ttdef"><b>Definition</b> <a href="#l00172">SpriteManager.cs:172</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager_html_a1820fb3e65202852fc86825beec65583"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a1820fb3e65202852fc86825beec65583">Gondwana.Drawing.Sprites.SpriteManager.AllSprites</a></div><div class="ttdeci">ReadOnlyCollection&lt; Sprite &gt; AllSprites</div><div class="ttdoc">Gets a read-only collection of all sprites currently managed by the sprite manager.</div><div class="ttdef"><b>Definition</b> <a href="#l00039">SpriteManager.cs:40</a></div></div>
@@ -426,7 +429,7 @@ $(function(){initNavTree('SpriteManager_8cs_source.html','',''); });
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager_html_a505a9f9dbaae76c3d1b1f1903b8aa857"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a505a9f9dbaae76c3d1b1f1903b8aa857">Gondwana.Drawing.Sprites.SpriteManager.CloneSprite</a></div><div class="ttdeci">Sprite CloneSprite(Sprite sprite)</div><div class="ttdoc">Creates a copy of the specified sprite, preserving its current scene layer.</div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager_html_a6256d6cf76f2c5237b6cb57f82048447"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a6256d6cf76f2c5237b6cb57f82048447">Gondwana.Drawing.Sprites.SpriteManager.Clear</a></div><div class="ttdeci">void Clear()</div><div class="ttdoc">Removes and disposes all sprites currently managed by the sprite manager.</div><div class="ttdef"><b>Definition</b> <a href="#l00158">SpriteManager.cs:158</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager_html_a633f91f556606066d4ea72497c46cb07"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a633f91f556606066d4ea72497c46cb07">Gondwana.Drawing.Sprites.SpriteManager.CloneSprite</a></div><div class="ttdeci">Sprite CloneSprite(Sprite sprite, SceneLayer sceneLayer)</div><div class="ttdoc">Creates a clone of the specified sprite on the given scene layer.</div><div class="ttdef"><b>Definition</b> <a href="#l00111">SpriteManager.cs:111</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager_html_a6a9bb942a76a0ba21eedc9f582226cb2"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a6a9bb942a76a0ba21eedc9f582226cb2">Gondwana.Drawing.Sprites.SpriteManager.Dispose</a></div><div class="ttdeci">void Dispose()</div><div class="ttdoc">Releases all sprites currently managed by this instance.</div><div class="ttdef"><b>Definition</b> <a href="#l00379">SpriteManager.cs:379</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager_html_a6a9bb942a76a0ba21eedc9f582226cb2"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a6a9bb942a76a0ba21eedc9f582226cb2">Gondwana.Drawing.Sprites.SpriteManager.Dispose</a></div><div class="ttdeci">void Dispose()</div><div class="ttdoc">Releases all sprites currently managed by this instance.</div><div class="ttdef"><b>Definition</b> <a href="#l00382">SpriteManager.cs:382</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager_html_a763ee51144da0fe6f81d3bc4dff7d287"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a763ee51144da0fe6f81d3bc4dff7d287">Gondwana.Drawing.Sprites.SpriteManager.SizeNewSpritesToSceneLayer</a></div><div class="ttdeci">bool SizeNewSpritesToSceneLayer</div><div class="ttdoc">Gets or sets a value indicating whether new sprites should be automatically sized to their scene laye...</div><div class="ttdef"><b>Definition</b> <a href="#l00051">SpriteManager.cs:51</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager_html_a9304ffe7d883840ea3dd944fe4a253a1"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a9304ffe7d883840ea3dd944fe4a253a1">Gondwana.Drawing.Sprites.SpriteManager.Remove</a></div><div class="ttdeci">void Remove(string ID)</div><div class="ttdoc">Removes and disposes the sprite with the specified ID.</div><div class="ttdef"><b>Definition</b> <a href="#l00148">SpriteManager.cs:148</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager_html_a99c0abe0349483b6a76dad08155b771f"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a99c0abe0349483b6a76dad08155b771f">Gondwana.Drawing.Sprites.SpriteManager.SpriteCreated</a></div><div class="ttdeci">Action&lt; Sprite &gt;? SpriteCreated</div><div class="ttdoc">Event raised when a new sprite is created.</div><div class="ttdef"><b>Definition</b> <a href="#l00032">SpriteManager.cs:32</a></div></div>
