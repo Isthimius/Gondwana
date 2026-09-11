@@ -100,7 +100,45 @@ public sealed class EngineInitializationTests
 
             await disposeReturned.Task.WaitAsync(TimeSpan.FromSeconds(2));
             await cycleTask.WaitAsync(TimeSpan.FromSeconds(2));
-            Assert.True(engine.IsDisposed);
+            Assert.True(SpinWait.SpinUntil(() => engine.IsDisposed, TimeSpan.FromSeconds(2)));
+        }
+        finally
+        {
+            GC.SuppressFinalize(engine);
+        }
+    }
+
+    [Fact]
+    public async Task Dispose_WhenCalledInsideCycleOnEngineThread_DefersManagedCleanupUntilCycleReturns()
+    {
+        var engine = CreateEngineInstance();
+        Task? cycleTask = null;
+        var disposeObservedInsideCycle = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        try
+        {
+            SetIsRunning(engine, true);
+            engine.Configuration.SamplingTimeForCPS = 0;
+            engine.BeforeBackgroundTasksExecute += () =>
+            {
+                engine.Dispose();
+                disposeObservedInsideCycle.SetResult(engine.IsDisposed);
+            };
+
+            cycleTask = Task.Run(() =>
+            {
+                Assert.True(SpinWait.SpinUntil(() => cycleTask is not null, TimeSpan.FromSeconds(1)));
+
+                engine.EngineDispatcher.BindToCurrentThread();
+                SetCycleTask(engine, cycleTask!);
+                InvokeCycle(engine);
+            });
+
+            var wasDisposedInsideCycle = await disposeObservedInsideCycle.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            await cycleTask.WaitAsync(TimeSpan.FromSeconds(2));
+
+            Assert.False(wasDisposedInsideCycle);
+            Assert.True(SpinWait.SpinUntil(() => engine.IsDisposed, TimeSpan.FromSeconds(2)));
         }
         finally
         {
@@ -156,5 +194,15 @@ public sealed class EngineInitializationTests
             ?? throw new InvalidOperationException("Could not find Engine.IsRunning via reflection.");
 
         property.SetValue(engine, isRunning);
+    }
+
+    private static void InvokeCycle(Engine engine)
+    {
+        var cycleMethod = typeof(Engine).GetMethod(
+            "Cycle",
+            BindingFlags.Instance | BindingFlags.NonPublic)
+            ?? throw new InvalidOperationException("Could not find Engine.Cycle via reflection.");
+
+        cycleMethod.Invoke(engine, null);
     }
 }

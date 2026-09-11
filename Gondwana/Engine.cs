@@ -80,6 +80,7 @@ public sealed class Engine : IDisposable
 
     private Task? _cycleTask;
     private EngineConfigurationFile? _configurationFile;
+    private bool _deferredDisposeScheduled;
 
     #endregion private fields
 
@@ -1123,6 +1124,9 @@ public sealed class Engine : IDisposable
         {
             if (disposing)
             {
+                if (IsDisposing)
+                    return;
+
                 IsDisposing = true;
 
                 // stop the loop first so handlers don't race the cycle thread
@@ -1139,6 +1143,21 @@ public sealed class Engine : IDisposable
                 try
                 {
                     var cycleTask = _cycleTask;
+                    if (cycleTask is not null && EngineDispatcher.IsOnEngineThread && !cycleTask.IsCompleted)
+                    {
+                        if (!_deferredDisposeScheduled)
+                        {
+                            _deferredDisposeScheduled = true;
+                            cycleTask.ContinueWith(
+                                _ => CompleteManagedDisposal(),
+                                System.Threading.CancellationToken.None,
+                                System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously,
+                                System.Threading.Tasks.TaskScheduler.Default);
+                        }
+
+                        return;
+                    }
+
                     if (cycleTask is not null && !EngineDispatcher.IsOnEngineThread)
                         cycleTask.Wait();
                 }
@@ -1147,53 +1166,63 @@ public sealed class Engine : IDisposable
                     Logger.LogError(ex, "Error waiting for engine loop to exit.");
                 }
 
-                // raise Disposing on UI thread if possible; otherwise inline
-                if (UiDispatcher is not null)
-                    UiDispatcher.Post(() => SafeInvoke(Disposing));
-                else
-                    SafeInvoke(Disposing);
-
-                // managed cleanup...
-                Input.KeyboardEventPoller?.StopMonitoringAllKeys();
-                MouseEventPoller.Reset();
-                TouchEventPoller.Reset();
-
-                if (Input.GamepadManager is not null)
-                    foreach (var gamepadAdapter in Input.GamepadManager.ConnectedAdapters)
-                        Input.GamepadEventPoller?.StopMonitoringAllButtons(gamepadAdapter.GamepadId);
-
-                try
-                {
-                    _configurationFile?.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error saving the engine configuration during disposal.");
-                }
-                finally
-                {
-                    _configurationFile = null;
-                }
-
-                if (EngineLogger.Mode == EngineLoggingMode.Asynchronous)
-                    EngineLogger.StopAsyncLogging(flush: Configuration.FlushAsyncLogsOnShutdown);
-
-                Timer.ClearAll();
-                State.Clear();
+                CompleteManagedDisposal();
             }
-
-            // unmanaged cleanup...
-            IsDisposed = true;
-
-            if (disposing)
+            else
             {
-                // now signal we're fully torn down
-                if (UiDispatcher is not null)
-                    UiDispatcher.Post(() => SafeInvoke(Disposed));
-                else
-                    SafeInvoke(Disposed);
+                // unmanaged cleanup...
+                IsDisposed = true;
             }
         }
+    }
+
+    private void CompleteManagedDisposal()
+    {
+        if (IsDisposed)
+            return;
+
+        // raise Disposing on UI thread if possible; otherwise inline
+        if (UiDispatcher is not null)
+            UiDispatcher.Post(() => SafeInvoke(Disposing));
+        else
+            SafeInvoke(Disposing);
+
+        // managed cleanup...
+        Input.KeyboardEventPoller?.StopMonitoringAllKeys();
+        MouseEventPoller.Reset();
+        TouchEventPoller.Reset();
+
+        if (Input.GamepadManager is not null)
+            foreach (var gamepadAdapter in Input.GamepadManager.ConnectedAdapters)
+                Input.GamepadEventPoller?.StopMonitoringAllButtons(gamepadAdapter.GamepadId);
+
+        try
+        {
+            _configurationFile?.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error saving the engine configuration during disposal.");
+        }
+        finally
+        {
+            _configurationFile = null;
+        }
+
+        if (EngineLogger.Mode == EngineLoggingMode.Asynchronous)
+            EngineLogger.StopAsyncLogging(flush: Configuration.FlushAsyncLogsOnShutdown);
+
+        Timer.ClearAll();
+        State.Clear();
+
+        // unmanaged cleanup...
+        IsDisposed = true;
+
+        // now signal we're fully torn down
+        if (UiDispatcher is not null)
+            UiDispatcher.Post(() => SafeInvoke(Disposed));
+        else
+            SafeInvoke(Disposed);
     }
 
     private static void SafeInvoke(Action? evnt)
