@@ -36,9 +36,8 @@ All notable changes to this project will be documented in this file.
 - Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
 - Fix per PR / copilot: ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 - Harden engine initialization safety ([#336](https://github.com/Isthimius/Gondwana/pull/336))
-- Fix engine dispose self-deadlock on cycle thread ([#338](https://github.com/Isthimius/Gondwana/pull/338))
 - Warm effects manager on first update ([#337](https://github.com/Isthimius/Gondwana/pull/337))
-- Guard null sprite entries during layer collision refresh ([#338](https://github.com/Isthimius/Gondwana/pull/338))
+- Prevent engine dispose self-deadlock ([#338](https://github.com/Isthimius/Gondwana/pull/338))
 
 
 
@@ -67,8 +66,6 @@ All notable changes to this project will be documented in this file.
 ### Other Changes
 - Standardizing CollisionAdjust and Overlap values
 - Merge from master ([#335](https://github.com/Isthimius/Gondwana/pull/335))
-- Defer engine-thread disposal cleanup until cycle exits ([#338](https://github.com/Isthimius/Gondwana/pull/338))
-- Merge remote-tracking branch 'origin/copilot/fix-engine-dispose-deadlock' into copilot/fix-engine-dispose-deadlock ([#338](https://github.com/Isthimius/Gondwana/pull/338))
 
 ## Gondwana.Audio.Browser
 
@@ -371,6 +368,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Improve bitmap render adapters ([#291](https://github.com/Isthimius/Gondwana/pull/291))
 - Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
+- Fix for 0-height recovery ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 
 
