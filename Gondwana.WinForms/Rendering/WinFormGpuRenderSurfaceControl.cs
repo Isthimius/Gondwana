@@ -27,8 +27,12 @@ public partial class WinFormGpuRenderSurfaceControl : UserControl
     /// </summary>
     public WinFormGpuRenderSurfaceControl()
     {
-        _glControl = new SKGLControl { Dock = DockStyle.Fill };
+        // Do not Dock=Fill: WinForms will otherwise physically resize SKGLControl to 0×0
+        // during minimize/layout. OpenTK forwards that size to its native GLFW child. Keep the
+        // drawable at least 1×1 and let this wrapper report the real presentation size instead.
+        _glControl = new SKGLControl();
         Controls.Add(_glControl);
+        UpdateGlControlBounds();
 
         // Forward mouse events from the inner GL control to this outer control so that a
         // WinFormsMouseAdapter attached to this control sees them.  The inner SKGLControl
@@ -44,8 +48,9 @@ public partial class WinFormGpuRenderSurfaceControl : UserControl
 
         this.Load += (_, _) => InitializeBackbuffer();
 
-        // Ensure the adapter re-reads size whenever THIS wrapper changes size
-        SizeChanged += (_, __) => _adapter?.RefreshDestinationSize();
+        // Keep the native GL drawable valid even when this wrapper is temporarily 0×0. The
+        // adapter separately observes this wrapper's real size and suspends presentation at zero.
+        SizeChanged += (_, __) => UpdateGlControlBounds();
 
         // Fire once after this control is realized
         HandleCreated += (_, __) => _adapter?.RefreshDestinationSize();
@@ -64,9 +69,19 @@ public partial class WinFormGpuRenderSurfaceControl : UserControl
             BeginInvoke((Action)(() => _adapter?.RefreshDestinationSize()));
     }
 
+    private void UpdateGlControlBounds()
+    {
+        var rect = DisplayRectangle;
+        _glControl.SetBounds(
+            rect.X,
+            rect.Y,
+            Math.Max(1, rect.Width),
+            Math.Max(1, rect.Height));
+    }
+
     private void InitializeBackbuffer()
     {
-        _adapter = new WinFormGpuRenderSurfaceAdapter(_glControl);
+        _adapter = new WinFormGpuRenderSurfaceAdapter(_glControl, this);
         Host = new RenderSurfaceHost<GpuBackbuffer>(_adapter);
 
         // Register the host so the adapter drives all rendering on the GL thread.
