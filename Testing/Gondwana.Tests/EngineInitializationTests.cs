@@ -76,6 +76,38 @@ public sealed class EngineInitializationTests
         }
     }
 
+    [Fact]
+    public async Task Dispose_WhenCalledOnEngineThread_DoesNotWaitForOwnCycleTask()
+    {
+        var engine = CreateEngineInstance();
+        Task? cycleTask = null;
+        var disposeReturned = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        try
+        {
+            SetIsRunning(engine, true);
+
+            cycleTask = Task.Run(() =>
+            {
+                Assert.True(SpinWait.SpinUntil(() => cycleTask is not null, TimeSpan.FromSeconds(1)));
+
+                engine.EngineDispatcher.BindToCurrentThread();
+                SetCycleTask(engine, cycleTask!);
+
+                engine.Dispose();
+                disposeReturned.SetResult();
+            });
+
+            await disposeReturned.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            await cycleTask.WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.True(engine.IsDisposed);
+        }
+        finally
+        {
+            GC.SuppressFinalize(engine);
+        }
+    }
+
     private static Engine CreateEngineInstance() =>
         (Engine)Activator.CreateInstance(typeof(Engine), nonPublic: true)!;
 
@@ -104,5 +136,25 @@ public sealed class EngineInitializationTests
 
         initializingField.SetValue(engine, isInitializing);
         initializedField.SetValue(engine, isInitialized);
+    }
+
+    private static void SetCycleTask(Engine engine, Task cycleTask)
+    {
+        var cycleTaskField = typeof(Engine).GetField(
+            "_cycleTask",
+            BindingFlags.Instance | BindingFlags.NonPublic)
+            ?? throw new InvalidOperationException("Could not find Engine._cycleTask via reflection.");
+
+        cycleTaskField.SetValue(engine, cycleTask);
+    }
+
+    private static void SetIsRunning(Engine engine, bool isRunning)
+    {
+        var property = typeof(Engine).GetProperty(
+            nameof(Engine.IsRunning),
+            BindingFlags.Instance | BindingFlags.Public)
+            ?? throw new InvalidOperationException("Could not find Engine.IsRunning via reflection.");
+
+        property.SetValue(engine, isRunning);
     }
 }

@@ -1135,10 +1135,12 @@ public sealed class Engine : IDisposable
                     Logger.LogError(ex, "Unhandled exception calling Stop()");
                 }
 
-                // wait for the background loop to actually exit
+                // wait for the background loop to actually exit unless we're already on it
                 try
                 {
-                    _cycleTask?.Wait();
+                    var cycleTask = _cycleTask;
+                    if (cycleTask is not null && !EngineDispatcher.IsOnEngineThread)
+                        cycleTask.Wait();
                 }
                 catch (Exception ex)
                 {
@@ -1213,7 +1215,7 @@ public sealed class Engine : IDisposable
     /// </para>
     /// <list type="bullet">
     ///   <item><description>Stopping the main engine loop</description></item>
-    ///   <item><description>Waiting for the background thread to exit</description></item>
+    ///   <item><description>Waiting for the background thread to exit when disposal is initiated off the engine thread</description></item>
     ///   <item><description>Raising the <see cref="Disposing"/> event</description></item>
     ///   <item><description>Cleaning up input subsystems</description></item>
     ///   <item><description>Saving configuration changes when automatic saving is enabled</description></item>
