@@ -78,6 +78,10 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
         {
             SetDestinationSize(sz.Width, sz.Height);
             Interlocked.Exchange(ref _pendingResize, 1);
+            // A paint requested while the surface had no area may never have arrived.
+            // Allow the engine to request a fresh frame after layout restores the surface.
+            Interlocked.Exchange(ref _pendingInvalidate, 0);
+            _glControl.Invalidate();
         }
     }
 
@@ -104,6 +108,8 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
             {
                 SetDestinationSize(width, height);
                 Interlocked.Exchange(ref _pendingResize, 1);
+                Interlocked.Exchange(ref _pendingInvalidate, 0);
+                _glControl.Invalidate();
             }
         };
 
