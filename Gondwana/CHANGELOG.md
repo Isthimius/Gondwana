@@ -35,6 +35,9 @@ All notable changes to this project will be documented in this file.
 - Resolve timer edge case ([#295](https://github.com/Isthimius/Gondwana/pull/295))
 - Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
 - Harden engine initialization safety ([#336](https://github.com/Isthimius/Gondwana/pull/336))
+- Fix engine dispose self-deadlock on cycle thread ([#338](https://github.com/Isthimius/Gondwana/pull/338))
+- Warm effects manager on first update ([#337](https://github.com/Isthimius/Gondwana/pull/337))
+- Guard null sprite entries during layer collision refresh ([#338](https://github.com/Isthimius/Gondwana/pull/338))
 
 
 
@@ -62,7 +65,8 @@ All notable changes to this project will be documented in this file.
 
 ## Other Changes
 - Standardizing CollisionAdjust and Overlap values
-- Warm EffectsManager tick on first update ([#337](https://github.com/Isthimius/Gondwana/pull/337))
+- Defer engine-thread disposal cleanup until cycle exits ([#338](https://github.com/Isthimius/Gondwana/pull/338))
+- Merge remote-tracking branch 'origin/copilot/fix-engine-dispose-deadlock' into copilot/fix-engine-dispose-deadlock ([#338](https://github.com/Isthimius/Gondwana/pull/338))
 
 # v2.5.2 - July 26, 2026
 
