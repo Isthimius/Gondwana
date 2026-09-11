@@ -33,13 +33,14 @@ All notable changes to this project will be documented in this file.
 - Correct view coordinate conversion on GPU path to address occasional tearing ([#290](https://github.com/Isthimius/Gondwana/pull/290))
 - Resolve timer edge case ([#295](https://github.com/Isthimius/Gondwana/pull/295))
 - Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
+- Harden engine initialization safety ([#336](https://github.com/Isthimius/Gondwana/pull/336))
+- Fix engine dispose self-deadlock on cycle thread ([#338](https://github.com/Isthimius/Gondwana/pull/338))
 
 
 
 ### Refactoring
 - Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
 - Use fixed-step simulation timing ([#305](https://github.com/Isthimius/Gondwana/pull/305))
-- Use seconds float for init wait timeout ([#336](https://github.com/Isthimius/Gondwana/pull/336))
 
 
 
@@ -61,9 +62,6 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 - Standardizing CollisionAdjust and Overlap values
-- Fix Engine initialization exception safety and add regression tests ([#336](https://github.com/Isthimius/Gondwana/pull/336))
-- Make Engine start init wait timeout configurable ([#336](https://github.com/Isthimius/Gondwana/pull/336))
-- Refactor EngineConfiguration timeout setter logic ([#336](https://github.com/Isthimius/Gondwana/pull/336))
 
 ## Gondwana.Audio.Browser
 
