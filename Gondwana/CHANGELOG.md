@@ -63,6 +63,7 @@ All notable changes to this project will be documented in this file.
 
 ## Other Changes
 - Standardizing CollisionAdjust and Overlap values
+- Warm EffectsManager tick on first update ([#337](https://github.com/Isthimius/Gondwana/pull/337))
 
 # v2.5.2 - July 26, 2026
 

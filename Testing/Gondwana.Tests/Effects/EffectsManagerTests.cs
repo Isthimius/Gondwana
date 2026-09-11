@@ -3,6 +3,7 @@ using Gondwana.Effects;
 using Gondwana.Physics.Movement.Easing;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
+using Gondwana.Timers;
 
 namespace Gondwana.Tests.Effects;
 
@@ -30,6 +31,25 @@ public sealed class EffectsManagerTests
         Assert.Equal(EffectStatus.Completed, effect.Status);
         Assert.Equal(0f, view.EffectOpacity);
         Assert.Empty(host.Effects.ActiveEffects);
+    }
+
+    [Fact]
+    public void Update_FirstCallWarmsTickWithoutSkippingEffect()
+    {
+        using var host = CreateHost(out View view, out _);
+        var effect = host.Effects.Run(view, new FadeOutEffect(1f));
+        long firstTick = HighResTimer.GetCurrentTick() + (5 * HighResTimer.TicksPerSecond);
+
+        host.Effects.Update(firstTick);
+
+        Assert.Equal(EffectStatus.Running, effect.Status);
+        Assert.Equal(0f, effect.Progress, 3);
+        Assert.Equal(1f, view.EffectOpacity, 3);
+
+        host.Effects.Update(firstTick + (HighResTimer.TicksPerSecond / 2));
+
+        Assert.Equal(0.5f, effect.Progress, 3);
+        Assert.Equal(0.5f, view.EffectOpacity, 3);
     }
 
     [Fact]

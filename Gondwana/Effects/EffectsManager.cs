@@ -14,7 +14,7 @@ public sealed class EffectsManager : IDisposable
     private readonly object _sync = new();
     private readonly List<DisplayEffect> _activeEffects = [];
     private readonly RenderSurfaceHostBase _host;
-    private long _lastTick = HighResTimer.GetCurrentTick();
+    private long? _lastTick;
     private bool _disposed;
 
     internal EffectsManager(RenderSurfaceHostBase host) =>
@@ -74,7 +74,13 @@ public sealed class EffectsManager : IDisposable
 
     internal void Update(long tick)
     {
-        float deltaSeconds = HighResTimer.GetDuration(_lastTick, tick);
+        if (!_lastTick.HasValue)
+        {
+            _lastTick = tick;
+            return;
+        }
+
+        float deltaSeconds = HighResTimer.GetDuration(_lastTick.Value, tick);
         _lastTick = tick;
         Advance(deltaSeconds);
     }
