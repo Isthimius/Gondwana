@@ -113,18 +113,19 @@ public abstract class RenderSurfaceAdapterBase
     /// <param name="destWidth">The new width of the render surface in pixels.</param>
     /// <param name="destHeight">The new height of the render surface in pixels.</param>
     /// <remarks>
-    /// If the specified dimensions are the same as the current dimensions, this method returns without making changes
-    /// or raising the <see cref="Resized"/> event.
+    /// If dimensions and size availability are unchanged, this method returns without raising
+    /// <see cref="Resized"/>. The first valid layout raises the event even if it matches the placeholder dimensions.
     /// </remarks>
     protected void SetDestinationSize(int destWidth, int destHeight)
     {
-        if (destWidth == Width && destHeight == Height && InitialSizeAvailable)
+        var sizeAvailable = destWidth > 0 && destHeight > 0;
+        if (destWidth == Width && destHeight == Height && InitialSizeAvailable == sizeAvailable)
             return;
 
         var oldWidth = Width;
         var oldHeight = Height;
 
-        InitialSizeAvailable = destWidth > 0 && destHeight > 0;
+        InitialSizeAvailable = sizeAvailable;
         lock (_presentationSync)
         {
             var state = _presentation;

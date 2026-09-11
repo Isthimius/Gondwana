@@ -115,6 +115,40 @@ public sealed class ViewportScalingTests : IDisposable
     }
 
     [Theory]
+    [InlineData(0, 0)]
+    [InlineData(0, 720)]
+    [InlineData(1280, 0)]
+    public void RepeatedUnavailableDimensionsDoNotRaiseResize(int width, int height)
+    {
+        var adapter = new Adapter(1, 1, false);
+        int events = 0;
+        adapter.Resized += _ => events++;
+        adapter.Resize(width, height);
+        Assert.Equal(1, events);
+        adapter.Resize(width, height);
+        adapter.Resize(width, height);
+        Assert.Equal(1, events);
+        Assert.False(adapter.InitialSizeAvailable);
+    }
+
+    [Fact]
+    public void FirstValidLayoutMatchingPlaceholderEstablishesResolutionOnce()
+    {
+        Engine.Instance.Configuration.RenderScale = 2;
+        var adapter = new Adapter(1, 1, false);
+        using var host = new RenderSurfaceHost<BitmapBackbuffer>(adapter);
+        using var buffer = host.Backbuffer;
+        int events = 0;
+        adapter.Resized += _ => events++;
+        adapter.Resize(1, 1);
+        buffer.BeginFrame();
+        Assert.True(adapter.InitialSizeAvailable);
+        Assert.Equal((2, 2), (buffer.Width, buffer.Height));
+        adapter.Resize(1, 1);
+        Assert.Equal(1, events);
+    }
+
+    [Theory]
     [InlineData(0.5f, 2f)]
     [InlineData(2f, 0.5f)]
     public void AdapterToScreenToWorldToGrid_IsIndependentOfZoom(float scale, float zoom)
