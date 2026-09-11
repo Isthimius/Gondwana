@@ -38,6 +38,11 @@ All notable changes to this project will be documented in this file.
 ## Maintenance
 - Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
 
+
+
+## Other Changes
+- Corner case fix ([#335](https://github.com/Isthimius/Gondwana/pull/335))
+
 # v2.5.2 - July 26, 2026
 
 

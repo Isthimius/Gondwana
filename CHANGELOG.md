@@ -388,6 +388,11 @@ All notable changes to this project will be documented in this file.
 ### Maintenance
 - Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
 
+
+
+### Other Changes
+- Corner case fix ([#335](https://github.com/Isthimius/Gondwana/pull/335))
+
 ## Gondwana.WinForms.Hosting
 
 ### Added
