@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 ## Added
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+- Decouple backbuffer resolution from adapter presentation ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 
 
@@ -26,6 +27,11 @@ All notable changes to this project will be documented in this file.
 ## Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 - Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
+
+
+
+## Tests
+- Document scaling migration and benchmark bitmap presentation ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 
 
