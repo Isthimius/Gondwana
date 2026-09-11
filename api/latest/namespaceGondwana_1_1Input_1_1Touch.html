@@ -194,7 +194,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">Id</td><td>The unique identifier for this touch contact. The same finger contact retains the same Id across <a class="el" href="#ae45771976c0d97929be599f0dac9a837a7b81520329371177ede3ccbc307bc85d" title="A finger or pointer made initial contact with the surface.">TouchPhase.Began</a>, <a class="el" href="#ae45771976c0d97929be599f0dac9a837a95bfdefaaf01553cbf21ccd942855c69" title="A finger or pointer that is already in contact moved across the surface.">TouchPhase.Moved</a>, and <a class="el" href="#ae45771976c0d97929be599f0dac9a837a0157fbb99be9622bdaa6e544270c0622" title="A finger or pointer lifted from the surface, ending contact normally.">TouchPhase.Ended</a> phases. On desktop, a mouse-emulated touch always uses <code>Id = 0</code>. </td></tr>
-    <tr><td class="paramname">Position</td><td>The position of the touch contact in client (control-local) coordinates at the moment the event was recorded. </td></tr>
+    <tr><td class="paramname">Position</td><td>The position of the touch contact in logical Backbuffer ScreenPx coordinates at the moment the event was recorded. </td></tr>
     <tr><td class="paramname">Phase</td><td>The current lifecycle phase of this touch contact, indicating whether the contact just began, moved, remained stationary, ended, or was cancelled. </td></tr>
   </table>
   </dd>

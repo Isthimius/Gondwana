@@ -16,6 +16,8 @@ var classGondwana_1_1Configuration_1_1EngineConfiguration =
     [ "LoggingQueueCapacity", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a1256ecbc22e69298a52eda5eae3a142f", null ],
     [ "MaxTimerDrivenSimulationSteps", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#aeed3a01229d4da4c1fbdea5e31cda862", null ],
     [ "MsaaSampleCount", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#ab614f324c6124fb90cbd818886755602", null ],
+    [ "RenderScale", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a7ea9365066b7f0ba1c168133cab1d522", null ],
+    [ "RenderScalingFilter", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a47d294c9ca6d88a33f435067d1a08a8f", null ],
     [ "SamplingTimeForCPS", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#ac855c43adbb76108ebf60b3a4e607f37", null ],
     [ "SamplingTimeForCPSTicks", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a54425e8fee2e8de5f3bb71b94fa9bcbc", null ],
     [ "StartInitializationWaitTimeout", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a99240603db61bfb9d1f4222f9a9322fa", null ],

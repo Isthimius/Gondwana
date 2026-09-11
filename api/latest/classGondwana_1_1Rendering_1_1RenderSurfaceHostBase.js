@@ -9,6 +9,7 @@ var classGondwana_1_1Rendering_1_1RenderSurfaceHostBase =
     [ "GlSnapshotCurrentFrame", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#aee30ea8388cd79faa818395fff8d7fcc", null ],
     [ "Backbuffer", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#aa5cd6f2a3441111e38acdff4b721512a", null ],
     [ "Effects", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a1af1ad2a7318a1d4e87be15de7d1c63f", null ],
+    [ "PresentationScale", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a5d574c0284efea733170f575df69e7f9", null ],
     [ "RenderSurfaceAdapter", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a51fc79ef51f94b3cd16a8f8220a2c1d1", null ],
     [ "Scene", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a41d56ce40e10058940fb2f73dcaec343", null ],
     [ "ViewManager", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a6343c6c478d911e1ce79e67a0bb04f5a", null ]

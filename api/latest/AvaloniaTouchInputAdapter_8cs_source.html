@@ -247,7 +247,7 @@ $(function(){initNavTree('AvaloniaTouchInputAdapter_8cs_source.html','',''); });
 <div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keyword">private</span> <span class="keyword">static</span> Point GetPosition(PointerEventArgs e, Control? relativeTo)</div>
 <div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    {</div>
 <div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        var pos = e.GetPosition(relativeTo);</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> Point((<span class="keywordtype">int</span>)pos.X, (<span class="keywordtype">int</span>)pos.Y);</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <span class="keywordflow">return</span> PointerCoordinates.ToScreenPx(relativeTo, <span class="keyword">new</span> PointF((<span class="keywordtype">float</span>)pos.X, (<span class="keywordtype">float</span>)pos.Y));</div>
 <div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    }</div>
 <div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span></div>
 <div class="foldopen" id="foldopen00192" data-start="{" data-end="}">

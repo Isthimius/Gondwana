@@ -113,11 +113,11 @@ $(function(){initNavTree('AvaloniaMouseAdapter_8cs_source.html','',''); });
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>{</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">private</span> readonly Control _control;</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">private</span> readonly HashSet&lt;GondwanaMouseButton&gt; _pressed = <span class="keyword">new</span>();</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">private</span> Point _currentPosition;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">private</span> PointF _currentPosition;</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keyword">private</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Input_1_1Keyboard.html#a9a26020facee161978f965f4c451a92e">KeyboardModifierState</a> _modifiers;</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">private</span> <span class="keywordtype">int</span> _scrollDelta;</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html#a193d149dc02da8bba9e1eae70f1be62e">   25</a></span>    <span class="keyword">public</span> Point <a class="code hl_property" href="classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html#a193d149dc02da8bba9e1eae70f1be62e">CurrentPosition</a> =&gt; _currentPosition;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html#a193d149dc02da8bba9e1eae70f1be62e">   25</a></span>    <span class="keyword">public</span> Point <a class="code hl_property" href="classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html#a193d149dc02da8bba9e1eae70f1be62e">CurrentPosition</a> =&gt; PointerCoordinates.ToScreenPx(_control, _currentPosition);</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span></div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html#a7b5017b41f937673cd3e06925bb52309">   30</a></span>    <span class="keyword">public</span> HashSet&lt;GondwanaMouseButton&gt; <a class="code hl_property" href="classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html#a7b5017b41f937673cd3e06925bb52309">PressedButtons</a> =&gt; _pressed;</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span></div>
@@ -158,7 +158,7 @@ $(function(){initNavTree('AvaloniaMouseAdapter_8cs_source.html','',''); });
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> UpdatePosition(PointerEventArgs e, Control? relativeTo)</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    {</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        var pos = e.GetPosition(relativeTo);</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        _currentPosition = <span class="keyword">new</span> Point((<span class="keywordtype">int</span>)pos.X, (<span class="keywordtype">int</span>)pos.Y);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        _currentPosition = <span class="keyword">new</span> PointF((<span class="keywordtype">float</span>)pos.X, (<span class="keywordtype">float</span>)pos.Y);</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        _modifiers = <a class="code hl_enumeration" href="namespaceGondwana_1_1Input_1_1Keyboard.html#a9a26020facee161978f965f4c451a92e">KeyboardModifierState</a>.None;</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        var km = e.KeyModifiers;</div>

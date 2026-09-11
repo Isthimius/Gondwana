@@ -247,7 +247,7 @@ var NAVTREEINDEX1 =
 "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceComponent.html#ab500bedc86888b5a8de51b151bc6acf6":[1,0,0,3,2,3,3],
 "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorRenderSurfaceComponentBase.html":[0,0,0,3,2,4],
 "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorRenderSurfaceComponentBase.html":[1,0,0,3,2,4],
-"classGondwana_1_1Blazor_1_1Rendering_1_1BlazorRenderSurfaceComponentBase.html#a0267bde6d9e207466edf8ed301f8c259":[0,0,0,3,2,4,9],
-"classGondwana_1_1Blazor_1_1Rendering_1_1BlazorRenderSurfaceComponentBase.html#a0267bde6d9e207466edf8ed301f8c259":[1,0,0,3,2,4,9],
+"classGondwana_1_1Blazor_1_1Rendering_1_1BlazorRenderSurfaceComponentBase.html#a30fd83e72414e8387c1c44d443a6ea48":[0,0,0,3,2,4,8],
+"classGondwana_1_1Blazor_1_1Rendering_1_1BlazorRenderSurfaceComponentBase.html#a30fd83e72414e8387c1c44d443a6ea48":[1,0,0,3,2,4,8],
 "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorRenderSurfaceComponentBase.html#a377eff0bb825ceb3d24b9e0da46a78ed":[0,0,0,3,2,4,12]
 };

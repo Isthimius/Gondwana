@@ -2,6 +2,7 @@ var classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer =
 [
     [ "GpuBackbuffer", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a4aec5c53e310704b6b92745c5ba51f64", null ],
     [ "Dispose", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#ae7f7fd8af54fb16b6914e046b4197cc0", null ],
+    [ "EnsureInitialized", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a9fd9bb2abb6158420b144d0fcfefbf6b", null ],
     [ "Initialize", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a4fef1b4ad8a55fd62cbaa501ec89290a", null ],
     [ "RecordFrame", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#ad6ec6f40683db71c71ebf19b5a360516", null ],
     [ "Canvas", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#af0584f5f0b09937cfafd3b512c838252", null ],

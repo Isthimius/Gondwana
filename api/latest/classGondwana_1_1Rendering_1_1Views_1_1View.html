@@ -115,7 +115,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac33dbf74f3317abe54778791aa879865" id="r_ac33dbf74f3317abe54778791aa879865"><td class="memItemLeft" align="right" valign="top">RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac33dbf74f3317abe54778791aa879865">WorldRectToScreenRect</a> (<a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a> layer, RectangleF worldRect)</td></tr>
 <tr class="memdesc:ac33dbf74f3317abe54778791aa879865"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a world-space pixel rectangle into a screen-space rectangle for this <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a>, using the specified layer's parallax factor.  <br /></td></tr>
 <tr class="memitem:acb47af9b38be41d6a967ff43178c3b4b" id="r_acb47af9b38be41d6a967ff43178c3b4b"><td class="memItemLeft" align="right" valign="top">RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acb47af9b38be41d6a967ff43178c3b4b">ScreenRectToWorldRect</a> (<a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a> layer, RectangleF screenRect)</td></tr>
-<tr class="memdesc:acb47af9b38be41d6a967ff43178c3b4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a screen-space rectangle (on the adapter) into a world-space rectangle for the given layer, respecting zoom, camera position, viewport offsets, and the layer's parallax factor.  <br /></td></tr>
+<tr class="memdesc:acb47af9b38be41d6a967ff43178c3b4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a screen-space rectangle (on the logical Backbuffer) into a world-space rectangle for the given layer, respecting zoom, camera position, viewport offsets, and the layer's parallax factor.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
@@ -224,7 +224,7 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Converts a screen-space rectangle (on the adapter) into a world-space rectangle for the given layer, respecting zoom, camera position, viewport offsets, and the layer's parallax factor. </p>
+<p>Converts a screen-space rectangle (on the logical Backbuffer) into a world-space rectangle for the given layer, respecting zoom, camera position, viewport offsets, and the layer's parallax factor. </p>
 <p>Inverse of: screen = offset + (world - camera * p) * zoom </p>
 
 <p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00369">369</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
@@ -333,7 +333,7 @@ Properties</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">layer</td><td>Reference layer whose parallax factor is used for the world-space transform. Typically the main gameplay layer (parallax = 1). </td></tr>
-    <tr><td class="paramname">screenPoint</td><td>Mouse position in adapter/screen pixels relative to the render surface. </td></tr>
+    <tr><td class="paramname">screenPoint</td><td>Mouse position in logical Backbuffer ScreenPx, after adapter input normalization. </td></tr>
     <tr><td class="paramname">targetZoom</td><td>Desired zoom factor after the animation completes. </td></tr>
     <tr><td class="paramname">durationSeconds</td><td>Duration in seconds for the zoom animation. Values &lt;= 0 snap immediately. </td></tr>
   </table>

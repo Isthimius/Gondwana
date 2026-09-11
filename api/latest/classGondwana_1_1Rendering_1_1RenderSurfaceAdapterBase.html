@@ -118,6 +118,10 @@ Inheritance diagram for Gondwana.Rendering.RenderSurfaceAdapterBase:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:ae728df578a94403b505b7419bc990b17" id="r_ae728df578a94403b505b7419bc990b17"><td class="memItemLeft" align="right" valign="top">Point&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae728df578a94403b505b7419bc990b17">AdapterPxToScreenPx</a> (PointF adapterPx)</td></tr>
+<tr class="memdesc:ae728df578a94403b505b7419bc990b17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts adapter input to logical ScreenPx, retaining outside coordinates for capture/leave.  <br /></td></tr>
+<tr class="memitem:aeee49fbb44ab3d2b4b1114ebdeb4e54a" id="r_aeee49fbb44ab3d2b4b1114ebdeb4e54a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeee49fbb44ab3d2b4b1114ebdeb4e54a">DrawImage</a> (SKCanvas canvas, SKImage image, SKColor clearColor)</td></tr>
+<tr class="memdesc:aeee49fbb44ab3d2b4b1114ebdeb4e54a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Presents a complete image using the same transform as pointer normalization.  <br /></td></tr>
 <tr class="memitem:a21b2cb15e86a814a070e5d68c15e4e35" id="r_a21b2cb15e86a814a070e5d68c15e4e35"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a21b2cb15e86a814a070e5d68c15e4e35">Present</a> (SKImage bufferImage, SKRectI bufferRect, SKRect destRect)</td></tr>
 <tr class="memdesc:a21b2cb15e86a814a070e5d68c15e4e35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Presents the specified portion of the Backbuffer image to the destination rectangle on the RenderSurfaceAdapter.  <br /></td></tr>
 </table><table class="memberdecls">
@@ -125,11 +129,17 @@ Public Member Functions</h2></td></tr>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:ae5ec6cc715ff40b37cad1828c0164868" id="r_ae5ec6cc715ff40b37cad1828c0164868"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae5ec6cc715ff40b37cad1828c0164868">RenderSurfaceAdapterBase</a> (int destWidth, int destHeight)</td></tr>
 <tr class="memdesc:ae5ec6cc715ff40b37cad1828c0164868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html" title="Represents the abstract base class for render surface adapters that present backbuffer output to a de...">RenderSurfaceAdapterBase</a> class with the specified dimensions.  <br /></td></tr>
+<tr class="memitem:a256ff15ce23dbcf241c1e7fa940336a8" id="r_a256ff15ce23dbcf241c1e7fa940336a8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a256ff15ce23dbcf241c1e7fa940336a8">RenderSurfaceAdapterBase</a> (int destWidth, int destHeight, bool initialSizeAvailable)</td></tr>
+<tr class="memdesc:a256ff15ce23dbcf241c1e7fa940336a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an adapter whose initial layout may still be pending.  <br /></td></tr>
 <tr class="memitem:a406a663858eadcb3ed5de20e14ca049b" id="r_a406a663858eadcb3ed5de20e14ca049b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a406a663858eadcb3ed5de20e14ca049b">SetDestinationSize</a> (int destWidth, int destHeight)</td></tr>
 <tr class="memdesc:a406a663858eadcb3ed5de20e14ca049b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the destination size of the render surface and raises the <a class="el" href="#aec240b322b995ec0cdf4fca485cfba47" title="Occurs when the render surface adapter is resized.">Resized</a> event if the dimensions have changed.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
+<tr class="memitem:adf0106bf20c2bf9b71339f3c52344bbf" id="r_adf0106bf20c2bf9b71339f3c52344bbf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Rendering.html#a8e514e72a9b64a75895ab92f36ccb2ec">PresentationTransform</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adf0106bf20c2bf9b71339f3c52344bbf">Presentation</a><code> [get]</code></td></tr>
+<tr class="memdesc:adf0106bf20c2bf9b71339f3c52344bbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current immutable aspect-preserving mapping of Backbuffer ScreenPx to adapter pixels.  <br /></td></tr>
+<tr class="memitem:a35c50880b719358ed4b69865ac88e4c5" id="r_a35c50880b719358ed4b69865ac88e4c5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a35c50880b719358ed4b69865ac88e4c5">PresentationScale</a><code> [get]</code></td></tr>
+<tr class="memdesc:a35c50880b719358ed4b69865ac88e4c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current derived presentation scale; adapter resize does not resize the Backbuffer.  <br /></td></tr>
 <tr class="memitem:a02161b1fcf631174f0b69d7595f5e74f" id="r_a02161b1fcf631174f0b69d7595f5e74f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a02161b1fcf631174f0b69d7595f5e74f">Width</a><code> [get, protected set]</code></td></tr>
 <tr class="memdesc:a02161b1fcf631174f0b69d7595f5e74f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current width of the render surface in pixels.  <br /></td></tr>
 <tr class="memitem:ae84340b8de8d385ce27da526d9a87317" id="r_ae84340b8de8d385ce27da526d9a87317"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae84340b8de8d385ce27da526d9a87317">Height</a><code> [get, protected set]</code></td></tr>
@@ -143,10 +153,10 @@ Events</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents the abstract base class for render surface adapters that present backbuffer output to a destination surface. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00009">9</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00010">10</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ae5ec6cc715ff40b37cad1828c0164868" name="ae5ec6cc715ff40b37cad1828c0164868"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae5ec6cc715ff40b37cad1828c0164868">&#9670;&#160;</a></span>RenderSurfaceAdapterBase()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5ec6cc715ff40b37cad1828c0164868">&#9670;&#160;</a></span>RenderSurfaceAdapterBase() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -181,11 +191,108 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00037">37</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00097">97</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+
+</div>
+</div>
+<a id="a256ff15ce23dbcf241c1e7fa940336a8" name="a256ff15ce23dbcf241c1e7fa940336a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a256ff15ce23dbcf241c1e7fa940336a8">&#9670;&#160;</a></span>RenderSurfaceAdapterBase() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Gondwana.Rendering.RenderSurfaceAdapterBase.RenderSurfaceAdapterBase </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>destWidth</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>destHeight</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>initialSizeAvailable</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs an adapter whose initial layout may still be pending. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">destWidth</td><td>Initial or placeholder adapter width.</td></tr>
+    <tr><td class="paramname">destHeight</td><td>Initial or placeholder adapter height.</td></tr>
+    <tr><td class="paramname">initialSizeAvailable</td><td>False for hosts constructed before layout; the first valid size establishes resolution once.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00104">104</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
 
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="ae728df578a94403b505b7419bc990b17" name="ae728df578a94403b505b7419bc990b17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae728df578a94403b505b7419bc990b17">&#9670;&#160;</a></span>AdapterPxToScreenPx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Point Gondwana.Rendering.RenderSurfaceAdapterBase.AdapterPxToScreenPx </td>
+          <td>(</td>
+          <td class="paramtype">PointF</td>          <td class="paramname"><span class="paramname"><em>adapterPx</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Converts adapter input to logical ScreenPx, retaining outside coordinates for capture/leave. </p>
+
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00039">39</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+
+</div>
+</div>
+<a id="aeee49fbb44ab3d2b4b1114ebdeb4e54a" name="aeee49fbb44ab3d2b4b1114ebdeb4e54a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeee49fbb44ab3d2b4b1114ebdeb4e54a">&#9670;&#160;</a></span>DrawImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Rendering.RenderSurfaceAdapterBase.DrawImage </td>
+          <td>(</td>
+          <td class="paramtype">SKCanvas</td>          <td class="paramname"><span class="paramname"><em>canvas</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">SKImage</td>          <td class="paramname"><span class="paramname"><em>image</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">SKColor</td>          <td class="paramname"><span class="paramname"><em>clearColor</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Presents a complete image using the same transform as pointer normalization. </p>
+
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00047">47</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+
+</div>
+</div>
 <a id="a21b2cb15e86a814a070e5d68c15e4e35" name="a21b2cb15e86a814a070e5d68c15e4e35"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a21b2cb15e86a814a070e5d68c15e4e35">&#9670;&#160;</a></span>Present()</h2>
 
@@ -266,9 +373,9 @@ Events</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>If the specified dimensions are the same as the current dimensions, this method returns without making changes or raising the <a class="el" href="#aec240b322b995ec0cdf4fca485cfba47" title="Occurs when the render surface adapter is resized.">Resized</a> event. </p>
+<p>If dimensions and size availability are unchanged, this method returns without raising <a class="el" href="#aec240b322b995ec0cdf4fca485cfba47" title="Occurs when the render surface adapter is resized.">Resized</a>. The first valid layout raises the event even if it matches the placeholder dimensions. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00051">51</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00119">119</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
 
 </div>
 </div>
@@ -296,7 +403,59 @@ Events</h2></td></tr>
 <p>Gets the current height of the render surface in pixels. </p>
 <p>The height of the render surface.</p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00030">30</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00086">86</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+
+</div>
+</div>
+<a id="adf0106bf20c2bf9b71339f3c52344bbf" name="adf0106bf20c2bf9b71339f3c52344bbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf0106bf20c2bf9b71339f3c52344bbf">&#9670;&#160;</a></span>Presentation</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceGondwana_1_1Rendering.html#a8e514e72a9b64a75895ab92f36ccb2ec">PresentationTransform</a> Gondwana.Rendering.RenderSurfaceAdapterBase.Presentation</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current immutable aspect-preserving mapping of Backbuffer ScreenPx to adapter pixels. </p>
+
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00024">24</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+
+</div>
+</div>
+<a id="a35c50880b719358ed4b69865ac88e4c5" name="a35c50880b719358ed4b69865ac88e4c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35c50880b719358ed4b69865ac88e4c5">&#9670;&#160;</a></span>PresentationScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Gondwana.Rendering.RenderSurfaceAdapterBase.PresentationScale</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current derived presentation scale; adapter resize does not resize the Backbuffer. </p>
+
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00027">27</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
 
 </div>
 </div>
@@ -323,7 +482,7 @@ Events</h2></td></tr>
 <p>Gets the current width of the render surface in pixels. </p>
 <p>The width of the render surface.</p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00024">24</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00076">76</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
 
 </div>
 </div>
@@ -343,7 +502,7 @@ Events</h2></td></tr>
 <p>Occurs when the render surface adapter is resized. </p>
 <p>This event is raised when the <a class="el" href="#a02161b1fcf631174f0b69d7595f5e74f" title="Gets the current width of the render surface in pixels.">Width</a> or <a class="el" href="#ae84340b8de8d385ce27da526d9a87317" title="Gets the current height of the render surface in pixels.">Height</a> properties change, providing both the old and new dimensions in the event arguments. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00018">18</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00070">70</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
 
 </div>
 </div>

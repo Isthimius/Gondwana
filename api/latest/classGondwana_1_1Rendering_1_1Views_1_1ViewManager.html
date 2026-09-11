@@ -107,7 +107,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aeb0e058d470c9953350fa7e5a86233ae" id="r_aeb0e058d470c9953350fa7e5a86233ae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb0e058d470c9953350fa7e5a86233ae">AddView</a> (Rectangle targetRectPx, float zoom=1f, int zOrder=0, RectangleF? worldBoundsPx=null)</td></tr>
 <tr class="memdesc:aeb0e058d470c9953350fa7e5a86233ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates and adds a new view with the specified screen rectangle, zoom level, and Z-order. The view is automatically configured with a camera that can be optionally clamped to world bounds.  <br /></td></tr>
 <tr class="memitem:ac9a5e8510813ed90687fa219cfc70a2b" id="r_ac9a5e8510813ed90687fa219cfc70a2b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac9a5e8510813ed90687fa219cfc70a2b">ConfigureSingleFullView</a> (float zoom=1f, int zOrder=0)</td></tr>
-<tr class="memdesc:ac9a5e8510813ed90687fa219cfc70a2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all existing views and creates a single full-screen view that occupies the entire render surface adapter.  <br /></td></tr>
+<tr class="memdesc:ac9a5e8510813ed90687fa219cfc70a2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all existing views and creates a single full-screen view that occupies the entire logical Backbuffer.  <br /></td></tr>
 <tr class="memitem:a0ea85643b4b886d927d5af75b8c075a9" id="r_a0ea85643b4b886d927d5af75b8c075a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ea85643b4b886d927d5af75b8c075a9">ConfigureVerticalSplit</a> (float leftZoom=1f, float rightZoom=1f)</td></tr>
 <tr class="memdesc:a0ea85643b4b886d927d5af75b8c075a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all existing views and creates a vertical split-screen layout: left and right views sharing the full height of the render surface.  <br /></td></tr>
 <tr class="memitem:aba7c343c7448faf516b1fde31040d840" id="r_aba7c343c7448faf516b1fde31040d840"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba7c343c7448faf516b1fde31040d840">ConfigureHorizontalSplit</a> (float topZoom=1f, float bottomZoom=1f)</td></tr>
@@ -254,7 +254,7 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Removes all existing views and creates a single full-screen view that occupies the entire render surface adapter. </p>
+<p>Removes all existing views and creates a single full-screen view that occupies the entire logical Backbuffer. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">zoom</td><td>Initial zoom level for the view.</td></tr>

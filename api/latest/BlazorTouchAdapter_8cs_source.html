@@ -224,8 +224,8 @@ $(function(){initNavTree('BlazorTouchAdapter_8cs_source.html','',''); });
 <div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        _activeTouchesSnapshot = _activeTouches.Values.ToArray();</div>
 <div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    }</div>
 <div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keyword">private</span> <span class="keyword">static</span> Point GetPosition(BrowserTouchPoint t) =&gt;</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        <span class="keyword">new</span> Point((<span class="keywordtype">int</span>)t.ClientX, (<span class="keywordtype">int</span>)t.ClientY);</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keyword">private</span> Point GetPosition(BrowserTouchPoint t) =&gt;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        _component.ToScreenPx(t.ClientX, t.ClientY);</div>
 <div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span></div>
 <div class="foldopen" id="foldopen00152" data-start="{" data-end="}">
 <div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html#ae1b91f4ec7a6db1a33dfac4cac1bc8a4">  152</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html#ae1b91f4ec7a6db1a33dfac4cac1bc8a4">Dispose</a>()</div>

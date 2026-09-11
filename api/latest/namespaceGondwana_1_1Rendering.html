@@ -123,7 +123,73 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides data for the <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#af8bbb7657b2a182575fabb206ea4d974" title="Occurs when a scene is bound to or unbound from this render surface host.">RenderSurfaceHost&lt;TBackbuffer&gt;.BindToScene</a> event.  <a href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBindEventArgs.html#details">More...</a><br /></td></tr>
 <tr class="memitem:RenderSurfaceHostRegistry" id="r_RenderSurfaceHostRegistry"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>RenderSurfaceHostRegistry</b></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides a central registry for tracking all active <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html" title="Represents a base class for hosting a render surface, providing functionality for managing rendering ...">RenderSurfaceHostBase</a> instances in the application. <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:aa8e97c3e51f1384d7e310365b82ee785" id="r_aa8e97c3e51f1384d7e310365b82ee785"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa8e97c3e51f1384d7e310365b82ee785">RenderScalingFilter</a> { <a class="el" href="#aa8e97c3e51f1384d7e310365b82ee785a32a843da6ea40ab3b17a3421ccdf671b">Linear</a>
+, <a class="el" href="#aa8e97c3e51f1384d7e310365b82ee785aaa020331bb30d2fa2ecf7c3a0777823f">NearestNeighbor</a>
+ }</td></tr>
+<tr class="memdesc:aa8e97c3e51f1384d7e310365b82ee785"><td class="mdescLeft">&#160;</td><td class="mdescRight">Filtering used only when presenting the finished Backbuffer.  <a href="#aa8e97c3e51f1384d7e310365b82ee785">More...</a><br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a8e514e72a9b64a75895ab92f36ccb2ec" id="r_a8e514e72a9b64a75895ab92f36ccb2ec"><td class="memItemLeft" align="right" valign="top">readonly record struct&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8e514e72a9b64a75895ab92f36ccb2ec">PresentationTransform</a> (float Scale, SKRect DestinationRect)</td></tr>
+<tr class="memdesc:a8e514e72a9b64a75895ab92f36ccb2ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Aspect-preserving mapping between logical Backbuffer ScreenPx and adapter pixels.  <br /></td></tr>
 </table>
+<a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
+<a id="aa8e97c3e51f1384d7e310365b82ee785" name="aa8e97c3e51f1384d7e310365b82ee785"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8e97c3e51f1384d7e310365b82ee785">&#9670;&#160;</a></span>RenderScalingFilter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#aa8e97c3e51f1384d7e310365b82ee785">Gondwana.Rendering.RenderScalingFilter</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Filtering used only when presenting the finished Backbuffer. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aa8e97c3e51f1384d7e310365b82ee785a32a843da6ea40ab3b17a3421ccdf671b" name="aa8e97c3e51f1384d7e310365b82ee785a32a843da6ea40ab3b17a3421ccdf671b"></a>Linear&#160;</td><td class="fielddoc"><p>Bilinear presentation filtering. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa8e97c3e51f1384d7e310365b82ee785aaa020331bb30d2fa2ecf7c3a0777823f" name="aa8e97c3e51f1384d7e310365b82ee785aaa020331bb30d2fa2ecf7c3a0777823f"></a>NearestNeighbor&#160;</td><td class="fielddoc"><p>Unfiltered nearest-pixel presentation for pixel art. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="PresentationTransform_8cs_source.html#l00048">48</a> of file <a class="el" href="PresentationTransform_8cs_source.html">PresentationTransform.cs</a>.</p>
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a8e514e72a9b64a75895ab92f36ccb2ec" name="a8e514e72a9b64a75895ab92f36ccb2ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e514e72a9b64a75895ab92f36ccb2ec">&#9670;&#160;</a></span>PresentationTransform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">readonly record struct Gondwana.Rendering.PresentationTransform </td>
+          <td>(</td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>Scale</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">SKRect</td>          <td class="paramname"><span class="paramname"><em>DestinationRect</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Aspect-preserving mapping between logical Backbuffer ScreenPx and adapter pixels. </p>
+<p>Fits the entire logical image inside the adapter, centered on both axes.</p>
+<p>Maps input without clamping margins. False means outside the presented game area.</p>
+<p>Maps logical dirty edges outwards to avoid gaps at fractional presentation scales.</p>
+
+<p class="definition">Definition at line <a class="el" href="PresentationTransform_8cs_source.html#l00007">7</a> of file <a class="el" href="PresentationTransform_8cs_source.html">PresentationTransform.cs</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

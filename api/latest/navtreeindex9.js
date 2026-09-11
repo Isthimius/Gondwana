@@ -1,5 +1,9 @@
 var NAVTREEINDEX9 =
 {
+"classGondwana_1_1Hosting_1_1GameHostBase.html#a332c71dfd84ee52dc7bdb2aabc9f3905":[1,0,0,8,0,31],
+"classGondwana_1_1Hosting_1_1GameHostBase.html#a33aefd7ff2427402e075af995563d111":[0,0,0,8,0,37],
+"classGondwana_1_1Hosting_1_1GameHostBase.html#a33aefd7ff2427402e075af995563d111":[1,0,0,8,0,37],
+"classGondwana_1_1Hosting_1_1GameHostBase.html#a38c70b8d3afe90cb0c3837957448a88c":[0,0,0,8,0,14],
 "classGondwana_1_1Hosting_1_1GameHostBase.html#a38c70b8d3afe90cb0c3837957448a88c":[1,0,0,8,0,14],
 "classGondwana_1_1Hosting_1_1GameHostBase.html#a3f34005c50744e316edad63029186c3c":[0,0,0,8,0,28],
 "classGondwana_1_1Hosting_1_1GameHostBase.html#a3f34005c50744e316edad63029186c3c":[1,0,0,8,0,28],
@@ -245,9 +249,5 @@ var NAVTREEINDEX9 =
 "classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.html#affe11699c919122f54beeebc29fd90ba":[1,0,0,9,2,4,2],
 "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1GestureEventArgs.html":[0,0,0,9,4,0,0],
 "classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1GestureEventArgs.html":[1,0,0,9,3,0,0],
-"classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1GestureEventArgs.html#a11da7136852c4d264f610077ed8b94cf":[0,0,0,9,4,0,0,8],
-"classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1GestureEventArgs.html#a11da7136852c4d264f610077ed8b94cf":[1,0,0,9,3,0,0,8],
-"classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1GestureEventArgs.html#a122601a3d9ee32e5a7750d9131a11f33":[0,0,0,9,4,0,0,2],
-"classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1GestureEventArgs.html#a122601a3d9ee32e5a7750d9131a11f33":[1,0,0,9,3,0,0,2],
-"classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1GestureEventArgs.html#a13786468ff18415da07c8a29c8cc7a91":[0,0,0,9,4,0,0,0]
+"classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1GestureEventArgs.html#a11da7136852c4d264f610077ed8b94cf":[0,0,0,9,4,0,0,8]
 };

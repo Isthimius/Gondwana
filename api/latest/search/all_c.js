@@ -17,7 +17,7 @@ var searchData=
   ['lightcolor_14',['LightColor',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a725fd47660e3f269909e3593befd2e60',1,'Gondwana::Drawing::Direct::DirectRadialLight']]],
   ['lightremoving_15',['LightRemoving',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectLightLayer.html#a1e2b2da9f4e28e925734d5d69c7d014c',1,'Gondwana::Drawing::Direct::DirectLightLayer']]],
   ['lights_16',['Lights',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectLightLayer.html#a31652a267817ef9818a2a86bddb41190',1,'Gondwana::Drawing::Direct::DirectLightLayer']]],
-  ['linear_17',['Linear',['../namespaceGondwana_1_1Physics_1_1Movement_1_1Easing.html#afc5970aaefa30a4c61cc1f800f15e5bca32a843da6ea40ab3b17a3421ccdf671b',1,'Gondwana::Physics::Movement::Easing']]],
+  ['linear_17',['Linear',['../namespaceGondwana_1_1Physics_1_1Movement_1_1Easing.html#afc5970aaefa30a4c61cc1f800f15e5bca32a843da6ea40ab3b17a3421ccdf671b',1,'Gondwana.Physics.Movement.Easing.Linear'],['../namespaceGondwana_1_1Rendering.html#aa8e97c3e51f1384d7e310365b82ee785a32a843da6ea40ab3b17a3421ccdf671b',1,'Gondwana.Rendering.Linear']]],
   ['lineardamping_18',['LinearDamping',['../structGondwana_1_1Physics_1_1Movement_1_1MovementState.html#ac8855e7bd31cf6a4e7b047cdd750d082',1,'Gondwana::Physics::Movement::MovementState']]],
   ['lineheight_19',['LineHeight',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#adc94f261534f4e63cef86ad80a1e0ba2',1,'Gondwana::Drawing::Direct::TextBlock']]],
   ['lines_20',['Lines',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#ac9830c61b758722087c406040cfc4eab',1,'Gondwana::Drawing::Direct::TextBlock']]],
