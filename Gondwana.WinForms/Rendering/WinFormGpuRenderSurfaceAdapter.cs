@@ -1,6 +1,7 @@
 ﻿using Gondwana;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
+using System.Windows.Forms;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 
@@ -19,6 +20,7 @@ namespace Gondwana.WinForms.Rendering;
 public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisposable
 {
     private readonly SKGLControl _glControl;
+    private readonly Control _presentationControl;
     private readonly EventHandler _resizeHandler;
 
     // ── GL-thread path ───────────────────────────────────────────────────────
@@ -34,11 +36,12 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     // Tracks whether GrContext has been captured and the first-available event fired.
     private bool _grContextReady;
 
-    // Set to 1 when the GL control is resized so OnPaintSurface can fire ResizeRequested.
+    // Set to 1 when the presentation area is resized so OnPaintSurface can fire ResizeRequested.
     private int _pendingResize;
 
-    // Set to 1 when a UiDispatcher.Post(Invalidate) is already queued; prevents queuing more than
-    // one at a time when the engine cycle rate exceeds the GPU render rate.
+    // Set to 1 while an invalidate callback is queued on the UI dispatcher. The callback clears
+    // the flag whether or not WinForms ultimately produces a paint, so a zero-sized presentation
+    // cannot permanently latch rendering off.
     private int _pendingInvalidate;
 
     /// <summary>
@@ -61,55 +64,58 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     /// <summary>
     /// Raised on the GL thread when the control has been resized and a valid
     /// <see cref="GRContext"/> is available.  The arguments are the context and the new
-    /// width and height in pixels.  Subscribe to call
-    /// <see cref="GpuBackbuffer.Initialize"/> with the new dimensions.
+    /// width and height in adapter pixels. This event is for presentation resources;
+    /// it must not be used to resize the logical Backbuffer.
     /// </summary>
     public event Action<GRContext, int, int>? ResizeRequested;
 
     /// <summary>
-    /// Refreshes the destination size based on the current client size of the GL control.
+    /// Refreshes the destination size based on the current client size of the presentation control.
+    /// A non-positive size marks presentation as unavailable without resizing the logical Backbuffer.
     /// </summary>
     public void RefreshDestinationSize()
     {
-        if (_glControl.IsDisposed || !_glControl.IsHandleCreated) return;
+        if (_presentationControl.IsDisposed || !_presentationControl.IsHandleCreated) return;
 
-        var sz = _glControl.ClientSize;
+        var sz = _presentationControl.ClientSize;
+        SetDestinationSize(sz.Width, sz.Height);
+
         if (sz.Width > 0 && sz.Height > 0)
-        {
-            SetDestinationSize(sz.Width, sz.Height);
             Interlocked.Exchange(ref _pendingResize, 1);
-        }
+        else
+            Interlocked.Exchange(ref _pendingResize, 0);
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WinFormGpuRenderSurfaceAdapter"/> class.
     /// </summary>
-    /// <param name="gl">The SKGLControl to use as the render target.</param>
+    /// <param name="gl">The SKGLControl to use as the render target and presentation control.</param>
     public WinFormGpuRenderSurfaceAdapter(SKGLControl gl)
-        : base(gl.Width, gl.Height)
+        : this(gl, gl)
     {
-        _glControl = gl;
+    }
 
-        // Store the resize handler in a field so it can be unsubscribed in Dispose().
-        // WinForms can transiently report 0×0 during minimize/layout; avoid committing that size
-        // so downstream resize code (which divides by the previous width/height) never observes a
-        // zero denominator.  We skip both the dimension update and the pending-resize flag when the
-        // control reports non-positive dimensions.
-        _resizeHandler = (_, _) =>
-        {
-            var width = _glControl.Width;
-            var height = _glControl.Height;
+    /// <summary>
+    /// Initializes an adapter whose physical GL control may be kept at a non-zero minimum size
+    /// while a separate control supplies the actual presentation dimensions.
+    /// </summary>
+    internal WinFormGpuRenderSurfaceAdapter(SKGLControl gl, Control presentationControl)
+        : base(
+            Math.Max(1, presentationControl.ClientSize.Width),
+            Math.Max(1, presentationControl.ClientSize.Height),
+            presentationControl.ClientSize.Width > 0 && presentationControl.ClientSize.Height > 0)
+    {
+        _glControl = gl ?? throw new ArgumentNullException(nameof(gl));
+        _presentationControl = presentationControl ?? throw new ArgumentNullException(nameof(presentationControl));
 
-            if (width > 0 && height > 0)
-            {
-                SetDestinationSize(width, height);
-                Interlocked.Exchange(ref _pendingResize, 1);
-            }
-        };
+        // Track the actual presentation control rather than the GL drawable. The wrapper may keep
+        // the drawable at 1×1 while its own client area is 0×0 so OpenTK/GLFW never receives a
+        // zero-sized native surface.
+        _resizeHandler = (_, _) => RefreshDestinationSize();
 
         // Wire events
         _glControl.PaintSurface += OnPaintSurface;
-        _glControl.Resize += _resizeHandler;
+        _presentationControl.Resize += _resizeHandler;
 
         // On modern SkiaSharp, SKGLControl exposes GRContext; otherwise capture it in the first paint.
         GrContext = _glControl.GRContext; // may be null until first paint; we also set in OnPaintSurface
@@ -135,15 +141,10 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
         _gpuBackbuffer = _host.Backbuffer as GpuBackbuffer;
 
         // Invalidate the GL control on the UI thread after every engine foreground cycle.
-        // Use _pendingInvalidate to ensure at most one Post(Invalidate) is queued: when the engine
-        // cycle rate exceeds the GPU render rate, excess calls are dropped rather than piling
-        // up in the message queue.  The flag is cleared at the start of each paint.
-        _afterFrameRenderHandler = () =>
-        {
-            if (!_glControl.IsDisposed
-                && Interlocked.CompareExchange(ref _pendingInvalidate, 1, 0) == 0)
-                Engine.Instance.UiDispatcher!.Post(_glControl.Invalidate);
-        };
+        // _pendingInvalidate tracks the queued dispatcher callback, not PaintSurface itself.
+        // Invalidate() is only a paint request and can be dropped while the presentation has no
+        // area, so tying this latch to PaintSurface can permanently starve rendering after restore.
+        _afterFrameRenderHandler = QueueInvalidate;
         Engine.Instance.AfterFrameRender += _afterFrameRenderHandler;
     }
 
@@ -156,10 +157,34 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
         bufferImage.Dispose();
     }
 
-    private void OnPaintSurface(object? sender, SKPaintGLSurfaceEventArgs e)    {
-        // Clear the pending-invalidate flag so the next AfterFrameRender can queue a new one.
-        Interlocked.Exchange(ref _pendingInvalidate, 0);
+    private void QueueInvalidate()
+    {
+        if (_glControl.IsDisposed || _presentationControl.IsDisposed) return;
+        if (Interlocked.CompareExchange(ref _pendingInvalidate, 1, 0) != 0) return;
 
+        Engine.Instance.UiDispatcher!.Post(() =>
+        {
+            try
+            {
+                if (!_glControl.IsDisposed
+                    && !_presentationControl.IsDisposed
+                    && _presentationControl.ClientSize.Width > 0
+                    && _presentationControl.ClientSize.Height > 0)
+                {
+                    _glControl.Invalidate();
+                }
+            }
+            finally
+            {
+                // The dispatcher callback completed. Do not wait for PaintSurface: WinForms is
+                // allowed to coalesce or discard an invalidation, especially at zero size.
+                Interlocked.Exchange(ref _pendingInvalidate, 0);
+            }
+        });
+    }
+
+    private void OnPaintSurface(object? sender, SKPaintGLSurfaceEventArgs e)
+    {
         // Lazily sync VSync → GLControl.VSync whenever the backbuffer value changes.
         if (_gpuBackbuffer != null)
         {
@@ -186,7 +211,7 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
             }
             else if (Interlocked.Exchange(ref _pendingResize, 0) == 1)
             {
-                // Subsequent resize: reinitialize the backbuffer's GPU resources on the GL thread.
+                // Notify consumers about presentation resource resize on the GL thread.
                 // WinForms controls can report zero size while minimized or before layout completes;
                 // suppress invalid resize requests so downstream GPU initialization is not attempted
                 // with non-positive dimensions.
@@ -197,7 +222,17 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
             }
         }
 
+        if (GrContext != null) _gpuBackbuffer?.EnsureInitialized(GrContext);
+
         var canvas = e.Surface.Canvas;
+
+        // The physical GL drawable is intentionally kept at least 1×1, even when the wrapper has
+        // no presentation area. Avoid doing scene work for that clipped placeholder surface.
+        if (Width <= 0 || Height <= 0)
+        {
+            canvas.Clear(ClearColor);
+            return;
+        }
 
         // Render + blit entirely on the GL thread.
         // GlRenderAndSnapshot drives RenderToBackbuffer on the GPU surface then returns a
@@ -208,14 +243,7 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
             using var img = _host.GlRenderAndSnapshot();
             if (img != null)
             {
-                // DrawImage covers the full render target, so no pre-clear is needed.
-                // Clearing the window surface before blitting would cause a black flash
-                // that is visible when VSync is off (the monitor may scan between the
-                // clear and the blit, seeing the cleared back buffer).
-                var dst = SKRect.Create(0, 0,
-                    e.BackendRenderTarget.Width,
-                    e.BackendRenderTarget.Height);
-                canvas.DrawImage(img, dst);
+                DrawImage(canvas, img, ClearColor);
             }
             else
             {
@@ -246,9 +274,9 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
         }
 
         if (!_glControl.IsDisposed)
-        {
             _glControl.PaintSurface -= OnPaintSurface;
-            _glControl.Resize -= _resizeHandler;
-        }
+
+        if (!_presentationControl.IsDisposed)
+            _presentationControl.Resize -= _resizeHandler;
     }
 }

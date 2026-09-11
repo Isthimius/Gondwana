@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
 - Add DirectSceneLayerDarknessOverlay ([#293](https://github.com/Isthimius/Gondwana/pull/293))
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+- Decouple backbuffer resolution from adapter presentation ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 
 
@@ -34,10 +35,10 @@ All notable changes to this project will be documented in this file.
 - Correct view coordinate conversion on GPU path to address occasional tearing ([#290](https://github.com/Isthimius/Gondwana/pull/290))
 - Resolve timer edge case ([#295](https://github.com/Isthimius/Gondwana/pull/295))
 - Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
+- Fix per PR / copilot: ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 - Harden engine initialization safety ([#336](https://github.com/Isthimius/Gondwana/pull/336))
-- Fix engine dispose self-deadlock on cycle thread ([#338](https://github.com/Isthimius/Gondwana/pull/338))
 - Warm effects manager on first update ([#337](https://github.com/Isthimius/Gondwana/pull/337))
-- Guard null sprite entries during layer collision refresh ([#338](https://github.com/Isthimius/Gondwana/pull/338))
+- Prevent engine dispose self-deadlock ([#338](https://github.com/Isthimius/Gondwana/pull/338))
 
 
 
@@ -65,8 +66,7 @@ All notable changes to this project will be documented in this file.
 
 ## Other Changes
 - Standardizing CollisionAdjust and Overlap values
-- Defer engine-thread disposal cleanup until cycle exits ([#338](https://github.com/Isthimius/Gondwana/pull/338))
-- Merge remote-tracking branch 'origin/copilot/fix-engine-dispose-deadlock' into copilot/fix-engine-dispose-deadlock ([#338](https://github.com/Isthimius/Gondwana/pull/338))
+- Merge from master ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 # v2.5.2 - July 26, 2026
 

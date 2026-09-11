@@ -1,4 +1,4 @@
-﻿using Gondwana.Rendering;
+using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -36,6 +36,12 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : BlazorRenderSur
 
     /// <summary>Gets the <see cref="RenderSurfaceHost{T}"/> bound to this component.</summary>
     public RenderSurfaceHost<BitmapBackbuffer> Host { get; private set; } = null!;
+
+    internal override ValueTask<CanvasOffset> GetCanvasOffsetAsync()
+        => _module is null ? ValueTask.FromResult(default(CanvasOffset))
+           : _module.InvokeAsync<CanvasOffset>("getCanvasOffset", _canvasRef);
+
+    internal override RenderSurfaceAdapterBase? InputSurfaceAdapter => Adapter;
 
     /// <inheritdoc/>
     protected override void OnInitialized()
@@ -102,6 +108,7 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : BlazorRenderSur
         if (width > 0 && height > 0)
         {
             Adapter.UpdateSize(width, height);
+            PresentRetainedFrame();
         }
     }
 
@@ -123,7 +130,10 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : BlazorRenderSur
         {
             try
             {
-                inProcessModule.InvokeVoid("putImageData", _canvasRef, canvasWidth, canvasHeight, width, height, x, y, rgbaPixels);
+                inProcessModule.InvokeVoid("putImageData", _canvasRef, canvasWidth, canvasHeight, width, height, x, y, rgbaPixels, Adapter.Width, Adapter.Height,
+                    Adapter.Presentation.DestinationRect.Left, Adapter.Presentation.DestinationRect.Top,
+                    Adapter.Presentation.DestinationRect.Width, Adapter.Presentation.DestinationRect.Height,
+                    Engine.Instance.Configuration.RenderScalingFilter == RenderScalingFilter.NearestNeighbor);
                 return;
             }
             catch
@@ -135,8 +145,20 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : BlazorRenderSur
         _ = InvokeAsync(async () =>
         {
             if (!_moduleLoaded || _module is null) return;
-            await _module.InvokeVoidAsync("putImageData", _canvasRef, canvasWidth, canvasHeight, width, height, x, y, rgbaPixels);
+            await _module.InvokeVoidAsync("putImageData", _canvasRef, canvasWidth, canvasHeight, width, height, x, y, rgbaPixels, Adapter.Width, Adapter.Height,
+                    Adapter.Presentation.DestinationRect.Left, Adapter.Presentation.DestinationRect.Top,
+                    Adapter.Presentation.DestinationRect.Width, Adapter.Presentation.DestinationRect.Height,
+                    Engine.Instance.Configuration.RenderScalingFilter == RenderScalingFilter.NearestNeighbor);
         });
+    }
+
+    private void PresentRetainedFrame()
+    {
+        if (_module is null) return;
+        var rect = Adapter.Presentation.DestinationRect;
+        _ = _module.InvokeVoidAsync("presentBitmap", _canvasRef, Adapter.Width, Adapter.Height,
+            rect.Left, rect.Top, rect.Width, rect.Height,
+            Engine.Instance.Configuration.RenderScalingFilter == RenderScalingFilter.NearestNeighbor);
     }
 
     /// <inheritdoc/>

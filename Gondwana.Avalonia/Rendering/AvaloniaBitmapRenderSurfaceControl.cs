@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -48,10 +48,15 @@ public class AvaloniaBitmapRenderSurfaceControl : Control
     /// <inheritdoc/>
     public override void Render(DrawingContext context)
     {
+        context.FillRectangle(Brushes.Black, new Rect(Bounds.Size));
+        RenderOptions.SetBitmapInterpolationMode(this,
+            Engine.Instance.Configuration.RenderScalingFilter == RenderScalingFilter.NearestNeighbor
+                ? BitmapInterpolationMode.None : BitmapInterpolationMode.LowQuality);
         var bmp = _bitmap;
         if (bmp != null)
         {
-            var dest = new Rect(0, 0, Bounds.Width, Bounds.Height);
+            var fit = PresentationTransform.Fit(bmp.PixelSize.Width, bmp.PixelSize.Height, Adapter.Width, Adapter.Height).DestinationRect;
+            var dest = new Rect(fit.Left, fit.Top, fit.Width, fit.Height);
             context.DrawImage(bmp, new Rect(bmp.Size), dest);
         }
     }

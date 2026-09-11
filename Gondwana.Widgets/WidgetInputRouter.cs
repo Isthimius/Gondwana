@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Numerics;
 using Gondwana.Drawing.Direct;
 using Gondwana.Input.Keyboard;
@@ -583,6 +583,12 @@ public sealed class WidgetInputRouter : IDisposable
 
     private View? GetTopmostViewAt(Point screenPositionPx)
     {
+        if (_renderSurfaceHost.RenderSurfaceAdapter is not null &&
+            (screenPositionPx.X < 0 || screenPositionPx.Y < 0 ||
+             screenPositionPx.X >= _renderSurfaceHost.Backbuffer.Width ||
+             screenPositionPx.Y >= _renderSurfaceHost.Backbuffer.Height))
+            return null;
+
         var views = _renderSurfaceHost.ViewManager.Views;
 
         for (int index = views.Count - 1; index >= 0; index--)

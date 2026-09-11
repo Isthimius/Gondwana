@@ -22,7 +22,7 @@ public sealed class BlazorGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, ID
     /// Initializes a new instance of <see cref="BlazorGpuRenderSurfaceAdapter"/>.
     /// </summary>
     internal BlazorGpuRenderSurfaceAdapter()
-        : base(1, 1)
+        : base(1, 1, initialSizeAvailable: false)
     {
     }
 
@@ -54,7 +54,7 @@ public sealed class BlazorGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, ID
     /// </summary>
     internal void BeginPaint(int width, int height)
     {
-        if (!_disposed && width > 0 && height > 0)
+        if (!_disposed)
             SetDestinationSize(width, height);
     }
 

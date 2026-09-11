@@ -153,24 +153,37 @@ export function stopRenderLoop() {
  * @param {number} y - Destination Y position in canvas pixel coordinates.
  * @param {Uint8Array} data - RGBA byte array (width * height * 4 bytes, unpremultiplied).
  */
-export function putImageData(canvas, canvasWidth, canvasHeight, width, height, x, y, data) {
+export function putImageData(canvas, canvasWidth, canvasHeight, width, height, x, y, data,
+    adapterWidth, adapterHeight, destX, destY, destWidth, destHeight, nearest) {
     if (!canvas) return;
-
     const state = canvas.__gondwana ??= {};
-
-    if (state.w !== canvasWidth || state.h !== canvasHeight) {
-        canvas.width = canvasWidth;
-        canvas.height = canvasHeight;
-
-        state.ctx = canvas.getContext('2d', { alpha: false });
-        state.w = canvasWidth;
-        state.h = canvasHeight;
+    const source = state.source ??= document.createElement('canvas');
+    if (source.width !== canvasWidth || source.height !== canvasHeight) {
+        source.width = canvasWidth;
+        source.height = canvasHeight;
     }
-
-    const ctx = state.ctx;
-    if (!ctx) return;
-
     const rgba = new Uint8ClampedArray(data.buffer, data.byteOffset, data.byteLength);
-    const imageData = new ImageData(rgba, width, height);
-    ctx.putImageData(imageData, x, y);
+    source.getContext('2d').putImageData(new ImageData(rgba, width, height), x, y);
+    presentBitmap(canvas, adapterWidth, adapterHeight, destX, destY, destWidth, destHeight, nearest);
+}
+
+// Logical pixels survive adapter resize; only the visible presentation canvas changes size.
+export function presentBitmap(canvas, width, height, x, y, destWidth, destHeight, nearest) {
+    if (!canvas || width <= 0 || height <= 0) return;
+    if (canvas.width !== width) canvas.width = width;
+    if (canvas.height !== height) canvas.height = height;
+    const ctx = canvas.getContext('2d', { alpha: false });
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, width, height);
+    ctx.imageSmoothingEnabled = !nearest;
+    const source = canvas.__gondwana?.source;
+    if (source && destWidth > 0 && destHeight > 0)
+        ctx.drawImage(source, 0, 0, source.width, source.height, x, y, destWidth, destHeight);
+}
+
+// Read on each touch event so scrolling/repositioning cannot leave a stale canvas origin.
+export function getCanvasOffset(elementOrId) {
+    const canvas = typeof elementOrId === 'string' ? document.getElementById(elementOrId) : elementOrId;
+    const bounds = canvas?.getBoundingClientRect();
+    return { left: bounds?.left ?? 0, top: bounds?.top ?? 0 };
 }

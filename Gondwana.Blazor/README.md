@@ -55,6 +55,19 @@ engine and renders a new scene frame only when Gondwana's foreground cadence req
 it re-presents the current GPU backbuffer. Rendering remains entirely inside the WebGL paint callback
 while its GPU context is current.
 
+### Render resolution
+
+`Engine.Instance.Configuration.RenderScale` establishes the Backbuffer resolution from the first
+valid canvas size. Later canvas resizes change presentation only, preserving aspect ratio and
+centering the image. Changing RenderScale explicitly establishes a new resolution from the current
+canvas dimensions. RenderScalingFilter selects Linear or NearestNeighbor, and Host.PresentationScale
+reports the derived fit. Pointer input is normalized into logical ScreenPx before routing; canvas
+margins are outside the game area. Existing browser/DPI sizing semantics are preserved.
+
+Linear WebGL scaling uses a scoped GPU texture snapshot because Skia's direct DrawSurface does not
+expose sampling options. It performs no CPU pixel transfer. Nearest-neighbor and unscaled presentation
+retain the direct-surface path. See [viewport scaling notes](../docs/viewport-scaling.md).
+
 ### Bitmap compatibility path
 
 The original Canvas 2D path remains available. Use `BlazorBitmapRenderSurfaceComponent` with a

@@ -84,14 +84,16 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase
         if (_grContext == null) return;
 
         var scaling = VisualRoot?.RenderScaling ?? 1.0;
-        var physW   = Math.Max(1, (int)Math.Round(Bounds.Width  * scaling));
-        var physH   = Math.Max(1, (int)Math.Round(Bounds.Height * scaling));
+        var physW   = (int)Math.Round(Bounds.Width * scaling);
+        var physH   = (int)Math.Round(Bounds.Height * scaling);
+
+        if (physW <= 0 || physH <= 0) return;
 
         _lastPhysW = physW;
         _lastPhysH = physH;
 
         Adapter.UpdateDimensions(physW, physH);
-        _gpuBackbuffer?.Initialize(_grContext, physW, physH);
+        _gpuBackbuffer?.EnsureInitialized(_grContext);
     }
 
     /// <inheritdoc/>
@@ -104,17 +106,26 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase
         _grContext.ResetContext();
 
         var scaling = VisualRoot?.RenderScaling ?? 1.0;
-        var physW   = Math.Max(1, (int)Math.Round(Bounds.Width  * scaling));
-        var physH   = Math.Max(1, (int)Math.Round(Bounds.Height * scaling));
+        var physW   = (int)Math.Round(Bounds.Width * scaling);
+        var physH   = (int)Math.Round(Bounds.Height * scaling);
 
-        // Reinitialise the GPU surface when the control is resized.
+        if (physW <= 0 || physH <= 0)
+        {
+            _lastPhysW = _lastPhysH = 0;
+            Adapter.UpdateDimensions(0, 0);
+            return;
+        }
+
+        // Resize presentation resources only; the logical render target remains unchanged.
         if (physW != _lastPhysW || physH != _lastPhysH)
         {
             _lastPhysW = physW;
             _lastPhysH = physH;
             Adapter.UpdateDimensions(physW, physH);
-            _gpuBackbuffer.Initialize(_grContext, physW, physH);
+
         }
+
+        _gpuBackbuffer.EnsureInitialized(_grContext);
 
         // Wrap the Avalonia-provided framebuffer in a SkiaSharp surface for compositing.
         // The framebuffer uses OpenGL bottom-left origin, RGBA8 color format.
@@ -130,7 +141,7 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase
         using var img = Host.GlRenderAndSnapshot();
         if (img != null)
         {
-            canvas.DrawImage(img, SKRect.Create(0, 0, physW, physH));
+            Adapter.DrawImage(canvas, img, Adapter.ClearColor);
         }
         else
         {

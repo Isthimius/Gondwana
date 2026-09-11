@@ -1,4 +1,4 @@
-﻿using Gondwana.Scenes;
+using Gondwana.Scenes;
 using System.Collections.ObjectModel;
 using System.Drawing;
 
@@ -101,7 +101,7 @@ public sealed class ViewManager
 
     /// <summary>
     /// Removes all existing views and creates a single full-screen view that
-    /// occupies the entire render surface adapter.
+    /// occupies the entire logical Backbuffer.
     /// </summary>
     /// <param name="zoom">Initial zoom level for the view.</param>
     /// <param name="zOrder">Z-order for the view (default 0).</param>
@@ -112,8 +112,8 @@ public sealed class ViewManager
 
         ClearViews();
 
-        var adapter = _renderSurfaceHost.RenderSurfaceAdapter;
-        var bounds = new Rectangle(0, 0, adapter.Width, adapter.Height);
+        var backbuffer = _renderSurfaceHost.Backbuffer;
+        var bounds = new Rectangle(0, 0, backbuffer.Width, backbuffer.Height);
 
         RectangleF worldBoundsPx = RectangleF.Empty;
         if (_renderSurfaceHost.Scene is not null)
@@ -135,9 +135,9 @@ public sealed class ViewManager
 
         ClearViews();
 
-        var adapter = _renderSurfaceHost.RenderSurfaceAdapter;
-        int width = adapter.Width;
-        int height = adapter.Height;
+        var backbuffer = _renderSurfaceHost.Backbuffer;
+        int width = backbuffer.Width;
+        int height = backbuffer.Height;
 
         int halfWidth = width / 2;
 
@@ -173,9 +173,9 @@ public sealed class ViewManager
 
         ClearViews();
 
-        var adapter = _renderSurfaceHost.RenderSurfaceAdapter;
-        int width = adapter.Width;
-        int height = adapter.Height;
+        var backbuffer = _renderSurfaceHost.Backbuffer;
+        int width = backbuffer.Width;
+        int height = backbuffer.Height;
 
         int halfHeight = height / 2;
 
@@ -281,7 +281,7 @@ public sealed class ViewManager
         // if no views exist, create a default one
         if (!_views.Any())
         {
-            AddView(new Rectangle(0, 0, _renderSurfaceHost.RenderSurfaceAdapter!.Width, _renderSurfaceHost.RenderSurfaceAdapter.Height), 1, 0, worldBoundsPx);
+            AddView(new Rectangle(0, 0, _renderSurfaceHost.Backbuffer.Width, _renderSurfaceHost.Backbuffer.Height), 1, 0, worldBoundsPx);
         }
         else
         {

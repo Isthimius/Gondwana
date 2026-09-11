@@ -26,7 +26,8 @@ namespace Gondwana.Blazor.Rendering;
 /// <para>
 /// The GPU context is obtained from <see cref="SKPaintGLSurfaceEventArgs.Surface"/> while the
 /// WebGL context is current. Scene rendering and the final GPU-to-GPU surface draw both occur
-/// synchronously inside that callback without allocating a per-frame <see cref="SKImage"/> snapshot.
+/// synchronously inside that callback. Linear scaling uses a scoped GPU texture snapshot;
+/// unscaled and nearest-neighbor presentation draw the surface directly. No frame pixels are read back.
 /// </para>
 /// </remarks>
 [SupportedOSPlatform("browser")]
@@ -49,6 +50,12 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
 
     /// <summary>Gets the HTML attributes applied to the <see cref="SKGLView"/> canvas.</summary>
     private IReadOnlyDictionary<string, object>? GpuCanvasAttributes => _gpuCanvasAttributes;
+
+    internal override ValueTask<CanvasOffset> GetCanvasOffsetAsync()
+        => _module is null ? ValueTask.FromResult(default(CanvasOffset))
+           : _module.InvokeAsync<CanvasOffset>("getCanvasOffset", _canvasId);
+
+    internal override RenderSurfaceAdapterBase? InputSurfaceAdapter => Adapter;
 
     /// <inheritdoc/>
     protected override void OnInitialized()
@@ -118,14 +125,9 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
         }
 
         var backbuffer = (GpuBackbuffer)Host.Backbuffer;
-        if (!ReferenceEquals(_grContext, grContext)
-            || backbuffer.Width != width
-            || backbuffer.Height != height)
-        {
-            _grContext = grContext;
-            backbuffer.Initialize(grContext, width, height);
+        _grContext = grContext;
+        if (backbuffer.EnsureInitialized(grContext))
             _backbufferNeedsRender = true;
-        }
 
         var engine = Engine.Instance;
         if (!engine.IsRunning)

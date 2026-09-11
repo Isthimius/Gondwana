@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.SkiaSharp;
@@ -43,6 +43,9 @@ public class GpuBackbuffer : BackbufferBase
     private SKBitmap? _cpuBitmap;   // temporary CPU surface used before GRContext is ready
     private SKSurface? _surface;
     private bool _disposed;
+    private GRContext? _context;
+    private sealed record Resolution(int Width, int Height);
+    private Resolution? _requestedResolution;
 
     private int _targetFps = 60;
     private int _msaaSampleCount = 1;
@@ -107,7 +110,7 @@ public class GpuBackbuffer : BackbufferBase
     /// </para>
     /// <para>
     /// Changing this property on an already-initialized backbuffer takes effect the next time
-    /// <see cref="Initialize"/> is called (e.g. on the next window resize), because the GPU
+    /// <see cref="Initialize"/> is called (e.g. on an explicit resolution change), because the GPU
     /// render-target surface must be recreated with the new sample count.
     /// </para>
     /// <para>
@@ -154,8 +157,7 @@ public class GpuBackbuffer : BackbufferBase
     /// Creates (or recreates) the GPU render-target surface for this backbuffer.
     /// </summary>
     /// <remarks>
-    /// Called from the GL thread via the adapter's <c>GrContextFirstAvailable</c> and
-    /// <c>ResizeRequested</c> events.  Replaces the temporary CPU raster surface with a
+    /// Called from the owning GL thread for initial setup or an explicit logical resolution change.  Replaces the temporary CPU raster surface with a
     /// hardware-accelerated off-screen render target backed by <paramref name="grContext"/>.
     /// </remarks>
     /// <param name="grContext">The active Skia GPU context.  Must not be <see langword="null"/>.</param>
@@ -169,6 +171,7 @@ public class GpuBackbuffer : BackbufferBase
 
         DisposeSurface();
         CreateGpuSurface(grContext, width, height);
+        _context = grContext;
         UpdateSize(width, height);
 
         // Set canvas into a known state for the first frame on the new surface.
@@ -176,10 +179,27 @@ public class GpuBackbuffer : BackbufferBase
     }
 
     /// <summary>
-    /// No-op for <see cref="GpuBackbuffer"/>: resize is driven by <see cref="Initialize"/> which is
-    /// called from the GL thread via the adapter's <c>ResizeRequested</c> event.
+    /// Queues an explicit logical resolution change for the next owning GL callback.
     /// </summary>
-    protected internal override void RequestResize(int width, int height) { }
+    protected internal override void RequestResize(int width, int height)
+        => Interlocked.Exchange(ref _requestedResolution, new(width, height));
+
+    /// <summary>
+    /// Initializes on the owning GL thread, or applies an explicit logical resolution request.
+    /// Adapter dimensions are deliberately absent: window resize never reallocates this surface.
+    /// Returns true when a new surface needs its first complete frame.
+    /// </summary>
+    public bool EnsureInitialized(GRContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        if (_disposed) return false;
+        var request = Interlocked.Exchange(ref _requestedResolution, null);
+        int width = request?.Width ?? Width;
+        int height = request?.Height ?? Height;
+        if (ReferenceEquals(_context, context) && width == Width && height == Height) return false;
+        Initialize(context, width, height);
+        return true;
+    }
 
     /// <summary>
     /// Gets the SkiaSharp canvas for drawing operations.

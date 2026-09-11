@@ -9,12 +9,14 @@ All notable changes to this project will be documented in this file.
 
 ## Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+- Decouple backbuffer resolution from adapter presentation ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 
 
 ## Fixed
 - Improve bitmap render adapters ([#291](https://github.com/Isthimius/Gondwana/pull/291))
 - Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
+- Fix for 0-height recovery ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 
 
@@ -36,6 +38,11 @@ All notable changes to this project will be documented in this file.
 
 ## Maintenance
 - Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
+
+
+
+## Other Changes
+- Corner case fix ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 # v2.5.2 - July 26, 2026
 

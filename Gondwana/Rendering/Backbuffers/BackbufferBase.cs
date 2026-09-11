@@ -205,8 +205,8 @@ public abstract class BackbufferBase : IDisposable
     /// the <see cref="SizeChanged"/> event is raised.
     /// </para>
     /// <para>
-    /// Resizing may be triggered by window resize events, display mode changes, or programmatic
-    /// requests from the rendering system.
+    /// Resizing is an explicit logical-resolution request. Window and adapter resizing only
+    /// changes presentation and must not request Backbuffer resizing.
     /// </para>
     /// </remarks>
     protected internal virtual void RequestResize(int width, int height)
@@ -258,7 +258,7 @@ public abstract class BackbufferBase : IDisposable
 
     /// <summary>
     /// Union of all rectangle areas redrawn on the current frame, to be rendered to the UI adapter.
-    /// <para />***** IMPORTANT: DirtyRectangle is ALWAYS in adapter/control SCREEN pixels. *****
+    /// <para />***** IMPORTANT: DirtyRectangle is ALWAYS in logical Backbuffer ScreenPx. *****
     /// </summary>
     protected internal Rectangle DirtyRectangle { get; private set; }
 
@@ -424,7 +424,7 @@ public abstract class BackbufferBase : IDisposable
     }
 
     /// <summary>
-    /// ***** IMPORTANT: should ALWAYS be in adapter/control SCREEN pixels. *****
+    /// ***** IMPORTANT: should ALWAYS be in logical Backbuffer ScreenPx. *****
     /// This is used to signal to the UI adapter what needs to be repainted.
     /// No-op for GL-thread-rendered backbuffers: the adapter always presents the full surface,
     /// so there is no partial-blit dirty region to track.

@@ -13,7 +13,7 @@ namespace Gondwana.Input.Touch;
 /// <c>Id = 0</c>.
 /// </param>
 /// <param name="Position">
-/// The position of the touch contact in client (control-local) coordinates at the moment
+/// The position of the touch contact in logical Backbuffer ScreenPx coordinates at the moment
 /// the event was recorded.
 /// </param>
 /// <param name="Phase">

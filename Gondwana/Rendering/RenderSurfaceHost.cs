@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using Gondwana.Drawing.Direct;
@@ -29,6 +29,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     where TBackbuffer : BackbufferBase
 {
     private TBackbuffer _backbuffer;
+    private bool _resolutionEstablished;
+    private int _logicalWidth, _logicalHeight;
+    private int _presentationInvalidated = 1;
+    private float _deferredRenderScale = float.NaN;
     private Scene _scene = Scene.Empty;
 
     private readonly RenderSurfaceAdapterBase _renderSurfaceAdapter;
@@ -108,8 +112,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     {
         _renderSurfaceAdapter = renderSurfaceAdapter ?? throw new ArgumentNullException(nameof(renderSurfaceAdapter));
 
-        // Recreate backbuffer on adapter resize
-        RenderSurfaceAdapter.Resized += (args) => OnRenderSurfaceAdapterResized(args);
+        // Host layout changes presentation; only the initial valid layout establishes resolution.
+        RenderSurfaceAdapter.Resized += OnRenderSurfaceAdapterResized;
 
         var w = RenderSurfaceAdapter.Width;
         var h = RenderSurfaceAdapter.Height;
@@ -117,10 +121,15 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (w <= 0 || h <= 0)
             throw new InvalidOperationException("RenderSurfaceAdapter has non-positive dimensions.");
 
-        _backbuffer = CreateBackbuffer(w, h);
+        _resolutionEstablished = RenderSurfaceAdapter.InitialSizeAvailable;
+        var scale = Engine.Instance.Configuration.RenderScale;
+        _logicalWidth = _resolutionEstablished ? PresentationTransform.ScaleDimension(w, scale) : 1;
+        _logicalHeight = _resolutionEstablished ? PresentationTransform.ScaleDimension(h, scale) : 1;
+        _backbuffer = CreateBackbuffer(_logicalWidth, _logicalHeight);
+        RenderSurfaceAdapter.SetBackbufferSize(_logicalWidth, _logicalHeight);
         Backbuffer.BeginFrame();
 
-        Backbuffer.SizeChanged += (w, h) => Scene.FullRefreshNeeded = true;
+        Backbuffer.SizeChanged += OnBackbufferSizeChanged;
     }
 
     private static TBackbuffer CreateBackbuffer(int width, int height)
@@ -180,7 +189,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// </value>
     /// <remarks>
     /// The adapter handles platform-specific presentation details and provides size/resize notifications.
-    /// The backbuffer dimensions are synchronized with the adapter's size.
+    /// The Backbuffer retains its logical dimensions across adapter resizes.
     /// </remarks>
     public override RenderSurfaceAdapterBase RenderSurfaceAdapter => _renderSurfaceAdapter;
 
@@ -287,6 +296,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// </summary>
     internal override void RenderToBackbuffer(long tick)
     {
+        Backbuffer.BeginFrame();
         RenderBackbufferBegin?.Invoke();
 
         // For GL-thread-rendered backbuffers (GpuBackbuffer), the RefreshQueue mechanism is
@@ -806,7 +816,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         Backbuffer.EndFrame();
 
-        if (RedrawDirtyRectangleOnly)
+        if (RedrawDirtyRectangleOnly && Interlocked.Exchange(ref _presentationInvalidated, 0) == 0)
             PresentBackbufferRect();
         else
             PresentBackbufferAll();
@@ -834,6 +844,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 _scene = Scene.Empty;
             }
 
+            RenderSurfaceAdapter.Resized -= OnRenderSurfaceAdapterResized;
+            Backbuffer.SizeChanged -= OnBackbufferSizeChanged;
             _backbuffer = null;
         }
 
@@ -855,27 +867,49 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     private void OnRenderSurfaceAdapterResized(RenderSurfaceAdapterResizedEventArgs args)
     {
-        if (Scene != null)
-            Scene.FullRefreshNeeded = true;                 // full redraw next frame
+        Interlocked.Exchange(ref _presentationInvalidated, 1);
+        if (float.IsFinite(_deferredRenderScale) && args.NewWidth > 0 && args.NewHeight > 0)
+            RequestRenderScale(_deferredRenderScale);
+        if (!_resolutionEstablished && args.NewWidth > 0 && args.NewHeight > 0)
+        {
+            _resolutionEstablished = true;
+            RequestRenderScale(Engine.Instance.Configuration.RenderScale);
+        }
+    }
 
-        _backbuffer?.RequestResize(args.NewWidth, args.NewHeight);      // UI thread → request only
+    internal override void InvalidatePresentation() => Interlocked.Exchange(ref _presentationInvalidated, 1);
 
-        float scaleX = (float)args.NewWidth / args.OldWidth;
-        float scaleY = (float)args.NewHeight / args.OldHeight;
+    internal override void RequestRenderScale(float scale)
+    {
+        if (!_resolutionEstablished || _disposed) return;
+        var adapter = RenderSurfaceAdapter;
+        // Zero-size requests are deferred until a valid presentation size exists.
+        if (adapter.Width <= 0 || adapter.Height <= 0)
+        {
+            _deferredRenderScale = scale;
+            return;
+        }
+        _deferredRenderScale = float.NaN;
+        Backbuffer.RequestResize(PresentationTransform.ScaleDimension(adapter.Width, scale),
+                                 PresentationTransform.ScaleDimension(adapter.Height, scale));
+    }
 
-        // resize each View proportionally
+    private void OnBackbufferSizeChanged(int width, int height)
+    {
+        float scaleX = (float)width / _logicalWidth;
+        float scaleY = (float)height / _logicalHeight;
+        _logicalWidth = width;
+        _logicalHeight = height;
+        RenderSurfaceAdapter.SetBackbufferSize(width, height);
         foreach (var view in ViewManager.Views)
         {
             var old = view.Viewport.TargetRectPx;
-
-            int newLeft = (int)Math.Round(old.Left * scaleX);
-            int newTop = (int)Math.Round(old.Top * scaleY);
-            int newWidth = (int)Math.Round(old.Width * scaleX);
-            int newHeight = (int)Math.Round(old.Height * scaleY);
-
-            view.Viewport.TargetRectPx = new Rectangle(
-                newLeft, newTop, newWidth, newHeight);
+            view.Viewport.TargetRectPx = Rectangle.FromLTRB(
+                (int)Math.Round(old.Left * scaleX), (int)Math.Round(old.Top * scaleY),
+                (int)Math.Round(old.Right * scaleX), (int)Math.Round(old.Bottom * scaleY));
         }
+        Scene.FullRefreshNeeded = true;
+        Interlocked.Exchange(ref _presentationInvalidated, 1);
     }
 
     private void PresentBackbufferAll()
@@ -885,7 +919,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         var img = Backbuffer.Snapshot();
         var src = new SKRectI(0, 0, img.Width, img.Height);
-        var dst = SKRect.Create(0, 0, RenderSurfaceAdapter!.Width, RenderSurfaceAdapter.Height);
+        var dst = RenderSurfaceAdapter.Presentation.DestinationRect;
 
         // Post to UI thread
         Engine.Instance.UiDispatcher!.Post(() => RenderSurfaceAdapter.Present(img, src, dst));
@@ -909,7 +943,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         // Post to UI thread
         Engine.Instance.UiDispatcher!.Post(() =>
-            RenderSurfaceAdapter!.Present(img, clamped.ToSKRectI(), clamped.ToSKRect()));
+            RenderSurfaceAdapter!.Present(img, clamped.ToSKRectI(),
+                PresentationTransform.Fit(img.Width, img.Height, RenderSurfaceAdapter.Width, RenderSurfaceAdapter.Height)
+                    .ScreenRectToAdapterRect(clamped).ToSKRect()));
     }
 
     private void InvokePostSceneCanvasHooks()

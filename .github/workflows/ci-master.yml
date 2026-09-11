@@ -50,6 +50,14 @@ jobs:
       - name: Gondwana.Tests unit tests
         run: dotnet test --configuration Release --no-build --no-restore --nologo /p:EnableWindowsTargeting=true Testing/Gondwana.Tests/Gondwana.Tests.csproj
 
+      - name: Setup Node for browser presentation tests
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Blazor presentation helper tests
+        run: node --test Testing/BlazorPresentationTests.mjs
+
       - name: Pack (validation only)
         run: dotnet pack --configuration Release --no-build --nologo /p:EnableWindowsTargeting=true
 

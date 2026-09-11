@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Drawing;
 using Gondwana.Blazor.Rendering;
 using Gondwana.Input.Touch;
@@ -145,8 +145,8 @@ public sealed class BlazorTouchAdapter : ITouchAdapter, IDisposable
         _activeTouchesSnapshot = _activeTouches.Values.ToArray();
     }
 
-    private static Point GetPosition(BrowserTouchPoint t) =>
-        new Point((int)t.ClientX, (int)t.ClientY);
+    private Point GetPosition(BrowserTouchPoint t) =>
+        _component.ToScreenPx(t.ClientX, t.ClientY);
 
     /// <summary>Releases all resources and removes event handlers registered by this adapter.</summary>
     public void Dispose()

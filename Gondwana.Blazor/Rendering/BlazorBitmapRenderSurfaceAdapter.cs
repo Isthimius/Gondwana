@@ -26,7 +26,7 @@ public sealed class BlazorBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase,
     /// <param name="component">The Blazor component that owns the canvas element.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="component"/> is null.</exception>
     public BlazorBitmapRenderSurfaceAdapter(BlazorBitmapRenderSurfaceComponent component)
-        : base(1, 1)
+        : base(1, 1, initialSizeAvailable: false)
     {
         _component = component ?? throw new ArgumentNullException(nameof(component));
     }
