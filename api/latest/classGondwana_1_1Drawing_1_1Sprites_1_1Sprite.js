@@ -3,6 +3,7 @@ var classGondwana_1_1Drawing_1_1Sprites_1_1Sprite =
     [ "CancelResize", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#ac6e9df3779449c4b2e6874eed9169c26", null ],
     [ "CancelVelocityComponent", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#a4e8330739bf50c5672420653fae7802b", null ],
     [ "Dispose", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#aa3c760f6aeae24f2a907da2f254cc84a", null ],
+    [ "Draw", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#a116577290ad932c190df818269e7c2ae", null ],
     [ "GetPosition", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#aecb27b5190b87273097228a1aa4b5806", null ],
     [ "GetVisualBoundsScreen", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#aaee03baa83dc3daebcc7ee24ec84949f", null ],
     [ "JiggleOnce", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#aec5d4cc99383140c12970518953c2d51", null ],

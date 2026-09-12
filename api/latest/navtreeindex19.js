@@ -1,5 +1,7 @@
 var NAVTREEINDEX19 =
 {
+"namespaceGondwana_1_1Effects.html#a528d478bb047b0409ec031863d290daaa7ba9e982bbdc0cd507a64c2fc4a07e11":[0,0,0,6,15,6],
+"namespaceGondwana_1_1Effects.html#a528d478bb047b0409ec031863d290daaa815ce8634a64fdb67d9247d0fa9ae618":[0,0,0,6,15,1],
 "namespaceGondwana_1_1Effects.html#a528d478bb047b0409ec031863d290daaaaee1ceff88a3e09abb84efbd9ed85fa2":[0,0,0,6,15,8],
 "namespaceGondwana_1_1Effects.html#a528d478bb047b0409ec031863d290daaabf276cb812b8398522486c630408d15e":[0,0,0,6,15,2],
 "namespaceGondwana_1_1Effects.html#a528d478bb047b0409ec031863d290daaae7eab9b6030f94e580c64b57896e6d7f":[0,0,0,6,15,3],
@@ -247,7 +249,5 @@ var NAVTREEINDEX19 =
 "structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html#afd5b512bb2081bca87998318d89e3bca":[1,0,0,5,2,1,0,13],
 "structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html#afdd93a418c2576292c14e75bbf214180":[0,0,0,5,3,1,0,7],
 "structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html#afdd93a418c2576292c14e75bbf214180":[1,0,0,5,2,1,0,7],
-"structGondwana_1_1Drawing_1_1Frame.html":[0,0,0,5,6],
-"structGondwana_1_1Drawing_1_1Frame.html":[1,0,0,5,5],
-"structGondwana_1_1Drawing_1_1Frame.html#a081ebf55d354a981277f0927a15fc883":[0,0,0,5,6,14]
+"structGondwana_1_1Drawing_1_1Frame.html":[0,0,0,5,6]
 };

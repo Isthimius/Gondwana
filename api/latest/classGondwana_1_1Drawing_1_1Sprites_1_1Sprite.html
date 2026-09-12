@@ -121,6 +121,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a65e329846630306b9db34241ff8dd670" id="r_a65e329846630306b9db34241ff8dd670"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a65e329846630306b9db34241ff8dd670">SetPosition</a> (Vector2 pos)</td></tr>
 <tr class="memitem:aaee03baa83dc3daebcc7ee24ec84949f" id="r_aaee03baa83dc3daebcc7ee24ec84949f"><td class="memItemLeft" align="right" valign="top">RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaee03baa83dc3daebcc7ee24ec84949f">GetVisualBoundsScreen</a> (<a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> view)</td></tr>
 <tr class="memdesc:aaee03baa83dc3daebcc7ee24ec84949f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the axis-aligned screen-pixel bounds enclosing the rotated sprite.  <br /></td></tr>
+<tr class="memitem:a116577290ad932c190df818269e7c2ae" id="r_a116577290ad932c190df818269e7c2ae"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a116577290ad932c190df818269e7c2ae">Draw</a> (<a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
+<tr class="memdesc:a116577290ad932c190df818269e7c2ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws the object to the Backbuffer using the provided SCREEN-space destination rectangle. The rectangle is assumed to already be projected into screen-space; no world-to-screen conversion should occur within this method.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">backbuffer</td><td>The Backbuffer to draw onto. </td></tr>
+    <tr><td class="paramname">destRectScreen</td><td>The destination rectangle in absolute SCREEN pixel coordinates on the Backbuffer. </td></tr>
+  </table>
+  </dd>
+</dl>
+  <br /></td></tr>
 <tr class="memitem:a0786f02005a6fa9358a26bcfe30b5144" id="r_a0786f02005a6fa9358a26bcfe30b5144"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0786f02005a6fa9358a26bcfe30b5144">TranslateWorldPx</a> (int dx, int dy)</td></tr>
 <tr class="memdesc:a0786f02005a6fa9358a26bcfe30b5144"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a world-pixel translation without rebuilding the absolute position from an integer rectangle, preserving fractional coordinates on the other axis.  <br /></td></tr>
 <tr class="memitem:a4e8330739bf50c5672420653fae7802b" id="r_a4e8330739bf50c5672420653fae7802b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4e8330739bf50c5672420653fae7802b">CancelVelocityComponent</a> (bool cancelX, bool cancelY)</td></tr>
@@ -148,8 +157,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2c2d0e6d13d966cf1faca72bd05a85c9 inherit pub_methods_classGondwana_1_1Drawing_1_1Tile" id="r_a2c2d0e6d13d966cf1faca72bd05a85c9"><td class="memItemLeft" align="right" valign="top">virtual RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a2c2d0e6d13d966cf1faca72bd05a85c9">GetDrawLocationScreen</a> (<a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> view)</td></tr>
 <tr class="memdesc:a2c2d0e6d13d966cf1faca72bd05a85c9 inherit pub_methods_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the object's destination rectangle in SCREEN pixels for rendering on the Backbuffer, using the provided <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a> to project from world-space.  <br /></td></tr>
 <tr class="memitem:a196e3fa81e6244609b0ca81d914d9f06 inherit pub_methods_classGondwana_1_1Drawing_1_1Tile" id="r_a196e3fa81e6244609b0ca81d914d9f06"><td class="memItemLeft" align="right" valign="top">virtual RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a196e3fa81e6244609b0ca81d914d9f06">GetCollisionAreaScreen</a> (<a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> view)</td></tr>
-<tr class="memitem:a4927327e6c632c964beae3b3bcdcb69b inherit pub_methods_classGondwana_1_1Drawing_1_1Tile" id="r_a4927327e6c632c964beae3b3bcdcb69b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a4927327e6c632c964beae3b3bcdcb69b">Draw</a> (<a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
-<tr class="memdesc:a4927327e6c632c964beae3b3bcdcb69b inherit pub_methods_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws the object to the Backbuffer using the provided SCREEN-space destination rectangle. The rectangle is assumed to already be projected into screen-space; no world-to-screen conversion should occur within this method.  <br /></td></tr>
 <tr class="memitem:a7e7657d4ab7cc877fb6b42a5b9f1e0ba inherit pub_methods_classGondwana_1_1Drawing_1_1Tile" id="r_a7e7657d4ab7cc877fb6b42a5b9f1e0ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a7e7657d4ab7cc877fb6b42a5b9f1e0ba">SetCollisionProfile</a> (string profileName)</td></tr>
 <tr class="memdesc:a7e7657d4ab7cc877fb6b42a5b9f1e0ba inherit pub_methods_classGondwana_1_1Drawing_1_1Tile"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a named profile from this tile's parent scene. If the layer has not yet been attached to a scene, the name is retained and resolved later when the collider is attached or the profile is reapplied.  <br /></td></tr>
 <tr class="memitem:a88e851955c75d87fb4077eb257b32684 inherit pub_methods_classGondwana_1_1Drawing_1_1Tile" id="r_a88e851955c75d87fb4077eb257b32684"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a88e851955c75d87fb4077eb257b32684">CompareTo</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Tile.html">Tile</a>? tile)</td></tr>
@@ -243,7 +250,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Partial class containing resize and pulse animation members for <a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html" title="Represents a movable visual element on a scene layer.">Sprite</a>.</p>
 <p>Partial class containing jiggle animation members for <a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html" title="Represents a movable visual element on a scene layer.">Sprite</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00018">18</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00019">19</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="ac6e9df3779449c4b2e6874eed9169c26" name="ac6e9df3779449c4b2e6874eed9169c26"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac6e9df3779449c4b2e6874eed9169c26">&#9670;&#160;</a></span>CancelResize()</h2>
@@ -296,7 +303,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionMovableEntity.html#aa8f60fe2d121a71d4dd053da9dba3903">Gondwana.Physics.Collisions.ICollisionMovableEntity</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00255">255</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00283">283</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -325,7 +332,49 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a6ca4859d010ae75a57af442c51e83022">Gondwana.Drawing.Tile</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00468">468</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00496">496</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+
+</div>
+</div>
+<a id="a116577290ad932c190df818269e7c2ae" name="a116577290ad932c190df818269e7c2ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a116577290ad932c190df818269e7c2ae">&#9670;&#160;</a></span>Draw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">override void Gondwana.Drawing.Sprites.Sprite.Draw </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html">BackbufferBase</a></td>          <td class="paramname"><span class="paramname"><em>backbuffer</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RectangleF</td>          <td class="paramname"><span class="paramname"><em>destRectScreen</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Draws the object to the Backbuffer using the provided SCREEN-space destination rectangle. The rectangle is assumed to already be projected into screen-space; no world-to-screen conversion should occur within this method.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">backbuffer</td><td>The Backbuffer to draw onto. </td></tr>
+    <tr><td class="paramname">destRectScreen</td><td>The destination rectangle in absolute SCREEN pixel coordinates on the Backbuffer. </td></tr>
+  </table>
+  </dd>
+</dl>
+ </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a4927327e6c632c964beae3b3bcdcb69b">Gondwana.Drawing.Tile</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00231">231</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -545,7 +594,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00167">167</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00168">168</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -686,7 +735,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionMovableEntity.html#aa7ea1b97e38ffa3a5f33b71bdb4e1bbf">Gondwana.Physics.Collisions.ICollisionMovableEntity</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00233">233</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00261">261</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -711,7 +760,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00264">264</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00292">292</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -735,7 +784,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00382">382</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00410">410</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -759,7 +808,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00287">287</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00315">315</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -809,7 +858,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00419">419</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00447">447</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -885,7 +934,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00261">261</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00289">289</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -909,7 +958,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00325">325</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00353">353</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -933,7 +982,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00344">344</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00372">372</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -957,7 +1006,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00162">162</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00163">163</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -981,7 +1030,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00363">363</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00391">391</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1008,7 +1057,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Gets or sets the clockwise visual rotation, in degrees, around the center of the sprite's render rectangle. </p>
 <p>Rotation affects rendering and dirty-region bounds. Collision geometry remains axis-aligned and continues to use <a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#a39985eb5adff013e78446f18336963e9" title="Gets the effective collision area in world coordinates.">Tile.CollisionArea</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00192">192</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00193">193</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1032,7 +1081,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00425">425</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00453">453</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1056,7 +1105,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00422">422</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00450">450</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1080,7 +1129,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00306">306</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00334">334</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1108,7 +1157,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#a843ab6717c0e6887cf9d18f6240d6c2d">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00276">276</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00304">304</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1134,7 +1183,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the axis-aligned world-pixel bounds enclosing the rotated sprite. </p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00217">217</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00218">218</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1162,7 +1211,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#afe2fb2cda22db383aa386dc3c97af76c">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00428">428</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00456">456</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1179,7 +1228,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00021">21</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00022">22</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>
@@ -1213,7 +1262,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00020">20</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Sprite_8cs_source.html#l00021">21</a> of file <a class="el" href="Sprite_8cs_source.html">Sprite.cs</a>.</p>
 
 </div>
 </div>

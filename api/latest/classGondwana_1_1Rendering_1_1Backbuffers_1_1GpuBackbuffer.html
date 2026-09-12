@@ -173,7 +173,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Before the first <a class="el" href="#a4fef1b4ad8a55fd62cbaa501ec89290a" title="Creates (or recreates) the GPU render-target surface for this backbuffer.">Initialize</a> call the backbuffer uses a temporary CPU raster surface (identical to <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BitmapBackbuffer.html" title="Provides a bitmap-based backbuffer implementation for rendering operations using SkiaSharp....">BitmapBackbuffer</a>) so that the host can always be in a valid state. Once a GRContext becomes available on the GL thread, <a class="el" href="#a4fef1b4ad8a55fd62cbaa501ec89290a" title="Creates (or recreates) the GPU render-target surface for this backbuffer.">Initialize</a> replaces that with a proper GPU surface. </p>
 <p><b>Thread safety:</b> After <a class="el" href="#a4fef1b4ad8a55fd62cbaa501ec89290a" title="Creates (or recreates) the GPU render-target surface for this backbuffer.">Initialize</a> has been called, all methods and properties that access or mutate GL state must be invoked from the GL thread (the thread on which the GRContext is current). The engine loop guarantees this by checking <a class="el" href="#a123d04c913f9489067a65ff33b639bc0">IsGlThreadRendered</a> before touching the backbuffer. The simple configuration properties <a class="el" href="#a187c5db40cc71e3159ea4f6be0f6a3fe" title="Gets or sets a value indicating whether vertical synchronisation (vsync) is enabled.">VSync</a>, <a class="el" href="#a3ba7ffe088870c2242440b60c75ddc00" title="Gets or sets the number of MSAA (multisample anti-aliasing) samples used when creating the GPU render...">MsaaSampleCount</a>, and <a class="el" href="#a68033b8c7cccdc042fa6c352e977fcfc" title="Gets or sets the target frame rate associated with this GPU backbuffer.">TargetFps</a> are exempt from this restriction: they only write to plain fields and may be set from any thread (for example, from <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html" title="Settings used by the engine when cycling.">Gondwana.Configuration.EngineConfiguration</a> setters running on the engine background thread). </p>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00040">40</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00039">39</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a4aec5c53e310704b6b92745c5ba51f64" name="a4aec5c53e310704b6b92745c5ba51f64"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4aec5c53e310704b6b92745c5ba51f64">&#9670;&#160;</a></span>GpuBackbuffer()</h2>
@@ -203,7 +203,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00136">136</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00135">135</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
@@ -235,7 +235,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#ad337f9fed366bb07672919518bd3b7c2">Gondwana.Rendering.Backbuffers.BackbufferBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00337">337</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00317">317</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
@@ -256,7 +256,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Initializes on the owning GL thread, or applies an explicit logical resolution request. Adapter dimensions are deliberately absent: window resize never reallocates this surface. Returns true when a new surface needs its first complete frame. </p>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00192">192</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00191">191</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
@@ -295,7 +295,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00166">166</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00165">165</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
@@ -341,7 +341,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the <a class="el" href="namespaceGondwana_1_1SkiaSharp.html">SkiaSharp</a> canvas for drawing operations. </p>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00207">207</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00206">206</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
@@ -366,7 +366,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>Always returns <code>true</code>. The engine loop will skip this surface; the platform adapter drives rendering from <code>SKGLControl.PaintSurface</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00154">154</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00153">153</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
@@ -397,7 +397,7 @@ Additional Inherited Members</h2></td></tr>
 <p>If the requested sample count is not supported by the hardware or driver, <a class="el" href="#a4fef1b4ad8a55fd62cbaa501ec89290a" title="Creates (or recreates) the GPU render-target surface for this backbuffer.">Initialize</a> will automatically fall back to a sample count of <code>1</code> (no MSAA) so the surface is always valid. </p>
 <p>The MSAA sample count. Values less than <code>1</code> are clamped to <code>1</code>. The default is <code>1</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00125">125</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00124">124</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
@@ -425,7 +425,7 @@ Additional Inherited Members</h2></td></tr>
 <p>This value is kept in sync with <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#aedc1761c6b8c8261ec99bd8bc1b17a33" title="Target screen refresh rate for the Engine. Setting the number lower allows more time for the processo...">Gondwana.Configuration.EngineConfiguration.TargetFPS</a> (which propagates its value to all registered GPU backbuffers). The engine's own foreground cycle — not the backbuffer — is responsible for throttling the frame rate; see <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#aedc1761c6b8c8261ec99bd8bc1b17a33" title="Target screen refresh rate for the Engine. Setting the number lower allows more time for the processo...">Gondwana.Configuration.EngineConfiguration.TargetFPS</a> for details. </p>
 <p>The desired frames per second. Negative values are clamped to zero. The default is 60. </p>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00069">69</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00068">68</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
@@ -454,7 +454,7 @@ Additional Inherited Members</h2></td></tr>
 <p>This value is kept in sync with <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#abb8f7812aaf01854910f2230c530ec79" title="Gets or sets a value indicating whether vertical synchronisation (vsync) is enabled.">Gondwana.Configuration.EngineConfiguration.VSync</a> (which propagates its value to all registered GPU backbuffers). The value is read by the platform adapter (e.g. <code>WinFormGpuRenderSurfaceAdapter</code>) at the start of each <code>PaintSurface</code> call and applied to the underlying <code>GLControl.VSync</code> property when it changes. Enabling vsync prevents screen tearing but caps the frame rate to the monitor refresh rate. Disabling vsync allows higher frame rates at the cost of potential tearing. </p>
 <p><code>true</code> to synchronise presentation with the monitor refresh; otherwise <code>false</code>. The default is <code>true</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00095">95</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00094">94</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
