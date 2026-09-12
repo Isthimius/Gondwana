@@ -593,6 +593,7 @@ All notable changes to this project will be documented in this file.
 - Add funding usernames to FUNDING.yml
 - Adding bitbucket mirror
 - One more change ([#340](https://github.com/Isthimius/Gondwana/pull/340))
+- Misc ps1 comments ([#340](https://github.com/Isthimius/Gondwana/pull/340))
 
 # [v2.5.2] - 2026-07-26
 
