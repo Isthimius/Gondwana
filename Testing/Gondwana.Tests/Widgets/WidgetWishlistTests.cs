@@ -33,7 +33,7 @@ public sealed class WidgetWishlistTests : IDisposable
 
         Assert.True(checkBox.IsChecked);
         Assert.True(checkBox.Mark.Visible);
-        Assert.True(changedTo);
+        Assert.Equal(true, changedTo);
     }
 
     [Fact]
