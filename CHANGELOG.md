@@ -538,7 +538,6 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Add explicit permissions block ([#266](https://github.com/Isthimius/Gondwana/pull/266))
 - Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
-- Fix per copilot feedback ([#340](https://github.com/Isthimius/Gondwana/pull/340))
 
 
 
@@ -557,13 +556,7 @@ All notable changes to this project will be documented in this file.
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 - Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 - Mark item complete ([#334](https://github.com/Isthimius/Gondwana/pull/334))
-- Retire API history rebuild instructions ([#341](https://github.com/Isthimius/Gondwana/pull/341))
-
-
-
-### Tests
-- Preserve active API build coverage ([#341](https://github.com/Isthimius/Gondwana/pull/341))
-- Keep redirect coverage with publisher tests ([#341](https://github.com/Isthimius/Gondwana/pull/341))
+- Retire api docs rebuild workflow ([#341](https://github.com/Isthimius/Gondwana/pull/341))
 
 
 
@@ -599,8 +592,6 @@ All notable changes to this project will be documented in this file.
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
 - Adding bitbucket mirror
-- One more change ([#340](https://github.com/Isthimius/Gondwana/pull/340))
-- Misc ps1 comments ([#340](https://github.com/Isthimius/Gondwana/pull/340))
 
 # [v2.5.2] - 2026-07-26
 
