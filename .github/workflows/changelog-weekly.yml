@@ -1,0 +1,98 @@
+name: Changelog (weekly)
+
+# Keep the generated [Unreleased] sections reasonably current without rewriting
+# every open pull request. Runs Sunday night in US Eastern time and can also be
+# started manually from the Actions tab.
+on:
+  schedule:
+    # Monday 03:00 UTC = Sunday 11:00 PM EDT / 10:00 PM EST.
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A manual run and the scheduled run should never update master concurrently.
+concurrency:
+  group: changelog-weekly-master
+  cancel-in-progress: false
+
+jobs:
+  refresh-changelogs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Require token that triggers downstream workflows
+        shell: bash
+        env:
+          PUSH_TOKEN: ${{ secrets.CHANGELOG_PUSH_TOKEN }}
+        run: |
+          if [ -z "$PUSH_TOKEN" ]; then
+            echo "::error::Set CHANGELOG_PUSH_TOKEN to an App token or fine-grained PAT with Contents read/write access to this repository. The default GITHUB_TOKEN does not trigger workflows from its own pushes."
+            exit 1
+          fi
+
+      - name: Checkout master
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Record starting master revision
+        shell: bash
+        run: echo "BASE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Install git-cliff
+        uses: taiki-e/install-action@d8ae1fa96886bc82c05515b8ac15b41515da2c6d # git-cliff
+
+      - name: Validate changelog configuration
+        shell: pwsh
+        run: ./Tooling/scripts/Test-ChangelogConfiguration.ps1
+
+      - name: Refresh unreleased changelogs
+        shell: pwsh
+        run: |
+          ./Tooling/scripts/Generate-Root-Changelog.ps1
+          ./Tooling/scripts/Generate-Project-Changelogs.ps1
+
+      - name: Commit and push changelog refresh
+        shell: bash
+        env:
+          PUSH_TOKEN: ${{ secrets.CHANGELOG_PUSH_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # Stage only generated changelogs, including any newly bootstrapped
+          # project CHANGELOG.md files.
+          find . -name .git -prune -o -type f -name CHANGELOG.md -print0 | xargs -0 -r git add --
+
+          # The generators are only allowed to modify CHANGELOG.md files.
+          if ! git diff --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]; then
+            echo "::error::Changelog generation changed files other than CHANGELOG.md files."
+            git status --short
+            exit 1
+          fi
+
+          if git diff --cached --quiet; then
+            echo "Changelogs are already current."
+            exit 0
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'docs: refresh unreleased changelogs [skip release notes]'
+
+          # Do not race a PR merge or any other direct update to master. The
+          # preflight check gives a clear error, and the push lease below makes
+          # the same BASE_SHA requirement atomic at the remote.
+          git fetch origin master
+          current_master="$(git rev-parse origin/master)"
+          if [ "$current_master" != "$BASE_SHA" ]; then
+            echo "::error::master moved from $BASE_SHA to $current_master while changelogs were being generated. No push was attempted; rerun the workflow."
+            exit 1
+          fi
+
+          git push --force-with-lease="refs/heads/master:${BASE_SHA}" \
+            "https://x-access-token:${PUSH_TOKEN}@github.com/${{ github.repository }}.git" \
+            "HEAD:refs/heads/master"

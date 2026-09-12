@@ -131,9 +131,9 @@ Packs `Tooling/Gondwana.Templates` and reinstalls the exact freshly packed templ
 
 ### `Generate-Project-Changelogs.ps1`
 
-Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://git-cliff.org/), filtering commits by changed file paths so each project only shows the changes that affected it. This is the standard monorepo approach described in the git-cliff docs. `release.ps1` invokes this script as part of the release flow, and `.github/workflows/changelog-master.yml` refreshes the incoming pull-request branch before merge so the generated changelog updates are included in the same eventual squash commit as the change itself.
+Generates a `CHANGELOG.md` for each library project using [`git-cliff`](https://git-cliff.org/), filtering commits by changed file paths so each project only shows the changes that affected it. This is the standard monorepo approach described in the git-cliff docs. `release.ps1` invokes this script as part of the release flow, and `.github/workflows/changelog-weekly.yml` refreshes the running `[Unreleased]` sections from `master` once each Sunday night (or on manual dispatch) rather than modifying pull-request branches.
 
-PR provenance is handled by the shared `cliff.toml` configuration. Squash-merged commits already contain GitHub's `(#NNN)` suffix, which is converted directly into a link to the originating PR. Before the current PR is merged, the workflow supplies the current PR number plus the exact set of commits in that PR through `CHANGELOG_PR_NUMBER` and `CHANGELOG_PR_COMMITS`; `cliff.toml` uses that context to link only those entries. Normal local changelog and release generation require no GitHub API access and leave direct, non-PR commits unlinked.
+PR provenance is handled by the shared `cliff.toml` configuration. Squash-merged commits already contain GitHub's `(#NNN)` suffix, which is converted directly into a link to the originating PR. The weekly refresh runs only against merged `master` history, so normal scheduled and manual generation requires no GitHub API access and leaves direct, non-PR commits unlinked. `CHANGELOG_PR_NUMBER` and `CHANGELOG_PR_COMMITS` remain supported for isolated preview/test scenarios involving commits that have not yet been squash-merged.
 
 **What it does:**
 1. Loads `Changelog-ProjectGroups.ps1` and selects entries with `GenerateChangelog = $true` (optionally narrowed by `-Projects`).
@@ -178,7 +178,7 @@ PR provenance is handled by the shared `cliff.toml` configuration. Squash-merged
 
 ### `Generate-Root-Changelog.ps1`
 
-Regenerates only the repository-level `CHANGELOG.md`'s leading derived section while preserving all existing released history exactly. Its entries are grouped by project/area in the same format used by release notes. `.github/workflows/changelog-master.yml` runs this script alongside `Generate-Project-Changelogs.ps1` on the incoming pull-request branch before merge. The same shared PR-link behavior described above applies to root changelog entries.
+Regenerates only the repository-level `CHANGELOG.md`'s leading derived section while preserving all existing released history exactly. Its entries are grouped by project/area in the same format used by release notes. `.github/workflows/changelog-weekly.yml` runs this script alongside `Generate-Project-Changelogs.ps1` against `master` on the weekly schedule or by manual dispatch.
 
 **What it does:**
 1. Loads entries with `IncludeInRootChangelog = $true` from `Changelog-ProjectGroups.ps1`.
@@ -200,7 +200,7 @@ Regenerates only the repository-level `CHANGELOG.md`'s leading derived section w
 | `-PreviewOnly` | Print the complete resulting root changelog without modifying the file. | — |
 | `-SectionOnly` | Internal mode used by `release.ps1` to return only the generated current section without modifying the file. | — |
 | `-ChangelogPath` | Path to the root changelog. Relative paths are resolved from the repository root. | `CHANGELOG.md` |
-| `-CliffConfigPath` | Path to the `cliff.toml` config. Relative paths are resolved from the repository root. | `cliff.toml` |
+| `-CliffConfigPath` | Path to the `git-cliff` config. Relative paths are resolved from the repository root. | `cliff.toml` |
 
 **Examples:**
 ```powershell
@@ -245,7 +245,7 @@ Root-only areas such as `Build / Repository` use `Path = $null` and explicit `In
 
 Disabling project generation leaves any existing project CHANGELOG untouched; it does not delete historical files. `-Projects` is now a selection of configured paths, not an escape hatch for arbitrary folders or disabled generation. Register a new project here first. Root visibility changes apply to newly generated sections only; released history is never rewritten. If no visible entries remain, the root file is left unchanged, so removing a stale derived block after a policy change requires an intentional edit.
 
-The PR workflow accepts project-only, root-only, both, and no-output updates. Staging enumerates existing CHANGELOG files and tolerates no project files. Release staging selects enabled project outputs from this metadata. A release with no root-visible changes produces no new root section. `release.ps1` retains its existing guard against publishing empty release notes and stops before committing or tagging; automatic PR refreshes still succeed.
+The weekly refresh supports project-only, root-only, both, and no-output configurations. Staging enumerates existing CHANGELOG files and tolerates no project files. Release staging selects enabled project outputs from this metadata. A release with no root-visible changes produces no new root section. `release.ps1` retains its existing guard against publishing empty release notes and stops before committing or tagging; a weekly refresh with no generated changes exits successfully without creating a commit.
 
 Run the isolated integration suite with PowerShell 7 and `git-cliff` on PATH:
 
@@ -253,7 +253,7 @@ Run the isolated integration suite with PowerShell 7 and `git-cliff` on PATH:
 ./Tooling/scripts/Test-ChangelogConfiguration.ps1
 ```
 
-It creates temporary Git history and exercises all four combinations, missing-file bootstrap, preview safety, selection policy, PR links, repeated refreshes, tagged generation, released-history preservation, and excluded-only root no-ops. The PR workflow runs it alongside previews against the real repository.
+It creates temporary Git history and exercises all four combinations, missing-file bootstrap, preview safety, selection policy, PR links, repeated refreshes, tagged generation, released-history preservation, and excluded-only root no-ops. The weekly workflow runs it before refreshing the real repository changelogs.
 
 ---
 
