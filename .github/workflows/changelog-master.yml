@@ -452,8 +452,8 @@ jobs:
           # These scripts are PR-controlled at this point, but this runner has no
           # write-capable repository secret and can only produce this PR's fixed
           # candidate artifact.
-          pwsh -NoLogo -NoProfile -File ./Tooling/scripts/Generate-Root-Changelog.ps1
-          pwsh -NoLogo -NoProfile -File ./Tooling/scripts/Generate-Project-Changelogs.ps1
+env -u GH_TOKEN pwsh -NoLogo -NoProfile -File ./Tooling/scripts/Generate-Root-Changelog.ps1
+env -u GH_TOKEN pwsh -NoLogo -NoProfile -File ./Tooling/scripts/Generate-Project-Changelogs.ps1
 
           find . -name .git -prune -o -type f -name CHANGELOG.md -print0 | xargs -0 -r git add --
 
