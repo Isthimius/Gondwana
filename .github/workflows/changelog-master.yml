@@ -16,6 +16,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   validate-changelog-script:
@@ -261,7 +262,9 @@ jobs:
       - name: Refresh eligible open pull request branches
         shell: bash
         env:
-          GH_TOKEN: ${{ secrets.CHANGELOG_PUSH_TOKEN }}
+          # Use the workflow token for read-only PR enumeration; keep the
+          # long-lived push token limited to repository content updates.
+          GH_TOKEN: ${{ github.token }}
           PUSH_TOKEN: ${{ secrets.CHANGELOG_PUSH_TOKEN }}
         run: |
           set -euo pipefail
@@ -274,11 +277,19 @@ jobs:
           git fetch origin master
           base_sha="$(git rev-parse origin/master)"
 
-          mapfile -t prs < <(
+          if ! pr_rows="$(
             gh api --paginate \
               "repos/${GITHUB_REPOSITORY}/pulls?state=open&base=master&per_page=100" \
               --jq '.[] | [.number, .head.ref, .head.sha, .head.repo.full_name, (.draft | tostring), .user.login] | @tsv'
-          )
+          )"; then
+            echo "::error::Could not enumerate open pull requests targeting master."
+            exit 1
+          fi
+
+          prs=()
+          if [ -n "$pr_rows" ]; then
+            mapfile -t prs < <(printf '%s\n' "$pr_rows")
+          fi
 
           if [ "${#prs[@]}" -eq 0 ]; then
             echo "No open pull requests target master."
@@ -392,8 +403,50 @@ jobs:
             fi
 
             # Never force-push. If the branch moved while this job was running,
-            # the push fails instead of overwriting the contributor's work.
-            git push "https://x-access-token:${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:refs/heads/$head_branch"
+            # treat the resulting non-fast-forward rejection as a per-PR race
+            # and continue refreshing the remaining open PRs.
+            set +e
+            push_output="$(
+              git push "https://x-access-token:${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+                "HEAD:refs/heads/$head_branch" 2>&1
+            )"
+            push_status=$?
+            set -e
+
+            if [ "$push_status" -ne 0 ]; then
+              printf '%s\n' "$push_output"
+
+              # Re-read the branch through the normal read-only origin. If its
+              # head changed, another update won the race; leave that newer work
+              # alone and let its synchronize event perform the next refresh.
+              set +e
+              remote_line="$(git ls-remote origin "refs/heads/$head_branch" 2>&1)"
+              remote_status=$?
+              set -e
+
+              if [ "$remote_status" -ne 0 ]; then
+                echo "::error::Push for PR #$pr_number failed, and the branch state could not be re-read."
+                printf '%s\n' "$remote_line"
+                exit "$push_status"
+              fi
+
+              current_remote_sha="$(printf '%s\n' "$remote_line" | awk 'NR == 1 { print $1 }')"
+
+              if [ -z "$current_remote_sha" ]; then
+                echo "::warning::PR #$pr_number branch no longer exists; skipping it."
+                echo "::endgroup::"
+                continue
+              fi
+
+              if [ "$current_remote_sha" != "$head_sha" ]; then
+                echo "::warning::PR #$pr_number moved from $head_sha to $current_remote_sha while being refreshed; leaving the newer branch untouched."
+                echo "::endgroup::"
+                continue
+              fi
+
+              echo "::error::Push for PR #$pr_number failed even though the remote branch did not move."
+              exit "$push_status"
+            fi
 
             echo "::endgroup::"
           done
