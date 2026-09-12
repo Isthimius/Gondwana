@@ -1,6 +1,5 @@
 using System.Drawing;
 using Gondwana.Drawing;
-using Gondwana.Drawing.Sprites;
 using Gondwana.SkiaSharp;
 using SkiaSharp;
 using Gondwana;
@@ -240,25 +239,6 @@ public class GpuBackbuffer : BackbufferBase
         if (image is null || _surface is null) return;
 
         var canvas = _surface.Canvas;
-
-        if (tile is Sprite { Rotation: not 0f } sprite)
-        {
-            float centerX = destRectScreen.Left + destRectScreen.Width * 0.5f;
-            float centerY = destRectScreen.Top + destRectScreen.Height * 0.5f;
-
-            canvas.Save();
-            try
-            {
-                canvas.RotateDegrees(sprite.Rotation, centerX, centerY);
-                canvas.DrawImage(image, destRectScreen.ToSKRect());
-            }
-            finally
-            {
-                canvas.Restore();
-            }
-
-            return;
-        }
 
         canvas.DrawImage(image, destRectScreen.ToSKRect());
     }

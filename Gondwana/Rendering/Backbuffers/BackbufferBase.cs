@@ -113,11 +113,12 @@ public abstract class BackbufferBase : IDisposable
     /// <remarks>
     /// <para>
     /// Derived classes must implement this method to handle the actual rendering of tile graphics
-    /// to the canvas. The implementation should:
+    /// to the canvas. Drawable types apply their own visual transforms before invoking this method.
+    /// The implementation should:
     /// </para>
     /// <list type="bullet">
     /// <item><description>Extract the appropriate tile frame from the tile's tilesheet</description></item>
-    /// <item><description>Apply any tile-specific rendering properties (opacity, transformations, etc.)</description></item>
+    /// <item><description>Apply backend-specific sampling and blending behavior</description></item>
     /// <item><description>Draw the tile graphics to the destination rectangle</description></item>
     /// <item><description>Handle edge cases such as missing graphics or invalid tile data</description></item>
     /// </list>
