@@ -11,6 +11,8 @@ A small, self-contained platform game built directly on Gondwana's current engin
 
 Collect all five sun relics, then reach the red flag. Falling into a pit or touching spikes returns the player to the start; collected relics remain collected until the level is restarted.
 
+An angry mushroom enemy spawns at the start and every 10 seconds on safe ground near the player. Mushrooms walk toward you and fall into pits. Side or underside contact returns you to the start, just like spikes; jump onto a mushroom's head while descending to flatten it and bounce. The flattened mushroom briefly holds its pose, fades out, and is disposed. Restarting clears enemies and resets the spawn timer; winning clears the enemies.
+
 ## What the demo exercises
 
 - a code-built `Scene` with parallax and world layers

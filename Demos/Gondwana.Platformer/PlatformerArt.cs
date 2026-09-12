@@ -15,7 +15,11 @@ internal static class PlatformerArt
     internal const int PlayerLeftFrame = 6;
     internal const int CloudFrame = 7;
 
-    private const int FrameCount = 8;
+    internal const int EnemyWalkFrame = 8;
+    internal const int EnemyFlattenedFrame = 10;
+    internal const int EnemyFadeFrames = 16;
+
+    private const int FrameCount = EnemyFlattenedFrame + EnemyFadeFrames;
 
     internal static SKBitmap CreateTilesheetBitmap()
     {
@@ -36,6 +40,25 @@ internal static class PlatformerArt
         DrawPlayer(canvas, FrameLeft(PlayerRightFrame), facingLeft: false);
         DrawPlayer(canvas, FrameLeft(PlayerLeftFrame), facingLeft: true);
         DrawCloud(canvas, FrameLeft(CloudFrame));
+
+        DrawEnemy(canvas, FrameLeft(EnemyWalkFrame), alternateFeet: false);
+        DrawEnemy(canvas, FrameLeft(EnemyWalkFrame + 1), alternateFeet: true);
+        for (var i = 0; i < EnemyFadeFrames; i++)
+        {
+            canvas.Save();
+            canvas.ClipRect(new SKRect(FrameLeft(EnemyFlattenedFrame + i), 0,
+                FrameLeft(EnemyFlattenedFrame + i) + TileSize, TileSize));
+            canvas.Translate(FrameLeft(EnemyFlattenedFrame + i), 24);
+            canvas.Scale(1f, 0.25f);
+            using var fade = new SKPaint
+            {
+                Color = SKColors.White.WithAlpha((byte)(255 * (EnemyFadeFrames - 1 - i) / (EnemyFadeFrames - 1)))
+            };
+            canvas.SaveLayer(fade);
+            DrawEnemy(canvas, 0, alternateFeet: false);
+            canvas.Restore();
+            canvas.Restore();
+        }
 
         canvas.Flush();
         return bitmap;
@@ -153,6 +176,32 @@ internal static class PlatformerArt
         paint.Color = new SKColor(247, 221, 88);
         canvas.DrawRect(x + 5, 16, 4, 9, paint);
         canvas.DrawRect(x + 25, 16, 4, 9, paint);
+    }
+
+    private static void DrawEnemy(SKCanvas canvas, int x, bool alternateFeet)
+    {
+        using var paint = PixelPaint(new SKColor(62, 37, 28));
+        canvas.DrawOval(new SKRect(x + 2, alternateFeet ? 25 : 28, x + 14, alternateFeet ? 29 : 32), paint);
+        canvas.DrawOval(new SKRect(x + 18, alternateFeet ? 28 : 25, x + 30, alternateFeet ? 32 : 29), paint);
+        paint.Color = new SKColor(229, 196, 139);
+        canvas.DrawOval(new SKRect(x + 9, 17, x + 23, 29), paint);
+        paint.Color = new SKColor(100, 48, 30);
+        canvas.DrawOval(new SKRect(x + 2, 3, x + 30, 24), paint);
+        paint.Color = new SKColor(167, 85, 44);
+        canvas.DrawOval(new SKRect(x + 4, 4, x + 28, 21), paint);
+        paint.Color = new SKColor(217, 152, 83);
+        canvas.DrawRect(x + 8, 7, 5, 3, paint);
+        canvas.DrawRect(x + 21, 8, 4, 3, paint);
+        paint.Color = SKColors.White;
+        canvas.DrawRect(x + 8, 12, 6, 8, paint);
+        canvas.DrawRect(x + 18, 12, 6, 8, paint);
+        paint.Color = new SKColor(36, 24, 23);
+        canvas.DrawRect(x + 11, 14, 3, 5, paint);
+        canvas.DrawRect(x + 18, 14, 3, 5, paint);
+        paint.StrokeWidth = 3;
+        canvas.DrawLine(x + 7, 10, x + 14, 13, paint);
+        canvas.DrawLine(x + 18, 13, x + 25, 10, paint);
+        canvas.DrawRect(x + 12, 23, 8, 2, paint);
     }
 
     private static void DrawCloud(SKCanvas canvas, int x)
