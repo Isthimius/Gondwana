@@ -83,8 +83,9 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'docs: refresh unreleased changelogs [skip release notes]'
 
-          # Do not race a PR merge or any other direct update to master. A later
-          # scheduled/manual run will regenerate from the newer history.
+          # Do not race a PR merge or any other direct update to master. The
+          # preflight check gives a clear error, and the push lease below makes
+          # the same BASE_SHA requirement atomic at the remote.
           git fetch origin master
           current_master="$(git rev-parse origin/master)"
           if [ "$current_master" != "$BASE_SHA" ]; then
@@ -92,5 +93,6 @@ jobs:
             exit 1
           fi
 
-          git push "https://x-access-token:${PUSH_TOKEN}@github.com/${{ github.repository }}.git" \
+          git push --force-with-lease="refs/heads/master:${BASE_SHA}" \
+            "https://x-access-token:${PUSH_TOKEN}@github.com/${{ github.repository }}.git" \
             "HEAD:refs/heads/master"
