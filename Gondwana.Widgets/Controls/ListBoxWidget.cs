@@ -467,16 +467,7 @@ public sealed class ListBoxWidget : WidgetBase
         SelectionHighlight.Visible = true;
     }
 
-    private static Rectangle GetRowBounds(Rectangle bounds, int rowIndex)
-    {
-        int y = bounds.Y + ContentPadding + rowIndex * DefaultItemHeight;
-        return new Rectangle(bounds.X + ContentPadding,
-                             y,
-                             Math.Max(1, bounds.Width - ContentPadding * 2),
-                             DefaultItemHeight);
-    }
-
-    private Rectangle GetRowBoundsInstance(Rectangle bounds, int rowIndex)
+    private Rectangle GetRowBounds(Rectangle bounds, int rowIndex)
     {
         int y = bounds.Y + ContentPadding + rowIndex * ItemHeight;
         return new Rectangle(bounds.X + ContentPadding,
