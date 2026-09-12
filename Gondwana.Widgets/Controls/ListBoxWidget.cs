@@ -110,6 +110,7 @@ public sealed class ListBoxWidget : WidgetBase
 
             _itemHeight = value;
             ClampTopIndex();
+            EnsureSelectionVisible();
             RefreshRows();
         }
     }
