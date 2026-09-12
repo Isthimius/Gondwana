@@ -42,8 +42,9 @@ sort_commits = "oldest"
 tag_pattern = "v[0-9].*"
 
 # Convert GitHub squash-merge PR suffixes to links, then strip author/co-author trailers.
-# Open PR commits do not have the (#123) suffix yet; the PR workflow supplies the
-# current PR number and exact commit set through CHANGELOG_PR_* environment variables.
+# Scheduled/manual refreshes run against merged master history, where squash commits already
+# carry GitHub's (#123) suffix. CHANGELOG_PR_* remains available for isolated previews/tests
+# involving commits that have not yet been squash-merged.
 commit_preprocessors = [
     { pattern = "\\A([^\\r\\n]*?)\\s*\\(#(\\d+)\\)(\\r?\\n|$)", replace = "$1 ([#$2](https://github.com/Isthimius/Gondwana/pull/$2))$3" },
     { pattern = "(?m)^Co-authored-by:.*\r?\n?", replace = "" },
