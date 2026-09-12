@@ -16,6 +16,7 @@ namespace Gondwana.Widgets.Controls;
 /// character resolver use Windows virtual-key values, matching the existing
 /// widget keyboard conventions. Other hosts can replace <see cref="CharacterResolver"/>
 /// and the configurable special-key properties without subclassing the widget.
+/// Text can also be supplied directly through <see cref="InsertText(string?)"/>.
 /// </remarks>
 public sealed class TextBoxWidget : WidgetBase
 {
@@ -145,7 +146,7 @@ public sealed class TextBoxWidget : WidgetBase
         get => _maxLength;
         set
         {
-            if (value < 0)
+            if (value.HasValue && value.Value < 0)
                 throw new ArgumentOutOfRangeException(nameof(value));
 
             _maxLength = value;
