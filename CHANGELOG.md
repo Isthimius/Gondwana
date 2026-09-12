@@ -20,7 +20,6 @@ All notable changes to this project will be documented in this file.
 - Add DirectSceneLayerDarknessOverlay ([#293](https://github.com/Isthimius/Gondwana/pull/293))
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
-- Decouple backbuffer resolution from adapter presentation ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 
 
@@ -34,7 +33,6 @@ All notable changes to this project will be documented in this file.
 - Correct view coordinate conversion on GPU path to address occasional tearing ([#290](https://github.com/Isthimius/Gondwana/pull/290))
 - Resolve timer edge case ([#295](https://github.com/Isthimius/Gondwana/pull/295))
 - Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
-- Fix per PR / copilot: ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 - Harden engine initialization safety ([#336](https://github.com/Isthimius/Gondwana/pull/336))
 - Warm effects manager on first update ([#337](https://github.com/Isthimius/Gondwana/pull/337))
 - Prevent engine dispose self-deadlock ([#338](https://github.com/Isthimius/Gondwana/pull/338))
@@ -65,7 +63,6 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 - Standardizing CollisionAdjust and Overlap values
-- Merge from master ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 ## Gondwana.Audio.Browser
 
@@ -123,7 +120,6 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
-- Decouple backbuffer resolution from adapter presentation ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 
 
@@ -183,7 +179,6 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
-- Decouple backbuffer resolution from adapter presentation ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 
 
@@ -200,11 +195,6 @@ All notable changes to this project will be documented in this file.
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 - Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
-
-
-
-### Tests
-- Document scaling migration and benchmark bitmap presentation ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 
 
@@ -329,7 +319,6 @@ All notable changes to this project will be documented in this file.
 - Add spaceduel demo ([#263](https://github.com/Isthimius/Gondwana/pull/263))
 - Add popup and toast overlays ([#281](https://github.com/Isthimius/Gondwana/pull/281))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
-- Decouple backbuffer resolution from adapter presentation ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 
 
@@ -361,14 +350,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
-- Decouple backbuffer resolution from adapter presentation ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 
 
 ### Fixed
 - Improve bitmap render adapters ([#291](https://github.com/Isthimius/Gondwana/pull/291))
 - Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
-- Fix for 0-height recovery ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 
 
@@ -390,11 +377,6 @@ All notable changes to this project will be documented in this file.
 
 ### Maintenance
 - Remove one-time job ([#329](https://github.com/Isthimius/Gondwana/pull/329))
-
-
-
-### Other Changes
-- Corner case fix ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 ## Gondwana.WinForms.Hosting
 
@@ -574,11 +556,6 @@ All notable changes to this project will be documented in this file.
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 - Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 - Mark item complete ([#334](https://github.com/Isthimius/Gondwana/pull/334))
-
-
-
-### Tests
-- Document scaling migration and benchmark bitmap presentation ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 
 

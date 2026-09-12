@@ -9,7 +9,6 @@ All notable changes to this project will be documented in this file.
 
 ## Added
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
-- Decouple backbuffer resolution from adapter presentation ([#335](https://github.com/Isthimius/Gondwana/pull/335))
 
 
 
