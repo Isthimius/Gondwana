@@ -5,6 +5,7 @@ using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Collisions;
 using Gondwana.Physics.Collisions;
 using Gondwana.Physics.Movement;
+using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Newtonsoft.Json;
@@ -225,6 +226,33 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
 
     internal RectangleF GetVisualBoundsScreen(RectangleF renderRectScreen) =>
         GetRotatedBounds(renderRectScreen, Rotation);
+
+    /// <inheritdoc />
+    public override void Draw(
+        BackbufferBase backbuffer,
+        RectangleF destRectScreen)
+    {
+        if (Rotation == 0f)
+        {
+            base.Draw(backbuffer, destRectScreen);
+            return;
+        }
+
+        float centerX = destRectScreen.Left + destRectScreen.Width * 0.5f;
+        float centerY = destRectScreen.Top + destRectScreen.Height * 0.5f;
+        var canvas = backbuffer.Canvas;
+
+        canvas.Save();
+        try
+        {
+            canvas.RotateDegrees(Rotation, centerX, centerY);
+            base.Draw(backbuffer, destRectScreen);
+        }
+        finally
+        {
+            canvas.Restore();
+        }
+    }
 
     /// <summary>
     /// Applies a world-pixel translation without rebuilding the absolute position
