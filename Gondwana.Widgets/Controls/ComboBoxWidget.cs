@@ -148,6 +148,7 @@ public sealed class ComboBoxWidget : ContainerWidget
         _isDropDownOpen = true;
         DropDown.Show();
         DropDown.Activate();
+        WidgetInputRouterRegistry.TryFocus(DropDown);
         return this;
     }
 
@@ -161,6 +162,8 @@ public sealed class ComboBoxWidget : ContainerWidget
 
         _isDropDownOpen = false;
         DropDown.Hide();
+        Header.Activate();
+        WidgetInputRouterRegistry.TryFocus(Header);
         return this;
     }
 

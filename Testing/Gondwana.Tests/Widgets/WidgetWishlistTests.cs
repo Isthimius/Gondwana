@@ -4,6 +4,7 @@ using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
+using Gondwana.Widgets;
 using Gondwana.Widgets.Controls;
 using Gondwana.Widgets.Dialogue;
 using Gondwana.Widgets.Hud;
@@ -89,7 +90,9 @@ public sealed class WidgetWishlistTests : IDisposable
     public void ComboBoxWidget_UsesListSelectionAndClosesDropDown()
     {
         using var host = new TestRenderSurfaceHost();
+        using var router = new WidgetInputRouter(host, null, null, null);
         View view = AddView(host);
+        router.Start();
         using var comboBox = new ComboBoxWidget(
             host,
             view,
@@ -98,11 +101,13 @@ public sealed class WidgetWishlistTests : IDisposable
 
         comboBox.OpenDropDown();
         Assert.True(comboBox.IsDropDownOpen);
+        Assert.Same(comboBox.DropDown, router.FocusedWidget);
 
         comboBox.SelectedIndex = 1;
 
         Assert.Equal("Normal", comboBox.SelectedItem);
         Assert.False(comboBox.IsDropDownOpen);
+        Assert.Same(comboBox.Header, router.FocusedWidget);
     }
 
     [Fact]

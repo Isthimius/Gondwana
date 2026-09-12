@@ -65,6 +65,19 @@ internal static class WidgetInputRouterRegistry
         return true;
     }
 
+    internal static bool TryFocus(WidgetBase widget)
+    {
+        ArgumentNullException.ThrowIfNull(widget);
+
+        WidgetInputRouter? router = GetRouter(widget);
+
+        if (router is null)
+            return false;
+
+        router.Focus(widget);
+        return true;
+    }
+
     internal static void NotifyHidden(WidgetBase widget)
     {
         GetRouter(widget)?.NotifyWidgetHidden(widget);
