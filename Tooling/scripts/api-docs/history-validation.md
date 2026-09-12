@@ -1,6 +1,6 @@
 # Historical API archive validation — 2026-09-08
 
-This records local staging validation, **not a completed live migration**. No generated HTML is committed to master, and `gh-pages` was not replaced during implementation.
+This record began as local staging validation and now also captures the completed live migration. No generated HTML is committed to `master`; the one-time workflow replaced `gh-pages` from reviewed staged output and retained its recovery evidence.
 
 ## Provenance and recovery
 
@@ -49,7 +49,7 @@ Doxygen exits successfully for every version. Existing warnings are distinct fro
 
 The initial build exposed Windows-1252 punctuation copied into 42 HTML pages from old `TextBlock.cs`/`Scene.cs` text through v2.5.0. The permanent builder now tells Doxygen the encoding of non-UTF-8 C# inputs without rewriting them. The full rebuild has **zero invalid UTF-8 HTML pages**. Other detected legacy C# inputs (including Sprite and an excluded demo) receive the same decoding rule. No source parsing failure remains that blocks staging validation.
 
-Hosted deployment duration and live-site checks remain pending manual dispatch. The workflow verifies branch-based Pages settings before publication, enforces the 750 MiB and per-file limits, explicitly requests a Pages build, and waits up to ten minutes for the published commit. Review its logs if the Ubuntu Doxygen version reports different warnings. Follow the [dispatch and recovery guide](README.md#review-dispatch-verification-and-recovery).
+The successful live migration run verified branch-based Pages settings before publication, enforced the 750 MiB and per-file limits, explicitly requested a Pages build, and waited for the published commit to finish building. Review the retained workflow logs if a future audit needs the exact hosted timings or Ubuntu Doxygen warnings.
 
 ## Linux encoding failure and correction — 2026-09-09
 
@@ -65,4 +65,4 @@ All 16 recorded releases and recorded master were successfully rebuilt on Linux 
 
 Local Chromium browser validation is blocked by this environment's socket permissions (`socket() failed: Operation not permitted`). No browser pass is claimed for this correction. The existing complete-site browser gate remains mandatory in the GitHub migration workflow **before** atomic publication; it has not been disabled or weakened. No engine/.NET code changed.
 
-After merging the fix, wait for normal Docs publishing to finish, then dispatch a **new** migration run on `master` with `REBUILD_GH_PAGES` and a fresh backup ref, for example `refs/heads/gh-pages-pre-versioning-20260909-retry1` if unused. Do not rerun the old workflow revision or overwrite the existing backup. Live publication and redirect verification remain separate from local staging validation.
+The completed live migration used reviewed `master` commit `ed766ea27e2bed0dfef32a1018ff57277531f42c`, confirmation `REBUILD_GH_PAGES`, and fresh backup ref `refs/heads/gh-pages-pre-versioning-20260909-retry1`. [One-time API history rebuild run #3](https://github.com/Isthimius/Gondwana/actions/runs/34390296959) atomically replaced `gh-pages` with published commit `1ccfd6000e4f88f439faeef8bf8b73aa3439bc6a`, and [Pages deployment run #84](https://github.com/Isthimius/Gondwana/actions/runs/34390794822) completed successfully for that exact commit. The migration workflow's browser validation of the complete staged site under `/Gondwana/` also passed before publication. Retain both dated backup branches, the `gh-pages-pre-versioning-20260909-retry1` recovery ref, and the run's `api-history-evidence` artifact as the permanent audit trail.

@@ -557,6 +557,13 @@ All notable changes to this project will be documented in this file.
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 - Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 - Mark item complete ([#334](https://github.com/Isthimius/Gondwana/pull/334))
+- Retire API history rebuild instructions ([#341](https://github.com/Isthimius/Gondwana/pull/341))
+
+
+
+### Tests
+- Preserve active API build coverage ([#341](https://github.com/Isthimius/Gondwana/pull/341))
+- Keep redirect coverage with publisher tests ([#341](https://github.com/Isthimius/Gondwana/pull/341))
 
 
 

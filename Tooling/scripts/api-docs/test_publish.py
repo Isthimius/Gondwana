@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 import json
-from publish import publish
+from publish import publish, redirect
 
 
 def snapshot(path):
@@ -66,6 +66,14 @@ class PublishingTests(unittest.TestCase):
             (root / 'api/v1.0.0').mkdir(parents=True)
             with self.assertRaises(ValueError):
                 publish(root, source, 'v1.0.0')
+
+    def test_redirects_use_both_automatic_mechanisms(self):
+        for target in ('api/', 'v2.5.2/'):
+            html = redirect(target)
+            self.assertIn('window.location.replace(' + json.dumps(target) + ')', html)
+            self.assertIn('content="0;url=' + target + '"', html)
+            self.assertIn('href="' + target + '"', html)
+        self.assertNotIn('v2.5.2', redirect('api/'))
 
 
 if __name__ == '__main__':
