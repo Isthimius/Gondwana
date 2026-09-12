@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Numerics;
 using Gondwana.Drawing.Direct;
 using Gondwana.Input.Keyboard;
 using Gondwana.Rendering;
@@ -457,12 +458,21 @@ public sealed class ListBoxWidget : WidgetBase
             return;
         }
 
-        Rectangle selectionBounds = GetRowBounds(Bounds, _selectedIndex - TopIndex);
+        int rowIndex = _selectedIndex - TopIndex;
+        Rectangle selectionBounds = GetRowBounds(Bounds, rowIndex);
+        Rectangle currentBounds = Mode == DirectDrawingMode.View
+            ? SelectionHighlight.ScreenBounds
+            : SelectionHighlight.WorldBounds;
+        Rectangle resizedBounds = new(currentBounds.Location, selectionBounds.Size);
 
         if (Mode == DirectDrawingMode.View)
-            SelectionHighlight.ScreenBounds = selectionBounds;
+            SelectionHighlight.ScreenBounds = resizedBounds;
         else
-            SelectionHighlight.WorldBounds = selectionBounds;
+            SelectionHighlight.WorldBounds = resizedBounds;
+
+        SetLocalOffset(
+            SelectionHighlight,
+            new Vector2(ContentPadding, ContentPadding + rowIndex * ItemHeight));
 
         SelectionHighlight.Visible = true;
     }
