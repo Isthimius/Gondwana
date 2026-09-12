@@ -3,6 +3,7 @@ var namespaceGondwana_1_1Widgets =
     [ "Controls", "namespaceGondwana_1_1Widgets_1_1Controls.html", "namespaceGondwana_1_1Widgets_1_1Controls" ],
     [ "Dialogs", "namespaceGondwana_1_1Widgets_1_1Dialogs.html", "namespaceGondwana_1_1Widgets_1_1Dialogs" ],
     [ "Hud", "namespaceGondwana_1_1Widgets_1_1Hud.html", "namespaceGondwana_1_1Widgets_1_1Hud" ],
+    [ "Layout", "namespaceGondwana_1_1Widgets_1_1Layout.html", "namespaceGondwana_1_1Widgets_1_1Layout" ],
     [ "Menus", "namespaceGondwana_1_1Widgets_1_1Menus.html", "namespaceGondwana_1_1Widgets_1_1Menus" ],
     [ "Overlays", "namespaceGondwana_1_1Widgets_1_1Overlays.html", "namespaceGondwana_1_1Widgets_1_1Overlays" ],
     [ "ContainerWidget", "classGondwana_1_1Widgets_1_1ContainerWidget.html", "classGondwana_1_1Widgets_1_1ContainerWidget" ],

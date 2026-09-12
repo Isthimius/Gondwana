@@ -267,7 +267,10 @@ var annotated_dup =
         [ "Controls", "namespaceGondwana_1_1Widgets_1_1Controls.html", [
           [ "ButtonWidget", "classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget" ],
           [ "HyperlinkWidget", "classGondwana_1_1Widgets_1_1Controls_1_1HyperlinkWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1HyperlinkWidget" ],
-          [ "IExternalUriLauncher", "interfaceGondwana_1_1Widgets_1_1Controls_1_1IExternalUriLauncher.html", "interfaceGondwana_1_1Widgets_1_1Controls_1_1IExternalUriLauncher" ]
+          [ "IExternalUriLauncher", "interfaceGondwana_1_1Widgets_1_1Controls_1_1IExternalUriLauncher.html", "interfaceGondwana_1_1Widgets_1_1Controls_1_1IExternalUriLauncher" ],
+          [ "LabelWidget", "classGondwana_1_1Widgets_1_1Controls_1_1LabelWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1LabelWidget" ],
+          [ "PanelWidget", "classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget" ],
+          [ "ProgressBarWidget", "classGondwana_1_1Widgets_1_1Controls_1_1ProgressBarWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1ProgressBarWidget" ]
         ] ],
         [ "Dialogs", "namespaceGondwana_1_1Widgets_1_1Dialogs.html", [
           [ "AboutBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox.html", "classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox" ],
@@ -275,6 +278,9 @@ var annotated_dup =
         ] ],
         [ "Hud", "namespaceGondwana_1_1Widgets_1_1Hud.html", [
           [ "HealthBarWidget", "classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget.html", "classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget" ]
+        ] ],
+        [ "Layout", "namespaceGondwana_1_1Widgets_1_1Layout.html", [
+          [ "StackPanelWidget", "classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget.html", "classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget" ]
         ] ],
         [ "Menus", "namespaceGondwana_1_1Widgets_1_1Menus.html", [
           [ "MenuBarMenu", "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarMenu.html", "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarMenu" ],

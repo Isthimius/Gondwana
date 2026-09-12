@@ -103,16 +103,20 @@ var hierarchy =
       [ "Gondwana.Drawing.Direct.DirectComposite", "classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html", [
         [ "Gondwana.Widgets.WidgetBase", "classGondwana_1_1Widgets_1_1WidgetBase.html", [
           [ "Gondwana.Widgets.ContainerWidget", "classGondwana_1_1Widgets_1_1ContainerWidget.html", [
+            [ "Gondwana.Widgets.Controls.PanelWidget", "classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget.html", null ],
             [ "Gondwana.Widgets.DraggableContainerWidget", "classGondwana_1_1Widgets_1_1DraggableContainerWidget.html", [
               [ "Gondwana.Widgets.Dialogs.DialogBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html", [
                 [ "Gondwana.Widgets.Dialogs.AboutBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox.html", null ]
               ] ]
             ] ],
+            [ "Gondwana.Widgets.Layout.StackPanelWidget", "classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget.html", null ],
             [ "Gondwana.Widgets.Menus.MenuBarWidget", "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html", null ],
             [ "Gondwana.Widgets.Menus.MenuDropDownWidget", "classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html", null ]
           ] ],
           [ "Gondwana.Widgets.Controls.ButtonWidget", "classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget.html", null ],
           [ "Gondwana.Widgets.Controls.HyperlinkWidget", "classGondwana_1_1Widgets_1_1Controls_1_1HyperlinkWidget.html", null ],
+          [ "Gondwana.Widgets.Controls.LabelWidget", "classGondwana_1_1Widgets_1_1Controls_1_1LabelWidget.html", null ],
+          [ "Gondwana.Widgets.Controls.ProgressBarWidget", "classGondwana_1_1Widgets_1_1Controls_1_1ProgressBarWidget.html", null ],
           [ "Gondwana.Widgets.DraggableWidgetBase", "classGondwana_1_1Widgets_1_1DraggableWidgetBase.html", null ],
           [ "Gondwana.Widgets.Hud.HealthBarWidget", "classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget.html", null ],
           [ "Gondwana.Widgets.Menus.MenuHeaderWidget", "classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget.html", null ],

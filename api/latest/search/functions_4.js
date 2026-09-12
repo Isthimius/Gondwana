@@ -1,7 +1,7 @@
 var searchData=
 [
   ['earthquakeeffect_0',['EarthquakeEffect',['../classGondwana_1_1Effects_1_1EarthquakeEffect.html#aa1df3ea69364979e269bcc9e00c27d0d',1,'Gondwana::Effects::EarthquakeEffect']]],
-  ['enablewrapping_1',['EnableWrapping',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a62f638ca17a897a139546d7e3efa1c1b',1,'Gondwana::Drawing::Direct::TextBlock']]],
+  ['enablewrapping_1',['EnableWrapping',['../classGondwana_1_1Widgets_1_1Controls_1_1LabelWidget.html#abfcea578a13f1b6224439c7b463c39d4',1,'Gondwana.Widgets.Controls.LabelWidget.EnableWrapping()'],['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a62f638ca17a897a139546d7e3efa1c1b',1,'Gondwana.Drawing.Direct.TextBlock.EnableWrapping()']]],
   ['ensureinitialized_2',['EnsureInitialized',['../classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a9fd9bb2abb6158420b144d0fcfefbf6b',1,'Gondwana::Rendering::Backbuffers::GpuBackbuffer']]],
   ['ensurenotdisposed_3',['EnsureNotDisposed',['../classGondwana_1_1Hosting_1_1GameHostBase.html#af4aac743545c0e74b854d768b69167e5',1,'Gondwana::Hosting::GameHostBase']]],
   ['ensurenotinitialized_4',['EnsureNotInitialized',['../classGondwana_1_1Hosting_1_1GameHostBase.html#a4190e4b3760094a46347a24609f32cb3',1,'Gondwana::Hosting::GameHostBase']]],
