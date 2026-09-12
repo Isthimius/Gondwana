@@ -556,6 +556,13 @@ All notable changes to this project will be documented in this file.
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 - Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
 - Mark item complete ([#334](https://github.com/Isthimius/Gondwana/pull/334))
+- Retire API history rebuild instructions ([#341](https://github.com/Isthimius/Gondwana/pull/341))
+
+
+
+### Tests
+- Preserve active API build coverage ([#341](https://github.com/Isthimius/Gondwana/pull/341))
+- Keep redirect coverage with publisher tests ([#341](https://github.com/Isthimius/Gondwana/pull/341))
 
 
 
@@ -591,6 +598,9 @@ All notable changes to this project will be documented in this file.
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
 - Adding bitbucket mirror
+- Remove retired API history rebuild tool ([#341](https://github.com/Isthimius/Gondwana/pull/341))
+- Remove retired rebuild tests ([#341](https://github.com/Isthimius/Gondwana/pull/341))
+- Remove retired git rebuild tests ([#341](https://github.com/Isthimius/Gondwana/pull/341))
 
 # [v2.5.2] - 2026-07-26
 
