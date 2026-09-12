@@ -482,8 +482,9 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
 
     private bool ResolveEnemyContacts()
     {
-        foreach (var enemy in _enemies)
+        for (var i = 0; i < _enemies.Count; i++)
         {
+            var enemy = _enemies[i];
             if (enemy.Flattened)
                 continue;
 
@@ -506,6 +507,11 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
             }
             else if (area.IntersectsWith(target))
             {
+                enemy.Sprite.Visible = false;
+                enemy.Sprite.CollisionsEnabled = false;
+                enemy.Sprite.Movement.StopAllMovement();
+                enemy.Sprite.Dispose();
+                _enemies.RemoveAt(i);
                 Respawn("Mushrooms have a personal-space problem.");
                 return true;
             }
