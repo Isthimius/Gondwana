@@ -378,6 +378,9 @@ public sealed class TextBoxWidget : WidgetBase
 
         if (args.Key == SubmitKey)
         {
+            if (args.KeyAction != KeyAction.Pressed)
+                return;
+
             args.Handled = true;
             Submitted?.Invoke(_text);
             return;
