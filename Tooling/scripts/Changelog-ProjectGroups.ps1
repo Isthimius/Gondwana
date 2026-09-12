@@ -2,6 +2,7 @@
 # Paths are repository-relative; omitted projects generate neither output.
 # A commit touching more than one group intentionally appears under each one.
 $ChangelogProjects = @(
+    # core projects - individual changelogs and root changelog
     [pscustomobject]@{ Path = "Gondwana"; RootName = "Gondwana"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Gondwana.Audio.Browser"; RootName = "Gondwana.Audio.Browser"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Gondwana.Audio.Midi"; RootName = "Gondwana.Audio.Midi"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
@@ -15,6 +16,8 @@ $ChangelogProjects = @(
     [pscustomobject]@{ Path = "Gondwana.Widgets"; RootName = "Gondwana.Widgets"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Gondwana.WinForms"; RootName = "Gondwana.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Gondwana.WinForms.Hosting"; RootName = "Gondwana.WinForms.Hosting"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+
+    # demo projects - individual changelogs but not root changelog
     [pscustomobject]@{ Path = "Demos/Gondwana.Flappy"; RootName = "Demos / Gondwana.Flappy"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
     [pscustomobject]@{ Path = "Demos/Gondwana.Platformer"; RootName = "Demos / Gondwana.Platformer"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
     [pscustomobject]@{ Path = "Demos/Gondwana.Pong"; RootName = "Demos / Gondwana.Pong"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
@@ -27,6 +30,8 @@ $ChangelogProjects = @(
     [pscustomobject]@{ Path = "Demos/Spot"; RootName = "Demos / Spot"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
     [pscustomobject]@{ Path = "Demos/Spot.Blazor"; RootName = "Demos / Spot.Blazor"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
     [pscustomobject]@{ Path = "Demos/SpotAvalonia"; RootName = "Demos / SpotAvalonia"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
+
+    # tooling projects - individual changelogs and root changelog
     [pscustomobject]@{ Path = "Tooling/Gondwana.Cli"; RootName = "Tooling / Gondwana.Cli"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Tooling/Gondwana.Mcp"; RootName = "Tooling / Gondwana.Mcp"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Tooling/Gondwana.Templates"; RootName = "Tooling / Gondwana.Templates"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
@@ -35,6 +40,8 @@ $ChangelogProjects = @(
     [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.Core"; RootName = "Tooling / Gondwana.Tooling.Studio.Core"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Tilesheets.WinForms"; RootName = "Tooling / Gondwana.Tooling.Tilesheets.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    
+    # root-only areas - no individual changelogs, but included in root changelog
     [pscustomobject]@{
         Path = $null
         RootName = "Build / Repository"
