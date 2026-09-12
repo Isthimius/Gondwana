@@ -102,6 +102,52 @@ public sealed class CoreHudWidgetTests
         Assert.Equal(new Point(100, 200), panel.Bounds.Location);
     }
 
+    [Fact]
+    public void LabelWidget_SizeAndPaddingUseLayoutInvalidatingApis()
+    {
+        using var host = new TestRenderSurfaceHost();
+        View view = AddView(host);
+
+        using var label = new LabelWidget(
+            host,
+            view,
+            new Rectangle(10, 20, 120, 30),
+            "Ready");
+
+        label.Size = new Size(140, 35);
+        label.SetPadding(6f, 4f);
+
+        Assert.Equal(new Rectangle(10, 20, 140, 35), label.Bounds);
+        Assert.Equal(6f, label.TextBlock.HorizontalPadding);
+        Assert.Equal(4f, label.TextBlock.VerticalPadding);
+    }
+
+    [Fact]
+    public void PanelWidget_SetPanelZOrder_PreservesCompositeChildInternalZOrder()
+    {
+        using var host = new TestRenderSurfaceHost();
+        View view = AddView(host);
+
+        using var panel = new PanelWidget(
+            host,
+            view,
+            new Rectangle(40, 50, 200, 100),
+            Color.Black);
+
+        using var progress = new ProgressBarWidget(
+            host,
+            view,
+            new Rectangle(0, 0, 120, 20),
+            value: 0.5f);
+
+        panel.AddWidget(progress, new Point(10, 12));
+        panel.SetPanelZOrder(20);
+
+        Assert.Equal(20, panel.Background.ZOrder);
+        Assert.Equal(21, progress.Track.ZOrder);
+        Assert.Equal(22, progress.Fill.ZOrder);
+    }
+
     private static View AddView(TestRenderSurfaceHost host)
     {
         var bounds = new Rectangle(0, 0, 640, 480);

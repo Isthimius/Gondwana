@@ -95,7 +95,7 @@ public sealed class PanelWidget : ContainerWidget
         Add(widget,
             keepCurrentOffset: false,
             explicitLocalOffsetPx: new Vector2(offset.X, offset.Y));
-        widget.SetZOrder(_panelZOrder + 1);
+        SetWidgetZOrder(widget, _panelZOrder + 1);
         return this;
     }
 
@@ -192,7 +192,7 @@ public sealed class PanelWidget : ContainerWidget
         Background.ZOrder = zOrder;
 
         foreach (WidgetBase widget in ChildWidgets)
-            widget.SetZOrder(zOrder + 1);
+            SetWidgetZOrder(widget, zOrder + 1);
 
         return this;
     }
@@ -220,5 +220,33 @@ public sealed class PanelWidget : ContainerWidget
     {
         if (size.Width <= 0 || size.Height <= 0)
             throw new ArgumentOutOfRangeException(nameof(size), size, "Panel size must be positive.");
+    }
+
+    private static void SetWidgetZOrder(WidgetBase widget, int zOrder)
+    {
+        DirectDrawingBase[] visuals = EnumerateVisuals(widget).ToArray();
+        if (visuals.Length == 0)
+            return;
+
+        int currentMin = visuals.Min(static visual => visual.ZOrder);
+        int delta = zOrder - currentMin;
+
+        foreach (DirectDrawingBase visual in visuals)
+            visual.ZOrder += delta;
+    }
+
+    private static IEnumerable<DirectDrawingBase> EnumerateVisuals(IDirectCompositeContainer container)
+    {
+        foreach (IDirectCompositeChild child in container.Children)
+        {
+            if (child is DirectDrawingBase drawing)
+                yield return drawing;
+
+            if (child is IDirectCompositeContainer nestedContainer)
+            {
+                foreach (DirectDrawingBase nestedDrawing in EnumerateVisuals(nestedContainer))
+                    yield return nestedDrawing;
+            }
+        }
     }
 }

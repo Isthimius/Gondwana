@@ -51,7 +51,7 @@ public sealed class LabelWidget : WidgetBase
         ArgumentNullException.ThrowIfNull(sceneLayer);
 
         _text = text ?? string.Empty;
-        TextBlock = new TextBlock(renderSurfaceHost, sceneLayer, view: null, worldBounds: bounds, $"{Nickname}.text")
+        TextBlock = new TextBlock(renderSurfaceHost, sceneLayer, view: null, worldBounds: bounds, nickname: $"{Nickname}.text")
             .SetText(_text)
             .SetColors(_foregroundColor, _backgroundColor);
 
@@ -85,11 +85,7 @@ public sealed class LabelWidget : WidgetBase
         set
         {
             ValidateSize(value);
-
-            if (Mode == DirectDrawingMode.View)
-                TextBlock.ScreenBounds = new Rectangle(TextBlock.ScreenBounds.Location, value);
-            else
-                TextBlock.WorldBounds = new Rectangle(TextBlock.WorldBounds.Location, value);
+            TextBlock.SetSize(value);
         }
     }
 
@@ -172,8 +168,7 @@ public sealed class LabelWidget : WidgetBase
         if (!float.IsFinite(vertical) || vertical < 0f)
             throw new ArgumentOutOfRangeException(nameof(vertical));
 
-        TextBlock.HorizontalPadding = horizontal;
-        TextBlock.VerticalPadding = vertical;
+        TextBlock.SetPadding(horizontal, vertical);
         return this;
     }
 
