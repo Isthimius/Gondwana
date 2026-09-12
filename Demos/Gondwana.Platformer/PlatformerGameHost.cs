@@ -1,4 +1,5 @@
 using System.Numerics;
+using Gondwana.Timers;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
@@ -28,6 +29,12 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
     private readonly List<SceneLayerTile> _hazards = [];
     private readonly List<SceneLayerTile> _relics = [];
     private readonly List<ICollider> _groundProbeResults = [];
+
+    private readonly List<MushroomEnemy> _enemies = [];
+    private long _lastEnemyTick;
+    private float _spawnElapsed;
+    private int _enemyId;
+    private Rectangle _previousPlayerArea;
 
     private Tilesheet _tilesheet = null!;
     private SceneLayer _backgroundLayer = null!;
@@ -126,6 +133,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
         var camera = RenderSurface.Host.ViewManager.Views[0].Camera;
         camera.DeadZonePx = new Rectangle(360, 0, 240, RenderSurface.Height);
         camera.FollowCenteredX(_player, speed: 9f);
+        SpawnEnemy();
     }
 
     protected override void CreateDirectDrawings()
@@ -187,6 +195,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
 
     protected override void OnEngineInitialized()
     {
+        _lastEnemyTick = HighResTimer.GetCurrentTick();
         Engine.Configuration.TargetFPS = 60;
         Engine.BeforeBackgroundTasksExecute += BeforeBackgroundTasksExecute;
         Engine.AfterBackgroundTasksExecute += AfterBackgroundTasksExecute;
@@ -336,6 +345,12 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
         if (_gameState != GameState.Playing)
             return;
 
+        var tick = HighResTimer.GetCurrentTick();
+        var elapsed = Math.Max(0f, HighResTimer.GetDuration(_lastEnemyTick, tick));
+        _lastEnemyTick = tick;
+        UpdateEnemies(elapsed);
+        _previousPlayerArea = _player.CollisionArea;
+
         var velocity = _player.Movement.MovementState.Velocity;
         var moveLeft = _keysDown.Contains(Keys.A) || _keysDown.Contains(Keys.Left);
         var moveRight = _keysDown.Contains(Keys.D) || _keysDown.Contains(Keys.Right);
@@ -369,6 +384,8 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
 
         _grounded = IsStandingOnSolid();
         CollectRelics();
+        if (ResolveEnemyContacts())
+            return;
 
         if (_hazards.Any(hazard =>
                 hazard.Visible &&
@@ -396,6 +413,125 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
 
         UpdateMessageVisibility();
         UpdateHud();
+    }
+
+    private void SpawnEnemy()
+    {
+        // Choose real ground near the player, keeping clear of pits and the respawn point.
+        var playerX = _player.GetPosition().X;
+        var column = Enumerable.Range(6, WorldColumns - 7)
+            .Where(x => _worldLayer[x, 16]!.CollisionsEnabled && Math.Abs(x - playerX) >= 5f)
+            .OrderBy(x => Math.Abs(x - (playerX + 8f)))
+            .First();
+        var sprite = Engine.Managers.Sprites.CreateSprite(
+            _worldLayer, _tilesheet[PlatformerArt.EnemyWalkFrame, 0], $"mushroom-{++_enemyId}");
+        sprite.SetPosition(new Vector2(column, 15f));
+        sprite.Visible = true;
+        sprite.ZOrder = 19;
+        sprite.AdjustCollisionArea = new CollisionAdjust(top: 3, bottom: 0, left: 3, right: 3);
+        sprite.Collider!.CollisionGroup = Scene!.CollisionGroups.Actors;
+        sprite.Collider.CollidesWith = Scene.CollisionGroups.WorldStatic;
+        sprite.Collider.ResponseType = CollisionResponseType.Solid;
+        sprite.CollisionsEnabled = true;
+        sprite.Movement.SetAcceleration(new Vector2(0f, Gravity));
+        _enemies.Add(new MushroomEnemy(sprite));
+    }
+
+    private void UpdateEnemies(float elapsed)
+    {
+        _spawnElapsed += elapsed;
+        while (_spawnElapsed >= 10f)
+        {
+            _spawnElapsed -= 10f;
+            SpawnEnemy();
+        }
+
+        for (var i = _enemies.Count - 1; i >= 0; i--)
+        {
+            var enemy = _enemies[i];
+            var sprite = enemy.Sprite;
+            enemy.PreviousArea = sprite.CollisionArea;
+            enemy.Age += elapsed;
+            if (enemy.Flattened)
+            {
+                // Hold the flattened pose briefly, then fade over 0.6 seconds.
+                var fade = Math.Clamp((enemy.Age - 0.2f) / 0.6f, 0f, 1f);
+                sprite.CurrentFrame = _tilesheet[PlatformerArt.EnemyFlattenedFrame +
+                    (int)(fade * (PlatformerArt.EnemyFadeFrames - 1)), 0];
+                if (fade < 1f)
+                    continue;
+            }
+            else if (sprite.GetPosition().Y <= WorldRows + 2)
+            {
+                var dx = _player.GetPosition().X - sprite.GetPosition().X;
+                sprite.Movement.SetVelocity(new Vector2(
+                    Math.Abs(dx) < 0.1f ? 0f : Math.Sign(dx) * 2f,
+                    Math.Min(sprite.Movement.MovementState.Velocity.Y, MaxFallSpeed)));
+                sprite.CurrentFrame = _tilesheet[
+                    PlatformerArt.EnemyWalkFrame + (int)(enemy.Age / 0.16f) % 2, 0];
+                continue;
+            }
+
+            sprite.Visible = false;
+            sprite.CollisionsEnabled = false;
+            sprite.Movement.StopAllMovement();
+            sprite.Dispose();
+            _enemies.RemoveAt(i);
+        }
+    }
+
+    private bool ResolveEnemyContacts()
+    {
+        foreach (var enemy in _enemies)
+        {
+            if (enemy.Flattened)
+                continue;
+
+            var area = _player.CollisionArea;
+            var target = enemy.Sprite.CollisionArea;
+            if (EnemyContact.IsStomp(_previousPlayerArea, area,
+                    enemy.PreviousArea, target, _player.Movement.MovementState.Velocity.Y))
+            {
+                enemy.Flattened = true;
+                enemy.Age = 0f;
+                enemy.Sprite.CollisionsEnabled = false;
+                enemy.Sprite.Movement.StopAllMovement();
+                enemy.Sprite.CurrentFrame = _tilesheet[PlatformerArt.EnemyFlattenedFrame, 0];
+                var position = _player.GetPosition();
+                position.Y += (target.Top - area.Bottom) / (float)PlatformerArt.TileSize;
+                _player.SetPosition(position);
+                var velocity = _player.Movement.MovementState.Velocity;
+                _player.Movement.SetVelocity(new Vector2(velocity.X, -JumpSpeed * 0.65f));
+                _grounded = false;
+            }
+            else if (area.IntersectsWith(target))
+            {
+                Respawn("Mushrooms have a personal-space problem.");
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void ClearEnemies()
+    {
+        foreach (var enemy in _enemies)
+        {
+            enemy.Sprite.Visible = false;
+            enemy.Sprite.CollisionsEnabled = false;
+            enemy.Sprite.Movement.StopAllMovement();
+            enemy.Sprite.Dispose();
+        }
+        _enemies.Clear();
+    }
+
+    private sealed class MushroomEnemy(Sprite sprite)
+    {
+        internal Sprite Sprite { get; } = sprite;
+        internal Rectangle PreviousArea { get; set; } = sprite.CollisionArea;
+        internal float Age { get; set; }
+        internal bool Flattened { get; set; }
     }
 
     private bool IsStandingOnSolid()
@@ -445,6 +581,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
     private void Respawn(string message)
     {
         _player.SetPosition(SpawnPosition);
+        _previousPlayerArea = _player.CollisionArea;
         _player.Movement.SetVelocity(Vector2.Zero);
         _player.Movement.SetAcceleration(new Vector2(0f, Gravity));
         _grounded = false;
@@ -455,6 +592,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
     {
         _gameState = GameState.Won;
         _keysDown.Clear();
+        ClearEnemies();
         _player.Movement.StopAllMovement();
         _messageText.SetText("YOU FOUND THE OLD ROAD\nPress R to play again");
         _messageText.Visible = true;
@@ -465,11 +603,15 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
     {
         _gameState = GameState.Playing;
         _relicsCollected = 0;
+        ClearEnemies();
+        _spawnElapsed = 0f;
+        _lastEnemyTick = HighResTimer.GetCurrentTick();
 
         foreach (var relic in _relics)
             relic.Visible = true;
 
         Respawn("The road begins again.");
+        SpawnEnemy();
         UpdateHud(force: true);
     }
 

@@ -26,6 +26,11 @@
 		<ProjectReference Include="..\..\Tooling\Gondwana.Mcp\Gondwana.Mcp.csproj" />
 	</ItemGroup>
 
+    <ItemGroup>
+        <Compile Include="../../Demos/Gondwana.Platformer/EnemyContact.cs" Link="Demos/EnemyContact.cs" />
+        <Compile Include="../../Demos/Gondwana.Platformer/PlatformerArt.cs" Link="Demos/PlatformerArt.cs" />
+    </ItemGroup>
+
 	<ItemGroup>
 		<Using Include="Xunit" />
 	</ItemGroup>
