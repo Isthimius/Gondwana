@@ -1,7 +1,7 @@
 # Gondwana.Widgets
 
 **Gondwana.Widgets** provides reusable UI and gameplay widgets for the Gondwana game engine,
-including menus, dialogs, labels, buttons, overlays, HUD elements, and other
+including menus, dialogs, labels, buttons, form-style controls, overlays, HUD elements, and other
 DirectDrawing-friendly 2D/2.5D game controls.
 
 It builds on the core `Gondwana` rendering model and is intended for in-game interface elements
@@ -12,7 +12,8 @@ and backbuffers using the same engine-driven drawing pipeline as the rest of the
 
 - Reusable in-game UI widgets for Gondwana projects
 - DirectDrawing-friendly controls and overlays
-- Game-oriented components such as HUD elements, status bars, labels, dialogs, and menus
+- Common controls including labels, buttons, check boxes, radio buttons, list boxes, combo boxes, and editable text boxes
+- Game-oriented components such as HUD elements, health bars, name tags, dialogs, conversation boxes, and menus
 - Code-first widget composition with no external editor or scene GUI required
 - Designed for 2D and 2.5D games using Gondwana's scene, view, and rendering systems
 - Cross-platform-friendly architecture through the core Gondwana rendering pipeline
@@ -37,12 +38,11 @@ using Gondwana.Widgets;
 A typical widget can be used for in-game interface elements such as:
 
 - HUD overlays
-- Dialog boxes
-- Labels and text panels
-- Menu screens
-- Buttons and selectable options
-- Health bars and status indicators
-- NPC conversation boxes
+- Dialog boxes and NPC conversation boxes
+- Labels, text panels, and editable text boxes
+- Menu screens, list boxes, and combo boxes
+- Buttons, check boxes, radio buttons, and selectable options
+- Health bars, name tags, and status indicators
 
 Exact usage depends on the specific widget type being used.
 

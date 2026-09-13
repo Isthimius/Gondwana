@@ -19,6 +19,7 @@ namespace Gondwana.Drawing.Sprites;
 public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntity, IDisposable
 {
     public event Action<SpriteMovedEventArgs>? SpriteMoved;
+    public event Action<Sprite>? VisualBoundsChanged;
     public event Action<Sprite>? Disposing;
 
     [JsonProperty("SceneLayer")]
@@ -507,6 +508,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             _sceneLayer.RefreshQueue.AddWorldRect(VisualBoundsWorld);
 
         SpriteMoved = null;
+        VisualBoundsChanged = null;
         Disposing = null;
 
         base.Dispose();
@@ -517,6 +519,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         Rectangle dirtyBounds = Rectangle.Union(oldBounds, newBounds);
         dirtyBounds.Inflate(2, 2);
         _sceneLayer.RefreshQueue.AddWorldRect(dirtyBounds);
+        VisualBoundsChanged?.Invoke(this);
     }
 
     private static Rectangle GetRotatedBounds(Rectangle rect, float degrees)
