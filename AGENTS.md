@@ -36,6 +36,33 @@ Do not treat a roadmap item, issue acceptance criterion, old changelog entry, or
 
 If code and documentation materially disagree, preserve the current implementation unless the task explicitly calls for changing it, and identify the documentation drift.
 
+## New Project Template Precedence
+
+When creating a new Gondwana game or generating starter game code, **always begin with the current Gondwana New Project template**.
+
+The New Project template is the canonical example of how a new Gondwana application should be initialized, structured, hosted, configured, and rendered. Unless the user explicitly requests otherwise, generated projects should follow the template's **GPU rendering path**.
+
+Use the following precedence when determining how generated game code should be written:
+
+1. **Current Gondwana source, public API, and tests** determine what behavior and APIs are valid.
+2. **The current New Project template** determines the preferred structure, initialization pattern, host setup, rendering configuration, and baseline coding approach for newly generated games.
+3. **Demo projects** may be consulted for feature-specific examples that are not demonstrated by the New Project template.
+4. Demo-specific architecture, initialization, compatibility code, workarounds, experimental code, or historical patterns should **not** be copied into a newly generated project when the New Project template provides a current equivalent.
+
+When consulting a demo, extract only the smallest feature-specific pattern needed and adapt it to the structure established by the New Project template.
+
+Do not treat an existing demo as a better starting point merely because it is larger or implements more features.
+
+### Rendering Default
+
+For newly generated Gondwana projects:
+
+* Default to the **GPU rendering path** used by the current New Project template.
+* Use the bitmap/compatibility path only when the user explicitly requests it or when a required target or feature cannot use the GPU path.
+* Do not infer that the bitmap path is preferred simply because an older demo uses it.
+
+The goal is for generated code to resemble what a developer creating a new Gondwana project today would receive and write, rather than inheriting incidental patterns from demonstration projects.
+
 ## Architectural Guardrails
 
 Preserve these project-level principles unless the requested work intentionally changes them:
