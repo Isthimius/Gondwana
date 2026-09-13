@@ -160,9 +160,10 @@ public sealed class ListBoxWidget : WidgetBase
     {
         ArgumentNullException.ThrowIfNull(items);
 
-        bool hadSelection = _selectedIndex >= 0;
-        _items.Clear();
-        _items.AddRange(items.Select(static item => item ?? string.Empty));
+bool hadSelection = _selectedIndex >= 0;
+string[] replacement = items.Select(static item => item ?? string.Empty).ToArray();
+_items.Clear();
+_items.AddRange(replacement);
         _selectedIndex = -1;
         _topIndex = 0;
         RefreshRows();
