@@ -1,0 +1,26 @@
+var classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox =
+[
+    [ "ConversationBox", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#aecf4b320ffe120655e346953ff9d64ae", null ],
+    [ "ConversationBox", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#a3ec9ecf185b43c288820514abe3721d8", null ],
+    [ "Advance", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#a5ef7568e8be9bbe5d41b18f221bc3618", null ],
+    [ "OnKeyboardInput", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#a1c69803996d8b6a0f06cf86bd8e4fb32", null ],
+    [ "OnPointerClick", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#a7d593855c4fbb0bfa796f7208cf05f5c", null ],
+    [ "ProcessShown", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#a8ec0cecc04674fc64cdd8741b59bbf7d", null ],
+    [ "SetConversation", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#abbb7c1f2e1c7453f709b79bccbf9206b", null ],
+    [ "SetConversationZOrder", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#ae8387938513c6adf382303c598ba853a", null ],
+    [ "SetPanelColors", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#ade7abaa60609d361e3d6b944a25ddf17", null ],
+    [ "SetSpeaker", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#a5fc55daec96f20f6990585678cd96db4", null ],
+    [ "SetText", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#a3a666a268122bf24aed68a363fb9d86c", null ],
+    [ "SetTextColors", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#a23776c5ebf22ec6cabe4a620dca019ee", null ],
+    [ "ShowContinueIndicator", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#aaedae07212f4bbe971ec8cdd9f40b98e", null ],
+    [ "BodyText", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#a2d3bf6ce8018e74a4d3671285abcf416", null ],
+    [ "Bounds", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#a57a484c6a5ac10f5183700d3691c79a8", null ],
+    [ "ContinueIndicator", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#adfae158a91d18b998794d75a2d3e6cd6", null ],
+    [ "Panel", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#a0484742a5f94e38d15254055455cf8d6", null ],
+    [ "PrimaryAdvanceKey", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#a65dd25e40af786d44938fa49908044c6", null ],
+    [ "SecondaryAdvanceKey", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#af230accd7686a6bb08dee76e4e6f8f91", null ],
+    [ "Speaker", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#a114c0dd69b66e15ed440bcba8a32f689", null ],
+    [ "SpeakerText", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#aa387c66f7a3088d668ecacb96254f5b8", null ],
+    [ "Text", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#a193f1eb96dc56b12b40608dcf2c97a17", null ],
+    [ "AdvanceRequested", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#a503c998f3e24a7a6c116b2506d3291db", null ]
+];

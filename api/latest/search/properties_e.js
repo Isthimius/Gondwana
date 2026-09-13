@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['offsetpx_0',['OffsetPx',['../classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget.html#a1e2df91d5b4803bb5bca65343efe7770',1,'Gondwana::Widgets::Hud::HealthBarWidget']]],
+  ['offsetpx_0',['OffsetPx',['../classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget.html#a1e2df91d5b4803bb5bca65343efe7770',1,'Gondwana.Widgets.Hud.HealthBarWidget.OffsetPx'],['../classGondwana_1_1Widgets_1_1Hud_1_1NameTagWidget.html#acb684c2c8ee57ab2d2f550b1c1f23c25',1,'Gondwana.Widgets.Hud.NameTagWidget.OffsetPx']]],
   ['okbutton_1',['OkButton',['../classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox.html#adedba118fdfa27927f2544129eef7fbd',1,'Gondwana::Widgets::Dialogs::AboutBox']]],
   ['oldheight_2',['OldHeight',['../classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#ab47d7c6afd4cbac57356fcfba571897e',1,'Gondwana::Rendering::RenderSurfaceAdapterResizedEventArgs']]],
   ['oldrect_3',['OldRect',['../classGondwana_1_1Rendering_1_1Views_1_1ViewportResizedEventArgs.html#a664a1e306048d8c3241788e0aa29a81b',1,'Gondwana::Rendering::Views::ViewportResizedEventArgs']]],

@@ -266,18 +266,28 @@ var annotated_dup =
       [ "Widgets", "namespaceGondwana_1_1Widgets.html", [
         [ "Controls", "namespaceGondwana_1_1Widgets_1_1Controls.html", [
           [ "ButtonWidget", "classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget" ],
+          [ "CheckBoxWidget", "classGondwana_1_1Widgets_1_1Controls_1_1CheckBoxWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1CheckBoxWidget" ],
+          [ "ComboBoxWidget", "classGondwana_1_1Widgets_1_1Controls_1_1ComboBoxWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1ComboBoxWidget" ],
           [ "HyperlinkWidget", "classGondwana_1_1Widgets_1_1Controls_1_1HyperlinkWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1HyperlinkWidget" ],
           [ "IExternalUriLauncher", "interfaceGondwana_1_1Widgets_1_1Controls_1_1IExternalUriLauncher.html", "interfaceGondwana_1_1Widgets_1_1Controls_1_1IExternalUriLauncher" ],
           [ "LabelWidget", "classGondwana_1_1Widgets_1_1Controls_1_1LabelWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1LabelWidget" ],
+          [ "ListBoxWidget", "classGondwana_1_1Widgets_1_1Controls_1_1ListBoxWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1ListBoxWidget" ],
           [ "PanelWidget", "classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget" ],
-          [ "ProgressBarWidget", "classGondwana_1_1Widgets_1_1Controls_1_1ProgressBarWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1ProgressBarWidget" ]
+          [ "ProgressBarWidget", "classGondwana_1_1Widgets_1_1Controls_1_1ProgressBarWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1ProgressBarWidget" ],
+          [ "RadioButtonGroup", "classGondwana_1_1Widgets_1_1Controls_1_1RadioButtonGroup.html", "classGondwana_1_1Widgets_1_1Controls_1_1RadioButtonGroup" ],
+          [ "RadioButtonWidget", "classGondwana_1_1Widgets_1_1Controls_1_1RadioButtonWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1RadioButtonWidget" ],
+          [ "TextBoxWidget", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget" ]
         ] ],
         [ "Dialogs", "namespaceGondwana_1_1Widgets_1_1Dialogs.html", [
           [ "AboutBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox.html", "classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox" ],
           [ "DialogBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox" ]
         ] ],
+        [ "Dialogue", "namespaceGondwana_1_1Widgets_1_1Dialogue.html", [
+          [ "ConversationBox", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox" ]
+        ] ],
         [ "Hud", "namespaceGondwana_1_1Widgets_1_1Hud.html", [
-          [ "HealthBarWidget", "classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget.html", "classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget" ]
+          [ "HealthBarWidget", "classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget.html", "classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget" ],
+          [ "NameTagWidget", "classGondwana_1_1Widgets_1_1Hud_1_1NameTagWidget.html", "classGondwana_1_1Widgets_1_1Hud_1_1NameTagWidget" ]
         ] ],
         [ "Layout", "namespaceGondwana_1_1Widgets_1_1Layout.html", [
           [ "StackPanelWidget", "classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget.html", "classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget" ]

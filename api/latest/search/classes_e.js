@@ -1,23 +1,11 @@
 var searchData=
 [
-  ['scene_0',['Scene',['../classGondwana_1_1Scenes_1_1Scene.html',1,'Gondwana::Scenes']]],
-  ['scenelayer_1',['SceneLayer',['../classGondwana_1_1Scenes_1_1SceneLayer.html',1,'Gondwana::Scenes']]],
-  ['scenelayertile_2',['SceneLayerTile',['../classGondwana_1_1Scenes_1_1SceneLayerTile.html',1,'Gondwana::Scenes']]],
-  ['scriptedmovement_3',['ScriptedMovement',['../structGondwana_1_1Physics_1_1Movement_1_1Scripted_1_1ScriptedMovement.html',1,'Gondwana::Physics::Movement::Scripted']]],
-  ['sdlgamepadadapter_4',['SdlGamepadAdapter',['../classGondwana_1_1Input_1_1Gamepad_1_1SDL2_1_1SdlGamepadAdapter.html',1,'Gondwana::Input::Gamepad::SDL2']]],
-  ['sdlgamepadmanager_5',['SdlGamepadManager',['../classGondwana_1_1Input_1_1Gamepad_1_1SDL2_1_1SdlGamepadManager.html',1,'Gondwana::Input::Gamepad::SDL2']]],
-  ['slideeffect_6',['SlideEffect',['../classGondwana_1_1Effects_1_1SlideEffect.html',1,'Gondwana::Effects']]],
-  ['slideineffect_7',['SlideInEffect',['../classGondwana_1_1Effects_1_1SlideInEffect.html',1,'Gondwana::Effects']]],
-  ['slideouteffect_8',['SlideOutEffect',['../classGondwana_1_1Effects_1_1SlideOutEffect.html',1,'Gondwana::Effects']]],
-  ['splashscreen_9',['SplashScreen',['../classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html',1,'Gondwana::Widgets::Overlays']]],
-  ['sprite_10',['Sprite',['../classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html',1,'Gondwana::Drawing::Sprites']]],
-  ['spritemanager_11',['SpriteManager',['../classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html',1,'Gondwana::Drawing::Sprites']]],
-  ['spritemovedeventargs_12',['SpriteMovedEventArgs',['../classGondwana_1_1Drawing_1_1Sprites_1_1SpriteMovedEventArgs.html',1,'Gondwana::Drawing::Sprites']]],
-  ['stackpanelwidget_13',['StackPanelWidget',['../classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget.html',1,'Gondwana::Widgets::Layout']]],
-  ['stereopansampleprovider_14',['StereoPanSampleProvider',['../classGondwana_1_1Audio_1_1StereoPanSampleProvider.html',1,'Gondwana::Audio']]],
-  ['svgresource_15',['SvgResource',['../classGondwana_1_1Drawing_1_1SvgResource.html',1,'Gondwana::Drawing']]],
-  ['svgresourcemanager_16',['SvgResourceManager',['../classGondwana_1_1Drawing_1_1SvgResourceManager.html',1,'Gondwana::Drawing']]],
-  ['swipedeventargs_17',['SwipedEventArgs',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipedEventArgs.html',1,'Gondwana::Input::Touch::Gestures']]],
-  ['swipegesturerecognizer_18',['SwipeGestureRecognizer',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer.html',1,'Gondwana::Input::Touch::Gestures']]],
-  ['synthesizersampleprovider_19',['SynthesizerSampleProvider',['../classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider.html',1,'Gondwana::Audio::Midi']]]
+  ['radiobuttongroup_0',['RadioButtonGroup',['../classGondwana_1_1Widgets_1_1Controls_1_1RadioButtonGroup.html',1,'Gondwana::Widgets::Controls']]],
+  ['radiobuttonwidget_1',['RadioButtonWidget',['../classGondwana_1_1Widgets_1_1Controls_1_1RadioButtonWidget.html',1,'Gondwana::Widgets::Controls']]],
+  ['rendersurfaceadapterbase_2',['RenderSurfaceAdapterBase',['../classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html',1,'Gondwana::Rendering']]],
+  ['rendersurfaceadapterresizedeventargs_3',['RenderSurfaceAdapterResizedEventArgs',['../classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html',1,'Gondwana::Rendering']]],
+  ['rendersurfacehost_2d1_2dg_4',['RenderSurfaceHost-1-g',['../classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html',1,'Gondwana::Rendering']]],
+  ['rendersurfacehostbase_5',['RenderSurfaceHostBase',['../classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html',1,'Gondwana::Rendering']]],
+  ['rendersurfacehostbindeventargs_6',['RenderSurfaceHostBindEventArgs',['../classGondwana_1_1Rendering_1_1RenderSurfaceHostBindEventArgs.html',1,'Gondwana::Rendering']]],
+  ['revealsource_7',['RevealSource',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay_1_1RevealSource.html',1,'Gondwana.Drawing.Direct.DirectDarknessOverlay.RevealSource'],['../classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay_1_1RevealSource.html',1,'Gondwana.Drawing.Direct.DirectSceneLayerDarknessOverlay.RevealSource']]]
 ];

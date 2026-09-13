@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['zoomeffect_0',['ZoomEffect',['../classGondwana_1_1Effects_1_1ZoomEffect.html',1,'Gondwana::Effects']]],
-  ['zoomineffect_1',['ZoomInEffect',['../classGondwana_1_1Effects_1_1ZoomInEffect.html',1,'Gondwana::Effects']]],
-  ['zoomouteffect_2',['ZoomOutEffect',['../classGondwana_1_1Effects_1_1ZoomOutEffect.html',1,'Gondwana::Effects']]]
+  ['xinputgamepadadapter_0',['XInputGamepadAdapter',['../classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadAdapter.html',1,'Gondwana::WinForms::Input::Gamepad::XInput']]],
+  ['xinputgamepadmanager_1',['XInputGamepadManager',['../classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadManager.html',1,'Gondwana::WinForms::Input::Gamepad::XInput']]]
 ];

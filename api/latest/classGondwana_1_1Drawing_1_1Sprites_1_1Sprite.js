@@ -37,5 +37,6 @@ var classGondwana_1_1Drawing_1_1Sprites_1_1Sprite =
     [ "ZOrder", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#ae6f5a4229cd4a1d3085e202c1e6efc43", null ],
     [ "Disposing", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#a2518d4feddc38b4ee9cd509f7ccc5b2b", null ],
     [ "ResizeComplete", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#af86cda257f1816701516db876fc64453", null ],
-    [ "SpriteMoved", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#a4d4ae3cd00aac852e64f8e3d49a41170", null ]
+    [ "SpriteMoved", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#a4d4ae3cd00aac852e64f8e3d49a41170", null ],
+    [ "VisualBoundsChanged", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#a4fe3804bcdf0fb2de920bb52b521e67f", null ]
 ];
