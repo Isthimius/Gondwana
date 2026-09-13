@@ -38,7 +38,7 @@ public sealed class NameTagWidget : WidgetBase
                 renderSurfaceHost,
                 Target.SceneLayer,
                 new Rectangle(Point.Empty, _size),
-                $"{nickname ?? Target.Nickname ?? "sprite"}-name-tag-background")
+                $"{Nickname}-name-tag-background")
             .SetFilled(true)
             .SetBorderColor(Color.FromArgb(200, 220, 220, 230))
             .SetStrokeWidth(1f)
@@ -49,7 +49,7 @@ public sealed class NameTagWidget : WidgetBase
                 Target.SceneLayer,
                 view: null,
                 worldBounds: new Rectangle(Point.Empty, _size),
-                nickname: $"{nickname ?? Target.Nickname ?? "sprite"}-name-tag-text")
+                nickname: $"{Nickname}-name-tag-text")
             .SetText(_text)
             .SetFont(SKTypeface.Default, 15f, minSize: 9f)
             .SetColors(SKColors.White, SKColors.Transparent)
