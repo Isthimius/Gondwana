@@ -1,7 +1,9 @@
 using System.Drawing;
 using System.Numerics;
+using System.Reflection;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Sprites;
+using Gondwana.Input.Keyboard;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.Widgets;
@@ -87,7 +89,7 @@ public sealed class WidgetWishlistTests : IDisposable
     }
 
     [Fact]
-    public void ComboBoxWidget_UsesListSelectionAndClosesDropDown()
+    public void ComboBoxWidget_NavigationKeepsDropDownOpenUntilSelectionIsCommitted()
     {
         using var host = new TestRenderSurfaceHost();
         using var router = new WidgetInputRouter(host, null, null, null);
@@ -103,7 +105,16 @@ public sealed class WidgetWishlistTests : IDisposable
         Assert.True(comboBox.IsDropDownOpen);
         Assert.Same(comboBox.DropDown, router.FocusedWidget);
 
-        comboBox.SelectedIndex = 1;
+        comboBox.DropDown.SelectNext();
+
+        Assert.Equal("Easy", comboBox.SelectedItem);
+        Assert.True(comboBox.IsDropDownOpen);
+        Assert.Same(comboBox.DropDown, router.FocusedWidget);
+
+        DispatchPointerClick(
+            comboBox.DropDown,
+            view,
+            new PointF(comboBox.DropDown.Bounds.Left + 10f, comboBox.DropDown.Bounds.Top + 36f));
 
         Assert.Equal("Normal", comboBox.SelectedItem);
         Assert.False(comboBox.IsDropDownOpen);
@@ -160,6 +171,77 @@ public sealed class WidgetWishlistTests : IDisposable
         Assert.Equal("Guard", conversation.Speaker);
         Assert.Equal("You may pass.", conversation.Text);
         Assert.Equal(1, advances);
+    }
+
+    [Fact]
+    public void WidgetShow_RestoresStateDependentChildVisibility()
+    {
+        using var host = new TestRenderSurfaceHost();
+        View view = AddView(host);
+        SceneLayer layer = AddLayer(host);
+        Sprite sprite = CreateSprite(layer, new Vector2(2, 3));
+
+        using var checkBox = new CheckBoxWidget(host, view, new Rectangle(10, 20, 180, 28), "Music");
+        using var radioButton = new RadioButtonWidget(host, view, new Rectangle(10, 52, 180, 28), "Windowed");
+        using var listBox = new ListBoxWidget(host, view, new Rectangle(10, 84, 180, 64), ["One", "Two", "Three"]);
+        using var conversation = new ConversationBox(host, view, new Rectangle(20, 300, 500, 140), "Guard", "Halt!");
+        using var nameTag = new NameTagWidget(host, sprite, "Merchant", size: new Size(100, 24));
+
+        conversation.ShowContinueIndicator(false);
+        nameTag.ShowBackground(false);
+
+        checkBox.Hide().Show();
+        radioButton.Hide().Show();
+        listBox.Hide().Show();
+        conversation.Hide().Show();
+        nameTag.Hide().Show();
+
+        Assert.False(checkBox.Mark.Visible);
+        Assert.False(radioButton.Dot.Visible);
+        Assert.False(listBox.SelectionHighlight.Visible);
+        Assert.False(conversation.ContinueIndicator.Visible);
+        Assert.False(nameTag.Background.Visible);
+    }
+
+    [Fact]
+    public void TextBoxWidget_NullCharacterResolverSuppressesPrintableInput()
+    {
+        using var host = new TestRenderSurfaceHost();
+        View view = AddView(host);
+        using var textBox = new TextBoxWidget(
+            host,
+            view,
+            new Rectangle(10, 20, 220, 32),
+            text: "ab");
+
+        textBox.CharacterResolver = null!;
+
+        DispatchKeyboard(textBox, 65);
+
+        Assert.Equal("ab", textBox.Text);
+    }
+
+    [Fact]
+    public void NameTagWidget_FollowsSpriteVisualBoundsChanges()
+    {
+        using var host = new TestRenderSurfaceHost();
+        SceneLayer layer = AddLayer(host);
+        Sprite sprite = CreateSprite(layer, new Vector2(2, 3));
+
+        using var nameTag = new NameTagWidget(
+            host,
+            sprite,
+            "Merchant",
+            size: new Size(100, 24));
+
+        Rectangle before = nameTag.BoundsWorld;
+
+        sprite.NudgeY = 10;
+
+        Assert.NotEqual(before.Location, nameTag.BoundsWorld.Location);
+        Assert.Equal(
+            sprite.DrawLocationWorld.Top - 24 - 6,
+            nameTag.BoundsWorld.Top);
     }
 
     [Fact]
@@ -226,5 +308,31 @@ public sealed class WidgetWishlistTests : IDisposable
         sprite.SetPosition(position);
         _sprites.Add(sprite);
         return sprite;
+    }
+
+    private static void DispatchKeyboard(
+        WidgetBase widget,
+        int key,
+        KeyAction keyAction = KeyAction.Pressed,
+        KeyboardModifierState modifiers = KeyboardModifierState.None)
+    {
+        typeof(WidgetBase)
+            .GetMethod("DispatchKeyboardInput", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .Invoke(
+                widget,
+                [new WidgetKeyboardEventArgs(widget, key, keyAction, modifiers)]);
+    }
+
+    private static void DispatchPointerClick(
+        WidgetBase widget,
+        View view,
+        PointF screenPositionPx,
+        WidgetPointerButtonEnum button = WidgetPointerButtonEnum.Left)
+    {
+        typeof(WidgetBase)
+            .GetMethod("DispatchPointerClick", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .Invoke(
+                widget,
+                [new WidgetPointerEventArgs(widget, view, screenPositionPx, button, clickCount: 1)]);
     }
 }

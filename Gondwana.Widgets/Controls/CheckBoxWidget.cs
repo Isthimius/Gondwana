@@ -189,6 +189,13 @@ public sealed class CheckBoxWidget : WidgetBase
     }
 
     /// <inheritdoc/>
+    protected override void ProcessShown()
+    {
+        base.ProcessShown();
+        Mark.Visible = IsChecked;
+    }
+
+    /// <inheritdoc/>
     protected override void OnPointerEnter(WidgetPointerEventArgs args)
     {
         base.OnPointerEnter(args);

@@ -194,6 +194,7 @@ public sealed class ComboBoxWidget : ContainerWidget
         _disposed = true;
         Header.Clicked -= OnHeaderClicked;
         DropDown.SelectedIndexChanged -= OnSelectedIndexChanged;
+        DropDown.SelectionCommitted -= OnDropDownSelectionCommitted;
         base.Dispose();
     }
 
@@ -220,6 +221,7 @@ public sealed class ComboBoxWidget : ContainerWidget
 
         Header.Clicked += OnHeaderClicked;
         DropDown.SelectedIndexChanged += OnSelectedIndexChanged;
+        DropDown.SelectionCommitted += OnDropDownSelectionCommitted;
 
         IsInputEnabled = false;
         IsPointerInputEnabled = false;
@@ -239,11 +241,13 @@ public sealed class ComboBoxWidget : ContainerWidget
     private void OnSelectedIndexChanged(int index)
     {
         RefreshHeaderText();
+        SelectedIndexChanged?.Invoke(index);
+    }
 
+    private void OnDropDownSelectionCommitted(int index)
+    {
         if (index >= 0)
             CloseDropDown();
-
-        SelectedIndexChanged?.Invoke(index);
     }
 
     private void RefreshHeaderText()

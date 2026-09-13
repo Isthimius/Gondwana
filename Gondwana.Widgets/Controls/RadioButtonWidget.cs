@@ -245,6 +245,13 @@ public sealed class RadioButtonWidget : WidgetBase
     }
 
     /// <inheritdoc/>
+    protected override void ProcessShown()
+    {
+        base.ProcessShown();
+        Dot.Visible = IsSelected;
+    }
+
+    /// <inheritdoc/>
     protected override void OnPointerEnter(WidgetPointerEventArgs args)
     {
         base.OnPointerEnter(args);

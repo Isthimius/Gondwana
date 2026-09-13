@@ -21,6 +21,7 @@ public sealed class ConversationBox : WidgetBase
 
     private string _speaker;
     private string _text;
+    private bool _continueIndicatorVisible = true;
 
     /// <summary>
     /// Occurs when the player requests the next line or conversation step.
@@ -169,6 +170,7 @@ public sealed class ConversationBox : WidgetBase
     /// </summary>
     public ConversationBox ShowContinueIndicator(bool visible = true)
     {
+        _continueIndicatorVisible = visible;
         ContinueIndicator.Visible = visible;
         return this;
     }
@@ -215,6 +217,13 @@ public sealed class ConversationBox : WidgetBase
             return;
 
         AdvanceRequested?.Invoke();
+    }
+
+    /// <inheritdoc/>
+    protected override void ProcessShown()
+    {
+        base.ProcessShown();
+        ContinueIndicator.Visible = _continueIndicatorVisible;
     }
 
     /// <inheritdoc/>

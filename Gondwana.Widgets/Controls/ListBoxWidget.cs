@@ -31,6 +31,11 @@ public sealed class ListBoxWidget : WidgetBase
     public event Action<int>? SelectedIndexChanged;
 
     /// <summary>
+    /// Occurs when the current selection is explicitly committed.
+    /// </summary>
+    public event Action<int>? SelectionCommitted;
+
+    /// <summary>
     /// Creates a view-level list box.
     /// </summary>
     public ListBoxWidget(RenderSurfaceHostBase renderSurfaceHost,
@@ -160,10 +165,10 @@ public sealed class ListBoxWidget : WidgetBase
     {
         ArgumentNullException.ThrowIfNull(items);
 
-bool hadSelection = _selectedIndex >= 0;
-string[] replacement = items.Select(static item => item ?? string.Empty).ToArray();
-_items.Clear();
-_items.AddRange(replacement);
+        bool hadSelection = _selectedIndex >= 0;
+        string[] replacement = items.Select(static item => item ?? string.Empty).ToArray();
+        _items.Clear();
+        _items.AddRange(replacement);
         _selectedIndex = -1;
         _topIndex = 0;
         RefreshRows();
@@ -306,6 +311,13 @@ _items.AddRange(replacement);
     }
 
     /// <inheritdoc/>
+    protected override void ProcessShown()
+    {
+        base.ProcessShown();
+        RefreshSelectionHighlight();
+    }
+
+    /// <inheritdoc/>
     protected override void OnPointerClick(WidgetPointerEventArgs args)
     {
         base.OnPointerClick(args);
@@ -332,6 +344,7 @@ _items.AddRange(replacement);
 
         args.Handled = true;
         SetSelectedIndex(index);
+        SelectionCommitted?.Invoke(index);
     }
 
     /// <inheritdoc/>
@@ -339,7 +352,20 @@ _items.AddRange(replacement);
     {
         base.OnKeyboardInput(args);
 
-        if (args.KeyAction is not KeyAction.Pressed and not KeyAction.Repeated || _items.Count == 0)
+        if (_items.Count == 0)
+            return;
+
+        if (args.Key == 13)
+        {
+            if (args.KeyAction != KeyAction.Pressed || _selectedIndex < 0)
+                return;
+
+            args.Handled = true;
+            SelectionCommitted?.Invoke(_selectedIndex);
+            return;
+        }
+
+        if (args.KeyAction is not KeyAction.Pressed and not KeyAction.Repeated)
             return;
 
         switch (args.Key)
@@ -412,36 +438,36 @@ _items.AddRange(replacement);
         return Math.Max(0, _items.Count - VisibleItemCount);
     }
 
-private void RefreshRows()
-{
-    bool wasVisible = Visible;
-
-    foreach (TextBlock row in _rowTextBlocks)
+    private void RefreshRows()
     {
-        Remove(row);
-        row.Dispose();
+        bool wasVisible = Visible;
+
+        foreach (TextBlock row in _rowTextBlocks)
+        {
+            Remove(row);
+            row.Dispose();
+        }
+
+        _rowTextBlocks.Clear();
+
+        Rectangle bounds = Bounds;
+        int count = Math.Min(VisibleItemCount, Math.Max(0, _items.Count - TopIndex));
+
+        for (int rowIndex = 0; rowIndex < count; rowIndex++)
+        {
+            int itemIndex = TopIndex + rowIndex;
+            Rectangle rowBounds = GetRowBounds(bounds, rowIndex);
+            TextBlock row = CreateRowText(rowBounds, _items[itemIndex]);
+            row.ZOrder = _baseZOrder + 2;
+            Add(row);
+            _rowTextBlocks.Add(row);
+        }
+
+        RefreshSelectionHighlight();
+
+        if (!wasVisible)
+            SetIsVisible(false);
     }
-
-    _rowTextBlocks.Clear();
-
-    Rectangle bounds = Bounds;
-    int count = Math.Min(VisibleItemCount, Math.Max(0, _items.Count - TopIndex));
-
-    for (int rowIndex = 0; rowIndex < count; rowIndex++)
-    {
-        int itemIndex = TopIndex + rowIndex;
-        Rectangle rowBounds = GetRowBounds(bounds, rowIndex);
-        TextBlock row = CreateRowText(rowBounds, _items[itemIndex]);
-        row.ZOrder = _baseZOrder + 2;
-        Add(row);
-        _rowTextBlocks.Add(row);
-    }
-
-    RefreshSelectionHighlight();
-
-    if (!wasVisible)
-        SetIsVisible(false);
-}
 
     private TextBlock CreateRowText(Rectangle bounds, string text)
     {

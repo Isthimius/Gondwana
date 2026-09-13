@@ -13,6 +13,7 @@ namespace Gondwana.Widgets.Hud;
 public sealed class NameTagWidget : WidgetBase
 {
     private bool _disposed;
+    private bool _backgroundVisible = true;
     private Size _size;
     private Point _offsetPx;
     private string _text;
@@ -68,6 +69,7 @@ public sealed class NameTagWidget : WidgetBase
         SetNameTagZOrder(0);
 
         Target.SpriteMoved += OnTargetMoved;
+        Target.VisualBoundsChanged += OnTargetVisualBoundsChanged;
         Target.Disposing += OnTargetDisposing;
 
         RefreshPosition();
@@ -164,6 +166,7 @@ public sealed class NameTagWidget : WidgetBase
     /// </summary>
     public NameTagWidget ShowBackground(bool visible = true)
     {
+        _backgroundVisible = visible;
         Background.Visible = visible;
         return this;
     }
@@ -197,11 +200,24 @@ public sealed class NameTagWidget : WidgetBase
 
         _disposed = true;
         Target.SpriteMoved -= OnTargetMoved;
+        Target.VisualBoundsChanged -= OnTargetVisualBoundsChanged;
         Target.Disposing -= OnTargetDisposing;
         base.Dispose();
     }
 
+    /// <inheritdoc/>
+    protected override void ProcessShown()
+    {
+        base.ProcessShown();
+        Background.Visible = _backgroundVisible;
+    }
+
     private void OnTargetMoved(SpriteMovedEventArgs args)
+    {
+        RefreshPosition();
+    }
+
+    private void OnTargetVisualBoundsChanged(Sprite sprite)
     {
         RefreshPosition();
     }

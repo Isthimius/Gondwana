@@ -30,6 +30,7 @@ public sealed class TextBoxWidget : WidgetBase
     private string _placeholder = string.Empty;
     private int _caretIndex;
     private int? _maxLength;
+    private Func<WidgetKeyboardEventArgs, char?> _characterResolver = ResolveWindowsVirtualKeyCharacter;
 
     /// <summary>
     /// Occurs when the text changes.
@@ -206,7 +207,11 @@ public sealed class TextBoxWidget : WidgetBase
     /// <summary>
     /// Gets or sets the function used to convert routed key events into printable characters.
     /// </summary>
-    public Func<WidgetKeyboardEventArgs, char?> CharacterResolver { get; set; } = ResolveWindowsVirtualKeyCharacter;
+    public Func<WidgetKeyboardEventArgs, char?> CharacterResolver
+    {
+        get => _characterResolver;
+        set => _characterResolver = value ?? NoCharacterResolver;
+    }
 
     /// <summary>
     /// Replaces the text and moves the caret to the end.
@@ -512,6 +517,11 @@ public sealed class TextBoxWidget : WidgetBase
         return (text ?? string.Empty)
             .Replace('\r', ' ')
             .Replace('\n', ' ');
+    }
+
+    private static char? NoCharacterResolver(WidgetKeyboardEventArgs args)
+    {
+        return null;
     }
 
     private static char? ResolveWindowsVirtualKeyCharacter(WidgetKeyboardEventArgs args)
