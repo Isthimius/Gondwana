@@ -411,31 +411,36 @@ public sealed class ListBoxWidget : WidgetBase
         return Math.Max(0, _items.Count - VisibleItemCount);
     }
 
-    private void RefreshRows()
+private void RefreshRows()
+{
+    bool wasVisible = Visible;
+
+    foreach (TextBlock row in _rowTextBlocks)
     {
-        foreach (TextBlock row in _rowTextBlocks)
-        {
-            Remove(row);
-            row.Dispose();
-        }
-
-        _rowTextBlocks.Clear();
-
-        Rectangle bounds = Bounds;
-        int count = Math.Min(VisibleItemCount, Math.Max(0, _items.Count - TopIndex));
-
-        for (int rowIndex = 0; rowIndex < count; rowIndex++)
-        {
-            int itemIndex = TopIndex + rowIndex;
-            Rectangle rowBounds = GetRowBounds(bounds, rowIndex);
-            TextBlock row = CreateRowText(rowBounds, _items[itemIndex]);
-            row.ZOrder = _baseZOrder + 2;
-            Add(row);
-            _rowTextBlocks.Add(row);
-        }
-
-        RefreshSelectionHighlight();
+        Remove(row);
+        row.Dispose();
     }
+
+    _rowTextBlocks.Clear();
+
+    Rectangle bounds = Bounds;
+    int count = Math.Min(VisibleItemCount, Math.Max(0, _items.Count - TopIndex));
+
+    for (int rowIndex = 0; rowIndex < count; rowIndex++)
+    {
+        int itemIndex = TopIndex + rowIndex;
+        Rectangle rowBounds = GetRowBounds(bounds, rowIndex);
+        TextBlock row = CreateRowText(rowBounds, _items[itemIndex]);
+        row.ZOrder = _baseZOrder + 2;
+        Add(row);
+        _rowTextBlocks.Add(row);
+    }
+
+    RefreshSelectionHighlight();
+
+    if (!wasVisible)
+        SetIsVisible(false);
+}
 
     private TextBlock CreateRowText(Rectangle bounds, string text)
     {
