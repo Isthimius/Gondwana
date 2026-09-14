@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <OutputType>Library</OutputType>
+        <RootNamespace>Gondwana.Audio.NAudio</RootNamespace>
+        <AssemblyName>Gondwana.Audio.NAudio</AssemblyName>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <!-- URLs / repository -->
+        <PackageProjectUrl>https://github.com/Isthimius/Gondwana/tree/master/Gondwana.Audio.NAudio</PackageProjectUrl>
+
+        <!-- NuGet packaging -->
+        <IsPackable>true</IsPackable>
+        <PackageId>Gondwana.Audio.NAudio</PackageId>
+        <Title>Gondwana Audio NAudio Support</Title>
+        <Description>Windows desktop audio playback backend for the Gondwana Game Engine using NAudio, including WAV, MP3, OGG/Vorbis, WMA, and M4A support.</Description>
+        <PackageTags>gondwana game-engine gamedev csharp dotnet audio naudio windows desktop wav mp3 ogg vorbis wma m4a playback</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>gondwana-logo.png</PackageIcon>
+        <PackageReleaseNotes>Full changelog: https://github.com/Isthimius/Gondwana/blob/master/CHANGELOG.md</PackageReleaseNotes>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NAudio" Version="2.3.0" />
+        <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="" />
+        <None Include="CHANGELOG.md" Pack="true" PackagePath="" />
+        <None Include="..\gondwana-logo.png" Pack="true" PackagePath="" Link="gondwana-logo.png" />
+    </ItemGroup>
+
+</Project>
