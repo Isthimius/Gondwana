@@ -318,7 +318,7 @@ This avoids recursively requesting another animation frame from within the anima
 
 ## Post-scene canvas hooks
 
-`RenderSurfaceHost.RenderBackbufferPostScene` and `IEnginePlugin.OnPostRenderCanvas` execute when WebGL is rendering a **new Scene frame**.
+`RenderSurfaceHost.RenderBackbufferPostScene` and `IEnginePlugin.OnPostRenderCanvas` execute after WebGL renders a new Scene frame with at least one configured View.
 
 They run synchronously inside the `SKGLView` paint callback while the `GRContext` is current.
 
