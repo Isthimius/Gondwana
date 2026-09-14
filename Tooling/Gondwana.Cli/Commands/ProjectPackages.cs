@@ -148,7 +148,7 @@ internal sealed class ProjectPackages
     {
         "widgets" => "Gondwana.Widgets",
         "audio" when Host == "Blazor" => "Gondwana.Audio.Browser",
-        "audio" => "Gondwana", // Desktop NAudio support lives in core on master.
+        "audio" => "Gondwana.Audio.NAudio",
         "midi" when Host != "Blazor" => "Gondwana.Audio.Midi",
         "gamepad" when Host != "Blazor" => "Gondwana.Input.SDL2",
         "video" when Host != "Blazor" => "Gondwana.Video",
