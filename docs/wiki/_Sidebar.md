@@ -7,7 +7,7 @@
 - [[Gondwana Engine Lifecycle]]
 - [[Gondwana CLI Cheatsheet]]
 
-<details>
+<details open>
 <summary><strong>Core Concepts</strong></summary>
 
 - [[Assets Files]]
@@ -29,7 +29,7 @@
 
 </details>
 
-<details>
+<details open>
 <summary><strong>Systems</strong></summary>
 
 - [[Movement and Controllers]]
@@ -48,7 +48,7 @@
 
 </details>
 
-<details>
+<details open>
 <summary><strong>Rendering</strong></summary>
 
 - [[Backbuffers]]
@@ -61,7 +61,7 @@
 
 </details>
 
-<details>
+<details open>
 <summary><strong>Widgets</strong></summary>
 
 - [[Widgets Overview]]
@@ -129,7 +129,7 @@
 
 </details>
 
-<details>
+<details open>
 <summary><strong>Advanced Topics</strong></summary>
 
 - [[Serialization and EngineState]]
