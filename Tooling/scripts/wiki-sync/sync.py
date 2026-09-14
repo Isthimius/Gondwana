@@ -186,6 +186,10 @@ def synchronize(repo, wiki, direction, authoritative, repository):
         write_tree(wiki, "", remote_tree, target)
         git(wiki, "commit", "-m", f"docs(wiki): publish Gondwana {master}\n\nGondwana-Source: {master}")
         # Normal fast-forward push rejects a concurrent Wiki edit, without rewriting history.
+        remote_master = git(repo, "ls-remote", "origin",
+                            "refs/heads/master").decode().split()
+        if not remote_master or remote_master[0] != master:
+            raise RuntimeError("master moved during publication; rerun synchronization")
         git(wiki, "push", "origin", "HEAD:refs/heads/master")
         print(f"Published documentation from {master}.")
         return
