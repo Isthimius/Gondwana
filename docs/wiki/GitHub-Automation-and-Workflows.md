@@ -541,13 +541,7 @@ GitHub Wiki
 
 ## Day-to-day: Wiki → repository
 
-Editing the GitHub Wiki produces a GitHub:
-
-```text
-gollum
-```
-
-event.
+Editing the GitHub Wiki produces a GitHub `gollum` event.
 
 That triggers the same `wiki-sync.yml`, but in the opposite direction:
 
