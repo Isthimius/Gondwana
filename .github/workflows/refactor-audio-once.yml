@@ -1,0 +1,55 @@
+name: Audio refactor one-time validation
+
+on:
+  push:
+    branches: [ 20260914_audio_backend_refactor ]
+    paths:
+      - 'Tooling/scripts/refactor-audio-once.py'
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 20260914_audio_backend_refactor
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Apply deterministic repository edits
+        run: |
+          dotnet sln Gondwana.sln add Gondwana.Audio.NAudio/Gondwana.Audio.NAudio.csproj
+          python3 Tooling/scripts/refactor-audio-once.py
+
+      - name: Restore workloads
+        run: dotnet workload restore Gondwana.sln /p:EnableWindowsTargeting=true
+
+      - name: Restore
+        run: dotnet restore --nologo /p:Configuration=Release /p:EnableWindowsTargeting=true
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore --nologo /p:EnableWindowsTargeting=true
+
+      - name: Unit tests
+        run: dotnet test --configuration Release --no-build --no-restore --nologo /p:EnableWindowsTargeting=true Testing/Gondwana.Tests/Gondwana.Tests.csproj
+
+      - name: Validate browser audio JavaScript
+        run: node --check Gondwana.Audio.Browser/wwwroot/gondwana-audio.js
+
+      - name: Commit validated generated edits
+        run: |
+          git config user.name github-actions
+          git config user.email actions@github.com
+          git add Gondwana.sln docs/doxy/Gondwana_doxy README.md Gondwana/README.md Tooling/Gondwana.Cli/README.md docs/wiki/Gondwana-CLI-Cheatsheet.md docs/ai/repository-map.md Tooling/Gondwana.Templates/README.md Demos/Slider/Puzzle.cs
+          if git diff --cached --quiet; then
+            echo 'No generated edits to commit.'
+            exit 0
+          fi
+          git commit -m 'chore(audio): finish project registration and documentation references'
+          git push origin HEAD:20260914_audio_backend_refactor
