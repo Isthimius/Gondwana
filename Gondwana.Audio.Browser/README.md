@@ -1,16 +1,20 @@
 # Gondwana.Audio.Browser
 
-**Gondwana.Audio.Browser** adds HTML5 Audio API playback support to the Gondwana Game Engine for browser/WASM targets built with `net8.0-browser`.
+**Gondwana.Audio.Browser** provides the browser/WASM implementation of Gondwana's backend-neutral `Gondwana.Audio` contracts.
 
-It uses .NET 8's native JavaScript interop (`[JSImport]`) to route all audio operations through a lightweight JavaScript ES module, bypassing the desktop NAudio pipeline that is unavailable in WebAssembly.
+The package uses .NET JavaScript interop plus HTML media and Web Audio APIs. New code can use the same `Engine.Managers.AudioResources` / `AudioResource` surface used by desktop audio.
 
 ## Features
 
-- Plays `.mp3`, `.wav`, `.ogg`, and any other format supported by the host browser
-- Volume and loop control
-- Play, pause, stop, and seek
-- Zero external .NET dependencies — only `System.Runtime.InteropServices.JavaScript`
-- Ships the `gondwana-audio.js` module as a NuGet content file (automatically placed in `wwwroot/`)
+- Browser-supported media formats such as MP3, WAV, and OGG
+- play, pause, resume, stop, seek, and looping
+- volume control
+- stereo pan through the Web Audio API when `StereoPannerNode` is available
+- playback speed from 0.25x through 4.0x
+- current position, duration, and common playback state
+- URI-based loading through `AudioResourceManager.LoadFromUri`
+- compatibility `BrowserAudioManager` / `BrowserAudioPlayer` wrappers for existing code
+- ships `gondwana-audio.js` as NuGet content
 
 ## Installation
 
@@ -18,99 +22,69 @@ It uses .NET 8's native JavaScript interop (`[JSImport]`) to route all audio ope
 dotnet add package Gondwana.Audio.Browser
 ```
 
-The NuGet package automatically copies `gondwana-audio.js` into your project's `wwwroot/` folder so that it is included in the WASM `AppBundle` on publish.
-
 ## Setup
 
-### 1. Import the JS module before Avalonia starts
-
-In `Program.Browser.cs`:
+Import the JavaScript module before using browser audio:
 
 ```csharp
-using System.Runtime.InteropServices.JavaScript;
-using System.Runtime.Versioning;
-
-[SupportedOSPlatform("browser")]
-private static async Task Main(string[] args)
-{
-    // Import the gondwana-audio JS module before starting Avalonia.
-    await JSHost.ImportAsync("gondwana-audio", "./gondwana-audio.js");
-    await BuildAvaloniaApp().StartBrowserAppAsync("out");
-}
+await JSHost.ImportAsync("gondwana-audio", "./gondwana-audio.js");
 ```
 
-### 2. Use `BrowserAudioManager` in your game host
+Then configure the backend:
 
 ```csharp
-protected override void LoadAssets()
-{
-    if (OperatingSystem.IsBrowser())
-    {
-        var audio = Engine.GetBrowserAudioManager();
-
-        _music = audio.Load("music", "assets/theme.mp3", volume: 0.5f, loop: true);
-        _sfx   = audio.Load("click", "assets/click.wav");
-    }
-    else
-    {
-        // Desktop: use the NAudio-based AudioResourceManager
-        _desktopMusic = Engine.Managers.AudioResources.LoadFromFile("music", @"assets\theme.mp3");
-        _desktopMusic.IsLooping = true;
-    }
-}
-
-protected override void OnStartEngine()
-{
-    if (OperatingSystem.IsBrowser())
-        _music?.Play();
-    else
-        _desktopMusic?.Play();
-}
+Engine.Instance.UseBrowserAudio();
 ```
 
-## API
+Load and control audio through the common API:
 
-### `BrowserAudioManager`
+```csharp
+var music = Engine.Managers.AudioResources.LoadFromUri(
+    "music",
+    "assets/theme.mp3",
+    volume: 0.5f);
 
-| Method | Description |
-|---|---|
-| `Load(key, src, volume, loop)` | Load a track; returns a `BrowserAudioPlayer`. |
-| `Unload(key)` | Stop and release a track. |
-| `UnloadAll()` | Stop and release all tracks. |
-| `TryGet(key, out player)` | Try to retrieve a loaded player. |
-| `Get(key)` | Get a player or `null`. |
-| `Contains(key)` | Check whether a key is loaded. |
+music.IsLooping = true;
+music.Pan = 0.0f;
+music.PlaybackSpeed = 1.0f;
+music.Play();
+```
 
-### `BrowserAudioPlayer`
+The Gondwana Blazor template imports the JavaScript module for you.
 
-| Member | Description |
-|---|---|
-| `Key` | The unique track identifier. |
-| `Volume` | Volume in [0.0, 1.0]. |
-| `IsLooping` | Whether the track loops. |
-| `Play(fromStart)` | Start or resume playback. |
-| `Pause()` | Pause without resetting. |
-| `Stop()` | Stop and seek to beginning. |
+## Compatibility API
 
-## Notes
+Existing code can continue to use:
 
-- Audio autoplay is subject to browser policy: the first `Play()` call should be triggered by a user gesture.
-- The `gondwana-audio.js` file must be reachable at `./gondwana-audio.js` relative to `index.html` in the `AppBundle`.
+```csharp
+var audio = Engine.Instance.GetBrowserAudioManager();
+var music = audio.Load("music", "assets/theme.mp3", volume: 0.5f, loop: true);
+```
+
+`BrowserAudioManager` and `BrowserAudioPlayer` now act as compatibility façades over the common core audio model.
+
+## Browser-specific behavior
+
+Browser assets are loaded by URI. The current backend does not implement the byte/stream loading path used by `LoadFromFile`, `LoadFromStream`, or packed `AssetsFile` audio.
+
+Autoplay remains subject to browser policy; games should normally begin playback in response to user interaction when the browser blocks autoplay.
+
+The JavaScript bridge tracks the HTML media `ended` event and changes playback state to `Stopped`, but the current bridge does not yet marshal that DOM event back into .NET. `AudioResource.PlaybackCompleted` and `PlaybackCompletedAsync` are therefore not currently raised by Browser Audio.
+
+Actual codec support is determined by the host browser and operating system.
+
+## Related packages
+
+- `Gondwana` — core engine and backend-neutral audio contracts
+- `Gondwana.Audio.NAudio` — Windows desktop audio backend
+- `Gondwana.Blazor` — browser rendering and input support
+- `Gondwana.Blazor.Hosting` — browser game hosting
 
 ## Documentation
 
--   **[Source Code](https://github.com/isthimius/Gondwana)**
--   **[Architecture & Guides](https://github.com/isthimius/Gondwana/wiki)**
--   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/api/)**
--   **[Release History](https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Audio.Browser/CHANGELOG.md)**
-
-## Related Packages
-
--   `Gondwana` --- Core engine
--   `Gondwana.Blazor` --- Web assembly rendering and input adapters
--   `Gondwana.Blazor.Hosting` --- Blazor-specific game host that integrates rendering and input into the Gondwana lifecycle
--   `Gondwana.Hosting` --- Standard platform-agnostic scaffolding for initializing and running Gondwana games
--   `Gondwana.Widgets` --- UI widget library for creating in-game menus, HUDs, and overlays
+- **Wiki:** https://github.com/Isthimius/Gondwana/wiki/Audio
+- **API reference:** https://isthimius.github.io/Gondwana/api/
+- **Release history:** https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Audio.Browser/CHANGELOG.md
 
 ## License
 
