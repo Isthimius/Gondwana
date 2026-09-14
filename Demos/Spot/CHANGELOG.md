@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+## Added
+- Finish core HUD widgets for #116 ([#344](https://github.com/Isthimius/Gondwana/pull/344))
+
+
+
 ## Fixed
 - Support custom logger dependency injection ([#270](https://github.com/Isthimius/Gondwana/pull/270))
 

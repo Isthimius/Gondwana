@@ -21,6 +21,8 @@ All notable changes to this project will be documented in this file.
 - Add DirectSceneLayerDarknessOverlay ([#293](https://github.com/Isthimius/Gondwana/pull/293))
 - Add WebGL GPU rendering path ([#307](https://github.com/Isthimius/Gondwana/pull/307))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+- Finish core HUD widgets for #116 ([#344](https://github.com/Isthimius/Gondwana/pull/344))
+- Add interactive widget controls ([#346](https://github.com/Isthimius/Gondwana/pull/346))
 
 
 
@@ -43,6 +45,7 @@ All notable changes to this project will be documented in this file.
 ## Refactoring
 - Tighten touch and mouse polling behavior ([#249](https://github.com/Isthimius/Gondwana/pull/249))
 - Use fixed-step simulation timing ([#305](https://github.com/Isthimius/Gondwana/pull/305))
+- Move sprite rotation into Sprite.Draw ([#345](https://github.com/Isthimius/Gondwana/pull/345))
 
 
 

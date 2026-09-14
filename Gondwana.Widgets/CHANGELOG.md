@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file.
 - Add spaceduel demo ([#263](https://github.com/Isthimius/Gondwana/pull/263))
 - Add popup and toast overlays ([#281](https://github.com/Isthimius/Gondwana/pull/281))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+- Finish core HUD widgets for #116 ([#344](https://github.com/Isthimius/Gondwana/pull/344))
+- Add interactive widget controls ([#346](https://github.com/Isthimius/Gondwana/pull/346))
 
 
 
