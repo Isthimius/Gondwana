@@ -1,6 +1,6 @@
 Dirty rectangles are Gondwana’s redraw currency for the CPU-backed BitmapBackbuffer. They are not used with the GpuBackbuffer.
 
-There are two different kinds , and confusing them causes bugs:
+There are two different kinds, and confusing them causes bugs:
 - world dirty rectangles — stored in RefreshQueue
 - screen dirty rectangles — tracked by the backbuffer for presentation
 
