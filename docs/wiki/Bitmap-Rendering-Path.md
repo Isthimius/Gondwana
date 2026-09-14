@@ -1,6 +1,4 @@
-This page documents Gondwana's CPU-backed bitmap rendering path from the engine
-cycle, through `RenderSurfaceHost`, to the platform-specific presentation
-adapter.
+This page documents Gondwana's **CPU-backed bitmap rendering path** from engine/timer execution, through `RenderSurfaceHost`, to platform-specific presentation.
 
 The bitmap path is used whenever:
 
@@ -8,59 +6,55 @@ The bitmap path is used whenever:
 surface.Backbuffer.IsGlThreadRendered == false
 ```
 
-The standard implementation is `BitmapBackbuffer`. Unlike the GL path, bitmap
-rendering is driven directly by the engine thread and uses dirty-region
-tracking to avoid redrawing unchanged scene content.
+The standard implementation is `BitmapBackbuffer`.
+
+Unlike the GPU path, bitmap scene rendering uses SceneLayer RefreshQueues and Backbuffer dirty-rectangle tracking so unchanged content does not need to be redrawn or re-presented.
+
+---
 
 ## Architectural overview
 
-The bitmap path separates rendering from presentation:
+The bitmap path separates scene rendering from final platform presentation:
 
-1. The engine thread updates drawing state.
-2. The engine thread renders changed scene regions into the bitmap backbuffer.
-3. The engine takes an `SKImage` snapshot of the backbuffer.
-4. Presentation is posted to the UI thread.
-5. The platform adapter displays the snapshot.
+1. Gondwana advances game/rendering state.
+2. Changed Scene regions are rendered into the CPU Backbuffer.
+3. The Backbuffer is finalized and snapshotted as an immutable `SKImage`.
+4. Presentation is marshalled to the platform/UI layer as needed.
+5. The adapter displays the image using the current presentation transform.
 
 ```mermaid
 flowchart TD
-    A["Engine thread"] --> B["Update state"]
+    A["Engine / timer-driven execution"] --> B["Update state"]
     B --> C["Render dirty regions"]
-    C --> D["Snapshot backbuffer"]
-    D --> E["Post presentation"]
-    E --> F["UI thread"]
-    F --> G["Platform adapter displays image"]
+    C --> D["Snapshot BitmapBackbuffer"]
+    D --> E["Platform presentation"]
+    E --> F["Window / control / browser canvas"]
 ```
 
-This arrangement is possible because the bitmap backbuffer is CPU-accessible
-and does not require an OpenGL context to be current while scene content is
-drawn.
+A bitmap Backbuffer is CPU-accessible and does not require an OpenGL context to be current while Scene content is drawn.
 
-## Entry from the engine cycle
+---
 
-`Engine.Cycle()` obtains the current high-resolution tick, performs background
-work, and uses `EngineConfiguration.TargetFPS` to determine whether foreground
-rendering is due.
+## Execution context: desktop vs browser
 
-```mermaid
-flowchart TD
-    A["Engine.Cycle()"] --> B["EngineDispatcher.Drain()"]
-    B --> C["Get current tick and delta"]
-    C --> D["DoBackgroundTasks(tick)"]
-    D --> E{"Foreground interval elapsed?"}
-    E -- No --> F["Skip foreground rendering"]
-    E -- Yes --> G["InvokePreFrameRender"]
-    G --> H["DoForegroundTasks(tick)"]
-    H --> I["InvokePostFrameRender"]
-```
+On desktop hosts, the normal Gondwana engine loop runs `Engine.Cycle()` on the engine thread. Bitmap rendering therefore occurs from that engine/render thread, while UI presentation is posted to the UI framework's owning thread.
 
-Background work runs before rendering and includes input polling, animation,
-sprite movement, collision resolution, and camera updates. These operations may
-invalidate scene regions or request a full scene refresh.
+Blazor/WASM uses timer-driven engine execution instead. `BlazorGameHostBase` starts the engine with `StartTimerDriven(...)`, and the bitmap host's JavaScript `requestAnimationFrame` loop calls `Engine.Tick()` through `OnAnimationFrame()`.
 
-## `Engine.DoForegroundTasks`
+That means the bitmap algorithm is the same in both environments, but the outer execution context differs:
 
-The bitmap route is called directly from `DoForegroundTasks`:
+| Environment | What drives the bitmap engine cycle? |
+| --- | --- |
+| Desktop | Gondwana's normal engine loop |
+| Blazor bitmap | Gondwana JavaScript `requestAnimationFrame` → `Engine.Tick()` |
+
+Do not assume "bitmap" always means "background engine thread"; browser timer-driven execution runs wherever `Tick()` is invoked.
+
+---
+
+## Entry from the foreground pass
+
+When foreground rendering is due, `Engine.DoForegroundTasks(tick)` updates DirectDrawing state and renders every non-GL host directly:
 
 ```csharp
 foreach (var surface in RenderSurfaceHostRegistry.All)
@@ -70,8 +64,7 @@ foreach (var surface in RenderSurfaceHostRegistry.All)
 }
 ```
 
-After all bitmap hosts have rendered, the engine makes a second pass to present
-their backbuffers:
+After rendering, Gondwana performs a second pass to present those same non-GL hosts:
 
 ```csharp
 foreach (var surface in RenderSurfaceHostRegistry.All)
@@ -81,243 +74,237 @@ foreach (var surface in RenderSurfaceHostRegistry.All)
 }
 ```
 
-The complete foreground activity is:
+The overall bitmap foreground flow is therefore:
 
 ```mermaid
 flowchart TD
-    A["DoForegroundTasks(tick)"] --> B["BeforeFrameRender event"]
+    A["Foreground frame due"] --> B["BeforeFrameRender"]
     B --> C["DirectDrawingManager.UpdateAll(tick)"]
-    C --> D["Enumerate registered hosts"]
-    D --> E{"GL-thread rendered?"}
-    E -- Yes --> F["Skip bitmap render call"]
-    E -- No --> G["RenderToBackbuffer(tick)"]
-    G --> H{"More hosts?"}
-    F --> H
-    H -- Yes --> D
-    H -- No --> I["Enumerate hosts for presentation"]
-    I --> J{"GL-thread rendered?"}
-    J -- Yes --> K["Skip bitmap presentation"]
-    J -- No --> L["PresentBackbufferToAdapter()"]
-    L --> M{"More hosts?"}
-    K --> M
-    M -- Yes --> I
-    M -- No --> N["Update gamepad state"]
-    N --> O["AfterFrameRender event"]
-    O --> P["Raise PostCycle timers"]
+    C --> D["Render non-GL hosts"]
+    D --> E["Present non-GL hosts"]
+    E --> F["AfterFrameRender"]
 ```
+
+GPU hosts are skipped here because their Scene rendering must happen from the owning GL/WebGL callback.
+
+---
 
 ## `RenderSurfaceHost.RenderToBackbuffer`
 
-`RenderToBackbuffer` is the common host-level dispatcher. It raises the
-begin/end events and selects the implementation appropriate for the
-backbuffer:
+`RenderToBackbuffer(tick)` is the common host-level entry point:
 
-```csharp
-RenderBackbufferBegin?.Invoke();
-
-if (Backbuffer.IsGlThreadRendered)
-    RenderToBackbufferGpuFull(tick);
-else
-    RenderToBackbufferBitmap(tick);
-
-RenderBackbufferEnd?.Invoke();
+```text
+Backbuffer.BeginFrame()
+  -> RenderBackbufferBegin
+  -> RenderToBackbufferBitmap(tick)
+  -> RenderBackbufferEnd
 ```
 
-For a bitmap backbuffer, control passes to `RenderToBackbufferBitmap`.
+For `BitmapBackbuffer`, any queued logical resize request is applied during `BeginFrame()` before drawing begins.
+
+---
 
 ## `RenderToBackbufferBitmap`
 
-The bitmap implementation uses the scene's layer `RefreshQueue` instances to
-determine which world regions need to be redrawn.
+The bitmap renderer uses each SceneLayer's `RefreshQueue` to determine which world regions need to be redrawn.
+
+At a high level:
 
 ```mermaid
 flowchart TD
     A["RenderToBackbufferBitmap(tick)"] --> B{"Any Views?"}
-    B -- No --> C["Clear entire backbuffer"]
-    C --> D["Clear FullRefreshNeeded"]
-    D --> Z["Return"]
-
-    B -- Yes --> E{"Visible SceneLayers?"}
-    E -- No --> F["Clear entire backbuffer"]
-    E -- Yes --> G{"FullRefreshNeeded?"}
-
-    G -- Yes --> H["EnqueueFullSceneRefresh()"]
-    G -- No --> I{"Scene.IsDirty?"}
-    I -- No --> J["RenderBackbufferNoOp event"]
-    J --> Z
-    I -- Yes --> K["Render Views"]
-    H --> K
-    F --> K
-
-    K --> L["Clear consumed RefreshQueues"]
-    L --> M["Clear FullRefreshNeeded"]
-    M --> N["InvokePostSceneCanvasHooks()"]
-    N --> Z
+    B -- No --> C["Clear Backbuffer"]
+    B -- Yes --> D{"Full refresh needed?"}
+    D -- Yes --> E["Enqueue full visible world regions"]
+    D -- No --> F{"Scene dirty?"}
+    F -- No --> G["RenderBackbufferNoOp"]
+    F -- Yes --> H["Render each View's dirty regions"]
+    E --> H
+    H --> I["Clear consumed RefreshQueues"]
+    I --> J["Invoke post-scene canvas hooks"]
 ```
 
-### Full-scene invalidation
+If a Scene has Views but no normal SceneLayers, View-bound DirectDrawings can still participate in rendering.
 
-When `Scene.FullRefreshNeeded` is true,
-`EnqueueFullSceneRefresh()`:
+---
 
-1. Iterates every configured `View`.
-2. Gets the view's screen viewport.
-3. Converts that viewport to a layer-specific world rectangle.
-4. Expands the world rectangle by one tile in every direction.
-5. Pixel-aligns the result.
-6. Adds it to the layer's `RefreshQueue`.
+## Full-scene invalidation
 
-The one-tile expansion protects against fractional camera or parallax movement
-and rounding at tile boundaries.
+When `Scene.FullRefreshNeeded` is true, Gondwana converts each View's logical Backbuffer viewport into the corresponding world extent for each visible SceneLayer.
 
-### Per-view rendering
+That world extent is expanded to protect against fractional camera movement, projection boundaries, and rounding, then added to the layer's RefreshQueue.
 
-Each view is rendered independently:
+The RefreshQueue stores world-space invalidation because each View may project the same layer differently.
 
-```mermaid
-flowchart TD
-    A["Begin View"] --> B["RenderContext.Push(view, tick)"]
-    B --> C["Get view overlays"]
-    C --> D["ForceRefresh overlays"]
-    D --> E["CollectDirtyScreenArea(view)"]
-    E --> F["Clip to View viewport"]
-    F --> G["Exclude higher-Z View overlaps"]
-    G --> H["PreclearScreenAreas()"]
-    H --> I["RenderLayerDirtyRegions()"]
-    I --> J["Draw view overlays"]
-    J --> K["Restore canvas"]
-    K --> L["RenderContext.Pop()"]
-```
+---
 
-`RenderContext.Push` makes the current view and tick available to drawing code.
-The `finally` block guarantees the matching `RenderContext.Pop`, even if a
-drawable throws while rendering.
+## Per-View dirty rendering
 
-### Collecting dirty screen regions
+For each View, Gondwana:
 
-`CollectDirtyScreenArea(view)` examines every visible scene layer:
+1. pushes the View and current tick into `RenderContext`;
+2. identifies View-bound DirectDrawing overlays;
+3. ensures overlays that require redraw participate in invalidation;
+4. projects dirty layer world rectangles into logical Backbuffer screen rectangles;
+5. clips those rectangles to the View's viewport;
+6. excludes portions hidden by higher-Z Views where appropriate;
+7. pre-clears changed screen areas;
+8. redraws affected layer content; and
+9. draws the View overlays.
 
-1. Skip a layer whose `RefreshQueue` is clean.
-2. Snapshot its dirty world rectangles.
-3. Convert each world rectangle to view screen coordinates.
-4. Intersect it with the view viewport.
-5. Discard empty results.
-6. Add the resulting rectangle without duplicates.
+The matching `RenderContext.Pop()` occurs in cleanup so drawing code cannot leave the wrong View active after an exception.
 
-World rectangles are stored per layer because different layers may have
-different coordinate transforms or parallax behavior. Conversion to screen
-space therefore occurs separately for each view.
+---
 
-### Preclearing changed areas
+## Collecting dirty screen regions
 
-`PreclearScreenAreas` clears each changed screen patch to
-`Backbuffer.ClearColor`. Clearing may expose content from other visible layers,
-so `EnqueueForOverlappingSceneLayers` converts the cleared screen patch back
-into the world coordinates of every visible layer and marks the overlapping
-layer regions for rendering.
+Dirty state begins in SceneLayer world coordinates.
 
-This prevents a changed or removed foreground drawable from leaving stale
-pixels or erasing unchanged background content.
+For each visible layer, Gondwana snapshots its dirty world rectangles and projects them into the current View's logical Backbuffer `ScreenPx`.
 
-### Rendering dirty layer regions
+Each projected rectangle is intersected with the Viewport and empty results are discarded.
 
-`RenderLayerDirtyRegions(view, layer)`:
+This per-View projection matters because the same SceneLayer can appear through multiple Views with different Cameras, zoom levels, or viewport positions.
 
-1. Skips a clean layer.
-2. Iterates the layer's dirty world rectangles.
-3. Calls `SceneLayer.GetDrawablesInWorldRect`.
-4. Projects the world rectangle to a screen rectangle.
-5. Calls `Backbuffer.DrawDrawables`, clipped to that screen rectangle.
+---
 
-`DrawDrawables` draws visible tiles, sprites, and scene-layer direct drawings.
-It also updates the backbuffer's aggregate `DirtyRectangle` so the presentation
-stage knows which adapter pixels changed.
+## Pre-clearing changed areas
 
-After every view is processed, the visible layers' refresh queues are cleared.
+Before redrawing changed content, Gondwana clears affected Backbuffer screen patches to `Backbuffer.ClearColor`.
+
+A clear can expose lower layers that were previously covered, so the cleared screen patch is converted back into the world coordinates of other visible layers and those overlapping regions are enqueued for redraw as needed.
+
+This prevents stale pixels and prevents removed foreground content from erasing unchanged background content without repainting it.
+
+---
+
+## Rendering dirty layer regions
+
+For each dirty world rectangle, `RenderLayerDirtyRegions` obtains the drawables intersecting that world extent, projects the region into logical Backbuffer screen space, and calls `Backbuffer.DrawDrawables(...)` clipped to the affected area.
+
+`DrawDrawables` renders visible tiles, sprites, and SceneLayer-bound DirectDrawings.
+
+For bitmap Backbuffers it also expands `BackbufferBase.DirtyRectangle` to include the actual changed visual bounds. That aggregate rectangle is always expressed in **logical Backbuffer `ScreenPx`**.
+
+After all Views are processed, consumed layer RefreshQueues are cleared.
+
+---
 
 ## Post-scene canvas hooks
 
-`InvokePostSceneCanvasHooks()` runs after scene content and overlays have been
-drawn but before the frame is finalized. It provides the backbuffer canvas to:
+After normal Scene and View composition, Gondwana can invoke:
 
-- `RenderBackbufferPostScene` subscribers; and
-- registered engine plugins through `InvokePostRenderCanvas`.
+- `RenderSurfaceHost.RenderBackbufferPostScene`; and
+- engine plugins through `IEnginePlugin.OnPostRenderCanvas`.
 
-For a bitmap backbuffer, the entire backbuffer is marked dirty before these
-hooks execute. Arbitrary subscriber or plugin drawing therefore cannot be
-accidentally omitted from presentation.
+These hooks receive the fully composed Backbuffer canvas before final presentation.
+
+When surface handlers or render-canvas plugins are present on a bitmap host, Gondwana marks the **entire logical Backbuffer dirty** before invoking them. This is intentional: arbitrary post-processing may change pixels anywhere on the surface, and restricting final presentation to the earlier Scene dirty region could omit those changes.
+
+On desktop bitmap hosts these hooks execute on the engine/render thread. In timer-driven browser mode they execute in the execution context that called `Engine.Tick()`.
+
+---
 
 ## Finalizing and presenting the bitmap
 
-`PresentBackbufferToAdapter()` finalizes the rendered frame:
+`RenderSurfaceHost.PresentBackbufferToAdapter()` finalizes the frame and chooses dirty-only or full presentation:
 
 ```mermaid
 flowchart TD
-    A["PresentBackbufferToAdapter()"] --> B{"Adapter assigned?"}
-    B -- No --> Z["Return"]
-    B -- Yes --> C["Backbuffer.EndFrame()"]
-    C --> D{"RedrawDirtyRectangleOnly?"}
-    D -- Yes --> E["PresentBackbufferRect()"]
-    D -- No --> F["PresentBackbufferAll()"]
-    E --> G["Create SKImage snapshot"]
-    F --> G
-    G --> H["UiDispatcher.Post(adapter.Present)"]
-    H --> I["Clear DirtyRectangle"]
-    I --> J["Backbuffer.BeginFrame()"]
+    A["PresentBackbufferToAdapter()"] --> B["Backbuffer.EndFrame()"]
+    B --> C{"RedrawDirtyRectangleOnly?"}
+    C -- Yes --> D["Present dirty Backbuffer region"]
+    C -- No --> E["Present complete Backbuffer"]
+    D --> F["Snapshot SKImage"]
+    E --> F
+    F --> G["Adapter.Present(...)"]
+    G --> H["Clear aggregate DirtyRectangle"]
+    H --> I["Backbuffer.BeginFrame()"]
 ```
 
-When dirty-only presentation is enabled, the source and destination rectangles
-identify the changed screen patch. Otherwise, the complete backbuffer snapshot
-is presented.
+The CPU `SKImage` snapshot is immutable and safe for the platform presentation path to consume independently of subsequent Backbuffer drawing.
 
-Presentation is posted rather than executed on the engine thread because UI
-framework controls must be accessed from their owning UI thread.
+---
 
-## Platform adapters
+## Logical Backbuffer size vs adapter size
 
-### WinForms
+Current Gondwana rendering no longer assumes that the Backbuffer and adapter have matching dimensions.
 
-`WinFormBitmapRenderSurfaceAdapter.Present` stores the newest snapshot and calls
-`SKControl.Invalidate()`. During `SKControl.PaintSurface`, the adapter:
+`EngineConfiguration.RenderScale` establishes the logical Backbuffer resolution from the first valid adapter size. After that, normal window/control/canvas resizing changes only the adapter's `PresentationTransform`.
 
-1. Intersects the requested source rectangle with the image.
-2. Clips the destination to the control bounds.
-3. Clears the destination patch.
-4. Draws the corresponding image patch.
-5. Disposes superseded snapshots after painting.
+The transform preserves aspect ratio and centers the Backbuffer in the available destination. Different aspect ratios produce letterboxing or pillarboxing rather than silently stretching the logical render surface.
 
-### Avalonia
+`RenderSurfaceHostBase.PresentationScale` exposes the derived fit scale.
 
-`AvaloniaBitmapRenderSurfaceAdapter.Present` stores the snapshot and posts
-`BlitAndInvalidate` at Avalonia's render priority. It copies the image pixels
-into a `WriteableBitmap`, assigns that bitmap to the control, and calls
-`InvalidateVisual`.
+Changing `RenderScale` explicitly queues a new logical resolution. For `BitmapBackbuffer`, the actual bitmap/surface reallocation occurs during a subsequent `BeginFrame()`.
 
-This is a CPU pixel-copy presentation path.
+---
 
-### Blazor
+## Presentation filtering
 
-`BlazorBitmapRenderSurfaceAdapter.Present` reads the requested image region into
-an RGBA byte array and queues the frame on the Blazor component. The component
-then updates the browser canvas.
+`EngineConfiguration.RenderScalingFilter` controls how the logical Backbuffer is sampled into the destination:
 
-This path necessarily crosses from Skia's bitmap representation into a
-browser-compatible pixel buffer.
+- `Linear` — smooth scaling;
+- `NearestNeighbor` — useful for pixel art and integer-like presentation.
 
-## Thread ownership
+The presentation transform also provides the inverse mapping used by input normalization, so adapter pointer coordinates remain aligned with logical Backbuffer `ScreenPx`.
 
-| Operation | Thread |
-| --- | --- |
-| Background updates and camera updates | Engine thread |
-| `DirectDrawingManager.UpdateAll` | Engine thread |
-| `RenderToBackbufferBitmap` | Engine thread |
-| Dirty-region collection | Engine thread |
-| Bitmap backbuffer drawing | Engine thread |
-| Backbuffer snapshot creation | Engine thread |
-| Adapter `Present` | UI thread |
-| Platform paint or visual update | UI thread |
+---
 
-## Condensed call stack
+## WinForms bitmap presentation
+
+`WinFormBitmapRenderSurfaceAdapter` retains the newest CPU snapshot and invalidates its `SKControl`.
+
+During the UI paint callback, the adapter draws the relevant image data through the current presentation mapping. Superseded snapshots are disposed when no longer needed.
+
+Scene rendering remains on Gondwana's engine/render execution context; control painting remains on the WinForms UI thread.
+
+---
+
+## Avalonia bitmap presentation
+
+`AvaloniaBitmapRenderSurfaceAdapter` presents the CPU-backed frame through Avalonia's UI rendering infrastructure.
+
+The path remains CPU-oriented: Gondwana renders into `BitmapBackbuffer`, then the adapter transfers that completed image into the Avalonia presentation surface and invalidates the visual as needed.
+
+As with WinForms, adapter resize changes presentation geometry rather than silently reallocating the logical Backbuffer.
+
+---
+
+## Blazor bitmap compatibility path
+
+Blazor retains the original Canvas 2D bitmap route alongside WebGL.
+
+`BlazorGameHost` uses `BlazorBitmapRenderSurfaceComponent` and `BitmapBackbuffer`. The host starts Gondwana in timer-driven mode, and Gondwana's JavaScript `requestAnimationFrame` loop calls the .NET `OnAnimationFrame()` method, which advances `Engine.Tick()`.
+
+After the bitmap renderer produces a snapshot, `BlazorBitmapRenderSurfaceAdapter` converts the requested image region into an RGBA byte array. `BlazorBitmapRenderSurfaceComponent` sends those pixels to its JavaScript module, which updates the HTML canvas.
+
+The component also retains the last browser-side bitmap frame so a canvas resize can re-present it using the new destination geometry without requiring the logical Backbuffer itself to resize.
+
+This path is useful when CPU-backed rendering or bitmap frame access is required, but it necessarily incurs CPU pixel conversion/JavaScript transfer that the WebGL path avoids.
+
+See [[WebGL Rendering Path]] for the GPU browser route.
+
+---
+
+## Thread / execution ownership
+
+| Operation | Desktop bitmap | Blazor bitmap |
+| --- | --- | --- |
+| Engine advancement | Engine thread | Browser rAF → `Engine.Tick()` |
+| Dirty-region Scene rendering | Engine thread | Timer-driven browser execution context |
+| `BitmapBackbuffer` drawing | Engine thread | Timer-driven browser execution context |
+| Snapshot creation | Same render context | Same render context |
+| Native UI presentation | UI thread | N/A |
+| Browser canvas update | N/A | JS/browser canvas path |
+
+The important invariant is that bitmap rendering does not require a current GL context. Platform presentation still obeys the threading/interop requirements of the destination UI system.
+
+---
+
+## Condensed call stacks
+
+### Desktop bitmap
 
 ```text
 Engine.Cycle()
@@ -325,30 +312,64 @@ Engine.Cycle()
    ├─ DirectDrawingManager.UpdateAll(tick)
    ├─ RenderSurfaceHost.RenderToBackbuffer(tick)
    │  └─ RenderToBackbufferBitmap(tick)
-   │     ├─ EnqueueFullSceneRefresh()
-   │     ├─ CollectDirtyScreenArea(view)
-   │     ├─ PreclearScreenAreas(view, dirtyRects)
-   │     │  └─ EnqueueForOverlappingSceneLayers(...)
-   │     ├─ RenderLayerDirtyRegions(view, layer)
-   │     │  ├─ SceneLayer.GetDrawablesInWorldRect(...)
-   │     │  └─ Backbuffer.DrawDrawables(...)
-   │     └─ InvokePostSceneCanvasHooks()
-   └─ RenderSurfaceHost.PresentBackbufferToAdapter()
+   │     ├─ collect / project RefreshQueue regions
+   │     ├─ pre-clear affected Backbuffer areas
+   │     ├─ redraw affected drawables
+   │     ├─ draw View overlays
+   │     └─ invoke post-scene hooks
+   └─ PresentBackbufferToAdapter()
       ├─ Backbuffer.EndFrame()
       ├─ Backbuffer.Snapshot()
-      └─ UiDispatcher.Post(adapter.Present)
-         └─ Platform-specific UI presentation
+      └─ platform adapter presentation
 ```
+
+### Blazor bitmap
+
+```text
+browser requestAnimationFrame
+└─ BlazorGameHostBase.OnAnimationFrame()
+   └─ Engine.Tick()
+      └─ DoForegroundTasks(tick)
+         ├─ RenderToBackbufferBitmap(tick)
+         └─ PresentBackbufferToAdapter()
+            └─ BlazorBitmapRenderSurfaceAdapter.Present(...)
+               └─ RGBA byte transfer
+                  └─ HTML canvas update
+```
+
+---
 
 ## Summary
 
-The bitmap path is an engine-driven, dirty-region renderer:
+The bitmap path is Gondwana's CPU-backed, dirty-region renderer:
 
-- rendering happens directly on the engine thread;
-- scene-layer refresh queues identify changed world regions;
-- dirty regions are projected independently for each view;
-- the bitmap backbuffer tracks the aggregate changed screen area; and
-- platform presentation is marshalled onto the UI thread.
+- SceneLayer RefreshQueues identify changed world areas;
+- each View projects those areas into logical Backbuffer `ScreenPx`;
+- only affected content is normally redrawn;
+- the Backbuffer tracks aggregate changed pixels for optional partial presentation;
+- post-scene hooks force full Backbuffer presentation when arbitrary canvas drawing is possible;
+- logical Backbuffer resolution remains independent of window/canvas resize; and
+- platform adapters present the immutable CPU snapshot using the current aspect-preserving presentation transform.
 
-It trades bookkeeping complexity for reduced CPU drawing and reduced
-presentation work when only a small portion of the frame changes.
+On desktop this normally runs from Gondwana's engine thread. In Blazor bitmap mode the same rendering path is advanced by a JavaScript `requestAnimationFrame` loop through timer-driven `Engine.Tick()`.
+
+---
+
+## Where to read next
+
+- [[Rendering Pipeline]]
+- [[Backbuffers]]
+- [[Refresh Queues]]
+- [[Dirty Rectangles]]
+- [[GL Rendering Path]]
+- [[WebGL Rendering Path]]
+
+Relevant source files:
+
+- `Gondwana/Engine.cs`
+- `Gondwana/Rendering/RenderSurfaceHost.cs`
+- `Gondwana/Rendering/Backbuffers/BitmapBackbuffer.cs`
+- `Gondwana/Rendering/RenderSurfaceAdapterBase.cs`
+- `Gondwana.Blazor.Hosting/BlazorGameHostBase.cs`
+- `Gondwana.Blazor/Rendering/BlazorBitmapRenderSurfaceAdapter.cs`
+- `Gondwana.Blazor/Rendering/BlazorBitmapRenderSurfaceComponent.razor.cs`
