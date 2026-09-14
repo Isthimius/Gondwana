@@ -1,16 +1,16 @@
 # Gondwana.Audio.Midi
 
-**Gondwana.Audio.Midi** adds MIDI playback support to the Gondwana Game Engine using MeltySynth.
+**Gondwana.Audio.Midi** adds MIDI playback to the Gondwana Game Engine using MeltySynth and the `Gondwana.Audio.NAudio` backend.
 
-It enables playback of `.mid` / `.midi` files with embedded SoundFont support, making it suitable for lightweight music systems without external dependencies.
+It synthesizes `.mid` / `.midi` files with an embedded SoundFont and registers those formats with the NAudio reader registry so MIDI resources can be loaded through the normal `AudioResourceManager` API.
 
 ## Features
 
-- MIDI file playback (`.mid`, `.midi`)
-- Built-in SoundFont support
-- Lightweight synthesis via MeltySynth
-- Integrates with Gondwana audio system
-- No external runtime dependencies
+- MIDI playback (`.mid`, `.midi`)
+- embedded General MIDI SoundFont
+- software synthesis through MeltySynth
+- integration with `Gondwana.Audio.NAudio`
+- normal Gondwana `AudioResource` playback controls after loading
 
 ## Installation
 
@@ -18,26 +18,39 @@ It enables playback of `.mid` / `.midi` files with embedded SoundFont support, m
 dotnet add package Gondwana.Audio.Midi
 ```
 
+`Gondwana.Audio.Midi` depends on `Gondwana.Audio.NAudio`, which provides the Windows audio output pipeline.
+
 ## Usage
 
-Register MIDI support through the Gondwana audio system:
+Configure the NAudio backend and register MIDI readers before loading MIDI resources:
 
 ```csharp
-host.Engine.InitializeMidiAudioFormats();
+Engine.Instance.UseNAudio();
+Engine.Instance.InitializeMidiAudioFormats();
 ```
+
+Then use the common audio manager:
+
+```csharp
+var music = Engine.Managers.AudioResources.LoadFromFile(
+    "theme",
+    "assets/theme.mid");
+
+music.IsLooping = true;
+music.Play();
+```
+
+## Related packages
+
+- `Gondwana` — core engine and backend-neutral audio contracts
+- `Gondwana.Audio.NAudio` — Windows desktop audio backend used by MIDI playback
+- `Gondwana.Audio.Browser` — browser/WASM audio backend; MIDI synthesis is not currently provided there
 
 ## Documentation
 
--   **[Source Code](https://github.com/isthimius/Gondwana)**
--   **[Architecture & Guides](https://github.com/isthimius/Gondwana/wiki)**
--   **[API Reference (Doxygen)](https://isthimius.github.io/Gondwana/api/)**
--   **[Release History](https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Audio.Midi/CHANGELOG.md)**
-
-## Related Packages
-
--   `Gondwana` --- Core engine
--   `Gondwana.Hosting` --- Standard platform-agnostic scaffolding for initializing and running Gondwana games
--   `Gondwana.Widgets` --- UI widget library for creating in-game menus, HUDs, and overlays
+- **Wiki:** https://github.com/Isthimius/Gondwana/wiki/Audio
+- **API reference:** https://isthimius.github.io/Gondwana/api/
+- **Release history:** https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Audio.Midi/CHANGELOG.md
 
 ## License
 
