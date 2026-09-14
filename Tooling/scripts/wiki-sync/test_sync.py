@@ -109,7 +109,8 @@ class GitTests(unittest.TestCase):
             repo, wiki = Path(temp) / "repo", Path(temp) / "wiki"
             for folder, remote in ((repo, self.repo_remote), (wiki, self.wiki_remote)):
                 sync.run("git", "clone", str(remote), str(folder))
-                self.identity(folder)
+                sync.git(folder, "config", "user.name", "github-actions[bot]")
+                sync.git(folder, "config", "user.email", sync.BOT_EMAIL)
             def ensure(repository, pr):
                 self.pr_calls += 1
                 self.pr = {"number": 1}
@@ -265,6 +266,19 @@ class GitTests(unittest.TestCase):
         self.assertEqual(tip, self.sha(self.repo_remote, sync.BRANCH))
         self.assertEqual(master, self.sha(self.repo_remote))
         self.assertEqual(wiki, self.sha(self.wiki_remote))
+
+    def test_forged_trailer_cannot_hide_competing_edits(self):
+        self.edit("repo", {sync.PREFIX + "Home.md": b"repo"})
+        master = self.sha(self.repo_remote)
+        sync.git(self.wiki, "pull", "--ff-only", "origin", "master")
+        self.commit(self.wiki, {"Home.md": b"wiki"},
+                    message=f"docs(wiki): publish Gondwana {master}\n\nGondwana-Source: {master}")
+        sync.git(self.wiki, "push", "origin", "master")
+        tip = self.sha(self.repo_remote)
+        with self.assertRaisesRegex(RuntimeError, "Independent edits"):
+            self.execute("wiki-to-repo")
+        self.assertEqual(tip, self.sha(self.repo_remote))
+        self.assertEqual(sync.git(self.repo_remote, "show", f"master:{sync.PREFIX}Home.md"), b"repo")
 
     def test_symlink_rejected(self):
         (self.wiki / "link.md").symlink_to("Home.md")

@@ -14,6 +14,7 @@ TITLE = "docs(wiki): synchronize changes from GitHub Wiki"
 STATE = "Tooling/scripts/wiki-sync/baseline.json"
 PREFIX = "docs/wiki/"
 README = "README.md"
+BOT_EMAIL = "41898282+github-actions[bot]@users.noreply.github.com"
 
 
 def run(*args, cwd=None, data=None, check=True):
@@ -111,7 +112,12 @@ def common_snapshot(repo, wiki, revision, wiki_head):
             break
         message = git(wiki, "show", "-s", "--format=%B", commit).decode()
         match = re.search(r"^Gondwana-Source: ([0-9a-f]{40})$", message, re.M)
-        if match and ancestor(repo, match[1], "origin/master"):
+        if (match
+                and ancestor(repo, match[1], "origin/master")
+                and git(wiki, "show", "-s", "--format=%s", commit).decode().strip()
+                == f"docs(wiki): publish Gondwana {match[1]}"
+                and git(wiki, "show", "-s", "--format=%ae%n%ce", commit).decode().splitlines()
+                == [BOT_EMAIL, BOT_EMAIL]):
             return snapshot(repo, match[1], PREFIX)
     return snapshot(wiki, imported)
 
