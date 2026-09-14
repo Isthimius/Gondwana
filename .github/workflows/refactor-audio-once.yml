@@ -22,34 +22,45 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Apply deterministic repository edits
+      - name: Apply edits and validate
+        shell: bash
         run: |
-          dotnet sln Gondwana.sln add Gondwana.Audio.NAudio/Gondwana.Audio.NAudio.csproj
-          python3 Tooling/scripts/refactor-audio-once.py
+          set +e
+          report=audio-refactor-validation.txt
+          : > "$report"
+          failed=0
 
-      - name: Restore workloads
-        run: dotnet workload restore Gondwana.sln /p:EnableWindowsTargeting=true
+          run_check() {
+            name="$1"
+            shift
+            echo "===== $name =====" | tee -a "$report"
+            "$@" >> "$report" 2>&1
+            status=$?
+            echo "EXIT_CODE=$status" | tee -a "$report"
+            echo >> "$report"
+            if [ "$status" -ne 0 ]; then failed=1; fi
+          }
 
-      - name: Restore
-        run: dotnet restore --nologo /p:Configuration=Release /p:EnableWindowsTargeting=true
+          run_check "Add solution project" dotnet sln Gondwana.sln add Gondwana.Audio.NAudio/Gondwana.Audio.NAudio.csproj
+          run_check "Doxygen description edit" python3 Tooling/scripts/refactor-audio-once.py
+          run_check "Restore workloads" dotnet workload restore Gondwana.sln /p:EnableWindowsTargeting=true
+          run_check "Restore" dotnet restore --nologo /p:Configuration=Release /p:EnableWindowsTargeting=true
+          run_check "Build" dotnet build --configuration Release --no-restore --nologo /p:EnableWindowsTargeting=true
+          run_check "Unit tests" dotnet test --configuration Release --no-build --no-restore --nologo /p:EnableWindowsTargeting=true Testing/Gondwana.Tests/Gondwana.Tests.csproj
+          run_check "Pack" dotnet pack --configuration Release --no-build --nologo /p:EnableWindowsTargeting=true
+          run_check "Browser audio JavaScript" node --check Gondwana.Audio.Browser/wwwroot/gondwana-audio.js
+          run_check "Changelog configuration" pwsh -NoProfile -File Tooling/scripts/Test-ChangelogConfiguration.ps1
+          run_check "API docs unit suite" python3 -m unittest discover -s Tooling/scripts/api-docs -p 'test_*.py' -v
 
-      - name: Build
-        run: dotnet build --configuration Release --no-restore --nologo /p:EnableWindowsTargeting=true
+          echo "OVERALL_FAILED=$failed" >> "$report"
 
-      - name: Unit tests
-        run: dotnet test --configuration Release --no-build --no-restore --nologo /p:EnableWindowsTargeting=true Testing/Gondwana.Tests/Gondwana.Tests.csproj
-
-      - name: Validate browser audio JavaScript
-        run: node --check Gondwana.Audio.Browser/wwwroot/gondwana-audio.js
-
-      - name: Commit validated generated edits
-        run: |
           git config user.name github-actions
           git config user.email actions@github.com
-          git add Gondwana.sln docs/doxy/Gondwana_doxy README.md Gondwana/README.md Tooling/Gondwana.Cli/README.md docs/wiki/Gondwana-CLI-Cheatsheet.md docs/ai/repository-map.md Tooling/Gondwana.Templates/README.md Demos/Slider/Puzzle.cs
-          if git diff --cached --quiet; then
-            echo 'No generated edits to commit.'
-            exit 0
+          git add "$report"
+          if [ "$failed" -eq 0 ]; then
+            git add Gondwana.sln docs/doxy/Gondwana_doxy
           fi
-          git commit -m 'chore(audio): finish project registration and documentation references'
+          git commit -m 'chore(audio): record refactor validation'
           git push origin HEAD:20260914_audio_backend_refactor
+
+          exit "$failed"
