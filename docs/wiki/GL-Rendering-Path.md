@@ -1,197 +1,194 @@
-This page documents Gondwana's GPU/OpenGL rendering path from the engine cycle,
-through `RenderSurfaceHost`, to the WinForms and Avalonia GL presentation
-surfaces.
+This page documents Gondwana's **desktop OpenGL rendering path** for WinForms and Avalonia.
 
-The GL path is used whenever:
+The browser GPU path uses the same `GpuBackbuffer` and much of the same host-level rendering code, but its frame-driving model is different enough to deserve separate treatment. See [[WebGL Rendering Path]] for Blazor/WebGL.
+
+The desktop GL path is selected whenever a render surface uses a Backbuffer for which:
 
 ```csharp
 surface.Backbuffer.IsGlThreadRendered == true
 ```
 
-`GpuBackbuffer` returns `true` for this property.
+`GpuBackbuffer` returns `true`.
 
-Unlike bitmap rendering, GPU rendering is not executed directly by the engine
-thread. The engine requests a platform repaint, and the platform's GL callback
-performs rendering while its OpenGL context is current.
+Unlike bitmap rendering, scene rendering is not performed directly by the engine's normal foreground render loop. The engine prepares foreground state and requests a platform repaint; the native GL callback performs rendering and presentation while the required OpenGL context is current.
 
-## Why GL rendering is callback-driven
+---
 
-An initialized `GpuBackbuffer` owns an Skia `SKSurface` associated with a
-`GRContext`. OpenGL operations must occur on a thread where the corresponding
-platform GL context is current.
+## Why desktop GL rendering is callback-driven
 
-The engine cycle runs on a background engine thread. The WinForms or Avalonia
-GL callback is the reliable point at which the UI framework has made the
-correct context current.
+An initialized `GpuBackbuffer` owns an Skia GPU `SKSurface` associated with a `GRContext`.
 
-Therefore:
+GPU operations must execute while the corresponding platform GL context is current. On WinForms and Avalonia, the reliable place for that is the platform's GL paint/render callback, not Gondwana's background engine thread.
 
-- the engine controls **when a frame is requested**;
-- the platform GL callback controls **when GPU rendering is legal**; and
-- scene rendering and presentation both occur synchronously inside that
-  callback.
+The division of responsibility is therefore:
+
+- the engine controls **when a new foreground frame is requested**;
+- the platform controls **when the GL callback can execute**; and
+- scene rendering, snapshotting, scaling, and presentation occur synchronously inside that callback.
 
 ```mermaid
 flowchart TD
-    A["Engine thread"] --> B["Update game and drawing state"]
-    B --> C["Raise AfterFrameRender"]
-    C --> D["Post repaint request"]
-    D --> E["UI / GL thread"]
-    E --> F["Platform makes GL context current"]
-    F --> G["Render complete scene frame"]
-    G --> H["Blit GPU image to window surface"]
+    A["Engine thread"] --> B["Update game and DirectDrawing state"]
+    B --> C["AfterFrameRender"]
+    C --> D["Post platform repaint request"]
+    D --> E["UI / GL callback"]
+    E --> F["GL context is current"]
+    F --> G["Render complete GPU scene frame"]
+    G --> H["Apply PresentationTransform"]
+    H --> I["GPU-to-GPU draw into platform surface"]
 ```
+
+---
 
 ## Entry from the engine cycle
 
-`Engine.Cycle()` performs background work and applies the configured foreground
-frame-rate throttle. When foreground work is due, it calls
-`DoForegroundTasks(tick)`.
+`Engine.Cycle()` performs simulation/background work and uses `EngineConfiguration.TargetFPS` to determine when foreground work is due.
 
-```mermaid
-flowchart TD
-    A["Engine.Cycle()"] --> B["DoBackgroundTasks(tick)"]
-    B --> C{"Foreground interval elapsed?"}
-    C -- No --> D["No frame request"]
-    C -- Yes --> E["DoForegroundTasks(tick)"]
-    E --> F["AfterFrameRender event"]
-    F --> G["GPU adapter repaint handler"]
-```
-
-Within `DoForegroundTasks`:
+Within `DoForegroundTasks(tick)`:
 
 1. `BeforeFrameRender` is raised.
 2. `DirectDrawingManager.UpdateAll(tick)` updates drawing state.
-3. GPU hosts are skipped by the engine's direct rendering loop.
-4. GPU hosts are also skipped by the direct presentation loop.
+3. GL-thread-rendered hosts are skipped by the engine's direct Backbuffer rendering loop.
+4. GL-thread-rendered hosts are skipped by the engine's direct presentation loop.
 5. `AfterFrameRender` is raised.
 
-The relevant guards are:
+Conceptually:
 
 ```csharp
 if (!surface.Backbuffer.IsGlThreadRendered)
     surface.RenderToBackbuffer(tick);
 ```
 
-and:
+and later:
 
 ```csharp
 if (!surface.Backbuffer.IsGlThreadRendered)
     surface.PresentBackbufferToAdapter();
 ```
 
-Thus, `AfterFrameRender` does not mean the GL frame has already been rendered.
-For GPU hosts, it is the signal that foreground state preparation is complete
-and a GL repaint may now be requested.
-
-## Frame-request activity
+For a desktop `GpuBackbuffer`, `AfterFrameRender` means **foreground state preparation is complete and the platform may request a GL repaint**. It does not mean the GPU frame has already been rendered.
 
 ```mermaid
 flowchart TD
     A["DoForegroundTasks(tick)"] --> B["Update DirectDrawings"]
-    B --> C["Skip GPU host rendering"]
-    C --> D["Skip GPU host presentation"]
-    D --> E["AfterFrameRender event"]
-    E --> F["Adapter handler"]
-    F --> G["UiDispatcher.Post(repaint request)"]
-    G --> H["UI framework schedules GL callback"]
+    B --> C["Skip direct GPU host render"]
+    C --> D["Skip direct GPU presentation"]
+    D --> E["AfterFrameRender"]
+    E --> F["Desktop GPU adapter requests repaint"]
 ```
 
-The repaint request is asynchronous. The engine cycle does not wait for the
-GL frame to finish.
+---
 
 ## WinForms GL path
 
-### Initialization and event wiring
+The WinForms implementation uses:
 
-`WinFormGpuRenderSurfaceControl` creates:
+- `WinFormGpuRenderSurfaceControl`;
+- `WinFormGpuRenderSurfaceAdapter`;
+- `RenderSurfaceHost<GpuBackbuffer>`; and
+- SkiaSharp's `SKGLControl`.
 
-- a `WinFormGpuRenderSurfaceAdapter`;
-- a `RenderSurfaceHost<GpuBackbuffer>`; and
-- the event wiring that initializes or resizes the GPU backbuffer while the GL
-  context is current.
+### Frame request
 
-It then calls:
+`WinFormGpuRenderSurfaceAdapter.SetHost(...)` subscribes to `Engine.AfterFrameRender`.
 
-```csharp
-adapter.SetHost(Host);
-```
+When a foreground frame completes, the adapter posts `SKGLControl.Invalidate()` through `Engine.UiDispatcher`.
 
-`SetHost` subscribes to `Engine.AfterFrameRender`. The handler coalesces repaint
-requests with `_pendingInvalidate` and posts `SKGLControl.Invalidate()` to the
-UI thread.
-
-Coalescing prevents a fast engine loop from flooding the WinForms message queue
-when the UI or GPU cannot paint at the same rate.
+A `_pendingInvalidate` flag coalesces queued dispatcher callbacks so a fast engine loop cannot flood the WinForms message queue with duplicate repaint requests.
 
 ```mermaid
 flowchart TD
-    A["Engine.AfterFrameRender"] --> B{"Invalidate already pending?"}
-    B -- Yes --> C["Drop duplicate request"]
-    B -- No --> D["Mark invalidate pending"]
-    D --> E["UiDispatcher.Post"]
-    E --> F["SKGLControl.Invalidate()"]
-    F --> G["SKGLControl.PaintSurface"]
+    A["AfterFrameRender"] --> B{"Invalidate already queued?"}
+    B -- Yes --> C["Coalesce request"]
+    B -- No --> D["UiDispatcher.Post"]
+    D --> E["SKGLControl.Invalidate()"]
+    E --> F["PaintSurface"]
 ```
 
-### `OnPaintSurface`
+### PaintSurface
 
-WinForms invokes `OnPaintSurface` with its GL context current:
+Inside the native GL callback the adapter:
+
+1. synchronizes the current WinForms VSync setting;
+2. captures or refreshes the active `GRContext`;
+3. lets `GpuBackbuffer.EnsureInitialized(grContext)` perform first-time GPU initialization or apply an explicit logical-resolution request;
+4. calls `Host.GlRenderAndSnapshot()`;
+5. applies the current presentation transform through `RenderSurfaceAdapterBase.DrawImage(...)`;
+6. draws the GPU-backed image into the native GL surface;
+7. flushes the GPU context; and
+8. records the completed frame.
 
 ```mermaid
 flowchart TD
-    A["OnPaintSurface"] --> B["Clear pending-invalidate flag"]
-    B --> C["Synchronize VSync setting"]
-    C --> D["Acquire GRContext"]
-    D --> E{"First usable context?"}
-    E -- Yes --> F["Initialize GpuBackbuffer"]
-    E -- No --> G{"Resize pending?"}
-    G -- Yes --> H["Reinitialize GPU resources"]
-    G -- No --> I["Continue"]
-    F --> I
-    H --> I
-    I --> J["Host.GlRenderAndSnapshot()"]
-    J --> K["Draw snapshot to window surface"]
-    K --> L["Flush GRContext"]
-    L --> M["Record completed GPU frame"]
+    A["SKGLControl.PaintSurface"] --> B["Capture current GRContext"]
+    B --> C["GpuBackbuffer.EnsureInitialized()"]
+    C --> D["Host.GlRenderAndSnapshot()"]
+    D --> E["Adapter.DrawImage()"]
+    E --> F["Flush GRContext"]
+    F --> G["GpuBackbuffer.RecordFrame()"]
 ```
 
-The adapter draws the returned image across the entire backend render target.
-Because the off-screen backbuffer and the control surface share the same
-`GRContext`, this is a GPU-to-GPU blit rather than a CPU pixel readback.
+The Backbuffer snapshot and the native destination surface share GPU context/resources. This is a GPU-to-GPU presentation path; Gondwana does not read the completed frame back into CPU memory.
+
+---
 
 ## Avalonia GL path
 
-`AvaloniaGpuRenderSurfaceControl` derives from `OpenGlControlBase`. Its adapter
-subscribes to `Engine.AfterFrameRender` and posts
-`RequestNextFrameRendering()` to the UI thread.
+The Avalonia implementation uses:
 
-```mermaid
-flowchart TD
-    A["Engine.AfterFrameRender"] --> B["Avalonia adapter handler"]
-    B --> C["UiDispatcher.Post"]
-    C --> D["RequestNextFrameRendering()"]
-    D --> E["Avalonia.OnOpenGlRender()"]
-```
+- `AvaloniaGpuRenderSurfaceControl`, derived from `OpenGlControlBase`;
+- `AvaloniaGpuRenderSurfaceAdapter`;
+- `RenderSurfaceHost<GpuBackbuffer>`; and
+- a Skia `GRContext` created from Avalonia's current OpenGL context.
 
-`OnOpenGlInit` creates the Skia `GRContext` while Avalonia's context is current
-and initializes the `GpuBackbuffer`.
+`AvaloniaGpuRenderSurfaceAdapter.AttachToEngine(...)` subscribes to `AfterFrameRender` and posts `RequestNextFrameRendering()` through Gondwana's UI dispatcher.
 
-For each `OnOpenGlRender` callback:
+### Initialization
 
-1. Reset Skia's cached GL state because Avalonia's compositor may have changed
-   it.
-2. Calculate the physical-pixel dimensions.
-3. Reinitialize the GPU backbuffer if the control was resized.
-4. Wrap Avalonia's framebuffer in an Skia `SKSurface`.
-5. Call `Host.GlRenderAndSnapshot()`.
-6. Draw the returned image over the complete framebuffer.
-7. Flush the `GRContext`.
-8. Record the completed GPU frame.
+`OnOpenGlInit` creates the Skia `GRContext` while Avalonia's OpenGL context is current, updates the adapter's physical destination dimensions, and initializes the `GpuBackbuffer`.
 
-## `RenderSurfaceHostBase.GlRenderAndSnapshot`
+### OnOpenGlRender
 
-Both platform paths converge here:
+For each render callback Gondwana:
+
+1. resets Skia's cached GL state because Avalonia's compositor may have changed it;
+2. calculates the current physical-pixel framebuffer dimensions;
+3. updates the adapter's presentation dimensions if they changed;
+4. calls `GpuBackbuffer.EnsureInitialized(_grContext)`;
+5. wraps Avalonia's framebuffer as an Skia `SKSurface`;
+6. calls `Host.GlRenderAndSnapshot()`;
+7. draws the GPU snapshot through `Adapter.DrawImage(...)` using the current presentation transform;
+8. flushes the `GRContext`; and
+9. records the completed frame.
+
+Avalonia controls swap/compositor synchronization. `GpuBackbuffer.VSync` does not directly control Avalonia's compositor.
+
+---
+
+## Adapter resize no longer means Backbuffer resize
+
+This is an important distinction from older versions of the GL path.
+
+A desktop window/control resize updates the adapter's **destination dimensions** only. It does not recreate or resize the logical `GpuBackbuffer`.
+
+The adapter computes an aspect-preserving `PresentationTransform` from:
+
+- the existing logical Backbuffer size; and
+- the current destination size.
+
+The Backbuffer is centered in the destination, with letterboxing or pillarboxing when the aspect ratios differ.
+
+`RenderSurfaceHostBase.PresentationScale` reports the derived fit scale.
+
+A new logical GPU resolution is requested only when Gondwana explicitly changes logical rendering resolution, such as when `EngineConfiguration.RenderScale` changes. `GpuBackbuffer.RequestResize(...)` queues that request, and `EnsureInitialized(...)` applies it from the next GL callback where the context is valid.
+
+A replaced `GRContext` also forces GPU surface recreation.
+
+---
+
+## `GlRenderAndSnapshot()`
+
+Both desktop paths converge on `RenderSurfaceHostBase.GlRenderAndSnapshot()`:
 
 ```csharp
 public SKImage? GlRenderAndSnapshot()
@@ -212,181 +209,125 @@ public SKImage? GlRenderAndSnapshot()
 }
 ```
 
-The method obtains a fresh tick at actual GL render time. This is intentionally
-different from the earlier engine-cycle tick because the UI framework may
-deliver the repaint callback later.
+The method obtains a fresh high-resolution tick at **actual GL render time**. The platform may deliver the repaint callback later than the engine foreground cycle that requested it.
 
-The returned `SKImage` is GPU-backed and aliases GPU resources owned by the
-backbuffer. The caller disposes it inside the same GL callback, before the next
-frame can reuse those resources.
+The returned `SKImage` is GPU-backed and should be consumed and disposed inside the same GL callback.
 
-```mermaid
-flowchart TD
-    A["GlRenderAndSnapshot()"] --> B{"GL-thread backbuffer?"}
-    B -- No --> C["Return null"]
-    B -- Yes --> D["Get current high-resolution tick"]
-    D --> E["RenderToBackbuffer(glTick)"]
-    E --> F["Backbuffer.EndFrame()"]
-    F --> G["Backbuffer.Snapshot()"]
-    G --> H["Backbuffer.BeginFrame()"]
-    H --> I["Return GPU-backed SKImage"]
+---
+
+## Full GPU scene rendering
+
+`RenderSurfaceHost.RenderToBackbuffer(tick)` selects the GPU renderer when `Backbuffer.IsGlThreadRendered` is true:
+
+```text
+RenderToBackbuffer(tick)
+  -> Backbuffer.BeginFrame()
+  -> RenderBackbufferBegin
+  -> RenderToBackbufferGpuFull(tick)
+  -> RenderBackbufferEnd
 ```
 
-## `RenderSurfaceHost.RenderToBackbuffer`
+`RenderToBackbufferGpuFull` intentionally bypasses dirty-region processing.
 
-The common method raises host rendering events and selects the GL implementation:
+For each configured View, Gondwana:
 
-```csharp
-RenderBackbufferBegin?.Invoke();
+1. pushes the View into `RenderContext`;
+2. clips drawing to that View's logical Backbuffer viewport;
+3. excludes regions covered by higher-Z Views where appropriate;
+4. clears/composes the View presentation area;
+5. converts the full Viewport into each visible SceneLayer's world extent;
+6. expands the extent to protect projection/rounding boundaries;
+7. retrieves all visible drawables in that extent;
+8. draws the complete View content;
+9. renders View-bound overlays; and
+10. restores canvas state and pops the render context.
 
-if (Backbuffer.IsGlThreadRendered)
-    RenderToBackbufferGpuFull(tick);
-else
-    RenderToBackbufferBitmap(tick);
+After View composition completes, post-scene canvas hooks run.
 
-RenderBackbufferEnd?.Invoke();
-```
+This is a **full scene-frame redraw** whenever a desktop GL callback renders a new frame.
 
-Because this call originates inside the platform GL callback, the
-`RenderBackbufferBegin`, post-scene hooks, and `RenderBackbufferEnd` callbacks
-also run on the GL/UI thread for a GPU host.
+---
 
-Subscribers that issue GPU drawing commands may therefore safely use the
-backbuffer canvas during these callbacks, provided they do not retain it beyond
-the callback.
+## Why RefreshQueues are bypassed
 
-## `RenderToBackbufferGpuFull`
+The bitmap `RefreshQueue` mechanism is built around engine-side invalidation and queue consumption.
 
-The GL renderer bypasses dirty-region processing entirely. Every GL frame
-redraws every configured view in full.
+Using it from a separate GL callback creates ordering problems: world rectangles can be posted after a GL callback begins, and queue-clearing work can race with invalidations for a subsequent frame.
 
-```mermaid
-flowchart TD
-    A["RenderToBackbufferGpuFull(tick)"] --> B{"Any Views?"}
-    B -- No --> C["Clear entire backbuffer"]
-    C --> D["Clear FullRefreshNeeded"]
-    D --> Z["Return"]
-
-    B -- Yes --> E["For each View"]
-    E --> F["RenderContext.Push(view, tick)"]
-    F --> G["Get view overlays"]
-    G --> H["Clip to full View viewport"]
-    H --> I["Exclude higher-Z View overlaps"]
-    I --> J["Clear full View viewport"]
-    J --> K["For each visible SceneLayer"]
-    K --> L["Convert viewport to layer world extent"]
-    L --> M["Expand extent by one tile"]
-    M --> N["Get all visible drawables"]
-    N --> O["Draw clipped to full viewport"]
-    O --> P{"More layers?"}
-    P -- Yes --> K
-    P -- No --> Q["Draw all View overlays"]
-    Q --> R["Restore canvas"]
-    R --> S["RenderContext.Pop()"]
-    S --> T{"More Views?"}
-    T -- Yes --> E
-    T -- No --> U["Clear FullRefreshNeeded"]
-    U --> V["InvokePostSceneCanvasHooks()"]
-```
-
-### Full-view rendering
-
-For every visible layer, the renderer:
-
-1. Converts the complete viewport from screen space into that layer's world
-   space.
-2. Expands the world rectangle by one tile in each direction to protect against
-   rounding and boundary conditions.
-3. Retrieves every drawable intersecting that extent.
-4. Draws the result clipped to the complete viewport.
-
-This is full-view rendering, not dirty-rectangle rendering.
-
-When multiple views exist, higher-Z view rectangles are excluded from lower
-views. This is view composition and does not represent dirty-region
-optimization.
-
-## Dirty-region isolation
-
-The following bitmap-only operations are never reached by the GL branch:
+The GPU path therefore does not call the bitmap-only dirty processing methods such as:
 
 - `EnqueueFullSceneRefresh`;
 - `CollectDirtyScreenArea`;
-- `PreclearScreenAreas`;
-- `RenderLayerDirtyRegions`; and
-- clearing consumed layer `RefreshQueue` instances.
+- `PreclearScreenAreas`; or
+- `RenderLayerDirtyRegions`.
 
-In addition, `BackbufferBase.AddToBackbufferDirtyRectangle` immediately returns
-for a GL-thread-rendered backbuffer:
+`BackbufferBase` likewise skips aggregate dirty-rectangle tracking for `IsGlThreadRendered` Backbuffers.
 
-```csharp
-if (IsGlThreadRendered || area.IsEmpty)
-    return;
-```
+View clipping still exists, but View clipping is a composition rule, not dirty-region optimization.
 
-Calls made internally by `ClearRect` and `DrawDrawables` therefore do not build
-a presentation dirty rectangle for a GPU host.
+---
 
-The viewport clipping used by the GL renderer is not dirty clipping. It limits
-one view to its configured screen rectangle and preserves correct overlap
-between multiple views.
+## Presentation scaling
 
-## GPU snapshot and presentation
+Desktop GL presentation uses `RenderSurfaceAdapterBase.DrawImage(...)`.
 
-After scene rendering:
+That method clears the destination surface, calculates or reuses the authoritative `PresentationTransform`, and draws the completed Backbuffer into its centered destination rectangle.
 
-1. `Backbuffer.EndFrame()` finalizes the off-screen GPU drawing pass.
-2. `GpuBackbuffer.Snapshot()` returns a lightweight GPU-backed image.
-3. `Backbuffer.BeginFrame()` prepares the off-screen surface for continued use.
-4. The platform callback draws the snapshot across its complete target surface.
-5. The platform flushes its `GRContext`.
-6. The snapshot is disposed before leaving the callback.
+`EngineConfiguration.RenderScalingFilter` controls sampling:
 
-`RenderSurfaceHost.PresentBackbufferToAdapter()` is never used for a GPU host.
-The GPU adapter's `Present` implementation is therefore only a defensive
-fallback that disposes an unexpected image.
+- `Linear` for smooth scaling;
+- `NearestNeighbor` for pixel-preserving scaling.
+
+Presentation scaling occurs after the Scene has been rendered in logical Backbuffer `ScreenPx`. Camera/View math therefore remains tied to the logical Backbuffer rather than physical window pixels.
+
+---
+
+## Post-scene canvas hooks
+
+`RenderBackbufferPostScene` and `IEnginePlugin.OnPostRenderCanvas` execute from the GL callback for a GPU surface.
+
+At that point the GPU Backbuffer's Skia canvas is valid and its `GRContext` is current. GPU drawing commands can safely use that canvas synchronously.
+
+Do not retain the canvas, GPU snapshot, or context-dependent resources for use after the callback returns.
+
+---
 
 ## Frame pacing
 
-`EngineConfiguration.TargetFPS` controls how frequently
-`DoForegroundTasks()` reaches `AfterFrameRender`, and therefore how frequently
-the engine requests a GL repaint.
+`EngineConfiguration.TargetFPS` controls how frequently the desktop engine reaches foreground rendering and therefore how frequently `AfterFrameRender` requests a GL repaint.
 
-Actual GPU presentation may be further constrained by:
+Actual displayed FPS can still be constrained by:
 
-- the UI framework's repaint scheduling;
+- the platform UI framework;
+- repaint coalescing;
 - monitor refresh rate;
-- VSync;
-- compositor behavior; and
+- compositor behavior;
+- VSync where the platform exposes it; and
 - GPU workload.
 
-WinForms coalesces pending invalidations, so engine cycles cannot accumulate an
-unbounded queue of repaint messages. Avalonia delegates repaint scheduling and
-composition to its rendering system.
+`GpuBackbuffer.RecordFrame()` counts callbacks that actually completed GPU presentation. This allows Gondwana to distinguish engine foreground cadence from frames that were truly drawn.
 
-`GpuBackbuffer.RecordFrame()` counts frames that actually completed their GL
-callback. This lets Gondwana distinguish requested foreground cycles from
-frames that were truly rendered.
+WinForms explicitly coalesces queued invalidations. Avalonia delegates repaint scheduling to its rendering/compositor system.
+
+---
 
 ## Thread ownership
 
-| Operation | Thread |
+| Operation | WinForms / Avalonia desktop GL |
 | --- | --- |
-| Background simulation and input polling | Engine thread |
+| Simulation/background updates | Engine thread |
 | `DirectDrawingManager.UpdateAll` | Engine thread |
-| `AfterFrameRender` notification | Engine thread |
-| Repaint request posting | Engine thread to UI dispatcher |
-| WinForms `PaintSurface` | UI/GL thread |
-| Avalonia `OnOpenGlRender` | UI/GL thread |
-| `GlRenderAndSnapshot` | UI/GL thread |
-| `RenderToBackbufferGpuFull` | UI/GL thread |
-| GPU snapshot and framebuffer blit | UI/GL thread |
-| `RecordFrame` | UI/GL thread |
+| `AfterFrameRender` | Engine thread |
+| Repaint request | Posted to platform UI dispatcher |
+| Scene GPU rendering | Platform UI/GL callback |
+| `RenderBackbufferPostScene` | Platform UI/GL callback |
+| GPU snapshot | Platform UI/GL callback |
+| Presentation scaling/blit | Platform UI/GL callback |
+| `RecordFrame` | Platform UI/GL callback |
 
-Because update work and GPU drawing occur on different threads, renderable
-state shared between them must either be synchronized or exposed to the render
-thread as a stable snapshot. The GL-context rule protects GPU resources; it
-does not by itself make arbitrary scene mutations thread-safe.
+The GL-context rule keeps GPU resource access legal. It does not automatically make arbitrary game-state mutations shared between the engine and render callback thread-safe; renderable state still needs Gondwana's normal synchronization/stable-state discipline.
+
+---
 
 ## Condensed call stacks
 
@@ -396,13 +337,14 @@ does not by itself make arbitrary scene mutations thread-safe.
 Engine.Cycle()
 └─ DoForegroundTasks(engineTick)
    └─ AfterFrameRender
-      └─ WinFormGpuRenderSurfaceAdapter handler
+      └─ WinFormGpuRenderSurfaceAdapter.QueueInvalidate()
          └─ UiDispatcher.Post(SKGLControl.Invalidate)
             └─ SKGLControl.PaintSurface
-               └─ WinFormGpuRenderSurfaceAdapter.OnPaintSurface()
-                  └─ RenderSurfaceHostBase.GlRenderAndSnapshot()
-                     └─ RenderSurfaceHost.RenderToBackbuffer(glTick)
-                        └─ RenderToBackbufferGpuFull(glTick)
+               ├─ GpuBackbuffer.EnsureInitialized(GRContext)
+               ├─ Host.GlRenderAndSnapshot()
+               │  └─ RenderToBackbufferGpuFull(glTick)
+               ├─ Adapter.DrawImage(...)
+               └─ GpuBackbuffer.RecordFrame()
 ```
 
 ### Avalonia
@@ -411,24 +353,64 @@ Engine.Cycle()
 Engine.Cycle()
 └─ DoForegroundTasks(engineTick)
    └─ AfterFrameRender
-      └─ AvaloniaGpuRenderSurfaceAdapter handler
+      └─ AvaloniaGpuRenderSurfaceAdapter
          └─ UiDispatcher.Post(RequestNextFrameRendering)
-            └─ AvaloniaGpuRenderSurfaceControl.OnOpenGlRender()
-               └─ RenderSurfaceHostBase.GlRenderAndSnapshot()
-                  └─ RenderSurfaceHost.RenderToBackbuffer(glTick)
-                     └─ RenderToBackbufferGpuFull(glTick)
+            └─ OnOpenGlRender(...)
+               ├─ Adapter.UpdateDimensions(...)
+               ├─ GpuBackbuffer.EnsureInitialized(GRContext)
+               ├─ Host.GlRenderAndSnapshot()
+               │  └─ RenderToBackbufferGpuFull(glTick)
+               ├─ Adapter.DrawImage(...)
+               └─ GpuBackbuffer.RecordFrame()
 ```
+
+---
+
+## Desktop GL vs WebGL
+
+Both paths use `GpuBackbuffer`, GPU-only frame content, and `RenderToBackbufferGpuFull` when a new Scene frame is rendered.
+
+The key pacing difference is ownership of the outer loop:
+
+| Desktop GL | WebGL |
+| --- | --- |
+| Engine foreground cadence requests a platform GL repaint | `SKGLView`/browser `requestAnimationFrame` owns the paint loop |
+| Requested GL callback normally renders a new Scene frame | Browser paint may rerender the Scene **or** re-present the current Backbuffer |
+| Simulation normally runs on the separate engine thread | `Engine.Tick()` runs inside the browser animation callback |
+| Uses `GlRenderAndSnapshot()` + adapter `DrawImage()` | Uses `GlRenderToCanvas()` / `GlDrawCurrentFrameToCanvas()` |
+
+See [[WebGL Rendering Path]] for the browser-specific pipeline.
+
+---
 
 ## Summary
 
-The GL path is an engine-paced but platform-callback-driven full-view renderer:
+The desktop GL path is an engine-paced, platform-callback-driven full-scene GPU renderer:
 
-- the engine updates state and requests a frame;
-- the platform invokes rendering with the correct GL context current;
-- all configured views and visible layers are redrawn;
-- refresh queues and presentation dirty rectangles are bypassed;
-- rendering, snapshotting, and presentation remain entirely on the GPU; and
-- actual completed frames are counted independently of engine-cycle frequency.
+- the engine updates state and requests a native GL repaint;
+- the platform invokes rendering with the correct context current;
+- Gondwana redraws the complete logical View composition;
+- RefreshQueues and dirty presentation are bypassed;
+- the logical Backbuffer remains independent of window size;
+- the adapter applies aspect-preserving presentation scaling; and
+- the completed frame remains on the GPU from scene rasterization through final display.
 
-This split is required by OpenGL context ownership and keeps GPU resource access
-inside the platform callback where it is valid.
+---
+
+## Where to read next
+
+- [[Rendering Pipeline]]
+- [[Backbuffers]]
+- [[WebGL Rendering Path]]
+- [[Bitmap Rendering Path]]
+- [[Performance Tuning]]
+
+Relevant source files:
+
+- `Gondwana/Rendering/RenderSurfaceHost.cs`
+- `Gondwana/Rendering/RenderSurfaceHostBase.cs`
+- `Gondwana/Rendering/Backbuffers/GpuBackbuffer.cs`
+- `Gondwana.WinForms/Rendering/WinFormGpuRenderSurfaceAdapter.cs`
+- `Gondwana.WinForms/Rendering/WinFormGpuRenderSurfaceControl.cs`
+- `Gondwana.Avalonia/Rendering/AvaloniaGpuRenderSurfaceAdapter.cs`
+- `Gondwana.Avalonia/Rendering/AvaloniaGpuRenderSurfaceControl.cs`
