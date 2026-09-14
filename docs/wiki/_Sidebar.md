@@ -56,6 +56,7 @@
   - [[Dirty Rectangles]]
 - [[Rendering Pipeline]]
   - [[GL Rendering Path]]
+  - [[WebGL Rendering Path]]
   - [[Bitmap Rendering Path]]
 
 </details>
@@ -91,7 +92,7 @@
   </details>
 
 - <details>
-  <summary><strong>Dialogue</strong></summary>
+<summary><strong>Dialogue</strong></summary>
 
   - [[ConversationBox|Widgets---ConversationBox]]
 
