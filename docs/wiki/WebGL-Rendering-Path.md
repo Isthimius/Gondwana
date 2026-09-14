@@ -378,7 +378,7 @@ If the engine is not running, the WebGL surface is cleared to the Backbuffer cle
 
 If `EnsureInitialized(...)` creates/recreates the GPU surface, the component forces a full Scene render on the new surface.
 
-If rendering/presentation cannot produce a valid GPU result, the destination is cleared instead of presenting stale or undefined content.
+The component clears the destination for invalid dimensions or context, while the engine is stopped, or when a GPU presentation helper reports failure. Exceptions from GPU initialization or scene/presentation drawing are not caught by this callback.
 
 ---
 
