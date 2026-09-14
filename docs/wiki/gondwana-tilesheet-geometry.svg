@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Gondwana TilesheetRegion Geometry</title>
+  <desc id="desc">Printable reference chart comparing Area, RegionMargin, TilePadding, Overhang, and CollisionAdjust in Gondwana.</desc>
+  <defs>
+    <style>
+      text { font-family: "Segoe UI", Arial, sans-serif; fill: #182230; }
+      .title { font-size: 42px; font-weight: 700; }
+      .subtitle { font-size: 20px; fill: #526173; }
+      .section { font-size: 27px; font-weight: 700; }
+      .kicker { font-size: 17px; fill: #526173; }
+      .label { font-size: 18px; font-weight: 600; }
+      .small { font-size: 15px; fill: #526173; }
+      .formula { font-family: Consolas, "Courier New", monospace; font-size: 17px; }
+      .sequence { font-family: Consolas, "Courier New", monospace; font-size: 16px; fill: #ffffff; }
+      .table-head { font-size: 16px; font-weight: 700; fill: #ffffff; }
+      .table-cell { font-size: 15px; }
+      .table-prop { font-family: Consolas, "Courier New", monospace; font-size: 15px; font-weight: 700; }
+      .panel { fill: #ffffff; stroke: #d7dde5; stroke-width: 2; }
+      .area { fill: #eef4ff; stroke: #2457a6; stroke-width: 4; }
+      .margin { fill: none; stroke: #d39b1d; stroke-width: 4; stroke-dasharray: 12 8; }
+      .padding { fill: #dff5ef; stroke: #14806f; stroke-width: 2; }
+      .frame { fill: #9edbc9; stroke: #0e6658; stroke-width: 3; }
+      .overhang { fill: #eee7fb; stroke: #7046b8; stroke-width: 4; }
+      .base { fill: #f2f4f7; stroke: #344154; stroke-width: 3; stroke-dasharray: 10 7; }
+      .collision { fill: #fff4e8; fill-opacity: .7; stroke: #c46614; stroke-width: 5; }
+      .leader { fill: none; stroke: #69788c; stroke-width: 2; }
+      .oh-arrow { fill: none; stroke: #7046b8; stroke-width: 4; }
+      .ca-arrow { fill: none; stroke: #c46614; stroke-width: 4; }
+      .rule { stroke: #d7dde5; stroke-width: 2; }
+    </style>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#7046b8" />
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#c46614" />
+    </marker>
+  </defs>
+
+  <rect width="1600" height="1100" fill="#fbfaf7" />
+  <text class="title" x="70" y="70">Gondwana TilesheetRegion Geometry</text>
+  <text class="subtitle" x="70" y="105">Source-image layout, rendered bounds, and collision edges — one page, no guesswork</text>
+
+  <rect class="panel" x="55" y="135" width="730" height="480" rx="18" />
+  <text class="section" x="85" y="180">Source image space</text>
+  <text class="kicker" x="85" y="209">How frames are located inside the tilesheet bitmap</text>
+
+  <rect class="area" x="100" y="245" width="640" height="285" rx="9" />
+  <rect class="margin" x="150" y="288" width="540" height="198" rx="6" />
+
+  <g>
+    <rect class="padding" x="180" y="320" width="145" height="120" rx="5" />
+    <rect class="frame" x="198" y="336" width="109" height="88" rx="3" />
+    <text class="label" x="252.5" y="386" text-anchor="middle">TileSize</text>
+  </g>
+  <g>
+    <rect class="padding" x="350" y="320" width="145" height="120" rx="5" />
+    <rect class="frame" x="368" y="336" width="109" height="88" rx="3" />
+    <text class="label" x="422.5" y="386" text-anchor="middle">TileSize</text>
+  </g>
+  <g>
+    <rect class="padding" x="520" y="320" width="145" height="120" rx="5" />
+    <rect class="frame" x="538" y="336" width="109" height="88" rx="3" />
+    <text class="label" x="592.5" y="386" text-anchor="middle">TileSize</text>
+  </g>
+
+  <path class="leader" d="M100 230 L100 245 M100 230 L182 230" />
+  <text class="label" x="190" y="236">Area</text>
+  <path class="leader" d="M150 273 L150 288 M150 273 L290 273" />
+  <text class="label" x="298" y="279">RegionMargin — once</text>
+  <path class="leader" d="M350 456 L350 440 M350 456 L495 456" />
+  <text class="label" x="505" y="462">TilePadding — repeats</text>
+  <path class="leader" d="M325 500 L495 500 M325 491 L325 509 M495 491 L495 509" />
+  <text class="small" x="410" y="522" text-anchor="middle">horizontal pitch</text>
+  <text class="small" x="420" y="575" text-anchor="middle">Padding is unused source space; the extracted frame stays exactly TileSize.</text>
+
+  <rect class="panel" x="815" y="135" width="730" height="480" rx="18" />
+  <text class="section" x="845" y="180">World and collision space</text>
+  <text class="kicker" x="845" y="209">How a frame occupies a SceneLayer tile position</text>
+
+  <rect class="overhang" x="965" y="260" width="430" height="260" rx="9" />
+  <rect class="base" x="1030" y="310" width="300" height="160" rx="6" />
+  <rect class="collision" x="1055" y="338" width="310" height="152" rx="6" />
+
+  <text class="label" x="1255" y="286" text-anchor="middle">DrawLocationWorld</text>
+  <text class="label" x="1180" y="398" text-anchor="middle">logical grid cell</text>
+  <text class="small" x="1180" y="423" text-anchor="middle">fixed position and base size</text>
+  <text class="label" x="1180" y="480" text-anchor="middle">CollisionArea</text>
+
+  <path class="oh-arrow" d="M965 300 L915 300" marker-end="url(#arrow-purple)" />
+  <text class="label" x="900" y="287" text-anchor="middle">+L</text>
+  <path class="oh-arrow" d="M1010 260 L1010 225" marker-end="url(#arrow-purple)" />
+  <text class="label" x="1034" y="235">+T</text>
+  <path class="oh-arrow" d="M1395 300 L1445 300" marker-end="url(#arrow-purple)" />
+  <text class="label" x="1460" y="287" text-anchor="middle">+R</text>
+  <path class="oh-arrow" d="M1350 520 L1350 555" marker-end="url(#arrow-purple)" />
+  <text class="label" x="1372" y="560">+B</text>
+
+  <path class="ca-arrow" d="M965 362 L1055 362" marker-end="url(#arrow-orange)" />
+  <text class="label" x="1010" y="349" text-anchor="middle">+Left</text>
+  <path class="ca-arrow" d="M1395 440 L1365 440" marker-end="url(#arrow-orange)" />
+  <text class="label" x="1430" y="428" text-anchor="middle">+Right</text>
+  <path class="ca-arrow" d="M1080 260 L1080 338" marker-end="url(#arrow-orange)" />
+  <text class="label" x="1102" y="317">+Top</text>
+  <path class="ca-arrow" d="M1100 520 L1100 490" marker-end="url(#arrow-orange)" />
+  <text class="label" x="1020" y="508">+Bottom</text>
+  <text class="small" x="1180" y="587" text-anchor="middle">Overhang: positive = outward. CollisionAdjust: positive = inward.</text>
+
+  <rect x="55" y="640" width="1490" height="72" rx="12" fill="#182230" />
+  <text class="sequence" x="800" y="684" text-anchor="middle">Area → RegionMargin → TilePadding → TileSize/frame → logical cell → Overhang → DrawLocationWorld → CollisionAdjust → CollisionArea</text>
+
+  <text class="formula" x="70" y="753">PitchX = Pad.Left + TileWidth + Pad.Right</text>
+  <text class="formula" x="820" y="753">Draw.Left = Cell.Left − Overhang.Left</text>
+  <text class="formula" x="70" y="786">PitchY = Pad.Top + TileHeight + Pad.Bottom</text>
+  <text class="formula" x="820" y="786">Collision.Right = Draw.Right − Adjust.Right</text>
+
+  <rect x="55" y="820" width="1490" height="49" rx="8" fill="#344154" />
+  <text class="table-head" x="75" y="851">Property</text>
+  <text class="table-head" x="315" y="851">Space</text>
+  <text class="table-head" x="520" y="851">Positive values mean</text>
+  <text class="table-head" x="1030" y="851">Scope</text>
+  <text class="table-head" x="1320" y="851">Negative values</text>
+
+  <rect x="55" y="869" width="1490" height="52" fill="#ffffff" />
+  <circle cx="76" cy="895" r="7" fill="#14806f" />
+  <text class="table-prop" x="92" y="901">RegionMargin</text>
+  <text class="table-cell" x="315" y="901">Source bitmap</text>
+  <text class="table-cell" x="520" y="901">Reserve space inside the region boundary</text>
+  <text class="table-cell" x="1030" y="901">Once around the grid</text>
+  <text class="table-cell" x="1320" y="901">Rejected</text>
+  <line class="rule" x1="55" y1="921" x2="1545" y2="921" />
+
+  <rect x="55" y="922" width="1490" height="52" fill="#f7f8fa" />
+  <circle cx="76" cy="948" r="7" fill="#14806f" />
+  <text class="table-prop" x="92" y="954">TilePadding</text>
+  <text class="table-cell" x="315" y="954">Source bitmap</text>
+  <text class="table-cell" x="520" y="954">Add unused space on that side of every frame</text>
+  <text class="table-cell" x="1030" y="954">Repeats per frame</text>
+  <text class="table-cell" x="1320" y="954">Rejected</text>
+  <line class="rule" x1="55" y1="974" x2="1545" y2="974" />
+
+  <rect x="55" y="975" width="1490" height="52" fill="#ffffff" />
+  <circle cx="76" cy="1001" r="7" fill="#7046b8" />
+  <text class="table-prop" x="92" y="1007">Overhang</text>
+  <text class="table-cell" x="315" y="1007">World/render</text>
+  <text class="table-cell" x="520" y="1007">Expand outward: L←  T↑  R→  B↓</text>
+  <text class="table-cell" x="1030" y="1007">Every rendered frame</text>
+  <text class="table-cell" x="1320" y="1007">Contracts that side</text>
+  <line class="rule" x1="55" y1="1027" x2="1545" y2="1027" />
+
+  <rect x="55" y="1028" width="1490" height="52" fill="#f7f8fa" />
+  <circle cx="76" cy="1054" r="7" fill="#c46614" />
+  <text class="table-prop" x="92" y="1060">CollisionAdjust</text>
+  <text class="table-cell" x="315" y="1060">Collision</text>
+  <text class="table-cell" x="520" y="1060">Inset toward center: L→  T↓  R←  B↑</text>
+  <text class="table-cell" x="1030" y="1060">Region default / frame override</text>
+  <text class="table-cell" x="1320" y="1060">Expands outward</text>
+</svg>

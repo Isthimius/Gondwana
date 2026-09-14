@@ -303,3 +303,18 @@ Creates a new versioned release of Gondwana: updates the changelog, commits it, 
 ## API documentation publishing
 
 See [Versioned API documentation](api-docs/README.md) for the stable `/api/`, development `/api/latest/`, historical version selector, publishing rules, and local validation.
+
+## Wiki synchronization
+
+`wiki-sync/sync.py` is shared by the event-driven `wiki-sync.yml` and the weekly
+`wiki-reconcile-weekly.yml`. It uses Git and the GitHub CLI on Ubuntu runners.
+See [Wiki synchronization and recovery](../../docs/wiki/README.md) for editing,
+manual directional sync, checkpoints, conflicts, tokens, PRs, and release exclusions.
+The imported Wiki articles remain byte-for-byte copies; migration infrastructure
+documentation lives in that repository-only README.
+
+Run its isolated local Git tests with:
+
+```console
+python3 -m unittest discover -s Tooling/scripts/wiki-sync -p 'test_*.py' -v
+```

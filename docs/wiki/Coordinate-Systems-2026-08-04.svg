@@ -1,0 +1,186 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc" data-revision="2026-08-04-seven-systems">
+  <title id="title">Gondwana coordinate systems — seven-system revision</title>
+  <desc id="desc">Seven panels compare Orthogonal, Isometric Rhombic, tightly packed Isometric Axial, Flat-Top Hex, Pointed-Top Hex, Oblique Right, and Oblique Left layouts. Blue marks tile zero zero, green marks tile one zero, and orange marks tile zero one.</desc>
+  <style>
+    .background { fill: #ffffff; }
+    .panel { fill: #f6f8fa; stroke: #8c959f; stroke-width: 1; }
+    .tile { fill: #d8dee4; stroke: #8c959f; stroke-width: 1.4; stroke-linejoin: round; }
+    .origin { fill: #58a6ff; }
+    .column { fill: #56d364; }
+    .row { fill: #f2a043; }
+    .heading { fill: #1f2328; font: 700 18px system-ui, sans-serif; }
+    .caption { fill: #59636e; font: 13px system-ui, sans-serif; }
+    .label { fill: #0d1117; font: 700 11px system-ui, sans-serif; text-anchor: middle; dominant-baseline: middle; }
+    .legend { fill: #1f2328; font: 14px system-ui, sans-serif; dominant-baseline: middle; }
+    @media (prefers-color-scheme: dark) {
+      .background { fill: #0d1117; }
+      .panel { fill: #161b22; }
+      .tile { fill: #30363d; }
+      .origin { fill: #388bfd; }
+      .column { fill: #3fb950; }
+      .row { fill: #d29922; }
+      .heading, .legend { fill: #f0f6fc; }
+      .caption { fill: #b1bac4; }
+    }
+  </style>
+
+  <rect class="background" width="1200" height="720" />
+
+  <!-- Orthogonal -->
+  <g transform="translate(15 20)">
+    <rect class="panel" width="285" height="295" rx="10" />
+    <text class="heading" x="18" y="34">Orthogonal</text>
+    <text class="caption" x="18" y="57">Rectangle · straight rows and columns</text>
+    <g transform="translate(58 88)">
+      <rect class="tile origin" x="0" y="0" width="56" height="40" />
+      <rect class="tile column" x="56" y="0" width="56" height="40" />
+      <rect class="tile" x="112" y="0" width="56" height="40" />
+      <rect class="tile row" x="0" y="40" width="56" height="40" />
+      <rect class="tile" x="56" y="40" width="56" height="40" />
+      <rect class="tile" x="112" y="40" width="56" height="40" />
+      <rect class="tile" x="0" y="80" width="56" height="40" />
+      <rect class="tile" x="56" y="80" width="56" height="40" />
+      <rect class="tile" x="112" y="80" width="56" height="40" />
+      <text class="label" x="28" y="20">0,0</text>
+      <text class="label" x="84" y="20">1,0</text>
+      <text class="label" x="28" y="60">0,1</text>
+    </g>
+    <text class="caption" x="18" y="270">+column → · +row ↓</text>
+  </g>
+
+  <!-- Isometric Rhombic -->
+  <g transform="translate(310 20)">
+    <rect class="panel" width="285" height="295" rx="10" />
+    <text class="heading" x="18" y="34">Isometric Rhombic</text>
+    <text class="caption" x="18" y="57">Diamond · symmetric diagonal axes</text>
+    <g transform="translate(143 88)">
+      <polygon class="tile origin" points="0,0 30,17 0,34 -30,17" />
+      <polygon class="tile column" points="30,17 60,34 30,51 0,34" />
+      <polygon class="tile" points="60,34 90,51 60,68 30,51" />
+      <polygon class="tile row" points="-30,17 0,34 -30,51 -60,34" />
+      <polygon class="tile" points="0,34 30,51 0,68 -30,51" />
+      <polygon class="tile" points="30,51 60,68 30,85 0,68" />
+      <polygon class="tile" points="-60,34 -30,51 -60,68 -90,51" />
+      <polygon class="tile" points="-30,51 0,68 -30,85 -60,68" />
+      <polygon class="tile" points="0,68 30,85 0,102 -30,85" />
+      <text class="label" x="0" y="17">0,0</text>
+      <text class="label" x="30" y="34">1,0</text>
+      <text class="label" x="-30" y="34">0,1</text>
+    </g>
+    <text class="caption" x="18" y="270">+column ↘ · +row ↙</text>
+  </g>
+
+  <!-- Isometric Axial -->
+  <g transform="translate(605 20)">
+    <rect class="panel" width="285" height="295" rx="10" />
+    <text class="heading" x="18" y="34">Isometric Axial</text>
+    <text class="caption" x="18" y="57">Diamond · tight horizontal/diagonal basis</text>
+    <g transform="translate(38 91)">
+      <polygon class="tile origin" points="30,0 60,17 30,34 0,17" />
+      <polygon class="tile column" points="90,0 120,17 90,34 60,17" />
+      <polygon class="tile" points="150,0 180,17 150,34 120,17" />
+      <polygon class="tile row" points="60,17 90,34 60,51 30,34" />
+      <polygon class="tile" points="120,17 150,34 120,51 90,34" />
+      <polygon class="tile" points="180,17 210,34 180,51 150,34" />
+      <polygon class="tile" points="90,34 120,51 90,68 60,51" />
+      <polygon class="tile" points="150,34 180,51 150,68 120,51" />
+      <polygon class="tile" points="210,34 240,51 210,68 180,51" />
+      <text class="label" x="30" y="17">0,0</text>
+      <text class="label" x="90" y="17">1,0</text>
+      <text class="label" x="60" y="34">0,1</text>
+    </g>
+    <text class="caption" x="18" y="249">No blank diamonds between grid cells</text>
+    <text class="caption" x="18" y="270">+column → · +row ↘</text>
+  </g>
+
+  <!-- Flat-Top Hex -->
+  <g transform="translate(900 20)">
+    <rect class="panel" width="285" height="295" rx="10" />
+    <text class="heading" x="18" y="34">Hex Axial Flat Top</text>
+    <text class="caption" x="18" y="57">Flat hex · staggered columns (even-q)</text>
+    <g transform="translate(55 84)">
+      <polygon class="tile origin" points="15,0 45,0 60,26 45,52 15,52 0,26" />
+      <polygon class="tile column" points="60,26 90,26 105,52 90,78 60,78 45,52" />
+      <polygon class="tile" points="105,0 135,0 150,26 135,52 105,52 90,26" />
+      <polygon class="tile row" points="15,52 45,52 60,78 45,104 15,104 0,78" />
+      <polygon class="tile" points="60,78 90,78 105,104 90,130 60,130 45,104" />
+      <polygon class="tile" points="105,52 135,52 150,78 135,104 105,104 90,78" />
+      <text class="label" x="30" y="26">0,0</text>
+      <text class="label" x="75" y="52">1,0</text>
+      <text class="label" x="30" y="78">0,1</text>
+    </g>
+    <text class="caption" x="18" y="270">+column ↘ · +row ↓</text>
+  </g>
+
+  <!-- Pointed-Top Hex -->
+  <g transform="translate(162 335)">
+    <rect class="panel" width="285" height="295" rx="10" />
+    <text class="heading" x="18" y="34">Hex Axial Pointed Top</text>
+    <text class="caption" x="18" y="57">Pointed hex · staggered rows (even-r)</text>
+    <g transform="translate(51 82)">
+      <polygon class="tile origin" points="26,0 52,15 52,45 26,60 0,45 0,15" />
+      <polygon class="tile column" points="78,0 104,15 104,45 78,60 52,45 52,15" />
+      <polygon class="tile" points="130,0 156,15 156,45 130,60 104,45 104,15" />
+      <polygon class="tile row" points="52,45 78,60 78,90 52,105 26,90 26,60" />
+      <polygon class="tile" points="104,45 130,60 130,90 104,105 78,90 78,60" />
+      <polygon class="tile" points="156,45 182,60 182,90 156,105 130,90 130,60" />
+      <text class="label" x="26" y="30">0,0</text>
+      <text class="label" x="78" y="30">1,0</text>
+      <text class="label" x="52" y="75">0,1</text>
+    </g>
+    <text class="caption" x="18" y="270">+column → · +row ↘</text>
+  </g>
+
+  <!-- Oblique Right -->
+  <g transform="translate(457 335)">
+    <rect class="panel" width="285" height="295" rx="10" />
+    <text class="heading" x="18" y="34">Oblique Right</text>
+    <text class="caption" x="18" y="57">Parallelogram · right-receding rows</text>
+    <g transform="translate(34 86)">
+      <polygon class="tile origin" points="0,0 36,0 72,42 36,42" />
+      <polygon class="tile column" points="36,0 72,0 108,42 72,42" />
+      <polygon class="tile" points="72,0 108,0 144,42 108,42" />
+      <polygon class="tile row" points="36,42 72,42 108,84 72,84" />
+      <polygon class="tile" points="72,42 108,42 144,84 108,84" />
+      <polygon class="tile" points="108,42 144,42 180,84 144,84" />
+      <polygon class="tile" points="72,84 108,84 144,126 108,126" />
+      <polygon class="tile" points="108,84 144,84 180,126 144,126" />
+      <polygon class="tile" points="144,84 180,84 216,126 180,126" />
+      <text class="label" x="36" y="21">0,0</text>
+      <text class="label" x="72" y="21">1,0</text>
+      <text class="label" x="72" y="63">0,1</text>
+    </g>
+    <text class="caption" x="18" y="270">+column → · +row ↘</text>
+  </g>
+
+  <!-- Oblique Left -->
+  <g transform="translate(752 335)">
+    <rect class="panel" width="285" height="295" rx="10" />
+    <text class="heading" x="18" y="34">Oblique Left</text>
+    <text class="caption" x="18" y="57">Parallelogram · left-receding rows</text>
+    <g transform="translate(105 86)">
+      <polygon class="tile origin" points="36,0 72,0 36,42 0,42" />
+      <polygon class="tile column" points="72,0 108,0 72,42 36,42" />
+      <polygon class="tile" points="108,0 144,0 108,42 72,42" />
+      <polygon class="tile row" points="0,42 36,42 0,84 -36,84" />
+      <polygon class="tile" points="36,42 72,42 36,84 0,84" />
+      <polygon class="tile" points="72,42 108,42 72,84 36,84" />
+      <polygon class="tile" points="-36,84 0,84 -36,126 -72,126" />
+      <polygon class="tile" points="0,84 36,84 0,126 -36,126" />
+      <polygon class="tile" points="36,84 72,84 36,126 0,126" />
+      <text class="label" x="36" y="21">0,0</text>
+      <text class="label" x="72" y="21">1,0</text>
+      <text class="label" x="0" y="63">0,1</text>
+    </g>
+    <text class="caption" x="18" y="270">+column → · +row ↙</text>
+  </g>
+
+  <g transform="translate(310 687)">
+    <rect class="origin" x="0" y="-9" width="18" height="18" rx="3" />
+    <text class="legend" x="26" y="0">(0,0)</text>
+    <rect class="column" x="130" y="-9" width="18" height="18" rx="3" />
+    <text class="legend" x="156" y="0">(1,0) · +column</text>
+    <rect class="row" x="350" y="-9" width="18" height="18" rx="3" />
+    <text class="legend" x="376" y="0">(0,1) · +row</text>
+  </g>
+</svg>

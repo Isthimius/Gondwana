@@ -1,0 +1,54 @@
+name: Wiki sync
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'docs/wiki/**'
+      - '!docs/wiki/README.md'
+  gollum:
+  workflow_dispatch:
+    inputs:
+      direction:
+        description: 'Authoritative source direction (may replace destination content)'
+        type: choice
+        required: true
+        options:
+          - repo-to-wiki
+          - wiki-to-repo
+
+permissions:
+  contents: read
+
+# Shared with reconciliation. Runs always read current heads, so a coalesced
+# pending event is covered by the next complete three-way comparison.
+concurrency:
+  group: wiki-sync-master
+  cancel-in-progress: false
+
+jobs:
+  synchronize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout trusted synchronization code
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          persist-credentials: false
+      - name: Validate synchronization behavior
+        run: python3 -m unittest discover -s Tooling/scripts/wiki-sync -p 'test_*.py'
+      - name: Synchronize Wiki
+        env:
+          WIKI_SYNC_TOKEN: ${{ secrets.WIKI_SYNC_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          DIRECTION: ${{ inputs.direction }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = workflow_dispatch ]; then
+            python3 Tooling/scripts/wiki-sync/sync.py "$DIRECTION" --authoritative
+          elif [ "$EVENT_NAME" = push ]; then
+            python3 Tooling/scripts/wiki-sync/sync.py repo-to-wiki
+          else
+            python3 Tooling/scripts/wiki-sync/sync.py wiki-to-repo
+          fi

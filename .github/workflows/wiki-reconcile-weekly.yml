@@ -1,0 +1,36 @@
+name: Wiki reconciliation (weekly)
+
+on:
+  schedule:
+    # Monday 04:17 UTC, distinct from the 03:00 UTC changelog refresh.
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wiki-sync-master
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout trusted synchronization code
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          persist-credentials: false
+      - name: Validate synchronization behavior
+        run: python3 -m unittest discover -s Tooling/scripts/wiki-sync -p 'test_*.py'
+      - name: Reconcile missed Wiki and repository changes
+        env:
+          WIKI_SYNC_TOKEN: ${{ secrets.WIKI_SYNC_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Both operations use three-way comparisons. Conflicts stop recovery.
+          # Import first so unacknowledged Wiki changes get their shared PR.
+          python3 Tooling/scripts/wiki-sync/sync.py wiki-to-repo
+          python3 Tooling/scripts/wiki-sync/sync.py repo-to-wiki
