@@ -248,6 +248,24 @@ class GitTests(unittest.TestCase):
             self.execute("wiki-to-repo")
         self.assertEqual(tip, self.sha(self.repo_remote, sync.BRANCH))
 
+    def test_existing_automation_branch_readme_edit_rejected(self):
+        self.edit("wiki", {"Home.md": b"wiki"})
+        self.execute("wiki-to-repo")
+        sync.git(self.repo, "fetch", "origin", sync.BRANCH)
+        sync.git(self.repo, "checkout", "--detach", "FETCH_HEAD")
+        self.commit(self.repo, {sync.PREFIX + sync.README: b"unexpected infrastructure edit"})
+        sync.git(self.repo, "push", "origin", f"HEAD:refs/heads/{sync.BRANCH}")
+        tip = self.sha(self.repo_remote, sync.BRANCH)
+        master = self.sha(self.repo_remote)
+        wiki = self.sha(self.wiki_remote)
+        for authoritative in (False, True):
+            with self.subTest(authoritative=authoritative), self.assertRaisesRegex(
+                    RuntimeError, "reserved README"):
+                self.execute("wiki-to-repo", authoritative)
+        self.assertEqual(tip, self.sha(self.repo_remote, sync.BRANCH))
+        self.assertEqual(master, self.sha(self.repo_remote))
+        self.assertEqual(wiki, self.sha(self.wiki_remote))
+
     def test_symlink_rejected(self):
         (self.wiki / "link.md").symlink_to("Home.md")
         self.commit(self.wiki, {})

@@ -191,8 +191,9 @@ def synchronize(repo, wiki, direction, authoritative, repository):
         git(repo, "checkout", "--detach", previous)
         fork = git(repo, "merge-base", master, previous).decode().strip()
         changed = git(repo, "diff", "--name-only", "-z", fork, previous).decode().split("\0")
-        if any(p and not p.startswith(PREFIX) and p != STATE for p in changed):
-            raise RuntimeError("Automation branch contains unrelated edits; inspect its PR")
+        if any(p == PREFIX + README or
+               (p and not p.startswith(PREFIX) and p != STATE) for p in changed):
+            raise RuntimeError("Automation branch contains unrelated or reserved README edits; inspect its PR")
         git(repo, "merge", "--no-edit", "-m", "docs(wiki): incorporate current master", master)
     else:
         git(repo, "checkout", "--detach", master)
