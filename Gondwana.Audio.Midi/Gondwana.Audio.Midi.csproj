@@ -12,8 +12,8 @@
         <IsPackable>true</IsPackable>
         <PackageId>Gondwana.Audio.Midi</PackageId>
         <Title>Gondwana Audio MIDI Support</Title>
-        <Description>MIDI audio playback support for the Gondwana Game Engine, including integration for loading and playing MIDI files through the engine's audio system.</Description>
-        <PackageTags>game-engine gamedev csharp dotnet audio midi adapter playback music sound</PackageTags>
+        <Description>MIDI audio playback support for the Gondwana Game Engine, including integration for loading and playing MIDI files through the NAudio audio backend.</Description>
+        <PackageTags>game-engine gamedev csharp dotnet audio midi naudio adapter playback music sound</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>gondwana-logo.png</PackageIcon>
 		<PackageReleaseNotes>Full changelog: https://github.com/Isthimius/Gondwana/blob/master/CHANGELOG.md</PackageReleaseNotes>
@@ -25,11 +25,11 @@
 
     <ItemGroup>
         <PackageReference Include="MeltySynth" Version="2.4.1" />
-        <PackageReference Include="NAudio" Version="2.3.0" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
+        <ProjectReference Include="..\Gondwana.Audio.NAudio\Gondwana.Audio.NAudio.csproj" />
     </ItemGroup>
 
 	<ItemGroup>
