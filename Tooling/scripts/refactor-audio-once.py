@@ -12,3 +12,4 @@ if text.count(old) != 1:
     raise RuntimeError(f"Expected exactly one Doxygen project-brief match; found {text.count(old)}")
 path.write_text(text.replace(old, new), encoding="utf-8")
 print("Doxygen project brief updated.")
+# Trigger the one-time validated persistence run.
