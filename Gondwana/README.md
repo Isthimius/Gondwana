@@ -17,7 +17,7 @@ into .NET applications.
 -   Particle effects
 -   SkiaSharp-based rendering
 -   SVG asset support (`SvgResource` + `DirectSvg`) for scalable UI/icon rendering
--   NAudio-based audio playback
+-   Backend-neutral audio resource and playback contracts
 -   Cross-platform architecture
 
 ## Installation
@@ -35,8 +35,9 @@ dotnet add package Gondwana
 
 ## Related Packages
 
+-   `Gondwana.Audio.NAudio` --- Windows desktop audio playback through NAudio
 -   `Gondwana.Audio.Browser` --- Browser-based audio playback support
--   `Gondwana.Audio.Midi` --- MIDI playback and sequencing support
+-   `Gondwana.Audio.Midi` --- MIDI playback and sequencing support through the NAudio backend
 -   `Gondwana.Avalonia` --- Avalonia rendering and input adapters
 -   `Gondwana.Avalonia.Hosting` --- Avalonia-specific game host that integrates rendering and input into the Gondwana lifecycle
 -   `Gondwana.Blazor` --- Web assembly rendering and input adapters
