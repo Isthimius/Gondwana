@@ -1,37 +1,41 @@
-Gondwana uses GitHub Actions and repository-level YAML configuration to automate several project-maintenance tasks.
+Gondwana uses GitHub Actions and repository-level configuration to automate project maintenance, validation, documentation, synchronization, mirroring, and releases.
 
-These include:
+The main automation covers:
 
-- building and testing the engine
-- validating NuGet packages
-- producing downloadable binary artifacts
-- publishing API documentation
+- building, testing, packing, and staging binaries
+- maintaining root and per-project changelogs
+- publishing development and release API documentation
+- synchronizing the GitHub Wiki with `docs/wiki`
 - labeling pull requests
 - formatting pull request titles and descriptions
-- maintaining running root and per-project changelogs
-- creating GitHub releases
-- publishing packages to NuGet and GitHub Packages
+- mirroring the repository to secondary Git hosts
+- creating GitHub Releases
+- publishing packages to NuGet.org and GitHub Packages
 
-Most of this automation lives under:
+Most of the automation lives under:
 
 ```text
 .github/
 ├── labeler.yml
 ├── release.yml
 └── workflows/
-    ├── changelog-master.yml
+    ├── changelog-weekly.yml
     ├── ci-master.yml
     ├── docs.yml
     ├── format-pr-title.yml
     ├── labeler.yml
-    └── release.yml
+    ├── mirror-gitlab.yml
+    ├── mirror-sourceforge.yml
+    ├── mirror_bitbucket.yml
+    ├── mirror_codeberg.yml
+    ├── release.yml
+    ├── wiki-reconcile-weekly.yml
+    └── wiki-sync.yml
 ```
 
-There are two different kinds of YAML files here.
+Files under `.github/workflows/` are **GitHub Actions workflows**: they define things GitHub actually runs.
 
-Files under `.github/workflows/` are **GitHub Actions workflows**. They define things that GitHub actually runs.
-
-Files such as `.github/labeler.yml` and `.github/release.yml` are **configuration files**. They describe rules consumed by GitHub Actions or GitHub itself.
+Files such as `.github/labeler.yml` and `.github/release.yml` are **configuration files** consumed by workflows or by GitHub itself.
 
 ---
 
@@ -39,10 +43,13 @@ Files such as `.github/labeler.yml` and `.github/release.yml` are **configuratio
 
 - [Workflow overview](#workflow-overview)
 - [CI — ci-master.yml](#ci--ci-masteryml)
-- [Changelog maintenance — changelog-master.yml](#changelog-maintenance--changelog-masteryml)
-- [Documentation — docs.yml](#documentation--docsyml)
+- [Changelog maintenance — changelog-weekly.yml](#changelog-maintenance--changelog-weeklyyml)
+- [Wiki synchronization — wiki-sync.yml](#wiki-synchronization--wiki-syncyml)
+- [Weekly Wiki reconciliation — wiki-reconcile-weekly.yml](#weekly-wiki-reconciliation--wiki-reconcile-weeklyyml)
+- [API documentation — docs.yml](#api-documentation--docsyml)
 - [PR labels — labeler.yml](#pr-labels--labeleryml)
 - [PR title and description formatting](#pr-title-and-description-formatting)
+- [Repository mirrors](#repository-mirrors)
 - [Releases — release.yml](#releases--releaseyml)
 - [Release-note configuration](#release-note-configuration)
 - [Secrets and permissions](#secrets-and-permissions)
@@ -53,38 +60,43 @@ Files such as `.github/labeler.yml` and `.github/release.yml` are **configuratio
 
 ---
 
-## Workflow overview
+# Workflow overview
 
 At a high level, Gondwana's repository automation looks like this:
 
 ```mermaid
 flowchart TD
     PR[Pull Request] --> LABEL[Label PR]
-    PR --> FORMAT[Format PR title / description]
+    PR --> FORMAT[Normalize PR metadata]
     PR --> CI[Build + Test + Pack]
 
-    CHGPR[PR changes changelog infrastructure] --> CHGVALIDATE[Validate changelog generators]
+    MASTER[Push to master] --> CI
+    MASTER --> DOCS[Development API docs when relevant]
+    MASTER --> MIRRORS[Repository mirrors]
+    MASTER --> WIKIPUB[Publish docs/wiki changes to Wiki]
 
-    PUSH[Push to master] --> CI
-    PUSH --> CHG[Refresh root + project changelogs]
-    CHG --> AUTOPR[Open or update changelog PR]
-    AUTOPR --> AUTOMERGE[Request squash auto-merge]
-    AUTOMERGE --> MASTERCHG[Updated changelogs on master]
+    WIKIEDIT[Edit GitHub Wiki] --> GOLLUM[gollum event]
+    GOLLUM --> WIKIIMPORT[Import through automation/wiki-sync PR]
+    WIKIIMPORT --> MASTER
 
-    DOCS[Docs changed on master] --> DOCBUILD[Generate Doxygen docs]
+    CHGWEEKLY[Monday 03:00 UTC] --> CHG[Refresh Unreleased changelogs]
+    CHG --> MASTER
+
+    WIKIWEEKLY[Monday 04:17 UTC] --> RECONCILE[Reconcile Wiki and docs/wiki drift]
 
     TAG[Push v* tag] --> RELEASE[Release workflow]
+    TAG --> MIRRORS
 
     CI --> ARTIFACT[CI binary artifact]
-    DOCBUILD --> PAGES[gh-pages]
+    DOCS --> DEVAPI[/api/latest/]
     RELEASE --> BUILD[Build + Pack]
     BUILD --> GHREL[GitHub Release]
     BUILD --> NUGET[NuGet.org]
     BUILD --> GHPKG[GitHub Packages]
-    RELEASE --> PAGES
+    RELEASE --> STABLEAPI[/api/vX.Y.Z/ + /api/]
 ```
 
-The important point is that these workflows serve different purposes.
+The workflows answer different questions.
 
 **CI answers:**
 
@@ -92,17 +104,21 @@ The important point is that these workflows serve different purposes.
 
 **Changelog automation answers:**
 
-> Do the root and per-project `[Unreleased]` sections accurately reflect the commits currently on `master`, without rewriting released history?
+> Are the derived `[Unreleased]` sections reasonably current without creating changelog churn after every merge?
 
-**Docs answers:**
+**Wiki synchronization answers:**
 
-> Can the current documentation be generated and published?
+> Do `docs/wiki` and the GitHub Wiki represent the same documentation while allowing either surface to be edited safely?
+
+**Docs automation answers:**
+
+> Can current development and tagged-release API documentation be generated and published?
 
 **PR automation answers:**
 
 > Can routine repository housekeeping happen consistently without manual work?
 
-**Release answers:**
+**Release automation answers:**
 
 > Can a tagged version become an actual Gondwana release?
 
@@ -118,17 +134,17 @@ File:
 
 The CI workflow is Gondwana's main validation pipeline.
 
-It runs when:
+It runs for:
 
-- code is pushed to `master`
-- a pull request is opened
-- a pull request receives new commits
-- a pull request is reopened
-- a draft pull request becomes ready for review
+- pushes to `master`
+- pull requests that are opened
+- pull requests that receive new commits
+- reopened pull requests
+- draft pull requests marked ready for review
 
 Documentation-only and changelog-only changes are excluded from the normal CI workflow.
 
-The current `paths-ignore` rules exclude:
+The current `paths-ignore` rules include:
 
 ```text
 docs/**
@@ -138,7 +154,9 @@ CHANGELOG.md
 **/CHANGELOG.md
 ```
 
-That keeps generated changelog refreshes and documentation-only updates from needlessly rebuilding the entire engine.
+That keeps generated changelog refreshes and documentation-only changes from rebuilding the entire engine.
+
+A Wiki import is a special case: its checkpoint file lives under `Tooling/scripts/wiki-sync`, outside `docs/**`, so an imported Wiki PR is not accidentally treated as a documentation-only CI no-op.
 
 ---
 
@@ -150,53 +168,35 @@ CI currently runs on:
 runs-on: ubuntu-latest
 ```
 
-and installs:
+with:
 
 ```yaml
 dotnet-version: '8.0.x'
 ```
 
-Although Gondwana contains Windows-targeting projects, the workflow builds from Linux using:
+Although Gondwana contains Windows-targeting projects, CI builds from Linux using:
 
 ```text
 /p:EnableWindowsTargeting=true
 ```
 
-This allows the repository to validate Windows-targeted assemblies without requiring the entire CI job to run on a Windows runner.
+This allows Windows-targeted assemblies to be validated without moving the entire build to a Windows runner.
 
 ---
 
-## Restore
+## Restore and build
 
-The workflow performs both workload restoration and normal NuGet restoration.
+The workflow restores workloads and NuGet dependencies, then performs a full Release build.
 
-Conceptually:
-
-```text
-restore workloads
-       ↓
-restore NuGet dependencies
-       ↓
-build
-```
-
-The normal restore explicitly uses the Release configuration.
-
-This matters because some Gondwana projects contain runtime-specific dependencies whose assets are resolved differently depending on configuration.
-
-The restore therefore includes:
+The normal restore includes:
 
 ```text
 /p:Configuration=Release
 ```
 
-before the later `--no-restore` build.
+because some runtime-specific dependencies are resolved differently by configuration.
 
----
-
-## Build
-
-CI performs a full Release build:
+The build uses the already-restored dependency graph:
 
 ```bash
 dotnet build \
@@ -205,45 +205,41 @@ dotnet build \
     /p:EnableWindowsTargeting=true
 ```
 
-If this fails, the rest of the validation pipeline does not represent a releasable repository state.
-
 ---
 
-## Unit tests
+## Tests
 
-The CI workflow explicitly runs:
+CI explicitly runs:
 
 ```text
 Testing/Gondwana.Tests/Gondwana.Tests.csproj
 ```
 
-using the already-built Release output.
+It also runs the browser-side Blazor presentation helper tests with Node.js:
+
+```text
+Testing/BlazorPresentationTests.mjs
+```
 
 Conceptually:
 
 ```text
+Restore
+  ↓
 Build
   ↓
 Gondwana.Tests
   ↓
+Blazor presentation tests
+  ↓
 Pack validation
 ```
-
-This makes unit tests part of the normal pull-request and `master` validation path.
 
 ---
 
 ## Pack validation
 
-CI also runs:
-
-```bash
-dotnet pack
-```
-
-but does **not** publish those packages.
-
-This is deliberate.
+CI runs `dotnet pack`, but it does **not** publish packages.
 
 CI answers:
 
@@ -253,319 +249,504 @@ The release workflow answers:
 
 > Should those packages actually be published?
 
-Keeping those responsibilities separate prevents an ordinary pull request or push from accidentally becoming a package release.
+Keeping those responsibilities separate prevents an ordinary pull request or push from becoming a package release.
 
 ---
 
-## Published binaries
+## Published CI binaries
 
-After validation, CI publishes selected Gondwana projects into temporary staging directories.
-
-These include engine assemblies such as:
-
-```text
-Gondwana.dll
-Gondwana.Audio.Midi.dll
-Gondwana.Blazor.dll
-Gondwana.Blazor.Hosting.dll
-Gondwana.Hosting.dll
-Gondwana.Input.SDL2.dll
-Gondwana.Video.dll
-Gondwana.Widgets.dll
-Gondwana.WinForms.dll
-Gondwana.WinForms.Hosting.dll
-```
-
-It also publishes selected executable projects, including tooling and demos.
-
-The workflow then stages the exact downloadable files into an artifact directory and creates:
+After validation, CI publishes selected projects into temporary staging directories and creates:
 
 ```text
 Gondwana-binaries.zip
 ```
 
-Finally, GitHub Actions uploads that ZIP as the workflow artifact:
+GitHub Actions uploads the ZIP as the workflow artifact:
 
 ```text
 Gondwana-binaries
 ```
 
-This is useful for testing a build without performing a formal Gondwana release.
+This provides downloadable build output without performing a formal release.
 
 ---
 
-# Changelog maintenance — `changelog-master.yml`
+# Changelog maintenance — `changelog-weekly.yml`
 
 File:
 
 ```text
-.github/workflows/changelog-master.yml
+.github/workflows/changelog-weekly.yml
 ```
 
-This workflow maintains Gondwana's **running changelogs on `master`** and validates the changelog-generation machinery when that machinery changes.
+This workflow replaced the older `changelog-master.yml` design.
 
-It works with:
+The important architectural change is that Gondwana no longer regenerates `[Unreleased]` and opens a changelog PR after every qualifying push to `master`.
+
+Instead, changelogs are refreshed **in a scheduled batch**.
+
+---
+
+## Schedule and manual execution
+
+The workflow runs:
 
 ```text
-Tooling/scripts/Generate-Root-Changelog.ps1
-Tooling/scripts/Generate-Project-Changelogs.ps1
-Tooling/scripts/Changelog-ProjectGroups.ps1
-Tooling/scripts/release.ps1
-cliff.toml
+Monday 03:00 UTC
 ```
 
-The PowerShell scripts contain the changelog-generation logic.
+which is Sunday night in US Eastern time:
 
-The workflow supplies the GitHub-side orchestration around them.
+- 11:00 PM during EDT
+- 10:00 PM during EST
 
----
-
-## Two different jobs
-
-`changelog-master.yml` has two distinct responsibilities:
+It can also be started manually with:
 
 ```text
-pull request changes changelog infrastructure
-        ↓
-validate-changelog-script
-        ↓
-prove the generators behave safely
-
-
-ordinary push reaches master
-        ↓
-update-changelogs
-        ↓
-refresh [Unreleased]
-        ↓
-open/update automation PR
-        ↓
-request squash auto-merge
+Actions → Changelog (weekly) → Run workflow
 ```
 
-The validation job is **repository-read-only**. It may rewrite files inside the temporary runner workspace while exercising test scenarios, but it has no permission to write those changes back to GitHub.
-
-The update job receives narrowly scoped write permissions only when it is running for a `master` push.
+The schedule intentionally keeps normal development commits free from a second automated changelog PR after nearly every merge.
 
 ---
 
-## Pull-request validation
+## What the weekly job does
 
-The workflow runs its validation job only when a pull request changes changelog infrastructure such as:
+The workflow:
 
-- `Generate-Project-Changelogs.ps1`
-- `Generate-Root-Changelog.ps1`
-- `Changelog-ProjectGroups.ps1`
-- `release.ps1`
-- `cliff.toml`
-- `changelog-master.yml` itself
+1. verifies that `CHANGELOG_PUSH_TOKEN` is available
+2. checks out current `master` with full history
+3. records the starting `master` SHA
+4. installs `git-cliff`
+5. runs `Test-ChangelogConfiguration.ps1`
+6. runs `Generate-Root-Changelog.ps1`
+7. runs `Generate-Project-Changelogs.ps1`
+8. stages only `CHANGELOG.md` files
+9. fails if generation changed any other file
+10. exits cleanly if the changelogs are already current
+11. commits the refresh
+12. verifies that `master` has not moved
+13. pushes the commit directly to `master` with a force-with-lease guard
 
-This means ordinary feature pull requests do not spend time running specialized changelog tests.
-
-When changelog infrastructure *does* change, the workflow checks several important contracts.
-
-### Preview mode must be read-only
-
-Both generators are run with:
-
-```powershell
--PreviewOnly
-```
-
-and the workflow compares Git status before and after.
-
-A preview is considered broken if it modifies the working tree.
-
----
-
-### Repeat runs must be idempotent
-
-The workflow runs the changelog generators repeatedly and hashes the resulting changelog files.
-
-Running the generators twice against the same Git history must produce the same files.
-
-It also explicitly verifies that refreshing `[Unreleased]` does **not** alter existing released history.
-
-This is an important property because `[Unreleased]` is derived state while released sections are treated as historical records.
-
----
-
-### Root changelog behavior is validated
-
-The grouped root changelog is checked separately.
-
-Validation confirms that:
-
-- normal generation produces a leading `# [Unreleased]` section
-- the section is grouped by project or repository area
-- previously released root history is preserved exactly
-- a second run is idempotent
-- supplying `-Tag vX.Y.Z` replaces `[Unreleased]` with that versioned release section
-
-The root generator therefore has automated tests for both its development and release modes.
-
----
-
-### Missing project changelogs are bootstrapped
-
-The workflow temporarily removes a project `CHANGELOG.md` and runs the project generator.
-
-It verifies that a new changelog contains:
-
-- prior tagged release history
-- the current `[Unreleased]` section
-
-It then runs the generator again and verifies that the freshly bootstrapped file is already stable.
-
-A second bootstrap test supplies a synthetic release tag and verifies that the current commits become that version rather than remaining `[Unreleased]`.
-
----
-
-### Existing project changelogs are tested with `-Tag`
-
-The validation also exercises the normal release transition against an existing project changelog.
-
-It confirms that:
+The generated commit is:
 
 ```text
-[Unreleased]
-      ↓
--Tag vX.Y.Z
-      ↓
-vX.Y.Z
+docs: refresh unreleased changelogs [skip release notes]
 ```
-
-occurs without changing the older released history below it.
 
 ---
 
-## Updating changelogs after a push to `master`
+## Why the workflow pushes directly to `master`
 
-For ordinary non-changelog pushes to `master`, the `update-changelogs` job:
+This is intentionally different from the former automation-PR design.
 
-1. checks out the latest `master` with full Git history
-2. installs `git-cliff`
-3. runs `Generate-Root-Changelog.ps1`
-4. runs `Generate-Project-Changelogs.ps1`
-5. verifies that the generators changed only `CHANGELOG.md` files
-6. opens or updates an automation pull request if changes exist
+The weekly refresh is deterministic generated maintenance, and batching it once per week makes a dedicated PR less useful than it was when changelogs were regenerated continuously.
 
-The generated pull request uses the branch:
+The workflow still protects against clobbering newer work.
+
+Before pushing, it fetches `master` and confirms that the remote SHA still equals the SHA recorded at the beginning of the run.
+
+The final push also uses:
 
 ```text
-automation/update-changelogs
+--force-with-lease
 ```
 
-with a title of:
+against that exact starting SHA.
+
+So the contract is:
 
 ```text
-docs: update unreleased changelogs
-```
-
-The generated commit uses:
-
-```text
-docs: update unreleased changelogs [skip release notes]
-```
-
-The same automation branch is reused, so later pushes to `master` can update an already-open changelog pull request rather than creating a stream of separate PRs.
-
----
-
-## Why it uses a pull request instead of pushing directly
-
-The workflow deliberately does **not** write generated changelogs straight to `master`.
-
-Instead:
-
-```text
-master changes
+record master SHA
       ↓
 generate changelogs
       ↓
-automation branch
-      ↓
-pull request
-      ↓
-normal repository merge rules
-      ↓
-master
+master unchanged?
+   ├── no  → fail; rerun later
+   └── yes → lease-protected push
 ```
 
-This keeps automated repository writes visible and lets branch protection, required checks, and GitHub's normal pull-request machinery remain in the path.
-
-The workflow then requests **squash auto-merge** for the changelog PR.
-
-GitHub completes that merge only when the repository's auto-merge and branch-rule requirements permit it.
+A PR merge or other direct update that moves `master` during generation therefore causes a visible failure instead of an overwrite.
 
 ---
 
-## Avoiding recursive automation
+## Changelog configuration validation
 
-A changelog update creates another commit on `master`, so loop prevention is essential.
+Before touching the real changelogs, the weekly workflow runs:
 
-The workflow avoids recursion in several ways.
-
-First, its push trigger ignores:
-
-```text
-CHANGELOG.md
-**/CHANGELOG.md
+```powershell
+./Tooling/scripts/Test-ChangelogConfiguration.ps1
 ```
 
-A merge that changes only changelogs therefore does not start another changelog refresh.
+The test suite creates temporary Git history and exercises changelog behavior in isolation.
 
-The update job also excludes runs whose actor is:
+It checks contracts such as:
+
+- root and project selection behavior
+- missing-file bootstrap
+- preview safety
+- idempotent repeated refreshes
+- tagged generation
+- preservation of released history
+- excluded-only root no-ops
+- project configuration combinations
+
+This keeps the scheduled write path behind a validation step.
+
+---
+
+## Project selection
+
+The authoritative project metadata lives in:
 
 ```text
-github-actions[bot]
+Tooling/scripts/Changelog-ProjectGroups.ps1
 ```
 
-And the normal CI workflow independently ignores changelog-only changes.
-
-The PR-title Copilot workflow also excludes PRs whose title starts with:
+Each configured area independently declares:
 
 ```text
+GenerateChangelog
+IncludeInRootChangelog
+```
+
+That allows all four logical combinations.
+
+For example:
+
+- engine projects can have both a project changelog and root entry
+- demos can have project changelogs without appearing in the root changelog
+- repository/build areas can appear only in the root changelog
+- omitted areas can generate neither
+
+This is the central place to update when a new deployable project should participate in changelog generation.
+
+---
+
+## Changelog exclusions
+
+`cliff.toml` contains explicit parser rules to keep automation noise out of generated changelogs.
+
+Among other exclusions, it skips:
+
+```text
+docs(wiki):
+changelog
+[skip release notes]
 docs: update changelog
 ```
 
-so the generated changelog PR is not needlessly rewritten by AI-assisted PR metadata automation.
+That means Wiki-sync automation and the scheduled changelog-refresh commit do not recursively become changelog entries.
 
 ---
 
 ## Concurrency
 
-The update job uses a single concurrency group:
+The weekly workflow uses:
 
 ```text
-changelog-master
+changelog-weekly-master
 ```
 
-with in-progress work cancelled when a newer run supersedes it.
+with:
 
-This matters when several changes reach `master` close together.
+```text
+cancel-in-progress: false
+```
 
-The desired changelog is always the one derived from the **latest** `master` history, so an older refresh should not race a newer refresh to update the automation branch.
+A manually started run and the scheduled run therefore do not update `master` concurrently.
 
 ---
 
 ## No-change behavior
 
-If the generators produce no changelog changes, the workflow does not create an empty commit or pull request.
+If generation produces no staged changelog changes, the workflow reports that the changelogs are current and exits without creating a commit.
 
-It also checks for an existing stale pull request from:
-
-```text
-automation/update-changelogs
-```
-
-and closes it when there is no longer anything to update.
-
-This keeps the automation branch and PR state aligned with the actual generated result.
+There is no automation branch or changelog PR to clean up.
 
 ---
 
-# Documentation — `docs.yml`
+# Wiki synchronization — `wiki-sync.yml`
+
+Files and supporting code:
+
+```text
+.github/workflows/wiki-sync.yml
+docs/wiki/
+Tooling/scripts/wiki-sync/
+```
+
+Gondwana keeps its GitHub Wiki mirrored into the main repository under:
+
+```text
+docs/wiki
+```
+
+Both are supported editing surfaces.
+
+You can:
+
+- edit an article in the repository and merge it to `master`
+- edit an article directly through GitHub's Wiki UI
+
+The synchronization workflow keeps the two sides aligned without making either one permanently read-only.
+
+The repository-only file:
+
+```text
+docs/wiki/README.md
+```
+
+documents the synchronization machinery itself and is deliberately excluded from publication to the Wiki.
+
+---
+
+## Day-to-day: repository → Wiki
+
+A push to `master` that changes:
+
+```text
+docs/wiki/**
+```
+
+triggers `wiki-sync.yml`, except when the only relevant file is:
+
+```text
+docs/wiki/README.md
+```
+
+The workflow checks out the synchronization code from trusted `master`, runs its unit tests, then performs:
+
+```text
+repo-to-wiki
+```
+
+The comparison is content-aware. If the Wiki already represents the same content, there is no unnecessary content commit.
+
+Normal repository edits therefore follow:
+
+```text
+branch
+  ↓
+PR
+  ↓
+merge to master
+  ↓
+wiki-sync.yml
+  ↓
+GitHub Wiki
+```
+
+---
+
+## Day-to-day: Wiki → repository
+
+Editing the GitHub Wiki produces a GitHub `gollum` event.
+
+That triggers the same `wiki-sync.yml`, but in the opposite direction:
+
+```text
+wiki-to-repo
+```
+
+A Wiki import **never pushes directly to `master`**.
+
+Instead, the sync machinery uses the stable branch:
+
+```text
+automation/wiki-sync
+```
+
+and creates or updates a pull request against `master`.
+
+Automated Wiki-import PR titles begin with:
+
+```text
+docs(wiki):
+```
+
+The workflow requests auto-merge through GitHub's API, but normal repository rules remain authoritative. Required checks, branch protection, and required human review are not bypassed.
+
+---
+
+## Why Wiki imports use a PR
+
+The Wiki UI is an external editing surface relative to the main source repository.
+
+Importing through a PR gives the repository a reviewable boundary:
+
+```text
+Wiki edit
+   ↓
+gollum
+   ↓
+three-way comparison
+   ↓
+automation/wiki-sync
+   ↓
+docs(wiki): ... PR
+   ↓
+normal repository checks/review
+   ↓
+master
+```
+
+This is intentionally more conservative than silently copying Wiki state into `master`.
+
+---
+
+## Conflict behavior
+
+The synchronizer uses whole-file three-way comparisons based on the last acknowledged state.
+
+Its purpose is to preserve unrelated one-sided edits while refusing ambiguous two-sided edits.
+
+Cases that fail visibly include:
+
+- the same article independently changed on both sides
+- delete/edit conflicts
+- divergent Wiki history
+- merge conflicts between the automation branch and current `master`
+- concurrent remote changes detected while a push is in progress
+
+There is no silent last-writer-wins policy.
+
+Binary Wiki assets receive the same protection.
+
+A conflict can therefore be conservative: two independent edits to different parts of the same Markdown file still count as competing whole-file edits.
+
+---
+
+## Checkpoints and source anchors
+
+Synchronization state is recorded under:
+
+```text
+Tooling/scripts/wiki-sync/
+```
+
+including the imported Wiki revision.
+
+Automated Wiki publication commits also record a source master SHA.
+
+Together, those anchors let the script determine what changed on each side since the last common acknowledged state.
+
+The checkpoint is intentionally outside `docs/**` so Wiki-import PRs are not skipped by CI's documentation-only path filter.
+
+---
+
+## Manual synchronization
+
+`wiki-sync.yml` also supports `workflow_dispatch`.
+
+Use:
+
+```text
+Actions → Wiki sync → Run workflow
+```
+
+and choose one of:
+
+| Direction | Authoritative source | Destination |
+|---|---|---|
+| `repo-to-wiki` | current `master` `docs/wiki` | GitHub Wiki |
+| `wiki-to-repo` | current GitHub Wiki | automation branch / PR |
+
+Manual runs are **authoritative recovery operations**. They may replace destination content, including deletions, while still excluding the repository-only `docs/wiki/README.md`.
+
+Use them when you intentionally know which side should win.
+
+The `wiki-to-repo` manual direction still uses the protected PR path; it does not bypass `master`.
+
+---
+
+## Loop prevention
+
+The sync system compares actual content rather than relying on token-based event suppression.
+
+Repeated equivalent events become no-ops.
+
+This matters because a successful import eventually creates a `master` change under `docs/wiki`, which can in turn trigger the repository-to-Wiki direction.
+
+The content comparison recognizes that the destination is already current and stops the loop naturally.
+
+---
+
+## Concurrency
+
+The day-to-day and weekly Wiki workflows share:
+
+```text
+wiki-sync-master
+```
+
+with in-progress work preserved rather than cancelled.
+
+Runs read current heads and perform complete comparisons, so a later run can cover coalesced events without depending only on the original event's changed-file list.
+
+---
+
+# Weekly Wiki reconciliation — `wiki-reconcile-weekly.yml`
+
+File:
+
+```text
+.github/workflows/wiki-reconcile-weekly.yml
+```
+
+Normal Wiki synchronization is **event-driven**.
+
+The weekly workflow exists only as a safety net for events or runs that did not complete cleanly.
+
+It runs:
+
+```text
+Monday 04:17 UTC
+```
+
+and can also be started manually.
+
+The time is intentionally distinct from the Monday 03:00 UTC changelog refresh.
+
+---
+
+## What reconciliation does
+
+The weekly job:
+
+1. checks out trusted synchronization code from `master`
+2. runs the Wiki synchronization unit tests
+3. performs `wiki-to-repo`
+4. performs `repo-to-wiki`
+
+Import happens first so an unacknowledged Wiki edit gets its normal shared PR before repository publication is retried.
+
+The workflow compares complete trees rather than relying on a prior event payload.
+
+It can therefore recover from cases such as:
+
+- a missed `gollum` event
+- a failed or interrupted day-to-day sync
+- a deletion that was not propagated
+- rename edge cases
+- temporary drift between the Wiki and `docs/wiki`
+
+A rename can safely degrade to deletion plus addition.
+
+If the trees are already equivalent, the weekly job does not invent work.
+
+If both sides changed ambiguously, it fails rather than picking a winner.
+
+So the intended relationship is:
+
+```text
+day-to-day events = normal synchronization
+weekly reconcile  = recovery safety net
+```
+
+---
+
+# API documentation — `docs.yml`
 
 File:
 
@@ -573,130 +754,94 @@ File:
 .github/workflows/docs.yml
 ```
 
-The documentation workflow publishes Gondwana's generated API documentation.
+The standalone docs workflow publishes **development API documentation** from `master`.
 
-It can be started:
+It can be started manually and also runs automatically when relevant API-affecting source or documentation infrastructure changes.
 
-- manually with `workflow_dispatch`
-- automatically when relevant documentation files change on `master`
+The path filter includes relevant:
 
-The automatic path is restricted to:
+- `.cs`
+- `.csproj`
+- `.props`
+- `.targets`
+- version configuration
+- Doxygen configuration
+- API-doc tooling
 
-```text
-docs/**
-.github/workflows/docs.yml
-```
+while excluding areas such as demos, tests, and unrelated tooling.
 
-So a normal engine-code commit does not unnecessarily run the standalone documentation workflow.
-
----
-
-## Version detection
-
-Documentation uses **Nerdbank.GitVersioning**, through the `nbgv` command-line tool, to determine the package version:
-
-```text
-NuGetPackageVersion
-```
-
-That version is injected into the Doxygen configuration.
-
-The Doxygen source configuration contains a placeholder:
-
-```text
-@PROJECT_VERSION@
-```
-
-which the workflow replaces with the actual version before generation.
-
-For example, conceptually:
-
-```text
-@PROJECT_VERSION@
-        ↓
-     v1.2.3
-```
-
-This keeps generated API documentation tied to the engine version from which it was produced.
+This is intentionally different from ordinary Wiki prose: editing `docs/wiki` does not require rebuilding Doxygen output.
 
 ---
 
-## Doxygen
+## Development documentation
 
-The workflow installs Doxygen and generates the API documentation using the repository's Doxygen configuration under:
+The workflow uses Nerdbank.GitVersioning to determine the current package version, validates the API-doc publisher, generates Doxygen output, and publishes it as:
 
 ```text
-docs/doxy/
+/api/latest/
 ```
 
-A temporary generated configuration file is produced before Doxygen runs.
+The displayed version identifies it as development documentation from `master`.
 
-This avoids permanently rewriting the checked-in Doxygen configuration just to inject a version number.
+The workflow then requests a GitHub Pages build.
 
 ---
 
-## Publishing to `gh-pages`
+## Stable release documentation
 
-Generated documentation is published to the repository's:
+Stable API documentation is published by the tag-driven release workflow rather than `docs.yml`.
+
+For a stable tag:
 
 ```text
-gh-pages
+vX.Y.Z
 ```
 
-branch.
+the release workflow publishes an immutable version under:
 
-The workflow:
+```text
+/api/vX.Y.Z/
+```
 
-1. generates the documentation
-2. copies the finished `docs` tree to a temporary directory
-3. fetches or creates `gh-pages`
-4. clears the previous published contents
-5. copies in the newly generated documentation
-6. creates `.nojekyll`
-7. commits the result
-8. force-pushes it to `gh-pages`
+and updates the stable entry point:
 
-The `.nojekyll` file tells GitHub Pages not to process the generated site through Jekyll.
+```text
+/api/
+```
 
-That matters for generated documentation containing directory or filename conventions that Jekyll might otherwise treat specially.
+This produces two distinct tracks:
+
+```text
+/api/          → latest stable release
+/api/latest/   → development master
+/api/vX.Y.Z/   → immutable tagged release
+```
+
+Development publishing and release publishing share the concurrency group:
+
+```text
+api-docs-publication
+```
+
+so they do not update the Pages branch concurrently.
 
 ---
 
 # PR labels — `labeler.yml`
 
-There are **two** files called `labeler.yml`, and they have different jobs:
+There are two files called `labeler.yml`, and they have different jobs:
 
 ```text
 .github/workflows/labeler.yml
 .github/labeler.yml
 ```
 
-This distinction is worth remembering.
+The workflow file is executable automation.
 
----
+The configuration file maps changed paths to labels.
 
-## `.github/workflows/labeler.yml`
-
-This is the executable GitHub Actions workflow.
-
-It runs for pull-request events such as:
-
-- opened
-- synchronized
-- reopened
-- marked ready for review
-
-It invokes GitHub's `actions/labeler` action.
-
-That action then reads:
-
-```text
-.github/labeler.yml
-```
-
-for the actual rules.
-
-So the relationship is:
+Conceptually:
 
 ```mermaid
 flowchart LR
@@ -708,74 +853,45 @@ flowchart LR
 
 ---
 
-## `.github/labeler.yml`
+## Current label behavior
 
-This file maps changed paths to Gondwana labels.
+Path rules cover areas including:
 
-For example, changes under the core engine:
-
-```text
-Gondwana/**
-```
-
-map to:
-
-```text
-gondwana-core
-```
-
-Changes under:
-
-```text
-Gondwana.Widgets/**
-```
-
-map to:
-
-```text
-gondwana-widgets
-```
-
-Similar rules exist for:
-
+- Gondwana core
+- Widgets
 - Avalonia
 - Blazor
 - WinForms
-- audio
 - hosting
-- SDL2 input
+- input
 - video
 - CLI
 - templates
 - tooling
 - demos
 - documentation
+- repository chores
 
-Repository-maintenance files such as `.github/**`, `.props`, and `.json` can also receive the `chore` label.
-
----
-
-## Multiple labels are possible
-
-The rules are not mutually exclusive.
-
-For example, a change under:
+There are also broad category labels for:
 
 ```text
-Tooling/Gondwana.Cli/**
+audio
+testing
 ```
 
-may match both a specific tooling label and the broader:
+Audio matching is designed to cover current and future `Gondwana.Audio*` projects.
+
+Testing matching covers the current `Testing/**` tree and future `Gondwana.Testing*` projects.
+
+Generated changelogs are explicitly excluded from the path rules:
 
 ```text
-tooling
+!**/CHANGELOG.md
 ```
 
-classification.
+so a project does not receive a functional label merely because its generated changelog changed.
 
-That is intentional.
-
-Labels can describe both the specific subsystem and its broader category.
+Multiple labels are intentional. A Templates change, for example, may receive both a template-specific label and the broader tooling label.
 
 ---
 
@@ -787,80 +903,28 @@ File:
 .github/workflows/format-pr-title.yml
 ```
 
-This workflow provides Gondwana's AI-assisted PR metadata automation.
+This workflow provides Gondwana's AI-assisted PR metadata automation using GitHub Copilot CLI.
 
-It uses the GitHub Copilot CLI to help standardize pull-request metadata.
-
----
-
-## When it runs
-
-The workflow listens to:
-
-```text
-pull_request_target
-```
-
-events including:
-
-- opened
-- reopened
-- synchronize
-- edited
-
-However, it deliberately restricts execution further.
-
-It only runs when the pull request:
+It listens to `pull_request_target` events, but only runs when the pull request:
 
 - targets `master`
 - originates from the same Gondwana repository
-- is **not** the automated changelog-maintenance PR
 
-The changelog exclusion is implemented by ignoring titles that begin with:
+The same-repository restriction is important because `pull_request_target` runs with base-repository permissions.
 
-```text
-docs: update changelog
-```
-
-That keeps the generated:
-
-```text
-docs: update unreleased changelogs
-```
-
-pull request out of Copilot title/description formatting.
-
-The same-repository restriction is especially important.
-
-`pull_request_target` workflows execute with permissions associated with the base repository. Running arbitrary fork-provided content in that context would be dangerous.
-
-Gondwana therefore excludes fork-based pull requests from this Copilot automation.
+Fork-provided content is therefore excluded from this automation.
 
 ---
 
-## Conventional PR titles
+## Conventional titles
 
-The workflow checks whether the existing title already resembles a Conventional Commit title.
-
-For example:
-
-```text
-feat(rendering): add image instance layers
-```
-
-or:
-
-```text
-fix(collisions): preserve frame collision override
-```
-
-The expected general structure is:
+The workflow recognizes titles shaped like:
 
 ```text
 type(scope): description
 ```
 
-Supported types include:
+with conventional types such as:
 
 ```text
 feat
@@ -875,102 +939,75 @@ chore
 revert
 ```
 
-A breaking change can use:
+A breaking change may use:
 
 ```text
 type(scope)!: description
 ```
 
----
+If the existing PR title is already conventional, the workflow leaves it alone.
 
-## Existing valid titles are preserved
-
-The automation is not intended to fight the maintainer.
-
-If a PR already has a valid conventional title, the workflow leaves it alone.
-
-Likewise, before writing the generated title, it checks the live PR title again.
-
-This prevents the workflow from overwriting a title that somebody manually corrected while the job was running.
-
----
-
-## How Copilot gets context
-
-The workflow does **not** simply hand Copilot the entire repository.
-
-Instead, it constructs a limited context from:
-
-- the branch's commit messages
-- a changed-file summary from `git diff --stat`
-
-Both are capped to reasonable sizes.
-
-The resulting prompt asks Copilot to generate exactly one conventional title appropriate for the PR's eventual squash-merge commit.
-
-This keeps the automation focused and limits unnecessary prompt size.
-
----
-
-## Validation and fallback
-
-Copilot's response is not blindly trusted.
-
-The workflow validates the returned title against the required format.
-
-It checks things such as:
-
-- allowed Conventional Commit type
-- lowercase description
-- expected scope syntax
-- reasonable description length
-- no trailing period
-
-If Copilot fails or returns an invalid response, the workflow attempts to use an existing conventional commit message from the branch.
-
-If that also fails, it falls back to:
+That means Wiki documentation PR titles such as:
 
 ```text
-chore(core): update pull request
+docs(wiki): update synchronization documentation
 ```
 
-In other words:
-
-```text
-Copilot suggestion
-       ↓
-validation
-       ↓
-valid? ── yes ──> use it
-  │
-  no
-  ↓
-conventional commit fallback
-  │
-  ↓
-generic safe fallback
-```
-
-The workflow therefore treats AI output as a suggestion that must satisfy deterministic rules.
+are already in the preferred form and do not need AI rewriting.
 
 ---
 
-## PR descriptions
+## Copilot context and safeguards
 
-The same workflow can populate an empty PR body.
+Copilot receives limited branch context:
 
-If the PR already contains a description, it leaves it alone.
+- capped commit messages
+- capped `git diff --stat` output
 
-If the body is blank, Copilot receives the same limited branch context and is asked to produce a concise Markdown summary consisting of two to four bullet points.
+The returned title is validated deterministically for type, scope shape, casing, length, and punctuation.
 
-Again, the generated response is cleaned and constrained before being written.
+If Copilot fails or returns an invalid title, the workflow attempts to use an existing conventional commit message.
 
-The end result is that a newly opened Gondwana PR can automatically receive both:
+If that also fails, it uses a safe fallback.
 
-- a conventional title
-- a basic summary
+The workflow can similarly populate an empty PR description with a concise bullet summary, but it does not overwrite a human-written body.
 
-while still preserving human-written metadata whenever it already exists.
+AI therefore assists the metadata process; deterministic code decides whether its output is acceptable.
+
+---
+
+# Repository mirrors
+
+Gondwana keeps GitHub as the canonical repository while maintaining read-only mirrors for availability and discoverability.
+
+Current workflows include:
+
+```text
+.github/workflows/mirror_bitbucket.yml
+.github/workflows/mirror_codeberg.yml
+.github/workflows/mirror-gitlab.yml
+.github/workflows/mirror-sourceforge.yml
+```
+
+The mirror workflows run for relevant updates to `master` and tags, and they can also be dispatched manually.
+
+They push canonical GitHub history outward; development does not flow back from the mirrors into GitHub.
+
+The intended model is:
+
+```text
+GitHub master/tags
+       ↓
+read-only mirrors
+├── Bitbucket
+├── Codeberg
+├── GitLab
+└── SourceForge
+```
+
+Mirror credentials are stored as repository secrets rather than committed into workflow files.
+
+When changing mirror automation, preserve the rule that GitHub remains canonical.
 
 ---
 
@@ -990,15 +1027,7 @@ It runs when GitHub receives a tag matching:
 v*
 ```
 
-For example:
-
-```text
-v1.4.0
-```
-
-A tag is therefore not merely decorative in Gondwana.
-
-It is an executable release event.
+A tag is therefore an executable release event, not merely a label.
 
 ---
 
@@ -1016,14 +1045,15 @@ flowchart TD
     BUILD --> PUBLISH[Publish binaries]
     PUBLISH --> ZIP[Create release ZIP]
 
+    CHANGELOG[Tagged CHANGELOG.md] --> GHREL[GitHub Release]
+    ZIP --> GHREL
+
     PACK --> NUGET[NuGet.org]
     PACK --> GHPKG[GitHub Packages]
 
-    ZIP --> GHREL[GitHub Release]
-    CHANGELOG[CHANGELOG.md] --> GHREL
-
-    BUILD --> DOXY[Doxygen]
-    DOXY --> PAGES[gh-pages]
+    BUILD --> DOXY[Generate stable API docs]
+    DOXY --> VERSIONED[/api/vX.Y.Z/]
+    DOXY --> STABLE[/api/]
 ```
 
 ---
@@ -1036,184 +1066,97 @@ After determining the version through NBGV, the workflow creates or overwrites:
 release/v<version>
 ```
 
-For example:
+pointing at the tagged release commit.
 
-```text
-release/v1.4.0
-```
-
-The branch points at the tagged release commit.
-
-This provides a named branch corresponding to the release state in addition to the immutable Git tag.
+The immutable tag remains the actual release identity; the release branch provides a convenient named branch for that release state.
 
 ---
 
-## Restore, build, and pack
+## Build, packages, and binaries
 
-The release performs its own Release restore and build rather than assuming some previous CI job's output is still available.
+The release performs its own restore, build, pack, and publish from the tagged source.
 
-It then packs the repository's packable projects into:
+It does not depend on artifacts from some prior CI run.
+
+Packable projects are written under:
 
 ```text
 ./nupkgs
 ```
 
-This separation is important.
-
-CI may have already validated the same commit, but a release should remain reproducible from the tagged source itself.
-
----
-
-## Release binaries
-
-The workflow publishes the engine assemblies and selected executable projects.
-
-Library assemblies are staged as DLLs.
-
-Applications and tools that require runtime assets are staged as **full published directories**, not merely their `.exe` files.
-
-That distinction is deliberate.
-
-A standalone executable file is not necessarily a complete .NET application distribution.
-
-Its associated:
-
-- DLLs
-- runtime configuration
-- native dependencies
-- assets
-
-may be required as well.
-
-The release workflow therefore preserves the complete publish folders for those projects.
-
----
-
-## Binary ZIP
-
-The staged output is packaged as:
+Selected library assemblies and application/tool publish output are staged into:
 
 ```text
 Gondwana-<version>-binaries.zip
 ```
 
-For example:
-
-```text
-Gondwana-1.4.0-binaries.zip
-```
-
-That ZIP becomes an asset attached to the GitHub Release.
+which becomes an asset on the GitHub Release.
 
 ---
 
 ## Release notes come from `CHANGELOG.md`
 
-The release workflow treats:
+The tag-driven release workflow does **not** use GitHub's generated release-note body as its source of truth.
+
+Instead, it extracts the newest released section from:
 
 ```text
 CHANGELOG.md
 ```
 
-as the source of truth for the GitHub Release body.
-
-Before release creation, it extracts the newest release section from the changelog into:
+into:
 
 ```text
 RELEASE_NOTES.md
 ```
 
-The extraction supports both the newer git-cliff-style heading:
+and supplies that file to the GitHub Release action.
 
-```text
-# [version]
-```
+If a usable release section cannot be extracted, the release fails.
 
-and the repository's older:
+During normal development, the weekly workflow keeps `[Unreleased]` reasonably current.
 
-```text
-# vX.Y.Z
-```
+When `release.ps1` performs a release, it runs the changelog generators with the resolved tag so the current derived section becomes the versioned release section **before the tag is created**.
 
-format.
-
-If no valid release notes can be extracted, the release fails instead of publishing an empty or misleading release.
-
-This is intentional.
-
-During normal development, `changelog-master.yml` keeps the root and project changelogs' leading `[Unreleased]` sections current.
-
-When `release.ps1` performs a release, it calls the root and project changelog generators with the resolved `vX.Y.Z` tag. That converts the current derived sections into versioned release sections before the release commit and tag are pushed.
-
-The expected release process therefore updates the changelog **before the tag is created**, so the tagged commit contains the notes belonging to that release.
-
-`release.ps1` pushes the release commit and version tag atomically. The GitHub release workflow begins only after that tag reaches GitHub.
-
----
-
-## GitHub Release
-
-The workflow creates a GitHub Release using:
-
-- the version tag
-- the extracted changelog section
-- the generated binary ZIP
-
-The release is therefore built directly from the same tagged repository state described by its release notes.
+The tagged commit therefore contains the release notes that `release.yml` will publish.
 
 ---
 
 ## NuGet.org
 
-Every ordinary `.nupkg` generated during packing is pushed to:
-
-```text
-nuget.org
-```
-
-using the repository secret:
+Generated `.nupkg` files are pushed to NuGet.org using:
 
 ```text
 NUGET_API_KEY
 ```
 
-Symbol packages are excluded from this particular file-selection command.
-
-The publish command also uses:
-
-```text
---skip-duplicate
-```
-
-which prevents an already-published identical version from causing the push step to fail solely because it already exists.
+with duplicate versions skipped.
 
 ---
 
 ## GitHub Packages
 
-The release also configures the repository's GitHub Packages NuGet feed and attempts to push the generated packages there.
-
-Authentication uses GitHub's built-in:
+The workflow also attempts to publish packages to GitHub Packages using:
 
 ```text
 GITHUB_TOKEN
 ```
 
-Unlike the NuGet.org publish, GitHub Packages publishing is treated as **best effort**.
-
-If one or more GitHub Packages uploads fail, the workflow emits a warning and continues rather than invalidating the entire release.
-
-That makes NuGet.org and the GitHub Release the more critical publication paths.
+GitHub Packages publication is treated as best effort: failures produce warnings rather than invalidating the entire release.
 
 ---
 
-## Documentation during release
+## Stable API docs during release
 
-A release also regenerates Doxygen documentation and republishes the `gh-pages` branch.
+For a stable semantic-version tag matching:
 
-This means a formal release refreshes the published API documentation even if the standalone docs workflow has not recently run.
+```text
+vX.Y.Z
+```
 
-The version injected into Doxygen is the release's NBGV version.
+the release workflow validates the API publisher, generates Doxygen output, publishes the immutable versioned documentation, updates the stable `/api/` entry point, and requests a Pages build.
+
+Only proper stable `vX.Y.Z` tags publish the stable API-doc track.
 
 ---
 
@@ -1225,74 +1168,39 @@ File:
 .github/release.yml
 ```
 
-This file should not be confused with:
+Do not confuse this with:
 
 ```text
 .github/workflows/release.yml
 ```
 
-They are different things.
+The workflow file is the executable release pipeline.
 
-`workflows/release.yml` is Gondwana's executable release pipeline.
+`.github/release.yml` is GitHub's configuration for automatically generated release-note categories.
 
-`.github/release.yml` is GitHub's configuration for **automatically generated release notes**.
+Current categories include:
 
-It defines release-note categories based on labels.
+- Breaking Changes
+- New Features
+- Fixes
+- Gondwana (Core)
+- Gondwana.Widgets
+- Gondwana.Avalonia
+- Gondwana.Blazor
+- Gondwana.WinForms
+- Audio
+- Gondwana.Hosting
+- Gondwana.Input.SDL2
+- Gondwana.Video
+- Testing
+- Templates
+- Tooling
+- Demos
+- Other Changes
 
-For example:
+Templates are deliberately categorized before Tooling because template PRs may also receive the broader tooling label.
 
-```text
-breaking-change
-Semver-Major
-```
-
-belong under:
-
-```text
-Breaking Changes
-```
-
-Labels such as:
-
-```text
-enhancement
-feature
-Semver-Minor
-```
-
-belong under:
-
-```text
-New Features
-```
-
-and bug-related labels belong under:
-
-```text
-Fixes
-```
-
-There are also Gondwana-specific categories for:
-
-- core
-- widgets
-- Avalonia
-- Blazor
-- WinForms
-- audio
-- hosting
-- SDL2 input
-- video
-- tooling
-- demos
-
-Anything not otherwise classified can fall under:
-
-```text
-Other Changes
-```
-
-The configuration also excludes release-note noise from labels such as:
+The configuration excludes release-note noise associated with labels such as:
 
 ```text
 documentation
@@ -1301,45 +1209,45 @@ chore
 ignore-for-release
 ```
 
-and excludes pull requests authored by:
+and excludes PRs authored by:
 
 ```text
 github-actions[bot]
 ```
 
-That is especially useful now that changelog maintenance itself can create automated pull requests.
+Wiki documentation PRs receive normal documentation handling and are additionally excluded from `git-cliff` changelog generation by the `docs(wiki):` parser rule.
 
 ---
 
-## Important current behavior
+## Generated GitHub notes versus actual release notes
 
-The current Gondwana release workflow does **not** use GitHub's generated release notes as the body of its automated release.
-
-Instead, it explicitly supplies:
+`.github/release.yml` remains useful GitHub metadata configuration, but the tag-driven Gondwana release currently supplies:
 
 ```text
 RELEASE_NOTES.md
 ```
 
-extracted from:
+extracted from the repository changelog.
+
+So for an actual automated Gondwana release:
 
 ```text
 CHANGELOG.md
+    ↓
+RELEASE_NOTES.md
+    ↓
+GitHub Release body
 ```
 
-So `.github/release.yml` remains useful GitHub release-note configuration, but it is **not currently the source of truth for the tag-driven Gondwana release workflow**.
-
-The source of truth there is the changelog.
-
-That is an important distinction when modifying release behavior.
+The root changelog is the source of truth.
 
 ---
 
 # Secrets and permissions
 
-Repository automation sometimes needs credentials, but secret values should never appear in these YAML files.
+Repository automation sometimes needs credentials, but secret values should never appear in source control.
 
-Gondwana primarily relies on two forms of authentication.
+Each workflow should request only the permissions it actually needs.
 
 ---
 
@@ -1353,79 +1261,80 @@ GITHUB_TOKEN
 
 to workflow runs.
 
-It is used for repository-scoped operations such as:
+It is used for ordinary repository-scoped operations where its event behavior and permissions are sufficient, including examples such as:
 
-- editing pull requests
-- applying labels
-- creating and updating the automated changelog pull request
-- requesting auto-merge for that changelog pull request
-- publishing GitHub Packages
-- creating GitHub Releases
-- pushing documentation when appropriate
+- labels and PR metadata
+- GitHub Releases
+- GitHub Packages
+- Pages build requests
 
-Each workflow should request only the permissions it needs.
+A workflow-generated push made with the default token generally does not start a new chain of workflows. That behavior is one reason some Gondwana automation uses dedicated tokens when downstream workflow triggering is part of the design.
 
-For example, `changelog-master.yml` defaults to read-only contents access for validation. Its `update-changelogs` job separately requests:
+---
 
-```yaml
-permissions:
-  contents: write
-  pull-requests: write
+## `CHANGELOG_PUSH_TOKEN`
+
+The weekly changelog workflow requires:
+
+```text
+CHANGELOG_PUSH_TOKEN
 ```
 
-because that job must create/update a branch-backed pull request and request auto-merge.
+It must be an App token or fine-grained PAT with appropriate repository Contents read/write access.
 
-Examples include:
+The dedicated credential is important because the direct changelog push to `master` is intended to behave like a normal repository update and allow downstream automation to observe it.
 
-```yaml
-permissions:
-  contents: read
-  pull-requests: write
+The workflow fails early with a clear error if the secret is absent.
+
+---
+
+## `WIKI_SYNC_TOKEN`
+
+Wiki synchronization uses:
+
+```text
+WIKI_SYNC_TOKEN
 ```
 
-or:
+for authenticated Wiki Git access and repository branch/PR operations.
 
-```yaml
-permissions:
-  contents: write
-  packages: write
-```
+It requires working Wiki write access plus repository Contents and Pull requests read/write capability.
 
-This is preferable to granting broad write access to every workflow.
+Credentials are passed through the environment and Git askpass rather than embedded in remote URLs or printed diagnostics.
 
 ---
 
 ## `NUGET_API_KEY`
 
-Publishing to NuGet.org requires the repository secret:
+Publishing to NuGet.org requires:
 
 ```text
 NUGET_API_KEY
 ```
 
-The value itself must never be committed to the repository.
+The value is managed in repository settings and is referenced only as a secret from the workflow.
 
-The workflow only references it by name:
+---
 
-```text
-secrets.NUGET_API_KEY
-```
+## Mirror credentials
 
-The actual value is managed through GitHub repository settings.
+Each repository-mirror workflow uses provider-specific authentication secrets.
+
+Keep those credentials isolated to the workflow that needs them and never place private keys, tokens, or known-host material directly into the repository.
 
 ---
 
 ## Copilot permissions
 
-The PR-formatting workflow also requests:
+The PR-formatting workflow requests:
 
 ```text
 copilot-requests: write
 ```
 
-because it invokes GitHub Copilot CLI during the workflow.
+because it invokes GitHub Copilot CLI.
 
-Again, that permission is isolated to the workflow that actually requires it.
+That permission is isolated to the workflow that uses it.
 
 ---
 
@@ -1433,7 +1342,7 @@ Again, that permission is isolated to the workflow that actually requires it.
 
 Not every part of Gondwana's automation exists in source control.
 
-The YAML files describe workflow behavior, but repository settings also matter.
+The YAML and scripts describe workflow behavior, but repository settings also matter.
 
 Examples include:
 
@@ -1443,13 +1352,12 @@ Examples include:
 - Actions permissions
 - whether Actions may create pull requests
 - auto-merge availability and branch rules
-- available GitHub labels
-- NuGet API credentials
-- GitHub Packages permissions
+- available labels
+- NuGet credentials
+- Wiki availability and permissions
+- mirror credentials
 
-This distinction is useful when troubleshooting.
-
-If the YAML looks correct but a workflow still cannot perform an operation, the missing piece may be a GitHub repository setting rather than source code.
+If the YAML looks correct but an operation still fails, the missing piece may be a GitHub repository setting rather than a source-code bug.
 
 ---
 
@@ -1457,33 +1365,28 @@ If the YAML looks correct but a workflow still cannot perform an operation, the 
 
 Workflow files should be treated as production infrastructure.
 
-A small indentation error can disable a workflow.
-
-A small permission change can give a workflow more access than intended.
-
-A small trigger change can make something run far more often than expected.
-
 The safest pattern is:
 
 ```text
 create development branch
         ↓
-modify workflow
+modify workflow or script
         ↓
 push branch
         ↓
 inspect PR behavior
         ↓
-merge when validated
+merge after validation
 ```
 
-For workflows that only execute on `master` or tags, some behavior cannot be fully exercised from a branch alone.
+Some write paths only execute from `master`, a schedule, a Wiki event, or a version tag, so a branch cannot perfectly reproduce every production trigger.
 
-`changelog-master.yml` is intentionally better behaved in this respect: changes to the changelog scripts, `cliff.toml`, release script, shared project groups, or the workflow itself trigger a **pull-request validation job** before the `master` write path is involved.
+Where possible, Gondwana's workflows compensate with deterministic validation:
 
-Its actual automatic PR creation still occurs only after a qualifying push reaches `master`.
-
-For workflows without such a validation path, review the trigger and permissions particularly carefully before merging.
+- changelog refresh runs `Test-ChangelogConfiguration.ps1` before writing
+- Wiki sync runs its Python unit tests before synchronizing
+- API docs validate the publisher before publication
+- AI-generated PR metadata is checked before being written
 
 ---
 
@@ -1515,28 +1418,19 @@ There are few faster ways to turn sophisticated automation into expensive whites
 
 ---
 
-## Pin actions deliberately
+## Pin dependencies deliberately
 
-Workflow dependencies are themselves versioned.
+Workflow dependencies are versioned infrastructure.
 
-Examples currently used by Gondwana include actions such as:
+Gondwana uses a mixture of release tags and deliberately pinned action revisions.
 
-```text
-actions/checkout
-actions/setup-dotnet
-actions/setup-node
-actions/upload-artifact
-actions/labeler
-actions/github-script
-taiki-e/install-action
-peter-evans/create-pull-request
-```
+When changing an action version or pinned commit, review:
 
-Some first-party actions are referenced by release tag, while the changelog workflow pins important third-party actions to exact commit SHAs.
-
-For example, the `git-cliff` installer and changelog-PR action are deliberately pinned rather than floating automatically to whatever a future tag happens to contain.
-
-When changing an action version or pinned commit, review its release notes, required runtime versions, and trust implications rather than simply changing the number because a newer one exists.
+- the action's release notes
+- Node/runtime requirements
+- permission changes
+- supply-chain implications
+- whether output or behavior changed
 
 Infrastructure should be boring.
 
@@ -1548,7 +1442,7 @@ Boring infrastructure is usually infrastructure that works.
 
 When a workflow fails, start in GitHub's **Actions** tab.
 
-Select the failed workflow run, then identify:
+Follow:
 
 ```text
 workflow
@@ -1560,51 +1454,28 @@ step
 log output
 ```
 
-That hierarchy matters.
-
-A workflow can contain multiple jobs, and a job can contain many steps.
-
-The useful error is usually near the end of the **first failed step**, not necessarily at the bottom of the entire workflow page.
+The useful error is usually near the end of the first failed step.
 
 ---
 
-## Common failure categories
+## CI failures
 
-### Restore failures
-
-Look for:
-
-- unavailable NuGet packages
-- incorrect runtime identifiers
-- configuration-dependent assets
-- workload restoration failures
-
----
-
-### Build failures
-
-Treat these much like a local Release build failure.
-
-Try reproducing locally with the same major options used by CI, especially:
+For restore/build failures, try reproducing locally with the same major options used by CI:
 
 ```text
 Release
 EnableWindowsTargeting=true
 ```
 
----
+For unit-test failures, compilation succeeded but behavior no longer satisfies a tested contract.
 
-### Test failures
-
-The CI workflow directly runs `Gondwana.Tests`.
-
-A failure here generally indicates that compilation succeeded but engine behavior no longer satisfies the tested contract.
+For browser-presentation failures, inspect the Node test output separately from the .NET test output.
 
 ---
 
-### Permission failures
+## Permission failures
 
-Errors involving:
+Errors such as:
 
 ```text
 403
@@ -1612,11 +1483,69 @@ Resource not accessible by integration
 permission denied
 ```
 
-often point to workflow `permissions:` or repository Actions settings.
+usually point to one of:
+
+- workflow `permissions:`
+- repository Actions settings
+- token scopes
+- branch rules
+- Pages/Wiki/provider permissions
 
 ---
 
-### NuGet publication failures
+## Changelog automation failures
+
+For `changelog-weekly.yml`, common failure categories are:
+
+- `CHANGELOG_PUSH_TOKEN` is missing or under-scoped
+- changelog configuration tests failed
+- `git-cliff` installation or generation failed
+- a generator modified a non-`CHANGELOG.md` file
+- `master` moved while generation was running
+- the lease-protected push was rejected
+
+If `master` moved, the intended recovery is simply to rerun the workflow against the new head.
+
+Do not bypass the lease check.
+
+---
+
+## Wiki synchronization failures
+
+For `wiki-sync.yml` or `wiki-reconcile-weekly.yml`, check for:
+
+- missing or under-scoped `WIKI_SYNC_TOKEN`
+- synchronization unit-test failures
+- same-file edits on both sides
+- delete/edit conflicts
+- a merge conflict on `automation/wiki-sync`
+- rewritten/divergent Wiki history
+- concurrent remote changes during publication
+- branch protection or required checks preventing the import PR from merging
+
+For an actual content conflict, decide which version should survive.
+
+Then either resolve the automation PR normally or use a manual authoritative sync direction when appropriate.
+
+The weekly reconciliation job should not be used as a conflict resolver; it intentionally follows the same conservative comparison rules.
+
+---
+
+## API documentation failures
+
+Check:
+
+- NBGV version detection
+- Doxygen installation
+- API publisher unit tests
+- Doxygen generation
+- `gh-pages` write permission
+- Pages build permission
+- concurrency with another API publication run
+
+---
+
+## NuGet publication failures
 
 Check:
 
@@ -1627,93 +1556,59 @@ Check:
 
 ---
 
-### GitHub Packages failures
+## GitHub Packages failures
 
-The release workflow intentionally treats these as non-fatal.
+The release workflow intentionally treats GitHub Packages uploads as non-fatal.
 
-A warning here does not necessarily mean the GitHub Release or NuGet.org publication failed.
-
-Check the individual package push messages before assuming the entire release was unsuccessful.
+A warning there does not automatically mean the GitHub Release or NuGet.org publication failed.
 
 ---
 
-### Changelog automation failures
-
-For failures in `changelog-master.yml`, first identify whether the failed job was:
-
-```text
-validate-changelog-script
-```
-
-or:
-
-```text
-update-changelogs
-```
-
-Validation failures commonly indicate:
-
-- a preview unexpectedly modified files
-- a second generator run produced different bytes
-- released history changed during an `[Unreleased]` refresh
-- a missing changelog did not bootstrap correctly
-- `-Tag` did not replace the current section as expected
-- `git-cliff` produced output that no longer matches the scripts' assumptions
-
-Update-job failures commonly involve:
-
-- `git-cliff` installation or generation
-- a generator changing something other than a `CHANGELOG.md`
-- permission to create or update the automation branch/PR
-- repository auto-merge settings
-- branch protection or required checks preventing the requested auto-merge
-
-The workflow's design intentionally turns these assumptions into explicit failures instead of silently writing questionable changelog output.
-
----
-
-### Documentation failures
-
-Check:
-
-- NBGV version detection
-- Doxygen installation
-- Doxygen warnings/errors
-- generated configuration
-- `gh-pages` push permissions
-
----
-
-### Copilot PR automation failures
+## Copilot PR automation failures
 
 The PR formatting workflow contains deterministic fallback behavior.
 
-A Copilot failure therefore does not automatically mean the entire PR workflow must fail.
+Check whether it:
 
-Check whether the workflow:
-
-1. received enough branch context
-2. successfully invoked Copilot CLI
-3. rejected the generated title during validation
-4. selected a conventional commit fallback
+1. obtained branch context
+2. invoked Copilot CLI successfully
+3. rejected the generated result during validation
+4. selected a conventional-commit fallback
 5. ultimately used the generic fallback
 
-This is a good example of the intended architecture: AI may assist repository automation, but deterministic code remains responsible for validating its output.
+AI assists the workflow; it is not trusted as the validator.
+
+---
+
+## Mirror failures
+
+Check:
+
+- provider-specific authentication secrets
+- SSH known-host configuration where applicable
+- whether the provider is reachable
+- whether the canonical GitHub ref still exists
+- whether a provider rejected a force/prune operation
+
+Fix mirror automation on GitHub; do not make the mirror authoritative to work around a synchronization problem.
 
 ---
 
 # Mental model
 
-The simplest way to think about Gondwana's GitHub automation is:
+The simplest reference table is:
 
 | Concern | Source |
 |---|---|
-| Does Gondwana build and test? | `workflows/ci-master.yml` |
-| Are running root/project changelogs current? | `workflows/changelog-master.yml` |
-| Can API docs be regenerated? | `workflows/docs.yml` |
-| What labels should a PR receive? | `workflows/labeler.yml` + `.github/labeler.yml` |
-| Should PR metadata be normalized? | `workflows/format-pr-title.yml` |
-| What happens when a version tag is pushed? | `workflows/release.yml` |
+| Does Gondwana build and test? | `.github/workflows/ci-master.yml` |
+| Are `[Unreleased]` changelogs current? | `.github/workflows/changelog-weekly.yml` |
+| Do normal Wiki edits sync both ways? | `.github/workflows/wiki-sync.yml` |
+| Is Wiki/repository drift reconciled? | `.github/workflows/wiki-reconcile-weekly.yml` |
+| Are development API docs current? | `.github/workflows/docs.yml` |
+| What labels should a PR receive? | `.github/workflows/labeler.yml` + `.github/labeler.yml` |
+| Should PR metadata be normalized? | `.github/workflows/format-pr-title.yml` |
+| Are secondary Git hosts mirrored? | `.github/workflows/mirror-*.yml` and `mirror_*.yml` |
+| What happens when a version tag is pushed? | `.github/workflows/release.yml` |
 | How would GitHub categorize generated release notes? | `.github/release.yml` |
 
 Or, more compactly:
@@ -1721,32 +1616,40 @@ Or, more compactly:
 ```text
 Pull Request
 ├── label it
-├── normalize its metadata
-├── build + test it
-└── if changelog infrastructure changed:
-        validate changelog generation
+├── normalize metadata when needed
+└── build + test normal code changes
 
 master
 ├── build + test normal code changes
-├── refresh root + project [Unreleased] sections
-│       └── automation PR
-│             └── requested squash auto-merge
-└── publish docs when docs change
+├── publish relevant development API docs
+├── publish docs/wiki changes to the GitHub Wiki
+└── mirror canonical history outward
+
+GitHub Wiki edit
+└── import through automation/wiki-sync PR
+      └── normal checks/review
+            └── master
+
+Sunday night / Monday UTC
+├── 03:00 UTC → refresh [Unreleased] changelogs
+│                └── guarded direct push to master
+└── 04:17 UTC → reconcile Wiki drift
 
 v* tag
 └── build release
     ├── create GitHub Release
     ├── publish NuGet packages
     ├── publish GitHub Packages
-    └── regenerate API docs
+    ├── publish stable/versioned API docs
+    └── mirror tag outward
 ```
 
-The changelog workflow is the bridge between ordinary development and formal releases:
+The changelog path between development and release is:
 
 ```text
 commits on master
       ↓
-running [Unreleased]
+weekly [Unreleased] refresh
       ↓
 release.ps1
       ↓
@@ -1757,6 +1660,14 @@ v* tag
 release.yml
 ```
 
+The Wiki path is:
+
+```text
+repository article ──merge──> master ──event──> GitHub Wiki
+                                              ↑
+GitHub Wiki edit ──gollum──> automation PR ───┘
+```
+
 These files are not part of the Gondwana engine runtime.
 
-They are the machinery around the engine that keeps builds repeatable, pull requests organized, changelogs current, documentation published, and releases reproducible.
+They are the machinery around the engine that keeps builds repeatable, pull requests organized, changelogs current, documentation synchronized, API references published, mirrors current, and releases reproducible.
