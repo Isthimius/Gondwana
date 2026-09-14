@@ -54,6 +54,7 @@ commit_preprocessors = [
 
 # Group conventional commits first. Anything else falls through to Other Changes.
 commit_parsers = [
+    { message = "^docs\\(wiki\\):", skip = true },
     { message = "(?i)changelog", skip = true },
     { message = "(?i)\\[skip release notes\\]", skip = true },
     { message = "^docs: update changelog", skip = true },
