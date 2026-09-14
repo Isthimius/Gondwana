@@ -124,13 +124,20 @@ public sealed class ProjectDevelopmentTests : IDisposable
         var path = Project();
         Assert.Equal(0, Run("add", "widgets", "-p", path));
         Assert.Equal("2.5.2", new ProjectPackages(path).Packages.Single(p => p.Name == "Gondwana.Widgets").Version);
-        var before = File.ReadAllBytes(path);
+
+        var afterWidgets = File.ReadAllBytes(path);
         Assert.Equal(0, Run("add", "widgets", "-p", path));
+        Assert.Equal(afterWidgets, File.ReadAllBytes(path));
+
         Assert.Equal(0, Run("add", "audio", "-p", path));
-        Assert.Equal(before, File.ReadAllBytes(path));
+        Assert.Contains(new ProjectPackages(path).Packages, p => p.Name == "Gondwana.Audio.NAudio" && p.Version == "2.5.2");
+        var afterAudio = File.ReadAllBytes(path);
+        Assert.Equal(0, Run("add", "audio", "-p", path));
+        Assert.Equal(afterAudio, File.ReadAllBytes(path));
+
         Assert.Equal(1, Run("add", "not-a-feature", "-p", path));
         Assert.Equal(1, Run("add", "hosting", "-p", path));
-        Assert.Equal(before, File.ReadAllBytes(path));
+        Assert.Equal(afterAudio, File.ReadAllBytes(path));
     }
 
     [Fact]
@@ -149,12 +156,13 @@ public sealed class ProjectDevelopmentTests : IDisposable
         var path = Project($"<PackageReference Include=\"Gondwana\" Version=\"2.5.2\" /><PackageReference Include=\"Gondwana.{host}\" Version=\"2.5.2\" />");
         Assert.Equal(0, Run("add", "hosting", "-p", path));
         Assert.Contains(new ProjectPackages(path).Packages, p => p.Name == $"Gondwana.{host}.Hosting");
+
+        Assert.Equal(0, Run("add", "audio", "-p", path));
+        var expectedAudioPackage = host == "Blazor" ? "Gondwana.Audio.Browser" : "Gondwana.Audio.NAudio";
+        Assert.Contains(new ProjectPackages(path).Packages, p => p.Name == expectedAudioPackage);
+
         if (host == "Blazor")
-        {
-            Assert.Equal(0, Run("add", "audio", "-p", path));
-            Assert.Contains(new ProjectPackages(path).Packages, p => p.Name == "Gondwana.Audio.Browser");
             Assert.Equal(1, Run("add", "video", "-p", path));
-        }
     }
 
     [Fact]
