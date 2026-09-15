@@ -1,10 +1,13 @@
-using Gondwana.Audio;
 using Microsoft.Extensions.Logging;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
 namespace Gondwana.Audio.NAudio;
 
+/// <summary>
+/// Represents a playback handle for audio resources using NAudio.
+/// Manages playback state, volume, panning, looping, and playback speed for a single audio stream.
+/// </summary>
 internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
 {
     private readonly string _key;
@@ -12,9 +15,11 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
     private readonly WaveStream _waveStream;
     private readonly IWavePlayer _outputDevice;
     private readonly VariableSpeedSampleProvider _speedProvider;
+
     private PanningSampleProvider? _monoPanProvider;
     private StereoPanSampleProvider? _stereoPanProvider;
     private VolumeSampleProvider? _volumeProvider;
+    
     private bool _stopRequested;
     private bool? _pendingPlay;
     private bool _disposed;
@@ -23,6 +28,15 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
     private float _pan;
     private float _playbackSpeed;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NAudioPlaybackHandle"/> class.
+    /// </summary>
+    /// <param name="key">Logical key for the audio resource (used for logging).</param>
+    /// <param name="waveStream">The underlying <see cref="WaveStream"/> that provides audio samples.</param>
+    /// <param name="temporaryFilePath">Optional temporary file path associated with the resource.</param>
+    /// <param name="volume">Initial volume in the range [0,1].</param>
+    /// <param name="pan">Initial pan value in the range [-1,1] where -1 is full left and 1 is full right.</param>
+    /// <param name="playbackSpeed">Initial playback speed (clamped to supported range).</param>
     public NAudioPlaybackHandle(
         string key,
         WaveStream waveStream,
@@ -45,6 +59,7 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         };
 
         _outputDevice = new WaveOutEvent();
+
         try
         {
             _outputDevice.Init(BuildAudioGraph(_speedProvider));
@@ -54,11 +69,19 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
             _outputDevice.Dispose();
             throw;
         }
+
         _outputDevice.PlaybackStopped += OnPlaybackStopped;
     }
 
+    /// <summary>
+    /// Occurs when playback completes naturally (reached end and not looping).
+    /// </summary>
     public event EventHandler? PlaybackCompleted;
 
+    /// <summary>
+    /// Gets the current high-level playback state for this handle.
+    /// </summary>
+    /// <value>A <see cref="AudioPlaybackState"/> value indicating whether the audio is playing, paused, or stopped.</value>
     public AudioPlaybackState State => _outputDevice.PlaybackState switch
     {
         PlaybackState.Playing => AudioPlaybackState.Playing,
@@ -66,16 +89,36 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         _ => AudioPlaybackState.Stopped
     };
 
+    /// <summary>
+    /// Gets or sets the current playback position within the audio stream.
+    /// </summary>
+    /// <value>The current playback position.</value>
     public TimeSpan CurrentTime => _waveStream.CurrentTime;
+
+    /// <summary>
+    /// Gets the total duration of the audio stream.
+    /// </summary>
+    /// <value>The total duration.</value>
     public TimeSpan Duration => _waveStream.TotalTime;
+
+    /// <summary>
+    /// Gets the optional temporary file path associated with this playback resource.
+    /// </summary>
     public string? TemporaryFilePath { get; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether playback should loop when the end is reached.
+    /// </summary>
     public bool IsLooping
     {
         get => _isLooping;
         set => _isLooping = value;
     }
 
+    /// <summary>
+    /// Gets or sets the playback volume.
+    /// </summary>
+    /// <value>Volume in the range [0,1]. Setting updates the audio graph if available.</value>
     public float Volume
     {
         get => _volume;
@@ -87,6 +130,10 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         }
     }
 
+    /// <summary>
+    /// Gets or sets the stereo pan for playback.
+    /// </summary>
+    /// <value>Pan in the range [-1,1] where -1 is full left and 1 is full right.</value>
     public float Pan
     {
         get => _pan;
@@ -100,6 +147,10 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         }
     }
 
+    /// <summary>
+    /// Gets or sets the playback speed multiplier.
+    /// </summary>
+    /// <value>The playback speed; values are clamped to supported limits defined on <see cref="AudioResource"/>.</value>
     public float PlaybackSpeed
     {
         get => _playbackSpeed;
@@ -110,6 +161,10 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         }
     }
 
+    /// <summary>
+    /// Starts playback on this handle.
+    /// </summary>
+    /// <param name="fromStart">If true, playback begins from the start of the stream; otherwise resumes from current position.</param>
     public void Play(bool fromStart = true)
     {
         lock (_controlLock)
@@ -142,6 +197,9 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         }
     }
 
+    /// <summary>
+    /// Pauses playback if currently playing.
+    /// </summary>
     public void Pause()
     {
         lock (_controlLock)
@@ -152,6 +210,9 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         }
     }
 
+    /// <summary>
+    /// Resumes playback if currently paused.
+    /// </summary>
     public void Resume()
     {
         lock (_controlLock)
@@ -162,6 +223,10 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         }
     }
 
+    /// <summary>
+    /// Seeks the playback position to the specified time.
+    /// </summary>
+    /// <param name="position">Target playback position. Values outside the valid range are clamped to [0, Duration].</param>
     public void Seek(TimeSpan position)
     {
         lock (_controlLock)
@@ -182,6 +247,9 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         }
     }
 
+    /// <summary>
+    /// Stops playback immediately.
+    /// </summary>
     public void Stop()
     {
         lock (_controlLock)
@@ -288,6 +356,10 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         ObjectDisposedException.ThrowIf(_disposed, this);
     }
 
+    /// <summary>
+    /// Disposes the playback handle and releases associated native resources.
+    /// After disposal the instance must not be used.
+    /// </summary>
     public void Dispose()
     {
         lock (_controlLock)

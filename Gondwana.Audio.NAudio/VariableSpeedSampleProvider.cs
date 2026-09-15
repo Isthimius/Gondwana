@@ -21,6 +21,12 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider
     private double _phase;
     private float _playbackSpeed = 1.0f;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VariableSpeedSampleProvider"/> class.
+    /// </summary>
+    /// <param name="source">The underlying <see cref="ISampleProvider"/> to read samples from.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> is null.</exception>
+    /// <exception cref="ArgumentException">Thrown when the source exposes zero audio channels.</exception>
     public VariableSpeedSampleProvider(ISampleProvider source)
     {
         _source = source ?? throw new ArgumentNullException(nameof(source));
@@ -32,8 +38,18 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider
         _nextFrame = new float[_channels];
     }
 
+    /// <summary>
+    /// Gets the <see cref="WaveFormat"/> of the underlying source provider.
+    /// </summary>
     public WaveFormat WaveFormat => _source.WaveFormat;
 
+    /// <summary>
+    /// Gets or sets the playback speed multiplier used to advance through source frames.
+    /// </summary>
+    /// <remarks>
+    /// Values are clamped to the supported range defined by <see cref="AudioResource.MinimumPlaybackSpeed"/> and
+    /// <see cref="AudioResource.MaximumPlaybackSpeed"/>. Changing the speed affects both playback rate and pitch.
+    /// </remarks>
     public float PlaybackSpeed
     {
         get => Volatile.Read(ref _playbackSpeed);
@@ -42,6 +58,14 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider
             Math.Clamp(value, AudioResource.MinimumPlaybackSpeed, AudioResource.MaximumPlaybackSpeed));
     }
 
+    /// <summary>
+    /// Reads floating-point samples from the underlying source while performing linear interpolation
+    /// between adjacent frames to achieve the configured playback speed.
+    /// </summary>
+    /// <param name="buffer">Destination buffer to receive samples.</param>
+    /// <param name="offset">Offset into <paramref name="buffer"/> where writing begins.</param>
+    /// <param name="count">Maximum number of floating-point samples to write into the buffer.</param>
+    /// <returns>The number of samples actually written into <paramref name="buffer"/>.</returns>
     public int Read(float[] buffer, int offset, int count)
     {
         if (count <= 0)
@@ -81,7 +105,10 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider
         }
     }
 
-    /// <summary>Clears interpolation state after the underlying stream position changes.</summary>
+    /// <summary>
+    /// Clears interpolation state after the underlying stream position changes.
+    /// </summary>
+    /// <param name="reposition">Optional action to reposition the underlying stream before clearing state.</param>
     public void Reset(Action? reposition = null)
     {
         lock (_sync)

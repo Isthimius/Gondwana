@@ -23,22 +23,43 @@ public static class NAudioReaderRegistry
         RegisterFile(".m4a", path => new MediaFoundationReader(path));
     }
 
-    /// <summary>Registers a stream-based NAudio reader for an extension.</summary>
+    /// <summary>
+    /// Registers a stream-based NAudio reader factory for the specified file extension.
+    /// The factory will be invoked with a <see cref="Stream"/> when the audio data is
+    /// available in-memory and a <see cref="WaveStream"/> is required for playback.
+    /// </summary>
+    /// <param name="extension">File extension (e.g. ".mp3" or "mp3") to associate with the reader.</param>
+    /// <param name="readerFactory">Factory that creates a <see cref="WaveStream"/> from a <see cref="Stream"/>.</param>
     public static void Register(string extension, Func<Stream, WaveStream> readerFactory)
     {
         ArgumentNullException.ThrowIfNull(readerFactory);
         Readers[NormalizeExtension(extension)] = new Registration(readerFactory, null);
     }
 
-    /// <summary>Registers a file-based NAudio reader for an extension.</summary>
+    /// <summary>
+    /// Registers a file-based NAudio reader factory for the specified file extension.
+    /// The factory will be invoked with a file path when the reader requires a physical
+    /// file on disk (for example when using Media Foundation).
+    /// </summary>
+    /// <param name="extension">File extension (e.g. ".wma" or "wma") to associate with the reader.</param>
+    /// <param name="readerFactory">Factory that creates a <see cref="WaveStream"/> from a file path.</param>
     public static void RegisterFile(string extension, Func<string, WaveStream> readerFactory)
     {
         ArgumentNullException.ThrowIfNull(readerFactory);
         Readers[NormalizeExtension(extension)] = new Registration(null, readerFactory);
     }
 
+    /// <summary>
+    /// Determines whether the specified file name or extension is supported by the registry.
+    /// </summary>
+    /// <param name="fileNameOrExtension">Either a file name (e.g. "sound.mp3") or an extension (e.g. ".mp3" or "mp3").</param>
+    /// <returns>True if a reader is registered for the extension; otherwise false.</returns>
     public static bool Supports(string fileNameOrExtension) => Readers.ContainsKey(GetExtension(fileNameOrExtension));
 
+    /// <summary>
+    /// Returns the list of registered file extensions supported by the NAudio backend.
+    /// </summary>
+    /// <returns>An enumeration of supported extensions, each beginning with a leading '.' (for example ".wav").</returns>
     public static IEnumerable<string> SupportedExtensions() => Readers.Keys.OrderBy(ext => ext);
 
     internal static (WaveStream Reader, string? TemporaryFilePath) Open(byte[] data, string fileNameOrExtension)
