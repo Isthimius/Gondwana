@@ -98,7 +98,8 @@ public static class NAudioReaderRegistry
     private static string GetExtension(string fileNameOrExtension)
     {
         var extension = Path.GetExtension(fileNameOrExtension);
-        if (string.IsNullOrWhiteSpace(extension) && fileNameOrExtension.StartsWith('.'))
+        if (string.IsNullOrWhiteSpace(extension) &&
+            !fileNameOrExtension.Contains('/') && !fileNameOrExtension.Contains('\\'))
             extension = fileNameOrExtension;
 
         return NormalizeExtension(extension);

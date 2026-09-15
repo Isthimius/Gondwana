@@ -1,5 +1,10 @@
 # Gondwana.Audio.NAudio
 
+`Stop()` resets the reported position to zero. NAudio finishes stopping its worker
+asynchronously; the stream and speed-provider buffers are rewound after that worker
+exits, before any queued `Play(false)` begins. This avoids blocking a UI thread that
+may need to deliver the stop callback. An already-stopped source rewinds immediately.
+
 **Gondwana.Audio.NAudio** provides the Windows desktop audio backend for the Gondwana Game Engine using NAudio.
 
 The core `Gondwana` package defines the backend-neutral `Gondwana.Audio` contracts and resource APIs. This package supplies the NAudio implementation used by Windows desktop games.

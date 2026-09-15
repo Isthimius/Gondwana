@@ -201,42 +201,45 @@ public sealed class AudioResourceManager : IDisposable
             if (entry.AssetType != AssetTypes.Audio)
                 continue;
 
-            if (_soundResources.ContainsKey(entry.AssetName))
+            lock (_backendLock)
             {
-                Engine.Logger.LogDebug("AudioResource '{Key}' already loaded. Skipping.", entry.AssetName);
-                continue;
-            }
-
-            var stream = resourceFile.Get(entry.AssetType, entry.AssetName);
-            if (stream is null)
-            {
-                Engine.Logger.LogWarning("Failed to retrieve stream for audio resource: {Key}", entry.AssetName);
-                continue;
-            }
-
-            try
-            {
-                using (stream)
-                using (var ms = new MemoryStream())
+                if (_soundResources.ContainsKey(entry.AssetName))
                 {
-                    stream.CopyTo(ms);
-                    var sound = LoadFromBytes(
-                        entry.AssetName,
-                        ms.ToArray(),
-                        entry.AssetName,
-                        defaultVolume,
-                        defaultPan,
-                        defaultPlaybackSpeed);
-                    sound.SetAssetIdentifier(new AssetsFileIdentifier(resourceFile, AssetTypes.Audio, entry.AssetName));
-                    loadedSounds.Add(sound);
+                    Engine.Logger.LogDebug("AudioResource '{Key}' already loaded. Skipping.", entry.AssetName);
+                    continue;
                 }
 
-                Engine.Logger.LogInformation("Loaded sound: {Key}", entry.AssetName);
-            }
-            catch (Exception ex)
-            {
-                Engine.Logger.LogError(ex, "Error loading sound from asset file for key: {Key}", entry.AssetName);
-                throw;
+                var stream = resourceFile.Get(entry.AssetType, entry.AssetName);
+                if (stream is null)
+                {
+                    Engine.Logger.LogWarning("Failed to retrieve stream for audio resource: {Key}", entry.AssetName);
+                    continue;
+                }
+
+                try
+                {
+                    using (stream)
+                    using (var ms = new MemoryStream())
+                    {
+                        stream.CopyTo(ms);
+                        var sound = LoadFromBytes(
+                            entry.AssetName,
+                            ms.ToArray(),
+                            entry.AssetName,
+                            defaultVolume,
+                            defaultPan,
+                            defaultPlaybackSpeed);
+                        sound.SetAssetIdentifier(new AssetsFileIdentifier(resourceFile, AssetTypes.Audio, entry.AssetName));
+                        loadedSounds.Add(sound);
+                    }
+
+                    Engine.Logger.LogInformation("Loaded sound: {Key}", entry.AssetName);
+                }
+                catch (Exception ex)
+                {
+                    Engine.Logger.LogError(ex, "Error loading sound from asset file for key: {Key}", entry.AssetName);
+                    throw;
+                }
             }
         }
 

@@ -207,14 +207,57 @@ public sealed class AudioTests : IDisposable
         Assert.False(manager.Contains("music"));
     }
 
+    [Fact]
+    public async Task ConcurrentAssetLoads_SkipExistingResourceWithoutDisposingFirstResult()
+    {
+        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".assets");
+        using var assets = AssetsFile.LoadOrCreate(path);
+        assets.Add(AssetTypes.Audio, "sound.wav", new MemoryStream([1, 2, 3]));
+        using var release = new ManualResetEventSlim();
+        var creating = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var secondStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        backend.BeforeCreate = () =>
+        {
+            creating.TrySetResult();
+            Assert.True(release.Wait(TimeSpan.FromSeconds(10)));
+        };
+        var first = Task.Run(() => manager.LoadFromEngineAssetsFile(assets));
+        Task<List<AudioResource>>? second = null;
+        try
+        {
+            await creating.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            second = Task.Run(() =>
+            {
+                secondStarted.SetResult();
+                return manager.LoadFromEngineAssetsFile(assets);
+            });
+            await secondStarted.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            await Assert.ThrowsAsync<TimeoutException>(() => second.WaitAsync(TimeSpan.FromMilliseconds(100)));
+            release.Set();
+            var sound = Assert.Single(await first);
+            Assert.Empty(await second);
+            Assert.Same(sound, manager.Get("sound.wav"));
+            Assert.False(Assert.Single(backend.Handles).Disposed);
+        }
+        finally
+        {
+            release.Set();
+            await first;
+            if (second is not null) await second;
+            backend.BeforeCreate = null;
+        }
+    }
+
     private sealed class Backend : IAudioBackend
     {
         public string Name => "Test";
         public bool Fail { get; set; }
         public bool FailDuringSetup { get; set; }
+        public Action? BeforeCreate { get; set; }
         public List<Handle> Handles { get; } = [];
         private Handle Create()
         {
+            BeforeCreate?.Invoke();
             if (Fail) throw new NotSupportedException();
             var handle = new Handle { FailDuringSetup = FailDuringSetup };
             Handles.Add(handle);

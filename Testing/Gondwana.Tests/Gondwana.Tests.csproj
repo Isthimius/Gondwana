@@ -8,7 +8,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="NAudio.Core" Version="2.3.0" />
+		<PackageReference Include="NAudio" Version="2.3.0" />
+		<PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
 		<PackageReference Include="coverlet.collector" Version="6.0.4" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.6" />
@@ -31,6 +32,8 @@
     <ItemGroup>
         <!-- Exercise pure sample processing without a Windows audio device or platform dependency. -->
         <Compile Include="../../Gondwana.Audio.NAudio/VariableSpeedSampleProvider.cs" Link="Audio/VariableSpeedSampleProvider.cs" />
+        <Compile Include="../../Gondwana.Audio.NAudio/NAudioPlaybackHandle.cs" Link="Audio/NAudioPlaybackHandle.cs" />
+        <Compile Include="../../Gondwana.Audio.NAudio/NAudioReaderRegistry.cs" Link="Audio/NAudioReaderRegistry.cs" />
         <Compile Include="../../Gondwana.Audio.NAudio/StereoPanSampleProvider.cs" Link="Audio/StereoPanSampleProvider.cs" />
         <Compile Include="../../Demos/Gondwana.Platformer/EnemyContact.cs" Link="Demos/EnemyContact.cs" />
         <Compile Include="../../Demos/Gondwana.Platformer/PlatformerArt.cs" Link="Demos/PlatformerArt.cs" />

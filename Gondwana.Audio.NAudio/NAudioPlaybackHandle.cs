@@ -22,6 +22,7 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
     
     private bool _stopRequested;
     private bool? _pendingPlay;
+    private TimeSpan? _pendingPosition;
     private bool _disposed;
     private bool _isLooping;
     private float _volume;
@@ -37,13 +38,15 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
     /// <param name="volume">Initial volume in the range [0,1].</param>
     /// <param name="pan">Initial pan value in the range [-1,1] where -1 is full left and 1 is full right.</param>
     /// <param name="playbackSpeed">Initial playback speed (clamped to supported range).</param>
+    /// <param name="outputDevice">Optional output device for backend testing; defaults to WaveOutEvent.</param>
     public NAudioPlaybackHandle(
         string key,
         WaveStream waveStream,
         string? temporaryFilePath,
         float volume,
         float pan,
-        float playbackSpeed)
+        float playbackSpeed,
+        IWavePlayer? outputDevice = null)
     {
         _key = key;
         _waveStream = waveStream;
@@ -58,7 +61,7 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
             PlaybackSpeed = _playbackSpeed
         };
 
-        _outputDevice = new WaveOutEvent();
+        _outputDevice = outputDevice ?? new WaveOutEvent();
 
         try
         {
@@ -93,7 +96,10 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
     /// Gets or sets the current playback position within the audio stream.
     /// </summary>
     /// <value>The current playback position.</value>
-    public TimeSpan CurrentTime => _waveStream.CurrentTime;
+    public TimeSpan CurrentTime
+    {
+        get { lock (_controlLock) return _pendingPosition ?? _waveStream.CurrentTime; }
+    }
 
     /// <summary>
     /// Gets the total duration of the audio stream.
@@ -236,6 +242,12 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
                 ? TimeSpan.Zero
                 : position > Duration ? Duration : position;
 
+            if (_stopRequested)
+            {
+                _pendingPosition = clamped;
+                return;
+            }
+
             var wasPlaying = State == AudioPlaybackState.Playing;
             if (wasPlaying)
                 _outputDevice.Pause();
@@ -248,7 +260,8 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
     }
 
     /// <summary>
-    /// Stops playback immediately.
+    /// Stops playback and resets the logical position to the beginning. The stream
+    /// is rewound when the asynchronous device stop completes, before a queued play.
     /// </summary>
     public void Stop()
     {
@@ -256,11 +269,19 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         {
             ThrowIfDisposed();
             _pendingPlay = null;
+            if (_stopRequested)
+            {
+                _pendingPosition = TimeSpan.Zero;
+                return;
+            }
             if (State != AudioPlaybackState.Stopped)
             {
+                _pendingPosition = TimeSpan.Zero;
                 _stopRequested = true;
                 _outputDevice.Stop();
             }
+            else
+                _speedProvider.Reset(() => _waveStream.Position = 0);
         }
     }
 
@@ -308,6 +329,12 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
         {
             if (_disposed)
                 return;
+
+            if (_pendingPosition is { } position)
+            {
+                _speedProvider.Reset(() => _waveStream.CurrentTime = position);
+                _pendingPosition = null;
+            }
 
             if (e.Exception is not null)
             {
