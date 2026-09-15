@@ -41,11 +41,12 @@ internal sealed class MyGameHost : BlazorGpuGameHost
         //   TilesheetRegistry.Instance.Register(sheet);
 
         // TODO: Load audio files here.
-        // Example (browser):
-        //   var audioManager = Engine.GetBrowserAudioManager();
-        //   var theme = audioManager.Load("theme", "assets/theme.mp3");
+        // Program.cs configures the browser backend before host initialization.
+        // Example (serve the file at wwwroot/assets/theme.mp3):
+        //   var theme = Engine.Managers.AudioResources.LoadFromUri("theme", "assets/theme.mp3");
         //   theme.IsLooping = true;
-        //   theme.Play();
+        // Call theme.Play() from a user gesture handler after loading; browser
+        // autoplay policy may block playback during startup. Codec support varies.
 
         // TODO: Load fonts here.
         // Example:

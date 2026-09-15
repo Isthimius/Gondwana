@@ -14,4 +14,8 @@ Then load it in MyGameHost.cs:
     Audio:       Engine.Managers.AudioResources.LoadFromFile("name", @"assets\your-audio.mp3")
     Fonts:       Engine.Managers.Fonts.LoadFromFile("name", @"assets\your-font.ttf")
 
+The WinForms game host configures Gondwana.Audio.NAudio before LoadAssets.
+That Windows audio backend is included transitively through Gondwana.WinForms;
+no additional initialization or package reference is needed for this template.
+
 See https://github.com/Isthimius/Gondwana/wiki for full documentation.
