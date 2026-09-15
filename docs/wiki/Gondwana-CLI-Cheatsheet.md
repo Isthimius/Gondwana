@@ -176,13 +176,11 @@ Adds a supported feature package using the project's existing aligned Gondwana v
 | `video` | `Gondwana.Video` (desktop; requires native LibVLC) |
 | `hosting` | `Gondwana.WinForms.Hosting`, `Gondwana.Avalonia.Hosting`, or `Gondwana.Blazor.Hosting`, based on an unambiguous adapter |
 
-The command makes no change when the feature is already referenced. It refuses to guess a version for a non-Gondwana project or a platform-specific package when the adapter is ambiguous.
+The command makes no changes if the requested feature is already referenced. It also avoids making assumptions when it cannot safely determine which package or version to use.
 
-For a normal `net8.0` Avalonia project, `add audio` and `add midi` explain that no
-cross-platform desktop audio backend is automatically selected and leave the
-project unchanged. Explicitly choose/configure a compatible backend. The CLI
-does not retarget Avalonia to Windows; automatic NAudio/MIDI selection for a
-multi-target desktop project requires every declared framework to target Windows.
+For a standard cross-platform Avalonia project targeting `net8.0`, `add audio` and `add midi` do not automatically add a desktop audio backend. Instead, the CLI explains that a compatible backend must be selected explicitly and leaves the project unchanged.
+
+The CLI will not retarget an Avalonia project to Windows automatically. Windows-specific NAudio or MIDI packages are selected automatically only when all of the project's target frameworks are Windows targets.
 
 **Examples**
 
