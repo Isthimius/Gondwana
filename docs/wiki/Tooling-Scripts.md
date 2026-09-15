@@ -108,7 +108,7 @@ The maintainer PowerShell scripts resolve the repository root from their own loc
 
 The general PowerShell requirement is **PowerShell 5.1 or later**. The isolated changelog integration suite is intended to run under **PowerShell 7**.
 
-Python tooling under `api-docs/` and `wiki-sync/` requires Python 3. The API-documentation validation suite also uses Node.js for browser-facing JavaScript tests and Doxygen 1.14.0 for the real documentation build smoke test.
+Python tooling under `api-docs/` requires Python 3; `wiki-sync/` requires Python 3.11+. The API-documentation validation suite also uses Node.js for browser-facing JavaScript tests and Doxygen 1.14.0 for the real documentation build smoke test.
 
 ---
 
