@@ -8,6 +8,17 @@
 /** @type {Map<string, {audio: HTMLAudioElement, context: AudioContext|null, source: MediaElementAudioSourceNode|null, panner: StereoPannerNode|null, state: number}>} */
 const _players = new Map();
 
+// One context per module, retained until page teardown. Tracks own only their
+// nodes; unloading one track must not close the context used by the others.
+let _context = null;
+
+function getContext() {
+    const AudioContextType = globalThis.AudioContext || globalThis.webkitAudioContext;
+    if (!AudioContextType) return null;
+    if (!_context || _context.state === "closed") _context = new AudioContextType();
+    return _context;
+}
+
 function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
 }
@@ -19,7 +30,6 @@ function disposeEntry(entry) {
     entry.state = 0;
     try { entry.source?.disconnect(); } catch { }
     try { entry.panner?.disconnect(); } catch { }
-    try { entry.context?.close().catch(() => { }); } catch { }
     entry.audio.removeAttribute("src");
     entry.audio.load();
 }
@@ -37,10 +47,9 @@ export function load(key, src, loop, volume, pan, playbackSpeed, onEnded) {
     let source = null;
     let panner = null;
 
-    const AudioContextType = globalThis.AudioContext || globalThis.webkitAudioContext;
-    if (AudioContextType) {
-        try {
-            context = new AudioContextType();
+    try {
+        context = getContext();
+        if (context) {
             source = context.createMediaElementSource(audio);
             if (typeof context.createStereoPanner === "function") {
                 panner = context.createStereoPanner();
@@ -50,17 +59,16 @@ export function load(key, src, loop, volume, pan, playbackSpeed, onEnded) {
             } else {
                 source.connect(context.destination);
             }
-        } catch {
-            try { source?.disconnect(); } catch { }
-            try { panner?.disconnect(); } catch { }
-            try { context?.close().catch(() => { }); } catch { }
-            // A media element remains bound to a failed Web Audio source. Use a
-            // fresh element so the ordinary media fallback can still be heard.
-            audio = new Audio();
-            context = null;
-            source = null;
-            panner = null;
         }
+    } catch {
+        try { source?.disconnect(); } catch { }
+        try { panner?.disconnect(); } catch { }
+        // A media element remains bound to a failed Web Audio source. Use a
+        // fresh element so the ordinary media fallback can still be heard.
+        audio = new Audio();
+        context = null;
+        source = null;
+        panner = null;
     }
 
     // Set CORS before src so cross-origin requests use the correct mode.

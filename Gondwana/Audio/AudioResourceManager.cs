@@ -51,6 +51,10 @@ public sealed class AudioResourceManager : IDisposable
         }
     }
 
+    /// <summary>Retains the pre-backend-refactor CLR signature for compiled callers.</summary>
+    public AudioResource LoadFromFile(string key, string filePath, float volume, float pan)
+        => LoadFromFile(key, filePath, volume, pan, 1.0f);
+
     public AudioResource LoadFromFile(
         string key,
         string filePath,
@@ -61,6 +65,10 @@ public sealed class AudioResourceManager : IDisposable
         var bytes = File.ReadAllBytes(filePath);
         return LoadFromBytes(key, bytes, filePath, volume, pan, playbackSpeed);
     }
+
+    /// <summary>Retains the pre-backend-refactor CLR signature for compiled callers.</summary>
+    public AudioResource LoadFromStream(string key, Stream input, string fileExt, float volume, float pan)
+        => LoadFromStream(key, input, fileExt, volume, pan, 1.0f);
 
     public AudioResource LoadFromStream(
         string key,
@@ -93,12 +101,25 @@ public sealed class AudioResourceManager : IDisposable
             ValidateSettings(key, volume, pan, playbackSpeed);
             var speed = ClampPlaybackSpeed(playbackSpeed);
             var playback = RequireBackend().CreateFromUri(key, uri, Math.Clamp(volume, 0f, 1f), Math.Clamp(pan, -1f, 1f), speed);
-            var resource = new AudioResource(key, playback, volume, pan, speed);
-            resource.SetSourceUri(uri);
-            RegisterLoadedSound(key, resource);
-            return resource;
+            AudioResource? resource = null;
+            try
+            {
+                resource = new AudioResource(key, playback, volume, pan, speed);
+                resource.SetSourceUri(uri);
+                RegisterLoadedSound(key, resource);
+                return resource;
+            }
+            catch
+            {
+                DisposeFailedLoad(resource, playback);
+                throw;
+            }
         }
     }
+
+    /// <summary>Retains the pre-backend-refactor CLR signature for compiled callers.</summary>
+    public List<AudioResource> LoadFromEngineAssetsFile(AssetsFile resourceFile, float defaultVolume, float defaultPan)
+        => LoadFromEngineAssetsFile(resourceFile, defaultVolume, defaultPan, 1.0f);
 
     public List<AudioResource> LoadFromEngineAssetsFile(
         AssetsFile resourceFile,
@@ -154,6 +175,10 @@ public sealed class AudioResourceManager : IDisposable
 
         return loadedSounds;
     }
+
+    /// <summary>Retains the pre-backend-refactor CLR signature; the clone inherits its source's playback speed.</summary>
+    public AudioResource? Clone(string key, string? newKey, float? volume, float? pan)
+        => Clone(key, newKey, volume, pan, null);
 
     public AudioResource? Clone(
         string key,
@@ -237,9 +262,34 @@ public sealed class AudioResourceManager : IDisposable
                 Math.Clamp(pan, -1f, 1f),
                 speed);
 
-            var sound = new AudioResource(key, playback, volume, pan, speed, fileHint, bytes);
-            RegisterLoadedSound(key, sound);
-            return sound;
+            AudioResource? sound = null;
+            try
+            {
+                sound = new AudioResource(key, playback, volume, pan, speed, fileHint, bytes);
+                RegisterLoadedSound(key, sound);
+                return sound;
+            }
+            catch
+            {
+                DisposeFailedLoad(sound, playback);
+                throw;
+            }
+        }
+    }
+
+    private static void DisposeFailedLoad(AudioResource? resource, IAudioPlaybackHandle playback)
+    {
+        try
+        {
+            if (resource is not null)
+                resource.Dispose();
+            else
+                playback.Dispose();
+        }
+        catch (Exception ex)
+        {
+            // Preserve the original load failure even if a backend also fails to dispose.
+            Engine.Logger.LogError(ex, "Failed to release an audio handle after loading failed.");
         }
     }
 

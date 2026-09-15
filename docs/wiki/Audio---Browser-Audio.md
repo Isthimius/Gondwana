@@ -104,6 +104,10 @@ AudioContext.destination
 
 `AudioResource.Pan` maps to the `StereoPannerNode` range `-1.0` through `1.0`.
 
+Tracks share one lazily created `AudioContext` for the module's lifetime, with
+separate source/panner nodes per track. Unloading disconnects only that track's
+nodes; the shared context stays available until page teardown.
+
 If the browser cannot create the Web Audio graph, ordinary media playback still works but stereo pan is unavailable for that element.
 
 ---

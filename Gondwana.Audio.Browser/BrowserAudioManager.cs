@@ -21,6 +21,10 @@ public sealed class BrowserAudioManager
 
     public static BrowserAudioManager Instance => _instance.Value;
 
+    /// <summary>Retains the original CLR signature for compiled browser clients.</summary>
+    public BrowserAudioPlayer Load(string key, string src, float volume, bool loop)
+        => Load(key, src, volume, loop, 0.0f, 1.0f);
+
     public BrowserAudioPlayer Load(
         string key,
         string src,

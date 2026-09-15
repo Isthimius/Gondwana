@@ -158,8 +158,8 @@ internal sealed class ProjectPackages
     {
         "widgets" => "Gondwana.Widgets",
         "audio" when Host == "Blazor" => "Gondwana.Audio.Browser",
-        "audio" when Host == "WinForms" || TargetsWindows => "Gondwana.Audio.NAudio",
-        "midi" when Host != "Blazor" && (Host == "WinForms" || TargetsWindows) => "Gondwana.Audio.Midi",
+        "audio" when TargetsWindows => "Gondwana.Audio.NAudio",
+        "midi" when Host != "Blazor" && TargetsWindows => "Gondwana.Audio.Midi",
         "audio" or "midi" when Host != "Blazor" => throw new InvalidOperationException(
             $"'{feature}' requires a compatible backend. Gondwana.Audio.NAudio and Gondwana.Audio.Midi require Windows. No cross-platform desktop audio backend is automatically selected; explicitly choose and configure a compatible backend. The project target framework has not been changed."),
         "gamepad" when Host != "Blazor" => "Gondwana.Input.SDL2",

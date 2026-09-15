@@ -109,6 +109,11 @@ Existing NAudio-specific code should replace `PlatformAudioFactory` registration
 with `NAudioReaderRegistry` in `Gondwana.Audio.NAudio`. Playback state comparisons
 now use core `AudioPlaybackState`, rather than NAudio's `PlaybackState`.
 
+The original CLR overloads for `LoadFromFile`, `LoadFromStream`,
+`LoadFromEngineAssetsFile`, and `Clone` remain available. This preserves those
+compiled method calls, but does not restore the removed NAudio-specific core
+types or eliminate the need to configure a backend.
+
 ### Playback speed
 
 `PlaybackSpeed = 1.0f` is normal speed.

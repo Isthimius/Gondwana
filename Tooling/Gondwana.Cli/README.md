@@ -67,8 +67,8 @@ projects can be checked but must manage package versions in their source reposit
 | Feature | Package selected on current master |
 | --- | --- |
 | `widgets` | `Gondwana.Widgets` |
-| `audio` | `Gondwana.Audio.Browser` for Blazor; `Gondwana.Audio.NAudio` for WinForms or explicitly Windows-targeted desktop projects; cross-platform Avalonia requires an explicitly chosen compatible backend |
-| `midi` | `Gondwana.Audio.Midi` for WinForms or explicitly Windows-targeted desktop projects; unavailable for Blazor and cross-platform desktop targets |
+| `audio` | `Gondwana.Audio.Browser` for Blazor; `Gondwana.Audio.NAudio` for Windows-targeted WinForms or other desktop projects; cross-platform Avalonia requires an explicitly chosen compatible backend |
+| `midi` | `Gondwana.Audio.Midi` for Windows-targeted WinForms or other desktop projects; unavailable for Blazor and cross-platform desktop targets |
 | `gamepad` | `Gondwana.Input.SDL2` (desktop; requires native SDL2) |
 | `video` | `Gondwana.Video` (desktop; requires native LibVLC) |
 | `hosting` | `Gondwana.WinForms.Hosting`, `Gondwana.Avalonia.Hosting`, or `Gondwana.Blazor.Hosting`, based on an unambiguous adapter |

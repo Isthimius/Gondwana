@@ -155,6 +155,8 @@ public sealed class ProjectDevelopmentTests : IDisposable
     public void AddHosting_UsesActualAdapter(string host)
     {
         var path = Project($"<PackageReference Include=\"Gondwana\" Version=\"2.5.2\" /><PackageReference Include=\"Gondwana.{host}\" Version=\"2.5.2\" />");
+        if (host == "WinForms")
+            File.WriteAllText(path, File.ReadAllText(path).Replace("net8.0", "net8.0-windows"));
         Assert.Equal(0, Run("add", "hosting", "-p", path));
         Assert.Contains(new ProjectPackages(path).Packages, p => p.Name == $"Gondwana.{host}.Hosting");
 
@@ -175,6 +177,20 @@ public sealed class ProjectDevelopmentTests : IDisposable
 
         if (host == "Blazor")
             Assert.Equal(1, Run("add", "video", "-p", path));
+    }
+
+    [Theory]
+    [InlineData("net8.0;net8.0-windows")]
+    [InlineData("net8.0")]
+    public void AddAudioAndMidi_WinFormsAdapterDoesNotOverrideIncompatibleTargets(string targets)
+    {
+        var path = Project("<PackageReference Include=\"Gondwana.WinForms\" Version=\"2.6.0\" />");
+        File.WriteAllText(path, File.ReadAllText(path).Replace("<TargetFramework>net8.0</TargetFramework>",
+            $"<TargetFrameworks>{targets}</TargetFrameworks>"));
+        var before = File.ReadAllBytes(path);
+        Assert.Equal(1, Run("add", "audio", "-p", path));
+        Assert.Equal(1, Run("add", "midi", "-p", path));
+        Assert.Equal(before, File.ReadAllBytes(path));
     }
 
     [Theory]

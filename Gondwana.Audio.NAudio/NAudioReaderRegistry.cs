@@ -62,9 +62,9 @@ public static class NAudioReaderRegistry
         }
 
         var tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + extension);
-        File.WriteAllBytes(tempPath, data);
         try
         {
+            File.WriteAllBytes(tempPath, data);
             return (registration.FileFactory!(tempPath), tempPath);
         }
         catch

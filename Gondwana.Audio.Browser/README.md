@@ -73,6 +73,13 @@ The JavaScript bridge forwards the HTML media `ended` event into .NET, changes p
 
 Pan uses Web Audio's `StereoPannerNode` when available. Cross-origin media must permit anonymous CORS access. Duration is zero until browser metadata is available; seeking and codec support follow browser capabilities.
 
+All tracks share one lazily created `AudioContext` for the module's lifetime.
+Unloading a track disconnects its source/panner nodes without closing the shared
+context or interrupting other tracks. The context is retained until page teardown.
+
+The original four-argument `BrowserAudioManager.Load` CLR overload is retained for
+compiled clients. New source callers can also supply pan and playback speed.
+
 Actual codec support is determined by the host browser and operating system.
 
 ## Related packages

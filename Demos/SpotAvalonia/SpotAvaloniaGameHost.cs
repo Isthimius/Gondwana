@@ -47,15 +47,15 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaBitmapGameHost
     internal TextBlock? _gameMessageText;
     internal DirectRectangle? _gameMessageRectangle;
 
-    private AudioResource _music = null!;
+    private AudioResource? _music;
 
     private AudioResource? _spotSelected;
     private AudioResource? _spotDeselected;
-    private AudioResource _velcro = null!;
-    private AudioResource _drop = null!;
-    private AudioResource _gameWin = null!;
-    private AudioResource _gameLose = null!;
-    private AudioResource _bump = null!;
+    private AudioResource? _velcro;
+    private AudioResource? _drop;
+    private AudioResource? _gameWin;
+    private AudioResource? _gameLose;
+    private AudioResource? _bump;
     private AudioResource? _knock;
 
     private Tilesheet _spotSheetDefault = null!;
@@ -92,22 +92,31 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaBitmapGameHost
 
     protected override void LoadAssets()
     {
-        // load standalone audio files
-        _music = Engine.Managers.AudioResources.LoadFromFile("music", GetAssetPath("sounovamusic-puzzle-amp-casual-game-music-460543.mp3"));
-        _music.IsLooping = true;
+        // Cross-platform desktop has no default audio backend. A caller may
+        // configure a compatible byte-capable backend before host initialization.
+        if (Engine.Managers.AudioResources.IsBackendConfigured)
+        {
+            // load standalone audio files
+            _music = Engine.Managers.AudioResources.LoadFromFile("music", GetAssetPath("sounovamusic-puzzle-amp-casual-game-music-460543.mp3"));
+            _music.IsLooping = true;
 
-        _spotSelected = Engine.Managers.AudioResources.LoadFromFile("spotSelected", GetAssetPath("universfield-bubble-pop-293342.mp3"));
-        _spotSelected.Volume = 0.4f;
+            _spotSelected = Engine.Managers.AudioResources.LoadFromFile("spotSelected", GetAssetPath("universfield-bubble-pop-293342.mp3"));
+            _spotSelected.Volume = 0.4f;
 
-        _spotDeselected = Engine.Managers.AudioResources.LoadFromFile("spotDeselected", GetAssetPath("universfield-bubble-pop-293342.mp3"));
-        _spotDeselected.Volume = 0.15f;
+            _spotDeselected = Engine.Managers.AudioResources.LoadFromFile("spotDeselected", GetAssetPath("universfield-bubble-pop-293342.mp3"));
+            _spotDeselected.Volume = 0.15f;
 
-        _velcro = Engine.Managers.AudioResources.LoadFromFile("velcro", GetAssetPath("freesound_community-velcro_fast-91558.mp3"));
-        _drop = Engine.Managers.AudioResources.LoadFromFile("drop", GetAssetPath("freesound_community-water-drip-45622.mp3"));
-        _gameWin = Engine.Managers.AudioResources.LoadFromFile("gameWin", GetAssetPath("peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3"));
-        _gameLose = Engine.Managers.AudioResources.LoadFromFile("gameLose", GetAssetPath("freesound_community-080047_lose_funny_retro_video-game-80925.mp3"));
-        _bump = Engine.Managers.AudioResources.LoadFromFile("bump", GetAssetPath("freesound_community-bump-7-92964.mp3"));
-        _knock = Engine.Managers.AudioResources.LoadFromFile("knock", GetAssetPath("rohhsadotcom-knock-on-wood-02-421991.mp3"));
+            _velcro = Engine.Managers.AudioResources.LoadFromFile("velcro", GetAssetPath("freesound_community-velcro_fast-91558.mp3"));
+            _drop = Engine.Managers.AudioResources.LoadFromFile("drop", GetAssetPath("freesound_community-water-drip-45622.mp3"));
+            _gameWin = Engine.Managers.AudioResources.LoadFromFile("gameWin", GetAssetPath("peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3"));
+            _gameLose = Engine.Managers.AudioResources.LoadFromFile("gameLose", GetAssetPath("freesound_community-080047_lose_funny_retro_video-game-80925.mp3"));
+            _bump = Engine.Managers.AudioResources.LoadFromFile("bump", GetAssetPath("freesound_community-bump-7-92964.mp3"));
+            _knock = Engine.Managers.AudioResources.LoadFromFile("knock", GetAssetPath("rohhsadotcom-knock-on-wood-02-421991.mp3"));
+        }
+        else
+        {
+            Engine.Logger.LogWarning("SpotAvalonia audio is disabled: configure a compatible audio backend before initializing the host.");
+        }
 
         // load standalone video files
 
@@ -224,6 +233,8 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaBitmapGameHost
     #endregion AvaloniaGameHost overrides
 
     #region game settings
+
+    internal bool AudioAvailable => _music is not null;
 
     internal bool MusicEnabled { get; private set; } = true;
 

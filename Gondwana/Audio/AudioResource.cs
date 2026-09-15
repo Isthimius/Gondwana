@@ -72,12 +72,12 @@ public class AudioResource : IDisposable
         SourceExtension = string.IsNullOrEmpty(ext) ? null : NormalizeExtension(ext);
         OriginalBytes = rawBytes;
 
-        _playback.PlaybackCompleted += OnPlaybackCompleted;
-
         Volume = volume;
         Pan = pan;
         PlaybackSpeed = playbackSpeed;
         IsLooping = false;
+
+        _playback.PlaybackCompleted += OnPlaybackCompleted;
     }
 
     /// <summary>Gets the unique key associated with this audio resource.</summary>
