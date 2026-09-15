@@ -14,8 +14,13 @@ let _context = null;
 
 function getContext() {
     const AudioContextType = globalThis.AudioContext || globalThis.webkitAudioContext;
-    if (!AudioContextType) return null;
-    if (!_context || _context.state === "closed") _context = new AudioContextType();
+
+    if (!AudioContextType)
+        return null;
+
+    if (!_context || _context.state === "closed")
+        _context = new AudioContextType();
+
     return _context;
 }
 
@@ -28,8 +33,17 @@ function disposeEntry(entry) {
     entry.audio.removeEventListener("ended", entry.onEnded);
     entry.audio.pause();
     entry.state = 0;
-    try { entry.source?.disconnect(); } catch { }
-    try { entry.panner?.disconnect(); } catch { }
+
+    try {
+        entry.source?.disconnect();
+    }
+    catch { }
+
+    try {
+        entry.panner?.disconnect();
+    }
+    catch { }
+
     entry.audio.removeAttribute("src");
     entry.audio.load();
 }
@@ -60,9 +74,18 @@ export function load(key, src, loop, volume, pan, playbackSpeed, onEnded) {
                 source.connect(context.destination);
             }
         }
-    } catch {
-        try { source?.disconnect(); } catch { }
-        try { panner?.disconnect(); } catch { }
+    }
+    catch {
+        try {
+            source?.disconnect();
+        }
+        catch { }
+
+        try {
+            panner?.disconnect();
+        }
+        catch { }
+
         // A media element remains bound to a failed Web Audio source. Use a
         // fresh element so the ordinary media fallback can still be heard.
         audio = new Audio();
@@ -79,21 +102,29 @@ export function load(key, src, loop, volume, pan, playbackSpeed, onEnded) {
     audio.playbackRate = clamp(playbackSpeed, 0.25, 4);
 
     const entry = { audio, context, source, panner, state: 0, disposed: false };
+
     entry.onEnded = () => {
-        if (entry.disposed || audio.loop) return;
+        if (entry.disposed || audio.loop)
+            return;
+
         entry.state = 0;
         onEnded?.();
     };
+
     audio.addEventListener("ended", entry.onEnded);
     _players.set(key, entry);
 }
 
 export function play(key, fromStart) {
     const entry = _players.get(key);
-    if (!entry) return;
+    if (!entry)
+        return;
 
-    if (fromStart) entry.audio.currentTime = 0;
-    if (entry.context?.state === "suspended") entry.context.resume().catch(() => { });
+    if (fromStart)
+        entry.audio.currentTime = 0;
+
+    if (entry.context?.state === "suspended")
+        entry.context.resume().catch(() => { });
 
     entry.state = 1;
     entry.audio.play().catch(() => {
@@ -104,14 +135,19 @@ export function play(key, fromStart) {
 
 export function pause(key) {
     const entry = _players.get(key);
-    if (!entry) return;
+    if (!entry)
+        return;
+
     entry.audio.pause();
-    if (entry.state === 1) entry.state = 2;
+    if (entry.state === 1)
+        entry.state = 2;
 }
 
 export function stop(key) {
     const entry = _players.get(key);
-    if (!entry) return;
+    if (!entry)
+        return;
+
     entry.audio.pause();
     entry.audio.currentTime = 0;
     entry.state = 0;
@@ -119,7 +155,8 @@ export function stop(key) {
 
 export function setVolume(key, volume) {
     const entry = _players.get(key);
-    if (entry) entry.audio.volume = clamp(volume, 0, 1);
+    if (entry)
+        entry.audio.volume = clamp(volume, 0, 1);
 }
 
 export function setLoop(key, loop) {
@@ -129,7 +166,8 @@ export function setLoop(key, loop) {
 
 export function setPan(key, pan) {
     const entry = _players.get(key);
-    if (entry?.panner) entry.panner.pan.value = clamp(pan, -1, 1);
+    if (entry?.panner)
+        entry.panner.pan.value = clamp(pan, -1, 1);
 }
 
 export function setPlaybackSpeed(key, playbackSpeed) {
@@ -139,7 +177,8 @@ export function setPlaybackSpeed(key, playbackSpeed) {
 
 export function setCurrentTime(key, seconds) {
     const entry = _players.get(key);
-    if (!entry) return;
+    if (!entry)
+        return;
 
     const duration = Number.isFinite(entry.audio.duration) ? entry.audio.duration : Number.POSITIVE_INFINITY;
     entry.audio.currentTime = clamp(seconds, 0, duration);
@@ -163,7 +202,9 @@ export function getState(key) {
 
 export function unload(key) {
     const entry = _players.get(key);
-    if (!entry) return;
+    if (!entry)
+        return;
+
     disposeEntry(entry);
     _players.delete(key);
 }

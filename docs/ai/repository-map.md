@@ -51,7 +51,6 @@ Do not move platform-specific behavior into the core merely because more than on
 
 ## Optional Runtime Packages
 
-- `Gondwana/Audio/` — backend-neutral resources, manager, playback state, and backend contracts.
 - `Gondwana.Audio.NAudio/` — Windows NAudio backend, reader registration, Vorbis, pan, and playback speed.
 - `Gondwana.Audio.Browser/` — browser implementation of the common audio contracts, with URI loading.
 - `Gondwana.Audio.Midi/` — Windows MIDI and SoundFont support layered on the NAudio backend.
