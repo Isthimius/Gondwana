@@ -185,10 +185,10 @@ It:
 1. packs `Gondwana.Cli` into a local package feed
 2. uninstalls the currently installed global tool when present
 3. reinstalls the freshly packed package from that local source
-4. uses `--no-http-cache` and an isolated temporary `NUGET_PACKAGES` directory so the just-built package is selected deterministically even when the package version has not changed
+4. removes the existing `gondwana.cli` entry from the active NuGet package cache before reinstalling so the just-built package is selected even when the package version has not changed
 5. displays `gondwana --version` when available in the current shell
 
-That isolated package cache matters during development because repeatedly rebuilding the same package version with different contents violates the normal assumption that a NuGet package ID/version pair is immutable.
+That explicit package-cache removal matters during development because repeatedly rebuilding the same package version with different contents violates the normal assumption that a NuGet package ID/version pair is immutable.
 
 ## Parameters
 
@@ -493,6 +493,8 @@ Use preview mode before a release:
 .\Tooling\scripts\release.ps1 -PreviewOnly
 ```
 
+Preview mode still fetches remote state, requires a clean working tree, runs the Gondwana unit tests, resolves the version, and generates the root release-notes preview. It skips the required-branch/alignment enforcement, changelog writes, deployment confirmation, commit/tag creation, and push so maintainers can validate the release path from a non-release branch.
+
 For a real release:
 
 ```powershell
@@ -582,7 +584,7 @@ Development API docs are published by:
 .github/workflows/docs.yml
 ```
 
-for relevant changes on `master` and on manual dispatch.
+for relevant changes on `master` and on manual dispatch. That manual dispatch path still checks out `master` explicitly and only republishes `/api/latest/`; it does not publish a stable `api/vX.Y.Z/` snapshot or update the stable `/api/` redirect.
 
 Stable release docs are published by the API-docs job in:
 
@@ -590,7 +592,7 @@ Stable release docs are published by the API-docs job in:
 .github/workflows/release.yml
 ```
 
-using the triggering canonical `vX.Y.Z` release tag.
+using the triggering canonical `vX.Y.Z` release tag. Correspondingly, manual/local publication through `publish.py` and `publish.sh` is restricted to `latest` or canonical `vX.Y.Z` targets, and only canonical release publication updates `api/index.html`.
 
 The historical one-time API archive migration is complete. Its executable rebuild tooling was retired; `history-validation.md` remains as the retained migration record.
 
