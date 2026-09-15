@@ -31,7 +31,7 @@ In a typical hosted game, the runtime sequence is:
 2. `GameHostBase.Initialize()` configures logging, platform adapters, input, content, scene graph, scene binding, and the engine.
 3. `GameHostBase` starts the engine using the platform-appropriate engine start path.
 4. The engine repeats **background work** and **foreground/render work** until stopped.
-5. `GameHostBase.Dispose()` unhooks events, stops the engine, and disposes the singleton.
+5. `GameHostBase.Dispose()` stops and waits for the engine, unhooks events, and disposes the singleton.
 
 Two important rules shape everything else:
 
@@ -343,12 +343,14 @@ In the standard hosted path, disposal starts at the host:
 
 ```text
 GameHostBase.Dispose()
-  → OnDisposing
-  → UnhookEvents
   → [if engine started]
        → StopEngine
             → StopEngineCore
                  → Engine.Stop()
+  → [if engine initialized]
+       → Engine.StopAndWait()
+  → OnDisposing
+  → UnhookEvents
   → [if engine initialized]
        → DisposeEngine
             → Engine.Dispose()
@@ -366,6 +368,8 @@ Engine.Instance.Stop();
 ```
 
 Platform hosts may override `StopEngineCore()` for platform-specific shutdown. For example, Blazor stops its JavaScript render loop before calling the base implementation.
+
+Host cleanup hooks run only after `Engine.StopAndWait()` has waited for the background cycle to finish. Dispose hosts from the hosting/UI thread, outside engine callbacks; timer-driven hosts must stop scheduling and dispose between ticks. This prevents HUD/native drawing resources from being freed while Bitmap rendering is still using them.
 
 ### `Engine.Stop()`
 
@@ -626,9 +630,10 @@ GL Thread (GPU surfaces only)
 
 Shutdown
   └─ GameHostBase.Dispose()
+       ├─ StopEngine → StopEngineCore
+       ├─ Engine.StopAndWait
        ├─ OnDisposing
        ├─ UnhookEvents
-       ├─ StopEngine → StopEngineCore
        ├─ DisposeEngine
        └─ OnDisposed
 ```
