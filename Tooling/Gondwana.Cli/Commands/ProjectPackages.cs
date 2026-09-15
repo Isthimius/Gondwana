@@ -144,12 +144,24 @@ internal sealed class ProjectPackages
         return changes;
     }
 
+    private bool TargetsWindows
+    {
+        get
+        {
+            var targets = Elements("TargetFramework").Concat(Elements("TargetFrameworks")).ToArray();
+            return targets.Length == 1 && !Conditional(targets[0]) &&
+                targets[0].Value.Split(';').All(t => Regex.IsMatch(t.Trim(), @"^net\d+\.\d+-windows(?:\d+(?:\.\d+)*)?$", RegexOptions.IgnoreCase));
+        }
+    }
+
     public string FeaturePackage(string feature) => feature.ToLowerInvariant() switch
     {
         "widgets" => "Gondwana.Widgets",
         "audio" when Host == "Blazor" => "Gondwana.Audio.Browser",
-        "audio" => "Gondwana.Audio.NAudio",
-        "midi" when Host != "Blazor" => "Gondwana.Audio.Midi",
+        "audio" when Host == "WinForms" || TargetsWindows => "Gondwana.Audio.NAudio",
+        "midi" when Host != "Blazor" && (Host == "WinForms" || TargetsWindows) => "Gondwana.Audio.Midi",
+        "audio" or "midi" when Host != "Blazor" => throw new InvalidOperationException(
+            $"'{feature}' requires a compatible backend. Gondwana.Audio.NAudio and Gondwana.Audio.Midi require Windows. No cross-platform desktop audio backend is automatically selected; explicitly choose and configure a compatible backend. The project target framework has not been changed."),
         "gamepad" when Host != "Blazor" => "Gondwana.Input.SDL2",
         "video" when Host != "Blazor" => "Gondwana.Video",
         "hosting" when Host is not null => $"Gondwana.{Host}.Hosting",

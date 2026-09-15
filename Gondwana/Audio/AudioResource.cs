@@ -81,6 +81,7 @@ public class AudioResource : IDisposable
     }
 
     /// <summary>Gets the unique key associated with this audio resource.</summary>
+    [JsonProperty]
     public string Key { get; private set; }
 
     /// <summary>Gets the original byte array of the audio data, if available.</summary>
@@ -148,6 +149,7 @@ public class AudioResource : IDisposable
         get => _volume;
         set
         {
+            if (float.IsNaN(value)) throw new ArgumentOutOfRangeException(nameof(value));
             _volume = Math.Clamp(value, 0f, 1f);
             if (_playback is not null)
                 _playback.Volume = _volume;
@@ -160,6 +162,7 @@ public class AudioResource : IDisposable
         get => _pan;
         set
         {
+            if (float.IsNaN(value)) throw new ArgumentOutOfRangeException(nameof(value));
             _pan = Math.Clamp(value, -1f, 1f);
             if (_playback is not null)
                 _playback.Pan = _pan;
@@ -174,6 +177,7 @@ public class AudioResource : IDisposable
         get => _playbackSpeed;
         set
         {
+            if (float.IsNaN(value)) throw new ArgumentOutOfRangeException(nameof(value));
             _playbackSpeed = Math.Clamp(value, MinimumPlaybackSpeed, MaximumPlaybackSpeed);
             if (_playback is not null)
                 _playback.PlaybackSpeed = _playbackSpeed;
@@ -199,6 +203,14 @@ public class AudioResource : IDisposable
             : uri));
     }
 
+    internal void SetAssetIdentifier(AssetsFileIdentifier identifier) => AssetIdentifier = identifier;
+
+    internal void CopySourceFrom(AudioResource original)
+    {
+        SourceFilePath = original.SourceFilePath;
+        AssetIdentifier = original.AssetIdentifier;
+    }
+
     /// <summary>
     /// Ensures this serialized resource is re-created in <see cref="AudioResourceManager"/> from its persisted source.
     /// </summary>
@@ -222,13 +234,14 @@ public class AudioResource : IDisposable
             manager.Unload(Key);
 
         AudioResource loaded;
-        if (AssetIdentifier is not null && AssetIdentifier.IsValid)
+        if (AssetIdentifier is not null)
         {
             using var stream = AssetIdentifier.Data;
             if (stream is null)
                 throw new InvalidOperationException($"Missing asset data for {Key}.");
 
             loaded = manager.LoadFromStream(Key, stream, SourceExtension ?? ".wav", Volume, Pan, PlaybackSpeed);
+            loaded.SetAssetIdentifier(AssetIdentifier);
         }
         else if (!string.IsNullOrWhiteSpace(SourceFilePath))
         {
@@ -246,9 +259,15 @@ public class AudioResource : IDisposable
         loaded.IsLooping = IsLooping;
     }
 
-    private IAudioPlaybackHandle Playback => _playback
-        ?? throw new InvalidOperationException(
-            $"AudioResource '{Key}' is not attached to an audio backend. Configure an audio backend before loading or restoring audio.");
+    private IAudioPlaybackHandle Playback
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            return _playback ?? throw new InvalidOperationException(
+                $"AudioResource '{Key}' is not attached to an audio backend. Configure an audio backend before loading or restoring audio.");
+        }
+    }
 
     private async void OnPlaybackCompleted(object? sender, EventArgs e)
     {

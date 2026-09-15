@@ -67,8 +67,8 @@ projects can be checked but must manage package versions in their source reposit
 | Feature | Package selected on current master |
 | --- | --- |
 | `widgets` | `Gondwana.Widgets` |
-| `audio` | `Gondwana.Audio.Browser` for Blazor; desktop audio is already in `Gondwana` core |
-| `midi` | `Gondwana.Audio.Midi` (desktop) |
+| `audio` | `Gondwana.Audio.Browser` for Blazor; `Gondwana.Audio.NAudio` for WinForms or explicitly Windows-targeted desktop projects; cross-platform Avalonia requires an explicitly chosen compatible backend |
+| `midi` | `Gondwana.Audio.Midi` for WinForms or explicitly Windows-targeted desktop projects; unavailable for Blazor and cross-platform desktop targets |
 | `gamepad` | `Gondwana.Input.SDL2` (desktop; requires native SDL2) |
 | `video` | `Gondwana.Video` (desktop; requires native LibVLC) |
 | `hosting` | `Gondwana.WinForms.Hosting`, `Gondwana.Avalonia.Hosting`, or `Gondwana.Blazor.Hosting`, based on an unambiguous adapter |
@@ -76,6 +76,12 @@ projects can be checked but must manage package versions in their source reposit
 `add` uses the existing aligned Gondwana version and makes no change if the
 feature is already referenced. It refuses to guess a version for non-Gondwana
 projects. It adds references only; application setup remains in your code.
+
+A normal `net8.0` Avalonia project is left unchanged by `add audio` or `add midi`.
+The command explains that no cross-platform desktop audio backend is automatically
+selected. Explicitly choose/configure a compatible backend; the CLI never makes
+an Avalonia project Windows-only to install audio. A multi-target desktop project
+must target Windows in every declared framework for automatic NAudio/MIDI selection.
 
 ### Asset inspection and validation
 
@@ -676,8 +682,9 @@ Assets:
 ## Related Packages
 
 -   `Gondwana` --- Core engine
+-   `Gondwana.Audio.NAudio` --- Windows audio backend for the common audio API
 -   `Gondwana.Audio.Browser` --- Browser-based audio playback support
--   `Gondwana.Audio.Midi` --- MIDI playback and sequencing support
+-   `Gondwana.Audio.Midi` --- Windows MIDI playback through the NAudio backend
 -   `Gondwana.Avalonia` --- Avalonia rendering and input adapters
 -   `Gondwana.Avalonia.Hosting` --- Avalonia-specific game host that integrates rendering and input into the Gondwana lifecycle
 -   `Gondwana.Blazor` --- Blazor WebAssembly rendering and input adapters, including the GPU-backed WebGL path and bitmap compatibility renderer

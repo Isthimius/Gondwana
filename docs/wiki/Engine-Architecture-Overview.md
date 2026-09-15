@@ -1,5 +1,11 @@
 A recommended reading order for getting up to speed on the Gondwana engine codebase quickly.
 
+For audio, start with [[Audio]] and `Gondwana/Audio`: the core owns
+`AudioResourceManager`, `AudioResource`, and backend-neutral playback contracts.
+`Gondwana.Audio.NAudio` supplies Windows playback and reader registration;
+`Gondwana.Audio.Browser` supplies browser URI playback through the same model.
+`Gondwana.Audio.Midi` extends the Windows NAudio backend. Core has no NAudio dependency.
+
 ---
 
 ## ⚡ Optional: Automated Dev Setup (Windows / PowerShell)

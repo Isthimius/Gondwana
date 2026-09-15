@@ -18,6 +18,10 @@ Playback speed changes rate and pitch together. Pitch-preserving time stretching
 
 ## Setup
 
+Install `Gondwana.Audio.NAudio` in a Windows-targeted project (`net8.0-windows`).
+A cross-platform `net8.0` desktop project needs a compatible backend selected
+explicitly; adding this Windows package is not a cross-platform audio solution.
+
 ```csharp
 using Gondwana;
 

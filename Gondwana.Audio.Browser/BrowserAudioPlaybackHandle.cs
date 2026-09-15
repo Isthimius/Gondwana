@@ -15,16 +15,21 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
 
     public BrowserAudioPlaybackHandle(string key, string uri, float volume, float pan, float playbackSpeed)
     {
-        _key = key;
+        // Each handle owns its JS entry, including during replacement of a manager key.
+        _key = Guid.NewGuid().ToString("N");
         _volume = Math.Clamp(volume, 0f, 1f);
         _pan = Math.Clamp(pan, -1f, 1f);
         _playbackSpeed = Math.Clamp(playbackSpeed, AudioResource.MinimumPlaybackSpeed, AudioResource.MaximumPlaybackSpeed);
-        BrowserAudioInterop.Load(_key, uri, loop: false, _volume, _pan, _playbackSpeed);
+        BrowserAudioInterop.Load(_key, uri, loop: false, _volume, _pan, _playbackSpeed, OnEnded);
     }
 
-    // HTMLMediaElement exposes completion state but this compatibility layer does not yet marshal
-    // the DOM ended callback back into .NET. The common event remains available for backends that do.
     public event EventHandler? PlaybackCompleted;
+
+    private void OnEnded()
+    {
+        if (!_disposed && !_isLooping)
+            PlaybackCompleted?.Invoke(this, EventArgs.Empty);
+    }
 
     public AudioPlaybackState State => BrowserAudioInterop.GetState(_key) switch
     {
@@ -94,7 +99,8 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
     public void Resume()
     {
         ThrowIfDisposed();
-        BrowserAudioInterop.Play(_key, fromStart: false);
+        if (State == AudioPlaybackState.Paused)
+            BrowserAudioInterop.Play(_key, fromStart: false);
     }
 
     public void Seek(TimeSpan position)

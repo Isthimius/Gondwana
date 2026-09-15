@@ -2,6 +2,21 @@ When a new `.csproj` should become a first-class Gondwana package and ship throu
 
 The goal is not merely to make the project compile. A deployable project should be discoverable, packable, included in the appropriate changelogs and release automation, and covered by API/documentation tooling where applicable.
 
+## Required manual setup
+
+Create the project with appropriate platform dependencies, add solution membership,
+NuGet metadata and packaged README/CHANGELOG/icon, register changelog behavior,
+update package inventories and CLI mappings where applicable, and add explicit
+CI/release binary staging when needed. Verify labeling and release-category
+coverage; reuse an existing family wildcard rather than creating redundant rules.
+
+## Usually automatic, but must be verified
+
+Solution-wide NuGet packing/publishing, recursive API documentation discovery,
+and shared NBGV/version metadata normally need no project-specific registry or
+publish command. Verify their current configuration and inspect the produced
+package, including its dependency target frameworks and packed documentation.
+
 ---
 
 ## ✅ Required — add the project to the solution

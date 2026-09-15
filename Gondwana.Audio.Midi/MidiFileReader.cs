@@ -39,7 +39,7 @@ public static class MidiFileReader
     /// </summary>
     public static WaveStream CreateReader(Stream stream)
     {
-        var buffer = new MemoryStream();
+        using var buffer = new MemoryStream();
         stream.CopyTo(buffer);
         buffer.Position = 0;
 

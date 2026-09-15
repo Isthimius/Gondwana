@@ -82,10 +82,11 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider
     }
 
     /// <summary>Clears interpolation state after the underlying stream position changes.</summary>
-    public void Reset()
+    public void Reset(Action? reposition = null)
     {
         lock (_sync)
         {
+            reposition?.Invoke();
             _initialized = false;
             _hasCurrent = false;
             _hasNext = false;

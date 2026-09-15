@@ -101,6 +101,14 @@ var music = Engine.Managers.AudioResources.LoadFromUri(
 
 Values outside the documented ranges are clamped.
 
+`NaN` is rejected. Configure/load/control audio on the application's appropriate
+thread (the browser thread for WASM). NAudio's position reflects decoded source
+progress and may lead audible output by the device's queued buffers.
+
+Existing NAudio-specific code should replace `PlatformAudioFactory` registration
+with `NAudioReaderRegistry` in `Gondwana.Audio.NAudio`. Playback state comparisons
+now use core `AudioPlaybackState`, rather than NAudio's `PlaybackState`.
+
 ### Playback speed
 
 `PlaybackSpeed = 1.0f` is normal speed.
@@ -190,7 +198,7 @@ sound.PlaybackCompleted += (_, _) =>
 };
 ```
 
-Browser media exposes completion state, but the current browser bridge does not yet marshal the DOM `ended` event back into .NET; browser playback state still changes to `Stopped` when the media ends.
+Both supplied backends raise completion for natural, non-looping playback. Browser Audio forwards the DOM `ended` event into .NET and changes state to `Stopped`. Pause, explicit stop, and unload do not raise completion.
 
 `AudioResource.Dispose()` releases the backend handle. `AudioResourceManager.Unload` and `Clear` dispose resources automatically.
 

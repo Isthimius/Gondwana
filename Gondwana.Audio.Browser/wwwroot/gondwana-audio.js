@@ -13,25 +13,25 @@ function clamp(value, min, max) {
 }
 
 function disposeEntry(entry) {
+    entry.disposed = true;
+    entry.audio.removeEventListener("ended", entry.onEnded);
     entry.audio.pause();
     entry.state = 0;
     try { entry.source?.disconnect(); } catch { }
     try { entry.panner?.disconnect(); } catch { }
-    try { entry.context?.close(); } catch { }
-    entry.audio.src = "";
+    try { entry.context?.close().catch(() => { }); } catch { }
+    entry.audio.removeAttribute("src");
+    entry.audio.load();
 }
 
 /**
  * Loads a URI-addressable browser audio track without starting playback.
  */
-export function load(key, src, loop, volume, pan, playbackSpeed) {
+export function load(key, src, loop, volume, pan, playbackSpeed, onEnded) {
     const existing = _players.get(key);
     if (existing) disposeEntry(existing);
 
-    const audio = new Audio(src);
-    audio.loop = loop;
-    audio.volume = clamp(volume, 0, 1);
-    audio.playbackRate = clamp(playbackSpeed, 0.25, 4);
+    let audio = new Audio();
 
     let context = null;
     let source = null;
@@ -51,14 +51,32 @@ export function load(key, src, loop, volume, pan, playbackSpeed) {
                 source.connect(context.destination);
             }
         } catch {
+            try { source?.disconnect(); } catch { }
+            try { panner?.disconnect(); } catch { }
+            try { context?.close().catch(() => { }); } catch { }
+            // A media element remains bound to a failed Web Audio source. Use a
+            // fresh element so the ordinary media fallback can still be heard.
+            audio = new Audio();
             context = null;
             source = null;
             panner = null;
         }
     }
 
-    const entry = { audio, context, source, panner, state: 0 };
-    audio.addEventListener("ended", () => { entry.state = 0; });
+    // Set CORS before src so cross-origin requests use the correct mode.
+    audio.crossOrigin = "anonymous";
+    audio.src = src;
+    audio.loop = loop;
+    audio.volume = clamp(volume, 0, 1);
+    audio.playbackRate = clamp(playbackSpeed, 0.25, 4);
+
+    const entry = { audio, context, source, panner, state: 0, disposed: false };
+    entry.onEnded = () => {
+        if (entry.disposed || audio.loop) return;
+        entry.state = 0;
+        onEnded?.();
+    };
+    audio.addEventListener("ended", entry.onEnded);
     _players.set(key, entry);
 }
 
@@ -71,7 +89,8 @@ export function play(key, fromStart) {
 
     entry.state = 1;
     entry.audio.play().catch(() => {
-        entry.state = entry.audio.currentTime > 0 ? 2 : 0;
+        if (!entry.disposed && entry.state === 1 && entry.audio.paused)
+            entry.state = entry.audio.currentTime > 0 ? 2 : 0;
     });
 }
 

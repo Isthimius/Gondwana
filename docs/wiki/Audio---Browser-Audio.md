@@ -42,6 +42,10 @@ var music = Engine.Managers.AudioResources.LoadFromUri(
 
 The source may be a browser-relative or absolute URL that the browser can load.
 
+Pan uses Web Audio and cross-origin media must allow anonymous CORS requests.
+Duration is zero until browser metadata is available. URI loading, autoplay,
+codec support, and seekability remain browser/platform constraints.
+
 The current browser backend does not implement the byte/stream loading path used by `LoadFromFile`, `LoadFromStream`, and packed `AssetsFile` audio. Browser assets should therefore be addressable through the application's web root.
 
 ---
@@ -131,7 +135,7 @@ Gondwana catches the rejected JavaScript play promise so the browser does not su
 
 The JavaScript bridge tracks the media element's `ended` event and updates the playback state to `Stopped`.
 
-The current bridge does not yet marshal that DOM event back into .NET, so `AudioResource.PlaybackCompleted` and `PlaybackCompletedAsync` are not currently raised by Browser Audio. This is the principal remaining behavioral difference from the NAudio backend.
+The bridge forwards the DOM event through its .NET interop callback, raising `AudioResource.PlaybackCompleted` and `PlaybackCompletedAsync` for non-looping playback. Explicit stop and unload do not raise completion; unloading removes the callback.
 
 ---
 

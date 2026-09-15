@@ -69,7 +69,9 @@ Browser assets are loaded by URI. The current backend does not implement the byt
 
 Autoplay remains subject to browser policy; games should normally begin playback in response to user interaction when the browser blocks autoplay.
 
-The JavaScript bridge tracks the HTML media `ended` event and changes playback state to `Stopped`, but the current bridge does not yet marshal that DOM event back into .NET. `AudioResource.PlaybackCompleted` and `PlaybackCompletedAsync` are therefore not currently raised by Browser Audio.
+The JavaScript bridge forwards the HTML media `ended` event into .NET, changes playback state to `Stopped`, and raises `AudioResource.PlaybackCompleted` and `PlaybackCompletedAsync` for non-looping playback. Explicit stop and unload do not raise completion.
+
+Pan uses Web Audio's `StereoPannerNode` when available. Cross-origin media must permit anonymous CORS access. Duration is zero until browser metadata is available; seeking and codec support follow browser capabilities.
 
 Actual codec support is determined by the host browser and operating system.
 

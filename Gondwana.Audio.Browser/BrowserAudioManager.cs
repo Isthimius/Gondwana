@@ -35,6 +35,9 @@ public sealed class BrowserAudioManager
 
         var player = new BrowserAudioPlayer(resource);
         _players[key] = player;
+        resource.Disposed += (_, _) =>
+            ((ICollection<KeyValuePair<string, BrowserAudioPlayer>>)_players)
+                .Remove(new(key, player));
         return player;
     }
 

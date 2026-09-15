@@ -536,7 +536,7 @@ The tables below group the public runtime events exposed by the core `Gondwana` 
 | `TextBlock.TextRevealed` | More text becomes visible during a reveal animation | Argument is current revealed text |
 | `TextBlock.TextRevealComplete` | A text reveal finishes | Argument is the full text |
 | `Tilesheet.Disposed` | A tilesheet is disposed | Asset cleanup event |
-| `AudioResource.PlaybackCompleted` | Non-looping audio playback finishes | Playback completion event |
+| `AudioResource.PlaybackCompleted` | Non-looping audio playback finishes naturally | Raised by the configured NAudio or Browser backend; stop/unload do not count as completion |
 | `AudioResource.Disposed` | An audio resource is disposed | Asset cleanup event |
 | `AudioResourceManager.SoundDisposed` | A managed sound resource is disposed | Includes key/resource pair |
 

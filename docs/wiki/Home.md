@@ -85,8 +85,8 @@ The platform adapter projects handle render-surface creation, presentation, nati
 |---|---|
 | .NET 8 / C# | Primary language and runtime |
 | SkiaSharp | Cross-platform bitmap and GPU-backed 2D rendering |
-| NAudio | Desktop audio playback and mixing |
-| HTML5 Audio / JavaScript interop | Browser audio through `Gondwana.Audio.Browser` |
+| NAudio | Optional Windows audio backend in `Gondwana.Audio.NAudio` |
+| HTML5 Audio / Web Audio / JavaScript interop | Browser backend in `Gondwana.Audio.Browser`, using the common core audio API |
 | LibVLCSharp | Experimental video playback |
 | SDL2 | Optional cross-platform gamepad input |
 | WinForms | Windows desktop rendering and hosting |
@@ -300,6 +300,9 @@ Reusable, engine-rendered UI and gameplay widgets. This package depends on the c
 
 ## Optional Runtime Packages
 
+- `Gondwana.Audio.NAudio/`
+  - Windows implementation of the core audio contracts, including Vorbis and variable playback speed
+
 - `Gondwana.Audio.Browser/`
   - Browser audio through HTML5 Audio and JavaScript interop
 
@@ -472,8 +475,9 @@ Install only the packages required by the target application.
 | `Gondwana.Avalonia.Hosting` | Ready-to-use Avalonia game host |
 | `Gondwana.Blazor` | Blazor/WebAssembly adapter |
 | `Gondwana.Blazor.Hosting` | Blazor game host and timer-driven lifecycle |
-| `Gondwana.Audio.Browser` | Browser audio support |
-| `Gondwana.Audio.Midi` | MIDI and SoundFont support |
+| `Gondwana.Audio.NAudio` | Windows NAudio backend for the common audio API |
+| `Gondwana.Audio.Browser` | Browser backend for the common audio API |
+| `Gondwana.Audio.Midi` | Windows MIDI and SoundFont support layered on NAudio |
 | `Gondwana.Input.SDL2` | SDL2 gamepad provider |
 | `Gondwana.Video` | Experimental video playback |
 

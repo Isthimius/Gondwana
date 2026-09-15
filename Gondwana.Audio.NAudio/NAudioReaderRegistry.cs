@@ -10,7 +10,7 @@ public static class NAudioReaderRegistry
 {
     private sealed record Registration(Func<Stream, WaveStream>? StreamFactory, Func<string, WaveStream>? FileFactory);
 
-    private static readonly Dictionary<string, Registration> Readers = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, Registration> Readers = new(StringComparer.OrdinalIgnoreCase);
 
     static NAudioReaderRegistry()
     {
