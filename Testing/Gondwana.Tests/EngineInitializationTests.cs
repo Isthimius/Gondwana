@@ -146,6 +146,43 @@ public sealed class EngineInitializationTests
         }
     }
 
+    [Fact]
+    public async Task StopAndWait_WhenAlreadyStopped_WaitsForPendingCycle()
+    {
+        var engine = CreateEngineInstance();
+        var cycle = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        SetCycleTask(engine, cycle.Task);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var stopping = Task.Run(() => { entered.SetResult(); engine.StopAndWait(); });
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            await Assert.ThrowsAsync<TimeoutException>(() => stopping.WaitAsync(TimeSpan.FromMilliseconds(100)));
+            cycle.SetResult();
+            await stopping.WaitAsync(TimeSpan.FromSeconds(5));
+            Assert.False(engine.IsDisposed);
+        }
+        finally
+        {
+            cycle.TrySetResult();
+            await stopping;
+            GC.SuppressFinalize(engine);
+        }
+    }
+
+    [Fact]
+    public void StopAndWait_OnActiveEngineThread_RejectsSelfWait()
+    {
+        var engine = CreateEngineInstance();
+        try
+        {
+            engine.EngineDispatcher.BindToCurrentThread();
+            SetCycleTask(engine, new TaskCompletionSource().Task);
+            Assert.Throws<InvalidOperationException>(() => engine.StopAndWait());
+        }
+        finally { GC.SuppressFinalize(engine); }
+    }
+
     private static Engine CreateEngineInstance() =>
         (Engine)Activator.CreateInstance(typeof(Engine), nonPublic: true)!;
 

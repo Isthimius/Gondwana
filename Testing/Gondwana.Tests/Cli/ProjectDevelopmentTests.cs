@@ -122,15 +122,23 @@ public sealed class ProjectDevelopmentTests : IDisposable
     public void Add_IsIdempotent_AndUsesExistingFamilyVersion()
     {
         var path = Project();
+        File.WriteAllText(path, File.ReadAllText(path).Replace("net8.0", "net8.0-windows"));
         Assert.Equal(0, Run("add", "widgets", "-p", path));
         Assert.Equal("2.5.2", new ProjectPackages(path).Packages.Single(p => p.Name == "Gondwana.Widgets").Version);
-        var before = File.ReadAllBytes(path);
+
+        var afterWidgets = File.ReadAllBytes(path);
         Assert.Equal(0, Run("add", "widgets", "-p", path));
+        Assert.Equal(afterWidgets, File.ReadAllBytes(path));
+
         Assert.Equal(0, Run("add", "audio", "-p", path));
-        Assert.Equal(before, File.ReadAllBytes(path));
+        Assert.Contains(new ProjectPackages(path).Packages, p => p.Name == "Gondwana.Audio.NAudio" && p.Version == "2.5.2");
+        var afterAudio = File.ReadAllBytes(path);
+        Assert.Equal(0, Run("add", "audio", "-p", path));
+        Assert.Equal(afterAudio, File.ReadAllBytes(path));
+
         Assert.Equal(1, Run("add", "not-a-feature", "-p", path));
         Assert.Equal(1, Run("add", "hosting", "-p", path));
-        Assert.Equal(before, File.ReadAllBytes(path));
+        Assert.Equal(afterAudio, File.ReadAllBytes(path));
     }
 
     [Fact]
@@ -147,14 +155,64 @@ public sealed class ProjectDevelopmentTests : IDisposable
     public void AddHosting_UsesActualAdapter(string host)
     {
         var path = Project($"<PackageReference Include=\"Gondwana\" Version=\"2.5.2\" /><PackageReference Include=\"Gondwana.{host}\" Version=\"2.5.2\" />");
+        if (host == "WinForms")
+            File.WriteAllText(path, File.ReadAllText(path).Replace("net8.0", "net8.0-windows"));
         Assert.Equal(0, Run("add", "hosting", "-p", path));
         Assert.Contains(new ProjectPackages(path).Packages, p => p.Name == $"Gondwana.{host}.Hosting");
-        if (host == "Blazor")
+
+        if (host == "Avalonia")
+        {
+            var before = File.ReadAllBytes(path);
+            Assert.Equal(1, Run("add", "audio", "-p", path));
+            Assert.Equal(1, Run("add", "midi", "-p", path));
+            Assert.Equal(before, File.ReadAllBytes(path));
+        }
+        else
         {
             Assert.Equal(0, Run("add", "audio", "-p", path));
-            Assert.Contains(new ProjectPackages(path).Packages, p => p.Name == "Gondwana.Audio.Browser");
-            Assert.Equal(1, Run("add", "video", "-p", path));
+            var expectedAudioPackage = host == "Blazor" ? "Gondwana.Audio.Browser" : "Gondwana.Audio.NAudio";
+            Assert.Contains(new ProjectPackages(path).Packages, p => p.Name == expectedAudioPackage);
+            Assert.Equal(host == "Blazor" ? 1 : 0, Run("add", "midi", "-p", path));
         }
+
+        if (host == "Blazor")
+            Assert.Equal(1, Run("add", "video", "-p", path));
+    }
+
+    [Theory]
+    [InlineData("net8.0;net8.0-windows")]
+    [InlineData("net8.0")]
+    public void AddAudioAndMidi_WinFormsAdapterDoesNotOverrideIncompatibleTargets(string targets)
+    {
+        var path = Project("<PackageReference Include=\"Gondwana.WinForms\" Version=\"2.6.0\" />");
+        File.WriteAllText(path, File.ReadAllText(path).Replace("<TargetFramework>net8.0</TargetFramework>",
+            $"<TargetFrameworks>{targets}</TargetFrameworks>"));
+        var before = File.ReadAllBytes(path);
+        Assert.Equal(1, Run("add", "audio", "-p", path));
+        Assert.Equal(1, Run("add", "midi", "-p", path));
+        Assert.Equal(before, File.ReadAllBytes(path));
+    }
+
+    [Theory]
+    [InlineData("net8.0-windows", true)]
+    [InlineData("net8.0-windows10.0.19041.0", true)]
+    [InlineData("net8.0", false)]
+    [InlineData("net8.0;net8.0-windows", false)]
+    public void AddAudioAndMidi_RespectDesktopTargets(string target, bool supported)
+    {
+        var path = Project("<PackageReference Include=\"Gondwana.Avalonia\" Version=\"2.6.0\" />");
+        File.WriteAllText(path, File.ReadAllText(path).Replace("<TargetFramework>net8.0</TargetFramework>",
+            $"<TargetFrameworks>{target}</TargetFrameworks>"));
+        var before = File.ReadAllBytes(path);
+        foreach (var feature in new[] { "audio", "midi" })
+            Assert.Equal(supported ? 0 : 1, Run("add", feature, "-p", path));
+        if (supported)
+        {
+            Assert.Contains(new ProjectPackages(path).Packages, p => p.Name == "Gondwana.Audio.NAudio");
+            Assert.Contains(new ProjectPackages(path).Packages, p => p.Name == "Gondwana.Audio.Midi");
+        }
+        else Assert.Equal(before, File.ReadAllBytes(path));
+        Assert.Equal(target, XDocument.Load(path).Descendants("TargetFrameworks").Single().Value);
     }
 
     [Fact]

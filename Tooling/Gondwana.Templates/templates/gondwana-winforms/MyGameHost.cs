@@ -23,7 +23,7 @@ internal sealed class MyGameHost : WinFormsGpuGameHost
     internal MyGameHost(WinFormGpuRenderSurfaceControl renderSurface)
         : base(renderSurface) { }
 //#else
-internal sealed class MyGameHost : WinFormsBitmapGameHost
+internal sealed class MyGameHost : WinFormsGameHost
 {
     internal MyGameHost(WinFormBitmapRenderSurfaceControl renderSurface)
         : base(renderSurface) { }

@@ -7,7 +7,7 @@ public static class EngineExtensions
 {
     /// <summary>
     /// Initializes MIDI audio format support by registering default MIDI file readers (.mid and .midi extensions)
-    /// with the platform audio factory.
+    /// with the NAudio backend reader registry.
     /// </summary>
     /// <param name="engine">The <see cref="Engine"/> instance to initialize MIDI audio formats for.</param>
     /// <remarks>

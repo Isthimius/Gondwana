@@ -16,7 +16,7 @@
         <IsPackable>true</IsPackable>
         <PackageId>Gondwana.WinForms</PackageId>
         <Title>Gondwana WinForms Platform Support</Title>
-        <Description>WinForms-based platform support for the Gondwana Game Engine, providing rendering, input, and audio integration for Windows desktop applications.</Description>
+        <Description>WinForms-based platform support for the Gondwana Game Engine, providing rendering, input, and Windows desktop integration.</Description>
         <PackageTags>game-engine gamedev csharp dotnet winforms windows desktop rendering input audio</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>gondwana-logo.png</PackageIcon>
@@ -24,12 +24,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
         <PackageReference Include="SkiaSharp.Views.WindowsForms" Version="3.119.2" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Gondwana\Gondwana.csproj" />
+        <ProjectReference Include="..\Gondwana.Audio.NAudio\Gondwana.Audio.NAudio.csproj" />
     </ItemGroup>
 
 	<ItemGroup>

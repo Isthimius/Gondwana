@@ -651,6 +651,27 @@ public sealed class Engine : IDisposable
         InvokeShutdownAfterCycleStops();
     }
 
+    /// <summary>
+    /// Stops the engine and waits for its background cycle to finish before returning.
+    /// Resources used by rendering can then be released without racing that cycle.
+    /// </summary>
+    /// <remarks>
+    /// Call from the hosting thread, outside an engine callback. Timer-driven hosts
+    /// must stop their platform timer and call this between ticks on the timer's thread.
+    /// This does not dispose engine state. Unlike <see cref="Stop"/>, it blocks until
+    /// an in-flight background cycle completes, even if Stop was already called.
+    /// </remarks>
+    /// <exception cref="InvalidOperationException">Called from the active background engine thread.</exception>
+    public void StopAndWait()
+    {
+        var cycleTask = _cycleTask;
+        if (cycleTask is not null && !cycleTask.IsCompleted && EngineDispatcher.IsOnEngineThread)
+            throw new InvalidOperationException("StopAndWait must be called outside the background engine thread.");
+
+        Stop();
+        cycleTask?.GetAwaiter().GetResult();
+    }
+
     private void InvokeShutdownAfterCycleStops()
     {
         var cycleTask = _cycleTask;

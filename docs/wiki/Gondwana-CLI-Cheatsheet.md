@@ -170,13 +170,17 @@ Adds a supported feature package using the project's existing aligned Gondwana v
 | Feature | Package selected on current `master` |
 |---|---|
 | `widgets` | `Gondwana.Widgets` |
-| `audio` | `Gondwana.Audio.Browser` for Blazor; desktop audio is already included in `Gondwana` core |
-| `midi` | `Gondwana.Audio.Midi` (desktop) |
+| `audio` | `Gondwana.Audio.Browser` for Blazor; `Gondwana.Audio.NAudio` for Windows-targeted WinForms or other desktop projects; cross-platform Avalonia requires an explicitly chosen compatible backend |
+| `midi` | `Gondwana.Audio.Midi` for Windows-targeted WinForms or other desktop projects; unavailable for Blazor and cross-platform desktop targets |
 | `gamepad` | `Gondwana.Input.SDL2` (desktop; requires native SDL2) |
 | `video` | `Gondwana.Video` (desktop; requires native LibVLC) |
 | `hosting` | `Gondwana.WinForms.Hosting`, `Gondwana.Avalonia.Hosting`, or `Gondwana.Blazor.Hosting`, based on an unambiguous adapter |
 
-The command makes no change when the feature is already referenced. It refuses to guess a version for a non-Gondwana project or a platform-specific package when the adapter is ambiguous.
+The command makes no changes if the requested feature is already referenced. It also avoids making assumptions when it cannot safely determine which package or version to use.
+
+For a standard cross-platform Avalonia project targeting `net8.0`, `add audio` and `add midi` do not automatically add a desktop audio backend. Instead, the CLI explains that a compatible backend must be selected explicitly and leaves the project unchanged.
+
+The CLI will not retarget an Avalonia project to Windows automatically. Windows-specific NAudio or MIDI packages are selected automatically only when all of the project's target frameworks are Windows targets.
 
 **Examples**
 

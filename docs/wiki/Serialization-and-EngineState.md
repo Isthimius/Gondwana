@@ -531,6 +531,12 @@ If an incoming sprite has no nickname, one is generated.
 
 Audio has slightly different merge behavior.
 
+Configure the appropriate audio backend before restoration (`UseNAudio()` on Windows
+or `UseBrowserAudio()` in WASM). Core persists source metadata and portable settings,
+not backend handles. File/asset sources require a byte-capable backend; browser URI
+sources reload through Browser Audio. Stream-only sources without a persisted file,
+asset identifier, or URI cannot be restored from JSON.
+
 Asset-backed audio is loaded from the mounted asset files first, after which serialized audio specifications are applied.
 
 When an existing audio resource is encountered with:
@@ -544,6 +550,7 @@ the existing resource itself is retained, but persisted settings such as:
 ```text
 Volume
 Pan
+PlaybackSpeed
 IsLooping
 ```
 

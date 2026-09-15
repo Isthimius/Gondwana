@@ -453,10 +453,22 @@ public abstract class GameHostBase : IDisposable
     /// <summary>
     /// Releases resources owned by the game host.
     /// </summary>
+    /// <remarks>
+    /// Call from the hosting/UI thread, outside an engine callback. Background rendering
+    /// is stopped and joined before cleanup hooks release native resources.
+    /// </remarks>
     public void Dispose()
     {
         if (_disposed)
             return;
+
+        // Stop platform scheduling and wait for rendering before any hook can release
+        // native drawing resources. Stop alone only requests that the loop exit.
+        if (_engineStarted)
+            StopEngine();
+
+        if (_engineInitialized)
+            Engine.StopAndWait();
 
         OnDisposing();
 
@@ -464,9 +476,6 @@ public abstract class GameHostBase : IDisposable
         _widgetInputRouter = null;
 
         UnhookEvents();
-
-        if (_engineStarted)
-            StopEngine();
 
         if (_engineInitialized)
             DisposeEngine();

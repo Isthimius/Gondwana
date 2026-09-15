@@ -6,6 +6,7 @@ $ChangelogProjects = @(
     [pscustomobject]@{ Path = "Gondwana"; RootName = "Gondwana"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Gondwana.Audio.Browser"; RootName = "Gondwana.Audio.Browser"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Gondwana.Audio.Midi"; RootName = "Gondwana.Audio.Midi"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Gondwana.Audio.NAudio"; RootName = "Gondwana.Audio.NAudio"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Gondwana.Avalonia"; RootName = "Gondwana.Avalonia"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Gondwana.Avalonia.Hosting"; RootName = "Gondwana.Avalonia.Hosting"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Gondwana.Blazor"; RootName = "Gondwana.Blazor"; GenerateChangelog = $true; IncludeInRootChangelog = $true },

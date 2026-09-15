@@ -67,6 +67,10 @@ Do not assume the CPU bitmap and GPU paths use the same invalidation or presenta
 
 Relevant pages include:
 
+- **Audio**
+  - **Audio - NAudio**
+  - **Audio - Browser Audio**
+
 - **Movement and Controllers**
   - **Moving Sprites and Direct Drawings**
 - **Input Handling**

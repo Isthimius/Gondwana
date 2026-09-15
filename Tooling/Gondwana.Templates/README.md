@@ -109,6 +109,12 @@ The Blazor template intentionally uses WebGL as the default and expected browser
 
 **Note:** The `gondwana-audio.js` file is automatically included via the `Gondwana.Audio.Browser` NuGet package.
 
+Audio uses the common `Engine.Managers.AudioResources` API with a platform backend:
+
+- WinForms hosts configure `Gondwana.Audio.NAudio` before `LoadAssets`; the backend is a transitive dependency, so no extra package or initialization is required.
+- Blazor `Program.cs` imports the audio module and calls `Engine.Instance.UseBrowserAudio()`. Load URI assets with `LoadFromUri`, placing files under `wwwroot/assets`, and start playback from a user gesture handler. Browser autoplay policy and codec support apply.
+- Cross-platform Avalonia (`net8.0`) has no default desktop audio backend. Configure a compatible backend before loading audio. `gondwana add audio` and `gondwana add midi` explain the limitation without retargeting the project. NAudio and the current MIDI implementation require Windows targets.
+
 ## Documentation
 
 -   **[Source Code](https://github.com/isthimius/Gondwana)**
@@ -120,7 +126,8 @@ The Blazor template intentionally uses WebGL as the default and expected browser
 
 -   `Gondwana` --- Core engine
 -   `Gondwana.Audio.Browser` --- Browser-based audio playback support
--   `Gondwana.Audio.Midi` --- MIDI playback and sequencing support
+-   `Gondwana.Audio.NAudio` --- Windows audio backend, configured automatically by the WinForms host
+-   `Gondwana.Audio.Midi` --- Windows MIDI support layered on the NAudio backend
 -   `Gondwana.Avalonia` --- Avalonia rendering and input adapters
 -   `Gondwana.Avalonia.Hosting` --- Avalonia-specific game host that integrates rendering and input into the Gondwana lifecycle
 -   `Gondwana.Blazor` --- Blazor WebAssembly rendering and input adapters, including the GPU-backed WebGL path and bitmap compatibility renderer

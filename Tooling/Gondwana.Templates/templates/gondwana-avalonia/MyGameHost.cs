@@ -22,7 +22,7 @@ internal sealed class MyGameHost : AvaloniaGpuGameHost
     internal MyGameHost(AvaloniaGpuRenderSurfaceControl renderSurface)
         : base(renderSurface) { }
 //#else
-internal sealed class MyGameHost : AvaloniaGameHost
+internal sealed class MyGameHost : AvaloniaBitmapGameHost
 {
     internal MyGameHost(AvaloniaBitmapRenderSurfaceControl renderSurface)
         : base(renderSurface) { }
@@ -34,6 +34,9 @@ internal sealed class MyGameHost : AvaloniaGameHost
     // toggling feature flags, or preparing services before assets begin loading.
     protected override void OnInitializing()
     {
+        // To use audio, configure a compatible backend here before LoadAssets.
+        // This cross-platform net8.0 template has no default desktop audio backend.
+        // Gondwana.Audio.NAudio and Gondwana.Audio.Midi require Windows targeting.
     }
 
     // TODO: Load non-tilesheet assets such as audio, fonts, and data files.

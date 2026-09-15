@@ -488,6 +488,7 @@ public sealed class EngineState
                     {
                         existing.Volume = spec.Volume;
                         existing.Pan = spec.Pan;
+                        existing.PlaybackSpeed = spec.PlaybackSpeed;
                         existing.IsLooping = spec.IsLooping;
                     }
                     continue;
