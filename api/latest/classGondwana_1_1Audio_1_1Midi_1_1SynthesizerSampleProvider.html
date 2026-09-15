@@ -34,7 +34,7 @@
   <td id="projectalign">
    <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;Development (master) - 2.6.0</span>
    </div>
-   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop and web platforms using SkiaSharp for graphics and pluggable audio backends for desktop and browser targets.</div>
   </td>
  </tr>
  </tbody>
@@ -124,7 +124,7 @@ Properties</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Provides real-time audio sample generation from MIDI data using software synthesis. </p>
-<p>This class bridges the MeltySynth MIDI synthesizer with NAudio's audio streaming infrastructure by implementing ISampleProvider. It continuously renders MIDI data to stereo IEEE float audio samples at 44.1 kHz, with support for optional looping and time-based seeking. </p>
+<p>This class bridges the MeltySynth MIDI synthesizer with <a class="el" href="namespaceGondwana_1_1Audio_1_1NAudio.html">NAudio</a>'s audio streaming infrastructure by implementing ISampleProvider. It continuously renders MIDI data to stereo IEEE float audio samples at 44.1 kHz, with support for optional looping and time-based seeking. </p>
 <p>The provider monitors synthesizer output for silence detection to determine when playback has completed. When looping is enabled, the MIDI sequencer automatically restarts upon detecting silence. Otherwise, playback terminates and the provider returns zero samples. </p>
 <p><a class="el" href="namespaceGondwana_1_1Audio.html">Audio</a> rendering is performed in chunks using internal stereo buffers (8192 frames) to balance performance with memory usage. Silence is detected using a small floating-point tolerance threshold to account for numerical precision. </p>
 <dl class="section see"><dt>See also</dt><dd>ISampleProvider, MidiFileReader</dd></dl>

@@ -5,7 +5,7 @@ var searchData=
   ['pinchended_2',['PinchEnded',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchGestureRecognizer.html#a5dd9a7cc21555f572ece2b66fecbaa88',1,'Gondwana::Input::Touch::Gestures::PinchGestureRecognizer']]],
   ['pinchstarted_3',['PinchStarted',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchGestureRecognizer.html#abc17d0e09d8014757672e2ae41c24fc0',1,'Gondwana::Input::Touch::Gestures::PinchGestureRecognizer']]],
   ['pinchupdated_4',['PinchUpdated',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1PinchGestureRecognizer.html#a9db28285041f19812c3118d16f1a9df5',1,'Gondwana::Input::Touch::Gestures::PinchGestureRecognizer']]],
-  ['playbackcompleted_5',['PlaybackCompleted',['../classGondwana_1_1Audio_1_1AudioResource.html#ab3095f4f58ab095465ba6581fd3a787d',1,'Gondwana::Audio::AudioResource']]],
+  ['playbackcompleted_5',['PlaybackCompleted',['../classGondwana_1_1Audio_1_1AudioResource.html#a94e2cc6faed46896824fe11d74a9861a',1,'Gondwana.Audio.AudioResource.PlaybackCompleted'],['../interfaceGondwana_1_1Audio_1_1IAudioPlaybackHandle.html#a3ab208bc9b185b85fa5a84624e76fe9e',1,'Gondwana.Audio.IAudioPlaybackHandle.PlaybackCompleted']]],
   ['pointerclick_6',['PointerClick',['../classGondwana_1_1Widgets_1_1WidgetBase.html#a868e0fcbe538f507ee9a487c3f436716',1,'Gondwana::Widgets::WidgetBase']]],
   ['pointerdown_7',['PointerDown',['../classGondwana_1_1Widgets_1_1WidgetBase.html#ae48d553576775ae52043bcf7ab5818d8',1,'Gondwana::Widgets::WidgetBase']]],
   ['pointerenter_8',['PointerEnter',['../classGondwana_1_1Widgets_1_1WidgetBase.html#a45c142d53bc5e517229b5211902349cd',1,'Gondwana::Widgets::WidgetBase']]],

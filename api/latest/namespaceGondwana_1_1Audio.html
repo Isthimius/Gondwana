@@ -34,7 +34,7 @@
   <td id="projectalign">
    <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;Development (master) - 2.6.0</span>
    </div>
-   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop and web platforms using SkiaSharp for graphics and pluggable audio backends for desktop and browser targets.</div>
   </td>
  </tr>
  </tbody>
@@ -103,18 +103,54 @@ $(function(){initNavTree('namespaceGondwana_1_1Audio.html','',''); });
 Namespaces</h2></td></tr>
 <tr class="memitem:Browser" id="r_Browser"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGondwana_1_1Audio_1_1Browser.html">Browser</a></td></tr>
 <tr class="memitem:Midi" id="r_Midi"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGondwana_1_1Audio_1_1Midi.html">Midi</a></td></tr>
+<tr class="memitem:NAudio" id="r_NAudio"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGondwana_1_1Audio_1_1NAudio.html">NAudio</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:AudioResource" id="r_AudioResource"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Audio_1_1AudioResource.html">AudioResource</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a audio resource that can be played, paused, resumed, and disposed.  <a href="classGondwana_1_1Audio_1_1AudioResource.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an audio resource that can be played, paused, resumed, sought, and disposed. Playback is supplied by the currently configured <a class="el" href="interfaceGondwana_1_1Audio_1_1IAudioBackend.html" title="Creates backend-specific playback handles for the engine&#39;s common audio API.">IAudioBackend</a>.  <a href="classGondwana_1_1Audio_1_1AudioResource.html#details">More...</a><br /></td></tr>
 <tr class="memitem:AudioResourceManager" id="r_AudioResourceManager"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Audio_1_1AudioResourceManager.html">AudioResourceManager</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manages the lifecycle of audio resources, providing loading, retrieval, cloning, and disposal functionality.  <a href="classGondwana_1_1Audio_1_1AudioResourceManager.html#details">More...</a><br /></td></tr>
-<tr class="memitem:PlatformAudioFactory" id="r_PlatformAudioFactory"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>PlatformAudioFactory</b></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides platform-specific audio format support through a registry of audio reader factories. <br /></td></tr>
-<tr class="memitem:StereoPanSampleProvider" id="r_StereoPanSampleProvider"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Audio_1_1StereoPanSampleProvider.html">StereoPanSampleProvider</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simple stereo balancer: multiplies L/R samples independently. Expects stereo IEEE float (NAudio will convert upstream via ToSampleProvider()).  <a href="classGondwana_1_1Audio_1_1StereoPanSampleProvider.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manages the lifecycle of audio resources independently of the playback backend.  <a href="classGondwana_1_1Audio_1_1AudioResourceManager.html#details">More...</a><br /></td></tr>
+<tr class="memitem:IAudioBackend" id="r_IAudioBackend"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceGondwana_1_1Audio_1_1IAudioBackend.html">IAudioBackend</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates backend-specific playback handles for the engine's common audio API.  <a href="interfaceGondwana_1_1Audio_1_1IAudioBackend.html#details">More...</a><br /></td></tr>
+<tr class="memitem:IAudioPlaybackHandle" id="r_IAudioPlaybackHandle"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceGondwana_1_1Audio_1_1IAudioPlaybackHandle.html">IAudioPlaybackHandle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend-provided playback handle used by <a class="el" href="classGondwana_1_1Audio_1_1AudioResource.html" title="Represents an audio resource that can be played, paused, resumed, sought, and disposed....">AudioResource</a>. Implements IDisposable to allow releasing any native or temporary resources associated with playback (for example temporary files or native audio handles).  <a href="interfaceGondwana_1_1Audio_1_1IAudioPlaybackHandle.html#details">More...</a><br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a973077d5a560e4e7b680cb56380053b9" id="r_a973077d5a560e4e7b680cb56380053b9"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a973077d5a560e4e7b680cb56380053b9">AudioPlaybackState</a> { <a class="el" href="#a973077d5a560e4e7b680cb56380053b9ac23e2b09ebe6bf4cb5e2a9abe85c0be2">Stopped</a> = 0
+, <a class="el" href="#a973077d5a560e4e7b680cb56380053b9ac9dbb2b7c84159b632d71e512eba8428">Playing</a> = 1
+, <a class="el" href="#a973077d5a560e4e7b680cb56380053b9ae99180abf47a8b3a856e0bcb2656990a">Paused</a> = 2
+ }</td></tr>
+<tr class="memdesc:a973077d5a560e4e7b680cb56380053b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes the current playback state of an audio resource without exposing backend-specific playback types.  <a href="#a973077d5a560e4e7b680cb56380053b9">More...</a><br /></td></tr>
 </table>
+<a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
+<a id="a973077d5a560e4e7b680cb56380053b9" name="a973077d5a560e4e7b680cb56380053b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a973077d5a560e4e7b680cb56380053b9">&#9670;&#160;</a></span>AudioPlaybackState</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#a973077d5a560e4e7b680cb56380053b9">Gondwana.Audio.AudioPlaybackState</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Describes the current playback state of an audio resource without exposing backend-specific playback types. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a973077d5a560e4e7b680cb56380053b9ac23e2b09ebe6bf4cb5e2a9abe85c0be2" name="a973077d5a560e4e7b680cb56380053b9ac23e2b09ebe6bf4cb5e2a9abe85c0be2"></a>Stopped&#160;</td><td class="fielddoc"><p>Playback is stopped. No audio is currently playing and the position is at the start (or has been reset). </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a973077d5a560e4e7b680cb56380053b9ac9dbb2b7c84159b632d71e512eba8428" name="a973077d5a560e4e7b680cb56380053b9ac9dbb2b7c84159b632d71e512eba8428"></a>Playing&#160;</td><td class="fielddoc"><p>Playback is in progress. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a973077d5a560e4e7b680cb56380053b9ae99180abf47a8b3a856e0bcb2656990a" name="a973077d5a560e4e7b680cb56380053b9ae99180abf47a8b3a856e0bcb2656990a"></a>Paused&#160;</td><td class="fielddoc"><p>Playback is paused and can be resumed from the current position. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="AudioPlaybackState_8cs_source.html#l00007">7</a> of file <a class="el" href="AudioPlaybackState_8cs_source.html">AudioPlaybackState.cs</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

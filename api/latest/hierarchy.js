@@ -66,6 +66,10 @@ var hierarchy =
     [ "Gondwana.Drawing.Frame", "structGondwana_1_1Drawing_1_1Frame.html", null ],
     [ "Gondwana.Input.Gamepad.GamepadEventPoller", "classGondwana_1_1Input_1_1Gamepad_1_1GamepadEventPoller.html", null ],
     [ "Gondwana.Input.Gamepad.GamepadStickState", "structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html", null ],
+    [ "Gondwana.Audio.IAudioBackend", "interfaceGondwana_1_1Audio_1_1IAudioBackend.html", [
+      [ "Gondwana.Audio.Browser.BrowserAudioBackend", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioBackend.html", null ],
+      [ "Gondwana.Audio.NAudio.NAudioAudioBackend", "classGondwana_1_1Audio_1_1NAudio_1_1NAudioAudioBackend.html", null ]
+    ] ],
     [ "ICloneable", null, [
       [ "Gondwana.Drawing.Animation.Cycle", "classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html", null ],
       [ "Gondwana.TypedValueBag", "classGondwana_1_1TypedValueBag.html", null ]
@@ -138,6 +142,7 @@ var hierarchy =
       [ "Gondwana.Assets.AssetsFile", "classGondwana_1_1Assets_1_1AssetsFile.html", null ],
       [ "Gondwana.Audio.AudioResource", "classGondwana_1_1Audio_1_1AudioResource.html", null ],
       [ "Gondwana.Audio.AudioResourceManager", "classGondwana_1_1Audio_1_1AudioResourceManager.html", null ],
+      [ "Gondwana.Audio.IAudioPlaybackHandle", "interfaceGondwana_1_1Audio_1_1IAudioPlaybackHandle.html", null ],
       [ "Gondwana.Avalonia.Input.Keyboard.AvaloniaKeyboardAdapter", "classGondwana_1_1Avalonia_1_1Input_1_1Keyboard_1_1AvaloniaKeyboardAdapter.html", null ],
       [ "Gondwana.Avalonia.Input.Mouse.AvaloniaMouseAdapter", "classGondwana_1_1Avalonia_1_1Input_1_1Mouse_1_1AvaloniaMouseAdapter.html", null ],
       [ "Gondwana.Avalonia.Input.Touch.AvaloniaTouchInputAdapter", "classGondwana_1_1Avalonia_1_1Input_1_1Touch_1_1AvaloniaTouchInputAdapter.html", null ],
@@ -265,8 +270,7 @@ var hierarchy =
       [ "Gondwana.Input.Touch.TouchEventConfiguration", "classGondwana_1_1Input_1_1Touch_1_1TouchEventConfiguration.html", null ]
     ] ],
     [ "ISampleProvider", null, [
-      [ "Gondwana.Audio.Midi.SynthesizerSampleProvider", "classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider.html", null ],
-      [ "Gondwana.Audio.StereoPanSampleProvider", "classGondwana_1_1Audio_1_1StereoPanSampleProvider.html", null ]
+      [ "Gondwana.Audio.Midi.SynthesizerSampleProvider", "classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider.html", null ]
     ] ],
     [ "Gondwana.Input.Touch.ITouchAdapter", "interfaceGondwana_1_1Input_1_1Touch_1_1ITouchAdapter.html", [
       [ "Gondwana.Avalonia.Input.Touch.AvaloniaTouchInputAdapter", "classGondwana_1_1Avalonia_1_1Input_1_1Touch_1_1AvaloniaTouchInputAdapter.html", null ],

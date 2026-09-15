@@ -6,6 +6,7 @@ var classGondwana_1_1Engine =
     [ "Start", "classGondwana_1_1Engine.html#a1602914b099f6a520a4ec9a9b6be0792", null ],
     [ "StartTimerDriven", "classGondwana_1_1Engine.html#a498e7766914d124158b6a844b7c48235", null ],
     [ "Stop", "classGondwana_1_1Engine.html#ac7d30da86dbc3b9533d5753330e4b87f", null ],
+    [ "StopAndWait", "classGondwana_1_1Engine.html#a6556d7a8f6b8698661386dca3e58fbc5", null ],
     [ "Tick", "classGondwana_1_1Engine.html#a00078dddd49aef40c79cbbf1493da5f4", null ],
     [ "Configuration", "classGondwana_1_1Engine.html#ad8821f813581b2d22fabbb4c9c7c3cb2", null ],
     [ "CyclesPerSecond", "classGondwana_1_1Engine.html#a934c3fbfb438d588870d36142030b112", null ],

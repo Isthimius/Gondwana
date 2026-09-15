@@ -34,7 +34,7 @@
   <td id="projectalign">
    <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;Development (master) - 2.6.0</span>
    </div>
-   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop and web platforms using SkiaSharp for graphics and pluggable audio backends for desktop and browser targets.</div>
   </td>
  </tr>
  </tbody>
@@ -439,290 +439,291 @@ $(function(){initNavTree('EngineState_8cs_source.html','',''); });
 <div class="line"><a id="l00488" name="l00488"></a><span class="lineno">  488</span>                    {</div>
 <div class="line"><a id="l00489" name="l00489"></a><span class="lineno">  489</span>                        existing.Volume = spec.Volume;</div>
 <div class="line"><a id="l00490" name="l00490"></a><span class="lineno">  490</span>                        existing.Pan = spec.Pan;</div>
-<div class="line"><a id="l00491" name="l00491"></a><span class="lineno">  491</span>                        existing.IsLooping = spec.IsLooping;</div>
-<div class="line"><a id="l00492" name="l00492"></a><span class="lineno">  492</span>                    }</div>
-<div class="line"><a id="l00493" name="l00493"></a><span class="lineno">  493</span>                    <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00494" name="l00494"></a><span class="lineno">  494</span>                }</div>
-<div class="line"><a id="l00495" name="l00495"></a><span class="lineno">  495</span> </div>
-<div class="line"><a id="l00496" name="l00496"></a><span class="lineno">  496</span>                AudioResourceManager.Instance.Unload(key);</div>
-<div class="line"><a id="l00497" name="l00497"></a><span class="lineno">  497</span>            }</div>
-<div class="line"><a id="l00498" name="l00498"></a><span class="lineno">  498</span> </div>
-<div class="line"><a id="l00499" name="l00499"></a><span class="lineno">  499</span>            <span class="comment">// Ensure the audio spec is (re)created/registered in the manager.</span></div>
-<div class="line"><a id="l00500" name="l00500"></a><span class="lineno">  500</span>            spec.ReloadIntoManager();</div>
-<div class="line"><a id="l00501" name="l00501"></a><span class="lineno">  501</span>        }</div>
-<div class="line"><a id="l00502" name="l00502"></a><span class="lineno">  502</span>    }</div>
-<div class="line"><a id="l00503" name="l00503"></a><span class="lineno">  503</span> </div>
-<div class="line"><a id="l00504" name="l00504"></a><span class="lineno">  504</span>    <span class="keyword">private</span> <span class="keyword">static</span> Dictionary&lt;string, TilesheetDefinition&gt; CaptureTilesheetDefinitions(<span class="keywordtype">string</span>? baseDirectory)</div>
-<div class="line"><a id="l00505" name="l00505"></a><span class="lineno">  505</span>    {</div>
-<div class="line"><a id="l00506" name="l00506"></a><span class="lineno">  506</span>        <span class="keywordflow">return</span> TilesheetRegistry.Instance</div>
-<div class="line"><a id="l00507" name="l00507"></a><span class="lineno">  507</span>            .GetAll()</div>
-<div class="line"><a id="l00508" name="l00508"></a><span class="lineno">  508</span>            .ToDictionary(</div>
-<div class="line"><a id="l00509" name="l00509"></a><span class="lineno">  509</span>                kvp =&gt; kvp.Key,</div>
-<div class="line"><a id="l00510" name="l00510"></a><span class="lineno">  510</span>                kvp =&gt; TilesheetDefinitionSerializer.FromTilesheet(</div>
-<div class="line"><a id="l00511" name="l00511"></a><span class="lineno">  511</span>                    kvp.Value,</div>
-<div class="line"><a id="l00512" name="l00512"></a><span class="lineno">  512</span>                    baseDirectory,</div>
-<div class="line"><a id="l00513" name="l00513"></a><span class="lineno">  513</span>                    makePathsRelative: !<span class="keywordtype">string</span>.IsNullOrWhiteSpace(baseDirectory)));</div>
-<div class="line"><a id="l00514" name="l00514"></a><span class="lineno">  514</span>    }</div>
-<div class="line"><a id="l00515" name="l00515"></a><span class="lineno">  515</span> </div>
-<div class="line"><a id="l00516" name="l00516"></a><span class="lineno">  516</span>    <span class="keyword">private</span> <span class="keyword">static</span> Dictionary&lt;string, TilesheetStateEntry&gt; CaptureTilesheetEntries(</div>
-<div class="line"><a id="l00517" name="l00517"></a><span class="lineno">  517</span>        <span class="keywordtype">string</span>? baseDirectory,</div>
-<div class="line"><a id="l00518" name="l00518"></a><span class="lineno">  518</span>        <span class="keywordtype">string</span> engineStatePath,</div>
-<div class="line"><a id="l00519" name="l00519"></a><span class="lineno">  519</span>        <span class="keywordtype">bool</span> separateGtsFiles)</div>
-<div class="line"><a id="l00520" name="l00520"></a><span class="lineno">  520</span>    {</div>
-<div class="line"><a id="l00521" name="l00521"></a><span class="lineno">  521</span>        var result = <span class="keyword">new</span> Dictionary&lt;string, TilesheetStateEntry&gt;(StringComparer.Ordinal);</div>
-<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span> </div>
-<div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span>        <span class="keywordflow">foreach</span> (var (key, tilesheet) in TilesheetRegistry.Instance.GetAll())</div>
-<div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span>        {</div>
-<div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span>            <span class="keywordflow">if</span> (separateGtsFiles)</div>
-<div class="line"><a id="l00526" name="l00526"></a><span class="lineno">  526</span>            {</div>
-<div class="line"><a id="l00527" name="l00527"></a><span class="lineno">  527</span>                var gtsDirectory = GetTilesheetStateDirectory(engineStatePath);</div>
-<div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span>                Directory.CreateDirectory(gtsDirectory);</div>
-<div class="line"><a id="l00529" name="l00529"></a><span class="lineno">  529</span> </div>
-<div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span>                var gtsFileName = $<span class="stringliteral">&quot;{SanitizeFileName(key)}.gts&quot;</span>;</div>
-<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span>                var gtsFullPath = Path.Combine(gtsDirectory, gtsFileName);</div>
-<div class="line"><a id="l00532" name="l00532"></a><span class="lineno">  532</span> </div>
-<div class="line"><a id="l00533" name="l00533"></a><span class="lineno">  533</span>                <span class="comment">// Important:</span></div>
-<div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span>                <span class="comment">// Save the GTS using the GTS serializer, not EngineState.JsonSerializerSettings.</span></div>
-<div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span>                <span class="comment">// This avoids $id/$values noise in the .gts file.</span></div>
-<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span>                TilesheetDefinitionSerializer.Save(</div>
-<div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span>                    gtsFullPath,</div>
-<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span>                    tilesheet,</div>
-<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span>                    makePathsRelative: <span class="keyword">true</span>);</div>
-<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span> </div>
-<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span>                var gtsPathForState = MakeRelativePath(</div>
-<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span>                    gtsFullPath,</div>
-<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>                    baseDirectory);</div>
-<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span> </div>
-<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span>                result[key] = <span class="keyword">new</span> TilesheetStateEntry</div>
-<div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span>                {</div>
-<div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span>                    GtsPath = gtsPathForState</div>
-<div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span>                };</div>
-<div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span>            }</div>
-<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span>            {</div>
-<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span>                result[key] = <span class="keyword">new</span> TilesheetStateEntry</div>
-<div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span>                {</div>
-<div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span>                    Definition = TilesheetDefinitionSerializer.FromTilesheet(</div>
-<div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span>                        tilesheet,</div>
-<div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span>                        baseDirectory,</div>
-<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span>                        makePathsRelative: !<span class="keywordtype">string</span>.IsNullOrWhiteSpace(baseDirectory))</div>
-<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>                };</div>
-<div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span>            }</div>
-<div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span>        }</div>
-<div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span> </div>
-<div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span>        <span class="keywordflow">return</span> result;</div>
-<div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span>    }</div>
-<div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span> </div>
-<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">string</span> GetTilesheetStateDirectory(<span class="keywordtype">string</span> engineStatePath)</div>
-<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>    {</div>
-<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>        var directory = Path.GetDirectoryName(engineStatePath) ?? <span class="keywordtype">string</span>.Empty;</div>
-<div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>        var fileName = Path.GetFileNameWithoutExtension(engineStatePath);</div>
-<div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span> </div>
-<div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span>        <span class="keywordflow">return</span> Path.Combine(directory, $<span class="stringliteral">&quot;{fileName}.tilesheets&quot;</span>);</div>
-<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>    }</div>
-<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span> </div>
-<div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">string</span> MakeRelativePath(<span class="keywordtype">string</span> path, <span class="keywordtype">string</span>? baseDirectory)</div>
-<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span>    {</div>
-<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>        <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(baseDirectory))</div>
-<div class="line"><a id="l00576" name="l00576"></a><span class="lineno">  576</span>            <span class="keywordflow">return</span> path;</div>
-<div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span> </div>
-<div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span>        <span class="keywordflow">return</span> Path.GetRelativePath(</div>
-<div class="line"><a id="l00579" name="l00579"></a><span class="lineno">  579</span>            Path.GetFullPath(baseDirectory),</div>
-<div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span>            Path.GetFullPath(path));</div>
-<div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span>    }</div>
-<div class="line"><a id="l00582" name="l00582"></a><span class="lineno">  582</span> </div>
-<div class="line"><a id="l00583" name="l00583"></a><span class="lineno">  583</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">string</span> SanitizeFileName(<span class="keywordtype">string</span> value)</div>
-<div class="line"><a id="l00584" name="l00584"></a><span class="lineno">  584</span>    {</div>
-<div class="line"><a id="l00585" name="l00585"></a><span class="lineno">  585</span>        <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(value))</div>
-<div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span>            <span class="keywordflow">return</span> Guid.NewGuid().ToString(<span class="stringliteral">&quot;N&quot;</span>);</div>
-<div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span> </div>
-<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span>        var invalidChars = Path.GetInvalidFileNameChars();</div>
-<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span>        var sanitized = <span class="keyword">new</span> string(</div>
-<div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span>            value.Select(ch =&gt; invalidChars.Contains(ch) ? <span class="charliteral">&#39;_&#39;</span> : ch).ToArray());</div>
-<div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span> </div>
-<div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span>        <span class="keywordflow">return</span> <span class="keywordtype">string</span>.IsNullOrWhiteSpace(sanitized)</div>
-<div class="line"><a id="l00593" name="l00593"></a><span class="lineno">  593</span>            ? Guid.NewGuid().ToString(<span class="stringliteral">&quot;N&quot;</span>)</div>
-<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span>            : sanitized;</div>
-<div class="line"><a id="l00595" name="l00595"></a><span class="lineno">  595</span>    }</div>
-<div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span> </div>
-<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">void</span> MergeTilesheets(</div>
-<div class="line"><a id="l00598" name="l00598"></a><span class="lineno">  598</span>        Dictionary&lt;string, TilesheetStateEntry&gt;? tilesheets,</div>
-<div class="line"><a id="l00599" name="l00599"></a><span class="lineno">  599</span>        <span class="keywordtype">bool</span> overwriteExisting,</div>
-<div class="line"><a id="l00600" name="l00600"></a><span class="lineno">  600</span>        <span class="keywordtype">string</span>? baseDirectory)</div>
-<div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span>    {</div>
-<div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span>        <span class="keywordflow">if</span> (tilesheets is <span class="keyword">null</span> || tilesheets.Count == 0)</div>
-<div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span> </div>
-<div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span>        var registry = TilesheetRegistry.Instance.GetAll();</div>
-<div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span> </div>
-<div class="line"><a id="l00607" name="l00607"></a><span class="lineno">  607</span>        <span class="keywordflow">foreach</span> (var (key, entry) in tilesheets)</div>
-<div class="line"><a id="l00608" name="l00608"></a><span class="lineno">  608</span>        {</div>
-<div class="line"><a id="l00609" name="l00609"></a><span class="lineno">  609</span>            <span class="keywordflow">if</span> (entry is <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00610" name="l00610"></a><span class="lineno">  610</span>                <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00611" name="l00611"></a><span class="lineno">  611</span> </div>
-<div class="line"><a id="l00612" name="l00612"></a><span class="lineno">  612</span>            var existingKey = key;</div>
-<div class="line"><a id="l00613" name="l00613"></a><span class="lineno">  613</span> </div>
-<div class="line"><a id="l00614" name="l00614"></a><span class="lineno">  614</span>            <span class="keywordflow">if</span> (!overwriteExisting &amp;&amp; registry.ContainsKey(existingKey))</div>
-<div class="line"><a id="l00615" name="l00615"></a><span class="lineno">  615</span>                <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span> </div>
-<div class="line"><a id="l00617" name="l00617"></a><span class="lineno">  617</span>            Tilesheet rebuilt;</div>
-<div class="line"><a id="l00618" name="l00618"></a><span class="lineno">  618</span> </div>
-<div class="line"><a id="l00619" name="l00619"></a><span class="lineno">  619</span>            <span class="keywordflow">if</span> (!<span class="keywordtype">string</span>.IsNullOrWhiteSpace(entry.GtsPath))</div>
-<div class="line"><a id="l00620" name="l00620"></a><span class="lineno">  620</span>            {</div>
-<div class="line"><a id="l00621" name="l00621"></a><span class="lineno">  621</span>                var gtsPath = ResolvePath(entry.GtsPath, baseDirectory);</div>
-<div class="line"><a id="l00622" name="l00622"></a><span class="lineno">  622</span> </div>
-<div class="line"><a id="l00623" name="l00623"></a><span class="lineno">  623</span>                rebuilt = TilesheetFactory.FromDefinitionFile(gtsPath);</div>
-<div class="line"><a id="l00624" name="l00624"></a><span class="lineno">  624</span>            }</div>
-<div class="line"><a id="l00625" name="l00625"></a><span class="lineno">  625</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (entry.Definition is not <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00626" name="l00626"></a><span class="lineno">  626</span>            {</div>
-<div class="line"><a id="l00627" name="l00627"></a><span class="lineno">  627</span>                <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(entry.Definition.Name))</div>
-<div class="line"><a id="l00628" name="l00628"></a><span class="lineno">  628</span>                    entry.Definition.Name = key;</div>
-<div class="line"><a id="l00629" name="l00629"></a><span class="lineno">  629</span> </div>
-<div class="line"><a id="l00630" name="l00630"></a><span class="lineno">  630</span>                rebuilt = TilesheetFactory.FromDefinition(</div>
-<div class="line"><a id="l00631" name="l00631"></a><span class="lineno">  631</span>                    entry.Definition,</div>
-<div class="line"><a id="l00632" name="l00632"></a><span class="lineno">  632</span>                    baseDirectory);</div>
-<div class="line"><a id="l00633" name="l00633"></a><span class="lineno">  633</span>            }</div>
-<div class="line"><a id="l00634" name="l00634"></a><span class="lineno">  634</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00635" name="l00635"></a><span class="lineno">  635</span>            {</div>
-<div class="line"><a id="l00636" name="l00636"></a><span class="lineno">  636</span>                <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException(</div>
-<div class="line"><a id="l00637" name="l00637"></a><span class="lineno">  637</span>                    $<span class="stringliteral">&quot;Tilesheet state entry &#39;{key}&#39; does not contain a GTS path or inline definition.&quot;</span>);</div>
-<div class="line"><a id="l00638" name="l00638"></a><span class="lineno">  638</span>            }</div>
-<div class="line"><a id="l00639" name="l00639"></a><span class="lineno">  639</span> </div>
-<div class="line"><a id="l00640" name="l00640"></a><span class="lineno">  640</span>            TilesheetRegistry.Instance.Register(</div>
-<div class="line"><a id="l00641" name="l00641"></a><span class="lineno">  641</span>                rebuilt,</div>
-<div class="line"><a id="l00642" name="l00642"></a><span class="lineno">  642</span>                disposeReplaced: overwriteExisting);</div>
-<div class="line"><a id="l00643" name="l00643"></a><span class="lineno">  643</span>        }</div>
-<div class="line"><a id="l00644" name="l00644"></a><span class="lineno">  644</span>    }</div>
-<div class="line"><a id="l00645" name="l00645"></a><span class="lineno">  645</span> </div>
-<div class="line"><a id="l00646" name="l00646"></a><span class="lineno">  646</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">string</span> ResolvePath(<span class="keywordtype">string</span> path, <span class="keywordtype">string</span>? baseDirectory)</div>
-<div class="line"><a id="l00647" name="l00647"></a><span class="lineno">  647</span>    {</div>
-<div class="line"><a id="l00648" name="l00648"></a><span class="lineno">  648</span>        <span class="keywordflow">if</span> (Path.IsPathRooted(path))</div>
-<div class="line"><a id="l00649" name="l00649"></a><span class="lineno">  649</span>            <span class="keywordflow">return</span> path;</div>
-<div class="line"><a id="l00650" name="l00650"></a><span class="lineno">  650</span> </div>
-<div class="line"><a id="l00651" name="l00651"></a><span class="lineno">  651</span>        <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(baseDirectory))</div>
-<div class="line"><a id="l00652" name="l00652"></a><span class="lineno">  652</span>            <span class="keywordflow">return</span> path;</div>
-<div class="line"><a id="l00653" name="l00653"></a><span class="lineno">  653</span> </div>
-<div class="line"><a id="l00654" name="l00654"></a><span class="lineno">  654</span>        <span class="keywordflow">return</span> Path.GetFullPath(Path.Combine(baseDirectory, path));</div>
-<div class="line"><a id="l00655" name="l00655"></a><span class="lineno">  655</span>    }</div>
-<div class="line"><a id="l00656" name="l00656"></a><span class="lineno">  656</span> </div>
-<div class="line"><a id="l00657" name="l00657"></a><span class="lineno">  657</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">void</span> MergeCycles(Dictionary&lt;string, Cycle&gt;? cycles, <span class="keywordtype">bool</span> overwriteExisting)</div>
-<div class="line"><a id="l00658" name="l00658"></a><span class="lineno">  658</span>    {</div>
-<div class="line"><a id="l00659" name="l00659"></a><span class="lineno">  659</span>        <span class="keywordflow">if</span> (cycles is <span class="keyword">null</span> || cycles.Count == 0)</div>
-<div class="line"><a id="l00660" name="l00660"></a><span class="lineno">  660</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00661" name="l00661"></a><span class="lineno">  661</span> </div>
-<div class="line"><a id="l00662" name="l00662"></a><span class="lineno">  662</span>        <span class="keywordflow">foreach</span> (var (key, cycle) in cycles)</div>
-<div class="line"><a id="l00663" name="l00663"></a><span class="lineno">  663</span>        {</div>
-<div class="line"><a id="l00664" name="l00664"></a><span class="lineno">  664</span>            <span class="keywordflow">if</span> (!overwriteExisting &amp;&amp; Cycle._cycles.ContainsKey(key))</div>
-<div class="line"><a id="l00665" name="l00665"></a><span class="lineno">  665</span>                <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00666" name="l00666"></a><span class="lineno">  666</span> </div>
-<div class="line"><a id="l00667" name="l00667"></a><span class="lineno">  667</span>            Cycle._cycles[key] = cycle;</div>
-<div class="line"><a id="l00668" name="l00668"></a><span class="lineno">  668</span>        }</div>
-<div class="line"><a id="l00669" name="l00669"></a><span class="lineno">  669</span>    }</div>
-<div class="line"><a id="l00670" name="l00670"></a><span class="lineno">  670</span> </div>
-<div class="line"><a id="l00671" name="l00671"></a><span class="lineno">  671</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">void</span> MergeScenes(List&lt;Scene&gt;? scenes, <span class="keywordtype">bool</span> overwriteExisting)</div>
-<div class="line"><a id="l00672" name="l00672"></a><span class="lineno">  672</span>    {</div>
-<div class="line"><a id="l00673" name="l00673"></a><span class="lineno">  673</span>        <span class="keywordflow">if</span> (scenes is <span class="keyword">null</span> || scenes.Count == 0)</div>
-<div class="line"><a id="l00674" name="l00674"></a><span class="lineno">  674</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00675" name="l00675"></a><span class="lineno">  675</span> </div>
-<div class="line"><a id="l00676" name="l00676"></a><span class="lineno">  676</span>        <span class="comment">// Index existing scenes by ID (case-sensitive; change if you prefer)</span></div>
-<div class="line"><a id="l00677" name="l00677"></a><span class="lineno">  677</span>        var existingIndexById = <span class="keyword">new</span> Dictionary&lt;string, int&gt;(StringComparer.Ordinal);</div>
-<div class="line"><a id="l00678" name="l00678"></a><span class="lineno">  678</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; Scene._allScenes.Count; i++)</div>
-<div class="line"><a id="l00679" name="l00679"></a><span class="lineno">  679</span>        {</div>
-<div class="line"><a id="l00680" name="l00680"></a><span class="lineno">  680</span>            var <span class="keywordtype">id</span> = Scene._allScenes[i].ID;</div>
-<div class="line"><a id="l00681" name="l00681"></a><span class="lineno">  681</span>            <span class="keywordflow">if</span> (!<span class="keywordtype">string</span>.IsNullOrWhiteSpace(<span class="keywordtype">id</span>) &amp;&amp; !existingIndexById.ContainsKey(<span class="keywordtype">id</span>))</div>
-<div class="line"><a id="l00682" name="l00682"></a><span class="lineno">  682</span>                existingIndexById.Add(<span class="keywordtype">id</span>, i);</div>
-<div class="line"><a id="l00683" name="l00683"></a><span class="lineno">  683</span>        }</div>
-<div class="line"><a id="l00684" name="l00684"></a><span class="lineno">  684</span> </div>
-<div class="line"><a id="l00685" name="l00685"></a><span class="lineno">  685</span>        <span class="comment">// Avoid duplicating the same incoming ID twice (keeps last one)</span></div>
-<div class="line"><a id="l00686" name="l00686"></a><span class="lineno">  686</span>        var seenIncoming = <span class="keyword">new</span> HashSet&lt;string&gt;(StringComparer.Ordinal);</div>
-<div class="line"><a id="l00687" name="l00687"></a><span class="lineno">  687</span> </div>
-<div class="line"><a id="l00688" name="l00688"></a><span class="lineno">  688</span>        <span class="keywordflow">foreach</span> (var incoming <span class="keywordflow">in</span> scenes)</div>
-<div class="line"><a id="l00689" name="l00689"></a><span class="lineno">  689</span>        {</div>
-<div class="line"><a id="l00690" name="l00690"></a><span class="lineno">  690</span>            <span class="keywordflow">if</span> (incoming is <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00691" name="l00691"></a><span class="lineno">  691</span>                <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00692" name="l00692"></a><span class="lineno">  692</span> </div>
-<div class="line"><a id="l00693" name="l00693"></a><span class="lineno">  693</span>            <span class="comment">// Ensure ID exists (important if something created scenes without IDs)</span></div>
-<div class="line"><a id="l00694" name="l00694"></a><span class="lineno">  694</span>            <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(incoming.ID))</div>
-<div class="line"><a id="l00695" name="l00695"></a><span class="lineno">  695</span>                incoming.ID = Guid.NewGuid().ToString();</div>
-<div class="line"><a id="l00696" name="l00696"></a><span class="lineno">  696</span> </div>
-<div class="line"><a id="l00697" name="l00697"></a><span class="lineno">  697</span>            <span class="comment">// If the incoming list contains the same ID multiple times, last one wins.</span></div>
-<div class="line"><a id="l00698" name="l00698"></a><span class="lineno">  698</span>            <span class="keywordflow">if</span> (!seenIncoming.Add(incoming.ID))</div>
-<div class="line"><a id="l00699" name="l00699"></a><span class="lineno">  699</span>            {</div>
-<div class="line"><a id="l00700" name="l00700"></a><span class="lineno">  700</span>                <span class="comment">// Replace the previously added/replaced incoming with this one:</span></div>
-<div class="line"><a id="l00701" name="l00701"></a><span class="lineno">  701</span>                <span class="comment">// easiest way: treat it as overwriteExisting=true for that ID</span></div>
-<div class="line"><a id="l00702" name="l00702"></a><span class="lineno">  702</span>                overwriteExisting = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00703" name="l00703"></a><span class="lineno">  703</span>            }</div>
-<div class="line"><a id="l00704" name="l00704"></a><span class="lineno">  704</span> </div>
-<div class="line"><a id="l00705" name="l00705"></a><span class="lineno">  705</span>            <span class="keywordflow">if</span> (existingIndexById.TryGetValue(incoming.ID, out <span class="keywordtype">int</span> existingIndex))</div>
-<div class="line"><a id="l00706" name="l00706"></a><span class="lineno">  706</span>            {</div>
-<div class="line"><a id="l00707" name="l00707"></a><span class="lineno">  707</span>                <span class="keywordflow">if</span> (!overwriteExisting)</div>
-<div class="line"><a id="l00708" name="l00708"></a><span class="lineno">  708</span>                    <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00709" name="l00709"></a><span class="lineno">  709</span> </div>
-<div class="line"><a id="l00710" name="l00710"></a><span class="lineno">  710</span>                Scene._allScenes[existingIndex] = incoming;</div>
-<div class="line"><a id="l00711" name="l00711"></a><span class="lineno">  711</span>            }</div>
-<div class="line"><a id="l00712" name="l00712"></a><span class="lineno">  712</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00713" name="l00713"></a><span class="lineno">  713</span>            {</div>
-<div class="line"><a id="l00714" name="l00714"></a><span class="lineno">  714</span>                existingIndexById[incoming.ID] = Scene._allScenes.Count;</div>
-<div class="line"><a id="l00715" name="l00715"></a><span class="lineno">  715</span>                Scene._allScenes.Add(incoming);</div>
-<div class="line"><a id="l00716" name="l00716"></a><span class="lineno">  716</span>            }</div>
-<div class="line"><a id="l00717" name="l00717"></a><span class="lineno">  717</span>        }</div>
-<div class="line"><a id="l00718" name="l00718"></a><span class="lineno">  718</span>    }</div>
-<div class="line"><a id="l00719" name="l00719"></a><span class="lineno">  719</span> </div>
-<div class="line"><a id="l00720" name="l00720"></a><span class="lineno">  720</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">void</span> MergeSprites(List&lt;Sprite&gt;? sprites, <span class="keywordtype">bool</span> overwriteExisting)</div>
-<div class="line"><a id="l00721" name="l00721"></a><span class="lineno">  721</span>    {</div>
-<div class="line"><a id="l00722" name="l00722"></a><span class="lineno">  722</span>        <span class="keywordflow">if</span> (sprites is <span class="keyword">null</span> || sprites.Count == 0)</div>
-<div class="line"><a id="l00723" name="l00723"></a><span class="lineno">  723</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00724" name="l00724"></a><span class="lineno">  724</span> </div>
-<div class="line"><a id="l00725" name="l00725"></a><span class="lineno">  725</span>        var existingIndexById = <span class="keyword">new</span> Dictionary&lt;string, int&gt;(StringComparer.Ordinal);</div>
-<div class="line"><a id="l00726" name="l00726"></a><span class="lineno">  726</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; SpriteManager.Instance._spriteList.Count; i++)</div>
-<div class="line"><a id="l00727" name="l00727"></a><span class="lineno">  727</span>        {</div>
-<div class="line"><a id="l00728" name="l00728"></a><span class="lineno">  728</span>            var <span class="keywordtype">id</span> = SpriteManager.Instance._spriteList[i].Nickname;</div>
-<div class="line"><a id="l00729" name="l00729"></a><span class="lineno">  729</span>            <span class="keywordflow">if</span> (!<span class="keywordtype">string</span>.IsNullOrWhiteSpace(<span class="keywordtype">id</span>) &amp;&amp; !existingIndexById.ContainsKey(<span class="keywordtype">id</span>))</div>
-<div class="line"><a id="l00730" name="l00730"></a><span class="lineno">  730</span>                existingIndexById.Add(<span class="keywordtype">id</span>, i);</div>
-<div class="line"><a id="l00731" name="l00731"></a><span class="lineno">  731</span>        }</div>
-<div class="line"><a id="l00732" name="l00732"></a><span class="lineno">  732</span> </div>
-<div class="line"><a id="l00733" name="l00733"></a><span class="lineno">  733</span>        var seenIncoming = <span class="keyword">new</span> HashSet&lt;string&gt;(StringComparer.Ordinal);</div>
-<div class="line"><a id="l00734" name="l00734"></a><span class="lineno">  734</span> </div>
-<div class="line"><a id="l00735" name="l00735"></a><span class="lineno">  735</span>        <span class="keywordflow">foreach</span> (var incoming <span class="keywordflow">in</span> sprites)</div>
-<div class="line"><a id="l00736" name="l00736"></a><span class="lineno">  736</span>        {</div>
-<div class="line"><a id="l00737" name="l00737"></a><span class="lineno">  737</span>            <span class="keywordflow">if</span> (incoming is <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00738" name="l00738"></a><span class="lineno">  738</span>                <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00739" name="l00739"></a><span class="lineno">  739</span> </div>
-<div class="line"><a id="l00740" name="l00740"></a><span class="lineno">  740</span>            <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(incoming.Nickname))</div>
-<div class="line"><a id="l00741" name="l00741"></a><span class="lineno">  741</span>                incoming.Nickname = Guid.NewGuid().ToString();</div>
-<div class="line"><a id="l00742" name="l00742"></a><span class="lineno">  742</span> </div>
-<div class="line"><a id="l00743" name="l00743"></a><span class="lineno">  743</span>            <span class="keywordflow">if</span> (!seenIncoming.Add(incoming.Nickname))</div>
-<div class="line"><a id="l00744" name="l00744"></a><span class="lineno">  744</span>            {</div>
-<div class="line"><a id="l00745" name="l00745"></a><span class="lineno">  745</span>                <span class="comment">// Same-ID appears again in the incoming list: last one wins.</span></div>
-<div class="line"><a id="l00746" name="l00746"></a><span class="lineno">  746</span>                overwriteExisting = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00747" name="l00747"></a><span class="lineno">  747</span>            }</div>
-<div class="line"><a id="l00748" name="l00748"></a><span class="lineno">  748</span> </div>
-<div class="line"><a id="l00749" name="l00749"></a><span class="lineno">  749</span>            <span class="keywordflow">if</span> (existingIndexById.TryGetValue(incoming.Nickname, out <span class="keywordtype">int</span> existingIndex))</div>
-<div class="line"><a id="l00750" name="l00750"></a><span class="lineno">  750</span>            {</div>
-<div class="line"><a id="l00751" name="l00751"></a><span class="lineno">  751</span>                <span class="keywordflow">if</span> (!overwriteExisting)</div>
-<div class="line"><a id="l00752" name="l00752"></a><span class="lineno">  752</span>                    <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00753" name="l00753"></a><span class="lineno">  753</span> </div>
-<div class="line"><a id="l00754" name="l00754"></a><span class="lineno">  754</span>                SpriteManager.Instance._spriteList[existingIndex] = incoming;</div>
-<div class="line"><a id="l00755" name="l00755"></a><span class="lineno">  755</span>            }</div>
-<div class="line"><a id="l00756" name="l00756"></a><span class="lineno">  756</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00757" name="l00757"></a><span class="lineno">  757</span>            {</div>
-<div class="line"><a id="l00758" name="l00758"></a><span class="lineno">  758</span>                existingIndexById[incoming.Nickname] = SpriteManager.Instance._spriteList.Count;</div>
-<div class="line"><a id="l00759" name="l00759"></a><span class="lineno">  759</span>                SpriteManager.Instance.AddSprite(incoming);</div>
-<div class="line"><a id="l00760" name="l00760"></a><span class="lineno">  760</span>            }</div>
-<div class="line"><a id="l00761" name="l00761"></a><span class="lineno">  761</span>        }</div>
-<div class="line"><a id="l00762" name="l00762"></a><span class="lineno">  762</span>    }</div>
-<div class="line"><a id="l00763" name="l00763"></a><span class="lineno">  763</span> </div>
-<div class="line"><a id="l00764" name="l00764"></a><span class="lineno">  764</span><span class="preprocessor">    #endregion deserialization helpers</span></div>
-<div class="line"><a id="l00765" name="l00765"></a><span class="lineno">  765</span>}</div>
+<div class="line"><a id="l00491" name="l00491"></a><span class="lineno">  491</span>                        existing.PlaybackSpeed = spec.PlaybackSpeed;</div>
+<div class="line"><a id="l00492" name="l00492"></a><span class="lineno">  492</span>                        existing.IsLooping = spec.IsLooping;</div>
+<div class="line"><a id="l00493" name="l00493"></a><span class="lineno">  493</span>                    }</div>
+<div class="line"><a id="l00494" name="l00494"></a><span class="lineno">  494</span>                    <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00495" name="l00495"></a><span class="lineno">  495</span>                }</div>
+<div class="line"><a id="l00496" name="l00496"></a><span class="lineno">  496</span> </div>
+<div class="line"><a id="l00497" name="l00497"></a><span class="lineno">  497</span>                AudioResourceManager.Instance.Unload(key);</div>
+<div class="line"><a id="l00498" name="l00498"></a><span class="lineno">  498</span>            }</div>
+<div class="line"><a id="l00499" name="l00499"></a><span class="lineno">  499</span> </div>
+<div class="line"><a id="l00500" name="l00500"></a><span class="lineno">  500</span>            <span class="comment">// Ensure the audio spec is (re)created/registered in the manager.</span></div>
+<div class="line"><a id="l00501" name="l00501"></a><span class="lineno">  501</span>            spec.ReloadIntoManager();</div>
+<div class="line"><a id="l00502" name="l00502"></a><span class="lineno">  502</span>        }</div>
+<div class="line"><a id="l00503" name="l00503"></a><span class="lineno">  503</span>    }</div>
+<div class="line"><a id="l00504" name="l00504"></a><span class="lineno">  504</span> </div>
+<div class="line"><a id="l00505" name="l00505"></a><span class="lineno">  505</span>    <span class="keyword">private</span> <span class="keyword">static</span> Dictionary&lt;string, TilesheetDefinition&gt; CaptureTilesheetDefinitions(<span class="keywordtype">string</span>? baseDirectory)</div>
+<div class="line"><a id="l00506" name="l00506"></a><span class="lineno">  506</span>    {</div>
+<div class="line"><a id="l00507" name="l00507"></a><span class="lineno">  507</span>        <span class="keywordflow">return</span> TilesheetRegistry.Instance</div>
+<div class="line"><a id="l00508" name="l00508"></a><span class="lineno">  508</span>            .GetAll()</div>
+<div class="line"><a id="l00509" name="l00509"></a><span class="lineno">  509</span>            .ToDictionary(</div>
+<div class="line"><a id="l00510" name="l00510"></a><span class="lineno">  510</span>                kvp =&gt; kvp.Key,</div>
+<div class="line"><a id="l00511" name="l00511"></a><span class="lineno">  511</span>                kvp =&gt; TilesheetDefinitionSerializer.FromTilesheet(</div>
+<div class="line"><a id="l00512" name="l00512"></a><span class="lineno">  512</span>                    kvp.Value,</div>
+<div class="line"><a id="l00513" name="l00513"></a><span class="lineno">  513</span>                    baseDirectory,</div>
+<div class="line"><a id="l00514" name="l00514"></a><span class="lineno">  514</span>                    makePathsRelative: !<span class="keywordtype">string</span>.IsNullOrWhiteSpace(baseDirectory)));</div>
+<div class="line"><a id="l00515" name="l00515"></a><span class="lineno">  515</span>    }</div>
+<div class="line"><a id="l00516" name="l00516"></a><span class="lineno">  516</span> </div>
+<div class="line"><a id="l00517" name="l00517"></a><span class="lineno">  517</span>    <span class="keyword">private</span> <span class="keyword">static</span> Dictionary&lt;string, TilesheetStateEntry&gt; CaptureTilesheetEntries(</div>
+<div class="line"><a id="l00518" name="l00518"></a><span class="lineno">  518</span>        <span class="keywordtype">string</span>? baseDirectory,</div>
+<div class="line"><a id="l00519" name="l00519"></a><span class="lineno">  519</span>        <span class="keywordtype">string</span> engineStatePath,</div>
+<div class="line"><a id="l00520" name="l00520"></a><span class="lineno">  520</span>        <span class="keywordtype">bool</span> separateGtsFiles)</div>
+<div class="line"><a id="l00521" name="l00521"></a><span class="lineno">  521</span>    {</div>
+<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span>        var result = <span class="keyword">new</span> Dictionary&lt;string, TilesheetStateEntry&gt;(StringComparer.Ordinal);</div>
+<div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span> </div>
+<div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span>        <span class="keywordflow">foreach</span> (var (key, tilesheet) in TilesheetRegistry.Instance.GetAll())</div>
+<div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span>        {</div>
+<div class="line"><a id="l00526" name="l00526"></a><span class="lineno">  526</span>            <span class="keywordflow">if</span> (separateGtsFiles)</div>
+<div class="line"><a id="l00527" name="l00527"></a><span class="lineno">  527</span>            {</div>
+<div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span>                var gtsDirectory = GetTilesheetStateDirectory(engineStatePath);</div>
+<div class="line"><a id="l00529" name="l00529"></a><span class="lineno">  529</span>                Directory.CreateDirectory(gtsDirectory);</div>
+<div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span> </div>
+<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span>                var gtsFileName = $<span class="stringliteral">&quot;{SanitizeFileName(key)}.gts&quot;</span>;</div>
+<div class="line"><a id="l00532" name="l00532"></a><span class="lineno">  532</span>                var gtsFullPath = Path.Combine(gtsDirectory, gtsFileName);</div>
+<div class="line"><a id="l00533" name="l00533"></a><span class="lineno">  533</span> </div>
+<div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span>                <span class="comment">// Important:</span></div>
+<div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span>                <span class="comment">// Save the GTS using the GTS serializer, not EngineState.JsonSerializerSettings.</span></div>
+<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span>                <span class="comment">// This avoids $id/$values noise in the .gts file.</span></div>
+<div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span>                TilesheetDefinitionSerializer.Save(</div>
+<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span>                    gtsFullPath,</div>
+<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span>                    tilesheet,</div>
+<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>                    makePathsRelative: <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span> </div>
+<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span>                var gtsPathForState = MakeRelativePath(</div>
+<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>                    gtsFullPath,</div>
+<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span>                    baseDirectory);</div>
+<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span> </div>
+<div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span>                result[key] = <span class="keyword">new</span> TilesheetStateEntry</div>
+<div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span>                {</div>
+<div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span>                    GtsPath = gtsPathForState</div>
+<div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span>                };</div>
+<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span>            }</div>
+<div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span>            {</div>
+<div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span>                result[key] = <span class="keyword">new</span> TilesheetStateEntry</div>
+<div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span>                {</div>
+<div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span>                    Definition = TilesheetDefinitionSerializer.FromTilesheet(</div>
+<div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span>                        tilesheet,</div>
+<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span>                        baseDirectory,</div>
+<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>                        makePathsRelative: !<span class="keywordtype">string</span>.IsNullOrWhiteSpace(baseDirectory))</div>
+<div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span>                };</div>
+<div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span>            }</div>
+<div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span>        }</div>
+<div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span> </div>
+<div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span>        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span>    }</div>
+<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span> </div>
+<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">string</span> GetTilesheetStateDirectory(<span class="keywordtype">string</span> engineStatePath)</div>
+<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>    {</div>
+<div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>        var directory = Path.GetDirectoryName(engineStatePath) ?? <span class="keywordtype">string</span>.Empty;</div>
+<div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span>        var fileName = Path.GetFileNameWithoutExtension(engineStatePath);</div>
+<div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span> </div>
+<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>        <span class="keywordflow">return</span> Path.Combine(directory, $<span class="stringliteral">&quot;{fileName}.tilesheets&quot;</span>);</div>
+<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>    }</div>
+<div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span> </div>
+<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">string</span> MakeRelativePath(<span class="keywordtype">string</span> path, <span class="keywordtype">string</span>? baseDirectory)</div>
+<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>    {</div>
+<div class="line"><a id="l00576" name="l00576"></a><span class="lineno">  576</span>        <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(baseDirectory))</div>
+<div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span>            <span class="keywordflow">return</span> path;</div>
+<div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span> </div>
+<div class="line"><a id="l00579" name="l00579"></a><span class="lineno">  579</span>        <span class="keywordflow">return</span> Path.GetRelativePath(</div>
+<div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span>            Path.GetFullPath(baseDirectory),</div>
+<div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span>            Path.GetFullPath(path));</div>
+<div class="line"><a id="l00582" name="l00582"></a><span class="lineno">  582</span>    }</div>
+<div class="line"><a id="l00583" name="l00583"></a><span class="lineno">  583</span> </div>
+<div class="line"><a id="l00584" name="l00584"></a><span class="lineno">  584</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">string</span> SanitizeFileName(<span class="keywordtype">string</span> value)</div>
+<div class="line"><a id="l00585" name="l00585"></a><span class="lineno">  585</span>    {</div>
+<div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span>        <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(value))</div>
+<div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span>            <span class="keywordflow">return</span> Guid.NewGuid().ToString(<span class="stringliteral">&quot;N&quot;</span>);</div>
+<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span> </div>
+<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span>        var invalidChars = Path.GetInvalidFileNameChars();</div>
+<div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span>        var sanitized = <span class="keyword">new</span> string(</div>
+<div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span>            value.Select(ch =&gt; invalidChars.Contains(ch) ? <span class="charliteral">&#39;_&#39;</span> : ch).ToArray());</div>
+<div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span> </div>
+<div class="line"><a id="l00593" name="l00593"></a><span class="lineno">  593</span>        <span class="keywordflow">return</span> <span class="keywordtype">string</span>.IsNullOrWhiteSpace(sanitized)</div>
+<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span>            ? Guid.NewGuid().ToString(<span class="stringliteral">&quot;N&quot;</span>)</div>
+<div class="line"><a id="l00595" name="l00595"></a><span class="lineno">  595</span>            : sanitized;</div>
+<div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span>    }</div>
+<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span> </div>
+<div class="line"><a id="l00598" name="l00598"></a><span class="lineno">  598</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">void</span> MergeTilesheets(</div>
+<div class="line"><a id="l00599" name="l00599"></a><span class="lineno">  599</span>        Dictionary&lt;string, TilesheetStateEntry&gt;? tilesheets,</div>
+<div class="line"><a id="l00600" name="l00600"></a><span class="lineno">  600</span>        <span class="keywordtype">bool</span> overwriteExisting,</div>
+<div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span>        <span class="keywordtype">string</span>? baseDirectory)</div>
+<div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span>    {</div>
+<div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span>        <span class="keywordflow">if</span> (tilesheets is <span class="keyword">null</span> || tilesheets.Count == 0)</div>
+<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span> </div>
+<div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span>        var registry = TilesheetRegistry.Instance.GetAll();</div>
+<div class="line"><a id="l00607" name="l00607"></a><span class="lineno">  607</span> </div>
+<div class="line"><a id="l00608" name="l00608"></a><span class="lineno">  608</span>        <span class="keywordflow">foreach</span> (var (key, entry) in tilesheets)</div>
+<div class="line"><a id="l00609" name="l00609"></a><span class="lineno">  609</span>        {</div>
+<div class="line"><a id="l00610" name="l00610"></a><span class="lineno">  610</span>            <span class="keywordflow">if</span> (entry is <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00611" name="l00611"></a><span class="lineno">  611</span>                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00612" name="l00612"></a><span class="lineno">  612</span> </div>
+<div class="line"><a id="l00613" name="l00613"></a><span class="lineno">  613</span>            var existingKey = key;</div>
+<div class="line"><a id="l00614" name="l00614"></a><span class="lineno">  614</span> </div>
+<div class="line"><a id="l00615" name="l00615"></a><span class="lineno">  615</span>            <span class="keywordflow">if</span> (!overwriteExisting &amp;&amp; registry.ContainsKey(existingKey))</div>
+<div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span>                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00617" name="l00617"></a><span class="lineno">  617</span> </div>
+<div class="line"><a id="l00618" name="l00618"></a><span class="lineno">  618</span>            Tilesheet rebuilt;</div>
+<div class="line"><a id="l00619" name="l00619"></a><span class="lineno">  619</span> </div>
+<div class="line"><a id="l00620" name="l00620"></a><span class="lineno">  620</span>            <span class="keywordflow">if</span> (!<span class="keywordtype">string</span>.IsNullOrWhiteSpace(entry.GtsPath))</div>
+<div class="line"><a id="l00621" name="l00621"></a><span class="lineno">  621</span>            {</div>
+<div class="line"><a id="l00622" name="l00622"></a><span class="lineno">  622</span>                var gtsPath = ResolvePath(entry.GtsPath, baseDirectory);</div>
+<div class="line"><a id="l00623" name="l00623"></a><span class="lineno">  623</span> </div>
+<div class="line"><a id="l00624" name="l00624"></a><span class="lineno">  624</span>                rebuilt = TilesheetFactory.FromDefinitionFile(gtsPath);</div>
+<div class="line"><a id="l00625" name="l00625"></a><span class="lineno">  625</span>            }</div>
+<div class="line"><a id="l00626" name="l00626"></a><span class="lineno">  626</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (entry.Definition is not <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00627" name="l00627"></a><span class="lineno">  627</span>            {</div>
+<div class="line"><a id="l00628" name="l00628"></a><span class="lineno">  628</span>                <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(entry.Definition.Name))</div>
+<div class="line"><a id="l00629" name="l00629"></a><span class="lineno">  629</span>                    entry.Definition.Name = key;</div>
+<div class="line"><a id="l00630" name="l00630"></a><span class="lineno">  630</span> </div>
+<div class="line"><a id="l00631" name="l00631"></a><span class="lineno">  631</span>                rebuilt = TilesheetFactory.FromDefinition(</div>
+<div class="line"><a id="l00632" name="l00632"></a><span class="lineno">  632</span>                    entry.Definition,</div>
+<div class="line"><a id="l00633" name="l00633"></a><span class="lineno">  633</span>                    baseDirectory);</div>
+<div class="line"><a id="l00634" name="l00634"></a><span class="lineno">  634</span>            }</div>
+<div class="line"><a id="l00635" name="l00635"></a><span class="lineno">  635</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00636" name="l00636"></a><span class="lineno">  636</span>            {</div>
+<div class="line"><a id="l00637" name="l00637"></a><span class="lineno">  637</span>                <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException(</div>
+<div class="line"><a id="l00638" name="l00638"></a><span class="lineno">  638</span>                    $<span class="stringliteral">&quot;Tilesheet state entry &#39;{key}&#39; does not contain a GTS path or inline definition.&quot;</span>);</div>
+<div class="line"><a id="l00639" name="l00639"></a><span class="lineno">  639</span>            }</div>
+<div class="line"><a id="l00640" name="l00640"></a><span class="lineno">  640</span> </div>
+<div class="line"><a id="l00641" name="l00641"></a><span class="lineno">  641</span>            TilesheetRegistry.Instance.Register(</div>
+<div class="line"><a id="l00642" name="l00642"></a><span class="lineno">  642</span>                rebuilt,</div>
+<div class="line"><a id="l00643" name="l00643"></a><span class="lineno">  643</span>                disposeReplaced: overwriteExisting);</div>
+<div class="line"><a id="l00644" name="l00644"></a><span class="lineno">  644</span>        }</div>
+<div class="line"><a id="l00645" name="l00645"></a><span class="lineno">  645</span>    }</div>
+<div class="line"><a id="l00646" name="l00646"></a><span class="lineno">  646</span> </div>
+<div class="line"><a id="l00647" name="l00647"></a><span class="lineno">  647</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">string</span> ResolvePath(<span class="keywordtype">string</span> path, <span class="keywordtype">string</span>? baseDirectory)</div>
+<div class="line"><a id="l00648" name="l00648"></a><span class="lineno">  648</span>    {</div>
+<div class="line"><a id="l00649" name="l00649"></a><span class="lineno">  649</span>        <span class="keywordflow">if</span> (Path.IsPathRooted(path))</div>
+<div class="line"><a id="l00650" name="l00650"></a><span class="lineno">  650</span>            <span class="keywordflow">return</span> path;</div>
+<div class="line"><a id="l00651" name="l00651"></a><span class="lineno">  651</span> </div>
+<div class="line"><a id="l00652" name="l00652"></a><span class="lineno">  652</span>        <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(baseDirectory))</div>
+<div class="line"><a id="l00653" name="l00653"></a><span class="lineno">  653</span>            <span class="keywordflow">return</span> path;</div>
+<div class="line"><a id="l00654" name="l00654"></a><span class="lineno">  654</span> </div>
+<div class="line"><a id="l00655" name="l00655"></a><span class="lineno">  655</span>        <span class="keywordflow">return</span> Path.GetFullPath(Path.Combine(baseDirectory, path));</div>
+<div class="line"><a id="l00656" name="l00656"></a><span class="lineno">  656</span>    }</div>
+<div class="line"><a id="l00657" name="l00657"></a><span class="lineno">  657</span> </div>
+<div class="line"><a id="l00658" name="l00658"></a><span class="lineno">  658</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">void</span> MergeCycles(Dictionary&lt;string, Cycle&gt;? cycles, <span class="keywordtype">bool</span> overwriteExisting)</div>
+<div class="line"><a id="l00659" name="l00659"></a><span class="lineno">  659</span>    {</div>
+<div class="line"><a id="l00660" name="l00660"></a><span class="lineno">  660</span>        <span class="keywordflow">if</span> (cycles is <span class="keyword">null</span> || cycles.Count == 0)</div>
+<div class="line"><a id="l00661" name="l00661"></a><span class="lineno">  661</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00662" name="l00662"></a><span class="lineno">  662</span> </div>
+<div class="line"><a id="l00663" name="l00663"></a><span class="lineno">  663</span>        <span class="keywordflow">foreach</span> (var (key, cycle) in cycles)</div>
+<div class="line"><a id="l00664" name="l00664"></a><span class="lineno">  664</span>        {</div>
+<div class="line"><a id="l00665" name="l00665"></a><span class="lineno">  665</span>            <span class="keywordflow">if</span> (!overwriteExisting &amp;&amp; Cycle._cycles.ContainsKey(key))</div>
+<div class="line"><a id="l00666" name="l00666"></a><span class="lineno">  666</span>                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00667" name="l00667"></a><span class="lineno">  667</span> </div>
+<div class="line"><a id="l00668" name="l00668"></a><span class="lineno">  668</span>            Cycle._cycles[key] = cycle;</div>
+<div class="line"><a id="l00669" name="l00669"></a><span class="lineno">  669</span>        }</div>
+<div class="line"><a id="l00670" name="l00670"></a><span class="lineno">  670</span>    }</div>
+<div class="line"><a id="l00671" name="l00671"></a><span class="lineno">  671</span> </div>
+<div class="line"><a id="l00672" name="l00672"></a><span class="lineno">  672</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">void</span> MergeScenes(List&lt;Scene&gt;? scenes, <span class="keywordtype">bool</span> overwriteExisting)</div>
+<div class="line"><a id="l00673" name="l00673"></a><span class="lineno">  673</span>    {</div>
+<div class="line"><a id="l00674" name="l00674"></a><span class="lineno">  674</span>        <span class="keywordflow">if</span> (scenes is <span class="keyword">null</span> || scenes.Count == 0)</div>
+<div class="line"><a id="l00675" name="l00675"></a><span class="lineno">  675</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00676" name="l00676"></a><span class="lineno">  676</span> </div>
+<div class="line"><a id="l00677" name="l00677"></a><span class="lineno">  677</span>        <span class="comment">// Index existing scenes by ID (case-sensitive; change if you prefer)</span></div>
+<div class="line"><a id="l00678" name="l00678"></a><span class="lineno">  678</span>        var existingIndexById = <span class="keyword">new</span> Dictionary&lt;string, int&gt;(StringComparer.Ordinal);</div>
+<div class="line"><a id="l00679" name="l00679"></a><span class="lineno">  679</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; Scene._allScenes.Count; i++)</div>
+<div class="line"><a id="l00680" name="l00680"></a><span class="lineno">  680</span>        {</div>
+<div class="line"><a id="l00681" name="l00681"></a><span class="lineno">  681</span>            var <span class="keywordtype">id</span> = Scene._allScenes[i].ID;</div>
+<div class="line"><a id="l00682" name="l00682"></a><span class="lineno">  682</span>            <span class="keywordflow">if</span> (!<span class="keywordtype">string</span>.IsNullOrWhiteSpace(<span class="keywordtype">id</span>) &amp;&amp; !existingIndexById.ContainsKey(<span class="keywordtype">id</span>))</div>
+<div class="line"><a id="l00683" name="l00683"></a><span class="lineno">  683</span>                existingIndexById.Add(<span class="keywordtype">id</span>, i);</div>
+<div class="line"><a id="l00684" name="l00684"></a><span class="lineno">  684</span>        }</div>
+<div class="line"><a id="l00685" name="l00685"></a><span class="lineno">  685</span> </div>
+<div class="line"><a id="l00686" name="l00686"></a><span class="lineno">  686</span>        <span class="comment">// Avoid duplicating the same incoming ID twice (keeps last one)</span></div>
+<div class="line"><a id="l00687" name="l00687"></a><span class="lineno">  687</span>        var seenIncoming = <span class="keyword">new</span> HashSet&lt;string&gt;(StringComparer.Ordinal);</div>
+<div class="line"><a id="l00688" name="l00688"></a><span class="lineno">  688</span> </div>
+<div class="line"><a id="l00689" name="l00689"></a><span class="lineno">  689</span>        <span class="keywordflow">foreach</span> (var incoming <span class="keywordflow">in</span> scenes)</div>
+<div class="line"><a id="l00690" name="l00690"></a><span class="lineno">  690</span>        {</div>
+<div class="line"><a id="l00691" name="l00691"></a><span class="lineno">  691</span>            <span class="keywordflow">if</span> (incoming is <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00692" name="l00692"></a><span class="lineno">  692</span>                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00693" name="l00693"></a><span class="lineno">  693</span> </div>
+<div class="line"><a id="l00694" name="l00694"></a><span class="lineno">  694</span>            <span class="comment">// Ensure ID exists (important if something created scenes without IDs)</span></div>
+<div class="line"><a id="l00695" name="l00695"></a><span class="lineno">  695</span>            <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(incoming.ID))</div>
+<div class="line"><a id="l00696" name="l00696"></a><span class="lineno">  696</span>                incoming.ID = Guid.NewGuid().ToString();</div>
+<div class="line"><a id="l00697" name="l00697"></a><span class="lineno">  697</span> </div>
+<div class="line"><a id="l00698" name="l00698"></a><span class="lineno">  698</span>            <span class="comment">// If the incoming list contains the same ID multiple times, last one wins.</span></div>
+<div class="line"><a id="l00699" name="l00699"></a><span class="lineno">  699</span>            <span class="keywordflow">if</span> (!seenIncoming.Add(incoming.ID))</div>
+<div class="line"><a id="l00700" name="l00700"></a><span class="lineno">  700</span>            {</div>
+<div class="line"><a id="l00701" name="l00701"></a><span class="lineno">  701</span>                <span class="comment">// Replace the previously added/replaced incoming with this one:</span></div>
+<div class="line"><a id="l00702" name="l00702"></a><span class="lineno">  702</span>                <span class="comment">// easiest way: treat it as overwriteExisting=true for that ID</span></div>
+<div class="line"><a id="l00703" name="l00703"></a><span class="lineno">  703</span>                overwriteExisting = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00704" name="l00704"></a><span class="lineno">  704</span>            }</div>
+<div class="line"><a id="l00705" name="l00705"></a><span class="lineno">  705</span> </div>
+<div class="line"><a id="l00706" name="l00706"></a><span class="lineno">  706</span>            <span class="keywordflow">if</span> (existingIndexById.TryGetValue(incoming.ID, out <span class="keywordtype">int</span> existingIndex))</div>
+<div class="line"><a id="l00707" name="l00707"></a><span class="lineno">  707</span>            {</div>
+<div class="line"><a id="l00708" name="l00708"></a><span class="lineno">  708</span>                <span class="keywordflow">if</span> (!overwriteExisting)</div>
+<div class="line"><a id="l00709" name="l00709"></a><span class="lineno">  709</span>                    <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00710" name="l00710"></a><span class="lineno">  710</span> </div>
+<div class="line"><a id="l00711" name="l00711"></a><span class="lineno">  711</span>                Scene._allScenes[existingIndex] = incoming;</div>
+<div class="line"><a id="l00712" name="l00712"></a><span class="lineno">  712</span>            }</div>
+<div class="line"><a id="l00713" name="l00713"></a><span class="lineno">  713</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00714" name="l00714"></a><span class="lineno">  714</span>            {</div>
+<div class="line"><a id="l00715" name="l00715"></a><span class="lineno">  715</span>                existingIndexById[incoming.ID] = Scene._allScenes.Count;</div>
+<div class="line"><a id="l00716" name="l00716"></a><span class="lineno">  716</span>                Scene._allScenes.Add(incoming);</div>
+<div class="line"><a id="l00717" name="l00717"></a><span class="lineno">  717</span>            }</div>
+<div class="line"><a id="l00718" name="l00718"></a><span class="lineno">  718</span>        }</div>
+<div class="line"><a id="l00719" name="l00719"></a><span class="lineno">  719</span>    }</div>
+<div class="line"><a id="l00720" name="l00720"></a><span class="lineno">  720</span> </div>
+<div class="line"><a id="l00721" name="l00721"></a><span class="lineno">  721</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">void</span> MergeSprites(List&lt;Sprite&gt;? sprites, <span class="keywordtype">bool</span> overwriteExisting)</div>
+<div class="line"><a id="l00722" name="l00722"></a><span class="lineno">  722</span>    {</div>
+<div class="line"><a id="l00723" name="l00723"></a><span class="lineno">  723</span>        <span class="keywordflow">if</span> (sprites is <span class="keyword">null</span> || sprites.Count == 0)</div>
+<div class="line"><a id="l00724" name="l00724"></a><span class="lineno">  724</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00725" name="l00725"></a><span class="lineno">  725</span> </div>
+<div class="line"><a id="l00726" name="l00726"></a><span class="lineno">  726</span>        var existingIndexById = <span class="keyword">new</span> Dictionary&lt;string, int&gt;(StringComparer.Ordinal);</div>
+<div class="line"><a id="l00727" name="l00727"></a><span class="lineno">  727</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; SpriteManager.Instance._spriteList.Count; i++)</div>
+<div class="line"><a id="l00728" name="l00728"></a><span class="lineno">  728</span>        {</div>
+<div class="line"><a id="l00729" name="l00729"></a><span class="lineno">  729</span>            var <span class="keywordtype">id</span> = SpriteManager.Instance._spriteList[i].Nickname;</div>
+<div class="line"><a id="l00730" name="l00730"></a><span class="lineno">  730</span>            <span class="keywordflow">if</span> (!<span class="keywordtype">string</span>.IsNullOrWhiteSpace(<span class="keywordtype">id</span>) &amp;&amp; !existingIndexById.ContainsKey(<span class="keywordtype">id</span>))</div>
+<div class="line"><a id="l00731" name="l00731"></a><span class="lineno">  731</span>                existingIndexById.Add(<span class="keywordtype">id</span>, i);</div>
+<div class="line"><a id="l00732" name="l00732"></a><span class="lineno">  732</span>        }</div>
+<div class="line"><a id="l00733" name="l00733"></a><span class="lineno">  733</span> </div>
+<div class="line"><a id="l00734" name="l00734"></a><span class="lineno">  734</span>        var seenIncoming = <span class="keyword">new</span> HashSet&lt;string&gt;(StringComparer.Ordinal);</div>
+<div class="line"><a id="l00735" name="l00735"></a><span class="lineno">  735</span> </div>
+<div class="line"><a id="l00736" name="l00736"></a><span class="lineno">  736</span>        <span class="keywordflow">foreach</span> (var incoming <span class="keywordflow">in</span> sprites)</div>
+<div class="line"><a id="l00737" name="l00737"></a><span class="lineno">  737</span>        {</div>
+<div class="line"><a id="l00738" name="l00738"></a><span class="lineno">  738</span>            <span class="keywordflow">if</span> (incoming is <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00739" name="l00739"></a><span class="lineno">  739</span>                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00740" name="l00740"></a><span class="lineno">  740</span> </div>
+<div class="line"><a id="l00741" name="l00741"></a><span class="lineno">  741</span>            <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(incoming.Nickname))</div>
+<div class="line"><a id="l00742" name="l00742"></a><span class="lineno">  742</span>                incoming.Nickname = Guid.NewGuid().ToString();</div>
+<div class="line"><a id="l00743" name="l00743"></a><span class="lineno">  743</span> </div>
+<div class="line"><a id="l00744" name="l00744"></a><span class="lineno">  744</span>            <span class="keywordflow">if</span> (!seenIncoming.Add(incoming.Nickname))</div>
+<div class="line"><a id="l00745" name="l00745"></a><span class="lineno">  745</span>            {</div>
+<div class="line"><a id="l00746" name="l00746"></a><span class="lineno">  746</span>                <span class="comment">// Same-ID appears again in the incoming list: last one wins.</span></div>
+<div class="line"><a id="l00747" name="l00747"></a><span class="lineno">  747</span>                overwriteExisting = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00748" name="l00748"></a><span class="lineno">  748</span>            }</div>
+<div class="line"><a id="l00749" name="l00749"></a><span class="lineno">  749</span> </div>
+<div class="line"><a id="l00750" name="l00750"></a><span class="lineno">  750</span>            <span class="keywordflow">if</span> (existingIndexById.TryGetValue(incoming.Nickname, out <span class="keywordtype">int</span> existingIndex))</div>
+<div class="line"><a id="l00751" name="l00751"></a><span class="lineno">  751</span>            {</div>
+<div class="line"><a id="l00752" name="l00752"></a><span class="lineno">  752</span>                <span class="keywordflow">if</span> (!overwriteExisting)</div>
+<div class="line"><a id="l00753" name="l00753"></a><span class="lineno">  753</span>                    <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00754" name="l00754"></a><span class="lineno">  754</span> </div>
+<div class="line"><a id="l00755" name="l00755"></a><span class="lineno">  755</span>                SpriteManager.Instance._spriteList[existingIndex] = incoming;</div>
+<div class="line"><a id="l00756" name="l00756"></a><span class="lineno">  756</span>            }</div>
+<div class="line"><a id="l00757" name="l00757"></a><span class="lineno">  757</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00758" name="l00758"></a><span class="lineno">  758</span>            {</div>
+<div class="line"><a id="l00759" name="l00759"></a><span class="lineno">  759</span>                existingIndexById[incoming.Nickname] = SpriteManager.Instance._spriteList.Count;</div>
+<div class="line"><a id="l00760" name="l00760"></a><span class="lineno">  760</span>                SpriteManager.Instance.AddSprite(incoming);</div>
+<div class="line"><a id="l00761" name="l00761"></a><span class="lineno">  761</span>            }</div>
+<div class="line"><a id="l00762" name="l00762"></a><span class="lineno">  762</span>        }</div>
+<div class="line"><a id="l00763" name="l00763"></a><span class="lineno">  763</span>    }</div>
+<div class="line"><a id="l00764" name="l00764"></a><span class="lineno">  764</span> </div>
+<div class="line"><a id="l00765" name="l00765"></a><span class="lineno">  765</span><span class="preprocessor">    #endregion deserialization helpers</span></div>
+<div class="line"><a id="l00766" name="l00766"></a><span class="lineno">  766</span>}</div>
 </div>
 </div>
 <div class="ttc" id="aclassGondwana_1_1Assets_1_1AssetsFile_html"><div class="ttname"><a href="classGondwana_1_1Assets_1_1AssetsFile.html">Gondwana.Assets.AssetsFile</a></div><div class="ttdoc">Represents an asset file used by the engine, providing functionality to load, manage,...</div><div class="ttdef"><b>Definition</b> <a href="AssetsFile_8cs_source.html#l00017">AssetsFile.cs:18</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Assets_1_1AssetsFile_html_a0060f58868c35c0db7f24e3618a72afc"><div class="ttname"><a href="classGondwana_1_1Assets_1_1AssetsFile.html#a0060f58868c35c0db7f24e3618a72afc">Gondwana.Assets.AssetsFile.ClearAll</a></div><div class="ttdeci">static void ClearAll()</div><div class="ttdoc">Releases all assets held by the application and clears the internal collection of asset files.</div><div class="ttdef"><b>Definition</b> <a href="AssetsFile_8cs_source.html#l00029">AssetsFile.cs:29</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Assets_1_1AssetsFile_html_aa5fec607a0437f5c00bf2188625538f9"><div class="ttname"><a href="classGondwana_1_1Assets_1_1AssetsFile.html#aa5fec607a0437f5c00bf2188625538f9">Gondwana.Assets.AssetsFile.AllAssetsFiles</a></div><div class="ttdeci">static IReadOnlyList&lt; AssetsFile &gt; AllAssetsFiles</div><div class="ttdoc">Gets a read-only list of all instantiated AssetsFile instances.</div><div class="ttdef"><b>Definition</b> <a href="AssetsFile_8cs_source.html#l00024">AssetsFile.cs:24</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Audio_1_1AudioResourceManager_html"><div class="ttname"><a href="classGondwana_1_1Audio_1_1AudioResourceManager.html">Gondwana.Audio.AudioResourceManager</a></div><div class="ttdoc">Manages the lifecycle of audio resources, providing loading, retrieval, cloning, and disposal functio...</div><div class="ttdef"><b>Definition</b> <a href="AudioResourceManager_8cs_source.html#l00013">AudioResourceManager.cs:14</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Audio_1_1AudioResourceManager_html_a998299231ea0780d1b37b33ad008c3f1"><div class="ttname"><a href="classGondwana_1_1Audio_1_1AudioResourceManager.html#a998299231ea0780d1b37b33ad008c3f1">Gondwana.Audio.AudioResourceManager.Dispose</a></div><div class="ttdeci">void Dispose()</div><div class="ttdoc">Releases all resources used by the AudioResourceManager.</div><div class="ttdef"><b>Definition</b> <a href="AudioResourceManager_8cs_source.html#l00313">AudioResourceManager.cs:313</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Audio_1_1AudioResourceManager_html_ab96be01eb397d3a5725e16602f6a382d"><div class="ttname"><a href="classGondwana_1_1Audio_1_1AudioResourceManager.html#ab96be01eb397d3a5725e16602f6a382d">Gondwana.Audio.AudioResourceManager.GetAll</a></div><div class="ttdeci">Dictionary&lt; string, AudioResource &gt; GetAll()</div><div class="ttdoc">Gets all audio resources currently managed by this instance as a dictionary.</div></div>
-<div class="ttc" id="aclassGondwana_1_1Audio_1_1AudioResourceManager_html_ac31be479b5662f14767d14eb1f7a05a2"><div class="ttname"><a href="classGondwana_1_1Audio_1_1AudioResourceManager.html#ac31be479b5662f14767d14eb1f7a05a2">Gondwana.Audio.AudioResourceManager.Instance</a></div><div class="ttdeci">static AudioResourceManager Instance</div><div class="ttdoc">Singleton instance of the AudioResourceManager.</div><div class="ttdef"><b>Definition</b> <a href="AudioResourceManager_8cs_source.html#l00030">AudioResourceManager.cs:30</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Audio_1_1AudioResourceManager_html"><div class="ttname"><a href="classGondwana_1_1Audio_1_1AudioResourceManager.html">Gondwana.Audio.AudioResourceManager</a></div><div class="ttdoc">Manages the lifecycle of audio resources independently of the playback backend.</div><div class="ttdef"><b>Definition</b> <a href="AudioResourceManager_8cs_source.html#l00010">AudioResourceManager.cs:11</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Audio_1_1AudioResourceManager_html_a998299231ea0780d1b37b33ad008c3f1"><div class="ttname"><a href="classGondwana_1_1Audio_1_1AudioResourceManager.html#a998299231ea0780d1b37b33ad008c3f1">Gondwana.Audio.AudioResourceManager.Dispose</a></div><div class="ttdeci">void Dispose()</div><div class="ttdoc">Disposes the manager and all loaded audio resources. This method is idempotent.</div><div class="ttdef"><b>Definition</b> <a href="AudioResourceManager_8cs_source.html#l00481">AudioResourceManager.cs:481</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Audio_1_1AudioResourceManager_html_ab96be01eb397d3a5725e16602f6a382d"><div class="ttname"><a href="classGondwana_1_1Audio_1_1AudioResourceManager.html#ab96be01eb397d3a5725e16602f6a382d">Gondwana.Audio.AudioResourceManager.GetAll</a></div><div class="ttdeci">Dictionary&lt; string, AudioResource &gt; GetAll()</div><div class="ttdoc">Returns a snapshot dictionary of all loaded audio resources.</div></div>
+<div class="ttc" id="aclassGondwana_1_1Audio_1_1AudioResourceManager_html_ac31be479b5662f14767d14eb1f7a05a2"><div class="ttname"><a href="classGondwana_1_1Audio_1_1AudioResourceManager.html#ac31be479b5662f14767d14eb1f7a05a2">Gondwana.Audio.AudioResourceManager.Instance</a></div><div class="ttdeci">static AudioResourceManager Instance</div><div class="ttdoc">Gets the singleton AudioResourceManager instance.</div><div class="ttdef"><b>Definition</b> <a href="AudioResourceManager_8cs_source.html#l00029">AudioResourceManager.cs:29</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Animation_1_1Cycle_html"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html">Gondwana.Drawing.Animation.Cycle</a></div><div class="ttdoc">References a FrameSequence object, along with a particular Throttle value for animating through Frame...</div><div class="ttdef"><b>Definition</b> <a href="Cycle_8cs_source.html#l00013">Cycle.cs:14</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Animation_1_1Cycle_html_a0fdd2e85a2390fd7aabcd7b7bc504d86"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html#a0fdd2e85a2390fd7aabcd7b7bc504d86">Gondwana.Drawing.Animation.Cycle.ClearAllAnimationCycles</a></div><div class="ttdeci">static void ClearAllAnimationCycles()</div><div class="ttdoc">Removes and disposes all registered animation cycles.</div><div class="ttdef"><b>Definition</b> <a href="Cycle_8cs_source.html#l00216">Cycle.cs:216</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager_html"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html">Gondwana.Drawing.Sprites.SpriteManager</a></div><div class="ttdoc">Manages the lifecycle, lookup, and per-frame updates of all active Sprite instances.</div><div class="ttdef"><b>Definition</b> <a href="SpriteManager_8cs_source.html#l00014">SpriteManager.cs:15</a></div></div>
@@ -751,14 +752,14 @@ $(function(){initNavTree('EngineState_8cs_source.html','',''); });
 <div class="ttc" id="anamespaceGondwana_1_1Assets_html"><div class="ttname"><a href="namespaceGondwana_1_1Assets.html">Gondwana.Assets</a></div><div class="ttdef"><b>Definition</b> <a href="AssetsFile_8cs_source.html#l00005">AssetsFile.cs:5</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Assets_html_ad9ccdf6978e9837ddaa40da0e669cdb1"><div class="ttname"><a href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1">Gondwana.Assets.AssetTypes</a></div><div class="ttdeci">AssetTypes</div><div class="ttdoc">Defines the types of assets that can be stored and managed by the engine.</div><div class="ttdef"><b>Definition</b> <a href="AssetTypes_8cs_source.html#l00007">AssetTypes.cs:8</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Assets_html_ad9ccdf6978e9837ddaa40da0e669cdb1ab22f0418e8ac915eb66f829d262d14a2"><div class="ttname"><a href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1ab22f0418e8ac915eb66f829d262d14a2">Gondwana.Assets.AssetTypes.Audio</a></div><div class="ttdeci">@ Audio</div><div class="ttdoc">Represents the audio media type for Gondwana.Audio.AudioResourceManager</div><div class="ttdef"><b>Definition</b> <a href="AssetTypes_8cs_source.html#l00017">AssetTypes.cs:17</a></div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Audio_html"><div class="ttname"><a href="namespaceGondwana_1_1Audio.html">Gondwana.Audio</a></div><div class="ttdef"><b>Definition</b> <a href="BrowserAudioInterop_8cs_source.html#l00004">BrowserAudioInterop.cs:4</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Audio_html"><div class="ttname"><a href="namespaceGondwana_1_1Audio.html">Gondwana.Audio</a></div><div class="ttdef"><b>Definition</b> <a href="BrowserAudioBackend_8cs_source.html#l00004">BrowserAudioBackend.cs:4</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_1_1Animation_html"><div class="ttname"><a href="namespaceGondwana_1_1Drawing_1_1Animation.html">Gondwana.Drawing.Animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animator_8cs_source.html#l00003">Animator.cs:3</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_1_1Sprites_html"><div class="ttname"><a href="namespaceGondwana_1_1Drawing_1_1Sprites.html">Gondwana.Drawing.Sprites</a></div><div class="ttdef"><b>Definition</b> <a href="CompositeSprite_8cs_source.html#l00009">CompositeSprite.cs:9</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_html"><div class="ttname"><a href="namespaceGondwana_1_1Drawing_1_1Tilesheets_1_1GTS.html">Gondwana.Drawing.Tilesheets.GTS</a></div><div class="ttdef"><b>Definition</b> <a href="TilesheetDefinition_8cs_source.html#l00001">TilesheetDefinition.cs:1</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_1_1Tilesheets_html"><div class="ttname"><a href="namespaceGondwana_1_1Drawing_1_1Tilesheets.html">Gondwana.Drawing.Tilesheets</a></div><div class="ttdef"><b>Definition</b> <a href="TilesheetDefinition_8cs_source.html#l00001">TilesheetDefinition.cs:1</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_html"><div class="ttname"><a href="namespaceGondwana_1_1Drawing.html">Gondwana.Drawing</a></div><div class="ttdef"><b>Definition</b> <a href="DirectVideo_8cs_source.html#l00013">DirectVideo.cs:13</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Scenes_html"><div class="ttname"><a href="namespaceGondwana_1_1Scenes.html">Gondwana.Scenes</a></div><div class="ttdef"><b>Definition</b> <a href="Scene_8cs_source.html#l00010">Scene.cs:10</a></div></div>
-<div class="ttc" id="anamespaceGondwana_html"><div class="ttname"><a href="namespaceGondwana.html">Gondwana</a></div><div class="ttdef"><b>Definition</b> <a href="BrowserAudioInterop_8cs_source.html#l00004">BrowserAudioInterop.cs:4</a></div></div>
+<div class="ttc" id="anamespaceGondwana_html"><div class="ttname"><a href="namespaceGondwana.html">Gondwana</a></div><div class="ttdef"><b>Definition</b> <a href="BrowserAudioBackend_8cs_source.html#l00004">BrowserAudioBackend.cs:4</a></div></div>
 <div class="ttc" id="anamespaceGondwana_html_a41a5393997f1467717cf9a6ca9281575"><div class="ttname"><a href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575">Gondwana.EngineStateParts</a></div><div class="ttdeci">EngineStateParts</div><div class="ttdoc">Represents different parts of the engine state that can be managed, saved, or loaded independently....</div><div class="ttdef"><b>Definition</b> <a href="EngineStateParts_8cs_source.html#l00011">EngineStateParts.cs:12</a></div></div>
 <div class="ttc" id="anamespaceGondwana_html_a41a5393997f1467717cf9a6ca9281575a2578806b448ef3b8bd75bdfedcd01ae3"><div class="ttname"><a href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575a2578806b448ef3b8bd75bdfedcd01ae3">Gondwana.EngineStateParts.AssetsFiles</a></div><div class="ttdeci">@ AssetsFiles</div><div class="ttdoc">Represents the asset files state, including loaded file references, asset metadata,...</div><div class="ttdef"><b>Definition</b> <a href="EngineStateParts_8cs_source.html#l00024">EngineStateParts.cs:24</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

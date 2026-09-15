@@ -34,7 +34,7 @@
   <td id="projectalign">
    <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;Development (master) - 2.6.0</span>
    </div>
-   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop and web platforms using SkiaSharp for graphics and pluggable audio backends for desktop and browser targets.</div>
   </td>
  </tr>
  </tbody>
@@ -99,7 +99,7 @@ $(function(){initNavTree('classGondwana_1_1Audio_1_1AudioResource.html','','clas
 </div><!--header-->
 <div class="contents">
 
-<p>Represents a audio resource that can be played, paused, resumed, and disposed.  
+<p>Represents an audio resource that can be played, paused, resumed, sought, and disposed. Playback is supplied by the currently configured <a class="el" href="interfaceGondwana_1_1Audio_1_1IAudioBackend.html" title="Creates backend-specific playback handles for the engine&#39;s common audio API.">IAudioBackend</a>.  
  <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Audio.AudioResource:</div>
@@ -111,27 +111,29 @@ Inheritance diagram for Gondwana.Audio.AudioResource:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aa357df27e81308f9d759773f6492abe1" id="r_aa357df27e81308f9d759773f6492abe1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa357df27e81308f9d759773f6492abe1">Play</a> (bool fromStart=true)</td></tr>
-<tr class="memdesc:aa357df27e81308f9d759773f6492abe1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts playback of the audio stream.  <br /></td></tr>
+<tr class="memdesc:aa357df27e81308f9d759773f6492abe1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts playback of the resource.  <br /></td></tr>
 <tr class="memitem:a8df6ef8ad33ddce8ce5060d64a5a65df" id="r_a8df6ef8ad33ddce8ce5060d64a5a65df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8df6ef8ad33ddce8ce5060d64a5a65df">Pause</a> ()</td></tr>
-<tr class="memdesc:a8df6ef8ad33ddce8ce5060d64a5a65df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pauses playback if it is currently active.  <br /></td></tr>
+<tr class="memdesc:a8df6ef8ad33ddce8ce5060d64a5a65df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pauses playback if currently playing.  <br /></td></tr>
 <tr class="memitem:ae99615c055d269dcbf5568faf8cb9f80" id="r_ae99615c055d269dcbf5568faf8cb9f80"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae99615c055d269dcbf5568faf8cb9f80">Resume</a> ()</td></tr>
-<tr class="memdesc:ae99615c055d269dcbf5568faf8cb9f80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resumes playback if the output device is currently paused.  <br /></td></tr>
+<tr class="memdesc:ae99615c055d269dcbf5568faf8cb9f80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resumes playback if currently paused.  <br /></td></tr>
 <tr class="memitem:acd58e93c8f962ca3ef2b69bd71334fa7" id="r_acd58e93c8f962ca3ef2b69bd71334fa7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acd58e93c8f962ca3ef2b69bd71334fa7">Seek</a> (TimeSpan position)</td></tr>
-<tr class="memdesc:acd58e93c8f962ca3ef2b69bd71334fa7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seeks to the specified position within the audio stream.  <br /></td></tr>
+<tr class="memdesc:acd58e93c8f962ca3ef2b69bd71334fa7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seeks to the specified playback position.  <br /></td></tr>
 <tr class="memitem:a7cae1d1b45fb5d0a2f1343f90022f2f3" id="r_a7cae1d1b45fb5d0a2f1343f90022f2f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7cae1d1b45fb5d0a2f1343f90022f2f3">Stop</a> ()</td></tr>
-<tr class="memdesc:a7cae1d1b45fb5d0a2f1343f90022f2f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the output device, halting any ongoing audio playback.  <br /></td></tr>
+<tr class="memdesc:a7cae1d1b45fb5d0a2f1343f90022f2f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops playback immediately.  <br /></td></tr>
 <tr class="memitem:a5bf8e7803b0bfd6087a6804fce518595" id="r_a5bf8e7803b0bfd6087a6804fce518595"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5bf8e7803b0bfd6087a6804fce518595">Dispose</a> ()</td></tr>
-<tr class="memdesc:a5bf8e7803b0bfd6087a6804fce518595"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources used by the <a class="el" href="classGondwana_1_1Audio_1_1AudioResource.html" title="Represents a audio resource that can be played, paused, resumed, and disposed.">AudioResource</a> instance.  <br /></td></tr>
+<tr class="memdesc:a5bf8e7803b0bfd6087a6804fce518595"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disposes the audio resource and releases any underlying playback handle and temporary files. After disposal the instance must not be used.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a9b8c11b571e39bbb6541b7f673e68b96" id="r_a9b8c11b571e39bbb6541b7f673e68b96"><td class="memItemLeft" align="right" valign="top">Func&lt; Task &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9b8c11b571e39bbb6541b7f673e68b96">PlaybackCompletedAsync</a></td></tr>
-<tr class="memdesc:a9b8c11b571e39bbb6541b7f673e68b96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asynchronous callback that is invoked when playback completes. Will not be invoked if the audio is looping.  <br /></td></tr>
+<tr class="memdesc:a9b8c11b571e39bbb6541b7f673e68b96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional asynchronous callback invoked when non-looping playback completes.  <br /></td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
-Protected Member Functions</h2></td></tr>
-<tr class="memitem:a909735b3294db4d7f0d06b7db64ae15a" id="r_a909735b3294db4d7f0d06b7db64ae15a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a909735b3294db4d7f0d06b7db64ae15a">Dispose</a> (bool disposing)</td></tr>
-<tr class="memdesc:a909735b3294db4d7f0d06b7db64ae15a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases the unmanaged resources used by the <a class="el" href="classGondwana_1_1Audio_1_1AudioResource.html" title="Represents a audio resource that can be played, paused, resumed, and disposed.">AudioResource</a> and optionally releases the managed resources.  <br /></td></tr>
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a990d091a2211d9185ee94ce05fad3af7" id="r_a990d091a2211d9185ee94ce05fad3af7"><td class="memItemLeft" align="right" valign="top">const float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a990d091a2211d9185ee94ce05fad3af7">MinimumPlaybackSpeed</a> = 0.25f</td></tr>
+<tr class="memdesc:a990d091a2211d9185ee94ce05fad3af7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum allowed playback speed multiplier. Values below this are clamped.  <br /></td></tr>
+<tr class="memitem:a5744167b017356eae1ebd334675faf14" id="r_a5744167b017356eae1ebd334675faf14"><td class="memItemLeft" align="right" valign="top">const float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5744167b017356eae1ebd334675faf14">MaximumPlaybackSpeed</a> = 4.0f</td></tr>
+<tr class="memdesc:a5744167b017356eae1ebd334675faf14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum allowed playback speed multiplier. Values above this are clamped.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
@@ -140,44 +142,48 @@ Properties</h2></td></tr>
 <tr class="memitem:a6c3559866140508513b9fc25be885d7e" id="r_a6c3559866140508513b9fc25be885d7e"><td class="memItemLeft" align="right" valign="top">byte?[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6c3559866140508513b9fc25be885d7e">OriginalBytes</a><code> [get]</code></td></tr>
 <tr class="memdesc:a6c3559866140508513b9fc25be885d7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the original byte array of the audio data, if available.  <br /></td></tr>
 <tr class="memitem:a9beadb625cef7e1db2f3b990314d45ce" id="r_a9beadb625cef7e1db2f3b990314d45ce"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9beadb625cef7e1db2f3b990314d45ce">SourceFilePath</a><code> [get]</code></td></tr>
-<tr class="memdesc:a9beadb625cef7e1db2f3b990314d45ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Original file path when the sound was loaded from disk (loose file). Null when loaded from an <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>.  <br /></td></tr>
+<tr class="memdesc:a9beadb625cef7e1db2f3b990314d45ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Original file path when the sound was loaded from disk. Null when loaded from an <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> or URI.  <br /></td></tr>
 <tr class="memitem:aab2f949e34951643c9b1111157eb0fac" id="r_aab2f949e34951643c9b1111157eb0fac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Assets_1_1AssetsFileIdentifier.html">AssetsFileIdentifier</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aab2f949e34951643c9b1111157eb0fac">AssetIdentifier</a><code> [get]</code></td></tr>
-<tr class="memdesc:aab2f949e34951643c9b1111157eb0fac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asset identifier when the sound was loaded from an <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>. Null when loaded from a loose file.  <br /></td></tr>
+<tr class="memdesc:aab2f949e34951643c9b1111157eb0fac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asset identifier when the sound was loaded from an <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>.  <br /></td></tr>
 <tr class="memitem:a3794bd2bbe3eb0c4a44cc52ef22d56f9" id="r_a3794bd2bbe3eb0c4a44cc52ef22d56f9"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3794bd2bbe3eb0c4a44cc52ef22d56f9">SourceExtension</a><code> [get]</code></td></tr>
-<tr class="memdesc:a3794bd2bbe3eb0c4a44cc52ef22d56f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalized file extension (".wav", ".mp3", etc) used to select the reader.  <br /></td></tr>
+<tr class="memdesc:a3794bd2bbe3eb0c4a44cc52ef22d56f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalized file extension used by the configured backend.  <br /></td></tr>
+<tr class="memitem:ab3737df3f248633c1234625113ef9a4c" id="r_ab3737df3f248633c1234625113ef9a4c"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab3737df3f248633c1234625113ef9a4c">SourceUri</a><code> [get]</code></td></tr>
+<tr class="memdesc:ab3737df3f248633c1234625113ef9a4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Source URI when the resource was loaded by URI, primarily for browser playback.  <br /></td></tr>
 <tr class="memitem:a49fd7ba5685ad039c9157051cde4221f" id="r_a49fd7ba5685ad039c9157051cde4221f"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a49fd7ba5685ad039c9157051cde4221f">TempFilePath</a><code> [get]</code></td></tr>
-<tr class="memdesc:a49fd7ba5685ad039c9157051cde4221f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the temporary file path used for WaveReaders that require a file on disk.  <br /></td></tr>
+<tr class="memdesc:a49fd7ba5685ad039c9157051cde4221f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the temporary file path used by a backend that requires file-based decoding, if any.  <br /></td></tr>
 <tr class="memitem:a71ccc63599a71f5f834d1a6edbeea569" id="r_a71ccc63599a71f5f834d1a6edbeea569"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a71ccc63599a71f5f834d1a6edbeea569">IsPaused</a><code> [get]</code></td></tr>
-<tr class="memdesc:a71ccc63599a71f5f834d1a6edbeea569"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the playback is currently paused.  <br /></td></tr>
+<tr class="memdesc:a71ccc63599a71f5f834d1a6edbeea569"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether playback is currently paused.  <br /></td></tr>
 <tr class="memitem:a419acecb8532f8221080e4a098584349" id="r_a419acecb8532f8221080e4a098584349"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a419acecb8532f8221080e4a098584349">IsPlaying</a><code> [get]</code></td></tr>
-<tr class="memdesc:a419acecb8532f8221080e4a098584349"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether audio playback is currently active.  <br /></td></tr>
-<tr class="memitem:a1f28dedac906cf7c1c08f4ee4dab7ead" id="r_a1f28dedac906cf7c1c08f4ee4dab7ead"><td class="memItemLeft" align="right" valign="top">PlaybackState&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1f28dedac906cf7c1c08f4ee4dab7ead">State</a><code> [get]</code></td></tr>
-<tr class="memdesc:a1f28dedac906cf7c1c08f4ee4dab7ead"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current playback state of the output device.  <br /></td></tr>
+<tr class="memdesc:a419acecb8532f8221080e4a098584349"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether playback is currently active.  <br /></td></tr>
+<tr class="memitem:a9e48504c9cdb15c427cef2139b1b5e6a" id="r_a9e48504c9cdb15c427cef2139b1b5e6a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Audio.html#a973077d5a560e4e7b680cb56380053b9">AudioPlaybackState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e48504c9cdb15c427cef2139b1b5e6a">State</a><code> [get]</code></td></tr>
+<tr class="memdesc:a9e48504c9cdb15c427cef2139b1b5e6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current high-level playback state of the resource.  <br /></td></tr>
 <tr class="memitem:a30411094359894d7dcea25ebba282e15" id="r_a30411094359894d7dcea25ebba282e15"><td class="memItemLeft" align="right" valign="top">TimeSpan&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a30411094359894d7dcea25ebba282e15">CurrentTime</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a30411094359894d7dcea25ebba282e15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the current playback position within the audio stream.  <br /></td></tr>
+<tr class="memdesc:a30411094359894d7dcea25ebba282e15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the current playback position within the resource. Setting this property seeks to the specified position.  <br /></td></tr>
 <tr class="memitem:a66b3a20750bdfefcb7356094a7595852" id="r_a66b3a20750bdfefcb7356094a7595852"><td class="memItemLeft" align="right" valign="top">TimeSpan&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66b3a20750bdfefcb7356094a7595852">Duration</a><code> [get]</code></td></tr>
-<tr class="memdesc:a66b3a20750bdfefcb7356094a7595852"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the total duration of the audio represented by the wave stream.  <br /></td></tr>
+<tr class="memdesc:a66b3a20750bdfefcb7356094a7595852"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the total duration of the resource, or TimeSpan.Zero when unknown.  <br /></td></tr>
 <tr class="memitem:a20df433260fe027a4857b45f7ead8c66" id="r_a20df433260fe027a4857b45f7ead8c66"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a20df433260fe027a4857b45f7ead8c66">IsLooping</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a20df433260fe027a4857b45f7ead8c66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether the playback is set to loop.  <br /></td></tr>
+<tr class="memdesc:a20df433260fe027a4857b45f7ead8c66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets whether playback loops continuously.  <br /></td></tr>
 <tr class="memitem:a1427ceb80ce37f31c23700204b41080c" id="r_a1427ceb80ce37f31c23700204b41080c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1427ceb80ce37f31c23700204b41080c">Volume</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a1427ceb80ce37f31c23700204b41080c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the volume of the audio output. 0.0 is silent, 1.0 is full volume.  <br /></td></tr>
+<tr class="memdesc:a1427ceb80ce37f31c23700204b41080c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets output volume in the range 0.0 through 1.0.  <br /></td></tr>
 <tr class="memitem:a085ab8d222d61cb35d2d01b3f2b81dc3" id="r_a085ab8d222d61cb35d2d01b3f2b81dc3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a085ab8d222d61cb35d2d01b3f2b81dc3">Pan</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a085ab8d222d61cb35d2d01b3f2b81dc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the stereo pan position of the audio output. -1 is full left, 0 is center, and 1 is full right.  <br /></td></tr>
+<tr class="memdesc:a085ab8d222d61cb35d2d01b3f2b81dc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets stereo pan from -1.0 (left) through 1.0 (right).  <br /></td></tr>
+<tr class="memitem:a395a2425a2c8b57617cf038b68b8c3bb" id="r_a395a2425a2c8b57617cf038b68b8c3bb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a395a2425a2c8b57617cf038b68b8c3bb">PlaybackSpeed</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a395a2425a2c8b57617cf038b68b8c3bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets playback speed. 1.0 is normal speed; supported values are clamped to 0.25 through 4.0.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-events" class="groupheader"><a id="events" name="events"></a>
 Events</h2></td></tr>
-<tr class="memitem:ab3095f4f58ab095465ba6581fd3a787d" id="r_ab3095f4f58ab095465ba6581fd3a787d"><td class="memItemLeft" align="right" valign="top">EventHandler&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab3095f4f58ab095465ba6581fd3a787d">PlaybackCompleted</a></td></tr>
-<tr class="memdesc:ab3095f4f58ab095465ba6581fd3a787d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Event that is raised when playback completes. Will not be raised if the audio is looping.  <br /></td></tr>
-<tr class="memitem:ad6f8322b6569027430afafe0c4ffea45" id="r_ad6f8322b6569027430afafe0c4ffea45"><td class="memItemLeft" align="right" valign="top">EventHandler&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad6f8322b6569027430afafe0c4ffea45">Disposed</a></td></tr>
-<tr class="memdesc:ad6f8322b6569027430afafe0c4ffea45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Event that is raised when the audio resource is disposed.  <br /></td></tr>
+<tr class="memitem:a94e2cc6faed46896824fe11d74a9861a" id="r_a94e2cc6faed46896824fe11d74a9861a"><td class="memItemLeft" align="right" valign="top">EventHandler?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a94e2cc6faed46896824fe11d74a9861a">PlaybackCompleted</a></td></tr>
+<tr class="memdesc:a94e2cc6faed46896824fe11d74a9861a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Event raised when non-looping playback reaches the end of the resource.  <br /></td></tr>
+<tr class="memitem:a0f0ccf97d01bd65c0d045f8ad539cce4" id="r_a0f0ccf97d01bd65c0d045f8ad539cce4"><td class="memItemLeft" align="right" valign="top">EventHandler?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0f0ccf97d01bd65c0d045f8ad539cce4">Disposed</a></td></tr>
+<tr class="memdesc:a0f0ccf97d01bd65c0d045f8ad539cce4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Event raised when the resource is disposed.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Represents a audio resource that can be played, paused, resumed, and disposed. </p>
+<div class="textblock"><p>Represents an audio resource that can be played, paused, resumed, sought, and disposed. Playback is supplied by the currently configured <a class="el" href="interfaceGondwana_1_1Audio_1_1IAudioBackend.html" title="Creates backend-specific playback handles for the engine&#39;s common audio API.">IAudioBackend</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00015">15</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00012">12</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a5bf8e7803b0bfd6087a6804fce518595" name="a5bf8e7803b0bfd6087a6804fce518595"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5bf8e7803b0bfd6087a6804fce518595">&#9670;&#160;</a></span>Dispose() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bf8e7803b0bfd6087a6804fce518595">&#9670;&#160;</a></span>Dispose()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -191,46 +197,9 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Releases all resources used by the <a class="el" href="classGondwana_1_1Audio_1_1AudioResource.html" title="Represents a audio resource that can be played, paused, resumed, and disposed.">AudioResource</a> instance. </p>
-<p>This method stops playback, disposes of the output device and wave stream, deletes any temporary files, and raises the <a class="el" href="#ad6f8322b6569027430afafe0c4ffea45" title="Event that is raised when the audio resource is disposed.">Disposed</a> event. After calling this method, the instance should not be used further.</p>
+<p>Disposes the audio resource and releases any underlying playback handle and temporary files. After disposal the instance must not be used. </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00475">475</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
-
-</div>
-</div>
-<a id="a909735b3294db4d7f0d06b7db64ae15a" name="a909735b3294db4d7f0d06b7db64ae15a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a909735b3294db4d7f0d06b7db64ae15a">&#9670;&#160;</a></span>Dispose() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void Gondwana.Audio.AudioResource.Dispose </td>
-          <td>(</td>
-          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>disposing</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Releases the unmanaged resources used by the <a class="el" href="classGondwana_1_1Audio_1_1AudioResource.html" title="Represents a audio resource that can be played, paused, resumed, and disposed.">AudioResource</a> and optionally releases the managed resources. </p>
-<p>This method implements the dispose pattern. When <em>disposing</em>  is <code>true</code>, it releases both managed and unmanaged resources. When <code>false</code>, it releases only unmanaged resources.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">disposing</td><td><code>true</code> to release both managed and unmanaged resources; <code>false</code> to release only unmanaged resources.</td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00489">489</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00344">344</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -249,10 +218,7 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Pauses playback if it is currently active. </p>
-<p>This method pauses the playback only if it is currently in progress. If playback is already paused or not started, calling this method has no effect.</p>
-
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00297">297</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p>Pauses playback if currently playing. </p>
 
 </div>
 </div>
@@ -271,16 +237,13 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Starts playback of the audio stream. </p>
-<p>If the audio is already playing, calling this method has no effect. Ensure the audio stream is properly initialized before invoking this method.</p>
+<p>Starts playback of the resource. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">fromStart</td><td>A value indicating whether playback should start from the beginning of the audio stream. <code>true</code> to start from the beginning; otherwise, playback resumes from the current position.</td></tr>
+    <tr><td class="paramname">fromStart</td><td>If true, playback begins from the start of the resource; otherwise resumes from the current position.</td></tr>
   </table>
   </dd>
 </dl>
-
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00276">276</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -299,10 +262,7 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Resumes playback if the output device is currently paused. </p>
-<p>This method has no effect if the output device is not paused. Ensure that the output device is properly initialized and in a paused state before calling this method.</p>
-
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00308">308</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p>Resumes playback if currently paused. </p>
 
 </div>
 </div>
@@ -321,16 +281,13 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Seeks to the specified position within the audio stream. </p>
-<p>If the audio is currently playing, it will be paused during the seek operation and resumed afterward.</p>
+<p>Seeks to the specified playback position. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">position</td><td>The position to seek to, specified as a TimeSpan. If the value is less than TimeSpan.Zero, the position is set to the start of the stream. If the value exceeds the total duration of the stream, the position is set to the end of the stream.</td></tr>
+    <tr><td class="paramname">position</td><td>Target playback position. Values outside the valid range are clamped by the backend.</td></tr>
   </table>
   </dd>
 </dl>
-
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00322">322</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -349,13 +306,64 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Stops the output device, halting any ongoing audio playback. </p>
-
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00342">342</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p>Stops playback immediately. </p>
 
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a5744167b017356eae1ebd334675faf14" name="a5744167b017356eae1ebd334675faf14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5744167b017356eae1ebd334675faf14">&#9670;&#160;</a></span>MaximumPlaybackSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const float Gondwana.Audio.AudioResource.MaximumPlaybackSpeed = 4.0f</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Maximum allowed playback speed multiplier. Values above this are clamped. </p>
+
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00023">23</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+
+</div>
+</div>
+<a id="a990d091a2211d9185ee94ce05fad3af7" name="a990d091a2211d9185ee94ce05fad3af7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a990d091a2211d9185ee94ce05fad3af7">&#9670;&#160;</a></span>MinimumPlaybackSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const float Gondwana.Audio.AudioResource.MinimumPlaybackSpeed = 0.25f</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Minimum allowed playback speed multiplier. Values below this are clamped. </p>
+<p>1.0 is normal speed; values &lt;1 slow playback, &gt;1 speed up playback.</p>
+
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00018">18</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+
+</div>
+</div>
 <a id="a9b8c11b571e39bbb6541b7f673e68b96" name="a9b8c11b571e39bbb6541b7f673e68b96"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9b8c11b571e39bbb6541b7f673e68b96">&#9670;&#160;</a></span>PlaybackCompletedAsync</h2>
 
@@ -368,9 +376,9 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Asynchronous callback that is invoked when playback completes. Will not be invoked if the audio is looping. </p>
+<p>Optional asynchronous callback invoked when non-looping playback completes. </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00038">38</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00048">48</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -395,9 +403,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Asset identifier when the sound was loaded from an <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>. Null when loaded from a loose file. </p>
+<p>Asset identifier when the sound was loaded from an <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00173">173</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00107">107</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -421,9 +429,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the current playback position within the audio stream. </p>
+<p>Gets or sets the current playback position within the resource. Setting this property seeks to the specified position. </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00209">209</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00146">146</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -447,9 +455,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the total duration of the audio represented by the wave stream. </p>
+<p>Gets the total duration of the resource, or TimeSpan.Zero when unknown. </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00219">219</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00156">156</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -473,9 +481,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets a value indicating whether the playback is set to loop. </p>
+<p>Gets or sets whether playback loops continuously. </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00224">224</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00159">159</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -499,9 +507,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets a value indicating whether the playback is currently paused. </p>
+<p>Gets a value indicating whether playback is currently paused. </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00191">191</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00127">127</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -525,9 +533,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets a value indicating whether audio playback is currently active. </p>
+<p>Gets a value indicating whether playback is currently active. </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00197">197</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00133">133</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -553,7 +561,7 @@ Events</h2></td></tr>
 
 <p>Gets the unique key associated with this audio resource. </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00153">153</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00093">93</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -579,7 +587,7 @@ Events</h2></td></tr>
 
 <p>Gets the original byte array of the audio data, if available. </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00159">159</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00097">97</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -603,9 +611,35 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the stereo pan position of the audio output. -1 is full left, 0 is center, and 1 is full right. </p>
+<p>Gets or sets stereo pan from -1.0 (left) through 1.0 (right). </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00251">251</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00184">184</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+
+</div>
+</div>
+<a id="a395a2425a2c8b57617cf038b68b8c3bb" name="a395a2425a2c8b57617cf038b68b8c3bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a395a2425a2c8b57617cf038b68b8c3bb">&#9670;&#160;</a></span>PlaybackSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Gondwana.Audio.AudioResource.PlaybackSpeed</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets playback speed. 1.0 is normal speed; supported values are clamped to 0.25 through 4.0. </p>
+
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00199">199</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -629,9 +663,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Normalized file extension (".wav", ".mp3", etc) used to select the reader. </p>
+<p>Normalized file extension used by the configured backend. </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00179">179</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00111">111</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -655,14 +689,14 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Original file path when the sound was loaded from disk (loose file). Null when loaded from an <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a>. </p>
+<p>Original file path when the sound was loaded from disk. Null when loaded from an <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> or URI. </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00166">166</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00103">103</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
-<a id="a1f28dedac906cf7c1c08f4ee4dab7ead" name="a1f28dedac906cf7c1c08f4ee4dab7ead"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1f28dedac906cf7c1c08f4ee4dab7ead">&#9670;&#160;</a></span>State</h2>
+<a id="ab3737df3f248633c1234625113ef9a4c" name="ab3737df3f248633c1234625113ef9a4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3737df3f248633c1234625113ef9a4c">&#9670;&#160;</a></span>SourceUri</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -671,7 +705,7 @@ Events</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">PlaybackState Gondwana.Audio.AudioResource.State</td>
+          <td class="memname">string? Gondwana.Audio.AudioResource.SourceUri</td>
         </tr>
       </table>
   </td>
@@ -681,9 +715,35 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the current playback state of the output device. </p>
+<p>Source URI when the resource was loaded by URI, primarily for browser playback. </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00203">203</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00115">115</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+
+</div>
+</div>
+<a id="a9e48504c9cdb15c427cef2139b1b5e6a" name="a9e48504c9cdb15c427cef2139b1b5e6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e48504c9cdb15c427cef2139b1b5e6a">&#9670;&#160;</a></span>State</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceGondwana_1_1Audio.html#a973077d5a560e4e7b680cb56380053b9">AudioPlaybackState</a> Gondwana.Audio.AudioResource.State</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the current high-level playback state of the resource. </p>
+
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00139">139</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -707,9 +767,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the temporary file path used for WaveReaders that require a file on disk. </p>
+<p>Gets the temporary file path used by a backend that requires file-based decoding, if any. </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00185">185</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00121">121</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
@@ -733,46 +793,46 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the volume of the audio output. 0.0 is silent, 1.0 is full volume. </p>
+<p>Gets or sets output volume in the range 0.0 through 1.0. </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00233">233</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00171">171</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
 <a name="doc-event-members" id="doc-event-members"></a><h2 id="header-doc-event-members" class="groupheader">Event Documentation</h2>
-<a id="ad6f8322b6569027430afafe0c4ffea45" name="ad6f8322b6569027430afafe0c4ffea45"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad6f8322b6569027430afafe0c4ffea45">&#9670;&#160;</a></span>Disposed</h2>
+<a id="a0f0ccf97d01bd65c0d045f8ad539cce4" name="a0f0ccf97d01bd65c0d045f8ad539cce4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f0ccf97d01bd65c0d045f8ad539cce4">&#9670;&#160;</a></span>Disposed</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">EventHandler Gondwana.Audio.AudioResource.Disposed</td>
+          <td class="memname">EventHandler? Gondwana.Audio.AudioResource.Disposed</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Event that is raised when the audio resource is disposed. </p>
+<p>Event raised when the resource is disposed. </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00043">43</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00053">53</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>
-<a id="ab3095f4f58ab095465ba6581fd3a787d" name="ab3095f4f58ab095465ba6581fd3a787d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab3095f4f58ab095465ba6581fd3a787d">&#9670;&#160;</a></span>PlaybackCompleted</h2>
+<a id="a94e2cc6faed46896824fe11d74a9861a" name="a94e2cc6faed46896824fe11d74a9861a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94e2cc6faed46896824fe11d74a9861a">&#9670;&#160;</a></span>PlaybackCompleted</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">EventHandler Gondwana.Audio.AudioResource.PlaybackCompleted</td>
+          <td class="memname">EventHandler? Gondwana.Audio.AudioResource.PlaybackCompleted</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Event that is raised when playback completes. Will not be raised if the audio is looping. </p>
+<p>Event raised when non-looping playback reaches the end of the resource. </p>
 
-<p class="definition">Definition at line <a class="el" href="AudioResource_8cs_source.html#l00032">32</a> of file <a class="el" href="AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html#l00043">43</a> of file <a class="el" href="Gondwana_2Audio_2AudioResource_8cs_source.html">AudioResource.cs</a>.</p>
 
 </div>
 </div>

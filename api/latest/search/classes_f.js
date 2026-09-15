@@ -14,10 +14,9 @@ var searchData=
   ['spritemanager_11',['SpriteManager',['../classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html',1,'Gondwana::Drawing::Sprites']]],
   ['spritemovedeventargs_12',['SpriteMovedEventArgs',['../classGondwana_1_1Drawing_1_1Sprites_1_1SpriteMovedEventArgs.html',1,'Gondwana::Drawing::Sprites']]],
   ['stackpanelwidget_13',['StackPanelWidget',['../classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget.html',1,'Gondwana::Widgets::Layout']]],
-  ['stereopansampleprovider_14',['StereoPanSampleProvider',['../classGondwana_1_1Audio_1_1StereoPanSampleProvider.html',1,'Gondwana::Audio']]],
-  ['svgresource_15',['SvgResource',['../classGondwana_1_1Drawing_1_1SvgResource.html',1,'Gondwana::Drawing']]],
-  ['svgresourcemanager_16',['SvgResourceManager',['../classGondwana_1_1Drawing_1_1SvgResourceManager.html',1,'Gondwana::Drawing']]],
-  ['swipedeventargs_17',['SwipedEventArgs',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipedEventArgs.html',1,'Gondwana::Input::Touch::Gestures']]],
-  ['swipegesturerecognizer_18',['SwipeGestureRecognizer',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer.html',1,'Gondwana::Input::Touch::Gestures']]],
-  ['synthesizersampleprovider_19',['SynthesizerSampleProvider',['../classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider.html',1,'Gondwana::Audio::Midi']]]
+  ['svgresource_14',['SvgResource',['../classGondwana_1_1Drawing_1_1SvgResource.html',1,'Gondwana::Drawing']]],
+  ['svgresourcemanager_15',['SvgResourceManager',['../classGondwana_1_1Drawing_1_1SvgResourceManager.html',1,'Gondwana::Drawing']]],
+  ['swipedeventargs_16',['SwipedEventArgs',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipedEventArgs.html',1,'Gondwana::Input::Touch::Gestures']]],
+  ['swipegesturerecognizer_17',['SwipeGestureRecognizer',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipeGestureRecognizer.html',1,'Gondwana::Input::Touch::Gestures']]],
+  ['synthesizersampleprovider_18',['SynthesizerSampleProvider',['../classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider.html',1,'Gondwana::Audio::Midi']]]
 ];

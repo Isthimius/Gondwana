@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Game Engine: Gondwana.WinForms/Audio Directory Reference</title>
+<title>Gondwana Game Engine: Gondwana.Audio.NAudio Namespace Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -34,7 +34,7 @@
   <td id="projectalign">
    <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;Development (master) - 2.6.0</span>
    </div>
-   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop and web platforms using SkiaSharp for graphics and pluggable audio backends for desktop and browser targets.</div>
   </td>
  </tr>
  </tbody>
@@ -69,7 +69,7 @@ $(function() {
   </div>
 </div>
 <script type="text/javascript">
-$(function(){initNavTree('dir_9bc952a4c9842383c720ab7db0259377.html','',''); });
+$(function(){initNavTree('namespaceGondwana_1_1Audio_1_1NAudio.html','',''); });
 </script>
 <div id="container">
 <div id="doc-content">
@@ -95,13 +95,22 @@ $(function(){initNavTree('dir_9bc952a4c9842383c720ab7db0259377.html','',''); });
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">Audio Directory Reference</div></div>
+  <div class="headertitle"><div class="title">Gondwana.Audio.NAudio Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-files" class="groupheader"><a id="files" name="files"></a>
-Files</h2></td></tr>
-<tr class="memitem:WinFormsAudioSupport_2Ecs" id="r_WinFormsAudioSupport_2Ecs"><td class="memItemLeft" align="right" valign="top"><a href="WinFormsAudioSupport_8cs_source.html"><span class="icondoc"><div class="doc-icon"></div></span></a>&#160;</td><td class="memItemRight" valign="bottom"><b>WinFormsAudioSupport.cs</b></td></tr>
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:NAudioAudioBackend" id="r_NAudioAudioBackend"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Audio_1_1NAudio_1_1NAudioAudioBackend.html">NAudioAudioBackend</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Windows desktop audio backend implemented with <a class="el" href="namespaceGondwana_1_1Audio_1_1NAudio.html">NAudio</a>.  <a href="classGondwana_1_1Audio_1_1NAudio_1_1NAudioAudioBackend.html#details">More...</a><br /></td></tr>
+<tr class="memitem:NAudioPlaybackHandle" id="r_NAudioPlaybackHandle"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>NAudioPlaybackHandle</b></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a playback handle for audio resources using <a class="el" href="namespaceGondwana_1_1Audio_1_1NAudio.html">NAudio</a>. Manages playback state, volume, panning, looping, and playback speed for a single audio stream. <br /></td></tr>
+<tr class="memitem:NAudioReaderRegistry" id="r_NAudioReaderRegistry"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>NAudioReaderRegistry</b></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registry of file-format readers used by the <a class="el" href="namespaceGondwana_1_1Audio_1_1NAudio.html">NAudio</a> backend. <br /></td></tr>
+<tr class="memitem:StereoPanSampleProvider" id="r_StereoPanSampleProvider"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>StereoPanSampleProvider</b></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies independent left/right gain to a stereo floating-point source. <br /></td></tr>
+<tr class="memitem:VariableSpeedSampleProvider" id="r_VariableSpeedSampleProvider"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>VariableSpeedSampleProvider</b></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lightweight variable-rate sample provider. It changes playback speed by advancing through source frames at a configurable rate and linearly interpolating between adjacent frames. Pitch changes naturally with speed; pitch preservation is intentionally not part of the core contract. <br /></td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -116,7 +125,7 @@ Files</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a href="dir_c032e06f5649aa8a33e881453f943c36.html">Gondwana.WinForms</a></li><li class="navelem"><a href="dir_9bc952a4c9842383c720ab7db0259377.html">Audio</a></li>
+    <li class="navelem"><a href="namespaceGondwana.html">Gondwana</a></li><li class="navelem"><a href="namespaceGondwana_1_1Audio.html">Audio</a></li><li class="navelem"><a href="namespaceGondwana_1_1Audio_1_1NAudio.html">NAudio</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0 </li>
   </ul>
 </div>

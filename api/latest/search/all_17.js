@@ -1,7 +1,7 @@
 var searchData=
 [
   ['w_0',['W',['../namespaceGondwana_1_1Drawing_1_1Coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5a61e9c06ea9a85a5088a499df6458d276',1,'Gondwana::Drawing::Coordinates']]],
-  ['waveformat_1',['WaveFormat',['../classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider.html#a28d7dc5c88b95c607ad8fbac0195018c',1,'Gondwana.Audio.Midi.SynthesizerSampleProvider.WaveFormat'],['../classGondwana_1_1Audio_1_1Midi_1_1WaveProviderToWaveStream.html#aa9c7e9503922515c39ea2312938f5872',1,'Gondwana.Audio.Midi.WaveProviderToWaveStream.WaveFormat'],['../classGondwana_1_1Audio_1_1StereoPanSampleProvider.html#a972a5b2254e45e0ef89c7dcc709cf14c',1,'Gondwana.Audio.StereoPanSampleProvider.WaveFormat']]],
+  ['waveformat_1',['WaveFormat',['../classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider.html#a28d7dc5c88b95c607ad8fbac0195018c',1,'Gondwana.Audio.Midi.SynthesizerSampleProvider.WaveFormat'],['../classGondwana_1_1Audio_1_1Midi_1_1WaveProviderToWaveStream.html#aa9c7e9503922515c39ea2312938f5872',1,'Gondwana.Audio.Midi.WaveProviderToWaveStream.WaveFormat']]],
   ['waveprovidertowavestream_2',['WaveProviderToWaveStream',['../classGondwana_1_1Audio_1_1Midi_1_1WaveProviderToWaveStream.html',1,'Gondwana.Audio.Midi.WaveProviderToWaveStream'],['../classGondwana_1_1Audio_1_1Midi_1_1WaveProviderToWaveStream.html#a40c851a0bf2f8b19e39a6260dc032e5a',1,'Gondwana.Audio.Midi.WaveProviderToWaveStream.WaveProviderToWaveStream()']]],
   ['widget_3',['Widget',['../classGondwana_1_1Widgets_1_1WidgetEventArgs.html#aa9ce9dd9bdfa043bb2a2a0c991c6b375',1,'Gondwana::Widgets::WidgetEventArgs']]],
   ['widgetanchor_4',['WidgetAnchor',['../namespaceGondwana_1_1Widgets.html#a62d65747e03d2a846c1b732103bae9b6',1,'Gondwana::Widgets']]],

@@ -14,7 +14,8 @@ var searchData=
   ['blazorrendersurfacecomponentbase_11',['BlazorRenderSurfaceComponentBase',['../classGondwana_1_1Blazor_1_1Rendering_1_1BlazorRenderSurfaceComponentBase.html',1,'Gondwana::Blazor::Rendering']]],
   ['blazorskiaglview_12',['BlazorSkiaGlView',['../classGondwana_1_1Blazor_1_1Rendering_1_1BlazorSkiaGlView.html',1,'Gondwana::Blazor::Rendering']]],
   ['blazortouchadapter_13',['BlazorTouchAdapter',['../classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html',1,'Gondwana::Blazor::Input::Touch']]],
-  ['browseraudiomanager_14',['BrowserAudioManager',['../classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html',1,'Gondwana::Audio::Browser']]],
-  ['browseraudioplayer_15',['BrowserAudioPlayer',['../classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html',1,'Gondwana::Audio::Browser']]],
-  ['buttonwidget_16',['ButtonWidget',['../classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget.html',1,'Gondwana::Widgets::Controls']]]
+  ['browseraudiobackend_14',['BrowserAudioBackend',['../classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioBackend.html',1,'Gondwana::Audio::Browser']]],
+  ['browseraudiomanager_15',['BrowserAudioManager',['../classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html',1,'Gondwana::Audio::Browser']]],
+  ['browseraudioplayer_16',['BrowserAudioPlayer',['../classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html',1,'Gondwana::Audio::Browser']]],
+  ['buttonwidget_17',['ButtonWidget',['../classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget.html',1,'Gondwana::Widgets::Controls']]]
 ];

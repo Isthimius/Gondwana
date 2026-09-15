@@ -34,7 +34,7 @@
   <td id="projectalign">
    <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;Development (master) - 2.6.0</span>
    </div>
-   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop and web platforms using SkiaSharp for graphics and pluggable audio backends for desktop and browser targets.</div>
   </td>
  </tr>
  </tbody>
@@ -99,32 +99,34 @@ $(function(){initNavTree('classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlaye
 </div><!--header-->
 <div class="contents">
 
-<p>Controls a single audio track loaded through <a class="el" href="classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html" title="Manages audio playback in browser/WASM environments using the HTML5 Audio API.">BrowserAudioManager</a>.  
+<p>Compatibility wrapper around the common <a class="el" href="classGondwana_1_1Audio_1_1AudioResource.html" title="Represents an audio resource that can be played, paused, resumed, sought, and disposed....">AudioResource</a> browser implementation.  
  <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a8cb585d652fa1140adfbf97c3c6144dd" id="r_a8cb585d652fa1140adfbf97c3c6144dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8cb585d652fa1140adfbf97c3c6144dd">Play</a> (bool fromStart=true)</td></tr>
-<tr class="memdesc:a8cb585d652fa1140adfbf97c3c6144dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts (or resumes) playback.  <br /></td></tr>
 <tr class="memitem:acb3beae96bacc6fd57543f20f8d09928" id="r_acb3beae96bacc6fd57543f20f8d09928"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acb3beae96bacc6fd57543f20f8d09928">Pause</a> ()</td></tr>
-<tr class="memdesc:acb3beae96bacc6fd57543f20f8d09928"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pauses playback without resetting the position.  <br /></td></tr>
+<tr class="memitem:a7260d8396200decf8e3bb480de246f4e" id="r_a7260d8396200decf8e3bb480de246f4e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7260d8396200decf8e3bb480de246f4e">Resume</a> ()</td></tr>
+<tr class="memitem:a9345a10ce02535437357d17d41c884a4" id="r_a9345a10ce02535437357d17d41c884a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9345a10ce02535437357d17d41c884a4">Seek</a> (TimeSpan position)</td></tr>
 <tr class="memitem:a7140834a3da4ca997af80243c5c1a37f" id="r_a7140834a3da4ca997af80243c5c1a37f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7140834a3da4ca997af80243c5c1a37f">Stop</a> ()</td></tr>
-<tr class="memdesc:a7140834a3da4ca997af80243c5c1a37f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops playback and resets the track to the beginning.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a2596575dfeaa5f617349165f7fcbcb76" id="r_a2596575dfeaa5f617349165f7fcbcb76"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2596575dfeaa5f617349165f7fcbcb76">Key</a><code> [get]</code></td></tr>
-<tr class="memdesc:a2596575dfeaa5f617349165f7fcbcb76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the unique key that identifies this audio track.  <br /></td></tr>
+<tr class="memitem:a3046e73c02b308ec7ec98c77a0d1dfce" id="r_a3046e73c02b308ec7ec98c77a0d1dfce"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3046e73c02b308ec7ec98c77a0d1dfce">IsPlaying</a><code> [get]</code></td></tr>
+<tr class="memitem:a19feb0cd88e82235907e05fc3c71c130" id="r_a19feb0cd88e82235907e05fc3c71c130"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a19feb0cd88e82235907e05fc3c71c130">IsPaused</a><code> [get]</code></td></tr>
+<tr class="memitem:ab7a035f711252db0f13e643331dca480" id="r_ab7a035f711252db0f13e643331dca480"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Audio.html#a973077d5a560e4e7b680cb56380053b9">AudioPlaybackState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab7a035f711252db0f13e643331dca480">State</a><code> [get]</code></td></tr>
+<tr class="memitem:a5701d2ba197ecec0809327c2f71dfdd1" id="r_a5701d2ba197ecec0809327c2f71dfdd1"><td class="memItemLeft" align="right" valign="top">TimeSpan&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5701d2ba197ecec0809327c2f71dfdd1">CurrentTime</a><code> [get, set]</code></td></tr>
+<tr class="memitem:a177947600f43342e067816b6266fb96a" id="r_a177947600f43342e067816b6266fb96a"><td class="memItemLeft" align="right" valign="top">TimeSpan&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a177947600f43342e067816b6266fb96a">Duration</a><code> [get]</code></td></tr>
 <tr class="memitem:ac53b9f5d498e6087fd92271cf68a98a5" id="r_ac53b9f5d498e6087fd92271cf68a98a5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac53b9f5d498e6087fd92271cf68a98a5">IsLooping</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:ac53b9f5d498e6087fd92271cf68a98a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether the track loops continuously.  <br /></td></tr>
 <tr class="memitem:a845d6e2861ece1402c2fd36ae694e2d8" id="r_a845d6e2861ece1402c2fd36ae694e2d8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a845d6e2861ece1402c2fd36ae694e2d8">Volume</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a845d6e2861ece1402c2fd36ae694e2d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the playback volume in the range [0.0, 1.0].  <br /></td></tr>
+<tr class="memitem:a8b54313acc8f800152c19ebac2cfb1cc" id="r_a8b54313acc8f800152c19ebac2cfb1cc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8b54313acc8f800152c19ebac2cfb1cc">Pan</a><code> [get, set]</code></td></tr>
+<tr class="memitem:ac767db8da67b739751eedd75ff706b54" id="r_ac767db8da67b739751eedd75ff706b54"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac767db8da67b739751eedd75ff706b54">PlaybackSpeed</a><code> [get, set]</code></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Controls a single audio track loaded through <a class="el" href="classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html" title="Manages audio playback in browser/WASM environments using the HTML5 Audio API.">BrowserAudioManager</a>. </p>
-<p>Instances are created by <a class="el" href="classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html#ac1aae70c99fefae628d16b38c9ce3618" title="Loads an audio file and returns a BrowserAudioPlayer that controls it.">BrowserAudioManager.Load</a>. Each instance wraps a single HTML <code>&lt;audio&gt;</code> element on the browser side via the <code>gondwana-audio</code> JavaScript module. </p>
+<div class="textblock"><p>Compatibility wrapper around the common <a class="el" href="classGondwana_1_1Audio_1_1AudioResource.html" title="Represents an audio resource that can be played, paused, resumed, sought, and disposed....">AudioResource</a> browser implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="BrowserAudioPlayer_8cs_source.html#l00016">16</a> of file <a class="el" href="BrowserAudioPlayer_8cs_source.html">BrowserAudioPlayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrowserAudioPlayer_8cs_source.html#l00010">10</a> of file <a class="el" href="BrowserAudioPlayer_8cs_source.html">BrowserAudioPlayer.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="acb3beae96bacc6fd57543f20f8d09928" name="acb3beae96bacc6fd57543f20f8d09928"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acb3beae96bacc6fd57543f20f8d09928">&#9670;&#160;</a></span>Pause()</h2>
@@ -140,8 +142,6 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Pauses playback without resetting the position. </p>
 
 </div>
 </div>
@@ -160,13 +160,39 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Starts (or resumes) playback. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">fromStart</td><td><code>true</code> to seek to the beginning before playing; <code>false</code> to resume from the current position. </td></tr>
-  </table>
-  </dd>
-</dl>
+</div>
+</div>
+<a id="a7260d8396200decf8e3bb480de246f4e" name="a7260d8396200decf8e3bb480de246f4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7260d8396200decf8e3bb480de246f4e">&#9670;&#160;</a></span>Resume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Audio.Browser.BrowserAudioPlayer.Resume </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9345a10ce02535437357d17d41c884a4" name="a9345a10ce02535437357d17d41c884a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9345a10ce02535437357d17d41c884a4">&#9670;&#160;</a></span>Seek()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Audio.Browser.BrowserAudioPlayer.Seek </td>
+          <td>(</td>
+          <td class="paramtype">TimeSpan</td>          <td class="paramname"><span class="paramname"><em>position</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -185,11 +211,57 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Stops playback and resets the track to the beginning. </p>
-
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
+<a id="a5701d2ba197ecec0809327c2f71dfdd1" name="a5701d2ba197ecec0809327c2f71dfdd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5701d2ba197ecec0809327c2f71dfdd1">&#9670;&#160;</a></span>CurrentTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">TimeSpan Gondwana.Audio.Browser.BrowserAudioPlayer.CurrentTime</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BrowserAudioPlayer_8cs_source.html#l00023">23</a> of file <a class="el" href="BrowserAudioPlayer_8cs_source.html">BrowserAudioPlayer.cs</a>.</p>
+
+</div>
+</div>
+<a id="a177947600f43342e067816b6266fb96a" name="a177947600f43342e067816b6266fb96a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a177947600f43342e067816b6266fb96a">&#9670;&#160;</a></span>Duration</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">TimeSpan Gondwana.Audio.Browser.BrowserAudioPlayer.Duration</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BrowserAudioPlayer_8cs_source.html#l00029">29</a> of file <a class="el" href="BrowserAudioPlayer_8cs_source.html">BrowserAudioPlayer.cs</a>.</p>
+
+</div>
+</div>
 <a id="ac53b9f5d498e6087fd92271cf68a98a5" name="ac53b9f5d498e6087fd92271cf68a98a5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac53b9f5d498e6087fd92271cf68a98a5">&#9670;&#160;</a></span>IsLooping</h2>
 
@@ -210,9 +282,55 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets a value indicating whether the track loops continuously. </p>
+<p class="definition">Definition at line <a class="el" href="BrowserAudioPlayer_8cs_source.html#l00031">31</a> of file <a class="el" href="BrowserAudioPlayer_8cs_source.html">BrowserAudioPlayer.cs</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BrowserAudioPlayer_8cs_source.html#l00034">34</a> of file <a class="el" href="BrowserAudioPlayer_8cs_source.html">BrowserAudioPlayer.cs</a>.</p>
+</div>
+</div>
+<a id="a19feb0cd88e82235907e05fc3c71c130" name="a19feb0cd88e82235907e05fc3c71c130"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19feb0cd88e82235907e05fc3c71c130">&#9670;&#160;</a></span>IsPaused</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Gondwana.Audio.Browser.BrowserAudioPlayer.IsPaused</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BrowserAudioPlayer_8cs_source.html#l00021">21</a> of file <a class="el" href="BrowserAudioPlayer_8cs_source.html">BrowserAudioPlayer.cs</a>.</p>
+
+</div>
+</div>
+<a id="a3046e73c02b308ec7ec98c77a0d1dfce" name="a3046e73c02b308ec7ec98c77a0d1dfce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3046e73c02b308ec7ec98c77a0d1dfce">&#9670;&#160;</a></span>IsPlaying</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Gondwana.Audio.Browser.BrowserAudioPlayer.IsPlaying</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BrowserAudioPlayer_8cs_source.html#l00020">20</a> of file <a class="el" href="BrowserAudioPlayer_8cs_source.html">BrowserAudioPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -236,9 +354,79 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the unique key that identifies this audio track. </p>
+<p class="definition">Definition at line <a class="el" href="BrowserAudioPlayer_8cs_source.html#l00019">19</a> of file <a class="el" href="BrowserAudioPlayer_8cs_source.html">BrowserAudioPlayer.cs</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BrowserAudioPlayer_8cs_source.html#l00029">29</a> of file <a class="el" href="BrowserAudioPlayer_8cs_source.html">BrowserAudioPlayer.cs</a>.</p>
+</div>
+</div>
+<a id="a8b54313acc8f800152c19ebac2cfb1cc" name="a8b54313acc8f800152c19ebac2cfb1cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b54313acc8f800152c19ebac2cfb1cc">&#9670;&#160;</a></span>Pan</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Gondwana.Audio.Browser.BrowserAudioPlayer.Pan</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BrowserAudioPlayer_8cs_source.html#l00043">43</a> of file <a class="el" href="BrowserAudioPlayer_8cs_source.html">BrowserAudioPlayer.cs</a>.</p>
+
+</div>
+</div>
+<a id="ac767db8da67b739751eedd75ff706b54" name="ac767db8da67b739751eedd75ff706b54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac767db8da67b739751eedd75ff706b54">&#9670;&#160;</a></span>PlaybackSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Gondwana.Audio.Browser.BrowserAudioPlayer.PlaybackSpeed</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BrowserAudioPlayer_8cs_source.html#l00049">49</a> of file <a class="el" href="BrowserAudioPlayer_8cs_source.html">BrowserAudioPlayer.cs</a>.</p>
+
+</div>
+</div>
+<a id="ab7a035f711252db0f13e643331dca480" name="ab7a035f711252db0f13e643331dca480"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7a035f711252db0f13e643331dca480">&#9670;&#160;</a></span>State</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceGondwana_1_1Audio.html#a973077d5a560e4e7b680cb56380053b9">AudioPlaybackState</a> Gondwana.Audio.Browser.BrowserAudioPlayer.State</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BrowserAudioPlayer_8cs_source.html#l00022">22</a> of file <a class="el" href="BrowserAudioPlayer_8cs_source.html">BrowserAudioPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -262,9 +450,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the playback volume in the range [0.0, 1.0]. </p>
-
-<p class="definition">Definition at line <a class="el" href="BrowserAudioPlayer_8cs_source.html#l00047">47</a> of file <a class="el" href="BrowserAudioPlayer_8cs_source.html">BrowserAudioPlayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrowserAudioPlayer_8cs_source.html#l00037">37</a> of file <a class="el" href="BrowserAudioPlayer_8cs_source.html">BrowserAudioPlayer.cs</a>.</p>
 
 </div>
 </div>

@@ -8,6 +8,7 @@ var annotated_dup =
       ] ],
       [ "Audio", "namespaceGondwana_1_1Audio.html", [
         [ "Browser", "namespaceGondwana_1_1Audio_1_1Browser.html", [
+          [ "BrowserAudioBackend", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioBackend.html", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioBackend" ],
           [ "BrowserAudioManager", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager" ],
           [ "BrowserAudioPlayer", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer" ]
         ] ],
@@ -15,9 +16,13 @@ var annotated_dup =
           [ "SynthesizerSampleProvider", "classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider.html", "classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider" ],
           [ "WaveProviderToWaveStream", "classGondwana_1_1Audio_1_1Midi_1_1WaveProviderToWaveStream.html", "classGondwana_1_1Audio_1_1Midi_1_1WaveProviderToWaveStream" ]
         ] ],
+        [ "NAudio", "namespaceGondwana_1_1Audio_1_1NAudio.html", [
+          [ "NAudioAudioBackend", "classGondwana_1_1Audio_1_1NAudio_1_1NAudioAudioBackend.html", "classGondwana_1_1Audio_1_1NAudio_1_1NAudioAudioBackend" ]
+        ] ],
         [ "AudioResource", "classGondwana_1_1Audio_1_1AudioResource.html", "classGondwana_1_1Audio_1_1AudioResource" ],
         [ "AudioResourceManager", "classGondwana_1_1Audio_1_1AudioResourceManager.html", "classGondwana_1_1Audio_1_1AudioResourceManager" ],
-        [ "StereoPanSampleProvider", "classGondwana_1_1Audio_1_1StereoPanSampleProvider.html", "classGondwana_1_1Audio_1_1StereoPanSampleProvider" ]
+        [ "IAudioBackend", "interfaceGondwana_1_1Audio_1_1IAudioBackend.html", "interfaceGondwana_1_1Audio_1_1IAudioBackend" ],
+        [ "IAudioPlaybackHandle", "interfaceGondwana_1_1Audio_1_1IAudioPlaybackHandle.html", "interfaceGondwana_1_1Audio_1_1IAudioPlaybackHandle" ]
       ] ],
       [ "Avalonia", "namespaceGondwana_1_1Avalonia.html", [
         [ "Hosting", "namespaceGondwana_1_1Avalonia_1_1Hosting.html", [

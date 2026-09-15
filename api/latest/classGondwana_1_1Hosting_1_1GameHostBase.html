@@ -34,7 +34,7 @@
   <td id="projectalign">
    <div id="projectname">Gondwana Game Engine<span id="projectnumber">&#160;Development (master) - 2.6.0</span>
    </div>
-   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop, mobile, and web platforms using SkiaSharp for graphics and NAudio for sound.</div>
+   <div id="projectbrief">Gondwana is a cross-platform 2.5D game and rendering engine written in C#/.NET 8. It provides fine-grained control over rendering, timing, and scene composition, with built-in support for parallax, z-ordering, pixel overhang, collision detection, and particle effects. Gondwana targets desktop and web platforms using SkiaSharp for graphics and pluggable audio backends for desktop and browser targets.</div>
   </td>
  </tr>
  </tbody>
@@ -634,8 +634,9 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Releases resources owned by the game host. </p>
+<p>Call from the hosting/UI thread, outside an engine callback. Background rendering is stopped and joined before cleanup hooks release native resources. </p>
 
-<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00456">456</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GameHostBase_8cs_source.html#l00460">460</a> of file <a class="el" href="GameHostBase_8cs_source.html">GameHostBase.cs</a>.</p>
 
 </div>
 </div>
