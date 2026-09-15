@@ -18,7 +18,7 @@ public static class EngineExtensions
     /// <param name="engine">The engine instance to configure.</param>
     public static void InitializeWinFormsAudioFormats(this Engine engine)
     {
-        Gondwana.NAudioEngineExtensions.UseNAudio(engine);
+        NAudioEngineExtensions.UseNAudio(engine);
     }
 
     /// <summary>

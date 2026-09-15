@@ -15,10 +15,17 @@ public sealed class AudioResourceManager : IDisposable
     private IAudioBackend? _backend;
     private bool _disposed;
 
+    /// <summary>
+    /// Occurs when a loaded <see cref="AudioResource"/> is disposed and removed from the manager.
+    /// The event payload contains the resource key and the <see cref="AudioResource"/> instance.
+    /// </summary>
     public event EventHandler<(string Key, AudioResource Resource)>? SoundDisposed;
 
     private AudioResourceManager() { }
 
+    /// <summary>
+    /// Gets the singleton <see cref="AudioResourceManager"/> instance.
+    /// </summary>
     public static AudioResourceManager Instance => _instance.Value;
 
     /// <summary>Gets the currently configured audio backend, or null if none has been configured.</summary>
@@ -31,6 +38,8 @@ public sealed class AudioResourceManager : IDisposable
     /// Configures the backend used for subsequently loaded audio resources.
     /// A backend cannot be replaced while resources are loaded.
     /// </summary>
+    /// <param name="backend">The <see cref="IAudioBackend"/> implementation to use for audio playback.</param>
+    /// <exception cref="InvalidOperationException">Thrown if attempting to replace the configured backend while audio resources are still loaded.</exception>
     public void ConfigureBackend(IAudioBackend backend)
     {
         ArgumentNullException.ThrowIfNull(backend);
@@ -51,10 +60,27 @@ public sealed class AudioResourceManager : IDisposable
         }
     }
 
-    /// <summary>Retains the pre-backend-refactor CLR signature for compiled callers.</summary>
+    /// <summary>
+    /// Compatibility overload that loads an audio resource from a file path.
+    /// Retains the pre-backend-refactor CLR signature for compiled callers.
+    /// </summary>
+    /// <param name="key">Unique key for the audio resource.</param>
+    /// <param name="filePath">Path to the audio file to load.</param>
+    /// <param name="volume">Initial volume (0.0 to 1.0).</param>
+    /// <param name="pan">Initial stereo pan (-1.0 to 1.0).</param>
+    /// <returns>The loaded <see cref="AudioResource"/>.</returns>
     public AudioResource LoadFromFile(string key, string filePath, float volume, float pan)
         => LoadFromFile(key, filePath, volume, pan, 1.0f);
 
+    /// <summary>
+    /// Loads an audio resource from a file on disk.
+    /// </summary>
+    /// <param name="key">Unique key for the audio resource.</param>
+    /// <param name="filePath">Path to the audio file.</param>
+    /// <param name="volume">Initial volume (0.0 to 1.0).</param>
+    /// <param name="pan">Initial stereo pan (-1.0 to 1.0).</param>
+    /// <param name="playbackSpeed">Initial playback speed (clamped to allowed range).</param>
+    /// <returns>The loaded <see cref="AudioResource"/>.</returns>
     public AudioResource LoadFromFile(
         string key,
         string filePath,
@@ -66,10 +92,29 @@ public sealed class AudioResourceManager : IDisposable
         return LoadFromBytes(key, bytes, filePath, volume, pan, playbackSpeed);
     }
 
-    /// <summary>Retains the pre-backend-refactor CLR signature for compiled callers.</summary>
+    /// <summary>
+    /// Compatibility overload that loads an audio resource from a stream.
+    /// Retains the pre-backend-refactor CLR signature for compiled callers.
+    /// </summary>
+    /// <param name="key">Unique key for the audio resource.</param>
+    /// <param name="input">Input <see cref="Stream"/> containing audio data.</param>
+    /// <param name="fileExt">File extension or hint for the audio data (e.g. ".wav").</param>
+    /// <param name="volume">Initial volume (0.0 to 1.0).</param>
+    /// <param name="pan">Initial stereo pan (-1.0 to 1.0).</param>
+    /// <returns>The loaded <see cref="AudioResource"/>.</returns>
     public AudioResource LoadFromStream(string key, Stream input, string fileExt, float volume, float pan)
         => LoadFromStream(key, input, fileExt, volume, pan, 1.0f);
 
+    /// <summary>
+    /// Loads an audio resource from the provided <see cref="Stream"/>.
+    /// </summary>
+    /// <param name="key">Unique key for the audio resource.</param>
+    /// <param name="input">Input <see cref="Stream"/> containing audio data.</param>
+    /// <param name="fileExt">File extension or hint for the audio data (e.g. ".ogg").</param>
+    /// <param name="volume">Initial volume (0.0 to 1.0).</param>
+    /// <param name="pan">Initial stereo pan (-1.0 to 1.0).</param>
+    /// <param name="playbackSpeed">Initial playback speed (clamped to allowed range).</param>
+    /// <returns>The loaded <see cref="AudioResource"/>.</returns>
     public AudioResource LoadFromStream(
         string key,
         Stream input,
@@ -86,6 +131,13 @@ public sealed class AudioResourceManager : IDisposable
     /// <summary>
     /// Loads an audio source by URI. This is primarily intended for URI-capable backends such as browser audio.
     /// </summary>
+    /// <param name="key">Unique key for the audio resource.</param>
+    /// <param name="uri">The URI referencing the audio resource.</param>
+    /// <param name="volume">Initial volume (0.0 to 1.0).</param>
+    /// <param name="pan">Initial stereo pan (-1.0 to 1.0).</param>
+    /// <param name="playbackSpeed">Initial playback speed (clamped to allowed range).</param>
+    /// <returns>The created <see cref="AudioResource"/>.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="uri"/> is null or whitespace.</exception>
     public AudioResource LoadFromUri(
         string key,
         string uri,
@@ -117,10 +169,25 @@ public sealed class AudioResourceManager : IDisposable
         }
     }
 
-    /// <summary>Retains the pre-backend-refactor CLR signature for compiled callers.</summary>
+    /// <summary>
+    /// Compatibility overload that loads audio resources from an <see cref="AssetsFile"/>.
+    /// Retains the pre-backend-refactor CLR signature for compiled callers.
+    /// </summary>
+    /// <param name="resourceFile">The <see cref="AssetsFile"/> containing audio entries.</param>
+    /// <param name="defaultVolume">Default volume to apply to loaded resources.</param>
+    /// <param name="defaultPan">Default pan to apply to loaded resources.</param>
+    /// <returns>A list of loaded <see cref="AudioResource"/> instances.</returns>
     public List<AudioResource> LoadFromEngineAssetsFile(AssetsFile resourceFile, float defaultVolume, float defaultPan)
         => LoadFromEngineAssetsFile(resourceFile, defaultVolume, defaultPan, 1.0f);
 
+    /// <summary>
+    /// Loads all audio entries from the provided <see cref="AssetsFile"/> and returns the loaded resources.
+    /// </summary>
+    /// <param name="resourceFile">The <see cref="AssetsFile"/> to read audio entries from.</param>
+    /// <param name="defaultVolume">Default volume to apply when an entry does not specify one.</param>
+    /// <param name="defaultPan">Default pan to apply when an entry does not specify one.</param>
+    /// <param name="defaultPlaybackSpeed">Default playback speed for loaded resources.</param>
+    /// <returns>A list of loaded <see cref="AudioResource"/> instances.</returns>
     public List<AudioResource> LoadFromEngineAssetsFile(
         AssetsFile resourceFile,
         float defaultVolume = 1.0f,
@@ -176,10 +243,28 @@ public sealed class AudioResourceManager : IDisposable
         return loadedSounds;
     }
 
-    /// <summary>Retains the pre-backend-refactor CLR signature; the clone inherits its source's playback speed.</summary>
+    /// <summary>
+    /// Compatibility overload that creates a clone of an existing audio resource.
+    /// Retains the pre-backend-refactor CLR signature; the clone inherits its source's playback speed.
+    /// </summary>
+    /// <param name="key">Key of the source resource to clone.</param>
+    /// <param name="newKey">Optional key for the clone. If null, a generated key is used.</param>
+    /// <param name="volume">Optional volume override for the clone.</param>
+    /// <param name="pan">Optional pan override for the clone.</param>
+    /// <returns>The cloned <see cref="AudioResource"/> or null if the source was not found or could not be cloned.</returns>
     public AudioResource? Clone(string key, string? newKey, float? volume, float? pan)
         => Clone(key, newKey, volume, pan, null);
 
+    /// <summary>
+    /// Creates a clone of an existing <see cref="AudioResource"/>. The clone may inherit or override
+    /// volume, pan, and playback speed from the source resource.
+    /// </summary>
+    /// <param name="key">Key of the resource to clone.</param>
+    /// <param name="newKey">Optional new key for the clone. If null a generated key is used.</param>
+    /// <param name="volume">Optional volume override for the clone.</param>
+    /// <param name="pan">Optional pan override for the clone.</param>
+    /// <param name="playbackSpeed">Optional playback speed override for the clone.</param>
+    /// <returns>The cloned <see cref="AudioResource"/> or null if cloning was not possible.</returns>
     public AudioResource? Clone(
         string key,
         string? newKey = null,
@@ -326,6 +411,10 @@ public sealed class AudioResourceManager : IDisposable
     private static float ClampPlaybackSpeed(float speed) =>
         Math.Clamp(speed, AudioResource.MinimumPlaybackSpeed, AudioResource.MaximumPlaybackSpeed);
 
+    /// <summary>
+    /// Unloads and disposes the audio resource with the specified key, if it exists.
+    /// </summary>
+    /// <param name="key">Key of the audio resource to unload.</param>
     public void Unload(string key)
     {
         lock (_backendLock)
@@ -335,6 +424,9 @@ public sealed class AudioResourceManager : IDisposable
         }
     }
 
+    /// <summary>
+    /// Disposes and clears all loaded audio resources.
+    /// </summary>
     public void Clear()
     {
         lock (_backendLock)
@@ -346,16 +438,43 @@ public sealed class AudioResourceManager : IDisposable
         }
     }
 
+    /// <summary>
+    /// Attempts to retrieve a loaded audio resource by key.
+    /// </summary>
+    /// <param name="key">Key of the audio resource to retrieve.</param>
+    /// <param name="resource">When this method returns, contains the <see cref="AudioResource"/> associated with the key, if found; otherwise null.</param>
+    /// <returns>True if the resource was found; otherwise false.</returns>
     public bool TryGet(string key, out AudioResource? resource) => _soundResources.TryGetValue(key, out resource);
 
+    /// <summary>
+    /// Gets the <see cref="AudioResource"/> with the specified key, or null if not found.
+    /// </summary>
+    /// <param name="key">Key of the audio resource to retrieve.</param>
+    /// <returns>The <see cref="AudioResource"/> if found; otherwise null.</returns>
     public AudioResource? Get(string key) => _soundResources.TryGetValue(key, out var resource) ? resource : null;
 
+    /// <summary>
+    /// Determines whether an audio resource with the specified key is loaded.
+    /// </summary>
+    /// <param name="key">Key to check for existence.</param>
+    /// <returns>True if the key exists; otherwise false.</returns>
     public bool Contains(string key) => _soundResources.ContainsKey(key);
 
+    /// <summary>
+    /// Returns all loaded audio resource keys.
+    /// </summary>
+    /// <returns>An <see cref="IEnumerable{String}"/> of all resource keys.</returns>
     public IEnumerable<string> GetAllKeys() => _soundResources.Keys;
 
+    /// <summary>
+    /// Returns a snapshot dictionary of all loaded audio resources.
+    /// </summary>
+    /// <returns>A <see cref="Dictionary{String,AudioResource}"/> containing the loaded resources.</returns>
     public Dictionary<string, AudioResource> GetAll() => new(_soundResources);
 
+    /// <summary>
+    /// Disposes the manager and all loaded audio resources. This method is idempotent.
+    /// </summary>
     public void Dispose()
     {
         if (_disposed)

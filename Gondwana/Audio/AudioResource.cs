@@ -11,7 +11,15 @@ namespace Gondwana.Audio;
 [JsonObject(IsReference = true)]
 public class AudioResource : IDisposable
 {
+    /// <summary>
+    /// Minimum allowed playback speed multiplier. Values below this are clamped.
+    /// </summary>
+    /// <remarks>1.0 is normal speed; values &lt;1 slow playback, &gt;1 speed up playback.</remarks>
     public const float MinimumPlaybackSpeed = 0.25f;
+
+    /// <summary>
+    /// Maximum allowed playback speed multiplier. Values above this are clamped.
+    /// </summary>
     public const float MaximumPlaybackSpeed = 4.0f;
 
     private IAudioPlaybackHandle? _playback;
@@ -112,15 +120,28 @@ public class AudioResource : IDisposable
     [JsonIgnore]
     public string? TempFilePath => _playback?.TemporaryFilePath;
 
+    /// <summary>
+    /// Gets a value indicating whether playback is currently paused.
+    /// </summary>
     [JsonIgnore]
     public bool IsPaused => State == AudioPlaybackState.Paused;
 
+    /// <summary>
+    /// Gets a value indicating whether playback is currently active.
+    /// </summary>
     [JsonIgnore]
     public bool IsPlaying => State == AudioPlaybackState.Playing;
 
+    /// <summary>
+    /// Gets the current high-level playback state of the resource.
+    /// </summary>
     [JsonIgnore]
     public AudioPlaybackState State => _playback?.State ?? AudioPlaybackState.Stopped;
 
+    /// <summary>
+    /// Gets or sets the current playback position within the resource.
+    /// Setting this property seeks to the specified position.
+    /// </summary>
     [JsonIgnore]
     public TimeSpan CurrentTime
     {
@@ -128,6 +149,9 @@ public class AudioResource : IDisposable
         set => Seek(value);
     }
 
+    /// <summary>
+    /// Gets the total duration of the resource, or <see cref="TimeSpan.Zero"/> when unknown.
+    /// </summary>
     [JsonIgnore]
     public TimeSpan Duration => _playback?.Duration ?? TimeSpan.Zero;
 
@@ -184,14 +208,31 @@ public class AudioResource : IDisposable
         }
     }
 
+    /// <summary>
+    /// Starts playback of the resource.
+    /// </summary>
+    /// <param name="fromStart">If true, playback begins from the start of the resource; otherwise resumes from the current position.</param>
     public void Play(bool fromStart = true) => Playback.Play(fromStart);
 
+    /// <summary>
+    /// Pauses playback if currently playing.
+    /// </summary>
     public void Pause() => Playback.Pause();
 
+    /// <summary>
+    /// Resumes playback if currently paused.
+    /// </summary>
     public void Resume() => Playback.Resume();
 
+    /// <summary>
+    /// Seeks to the specified playback position.
+    /// </summary>
+    /// <param name="position">Target playback position. Values outside the valid range are clamped by the backend.</param>
     public void Seek(TimeSpan position) => Playback.Seek(position);
 
+    /// <summary>
+    /// Stops playback immediately.
+    /// </summary>
     public void Stop() => Playback.Stop();
 
     internal void SetSourceUri(string uri)
@@ -296,6 +337,10 @@ public class AudioResource : IDisposable
             : "." + extension.ToLowerInvariant();
     }
 
+    /// <summary>
+    /// Disposes the audio resource and releases any underlying playback handle and temporary files.
+    /// After disposal the instance must not be used.
+    /// </summary>
     public void Dispose()
     {
         if (_disposed)
