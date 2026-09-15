@@ -1,6 +1,5 @@
 ﻿using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
-using Gondwana.WinForms.Audio;
 using Gondwana.WinForms.Input.Gamepad.XInput;
 using Gondwana.WinForms.Input.Keyboard;
 using Gondwana.WinForms.Input.Mouse;
@@ -14,12 +13,12 @@ namespace Gondwana.WinForms;
 public static class EngineExtensions
 {
     /// <summary>
-    /// Registers support for extended audio formats including OGG, OGA, MOGG (Vorbis), WMA, and M4A (Media Foundation).
+    /// Configures the Windows desktop NAudio backend, including the standard NAudio/Vorbis/Media Foundation formats.
     /// </summary>
     /// <param name="engine">The engine instance to configure.</param>
     public static void InitializeWinFormsAudioFormats(this Engine engine)
     {
-        WinFormsAudioSupport.RegisterExtendedAudioFormats();
+        NAudioEngineExtensions.UseNAudio(engine);
     }
 
     /// <summary>

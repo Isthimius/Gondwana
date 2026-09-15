@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Gondwana.Audio.NAudio;
 using MeltySynth;
 using Microsoft.Extensions.Logging;
 using NAudio.Wave;
@@ -30,9 +31,7 @@ public static class MidiFileReader
         return new SoundFont(stream);
     });
 
-    /// <summary>
-    /// Gets the General MIDI SoundFont used for synthesizing MIDI audio.
-    /// </summary>
+    /// <summary>Gets the General MIDI SoundFont used for synthesizing MIDI audio.</summary>
     /// <value>
     /// A <see cref="MeltySynth.SoundFont"/> instance loaded from the embedded TimGM6mb.sf2 resource.
     /// </value>
@@ -48,7 +47,8 @@ public static class MidiFileReader
     public static SoundFont SoundFont => _soundFont.Value;
 
     /// <summary>
-    /// Registers factory functions for .mid and .midi file extensions with the <see cref="PlatformAudioFactory"/>
+    /// Registers .mid and .midi readers with <see cref="NAudioReaderRegistry"/>.
+    /// Call this after configuring the NAudio backend and before loading MIDI resources.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -62,13 +62,11 @@ public static class MidiFileReader
     /// </para>
     /// </remarks>
     /// <seealso cref="CreateReader"/>
-    /// <seealso cref="PlatformAudioFactory.Register"/>
     internal static void RegisterDefaultReaders()
     {
-        PlatformAudioFactory.Register(".mid", stream => CreateReader(stream));
-        PlatformAudioFactory.Register(".midi", stream => CreateReader(stream));
-
-        Engine.Logger.LogInformation("RegisterDefaultReaders() called");
+        NAudioReaderRegistry.Register(".mid", CreateReader);
+        NAudioReaderRegistry.Register(".midi", CreateReader);
+        Engine.Logger.LogInformation("Registered Gondwana.Audio.Midi readers with the NAudio backend.");
     }
 
     /// <summary>
@@ -92,8 +90,7 @@ public static class MidiFileReader
     /// </list>
     /// <para>
     /// The returned stream does not loop internally; looping should be handled by the calling code
-    /// (typically through <see cref="Gondwana.Audio.SoundResource"/>). The stream supports seeking
-    /// to arbitrary time positions for interactive playback control.
+    /// The stream supports seeking to arbitrary time positions for interactive playback control.
     /// </para>
     /// <para>
     /// Audio output specifications:
@@ -109,21 +106,16 @@ public static class MidiFileReader
     /// <seealso cref="WaveProviderToWaveStream"/>
     public static WaveStream CreateReader(Stream stream)
     {
-        var buffer = new MemoryStream();
+        using var buffer = new MemoryStream();
         stream.CopyTo(buffer);
         buffer.Position = 0;
 
         var synth = new Synthesizer(SoundFont, 44100);
         var midi = new MidiFile(buffer);
         var sequencer = new MidiFileSequencer(synth);
-
-        // Start playback once. Do NOT enable internal looping.
         sequencer.Play(midi, loop: false);
 
-        // Provider must NOT loop; SoundResource will handle loop restarts.
         var provider = new SynthesizerSampleProvider(sequencer, synth, midi, loop: false);
-
-        // Duration -> bytes for WaveStream.Length; keep seek wiring.
         return new WaveProviderToWaveStream(provider.ToWaveProvider(), midi.Length.TotalSeconds, provider.Seek);
     }
 }

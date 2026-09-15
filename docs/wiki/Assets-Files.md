@@ -391,6 +391,10 @@ SvgResource
 
 Audio follows the same basic pattern:
 
+Configure a byte-capable audio backend before loading packed audio. The Windows
+`Gondwana.Audio.NAudio` backend supports these entries; `Gondwana.Audio.Browser`
+currently loads URI-addressable browser assets with `LoadFromUri` instead.
+
 ```text
 AssetsFile
     |

@@ -39,10 +39,11 @@ gondwana-winforms:
       - 'Gondwana.WinForms.Hosting/**'
       - '!**/CHANGELOG.md'
 
+# All audio implementation/extension packages share the Gondwana audio family label.
 gondwana-audio:
   - changed-files:
     - all-globs-to-any-file:
-      - 'Gondwana.Audio.Midi/**'
+      - 'Gondwana.Audio*/**'
       - '!**/CHANGELOG.md'
 
 gondwana-hosting:

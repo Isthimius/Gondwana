@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices.JavaScript;
+using Gondwana;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MyGame;
@@ -11,5 +12,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 
 // Import the gondwana-audio JS module - use absolute path from root
 await JSHost.ImportAsync("gondwana-audio", "/gondwana-audio.js");
+Engine.Instance.UseBrowserAudio();
 
 await builder.Build().RunAsync();

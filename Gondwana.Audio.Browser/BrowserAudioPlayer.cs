@@ -1,72 +1,60 @@
 using System.Runtime.Versioning;
+using Gondwana.Audio;
 
 namespace Gondwana.Audio.Browser;
 
 /// <summary>
-/// Controls a single audio track loaded through <see cref="BrowserAudioManager"/>.
+/// Compatibility wrapper around the common <see cref="AudioResource"/> browser implementation.
 /// </summary>
-/// <remarks>
-/// <para>
-/// Instances are created by <see cref="BrowserAudioManager.Load"/>. Each instance
-/// wraps a single HTML <c>&lt;audio&gt;</c> element on the browser side via the
-/// <c>gondwana-audio</c> JavaScript module.
-/// </para>
-/// </remarks>
 [SupportedOSPlatform("browser")]
 public sealed class BrowserAudioPlayer
 {
-    private float _volume;
-    private bool _isLooping;
+    private readonly AudioResource _resource;
 
-    internal BrowserAudioPlayer(string key, float volume, bool loop)
+    internal BrowserAudioPlayer(AudioResource resource)
     {
-        Key = key;
-        _volume = volume;
-        _isLooping = loop;
+        _resource = resource;
     }
 
-    /// <summary>Gets the unique key that identifies this audio track.</summary>
-    public string Key { get; }
+    public string Key => _resource.Key;
+    public bool IsPlaying => _resource.IsPlaying;
+    public bool IsPaused => _resource.IsPaused;
+    public AudioPlaybackState State => _resource.State;
+    public TimeSpan CurrentTime
+    {
+        get => _resource.CurrentTime;
+        set => _resource.CurrentTime = value;
+    }
 
-    /// <summary>
-    /// Gets or sets a value indicating whether the track loops continuously.
-    /// </summary>
+    public TimeSpan Duration => _resource.Duration;
+
     public bool IsLooping
     {
-        get => _isLooping;
-        set
-        {
-            _isLooping = value;
-            BrowserAudioInterop.SetLoop(Key, value);
-        }
+        get => _resource.IsLooping;
+        set => _resource.IsLooping = value;
     }
 
-    /// <summary>
-    /// Gets or sets the playback volume in the range [0.0, 1.0].
-    /// </summary>
     public float Volume
     {
-        get => _volume;
-        set
-        {
-            _volume = Math.Clamp(value, 0f, 1f);
-            BrowserAudioInterop.SetVolume(Key, _volume);
-        }
+        get => _resource.Volume;
+        set => _resource.Volume = value;
     }
 
-    /// <summary>Starts (or resumes) playback.</summary>
-    /// <param name="fromStart">
-    /// <see langword="true"/> to seek to the beginning before playing;
-    /// <see langword="false"/> to resume from the current position.
-    /// </param>
-    public void Play(bool fromStart = true)
-        => BrowserAudioInterop.Play(Key, fromStart);
+    public float Pan
+    {
+        get => _resource.Pan;
+        set => _resource.Pan = value;
+    }
 
-    /// <summary>Pauses playback without resetting the position.</summary>
-    public void Pause()
-        => BrowserAudioInterop.Pause(Key);
+    public float PlaybackSpeed
+    {
+        get => _resource.PlaybackSpeed;
+        set => _resource.PlaybackSpeed = value;
+    }
 
-    /// <summary>Stops playback and resets the track to the beginning.</summary>
-    public void Stop()
-        => BrowserAudioInterop.Stop(Key);
+    public void Play(bool fromStart = true) => _resource.Play(fromStart);
+    public void Pause() => _resource.Pause();
+    public void Resume() => _resource.Resume();
+    public void Seek(TimeSpan position) => _resource.Seek(position);
+    public void Stop() => _resource.Stop();
 }

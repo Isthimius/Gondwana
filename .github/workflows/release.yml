@@ -59,6 +59,7 @@ jobs:
         run: |
           mkdir -p publish/Gondwana
           mkdir -p publish/Gondwana.Audio.Midi
+          mkdir -p publish/Gondwana.Audio.NAudio
           mkdir -p publish/Gondwana.Blazor
           mkdir -p publish/Gondwana.Blazor.Hosting
           mkdir -p publish/Gondwana.Hosting
@@ -74,6 +75,7 @@ jobs:
 
           dotnet publish Gondwana/Gondwana.csproj -c Release -o publish/Gondwana --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.Audio.Midi/Gondwana.Audio.Midi.csproj -c Release -o publish/Gondwana.Audio.Midi --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Gondwana.Audio.NAudio/Gondwana.Audio.NAudio.csproj -c Release -o publish/Gondwana.Audio.NAudio --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.Blazor/Gondwana.Blazor.csproj -c Release -o publish/Gondwana.Blazor --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.Blazor.Hosting/Gondwana.Blazor.Hosting.csproj -c Release -o publish/Gondwana.Blazor.Hosting --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.Hosting/Gondwana.Hosting.csproj -c Release -o publish/Gondwana.Hosting --nologo /p:EnableWindowsTargeting=true
@@ -100,6 +102,7 @@ jobs:
           # Engine DLLs (flat)
           cp publish/Gondwana/Gondwana.dll release-assets/
           cp publish/Gondwana.Audio.Midi/Gondwana.Audio.Midi.dll release-assets/
+          cp publish/Gondwana.Audio.NAudio/Gondwana.Audio.NAudio.dll release-assets/
           cp publish/Gondwana.Blazor/Gondwana.Blazor.dll release-assets/
           cp publish/Gondwana.Blazor.Hosting/Gondwana.Blazor.Hosting.dll release-assets/
           cp publish/Gondwana.Hosting/Gondwana.Hosting.dll release-assets/

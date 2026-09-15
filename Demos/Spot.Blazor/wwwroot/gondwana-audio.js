@@ -1,99 +1,210 @@
 /**
- * gondwana-audio.js
- *
- * Lightweight HTML5 Audio playback module for Gondwana WASM games.
- * Import this module before starting Avalonia:
+ * Browser/WASM audio backend for Gondwana.
+ * Import before using Gondwana.Audio.Browser:
  *
  *   await JSHost.ImportAsync("gondwana-audio", "./gondwana-audio.js");
- *
- * All functions are keyed by a string identifier that matches the key
- * passed to BrowserAudioManager.Load() on the C# side.
  */
 
-/** @type {Map<string, HTMLAudioElement>} */
+/** @type {Map<string, {audio: HTMLAudioElement, context: AudioContext|null, source: MediaElementAudioSourceNode|null, panner: StereoPannerNode|null, state: number}>} */
 const _players = new Map();
 
+// One context per module, retained until page teardown. Tracks own only their
+// nodes; unloading one track must not close the context used by the others.
+let _context = null;
+
+function getContext() {
+    const AudioContextType = globalThis.AudioContext || globalThis.webkitAudioContext;
+
+    if (!AudioContextType)
+        return null;
+
+    if (!_context || _context.state === "closed")
+        _context = new AudioContextType();
+
+    return _context;
+}
+
+function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+}
+
+function disposeEntry(entry) {
+    entry.disposed = true;
+    entry.audio.removeEventListener("ended", entry.onEnded);
+    entry.audio.pause();
+    entry.state = 0;
+
+    try {
+        entry.source?.disconnect();
+    }
+    catch { }
+
+    try {
+        entry.panner?.disconnect();
+    }
+    catch { }
+
+    entry.audio.removeAttribute("src");
+    entry.audio.load();
+}
+
 /**
- * Loads a new audio track. Returns without starting playback; call play() when ready.
- * If a track with the same key already exists it is stopped and replaced.
- * @param {string} key    - Unique identifier for this track.
- * @param {string} src    - Relative or absolute URL of the audio file.
- * @param {boolean} loop  - Whether the track should loop.
- * @param {number} volume - Initial volume in the range [0, 1].
+ * Loads a URI-addressable browser audio track without starting playback.
  */
-export function load(key, src, loop, volume) {
+export function load(key, src, loop, volume, pan, playbackSpeed, onEnded) {
     const existing = _players.get(key);
-    if (existing) {
-        existing.pause();
-        existing.src = "";
+    if (existing) disposeEntry(existing);
+
+    let audio = new Audio();
+
+    let context = null;
+    let source = null;
+    let panner = null;
+
+    try {
+        context = getContext();
+        if (context) {
+            source = context.createMediaElementSource(audio);
+            if (typeof context.createStereoPanner === "function") {
+                panner = context.createStereoPanner();
+                panner.pan.value = clamp(pan, -1, 1);
+                source.connect(panner);
+                panner.connect(context.destination);
+            } else {
+                source.connect(context.destination);
+            }
+        }
+    }
+    catch {
+        try {
+            source?.disconnect();
+        }
+        catch { }
+
+        try {
+            panner?.disconnect();
+        }
+        catch { }
+
+        // A media element remains bound to a failed Web Audio source. Use a
+        // fresh element so the ordinary media fallback can still be heard.
+        audio = new Audio();
+        context = null;
+        source = null;
+        panner = null;
     }
 
-    const audio = new Audio(src);
+    // Set CORS before src so cross-origin requests use the correct mode.
+    audio.crossOrigin = "anonymous";
+    audio.src = src;
     audio.loop = loop;
-    audio.volume = Math.max(0, Math.min(1, volume));
-    _players.set(key, audio);
+    audio.volume = clamp(volume, 0, 1);
+    audio.playbackRate = clamp(playbackSpeed, 0.25, 4);
+
+    const entry = { audio, context, source, panner, state: 0, disposed: false };
+
+    entry.onEnded = () => {
+        if (entry.disposed || audio.loop)
+            return;
+
+        entry.state = 0;
+        onEnded?.();
+    };
+
+    audio.addEventListener("ended", entry.onEnded);
+    _players.set(key, entry);
 }
 
-/**
- * Starts (or resumes) playback of a loaded track.
- * @param {string} key       - The track identifier.
- * @param {boolean} fromStart - If true, seek to the beginning before playing.
- */
 export function play(key, fromStart) {
-    const audio = _players.get(key);
-    if (!audio) return;
-    if (fromStart) audio.currentTime = 0;
-    audio.play().catch(() => { /* autoplay policy — user must interact first */ });
+    const entry = _players.get(key);
+    if (!entry)
+        return;
+
+    if (fromStart)
+        entry.audio.currentTime = 0;
+
+    if (entry.context?.state === "suspended")
+        entry.context.resume().catch(() => { });
+
+    entry.state = 1;
+    entry.audio.play().catch(() => {
+        if (!entry.disposed && entry.state === 1 && entry.audio.paused)
+            entry.state = entry.audio.currentTime > 0 ? 2 : 0;
+    });
 }
 
-/**
- * Pauses playback of a loaded track without resetting its position.
- * @param {string} key - The track identifier.
- */
 export function pause(key) {
-    const audio = _players.get(key);
-    if (audio) audio.pause();
+    const entry = _players.get(key);
+    if (!entry)
+        return;
+
+    entry.audio.pause();
+    if (entry.state === 1)
+        entry.state = 2;
 }
 
-/**
- * Stops playback and resets the track to the beginning.
- * @param {string} key - The track identifier.
- */
 export function stop(key) {
-    const audio = _players.get(key);
-    if (!audio) return;
-    audio.pause();
-    audio.currentTime = 0;
+    const entry = _players.get(key);
+    if (!entry)
+        return;
+
+    entry.audio.pause();
+    entry.audio.currentTime = 0;
+    entry.state = 0;
 }
 
-/**
- * Sets the volume of a loaded track.
- * @param {string} key    - The track identifier.
- * @param {number} volume - Volume in the range [0, 1].
- */
 export function setVolume(key, volume) {
-    const audio = _players.get(key);
-    if (audio) audio.volume = Math.max(0, Math.min(1, volume));
+    const entry = _players.get(key);
+    if (entry)
+        entry.audio.volume = clamp(volume, 0, 1);
 }
 
-/**
- * Enables or disables looping for a loaded track.
- * @param {string} key   - The track identifier.
- * @param {boolean} loop - Whether the track should loop.
- */
 export function setLoop(key, loop) {
-    const audio = _players.get(key);
-    if (audio) audio.loop = loop;
+    const entry = _players.get(key);
+    if (entry) entry.audio.loop = loop;
 }
 
-/**
- * Unloads a track and releases its resources.
- * @param {string} key - The track identifier.
- */
+export function setPan(key, pan) {
+    const entry = _players.get(key);
+    if (entry?.panner)
+        entry.panner.pan.value = clamp(pan, -1, 1);
+}
+
+export function setPlaybackSpeed(key, playbackSpeed) {
+    const entry = _players.get(key);
+    if (entry) entry.audio.playbackRate = clamp(playbackSpeed, 0.25, 4);
+}
+
+export function setCurrentTime(key, seconds) {
+    const entry = _players.get(key);
+    if (!entry)
+        return;
+
+    const duration = Number.isFinite(entry.audio.duration) ? entry.audio.duration : Number.POSITIVE_INFINITY;
+    entry.audio.currentTime = clamp(seconds, 0, duration);
+}
+
+export function getCurrentTime(key) {
+    const entry = _players.get(key);
+    return entry ? entry.audio.currentTime || 0 : 0;
+}
+
+export function getDuration(key) {
+    const entry = _players.get(key);
+    return entry && Number.isFinite(entry.audio.duration) ? entry.audio.duration : 0;
+}
+
+// 0 = stopped, 1 = playing, 2 = paused
+export function getState(key) {
+    const entry = _players.get(key);
+    return entry ? entry.state : 0;
+}
+
 export function unload(key) {
-    const audio = _players.get(key);
-    if (!audio) return;
-    audio.pause();
-    audio.src = "";
+    const entry = _players.get(key);
+    if (!entry)
+        return;
+
+    disposeEntry(entry);
     _players.delete(key);
 }

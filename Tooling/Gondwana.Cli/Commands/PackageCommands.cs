@@ -39,7 +39,7 @@ internal sealed class AddCommand : Command<AddCommand.Settings>
     public sealed class Settings : ProjectSettings
     {
         [CommandArgument(0, "<feature>")]
-        [Description("widgets, audio, midi, gamepad, video, or hosting.")]
+        [Description("widgets, audio, midi, gamepad, video, or hosting. Audio selects Browser for Blazor or NAudio for Windows; MIDI requires Windows. Cross-platform desktop audio requires explicit backend selection.")]
         public string Feature { get; init; } = "";
     }
 

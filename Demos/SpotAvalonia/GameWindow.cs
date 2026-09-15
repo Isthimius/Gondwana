@@ -153,6 +153,10 @@ internal sealed class GameWindow : Window
         };
 
         _host.Initialize();
+        _musicMenuItem!.IsEnabled = _host.AudioAvailable;
+        _musicMenuItem.IsChecked = _host.AudioAvailable;
+        _soundEffectsMenuItem!.IsEnabled = _host.AudioAvailable;
+        _soundEffectsMenuItem.IsChecked = _host.AudioAvailable;
     }
 
     protected override void OnClosed(EventArgs e)

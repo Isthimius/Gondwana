@@ -77,10 +77,10 @@ namespace Slider
             delMoveStop = Sprites_SpriteMovementStopped;
 
             InitializeSprites(tileWidth, tileHeight);
+            Engine.Instance.UseNAudio();
             slideSound = AudioResourceManager.Instance.LoadFromFile("move", "assets/75143__willc2-45220__slide-cup-16b-44k-0-747s.wav");
             tadaSound = AudioResourceManager.Instance.LoadFromFile("tada", "assets/177120__rdholder__2dogsound-tadaa1-3s-2013jan31-cc-by-30-us.wav");
 
-            //Engine.Instance.InitializeWinFormsAudioFormats();
             //Engine.Instance.InitializeXInputGamepadManager();
         }
 

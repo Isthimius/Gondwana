@@ -8,7 +8,7 @@ It allows Gondwana applications to run as native WinForms applications with mini
 
 - SkiaSharp rendering surface for WinForms
 - Input integration (keyboard/mouse/gamepad)
-- Audio integration
+- Convenient initialization of the `Gondwana.Audio.NAudio` backend (reader and Vorbis registration live in that package)
 - Designed for desktop Windows applications
 
 ## Installation
