@@ -6,6 +6,35 @@
 /// </summary>
 public sealed class ColliderRegistry
 {
+    internal Gondwana.Scenes.SceneLayer? SceneLayer { get; set; }
+
+    /// <summary>
+    /// Queries canonical colliders with translated bounds for every overlapping wrapped instance.
+    /// Collision masks and the ignored collider apply to canonical identities.
+    /// </summary>
+    public void QueryInstances(in Aabb area, int layerMask, int collidesWithMask,
+        List<ColliderInstance> results, ICollider? ignore = null)
+    {
+        results.Clear();
+        var layer = SceneLayer;
+        var periodic = layer is not null && (layer.WrapHorizontally || layer.WrapVertically);
+        var period = periodic ? layer!.GetPeriod() : default;
+        var query = new System.Drawing.RectangleF(area.MinX, area.MinY, area.Width, area.Height);
+        foreach (var collider in _static.Concat(_dynamic))
+        {
+            if (ReferenceEquals(collider, ignore) || (collider.CollisionGroup & collidesWithMask) == 0 || (layerMask & collider.CollidesWith) == 0)
+                continue;
+            var bounds = collider.BoundsWorldPx;
+            if (!periodic)
+            {
+                if (area.Intersects(bounds)) results.Add(new(collider, bounds));
+                continue;
+            }
+            foreach (var offset in period.Offsets(new(bounds.MinX, bounds.MinY, bounds.Width, bounds.Height), query))
+                results.Add(new(collider, new(bounds.MinX + offset.X, bounds.MinY + offset.Y, bounds.MaxX + offset.X, bounds.MaxY + offset.Y)));
+        }
+    }
+
     private readonly HashSet<ICollider> _static = new();
     private readonly HashSet<ICollider> _dynamic = new();
 
@@ -55,6 +84,8 @@ public sealed class ColliderRegistry
     /// <summary>
     /// Broad-phase query: returns colliders overlapping the given AABB that also
     /// match the provided layer mask (bitwise AND with their LayerMask / CollidesWithMask).
+    /// On periodic layers, returns unique canonical identities for overlapping images.
+    /// Use <see cref="QueryInstances"/> when translated bounds are needed.
     /// </summary>
     /// <param name="area">The axis-aligned bounding box to query within.</param>
     /// <param name="layerMask">The layer mask to test against each collider's <see cref="ICollider.CollidesWith"/> mask.</param>
@@ -68,41 +99,10 @@ public sealed class ColliderRegistry
         List<ICollider> results,
         ICollider? ignore = null)
     {
+        var instances = new List<ColliderInstance>();
+        QueryInstances(area, layerMask, collidesWithMask, instances, ignore);
         results.Clear();
-
-        static bool MaskPasses(ICollider c, int layer, int collidesWith)
-        {
-            if ((c.CollisionGroup & collidesWith) == 0)
-                return false;
-
-            if ((layer & c.CollidesWith) == 0)
-                return false;
-
-            return true;
-        }
-
-        foreach (var c in _static)
-        {
-            if (ReferenceEquals(c, ignore))
-                continue;
-
-            if (!MaskPasses(c, layerMask, collidesWithMask))
-                continue;
-
-            if (area.Intersects(c.BoundsWorldPx))
-                results.Add(c);
-        }
-
-        foreach (var c in _dynamic)
-        {
-            if (ReferenceEquals(c, ignore))
-                continue;
-
-            if (!MaskPasses(c, layerMask, collidesWithMask))
-                continue;
-
-            if (area.Intersects(c.BoundsWorldPx))
-                results.Add(c);
-        }
+        foreach (var instance in instances)
+            if (!results.Contains(instance.Collider)) results.Add(instance.Collider);
     }
 }

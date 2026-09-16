@@ -199,14 +199,14 @@ internal sealed class ObliqueLeftCoordinates : ISceneLayerCoordinates
 
         return direction switch
         {
-            CardinalDirections.N => sceneLayer[x, y - 1],
-            CardinalDirections.NE => sceneLayer[x + 1, y - 1],
-            CardinalDirections.E => sceneLayer[x + 1, y],
-            CardinalDirections.SE => sceneLayer[x + 1, y + 1],
-            CardinalDirections.S => sceneLayer[x, y + 1],
-            CardinalDirections.SW => sceneLayer[x - 1, y + 1],
-            CardinalDirections.W => sceneLayer[x - 1, y],
-            CardinalDirections.NW => sceneLayer[x - 1, y - 1],
+            CardinalDirections.N => sceneLayer.ResolveWrappedTile(x, y - 1),
+            CardinalDirections.NE => sceneLayer.ResolveWrappedTile(x + 1, y - 1),
+            CardinalDirections.E => sceneLayer.ResolveWrappedTile(x + 1, y),
+            CardinalDirections.SE => sceneLayer.ResolveWrappedTile(x + 1, y + 1),
+            CardinalDirections.S => sceneLayer.ResolveWrappedTile(x, y + 1),
+            CardinalDirections.SW => sceneLayer.ResolveWrappedTile(x - 1, y + 1),
+            CardinalDirections.W => sceneLayer.ResolveWrappedTile(x - 1, y),
+            CardinalDirections.NW => sceneLayer.ResolveWrappedTile(x - 1, y - 1),
             _ => null
         };
     }

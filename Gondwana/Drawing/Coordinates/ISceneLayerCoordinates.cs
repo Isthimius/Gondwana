@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using Gondwana.Scenes;
 
 namespace Gondwana.Drawing.Coordinates;
@@ -11,6 +11,8 @@ namespace Gondwana.Drawing.Coordinates;
 /// </summary>
 internal interface ISceneLayerCoordinates
 {
+    LayerPeriod GetWrapPeriod(SceneLayer layer) => LayerPeriod.Create(this, layer);
+
     /// <summary>
     /// Returns the projection-defined world-space pixel anchor of the tile at the
     /// given grid coordinate (col,row) in this SceneLayer.

@@ -421,9 +421,10 @@ public sealed class View
                 pixels.Y + layer.EffectOffsetPx.Y);
         }
 
+        var wrappedOffset = layer is null ? PointF.Empty : Gondwana.Drawing.WrappedDrawable.ScreenOffset(this, layer);
         return new PointF(
-            pixels.X + factor.X * targetRect.Width,
-            pixels.Y + factor.Y * targetRect.Height);
+            pixels.X + factor.X * targetRect.Width + wrappedOffset.X,
+            pixels.Y + factor.Y * targetRect.Height + wrappedOffset.Y);
     }
 
     internal RectangleF GetPresentationBoundsPx()

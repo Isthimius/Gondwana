@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using Gondwana.Scenes;
 
 namespace Gondwana.Drawing.Coordinates;
@@ -156,12 +156,12 @@ internal sealed class HexAxialPointedTop : ISceneLayerCoordinates
         bool even = (y & 1) == 0; var m = gp.SceneLayer;
         return dir switch
         {
-            CardinalDirections.N => m[x, y - 1],
-            CardinalDirections.S => m[x, y + 1],
-            CardinalDirections.NE => m[x + (even ? 0 : 1), y - 1],
-            CardinalDirections.NW => m[x - (even ? 1 : 0), y - 1],
-            CardinalDirections.SE => m[x + (even ? 0 : 1), y + 1],
-            CardinalDirections.SW => m[x - (even ? 1 : 0), y + 1],
+            CardinalDirections.N => m.ResolveWrappedTile(x, y - 1),
+            CardinalDirections.S => m.ResolveWrappedTile(x, y + 1),
+            CardinalDirections.NE => m.ResolveWrappedTile(x + (even ? 0 : 1), y - 1),
+            CardinalDirections.NW => m.ResolveWrappedTile(x - (even ? 1 : 0), y - 1),
+            CardinalDirections.SE => m.ResolveWrappedTile(x + (even ? 0 : 1), y + 1),
+            CardinalDirections.SW => m.ResolveWrappedTile(x - (even ? 1 : 0), y + 1),
             CardinalDirections.E => null,
             CardinalDirections.W => null,
             _ => null
