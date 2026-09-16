@@ -2,13 +2,11 @@ A Gondwana game host is the bridge between your game code, the Gondwana engine, 
 
 For most games, the host is the right place to organize startup and shutdown. It gives asset loading, scene creation, input setup, render-surface binding, engine startup, and cleanup a predictable order without forcing those responsibilities into `Program.cs`, a Form, an Avalonia Window, or a Blazor component.
 
-This page is about using the host model as a game developer. For the lower-level engine lifecycle and threading details, see [[Gondwana Engine Lifecycle]].
+This page focuses on using the host model as a game developer. For lower-level lifecycle and threading details, see [[Gondwana Engine Lifecycle]].
 
 ---
 
 ## The short version
-
-A typical Gondwana application has three distinct responsibilities:
 
 ```mermaid
 flowchart LR
@@ -23,30 +21,28 @@ flowchart LR
     ENGINE --> GAME
 ```
 
-The application framework creates the render surface and your game host. The host then performs the ordered Gondwana initialization sequence.
+The application framework creates the render surface and your game host. The host then performs Gondwana initialization in a defined order.
 
-In normal game code:
+For ordinary game code:
 
-- let the platform host configure platform adapters
-- override host hooks to load your content and build the game
+- derive from the platform-specific game host
+- override lifecycle hooks to load content and build the game
 - call `Initialize()` once from the platform/UI startup path
-- dispose the host when the application or game surface is shutting down
+- dispose the host when the game surface shuts down
 
 ---
 
 ## `GameHostBase`
 
-`GameHostBase` is the platform-neutral lifecycle coordinator in `Gondwana.Hosting`.
+`GameHostBase` in `Gondwana.Hosting` coordinates the platform-neutral lifecycle.
 
-It owns the sequence; your derived host fills in the game-specific pieces.
-
-The important public entry point is:
+The public entry point is:
 
 ```csharp
 host.Initialize();
 ```
 
-That one call performs the full startup sequence:
+Conceptually, initialization runs in this order:
 
 ```mermaid
 flowchart TD
@@ -58,9 +54,9 @@ flowchart TD
     F --> G[Load tilesheets]
     G --> H[Load animation cycles]
     H --> I[Create initial Scene]
-    I --> J[Create initial Views]
+    I --> J[CreateInitialViews]
     J --> K[OnSceneGraphCreated]
-    K --> L[Bind Scene to render surface]
+    K --> L[Bind Scene]
     L --> M[OnSceneBound]
     M --> N[Create sprites]
     N --> O[Create DirectDrawings / widgets]
@@ -71,13 +67,13 @@ flowchart TD
     S --> T[OnInitialized]
 ```
 
-The value of the host is not that each step is complicated. The value is that every Gondwana application can rely on the same order.
+The value of the host is not that any one step is complicated. The value is that game code can rely on the same ordering across platforms.
 
 ---
 
-## Choose the platform host, not bare `GameHostBase`
+## Choose the platform host
 
-Most games should derive from one of Gondwana's platform-specific hosts instead of directly from `GameHostBase`.
+Most games should derive from a platform host rather than directly from `GameHostBase`.
 
 | Platform | Bitmap / compatibility host | GPU host |
 | --- | --- | --- |
@@ -85,26 +81,24 @@ Most games should derive from one of Gondwana's platform-specific hosts instead 
 | Avalonia | `AvaloniaBitmapGameHost` | `AvaloniaGpuGameHost` |
 | Blazor | `BlazorGameHost` | `BlazorGpuGameHost` |
 
-The platform hosts already know how to wire the appropriate render surface, input adapters, scene binding, and platform behavior into the base lifecycle.
+These hosts already know how to wire their render surface, input adapters, scene binding, and platform behavior into the base lifecycle.
 
-For example, the WinForms host seals the low-level platform setup and exposes narrower hooks such as `OnConfigurePlatform()`, `OnKeyboardAdapterInitialized()`, and `OnMouseAdapterInitialized()`. Game code normally customizes those hooks instead of replacing the platform wiring itself.
+For example, WinForms owns the standard keyboard and mouse initialization and exposes narrower hooks such as `OnKeyboardAdapterInitialized()` and `OnMouseAdapterInitialized()` for game-specific work.
 
 ### GPU versus bitmap
 
-The host choice also selects the rendering path used by that application surface.
+The host also selects the rendering path used by that application surface:
 
-- WinForms and Avalonia offer bitmap and GPU hosts.
-- Blazor uses `BlazorGameHost` for the Canvas 2D/bitmap compatibility path and `BlazorGpuGameHost` for the WebGL/GPU path.
+- WinForms and Avalonia provide bitmap and GPU hosts.
+- Blazor uses `BlazorGameHost` for the Canvas 2D/bitmap compatibility path and `BlazorGpuGameHost` for WebGL/GPU rendering.
 
-Your scene, sprites, tiles, cameras, and most game logic should not care which host is presenting them. Keep backend-specific work at the hosting/render-surface boundary whenever possible.
+Scene, tile, sprite, camera, and gameplay code should generally remain independent of that choice.
 
-See [[GL Rendering Path]], [[WebGL Rendering Path]], and [[Bitmap Rendering Path]] for renderer-specific behavior.
+See [[GL Rendering Path]], [[WebGL Rendering Path]], and [[Bitmap Rendering Path]].
 
 ---
 
-## A typical game host
-
-A normal host is mostly a collection of focused overrides:
+## A typical WinForms host
 
 ```csharp
 internal sealed class MyGameHost : WinFormsGameHost
@@ -147,24 +141,32 @@ internal sealed class MyGameHost : WinFormsGameHost
 
     protected override void CreateInitialViews()
     {
-        RenderSurface.Host.ViewManager.ConfigureSingleFullView();
+        // With the current host implementation, leave this empty for the
+        // normal default view. Scene binding creates that view automatically.
+    }
+
+    protected override void OnSceneBound()
+    {
+        // Configure a custom view layout here if the default full view is not enough.
+        // Example:
+        // RenderSurface.Host.ViewManager.ConfigureVerticalSplit();
     }
 
     protected override void CreateSprites()
     {
-        // Scene is already created and bound here.
+        // Scene and layers now exist and are bound to the render surface.
     }
 
     protected override void OnEngineStarted()
     {
-        // Begin gameplay work that assumes the engine is running.
+        // Begin work that assumes normal engine timing is active.
     }
 }
 ```
 
-The exact render-surface property exposed by a platform host differs by host type, but the content lifecycle remains the same.
+The exact render-surface property differs by platform host, but the content lifecycle is the same.
 
-The project templates generated by Gondwana CLI are a good starting point because they already expose the intended hooks in lifecycle order.
+The CLI project templates are useful starting points because they expose the intended host hooks in lifecycle order.
 
 ---
 
@@ -174,35 +176,31 @@ The project templates generated by Gondwana CLI are a good starting point becaus
 
 Use this for game-level preparation that must happen before platform, input, or content initialization.
 
-Examples:
+Examples include choosing configuration paths, initializing game-owned services, or determining startup mode.
 
-- choose configuration paths
-- initialize game-owned services
-- determine startup mode
-- establish feature flags needed by later hooks
-
-Do not create scene objects here. The scene does not exist yet.
+Do not create scene objects here; the scene does not exist yet.
 
 ### `LoadAssets()`
 
-Load non-tilesheet resources needed by the game, such as:
+Load non-tilesheet resources such as audio, fonts, data files, or game-owned definitions.
 
-- audio resources
-- fonts
-- data files
-- game-owned configuration or definitions
-
-Platform audio backends should already have been configured by the time this hook runs.
+Platform services have already been configured before this hook runs.
 
 ### `LoadTilesheets()`
 
 Load tilesheet images and `.gts` definitions here.
 
-This runs before `LoadAnimationCycles()`, so animation definitions can safely reference loaded tilesheets.
+Use the public tilesheet manager/registry APIs, for example:
+
+```csharp
+_worldSheet = Engine.Managers.Tilesheets.LoadFromImageFile(
+    "world",
+    @"assets\world.png");
+```
 
 ### `LoadAnimationCycles()`
 
-Create reusable `FrameSequence` and `Cycle` definitions here.
+Create reusable `FrameSequence` and `Cycle` definitions here. Tilesheets are already loaded.
 
 See [[Tile Animation]].
 
@@ -210,73 +208,76 @@ See [[Tile Animation]].
 
 Build and return the initial `Scene` and its `SceneLayer` collection.
 
-This is where the structural world model belongs:
+This is the natural place to establish:
 
-- layer dimensions
-- layer tile size
-- coordinate-system selection
+- layer dimensions and tile size
+- coordinate systems
 - parallax
 - layer Z-order
-- scene-level collision setup
+- scene/layer collision setup
 
-### `CreateInitialViews()`
+### `CreateInitialViews()` — current implementation caveat
 
-Configure the camera/view layout after the scene exists.
+`GameHostBase` calls `CreateInitialViews()` before `BindScene()`.
 
-Examples include:
+With the current render-host implementation, `ViewManager` creates a `Camera` against the render host's **currently bound scene**. Before binding, that scene is `Scene.Empty`. For that reason, the standard Gondwana templates currently leave `CreateInitialViews()` empty.
 
-- one full-screen view
-- split screen
-- picture-in-picture
-- a secondary minimap view
+When no views exist, `RenderSurfaceHost.Bind(...)` creates the default full-surface view after the real scene becomes current.
 
-See [[Views, Cameras, and Viewports]].
+For custom view layouts, configure the `ViewManager` in `OnSceneBound()` with the current implementation. This ensures newly created cameras are associated with the bound scene.
+
+This distinction is especially relevant for bitmap rendering because camera movement marks its associated scene for refresh.
 
 ### `OnSceneGraphCreated()`
 
-Use this when something needs the finished scene and views but must happen before the scene is bound to the render surface.
-
-Most games will not need this hook often.
+This runs after the scene has been created but before binding. Use it for scene-graph work that does not require a bound render surface.
 
 ### `OnSceneBound()`
 
-At this point the initial scene has been attached to the platform render surface.
+The scene is now attached to the platform render host.
 
-Use this for behavior that specifically requires a bound scene/render host.
+This is the safe point for work that requires the bound `RenderSurfaceHost`, including custom view layouts:
+
+```csharp
+protected override void OnSceneBound()
+{
+    RenderSurface.Host.ViewManager.ConfigureVerticalSplit();
+}
+```
+
+The property path shown above is for `WinFormsGameHost`; other platform hosts expose their own render-surface property.
 
 ### `CreateSprites()`
 
-Create movable scene actors here. The scene and layers already exist and are bound.
+Create movable scene actors here. The scene and its layers already exist and are bound.
 
 ### `CreateDirectDrawings()`
 
-Create DirectDrawing objects, HUD elements, widgets, and other drawing primitives here.
+Create DirectDrawing objects, HUD elements, and widgets here.
 
-The name is historical enough that it is worth noting: this hook is also a reasonable place to create widgets backed by DirectDrawing.
+The method name predates the widget layer; it remains a reasonable place to create widgets backed by DirectDrawing.
 
 ### `OnEngineInitialized()`
 
-The engine has completed `Engine.Initialize()`, but it has not started running yet.
+`Engine.Initialize()` has completed, but the engine has not started running yet.
 
-Use this only for work that specifically needs initialized engine state before the loop begins.
+Use this only for work that specifically requires initialized engine state before the loop begins.
 
 ### `OnEngineStarted()`
 
-The engine is running.
-
-This is a good place to begin game behavior that assumes normal engine timing is active, such as starting gameplay timers or music.
+The engine is running. This is a good place to start gameplay timers, music, or other behavior that assumes normal engine timing.
 
 ### `OnInitialized()`
 
-The entire host sequence has completed. Use this as the final application-level startup hook when needed.
+The full host initialization sequence has completed.
 
 ---
 
-## Platform configuration and input hooks
+## Platform input hooks
 
-Platform-specific host bases deliberately own the standard adapter setup.
+Platform hosts deliberately own the standard adapter setup.
 
-For example, a WinForms host configures the WinForms keyboard and mouse adapters before calling the corresponding game hooks:
+A WinForms host, for example, initializes the keyboard adapter before calling your hook:
 
 ```csharp
 protected override void OnKeyboardAdapterInitialized()
@@ -285,19 +286,15 @@ protected override void OnKeyboardAdapterInitialized()
 }
 ```
 
-This ordering matters: the hook runs after the adapter exists, so game code can subscribe to it without having to recreate the platform initialization itself.
+That lets game code subscribe to an already-configured adapter instead of rebuilding platform setup.
 
-The same principle applies across platforms even when the exact hooks differ.
-
-See [[Input Handling]] for the input subsystem itself.
+See [[Input Handling]].
 
 ---
 
-## Scene binding is a host responsibility
+## Scene binding
 
-A `Scene` does not render merely because you constructed it.
-
-The host creates the scene graph and then binds the current `Scene` to the platform's `RenderSurfaceHost`. Binding connects:
+Constructing a `Scene` is not enough to render it. The platform host binds the scene to its `RenderSurfaceHost`:
 
 ```mermaid
 flowchart LR
@@ -307,31 +304,29 @@ flowchart LR
     RSH --> AD[Platform render adapter]
 ```
 
-Once bound, views can project the scene into the backbuffer and the adapter can present that backbuffer to the window or browser surface.
+Binding makes the scene current for that surface, updates the view manager for the new scene, marks the scene for refresh, and lets the adapter present the resulting backbuffer.
 
-For ordinary applications, let the platform game host perform this step. Direct render-surface binding is mainly relevant when building custom platform integrations.
+For normal games, let the platform game host perform binding. Manual binding is mainly relevant when implementing custom platform/render integrations.
 
-See [[Custom Platform Adapters and Render Surfaces]] for that lower-level case.
+See [[Custom Platform Adapters and Render Surfaces]].
 
 ---
 
 ## Desktop and browser execution differ
 
-The host lifecycle is intentionally similar across platforms, but the engine cannot be scheduled identically everywhere.
+The host lifecycle is intentionally similar across platforms, but execution scheduling is not identical.
 
-Desktop hosts normally start Gondwana with the platform/UI synchronization context while the engine manages its normal execution model.
+Desktop hosts use Gondwana's normal desktop execution model. Browser hosts integrate engine advancement with browser animation scheduling; the Blazor GPU path is driven through the browser/WebGL render callback rather than pretending the browser has the same rendering-thread model as desktop.
 
-Blazor browser hosts integrate engine advancement with browser animation scheduling. In particular, the GPU path is driven from the WebGL/`requestAnimationFrame` rendering path rather than pretending the browser has the same background-thread rendering model as desktop.
+Keep this difference behind the host boundary when possible. Gameplay code should not depend on a particular presentation callback unless it is genuinely platform-specific.
 
-As a game developer, keep this distinction behind the host boundary. Avoid writing gameplay code that assumes a particular host thread or presentation callback unless that code truly is platform-specific.
-
-For the detailed threading and callback rules, see [[Gondwana Engine Lifecycle]] and [[Rendering Pipeline]].
+See [[Gondwana Engine Lifecycle]] and [[Rendering Pipeline]] for the detailed timing and threading rules.
 
 ---
 
 ## Shutdown and disposal
 
-The game host also owns orderly engine shutdown.
+The host owns orderly shutdown as well as startup.
 
 Dispose it from the hosting/UI thread when the game surface is closing:
 
@@ -339,9 +334,9 @@ Dispose it from the hosting/UI thread when the game surface is closing:
 _host?.Dispose();
 ```
 
-The base host coordinates engine stop/wait behavior before managed cleanup hooks release resources. It then disposes widget input routing, invokes event-unhooking hooks, and disposes the engine.
+The base host coordinates engine stop/wait behavior before cleanup hooks release game-owned resources.
 
-Use the shutdown hooks for game-owned cleanup:
+Useful shutdown hooks include:
 
 - `UnhookEvents()` — unsubscribe handlers installed during startup
 - `OnDisposing()` — release game-owned resources before final host disposal
@@ -353,16 +348,14 @@ Do not release render/native resources from an arbitrary engine callback while r
 
 ## When to bypass the host model
 
-You can initialize `Engine` and render infrastructure directly, but most games should not.
+Direct engine/render setup is appropriate when:
 
-Direct engine setup makes sense when:
-
-- integrating Gondwana into an unusual existing application architecture
+- integrating Gondwana into an unusual existing application
 - building a new platform adapter or render surface
 - writing specialized tooling or tests
 - deliberately taking ownership of lifecycle and threading
 
-For a normal game, the host model removes boilerplate and gives future engine versions a predictable place to integrate new platform services.
+For a normal game, the host model removes boilerplate and gives platform services a predictable place to integrate.
 
 ---
 
@@ -372,25 +365,29 @@ For a normal game, the host model removes boilerplate and gives future engine ve
 
 Let the application framework create the window/surface. Put Gondwana startup and game construction in the game host.
 
-### Overriding low-level platform setup unnecessarily
+### Rebuilding platform adapter setup
 
-Use the hooks exposed by the platform host. Do not rebuild keyboard, render-surface, or platform setup simply to attach game behavior.
+Use the hooks exposed by the platform host unless you are deliberately implementing a lower-level integration.
 
-### Creating sprites before their scene layer exists
+### Creating sprites before their layer exists
 
-Create the scene and layers in `CreateInitialScene()`. Create sprites later in `CreateSprites()`.
+Create layers in `CreateInitialScene()` and sprites later in `CreateSprites()`.
 
-### Defining animation cycles before loading their tilesheets
+### Defining animation cycles before their tilesheets
 
 `LoadTilesheets()` runs before `LoadAnimationCycles()` for this reason.
 
-### Starting game timers too early
+### Creating custom views before the scene is bound
 
-If the work assumes normal engine timing, start it in or after `OnEngineStarted()`.
+With the current implementation, let binding create the default view or configure custom views in `OnSceneBound()` so their cameras are associated with the real scene.
+
+### Starting engine-timed behavior too early
+
+If work assumes normal engine timing, start it in or after `OnEngineStarted()`.
 
 ### Forgetting disposal
 
-The host owns engine shutdown as well as startup. Dispose it when the application surface is finished.
+The game host owns shutdown too. Dispose it when the application surface is finished.
 
 ---
 
@@ -400,6 +397,6 @@ The host owns engine shutdown as well as startup. Dispose it when the applicatio
 - [[Gondwana Engine Lifecycle]] — detailed lifecycle, timing, threading, and callback behavior
 - [[Engine Architecture Overview]] — subsystem relationships
 - [[Engine Configuration]] — configuration loading and startup order
-- [[Views, Cameras, and Viewports]] — view creation and camera behavior
+- [[Views, Cameras, and Viewports]] — cameras and view layouts
 - [[Rendering Pipeline]] — how a bound scene reaches the backbuffer
-- [[Custom Platform Adapters and Render Surfaces]] — building below the standard host layer
+- [[Custom Platform Adapters and Render Surfaces]] — working below the standard host layer
