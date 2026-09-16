@@ -289,7 +289,7 @@ For the full source-image model, regions, margins, padding, overhang, provenance
 
 ## Animation
 
-Every sprite owns an `Animator`, exposed through `TileAnimator`.
+Every sprite owns an `Animator`, exposed through `TileAnimator`. The animation system itself belongs to the `Tile` base model, so fixed `SceneLayerTile` cells can use the same machinery when their animator is enabled. This section focuses on sprite usage; see [[Tile Animation]] for the shared model and animated map-tile examples.
 
 Animation is built from three pieces:
 
@@ -536,13 +536,15 @@ Sprites render as part of their owning `SceneLayer`. For each world region being
 
 It then sorts the combined drawable list.
 
-The primary key is `ZOrder`: lower values draw first and higher values draw later. A sprite clamps its `ZOrder` to a minimum of `1`.
+The primary key is `ZOrder`: lower values draw first and higher values draw later. A newly created sprite starts with `ZOrder = 1`, and the property clamps assigned values to a minimum of `1`.
 
 ```csharp
 player.ZOrder = 10;
 ```
 
-When tiles or sprites share a Z-order, Gondwana retains tile-style depth ordering based on their effective lower edge, overhang, and X position. This is what allows actors standing lower in the world to appear in front of actors standing higher up without requiring a unique Z-order for every row.
+When tiles or sprites share a Z-order, Gondwana retains tile-style depth ordering based on their effective vertical location, overhang, and X position, with fixed tiles ordered before movable tiles when a fixed/movable pair ties. This allows actors sharing a Z-order to depth-sort by their world position without requiring a unique Z-order for every row.
+
+For the complete hierarchy—including SceneLayer Z-order, View Z-order, and View-bound overlays—see [[Rendering Order and Z-Order]].
 
 ### Visibility
 
@@ -983,10 +985,12 @@ If you remember only one distinction, remember this one:
 
 - [[Tilesheets]] — source images, regions, frames, sizing, margins, and overhang
 - [[.gts Files]] — serializing tilesheet layout and provenance
+- [[Tile Animation]] — the shared `Tile` animation model for sprites and fixed grid tiles
 - [[Coordinate Spaces]] — grid, world, screen, and projection spaces
 - [[Using Views and Cameras]] — cameras, viewports, zoom, and screen projection
 - [[MovementController]] — follow, scripted, and integrated movement
 - [[DirectDrawing]] — engine-managed visuals that are not sprites or layer tiles
+- [[Rendering Order and Z-Order]] — layer, drawable, view, and overlay ordering
 - [[Refresh Queues]] — bitmap dirty-region invalidation
 - [[Serialization and EngineState]] — saving and restoring engine registries
 
