@@ -3,8 +3,8 @@
 ### Introduction
 - [[Home]]
 - [[Make Your First Game in 30 Minutes]]
-- [[Game Hosts and Application Startup]]
 - [[Engine Architecture Overview]]
+- [[Game Hosts and Application Startup]]
 - [[Gondwana Engine Lifecycle]]
 - [[Gondwana CLI Cheatsheet]]
 
