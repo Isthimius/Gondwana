@@ -145,7 +145,7 @@ internal sealed class MyGameHost : WinFormsGameHost
 
     protected override void CreateInitialViews()
     {
-        RenderSurfaceHost.ViewManager.ConfigureSingleFullView();
+        RenderSurface.Host.ViewManager.ConfigureSingleFullView();
     }
 
     protected override void CreateSprites()
