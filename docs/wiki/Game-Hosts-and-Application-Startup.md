@@ -119,7 +119,9 @@ internal sealed class MyGameHost : WinFormsGameHost
 
     protected override void LoadTilesheets()
     {
-        _worldSheet = new Tilesheet("world", @"assets\world.png");
+        _worldSheet = TilesheetRegistry.Instance.LoadFromImageFile(
+            "world",
+            @"assets\world.png");
     }
 
     protected override void LoadAnimationCycles()
