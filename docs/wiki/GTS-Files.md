@@ -90,22 +90,22 @@ The following is an abridged loose definition for a two-frame tilesheet. `System
       "Area": "0, 0, 32, 16",
       "TileSize": "16, 16",
       "TilePadding": {
-        "Left": 0,
-        "Top": 0,
-        "Right": 0,
-        "Bottom": 0
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0
       },
       "RegionMargin": {
-        "Left": 0,
-        "Top": 0,
-        "Right": 0,
-        "Bottom": 0
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0
       },
       "Overhang": {
-        "Left": 0,
-        "Top": 0,
-        "Right": 0,
-        "Bottom": 0
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0
       },
       "CollisionAdjust": {
         "Top": 1,
