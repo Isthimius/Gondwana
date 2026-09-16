@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 
 namespace Gondwana.Physics.Collisions;
 
@@ -9,7 +9,7 @@ namespace Gondwana.Physics.Collisions;
 /// </summary>
 internal sealed class CollisionResolver
 {
-    private readonly List<ICollider> _queryResults = new();
+    private readonly List<ColliderInstance> _queryResults = new();
     private readonly ColliderRegistry _world;
 
     /// <summary>
@@ -52,7 +52,7 @@ internal sealed class CollisionResolver
 
         var aabb = Aabb.FromRectangle(rect);
 
-        _world.QueryAabb(
+        _world.QueryInstances(
             aabb,
             mover.CollisionGroup,
             mover.CollidesWith,
@@ -64,9 +64,10 @@ internal sealed class CollisionResolver
         bool hitX = false;
         bool hitY = false;
 
-        foreach (var otherCollider in _queryResults)
+        foreach (var instance in _queryResults)
         {
-            var otherRect = otherCollider.BoundsWorldPx.ToRectangle();
+            var otherCollider = instance.Collider;
+            var otherRect = instance.BoundsWorldPx.ToRectangle();
 
             if (!rect.IntersectsWith(otherRect))
                 continue;
