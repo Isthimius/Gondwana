@@ -536,7 +536,7 @@ Sprites render as part of their owning `SceneLayer`. For each world region being
 
 It then sorts the combined drawable list.
 
-The primary key is `ZOrder`: lower values draw first and higher values draw later. A newly created sprite starts with `ZOrder = 1`; that is its default, not a minimum enforced by the property.
+The primary key is `ZOrder`: lower values draw first and higher values draw later. A newly created sprite starts with `ZOrder = 1`, and the property clamps assigned values to a minimum of `1`.
 
 ```csharp
 player.ZOrder = 10;
