@@ -37,6 +37,10 @@ Think of a Scene as a folder, and each SceneLayer as a transparent sheet inside 
 ---
 
 ## Where to read next
+- [[Tiles and Tile-Based SceneLayers]] — fixed grid cells, tiles, adjacency, wrapping, animation, and collision
+- [[Rendering Order and Z-Order]] — how layers and their drawables are stacked
+- [[Coordinate Systems]] — how layer grid coordinates project into world pixels
+- [[Parallax and Multi-View Rendering]] — how layers move through views
 - `Gondwana/Scenes/Scene.cs`
 - `Gondwana/Scenes/SceneLayer.cs`
 - `Gondwana/Rendering/RefreshQueue.cs`
