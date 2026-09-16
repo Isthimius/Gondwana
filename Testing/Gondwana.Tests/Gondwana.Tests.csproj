@@ -37,6 +37,9 @@
         <Compile Include="../../Gondwana.Audio.NAudio/StereoPanSampleProvider.cs" Link="Audio/StereoPanSampleProvider.cs" />
         <Compile Include="../../Demos/Gondwana.Platformer/EnemyContact.cs" Link="Demos/EnemyContact.cs" />
         <Compile Include="../../Demos/Gondwana.Platformer/PlatformerArt.cs" Link="Demos/PlatformerArt.cs" />
+        <!-- Keep the standalone editor's document model testable without a Windows UI. -->
+        <Compile Include="../../Tooling/Gondwana.Tooling.Tilesheets.WinForms/Editing/*.cs" Link="TilesheetEditing/%(Filename)%(Extension)" />
+        <Compile Include="../../Tooling/Gondwana.Tooling.Tilesheets.WinForms/PropertyFields.cs" Link="TilesheetEditing/PropertyFields.cs" />
     </ItemGroup>
 
 	<ItemGroup>

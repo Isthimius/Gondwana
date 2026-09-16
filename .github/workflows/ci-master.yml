@@ -22,6 +22,18 @@ permissions:
   contents: read
   actions: read
 jobs:
+  tilesheet-editor-tests:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: WinForms editor interaction tests
+        run: dotnet test Testing/Gondwana.Tooling.Tilesheets.WinForms.Tests/Gondwana.Tooling.Tilesheets.WinForms.Tests.csproj --configuration Release --nologo
+
   build:
     runs-on: ubuntu-latest
 
@@ -90,6 +102,7 @@ jobs:
           dotnet publish Gondwana.WinForms/Gondwana.WinForms.csproj -c Release -o publish/Gondwana.WinForms --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.csproj -c Release -o publish/Gondwana.WinForms.Hosting --nologo /p:EnableWindowsTargeting=true
           dotnet publish Tooling/Gondwana.Tooling.Assets.WinForms/Gondwana.Tooling.Assets.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Assets.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Tooling/Gondwana.Tooling.Tilesheets.WinForms/Gondwana.Tooling.Tilesheets.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Demos/Slider/Slider.csproj -c Release -o publish/Demos/Slider -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Demos/Spot/Spot.csproj -c Release -o publish/Demos/Spot -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
 
@@ -112,6 +125,7 @@ jobs:
           cp publish/Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.dll artifacts/
 
           cp publish/Tooling/Gondwana.Tooling.Assets.WinForms/Gondwana.Tooling.Assets.WinForms.exe artifacts/Tooling/
+          cp -r publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms artifacts/Tooling/
           cp publish/Demos/Slider/Slider.exe artifacts/Demos/
           cp publish/Demos/Spot/Spot.exe artifacts/Demos/
 
