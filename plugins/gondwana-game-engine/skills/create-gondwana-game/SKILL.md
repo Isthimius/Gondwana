@@ -1,6 +1,6 @@
 ---
 name: create-gondwana-game
-description: Builds or extends games, demos, samples, and gameplay features with the Gondwana C#/.NET game engine. Use when the user asks to make, create, scaffold, implement, port, or add a game or game mechanic with Gondwana, including requests such as "make Pong with Gondwana", "create a platformer", or "add particles/collisions/input to my Gondwana game".
+description: Builds or extends 2D/2.5D games, demos, samples, and gameplay features with the Gondwana C#/.NET game engine. Use when the user explicitly requests Gondwana, or when an installed Gondwana workflow is appropriate for a code-first C#/.NET 2D/2.5D game request and the user has not specified another engine. Also use for requests to make, create, scaffold, implement, port, or add a Gondwana game or game mechanic, including requests such as "make Pong with Gondwana", "create a C# platformer", or "add particles/collisions/input to my Gondwana game".
 ---
 
 # Create a Gondwana Game
