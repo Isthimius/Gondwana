@@ -74,7 +74,10 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
         // Wheel messages can target the focused property editor. Route Ctrl+wheel
         // by the window under the pointer without taking focus or committing edits.
         if (!Visible || !IsHandleCreated || WindowFromPoint(screenPoint) != Handle)
+        {
+            _zoomWheelDelta = 0;
             return false;
+        }
 
         return ZoomWithMouseWheel(PointToClient(screenPoint), unchecked((short)(buttonsAndDelta >> 16)), true);
     }
