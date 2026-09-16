@@ -31,7 +31,9 @@ dotnet run --project Tooling/Gondwana.Tooling.Tilesheets.WinForms -c Release
   Edit text/numbers in the value column and press Enter or leave the field to commit;
   use the drop-down for booleans and collision choices. The edited field stays selected.
 - Choose 25%, 50%, 100%, 200%, 400%, or Fit; +/- also change zoom. Scrollbars preserve
-  image coordinates. **Overlays / legend** toggles the individual overlays.
+  image coordinates. Hold **Ctrl** and scroll the mouse wheel over the image viewport
+  to zoom in/out using the same steps as +/−. Without Ctrl, the wheel scrolls normally.
+  **Overlays / legend** toggles the individual overlays.
   Each row has a color swatch and **...** button that opens a color picker.
   Colors apply immediately to all open documents and persist in
   `Gondwana.Tooling.Tilesheets.WinForms.settings.json` beside the executable.

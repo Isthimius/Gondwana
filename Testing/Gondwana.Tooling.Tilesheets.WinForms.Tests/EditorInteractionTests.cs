@@ -12,6 +12,32 @@ public sealed class EditorInteractionTests
 {
     private const BindingFlags PrivateInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
+    [Fact]
+    public void CtrlWheel_UsesToolbarZoomStepsAndPreservesOrdinaryScrolling() => RunSta(() =>
+    {
+        using var bitmap = new Bitmap(1000, 1000);
+        using var viewport = new ImageViewport { Image = bitmap, Size = new Size(300, 300) };
+        viewport.CreateControl();
+        var point = new Point(100, 100);
+        Assert.False(viewport.ZoomWithMouseWheel(point, 120, false));
+        Assert.Equal(1f, viewport.Zoom);
+        Assert.True(viewport.ZoomWithMouseWheel(point, 120, true));
+        Assert.Equal(2f, viewport.Zoom);
+        Assert.True(viewport.ZoomWithMouseWheel(point, -120, true));
+        Assert.Equal(1f, viewport.Zoom);
+        viewport.ZoomWithMouseWheel(point, 60, true);
+        Assert.Equal(1f, viewport.Zoom);
+        viewport.ZoomWithMouseWheel(point, 60, true);
+        Assert.Equal(2f, viewport.Zoom);
+        viewport.ZoomWithMouseWheel(point, -240, true);
+        Assert.Equal(.5f, viewport.Zoom);
+        Assert.False(viewport.ZoomWithMouseWheel(new Point(-1, -1), 120, true));
+        Assert.Equal(.5f, viewport.Zoom);
+        viewport.SetZoom(16);
+        viewport.ZoomWithMouseWheel(point, 120, true);
+        Assert.Equal(16f, viewport.Zoom);
+    });
+
     [Theory]
     [InlineData("forest")]
     [InlineData("ganon")]
