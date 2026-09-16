@@ -100,6 +100,22 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         return fields;
     }
 
+    private static FrameCollisionChoice ToFrameCollisionChoice(TileCollisionType collisionType) => collisionType switch
+    {
+        TileCollisionType.None => FrameCollisionChoice.None,
+        TileCollisionType.Blocking => FrameCollisionChoice.Blocking,
+        TileCollisionType.Trigger => FrameCollisionChoice.Trigger,
+        _ => (FrameCollisionChoice)(int)collisionType
+    };
+
+    private static TileCollisionType ToTileCollisionType(FrameCollisionChoice collisionChoice) => collisionChoice switch
+    {
+        FrameCollisionChoice.None => TileCollisionType.None,
+        FrameCollisionChoice.Blocking => TileCollisionType.Blocking,
+        FrameCollisionChoice.Trigger => TileCollisionType.Trigger,
+        _ => (TileCollisionType)(int)collisionChoice
+    };
+
     private sealed class Field<T>(string name, string category, Func<T> get, Action<T>? set, string description)
         : PropertyDescriptor(name, [new CategoryAttribute(category), new DescriptionAttribute(description)])
     {
