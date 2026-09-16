@@ -83,8 +83,8 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         fields.Add("YTile", "Coordinates (read only)", () => y);
         fields.Add("CollisionAdjust mode", "Collision", () => Current()?.CollisionAdjust is null ? Inheritance.InheritRegion : Inheritance.Override,
             v => { document.EditFrame(region, x, y).CollisionAdjust = v == Inheritance.InheritRegion ? null : Current()?.CollisionAdjust ?? region.CollisionAdjust; changed(); });
-        fields.Add("CollisionType", "Collision", () => Current()?.CollisionType is { } t ? Enum.Parse<FrameCollisionChoice>(t.ToString()) : FrameCollisionChoice.InheritRegion,
-            v => { document.EditFrame(region, x, y).CollisionType = v == FrameCollisionChoice.InheritRegion ? null : Enum.Parse<TileCollisionType>(v.ToString()); changed(); });
+        fields.Add("CollisionType", "Collision", () => Current()?.CollisionType is { } t ? ToFrameCollisionChoice(t) : FrameCollisionChoice.InheritRegion,
+            v => { document.EditFrame(region, x, y).CollisionType = v == FrameCollisionChoice.InheritRegion ? null : ToTileCollisionType(v); changed(); });
         foreach (var property in typeof(CollisionAdjust).GetProperties().Where(p => p.CanWrite))
         {
             bool inherited = Current()?.CollisionAdjust is null;
@@ -99,6 +99,22 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         }
         return fields;
     }
+
+    private static FrameCollisionChoice ToFrameCollisionChoice(TileCollisionType collisionType) => collisionType switch
+    {
+        TileCollisionType.None => FrameCollisionChoice.None,
+        TileCollisionType.Blocking => FrameCollisionChoice.Blocking,
+        TileCollisionType.Trigger => FrameCollisionChoice.Trigger,
+        _ => (FrameCollisionChoice)(int)collisionType
+    };
+
+    private static TileCollisionType ToTileCollisionType(FrameCollisionChoice collisionChoice) => collisionChoice switch
+    {
+        FrameCollisionChoice.None => TileCollisionType.None,
+        FrameCollisionChoice.Blocking => TileCollisionType.Blocking,
+        FrameCollisionChoice.Trigger => TileCollisionType.Trigger,
+        _ => (TileCollisionType)(int)collisionChoice
+    };
 
     private sealed class Field<T>(string name, string category, Func<T> get, Action<T>? set, string description)
         : PropertyDescriptor(name, [new CategoryAttribute(category), new DescriptionAttribute(description)])
