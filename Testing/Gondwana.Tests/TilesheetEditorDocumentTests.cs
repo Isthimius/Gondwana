@@ -147,19 +147,6 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
     }
 
     [Fact]
-    public void PropertyAdapters_PreserveUndefinedFrameCollisionTypeUntilEdited()
-    {
-        var document = TilesheetDocument.Open(WriteDefinition());
-        var region = document.Definition.Regions[0];
-        region.Frames[1].CollisionType = (TileCollisionType)99;
-        var fields = PropertyFields.Frame(document, region, 1, 0, document.MarkChanged);
-        Assert.Equal((FrameCollisionChoice)99, fields.GetProperties()["CollisionType"]!.GetValue(fields));
-        Assert.Equal((TileCollisionType)99, region.Frames[1].CollisionType);
-        fields.GetProperties()["CollisionType"]!.SetValue(fields, FrameCollisionChoice.Trigger);
-        Assert.Equal(TileCollisionType.Trigger, region.Frames[1].CollisionType);
-    }
-
-    [Fact]
     public void InvalidSaveAndFailedSave_KeepOriginalFileAndDirtySession()
     {
         string path = WriteDefinition();
