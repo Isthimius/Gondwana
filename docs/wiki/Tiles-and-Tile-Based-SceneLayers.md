@@ -328,7 +328,7 @@ Use `GetAdjacentTile()` when game logic needs the neighboring tile according to 
 ```csharp
 SceneLayerTile? east = worldLayer.GetAdjacentTile(
     tile,
-    CardinalDirections.East);
+    CardinalDirections.E);
 ```
 
 This is preferable to assuming that every projection interprets neighboring cells exactly like an orthogonal square grid.
