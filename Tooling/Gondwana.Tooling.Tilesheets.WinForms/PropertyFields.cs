@@ -32,7 +32,7 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         }
     }
 
-    private void AddReflected(object model, PropertyInfo[] path, Action changed)
+    private void AddReflected(object model, PropertyInfo[] path, Action changed, string? category = null)
     {
         var leaf = path[^1];
         object? Read()
@@ -52,7 +52,7 @@ internal sealed class PropertyFields : CustomTypeDescriptor
             }
             changed();
         }
-        _fields.Add(new ReflectedField(string.Join(".", path.Select(p => p.Name)), path[0].Name, leaf.PropertyType, Read, Write));
+        _fields.Add(new ReflectedField(string.Join(".", path.Select(p => p.Name)), category ?? path[0].Name, leaf.PropertyType, Read, Write));
     }
 
     public static PropertyFields Definition(TilesheetDocument document, Action changed)
@@ -69,7 +69,9 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         fields.Add("Source.AssetsFilePath", "Provenance (read only)", () => model.Source.AssetsFilePath ?? "");
         fields.Add("Source.AssetEntryName", "Provenance (read only)", () => model.Source.AssetEntryName ?? "");
         fields.Add("Mask enabled", "Mask", () => model.Mask is not null, v => { model.Mask = v ? model.Mask ?? new() : null; changed(); });
-        if (model.Mask is { } mask) fields.AddModel(mask, changed);
+        if (model.Mask is { } mask)
+            foreach (var property in typeof(TilesheetMaskDefinition).GetProperties().Where(p => p.CanWrite))
+                fields.AddReflected(mask, [property], changed, "Mask");
         return fields;
     }
 
