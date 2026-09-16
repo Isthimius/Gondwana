@@ -206,6 +206,7 @@ public abstract class DialogBox : DraggableContainerWidget
             return false;
 
         RectangleF titleBarBounds = TitleBar.GetDrawLocationScreen(args.View);
+        titleBarBounds.Offset(args.WrappedOffsetWorldPx.X * args.View.Viewport.Zoom, args.WrappedOffsetWorldPx.Y * args.View.Viewport.Zoom);
 
         return titleBarBounds.Contains(args.ScreenPositionPx.X, args.ScreenPositionPx.Y);
     }

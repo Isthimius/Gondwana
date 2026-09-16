@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using Gondwana.Drawing.Direct;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Views;
@@ -213,10 +213,28 @@ public abstract class WidgetBase : DirectComposite
             return false;
         }
 
+        if (Mode == DirectDrawingMode.SceneLayer && SceneLayer is { } layer &&
+            (layer.WrapHorizontally || layer.WrapVertically))
+            return GetWrappedHitOffset(view, screenPositionPx).HasValue;
+
         RectangleF screenBounds = GetDrawLocationScreen(view);
 
         return !screenBounds.IsEmpty
             && screenBounds.Contains(screenPositionPx.X, screenPositionPx.Y);
+    }
+
+    internal PointF? GetWrappedHitOffset(View view, Point screenPositionPx)
+    {
+        if (Mode != DirectDrawingMode.SceneLayer || SceneLayer is not { } layer)
+            return PointF.Empty;
+        var world = view.ScreenPxToWorldPx(layer, screenPositionPx);
+        foreach (var offset in layer.GetWrappedOffsets(WorldBounds, new RectangleF(world.X, world.Y, 0.01f, 0.01f)))
+        {
+            RectangleF bounds = WorldBounds;
+            bounds.Offset(offset);
+            if (bounds.Contains(world)) return offset;
+        }
+        return null;
     }
 
     /// <summary>

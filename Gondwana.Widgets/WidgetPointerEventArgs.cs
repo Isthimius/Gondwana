@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Numerics;
 using Gondwana.Rendering.Views;
 
@@ -45,6 +45,12 @@ public sealed class WidgetPointerEventArgs : WidgetEventArgs
     /// Gets the view through which the pointer interaction was routed.
     /// </summary>
     public View View { get; }
+
+    /// <summary>
+    /// World-space translation of the selected periodic widget instance. Retained
+    /// throughout pointer capture; zero for view-space widgets and canonical copies.
+    /// </summary>
+    public PointF WrappedOffsetWorldPx { get; internal set; }
 
     /// <summary>
     /// Gets the pointer position in screen pixels.

@@ -326,6 +326,7 @@ public sealed class ListBoxWidget : WidgetBase
             return;
 
         RectangleF screenBounds = Background.GetDrawLocationScreen(args.View);
+        screenBounds.Offset(args.WrappedOffsetWorldPx.X * args.View.Viewport.Zoom, args.WrappedOffsetWorldPx.Y * args.View.Viewport.Zoom);
         if (screenBounds.Height <= 0f || Bounds.Height <= 0)
             return;
 
