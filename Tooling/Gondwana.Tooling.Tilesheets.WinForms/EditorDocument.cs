@@ -339,7 +339,7 @@ internal sealed class EditorDocument : DockContent
             using var bitmap = new Bitmap(stream);
             _viewport.Image = new Bitmap(bitmap);
         }
-        catch (Exception ex) when (ex is IOException or ArgumentException or InvalidOperationException or NotSupportedException or UnauthorizedAccessException or System.Runtime.InteropServices.ExternalException)
+        catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or InvalidOperationException or NotSupportedException or UnauthorizedAccessException or System.Runtime.InteropServices.ExternalException)
         {
             _previewError = "Image cannot be previewed: " + ex.Message;
             _viewport.Message = _previewError;
