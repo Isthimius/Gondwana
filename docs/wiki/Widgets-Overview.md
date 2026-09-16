@@ -266,3 +266,9 @@ For lower-level details about the shared widget system, see:
 * `Gondwana.Widgets/*`
 
 For the underlying rendering model, see the [[DirectDrawing]] documentation.
+
+---
+
+## Widgets on wrapped layers
+
+World-space widget children repeat with their SceneLayer; View-bound UI never wraps. Following widgets share their target's translations. Hit testing returns the canonical widget, while pointer capture retains the chosen image in `WrappedOffsetWorldPx`. See [[SceneLayer Wrapping]] for dragging and custom-control coordinate handling.

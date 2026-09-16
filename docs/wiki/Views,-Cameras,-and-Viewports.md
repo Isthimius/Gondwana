@@ -49,3 +49,9 @@ Because rendering flows through views, multiple cameras are not a bolt-on featur
 - `Gondwana/Rendering/Views/Camera.cs`
 - `Gondwana/Rendering/Views/Viewport.cs`
 - `Gondwana/Rendering/Views/ViewManager.cs`
+
+---
+
+## Cameras in periodic worlds
+
+Wrapped layer axes allow continuous camera movement; non-wrapped axes retain clamping. Following selects the target image nearest the camera center. A followed object's layer supplies topology; other camera uses select the first visible layer in scene insertion order. See [[SceneLayer Wrapping]] for projected-axis clamping and mixed-layer behavior.

@@ -35,3 +35,9 @@ Collision resolution decides whether that position is legal.
 - `Gondwana/Collisions/CollisionResolver.cs`
 - `Gondwana/Collisions/`
 - `Gondwana/Scenes/SceneLayer.cs`
+
+---
+
+## Periodic collision instances
+
+On wrapped layers, `ColliderRegistry.QueryInstances` returns canonical colliders with translated `BoundsWorldPx`. The resolver uses those bounds at seams and corners while events identify canonical owners. `QueryAabb` returns unique canonical identities. See [[SceneLayer Wrapping]] before using canonical bounds in custom seam collision code.

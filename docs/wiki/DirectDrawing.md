@@ -510,3 +510,9 @@ Built-in drawings:
 - `Gondwana/Drawing/Direct/TextBlock.cs`
 - `Gondwana/Drawing/Direct/ImageLayer/*`
 - `Gondwana/Drawing/Direct/Particles/*`
+
+---
+
+## Periodic layer content
+
+SceneLayer-bound drawings repeat with their layer's world-space period vectors, including copies several periods away. View-bound drawings remain fixed. See [[SceneLayer Wrapping]] for instance selection and refresh behavior.

@@ -77,4 +77,3 @@ public sealed class WrappedCollisionTests
         public void CancelVelocityComponent(bool cancelX, bool cancelY) { }
     }
 }
-

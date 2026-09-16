@@ -297,3 +297,9 @@ The camera and view system then transform that world geometry into screen space.
 - coordinate implementations under `Gondwana/Drawing/Coordinates/`
 - `Gondwana/Scenes/SceneLayer.cs`
 - `Gondwana/Scenes/Scene.cs`
+
+---
+
+## Periodic layers
+
+`WrapHorizontally` repeats the column axis; `WrapVertically` repeats the row axis. Isometric and oblique period vectors can be diagonal. Staggered hex layouts require compatible dimensions, and pixel-rounded periods must be consistent. See [[SceneLayer Wrapping]] for constraints and examples.
