@@ -87,6 +87,7 @@ jobs:
 
           # Apps/tools (full folders needed for assets)
           dotnet publish Tooling/Gondwana.Assets.WinForms/Gondwana.Assets.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Assets.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Tooling/Gondwana.Tooling.Tilesheets.WinForms/Gondwana.Tooling.Tilesheets.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Demos/Slider/Slider.csproj -c Release -o publish/Demos/Slider -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Demos/Spot/Spot.csproj -c Release -o publish/Demos/Spot -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
 
@@ -114,6 +115,7 @@ jobs:
 
           # Apps/tools (FULL folders for assets/runtime)
           cp -r publish/Tooling/Gondwana.Assets.WinForms release-assets/Tooling/
+          cp -r publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms release-assets/Tooling/
           cp -r publish/Demos/Slider release-assets/Demos/
           cp -r publish/Demos/Spot release-assets/Demos/
 

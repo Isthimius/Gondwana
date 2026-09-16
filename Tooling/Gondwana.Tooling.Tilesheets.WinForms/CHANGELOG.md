@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
+## Features
+- Add the standalone dockable GTS editor with lossless current-model editing, region and frame collision inheritance, image previews, validation, and loose-file workspace management.
 
 
 ## Maintenance
