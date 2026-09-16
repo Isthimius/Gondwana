@@ -168,7 +168,7 @@ internal sealed class MainForm : Form
             if (existing is not null) { existing.Activate(); return; }
             ShowDocument(TilesheetDocument.Open(path));
         }
-        catch (Exception ex) when (ex is IOException or ArgumentException or UnauthorizedAccessException or InvalidOperationException or NotSupportedException)
+        catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or UnauthorizedAccessException or InvalidOperationException or NotSupportedException)
         { ShowError(ex); }
     }
 
