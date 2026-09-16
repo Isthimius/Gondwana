@@ -3,6 +3,7 @@
 ### Introduction
 - [[Home]]
 - [[Make Your First Game in 30 Minutes]]
+- [[Game Hosts and Application Startup]]
 - [[Engine Architecture Overview]]
 - [[Gondwana Engine Lifecycle]]
 - [[Gondwana CLI Cheatsheet]]
@@ -14,6 +15,7 @@
 - [[Tilesheets]]
   - [[.gts Files|GTS-Files]]
 - [[Scenes and SceneLayers]]
+  - [[Tiles and Tile-Based SceneLayers]]
   - [[Coordinate Spaces]]
   - [[Coordinate Systems]]
 - [[Sprites]]
@@ -32,6 +34,7 @@
 <details open>
 <summary><strong>Systems</strong></summary>
 
+- [[Tile Animation]]
 - [[Movement and Controllers]]
   - [[Moving Sprites and Direct Drawings]]
 - [[Input Handling]]
@@ -54,6 +57,7 @@
 <details open>
 <summary><strong>Rendering</strong></summary>
 
+- [[Rendering Order and Z-Order]]
 - [[Backbuffers]]
   - [[Refresh Queues]]
   - [[Dirty Rectangles]]
