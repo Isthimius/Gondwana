@@ -12,6 +12,51 @@ public sealed class EditorInteractionTests
 {
     private const BindingFlags PrivateInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
+    [Fact]
+    public void CtrlWheel_UsesOnePointTwoFiveZoomStepsAndPreservesOrdinaryScrolling() => RunSta(() =>
+    {
+        using var bitmap = new Bitmap(1000, 1000);
+        using var viewport = new ImageViewport { Image = bitmap, Size = new Size(300, 300) };
+        viewport.CreateControl();
+        var point = new Point(100, 100);
+        Assert.False(viewport.ZoomWithMouseWheel(point, 120, false));
+        Assert.Equal(1f, viewport.Zoom);
+        Assert.True(viewport.ZoomWithMouseWheel(point, 120, true));
+        Assert.Equal(1.25f, viewport.Zoom, 3);
+        Assert.True(viewport.ZoomWithMouseWheel(point, -120, true));
+        Assert.Equal(1f, viewport.Zoom);
+        viewport.ZoomWithMouseWheel(point, 60, true);
+        Assert.Equal(1f, viewport.Zoom);
+        viewport.ZoomWithMouseWheel(point, 60, true);
+        Assert.Equal(1.25f, viewport.Zoom, 3);
+        viewport.ZoomWithMouseWheel(point, -240, true);
+        Assert.Equal(.8f, viewport.Zoom, 3);
+        Assert.False(viewport.ZoomWithMouseWheel(new Point(-1, -1), 120, true));
+        Assert.Equal(.8f, viewport.Zoom, 3);
+        viewport.SetZoom(16);
+        viewport.ZoomWithMouseWheel(point, 120, true);
+        Assert.Equal(16f, viewport.Zoom);
+    });
+
+    [Fact]
+    public void ToolbarZoomButtons_UseOnePointTwoFiveZoomSteps() => RunSta(() =>
+    {
+        var document = TilesheetDocument.Create(Path.Combine(AppContext.BaseDirectory, "assets"));
+        using var editor = Show(document);
+        var viewport = Field<ImageViewport>(editor, "_viewport");
+        var buttons = Descendants(editor).OfType<ToolStrip>().SelectMany(strip => strip.Items.Cast<ToolStripItem>()).ToArray();
+        var zoomOut = buttons.Single(item => item.Text == "−");
+        var zoomIn = buttons.Single(item => item.Text == "+");
+
+        Assert.Equal(1f, viewport.Zoom);
+        zoomIn.PerformClick();
+        Assert.Equal(1.25f, viewport.Zoom, 3);
+        zoomOut.PerformClick();
+        Assert.Equal(1f, viewport.Zoom, 3);
+        zoomOut.PerformClick();
+        Assert.Equal(.8f, viewport.Zoom, 3);
+    });
+
     [Theory]
     [InlineData("forest")]
     [InlineData("ganon")]
@@ -239,4 +284,3 @@ public sealed class EditorInteractionTests
         if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
     }
 }
-

@@ -97,7 +97,7 @@ internal sealed class EditorDocument : DockContent
         var bar = new ToolStrip { Dock = DockStyle.Top, GripStyle = ToolStripGripStyle.Hidden };
         bar.Items.Add("Image…", null, (_, _) => ChooseImage());
         bar.Items.Add("Reload image", null, (_, _) => { _previewKey = null; RefreshView(); });
-        bar.Items.Add("−", null, (_, _) => _viewport.SetZoom(_viewport.Zoom / 2));
+        bar.Items.Add("−", null, (_, _) => _viewport.ZoomOut());
         var zoom = new ToolStripComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 75,
             BackColor = DarkTheme.Background, ForeColor = DarkTheme.Foreground, FlatStyle = FlatStyle.Flat };
         zoom.Items.AddRange(["25%", "50%", "100%", "200%", "400%", "Fit"]);
@@ -108,7 +108,7 @@ internal sealed class EditorDocument : DockContent
             else _viewport.SetZoom(new[] { .25f, .5f, 1, 2, 4 }[zoom.SelectedIndex]);
         };
         bar.Items.Add(zoom);
-        bar.Items.Add("+", null, (_, _) => _viewport.SetZoom(_viewport.Zoom * 2));
+        bar.Items.Add("+", null, (_, _) => _viewport.ZoomIn());
         var overlays = new ToolStripDropDownButton("Overlays / legend");
         foreach (var (kind, description) in new[]
         {
@@ -391,5 +391,4 @@ internal sealed class EditorDocument : DockContent
         base.Dispose(disposing);
     }
 }
-
 

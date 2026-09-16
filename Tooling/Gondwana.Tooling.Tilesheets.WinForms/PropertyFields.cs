@@ -83,8 +83,8 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         fields.Add("YTile", "Coordinates (read only)", () => y);
         fields.Add("CollisionAdjust mode", "Collision", () => Current()?.CollisionAdjust is null ? Inheritance.InheritRegion : Inheritance.Override,
             v => { document.EditFrame(region, x, y).CollisionAdjust = v == Inheritance.InheritRegion ? null : Current()?.CollisionAdjust ?? region.CollisionAdjust; changed(); });
-        fields.Add("CollisionType", "Collision", () => Current()?.CollisionType is { } t ? ToFrameCollisionChoice(t) : FrameCollisionChoice.InheritRegion,
-            v => { document.EditFrame(region, x, y).CollisionType = v == FrameCollisionChoice.InheritRegion ? null : ToTileCollisionType(v); changed(); });
+        fields.Add("CollisionType", "Collision", () => Current()?.CollisionType is { } t ? Enum.Parse<FrameCollisionChoice>(t.ToString()) : FrameCollisionChoice.InheritRegion,
+            v => { document.EditFrame(region, x, y).CollisionType = v == FrameCollisionChoice.InheritRegion ? null : Enum.Parse<TileCollisionType>(v.ToString()); changed(); });
         foreach (var property in typeof(CollisionAdjust).GetProperties().Where(p => p.CanWrite))
         {
             bool inherited = Current()?.CollisionAdjust is null;
