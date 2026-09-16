@@ -7,6 +7,7 @@ namespace Gondwana.Tooling.Tilesheets.WinForms;
 
 internal sealed class ImageViewport : ScrollableControl, IMessageFilter
 {
+    private const float ZoomStepFactor = 1.25f;
     private int _zoomWheelDelta;
     public Bitmap? Image { get; set; }
     public TilesheetDefinition? Definition { get; set; }
@@ -40,6 +41,10 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
         
         Invalidate();
     }
+
+    internal void ZoomIn() => SetZoom(Zoom * ZoomStepFactor);
+
+    internal void ZoomOut() => SetZoom(Zoom / ZoomStepFactor);
 
     protected override void OnHandleCreated(EventArgs e)
     {
@@ -94,12 +99,12 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
         const int WheelNotch = 120;
         while (_zoomWheelDelta >= WheelNotch)
         {
-            SetZoom(Zoom * 1.25f);
+            ZoomIn();
             _zoomWheelDelta -= WheelNotch;
         }
         while (_zoomWheelDelta <= -WheelNotch)
         {
-            SetZoom(Zoom / 1.25f);
+            ZoomOut();
             _zoomWheelDelta += WheelNotch;
         }
         
