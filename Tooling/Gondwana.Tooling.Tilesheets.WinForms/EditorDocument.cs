@@ -9,6 +9,7 @@ namespace Gondwana.Tooling.Tilesheets.WinForms;
 internal sealed class EditorDocument : DockContent
 {
     public TilesheetDocument Document { get; }
+    private readonly OverlaySettings _overlaySettings;
     private readonly ImageViewport _viewport = new();
     private readonly PropertyGrid _definitionProperties = CreatePropertyGrid();
     private readonly PropertyGrid _regionProperties = CreatePropertyGrid();
@@ -27,9 +28,11 @@ internal sealed class EditorDocument : DockContent
     private TilesheetRegionDefinition? SelectedRegion => _regions.SelectedItem as TilesheetRegionDefinition;
     public Size? ImageSize => _viewport.Image?.Size;
 
-    public EditorDocument(TilesheetDocument document, Func<EditorDocument, bool, bool> save)
+    public EditorDocument(TilesheetDocument document, Func<EditorDocument, bool, bool> save, OverlaySettings? overlaySettings = null)
     {
         Document = document;
+        _overlaySettings = overlaySettings ?? OverlaySettings.Default;
+        _viewport.Colors = _overlaySettings;
         _save = save;
         DockAreas = DockAreas.Document | DockAreas.Float;
         var split = new SplitContainer { Dock = DockStyle.Fill, Size = new Size(1000, 650), SplitterDistance = 640, Panel2MinSize = 270 };
@@ -84,6 +87,7 @@ internal sealed class EditorDocument : DockContent
             SelectFrame();
         };
         Document.Changed += DocumentChanged;
+        _overlaySettings.Changed += OverlayColorsChanged;
         FormClosing += (_, e) => { if (!CloseApproved) e.Cancel = !ConfirmClose(); };
         RefreshView();
     }
@@ -106,22 +110,46 @@ internal sealed class EditorDocument : DockContent
         bar.Items.Add(zoom);
         bar.Items.Add("+", null, (_, _) => _viewport.SetZoom(_viewport.Zoom * 2));
         var overlays = new ToolStripDropDownButton("Overlays / legend");
-        foreach (var (name, color, description) in new[]
+        foreach (var (kind, description) in new[]
         {
-            ("Regions", Color.DeepSkyBlue, "selected blue / others purple"),
-            ("Frames", Color.SeaGreen, "tile bounds; selected white"),
-            ("Margin", Color.Goldenrod, "inner region margin"),
-            ("Padding", Color.Silver, "padded cell"),
-            ("Overhang", Color.Orchid, "world extent projected at source scale"),
-            ("Collision", Color.Tomato, "effective bounds, including None types")
+            (OverlayKind.Regions, "Regions: other region bounds"),
+            (OverlayKind.SelectedRegion, "Selected region bounds"),
+            (OverlayKind.Frames, "Frames: tile bounds"),
+            (OverlayKind.SelectedFrame, "Selected frame"),
+            (OverlayKind.Margin, "Margin: inner region margin"),
+            (OverlayKind.Padding, "Padding: padded cell"),
+            (OverlayKind.Overhang, "Overhang: world extent at source scale"),
+            (OverlayKind.Collision, "Collision: effective bounds")
         })
         {
-            var item = new ToolStripMenuItem($"{name}: {description}") { Checked = true, CheckOnClick = true, ForeColor = color };
-            item.CheckedChanged += (_, _) => { if (item.Checked) _viewport.Overlays.Add(name); else _viewport.Overlays.Remove(name); _viewport.Invalidate(); };
-            overlays.DropDownItems.Add(item);
+            var row = new OverlayLegendRow(kind, description, _overlaySettings,
+                visible =>
+                {
+                    if (visible) _viewport.Overlays.Add(kind.ToString()); else _viewport.Overlays.Remove(kind.ToString());
+                    _viewport.Invalidate();
+                },
+                () =>
+                {
+                    overlays.HideDropDown();
+                    using var dialog = new ColorDialog { Color = _overlaySettings[kind], FullOpen = true };
+                    if (dialog.ShowDialog(this) != DialogResult.OK) return;
+                    try { _overlaySettings.SetColor(kind, dialog.Color); }
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                    {
+                        MessageBox.Show(this, $"Could not save overlay colors to {_overlaySettings.FilePath}.\n{ex.Message}",
+                            "Overlay settings", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                });
+            overlays.DropDownItems.Add(new ToolStripControlHost(row) { AutoSize = false, Size = row.Size, Margin = Padding.Empty, Padding = Padding.Empty });
         }
         bar.Items.Add(overlays);
         return bar;
+    }
+
+    private void OverlayColorsChanged(object? sender, EventArgs e)
+    {
+        _viewport.Invalidate();
+        UpdateValidation();
     }
 
     public void ChooseImage(string? path = null)
@@ -324,6 +352,7 @@ internal sealed class EditorDocument : DockContent
         var errors = Document.Validate(ImageSize).ToList();
         if (_previewError is not null) errors.Add(_previewError);
         var lines = errors.Select(e => "ERROR: " + e).ToList();
+        if (_overlaySettings.Warning is { } settingsWarning) lines.Add("WARNING: " + settingsWarning);
         if (string.IsNullOrWhiteSpace(Document.Definition.Image?.FilePath))
             lines.Add("WARNING: Packed image preview and asset validation are deferred; existing packed fields are preserved.");
         lines.Add("INFO: Geometry changes retain frame metadata at its original coordinates. Use Prune invalid frames only to explicitly discard it.");
@@ -352,7 +381,13 @@ internal sealed class EditorDocument : DockContent
 
     protected override void Dispose(bool disposing)
     {
-        if (disposing) { Document.Changed -= DocumentChanged; _viewport.Image?.Dispose(); _viewport.Image = null; }
+        if (disposing)
+        {
+            Document.Changed -= DocumentChanged;
+            _overlaySettings.Changed -= OverlayColorsChanged;
+            _viewport.Image?.Dispose();
+            _viewport.Image = null;
+        }
         base.Dispose(disposing);
     }
 }

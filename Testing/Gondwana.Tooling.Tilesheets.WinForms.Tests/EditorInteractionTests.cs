@@ -98,9 +98,41 @@ public sealed class EditorInteractionTests
         finally { File.Delete(output); }
     });
 
-    private static EditorDocument Show(TilesheetDocument document)
+    [Fact]
+    public void OverlayColors_UpdateOpenDocumentsAndLegendWithoutDirtyingGts() => RunSta(() =>
     {
-        var editor = new EditorDocument(document, (_, _) => false)
+        string path = Path.Combine(Path.GetTempPath(), "GtsColors_" + Guid.NewGuid().ToString("N") + ".json");
+        try
+        {
+            var settings = OverlaySettings.Load(path);
+            var source = Path.Combine(AppContext.BaseDirectory, "assets", "forest.gts");
+            using var first = Show(TilesheetDocument.Open(source), settings);
+            using var second = Show(TilesheetDocument.Open(source), settings);
+            var menu = Descendants(first).OfType<ToolStrip>().SelectMany(strip => strip.Items.Cast<ToolStripItem>())
+                .OfType<ToolStripDropDownButton>().Single(item => item.Text == "Overlays / legend");
+            Assert.Equal(Enum.GetValues<OverlayKind>().Length, menu.DropDownItems.Count);
+            foreach (ToolStripControlHost item in menu.DropDownItems)
+            {
+                Assert.Single(Descendants(item.Control).OfType<Button>(), button => button.Text == "...");
+                Assert.Single(Descendants(item.Control).OfType<CheckBox>());
+                var layout = Descendants(item.Control).OfType<TableLayoutPanel>().Single();
+                layout.PerformLayout();
+                foreach (Control control in layout.Controls)
+                    Assert.True(control.Bottom <= layout.Height, "Legend controls must fit inside their row.");
+            }
+            settings.SetColor(OverlayKind.Collision, Color.Lime);
+            Application.DoEvents();
+            Assert.Equal(Color.Lime.ToArgb(), Field<ImageViewport>(first, "_viewport").Colors[OverlayKind.Collision].ToArgb());
+            Assert.Equal(Color.Lime.ToArgb(), Field<ImageViewport>(second, "_viewport").Colors[OverlayKind.Collision].ToArgb());
+            Assert.False(first.Document.IsDirty);
+            Assert.False(second.Document.IsDirty);
+        }
+        finally { File.Delete(path); }
+    });
+
+    private static EditorDocument Show(TilesheetDocument document, OverlaySettings? settings = null)
+    {
+        var editor = new EditorDocument(document, (_, _) => false, settings)
         {
             Opacity = 0, ShowInTaskbar = false, Size = new Size(1200, 800), CloseApproved = true
         };

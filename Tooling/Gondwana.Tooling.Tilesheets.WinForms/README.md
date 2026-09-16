@@ -32,6 +32,13 @@ dotnet run --project Tooling/Gondwana.Tooling.Tilesheets.WinForms -c Release
   use the drop-down for booleans and collision choices. The edited field stays selected.
 - Choose 25%, 50%, 100%, 200%, 400%, or Fit; +/- also change zoom. Scrollbars preserve
   image coordinates. **Overlays / legend** toggles the individual overlays.
+  Each row has a color swatch and **...** button that opens a color picker.
+  Colors apply immediately to all open documents and persist in
+  `Gondwana.Tooling.Tilesheets.WinForms.settings.json` beside the executable.
+  The file is created on the first color change and stores colors as `#RRGGBB`.
+  Selected-region and selected-frame colors can be customized separately.
+  Invalid settings fall back to defaults with a warning in the status panel;
+  a failed settings write reports an error and leaves the previous color in place.
 - **Ctrl+S**, **Ctrl+Shift+S**, and **Ctrl+W** save, save as, and close. Closing a
   dirty document or the app prompts to save, discard, or cancel.
 

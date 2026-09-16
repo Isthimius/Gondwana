@@ -10,7 +10,8 @@ internal sealed class ImageViewport : ScrollableControl
     public TilesheetDefinition? Definition { get; set; }
     public TilesheetRegionDefinition? SelectedRegion { get; set; }
     public Point? SelectedFrame { get; set; }
-    public HashSet<string> Overlays { get; } = ["Regions", "Frames", "Margin", "Padding", "Overhang", "Collision"];
+    public HashSet<string> Overlays { get; } = Enum.GetNames<OverlayKind>().ToHashSet();
+    public OverlaySettings Colors { get; set; } = OverlaySettings.Default;
     public event Action<TilesheetRegionDefinition, Point>? FrameSelected;
     public float Zoom { get; private set; } = 1;
     public string Message { get; set; } = "Choose a loose image to preview.";
@@ -93,13 +94,14 @@ internal sealed class ImageViewport : ScrollableControl
         g.SmoothingMode = SmoothingMode.None;
         g.DrawImage(Image, new Rectangle(0, 0, Image.Width, Image.Height));
         if (Definition is null) return;
-        if (Overlays.Contains("Regions"))
+        if (Overlays.Contains("Regions") || Overlays.Contains("SelectedRegion"))
             foreach (var region in Definition.Regions)
-                Outline(g, region.Area, region == SelectedRegion ? Color.DeepSkyBlue : Color.SlateBlue, region == SelectedRegion ? 2 : 1);
+                if (Overlays.Contains(region == SelectedRegion ? "SelectedRegion" : "Regions"))
+                    Outline(g, region.Area, Colors[region == SelectedRegion ? OverlayKind.SelectedRegion : OverlayKind.Regions], region == SelectedRegion ? 2 : 1);
         if (SelectedRegion is not { } r) return;
         if (Overlays.Contains("Margin"))
             Outline(g, RectangleF.FromLTRB((float)r.Area.X + r.RegionMargin.Left, (float)r.Area.Y + r.RegionMargin.Top,
-                (float)r.Area.X + r.Area.Width - r.RegionMargin.Right, (float)r.Area.Y + r.Area.Height - r.RegionMargin.Bottom), Color.Goldenrod, 1, DashStyle.Dash);
+                (float)r.Area.X + r.Area.Width - r.RegionMargin.Right, (float)r.Area.Y + r.Area.Height - r.RegionMargin.Bottom), Colors[OverlayKind.Margin], 1, DashStyle.Dash);
 
         var (columns, rows) = TilesheetDefinitionValidator.GridSize(r);
         long pitchX = (long)r.TileSize.Width + r.TilePadding.Left + r.TilePadding.Right;
@@ -128,17 +130,17 @@ internal sealed class ImageViewport : ScrollableControl
             catch (OverflowException) { return; }
             if (Overlays.Contains("Padding"))
                 Outline(g, RectangleF.FromLTRB((float)bounds.X - r.TilePadding.Left, (float)bounds.Y - r.TilePadding.Top,
-                    (float)bounds.X + bounds.Width + r.TilePadding.Right, (float)bounds.Y + bounds.Height + r.TilePadding.Bottom), Color.DimGray, 1, DashStyle.Dot);
+                    (float)bounds.X + bounds.Width + r.TilePadding.Right, (float)bounds.Y + bounds.Height + r.TilePadding.Bottom), Colors[OverlayKind.Padding], 1, DashStyle.Dot);
             if (Overlays.Contains("Overhang"))
                 Outline(g, RectangleF.FromLTRB((float)bounds.X - r.Overhang.Left, (float)bounds.Y - r.Overhang.Top,
-                    (float)bounds.X + bounds.Width + r.Overhang.Right, (float)bounds.Y + bounds.Height + r.Overhang.Bottom), Color.Orchid, 1, DashStyle.Dash);
-            if (Overlays.Contains("Frames")) Outline(g, bounds, Color.SeaGreen);
+                    (float)bounds.X + bounds.Width + r.Overhang.Right, (float)bounds.Y + bounds.Height + r.Overhang.Bottom), Colors[OverlayKind.Overhang], 1, DashStyle.Dash);
+            if (Overlays.Contains("Frames")) Outline(g, bounds, Colors[OverlayKind.Frames]);
             if (Overlays.Contains("Collision"))
             {
                 metadata.TryGetValue((x, y), out var frame);
-                Outline(g, (frame?.CollisionAdjust ?? r.CollisionAdjust).ApplyTo(bounds), Color.Tomato, 1, DashStyle.DashDot);
+                Outline(g, (frame?.CollisionAdjust ?? r.CollisionAdjust).ApplyTo(bounds), Colors[OverlayKind.Collision], 1, DashStyle.DashDot);
             }
-            if (selected) Outline(g, bounds, Color.White, 3);
+            if (selected && Overlays.Contains("SelectedFrame")) Outline(g, bounds, Colors[OverlayKind.SelectedFrame], 3);
         }
     }
 
@@ -149,4 +151,3 @@ internal sealed class ImageViewport : ScrollableControl
         graphics.DrawRectangle(pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
     }
 }
-
