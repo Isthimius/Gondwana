@@ -83,12 +83,13 @@ function Invoke-ProjectChangelogGeneration {
     Write-Host ""
     Write-Host "Updating per-project changelogs..."
 
-    & $projectChangelogScript `
-        -Tag $TagName `
-        -CliffConfigPath $CliffConfigPath
-
-    if ($LASTEXITCODE -ne 0) {
-        throw "Generate-Project-Changelogs.ps1 failed."
+    try {
+        & $projectChangelogScript `
+            -Tag $TagName `
+            -CliffConfigPath $CliffConfigPath
+    }
+    catch {
+        throw "Generate-Project-Changelogs.ps1 failed: $($_.Exception.Message)"
     }
 }
 
@@ -112,13 +113,14 @@ function Invoke-RootChangelogGeneration {
     Write-Host ""
     Write-Host "Updating root changelog..."
 
-    & $rootChangelogScript `
-        -Tag $TagName `
-        -ChangelogPath $ChangelogPath `
-        -CliffConfigPath $CliffConfigPath
-
-    if ($LASTEXITCODE -ne 0) {
-        throw "Generate-Root-Changelog.ps1 failed."
+    try {
+        & $rootChangelogScript `
+            -Tag $TagName `
+            -ChangelogPath $ChangelogPath `
+            -CliffConfigPath $CliffConfigPath
+    }
+    catch {
+        throw "Generate-Root-Changelog.ps1 failed: $($_.Exception.Message)"
     }
 }
 
@@ -209,14 +211,15 @@ function Get-RootChangelogSection {
     )
 
     $rootChangelogScript = Join-Path $PSScriptRoot "Generate-Root-Changelog.ps1"
-    $section = & $rootChangelogScript `
-        -Tag $TagName `
-        -SectionOnly `
-        -ChangelogPath $ChangelogPath `
-        -CliffConfigPath $CliffConfigPath
-
-    if ($LASTEXITCODE -ne 0) {
-        throw "Generate-Root-Changelog.ps1 failed while previewing release notes."
+    try {
+        $section = & $rootChangelogScript `
+            -Tag $TagName `
+            -SectionOnly `
+            -ChangelogPath $ChangelogPath `
+            -CliffConfigPath $CliffConfigPath
+    }
+    catch {
+        throw "Generate-Root-Changelog.ps1 failed while previewing release notes: $($_.Exception.Message)"
     }
 
     return ($section -join [Environment]::NewLine)
