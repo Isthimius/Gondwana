@@ -1,6 +1,7 @@
 var namespaceGondwana_1_1Widgets_1_1Dialogs =
 [
     [ "AboutBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox.html", "classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox" ],
+    [ "ConversationBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1ConversationBox.html", "classGondwana_1_1Widgets_1_1Dialogs_1_1ConversationBox" ],
     [ "DialogBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox" ],
     [ "DialogResult", "namespaceGondwana_1_1Widgets_1_1Dialogs.html#a71046fc66000d377827932c0e7919ddb", [
       [ "None", "namespaceGondwana_1_1Widgets_1_1Dialogs.html#a71046fc66000d377827932c0e7919ddba6adf97f83acf6453d4a6a4b1070f3754", null ],

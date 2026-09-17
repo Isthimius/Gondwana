@@ -21,7 +21,7 @@ var searchData=
   ['addtorchlight_18',['AddTorchLight',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectLightLayer.html#a7aba65053859b8ec758ed0a0d67d9d28',1,'Gondwana::Drawing::Direct::DirectLightLayer']]],
   ['addview_19',['AddView',['../classGondwana_1_1Rendering_1_1Views_1_1ViewManager.html#aeb0e058d470c9953350fa7e5a86233ae',1,'Gondwana::Rendering::Views::ViewManager']]],
   ['addwidget_20',['AddWidget',['../classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget.html#a1a4cf4e0be2e5cc01fb00b10d8c953d4',1,'Gondwana.Widgets.Controls.PanelWidget.AddWidget()'],['../classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget.html#a670bb8a83fd03cd3a9df55546c92c6e0',1,'Gondwana.Widgets.Layout.StackPanelWidget.AddWidget()']]],
-  ['advance_21',['Advance',['../classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html#a5ef7568e8be9bbe5d41b18f221bc3618',1,'Gondwana::Widgets::Dialogue::ConversationBox']]],
+  ['advance_21',['Advance',['../classGondwana_1_1Widgets_1_1Dialogs_1_1ConversationBox.html#a2adfb80390faa2b327ca3d01785100e9',1,'Gondwana::Widgets::Dialogs::ConversationBox']]],
   ['animatecenterongrid_22',['AnimateCenterOnGrid',['../classGondwana_1_1Rendering_1_1Views_1_1Camera.html#a4ff77567709299bc35c86bb803a3c2c2',1,'Gondwana::Rendering::Views::Camera']]],
   ['applymask_23',['ApplyMask',['../classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a319188d2d81776215ec095aa8ae92f0b',1,'Gondwana::Drawing::Tilesheets::Tilesheet']]],
   ['applypremultiplyalpha_24',['ApplyPremultiplyAlpha',['../classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a4d352c40b4c8e243323726fc60396909',1,'Gondwana::Drawing::Tilesheets::Tilesheet']]],

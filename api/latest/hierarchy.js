@@ -126,7 +126,7 @@ var hierarchy =
           [ "Gondwana.Widgets.Controls.ProgressBarWidget", "classGondwana_1_1Widgets_1_1Controls_1_1ProgressBarWidget.html", null ],
           [ "Gondwana.Widgets.Controls.RadioButtonWidget", "classGondwana_1_1Widgets_1_1Controls_1_1RadioButtonWidget.html", null ],
           [ "Gondwana.Widgets.Controls.TextBoxWidget", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html", null ],
-          [ "Gondwana.Widgets.Dialogue.ConversationBox", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html", null ],
+          [ "Gondwana.Widgets.Dialogs.ConversationBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1ConversationBox.html", null ],
           [ "Gondwana.Widgets.DraggableWidgetBase", "classGondwana_1_1Widgets_1_1DraggableWidgetBase.html", null ],
           [ "Gondwana.Widgets.Hud.HealthBarWidget", "classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget.html", null ],
           [ "Gondwana.Widgets.Hud.NameTagWidget", "classGondwana_1_1Widgets_1_1Hud_1_1NameTagWidget.html", null ],

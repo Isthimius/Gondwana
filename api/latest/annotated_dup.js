@@ -285,10 +285,8 @@ var annotated_dup =
         ] ],
         [ "Dialogs", "namespaceGondwana_1_1Widgets_1_1Dialogs.html", [
           [ "AboutBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox.html", "classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox" ],
+          [ "ConversationBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1ConversationBox.html", "classGondwana_1_1Widgets_1_1Dialogs_1_1ConversationBox" ],
           [ "DialogBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox" ]
-        ] ],
-        [ "Dialogue", "namespaceGondwana_1_1Widgets_1_1Dialogue.html", [
-          [ "ConversationBox", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox.html", "classGondwana_1_1Widgets_1_1Dialogue_1_1ConversationBox" ]
         ] ],
         [ "Hud", "namespaceGondwana_1_1Widgets_1_1Hud.html", [
           [ "HealthBarWidget", "classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget.html", "classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget" ],
