@@ -18,9 +18,9 @@ You do **not** need to clone the Gondwana repository, configure a GitHub token, 
 > The Gondwana Game Engine plugin is currently awaiting approval for public
 > listing in OpenAI's Plugin Directory.
 >
-> Until the public listing becomes available, users who do not already have
-> access to the plugin will not be able to find it by searching the directory.
-> These instructions will be updated if the public installation process changes.
+> Until that listing is approved and published, the plugin is not generally
+> available for public installation. The instructions below describe the
+> installation process that will apply once the public listing is available.
 
 The Gondwana plugin is designed to work without requiring you to clone the
 Gondwana repository, create a GitHub token, or manually configure its MCP
