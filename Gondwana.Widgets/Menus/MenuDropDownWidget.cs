@@ -26,6 +26,7 @@ public sealed class MenuDropDownWidget : ContainerWidget
     private readonly List<MenuItemWidget> _items = new();
 
     private EventHandler<DirectDrawingBase>? _closeCompletionHandler;
+    private int _nextChildNicknameSuffix;
     private int _selectedIndex = -1;
     private bool _disposed;
 
@@ -118,7 +119,7 @@ public sealed class MenuDropDownWidget : ContainerWidget
         ArgumentNullException.ThrowIfNull(configure);
         ValidateEntry(text, key, null, mnemonic);
         var child = new MenuDropDownWidget(RenderSurfaceHost, View!, Point.Empty, _theme,
-            $"{Nickname}.submenu.{_items.Count}", _bar);
+            CreateChildNickname("submenu"), _bar);
         try
         {
             configure(child);
@@ -156,7 +157,7 @@ public sealed class MenuDropDownWidget : ContainerWidget
         var anchor = Point.Round(new PointF(GetPosition().X, GetPosition().Y));
         var item = new MenuItemWidget(RenderSurfaceHost, View!,
             new Rectangle(anchor.X, anchor.Y, Width, _theme.ItemHeight), text, shortcutText,
-            action, _theme, $"{Nickname}.item.{_items.Count}", this, key, shortcut, mnemonic,
+            action, _theme, CreateChildNickname("item"), this, key, shortcut, mnemonic,
             icon, checkable, radioGroup, checkedAction, subMenu);
         item.SetEnabled(enabled);
         item.Hovered += OnItemHovered;
@@ -180,6 +181,8 @@ public sealed class MenuDropDownWidget : ContainerWidget
             if (!ReferenceEquals(item, selected) && item.RadioGroup == selected.RadioGroup && item.IsChecked)
                 item.SetChecked(false);
     }
+
+    private string CreateChildNickname(string kind) => $"{Nickname}.{kind}.{_nextChildNicknameSuffix++}";
 
     internal void UnregisterItem(MenuItemWidget item)
     {
@@ -261,7 +264,7 @@ public sealed class MenuDropDownWidget : ContainerWidget
                 RenderSurfaceHost,
                 View!,
                 new Rectangle(anchor.X, anchor.Y, 1, 1),
-                $"{Nickname}.separator.{_entries.Count}")
+                CreateChildNickname("separator"))
             .SetFilled(true)
             .SetStrokeWidth(0f);
 

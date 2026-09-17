@@ -61,6 +61,28 @@ public sealed class MenuFeaturesTests
         context.Bar.Menus[0].DropDown.AddItem("Replacement", key: "save", shortcut: KeyGesture.Ctrl('S'));
     }
 
+    [Fact]
+    public void ReplacingDisposedItem_DoesNotDisposeRemainingSibling()
+    {
+        using var context = new MenuContext();
+        context.Bar.AddMenu("File", menu => menu
+            .AddItem("One", key: "one")
+            .AddItem("Two", key: "two"));
+
+        var dropDown = context.Bar.Menus[0].DropDown;
+        var first = context.Bar["one"];
+        var second = context.Bar["two"];
+        int secondDisposed = 0;
+        second.Disposing += (_, _) => secondDisposed++;
+
+        first.Dispose();
+        dropDown.AddItem("Replacement", key: "replacement");
+
+        Assert.Equal(0, secondDisposed);
+        Assert.True(context.Bar.TryGetItem("two", out var remaining));
+        Assert.Same(second, remaining);
+    }
+
     [Theory]
     [InlineData(0)]
     [InlineData(1)]
