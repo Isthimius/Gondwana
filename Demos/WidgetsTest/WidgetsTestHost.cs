@@ -177,9 +177,11 @@ internal sealed class WidgetsTestHost : WinFormsGpuGameHost
     {
         // Hosts monitor keys explicitly; menu gestures use the same adapter key codes.
         var keyboard = Engine.Input.KeyboardEventPoller!;
-        for (int key = 'A'; key <= 'Z'; key++) keyboard.StartMonitoringKey(key);
+        const double repeatIntervalSec = 0.10;
+        for (int key = 'A'; key <= 'Z'; key++)
+            keyboard.StartMonitoringKey(key, timeBetweenEvents: repeatIntervalSec);
         foreach (int key in new[] { 8, 13, 27, 32, 35, 36, 37, 38, 39, 40, 46 })
-            keyboard.StartMonitoringKey(key);
+            keyboard.StartMonitoringKey(key, timeBetweenEvents: repeatIntervalSec);
     }
 
     protected override void UnhookEvents()
