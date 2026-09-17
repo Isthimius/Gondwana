@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['iaudiobackend_0',['IAudioBackend',['../interfaceGondwana_1_1Audio_1_1IAudioBackend.html',1,'Gondwana::Audio']]],
+  ['iaudioplaybackhandle_1',['IAudioPlaybackHandle',['../interfaceGondwana_1_1Audio_1_1IAudioPlaybackHandle.html',1,'Gondwana::Audio']]],
+  ['icollider_2',['ICollider',['../interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html',1,'Gondwana::Physics::Collisions']]],
+  ['icollisionentity_3',['ICollisionEntity',['../interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionEntity.html',1,'Gondwana::Physics::Collisions']]],
+  ['icollisionmovableentity_4',['ICollisionMovableEntity',['../interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionMovableEntity.html',1,'Gondwana::Physics::Collisions']]],
+  ['idirectcompositechild_5',['IDirectCompositeChild',['../interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeChild.html',1,'Gondwana::Drawing::Direct']]],
+  ['idirectcompositecontainer_6',['IDirectCompositeContainer',['../interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeContainer.html',1,'Gondwana::Drawing::Direct']]],
+  ['idirectdrawable_7',['IDirectDrawable',['../interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html',1,'Gondwana::Drawing::Direct']]],
+  ['idrawable_8',['IDrawable',['../interfaceGondwana_1_1Drawing_1_1IDrawable.html',1,'Gondwana::Drawing']]],
+  ['ienginedispatcher_9',['IEngineDispatcher',['../interfaceGondwana_1_1IEngineDispatcher.html',1,'Gondwana']]],
+  ['iengineplugin_10',['IEnginePlugin',['../interfaceGondwana_1_1Extensibility_1_1IEnginePlugin.html',1,'Gondwana::Extensibility']]],
+  ['iexternalurilauncher_11',['IExternalUriLauncher',['../interfaceGondwana_1_1Widgets_1_1Controls_1_1IExternalUriLauncher.html',1,'Gondwana::Widgets::Controls']]],
+  ['igamepadadapter_12',['IGamepadAdapter',['../interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadAdapter.html',1,'Gondwana::Input::Gamepad']]],
+  ['igamepadmanager_2d1_2dg_13',['IGamepadManager-1-g',['../interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadManager-1-g.html',1,'Gondwana::Input::Gamepad']]],
+  ['ikeyboardadapter_14',['IKeyboardAdapter',['../interfaceGondwana_1_1Input_1_1Keyboard_1_1IKeyboardAdapter.html',1,'Gondwana::Input::Keyboard']]],
+  ['imageinstance_15',['ImageInstance',['../classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstance.html',1,'Gondwana::Drawing::Direct::ImageLayer']]],
+  ['imageinstancelayer_16',['ImageInstanceLayer',['../classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html',1,'Gondwana::Drawing::Direct::ImageLayer']]],
+  ['imouseadapter_17',['IMouseAdapter',['../interfaceGondwana_1_1Input_1_1Mouse_1_1IMouseAdapter.html',1,'Gondwana::Input::Mouse']]],
+  ['imovable_18',['IMovable',['../interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html',1,'Gondwana::Physics::Movement']]],
+  ['imovableonscenelayer_19',['IMovableOnSceneLayer',['../interfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer.html',1,'Gondwana::Physics::Movement']]],
+  ['inputeventconfigurationbase_20',['InputEventConfigurationBase',['../classGondwana_1_1Input_1_1InputEventConfigurationBase.html',1,'Gondwana::Input']]],
+  ['itouchadapter_21',['ITouchAdapter',['../interfaceGondwana_1_1Input_1_1Touch_1_1ITouchAdapter.html',1,'Gondwana::Input::Touch']]],
+  ['itouchinput_22',['ITouchInput',['../interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html',1,'Gondwana::Input::Touch']]],
+  ['iuidispatcher_23',['IUiDispatcher',['../interfaceGondwana_1_1IUiDispatcher.html',1,'Gondwana']]],
+  ['ivideoplayer_24',['IVideoPlayer',['../interfaceGondwana_1_1Video_1_1IVideoPlayer.html',1,'Gondwana::Video']]]
+];
