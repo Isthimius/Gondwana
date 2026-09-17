@@ -14,25 +14,111 @@ You do **not** need to clone the Gondwana repository, configure a GitHub token, 
 
 ## Installing the Gondwana plugin
 
-For general information about installing and using plugins in ChatGPT and Codex, see OpenAI's official **[Plugins in ChatGPT and Codex](https://help.openai.com/en/articles/20001256-plugins-in-codex)** documentation.
+> [!NOTE]
+> The Gondwana Game Engine plugin is currently awaiting approval for public
+> listing in OpenAI's Plugin Directory.
+>
+> Until the public listing becomes available, users who do not already have
+> access to the plugin will not be able to find it by searching the directory.
+> These instructions will be updated if the public installation process changes.
 
-Open the **Plugin Directory** in ChatGPT or Codex.
+The Gondwana plugin is designed to work without requiring you to clone the
+Gondwana repository, create a GitHub token, or manually configure its MCP
+server.
 
-Depending on the product and version you are using, you can normally reach it from:
+Once **Gondwana Game Engine** is available to your account, installation is
+straightforward.
 
-- the **Plugins** entry in the sidebar
-- **Settings → Plugins**
-- the plugin browser available from ChatGPT or Codex
+### Install it in ChatGPT
 
-Search for:
+1. Open **ChatGPT**.
 
-**Gondwana Game Engine**
+2. Open **Plugins** from the ChatGPT interface to enter the Plugin Directory.
 
-Open the plugin and select **Install** or **Connect**, depending on the interface shown.
+3. Search for:
 
-The Gondwana plugin does not require you to authenticate with GitHub. Its repository and documentation access is provided by the public, read-only Gondwana service.
+   **Gondwana Game Engine**
 
-> Plugin availability can depend on your ChatGPT plan, workspace configuration, role, region, and the surface you are using. In a managed Business, Enterprise, or Edu workspace, an administrator may need to make the plugin available to your role.
+4. Select **Gondwana Game Engine** from the search results.
+
+5. Review the plugin details, then select **Install plugin**.
+
+6. Wait for installation to complete.
+
+That's it.
+
+The Gondwana plugin does **not** require you to sign in to GitHub or provide a
+GitHub personal access token. Its Gondwana repository and documentation access
+is handled by the plugin's public, read-only MCP service.
+
+After installation, you can use Gondwana from ChatGPT when asking
+Gondwana-related questions. Where the current ChatGPT interface provides plugin
+selection, you can also explicitly select or mention **Gondwana Game Engine**.
+
+For example:
+
+```text
+Using Gondwana, explain how SceneLayer, View, Camera, and Viewport differ.
+```
+
+### Install it in Codex
+
+1. Open **Codex**.
+
+2. Open **Plugins** and find **Gondwana Game Engine**.
+
+3. Select the plugin and choose **Install plugin** if it is not already
+   installed.
+
+4. Open the Gondwana game project you want to work with.
+
+5. When starting a Codex task, open **Sources**.
+
+6. Select **Use plugins**.
+
+7. Find and select **Gondwana Game Engine**.
+
+Codex can now use the Gondwana-specific workflows and current engine context
+while working on your project.
+
+For example:
+
+```text
+Make a simple Pong game using Gondwana and WinForms.
+```
+
+or:
+
+```text
+My Sprite renders correctly but is not colliding. Diagnose the problem using
+the current Gondwana APIs.
+```
+
+You do not need to tell Codex where the Gondwana source code lives, configure
+the Gondwana MCP endpoint yourself, or check out the engine repository beside
+your game.
+
+### If you cannot find Gondwana
+
+First, make sure you are searching the **Plugin Directory**, not the general
+ChatGPT conversation search.
+
+If **Gondwana Game Engine** still does not appear:
+
+1. Confirm that the public Gondwana plugin listing is available.
+2. Refresh or restart ChatGPT or Codex.
+3. Check whether plugins are available for your account, workspace, and role.
+4. If you are using a managed workspace, ask your administrator whether the
+   Gondwana plugin is available to your role.
+
+Plugin availability can vary by ChatGPT plan, workspace configuration, role,
+region, and product surface. Changes to the Plugin Directory may also take time
+to appear in Codex.
+
+For general information about plugin installation and availability, see
+OpenAI's official
+**[Plugins in ChatGPT and Codex](https://help.openai.com/en/articles/20001256/)**
+documentation.
 
 ---
 
