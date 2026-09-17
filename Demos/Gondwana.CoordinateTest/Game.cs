@@ -138,8 +138,10 @@ public class Game : IDisposable
     {
         //Implementation for creating direct drawings goes here
 
-        var bounds1 = new Rectangle(RenderSurface.Size.Width - 250, 0, 250, 150);
-        var bounds2 = new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150);
+        //var bounds1 = new Rectangle(RenderSurface.Size.Width - 250, 0, 250, 150);
+        var bounds1 = new Rectangle(10, 10, 250, 150);
+        //var bounds2 = new Rectangle(RenderSurface.Size.Width - 250, 200, 250, 150);
+        var bounds2 = new Rectangle(10, 200, 250, 150);
 
         _directRectangle = new DirectRectangle(Color.Wheat,
                                                RenderSurface.Host,
@@ -244,11 +246,14 @@ public class Game : IDisposable
     private Scene? CreateInitialScene()
     {
         var scene = new Scene();
-        var sceneLayer1 = scene.AddLayer(60, 5, 64, 64, 10, 1f, CoordinateSystemTypes.IsometricAxial);
-        var sceneLayer2 = scene.AddLayer(60, 5, 32, 32, 5, 0.5f, CoordinateSystemTypes.IsometricAxial);
+        var sceneLayer1 = scene.AddLayer(60, 5, 64, 64, 10, 1f, CoordinateSystemTypes.Orthogonal);
+        var sceneLayer2 = scene.AddLayer(60, 5, 32, 32, 5, 0.5f, CoordinateSystemTypes.Orthogonal);
 
+        sceneLayer1.WrapHorizontally = true;
         sceneLayer1.ShowGridLines = true;
         sceneLayer1.ShowCollisionBoxes = true;
+
+        //sceneLayer2.WrapHorizontally = true;
         sceneLayer2.ShowGridLines = true;
 
         var sourceTilesheet = TilesheetRegistry.Instance.GetAll()["tiles"];

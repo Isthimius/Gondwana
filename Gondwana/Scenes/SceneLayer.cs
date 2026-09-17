@@ -771,9 +771,12 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     {
         if (!WrapHorizontally && !WrapVertically)
             return grid;
+
         _ = GetPeriod();
+        
         if (!float.IsFinite(grid.X) || !float.IsFinite(grid.Y))
             throw new ArgumentOutOfRangeException(nameof(grid));
+        
         var wrapped = CoordinateSystem.FindEquivalentSceneLayerCoordinates(grid, GridColumnCount - 1, GridRowCount - 1);
         return new PointF(WrapHorizontally ? wrapped.X : grid.X, WrapVertically ? wrapped.Y : grid.Y);
     }
@@ -784,8 +787,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// </summary>
     public SceneLayerTile? ResolveWrappedTile(int column, int row)
     {
-        if (WrapHorizontally || WrapVertically) _ = GetPeriod();
+        if (WrapHorizontally || WrapVertically)
+            _ = GetPeriod();
+
         static int Mod(int value, int period) { int remainder = value % period; return remainder < 0 ? remainder + period : remainder; }
+        
         return this[WrapHorizontally ? Mod(column, GridColumnCount) : column,
             WrapVertically ? Mod(row, GridRowCount) : row];
     }
@@ -800,6 +806,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     {
         if (WrapHorizontally || WrapVertically)
             return GetPeriod().Offsets(contentBounds, queryBounds);
+
         return contentBounds.IntersectsWith(queryBounds) ? new[] { PointF.Empty } : Array.Empty<PointF>();
     }
 
