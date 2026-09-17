@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using Gondwana.Scenes;
 
 namespace Gondwana.Drawing.Coordinates;
@@ -132,14 +132,14 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
         var m = gp.SceneLayer; int x = gp.GridCoordinatesAbs.X; int y = gp.GridCoordinatesAbs.Y;
         return dir switch
         {
-            CardinalDirections.N => m[x, y - 1],
-            CardinalDirections.S => m[x, y + 1],
-            CardinalDirections.E => m[x + 1, y],
-            CardinalDirections.W => m[x - 1, y],
-            CardinalDirections.NE => m[x + 1, y - 1],
-            CardinalDirections.NW => m[x - 1, y - 1],
-            CardinalDirections.SE => m[x + 1, y + 1],
-            CardinalDirections.SW => m[x - 1, y + 1],
+            CardinalDirections.N => m.ResolveWrappedTile(x, y - 1),
+            CardinalDirections.S => m.ResolveWrappedTile(x, y + 1),
+            CardinalDirections.E => m.ResolveWrappedTile(x + 1, y),
+            CardinalDirections.W => m.ResolveWrappedTile(x - 1, y),
+            CardinalDirections.NE => m.ResolveWrappedTile(x + 1, y - 1),
+            CardinalDirections.NW => m.ResolveWrappedTile(x - 1, y - 1),
+            CardinalDirections.SE => m.ResolveWrappedTile(x + 1, y + 1),
+            CardinalDirections.SW => m.ResolveWrappedTile(x - 1, y + 1),
             _ => null
         };
     }

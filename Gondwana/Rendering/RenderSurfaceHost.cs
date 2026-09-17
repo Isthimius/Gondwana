@@ -494,7 +494,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             return;
         }
 
-        bool fullViewComposition = ViewManager.Views.Any(view => view.HasPresentationEffect);
+        bool fullViewComposition = ViewManager.Views.Any(view => view.HasPresentationEffect)
+            || Scene.VisibleSceneLayers.Any(layer => layer.WrapHorizontally || layer.WrapVertically);
 
         // 0) If there are no visible SceneLayers, just clear and publish the full frame.
         if (Scene.CountOfVisibleLayers == 0)

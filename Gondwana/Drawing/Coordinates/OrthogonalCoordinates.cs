@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using Gondwana.Scenes;
 
 namespace Gondwana.Drawing.Coordinates;
@@ -146,28 +146,28 @@ internal sealed class OrthogonalCoordinates : ISceneLayerCoordinates
         switch (direction)
         {
             case CardinalDirections.N:
-                return sceneLayer[layerPoint.GridCoordinatesAbs.X, layerPoint.GridCoordinatesAbs.Y - 1];
+                return sceneLayer.ResolveWrappedTile(layerPoint.GridCoordinatesAbs.X, layerPoint.GridCoordinatesAbs.Y - 1);
 
             case CardinalDirections.NE:
-                return sceneLayer[layerPoint.GridCoordinatesAbs.X + 1, layerPoint.GridCoordinatesAbs.Y - 1];
+                return sceneLayer.ResolveWrappedTile(layerPoint.GridCoordinatesAbs.X + 1, layerPoint.GridCoordinatesAbs.Y - 1);
 
             case CardinalDirections.E:
-                return sceneLayer[layerPoint.GridCoordinatesAbs.X + 1, layerPoint.GridCoordinatesAbs.Y];
+                return sceneLayer.ResolveWrappedTile(layerPoint.GridCoordinatesAbs.X + 1, layerPoint.GridCoordinatesAbs.Y);
 
             case CardinalDirections.SE:
-                return sceneLayer[layerPoint.GridCoordinatesAbs.X + 1, layerPoint.GridCoordinatesAbs.Y + 1];
+                return sceneLayer.ResolveWrappedTile(layerPoint.GridCoordinatesAbs.X + 1, layerPoint.GridCoordinatesAbs.Y + 1);
 
             case CardinalDirections.S:
-                return sceneLayer[layerPoint.GridCoordinatesAbs.X, layerPoint.GridCoordinatesAbs.Y + 1];
+                return sceneLayer.ResolveWrappedTile(layerPoint.GridCoordinatesAbs.X, layerPoint.GridCoordinatesAbs.Y + 1);
 
             case CardinalDirections.SW:
-                return sceneLayer[layerPoint.GridCoordinatesAbs.X - 1, layerPoint.GridCoordinatesAbs.Y + 1];
+                return sceneLayer.ResolveWrappedTile(layerPoint.GridCoordinatesAbs.X - 1, layerPoint.GridCoordinatesAbs.Y + 1);
 
             case CardinalDirections.W:
-                return sceneLayer[layerPoint.GridCoordinatesAbs.X - 1, layerPoint.GridCoordinatesAbs.Y];
+                return sceneLayer.ResolveWrappedTile(layerPoint.GridCoordinatesAbs.X - 1, layerPoint.GridCoordinatesAbs.Y);
 
             case CardinalDirections.NW:
-                return sceneLayer[layerPoint.GridCoordinatesAbs.X - 1, layerPoint.GridCoordinatesAbs.Y - 1];
+                return sceneLayer.ResolveWrappedTile(layerPoint.GridCoordinatesAbs.X - 1, layerPoint.GridCoordinatesAbs.Y - 1);
 
             default:
                 return null;

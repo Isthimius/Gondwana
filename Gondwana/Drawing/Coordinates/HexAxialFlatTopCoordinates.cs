@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using Gondwana.Scenes;
 
 namespace Gondwana.Drawing.Coordinates;
@@ -190,12 +190,12 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         var m = gp.SceneLayer;
         return dir switch
         {
-            CardinalDirections.E => m[x + 1, y],
-            CardinalDirections.W => m[x - 1, y],
-            CardinalDirections.NE => m[x + 1, y - (even ? 1 : 0)],
-            CardinalDirections.SE => m[x + 1, y + (even ? 0 : 1)],
-            CardinalDirections.NW => m[x - 1, y - (even ? 1 : 0)],
-            CardinalDirections.SW => m[x - 1, y + (even ? 0 : 1)],
+            CardinalDirections.E => m.ResolveWrappedTile(x + 1, y),
+            CardinalDirections.W => m.ResolveWrappedTile(x - 1, y),
+            CardinalDirections.NE => m.ResolveWrappedTile(x + 1, y - (even ? 1 : 0)),
+            CardinalDirections.SE => m.ResolveWrappedTile(x + 1, y + (even ? 0 : 1)),
+            CardinalDirections.NW => m.ResolveWrappedTile(x - 1, y - (even ? 1 : 0)),
+            CardinalDirections.SW => m.ResolveWrappedTile(x - 1, y + (even ? 0 : 1)),
             CardinalDirections.N => null, // not a direct neighbor in hex grid
             CardinalDirections.S => null,
             _ => null

@@ -315,10 +315,13 @@ public abstract class BackbufferBase : IDisposable
         Canvas.Save();
         Canvas.ClipRect(clipRect.ToSKRect());
 
-        var tiles = new List<Tile>();
+        var tiles = new List<(Tile Tile, WrappedDrawable? Instance)>();
 
-        foreach (var drawable in drawables)
+        foreach (var entry in drawables)
         {
+            var instance = entry as WrappedDrawable;
+            var drawable = instance?.Owner ?? entry;
+            using var scope = instance?.Enter(view);
             if (!drawable.Visible)
                 continue;
 
@@ -342,7 +345,7 @@ public abstract class BackbufferBase : IDisposable
             }
 
             if (drawable is Tile tile)
-                tiles.Add(tile);
+                tiles.Add((tile, instance));
         }
 
         PostDrawTiles(view, tiles);
@@ -350,10 +353,12 @@ public abstract class BackbufferBase : IDisposable
         Canvas.Restore();
     }
 
-    private void PostDrawTiles(View view, List<Tile> tiles)
+    private void PostDrawTiles(View view, List<(Tile Tile, WrappedDrawable? Instance)> tiles)
     {
-        foreach (var tile in tiles)
+        foreach (var entry in tiles)
         {
+            var tile = entry.Tile;
+            using var scope = entry.Instance?.Enter(view);
             var layer = tile.SceneLayer;
             bool drawFog = tile.EnableFog;
             bool drawGrid = layer.ShowGridLines && tile.Visible && tile.IsPositionFixed;

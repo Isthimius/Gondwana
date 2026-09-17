@@ -341,22 +341,16 @@ This becomes especially important with isometric and hexagonal maps.
 
 ## Layer wrapping
 
-`SceneLayer` supports horizontal and vertical wrapping for worlds that repeat at their boundaries.
-
-The direct indexer remains bounds-checked and does not wrap:
+Enable `WrapHorizontally` and/or `WrapVertically` to repeat the layer along its column and row axes. Rendering, collision queries, layer-bound drawings, and world-space widgets share the same canonical content at translated positions.
 
 ```csharp
-worldLayer[-1, 5] // null
+worldLayer.WrapHorizontally = true;
+SceneLayerTile? tile = worldLayer.ResolveWrappedTile(-1, 5);
 ```
 
-When code explicitly needs a wrapped coordinate, use the layer's wrapping conversion:
+The normal indexer remains bounds-checked: `worldLayer[-1, 5]` returns `null`. `WrapGrid` normalizes only enabled axes, and adjacency can cross enabled seams. Sprite movement wrapping remains a separate opt-in.
 
-```csharp
-PointF wrapped = worldLayer.WrapGrid(new PointF(-1, 5));
-SceneLayerTile? tile = worldLayer[wrapped];
-```
-
-Keeping these behaviors separate prevents ordinary array-style tile access from silently teleporting to the other side of the map.
+See [[SceneLayer Wrapping]] for projected-grid constraints, cameras, collision instances, UI behavior, and performance considerations.
 
 ---
 

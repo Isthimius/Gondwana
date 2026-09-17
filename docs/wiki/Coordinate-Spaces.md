@@ -465,3 +465,9 @@ Gondwana keeps those concepts separate so that changing how something is **viewe
 - `Gondwana/Rendering/Views/Viewport.cs`
 - coordinate implementations under `Gondwana/Drawing/Coordinates/`
 - [[Coordinate Systems]]
+
+---
+
+## Virtual wrapped coordinates
+
+Periodic layers retain virtual world/grid coordinates for position and presentation. Explicit lookup resolves them to canonical content; that object's ordinary bounds remain canonical. Use translated instances for rendering and collisions. See [[SceneLayer Wrapping]].

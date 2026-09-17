@@ -16,6 +16,7 @@
   - [[.gts Files|GTS-Files]]
 - [[Scenes and SceneLayers]]
   - [[Tiles and Tile-Based SceneLayers]]
+  - [[SceneLayer Wrapping]]
   - [[Coordinate Spaces]]
   - [[Coordinate Systems]]
 - [[Sprites]]
