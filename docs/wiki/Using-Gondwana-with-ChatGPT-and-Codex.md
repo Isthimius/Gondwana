@@ -26,8 +26,7 @@ The Gondwana plugin is designed to work without requiring you to clone the
 Gondwana repository, create a GitHub token, or manually configure its MCP
 server.
 
-Once **Gondwana Game Engine** is available to your account, installation is
-straightforward.
+Once **Gondwana Game Engine** is publicly available in OpenAI's Plugin Directory, installation is straightforward for users whose ChatGPT account or workspace supports plugins.
 
 ### Install it in ChatGPT
 
