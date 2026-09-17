@@ -192,6 +192,7 @@ public sealed class MenuDropDownWidget : ContainerWidget
         _entries.RemoveAll(entry => ReferenceEquals(entry.Item, item));
         _selectedIndex = -1;
         foreach (var remaining in _items) remaining.SetSelected(false);
+        RecalculateLayout();
     }
 
     internal void OnItemDisabled(MenuItemWidget item)

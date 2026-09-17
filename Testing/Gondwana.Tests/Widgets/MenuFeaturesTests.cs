@@ -339,6 +339,54 @@ public sealed class MenuFeaturesTests
     }
 
     [Fact]
+    public void OpeningOlderBar_PromotesUnhandledAcceleratorsWithoutBreakingPointerOrder()
+    {
+        using var context = new MenuContext();
+        int first = 0, second = 0;
+        context.Bar.AddMenu("First", menu => menu.AddItem("Go", () => first++, shortcut: KeyGesture.Ctrl('G')));
+        using var other = new MenuBarWidget(context.Host, context.View, new Rectangle(0, 40, 640, 30))
+            .AddMenu("Second", menu => menu.AddItem("Go", () => second++, shortcut: KeyGesture.Ctrl('G')));
+        other.Show();
+        context.Bar.OpenMenuAt(0);
+        var item = context.Bar.Menus[0].DropDown.Items[0];
+        var bounds = item.Background.ScreenBounds;
+        Assert.Same(item, context.Hit(new Point(bounds.Left + 10, bounds.Top + bounds.Height / 2)));
+        Assert.Same(context.Bar.ChildWidgets.First(), context.Hit(new Point(600, 450)));
+        // Bypass focused-header bubbling to exercise the unhandled fallback priority.
+        context.Router.ClearFocus();
+        context.Key('G', KeyboardModifierState.Ctrl);
+        Assert.Equal(1, first);
+        Assert.Equal(0, second);
+        Assert.Equal(-1, context.Bar.OpenMenuIndex);
+    }
+
+    [Fact]
+    public void DisposingLongestRow_RecalculatesWidthHeightAndRemainingPositions()
+    {
+        using var context = new MenuContext();
+        context.Bar.AddMenu("File", menu => menu
+            .AddItem(new string('W', 50), key: "long")
+            .AddItem("Keep", key: "keep"));
+        context.Bar.OpenMenuAt(0);
+        var dropdown = context.Bar.Menus[0].DropDown;
+        int oldWidth = dropdown.Width;
+        int oldHeight = dropdown.Height;
+        int firstRowTop = context.Bar["long"].Background.ScreenBounds.Top;
+        context.Bar["long"].Dispose();
+        Assert.True(dropdown.Width < oldWidth);
+        Assert.Equal(oldHeight - MenuBarTheme.Default.ItemHeight, dropdown.Height);
+        Assert.Equal(dropdown.Width, dropdown.Panel.ScreenBounds.Width);
+        Assert.Equal(dropdown.Height, dropdown.Panel.ScreenBounds.Height);
+        Assert.Equal(firstRowTop, context.Bar["keep"].Background.ScreenBounds.Top);
+        var staleArea = new Point(dropdown.Panel.ScreenBounds.Left + oldWidth - 2, firstRowTop + 2);
+        Assert.False(dropdown.HitTest(context.View, staleArea));
+        context.Bar["keep"].Dispose();
+        Assert.Empty(dropdown.Items);
+        Assert.Equal(2 * MenuBarTheme.Default.DropDownVerticalPadding, dropdown.Height);
+        Assert.False(dropdown.HitTest(context.View, new Point(15, firstRowTop + 15)));
+    }
+
+    [Fact]
     public void Mnemonics_AreExplicitCaseInsensitiveAndConflictsRejected()
     {
         using var context = new MenuContext();

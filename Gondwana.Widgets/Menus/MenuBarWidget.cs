@@ -263,6 +263,8 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
         _dismissLayer.SetDismissEnabled(true);
 
         // Input routing is registration ordered rather than drawing-Z ordered.
+        // Promote the accelerator participant without recursively activating its children.
+        WidgetInputRouterRegistry.TryBringToFront(this);
         _dismissLayer.Activate();
 
         foreach (MenuBarMenu candidate in _menus)
