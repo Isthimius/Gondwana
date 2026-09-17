@@ -36,8 +36,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Dialogue\" />
-		<Folder Include="Dialogs\" />
 		<Folder Include="Hud\" />
 		<Folder Include="Menus\" />
 	</ItemGroup>
