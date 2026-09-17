@@ -1,6 +1,6 @@
 # Gondwana Asset Files (WinForms)
 
-Standalone .NET 8 Windows editor for Gondwana asset files (`.gaf`). It provides a
+Standalone .NET 8 Windows editor for Gondwana asset files (`.gaf` / `.zip`). It provides a
 simple desktop workflow for creating, inspecting, importing, replacing, exporting,
 renaming, and deleting assets stored through `AssetsFile`.
 
