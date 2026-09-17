@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-# [Unreleased]
+# [v2.6.0] - 2026-09-17
 
 ## Gondwana
 
@@ -22,6 +22,8 @@ All notable changes to this project will be documented in this file.
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 - Finish core HUD widgets for #116 ([#344](https://github.com/Isthimius/Gondwana/pull/344))
 - Add interactive widget controls ([#346](https://github.com/Isthimius/Gondwana/pull/346))
+- Implement SceneLayer wrapping ([#359](https://github.com/Isthimius/Gondwana/pull/359))
+- Add nested menus and keyboard accelerators ([#365](https://github.com/Isthimius/Gondwana/pull/365))
 
 
 
@@ -324,6 +326,9 @@ All notable changes to this project will be documented in this file.
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 - Finish core HUD widgets for #116 ([#344](https://github.com/Isthimius/Gondwana/pull/344))
 - Add interactive widget controls ([#346](https://github.com/Isthimius/Gondwana/pull/346))
+- Implement SceneLayer wrapping ([#359](https://github.com/Isthimius/Gondwana/pull/359))
+- Add nested menus and keyboard accelerators ([#365](https://github.com/Isthimius/Gondwana/pull/365))
+- Complete menu navigation and commands ([#367](https://github.com/Isthimius/Gondwana/pull/367))
 
 
 
@@ -491,6 +496,7 @@ All notable changes to this project will be documented in this file.
 ### Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 - Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
+- Expand Assets WinForms tooling README ([#364](https://github.com/Isthimius/Gondwana/pull/364))
 
 
 
@@ -520,6 +526,12 @@ All notable changes to this project will be documented in this file.
 
 ## Tooling / Gondwana.Tooling.Tilesheets.WinForms
 
+### Added
+- Add standalone gts editor ([#357](https://github.com/Isthimius/Gondwana/pull/357))
+- Add image resize and border controls ([#358](https://github.com/Isthimius/Gondwana/pull/358))
+
+
+
 ### Maintenance
 - Rename tooling projects and files ([#262](https://github.com/Isthimius/Gondwana/pull/262))
 
@@ -537,6 +549,8 @@ All notable changes to this project will be documented in this file.
 - Add side scroller and zelda prototypes ([#289](https://github.com/Isthimius/Gondwana/pull/289))
 - Publish immutable api releases ([#320](https://github.com/Isthimius/Gondwana/pull/320))
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
+- Add standalone gts editor ([#357](https://github.com/Isthimius/Gondwana/pull/357))
+- Complete menu navigation and commands ([#367](https://github.com/Isthimius/Gondwana/pull/367))
 
 
 
@@ -597,6 +611,8 @@ All notable changes to this project will be documented in this file.
 - Add buy_me_a_coffee funding option
 - Add funding usernames to FUNDING.yml
 - Adding bitbucket mirror
+
+Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.5.2...v2.6.0
 
 # [v2.5.2] - 2026-07-26
 

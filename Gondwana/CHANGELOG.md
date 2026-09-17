@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 
-# [Unreleased]
+# v2.6.0 - September 17, 2026
 
 
 
@@ -23,6 +23,8 @@ All notable changes to this project will be documented in this file.
 - Add guarded api history rebuild and validation ([#325](https://github.com/Isthimius/Gondwana/pull/325))
 - Finish core HUD widgets for #116 ([#344](https://github.com/Isthimius/Gondwana/pull/344))
 - Add interactive widget controls ([#346](https://github.com/Isthimius/Gondwana/pull/346))
+- Implement SceneLayer wrapping ([#359](https://github.com/Isthimius/Gondwana/pull/359))
+- Add nested menus and keyboard accelerators ([#365](https://github.com/Isthimius/Gondwana/pull/365))
 
 
 

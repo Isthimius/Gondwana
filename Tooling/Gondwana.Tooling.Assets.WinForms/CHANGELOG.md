@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 
-# [Unreleased]
+# v2.6.0 - September 17, 2026
 
 
 
@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file.
 ## Documentation
 - Add release notes and gitlab and bitbucket mirrors ([#327](https://github.com/Isthimius/Gondwana/pull/327))
 - Clarify skia and skia sharp license ([#330](https://github.com/Isthimius/Gondwana/pull/330))
+- Expand Assets WinForms tooling README ([#364](https://github.com/Isthimius/Gondwana/pull/364))
 
 
 

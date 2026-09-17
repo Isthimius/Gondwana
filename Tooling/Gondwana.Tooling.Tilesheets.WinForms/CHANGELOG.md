@@ -2,10 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
-# [Unreleased]
+# v2.6.0 - September 17, 2026
 
-## Features
-- Add the standalone dockable GTS editor with lossless current-model editing, region and frame collision inheritance, image previews, validation, and loose-file workspace management.
+
+
+## Added
+- Add standalone gts editor ([#357](https://github.com/Isthimius/Gondwana/pull/357))
+- Add image resize and border controls ([#358](https://github.com/Isthimius/Gondwana/pull/358))
+
 
 
 ## Maintenance
