@@ -3,3 +3,5 @@
 All notable changes to this project will be documented in this file.
 
 # v2.6.0 - September 17, 2026
+
+# v2.6.0 - September 17, 2026
