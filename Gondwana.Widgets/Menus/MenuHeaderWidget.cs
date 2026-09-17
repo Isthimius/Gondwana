@@ -25,9 +25,10 @@ public sealed class MenuHeaderWidget : WidgetBase
                               Rectangle bounds,
                               string text,
                               MenuBarTheme theme,
-                              string? nickname = null)
+                              string? nickname = null, char? mnemonic = null)
         : base(host, DirectDrawingMode.View, bounds.Location, nickname)
     {
+        Mnemonic = mnemonic;
         _theme = theme ?? throw new ArgumentNullException(nameof(theme));
         Text = text ?? throw new ArgumentNullException(nameof(text));
 
@@ -58,6 +59,9 @@ public sealed class MenuHeaderWidget : WidgetBase
         IsKeyboardInputEnabled = true;
         IsPointerInputEnabled = true;
     }
+
+    /// <summary>Gets the explicit, case-insensitive Alt access character.</summary>
+    public char? Mnemonic { get; }
 
     /// <summary>Gets the displayed header text.</summary>
     public string Text { get; private set; }

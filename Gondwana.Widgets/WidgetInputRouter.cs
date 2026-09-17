@@ -264,25 +264,47 @@ public sealed class WidgetInputRouter : IDisposable
         if (!_isStarted || _disposed)
             return;
 
-        WidgetBase? target = _focusedWidget;
-
-        if (target is null)
-            return;
-
-        if (!CanReceiveKeyboardInput(target))
-        {
-            ClearFocus();
-            return;
-        }
-
         if (!int.TryParse(args.KeyConfig.Key, out int key))
             return;
 
-        target.DispatchKeyboardInput(new WidgetKeyboardEventArgs(target,
-                                                                 key,
-                                                                 args.KeyAction,
-                                                                 args.Modifiers,
-                                                                 tick: 0));
+        RouteKeyboardInput(key, args.KeyAction, args.Modifiers);
+    }
+
+    internal void RouteKeyboardInput(int key, KeyAction action, KeyboardModifierState modifiers)
+    {
+        WidgetBase? target = _focusedWidget;
+        if (target is not null && !CanReceiveKeyboardInput(target))
+        {
+            ClearFocus();
+            target = null;
+        }
+
+        if (target is not null)
+        {
+            var focusedArgs = new WidgetKeyboardEventArgs(target, key, action, modifiers);
+            target.DispatchKeyboardInput(focusedArgs);
+            if (focusedArgs.Handled)
+                return;
+        }
+
+        WidgetBase[] snapshot;
+        lock (_syncRoot)
+            snapshot = [.. _widgets];
+
+        // Most recently activated/registered eligible bar wins, just like pointer routing.
+        for (int index = snapshot.Length - 1; index >= 0; index--)
+        {
+            WidgetBase widget = snapshot[index];
+            if (widget is not IWidgetKeyboardFallback fallback || !IsRegistered(widget) ||
+                !HasValidTarget(widget) || !widget.Visible ||
+                !widget.IsInputEnabled || !widget.IsKeyboardInputEnabled)
+                continue;
+
+            var fallbackArgs = new WidgetKeyboardEventArgs(widget, key, action, modifiers);
+            fallback.HandleUnhandledKeyboardInput(fallbackArgs);
+            if (fallbackArgs.Handled)
+                return;
+        }
     }
 
     private void OnMouseEvent(MouseEventArgs args)

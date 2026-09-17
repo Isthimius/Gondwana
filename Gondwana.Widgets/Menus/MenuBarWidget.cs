@@ -10,7 +10,7 @@ namespace Gondwana.Widgets.Menus;
 /// <summary>
 /// Provides a view-level menu bar with animated dropdown command lists.
 /// </summary>
-public sealed class MenuBarWidget : ContainerWidget
+public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
 {
     private readonly View _view;
     private readonly Rectangle _bounds;
@@ -18,6 +18,46 @@ public sealed class MenuBarWidget : ContainerWidget
     private readonly DismissLayerWidget _dismissLayer;
     private readonly List<MenuBarMenu> _menus = new();
 
+    private readonly Dictionary<string, MenuItemWidget> _itemsByKey = new(StringComparer.Ordinal);
+    private readonly Dictionary<KeyGesture, MenuItemWidget> _shortcuts = new();
+    internal bool IsAvailable => !_disposed && Visible && IsInputEnabled && IsKeyboardInputEnabled;
+
+    /// <summary>Gets an item by its stable, case-sensitive key, including nested descendants.</summary>
+    public MenuItemWidget GetItem(string key) => _itemsByKey[key];
+    /// <summary>Gets an item by its stable key, or throws KeyNotFoundException.</summary>
+    public MenuItemWidget this[string key] => GetItem(key);
+    /// <summary>Looks up a stable key; returns false and null when absent.</summary>
+    public bool TryGetItem(string key, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out MenuItemWidget? item) =>
+        _itemsByKey.TryGetValue(key, out item);
+
+    internal void ValidateRegistration(string? key, KeyGesture? shortcut)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        if (key is not null)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(key);
+            if (_itemsByKey.ContainsKey(key)) throw new ArgumentException($"Duplicate menu item key '{key}'.", nameof(key));
+        }
+        if (shortcut is { } gesture)
+        {
+            if (gesture.Key <= 0) throw new ArgumentException("A shortcut requires a nonzero key.", nameof(shortcut));
+            if (_shortcuts.ContainsKey(gesture)) throw new ArgumentException($"Duplicate menu shortcut '{gesture}'.", nameof(shortcut));
+        }
+    }
+
+    internal void RegisterItem(MenuItemWidget item)
+    {
+        if (item.Key is not null) _itemsByKey.Add(item.Key, item);
+        if (item.Shortcut is { } gesture) _shortcuts.Add(gesture, item);
+    }
+
+    internal void UnregisterItem(MenuItemWidget item)
+    {
+        if (item.Key is not null && _itemsByKey.GetValueOrDefault(item.Key) == item) _itemsByKey.Remove(item.Key);
+        if (item.Shortcut is { } gesture && _shortcuts.GetValueOrDefault(gesture) == item) _shortcuts.Remove(gesture);
+    }
+
+    private WidgetBase? _previousFocus;
     private int _openMenuIndex = -1;
     private int _nextHeaderX;
     private int _menuZOrder = 20_000;
@@ -96,7 +136,7 @@ public sealed class MenuBarWidget : ContainerWidget
     public DirectRectangle BarBackground { get; }
 
     /// <summary>Gets the configured top-level menus.</summary>
-    public IReadOnlyList<MenuBarMenu> Menus => _menus;
+    public IReadOnlyList<MenuBarMenu> Menus => _menus.AsReadOnly();
 
     /// <summary>Gets the zero-based open-menu index, or -1.</summary>
     public int OpenMenuIndex => _openMenuIndex;
@@ -119,9 +159,14 @@ public sealed class MenuBarWidget : ContainerWidget
     /// </summary>
     public MenuBarWidget AddMenu(string text,
                                  Action<MenuDropDownWidget>? configure = null,
-                                 int? headerWidth = null)
+                                 int? headerWidth = null,
+                                 char? mnemonic = null)
     {
+        ObjectDisposedException.ThrowIf(_disposed, this);
         ArgumentNullException.ThrowIfNull(text);
+        if (mnemonic is char character && _menus.Any(menu => menu.Header.Mnemonic is char existing &&
+            char.ToUpperInvariant(existing) == char.ToUpperInvariant(character)))
+            throw new ArgumentException($"Duplicate top-level mnemonic '{character}'.", nameof(mnemonic));
 
         int resolvedHeaderWidth = headerWidth ?? EstimateHeaderWidth(text);
 
@@ -147,16 +192,25 @@ public sealed class MenuBarWidget : ContainerWidget
             headerBounds,
             text,
             _theme,
-            $"{Nickname}.header.{menuIndex}");
+            $"{Nickname}.header.{menuIndex}", mnemonic);
 
         var dropDown = new MenuDropDownWidget(
             RenderSurfaceHost,
             _view,
             new Point(headerBounds.X, _bounds.Bottom),
             _theme,
-            $"{Nickname}.dropdown.{menuIndex}");
+            $"{Nickname}.dropdown.{menuIndex}", this);
 
-        configure?.Invoke(dropDown);
+        try
+        {
+            configure?.Invoke(dropDown);
+        }
+        catch
+        {
+            dropDown.Dispose();
+            header.Dispose();
+            throw;
+        }
         PositionDropDown(headerBounds, dropDown);
 
         var menu = new MenuBarMenu(header, dropDown);
@@ -164,7 +218,6 @@ public sealed class MenuBarWidget : ContainerWidget
 
         header.Invoked += OnHeaderInvoked;
         header.Hovered += OnHeaderHovered;
-        dropDown.ItemInvoked += OnDropDownItemInvoked;
 
         Add(
             header,
@@ -193,11 +246,12 @@ public sealed class MenuBarWidget : ContainerWidget
         if (index < 0 || index >= _menus.Count)
             throw new ArgumentOutOfRangeException(nameof(index));
 
-        if (_openMenuIndex == index)
+        if (!IsAvailable || _openMenuIndex == index)
             return;
 
         CloseMenuInternal(immediate: true);
 
+        _previousFocus = WidgetInputRouterRegistry.GetFocusedWidget(this);
         _openMenuIndex = index;
         MenuBarMenu menu = _menus[index];
 
@@ -213,6 +267,9 @@ public sealed class MenuBarWidget : ContainerWidget
 
         foreach (MenuBarMenu candidate in _menus)
             candidate.Header.Activate();
+
+        PositionDropDown(menu.Header.Background.ScreenBounds, menu.DropDown);
+        WidgetInputRouterRegistry.TryFocus(menu.Header);
 
         menu.DropDown.OpenAnimated(
             DropDownAnimation,
@@ -275,49 +332,64 @@ public sealed class MenuBarWidget : ContainerWidget
     protected override void OnKeyboardInput(WidgetKeyboardEventArgs args)
     {
         base.OnKeyboardInput(args);
+        HandleKeyboard(args);
+    }
 
-        if (args.Handled ||
-            args.KeyAction != KeyAction.Pressed ||
-            _openMenuIndex < 0)
+    void IWidgetKeyboardFallback.HandleUnhandledKeyboardInput(WidgetKeyboardEventArgs args) => HandleKeyboard(args);
+
+    private void HandleKeyboard(WidgetKeyboardEventArgs args)
+    {
+        if (args.Handled || args.KeyAction != KeyAction.Pressed || !IsAvailable) return;
+        if (args.Key > 0 && _shortcuts.TryGetValue(new KeyGesture(args.Key, args.Modifiers), out var command) && command.CanInvoke)
         {
+            args.Handled = true;
+            command.PerformClick();
             return;
         }
-
-        MenuDropDownWidget dropDown = _menus[_openMenuIndex].DropDown;
-
+        if (args.Modifiers == KeyboardModifierState.Alt)
+        {
+            int index = _menus.FindIndex(menu => MatchesMnemonic(menu.Header.Mnemonic, args.Key));
+            if (index >= 0)
+            {
+                args.Handled = true;
+                OpenMenuAt(index);
+                _menus[index].DropDown.SelectFirstEnabled();
+                return;
+            }
+        }
+        if (_openMenuIndex < 0 || args.Modifiers != KeyboardModifierState.None) return;
+        var dropDown = _menus[_openMenuIndex].DropDown.ActiveMenu;
         switch (args.Key)
         {
-            case 27: // Escape
-                args.Handled = true;
-                CloseMenu();
+            case 27:
+                if (dropDown.ParentMenu is { } parent) parent.CloseChild();
+                else CloseMenu();
                 break;
-
-            case 37: // Left Arrow
-                args.Handled = true;
-                OpenMenuAt((_openMenuIndex - 1 + _menus.Count) % _menus.Count);
+            case 37:
+                if (dropDown.ParentMenu is { } previous) previous.CloseChild();
+                else OpenMenuAt((_openMenuIndex - 1 + _menus.Count) % _menus.Count);
                 break;
-
-            case 39: // Right Arrow
-                args.Handled = true;
-                OpenMenuAt((_openMenuIndex + 1) % _menus.Count);
+            case 39:
+                if (dropDown.SelectedItem is { SubMenu: not null } owner)
+                    dropDown.OpenSubMenu(owner, selectFirst: true);
+                else if (dropDown.ParentMenu is null)
+                    OpenMenuAt((_openMenuIndex + 1) % _menus.Count);
                 break;
-
-            case 38: // Up Arrow
-                args.Handled = true;
-                dropDown.SelectPreviousEnabled();
-                break;
-
-            case 40: // Down Arrow
-                args.Handled = true;
-                dropDown.SelectNextEnabled();
-                break;
-
-            case 13: // Enter
-                args.Handled = true;
-                dropDown.InvokeSelectedItem();
+            case 38: dropDown.SelectPreviousEnabled(); break;
+            case 40: dropDown.SelectNextEnabled(); break;
+            case 13:
+            case 32: dropDown.InvokeSelectedItem(); break;
+            default:
+                var item = dropDown.Items.FirstOrDefault(item => item.CanInvoke && MatchesMnemonic(item.Mnemonic, args.Key));
+                if (item is null) return;
+                item.PerformClick();
                 break;
         }
+        args.Handled = true;
     }
+
+    private static bool MatchesMnemonic(char? mnemonic, int key) => mnemonic is char character &&
+        key <= char.MaxValue && key >= 0 && char.ToUpperInvariant(character) == char.ToUpperInvariant((char)key);
 
     /// <inheritdoc/>
     public override void Dispose()
@@ -334,10 +406,12 @@ public sealed class MenuBarWidget : ContainerWidget
         {
             menu.Header.Invoked -= OnHeaderInvoked;
             menu.Header.Hovered -= OnHeaderHovered;
-            menu.DropDown.ItemInvoked -= OnDropDownItemInvoked;
         }
 
         base.Dispose();
+        MenuOpened = null;
+        MenuClosed = null;
+        ItemInvoked = null;
     }
 
     private void OnHeaderInvoked(MenuHeaderWidget header)
@@ -359,8 +433,7 @@ public sealed class MenuBarWidget : ContainerWidget
             OpenMenuAt(index);
     }
 
-    private void OnDropDownItemInvoked(MenuDropDownWidget dropDown,
-                                       MenuItemWidget item)
+    internal void OnItemInvoked(MenuItemWidget item)
     {
         CloseMenuInternal(immediate: true);
         ItemInvoked?.Invoke(item);
@@ -395,8 +468,16 @@ public sealed class MenuBarWidget : ContainerWidget
             Math.Max(0f, DropDownAnimationDurationSec),
             immediate);
 
+        var focused = WidgetInputRouterRegistry.GetFocusedWidget(this);
+        if (focused is null || ContainsWidget(this, focused))
+            WidgetInputRouterRegistry.RestoreFocus(this, _previousFocus);
+        _previousFocus = null;
         MenuClosed?.Invoke(menu);
     }
+
+    private static bool ContainsWidget(ContainerWidget container, WidgetBase widget) =>
+        container.ChildWidgets.Any(child => ReferenceEquals(child, widget) ||
+            child is ContainerWidget nested && ContainsWidget(nested, widget));
 
     private void PositionDropDown(Rectangle headerBounds,
                                   MenuDropDownWidget dropDown)
@@ -407,7 +488,11 @@ public sealed class MenuBarWidget : ContainerWidget
             viewport.Left,
             Math.Max(viewport.Left, viewport.Right - dropDown.Width));
 
-        dropDown.SetPosition(x, _bounds.Bottom);
+        int y = Math.Clamp(_bounds.Bottom, viewport.Top, Math.Max(viewport.Top, viewport.Bottom - dropDown.Height));
+        if (Children.Contains(dropDown))
+            SetLocalOffset(dropDown, new Vector2(x - GetPosition().X, y - GetPosition().Y));
+        else
+            dropDown.SetPosition(x, y);
     }
 
     private int EstimateHeaderWidth(string text)
