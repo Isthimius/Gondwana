@@ -379,473 +379,474 @@ $(function(){initNavTree('RenderSurfaceHost_8cs_source.html','',''); });
 <div class="line"><a id="l00494" name="l00494"></a><span class="lineno">  494</span>            <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l00495" name="l00495"></a><span class="lineno">  495</span>        }</div>
 <div class="line"><a id="l00496" name="l00496"></a><span class="lineno">  496</span> </div>
-<div class="line"><a id="l00497" name="l00497"></a><span class="lineno">  497</span>        <span class="keywordtype">bool</span> fullViewComposition = ViewManager.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Views_1_1ViewManager.html#a73cd2d2e8dd433960f9eeb1c10078472">Views</a>.Any(view =&gt; view.HasPresentationEffect);</div>
-<div class="line"><a id="l00498" name="l00498"></a><span class="lineno">  498</span> </div>
-<div class="line"><a id="l00499" name="l00499"></a><span class="lineno">  499</span>        <span class="comment">// 0) If there are no visible SceneLayers, just clear and publish the full frame.</span></div>
-<div class="line"><a id="l00500" name="l00500"></a><span class="lineno">  500</span>        <span class="keywordflow">if</span> (Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a9860887b89736db85032548e42d20bdd">CountOfVisibleLayers</a> == 0)</div>
-<div class="line"><a id="l00501" name="l00501"></a><span class="lineno">  501</span>        {</div>
-<div class="line"><a id="l00502" name="l00502"></a><span class="lineno">  502</span>            Backbuffer.ClearRect(<span class="keyword">new</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>(0, 0, Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a4363faf5b1440170776c8881fb1e761a">Width</a>, Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a904ea16bdee9a1de14718c23ceac671e">Height</a>));</div>
-<div class="line"><a id="l00503" name="l00503"></a><span class="lineno">  503</span>            Scene.FullRefreshNeeded = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00504" name="l00504"></a><span class="lineno">  504</span>        }</div>
-<div class="line"><a id="l00505" name="l00505"></a><span class="lineno">  505</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00506" name="l00506"></a><span class="lineno">  506</span>        {</div>
-<div class="line"><a id="l00507" name="l00507"></a><span class="lineno">  507</span>            <span class="comment">// 1) Handle full scene refresh once (camera moved, zoom changed, etc.): clear and mark all layers as dirty.</span></div>
-<div class="line"><a id="l00508" name="l00508"></a><span class="lineno">  508</span>            <span class="comment">//    This already clears the whole backbuffer and enqueues a full rect per layer.</span></div>
-<div class="line"><a id="l00509" name="l00509"></a><span class="lineno">  509</span>            <span class="keywordflow">if</span> (Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a4028379dbb7e8c28a6babd9f878044d2">FullRefreshNeeded</a> || (fullViewComposition &amp;&amp; Scene.IsDirty))</div>
-<div class="line"><a id="l00510" name="l00510"></a><span class="lineno">  510</span>            {</div>
-<div class="line"><a id="l00511" name="l00511"></a><span class="lineno">  511</span>                <span class="comment">// this will mark the Scene.IsDirty flag as true</span></div>
-<div class="line"><a id="l00512" name="l00512"></a><span class="lineno">  512</span>                EnqueueFullSceneRefresh();</div>
-<div class="line"><a id="l00513" name="l00513"></a><span class="lineno">  513</span>            }</div>
-<div class="line"><a id="l00514" name="l00514"></a><span class="lineno">  514</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00515" name="l00515"></a><span class="lineno">  515</span>            {</div>
-<div class="line"><a id="l00516" name="l00516"></a><span class="lineno">  516</span>                <span class="comment">// scene is not dirty, this frame is done...</span></div>
-<div class="line"><a id="l00517" name="l00517"></a><span class="lineno">  517</span>                <span class="keywordflow">if</span> (!Scene.IsDirty)</div>
-<div class="line"><a id="l00518" name="l00518"></a><span class="lineno">  518</span>                {</div>
-<div class="line"><a id="l00519" name="l00519"></a><span class="lineno">  519</span>                    RenderBackbufferNoOp?.Invoke();</div>
-<div class="line"><a id="l00520" name="l00520"></a><span class="lineno">  520</span>                    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00521" name="l00521"></a><span class="lineno">  521</span>                }</div>
-<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span>            }</div>
-<div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span>        }</div>
-<div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span> </div>
-<div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span>        <span class="keywordflow">if</span> (fullViewComposition)</div>
-<div class="line"><a id="l00526" name="l00526"></a><span class="lineno">  526</span>            Backbuffer.ClearRect(<span class="keyword">new</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>(0, 0, Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a4363faf5b1440170776c8881fb1e761a">Width</a>, Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a904ea16bdee9a1de14718c23ceac671e">Height</a>));</div>
-<div class="line"><a id="l00527" name="l00527"></a><span class="lineno">  527</span> </div>
-<div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span>        <span class="comment">// 2) Render all views to Backbuffer. Draw layers back -&gt; front (ascending Z).</span></div>
-<div class="line"><a id="l00529" name="l00529"></a><span class="lineno">  529</span>        <span class="keywordflow">foreach</span> (var view <span class="keywordflow">in</span> ViewManager.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Views_1_1ViewManager.html#a73cd2d2e8dd433960f9eeb1c10078472">Views</a>)</div>
-<div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span>        {</div>
-<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span>            RenderContext.Push(view, tick);</div>
-<div class="line"><a id="l00532" name="l00532"></a><span class="lineno">  532</span> </div>
-<div class="line"><a id="l00533" name="l00533"></a><span class="lineno">  533</span>            <span class="keywordflow">try</span></div>
-<div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span>            {</div>
-<div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span>                <span class="comment">// 2.1) Force-refresh all DirectDrawings that overlay this view</span></div>
-<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span>                var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);</div>
-<div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span>                <span class="keywordflow">foreach</span> (var overlay <span class="keywordflow">in</span> overlays)</div>
-<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span>                {</div>
-<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span>                    overlay.ForceRefresh();</div>
-<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>                }</div>
-<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span> </div>
-<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span>                <span class="comment">// 2.2) identify dirty SCREEN areas across all layers for this view</span></div>
-<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>                var dirtyScreenRects = CollectDirtyScreenArea(view);</div>
-<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span> </div>
-<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span>                <span class="comment">// 2.3) Clip to this view&#39;s viewport</span></div>
-<div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span>                var vp = view.GetRenderViewportTargetRectPx();</div>
-<div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span> </div>
-<div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span>                <span class="comment">// clip inclusive to current viewport</span></div>
-<div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span>                Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>.Save();</div>
-<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span>                Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>.ResetMatrix();</div>
-<div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span>                Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>.ClipRect(vp.ToSKRect(), SKClipOperation.Intersect, antialias: <span class="keyword">false</span>);</div>
-<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span> </div>
-<div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span>                <span class="comment">// clip exclusive to higher Z-order views</span></div>
-<div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span>                <span class="keywordflow">foreach</span> (var blocker <span class="keywordflow">in</span> ViewManager.<a class="code hl_function" href="classGondwana_1_1Rendering_1_1Views_1_1ViewManager.html#a2ec1ac278fd13f56bf21417719cad649">GetViewsAbove</a>(view))</div>
-<div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span>                {</div>
-<div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span>                    <span class="keywordflow">if</span> (!blocker.BlocksViewsBelow)</div>
-<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span>                        <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span> </div>
-<div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span>                    var overlap = <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>.Intersect(vp, blocker.GetRenderViewportTargetRectPx());</div>
-<div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span>                    <span class="keywordflow">if</span> (!overlap.IsEmpty)</div>
-<div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span>                        Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>.ClipRect(overlap.ToSKRect(), SKClipOperation.Difference, antialias: <span class="keyword">false</span>);</div>
-<div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span>                }</div>
-<div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span> </div>
-<div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span>                <span class="keywordtype">int</span> viewPresentation = BeginPresentation(</div>
-<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>                    view.GetPresentationBoundsPx(),</div>
-<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>                    view.EffectOpacity,</div>
-<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>                    view.EffectReveal,</div>
-<div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>                    view.EffectRevealDirection);</div>
-<div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span> </div>
-<div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span>                <span class="keywordflow">if</span> (viewPresentation &gt; 0)</div>
-<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>                {</div>
-<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>                    <span class="keywordflow">if</span> (fullViewComposition)</div>
-<div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span>                    {</div>
-<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span>                        Backbuffer.ClearRect(view.GetPresentationBoundsPx().ToPixelAlignedRect());</div>
-<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>                    }</div>
-<div class="line"><a id="l00576" name="l00576"></a><span class="lineno">  576</span>                    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span>                    {</div>
-<div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span>                        <span class="comment">// 2.4) Pre-clear dirty areas on backbuffer to Backbuffer.ClearColor</span></div>
-<div class="line"><a id="l00579" name="l00579"></a><span class="lineno">  579</span>                        PreclearScreenAreas(view, dirtyScreenRects);</div>
-<div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span>                    }</div>
-<div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span> </div>
-<div class="line"><a id="l00582" name="l00582"></a><span class="lineno">  582</span>                    <span class="comment">// 2.5) Render each visible layer&#39;s dirty regions for this view</span></div>
-<div class="line"><a id="l00583" name="l00583"></a><span class="lineno">  583</span>                    <span class="comment">//      this will draw SceneLayerTiles, Sprites, and SceneLayer-based DirectDrawings</span></div>
-<div class="line"><a id="l00584" name="l00584"></a><span class="lineno">  584</span>                    var sceneLayers = Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a62f82a3e296beb61cedf989dde078a65">VisibleSceneLayers</a>;</div>
-<div class="line"><a id="l00585" name="l00585"></a><span class="lineno">  585</span> </div>
-<div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span>                    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; sceneLayers.Count; i++)</div>
-<div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span>                    {</div>
-<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span>                        var layer = sceneLayers[i];</div>
-<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span>                        <span class="keywordtype">int</span> layerPresentation = BeginPresentation(</div>
-<div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span>                            GetLayerPresentationBounds(view, layer),</div>
-<div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span>                            layer.EffectOpacity,</div>
-<div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span>                            layer.EffectReveal,</div>
-<div class="line"><a id="l00593" name="l00593"></a><span class="lineno">  593</span>                            layer.EffectRevealDirection);</div>
-<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span> </div>
-<div class="line"><a id="l00595" name="l00595"></a><span class="lineno">  595</span>                        <span class="keywordflow">if</span> (layerPresentation == 0)</div>
-<div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span>                            <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span> </div>
-<div class="line"><a id="l00598" name="l00598"></a><span class="lineno">  598</span>                        RenderLayerDirtyRegions(view, layer);</div>
-<div class="line"><a id="l00599" name="l00599"></a><span class="lineno">  599</span>                        EndPresentation(layerPresentation);</div>
-<div class="line"><a id="l00600" name="l00600"></a><span class="lineno">  600</span>                    }</div>
-<div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span> </div>
-<div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span>                    <span class="comment">// 2.6) draw all View-based DirectDrawings for this view</span></div>
-<div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span>                    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; overlays.Count; i++)</div>
-<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span>                        overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));</div>
-<div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span> </div>
-<div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span>                    EndPresentation(viewPresentation);</div>
-<div class="line"><a id="l00607" name="l00607"></a><span class="lineno">  607</span>                }</div>
-<div class="line"><a id="l00608" name="l00608"></a><span class="lineno">  608</span> </div>
-<div class="line"><a id="l00609" name="l00609"></a><span class="lineno">  609</span>                <span class="comment">// 2.7) Restore from viewport clip</span></div>
-<div class="line"><a id="l00610" name="l00610"></a><span class="lineno">  610</span>                Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>.Restore();</div>
-<div class="line"><a id="l00611" name="l00611"></a><span class="lineno">  611</span>            }</div>
-<div class="line"><a id="l00612" name="l00612"></a><span class="lineno">  612</span>            <span class="keywordflow">finally</span></div>
-<div class="line"><a id="l00613" name="l00613"></a><span class="lineno">  613</span>            {</div>
-<div class="line"><a id="l00614" name="l00614"></a><span class="lineno">  614</span>                RenderContext.Pop();</div>
-<div class="line"><a id="l00615" name="l00615"></a><span class="lineno">  615</span>            }</div>
-<div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span>        }</div>
-<div class="line"><a id="l00617" name="l00617"></a><span class="lineno">  617</span> </div>
-<div class="line"><a id="l00618" name="l00618"></a><span class="lineno">  618</span>        <span class="comment">// 3) Clear layer queues now that we&#39;ve consumed them (avoids re-drawing same tiles next frame)</span></div>
-<div class="line"><a id="l00619" name="l00619"></a><span class="lineno">  619</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a9860887b89736db85032548e42d20bdd">CountOfVisibleLayers</a>; i++)</div>
-<div class="line"><a id="l00620" name="l00620"></a><span class="lineno">  620</span>            Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a62f82a3e296beb61cedf989dde078a65">VisibleSceneLayers</a>[i].RefreshQueue.ClearRefreshQueue();</div>
-<div class="line"><a id="l00621" name="l00621"></a><span class="lineno">  621</span> </div>
-<div class="line"><a id="l00622" name="l00622"></a><span class="lineno">  622</span>        Scene.FullRefreshNeeded = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00623" name="l00623"></a><span class="lineno">  623</span> </div>
-<div class="line"><a id="l00624" name="l00624"></a><span class="lineno">  624</span>        <span class="comment">// Notify subscribers that all scene content has been drawn and the canvas is ready for</span></div>
-<div class="line"><a id="l00625" name="l00625"></a><span class="lineno">  625</span>        <span class="comment">// post-scene effects.  Fires before RenderBackbufferEnd so subscribers still have a</span></div>
-<div class="line"><a id="l00626" name="l00626"></a><span class="lineno">  626</span>        <span class="comment">// chance to draw into the canvas before it is presented to the adapter.</span></div>
-<div class="line"><a id="l00627" name="l00627"></a><span class="lineno">  627</span>        InvokePostSceneCanvasHooks();</div>
-<div class="line"><a id="l00628" name="l00628"></a><span class="lineno">  628</span>    }</div>
-<div class="line"><a id="l00629" name="l00629"></a><span class="lineno">  629</span> </div>
-<div class="line"><a id="l00630" name="l00630"></a><span class="lineno">  630</span><span class="preprocessor">    #region DrawRefreshQueueToBackbuffer helpers</span></div>
-<div class="line"><a id="l00631" name="l00631"></a><span class="lineno">  631</span> </div>
-<div class="line"><a id="l00632" name="l00632"></a><span class="lineno">  632</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> EnqueueFullSceneRefresh()</div>
-<div class="line"><a id="l00633" name="l00633"></a><span class="lineno">  633</span>    {</div>
-<div class="line"><a id="l00634" name="l00634"></a><span class="lineno">  634</span>        <span class="keywordflow">foreach</span> (var view <span class="keywordflow">in</span> ViewManager.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Views_1_1ViewManager.html#a73cd2d2e8dd433960f9eeb1c10078472">Views</a>)</div>
-<div class="line"><a id="l00635" name="l00635"></a><span class="lineno">  635</span>        {</div>
-<div class="line"><a id="l00636" name="l00636"></a><span class="lineno">  636</span>            var viewport = view.Viewport;</div>
-<div class="line"><a id="l00637" name="l00637"></a><span class="lineno">  637</span>            var screenRect = viewport.TargetRectPx;</div>
-<div class="line"><a id="l00638" name="l00638"></a><span class="lineno">  638</span> </div>
-<div class="line"><a id="l00639" name="l00639"></a><span class="lineno">  639</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a9860887b89736db85032548e42d20bdd">CountOfVisibleLayers</a>; i++)</div>
-<div class="line"><a id="l00640" name="l00640"></a><span class="lineno">  640</span>            {</div>
-<div class="line"><a id="l00641" name="l00641"></a><span class="lineno">  641</span>                var layer = Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a62f82a3e296beb61cedf989dde078a65">VisibleSceneLayers</a>[i];</div>
-<div class="line"><a id="l00642" name="l00642"></a><span class="lineno">  642</span> </div>
-<div class="line"><a id="l00643" name="l00643"></a><span class="lineno">  643</span>                <span class="comment">// 1) Compute layer-specific visible world rect</span></div>
-<div class="line"><a id="l00644" name="l00644"></a><span class="lineno">  644</span>                var layerWorldRect = view.ScreenRectToWorldRect(layer, screenRect);</div>
-<div class="line"><a id="l00645" name="l00645"></a><span class="lineno">  645</span> </div>
-<div class="line"><a id="l00646" name="l00646"></a><span class="lineno">  646</span>                <span class="comment">// 2) Expand world rect by **one full tile** in all directions.</span></div>
-<div class="line"><a id="l00647" name="l00647"></a><span class="lineno">  647</span>                <span class="comment">//    This compensates for fractional-layer motion (parallax),</span></div>
-<div class="line"><a id="l00648" name="l00648"></a><span class="lineno">  648</span>                <span class="comment">//    camera motion, and tile boundaries.</span></div>
-<div class="line"><a id="l00649" name="l00649"></a><span class="lineno">  649</span>                <span class="keywordtype">int</span> expandX = layer.TileWidth;</div>
-<div class="line"><a id="l00650" name="l00650"></a><span class="lineno">  650</span>                <span class="keywordtype">int</span> expandY = layer.TileHeight;</div>
-<div class="line"><a id="l00651" name="l00651"></a><span class="lineno">  651</span> </div>
-<div class="line"><a id="l00652" name="l00652"></a><span class="lineno">  652</span>                layerWorldRect.Inflate(expandX, expandY);</div>
-<div class="line"><a id="l00653" name="l00653"></a><span class="lineno">  653</span> </div>
-<div class="line"><a id="l00654" name="l00654"></a><span class="lineno">  654</span>                <span class="comment">// 3) Round to ints and enqueue</span></div>
-<div class="line"><a id="l00655" name="l00655"></a><span class="lineno">  655</span>                var worldRectInt = layerWorldRect.ToPixelAlignedRect();</div>
-<div class="line"><a id="l00656" name="l00656"></a><span class="lineno">  656</span> </div>
-<div class="line"><a id="l00657" name="l00657"></a><span class="lineno">  657</span>                layer.RefreshQueue.AddWorldRect(worldRectInt);</div>
-<div class="line"><a id="l00658" name="l00658"></a><span class="lineno">  658</span>            }</div>
-<div class="line"><a id="l00659" name="l00659"></a><span class="lineno">  659</span>        }</div>
-<div class="line"><a id="l00660" name="l00660"></a><span class="lineno">  660</span>    }</div>
-<div class="line"><a id="l00661" name="l00661"></a><span class="lineno">  661</span> </div>
-<div class="line"><a id="l00662" name="l00662"></a><span class="lineno">  662</span>    <span class="keyword">private</span> List&lt;Rectangle&gt; CollectDirtyScreenArea(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31a4351cfebe4b61d8aa5efa1d020710005">View</a> view)</div>
-<div class="line"><a id="l00663" name="l00663"></a><span class="lineno">  663</span>    {</div>
-<div class="line"><a id="l00664" name="l00664"></a><span class="lineno">  664</span>        var dirty = <span class="keyword">new</span> List&lt;Rectangle&gt;(64);</div>
-<div class="line"><a id="l00665" name="l00665"></a><span class="lineno">  665</span>        var viewportRect = view.GetRenderViewportTargetRectPx();</div>
-<div class="line"><a id="l00666" name="l00666"></a><span class="lineno">  666</span> </div>
-<div class="line"><a id="l00667" name="l00667"></a><span class="lineno">  667</span>        <span class="keywordflow">foreach</span> (var sceneLayer <span class="keywordflow">in</span> Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a62f82a3e296beb61cedf989dde078a65">VisibleSceneLayers</a>)</div>
-<div class="line"><a id="l00668" name="l00668"></a><span class="lineno">  668</span>        {</div>
-<div class="line"><a id="l00669" name="l00669"></a><span class="lineno">  669</span>            var refreshQueue = sceneLayer.RefreshQueue;</div>
-<div class="line"><a id="l00670" name="l00670"></a><span class="lineno">  670</span>            <span class="keywordflow">if</span> (!refreshQueue.IsDirty)</div>
-<div class="line"><a id="l00671" name="l00671"></a><span class="lineno">  671</span>                <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00672" name="l00672"></a><span class="lineno">  672</span> </div>
-<div class="line"><a id="l00673" name="l00673"></a><span class="lineno">  673</span>            <span class="keywordflow">foreach</span> (var worldRect <span class="keywordflow">in</span> refreshQueue.SnapshotWorldRects())</div>
-<div class="line"><a id="l00674" name="l00674"></a><span class="lineno">  674</span>            {</div>
-<div class="line"><a id="l00675" name="l00675"></a><span class="lineno">  675</span>                var screenRectF = view.<a class="code hl_function" href="classGondwana_1_1Rendering_1_1Views_1_1View.html#ac33dbf74f3317abe54778791aa879865">WorldRectToScreenRect</a>(sceneLayer, worldRect);</div>
-<div class="line"><a id="l00676" name="l00676"></a><span class="lineno">  676</span>                var rect = <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>.Intersect(</div>
-<div class="line"><a id="l00677" name="l00677"></a><span class="lineno">  677</span>                    screenRectF.ToPixelAlignedRect(),</div>
-<div class="line"><a id="l00678" name="l00678"></a><span class="lineno">  678</span>                    viewportRect);</div>
-<div class="line"><a id="l00679" name="l00679"></a><span class="lineno">  679</span> </div>
-<div class="line"><a id="l00680" name="l00680"></a><span class="lineno">  680</span>                <span class="keywordflow">if</span> (rect.IsEmpty)</div>
-<div class="line"><a id="l00681" name="l00681"></a><span class="lineno">  681</span>                    <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00682" name="l00682"></a><span class="lineno">  682</span> </div>
-<div class="line"><a id="l00683" name="l00683"></a><span class="lineno">  683</span>                dirty.AddDeduped(rect);</div>
-<div class="line"><a id="l00684" name="l00684"></a><span class="lineno">  684</span>            }</div>
-<div class="line"><a id="l00685" name="l00685"></a><span class="lineno">  685</span>        }</div>
-<div class="line"><a id="l00686" name="l00686"></a><span class="lineno">  686</span> </div>
-<div class="line"><a id="l00687" name="l00687"></a><span class="lineno">  687</span>        <span class="keywordflow">return</span> dirty;</div>
-<div class="line"><a id="l00688" name="l00688"></a><span class="lineno">  688</span>    }</div>
-<div class="line"><a id="l00689" name="l00689"></a><span class="lineno">  689</span> </div>
-<div class="line"><a id="l00690" name="l00690"></a><span class="lineno">  690</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> PreclearScreenAreas(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31a4351cfebe4b61d8aa5efa1d020710005">View</a> view, List&lt;Rectangle&gt; screenRects)</div>
-<div class="line"><a id="l00691" name="l00691"></a><span class="lineno">  691</span>    {</div>
-<div class="line"><a id="l00692" name="l00692"></a><span class="lineno">  692</span>        <span class="keywordflow">if</span> (Backbuffer is <span class="keyword">null</span> || screenRects is <span class="keyword">null</span> || screenRects.Count == 0)</div>
-<div class="line"><a id="l00693" name="l00693"></a><span class="lineno">  693</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00694" name="l00694"></a><span class="lineno">  694</span> </div>
-<div class="line"><a id="l00695" name="l00695"></a><span class="lineno">  695</span>        <span class="keywordflow">foreach</span> (var screenRect <span class="keywordflow">in</span> screenRects)</div>
-<div class="line"><a id="l00696" name="l00696"></a><span class="lineno">  696</span>        {</div>
-<div class="line"><a id="l00697" name="l00697"></a><span class="lineno">  697</span>            var screenRectViewport = <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>.Intersect(screenRect, view.GetRenderViewportTargetRectPx());</div>
-<div class="line"><a id="l00698" name="l00698"></a><span class="lineno">  698</span> </div>
-<div class="line"><a id="l00699" name="l00699"></a><span class="lineno">  699</span>            <span class="keywordflow">if</span> (screenRectViewport.IsEmpty || screenRectViewport.Width &lt;= 0 || screenRectViewport.Height &lt;= 0)</div>
-<div class="line"><a id="l00700" name="l00700"></a><span class="lineno">  700</span>                <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00701" name="l00701"></a><span class="lineno">  701</span> </div>
-<div class="line"><a id="l00702" name="l00702"></a><span class="lineno">  702</span>            <span class="comment">// Clear just this patch (overwrite with Backbuffer.ClearColor)</span></div>
-<div class="line"><a id="l00703" name="l00703"></a><span class="lineno">  703</span>            Backbuffer.ClearRect(screenRectViewport);</div>
-<div class="line"><a id="l00704" name="l00704"></a><span class="lineno">  704</span> </div>
-<div class="line"><a id="l00705" name="l00705"></a><span class="lineno">  705</span>            EnqueueForOverlappingSceneLayers(view, screenRectViewport);</div>
-<div class="line"><a id="l00706" name="l00706"></a><span class="lineno">  706</span>        }</div>
-<div class="line"><a id="l00707" name="l00707"></a><span class="lineno">  707</span>    }</div>
-<div class="line"><a id="l00708" name="l00708"></a><span class="lineno">  708</span> </div>
-<div class="line"><a id="l00709" name="l00709"></a><span class="lineno">  709</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> EnqueueForOverlappingSceneLayers(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31a4351cfebe4b61d8aa5efa1d020710005">View</a> sourceView, Rectangle clearedScreenRect)</div>
-<div class="line"><a id="l00710" name="l00710"></a><span class="lineno">  710</span>    {</div>
-<div class="line"><a id="l00711" name="l00711"></a><span class="lineno">  711</span>        var overlap = <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>.Intersect(clearedScreenRect, sourceView.GetRenderViewportTargetRectPx());</div>
-<div class="line"><a id="l00712" name="l00712"></a><span class="lineno">  712</span> </div>
-<div class="line"><a id="l00713" name="l00713"></a><span class="lineno">  713</span>        <span class="keywordflow">if</span> (overlap.IsEmpty)</div>
-<div class="line"><a id="l00714" name="l00714"></a><span class="lineno">  714</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00715" name="l00715"></a><span class="lineno">  715</span> </div>
-<div class="line"><a id="l00716" name="l00716"></a><span class="lineno">  716</span>        <span class="keywordflow">foreach</span> (var sceneLayer <span class="keywordflow">in</span> Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a62f82a3e296beb61cedf989dde078a65">VisibleSceneLayers</a>)</div>
-<div class="line"><a id="l00717" name="l00717"></a><span class="lineno">  717</span>        {</div>
-<div class="line"><a id="l00718" name="l00718"></a><span class="lineno">  718</span>            var worldRectF = sourceView.<a class="code hl_function" href="classGondwana_1_1Rendering_1_1Views_1_1View.html#acb47af9b38be41d6a967ff43178c3b4b">ScreenRectToWorldRect</a>(sceneLayer, overlap);</div>
-<div class="line"><a id="l00719" name="l00719"></a><span class="lineno">  719</span>            var worldRect = worldRectF.ToPixelAlignedRect();</div>
-<div class="line"><a id="l00720" name="l00720"></a><span class="lineno">  720</span> </div>
-<div class="line"><a id="l00721" name="l00721"></a><span class="lineno">  721</span>            <span class="keywordflow">if</span> (!worldRect.IsEmpty)</div>
-<div class="line"><a id="l00722" name="l00722"></a><span class="lineno">  722</span>                sceneLayer.RefreshQueue.AddWorldRect(worldRect);</div>
-<div class="line"><a id="l00723" name="l00723"></a><span class="lineno">  723</span>        }</div>
-<div class="line"><a id="l00724" name="l00724"></a><span class="lineno">  724</span>    }</div>
-<div class="line"><a id="l00725" name="l00725"></a><span class="lineno">  725</span> </div>
-<div class="line"><a id="l00726" name="l00726"></a><span class="lineno">  726</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> RenderLayerDirtyRegions(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31a4351cfebe4b61d8aa5efa1d020710005">View</a> view, <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31a79a5a478b986b73453513a38cb3b4b3c">SceneLayer</a> layer)</div>
-<div class="line"><a id="l00727" name="l00727"></a><span class="lineno">  727</span>    {</div>
-<div class="line"><a id="l00728" name="l00728"></a><span class="lineno">  728</span>        var refreshQueue = layer.RefreshQueue;</div>
-<div class="line"><a id="l00729" name="l00729"></a><span class="lineno">  729</span> </div>
-<div class="line"><a id="l00730" name="l00730"></a><span class="lineno">  730</span>        <span class="comment">// if this layer has no dirty regions and we are not forcing a full redraw, skip it.</span></div>
-<div class="line"><a id="l00731" name="l00731"></a><span class="lineno">  731</span>        <span class="keywordflow">if</span> (!refreshQueue.IsDirty)</div>
-<div class="line"><a id="l00732" name="l00732"></a><span class="lineno">  732</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00733" name="l00733"></a><span class="lineno">  733</span> </div>
-<div class="line"><a id="l00734" name="l00734"></a><span class="lineno">  734</span>        <span class="keywordflow">foreach</span> (var worldRect <span class="keywordflow">in</span> refreshQueue.SnapshotWorldRects())</div>
-<div class="line"><a id="l00735" name="l00735"></a><span class="lineno">  735</span>        {</div>
-<div class="line"><a id="l00736" name="l00736"></a><span class="lineno">  736</span>            <span class="comment">// draw tiles/sprites/direct drawings in this world rect</span></div>
-<div class="line"><a id="l00737" name="l00737"></a><span class="lineno">  737</span>            var drawables = layer.GetDrawablesInWorldRect(worldRect);</div>
-<div class="line"><a id="l00738" name="l00738"></a><span class="lineno">  738</span> </div>
-<div class="line"><a id="l00739" name="l00739"></a><span class="lineno">  739</span>            <span class="comment">// project world → screen for adapter dirty</span></div>
-<div class="line"><a id="l00740" name="l00740"></a><span class="lineno">  740</span>            var screenRect = view.<a class="code hl_function" href="classGondwana_1_1Rendering_1_1Views_1_1View.html#ac33dbf74f3317abe54778791aa879865">WorldRectToScreenRect</a>(layer, worldRect).ToPixelAlignedRect();</div>
-<div class="line"><a id="l00741" name="l00741"></a><span class="lineno">  741</span> </div>
-<div class="line"><a id="l00742" name="l00742"></a><span class="lineno">  742</span>            Backbuffer.DrawDrawables(view, drawables, screenRect);</div>
-<div class="line"><a id="l00743" name="l00743"></a><span class="lineno">  743</span>        }</div>
-<div class="line"><a id="l00744" name="l00744"></a><span class="lineno">  744</span>    }</div>
-<div class="line"><a id="l00745" name="l00745"></a><span class="lineno">  745</span> </div>
-<div class="line"><a id="l00746" name="l00746"></a><span class="lineno">  746</span>    <span class="keyword">private</span> <span class="keywordtype">int</span> BeginPresentation(</div>
-<div class="line"><a id="l00747" name="l00747"></a><span class="lineno">  747</span>        RectangleF bounds,</div>
-<div class="line"><a id="l00748" name="l00748"></a><span class="lineno">  748</span>        <span class="keywordtype">float</span> opacity,</div>
-<div class="line"><a id="l00749" name="l00749"></a><span class="lineno">  749</span>        <span class="keywordtype">float</span> reveal,</div>
-<div class="line"><a id="l00750" name="l00750"></a><span class="lineno">  750</span>        <a class="code hl_enumeration" href="namespaceGondwana_1_1Effects.html#a528d478bb047b0409ec031863d290daa">EffectDirection</a> direction)</div>
-<div class="line"><a id="l00751" name="l00751"></a><span class="lineno">  751</span>    {</div>
-<div class="line"><a id="l00752" name="l00752"></a><span class="lineno">  752</span>        opacity = Math.Clamp(opacity, 0f, 1f);</div>
-<div class="line"><a id="l00753" name="l00753"></a><span class="lineno">  753</span>        reveal = Math.Clamp(reveal, 0f, 1f);</div>
-<div class="line"><a id="l00754" name="l00754"></a><span class="lineno">  754</span> </div>
-<div class="line"><a id="l00755" name="l00755"></a><span class="lineno">  755</span>        <span class="keywordflow">if</span> (opacity &lt;= 0.0001f || reveal &lt;= 0.0001f || bounds.IsEmpty)</div>
-<div class="line"><a id="l00756" name="l00756"></a><span class="lineno">  756</span>            <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00757" name="l00757"></a><span class="lineno">  757</span> </div>
-<div class="line"><a id="l00758" name="l00758"></a><span class="lineno">  758</span>        <span class="keywordtype">int</span> saveCount = 1;</div>
-<div class="line"><a id="l00759" name="l00759"></a><span class="lineno">  759</span>        Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>.Save();</div>
-<div class="line"><a id="l00760" name="l00760"></a><span class="lineno">  760</span> </div>
-<div class="line"><a id="l00761" name="l00761"></a><span class="lineno">  761</span>        <span class="keywordflow">if</span> (reveal &lt; 0.9999f)</div>
-<div class="line"><a id="l00762" name="l00762"></a><span class="lineno">  762</span>        {</div>
-<div class="line"><a id="l00763" name="l00763"></a><span class="lineno">  763</span>            RectangleF revealRect = EffectGeometry.GetRevealRect(bounds, direction, reveal);</div>
-<div class="line"><a id="l00764" name="l00764"></a><span class="lineno">  764</span>            Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>.ClipRect(</div>
-<div class="line"><a id="l00765" name="l00765"></a><span class="lineno">  765</span>                revealRect.ToSKRect(),</div>
-<div class="line"><a id="l00766" name="l00766"></a><span class="lineno">  766</span>                SKClipOperation.Intersect,</div>
-<div class="line"><a id="l00767" name="l00767"></a><span class="lineno">  767</span>                antialias: <span class="keyword">false</span>);</div>
-<div class="line"><a id="l00768" name="l00768"></a><span class="lineno">  768</span>        }</div>
-<div class="line"><a id="l00769" name="l00769"></a><span class="lineno">  769</span> </div>
-<div class="line"><a id="l00770" name="l00770"></a><span class="lineno">  770</span>        <span class="keywordflow">if</span> (opacity &lt; 0.9999f)</div>
-<div class="line"><a id="l00771" name="l00771"></a><span class="lineno">  771</span>        {</div>
-<div class="line"><a id="l00772" name="l00772"></a><span class="lineno">  772</span>            <span class="keyword">using </span>var paint = <span class="keyword">new</span> SKPaint</div>
-<div class="line"><a id="l00773" name="l00773"></a><span class="lineno">  773</span>            {</div>
-<div class="line"><a id="l00774" name="l00774"></a><span class="lineno">  774</span>                Color = <span class="keyword">new</span> SKColor(255, 255, 255, (<span class="keywordtype">byte</span>)Math.Round(opacity * 255f))</div>
-<div class="line"><a id="l00775" name="l00775"></a><span class="lineno">  775</span>            };</div>
-<div class="line"><a id="l00776" name="l00776"></a><span class="lineno">  776</span> </div>
-<div class="line"><a id="l00777" name="l00777"></a><span class="lineno">  777</span>            Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>.SaveLayer(bounds.ToSKRect(), paint);</div>
-<div class="line"><a id="l00778" name="l00778"></a><span class="lineno">  778</span>            saveCount++;</div>
-<div class="line"><a id="l00779" name="l00779"></a><span class="lineno">  779</span>        }</div>
-<div class="line"><a id="l00780" name="l00780"></a><span class="lineno">  780</span> </div>
-<div class="line"><a id="l00781" name="l00781"></a><span class="lineno">  781</span>        <span class="keywordflow">return</span> saveCount;</div>
-<div class="line"><a id="l00782" name="l00782"></a><span class="lineno">  782</span>    }</div>
-<div class="line"><a id="l00783" name="l00783"></a><span class="lineno">  783</span> </div>
-<div class="line"><a id="l00784" name="l00784"></a><span class="lineno">  784</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> EndPresentation(<span class="keywordtype">int</span> saveCount)</div>
-<div class="line"><a id="l00785" name="l00785"></a><span class="lineno">  785</span>    {</div>
-<div class="line"><a id="l00786" name="l00786"></a><span class="lineno">  786</span>        <span class="keywordflow">while</span> (saveCount-- &gt; 0)</div>
-<div class="line"><a id="l00787" name="l00787"></a><span class="lineno">  787</span>            Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>.Restore();</div>
-<div class="line"><a id="l00788" name="l00788"></a><span class="lineno">  788</span>    }</div>
-<div class="line"><a id="l00789" name="l00789"></a><span class="lineno">  789</span> </div>
-<div class="line"><a id="l00790" name="l00790"></a><span class="lineno">  790</span>    <span class="keyword">private</span> <span class="keyword">static</span> RectangleF GetLayerPresentationBounds(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31a4351cfebe4b61d8aa5efa1d020710005">View</a> view, <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31a79a5a478b986b73453513a38cb3b4b3c">SceneLayer</a> layer)</div>
-<div class="line"><a id="l00791" name="l00791"></a><span class="lineno">  791</span>    {</div>
-<div class="line"><a id="l00792" name="l00792"></a><span class="lineno">  792</span>        RectangleF viewport = view.GetRenderViewportTargetRectPx();</div>
-<div class="line"><a id="l00793" name="l00793"></a><span class="lineno">  793</span>        PointF offset = view.GetEffectOffsetPx(layer);</div>
-<div class="line"><a id="l00794" name="l00794"></a><span class="lineno">  794</span> </div>
-<div class="line"><a id="l00795" name="l00795"></a><span class="lineno">  795</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> RectangleF(</div>
-<div class="line"><a id="l00796" name="l00796"></a><span class="lineno">  796</span>            viewport.Left + offset.X,</div>
-<div class="line"><a id="l00797" name="l00797"></a><span class="lineno">  797</span>            viewport.Top + offset.Y,</div>
-<div class="line"><a id="l00798" name="l00798"></a><span class="lineno">  798</span>            viewport.Width,</div>
-<div class="line"><a id="l00799" name="l00799"></a><span class="lineno">  799</span>            viewport.Height);</div>
-<div class="line"><a id="l00800" name="l00800"></a><span class="lineno">  800</span>    }</div>
-<div class="line"><a id="l00801" name="l00801"></a><span class="lineno">  801</span> </div>
-<div class="line"><a id="l00802" name="l00802"></a><span class="lineno">  802</span><span class="preprocessor">    #endregion DrawRefreshQueueToBackbuffer helpers</span></div>
-<div class="line"><a id="l00803" name="l00803"></a><span class="lineno">  803</span></div>
-<div class="line"><a id="l00812" name="l00812"></a><span class="lineno">  812</span>    <span class="keyword">internal</span> <span class="keyword">override</span> <span class="keywordtype">void</span> PresentBackbufferToAdapter()</div>
-<div class="line"><a id="l00813" name="l00813"></a><span class="lineno">  813</span>    {</div>
-<div class="line"><a id="l00814" name="l00814"></a><span class="lineno">  814</span>        <span class="keywordflow">if</span> (RenderSurfaceAdapter is <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00815" name="l00815"></a><span class="lineno">  815</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00816" name="l00816"></a><span class="lineno">  816</span> </div>
-<div class="line"><a id="l00817" name="l00817"></a><span class="lineno">  817</span>        Backbuffer.EndFrame();</div>
-<div class="line"><a id="l00818" name="l00818"></a><span class="lineno">  818</span> </div>
-<div class="line"><a id="l00819" name="l00819"></a><span class="lineno">  819</span>        <span class="keywordflow">if</span> (RedrawDirtyRectangleOnly &amp;&amp; Interlocked.Exchange(ref _presentationInvalidated, 0) == 0)</div>
-<div class="line"><a id="l00820" name="l00820"></a><span class="lineno">  820</span>            PresentBackbufferRect();</div>
-<div class="line"><a id="l00821" name="l00821"></a><span class="lineno">  821</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00822" name="l00822"></a><span class="lineno">  822</span>            PresentBackbufferAll();</div>
-<div class="line"><a id="l00823" name="l00823"></a><span class="lineno">  823</span> </div>
-<div class="line"><a id="l00824" name="l00824"></a><span class="lineno">  824</span>        Backbuffer.ClearDirtyRectangle();</div>
-<div class="line"><a id="l00825" name="l00825"></a><span class="lineno">  825</span>        Backbuffer.BeginFrame();</div>
-<div class="line"><a id="l00826" name="l00826"></a><span class="lineno">  826</span>    }</div>
-<div class="line"><a id="l00827" name="l00827"></a><span class="lineno">  827</span> </div>
-<div class="line"><a id="l00828" name="l00828"></a><span class="lineno">  828</span><span class="preprocessor">    #region IDisposable</span></div>
-<div class="line"><a id="l00829" name="l00829"></a><span class="lineno">  829</span> </div>
-<div class="line"><a id="l00830" name="l00830"></a><span class="lineno">  830</span>    <span class="keyword">private</span> <span class="keywordtype">bool</span> _disposed;</div>
-<div class="line"><a id="l00831" name="l00831"></a><span class="lineno">  831</span></div>
-<div class="foldopen" id="foldopen00833" data-start="{" data-end="}">
-<div class="line"><a id="l00833" name="l00833"></a><span class="lineno"><a class="line" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a79f88c27799c59b82709dbe3994e0d6c">  833</a></span>    <span class="keyword">protected</span> <span class="keyword">override</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a79f88c27799c59b82709dbe3994e0d6c">Dispose</a>(<span class="keywordtype">bool</span> disposing)</div>
-<div class="line"><a id="l00834" name="l00834"></a><span class="lineno">  834</span>    {</div>
-<div class="line"><a id="l00835" name="l00835"></a><span class="lineno">  835</span>        <span class="keywordflow">if</span> (_disposed)</div>
-<div class="line"><a id="l00836" name="l00836"></a><span class="lineno">  836</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00837" name="l00837"></a><span class="lineno">  837</span> </div>
-<div class="line"><a id="l00838" name="l00838"></a><span class="lineno">  838</span>        <span class="keywordflow">if</span> (disposing)</div>
-<div class="line"><a id="l00839" name="l00839"></a><span class="lineno">  839</span>        {</div>
-<div class="line"><a id="l00840" name="l00840"></a><span class="lineno">  840</span>            <span class="keywordflow">if</span> (_scene != <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00841" name="l00841"></a><span class="lineno">  841</span>            {</div>
-<div class="line"><a id="l00842" name="l00842"></a><span class="lineno">  842</span>                _scene.SceneDisposing -= OnSourceDisposing;</div>
-<div class="line"><a id="l00843" name="l00843"></a><span class="lineno">  843</span>                _scene.UnbindRenderSurfaceHost(<span class="keyword">this</span>);</div>
-<div class="line"><a id="l00844" name="l00844"></a><span class="lineno">  844</span>                _scene = <a class="code hl_property" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a5443506468c1f60d06d90d65d49ebee7">Scene</a>.Empty;</div>
-<div class="line"><a id="l00845" name="l00845"></a><span class="lineno">  845</span>            }</div>
-<div class="line"><a id="l00846" name="l00846"></a><span class="lineno">  846</span> </div>
-<div class="line"><a id="l00847" name="l00847"></a><span class="lineno">  847</span>            RenderSurfaceAdapter.Resized -= OnRenderSurfaceAdapterResized;</div>
-<div class="line"><a id="l00848" name="l00848"></a><span class="lineno">  848</span>            Backbuffer.SizeChanged -= OnBackbufferSizeChanged;</div>
-<div class="line"><a id="l00849" name="l00849"></a><span class="lineno">  849</span>            _backbuffer = <span class="keyword">null</span>;</div>
-<div class="line"><a id="l00850" name="l00850"></a><span class="lineno">  850</span>        }</div>
-<div class="line"><a id="l00851" name="l00851"></a><span class="lineno">  851</span> </div>
-<div class="line"><a id="l00852" name="l00852"></a><span class="lineno">  852</span>        _disposed = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00853" name="l00853"></a><span class="lineno">  853</span> </div>
-<div class="line"><a id="l00854" name="l00854"></a><span class="lineno">  854</span>        base.Dispose(disposing);</div>
-<div class="line"><a id="l00855" name="l00855"></a><span class="lineno">  855</span>    }</div>
+<div class="line"><a id="l00497" name="l00497"></a><span class="lineno">  497</span>        <span class="keywordtype">bool</span> fullViewComposition = ViewManager.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Views_1_1ViewManager.html#a73cd2d2e8dd433960f9eeb1c10078472">Views</a>.Any(view =&gt; view.HasPresentationEffect)</div>
+<div class="line"><a id="l00498" name="l00498"></a><span class="lineno">  498</span>            || Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a62f82a3e296beb61cedf989dde078a65">VisibleSceneLayers</a>.Any(layer =&gt; layer.WrapHorizontally || layer.WrapVertically);</div>
+<div class="line"><a id="l00499" name="l00499"></a><span class="lineno">  499</span> </div>
+<div class="line"><a id="l00500" name="l00500"></a><span class="lineno">  500</span>        <span class="comment">// 0) If there are no visible SceneLayers, just clear and publish the full frame.</span></div>
+<div class="line"><a id="l00501" name="l00501"></a><span class="lineno">  501</span>        <span class="keywordflow">if</span> (Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a9860887b89736db85032548e42d20bdd">CountOfVisibleLayers</a> == 0)</div>
+<div class="line"><a id="l00502" name="l00502"></a><span class="lineno">  502</span>        {</div>
+<div class="line"><a id="l00503" name="l00503"></a><span class="lineno">  503</span>            Backbuffer.ClearRect(<span class="keyword">new</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>(0, 0, Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a4363faf5b1440170776c8881fb1e761a">Width</a>, Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a904ea16bdee9a1de14718c23ceac671e">Height</a>));</div>
+<div class="line"><a id="l00504" name="l00504"></a><span class="lineno">  504</span>            Scene.FullRefreshNeeded = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00505" name="l00505"></a><span class="lineno">  505</span>        }</div>
+<div class="line"><a id="l00506" name="l00506"></a><span class="lineno">  506</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00507" name="l00507"></a><span class="lineno">  507</span>        {</div>
+<div class="line"><a id="l00508" name="l00508"></a><span class="lineno">  508</span>            <span class="comment">// 1) Handle full scene refresh once (camera moved, zoom changed, etc.): clear and mark all layers as dirty.</span></div>
+<div class="line"><a id="l00509" name="l00509"></a><span class="lineno">  509</span>            <span class="comment">//    This already clears the whole backbuffer and enqueues a full rect per layer.</span></div>
+<div class="line"><a id="l00510" name="l00510"></a><span class="lineno">  510</span>            <span class="keywordflow">if</span> (Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a4028379dbb7e8c28a6babd9f878044d2">FullRefreshNeeded</a> || (fullViewComposition &amp;&amp; Scene.IsDirty))</div>
+<div class="line"><a id="l00511" name="l00511"></a><span class="lineno">  511</span>            {</div>
+<div class="line"><a id="l00512" name="l00512"></a><span class="lineno">  512</span>                <span class="comment">// this will mark the Scene.IsDirty flag as true</span></div>
+<div class="line"><a id="l00513" name="l00513"></a><span class="lineno">  513</span>                EnqueueFullSceneRefresh();</div>
+<div class="line"><a id="l00514" name="l00514"></a><span class="lineno">  514</span>            }</div>
+<div class="line"><a id="l00515" name="l00515"></a><span class="lineno">  515</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00516" name="l00516"></a><span class="lineno">  516</span>            {</div>
+<div class="line"><a id="l00517" name="l00517"></a><span class="lineno">  517</span>                <span class="comment">// scene is not dirty, this frame is done...</span></div>
+<div class="line"><a id="l00518" name="l00518"></a><span class="lineno">  518</span>                <span class="keywordflow">if</span> (!Scene.IsDirty)</div>
+<div class="line"><a id="l00519" name="l00519"></a><span class="lineno">  519</span>                {</div>
+<div class="line"><a id="l00520" name="l00520"></a><span class="lineno">  520</span>                    RenderBackbufferNoOp?.Invoke();</div>
+<div class="line"><a id="l00521" name="l00521"></a><span class="lineno">  521</span>                    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span>                }</div>
+<div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span>            }</div>
+<div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span>        }</div>
+<div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span> </div>
+<div class="line"><a id="l00526" name="l00526"></a><span class="lineno">  526</span>        <span class="keywordflow">if</span> (fullViewComposition)</div>
+<div class="line"><a id="l00527" name="l00527"></a><span class="lineno">  527</span>            Backbuffer.ClearRect(<span class="keyword">new</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>(0, 0, Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a4363faf5b1440170776c8881fb1e761a">Width</a>, Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a904ea16bdee9a1de14718c23ceac671e">Height</a>));</div>
+<div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span> </div>
+<div class="line"><a id="l00529" name="l00529"></a><span class="lineno">  529</span>        <span class="comment">// 2) Render all views to Backbuffer. Draw layers back -&gt; front (ascending Z).</span></div>
+<div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span>        <span class="keywordflow">foreach</span> (var view <span class="keywordflow">in</span> ViewManager.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Views_1_1ViewManager.html#a73cd2d2e8dd433960f9eeb1c10078472">Views</a>)</div>
+<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span>        {</div>
+<div class="line"><a id="l00532" name="l00532"></a><span class="lineno">  532</span>            RenderContext.Push(view, tick);</div>
+<div class="line"><a id="l00533" name="l00533"></a><span class="lineno">  533</span> </div>
+<div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span>            <span class="keywordflow">try</span></div>
+<div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span>            {</div>
+<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span>                <span class="comment">// 2.1) Force-refresh all DirectDrawings that overlay this view</span></div>
+<div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span>                var overlays = DirectDrawingManager.Instance.GetDrawingsForView(view);</div>
+<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span>                <span class="keywordflow">foreach</span> (var overlay <span class="keywordflow">in</span> overlays)</div>
+<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span>                {</div>
+<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>                    overlay.ForceRefresh();</div>
+<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span>                }</div>
+<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span> </div>
+<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>                <span class="comment">// 2.2) identify dirty SCREEN areas across all layers for this view</span></div>
+<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span>                var dirtyScreenRects = CollectDirtyScreenArea(view);</div>
+<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span> </div>
+<div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span>                <span class="comment">// 2.3) Clip to this view&#39;s viewport</span></div>
+<div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span>                var vp = view.GetRenderViewportTargetRectPx();</div>
+<div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span> </div>
+<div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span>                <span class="comment">// clip inclusive to current viewport</span></div>
+<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span>                Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>.Save();</div>
+<div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span>                Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>.ResetMatrix();</div>
+<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span>                Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>.ClipRect(vp.ToSKRect(), SKClipOperation.Intersect, antialias: <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span> </div>
+<div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span>                <span class="comment">// clip exclusive to higher Z-order views</span></div>
+<div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span>                <span class="keywordflow">foreach</span> (var blocker <span class="keywordflow">in</span> ViewManager.<a class="code hl_function" href="classGondwana_1_1Rendering_1_1Views_1_1ViewManager.html#a2ec1ac278fd13f56bf21417719cad649">GetViewsAbove</a>(view))</div>
+<div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span>                {</div>
+<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span>                    <span class="keywordflow">if</span> (!blocker.BlocksViewsBelow)</div>
+<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>                        <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span> </div>
+<div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span>                    var overlap = <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>.Intersect(vp, blocker.GetRenderViewportTargetRectPx());</div>
+<div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span>                    <span class="keywordflow">if</span> (!overlap.IsEmpty)</div>
+<div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span>                        Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>.ClipRect(overlap.ToSKRect(), SKClipOperation.Difference, antialias: <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span>                }</div>
+<div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span> </div>
+<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>                <span class="keywordtype">int</span> viewPresentation = BeginPresentation(</div>
+<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>                    view.GetPresentationBoundsPx(),</div>
+<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>                    view.EffectOpacity,</div>
+<div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>                    view.EffectReveal,</div>
+<div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span>                    view.EffectRevealDirection);</div>
+<div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span> </div>
+<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>                <span class="keywordflow">if</span> (viewPresentation &gt; 0)</div>
+<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>                {</div>
+<div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span>                    <span class="keywordflow">if</span> (fullViewComposition)</div>
+<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span>                    {</div>
+<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>                        Backbuffer.ClearRect(view.GetPresentationBoundsPx().ToPixelAlignedRect());</div>
+<div class="line"><a id="l00576" name="l00576"></a><span class="lineno">  576</span>                    }</div>
+<div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span>                    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span>                    {</div>
+<div class="line"><a id="l00579" name="l00579"></a><span class="lineno">  579</span>                        <span class="comment">// 2.4) Pre-clear dirty areas on backbuffer to Backbuffer.ClearColor</span></div>
+<div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span>                        PreclearScreenAreas(view, dirtyScreenRects);</div>
+<div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span>                    }</div>
+<div class="line"><a id="l00582" name="l00582"></a><span class="lineno">  582</span> </div>
+<div class="line"><a id="l00583" name="l00583"></a><span class="lineno">  583</span>                    <span class="comment">// 2.5) Render each visible layer&#39;s dirty regions for this view</span></div>
+<div class="line"><a id="l00584" name="l00584"></a><span class="lineno">  584</span>                    <span class="comment">//      this will draw SceneLayerTiles, Sprites, and SceneLayer-based DirectDrawings</span></div>
+<div class="line"><a id="l00585" name="l00585"></a><span class="lineno">  585</span>                    var sceneLayers = Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a62f82a3e296beb61cedf989dde078a65">VisibleSceneLayers</a>;</div>
+<div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span> </div>
+<div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span>                    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; sceneLayers.Count; i++)</div>
+<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span>                    {</div>
+<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span>                        var layer = sceneLayers[i];</div>
+<div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span>                        <span class="keywordtype">int</span> layerPresentation = BeginPresentation(</div>
+<div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span>                            GetLayerPresentationBounds(view, layer),</div>
+<div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span>                            layer.EffectOpacity,</div>
+<div class="line"><a id="l00593" name="l00593"></a><span class="lineno">  593</span>                            layer.EffectReveal,</div>
+<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span>                            layer.EffectRevealDirection);</div>
+<div class="line"><a id="l00595" name="l00595"></a><span class="lineno">  595</span> </div>
+<div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span>                        <span class="keywordflow">if</span> (layerPresentation == 0)</div>
+<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span>                            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00598" name="l00598"></a><span class="lineno">  598</span> </div>
+<div class="line"><a id="l00599" name="l00599"></a><span class="lineno">  599</span>                        RenderLayerDirtyRegions(view, layer);</div>
+<div class="line"><a id="l00600" name="l00600"></a><span class="lineno">  600</span>                        EndPresentation(layerPresentation);</div>
+<div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span>                    }</div>
+<div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span> </div>
+<div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span>                    <span class="comment">// 2.6) draw all View-based DirectDrawings for this view</span></div>
+<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span>                    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; overlays.Count; i++)</div>
+<div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span>                        overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));</div>
+<div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span> </div>
+<div class="line"><a id="l00607" name="l00607"></a><span class="lineno">  607</span>                    EndPresentation(viewPresentation);</div>
+<div class="line"><a id="l00608" name="l00608"></a><span class="lineno">  608</span>                }</div>
+<div class="line"><a id="l00609" name="l00609"></a><span class="lineno">  609</span> </div>
+<div class="line"><a id="l00610" name="l00610"></a><span class="lineno">  610</span>                <span class="comment">// 2.7) Restore from viewport clip</span></div>
+<div class="line"><a id="l00611" name="l00611"></a><span class="lineno">  611</span>                Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>.Restore();</div>
+<div class="line"><a id="l00612" name="l00612"></a><span class="lineno">  612</span>            }</div>
+<div class="line"><a id="l00613" name="l00613"></a><span class="lineno">  613</span>            <span class="keywordflow">finally</span></div>
+<div class="line"><a id="l00614" name="l00614"></a><span class="lineno">  614</span>            {</div>
+<div class="line"><a id="l00615" name="l00615"></a><span class="lineno">  615</span>                RenderContext.Pop();</div>
+<div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span>            }</div>
+<div class="line"><a id="l00617" name="l00617"></a><span class="lineno">  617</span>        }</div>
+<div class="line"><a id="l00618" name="l00618"></a><span class="lineno">  618</span> </div>
+<div class="line"><a id="l00619" name="l00619"></a><span class="lineno">  619</span>        <span class="comment">// 3) Clear layer queues now that we&#39;ve consumed them (avoids re-drawing same tiles next frame)</span></div>
+<div class="line"><a id="l00620" name="l00620"></a><span class="lineno">  620</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a9860887b89736db85032548e42d20bdd">CountOfVisibleLayers</a>; i++)</div>
+<div class="line"><a id="l00621" name="l00621"></a><span class="lineno">  621</span>            Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a62f82a3e296beb61cedf989dde078a65">VisibleSceneLayers</a>[i].RefreshQueue.ClearRefreshQueue();</div>
+<div class="line"><a id="l00622" name="l00622"></a><span class="lineno">  622</span> </div>
+<div class="line"><a id="l00623" name="l00623"></a><span class="lineno">  623</span>        Scene.FullRefreshNeeded = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00624" name="l00624"></a><span class="lineno">  624</span> </div>
+<div class="line"><a id="l00625" name="l00625"></a><span class="lineno">  625</span>        <span class="comment">// Notify subscribers that all scene content has been drawn and the canvas is ready for</span></div>
+<div class="line"><a id="l00626" name="l00626"></a><span class="lineno">  626</span>        <span class="comment">// post-scene effects.  Fires before RenderBackbufferEnd so subscribers still have a</span></div>
+<div class="line"><a id="l00627" name="l00627"></a><span class="lineno">  627</span>        <span class="comment">// chance to draw into the canvas before it is presented to the adapter.</span></div>
+<div class="line"><a id="l00628" name="l00628"></a><span class="lineno">  628</span>        InvokePostSceneCanvasHooks();</div>
+<div class="line"><a id="l00629" name="l00629"></a><span class="lineno">  629</span>    }</div>
+<div class="line"><a id="l00630" name="l00630"></a><span class="lineno">  630</span> </div>
+<div class="line"><a id="l00631" name="l00631"></a><span class="lineno">  631</span><span class="preprocessor">    #region DrawRefreshQueueToBackbuffer helpers</span></div>
+<div class="line"><a id="l00632" name="l00632"></a><span class="lineno">  632</span> </div>
+<div class="line"><a id="l00633" name="l00633"></a><span class="lineno">  633</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> EnqueueFullSceneRefresh()</div>
+<div class="line"><a id="l00634" name="l00634"></a><span class="lineno">  634</span>    {</div>
+<div class="line"><a id="l00635" name="l00635"></a><span class="lineno">  635</span>        <span class="keywordflow">foreach</span> (var view <span class="keywordflow">in</span> ViewManager.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Views_1_1ViewManager.html#a73cd2d2e8dd433960f9eeb1c10078472">Views</a>)</div>
+<div class="line"><a id="l00636" name="l00636"></a><span class="lineno">  636</span>        {</div>
+<div class="line"><a id="l00637" name="l00637"></a><span class="lineno">  637</span>            var viewport = view.Viewport;</div>
+<div class="line"><a id="l00638" name="l00638"></a><span class="lineno">  638</span>            var screenRect = viewport.TargetRectPx;</div>
+<div class="line"><a id="l00639" name="l00639"></a><span class="lineno">  639</span> </div>
+<div class="line"><a id="l00640" name="l00640"></a><span class="lineno">  640</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a9860887b89736db85032548e42d20bdd">CountOfVisibleLayers</a>; i++)</div>
+<div class="line"><a id="l00641" name="l00641"></a><span class="lineno">  641</span>            {</div>
+<div class="line"><a id="l00642" name="l00642"></a><span class="lineno">  642</span>                var layer = Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a62f82a3e296beb61cedf989dde078a65">VisibleSceneLayers</a>[i];</div>
+<div class="line"><a id="l00643" name="l00643"></a><span class="lineno">  643</span> </div>
+<div class="line"><a id="l00644" name="l00644"></a><span class="lineno">  644</span>                <span class="comment">// 1) Compute layer-specific visible world rect</span></div>
+<div class="line"><a id="l00645" name="l00645"></a><span class="lineno">  645</span>                var layerWorldRect = view.ScreenRectToWorldRect(layer, screenRect);</div>
+<div class="line"><a id="l00646" name="l00646"></a><span class="lineno">  646</span> </div>
+<div class="line"><a id="l00647" name="l00647"></a><span class="lineno">  647</span>                <span class="comment">// 2) Expand world rect by **one full tile** in all directions.</span></div>
+<div class="line"><a id="l00648" name="l00648"></a><span class="lineno">  648</span>                <span class="comment">//    This compensates for fractional-layer motion (parallax),</span></div>
+<div class="line"><a id="l00649" name="l00649"></a><span class="lineno">  649</span>                <span class="comment">//    camera motion, and tile boundaries.</span></div>
+<div class="line"><a id="l00650" name="l00650"></a><span class="lineno">  650</span>                <span class="keywordtype">int</span> expandX = layer.TileWidth;</div>
+<div class="line"><a id="l00651" name="l00651"></a><span class="lineno">  651</span>                <span class="keywordtype">int</span> expandY = layer.TileHeight;</div>
+<div class="line"><a id="l00652" name="l00652"></a><span class="lineno">  652</span> </div>
+<div class="line"><a id="l00653" name="l00653"></a><span class="lineno">  653</span>                layerWorldRect.Inflate(expandX, expandY);</div>
+<div class="line"><a id="l00654" name="l00654"></a><span class="lineno">  654</span> </div>
+<div class="line"><a id="l00655" name="l00655"></a><span class="lineno">  655</span>                <span class="comment">// 3) Round to ints and enqueue</span></div>
+<div class="line"><a id="l00656" name="l00656"></a><span class="lineno">  656</span>                var worldRectInt = layerWorldRect.ToPixelAlignedRect();</div>
+<div class="line"><a id="l00657" name="l00657"></a><span class="lineno">  657</span> </div>
+<div class="line"><a id="l00658" name="l00658"></a><span class="lineno">  658</span>                layer.RefreshQueue.AddWorldRect(worldRectInt);</div>
+<div class="line"><a id="l00659" name="l00659"></a><span class="lineno">  659</span>            }</div>
+<div class="line"><a id="l00660" name="l00660"></a><span class="lineno">  660</span>        }</div>
+<div class="line"><a id="l00661" name="l00661"></a><span class="lineno">  661</span>    }</div>
+<div class="line"><a id="l00662" name="l00662"></a><span class="lineno">  662</span> </div>
+<div class="line"><a id="l00663" name="l00663"></a><span class="lineno">  663</span>    <span class="keyword">private</span> List&lt;Rectangle&gt; CollectDirtyScreenArea(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31a4351cfebe4b61d8aa5efa1d020710005">View</a> view)</div>
+<div class="line"><a id="l00664" name="l00664"></a><span class="lineno">  664</span>    {</div>
+<div class="line"><a id="l00665" name="l00665"></a><span class="lineno">  665</span>        var dirty = <span class="keyword">new</span> List&lt;Rectangle&gt;(64);</div>
+<div class="line"><a id="l00666" name="l00666"></a><span class="lineno">  666</span>        var viewportRect = view.GetRenderViewportTargetRectPx();</div>
+<div class="line"><a id="l00667" name="l00667"></a><span class="lineno">  667</span> </div>
+<div class="line"><a id="l00668" name="l00668"></a><span class="lineno">  668</span>        <span class="keywordflow">foreach</span> (var sceneLayer <span class="keywordflow">in</span> Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a62f82a3e296beb61cedf989dde078a65">VisibleSceneLayers</a>)</div>
+<div class="line"><a id="l00669" name="l00669"></a><span class="lineno">  669</span>        {</div>
+<div class="line"><a id="l00670" name="l00670"></a><span class="lineno">  670</span>            var refreshQueue = sceneLayer.RefreshQueue;</div>
+<div class="line"><a id="l00671" name="l00671"></a><span class="lineno">  671</span>            <span class="keywordflow">if</span> (!refreshQueue.IsDirty)</div>
+<div class="line"><a id="l00672" name="l00672"></a><span class="lineno">  672</span>                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00673" name="l00673"></a><span class="lineno">  673</span> </div>
+<div class="line"><a id="l00674" name="l00674"></a><span class="lineno">  674</span>            <span class="keywordflow">foreach</span> (var worldRect <span class="keywordflow">in</span> refreshQueue.SnapshotWorldRects())</div>
+<div class="line"><a id="l00675" name="l00675"></a><span class="lineno">  675</span>            {</div>
+<div class="line"><a id="l00676" name="l00676"></a><span class="lineno">  676</span>                var screenRectF = view.<a class="code hl_function" href="classGondwana_1_1Rendering_1_1Views_1_1View.html#ac33dbf74f3317abe54778791aa879865">WorldRectToScreenRect</a>(sceneLayer, worldRect);</div>
+<div class="line"><a id="l00677" name="l00677"></a><span class="lineno">  677</span>                var rect = <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>.Intersect(</div>
+<div class="line"><a id="l00678" name="l00678"></a><span class="lineno">  678</span>                    screenRectF.ToPixelAlignedRect(),</div>
+<div class="line"><a id="l00679" name="l00679"></a><span class="lineno">  679</span>                    viewportRect);</div>
+<div class="line"><a id="l00680" name="l00680"></a><span class="lineno">  680</span> </div>
+<div class="line"><a id="l00681" name="l00681"></a><span class="lineno">  681</span>                <span class="keywordflow">if</span> (rect.IsEmpty)</div>
+<div class="line"><a id="l00682" name="l00682"></a><span class="lineno">  682</span>                    <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00683" name="l00683"></a><span class="lineno">  683</span> </div>
+<div class="line"><a id="l00684" name="l00684"></a><span class="lineno">  684</span>                dirty.AddDeduped(rect);</div>
+<div class="line"><a id="l00685" name="l00685"></a><span class="lineno">  685</span>            }</div>
+<div class="line"><a id="l00686" name="l00686"></a><span class="lineno">  686</span>        }</div>
+<div class="line"><a id="l00687" name="l00687"></a><span class="lineno">  687</span> </div>
+<div class="line"><a id="l00688" name="l00688"></a><span class="lineno">  688</span>        <span class="keywordflow">return</span> dirty;</div>
+<div class="line"><a id="l00689" name="l00689"></a><span class="lineno">  689</span>    }</div>
+<div class="line"><a id="l00690" name="l00690"></a><span class="lineno">  690</span> </div>
+<div class="line"><a id="l00691" name="l00691"></a><span class="lineno">  691</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> PreclearScreenAreas(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31a4351cfebe4b61d8aa5efa1d020710005">View</a> view, List&lt;Rectangle&gt; screenRects)</div>
+<div class="line"><a id="l00692" name="l00692"></a><span class="lineno">  692</span>    {</div>
+<div class="line"><a id="l00693" name="l00693"></a><span class="lineno">  693</span>        <span class="keywordflow">if</span> (Backbuffer is <span class="keyword">null</span> || screenRects is <span class="keyword">null</span> || screenRects.Count == 0)</div>
+<div class="line"><a id="l00694" name="l00694"></a><span class="lineno">  694</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00695" name="l00695"></a><span class="lineno">  695</span> </div>
+<div class="line"><a id="l00696" name="l00696"></a><span class="lineno">  696</span>        <span class="keywordflow">foreach</span> (var screenRect <span class="keywordflow">in</span> screenRects)</div>
+<div class="line"><a id="l00697" name="l00697"></a><span class="lineno">  697</span>        {</div>
+<div class="line"><a id="l00698" name="l00698"></a><span class="lineno">  698</span>            var screenRectViewport = <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>.Intersect(screenRect, view.GetRenderViewportTargetRectPx());</div>
+<div class="line"><a id="l00699" name="l00699"></a><span class="lineno">  699</span> </div>
+<div class="line"><a id="l00700" name="l00700"></a><span class="lineno">  700</span>            <span class="keywordflow">if</span> (screenRectViewport.IsEmpty || screenRectViewport.Width &lt;= 0 || screenRectViewport.Height &lt;= 0)</div>
+<div class="line"><a id="l00701" name="l00701"></a><span class="lineno">  701</span>                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00702" name="l00702"></a><span class="lineno">  702</span> </div>
+<div class="line"><a id="l00703" name="l00703"></a><span class="lineno">  703</span>            <span class="comment">// Clear just this patch (overwrite with Backbuffer.ClearColor)</span></div>
+<div class="line"><a id="l00704" name="l00704"></a><span class="lineno">  704</span>            Backbuffer.ClearRect(screenRectViewport);</div>
+<div class="line"><a id="l00705" name="l00705"></a><span class="lineno">  705</span> </div>
+<div class="line"><a id="l00706" name="l00706"></a><span class="lineno">  706</span>            EnqueueForOverlappingSceneLayers(view, screenRectViewport);</div>
+<div class="line"><a id="l00707" name="l00707"></a><span class="lineno">  707</span>        }</div>
+<div class="line"><a id="l00708" name="l00708"></a><span class="lineno">  708</span>    }</div>
+<div class="line"><a id="l00709" name="l00709"></a><span class="lineno">  709</span> </div>
+<div class="line"><a id="l00710" name="l00710"></a><span class="lineno">  710</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> EnqueueForOverlappingSceneLayers(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31a4351cfebe4b61d8aa5efa1d020710005">View</a> sourceView, Rectangle clearedScreenRect)</div>
+<div class="line"><a id="l00711" name="l00711"></a><span class="lineno">  711</span>    {</div>
+<div class="line"><a id="l00712" name="l00712"></a><span class="lineno">  712</span>        var overlap = <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>.Intersect(clearedScreenRect, sourceView.GetRenderViewportTargetRectPx());</div>
+<div class="line"><a id="l00713" name="l00713"></a><span class="lineno">  713</span> </div>
+<div class="line"><a id="l00714" name="l00714"></a><span class="lineno">  714</span>        <span class="keywordflow">if</span> (overlap.IsEmpty)</div>
+<div class="line"><a id="l00715" name="l00715"></a><span class="lineno">  715</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00716" name="l00716"></a><span class="lineno">  716</span> </div>
+<div class="line"><a id="l00717" name="l00717"></a><span class="lineno">  717</span>        <span class="keywordflow">foreach</span> (var sceneLayer <span class="keywordflow">in</span> Scene.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a62f82a3e296beb61cedf989dde078a65">VisibleSceneLayers</a>)</div>
+<div class="line"><a id="l00718" name="l00718"></a><span class="lineno">  718</span>        {</div>
+<div class="line"><a id="l00719" name="l00719"></a><span class="lineno">  719</span>            var worldRectF = sourceView.<a class="code hl_function" href="classGondwana_1_1Rendering_1_1Views_1_1View.html#acb47af9b38be41d6a967ff43178c3b4b">ScreenRectToWorldRect</a>(sceneLayer, overlap);</div>
+<div class="line"><a id="l00720" name="l00720"></a><span class="lineno">  720</span>            var worldRect = worldRectF.ToPixelAlignedRect();</div>
+<div class="line"><a id="l00721" name="l00721"></a><span class="lineno">  721</span> </div>
+<div class="line"><a id="l00722" name="l00722"></a><span class="lineno">  722</span>            <span class="keywordflow">if</span> (!worldRect.IsEmpty)</div>
+<div class="line"><a id="l00723" name="l00723"></a><span class="lineno">  723</span>                sceneLayer.RefreshQueue.AddWorldRect(worldRect);</div>
+<div class="line"><a id="l00724" name="l00724"></a><span class="lineno">  724</span>        }</div>
+<div class="line"><a id="l00725" name="l00725"></a><span class="lineno">  725</span>    }</div>
+<div class="line"><a id="l00726" name="l00726"></a><span class="lineno">  726</span> </div>
+<div class="line"><a id="l00727" name="l00727"></a><span class="lineno">  727</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> RenderLayerDirtyRegions(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31a4351cfebe4b61d8aa5efa1d020710005">View</a> view, <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31a79a5a478b986b73453513a38cb3b4b3c">SceneLayer</a> layer)</div>
+<div class="line"><a id="l00728" name="l00728"></a><span class="lineno">  728</span>    {</div>
+<div class="line"><a id="l00729" name="l00729"></a><span class="lineno">  729</span>        var refreshQueue = layer.RefreshQueue;</div>
+<div class="line"><a id="l00730" name="l00730"></a><span class="lineno">  730</span> </div>
+<div class="line"><a id="l00731" name="l00731"></a><span class="lineno">  731</span>        <span class="comment">// if this layer has no dirty regions and we are not forcing a full redraw, skip it.</span></div>
+<div class="line"><a id="l00732" name="l00732"></a><span class="lineno">  732</span>        <span class="keywordflow">if</span> (!refreshQueue.IsDirty)</div>
+<div class="line"><a id="l00733" name="l00733"></a><span class="lineno">  733</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00734" name="l00734"></a><span class="lineno">  734</span> </div>
+<div class="line"><a id="l00735" name="l00735"></a><span class="lineno">  735</span>        <span class="keywordflow">foreach</span> (var worldRect <span class="keywordflow">in</span> refreshQueue.SnapshotWorldRects())</div>
+<div class="line"><a id="l00736" name="l00736"></a><span class="lineno">  736</span>        {</div>
+<div class="line"><a id="l00737" name="l00737"></a><span class="lineno">  737</span>            <span class="comment">// draw tiles/sprites/direct drawings in this world rect</span></div>
+<div class="line"><a id="l00738" name="l00738"></a><span class="lineno">  738</span>            var drawables = layer.GetDrawablesInWorldRect(worldRect);</div>
+<div class="line"><a id="l00739" name="l00739"></a><span class="lineno">  739</span> </div>
+<div class="line"><a id="l00740" name="l00740"></a><span class="lineno">  740</span>            <span class="comment">// project world → screen for adapter dirty</span></div>
+<div class="line"><a id="l00741" name="l00741"></a><span class="lineno">  741</span>            var screenRect = view.<a class="code hl_function" href="classGondwana_1_1Rendering_1_1Views_1_1View.html#ac33dbf74f3317abe54778791aa879865">WorldRectToScreenRect</a>(layer, worldRect).ToPixelAlignedRect();</div>
+<div class="line"><a id="l00742" name="l00742"></a><span class="lineno">  742</span> </div>
+<div class="line"><a id="l00743" name="l00743"></a><span class="lineno">  743</span>            Backbuffer.DrawDrawables(view, drawables, screenRect);</div>
+<div class="line"><a id="l00744" name="l00744"></a><span class="lineno">  744</span>        }</div>
+<div class="line"><a id="l00745" name="l00745"></a><span class="lineno">  745</span>    }</div>
+<div class="line"><a id="l00746" name="l00746"></a><span class="lineno">  746</span> </div>
+<div class="line"><a id="l00747" name="l00747"></a><span class="lineno">  747</span>    <span class="keyword">private</span> <span class="keywordtype">int</span> BeginPresentation(</div>
+<div class="line"><a id="l00748" name="l00748"></a><span class="lineno">  748</span>        RectangleF bounds,</div>
+<div class="line"><a id="l00749" name="l00749"></a><span class="lineno">  749</span>        <span class="keywordtype">float</span> opacity,</div>
+<div class="line"><a id="l00750" name="l00750"></a><span class="lineno">  750</span>        <span class="keywordtype">float</span> reveal,</div>
+<div class="line"><a id="l00751" name="l00751"></a><span class="lineno">  751</span>        <a class="code hl_enumeration" href="namespaceGondwana_1_1Effects.html#a528d478bb047b0409ec031863d290daa">EffectDirection</a> direction)</div>
+<div class="line"><a id="l00752" name="l00752"></a><span class="lineno">  752</span>    {</div>
+<div class="line"><a id="l00753" name="l00753"></a><span class="lineno">  753</span>        opacity = Math.Clamp(opacity, 0f, 1f);</div>
+<div class="line"><a id="l00754" name="l00754"></a><span class="lineno">  754</span>        reveal = Math.Clamp(reveal, 0f, 1f);</div>
+<div class="line"><a id="l00755" name="l00755"></a><span class="lineno">  755</span> </div>
+<div class="line"><a id="l00756" name="l00756"></a><span class="lineno">  756</span>        <span class="keywordflow">if</span> (opacity &lt;= 0.0001f || reveal &lt;= 0.0001f || bounds.IsEmpty)</div>
+<div class="line"><a id="l00757" name="l00757"></a><span class="lineno">  757</span>            <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00758" name="l00758"></a><span class="lineno">  758</span> </div>
+<div class="line"><a id="l00759" name="l00759"></a><span class="lineno">  759</span>        <span class="keywordtype">int</span> saveCount = 1;</div>
+<div class="line"><a id="l00760" name="l00760"></a><span class="lineno">  760</span>        Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>.Save();</div>
+<div class="line"><a id="l00761" name="l00761"></a><span class="lineno">  761</span> </div>
+<div class="line"><a id="l00762" name="l00762"></a><span class="lineno">  762</span>        <span class="keywordflow">if</span> (reveal &lt; 0.9999f)</div>
+<div class="line"><a id="l00763" name="l00763"></a><span class="lineno">  763</span>        {</div>
+<div class="line"><a id="l00764" name="l00764"></a><span class="lineno">  764</span>            RectangleF revealRect = EffectGeometry.GetRevealRect(bounds, direction, reveal);</div>
+<div class="line"><a id="l00765" name="l00765"></a><span class="lineno">  765</span>            Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>.ClipRect(</div>
+<div class="line"><a id="l00766" name="l00766"></a><span class="lineno">  766</span>                revealRect.ToSKRect(),</div>
+<div class="line"><a id="l00767" name="l00767"></a><span class="lineno">  767</span>                SKClipOperation.Intersect,</div>
+<div class="line"><a id="l00768" name="l00768"></a><span class="lineno">  768</span>                antialias: <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00769" name="l00769"></a><span class="lineno">  769</span>        }</div>
+<div class="line"><a id="l00770" name="l00770"></a><span class="lineno">  770</span> </div>
+<div class="line"><a id="l00771" name="l00771"></a><span class="lineno">  771</span>        <span class="keywordflow">if</span> (opacity &lt; 0.9999f)</div>
+<div class="line"><a id="l00772" name="l00772"></a><span class="lineno">  772</span>        {</div>
+<div class="line"><a id="l00773" name="l00773"></a><span class="lineno">  773</span>            <span class="keyword">using </span>var paint = <span class="keyword">new</span> SKPaint</div>
+<div class="line"><a id="l00774" name="l00774"></a><span class="lineno">  774</span>            {</div>
+<div class="line"><a id="l00775" name="l00775"></a><span class="lineno">  775</span>                Color = <span class="keyword">new</span> SKColor(255, 255, 255, (<span class="keywordtype">byte</span>)Math.Round(opacity * 255f))</div>
+<div class="line"><a id="l00776" name="l00776"></a><span class="lineno">  776</span>            };</div>
+<div class="line"><a id="l00777" name="l00777"></a><span class="lineno">  777</span> </div>
+<div class="line"><a id="l00778" name="l00778"></a><span class="lineno">  778</span>            Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>.SaveLayer(bounds.ToSKRect(), paint);</div>
+<div class="line"><a id="l00779" name="l00779"></a><span class="lineno">  779</span>            saveCount++;</div>
+<div class="line"><a id="l00780" name="l00780"></a><span class="lineno">  780</span>        }</div>
+<div class="line"><a id="l00781" name="l00781"></a><span class="lineno">  781</span> </div>
+<div class="line"><a id="l00782" name="l00782"></a><span class="lineno">  782</span>        <span class="keywordflow">return</span> saveCount;</div>
+<div class="line"><a id="l00783" name="l00783"></a><span class="lineno">  783</span>    }</div>
+<div class="line"><a id="l00784" name="l00784"></a><span class="lineno">  784</span> </div>
+<div class="line"><a id="l00785" name="l00785"></a><span class="lineno">  785</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> EndPresentation(<span class="keywordtype">int</span> saveCount)</div>
+<div class="line"><a id="l00786" name="l00786"></a><span class="lineno">  786</span>    {</div>
+<div class="line"><a id="l00787" name="l00787"></a><span class="lineno">  787</span>        <span class="keywordflow">while</span> (saveCount-- &gt; 0)</div>
+<div class="line"><a id="l00788" name="l00788"></a><span class="lineno">  788</span>            Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>.Restore();</div>
+<div class="line"><a id="l00789" name="l00789"></a><span class="lineno">  789</span>    }</div>
+<div class="line"><a id="l00790" name="l00790"></a><span class="lineno">  790</span> </div>
+<div class="line"><a id="l00791" name="l00791"></a><span class="lineno">  791</span>    <span class="keyword">private</span> <span class="keyword">static</span> RectangleF GetLayerPresentationBounds(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31a4351cfebe4b61d8aa5efa1d020710005">View</a> view, <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31a79a5a478b986b73453513a38cb3b4b3c">SceneLayer</a> layer)</div>
+<div class="line"><a id="l00792" name="l00792"></a><span class="lineno">  792</span>    {</div>
+<div class="line"><a id="l00793" name="l00793"></a><span class="lineno">  793</span>        RectangleF viewport = view.GetRenderViewportTargetRectPx();</div>
+<div class="line"><a id="l00794" name="l00794"></a><span class="lineno">  794</span>        PointF offset = view.GetEffectOffsetPx(layer);</div>
+<div class="line"><a id="l00795" name="l00795"></a><span class="lineno">  795</span> </div>
+<div class="line"><a id="l00796" name="l00796"></a><span class="lineno">  796</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> RectangleF(</div>
+<div class="line"><a id="l00797" name="l00797"></a><span class="lineno">  797</span>            viewport.Left + offset.X,</div>
+<div class="line"><a id="l00798" name="l00798"></a><span class="lineno">  798</span>            viewport.Top + offset.Y,</div>
+<div class="line"><a id="l00799" name="l00799"></a><span class="lineno">  799</span>            viewport.Width,</div>
+<div class="line"><a id="l00800" name="l00800"></a><span class="lineno">  800</span>            viewport.Height);</div>
+<div class="line"><a id="l00801" name="l00801"></a><span class="lineno">  801</span>    }</div>
+<div class="line"><a id="l00802" name="l00802"></a><span class="lineno">  802</span> </div>
+<div class="line"><a id="l00803" name="l00803"></a><span class="lineno">  803</span><span class="preprocessor">    #endregion DrawRefreshQueueToBackbuffer helpers</span></div>
+<div class="line"><a id="l00804" name="l00804"></a><span class="lineno">  804</span></div>
+<div class="line"><a id="l00813" name="l00813"></a><span class="lineno">  813</span>    <span class="keyword">internal</span> <span class="keyword">override</span> <span class="keywordtype">void</span> PresentBackbufferToAdapter()</div>
+<div class="line"><a id="l00814" name="l00814"></a><span class="lineno">  814</span>    {</div>
+<div class="line"><a id="l00815" name="l00815"></a><span class="lineno">  815</span>        <span class="keywordflow">if</span> (RenderSurfaceAdapter is <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00816" name="l00816"></a><span class="lineno">  816</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00817" name="l00817"></a><span class="lineno">  817</span> </div>
+<div class="line"><a id="l00818" name="l00818"></a><span class="lineno">  818</span>        Backbuffer.EndFrame();</div>
+<div class="line"><a id="l00819" name="l00819"></a><span class="lineno">  819</span> </div>
+<div class="line"><a id="l00820" name="l00820"></a><span class="lineno">  820</span>        <span class="keywordflow">if</span> (RedrawDirtyRectangleOnly &amp;&amp; Interlocked.Exchange(ref _presentationInvalidated, 0) == 0)</div>
+<div class="line"><a id="l00821" name="l00821"></a><span class="lineno">  821</span>            PresentBackbufferRect();</div>
+<div class="line"><a id="l00822" name="l00822"></a><span class="lineno">  822</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00823" name="l00823"></a><span class="lineno">  823</span>            PresentBackbufferAll();</div>
+<div class="line"><a id="l00824" name="l00824"></a><span class="lineno">  824</span> </div>
+<div class="line"><a id="l00825" name="l00825"></a><span class="lineno">  825</span>        Backbuffer.ClearDirtyRectangle();</div>
+<div class="line"><a id="l00826" name="l00826"></a><span class="lineno">  826</span>        Backbuffer.BeginFrame();</div>
+<div class="line"><a id="l00827" name="l00827"></a><span class="lineno">  827</span>    }</div>
+<div class="line"><a id="l00828" name="l00828"></a><span class="lineno">  828</span> </div>
+<div class="line"><a id="l00829" name="l00829"></a><span class="lineno">  829</span><span class="preprocessor">    #region IDisposable</span></div>
+<div class="line"><a id="l00830" name="l00830"></a><span class="lineno">  830</span> </div>
+<div class="line"><a id="l00831" name="l00831"></a><span class="lineno">  831</span>    <span class="keyword">private</span> <span class="keywordtype">bool</span> _disposed;</div>
+<div class="line"><a id="l00832" name="l00832"></a><span class="lineno">  832</span></div>
+<div class="foldopen" id="foldopen00834" data-start="{" data-end="}">
+<div class="line"><a id="l00834" name="l00834"></a><span class="lineno"><a class="line" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a79f88c27799c59b82709dbe3994e0d6c">  834</a></span>    <span class="keyword">protected</span> <span class="keyword">override</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a79f88c27799c59b82709dbe3994e0d6c">Dispose</a>(<span class="keywordtype">bool</span> disposing)</div>
+<div class="line"><a id="l00835" name="l00835"></a><span class="lineno">  835</span>    {</div>
+<div class="line"><a id="l00836" name="l00836"></a><span class="lineno">  836</span>        <span class="keywordflow">if</span> (_disposed)</div>
+<div class="line"><a id="l00837" name="l00837"></a><span class="lineno">  837</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00838" name="l00838"></a><span class="lineno">  838</span> </div>
+<div class="line"><a id="l00839" name="l00839"></a><span class="lineno">  839</span>        <span class="keywordflow">if</span> (disposing)</div>
+<div class="line"><a id="l00840" name="l00840"></a><span class="lineno">  840</span>        {</div>
+<div class="line"><a id="l00841" name="l00841"></a><span class="lineno">  841</span>            <span class="keywordflow">if</span> (_scene != <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00842" name="l00842"></a><span class="lineno">  842</span>            {</div>
+<div class="line"><a id="l00843" name="l00843"></a><span class="lineno">  843</span>                _scene.SceneDisposing -= OnSourceDisposing;</div>
+<div class="line"><a id="l00844" name="l00844"></a><span class="lineno">  844</span>                _scene.UnbindRenderSurfaceHost(<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00845" name="l00845"></a><span class="lineno">  845</span>                _scene = <a class="code hl_property" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a5443506468c1f60d06d90d65d49ebee7">Scene</a>.Empty;</div>
+<div class="line"><a id="l00846" name="l00846"></a><span class="lineno">  846</span>            }</div>
+<div class="line"><a id="l00847" name="l00847"></a><span class="lineno">  847</span> </div>
+<div class="line"><a id="l00848" name="l00848"></a><span class="lineno">  848</span>            RenderSurfaceAdapter.Resized -= OnRenderSurfaceAdapterResized;</div>
+<div class="line"><a id="l00849" name="l00849"></a><span class="lineno">  849</span>            Backbuffer.SizeChanged -= OnBackbufferSizeChanged;</div>
+<div class="line"><a id="l00850" name="l00850"></a><span class="lineno">  850</span>            _backbuffer = <span class="keyword">null</span>;</div>
+<div class="line"><a id="l00851" name="l00851"></a><span class="lineno">  851</span>        }</div>
+<div class="line"><a id="l00852" name="l00852"></a><span class="lineno">  852</span> </div>
+<div class="line"><a id="l00853" name="l00853"></a><span class="lineno">  853</span>        _disposed = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00854" name="l00854"></a><span class="lineno">  854</span> </div>
+<div class="line"><a id="l00855" name="l00855"></a><span class="lineno">  855</span>        base.Dispose(disposing);</div>
+<div class="line"><a id="l00856" name="l00856"></a><span class="lineno">  856</span>    }</div>
 </div>
-<div class="line"><a id="l00856" name="l00856"></a><span class="lineno">  856</span> </div>
-<div class="line"><a id="l00857" name="l00857"></a><span class="lineno">  857</span><span class="preprocessor">    #endregion IDisposable</span></div>
-<div class="line"><a id="l00858" name="l00858"></a><span class="lineno">  858</span> </div>
-<div class="line"><a id="l00859" name="l00859"></a><span class="lineno">  859</span><span class="preprocessor">    #region private methods</span></div>
-<div class="line"><a id="l00860" name="l00860"></a><span class="lineno">  860</span> </div>
-<div class="line"><a id="l00861" name="l00861"></a><span class="lineno">  861</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> OnSourceDisposing(<a class="code hl_class" href="classGondwana_1_1Scenes_1_1Scene.html">Scene</a> scene)</div>
-<div class="line"><a id="l00862" name="l00862"></a><span class="lineno">  862</span>    {</div>
-<div class="line"><a id="l00863" name="l00863"></a><span class="lineno">  863</span>        scene.SceneDisposing -= OnSourceDisposing;</div>
-<div class="line"><a id="l00864" name="l00864"></a><span class="lineno">  864</span>        scene.UnbindRenderSurfaceHost(<span class="keyword">this</span>);</div>
-<div class="line"><a id="l00865" name="l00865"></a><span class="lineno">  865</span>        _scene = <a class="code hl_class" href="classGondwana_1_1Scenes_1_1Scene.html">Scene</a>.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a98e66a9feac69e867a1a0b0ba172642f">Empty</a>;</div>
-<div class="line"><a id="l00866" name="l00866"></a><span class="lineno">  866</span>    }</div>
-<div class="line"><a id="l00867" name="l00867"></a><span class="lineno">  867</span> </div>
-<div class="line"><a id="l00868" name="l00868"></a><span class="lineno">  868</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> OnRenderSurfaceAdapterResized(<a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html">RenderSurfaceAdapterResizedEventArgs</a> args)</div>
-<div class="line"><a id="l00869" name="l00869"></a><span class="lineno">  869</span>    {</div>
-<div class="line"><a id="l00870" name="l00870"></a><span class="lineno">  870</span>        Interlocked.Exchange(ref _presentationInvalidated, 1);</div>
-<div class="line"><a id="l00871" name="l00871"></a><span class="lineno">  871</span>        <span class="keywordflow">if</span> (<span class="keywordtype">float</span>.IsFinite(_deferredRenderScale) &amp;&amp; args.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a832f3cb246dbe37104bd3cb0196755f6">NewWidth</a> &gt; 0 &amp;&amp; args.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a9fb3ca7a6384ed8c853ebce8075d2430">NewHeight</a> &gt; 0)</div>
-<div class="line"><a id="l00872" name="l00872"></a><span class="lineno">  872</span>            RequestRenderScale(_deferredRenderScale);</div>
-<div class="line"><a id="l00873" name="l00873"></a><span class="lineno">  873</span>        <span class="keywordflow">if</span> (!_resolutionEstablished &amp;&amp; args.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a832f3cb246dbe37104bd3cb0196755f6">NewWidth</a> &gt; 0 &amp;&amp; args.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a9fb3ca7a6384ed8c853ebce8075d2430">NewHeight</a> &gt; 0)</div>
-<div class="line"><a id="l00874" name="l00874"></a><span class="lineno">  874</span>        {</div>
-<div class="line"><a id="l00875" name="l00875"></a><span class="lineno">  875</span>            _resolutionEstablished = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00876" name="l00876"></a><span class="lineno">  876</span>            RequestRenderScale(<a class="code hl_class" href="classGondwana_1_1Engine.html">Engine</a>.<a class="code hl_property" href="classGondwana_1_1Engine.html#a10ce957685d349193e8268c1421bcec5">Instance</a>.<a class="code hl_property" href="classGondwana_1_1Engine.html#ad8821f813581b2d22fabbb4c9c7c3cb2">Configuration</a>.RenderScale);</div>
-<div class="line"><a id="l00877" name="l00877"></a><span class="lineno">  877</span>        }</div>
-<div class="line"><a id="l00878" name="l00878"></a><span class="lineno">  878</span>    }</div>
-<div class="line"><a id="l00879" name="l00879"></a><span class="lineno">  879</span> </div>
-<div class="line"><a id="l00880" name="l00880"></a><span class="lineno">  880</span>    <span class="keyword">internal</span> <span class="keyword">override</span> <span class="keywordtype">void</span> InvalidatePresentation() =&gt; Interlocked.Exchange(ref _presentationInvalidated, 1);</div>
-<div class="line"><a id="l00881" name="l00881"></a><span class="lineno">  881</span> </div>
-<div class="line"><a id="l00882" name="l00882"></a><span class="lineno">  882</span>    <span class="keyword">internal</span> <span class="keyword">override</span> <span class="keywordtype">void</span> RequestRenderScale(<span class="keywordtype">float</span> scale)</div>
-<div class="line"><a id="l00883" name="l00883"></a><span class="lineno">  883</span>    {</div>
-<div class="line"><a id="l00884" name="l00884"></a><span class="lineno">  884</span>        <span class="keywordflow">if</span> (!_resolutionEstablished || _disposed) <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00885" name="l00885"></a><span class="lineno">  885</span>        var adapter = RenderSurfaceAdapter;</div>
-<div class="line"><a id="l00886" name="l00886"></a><span class="lineno">  886</span>        <span class="comment">// Zero-size requests are deferred until a valid presentation size exists.</span></div>
-<div class="line"><a id="l00887" name="l00887"></a><span class="lineno">  887</span>        <span class="keywordflow">if</span> (adapter.Width &lt;= 0 || adapter.Height &lt;= 0)</div>
-<div class="line"><a id="l00888" name="l00888"></a><span class="lineno">  888</span>        {</div>
-<div class="line"><a id="l00889" name="l00889"></a><span class="lineno">  889</span>            _deferredRenderScale = scale;</div>
-<div class="line"><a id="l00890" name="l00890"></a><span class="lineno">  890</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00891" name="l00891"></a><span class="lineno">  891</span>        }</div>
-<div class="line"><a id="l00892" name="l00892"></a><span class="lineno">  892</span>        _deferredRenderScale = <span class="keywordtype">float</span>.NaN;</div>
-<div class="line"><a id="l00893" name="l00893"></a><span class="lineno">  893</span>        Backbuffer.RequestResize(<a class="code hl_function" href="namespaceGondwana_1_1Rendering.html#a8e514e72a9b64a75895ab92f36ccb2ec">PresentationTransform</a>.ScaleDimension(adapter.Width, scale),</div>
-<div class="line"><a id="l00894" name="l00894"></a><span class="lineno">  894</span>                                 <a class="code hl_function" href="namespaceGondwana_1_1Rendering.html#a8e514e72a9b64a75895ab92f36ccb2ec">PresentationTransform</a>.ScaleDimension(adapter.Height, scale));</div>
-<div class="line"><a id="l00895" name="l00895"></a><span class="lineno">  895</span>    }</div>
-<div class="line"><a id="l00896" name="l00896"></a><span class="lineno">  896</span> </div>
-<div class="line"><a id="l00897" name="l00897"></a><span class="lineno">  897</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> OnBackbufferSizeChanged(<span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height)</div>
-<div class="line"><a id="l00898" name="l00898"></a><span class="lineno">  898</span>    {</div>
-<div class="line"><a id="l00899" name="l00899"></a><span class="lineno">  899</span>        <span class="keywordtype">float</span> scaleX = (float)width / _logicalWidth;</div>
-<div class="line"><a id="l00900" name="l00900"></a><span class="lineno">  900</span>        <span class="keywordtype">float</span> scaleY = (float)height / _logicalHeight;</div>
-<div class="line"><a id="l00901" name="l00901"></a><span class="lineno">  901</span>        _logicalWidth = width;</div>
-<div class="line"><a id="l00902" name="l00902"></a><span class="lineno">  902</span>        _logicalHeight = height;</div>
-<div class="line"><a id="l00903" name="l00903"></a><span class="lineno">  903</span>        RenderSurfaceAdapter.SetBackbufferSize(width, height);</div>
-<div class="line"><a id="l00904" name="l00904"></a><span class="lineno">  904</span>        <span class="keywordflow">foreach</span> (var view <span class="keywordflow">in</span> ViewManager.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Views_1_1ViewManager.html#a73cd2d2e8dd433960f9eeb1c10078472">Views</a>)</div>
-<div class="line"><a id="l00905" name="l00905"></a><span class="lineno">  905</span>        {</div>
-<div class="line"><a id="l00906" name="l00906"></a><span class="lineno">  906</span>            var old = view.Viewport.TargetRectPx;</div>
-<div class="line"><a id="l00907" name="l00907"></a><span class="lineno">  907</span>            view.Viewport.TargetRectPx = <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>.FromLTRB(</div>
-<div class="line"><a id="l00908" name="l00908"></a><span class="lineno">  908</span>                (<span class="keywordtype">int</span>)Math.Round(old.Left * scaleX), (<span class="keywordtype">int</span>)Math.Round(old.Top * scaleY),</div>
-<div class="line"><a id="l00909" name="l00909"></a><span class="lineno">  909</span>                (<span class="keywordtype">int</span>)Math.Round(old.Right * scaleX), (<span class="keywordtype">int</span>)Math.Round(old.Bottom * scaleY));</div>
-<div class="line"><a id="l00910" name="l00910"></a><span class="lineno">  910</span>        }</div>
-<div class="line"><a id="l00911" name="l00911"></a><span class="lineno">  911</span>        Scene.FullRefreshNeeded = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00912" name="l00912"></a><span class="lineno">  912</span>        Interlocked.Exchange(ref _presentationInvalidated, 1);</div>
-<div class="line"><a id="l00913" name="l00913"></a><span class="lineno">  913</span>    }</div>
-<div class="line"><a id="l00914" name="l00914"></a><span class="lineno">  914</span> </div>
-<div class="line"><a id="l00915" name="l00915"></a><span class="lineno">  915</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> PresentBackbufferAll()</div>
-<div class="line"><a id="l00916" name="l00916"></a><span class="lineno">  916</span>    {</div>
-<div class="line"><a id="l00917" name="l00917"></a><span class="lineno">  917</span>        <span class="keywordflow">if</span> (Backbuffer == <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00918" name="l00918"></a><span class="lineno">  918</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00919" name="l00919"></a><span class="lineno">  919</span> </div>
-<div class="line"><a id="l00920" name="l00920"></a><span class="lineno">  920</span>        var img = Backbuffer.Snapshot();</div>
-<div class="line"><a id="l00921" name="l00921"></a><span class="lineno">  921</span>        var src = <span class="keyword">new</span> SKRectI(0, 0, img.Width, img.Height);</div>
-<div class="line"><a id="l00922" name="l00922"></a><span class="lineno">  922</span>        var dst = RenderSurfaceAdapter.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#adf0106bf20c2bf9b71339f3c52344bbf">Presentation</a>.DestinationRect;</div>
-<div class="line"><a id="l00923" name="l00923"></a><span class="lineno">  923</span> </div>
-<div class="line"><a id="l00924" name="l00924"></a><span class="lineno">  924</span>        <span class="comment">// Post to UI thread</span></div>
-<div class="line"><a id="l00925" name="l00925"></a><span class="lineno">  925</span>        Engine.Instance.UiDispatcher!.Post(() =&gt; RenderSurfaceAdapter.<a class="code hl_function" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#a21b2cb15e86a814a070e5d68c15e4e35">Present</a>(img, src, dst));</div>
-<div class="line"><a id="l00926" name="l00926"></a><span class="lineno">  926</span>    }</div>
-<div class="line"><a id="l00927" name="l00927"></a><span class="lineno">  927</span> </div>
-<div class="line"><a id="l00928" name="l00928"></a><span class="lineno">  928</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> PresentBackbufferRect()</div>
-<div class="line"><a id="l00929" name="l00929"></a><span class="lineno">  929</span>    {</div>
-<div class="line"><a id="l00930" name="l00930"></a><span class="lineno">  930</span>        <span class="keywordflow">if</span> (Backbuffer == <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00931" name="l00931"></a><span class="lineno">  931</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00932" name="l00932"></a><span class="lineno">  932</span> </div>
-<div class="line"><a id="l00933" name="l00933"></a><span class="lineno">  933</span>        var dirty = Backbuffer.DirtyRectangle;</div>
-<div class="line"><a id="l00934" name="l00934"></a><span class="lineno">  934</span>        <span class="keywordflow">if</span> (dirty.IsEmpty)</div>
-<div class="line"><a id="l00935" name="l00935"></a><span class="lineno">  935</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00936" name="l00936"></a><span class="lineno">  936</span> </div>
-<div class="line"><a id="l00937" name="l00937"></a><span class="lineno">  937</span>        var bounds = <span class="keyword">new</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>(0, 0, Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a4363faf5b1440170776c8881fb1e761a">Width</a>, Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a904ea16bdee9a1de14718c23ceac671e">Height</a>);</div>
-<div class="line"><a id="l00938" name="l00938"></a><span class="lineno">  938</span>        var clamped = <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>.Intersect(dirty, bounds);</div>
-<div class="line"><a id="l00939" name="l00939"></a><span class="lineno">  939</span>        <span class="keywordflow">if</span> (clamped.IsEmpty)</div>
-<div class="line"><a id="l00940" name="l00940"></a><span class="lineno">  940</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00941" name="l00941"></a><span class="lineno">  941</span> </div>
-<div class="line"><a id="l00942" name="l00942"></a><span class="lineno">  942</span>        var img = Backbuffer.Snapshot();</div>
-<div class="line"><a id="l00943" name="l00943"></a><span class="lineno">  943</span> </div>
-<div class="line"><a id="l00944" name="l00944"></a><span class="lineno">  944</span>        <span class="comment">// Post to UI thread</span></div>
-<div class="line"><a id="l00945" name="l00945"></a><span class="lineno">  945</span>        Engine.Instance.UiDispatcher!.Post(() =&gt;</div>
-<div class="line"><a id="l00946" name="l00946"></a><span class="lineno">  946</span>            RenderSurfaceAdapter!.Present(img, clamped.ToSKRectI(),</div>
-<div class="line"><a id="l00947" name="l00947"></a><span class="lineno">  947</span>                <a class="code hl_function" href="namespaceGondwana_1_1Rendering.html#a8e514e72a9b64a75895ab92f36ccb2ec">PresentationTransform</a>.Fit(img.Width, img.Height, RenderSurfaceAdapter.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#a02161b1fcf631174f0b69d7595f5e74f">Width</a>, RenderSurfaceAdapter.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#ae84340b8de8d385ce27da526d9a87317">Height</a>)</div>
-<div class="line"><a id="l00948" name="l00948"></a><span class="lineno">  948</span>                    .ScreenRectToAdapterRect(clamped).ToSKRect()));</div>
-<div class="line"><a id="l00949" name="l00949"></a><span class="lineno">  949</span>    }</div>
-<div class="line"><a id="l00950" name="l00950"></a><span class="lineno">  950</span> </div>
-<div class="line"><a id="l00951" name="l00951"></a><span class="lineno">  951</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> InvokePostSceneCanvasHooks()</div>
-<div class="line"><a id="l00952" name="l00952"></a><span class="lineno">  952</span>    {</div>
-<div class="line"><a id="l00953" name="l00953"></a><span class="lineno">  953</span>        var hasSurfaceHandlers = RenderBackbufferPostScene is not <span class="keyword">null</span>;</div>
-<div class="line"><a id="l00954" name="l00954"></a><span class="lineno">  954</span>        var hasPlugins = EnginePluginRegistry.All.Count &gt; 0;</div>
-<div class="line"><a id="l00955" name="l00955"></a><span class="lineno">  955</span> </div>
-<div class="line"><a id="l00956" name="l00956"></a><span class="lineno">  956</span>        <span class="keywordflow">if</span> (!hasSurfaceHandlers &amp;&amp; !hasPlugins)</div>
-<div class="line"><a id="l00957" name="l00957"></a><span class="lineno">  957</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00958" name="l00958"></a><span class="lineno">  958</span> </div>
-<div class="line"><a id="l00959" name="l00959"></a><span class="lineno">  959</span>        <span class="keywordflow">if</span> (!Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a18931760ccfbf7d8ee7aa962fec386d1">IsGlThreadRendered</a>)</div>
-<div class="line"><a id="l00960" name="l00960"></a><span class="lineno">  960</span>            Backbuffer.AddToBackbufferDirtyRectangle(<span class="keyword">new</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>(0, 0, Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a4363faf5b1440170776c8881fb1e761a">Width</a>, Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a904ea16bdee9a1de14718c23ceac671e">Height</a>));</div>
-<div class="line"><a id="l00961" name="l00961"></a><span class="lineno">  961</span> </div>
-<div class="line"><a id="l00962" name="l00962"></a><span class="lineno">  962</span>        <span class="keywordflow">if</span> (hasSurfaceHandlers)</div>
-<div class="line"><a id="l00963" name="l00963"></a><span class="lineno">  963</span>            RenderBackbufferPostScene?.Invoke(Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>);</div>
-<div class="line"><a id="l00964" name="l00964"></a><span class="lineno">  964</span> </div>
-<div class="line"><a id="l00965" name="l00965"></a><span class="lineno">  965</span>        <span class="keywordflow">if</span> (hasPlugins)</div>
-<div class="line"><a id="l00966" name="l00966"></a><span class="lineno">  966</span>            EnginePluginRegistry.InvokePostRenderCanvas(Engine.Instance, <span class="keyword">this</span>, Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>);</div>
-<div class="line"><a id="l00967" name="l00967"></a><span class="lineno">  967</span>    }</div>
-<div class="line"><a id="l00968" name="l00968"></a><span class="lineno">  968</span> </div>
-<div class="line"><a id="l00969" name="l00969"></a><span class="lineno">  969</span><span class="preprocessor">    #endregion private methods</span></div>
-<div class="line"><a id="l00970" name="l00970"></a><span class="lineno">  970</span>}</div>
+<div class="line"><a id="l00857" name="l00857"></a><span class="lineno">  857</span> </div>
+<div class="line"><a id="l00858" name="l00858"></a><span class="lineno">  858</span><span class="preprocessor">    #endregion IDisposable</span></div>
+<div class="line"><a id="l00859" name="l00859"></a><span class="lineno">  859</span> </div>
+<div class="line"><a id="l00860" name="l00860"></a><span class="lineno">  860</span><span class="preprocessor">    #region private methods</span></div>
+<div class="line"><a id="l00861" name="l00861"></a><span class="lineno">  861</span> </div>
+<div class="line"><a id="l00862" name="l00862"></a><span class="lineno">  862</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> OnSourceDisposing(<a class="code hl_class" href="classGondwana_1_1Scenes_1_1Scene.html">Scene</a> scene)</div>
+<div class="line"><a id="l00863" name="l00863"></a><span class="lineno">  863</span>    {</div>
+<div class="line"><a id="l00864" name="l00864"></a><span class="lineno">  864</span>        scene.SceneDisposing -= OnSourceDisposing;</div>
+<div class="line"><a id="l00865" name="l00865"></a><span class="lineno">  865</span>        scene.UnbindRenderSurfaceHost(<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00866" name="l00866"></a><span class="lineno">  866</span>        _scene = <a class="code hl_class" href="classGondwana_1_1Scenes_1_1Scene.html">Scene</a>.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a98e66a9feac69e867a1a0b0ba172642f">Empty</a>;</div>
+<div class="line"><a id="l00867" name="l00867"></a><span class="lineno">  867</span>    }</div>
+<div class="line"><a id="l00868" name="l00868"></a><span class="lineno">  868</span> </div>
+<div class="line"><a id="l00869" name="l00869"></a><span class="lineno">  869</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> OnRenderSurfaceAdapterResized(<a class="code hl_class" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html">RenderSurfaceAdapterResizedEventArgs</a> args)</div>
+<div class="line"><a id="l00870" name="l00870"></a><span class="lineno">  870</span>    {</div>
+<div class="line"><a id="l00871" name="l00871"></a><span class="lineno">  871</span>        Interlocked.Exchange(ref _presentationInvalidated, 1);</div>
+<div class="line"><a id="l00872" name="l00872"></a><span class="lineno">  872</span>        <span class="keywordflow">if</span> (<span class="keywordtype">float</span>.IsFinite(_deferredRenderScale) &amp;&amp; args.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a832f3cb246dbe37104bd3cb0196755f6">NewWidth</a> &gt; 0 &amp;&amp; args.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a9fb3ca7a6384ed8c853ebce8075d2430">NewHeight</a> &gt; 0)</div>
+<div class="line"><a id="l00873" name="l00873"></a><span class="lineno">  873</span>            RequestRenderScale(_deferredRenderScale);</div>
+<div class="line"><a id="l00874" name="l00874"></a><span class="lineno">  874</span>        <span class="keywordflow">if</span> (!_resolutionEstablished &amp;&amp; args.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a832f3cb246dbe37104bd3cb0196755f6">NewWidth</a> &gt; 0 &amp;&amp; args.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a9fb3ca7a6384ed8c853ebce8075d2430">NewHeight</a> &gt; 0)</div>
+<div class="line"><a id="l00875" name="l00875"></a><span class="lineno">  875</span>        {</div>
+<div class="line"><a id="l00876" name="l00876"></a><span class="lineno">  876</span>            _resolutionEstablished = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00877" name="l00877"></a><span class="lineno">  877</span>            RequestRenderScale(<a class="code hl_class" href="classGondwana_1_1Engine.html">Engine</a>.<a class="code hl_property" href="classGondwana_1_1Engine.html#a10ce957685d349193e8268c1421bcec5">Instance</a>.<a class="code hl_property" href="classGondwana_1_1Engine.html#ad8821f813581b2d22fabbb4c9c7c3cb2">Configuration</a>.RenderScale);</div>
+<div class="line"><a id="l00878" name="l00878"></a><span class="lineno">  878</span>        }</div>
+<div class="line"><a id="l00879" name="l00879"></a><span class="lineno">  879</span>    }</div>
+<div class="line"><a id="l00880" name="l00880"></a><span class="lineno">  880</span> </div>
+<div class="line"><a id="l00881" name="l00881"></a><span class="lineno">  881</span>    <span class="keyword">internal</span> <span class="keyword">override</span> <span class="keywordtype">void</span> InvalidatePresentation() =&gt; Interlocked.Exchange(ref _presentationInvalidated, 1);</div>
+<div class="line"><a id="l00882" name="l00882"></a><span class="lineno">  882</span> </div>
+<div class="line"><a id="l00883" name="l00883"></a><span class="lineno">  883</span>    <span class="keyword">internal</span> <span class="keyword">override</span> <span class="keywordtype">void</span> RequestRenderScale(<span class="keywordtype">float</span> scale)</div>
+<div class="line"><a id="l00884" name="l00884"></a><span class="lineno">  884</span>    {</div>
+<div class="line"><a id="l00885" name="l00885"></a><span class="lineno">  885</span>        <span class="keywordflow">if</span> (!_resolutionEstablished || _disposed) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00886" name="l00886"></a><span class="lineno">  886</span>        var adapter = RenderSurfaceAdapter;</div>
+<div class="line"><a id="l00887" name="l00887"></a><span class="lineno">  887</span>        <span class="comment">// Zero-size requests are deferred until a valid presentation size exists.</span></div>
+<div class="line"><a id="l00888" name="l00888"></a><span class="lineno">  888</span>        <span class="keywordflow">if</span> (adapter.Width &lt;= 0 || adapter.Height &lt;= 0)</div>
+<div class="line"><a id="l00889" name="l00889"></a><span class="lineno">  889</span>        {</div>
+<div class="line"><a id="l00890" name="l00890"></a><span class="lineno">  890</span>            _deferredRenderScale = scale;</div>
+<div class="line"><a id="l00891" name="l00891"></a><span class="lineno">  891</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00892" name="l00892"></a><span class="lineno">  892</span>        }</div>
+<div class="line"><a id="l00893" name="l00893"></a><span class="lineno">  893</span>        _deferredRenderScale = <span class="keywordtype">float</span>.NaN;</div>
+<div class="line"><a id="l00894" name="l00894"></a><span class="lineno">  894</span>        Backbuffer.RequestResize(<a class="code hl_function" href="namespaceGondwana_1_1Rendering.html#a8e514e72a9b64a75895ab92f36ccb2ec">PresentationTransform</a>.ScaleDimension(adapter.Width, scale),</div>
+<div class="line"><a id="l00895" name="l00895"></a><span class="lineno">  895</span>                                 <a class="code hl_function" href="namespaceGondwana_1_1Rendering.html#a8e514e72a9b64a75895ab92f36ccb2ec">PresentationTransform</a>.ScaleDimension(adapter.Height, scale));</div>
+<div class="line"><a id="l00896" name="l00896"></a><span class="lineno">  896</span>    }</div>
+<div class="line"><a id="l00897" name="l00897"></a><span class="lineno">  897</span> </div>
+<div class="line"><a id="l00898" name="l00898"></a><span class="lineno">  898</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> OnBackbufferSizeChanged(<span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height)</div>
+<div class="line"><a id="l00899" name="l00899"></a><span class="lineno">  899</span>    {</div>
+<div class="line"><a id="l00900" name="l00900"></a><span class="lineno">  900</span>        <span class="keywordtype">float</span> scaleX = (float)width / _logicalWidth;</div>
+<div class="line"><a id="l00901" name="l00901"></a><span class="lineno">  901</span>        <span class="keywordtype">float</span> scaleY = (float)height / _logicalHeight;</div>
+<div class="line"><a id="l00902" name="l00902"></a><span class="lineno">  902</span>        _logicalWidth = width;</div>
+<div class="line"><a id="l00903" name="l00903"></a><span class="lineno">  903</span>        _logicalHeight = height;</div>
+<div class="line"><a id="l00904" name="l00904"></a><span class="lineno">  904</span>        RenderSurfaceAdapter.SetBackbufferSize(width, height);</div>
+<div class="line"><a id="l00905" name="l00905"></a><span class="lineno">  905</span>        <span class="keywordflow">foreach</span> (var view <span class="keywordflow">in</span> ViewManager.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Views_1_1ViewManager.html#a73cd2d2e8dd433960f9eeb1c10078472">Views</a>)</div>
+<div class="line"><a id="l00906" name="l00906"></a><span class="lineno">  906</span>        {</div>
+<div class="line"><a id="l00907" name="l00907"></a><span class="lineno">  907</span>            var old = view.Viewport.TargetRectPx;</div>
+<div class="line"><a id="l00908" name="l00908"></a><span class="lineno">  908</span>            view.Viewport.TargetRectPx = <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>.FromLTRB(</div>
+<div class="line"><a id="l00909" name="l00909"></a><span class="lineno">  909</span>                (<span class="keywordtype">int</span>)Math.Round(old.Left * scaleX), (<span class="keywordtype">int</span>)Math.Round(old.Top * scaleY),</div>
+<div class="line"><a id="l00910" name="l00910"></a><span class="lineno">  910</span>                (<span class="keywordtype">int</span>)Math.Round(old.Right * scaleX), (<span class="keywordtype">int</span>)Math.Round(old.Bottom * scaleY));</div>
+<div class="line"><a id="l00911" name="l00911"></a><span class="lineno">  911</span>        }</div>
+<div class="line"><a id="l00912" name="l00912"></a><span class="lineno">  912</span>        Scene.FullRefreshNeeded = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00913" name="l00913"></a><span class="lineno">  913</span>        Interlocked.Exchange(ref _presentationInvalidated, 1);</div>
+<div class="line"><a id="l00914" name="l00914"></a><span class="lineno">  914</span>    }</div>
+<div class="line"><a id="l00915" name="l00915"></a><span class="lineno">  915</span> </div>
+<div class="line"><a id="l00916" name="l00916"></a><span class="lineno">  916</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> PresentBackbufferAll()</div>
+<div class="line"><a id="l00917" name="l00917"></a><span class="lineno">  917</span>    {</div>
+<div class="line"><a id="l00918" name="l00918"></a><span class="lineno">  918</span>        <span class="keywordflow">if</span> (Backbuffer == <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00919" name="l00919"></a><span class="lineno">  919</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00920" name="l00920"></a><span class="lineno">  920</span> </div>
+<div class="line"><a id="l00921" name="l00921"></a><span class="lineno">  921</span>        var img = Backbuffer.Snapshot();</div>
+<div class="line"><a id="l00922" name="l00922"></a><span class="lineno">  922</span>        var src = <span class="keyword">new</span> SKRectI(0, 0, img.Width, img.Height);</div>
+<div class="line"><a id="l00923" name="l00923"></a><span class="lineno">  923</span>        var dst = RenderSurfaceAdapter.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#adf0106bf20c2bf9b71339f3c52344bbf">Presentation</a>.DestinationRect;</div>
+<div class="line"><a id="l00924" name="l00924"></a><span class="lineno">  924</span> </div>
+<div class="line"><a id="l00925" name="l00925"></a><span class="lineno">  925</span>        <span class="comment">// Post to UI thread</span></div>
+<div class="line"><a id="l00926" name="l00926"></a><span class="lineno">  926</span>        Engine.Instance.UiDispatcher!.Post(() =&gt; RenderSurfaceAdapter.<a class="code hl_function" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#a21b2cb15e86a814a070e5d68c15e4e35">Present</a>(img, src, dst));</div>
+<div class="line"><a id="l00927" name="l00927"></a><span class="lineno">  927</span>    }</div>
+<div class="line"><a id="l00928" name="l00928"></a><span class="lineno">  928</span> </div>
+<div class="line"><a id="l00929" name="l00929"></a><span class="lineno">  929</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> PresentBackbufferRect()</div>
+<div class="line"><a id="l00930" name="l00930"></a><span class="lineno">  930</span>    {</div>
+<div class="line"><a id="l00931" name="l00931"></a><span class="lineno">  931</span>        <span class="keywordflow">if</span> (Backbuffer == <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00932" name="l00932"></a><span class="lineno">  932</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00933" name="l00933"></a><span class="lineno">  933</span> </div>
+<div class="line"><a id="l00934" name="l00934"></a><span class="lineno">  934</span>        var dirty = Backbuffer.DirtyRectangle;</div>
+<div class="line"><a id="l00935" name="l00935"></a><span class="lineno">  935</span>        <span class="keywordflow">if</span> (dirty.IsEmpty)</div>
+<div class="line"><a id="l00936" name="l00936"></a><span class="lineno">  936</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00937" name="l00937"></a><span class="lineno">  937</span> </div>
+<div class="line"><a id="l00938" name="l00938"></a><span class="lineno">  938</span>        var bounds = <span class="keyword">new</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>(0, 0, Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a4363faf5b1440170776c8881fb1e761a">Width</a>, Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a904ea16bdee9a1de14718c23ceac671e">Height</a>);</div>
+<div class="line"><a id="l00939" name="l00939"></a><span class="lineno">  939</span>        var clamped = <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>.Intersect(dirty, bounds);</div>
+<div class="line"><a id="l00940" name="l00940"></a><span class="lineno">  940</span>        <span class="keywordflow">if</span> (clamped.IsEmpty)</div>
+<div class="line"><a id="l00941" name="l00941"></a><span class="lineno">  941</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00942" name="l00942"></a><span class="lineno">  942</span> </div>
+<div class="line"><a id="l00943" name="l00943"></a><span class="lineno">  943</span>        var img = Backbuffer.Snapshot();</div>
+<div class="line"><a id="l00944" name="l00944"></a><span class="lineno">  944</span> </div>
+<div class="line"><a id="l00945" name="l00945"></a><span class="lineno">  945</span>        <span class="comment">// Post to UI thread</span></div>
+<div class="line"><a id="l00946" name="l00946"></a><span class="lineno">  946</span>        Engine.Instance.UiDispatcher!.Post(() =&gt;</div>
+<div class="line"><a id="l00947" name="l00947"></a><span class="lineno">  947</span>            RenderSurfaceAdapter!.Present(img, clamped.ToSKRectI(),</div>
+<div class="line"><a id="l00948" name="l00948"></a><span class="lineno">  948</span>                <a class="code hl_function" href="namespaceGondwana_1_1Rendering.html#a8e514e72a9b64a75895ab92f36ccb2ec">PresentationTransform</a>.Fit(img.Width, img.Height, RenderSurfaceAdapter.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#a02161b1fcf631174f0b69d7595f5e74f">Width</a>, RenderSurfaceAdapter.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#ae84340b8de8d385ce27da526d9a87317">Height</a>)</div>
+<div class="line"><a id="l00949" name="l00949"></a><span class="lineno">  949</span>                    .ScreenRectToAdapterRect(clamped).ToSKRect()));</div>
+<div class="line"><a id="l00950" name="l00950"></a><span class="lineno">  950</span>    }</div>
+<div class="line"><a id="l00951" name="l00951"></a><span class="lineno">  951</span> </div>
+<div class="line"><a id="l00952" name="l00952"></a><span class="lineno">  952</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> InvokePostSceneCanvasHooks()</div>
+<div class="line"><a id="l00953" name="l00953"></a><span class="lineno">  953</span>    {</div>
+<div class="line"><a id="l00954" name="l00954"></a><span class="lineno">  954</span>        var hasSurfaceHandlers = RenderBackbufferPostScene is not <span class="keyword">null</span>;</div>
+<div class="line"><a id="l00955" name="l00955"></a><span class="lineno">  955</span>        var hasPlugins = EnginePluginRegistry.All.Count &gt; 0;</div>
+<div class="line"><a id="l00956" name="l00956"></a><span class="lineno">  956</span> </div>
+<div class="line"><a id="l00957" name="l00957"></a><span class="lineno">  957</span>        <span class="keywordflow">if</span> (!hasSurfaceHandlers &amp;&amp; !hasPlugins)</div>
+<div class="line"><a id="l00958" name="l00958"></a><span class="lineno">  958</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00959" name="l00959"></a><span class="lineno">  959</span> </div>
+<div class="line"><a id="l00960" name="l00960"></a><span class="lineno">  960</span>        <span class="keywordflow">if</span> (!Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a18931760ccfbf7d8ee7aa962fec386d1">IsGlThreadRendered</a>)</div>
+<div class="line"><a id="l00961" name="l00961"></a><span class="lineno">  961</span>            Backbuffer.AddToBackbufferDirtyRectangle(<span class="keyword">new</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>(0, 0, Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a4363faf5b1440170776c8881fb1e761a">Width</a>, Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a904ea16bdee9a1de14718c23ceac671e">Height</a>));</div>
+<div class="line"><a id="l00962" name="l00962"></a><span class="lineno">  962</span> </div>
+<div class="line"><a id="l00963" name="l00963"></a><span class="lineno">  963</span>        <span class="keywordflow">if</span> (hasSurfaceHandlers)</div>
+<div class="line"><a id="l00964" name="l00964"></a><span class="lineno">  964</span>            RenderBackbufferPostScene?.Invoke(Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>);</div>
+<div class="line"><a id="l00965" name="l00965"></a><span class="lineno">  965</span> </div>
+<div class="line"><a id="l00966" name="l00966"></a><span class="lineno">  966</span>        <span class="keywordflow">if</span> (hasPlugins)</div>
+<div class="line"><a id="l00967" name="l00967"></a><span class="lineno">  967</span>            EnginePluginRegistry.InvokePostRenderCanvas(Engine.Instance, <span class="keyword">this</span>, Backbuffer.<a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Canvas</a>);</div>
+<div class="line"><a id="l00968" name="l00968"></a><span class="lineno">  968</span>    }</div>
+<div class="line"><a id="l00969" name="l00969"></a><span class="lineno">  969</span> </div>
+<div class="line"><a id="l00970" name="l00970"></a><span class="lineno">  970</span><span class="preprocessor">    #endregion private methods</span></div>
+<div class="line"><a id="l00971" name="l00971"></a><span class="lineno">  971</span>}</div>
 </div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingManager_html"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingManager.html">Gondwana.Drawing.Direct.DirectDrawingManager</a></div><div class="ttdoc">Manages the lifecycle, registration, and retrieval of all direct drawing objects in the Gondwana engi...</div><div class="ttdef"><b>Definition</b> <a href="DirectDrawingManager_8cs_source.html#l00040">DirectDrawingManager.cs:41</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingManager_html_a3240711887e8dd2c0b7fa87ce3688a40"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingManager.html#a3240711887e8dd2c0b7fa87ce3688a40">Gondwana.Drawing.Direct.DirectDrawingManager.Instance</a></div><div class="ttdeci">static DirectDrawingManager Instance</div><div class="ttdoc">Gets the singleton instance of the direct drawing manager.</div><div class="ttdef"><b>Definition</b> <a href="DirectDrawingManager_8cs_source.html#l00050">DirectDrawingManager.cs:50</a></div></div>
@@ -855,7 +856,7 @@ $(function(){initNavTree('RenderSurfaceHost_8cs_source.html','',''); });
 <div class="ttc" id="aclassGondwana_1_1Engine_html_a626de1eeb9d5528a11c8e1a6756d252f"><div class="ttname"><a href="classGondwana_1_1Engine.html#a626de1eeb9d5528a11c8e1a6756d252f">Gondwana.Engine.Logger</a></div><div class="ttdeci">static ILogger&lt; Engine &gt; Logger</div><div class="ttdoc">Gets the logger instance used by the engine for diagnostic and informational messages.</div><div class="ttdef"><b>Definition</b> <a href="Engine_8cs_source.html#l00059">Engine.cs:59</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Engine_html_ad8821f813581b2d22fabbb4c9c7c3cb2"><div class="ttname"><a href="classGondwana_1_1Engine.html#ad8821f813581b2d22fabbb4c9c7c3cb2">Gondwana.Engine.Configuration</a></div><div class="ttdeci">EngineConfiguration Configuration</div><div class="ttdoc">Gets the current engine configuration settings.</div><div class="ttdef"><b>Definition</b> <a href="Engine_8cs_source.html#l00835">Engine.cs:836</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase_html"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html">Gondwana.Rendering.Backbuffers.BackbufferBase</a></div><div class="ttdoc">Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rende...</div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00019">BackbufferBase.cs:20</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase_html_a18931760ccfbf7d8ee7aa962fec386d1"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a18931760ccfbf7d8ee7aa962fec386d1">Gondwana.Rendering.Backbuffers.BackbufferBase.IsGlThreadRendered</a></div><div class="ttdeci">virtual bool IsGlThreadRendered</div><div class="ttdoc">Gets a value indicating whether this backbuffer is rendered on the GL thread rather than the engine&#39;s...</div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00487">BackbufferBase.cs:487</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase_html_a18931760ccfbf7d8ee7aa962fec386d1"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a18931760ccfbf7d8ee7aa962fec386d1">Gondwana.Rendering.Backbuffers.BackbufferBase.IsGlThreadRendered</a></div><div class="ttdeci">virtual bool IsGlThreadRendered</div><div class="ttdoc">Gets a value indicating whether this backbuffer is rendered on the GL thread rather than the engine&#39;s...</div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00492">BackbufferBase.cs:492</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase_html_a4363faf5b1440170776c8881fb1e761a"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a4363faf5b1440170776c8881fb1e761a">Gondwana.Rendering.Backbuffers.BackbufferBase.Width</a></div><div class="ttdeci">int Width</div><div class="ttdoc">Gets the current Backbuffer width in a thread-safe manner.</div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00185">BackbufferBase.cs:185</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase_html_a904ea16bdee9a1de14718c23ceac671e"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a904ea16bdee9a1de14718c23ceac671e">Gondwana.Rendering.Backbuffers.BackbufferBase.Height</a></div><div class="ttdeci">int Height</div><div class="ttdoc">Gets the current Backbuffer height in a thread-safe manner.</div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00190">BackbufferBase.cs:190</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase_html_aec9089b369950756218d786c83a59af5"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Gondwana.Rendering.Backbuffers.BackbufferBase.Canvas</a></div><div class="ttdeci">SKCanvas Canvas</div><div class="ttdoc">Gets the SkiaSharp canvas used for drawing operations on this backbuffer.</div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00060">BackbufferBase.cs:60</a></div></div>
@@ -874,7 +875,7 @@ $(function(){initNavTree('RenderSurfaceHost_8cs_source.html','',''); });
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g_html_a5443506468c1f60d06d90d65d49ebee7"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a5443506468c1f60d06d90d65d49ebee7">Gondwana.Rendering.RenderSurfaceHost-1-g.Scene</a></div><div class="ttdeci">override Scene Scene</div><div class="ttdoc">Gets the scene currently bound to this render surface host.</div><div class="ttdef"><b>Definition</b> <a href="#l00181">RenderSurfaceHost.cs:181</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g_html_a67f94f0c04700627f1f85fa5b7927eee"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a67f94f0c04700627f1f85fa5b7927eee">Gondwana.Rendering.RenderSurfaceHost-1-g.RenderBackbufferEnd</a></div><div class="ttdeci">Action? RenderBackbufferEnd</div><div class="ttdoc">Occurs at the end of the backbuffer rendering process.</div><div class="ttdef"><b>Definition</b> <a href="#l00059">RenderSurfaceHost.cs:59</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g_html_a6df1d4dbd2be4ad06f17518294425948"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a6df1d4dbd2be4ad06f17518294425948">Gondwana.Rendering.RenderSurfaceHost-1-g.RenderSurfaceHost</a></div><div class="ttdeci">RenderSurfaceHost() RenderSurfaceHost(RenderSurfaceAdapterBase renderSurfaceAdapter)</div><div class="ttdoc">Initializes a new instance of the RenderSurfaceHost&lt;TBackbuffer&gt; class with the specified render surf...</div><div class="ttdef"><b>Definition</b> <a href="#l00111">RenderSurfaceHost.cs:111</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g_html_a79f88c27799c59b82709dbe3994e0d6c"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a79f88c27799c59b82709dbe3994e0d6c">Gondwana.Rendering.RenderSurfaceHost-1-g.Dispose</a></div><div class="ttdeci">override void Dispose(bool disposing)</div><div class="ttdoc">Releases resources used by this RenderSurfaceHostBase instance and unregisters it from the RenderSurf...</div><div class="ttdef"><b>Definition</b> <a href="#l00833">RenderSurfaceHost.cs:833</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g_html_a79f88c27799c59b82709dbe3994e0d6c"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a79f88c27799c59b82709dbe3994e0d6c">Gondwana.Rendering.RenderSurfaceHost-1-g.Dispose</a></div><div class="ttdeci">override void Dispose(bool disposing)</div><div class="ttdoc">Releases resources used by this RenderSurfaceHostBase instance and unregisters it from the RenderSurf...</div><div class="ttdef"><b>Definition</b> <a href="#l00834">RenderSurfaceHost.cs:834</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g_html_ab02a5f41d5ec6ba966313de1d4521307"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#ab02a5f41d5ec6ba966313de1d4521307">Gondwana.Rendering.RenderSurfaceHost-1-g.RenderSurfaceAdapter</a></div><div class="ttdeci">override RenderSurfaceAdapterBase RenderSurfaceAdapter</div><div class="ttdoc">Gets the platform-specific adapter that provides the underlying rendering surface.</div><div class="ttdef"><b>Definition</b> <a href="#l00194">RenderSurfaceHost.cs:194</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g_html_acfa3a199fe952ad768ce944219d40ac2"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#acfa3a199fe952ad768ce944219d40ac2">Gondwana.Rendering.RenderSurfaceHost-1-g.RenderBackbufferNoOp</a></div><div class="ttdeci">Action? RenderBackbufferNoOp</div><div class="ttdoc">Occurs when a backbuffer render operation is skipped because the scene is not dirty.</div><div class="ttdef"><b>Definition</b> <a href="#l00064">RenderSurfaceHost.cs:64</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g_html_ad2eee4bd5139d89c515b2d79463f2f03"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#ad2eee4bd5139d89c515b2d79463f2f03">Gondwana.Rendering.RenderSurfaceHost-1-g.Bind</a></div><div class="ttdeci">void Bind(Scene newScene, bool limitCameraToWorldBoundPx=true)</div><div class="ttdoc">Binds a scene to this render surface host, replacing any previously bound scene.</div><div class="ttdef"><b>Definition</b> <a href="#l00247">RenderSurfaceHost.cs:247</a></div></div>

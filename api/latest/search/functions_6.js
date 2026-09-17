@@ -55,10 +55,11 @@ var searchData=
   ['getviewsbelow_52',['GetViewsBelow',['../classGondwana_1_1Rendering_1_1Views_1_1ViewManager.html#adc9874603bc679a94f1d86f860eb0790',1,'Gondwana::Rendering::Views::ViewManager']]],
   ['getvisualboundsscreen_53',['GetVisualBoundsScreen',['../classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#aaee03baa83dc3daebcc7ee24ec84949f',1,'Gondwana::Drawing::Sprites::Sprite']]],
   ['getworldboundspx_54',['GetWorldBoundsPx',['../classGondwana_1_1Scenes_1_1Scene.html#ac7e3702793a7ffac747cb439ab50295a',1,'Gondwana::Scenes::Scene']]],
-  ['gldrawcurrentframetocanvas_55',['GlDrawCurrentFrameToCanvas',['../classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a6dfa99f99d51d1080bc52d205d5a55ee',1,'Gondwana::Rendering::RenderSurfaceHostBase']]],
-  ['glrenderandsnapshot_56',['GlRenderAndSnapshot',['../classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#aa4889c2c598f4b21e07ec34728d064ce',1,'Gondwana::Rendering::RenderSurfaceHostBase']]],
-  ['glrendertocanvas_57',['GlRenderToCanvas',['../classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#adde61565cb3feb05a1b42abe686b0185',1,'Gondwana::Rendering::RenderSurfaceHostBase']]],
-  ['glsnapshotcurrentframe_58',['GlSnapshotCurrentFrame',['../classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#aee30ea8388cd79faa818395fff8d7fcc',1,'Gondwana::Rendering::RenderSurfaceHostBase']]],
-  ['gpubackbuffer_59',['GpuBackbuffer',['../classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a4aec5c53e310704b6b92745c5ba51f64',1,'Gondwana::Rendering::Backbuffers::GpuBackbuffer']]],
-  ['gridtoworldpx_60',['GridToWorldPx',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a8e484b10fcc567050632269596c987d4',1,'Gondwana::Scenes::SceneLayer']]]
+  ['getwrappedoffsets_55',['GetWrappedOffsets',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a3685c13f15f49d004d4d22a9a71fc0af',1,'Gondwana::Scenes::SceneLayer']]],
+  ['gldrawcurrentframetocanvas_56',['GlDrawCurrentFrameToCanvas',['../classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a6dfa99f99d51d1080bc52d205d5a55ee',1,'Gondwana::Rendering::RenderSurfaceHostBase']]],
+  ['glrenderandsnapshot_57',['GlRenderAndSnapshot',['../classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#aa4889c2c598f4b21e07ec34728d064ce',1,'Gondwana::Rendering::RenderSurfaceHostBase']]],
+  ['glrendertocanvas_58',['GlRenderToCanvas',['../classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#adde61565cb3feb05a1b42abe686b0185',1,'Gondwana::Rendering::RenderSurfaceHostBase']]],
+  ['glsnapshotcurrentframe_59',['GlSnapshotCurrentFrame',['../classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#aee30ea8388cd79faa818395fff8d7fcc',1,'Gondwana::Rendering::RenderSurfaceHostBase']]],
+  ['gpubackbuffer_60',['GpuBackbuffer',['../classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a4aec5c53e310704b6b92745c5ba51f64',1,'Gondwana::Rendering::Backbuffers::GpuBackbuffer']]],
+  ['gridtoworldpx_61',['GridToWorldPx',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a8e484b10fcc567050632269596c987d4',1,'Gondwana::Scenes::SceneLayer']]]
 ];

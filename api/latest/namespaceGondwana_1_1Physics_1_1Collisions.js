@@ -17,5 +17,6 @@ var namespaceGondwana_1_1Physics_1_1Collisions =
       [ "None", "namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410ca6adf97f83acf6453d4a6a4b1070f3754", null ],
       [ "Blocking", "namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410cabd0ca6be53b0f3d2886fd53fcb52574e", null ],
       [ "Trigger", "namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410caf698f67f5666aff10729d8a1cb1c14d2", null ]
-    ] ]
+    ] ],
+    [ "ColliderInstance", "namespaceGondwana_1_1Physics_1_1Collisions.html#a9164fb25257c4f83c88af67c8357cb24", null ]
 ];

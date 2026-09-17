@@ -35,9 +35,10 @@ var searchData=
   ['worldstatic_32',['WorldStatic',['../classGondwana_1_1Physics_1_1Collisions_1_1CollisionGroupRegistry.html#a11fc83dc771ead23bf4ce7a08653bfa7',1,'Gondwana::Physics::Collisions::CollisionGroupRegistry']]],
   ['wrapgrid_33',['WrapGrid',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a1752ec1eb9abb1316ea8421f07f54006',1,'Gondwana::Scenes::SceneLayer']]],
   ['wraphorizontally_34',['WrapHorizontally',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a56c96e2aac98cc844669261aad0fee56',1,'Gondwana::Scenes::SceneLayer']]],
-  ['wrappingchanged_35',['WrappingChanged',['../classGondwana_1_1Scenes_1_1SceneLayer.html#ac2d4d3999fb500703dae19720bbd85e5',1,'Gondwana::Scenes::SceneLayer']]],
-  ['wraptext_36',['WrapText',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a575e61c710ec7ed5fecad27a05afee27',1,'Gondwana::Drawing::Direct::TextBlock']]],
-  ['wrapvertically_37',['WrapVertically',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a07994ff52aae5a303748d8be3cf3e81b',1,'Gondwana::Scenes::SceneLayer']]],
-  ['wrapx_38',['WrapX',['../classGondwana_1_1Physics_1_1Movement_1_1MovementController.html#a0be3cccdce85d60621c67e07ba848267',1,'Gondwana::Physics::Movement::MovementController']]],
-  ['wrapy_39',['WrapY',['../classGondwana_1_1Physics_1_1Movement_1_1MovementController.html#a334ab5cb955577f389ea17b030b9cef8',1,'Gondwana::Physics::Movement::MovementController']]]
+  ['wrappedoffsetworldpx_35',['WrappedOffsetWorldPx',['../classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html#a1c0fe295b25edeefe197292170177d80',1,'Gondwana::Widgets::WidgetPointerEventArgs']]],
+  ['wrappingchanged_36',['WrappingChanged',['../classGondwana_1_1Scenes_1_1SceneLayer.html#ac2d4d3999fb500703dae19720bbd85e5',1,'Gondwana::Scenes::SceneLayer']]],
+  ['wraptext_37',['WrapText',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a575e61c710ec7ed5fecad27a05afee27',1,'Gondwana::Drawing::Direct::TextBlock']]],
+  ['wrapvertically_38',['WrapVertically',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a07994ff52aae5a303748d8be3cf3e81b',1,'Gondwana::Scenes::SceneLayer']]],
+  ['wrapx_39',['WrapX',['../classGondwana_1_1Physics_1_1Movement_1_1MovementController.html#a0be3cccdce85d60621c67e07ba848267',1,'Gondwana::Physics::Movement::MovementController']]],
+  ['wrapy_40',['WrapY',['../classGondwana_1_1Physics_1_1Movement_1_1MovementController.html#a334ab5cb955577f389ea17b030b9cef8',1,'Gondwana::Physics::Movement::MovementController']]]
 ];

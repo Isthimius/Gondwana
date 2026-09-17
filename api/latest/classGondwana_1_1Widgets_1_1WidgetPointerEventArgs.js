@@ -7,5 +7,6 @@ var classGondwana_1_1Widgets_1_1WidgetPointerEventArgs =
     [ "IsPrimaryButton", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html#a3bdd9e2840f20189710f8d3b7ece174a", null ],
     [ "PointerId", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html#a9d00cd0fd6491b1ac8fdb17f7a163340", null ],
     [ "ScreenPositionPx", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html#a9f2147774640c5c71533a16f9fc65e69", null ],
-    [ "View", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html#a44cf0bb69c88e7fae01fcd97cd8a9f8d", null ]
+    [ "View", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html#a44cf0bb69c88e7fae01fcd97cd8a9f8d", null ],
+    [ "WrappedOffsetWorldPx", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html#a1c0fe295b25edeefe197292170177d80", null ]
 ];

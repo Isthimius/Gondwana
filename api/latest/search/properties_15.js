@@ -8,8 +8,9 @@ var searchData=
   ['worldboundspx_5',['WorldBoundsPx',['../classGondwana_1_1Rendering_1_1Views_1_1Camera.html#ad5075dc2214fb86d602df53f6d6347ff',1,'Gondwana::Rendering::Views::Camera']]],
   ['worldstatic_6',['WorldStatic',['../classGondwana_1_1Physics_1_1Collisions_1_1CollisionGroupRegistry.html#a11fc83dc771ead23bf4ce7a08653bfa7',1,'Gondwana::Physics::Collisions::CollisionGroupRegistry']]],
   ['wraphorizontally_7',['WrapHorizontally',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a56c96e2aac98cc844669261aad0fee56',1,'Gondwana::Scenes::SceneLayer']]],
-  ['wraptext_8',['WrapText',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a575e61c710ec7ed5fecad27a05afee27',1,'Gondwana::Drawing::Direct::TextBlock']]],
-  ['wrapvertically_9',['WrapVertically',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a07994ff52aae5a303748d8be3cf3e81b',1,'Gondwana::Scenes::SceneLayer']]],
-  ['wrapx_10',['WrapX',['../classGondwana_1_1Physics_1_1Movement_1_1MovementController.html#a0be3cccdce85d60621c67e07ba848267',1,'Gondwana::Physics::Movement::MovementController']]],
-  ['wrapy_11',['WrapY',['../classGondwana_1_1Physics_1_1Movement_1_1MovementController.html#a334ab5cb955577f389ea17b030b9cef8',1,'Gondwana::Physics::Movement::MovementController']]]
+  ['wrappedoffsetworldpx_8',['WrappedOffsetWorldPx',['../classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html#a1c0fe295b25edeefe197292170177d80',1,'Gondwana::Widgets::WidgetPointerEventArgs']]],
+  ['wraptext_9',['WrapText',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a575e61c710ec7ed5fecad27a05afee27',1,'Gondwana::Drawing::Direct::TextBlock']]],
+  ['wrapvertically_10',['WrapVertically',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a07994ff52aae5a303748d8be3cf3e81b',1,'Gondwana::Scenes::SceneLayer']]],
+  ['wrapx_11',['WrapX',['../classGondwana_1_1Physics_1_1Movement_1_1MovementController.html#a0be3cccdce85d60621c67e07ba848267',1,'Gondwana::Physics::Movement::MovementController']]],
+  ['wrapy_12',['WrapY',['../classGondwana_1_1Physics_1_1Movement_1_1MovementController.html#a334ab5cb955577f389ea17b030b9cef8',1,'Gondwana::Physics::Movement::MovementController']]]
 ];

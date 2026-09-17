@@ -137,6 +137,11 @@ Enumerations</h2></td></tr>
 , <a class="el" href="#a84746e66ff584652acc19981dd0b410caf698f67f5666aff10729d8a1cb1c14d2">Trigger</a> = 2
  }</td></tr>
 <tr class="memdesc:a84746e66ff584652acc19981dd0b410c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the default collision behavior associated with a tilesheet region, frame, or runtime tile.  <a href="#a84746e66ff584652acc19981dd0b410c">More...</a><br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a9164fb25257c4f83c88af67c8357cb24" id="r_a9164fb25257c4f83c88af67c8357cb24"><td class="memItemLeft" align="right" valign="top">readonly record struct&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9164fb25257c4f83c88af67c8357cb24">ColliderInstance</a> (<a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html">ICollider</a> Collider, <a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1Aabb.html">Aabb</a> BoundsWorldPx)</td></tr>
+<tr class="memdesc:a9164fb25257c4f83c88af67c8357cb24"><td class="mdescLeft">&#160;</td><td class="mdescRight">A canonical collider and the world-space bounds of one queried periodic instance.  <br /></td></tr>
 </table>
 <a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
 <a id="a37c66388b8160dcd6146a1a759e987a5" name="a37c66388b8160dcd6146a1a759e987a5"></a>
@@ -186,6 +191,37 @@ Enumerations</h2></td></tr>
 </table>
 
 <p class="definition">Definition at line <a class="el" href="TileCollisionType_8cs_source.html#l00011">11</a> of file <a class="el" href="TileCollisionType_8cs_source.html">TileCollisionType.cs</a>.</p>
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a9164fb25257c4f83c88af67c8357cb24" name="a9164fb25257c4f83c88af67c8357cb24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9164fb25257c4f83c88af67c8357cb24">&#9670;&#160;</a></span>ColliderInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">readonly record struct Gondwana.Physics.Collisions.ColliderInstance </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html">ICollider</a></td>          <td class="paramname"><span class="paramname"><em>Collider</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1Aabb.html">Aabb</a></td>          <td class="paramname"><span class="paramname"><em>BoundsWorldPx</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>A canonical collider and the world-space bounds of one queried periodic instance. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Collider</td><td>The original registered collider; never a clone.</td></tr>
+    <tr><td class="paramname">BoundsWorldPx</td><td>Translated bounds to use for overlap and resolution.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

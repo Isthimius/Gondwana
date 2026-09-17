@@ -120,6 +120,8 @@ Public Member Functions</h2></td></tr>
 Properties</h2></td></tr>
 <tr class="memitem:a44cf0bb69c88e7fae01fcd97cd8a9f8d" id="r_a44cf0bb69c88e7fae01fcd97cd8a9f8d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a44cf0bb69c88e7fae01fcd97cd8a9f8d">View</a><code> [get]</code></td></tr>
 <tr class="memdesc:a44cf0bb69c88e7fae01fcd97cd8a9f8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the view through which the pointer interaction was routed.  <br /></td></tr>
+<tr class="memitem:a1c0fe295b25edeefe197292170177d80" id="r_a1c0fe295b25edeefe197292170177d80"><td class="memItemLeft" align="right" valign="top">PointF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1c0fe295b25edeefe197292170177d80">WrappedOffsetWorldPx</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a1c0fe295b25edeefe197292170177d80"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space translation of the selected periodic widget instance. Retained throughout pointer capture; zero for view-space widgets and canonical copies.  <br /></td></tr>
 <tr class="memitem:a9f2147774640c5c71533a16f9fc65e69" id="r_a9f2147774640c5c71533a16f9fc65e69"><td class="memItemLeft" align="right" valign="top">PointF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9f2147774640c5c71533a16f9fc65e69">ScreenPositionPx</a><code> [get]</code></td></tr>
 <tr class="memdesc:a9f2147774640c5c71533a16f9fc65e69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the pointer position in screen pixels.  <br /></td></tr>
 <tr class="memitem:ae7523522a965fa90bc5c0534b3f91456" id="r_ae7523522a965fa90bc5c0534b3f91456"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Widgets.html#a4f23503be12c54428a2e6fb6efd473fe">WidgetPointerButtonEnum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae7523522a965fa90bc5c0534b3f91456">Button</a><code> [get]</code></td></tr>
@@ -242,7 +244,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the pointer button involved in the interaction. </p>
 
-<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00057">57</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00063">63</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -268,7 +270,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the number of clicks associated with this pointer action. </p>
 
-<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00062">62</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00068">68</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -294,7 +296,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the movement delta in pixels since the previous pointer update. </p>
 
-<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00067">67</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00073">73</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -320,7 +322,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets whether the pointer event represents a primary-button interaction. </p>
 
-<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00077">77</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00083">83</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -346,7 +348,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the identifier of the pointer that produced the event. </p>
 
-<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00072">72</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00078">78</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -372,7 +374,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the pointer position in screen pixels. </p>
 
-<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00052">52</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00058">58</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -399,6 +401,32 @@ Additional Inherited Members</h2></td></tr>
 <p>Gets the view through which the pointer interaction was routed. </p>
 
 <p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00047">47</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
+
+</div>
+</div>
+<a id="a1c0fe295b25edeefe197292170177d80" name="a1c0fe295b25edeefe197292170177d80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c0fe295b25edeefe197292170177d80">&#9670;&#160;</a></span>WrappedOffsetWorldPx</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">PointF Gondwana.Widgets.WidgetPointerEventArgs.WrappedOffsetWorldPx</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>World-space translation of the selected periodic widget instance. Retained throughout pointer capture; zero for view-space widgets and canonical copies. </p>
+
+<p class="definition">Definition at line <a class="el" href="WidgetPointerEventArgs_8cs_source.html#l00053">53</a> of file <a class="el" href="WidgetPointerEventArgs_8cs_source.html">WidgetPointerEventArgs.cs</a>.</p>
 
 </div>
 </div>
