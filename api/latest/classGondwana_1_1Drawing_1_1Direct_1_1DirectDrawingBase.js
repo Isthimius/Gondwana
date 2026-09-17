@@ -8,6 +8,7 @@ var classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase =
     ] ],
     [ "DirectDrawingBase", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#aec900d8f5d092b35565e658a0b845560", null ],
     [ "CancelFade", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#abbc8721e4dec41025c7c55aa1855b3ce", null ],
+    [ "CancelReveal", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a0a5f209be89adc606988bc4948fe11a6", null ],
     [ "CompareTo", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a5432f8b27319c8fc17a93dcbebdd6609", null ],
     [ "Dispose", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a397f33126e99162c868cc5195529f2d7", null ],
     [ "Dispose", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#ad239dc0e99d67621d35385086d91e98f", null ],

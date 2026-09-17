@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Game Engine: Gondwana.Widgets/Menus Directory Reference</title>
+<title>Gondwana Game Engine: Gondwana.Widgets/IWidgetKeyboardFallback.cs Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -69,7 +69,7 @@ $(function() {
   </div>
 </div>
 <script type="text/javascript">
-$(function(){initNavTree('dir_590fe6cdafc1fe3051ad3d52f6685f98.html','',''); });
+$(function(){initNavTree('IWidgetKeyboardFallback_8cs_source.html','',''); });
 </script>
 <div id="container">
 <div id="doc-content">
@@ -95,36 +95,24 @@ $(function(){initNavTree('dir_590fe6cdafc1fe3051ad3d52f6685f98.html','',''); });
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">Menus Directory Reference</div></div>
+  <div class="headertitle"><div class="title">IWidgetKeyboardFallback.cs</div></div>
 </div><!--header-->
 <div class="contents">
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-files" class="groupheader"><a id="files" name="files"></a>
-Files</h2></td></tr>
-<tr class="memitem:KeyGesture_2Ecs" id="r_KeyGesture_2Ecs"><td class="memItemLeft" align="right" valign="top"><a href="KeyGesture_8cs_source.html"><span class="icondoc"><div class="doc-icon"></div></span></a>&#160;</td><td class="memItemRight" valign="bottom"><b>KeyGesture.cs</b></td></tr>
-<tr class="memitem:MenuBarMenu_2Ecs" id="r_MenuBarMenu_2Ecs"><td class="memItemLeft" align="right" valign="top"><a href="MenuBarMenu_8cs_source.html"><span class="icondoc"><div class="doc-icon"></div></span></a>&#160;</td><td class="memItemRight" valign="bottom"><b>MenuBarMenu.cs</b></td></tr>
-<tr class="memitem:MenuBarTheme_2Ecs" id="r_MenuBarTheme_2Ecs"><td class="memItemLeft" align="right" valign="top"><a href="MenuBarTheme_8cs_source.html"><span class="icondoc"><div class="doc-icon"></div></span></a>&#160;</td><td class="memItemRight" valign="bottom"><b>MenuBarTheme.cs</b></td></tr>
-<tr class="memitem:MenuBarWidget_2Ecs" id="r_MenuBarWidget_2Ecs"><td class="memItemLeft" align="right" valign="top"><a href="MenuBarWidget_8cs_source.html"><span class="icondoc"><div class="doc-icon"></div></span></a>&#160;</td><td class="memItemRight" valign="bottom"><b>MenuBarWidget.cs</b></td></tr>
-<tr class="memitem:MenuDropDownAnimation_2Ecs" id="r_MenuDropDownAnimation_2Ecs"><td class="memItemLeft" align="right" valign="top"><a href="MenuDropDownAnimation_8cs_source.html"><span class="icondoc"><div class="doc-icon"></div></span></a>&#160;</td><td class="memItemRight" valign="bottom"><b>MenuDropDownAnimation.cs</b></td></tr>
-<tr class="memitem:MenuDropDownWidget_2Ecs" id="r_MenuDropDownWidget_2Ecs"><td class="memItemLeft" align="right" valign="top"><a href="MenuDropDownWidget_8cs_source.html"><span class="icondoc"><div class="doc-icon"></div></span></a>&#160;</td><td class="memItemRight" valign="bottom"><b>MenuDropDownWidget.cs</b></td></tr>
-<tr class="memitem:MenuHeaderWidget_2Ecs" id="r_MenuHeaderWidget_2Ecs"><td class="memItemLeft" align="right" valign="top"><a href="MenuHeaderWidget_8cs_source.html"><span class="icondoc"><div class="doc-icon"></div></span></a>&#160;</td><td class="memItemRight" valign="bottom"><b>MenuHeaderWidget.cs</b></td></tr>
-<tr class="memitem:MenuIndicatorDrawing_2Ecs" id="r_MenuIndicatorDrawing_2Ecs"><td class="memItemLeft" align="right" valign="top"><a href="MenuIndicatorDrawing_8cs_source.html"><span class="icondoc"><div class="doc-icon"></div></span></a>&#160;</td><td class="memItemRight" valign="bottom"><b>MenuIndicatorDrawing.cs</b></td></tr>
-<tr class="memitem:MenuItemWidget_2Ecs" id="r_MenuItemWidget_2Ecs"><td class="memItemLeft" align="right" valign="top"><a href="MenuItemWidget_8cs_source.html"><span class="icondoc"><div class="doc-icon"></div></span></a>&#160;</td><td class="memItemRight" valign="bottom"><b>MenuItemWidget.cs</b></td></tr>
-</table>
-</div><!-- contents -->
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceGondwana_1_1Widgets.html">Gondwana.Widgets</a>;</div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// Internal participation keeps accelerator routing scoped to built-in widgets.</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="keyword">internal</span> <span class="keyword">interface </span>IWidgetKeyboardFallback</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span>{</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>    <span class="keywordtype">void</span> HandleUnhandledKeyboardInput(WidgetKeyboardEventArgs args);</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>}</div>
+<div class="ttc" id="anamespaceGondwana_1_1Widgets_html"><div class="ttname"><a href="namespaceGondwana_1_1Widgets.html">Gondwana.Widgets</a></div><div class="ttdef"><b>Definition</b> <a href="ContainerWidget_8cs_source.html#l00006">ContainerWidget.cs:6</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
-<div id="page-nav" class="page-nav-panel">
-<div id="page-nav-resize-handle"></div>
-<div id="page-nav-tree">
-<div id="page-nav-contents">
-</div><!-- page-nav-contents -->
-</div><!-- page-nav-tree -->
-</div><!-- page-nav -->
 </div><!-- container -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a href="dir_f31b8c5149b8b7ba0c192e6d4680497b.html">Gondwana.Widgets</a></li><li class="navelem"><a href="dir_590fe6cdafc1fe3051ad3d52f6685f98.html">Menus</a></li>
+    <li class="navelem"><a href="dir_f31b8c5149b8b7ba0c192e6d4680497b.html">Gondwana.Widgets</a></li><li class="navelem"><b>IWidgetKeyboardFallback.cs</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0 </li>
   </ul>
 </div>

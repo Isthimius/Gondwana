@@ -1,5 +1,6 @@
 var namespaceGondwana_1_1Widgets_1_1Menus =
 [
+    [ "KeyGesture", "structGondwana_1_1Widgets_1_1Menus_1_1KeyGesture.html", "structGondwana_1_1Widgets_1_1Menus_1_1KeyGesture" ],
     [ "MenuBarMenu", "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarMenu.html", "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarMenu" ],
     [ "MenuBarWidget", "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html", "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget" ],
     [ "MenuDropDownWidget", "classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html", "classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget" ],

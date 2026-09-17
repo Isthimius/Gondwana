@@ -1,5 +1,7 @@
 var NAVTREEINDEX12 =
 {
+"classGondwana_1_1Rendering_1_1Text_1_1FontManager.html#a68037b892077ac01e574a49147dbc5c0":[1,0,0,12,1,0,2],
+"classGondwana_1_1Rendering_1_1Text_1_1FontManager.html#a6ca64d0497d20a15bff90929347b0ad8":[0,0,0,12,1,0,1],
 "classGondwana_1_1Rendering_1_1Text_1_1FontManager.html#a6ca64d0497d20a15bff90929347b0ad8":[1,0,0,12,1,0,1],
 "classGondwana_1_1Rendering_1_1Text_1_1FontManager.html#a8a2513093e826c61fdb7fe8aa2f008e7":[0,0,0,12,1,0,5],
 "classGondwana_1_1Rendering_1_1Text_1_1FontManager.html#a8a2513093e826c61fdb7fe8aa2f008e7":[1,0,0,12,1,0,5],
@@ -247,7 +249,5 @@ var NAVTREEINDEX12 =
 "classGondwana_1_1Scenes_1_1SceneLayer.html#a582d49df8cfc0b28dc9988cc07919717":[1,0,0,13,1,22],
 "classGondwana_1_1Scenes_1_1SceneLayer.html#a5a32b42fedf1dcf1365878805a4eeca1":[0,0,0,13,1,8],
 "classGondwana_1_1Scenes_1_1SceneLayer.html#a5a32b42fedf1dcf1365878805a4eeca1":[1,0,0,13,1,8],
-"classGondwana_1_1Scenes_1_1SceneLayer.html#a66305751d643a83bd615591eefd480c1":[0,0,0,13,1,15],
-"classGondwana_1_1Scenes_1_1SceneLayer.html#a66305751d643a83bd615591eefd480c1":[1,0,0,13,1,15],
-"classGondwana_1_1Scenes_1_1SceneLayer.html#a69e78c0da41b8b9f48092fcac16a0959":[0,0,0,13,1,26]
+"classGondwana_1_1Scenes_1_1SceneLayer.html#a66305751d643a83bd615591eefd480c1":[0,0,0,13,1,15]
 };

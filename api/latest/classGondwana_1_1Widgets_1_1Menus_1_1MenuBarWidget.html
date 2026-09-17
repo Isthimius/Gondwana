@@ -120,10 +120,14 @@ Inheritance diagram for Gondwana.Widgets.Menus.MenuBarWidget:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a54ba40076d1fc4430d0159632c74fbdd" id="r_a54ba40076d1fc4430d0159632c74fbdd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html">MenuItemWidget</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54ba40076d1fc4430d0159632c74fbdd">GetItem</a> (string key)</td></tr>
+<tr class="memdesc:a54ba40076d1fc4430d0159632c74fbdd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an item by its stable, case-sensitive key, including nested descendants.  <br /></td></tr>
+<tr class="memitem:afafef91da8e34495185e88c26c93a5bf" id="r_afafef91da8e34495185e88c26c93a5bf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afafef91da8e34495185e88c26c93a5bf">TryGetItem</a> (string key, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out <a class="el" href="classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html">MenuItemWidget</a>? item)</td></tr>
+<tr class="memdesc:afafef91da8e34495185e88c26c93a5bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Looks up a stable key; returns false and null when absent.  <br /></td></tr>
 <tr class="memitem:a49256682b00645bd330ff903e873a870" id="r_a49256682b00645bd330ff903e873a870"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a49256682b00645bd330ff903e873a870">MenuBarWidget</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> host, <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> view, Rectangle bounds, <a class="el" href="namespaceGondwana_1_1Widgets_1_1Menus.html#a27c1366ef44b223d8c18ae0043adc4f9">MenuBarTheme</a>? theme=null, string? nickname=null)</td></tr>
 <tr class="memdesc:a49256682b00645bd330ff903e873a870"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a menu bar attached to a view.  <br /></td></tr>
-<tr class="memitem:a27841eb40558339e2f34c47bb9f62eef" id="r_a27841eb40558339e2f34c47bb9f62eef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html">MenuBarWidget</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a27841eb40558339e2f34c47bb9f62eef">AddMenu</a> (string text, Action&lt; <a class="el" href="classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html">MenuDropDownWidget</a> &gt;? configure=null, int? headerWidth=null)</td></tr>
-<tr class="memdesc:a27841eb40558339e2f34c47bb9f62eef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a top-level menu and optionally configures its dropdown.  <br /></td></tr>
+<tr class="memitem:a5b05dd60668d9159ec61749200d9d65f" id="r_a5b05dd60668d9159ec61749200d9d65f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html">MenuBarWidget</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b05dd60668d9159ec61749200d9d65f">AddMenu</a> (string text, Action&lt; <a class="el" href="classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html">MenuDropDownWidget</a> &gt;? configure=null, int? headerWidth=null, char? mnemonic=null)</td></tr>
+<tr class="memdesc:a5b05dd60668d9159ec61749200d9d65f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a top-level menu and optionally configures its dropdown.  <br /></td></tr>
 <tr class="memitem:a806e1be26bf0ec27454edd458c58d97e" id="r_a806e1be26bf0ec27454edd458c58d97e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a806e1be26bf0ec27454edd458c58d97e">OpenMenuAt</a> (int index)</td></tr>
 <tr class="memdesc:a806e1be26bf0ec27454edd458c58d97e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens the specified top-level menu.  <br /></td></tr>
 <tr class="memitem:aec7d14e43f7f6c4c2349dc7c1e5265ca" id="r_aec7d14e43f7f6c4c2349dc7c1e5265ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec7d14e43f7f6c4c2349dc7c1e5265ca">CloseMenu</a> ()</td></tr>
@@ -297,6 +301,8 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
+<tr class="memitem:af0b0689a052b0de114534535350fb2bd" id="r_af0b0689a052b0de114534535350fb2bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html">MenuItemWidget</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af0b0689a052b0de114534535350fb2bd">this[string key]</a><code> [get]</code></td></tr>
+<tr class="memdesc:af0b0689a052b0de114534535350fb2bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an item by its stable key, or throws KeyNotFoundException.  <br /></td></tr>
 <tr class="memitem:a8fd1124d035e325145f6f33cbb5bd83e" id="r_a8fd1124d035e325145f6f33cbb5bd83e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8fd1124d035e325145f6f33cbb5bd83e">BarBackground</a><code> [get]</code></td></tr>
 <tr class="memdesc:a8fd1124d035e325145f6f33cbb5bd83e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the menu bar background drawing.  <br /></td></tr>
 <tr class="memitem:aa2e582472aceab11f853384a595cb760" id="r_aa2e582472aceab11f853384a595cb760"><td class="memItemLeft" align="right" valign="top">IReadOnlyList&lt; <a class="el" href="classGondwana_1_1Widgets_1_1Menus_1_1MenuBarMenu.html">MenuBarMenu</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa2e582472aceab11f853384a595cb760">Menus</a><code> [get]</code></td></tr>
@@ -434,13 +440,13 @@ Events</h2></td></tr>
 
 <p>Creates a menu bar attached to a view. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00038">38</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00078">78</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a27841eb40558339e2f34c47bb9f62eef" name="a27841eb40558339e2f34c47bb9f62eef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a27841eb40558339e2f34c47bb9f62eef">&#9670;&#160;</a></span>AddMenu()</h2>
+<a id="a5b05dd60668d9159ec61749200d9d65f" name="a5b05dd60668d9159ec61749200d9d65f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b05dd60668d9159ec61749200d9d65f">&#9670;&#160;</a></span>AddMenu()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -458,14 +464,19 @@ Events</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int?</td>          <td class="paramname"><span class="paramname"><em>headerWidth</em></span><span class="paramdefsep"> = </span><span class="paramdefval">null</span>&#160;)</td>
+          <td class="paramtype">int?</td>          <td class="paramname"><span class="paramname"><em>headerWidth</em></span><span class="paramdefsep"> = </span><span class="paramdefval">null</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char?</td>          <td class="paramname"><span class="paramname"><em>mnemonic</em></span><span class="paramdefsep"> = </span><span class="paramdefval">null</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Adds a top-level menu and optionally configures its dropdown. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00120">120</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00160">160</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -486,7 +497,7 @@ Events</h2></td></tr>
 
 <p>Closes the open menu, if any. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00228">228</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00287">287</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -517,7 +528,26 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ab4a9dddd84ec27a3a4701275077ef3e7">Gondwana.Drawing.Direct.DirectComposite</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00323">323</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00397">397</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a54ba40076d1fc4430d0159632c74fbdd" name="a54ba40076d1fc4430d0159632c74fbdd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54ba40076d1fc4430d0159632c74fbdd">&#9670;&#160;</a></span>GetItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html">MenuItemWidget</a> Gondwana.Widgets.Menus.MenuBarWidget.GetItem </td>
+          <td>(</td>
+          <td class="paramtype">string</td>          <td class="paramname"><span class="paramname"><em>key</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets an item by its stable, case-sensitive key, including nested descendants. </p>
 
 </div>
 </div>
@@ -554,7 +584,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#aaec953c2a7d8d8d45daa4886b95f779b">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00275">275</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00334">334</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -575,7 +605,7 @@ Events</h2></td></tr>
 
 <p>Opens the specified top-level menu. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00191">191</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00244">244</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -606,7 +636,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1ContainerWidget.html#ac25e4b4f7791710caef3c7dd7f9c5f03">Gondwana.Widgets.ContainerWidget</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00267">267</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00326">326</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -637,7 +667,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1ContainerWidget.html#aa6169c0eb64d7861a1dbb583b8d2f0d6">Gondwana.Widgets.ContainerWidget</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00251">251</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00310">310</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -658,7 +688,7 @@ Events</h2></td></tr>
 
 <p>Applies a drawing Z-order to the menu-bar family. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00243">243</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00302">302</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -679,7 +709,30 @@ Events</h2></td></tr>
 
 <p>Toggles the specified top-level menu. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00234">234</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00293">293</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="afafef91da8e34495185e88c26c93a5bf" name="afafef91da8e34495185e88c26c93a5bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afafef91da8e34495185e88c26c93a5bf">&#9670;&#160;</a></span>TryGetItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Gondwana.Widgets.Menus.MenuBarWidget.TryGetItem </td>
+          <td>(</td>
+          <td class="paramtype">string</td>          <td class="paramname"><span class="paramname"><em>key</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">[System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out <a class="el" href="classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html">MenuItemWidget</a>?</td>          <td class="paramname"><span class="paramname"><em>item</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Looks up a stable key; returns false and null when absent. </p>
 
 </div>
 </div>
@@ -706,7 +759,7 @@ Events</h2></td></tr>
 
 <p>Gets the menu bar background drawing. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00096">96</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00136">136</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -735,7 +788,7 @@ Events</h2></td></tr>
 </div><!-- fragment -->
 <p>Gets or sets the dropdown animation. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00111">111</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00151">151</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -761,7 +814,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the dropdown animation duration, in seconds. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00115">115</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00155">155</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -787,7 +840,7 @@ Events</h2></td></tr>
 
 <p>Gets the configured top-level menus. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00099">99</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00139">139</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -813,7 +866,7 @@ Events</h2></td></tr>
 
 <p>Gets the currently open menu, or null. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00105">105</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00145">145</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -839,7 +892,33 @@ Events</h2></td></tr>
 
 <p>Gets the zero-based open-menu index, or -1. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00102">102</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00142">142</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="af0b0689a052b0de114534535350fb2bd" name="af0b0689a052b0de114534535350fb2bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0b0689a052b0de114534535350fb2bd">&#9670;&#160;</a></span>this[string key]</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html">MenuItemWidget</a> Gondwana.Widgets.Menus.MenuBarWidget.this[string key]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets an item by its stable key, or throws KeyNotFoundException. </p>
+
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00028">28</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -858,7 +937,7 @@ Events</h2></td></tr>
 
 <p>Occurs when a command item is invoked. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00033">33</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00073">73</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -876,7 +955,7 @@ Events</h2></td></tr>
 
 <p>Occurs after a top-level menu begins closing. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00030">30</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00070">70</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -894,7 +973,7 @@ Events</h2></td></tr>
 
 <p>Occurs after a top-level menu opens. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00027">27</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00067">67</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>

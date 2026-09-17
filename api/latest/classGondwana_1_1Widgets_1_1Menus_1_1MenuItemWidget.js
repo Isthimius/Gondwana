@@ -1,5 +1,6 @@
 var classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget =
 [
+    [ "Dispose", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#ad321c90c11008e7d3283a92a61f59539", null ],
     [ "OnKeyboardInput", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#a746f68466b0f9ec45d46e4a70a781b99", null ],
     [ "OnPointerClick", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#a53e993f74a337b8e3369b3df4939ac12", null ],
     [ "OnPointerDown", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#a1f6de95c31a9f2efdb3ea1b264bb86ef", null ],
@@ -7,13 +8,25 @@ var classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget =
     [ "OnPointerLeave", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#a511c2f67fe7718890cd42ff9679e6d14", null ],
     [ "OnPointerUp", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#ae5a34ab73e71c70e3c6461ada7e9d4ab", null ],
     [ "PerformClick", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#a7002ff2d0f9b457c325adf246b957af1", null ],
+    [ "SetChecked", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#ad9a81a273b7c70650c268e775d477a74", null ],
     [ "SetEnabled", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#a52c3eaf0d00b2e125a2869ab4cae60eb", null ],
+    [ "Arrow", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#ad8fc6dbae84f7e12bd24460a9cc4add5", null ],
     [ "Background", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#a65222546ee9e664f48cda456e9f6da00", null ],
+    [ "Icon", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#ad84f0fa0dba6751313b80b8ae53e55e1", null ],
+    [ "IconDrawing", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#a94fd5718cf4e7e78c9370427db08ec33", null ],
+    [ "IsCheckable", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#a45825073f3dcb6cbb16981a88112f091", null ],
+    [ "IsChecked", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#abe846147665a50567db6b5d757fed812", null ],
     [ "IsEnabled", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#a774bcb49fba4d2462cba9c63b5c78c01", null ],
     [ "IsSelected", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#ad47af1942405fb9ecb77396a3149f6af", null ],
+    [ "Key", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#add96e68467f7b37b004395871809caff", null ],
     [ "Label", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#af7b08cf9bc03e5f77a81731fd8a11870", null ],
+    [ "Marker", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#a2f14afbf8f1bfb00228dc8f86312feec", null ],
+    [ "Mnemonic", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#a2d1245b0fd566f776f55e43a12b1c68e", null ],
+    [ "RadioGroup", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#a6cee9dbbfc3abc445399b76e8e62269d", null ],
+    [ "Shortcut", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#a71605df94fd3571a819c736eaceaa1b7", null ],
     [ "ShortcutLabel", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#a3e5cc98759c97849dd75861bf4ba0251", null ],
     [ "ShortcutText", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#ac5b00269efd245b2e402898c5d3d981a", null ],
+    [ "SubMenu", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#ace3df1201c6990713f7a9f8d58f2ac8f", null ],
     [ "Text", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#a3f9b5b3d8d23978ca217033682e7749e", null ],
     [ "Invoked", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#a71c4145f4d5d8eb4554bb82535e16370", null ]
 ];

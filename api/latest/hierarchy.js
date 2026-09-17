@@ -283,6 +283,7 @@ var hierarchy =
       [ "Gondwana.UiDispatcher", "classGondwana_1_1UiDispatcher.html", null ]
     ] ],
     [ "Gondwana.Input.Keyboard.KeyboardEventPoller", "classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html", null ],
+    [ "Gondwana.Widgets.Menus.KeyGesture", "structGondwana_1_1Widgets_1_1Menus_1_1KeyGesture.html", null ],
     [ "Gondwana.Widgets.Menus.MenuBarMenu", "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarMenu.html", null ],
     [ "Gondwana.Input.Mouse.MouseButtonState", "structGondwana_1_1Input_1_1Mouse_1_1MouseButtonState.html", null ],
     [ "Gondwana.Physics.Movement.MovementState", "structGondwana_1_1Physics_1_1Movement_1_1MovementState.html", null ],

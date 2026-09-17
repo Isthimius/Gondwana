@@ -10,5 +10,6 @@ var classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget =
     [ "Background", "classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget.html#a00f159c897d2c3f8ed23da955d153dcc", null ],
     [ "IsOpen", "classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget.html#a2ff777c8f84c0281f7c2e72396138652", null ],
     [ "Label", "classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget.html#a5de451c14449b288cb361359d054506b", null ],
+    [ "Mnemonic", "classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget.html#a54babfe00165c95be7560406cd292f23", null ],
     [ "Text", "classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget.html#a33876c459adcca0030fcc94723ebc193", null ]
 ];

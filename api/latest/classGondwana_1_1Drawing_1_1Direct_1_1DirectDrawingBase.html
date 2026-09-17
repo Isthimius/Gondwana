@@ -154,6 +154,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a07fbf01c483da1f18dc5efa30299c3f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the direction from which the reveal animation progresses.  <br /></td></tr>
 <tr class="memitem:a15fd13ea5e88a25cfd4dc2130765852d" id="r_a15fd13ea5e88a25cfd4dc2130765852d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a15fd13ea5e88a25cfd4dc2130765852d">RevealTo</a> (float t01, float durationSec, Func&lt; float, float &gt;? easing=null)</td></tr>
 <tr class="memdesc:a15fd13ea5e88a25cfd4dc2130765852d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initiates a smooth reveal animation to the specified target progress over the given duration, optionally using a custom easing function.  <br /></td></tr>
+<tr class="memitem:a0a5f209be89adc606988bc4948fe11a6" id="r_a0a5f209be89adc606988bc4948fe11a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0a5f209be89adc606988bc4948fe11a6">CancelReveal</a> ()</td></tr>
+<tr class="memdesc:a0a5f209be89adc606988bc4948fe11a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops an active reveal animation at its current progress.  <br /></td></tr>
 <tr class="memitem:a52ae59743dbd89bda3f0c721321939f0" id="r_a52ae59743dbd89bda3f0c721321939f0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a52ae59743dbd89bda3f0c721321939f0">Update</a> (long tick)</td></tr>
 <tr class="memdesc:a52ae59743dbd89bda3f0c721321939f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs per-frame update logic for this direct drawing, including fade and reveal animations.  <br /></td></tr>
 <tr class="memitem:a5432f8b27319c8fc17a93dcbebdd6609" id="r_a5432f8b27319c8fc17a93dcbebdd6609"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5432f8b27319c8fc17a93dcbebdd6609">CompareTo</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html">DirectDrawingBase</a>? other)</td></tr>
@@ -282,7 +284,7 @@ Events</h2></td></tr>
 </td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="DirectDrawingBase_8cs_source.html#l01066">1066</a> of file <a class="el" href="DirectDrawingBase_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectDrawingBase_8cs_source.html#l01074">1074</a> of file <a class="el" href="DirectDrawingBase_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -399,6 +401,28 @@ Events</h2></td></tr>
 
 </div>
 </div>
+<a id="a0a5f209be89adc606988bc4948fe11a6" name="a0a5f209be89adc606988bc4948fe11a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a5f209be89adc606988bc4948fe11a6">&#9670;&#160;</a></span>CancelReveal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html">DirectDrawingBase</a> Gondwana.Drawing.Direct.DirectDrawingBase.CancelReveal </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stops an active reveal animation at its current progress. </p>
+<dl class="section return"><dt>Returns</dt><dd>This drawing for fluent configuration.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="DirectDrawingBase_8cs_source.html#l00776">776</a> of file <a class="el" href="DirectDrawingBase_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+
+</div>
+</div>
 <a id="a5432f8b27319c8fc17a93dcbebdd6609" name="a5432f8b27319c8fc17a93dcbebdd6609"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5432f8b27319c8fc17a93dcbebdd6609">&#9670;&#160;</a></span>CompareTo()</h2>
 
@@ -445,7 +469,7 @@ Events</h2></td></tr>
 <p>This method unregisters the direct drawing from the <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingManager.html" title="Manages the lifecycle, registration, and retrieval of all direct drawing objects in the Gondwana engi...">DirectDrawingManager</a>, marks affected regions as dirty, and raises the <a class="el" href="#a911321b64ad973d2ed9d3e9b39f2fc4d" title="Occurs when this direct drawing is being disposed.">Disposing</a> event. After disposal, the object should not be used. </p>
 <p>Calling <a class="el" href="#a397f33126e99162c868cc5195529f2d7" title="Releases all resources used by this DirectDrawingBase instance.">Dispose()</a> multiple times is safe and has no additional effect. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectDrawingBase_8cs_source.html#l00914">914</a> of file <a class="el" href="DirectDrawingBase_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectDrawingBase_8cs_source.html#l00922">922</a> of file <a class="el" href="DirectDrawingBase_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -491,7 +515,7 @@ Clears all event handlers to prevent memory leaks. </li>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#ad06ae3b5b9aae126331b7088855f2e83">Gondwana.Drawing.Direct.DirectDarknessOverlay</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html#abe6cc2ae40b89ec2448711065d4f172c">Gondwana.Drawing.Direct.DirectRectangle</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html#ac9352ed6c7ef4ff3c70d2cea9ef061d6">Gondwana.Drawing.Direct.DirectSceneLayerDarknessOverlay</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectSvg.html#a9fdc1b2c0c618b479442e15ee0ce316b">Gondwana.Drawing.Direct.DirectSvg</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html#a30dd937e42296bdf2952a6368bd31bc5">Gondwana.Drawing.Direct.DirectVideo</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#a05ae37f19bc436a11451bebeb0b2a22a">Gondwana.Drawing.Direct.ImageLayer.ImageInstanceLayer</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html#a20056eedc80de1146bb183ce93af0179">Gondwana.Drawing.Direct.Particles.ParticleSurface</a>, and <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a9bc93ce7def0dbbe0cd66287e31a5cd8">Gondwana.Drawing.Direct.TextBlock</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectDrawingBase_8cs_source.html#l00941">941</a> of file <a class="el" href="DirectDrawingBase_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectDrawingBase_8cs_source.html#l00949">949</a> of file <a class="el" href="DirectDrawingBase_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>
@@ -1157,7 +1181,7 @@ Calls <a class="el" href="#a06db448ba75f0d6cf236f3a2a71ea8e4" title="Performs th
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#ab0b1347d164d09ebe9ce7b3c4a892d74">Gondwana.Drawing.Direct.DirectDarknessOverlay</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html#a156e583528d8e747636d70e4972b81db">Gondwana.Drawing.Direct.DirectDrawingMovableBase</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#ad15111322786bd85d2bc207ef1046b96">Gondwana.Drawing.Direct.DirectRadialLight</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html#a801c259d59c101239fd5947109e542f1">Gondwana.Drawing.Direct.DirectRectangle</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#a32a603730f9086d770ec6888b4ac8525">Gondwana.Drawing.Direct.ImageLayer.ImageInstanceLayer</a>, <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html#a00256efd1a1f3ba03842fe5fff21ca19">Gondwana.Drawing.Direct.Particles.ParticleSurface</a>, and <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#aeeafdc57fe4de1b8b742fe4b31aa8ad7">Gondwana.Drawing.Direct.TextBlock</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectDrawingBase_8cs_source.html#l00838">838</a> of file <a class="el" href="DirectDrawingBase_8cs_source.html">DirectDrawingBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectDrawingBase_8cs_source.html#l00846">846</a> of file <a class="el" href="DirectDrawingBase_8cs_source.html">DirectDrawingBase.cs</a>.</p>
 
 </div>
 </div>

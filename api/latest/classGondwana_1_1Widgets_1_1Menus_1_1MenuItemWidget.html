@@ -99,7 +99,7 @@ $(function(){initNavTree('classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.ht
 </div><!--header-->
 <div class="contents">
 
-<p>Represents one actionable command in a menu dropdown.  
+<p>A command, check/radio item, or submenu owner in a menu dropdown.  
  <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Widgets.Menus.MenuItemWidget:</div>
@@ -120,9 +120,13 @@ Inheritance diagram for Gondwana.Widgets.Menus.MenuItemWidget:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a52c3eaf0d00b2e125a2869ab4cae60eb" id="r_a52c3eaf0d00b2e125a2869ab4cae60eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html">MenuItemWidget</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a52c3eaf0d00b2e125a2869ab4cae60eb">SetEnabled</a> (bool enabled)</td></tr>
-<tr class="memdesc:a52c3eaf0d00b2e125a2869ab4cae60eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables or disables this item.  <br /></td></tr>
+<tr class="memdesc:a52c3eaf0d00b2e125a2869ab4cae60eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables or disables the item.  <br /></td></tr>
+<tr class="memitem:ad9a81a273b7c70650c268e775d477a74" id="r_ad9a81a273b7c70650c268e775d477a74"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html">MenuItemWidget</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad9a81a273b7c70650c268e775d477a74">SetChecked</a> (bool isChecked)</td></tr>
+<tr class="memdesc:ad9a81a273b7c70650c268e775d477a74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes state without invoking callbacks. Checking a radio item clears its group peers.  <br /></td></tr>
 <tr class="memitem:a7002ff2d0f9b457c325adf246b957af1" id="r_a7002ff2d0f9b457c325adf246b957af1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7002ff2d0f9b457c325adf246b957af1">PerformClick</a> ()</td></tr>
-<tr class="memdesc:a7002ff2d0f9b457c325adf246b957af1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Programmatically invokes the item when enabled.  <br /></td></tr>
+<tr class="memdesc:a7002ff2d0f9b457c325adf246b957af1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invokes an enabled command, even while its dropdown is closed, or opens its submenu.  <br /></td></tr>
+<tr class="memitem:ad321c90c11008e7d3283a92a61f59539" id="r_ad321c90c11008e7d3283a92a61f59539"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad321c90c11008e7d3283a92a61f59539">Dispose</a> ()</td></tr>
+<tr class="memdesc:ad321c90c11008e7d3283a92a61f59539"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disposes the composite and every child it owns.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classGondwana_1_1Widgets_1_1WidgetBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">Gondwana.Widgets.WidgetBase</a></td></tr>
 <tr class="memitem:afb806ddaae8d6fa99ba3598c9a3023d5 inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_afb806ddaae8d6fa99ba3598c9a3023d5"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#afb806ddaae8d6fa99ba3598c9a3023d5">HitTest</a> (<a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> view, Point screenPositionPx)</td></tr>
 <tr class="memdesc:afb806ddaae8d6fa99ba3598c9a3023d5 inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the widget can be hit at the specified screen position within the specified view.  <br /></td></tr>
@@ -171,23 +175,57 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ad03af0f91fcf18bbf7b4a791ba753518 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs no direct rendering because descendants render independently.  <br /></td></tr>
 <tr class="memitem:a53458c1a39cf4971f6a582e3433e5156 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a53458c1a39cf4971f6a582e3433e5156"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a53458c1a39cf4971f6a582e3433e5156">Update</a> (long tick)</td></tr>
 <tr class="memdesc:a53458c1a39cf4971f6a582e3433e5156 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances composite movement.  <br /></td></tr>
-<tr class="memitem:ab4a9dddd84ec27a3a4701275077ef3e7 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_ab4a9dddd84ec27a3a4701275077ef3e7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ab4a9dddd84ec27a3a4701275077ef3e7">Dispose</a> ()</td></tr>
-<tr class="memdesc:ab4a9dddd84ec27a3a4701275077ef3e7 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disposes the composite and every child it owns.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a62ead94f9176156ca962ab1414dc3db3" id="r_a62ead94f9176156ca962ab1414dc3db3"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a62ead94f9176156ca962ab1414dc3db3">OnPointerEnter</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
-<tr class="memdesc:a62ead94f9176156ca962ab1414dc3db3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer enters the widget bounds.  <br /></td></tr>
+<tr class="memdesc:a62ead94f9176156ca962ab1414dc3db3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer enters the widget bounds.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+  <br /></td></tr>
 <tr class="memitem:a511c2f67fe7718890cd42ff9679e6d14" id="r_a511c2f67fe7718890cd42ff9679e6d14"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a511c2f67fe7718890cd42ff9679e6d14">OnPointerLeave</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
-<tr class="memdesc:a511c2f67fe7718890cd42ff9679e6d14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer leaves the widget bounds.  <br /></td></tr>
+<tr class="memdesc:a511c2f67fe7718890cd42ff9679e6d14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer leaves the widget bounds.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+  <br /></td></tr>
 <tr class="memitem:a1f6de95c31a9f2efdb3ea1b264bb86ef" id="r_a1f6de95c31a9f2efdb3ea1b264bb86ef"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1f6de95c31a9f2efdb3ea1b264bb86ef">OnPointerDown</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
-<tr class="memdesc:a1f6de95c31a9f2efdb3ea1b264bb86ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer press begins on the widget.  <br /></td></tr>
+<tr class="memdesc:a1f6de95c31a9f2efdb3ea1b264bb86ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer press begins on the widget.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+  <br /></td></tr>
 <tr class="memitem:ae5a34ab73e71c70e3c6461ada7e9d4ab" id="r_ae5a34ab73e71c70e3c6461ada7e9d4ab"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae5a34ab73e71c70e3c6461ada7e9d4ab">OnPointerUp</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
-<tr class="memdesc:ae5a34ab73e71c70e3c6461ada7e9d4ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer press is released for the widget.  <br /></td></tr>
+<tr class="memdesc:ae5a34ab73e71c70e3c6461ada7e9d4ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer press is released for the widget.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+  <br /></td></tr>
 <tr class="memitem:a53e993f74a337b8e3369b3df4939ac12" id="r_a53e993f74a337b8e3369b3df4939ac12"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a53e993f74a337b8e3369b3df4939ac12">OnPointerClick</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
-<tr class="memdesc:a53e993f74a337b8e3369b3df4939ac12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer click is dispatched to the widget.  <br /></td></tr>
+<tr class="memdesc:a53e993f74a337b8e3369b3df4939ac12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer click is dispatched to the widget.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+  <br /></td></tr>
 <tr class="memitem:a746f68466b0f9ec45d46e4a70a781b99" id="r_a746f68466b0f9ec45d46e4a70a781b99"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a746f68466b0f9ec45d46e4a70a781b99">OnKeyboardInput</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html">WidgetKeyboardEventArgs</a> args)</td></tr>
-<tr class="memdesc:a746f68466b0f9ec45d46e4a70a781b99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when keyboard input is routed to the widget.  <br /></td></tr>
+<tr class="memdesc:a746f68466b0f9ec45d46e4a70a781b99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when keyboard input is routed to the widget.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The keyboard event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+  <br /></td></tr>
 <tr class="inherit_header pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classGondwana_1_1Widgets_1_1WidgetBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">Gondwana.Widgets.WidgetBase</a></td></tr>
 <tr class="memitem:a32f2b40b9c48a2f855f3332d2c1b1013 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a32f2b40b9c48a2f855f3332d2c1b1013"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a32f2b40b9c48a2f855f3332d2c1b1013">WidgetBase</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a> mode, PointF anchor=default, string? nickname=null)</td></tr>
 <tr class="memdesc:a32f2b40b9c48a2f855f3332d2c1b1013 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html" title="Provides the base implementation for widgets that can be drawn and receive pointer,...">WidgetBase</a> class.  <br /></td></tr>
@@ -239,20 +277,42 @@ Protected Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
+<tr class="memitem:add96e68467f7b37b004395871809caff" id="r_add96e68467f7b37b004395871809caff"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#add96e68467f7b37b004395871809caff">Key</a><code> [get]</code></td></tr>
+<tr class="memdesc:add96e68467f7b37b004395871809caff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the immutable optional key, unique within the menu bar.  <br /></td></tr>
 <tr class="memitem:a3f9b5b3d8d23978ca217033682e7749e" id="r_a3f9b5b3d8d23978ca217033682e7749e"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3f9b5b3d8d23978ca217033682e7749e">Text</a><code> [get]</code></td></tr>
 <tr class="memdesc:a3f9b5b3d8d23978ca217033682e7749e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the command label.  <br /></td></tr>
+<tr class="memitem:a71605df94fd3571a819c736eaceaa1b7" id="r_a71605df94fd3571a819c736eaceaa1b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGondwana_1_1Widgets_1_1Menus_1_1KeyGesture.html">KeyGesture</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a71605df94fd3571a819c736eaceaa1b7">Shortcut</a><code> [get]</code></td></tr>
+<tr class="memdesc:a71605df94fd3571a819c736eaceaa1b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the executable gesture, if any.  <br /></td></tr>
 <tr class="memitem:ac5b00269efd245b2e402898c5d3d981a" id="r_ac5b00269efd245b2e402898c5d3d981a"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac5b00269efd245b2e402898c5d3d981a">ShortcutText</a><code> [get]</code></td></tr>
-<tr class="memdesc:ac5b00269efd245b2e402898c5d3d981a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the optional display-only shortcut text.  <br /></td></tr>
+<tr class="memdesc:ac5b00269efd245b2e402898c5d3d981a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets gesture-generated text, or the legacy display-only shortcut text.  <br /></td></tr>
+<tr class="memitem:a2d1245b0fd566f776f55e43a12b1c68e" id="r_a2d1245b0fd566f776f55e43a12b1c68e"><td class="memItemLeft" align="right" valign="top">char?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d1245b0fd566f776f55e43a12b1c68e">Mnemonic</a><code> [get]</code></td></tr>
+<tr class="memdesc:a2d1245b0fd566f776f55e43a12b1c68e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the explicit, case-insensitive access character.  <br /></td></tr>
+<tr class="memitem:ad84f0fa0dba6751313b80b8ae53e55e1" id="r_ad84f0fa0dba6751313b80b8ae53e55e1"><td class="memItemLeft" align="right" valign="top">SKImage?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad84f0fa0dba6751313b80b8ae53e55e1">Icon</a><code> [get]</code></td></tr>
+<tr class="memdesc:ad84f0fa0dba6751313b80b8ae53e55e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the caller-owned image. Keep it alive until the item is disposed.  <br /></td></tr>
+<tr class="memitem:a94fd5718cf4e7e78c9370427db08ec33" id="r_a94fd5718cf4e7e78c9370427db08ec33"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html">DirectImage</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a94fd5718cf4e7e78c9370427db08ec33">IconDrawing</a><code> [get]</code></td></tr>
+<tr class="memdesc:a94fd5718cf4e7e78c9370427db08ec33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the retained icon drawing, if configured.  <br /></td></tr>
+<tr class="memitem:a45825073f3dcb6cbb16981a88112f091" id="r_a45825073f3dcb6cbb16981a88112f091"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a45825073f3dcb6cbb16981a88112f091">IsCheckable</a><code> [get]</code></td></tr>
+<tr class="memdesc:a45825073f3dcb6cbb16981a88112f091"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether this item has check or radio state.  <br /></td></tr>
+<tr class="memitem:abe846147665a50567db6b5d757fed812" id="r_abe846147665a50567db6b5d757fed812"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abe846147665a50567db6b5d757fed812">IsChecked</a><code> [get]</code></td></tr>
+<tr class="memdesc:abe846147665a50567db6b5d757fed812"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current checked state.  <br /></td></tr>
+<tr class="memitem:a6cee9dbbfc3abc445399b76e8e62269d" id="r_a6cee9dbbfc3abc445399b76e8e62269d"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6cee9dbbfc3abc445399b76e8e62269d">RadioGroup</a><code> [get]</code></td></tr>
+<tr class="memdesc:a6cee9dbbfc3abc445399b76e8e62269d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the radio group, scoped to the containing dropdown.  <br /></td></tr>
+<tr class="memitem:ace3df1201c6990713f7a9f8d58f2ac8f" id="r_ace3df1201c6990713f7a9f8d58f2ac8f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html">MenuDropDownWidget</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ace3df1201c6990713f7a9f8d58f2ac8f">SubMenu</a><code> [get]</code></td></tr>
+<tr class="memdesc:ace3df1201c6990713f7a9f8d58f2ac8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the child dropdown, if this item owns a submenu.  <br /></td></tr>
 <tr class="memitem:a65222546ee9e664f48cda456e9f6da00" id="r_a65222546ee9e664f48cda456e9f6da00"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a65222546ee9e664f48cda456e9f6da00">Background</a><code> [get]</code></td></tr>
-<tr class="memdesc:a65222546ee9e664f48cda456e9f6da00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the item background drawing.  <br /></td></tr>
+<tr class="memdesc:a65222546ee9e664f48cda456e9f6da00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the background drawing.  <br /></td></tr>
 <tr class="memitem:af7b08cf9bc03e5f77a81731fd8a11870" id="r_af7b08cf9bc03e5f77a81731fd8a11870"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html">TextBlock</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af7b08cf9bc03e5f77a81731fd8a11870">Label</a><code> [get]</code></td></tr>
-<tr class="memdesc:af7b08cf9bc03e5f77a81731fd8a11870"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the command label drawing.  <br /></td></tr>
+<tr class="memdesc:af7b08cf9bc03e5f77a81731fd8a11870"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the label drawing.  <br /></td></tr>
 <tr class="memitem:a3e5cc98759c97849dd75861bf4ba0251" id="r_a3e5cc98759c97849dd75861bf4ba0251"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html">TextBlock</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3e5cc98759c97849dd75861bf4ba0251">ShortcutLabel</a><code> [get]</code></td></tr>
-<tr class="memdesc:a3e5cc98759c97849dd75861bf4ba0251"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the shortcut label drawing.  <br /></td></tr>
+<tr class="memdesc:a3e5cc98759c97849dd75861bf4ba0251"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the shortcut drawing.  <br /></td></tr>
+<tr class="memitem:a2f14afbf8f1bfb00228dc8f86312feec" id="r_a2f14afbf8f1bfb00228dc8f86312feec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html">DirectDrawingMovableBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2f14afbf8f1bfb00228dc8f86312feec">Marker</a><code> [get]</code></td></tr>
+<tr class="memdesc:a2f14afbf8f1bfb00228dc8f86312feec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the check/radio indicator drawing.  <br /></td></tr>
+<tr class="memitem:ad8fc6dbae84f7e12bd24460a9cc4add5" id="r_ad8fc6dbae84f7e12bd24460a9cc4add5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html">DirectDrawingMovableBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad8fc6dbae84f7e12bd24460a9cc4add5">Arrow</a><code> [get]</code></td></tr>
+<tr class="memdesc:ad8fc6dbae84f7e12bd24460a9cc4add5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the submenu arrow drawing.  <br /></td></tr>
 <tr class="memitem:a774bcb49fba4d2462cba9c63b5c78c01" id="r_a774bcb49fba4d2462cba9c63b5c78c01"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a774bcb49fba4d2462cba9c63b5c78c01">IsEnabled</a><code> [get]</code></td></tr>
-<tr class="memdesc:a774bcb49fba4d2462cba9c63b5c78c01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether this item can currently be invoked.  <br /></td></tr>
+<tr class="memdesc:a774bcb49fba4d2462cba9c63b5c78c01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether this item is enabled.  <br /></td></tr>
 <tr class="memitem:ad47af1942405fb9ecb77396a3149f6af" id="r_ad47af1942405fb9ecb77396a3149f6af"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad47af1942405fb9ecb77396a3149f6af">IsSelected</a><code> [get]</code></td></tr>
-<tr class="memdesc:ad47af1942405fb9ecb77396a3149f6af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether this item is selected by hover or keyboard navigation.  <br /></td></tr>
+<tr class="memdesc:ad47af1942405fb9ecb77396a3149f6af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether this item is selected by pointer or keyboard.  <br /></td></tr>
 <tr class="inherit_header properties_classGondwana_1_1Widgets_1_1WidgetBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('properties_classGondwana_1_1Widgets_1_1WidgetBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Properties inherited from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">Gondwana.Widgets.WidgetBase</a></td></tr>
 <tr class="memitem:af43d800723f96fd801f8e41d854d1bee inherit properties_classGondwana_1_1Widgets_1_1WidgetBase" id="r_af43d800723f96fd801f8e41d854d1bee"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af43d800723f96fd801f8e41d854d1bee">IsInputEnabled</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:af43d800723f96fd801f8e41d854d1bee inherit properties_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether the widget can participate in input routing.  <br /></td></tr>
@@ -295,7 +355,7 @@ Properties</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-events" class="groupheader"><a id="events" name="events"></a>
 Events</h2></td></tr>
 <tr class="memitem:a71c4145f4d5d8eb4554bb82535e16370" id="r_a71c4145f4d5d8eb4554bb82535e16370"><td class="memItemLeft" align="right" valign="top">Action&lt; <a class="el" href="classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html">MenuItemWidget</a> &gt;?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a71c4145f4d5d8eb4554bb82535e16370">Invoked</a></td></tr>
-<tr class="memdesc:a71c4145f4d5d8eb4554bb82535e16370"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the menu item is activated.  <br /></td></tr>
+<tr class="memdesc:a71c4145f4d5d8eb4554bb82535e16370"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs after state changes and hierarchy closure, before the command callback.  <br /></td></tr>
 <tr class="inherit_header events_classGondwana_1_1Widgets_1_1WidgetBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('events_classGondwana_1_1Widgets_1_1WidgetBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Events inherited from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">Gondwana.Widgets.WidgetBase</a></td></tr>
 <tr class="memitem:a6b3d12d94261fbae70c2e35c8cd578ec inherit events_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a6b3d12d94261fbae70c2e35c8cd578ec"><td class="memItemLeft" align="right" valign="top">Action?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a6b3d12d94261fbae70c2e35c8cd578ec">Shown</a></td></tr>
 <tr class="memdesc:a6b3d12d94261fbae70c2e35c8cd578ec inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the widget is shown.  <br /></td></tr>
@@ -331,10 +391,41 @@ Events</h2></td></tr>
 <tr class="memdesc:af6121c7773fe8333043c8f4c74f8e97b inherit events_interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the object is being disposed.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Represents one actionable command in a menu dropdown. </p>
+<div class="textblock"><p>A command, check/radio item, or submenu owner in a menu dropdown. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00013">13</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00012">12</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="ad321c90c11008e7d3283a92a61f59539" name="ad321c90c11008e7d3283a92a61f59539"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad321c90c11008e7d3283a92a61f59539">&#9670;&#160;</a></span>Dispose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">override void Gondwana.Widgets.Menus.MenuItemWidget.Dispose </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Disposes the composite and every child it owns. </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ab4a9dddd84ec27a3a4701275077ef3e7">Gondwana.Drawing.Direct.DirectComposite</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00208">208</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+
+</div>
+</div>
 <a id="a746f68466b0f9ec45d46e4a70a781b99" name="a746f68466b0f9ec45d46e4a70a781b99"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a746f68466b0f9ec45d46e4a70a781b99">&#9670;&#160;</a></span>OnKeyboardInput()</h2>
 
@@ -358,17 +449,17 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Called when keyboard input is routed to the widget. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Called when keyboard input is routed to the widget.<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">args</td><td>The keyboard event data.</td></tr>
   </table>
   </dd>
 </dl>
+ </p>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#aaec953c2a7d8d8d45daa4886b95f779b">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00210">210</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00260">260</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -395,17 +486,17 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Called when a pointer click is dispatched to the widget. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Called when a pointer click is dispatched to the widget.<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
   </table>
   </dd>
 </dl>
+ </p>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a7d02dee6a2c67a4c1365aad41a19d4c0">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00199">199</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00251">251</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -432,17 +523,17 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Called when a pointer press begins on the widget. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Called when a pointer press begins on the widget.<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
   </table>
   </dd>
 </dl>
+ </p>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a3e21456ad03a8de98262b46bd1547fd8">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00185">185</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00237">237</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -469,17 +560,17 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Called when a pointer enters the widget bounds. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Called when a pointer enters the widget bounds.<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
   </table>
   </dd>
 </dl>
+ </p>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a5c8337f088f6c156050feb1a73852124">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00166">166</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00219">219</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -506,17 +597,17 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Called when a pointer leaves the widget bounds. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Called when a pointer leaves the widget bounds.<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
   </table>
   </dd>
 </dl>
+ </p>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#ac4bd1b14299027724385332dd7ff53eb">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00178">178</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00229">229</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -543,17 +634,17 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Called when a pointer press is released for the widget. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Called when a pointer press is released for the widget.<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
   </table>
   </dd>
 </dl>
+ </p>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af68f779ee36ea91d59fe2d375c2c0eeb">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00193">193</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00244">244</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -572,9 +663,31 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Programmatically invokes the item when enabled. </p>
+<p>Invokes an enabled command, even while its dropdown is closed, or opens its submenu. </p>
+<p>The bar and ancestor items must be available. State changes and menu closure precede callbacks.</p>
 
-<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00117">117</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00137">137</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="ad9a81a273b7c70650c268e775d477a74" name="ad9a81a273b7c70650c268e775d477a74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9a81a273b7c70650c268e775d477a74">&#9670;&#160;</a></span>SetChecked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html">MenuItemWidget</a> Gondwana.Widgets.Menus.MenuItemWidget.SetChecked </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>isChecked</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Changes state without invoking callbacks. Checking a radio item clears its group peers. </p>
+
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00125">125</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -593,13 +706,39 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Enables or disables this item. </p>
+<p>Enables or disables the item. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00108">108</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00114">114</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
 
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
+<a id="ad8fc6dbae84f7e12bd24460a9cc4add5" name="ad8fc6dbae84f7e12bd24460a9cc4add5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8fc6dbae84f7e12bd24460a9cc4add5">&#9670;&#160;</a></span>Arrow</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html">DirectDrawingMovableBase</a> Gondwana.Widgets.Menus.MenuItemWidget.Arrow</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the submenu arrow drawing. </p>
+
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00106">106</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+
+</div>
+</div>
 <a id="a65222546ee9e664f48cda456e9f6da00" name="a65222546ee9e664f48cda456e9f6da00"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a65222546ee9e664f48cda456e9f6da00">&#9670;&#160;</a></span>Background</h2>
 
@@ -620,9 +759,113 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the item background drawing. </p>
+<p>Gets the background drawing. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00093">93</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00098">98</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="ad84f0fa0dba6751313b80b8ae53e55e1" name="ad84f0fa0dba6751313b80b8ae53e55e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad84f0fa0dba6751313b80b8ae53e55e1">&#9670;&#160;</a></span>Icon</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">SKImage? Gondwana.Widgets.Menus.MenuItemWidget.Icon</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the caller-owned image. Keep it alive until the item is disposed. </p>
+
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00086">86</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a94fd5718cf4e7e78c9370427db08ec33" name="a94fd5718cf4e7e78c9370427db08ec33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94fd5718cf4e7e78c9370427db08ec33">&#9670;&#160;</a></span>IconDrawing</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html">DirectImage</a>? Gondwana.Widgets.Menus.MenuItemWidget.IconDrawing</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the retained icon drawing, if configured. </p>
+
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00088">88</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a45825073f3dcb6cbb16981a88112f091" name="a45825073f3dcb6cbb16981a88112f091"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45825073f3dcb6cbb16981a88112f091">&#9670;&#160;</a></span>IsCheckable</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Gondwana.Widgets.Menus.MenuItemWidget.IsCheckable</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets whether this item has check or radio state. </p>
+
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00090">90</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="abe846147665a50567db6b5d757fed812" name="abe846147665a50567db6b5d757fed812"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe846147665a50567db6b5d757fed812">&#9670;&#160;</a></span>IsChecked</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Gondwana.Widgets.Menus.MenuItemWidget.IsChecked</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the current checked state. </p>
+
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00092">92</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -646,9 +889,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets whether this item can currently be invoked. </p>
+<p>Gets whether this item is enabled. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00102">102</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00108">108</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -672,9 +915,35 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets whether this item is selected by hover or keyboard navigation. </p>
+<p>Gets whether this item is selected by pointer or keyboard. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00105">105</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00110">110</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="add96e68467f7b37b004395871809caff" name="add96e68467f7b37b004395871809caff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add96e68467f7b37b004395871809caff">&#9670;&#160;</a></span>Key</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">string? Gondwana.Widgets.Menus.MenuItemWidget.Key</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the immutable optional key, unique within the menu bar. </p>
+
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00076">76</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -698,9 +967,113 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the command label drawing. </p>
+<p>Gets the label drawing. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00096">96</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00100">100</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a2f14afbf8f1bfb00228dc8f86312feec" name="a2f14afbf8f1bfb00228dc8f86312feec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f14afbf8f1bfb00228dc8f86312feec">&#9670;&#160;</a></span>Marker</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html">DirectDrawingMovableBase</a> Gondwana.Widgets.Menus.MenuItemWidget.Marker</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the check/radio indicator drawing. </p>
+
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00104">104</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a2d1245b0fd566f776f55e43a12b1c68e" name="a2d1245b0fd566f776f55e43a12b1c68e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d1245b0fd566f776f55e43a12b1c68e">&#9670;&#160;</a></span>Mnemonic</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">char? Gondwana.Widgets.Menus.MenuItemWidget.Mnemonic</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the explicit, case-insensitive access character. </p>
+
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00084">84</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a6cee9dbbfc3abc445399b76e8e62269d" name="a6cee9dbbfc3abc445399b76e8e62269d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cee9dbbfc3abc445399b76e8e62269d">&#9670;&#160;</a></span>RadioGroup</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">string? Gondwana.Widgets.Menus.MenuItemWidget.RadioGroup</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the radio group, scoped to the containing dropdown. </p>
+
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00094">94</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a71605df94fd3571a819c736eaceaa1b7" name="a71605df94fd3571a819c736eaceaa1b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71605df94fd3571a819c736eaceaa1b7">&#9670;&#160;</a></span>Shortcut</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structGondwana_1_1Widgets_1_1Menus_1_1KeyGesture.html">KeyGesture</a>? Gondwana.Widgets.Menus.MenuItemWidget.Shortcut</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the executable gesture, if any. </p>
+
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00080">80</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -724,9 +1097,9 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the shortcut label drawing. </p>
+<p>Gets the shortcut drawing. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00099">99</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00102">102</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -750,9 +1123,35 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the optional display-only shortcut text. </p>
+<p>Gets gesture-generated text, or the legacy display-only shortcut text. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00090">90</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00082">82</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="ace3df1201c6990713f7a9f8d58f2ac8f" name="ace3df1201c6990713f7a9f8d58f2ac8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace3df1201c6990713f7a9f8d58f2ac8f">&#9670;&#160;</a></span>SubMenu</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html">MenuDropDownWidget</a>? Gondwana.Widgets.Menus.MenuItemWidget.SubMenu</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the child dropdown, if this item owns a submenu. </p>
+
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00096">96</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -778,7 +1177,7 @@ Events</h2></td></tr>
 
 <p>Gets the command label. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00087">87</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00078">78</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -795,9 +1194,9 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Occurs when the menu item is activated. </p>
+<p>Occurs after state changes and hierarchy closure, before the command callback. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00024">24</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuItemWidget_8cs_source.html#l00027">27</a> of file <a class="el" href="MenuItemWidget_8cs_source.html">MenuItemWidget.cs</a>.</p>
 
 </div>
 </div>
