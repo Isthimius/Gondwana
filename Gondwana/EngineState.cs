@@ -87,7 +87,7 @@ public sealed class EngineState
     /// This property provides direct access to the scene collection for serialization and state management.
     /// </summary>
     [JsonProperty]
-    public List<Scene> Scenes => Scene.GetAllScenesSnapshotList();
+    public List<Scene> Scenes => Scene._allScenes;
 
     /// <summary>
     /// Gets the list of all active sprites currently managed by the sprite manager.
@@ -674,51 +674,48 @@ public sealed class EngineState
         if (scenes is null || scenes.Count == 0)
             return;
 
-        Scene.WithAllScenesLock(existingScenes =>
+        // Index existing scenes by ID (case-sensitive; change if you prefer)
+        var existingIndexById = new Dictionary<string, int>(StringComparer.Ordinal);
+        for (int i = 0; i < Scene._allScenes.Count; i++)
         {
-            // Index existing scenes by ID (case-sensitive; change if you prefer)
-            var existingIndexById = new Dictionary<string, int>(StringComparer.Ordinal);
-            for (int i = 0; i < existingScenes.Count; i++)
+            var id = Scene._allScenes[i].ID;
+            if (!string.IsNullOrWhiteSpace(id) && !existingIndexById.ContainsKey(id))
+                existingIndexById.Add(id, i);
+        }
+
+        // Avoid duplicating the same incoming ID twice (keeps last one)
+        var seenIncoming = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var incoming in scenes)
+        {
+            if (incoming is null)
+                continue;
+
+            // Ensure ID exists (important if something created scenes without IDs)
+            if (string.IsNullOrWhiteSpace(incoming.ID))
+                incoming.ID = Guid.NewGuid().ToString();
+
+            // If the incoming list contains the same ID multiple times, last one wins.
+            if (!seenIncoming.Add(incoming.ID))
             {
-                var id = existingScenes[i].ID;
-                if (!string.IsNullOrWhiteSpace(id) && !existingIndexById.ContainsKey(id))
-                    existingIndexById.Add(id, i);
+                // Replace the previously added/replaced incoming with this one:
+                // easiest way: treat it as overwriteExisting=true for that ID
+                overwriteExisting = true;
             }
 
-            // Avoid duplicating the same incoming ID twice (keeps last one)
-            var seenIncoming = new HashSet<string>(StringComparer.Ordinal);
-
-            foreach (var incoming in scenes)
+            if (existingIndexById.TryGetValue(incoming.ID, out int existingIndex))
             {
-                if (incoming is null)
+                if (!overwriteExisting)
                     continue;
 
-                // Ensure ID exists (important if something created scenes without IDs)
-                if (string.IsNullOrWhiteSpace(incoming.ID))
-                    incoming.ID = Guid.NewGuid().ToString();
-
-                // If the incoming list contains the same ID multiple times, last one wins.
-                if (!seenIncoming.Add(incoming.ID))
-                {
-                    // Replace the previously added/replaced incoming with this one:
-                    // easiest way: treat it as overwriteExisting=true for that ID
-                    overwriteExisting = true;
-                }
-
-                if (existingIndexById.TryGetValue(incoming.ID, out int existingIndex))
-                {
-                    if (!overwriteExisting)
-                        continue;
-
-                    existingScenes[existingIndex] = incoming;
-                }
-                else
-                {
-                    existingIndexById[incoming.ID] = existingScenes.Count;
-                    existingScenes.Add(incoming);
-                }
+                Scene._allScenes[existingIndex] = incoming;
             }
-        });
+            else
+            {
+                existingIndexById[incoming.ID] = Scene._allScenes.Count;
+                Scene._allScenes.Add(incoming);
+            }
+        }
     }
 
     private static void MergeSprites(List<Sprite>? sprites, bool overwriteExisting)

@@ -135,7 +135,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
             OnSceneLayerAdded(sceneLayer);
 
         if (!ReferenceEquals(this, Empty))
-            WithAllScenesLock(scenes => scenes.Add(this));
+            _allScenes.Add(this);
     }
 
     #endregion constructors / finalizer
@@ -820,7 +820,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
         RemoveAllLayers();
 
-        WithAllScenesLock(scenes => scenes.Remove(this));
+        _allScenes.Remove(this);
 
         // cancel all subscriptions to this object
         SceneLayerAdded = null;
@@ -832,23 +832,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     #region static helpers
 
-    private static readonly object _allScenesSync = new();
     internal readonly static List<Scene> _allScenes = [];
-
-    internal static void WithAllScenesLock(Action<List<Scene>> action)
-    {
-        lock (_allScenesSync)
-            action(_allScenes);
-    }
-
-    internal static T WithAllScenesLock<T>(Func<List<Scene>, T> func)
-    {
-        lock (_allScenesSync)
-            return func(_allScenes);
-    }
-
-    internal static List<Scene> GetAllScenesSnapshotList() =>
-        WithAllScenesLock(static scenes => new List<Scene>(scenes));
 
     /// <summary>
     /// Retrieves a scene from the global scene collection by its unique identifier.
@@ -861,8 +845,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     /// This method searches the global collection of all active scenes. Scenes are automatically
     /// added to this collection when created and removed when disposed.
     /// </remarks>
-    public static Scene? GetSceneByID(string id) =>
-        WithAllScenesLock(scenes => scenes.Find(s => s.ID == id));
+    public static Scene? GetSceneByID(string id) => _allScenes.Find(s => s.ID == id);
 
     /// <summary>
     /// Gets a list of unique identifiers for all active scenes in the global scene collection.
@@ -872,8 +855,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     /// This method returns the IDs of all scenes that have been created and not yet disposed.
     /// It excludes null entries and provides a snapshot of active scene identifiers at the time of the call.
     /// </remarks>
-    public static List<string> GetAllSceneIDs() =>
-        WithAllScenesLock(scenes => scenes.ConvertAll(s => s.ID));
+    public static List<string> GetAllSceneIDs() => _allScenes.FindAll(s => s != null).ConvertAll(s => s.ID);
 
     /// <summary>
     /// Gets a read-only collection of all active scenes in the global scene collection.
@@ -887,8 +869,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     /// Changes to the underlying collection (such as creating or disposing scenes) will be
     /// reflected in subsequent calls to this method.
     /// </remarks>
-    public static ReadOnlyCollection<Scene> GetAllScenes() =>
-        GetAllScenesSnapshotList().AsReadOnly();
+    public static ReadOnlyCollection<Scene> GetAllScenes() => _allScenes.AsReadOnly();
 
     /// <summary>
     /// Disposes all active scenes in the global scene collection, releasing all resources.
@@ -906,7 +887,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     /// </remarks>
     public static void ClearAllScenes()
     {
-        var tmp = GetAllScenesSnapshotList();
+        var tmp = new List<Scene>(_allScenes);
         foreach (var scene in tmp)
             scene.Dispose();
     }
