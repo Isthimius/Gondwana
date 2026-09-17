@@ -124,6 +124,8 @@
 - <details>
   <summary><strong>Menus</strong></summary>
 
+  - [[MenuBarWidget|Widgets---MenuBarWidget]]
+
   </details>
 
 - <details>

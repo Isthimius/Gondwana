@@ -771,6 +771,14 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
         return this;
     }
 
+    /// <summary>Stops an active reveal animation at its current progress.</summary>
+    /// <returns>This drawing for fluent configuration.</returns>
+    public DirectDrawingBase CancelReveal()
+    {
+        _revealAnimating = false;
+        return this;
+    }
+
     /// <summary>
     /// Marks the regions occupied by this direct drawing as dirty, forcing a redraw on the next frame.
     /// </summary>

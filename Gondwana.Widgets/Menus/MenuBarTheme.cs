@@ -42,6 +42,23 @@ public sealed record MenuBarTheme
     public int ItemHeight { get; init; } = 28;
     public int ItemHorizontalPadding { get; init; } = 10;
     public int ShortcutGap { get; init; } = 24;
+    /// <summary>Gets the check/radio column width when any row is checkable.</summary>
+    public int MarkerColumnWidth { get; init; } = 24;
+    /// <summary>Gets the icon size in pixels.</summary>
+    public int IconSize { get; init; } = 18;
+    /// <summary>Gets the gap after the icon column.</summary>
+    public int IconGap { get; init; } = 6;
+    /// <summary>Gets the submenu arrow column width.</summary>
+    public int SubMenuArrowWidth { get; init; } = 20;
+    /// <summary>Gets spacing between parent and child popup edges.</summary>
+    public int SubMenuGap { get; init; } = 0;
+    /// <summary>Gets the size of check/radio/arrow geometry in pixels.</summary>
+    public int IndicatorSize { get; init; } = 14;
+    /// <summary>Gets the stroke width of checkmarks and submenu arrows.</summary>
+    public float IndicatorStrokeWidth { get; init; } = 1.8f;
+    /// <summary>Gets the enabled check/radio/arrow color.</summary>
+    public Color IndicatorColor { get; init; } = Color.White;
+
     public int SeparatorHeight { get; init; } = 9;
 
     public float FontSize { get; init; } = 15f;

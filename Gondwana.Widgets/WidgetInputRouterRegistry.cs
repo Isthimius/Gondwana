@@ -98,6 +98,15 @@ internal static class WidgetInputRouterRegistry
         GetRouter(widget)?.NotifyWidgetKeyboardFocusDisabled(widget);
     }
 
+    internal static WidgetBase? GetFocusedWidget(WidgetBase widget) => GetRouter(widget)?.FocusedWidget;
+
+    internal static void RestoreFocus(WidgetBase widget, WidgetBase? previous)
+    {
+        var router = GetRouter(widget);
+        router?.ClearFocus();
+        router?.Focus(previous);
+    }
+
     private static WidgetInputRouter? GetRouter(WidgetBase widget)
     {
         ArgumentNullException.ThrowIfNull(widget);
