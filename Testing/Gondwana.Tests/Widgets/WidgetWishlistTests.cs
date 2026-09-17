@@ -8,7 +8,7 @@ using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.Widgets;
 using Gondwana.Widgets.Controls;
-using Gondwana.Widgets.Dialogue;
+using Gondwana.Widgets.Dialogs;
 using Gondwana.Widgets.Hud;
 
 namespace Gondwana.Tests.Widgets;
