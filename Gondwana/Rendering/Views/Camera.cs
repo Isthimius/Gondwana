@@ -544,9 +544,22 @@ public sealed class Camera
         if (TopologyLayer is { } layer && (layer.WrapHorizontally || layer.WrapVertically))
         {
             var visible = GetVisibleWorldSizePx();
-            target = layer.GetPeriod().Nearest(target, new(PositionPx.X + visible.Width / 2, PositionPx.Y + visible.Height / 2));
-            if (_followAxis == 1) target.Y = PositionPx.Y + visible.Height / 2;
-            if (_followAxis == 2) target.X = PositionPx.X + visible.Width / 2;
+            var center = new PointF(PositionPx.X + visible.Width / 2, PositionPx.Y + visible.Height / 2);
+            var period = layer.GetPeriod();
+            if (_followAxis == 1)
+            {
+                target = NearestWrappedByAxis(period, target, center, followX: true);
+                target.Y = center.Y;
+            }
+            else if (_followAxis == 2)
+            {
+                target = NearestWrappedByAxis(period, target, center, followX: false);
+                target.X = center.X;
+            }
+            else
+            {
+                target = period.Nearest(target, center);
+            }
         }
         var desiredUL = DesiredUpperLeftToContainTarget(target);
         if (_hardFollow || FollowLerpPerSecond <= 0f)
@@ -596,6 +609,42 @@ public sealed class Camera
             newY += targetWorldPx.Y - dzWorld.Bottom;
 
         return new PointF(newX, newY);
+    }
+
+    private static PointF NearestWrappedByAxis(LayerPeriod period, PointF point, PointF reference, bool followX)
+    {
+        var delta = new PointF(reference.X - point.X, reference.Y - point.Y);
+        var coefficients = period.Coefficients(delta);
+        int baseColumn = (int)Math.Round(coefficients.X);
+        int baseRow = (int)Math.Round(coefficients.Y);
+
+        int minColumn = period.WrapColumns ? baseColumn - 4 : 0;
+        int maxColumn = period.WrapColumns ? baseColumn + 4 : 0;
+        int minRow = period.WrapRows ? baseRow - 4 : 0;
+        int maxRow = period.WrapRows ? baseRow + 4 : 0;
+
+        var best = period.Nearest(point, reference);
+        float bestAxisDistance = followX ? Math.Abs(best.X - reference.X) : Math.Abs(best.Y - reference.Y);
+        float bestDistanceSquared = (best.X - reference.X) * (best.X - reference.X) + (best.Y - reference.Y) * (best.Y - reference.Y);
+
+        for (int c = minColumn; c <= maxColumn; c++)
+        for (int r = minRow; r <= maxRow; r++)
+        {
+            var offset = period.Offset(c, r);
+            var candidate = new PointF(point.X + offset.X, point.Y + offset.Y);
+            float axisDistance = followX ? Math.Abs(candidate.X - reference.X) : Math.Abs(candidate.Y - reference.Y);
+            float distanceSquared = (candidate.X - reference.X) * (candidate.X - reference.X) +
+                                    (candidate.Y - reference.Y) * (candidate.Y - reference.Y);
+            if (axisDistance < bestAxisDistance ||
+                (axisDistance == bestAxisDistance && distanceSquared < bestDistanceSquared))
+            {
+                best = candidate;
+                bestAxisDistance = axisDistance;
+                bestDistanceSquared = distanceSquared;
+            }
+        }
+
+        return best;
     }
 
     private PointF ClampToWorldBounds(PointF ul)
