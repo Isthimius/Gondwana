@@ -46,6 +46,17 @@ A typical widget can be used for in-game interface elements such as:
 
 Exact usage depends on the specific widget type being used.
 
+### Menu bars
+
+`MenuBarWidget` supports callback commands, immutable optional item keys, check/radio
+items, recursive submenus, `SKImage` icons, typed `KeyGesture` shortcuts, and explicit
+mnemonics. Fluent `AddItem` construction remains available. Use `GetItem(key)` or the
+indexer to update enabled/checked state later. Keyboard shortcuts receive unhandled
+input after the focused widget, including while dropdowns are closed.
+
+See the [menu guide](https://github.com/Isthimius/Gondwana/wiki/Widgets---MenuBarWidget)
+and `Demos/WidgetsTest/WidgetsTestHost.cs` for complete consumer examples.
+
 ### Toast notifications
 
 ```csharp

@@ -68,7 +68,7 @@ It:
 * routes mouse or touch input to that widget
 * manages pointer capture during clicks and drags
 * manages keyboard focus
-* routes keyboard input to the focused widget
+* routes keyboard input to the focused widget, then offers unhandled keys to eligible menu bars
 * provides a platform-agnostic input path
 
 The platform hosts translate native input into Gondwana input events. Widgets themselves do not need to know whether they are running under WinForms, Avalonia, or Blazor.
@@ -115,6 +115,12 @@ Not every widget is interactive. Display-oriented widgets such as labels, progre
 # Available Widgets
 
 The following pages cover the current widgets available in `Gondwana.Widgets`.
+
+## Menus
+
+### [[MenuBarWidget|Widgets---MenuBarWidget]]
+
+Callback-based menu bars with stable item keys, check/radio commands, recursive submenus, icons, typed keyboard shortcuts, and explicit mnemonics. Closed menus receive unhandled accelerators after the focused widget has its opportunity to handle input.
 
 ## Controls
 
