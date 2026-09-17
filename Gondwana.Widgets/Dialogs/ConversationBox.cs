@@ -6,7 +6,7 @@ using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using SkiaSharp;
 
-namespace Gondwana.Widgets.Dialogue;
+namespace Gondwana.Widgets.Dialogs;
 
 /// <summary>
 /// Provides an NPC-style conversation panel with speaker, wrapped body text,
