@@ -32,8 +32,26 @@ namespace Gondwana.Scenes;
 [JsonObject(IsReference = true)]
 public class Scene : IEnumerable<SceneLayer>, IDisposable
 {
-    [JsonProperty]
+    [JsonProperty("SceneLayers")]
     private readonly List<SceneLayer> _sceneLayers = [];
+
+    // Read legacy state files that used the private field name without
+    // continuing to emit that implementation detail in new JSON.
+    [JsonProperty("_sceneLayers")]
+    private List<SceneLayer>? LegacySceneLayers
+    {
+        set
+        {
+            if (value is null || _sceneLayers.Count != 0)
+                return;
+
+            foreach (var sceneLayer in value)
+            {
+                _sceneLayers.Add(sceneLayer);
+                OnSceneLayerAdded(sceneLayer);
+            }
+        }
+    }
 
     [JsonIgnore]
     private readonly object _renderSurfaceHostSync = new();
@@ -150,7 +168,8 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     /// The value bag allows games or engine extensions to attach arbitrary structured data
     /// to scenes (such as level metadata, objectives, ambient settings, or custom properties)
     /// without modifying the core <see cref="Scene"/> class. Values are accessed using
-    /// strongly-typed <see cref="ValueKey{T}"/> instances and are included in scene serialization.
+    /// strongly-typed <see cref="ValueKey{T}"/> instances. The value bag is runtime-only and is
+    /// intentionally excluded from JSON serialization.
     /// </remarks>
     [JsonIgnore]
     public TypedValueBag ValueBag { get; private set; } = new();
