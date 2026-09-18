@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Tooling.Assets.WinForms;
+namespace Gondwana.Tooling.Assets.WinForms;
 
 internal sealed class InputDialog : Form
 {
@@ -58,6 +58,7 @@ internal sealed class InputDialog : Form
 
         AcceptButton = okButton;
         CancelButton = cancelButton;
+        DarkTheme.Apply(this);
     }
 
     public static string? Show(IWin32Window owner, string title, string prompt, string initialValue = "")

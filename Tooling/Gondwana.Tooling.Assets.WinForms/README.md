@@ -1,7 +1,7 @@
 # Gondwana Asset Files (WinForms)
 
 Standalone .NET 8 Windows editor for Gondwana asset files (`.gaf` / `.zip`). It provides a
-simple desktop workflow for creating, inspecting, importing, replacing, exporting,
+dark, dockable desktop workspace for creating, inspecting, importing, replacing, exporting,
 renaming, and deleting assets stored through `AssetsFile`.
 
 Open this project in Visual Studio, or run it from the repository root:
@@ -12,13 +12,28 @@ dotnet run --project Tooling/Gondwana.Tooling.Assets.WinForms -c Release
 
 This is development tooling, not a runtime dependency for a game.
 
-## Workflow
+## Workspace
+
+The editor follows the same WinForms workspace model as the Gondwana Tilesheets editor:
+
+- **File → Open working directory** selects the directory shown in the **Asset files**
+  tree. **F5** refreshes it, and subdirectories load as they are expanded.
+- The tree shows `.gaf` and `.zip` asset containers. Selecting a file opens it.
+- **File → Open** can open several asset files at once.
+- Every open asset file has its own document tab and independent filters, grid, status,
+  and in-memory `AssetsFile` instance.
+- Documents and the **Asset files** workspace can be docked, floated, resized, and
+  rearranged. **View → Asset files** restores the workspace if it is hidden.
+- The editor surfaces use the same VS2015-style dark docking theme as the Tilesheets
+  tool. Native Windows file dialogs and window chrome continue to follow Windows.
+
+## Asset-file workflow
 
 - **New** creates a new `.gaf` (or `.zip`) asset file. New files can be created
-  either unencrypted or password-protected.
-- **Open** loads an existing asset file. If the initial open fails, the editor
-  prompts for a password and retries it as an encrypted asset file.
-- The main grid lists each asset's **Type**, **Name**, and stored **Size**.
+  either unencrypted or password-protected and open immediately in their own document.
+- **Open** loads one or more existing asset files. If the initial open fails, the editor
+  prompts for a password and retries the file as an encrypted asset container.
+- The document grid lists each asset's **Type**, **Name**, and stored **Size**.
 - Use the **Type** selector to show all entries or only one `AssetTypes` value.
   The **Search** box filters the current list by asset name as you type.
 - **Add / Import** imports one or more files. Choose the Gondwana asset type once
@@ -29,13 +44,15 @@ This is development tooling, not a runtime dependency for a game.
 - **Export** writes the selected asset back to a normal file. Double-clicking a
   grid row performs the same export operation.
 - **Delete** removes the selected asset after confirmation.
-- **Refresh** rebuilds the grid from the currently loaded asset file and reapplies
-  the current type and search filters.
-- **Save** persists the current asset file. **Save As** writes a complete copy to
+- **Refresh** rebuilds that document's grid from its currently loaded asset file and
+  reapplies the current type and search filters.
+- **Save** persists the active asset file. **Save As** writes a complete copy to
   another `.gaf` or `.zip`, with an independent choice of password protection.
+- **Ctrl+S**, **Ctrl+Shift+S**, and **Ctrl+W** save, save as, and close the active
+  document.
 
-The status bar reports the current file and filtered asset count, along with the
-result of operations such as import, rename, export, and save.
+Each document's status bar reports its file path and filtered asset count, along with
+the result of operations such as import, rename, export, and save.
 
 ## Asset types
 
@@ -56,25 +73,29 @@ payload itself.
 
 A few behaviors are worth noting:
 
-- `.gaf` and `.zip` files are both offered by the file dialogs.
+- `.gaf` and `.zip` files are both offered by the file dialogs and workspace tree.
 - Password protection is chosen when creating a file or when using **Save As**.
 - Opening an encrypted file requires the correct password before entries can be
   enumerated.
 - **Save As** copies every entry from the currently open asset file into the new
   destination; it does not merely copy the container file on disk.
-- Importing, replacing, renaming, and deleting modify the in-memory `AssetsFile`.
-  Use **Save** to persist those changes to the current file.
+- Importing, replacing, renaming, and deleting modify the in-memory `AssetsFile`
+  owned by that document. Use **Save** to persist those changes to its current file.
+- Closing a document does not currently provide dirty-state tracking or a save prompt,
+  matching the pre-docking editor's save semantics.
 
 ## Current scope
 
-This tool is intentionally a compact asset-container editor. It manages the assets
-inside a Gondwana asset file but does not try to edit the contents of those assets.
-For example, image, audio, SVG, tilesheet, and other payloads remain ordinary stored
-streams and should be edited with their appropriate authoring tools before import.
+This tool is intentionally an asset-container editor. It manages the assets inside a
+Gondwana asset file but does not try to edit the contents of those assets. Image,
+audio, SVG, tilesheet, and other payloads remain ordinary stored streams and should
+be edited with their appropriate authoring tools before import.
 
 The editor currently provides:
 
-- asset-file creation and opening
+- asset-file creation and multi-file opening
+- dockable/floating asset documents
+- working-directory tree browsing
 - optional password-protected containers
 - multi-file import
 - Gondwana asset-type assignment
@@ -86,20 +107,24 @@ The editor currently provides:
 
 ## Development and maintenance
 
-The UI is implemented directly with WinForms and uses the engine's existing
-`Gondwana.Assets` model rather than maintaining a second asset-file implementation.
-Changes to this tool should therefore preserve compatibility with `AssetsFile` and
-`AssetTypes` instead of introducing editor-only file semantics.
+The UI is implemented directly with WinForms and DockPanelSuite and uses the engine's
+existing `Gondwana.Assets` model rather than maintaining a second asset-file
+implementation. Changes to this tool should preserve compatibility with `AssetsFile`
+and `AssetTypes` instead of introducing editor-only file semantics.
 
-Run the project directly for Windows UI verification and exercise at least these
-paths when changing asset-file behavior:
+Run the project directly for Windows UI verification and exercise at least these paths
+when changing asset-file behavior:
 
-1. Create both plain and password-protected asset files.
-2. Import multiple assets and assign a type.
-3. Filter by type and search by name.
-4. Replace, rename, export, and delete an entry.
-5. Save, reopen, and verify the resulting entries.
-6. Use **Save As** both with and without password protection and reopen the copy.
+1. Choose a working directory containing multiple `.gaf` files and open several from
+   the workspace tree.
+2. Dock, float, close, and restore the **Asset files** workspace; rearrange multiple
+   open asset documents.
+3. Create both plain and password-protected asset files.
+4. Import multiple assets and assign a type.
+5. Filter by type and search by name independently in two open documents.
+6. Replace, rename, export, and delete an entry.
+7. Save, reopen, and verify the resulting entries.
+8. Use **Save As** both with and without password protection and reopen the copy.
 
 For broader regression coverage, also run the repository's normal Release build and
 test suite.
