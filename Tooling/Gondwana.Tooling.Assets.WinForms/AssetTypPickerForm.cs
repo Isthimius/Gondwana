@@ -15,7 +15,9 @@ internal sealed class AssetTypePickerForm : Form
             .Where(name => !string.IsNullOrWhiteSpace(name))
             .ToArray();
 
-        Text = "Select Asset Type";
+        Text = fileNames.Length == 1
+            ? $"Select Asset Type — {fileNames[0]}"
+            : "Select Asset Type";
         FormBorderStyle = FormBorderStyle.FixedDialog;
         StartPosition = FormStartPosition.CenterParent;
         MinimizeBox = false;
@@ -33,10 +35,19 @@ internal sealed class AssetTypePickerForm : Form
             ColumnCount = 1,
             RowCount = 4,
             Dock = DockStyle.Fill,
-            Margin = Padding.Empty
+            Margin = new Padding(0)
         };
 
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 400));
+
+        var fileListHeight = fileNames.Length <= 1
+            ? 32
+            : Math.Min(120, 32 + ((fileNames.Length - 1) * 18));
+
+        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, fileListHeight));
+        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
         var label = new Label
         {
@@ -51,7 +62,7 @@ internal sealed class AssetTypePickerForm : Form
         var files = new ListBox
         {
             Dock = DockStyle.Fill,
-            Height = fileNames.Length <= 1 ? 32 : 88,
+            Height = fileListHeight,
             IntegralHeight = false,
             HorizontalScrollbar = true,
             Margin = new Padding(0, 0, 0, 10)
@@ -76,7 +87,7 @@ internal sealed class AssetTypePickerForm : Form
             Dock = DockStyle.Fill,
             FlowDirection = FlowDirection.RightToLeft,
             WrapContents = false,
-            Margin = Padding.Empty
+            Margin = new Padding(0)
         };
 
         var cancelButton = new Button
@@ -92,7 +103,7 @@ internal sealed class AssetTypePickerForm : Form
             Text = "OK",
             AutoSize = true,
             DialogResult = DialogResult.OK,
-            Margin = Padding.Empty
+            Margin = new Padding(0)
         };
 
         buttons.Controls.Add(cancelButton);
