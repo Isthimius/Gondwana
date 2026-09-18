@@ -14,7 +14,7 @@ using Gondwana.Widgets.Hud;
 namespace Gondwana.Tests.Widgets;
 
 [Collection("SpriteManager")]
-public sealed class WidgetWishlistTests : IDisposable
+public sealed class WidgetsTests : IDisposable
 {
     private readonly List<Sprite> _sprites = [];
 
