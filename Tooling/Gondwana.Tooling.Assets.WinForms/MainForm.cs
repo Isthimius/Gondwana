@@ -1,163 +1,261 @@
-using System.ComponentModel;
 using Gondwana.Assets;
+using WeifenLuo.WinFormsUI.Docking;
+using WeifenLuo.WinFormsUI.ThemeVS2015;
 
 namespace Gondwana.Tooling.Assets.WinForms;
 
-public sealed partial class MainForm : Form
+public sealed class MainForm : Form
 {
-    private AssetsFile? _assetsFile;
-    private readonly BindingList<AssetRecord> _records = new();
+    private const string AssetFileFilter = "Asset Files (*.gaf;*.zip)|*.gaf;*.zip|All Files (*.*)|*.*";
+    private static readonly HashSet<string> AssetFileExtensions = new(StringComparer.OrdinalIgnoreCase)
+        { ".gaf", ".zip" };
 
-    private readonly DataGridView _grid;
-    private readonly ToolStripStatusLabel _statusLabel;
-    private readonly ComboBox _typeComboBox;
-    private readonly TextBox _searchTextBox;
+    private readonly VS2015DarkTheme _theme = new();
+    private readonly DockPanel _dock;
+    private readonly DockContent _workspace = new() { Text = "Asset files", HideOnClose = true };
+    private readonly TreeView _tree = new() { Dock = DockStyle.Fill, HideSelection = false, ShowNodeToolTips = true };
+    private readonly List<AssetEditorDocument> _documents = [];
 
-    private readonly Button _newButton;
-    private readonly Button _openButton;
-    private readonly Button _saveButton;
-    private readonly Button _saveAsButton;
-    private readonly Button _refreshButton;
-
-    private readonly Button _addButton;
-    private readonly Button _replaceButton;
-    private readonly Button _renameButton;
-    private readonly Button _exportButton;
-    private readonly Button _deleteButton;
+    private string _directory = Environment.CurrentDirectory;
+    private AssetEditorDocument? ActiveEditor => _dock.ActiveDocument as AssetEditorDocument;
 
     public MainForm()
     {
-        Text = "AssetFiles Editor";
-        Width = 1100;
-        Height = 700;
+        Text = "Gondwana Assets — GAF editor";
+        Size = new Size(1450, 900);
+        MinimumSize = new Size(900, 600);
         StartPosition = FormStartPosition.CenterScreen;
 
-        var topPanel = new FlowLayoutPanel
-        {
-            Dock = DockStyle.Top,
-            Height = 42,
-            Padding = new Padding(8),
-            AutoSize = false,
-            WrapContents = false
-        };
-
-        _newButton = CreateButton("New", (_, _) => CreateNewAssetsFile());
-        _openButton = CreateButton("Open", (_, _) => OpenAssetsFile());
-        _saveButton = CreateButton("Save", (_, _) => SaveAssetsFile());
-        _saveAsButton = CreateButton("Save As", (_, _) => SaveAssetsFileAs());
-        _refreshButton = CreateButton("Refresh", (_, _) => ReloadGrid());
-
-        topPanel.Controls.AddRange([
-            _newButton,
-            _openButton,
-            _saveButton,
-            _saveAsButton,
-            _refreshButton
-        ]);
-
-        var filterPanel = new FlowLayoutPanel
-        {
-            Dock = DockStyle.Top,
-            Height = 42,
-            Padding = new Padding(8),
-            AutoSize = false,
-            WrapContents = false
-        };
-
-        _typeComboBox = new ComboBox
-        {
-            Width = 150,
-            DropDownStyle = ComboBoxStyle.DropDownList
-        };
-        _typeComboBox.Items.Add("All Types");
-        foreach (var value in Enum.GetValues<AssetTypes>())
-            _typeComboBox.Items.Add(value);
-        _typeComboBox.SelectedIndex = 0;
-        _typeComboBox.SelectedIndexChanged += (_, _) => ReloadGrid();
-
-        _searchTextBox = new TextBox
-        {
-            Width = 250,
-            PlaceholderText = "Filter by asset name..."
-        };
-        _searchTextBox.TextChanged += (_, _) => ReloadGrid();
-
-        _addButton = CreateButton("Add / Import", (_, _) => AddAsset());
-        _replaceButton = CreateButton("Replace", (_, _) => ReplaceSelectedAsset());
-        _renameButton = CreateButton("Rename", (_, _) => RenameSelectedAsset());
-        _exportButton = CreateButton("Export", (_, _) => ExportSelectedAsset());
-        _deleteButton = CreateButton("Delete", (_, _) => DeleteSelectedAsset());
-
-        filterPanel.Controls.Add(new Label { Text = "Type:", AutoSize = true, Padding = new Padding(0, 8, 0, 0) });
-        filterPanel.Controls.Add(_typeComboBox);
-        filterPanel.Controls.Add(new Label { Text = "Search:", AutoSize = true, Padding = new Padding(12, 8, 0, 0) });
-        filterPanel.Controls.Add(_searchTextBox);
-        filterPanel.Controls.Add(_addButton);
-        filterPanel.Controls.Add(_replaceButton);
-        filterPanel.Controls.Add(_renameButton);
-        filterPanel.Controls.Add(_exportButton);
-        filterPanel.Controls.Add(_deleteButton);
-
-        _grid = new DataGridView
+        _dock = new DockPanel
         {
             Dock = DockStyle.Fill,
-            ReadOnly = true,
-            AllowUserToAddRows = false,
-            AllowUserToDeleteRows = false,
-            AutoGenerateColumns = false,
-            MultiSelect = false,
-            SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-            DataSource = _records
+            Theme = _theme,
+            DocumentStyle = DocumentStyle.DockingWindow
         };
 
-        _grid.Columns.Add(new DataGridViewTextBoxColumn
+        var menu = new MenuStrip();
+        var file = new ToolStripMenuItem("&File");
+        Add(file, "&New", Keys.Control | Keys.N, CreateNewAssetsFile);
+        Add(file, "&Open…", Keys.Control | Keys.O, OpenFiles);
+        Add(file, "Open working &directory…", Keys.Control | Keys.Shift | Keys.O, ChooseDirectory);
+        file.DropDownItems.Add(new ToolStripSeparator());
+        Add(file, "&Save", Keys.Control | Keys.S, () => ActiveEditor?.Save());
+        Add(file, "Save &As…", Keys.Control | Keys.Shift | Keys.S, () => ActiveEditor?.SaveAs());
+        Add(file, "&Close", Keys.Control | Keys.W, () => ActiveEditor?.Close());
+        file.DropDownItems.Add(new ToolStripSeparator());
+        Add(file, "E&xit", Keys.Alt | Keys.F4, Close);
+
+        var view = new ToolStripMenuItem("&View");
+        Add(view, "Asset files", Keys.None, () => _workspace.Show(_dock, DockState.DockLeft));
+        Add(view, "Refresh directory", Keys.F5, RefreshDirectory);
+
+        menu.Items.AddRange([file, view]);
+        MainMenuStrip = menu;
+
+        Controls.Add(_dock);
+        Controls.Add(menu);
+
+        var workspaceTools = new ToolStrip
         {
-            HeaderText = "Type",
-            DataPropertyName = nameof(AssetRecord.AssetType),
-            Width = 120
-        });
+            Dock = DockStyle.Top,
+            GripStyle = ToolStripGripStyle.Hidden
+        };
+        workspaceTools.Items.Add("Directory…", null, (_, _) => ChooseDirectory());
+        workspaceTools.Items.Add("Refresh", null, (_, _) => RefreshDirectory());
 
-        _grid.Columns.Add(new DataGridViewTextBoxColumn
+        _workspace.Controls.Add(_tree);
+        _workspace.Controls.Add(workspaceTools);
+
+        _tree.BeforeExpand += (_, e) =>
         {
-            HeaderText = "Name",
-            DataPropertyName = nameof(AssetRecord.AssetName),
-            AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
-        });
+            if (e.Node is { Tag: DirectoryInfo directory } node &&
+                node.Nodes.Count == 1 &&
+                node.Nodes[0].Tag is null)
+            {
+                FillDirectory(node, directory.FullName);
+            }
+        };
 
-        _grid.Columns.Add(new DataGridViewTextBoxColumn
+        _tree.AfterSelect += (_, e) =>
         {
-            HeaderText = "Size",
-            DataPropertyName = nameof(AssetRecord.DisplaySize),
-            Width = 120
+            if (e.Node?.Tag is string path && IsAssetFile(path))
+                OpenDocument(path);
+        };
+
+        _tree.NodeMouseClick += (_, e) =>
+        {
+            if (e.Button == MouseButtons.Right)
+                _tree.SelectedNode = e.Node;
+        };
+
+        var context = new ContextMenuStrip();
+        context.Items.Add("Open asset file", null, (_, _) =>
+        {
+            if (_tree.SelectedNode?.Tag is string path && IsAssetFile(path))
+                OpenDocument(path);
         });
+        _tree.ContextMenuStrip = context;
 
-        _grid.CellDoubleClick += (_, _) => ExportSelectedAsset();
-        _grid.SelectionChanged += (_, _) => UpdateUiState();
+        DarkTheme.Apply(this);
+        DarkTheme.Apply(_workspace);
+        DarkTheme.Apply(context);
 
-        var statusStrip = new StatusStrip();
-        _statusLabel = new ToolStripStatusLabel("No asset file loaded.");
-        statusStrip.Items.Add(_statusLabel);
-
-        Controls.Add(_grid);
-        Controls.Add(filterPanel);
-        Controls.Add(topPanel);
-        Controls.Add(statusStrip);
-
-        UpdateUiState();
+        Shown += (_, _) =>
+        {
+            _workspace.Show(_dock, DockState.DockLeft);
+            RefreshDirectory();
+        };
     }
 
-    private Button CreateButton(string text, EventHandler onClick)
+    private static void Add(ToolStripMenuItem menu, string label, Keys shortcut, Action action)
     {
-        var button = new Button
+        var item = new ToolStripMenuItem(label)
         {
-            Text = text,
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            Padding = new Padding(8, 4, 8, 4),
-            Margin = new Padding(4, 0, 4, 0)
+            ShortcutKeys = shortcut,
+            ForeColor = DarkTheme.Foreground
         };
-        button.Click += onClick;
-        return button;
+        item.Click += (_, _) => action();
+        menu.DropDownItems.Add(item);
+    }
+
+    private void ChooseDirectory()
+    {
+        using var dialog = new FolderBrowserDialog
+        {
+            Description = "Choose the asset-file working directory",
+            UseDescriptionForTitle = true,
+            SelectedPath = _directory
+        };
+
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        _directory = dialog.SelectedPath;
+        RefreshDirectory();
+    }
+
+    private void RefreshDirectory()
+    {
+        _tree.BeginUpdate();
+        try
+        {
+            _tree.Nodes.Clear();
+            var root = new TreeNode(_directory)
+            {
+                Tag = new DirectoryInfo(_directory),
+                ToolTipText = _directory
+            };
+            _tree.Nodes.Add(root);
+            FillDirectory(root, _directory);
+            root.Expand();
+        }
+        finally
+        {
+            _tree.EndUpdate();
+        }
+    }
+
+    private static bool IsAssetFile(string path) =>
+        AssetFileExtensions.Contains(Path.GetExtension(path));
+
+    private static void FillDirectory(TreeNode parent, string path)
+    {
+        parent.Nodes.Clear();
+
+        try
+        {
+            foreach (var directory in new DirectoryInfo(path).EnumerateDirectories().OrderBy(d => d.Name))
+            {
+                if ((directory.Attributes & FileAttributes.ReparsePoint) != 0)
+                    continue;
+
+                var node = new TreeNode(directory.Name)
+                {
+                    Tag = directory,
+                    ToolTipText = directory.FullName
+                };
+                node.Nodes.Add("Expand to load…");
+                parent.Nodes.Add(node);
+            }
+
+            foreach (var file in Directory.EnumerateFiles(path)
+                         .Where(IsAssetFile)
+                         .OrderBy(Path.GetFileName))
+            {
+                parent.Nodes.Add(new TreeNode(Path.GetFileName(file))
+                {
+                    Tag = file,
+                    ToolTipText = file
+                });
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            parent.Nodes.Add("Cannot read directory: " + ex.Message);
+        }
+    }
+
+    private void OpenFiles()
+    {
+        using var dialog = new OpenFileDialog
+        {
+            Title = "Open Asset File",
+            Filter = AssetFileFilter,
+            Multiselect = true,
+            InitialDirectory = _directory
+        };
+
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        foreach (var path in dialog.FileNames)
+            OpenDocument(path);
+    }
+
+    private void OpenDocument(string path)
+    {
+        path = Path.GetFullPath(path);
+
+        var existing = _documents.FirstOrDefault(d =>
+            string.Equals(d.FilePath, path, StringComparison.OrdinalIgnoreCase));
+        if (existing is not null)
+        {
+            existing.Activate();
+            return;
+        }
+
+        AssetsFile? assetsFile = null;
+        try
+        {
+            try
+            {
+                assetsFile = AssetsFile.LoadOrCreate(path);
+                _ = assetsFile.GetAllEntries().ToList();
+            }
+            catch
+            {
+                assetsFile?.Dispose();
+                assetsFile = null;
+
+                var password = InputDialog.Show(this, "Password", "Enter password for this asset file:");
+                if (password is null)
+                    return;
+
+                assetsFile = AssetsFile.LoadOrCreate(path, password, encrypt: true);
+                _ = assetsFile.GetAllEntries().ToList();
+            }
+
+            ShowDocument(assetsFile);
+            assetsFile = null;
+        }
+        catch (Exception ex)
+        {
+            ShowError("Failed to open asset file.", ex);
+        }
+        finally
+        {
+            assetsFile?.Dispose();
+        }
     }
 
     private void CreateNewAssetsFile()
@@ -165,14 +263,25 @@ public sealed partial class MainForm : Form
         using var dialog = new SaveFileDialog
         {
             Title = "Create Asset File",
-            Filter = "Asset Files (*.gaf;*.zip)|*.gaf;*.zip|All Files (*.*)|*.*",
-            DefaultExt = "gaf"
+            Filter = AssetFileFilter,
+            DefaultExt = "gaf",
+            InitialDirectory = _directory
         };
 
         if (dialog.ShowDialog(this) != DialogResult.OK)
             return;
 
-        var encrypt = MessageBox.Show(this,
+        var path = Path.GetFullPath(dialog.FileName);
+        var existing = _documents.FirstOrDefault(d =>
+            string.Equals(d.FilePath, path, StringComparison.OrdinalIgnoreCase));
+        if (existing is not null)
+        {
+            existing.Activate();
+            return;
+        }
+
+        var encrypt = MessageBox.Show(
+            this,
             "Enable password protection for this asset file?",
             "Encryption",
             MessageBoxButtons.YesNo,
@@ -184,409 +293,63 @@ public sealed partial class MainForm : Form
             password = InputDialog.Show(this, "Password", "Enter password for the new asset file:");
             if (string.IsNullOrWhiteSpace(password))
             {
-                MessageBox.Show(this, "A password is required when encryption is enabled.", "Password Required",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(
+                    this,
+                    "A password is required when encryption is enabled.",
+                    "Password Required",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
                 return;
             }
         }
 
+        AssetsFile? assetsFile = null;
         try
         {
-            _assetsFile?.Dispose();
-            _assetsFile = AssetsFile.LoadOrCreate(dialog.FileName, password, encrypt);
-            _assetsFile.Save();
-            ReloadGrid();
-            SetStatus($"Created: {dialog.FileName}");
+            assetsFile = AssetsFile.LoadOrCreate(path, password, encrypt);
+            assetsFile.Save();
+            ShowDocument(assetsFile);
+            assetsFile = null;
+
+            _directory = Path.GetDirectoryName(path) ?? _directory;
+            RefreshDirectory();
         }
         catch (Exception ex)
         {
             ShowError("Failed to create asset file.", ex);
         }
-    }
-
-    private void OpenAssetsFile()
-    {
-        using var dialog = new OpenFileDialog
+        finally
         {
-            Title = "Open Asset File",
-            Filter = "Asset Files (*.gaf;*.zip)|*.gaf;*.zip|All Files (*.*)|*.*"
-        };
-
-        if (dialog.ShowDialog(this) != DialogResult.OK)
-            return;
-
-        try
-        {
-            _assetsFile?.Dispose();
-
-            try
-            {
-                _assetsFile = AssetsFile.LoadOrCreate(dialog.FileName);
-                _ = _assetsFile.GetAllEntries().ToList();
-            }
-            catch
-            {
-                var password = InputDialog.Show(this, "Password", "Enter password for this asset file:");
-                _assetsFile?.Dispose();
-                _assetsFile = AssetsFile.LoadOrCreate(dialog.FileName, password, encrypt: true);
-                _ = _assetsFile.GetAllEntries().ToList();
-            }
-
-            ReloadGrid();
-            SetStatus($"Opened: {dialog.FileName}");
-        }
-        catch (Exception ex)
-        {
-            ShowError("Failed to open asset file.", ex);
+            assetsFile?.Dispose();
         }
     }
 
-    private void SaveAssetsFile()
+    private AssetEditorDocument ShowDocument(AssetsFile assetsFile)
     {
-        if (!EnsureAssetsFileLoaded())
-            return;
-
-        try
-        {
-            _assetsFile!.Save();
-            ReloadGrid();
-            SetStatus($"Saved: {_assetsFile.FilePath}");
-        }
-        catch (Exception ex)
-        {
-            ShowError("Failed to save asset file.", ex);
-        }
-    }
-
-    private void SaveAssetsFileAs()
-    {
-        if (!EnsureAssetsFileLoaded())
-            return;
-
-        using var dialog = new SaveFileDialog
-        {
-            Title = "Save Asset File As",
-            Filter = "Asset Files (*.gaf;*.zip)|*.gaf;*.zip|All Files (*.*)|*.*",
-            DefaultExt = Path.GetExtension(_assetsFile!.FilePath)
-        };
-
-        if (dialog.ShowDialog(this) != DialogResult.OK)
-            return;
-
-        try
-        {
-            var encrypt = MessageBox.Show(this,
-                "Enable password protection for the saved copy?",
-                "Encryption",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question) == DialogResult.Yes;
-
-            string? password = null;
-            if (encrypt)
-            {
-                password = InputDialog.Show(this, "Password", "Enter password for the saved copy:");
-                if (string.IsNullOrWhiteSpace(password))
-                {
-                    MessageBox.Show(this, "A password is required when encryption is enabled.", "Password Required",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-            }
-
-            var copy = AssetsFile.LoadOrCreate(dialog.FileName, password, encrypt);
-            foreach (var entry in _assetsFile.GetAllEntries())
-            {
-                using var stream = _assetsFile[entry.AssetType, entry.AssetName];
-                if (stream is null)
-                    continue;
-
-                copy.Add(entry.AssetType, entry.AssetName, stream);
-            }
-
-            copy.Save();
-            copy.Dispose();
-            SetStatus($"Saved copy: {dialog.FileName}");
-        }
-        catch (Exception ex)
-        {
-            ShowError("Failed to save copy of asset file.", ex);
-        }
-    }
-
-    private void AddAsset()
-    {
-        if (!EnsureAssetsFileLoaded())
-            return;
-
-        using var dialog = new OpenFileDialog
-        {
-            Title = "Import Asset",
-            Multiselect = true,
-            Filter = "All Files (*.*)|*.*"
-        };
-
-        if (dialog.ShowDialog(this) != DialogResult.OK)
-            return;
-
-        using var typePicker = new AssetTypePickerForm();
-        if (typePicker.ShowDialog(this) != DialogResult.OK)
-            return;
-
-        try
-        {
-            foreach (var file in dialog.FileNames)
-            {
-                var customName = InputDialog.Show(this,
-                    "Asset Name",
-                    $"Enter asset name for '{Path.GetFileName(file)}' (leave as-is to keep original file name):",
-                    Path.GetFileName(file));
-
-                if (string.IsNullOrWhiteSpace(customName))
-                    continue;
-
-                _assetsFile!.Add(typePicker.SelectedType, file, customName);
-            }
-
-            ReloadGrid();
-            SetStatus($"Imported {dialog.FileNames.Length} asset(s).");
-        }
-        catch (Exception ex)
-        {
-            ShowError("Failed to import one or more assets.", ex);
-        }
-    }
-
-    private void ReplaceSelectedAsset()
-    {
-        if (!EnsureAssetsFileLoaded())
-            return;
-
-        var selected = GetSelectedRecord();
-        if (selected is null)
-            return;
-
-        using var dialog = new OpenFileDialog
-        {
-            Title = $"Replace '{selected.AssetName}'",
-            Filter = "All Files (*.*)|*.*"
-        };
-
-        if (dialog.ShowDialog(this) != DialogResult.OK)
-            return;
-
-        try
-        {
-            using var stream = File.OpenRead(dialog.FileName);
-            _assetsFile!.Add(selected.AssetType, selected.AssetName, stream);
-            ReloadGrid();
-            SetStatus($"Replaced: {selected.AssetName}");
-        }
-        catch (Exception ex)
-        {
-            ShowError("Failed to replace asset.", ex);
-        }
-    }
-
-    private void RenameSelectedAsset()
-    {
-        if (!EnsureAssetsFileLoaded())
-            return;
-
-        var selected = GetSelectedRecord();
-        if (selected is null)
-            return;
-
-        var newName = InputDialog.Show(this, "Rename Asset", "Enter new asset name:", selected.AssetName);
-        if (string.IsNullOrWhiteSpace(newName) || string.Equals(newName, selected.AssetName, StringComparison.OrdinalIgnoreCase))
-            return;
-
-        try
-        {
-            using var stream = _assetsFile![selected.AssetType, selected.AssetName];
-            if (stream is null)
-            {
-                MessageBox.Show(this, "The selected asset could not be read.", "Read Failed",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            _assetsFile.Add(selected.AssetType, newName, stream);
-            _assetsFile.Remove(selected.AssetType, selected.AssetName);
-            ReloadGrid();
-            SetStatus($"Renamed '{selected.AssetName}' to '{newName}'.");
-        }
-        catch (Exception ex)
-        {
-            ShowError("Failed to rename asset.", ex);
-        }
-    }
-
-    private void ExportSelectedAsset()
-    {
-        if (!EnsureAssetsFileLoaded())
-            return;
-
-        var selected = GetSelectedRecord();
-        if (selected is null)
-            return;
-
-        using var dialog = new SaveFileDialog
-        {
-            Title = $"Export '{selected.AssetName}'",
-            FileName = selected.AssetName,
-            Filter = "All Files (*.*)|*.*"
-        };
-
-        if (dialog.ShowDialog(this) != DialogResult.OK)
-            return;
-
-        try
-        {
-            using var stream = _assetsFile![selected.AssetType, selected.AssetName];
-            if (stream is null)
-            {
-                MessageBox.Show(this, "The selected asset could not be read.", "Read Failed",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            using var fileStream = File.Create(dialog.FileName);
-            stream.CopyTo(fileStream);
-            SetStatus($"Exported: {selected.AssetName}");
-        }
-        catch (Exception ex)
-        {
-            ShowError("Failed to export asset.", ex);
-        }
-    }
-
-    private void DeleteSelectedAsset()
-    {
-        if (!EnsureAssetsFileLoaded())
-            return;
-
-        var selected = GetSelectedRecord();
-        if (selected is null)
-            return;
-
-        if (MessageBox.Show(this,
-                $"Delete '{selected.AssetName}'?",
-                "Confirm Delete",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning) != DialogResult.Yes)
-            return;
-
-        try
-        {
-            _assetsFile!.Remove(selected.AssetType, selected.AssetName);
-            ReloadGrid();
-            SetStatus($"Deleted: {selected.AssetName}");
-        }
-        catch (Exception ex)
-        {
-            ShowError("Failed to delete asset.", ex);
-        }
-    }
-
-    private void ReloadGrid()
-    {
-        _records.Clear();
-
-        if (_assetsFile is null)
-        {
-            UpdateUiState();
-            return;
-        }
-
-        try
-        {
-            var entries = _assetsFile.GetAllEntries();
-            var selectedType = _typeComboBox.SelectedItem;
-            var search = _searchTextBox.Text.Trim();
-
-            foreach (var entry in entries.OrderBy(e => e.AssetType).ThenBy(e => e.AssetName))
-            {
-                if (selectedType is AssetTypes assetType && entry.AssetType != assetType)
-                    continue;
-
-                if (!string.IsNullOrWhiteSpace(search) &&
-                    entry.AssetName.IndexOf(search, StringComparison.OrdinalIgnoreCase) < 0)
-                    continue;
-
-                long size = 0;
-                using var stream = _assetsFile[entry.AssetType, entry.AssetName];
-                if (stream is not null && stream.CanSeek)
-                    size = stream.Length;
-                else if (stream is not null)
-                {
-                    using var ms = new MemoryStream();
-                    stream.CopyTo(ms);
-                    size = ms.Length;
-                }
-
-                _records.Add(new AssetRecord
-                {
-                    AssetType = entry.AssetType,
-                    AssetName = entry.AssetName,
-                    SizeBytes = size
-                });
-            }
-
-            SetStatus(_assetsFile.FilePath + $" ({_records.Count} asset(s))");
-        }
-        catch (Exception ex)
-        {
-            ShowError("Failed to load asset entries.", ex);
-        }
-
-        UpdateUiState();
-    }
-
-    private AssetRecord? GetSelectedRecord()
-    {
-        return _grid.CurrentRow?.DataBoundItem as AssetRecord;
-    }
-
-    private bool EnsureAssetsFileLoaded()
-    {
-        if (_assetsFile is not null)
-            return true;
-
-        MessageBox.Show(this, "Open or create an asset file first.", "No Asset File",
-            MessageBoxButtons.OK, MessageBoxIcon.Information);
-        return false;
-    }
-
-    private void UpdateUiState()
-    {
-        var hasFile = _assetsFile is not null;
-        var hasSelection = GetSelectedRecord() is not null;
-
-        _saveButton.Enabled = hasFile;
-        _saveAsButton.Enabled = hasFile;
-        _refreshButton.Enabled = hasFile;
-        _addButton.Enabled = hasFile;
-        _replaceButton.Enabled = hasFile && hasSelection;
-        _renameButton.Enabled = hasFile && hasSelection;
-        _exportButton.Enabled = hasFile && hasSelection;
-        _deleteButton.Enabled = hasFile && hasSelection;
-    }
-
-    private void SetStatus(string message)
-    {
-        _statusLabel.Text = message;
+        var editor = new AssetEditorDocument(assetsFile, RefreshDirectory);
+        _documents.Add(editor);
+        editor.FormClosed += (_, _) => _documents.Remove(editor);
+        editor.Show(_dock, DockState.Document);
+        return editor;
     }
 
     private void ShowError(string message, Exception ex)
     {
-        MessageBox.Show(this, message + Environment.NewLine + Environment.NewLine + ex.Message,
-            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        SetStatus(message);
+        MessageBox.Show(
+            this,
+            message + Environment.NewLine + Environment.NewLine + ex.Message,
+            "AssetFiles Editor",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error);
     }
 
-    protected override void OnFormClosing(FormClosingEventArgs e)
+    protected override void OnFormClosed(FormClosedEventArgs e)
     {
-        _assetsFile?.Dispose();
-        base.OnFormClosing(e);
+        foreach (var document in _documents.ToArray())
+            document.Dispose();
+
+        _workspace.Dispose();
+        _theme.Dispose();
+        base.OnFormClosed(e);
     }
 }
