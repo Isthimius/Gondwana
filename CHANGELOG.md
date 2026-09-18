@@ -4,15 +4,6 @@ All notable changes to this project will be documented in this file.
 
 # [v2.6.0] - 2026-09-17
 
-## Build / Repository
-
-### Fixed
-- Correct release assets tool path ([#369](https://github.com/Isthimius/Gondwana/pull/369))
-
-Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.5.2...v2.6.0
-
-# [v2.6.0] - 2026-09-17
-
 ## Gondwana
 
 ### Added
@@ -87,6 +78,7 @@ Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.5.2...v2.6.0
 
 ### Fixed
 - Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
+- Correct release assets tool path ([#369](https://github.com/Isthimius/Gondwana/pull/369))
 
 
 
