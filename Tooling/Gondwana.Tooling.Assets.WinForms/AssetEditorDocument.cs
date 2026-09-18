@@ -173,11 +173,23 @@ internal sealed class AssetEditorDocument : DockContent
             Filter = AssetFileFilter,
             DefaultExt = Path.GetExtension(FilePath),
             InitialDirectory = Path.GetDirectoryName(FilePath),
-            FileName = Path.GetFileName(FilePath)
+            FileName = Path.GetFileNameWithoutExtension(FilePath) + "-copy" + Path.GetExtension(FilePath)
         };
 
         if (dialog.ShowDialog(this) != DialogResult.OK)
             return;
+
+        var destination = Path.GetFullPath(dialog.FileName);
+        if (string.Equals(destination, FilePath, StringComparison.OrdinalIgnoreCase))
+        {
+            MessageBox.Show(
+                this,
+                "Save As creates a copy. Choose a destination different from the currently open asset file.",
+                "Choose Another Destination",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+            return;
+        }
 
         try
         {
@@ -204,7 +216,7 @@ internal sealed class AssetEditorDocument : DockContent
                 }
             }
 
-            using var copy = AssetsFile.LoadOrCreate(dialog.FileName, password, encrypt);
+            using var copy = AssetsFile.LoadOrCreate(destination, password, encrypt);
             foreach (var entry in _assetsFile.GetAllEntries())
             {
                 using var stream = _assetsFile[entry.AssetType, entry.AssetName];
@@ -214,7 +226,7 @@ internal sealed class AssetEditorDocument : DockContent
 
             copy.Save();
             _workspaceChanged();
-            SetStatus($"Saved copy: {Path.GetFullPath(dialog.FileName)}");
+            SetStatus($"Saved copy: {destination}");
         }
         catch (Exception ex)
         {
