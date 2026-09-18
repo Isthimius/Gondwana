@@ -63,7 +63,7 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
     #region IDrawable members
 
     [JsonProperty]
-    public Guid Id { get; private set; } = Guid.NewGuid();
+    public Guid Id { get; internal set; } = Guid.NewGuid();
 
     [JsonProperty]
     public string? Nickname { get; set; }
