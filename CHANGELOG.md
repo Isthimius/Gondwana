@@ -78,7 +78,6 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
-- Correct release assets tool path ([#369](https://github.com/Isthimius/Gondwana/pull/369))
 
 
 
@@ -558,6 +557,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Add explicit permissions block ([#266](https://github.com/Isthimius/Gondwana/pull/266))
 - Repair Linux API history encoding and pin Doxygen ([#328](https://github.com/Isthimius/Gondwana/pull/328))
+- Correct release assets tool path ([#369](https://github.com/Isthimius/Gondwana/pull/369))
 
 
 
