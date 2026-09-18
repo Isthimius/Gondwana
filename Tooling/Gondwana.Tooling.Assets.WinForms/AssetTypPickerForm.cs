@@ -1,4 +1,4 @@
-﻿using Gondwana.Assets;
+using Gondwana.Assets;
 
 namespace Gondwana.Tooling.Assets.WinForms;
 
@@ -64,5 +64,6 @@ internal sealed class AssetTypePickerForm : Form
 
         AcceptButton = okButton;
         CancelButton = cancelButton;
+        DarkTheme.Apply(this);
     }
 }
