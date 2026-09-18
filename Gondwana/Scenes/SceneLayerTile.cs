@@ -16,7 +16,7 @@ public class SceneLayerTile : Tile
 {
     #region private / internal fields
 
-    [JsonProperty]
+    [JsonIgnore]
     internal SceneLayer parentSceneLayer;
 
     /// <summary>
@@ -31,6 +31,17 @@ public class SceneLayerTile : Tile
     #region constructors / finalizer
 
     [JsonConstructor]
+    private SceneLayerTile()
+    {
+        zOrder = 0;
+        visible = true;
+
+        // Parent ownership is reconstructed by SceneLayer.OnDeserialized().
+        // Use the null-object layer while Json.NET populates inherited Tile
+        // properties whose setters may invalidate the parent layer.
+        parentSceneLayer = SceneLayer.Empty;
+    }
+
     internal SceneLayerTile(SceneLayer sceneLayer)
     {
         zOrder = 0;
