@@ -311,7 +311,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// <see cref="Scene.AddLayer"/> and cleared when the layer is removed. The scene reference
     /// provides access to scene-level resources such as the collision world.
     /// </remarks>
-    [JsonProperty]
+    [JsonIgnore]
     public Scene Scene { get; internal set; }
 
     [JsonIgnore]
