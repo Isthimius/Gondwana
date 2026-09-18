@@ -10,6 +10,7 @@ internal sealed class AssetEditorDocument : DockContent
 
     private readonly AssetsFile _assetsFile;
     private readonly Action _workspaceChanged;
+    private readonly Func<string, bool> _isDocumentOpen;
     private readonly BindingList<AssetRecord> _records = new();
 
     private readonly DataGridView _grid;
@@ -28,10 +29,11 @@ internal sealed class AssetEditorDocument : DockContent
 
     public string FilePath => Path.GetFullPath(_assetsFile.FilePath);
 
-    public AssetEditorDocument(AssetsFile assetsFile, Action workspaceChanged)
+    public AssetEditorDocument(AssetsFile assetsFile, Action workspaceChanged, Func<string, bool> isDocumentOpen)
     {
         _assetsFile = assetsFile;
         _workspaceChanged = workspaceChanged;
+        _isDocumentOpen = isDocumentOpen;
 
         Text = Path.GetFileName(FilePath);
         TabText = Text;
@@ -180,11 +182,11 @@ internal sealed class AssetEditorDocument : DockContent
             return;
 
         var destination = Path.GetFullPath(dialog.FileName);
-        if (string.Equals(destination, FilePath, StringComparison.OrdinalIgnoreCase))
+        if (_isDocumentOpen(destination))
         {
             MessageBox.Show(
                 this,
-                "Save As creates a copy. Choose a destination different from the currently open asset file.",
+                "Save As creates a copy. Choose a destination different from any currently open asset file.",
                 "Choose Another Destination",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);

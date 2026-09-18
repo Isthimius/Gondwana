@@ -18,6 +18,8 @@ public sealed class MainForm : Form
 
     private string _directory = Environment.CurrentDirectory;
     private AssetEditorDocument? ActiveEditor => _dock.ActiveDocument as AssetEditorDocument;
+    private bool IsDocumentOpen(string path) =>
+        _documents.Any(document => string.Equals(document.FilePath, path, StringComparison.OrdinalIgnoreCase));
 
     public MainForm()
     {
@@ -326,7 +328,7 @@ public sealed class MainForm : Form
 
     private AssetEditorDocument ShowDocument(AssetsFile assetsFile)
     {
-        var editor = new AssetEditorDocument(assetsFile, RefreshDirectory);
+        var editor = new AssetEditorDocument(assetsFile, RefreshDirectory, IsDocumentOpen);
         _documents.Add(editor);
         editor.FormClosed += (_, _) => _documents.Remove(editor);
         editor.Show(_dock, DockState.Document);
