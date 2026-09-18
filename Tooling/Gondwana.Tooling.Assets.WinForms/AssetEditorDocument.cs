@@ -246,7 +246,7 @@ internal sealed class AssetEditorDocument : DockContent
         if (dialog.ShowDialog(this) != DialogResult.OK)
             return;
 
-        using var typePicker = new AssetTypePickerForm();
+        using var typePicker = new AssetTypePickerForm(dialog.FileNames);
         if (typePicker.ShowDialog(this) != DialogResult.OK)
             return;
 
