@@ -392,6 +392,19 @@ public void SetCollisionProfile(string profileName)
     }
 
     /// <summary>
+    /// Detaches the current collider from its scene-layer registry without otherwise
+    /// changing this tile's serialized collision state.
+    /// </summary>
+    protected void DetachCollider()
+    {
+        if (_collider is null)
+            return;
+
+        SceneLayer.ColliderRegistry.Unregister(_collider);
+        _collider = null;
+    }
+
+    /// <summary>
     /// Attaches this tile's collider and applies any collision state that was set
     /// before the collider became available.
     /// </summary>
