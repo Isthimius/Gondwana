@@ -78,6 +78,10 @@ public sealed class AnimationEditorControl : UserControl
         Document = document ?? throw new ArgumentNullException(nameof(document));
         _propertyAdapter = new AnimationPropertyAdapter(Document);
 
+        // Give the reusable editor a sensible construction-time size before
+        // SplitContainer minimum sizes are applied. A host may resize it immediately
+        // afterward, but WinForms validates SplitterDistance during construction.
+        Size = new Size(1200, 800);
         Dock = DockStyle.Fill;
         BuildLayout();
 
@@ -565,20 +569,22 @@ public sealed class AnimationEditorControl : UserControl
         object? sender,
         TreeViewCancelEventArgs e)
     {
-        if (e.Node.Nodes.Count != 1 ||
-            e.Node.Nodes[0].Tag is not null)
+        var node = e.Node;
+        if (node is null ||
+            node.Nodes.Count != 1 ||
+            node.Nodes[0].Tag is not null)
         {
             return;
         }
 
-        switch (e.Node.Tag)
+        switch (node.Tag)
         {
             case RegionTag region:
-                PopulateRows(e.Node, region);
+                PopulateRows(node, region);
                 break;
 
             case RowTag row:
-                PopulateFrames(e.Node, row);
+                PopulateFrames(node, row);
                 break;
         }
     }
