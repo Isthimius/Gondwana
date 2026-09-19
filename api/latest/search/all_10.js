@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['packeddefinitionfile_0',['PackedDefinitionFile',['../classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html#a7dfb357e7e14b31d4884282855fbf2ee',1,'Gondwana.Drawing.Tilesheets.GTS.TilesheetDefinitionSource.PackedDefinitionFile()'],['../namespaceGondwana_1_1Drawing_1_1Tilesheets_1_1GTS.html#af1de729cc67cf81e370c5f82aee35630a89e42ca2f7d2fa6981f4fcc9df275297',1,'Gondwana.Drawing.Tilesheets.GTS.PackedDefinitionFile']]],
+  ['packeddefinitionfile_0',['PackedDefinitionFile',['../classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html#a7dfb357e7e14b31d4884282855fbf2ee',1,'Gondwana.Drawing.Tilesheets.GTS.TilesheetDefinitionSource.PackedDefinitionFile()'],['../classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinitionSource.html#aa6cd7d9db946205e817b3c7a3c7a8f59',1,'Gondwana.Scenes.GSCN.SceneDefinitionSource.PackedDefinitionFile()'],['../namespaceGondwana_1_1Drawing_1_1Tilesheets_1_1GTS.html#af1de729cc67cf81e370c5f82aee35630a89e42ca2f7d2fa6981f4fcc9df275297',1,'Gondwana.Drawing.Tilesheets.GTS.PackedDefinitionFile'],['../namespaceGondwana_1_1Scenes_1_1GSCN.html#a2171ac4346c9f5ac439c4d6e0ec1a626a89e42ca2f7d2fa6981f4fcc9df275297',1,'Gondwana.Scenes.GSCN.PackedDefinitionFile']]],
   ['padding_1',['Padding',['../classGondwana_1_1Widgets_1_1Controls_1_1ProgressBarWidget.html#a8dbb6f53234bcdfc7612eb45a98e974f',1,'Gondwana::Widgets::Controls::ProgressBarWidget']]],
   ['pagedown_2',['PageDown',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864aee3677bcca83ece9384b01e43952bf33',1,'Gondwana::Blazor::Input::Keyboard']]],
   ['pageup_3',['PageUp',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a9b869c510c75c5827ac82e49d4340927',1,'Gondwana::Blazor::Input::Keyboard']]],
@@ -14,7 +14,7 @@ var searchData=
   ['panto_11',['PanTo',['../classGondwana_1_1Rendering_1_1Views_1_1Camera.html#ae1f3712f1ccf72cdc5408c7a6d481f9e',1,'Gondwana::Rendering::Views::Camera']]],
   ['pantogridoverduration_12',['PanToGridOverDuration',['../classGondwana_1_1Rendering_1_1Views_1_1Camera.html#a223c1e5bdad797c5de0bee3692f45fb5',1,'Gondwana::Rendering::Views::Camera']]],
   ['pantooverduration_13',['PanToOverDuration',['../classGondwana_1_1Rendering_1_1Views_1_1Camera.html#abb52e521de612f2b995cacf222c7bee9',1,'Gondwana::Rendering::Views::Camera']]],
-  ['parallax_14',['Parallax',['../classGondwana_1_1Scenes_1_1SceneLayer.html#aad14b4f45fe0f24046eac8eb648e60dc',1,'Gondwana::Scenes::SceneLayer']]],
+  ['parallax_14',['Parallax',['../classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerDefinition.html#a8789ab49fe3c1c10ea82fd2b78baf146',1,'Gondwana.Scenes.GSCN.SceneLayerDefinition.Parallax'],['../classGondwana_1_1Scenes_1_1SceneLayer.html#aad14b4f45fe0f24046eac8eb648e60dc',1,'Gondwana.Scenes.SceneLayer.Parallax']]],
   ['parallaxchanged_15',['ParallaxChanged',['../classGondwana_1_1Scenes_1_1SceneLayer.html#aa6430a168f54a55f6c8ff0c92cce2ffa',1,'Gondwana::Scenes::SceneLayer']]],
   ['parent_16',['Parent',['../classGondwana_1_1Drawing_1_1Animation_1_1Animator.html#a637593ccb682de791e63489e15c801b0',1,'Gondwana::Drawing::Animation::Animator']]],
   ['particle_17',['Particle',['../structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html',1,'Gondwana::Drawing::Direct::Particles']]],

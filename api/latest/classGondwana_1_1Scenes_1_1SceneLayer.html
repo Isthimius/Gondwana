@@ -1084,7 +1084,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 
 <p>Gets the extensible value bag for storing arbitrary layer-specific metadata. </p>
 <p>A <a class="el" href="classGondwana_1_1TypedValueBag.html" title="A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...">TypedValueBag</a> instance for storing custom key-value data.</p>
-<p>The value bag allows games or engine extensions to attach arbitrary structured data to layers (such as layer-specific properties, AI navigation data, weather effects, or custom attributes) without modifying the core <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a> class. Values are accessed using strongly-typed ValueKey&lt;T&gt; instances and are included in layer serialization. </p>
+<p>The value bag allows games or engine extensions to attach arbitrary structured data to layers (such as layer-specific properties, AI navigation data, weather effects, or custom attributes) without modifying the core <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a> class. Values are accessed using strongly-typed ValueKey&lt;T&gt; instances. The value bag is runtime-only and is intentionally excluded from JSON serialization. </p>
 
 <p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00231">231</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 

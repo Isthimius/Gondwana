@@ -89,7 +89,7 @@ var searchData=
   ['orientation_86',['Orientation',['../classGondwana_1_1Widgets_1_1Controls_1_1ProgressBarWidget.html#ac287044efccedff11a8c2369d34f862f',1,'Gondwana.Widgets.Controls.ProgressBarWidget.Orientation'],['../classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget.html#ac94b4d2064460a393d9a6e5fc1ac8176',1,'Gondwana.Widgets.Layout.StackPanelWidget.Orientation']]],
   ['origin_87',['Origin',['../structGondwana_1_1Physics_1_1Movement_1_1Scripted_1_1ScriptedMovement.html#aed27c1f53bff1551ac53676393ec4da9',1,'Gondwana::Physics::Movement::Scripted::ScriptedMovement']]],
   ['originalbytes_88',['OriginalBytes',['../classGondwana_1_1Audio_1_1AudioResource.html#a6c3559866140508513b9fc25be885d7e',1,'Gondwana::Audio::AudioResource']]],
-  ['originpx_89',['OriginPx',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a21f256bf1956f7cbf867049dee1d182f',1,'Gondwana::Scenes::SceneLayer']]],
+  ['originpx_89',['OriginPx',['../classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerDefinition.html#a66609ab4bad95e72464544062a3c0732',1,'Gondwana.Scenes.GSCN.SceneLayerDefinition.OriginPx'],['../classGondwana_1_1Scenes_1_1SceneLayer.html#a21f256bf1956f7cbf867049dee1d182f',1,'Gondwana.Scenes.SceneLayer.OriginPx']]],
   ['originpxchanged_90',['OriginPxChanged',['../classGondwana_1_1Scenes_1_1SceneLayer.html#ae96fb0646d612dfd7732a37e2b1e8dd0',1,'Gondwana::Scenes::SceneLayer']]],
   ['orthogonal_91',['Orthogonal',['../namespaceGondwana_1_1Drawing_1_1Coordinates.html#ab877f6c99482c3923c816533c12f9ab3a7b2e80981e360c8634aef96cbcb62e57',1,'Gondwana::Drawing::Coordinates']]],
   ['outlineenabled_92',['OutlineEnabled',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#aaa9cdf867e4935510b1084463f104ba2',1,'Gondwana::Drawing::Direct::TextBlock']]],

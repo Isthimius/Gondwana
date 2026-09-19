@@ -130,6 +130,8 @@ Public Member Functions</h2></td></tr>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a565151265749a82230c3b5f4c32b5104" id="r_a565151265749a82230c3b5f4c32b5104"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a565151265749a82230c3b5f4c32b5104">CopyCollisionSettingsFrom</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Tile.html">Tile</a> source)</td></tr>
 <tr class="memdesc:a565151265749a82230c3b5f4c32b5104"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies collision behavior, profile, and effective frame metadata from another tile.  <br /></td></tr>
+<tr class="memitem:aa58ffe5ccf26281e9cd068fb624f5974" id="r_aa58ffe5ccf26281e9cd068fb624f5974"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa58ffe5ccf26281e9cd068fb624f5974">DetachCollider</a> ()</td></tr>
+<tr class="memdesc:aa58ffe5ccf26281e9cd068fb624f5974"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detaches the current collider from its scene-layer registry without otherwise changing this tile's serialized collision state.  <br /></td></tr>
 <tr class="memitem:a2ecd2b0efa88c81ae5a4f14fc5134f9a" id="r_a2ecd2b0efa88c81ae5a4f14fc5134f9a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2ecd2b0efa88c81ae5a4f14fc5134f9a">AttachCollider</a> (<a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html">ICollider</a> collider)</td></tr>
 <tr class="memdesc:a2ecd2b0efa88c81ae5a4f14fc5134f9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attaches this tile's collider and applies any collision state that was set before the collider became available.  <br /></td></tr>
 </table><table class="memberdecls">
@@ -146,7 +148,7 @@ Properties</h2></td></tr>
 <tr class="memitem:aa018700bb26077b44c54a8c0e5f18aaa" id="r_aa018700bb26077b44c54a8c0e5f18aaa"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa018700bb26077b44c54a8c0e5f18aaa">DrawLocationWorld</a><code> [get]</code></td></tr>
 <tr class="memitem:afaa33352c2ade338a6ffd65b907c3794" id="r_afaa33352c2ade338a6ffd65b907c3794"><td class="memItemLeft" align="right" valign="top">PointF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afaa33352c2ade338a6ffd65b907c3794">SceneLayerCoordinates</a><code> [get]</code></td></tr>
 <tr class="memitem:a3e4ea033721a0b7d9af2c49c2bddc385" id="r_a3e4ea033721a0b7d9af2c49c2bddc385"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3e4ea033721a0b7d9af2c49c2bddc385">SceneLayer</a><code> [get]</code></td></tr>
-<tr class="memitem:adc5257abe94fe51485c14cb02d79bfb0" id="r_adc5257abe94fe51485c14cb02d79bfb0"><td class="memItemLeft" align="right" valign="top">Guid&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc5257abe94fe51485c14cb02d79bfb0">Id</a> = Guid.NewGuid()<code> [get]</code></td></tr>
+<tr class="memitem:adc5257abe94fe51485c14cb02d79bfb0" id="r_adc5257abe94fe51485c14cb02d79bfb0"><td class="memItemLeft" align="right" valign="top">Guid&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc5257abe94fe51485c14cb02d79bfb0">Id</a> = Guid.NewGuid()<code> [get, set]</code></td></tr>
 <tr class="memdesc:adc5257abe94fe51485c14cb02d79bfb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Auto-assigned unique identifier for the object.  <br /></td></tr>
 <tr class="memitem:a56b469d237bd7f697309ad59a7fe606c" id="r_a56b469d237bd7f697309ad59a7fe606c"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56b469d237bd7f697309ad59a7fe606c">Nickname</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a56b469d237bd7f697309ad59a7fe606c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional human-readable name associated with the object.  <br /></td></tr>
@@ -207,7 +209,7 @@ Properties</h2></td></tr>
 
 <p>Attaches this tile's collider and applies any collision state that was set before the collider became available. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00398">398</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00411">411</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -226,7 +228,7 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00425">425</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00438">438</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -259,6 +261,35 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a id="aa58ffe5ccf26281e9cd068fb624f5974" name="aa58ffe5ccf26281e9cd068fb624f5974"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa58ffe5ccf26281e9cd068fb624f5974">&#9670;&#160;</a></span>DetachCollider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Drawing.Tile.DetachCollider </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Detaches the current collider from its scene-layer registry without otherwise changing this tile's serialized collision state. </p>
+
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00398">398</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+
+</div>
+</div>
 <a id="a6ca4859d010ae75a57af442c51e83022" name="a6ca4859d010ae75a57af442c51e83022"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6ca4859d010ae75a57af442c51e83022">&#9670;&#160;</a></span>Dispose()</h2>
 
@@ -284,7 +315,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#aa3c760f6aeae24f2a907da2f254cc84a">Gondwana.Drawing.Sprites.Sprite</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00489">489</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00502">502</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -758,7 +789,7 @@ Properties</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

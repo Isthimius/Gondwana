@@ -255,6 +255,14 @@ var annotated_dup =
         [ "RenderSurfaceHostBindEventArgs", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBindEventArgs.html", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBindEventArgs" ]
       ] ],
       [ "Scenes", "namespaceGondwana_1_1Scenes.html", [
+        [ "GSCN", "namespaceGondwana_1_1Scenes_1_1GSCN.html", [
+          [ "SceneCollisionProfileDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneCollisionProfileDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneCollisionProfileDefinition" ],
+          [ "SceneDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinition" ],
+          [ "SceneDefinitionSource", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinitionSource.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinitionSource" ],
+          [ "SceneFrameDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneFrameDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneFrameDefinition" ],
+          [ "SceneLayerDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerDefinition" ],
+          [ "SceneLayerTileDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition" ]
+        ] ],
         [ "Scene", "classGondwana_1_1Scenes_1_1Scene.html", "classGondwana_1_1Scenes_1_1Scene" ],
         [ "SceneLayer", "classGondwana_1_1Scenes_1_1SceneLayer.html", "classGondwana_1_1Scenes_1_1SceneLayer" ],
         [ "SceneLayerTile", "classGondwana_1_1Scenes_1_1SceneLayerTile.html", "classGondwana_1_1Scenes_1_1SceneLayerTile" ]

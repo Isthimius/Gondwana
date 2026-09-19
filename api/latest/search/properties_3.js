@@ -8,7 +8,7 @@ var searchData=
   ['decay_5',['Decay',['../classGondwana_1_1Effects_1_1EarthquakeEffect.html#ae453e1a28b0f4426a50a726f49292458',1,'Gondwana::Effects::EarthquakeEffect']]],
   ['defaultcollisionprofile_6',['DefaultCollisionProfile',['../classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a3658d9d7f85f65c33dc2b8958bce5898',1,'Gondwana::Drawing::Sprites::SpriteManager']]],
   ['defaultregion_7',['DefaultRegion',['../classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#a0cdca5cd02b0ea9b876872d04605edac',1,'Gondwana::Drawing::Tilesheets::Tilesheet']]],
-  ['defaulttilecollisionprofile_8',['DefaultTileCollisionProfile',['../classGondwana_1_1Scenes_1_1SceneLayer.html#a873ad19f627fa499cde31aeb44c03990',1,'Gondwana::Scenes::SceneLayer']]],
+  ['defaulttilecollisionprofile_8',['DefaultTileCollisionProfile',['../classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerDefinition.html#a86499298c2416fa0377452ee37218f09',1,'Gondwana.Scenes.GSCN.SceneLayerDefinition.DefaultTileCollisionProfile'],['../classGondwana_1_1Scenes_1_1SceneLayer.html#a873ad19f627fa499cde31aeb44c03990',1,'Gondwana.Scenes.SceneLayer.DefaultTileCollisionProfile']]],
   ['defaultzorder_9',['DefaultZOrder',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectLightLayer.html#a2632aa57a71027cc2c73cf76e4289b8d',1,'Gondwana::Drawing::Direct::DirectLightLayer']]],
   ['deletekey_10',['DeleteKey',['../classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html#ade3cfe8c7cdd3a0eae6c5368a01ae27b',1,'Gondwana::Widgets::Controls::TextBoxWidget']]],
   ['deltapx_11',['DeltaPx',['../classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html#a24fbfa7d888cde830d5850683e3143b9',1,'Gondwana::Widgets::WidgetPointerEventArgs']]],

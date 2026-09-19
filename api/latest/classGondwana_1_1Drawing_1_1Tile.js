@@ -3,6 +3,7 @@ var classGondwana_1_1Drawing_1_1Tile =
     [ "AttachCollider", "classGondwana_1_1Drawing_1_1Tile.html#a2ecd2b0efa88c81ae5a4f14fc5134f9a", null ],
     [ "CompareTo", "classGondwana_1_1Drawing_1_1Tile.html#a88e851955c75d87fb4077eb257b32684", null ],
     [ "CopyCollisionSettingsFrom", "classGondwana_1_1Drawing_1_1Tile.html#a565151265749a82230c3b5f4c32b5104", null ],
+    [ "DetachCollider", "classGondwana_1_1Drawing_1_1Tile.html#aa58ffe5ccf26281e9cd068fb624f5974", null ],
     [ "Dispose", "classGondwana_1_1Drawing_1_1Tile.html#a6ca4859d010ae75a57af442c51e83022", null ],
     [ "Draw", "classGondwana_1_1Drawing_1_1Tile.html#a4927327e6c632c964beae3b3bcdcb69b", null ],
     [ "GetCollisionAreaScreen", "classGondwana_1_1Drawing_1_1Tile.html#a196e3fa81e6244609b0ca81d914d9f06", null ],
