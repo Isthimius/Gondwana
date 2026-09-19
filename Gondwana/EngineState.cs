@@ -47,7 +47,6 @@ public sealed class EngineState
     /// Represents one serialized animation entry, either inline as a GANI definition or by
     /// reference to an external .gani file.
     /// </summary>
-    [JsonConverter(typeof(AnimationStateEntryConverter))]
     private sealed class AnimationStateEntry
     {
         /// <summary>
@@ -61,62 +60,6 @@ public sealed class EngineState
         /// </summary>
         [JsonProperty]
         public AnimationDefinition? Definition { get; set; }
-
-        /// <summary>
-        /// Holds the raw JSON shape used by pre-GANI EngineState files.
-        /// It is converted after tilesheets have been restored so Frame references can resolve.
-        /// </summary>
-        [JsonIgnore]
-        public JObject? LegacyJson { get; set; }
-    }
-
-    /// <summary>
-    /// Reads current GANI state entries while retaining legacy raw Cycle JSON for
-    /// dependency-ordered conversion after tilesheets are available.
-    /// </summary>
-    private sealed class AnimationStateEntryConverter : JsonConverter<AnimationStateEntry>
-    {
-        public override AnimationStateEntry? ReadJson(
-            JsonReader reader,
-            Type objectType,
-            AnimationStateEntry? existingValue,
-            bool hasExistingValue,
-            JsonSerializer serializer)
-        {
-            if (reader.TokenType == JsonToken.Null)
-                return null;
-
-            var obj = JObject.Load(reader);
-
-            if (obj.Property(nameof(AnimationStateEntry.GaniPath), StringComparison.OrdinalIgnoreCase) is not null ||
-                obj.Property(nameof(AnimationStateEntry.Definition), StringComparison.OrdinalIgnoreCase) is not null)
-            {
-                return new AnimationStateEntry
-                {
-                    GaniPath = obj.GetValue(
-                        nameof(AnimationStateEntry.GaniPath),
-                        StringComparison.OrdinalIgnoreCase)?.ToObject<string>(serializer),
-                    Definition = obj.GetValue(
-                        nameof(AnimationStateEntry.Definition),
-                        StringComparison.OrdinalIgnoreCase)?.ToObject<AnimationDefinition>(serializer)
-                };
-            }
-
-            // Do not deserialize a legacy Cycle yet. Its Frame values require the
-            // referenced tilesheets, which are restored later in ApplySnapshot().
-            return new AnimationStateEntry
-            {
-                LegacyJson = obj
-            };
-        }
-
-        public override void WriteJson(
-            JsonWriter writer,
-            AnimationStateEntry? value,
-            JsonSerializer serializer) =>
-            throw new NotSupportedException();
-
-        public override bool CanWrite => false;
     }
 
     /// <summary>
@@ -983,17 +926,6 @@ public sealed class EngineState
         if (animations is null || animations.Count == 0)
             return;
 
-        var legacyIds = new Dictionary<string, string>(StringComparer.Ordinal);
-        foreach (var (key, entry) in animations)
-        {
-            var id = entry?.LegacyJson?.GetValue(
-                "$id",
-                StringComparison.OrdinalIgnoreCase)?.Value<string>();
-
-            if (!string.IsNullOrWhiteSpace(id))
-                legacyIds[id] = key;
-        }
-
         var definitions = new List<AnimationDefinition>();
 
         foreach (var (key, entry) in animations)
@@ -1014,13 +946,6 @@ public sealed class EngineState
             else if (entry.Definition is not null)
             {
                 definition = entry.Definition;
-            }
-            else if (entry.LegacyJson is not null)
-            {
-                definition = ConvertLegacyCycleDefinition(
-                    key,
-                    entry.LegacyJson,
-                    legacyIds);
             }
             else
             {
@@ -1074,138 +999,6 @@ public sealed class EngineState
 
         foreach (var (cycle, definition) in materialized)
             AnimationDefinitionSerializer.ApplyNextCycle(cycle, definition);
-    }
-
-    private static AnimationDefinition ConvertLegacyCycleDefinition(
-        string stateKey,
-        JObject legacyCycle,
-        IReadOnlyDictionary<string, string> legacyIds)
-    {
-        if (legacyCycle.GetValue("$ref", StringComparison.OrdinalIgnoreCase) is JToken rootReference)
-        {
-            var referenceId = rootReference.Value<string>();
-            if (!string.IsNullOrWhiteSpace(referenceId) &&
-                legacyIds.TryGetValue(referenceId, out var referencedKey))
-            {
-                throw new InvalidDataException(
-                    $"Legacy animation state entry '{stateKey}' is a reference to '{referencedKey}' rather than a standalone cycle.");
-            }
-        }
-
-        var sequence = legacyCycle.GetValue(
-            nameof(Cycle.Sequence),
-            StringComparison.OrdinalIgnoreCase) as JObject
-            ?? throw new InvalidDataException(
-                $"Legacy animation state entry '{stateKey}' does not contain a FrameSequence.");
-
-        var cycleType = CycleType.Simple;
-        var cycleTypeToken = sequence.GetValue(
-            nameof(FrameSequence.SequenceCycleType),
-            StringComparison.OrdinalIgnoreCase);
-
-        if (cycleTypeToken is not null && cycleTypeToken.Type != JTokenType.Null)
-            cycleType = cycleTypeToken.ToObject<CycleType>();
-
-        var frameListToken = sequence.GetValue(
-            "frameList",
-            StringComparison.OrdinalIgnoreCase);
-
-        var frameTokens = frameListToken switch
-        {
-            JArray array => array,
-            JObject wrapper when wrapper.GetValue(
-                "$values",
-                StringComparison.OrdinalIgnoreCase) is JArray array => array,
-            null => new JArray(),
-            _ => throw new InvalidDataException(
-                $"Legacy animation state entry '{stateKey}' has an invalid frame list.")
-        };
-
-        var frames = new List<AnimationFrameDefinition>();
-        foreach (var token in frameTokens)
-        {
-            if (token is not JObject frame)
-            {
-                throw new InvalidDataException(
-                    $"Legacy animation state entry '{stateKey}' contains an invalid frame.");
-            }
-
-            var tilesheetToken = frame.GetValue(
-                "tilesheet",
-                StringComparison.OrdinalIgnoreCase);
-
-            string? tilesheetName = tilesheetToken?.Type switch
-            {
-                JTokenType.String => tilesheetToken.Value<string>(),
-                JTokenType.Object => ((JObject)tilesheetToken).GetValue(
-                    "Name",
-                    StringComparison.OrdinalIgnoreCase)?.Value<string>(),
-                _ => null
-            };
-
-            frames.Add(new AnimationFrameDefinition
-            {
-                Tilesheet = tilesheetName ?? string.Empty,
-                RegionName = frame.GetValue(
-                    "regionName",
-                    StringComparison.OrdinalIgnoreCase)?.Value<string>()
-                    ?? TilesheetRegion.DefaultRegionName,
-                XTile = frame.GetValue(
-                    "xTile",
-                    StringComparison.OrdinalIgnoreCase)?.Value<int>() ?? 0,
-                YTile = frame.GetValue(
-                    "yTile",
-                    StringComparison.OrdinalIgnoreCase)?.Value<int>() ?? 0
-            });
-        }
-
-        string? nextCycleKey = stateKey;
-        var nextCycleToken = legacyCycle.GetValue(
-            nameof(Cycle.NextCycle),
-            StringComparison.OrdinalIgnoreCase);
-
-        if (nextCycleToken?.Type == JTokenType.Null)
-        {
-            nextCycleKey = null;
-        }
-        else if (nextCycleToken is JObject nextCycleObject)
-        {
-            var referenceId = nextCycleObject.GetValue(
-                "$ref",
-                StringComparison.OrdinalIgnoreCase)?.Value<string>();
-
-            if (!string.IsNullOrWhiteSpace(referenceId))
-            {
-                if (!legacyIds.TryGetValue(referenceId, out nextCycleKey))
-                {
-                    throw new InvalidDataException(
-                        $"Legacy animation state entry '{stateKey}' references unknown cycle object '{referenceId}'.");
-                }
-            }
-            else
-            {
-                nextCycleKey = nextCycleObject.GetValue(
-                    nameof(Cycle.CycleKey),
-                    StringComparison.OrdinalIgnoreCase)?.Value<string>();
-            }
-        }
-
-        return new AnimationDefinition
-        {
-            Key = legacyCycle.GetValue(
-                nameof(Cycle.CycleKey),
-                StringComparison.OrdinalIgnoreCase)?.Value<string>() ?? stateKey,
-            ThrottleTime = legacyCycle.GetValue(
-                nameof(Cycle.ThrottleTime),
-                StringComparison.OrdinalIgnoreCase)?.Value<double>() ?? 0,
-            CycleType = cycleType,
-            HideTileOnCycleEnd = legacyCycle.GetValue(
-                nameof(Cycle.HideTileOnCycleEnd),
-                StringComparison.OrdinalIgnoreCase)?.Value<bool>() ?? false,
-            NextCycleKey = nextCycleKey,
-            Frames = frames,
-            Source = AnimationDefinitionSource.Generated()
-        };
     }
 
     private static void DetachLegacySnapshotScenes(List<SceneStateEntry>? scenes)

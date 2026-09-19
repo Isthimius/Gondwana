@@ -403,8 +403,6 @@ GANI is independent of the GTS and GSCN storage choices, so each definition fami
 
 Because animation definitions depend on tilesheet frames, applying `EngineStateParts.Cycles` also selects the tilesheet dependency chain. When creating a partial state file intended to restore independently, save its required `Tilesheets` (and any required `AssetsFiles`) along with its cycles.
 
-Older EngineState files that stored raw `Cycle` JSON remain readable. Legacy cycle JSON is retained during initial deserialization and converted only after tilesheets have been restored, avoiding premature frame resolution.
-
 ---
 
 ## Tooling model

@@ -2,7 +2,6 @@ using System.Drawing;
 using Gondwana.Assets;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Tilesheets;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SkiaSharp;
 
@@ -204,54 +203,6 @@ public sealed class EngineStateGaniTests : IDisposable
             cycle => cycle.CycleKey == "shared.animation");
         Assert.NotSame(existing, replaced);
         Assert.Equal(0.15, replaced.ThrottleTime);
-    }
-
-    [Fact]
-    public void LoadFromFile_AcceptsLegacyRawCycleEntries()
-    {
-        var sheet = CreateTilesheet("legacy-sheet");
-        _ = CreateCycle(sheet, "legacy.walk", 0.33, CycleType.Repeating);
-
-        var serializer = JsonSerializer.Create(EngineState.JsonSerializerSettings);
-        var legacyCycles = JToken.FromObject(Cycle._cycles, serializer);
-
-        // This fragment is serialized independently from the EngineState shell below,
-        // so its reference IDs start over at "1". Real legacy files used one serializer
-        // for the whole document. Prefix the fragment IDs to reproduce that uniqueness.
-        var legacyContainer = Assert.IsAssignableFrom<JContainer>(legacyCycles);
-        foreach (var obj in legacyContainer.DescendantsAndSelf().OfType<JObject>())
-        {
-            foreach (var propertyName in new[] { "$id", "$ref" })
-            {
-                if (obj[propertyName] is JValue { Type: JTokenType.String } value)
-                    value.Value = "legacy-" + value.Value<string>();
-            }
-        }
-
-        var path = Path.Combine(_tempDir, "legacy.state");
-        new EngineState().SaveToFile(
-            path,
-            parts: EngineStateParts.Tilesheets);
-
-        var root = JObject.Parse(File.ReadAllText(path));
-        root["Cycles"] = legacyCycles;
-        File.WriteAllText(path, root.ToString());
-
-        Cycle.ClearAllAnimationCycles();
-        TilesheetRegistry.Instance.Clear();
-
-        EngineState.LoadFromFile(
-            path,
-            parts: EngineStateParts.Cycles);
-
-        var restored = Assert.Single(
-            Cycle.GetAnimationCycles(),
-            cycle => cycle.CycleKey == "legacy.walk");
-
-        Assert.Equal(0.33, restored.ThrottleTime);
-        Assert.Equal(CycleType.Repeating, restored.Sequence.SequenceCycleType);
-        Assert.Equal("legacy-sheet", restored.Sequence[0].Tilesheet.Name);
-        Assert.Same(restored, restored.NextCycle);
     }
 
     private Tilesheet CreateTilesheet(string name)

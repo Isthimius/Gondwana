@@ -821,8 +821,6 @@ Sprites
 
 EngineState materializes all selected animation definitions before applying their `NextCycleKey` relationships. This two-pass step permits definitions to reference one another in either order, including circular relationships such as `idle -> blink -> idle`.
 
-Pre-GANI EngineState files remain readable. Legacy raw `Cycle` JSON is retained as data during initial snapshot deserialization and converted only after tilesheets have been restored; this avoids asking `FrameJsonConverter` to resolve frame references before their GTS dependencies exist.
-
 For the standalone format, see [[GANI Files]].
 
 ---
