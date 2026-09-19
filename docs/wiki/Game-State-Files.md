@@ -25,6 +25,7 @@ A game state file should not, however, be confused with a complete application-s
 - [Loading versus merging](#loading-versus-merging)
 - [Compressed state files](#compressed-state-files)
 - [Tilesheets and GTS files](#tilesheets-and-gts-files)
+- [Scenes and GSCN files](#scenes-and-gscn-files)
 - [Loading state files during startup](#loading-state-files-during-startup)
 - [What is not automatically saved](#what-is-not-automatically-saved)
 - [Choosing what belongs in EngineState](#choosing-what-belongs-in-enginestate)
@@ -137,6 +138,7 @@ By default this:
 - writes human-readable JSON
 - does not compress the file
 - stores tilesheet definitions inside the state file
+- stores scene definitions inline as GSCN data
 
 If the destination file already exists, it is overwritten.
 
@@ -370,6 +372,44 @@ For the tilesheet definition format itself, see [[GTS Files]].
 
 ---
 
+## Scenes and GSCN files
+
+Scenes use the GSCN scene-definition format when EngineState is saved.
+
+By default, each scene definition is embedded inline in the state file:
+
+```csharp
+Engine.Instance.State.SaveToFile(
+    "session.json");
+```
+
+Scenes can instead be written as separate `.gscn` files:
+
+```csharp
+Engine.Instance.State.SaveToFile(
+    "session.json",
+    separateGscnFiles: true);
+```
+
+For `session.json`, external scene definitions are written under a sibling directory:
+
+```text
+session.json
+session.scenes/
+    <scene-id>.gscn
+    ...
+```
+
+The main state file contains relative references to those files when possible.
+
+This works independently of `separateGtsFiles`. A project can therefore choose any combination of inline/external tilesheet and scene definitions.
+
+Sprites remain a separate EngineState category. When restored, their saved `SceneId` and `SceneLayerId` values are used to reconnect them to the canonical layers created from GSCN.
+
+For the scene-definition format itself, see [[GSCN Files]]. For implementation details, see [[Serialization and EngineState]].
+
+---
+
 ## Loading state files during startup
 
 State files can also be declared as part of `EngineConfiguration`.
@@ -551,6 +591,7 @@ For the implementation details behind state serialization, including snapshot co
 - [[Engine Configuration]]
 - [[Assets Files]]
 - [[GTS Files]]
+- [[GSCN Files]]
 - [[Sprites]]
 
 The distinction is intentional:
