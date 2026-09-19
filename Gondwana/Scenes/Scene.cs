@@ -152,7 +152,10 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         foreach (var sceneLayer in _sceneLayers)
             OnSceneLayerAdded(sceneLayer);
 
-        if (!ReferenceEquals(this, Empty))
+        // During static initialization the Empty property has not yet been assigned
+        // while the EmptyScene base constructor is running, so ReferenceEquals(this, Empty)
+        // is not a reliable discriminator here. Use the runtime type instead.
+        if (this is not EmptyScene)
             _allScenes.Add(this);
     }
 
