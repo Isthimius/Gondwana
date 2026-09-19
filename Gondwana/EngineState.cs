@@ -527,10 +527,11 @@ public sealed class EngineState
     {
         parts = NormalizeParts(parts);
 
-        // Legacy raw Scene objects register themselves while the snapshot DTO is
+        // Legacy raw objects may register themselves while the snapshot DTO is
         // deserialized. Detach those incoming instances before clearing or merging so
         // they are treated as snapshot data rather than pre-existing live state.
         DetachLegacySnapshotScenes(snapshot.Scenes);
+        DetachSnapshotSprites(snapshot.Sprites);
 
         // clear only what we're about to load.
         if (clearExisting)
@@ -926,6 +927,67 @@ public sealed class EngineState
         }
     }
 
+    private static void RebindSpriteSceneLayer(Sprite sprite)
+    {
+        var layerId = sprite.SerializedSceneLayerIdForBinding;
+        if (string.IsNullOrWhiteSpace(layerId))
+        {
+            if (!ReferenceEquals(sprite.SceneLayer, SceneLayer.Empty))
+                return;
+
+            throw new InvalidDataException(
+                $"Sprite '{sprite.Nickname ?? sprite.Id.ToString()}' does not contain a SceneLayer identity.");
+        }
+
+        SceneLayer? targetLayer = null;
+        var sceneId = sprite.SerializedSceneIdForBinding;
+
+        if (!string.IsNullOrWhiteSpace(sceneId))
+        {
+            var scene = Scene._allScenes.FirstOrDefault(
+                candidate => string.Equals(candidate.ID, sceneId, StringComparison.Ordinal));
+
+            targetLayer = scene?.GetSceneLayerByID(layerId);
+        }
+        else
+        {
+            // Older data may have a layer ID but no scene ID. Layer IDs are normally
+            // GUIDs; accept a unique match and reject ambiguity.
+            var matches = Scene._allScenes
+                .SelectMany(scene => scene.SceneLayers)
+                .Where(layer => string.Equals(layer.ID, layerId, StringComparison.Ordinal))
+                .Take(2)
+                .ToList();
+
+            if (matches.Count == 1)
+                targetLayer = matches[0];
+            else if (matches.Count > 1)
+                throw new InvalidDataException(
+                    $"Sprite '{sprite.Nickname ?? sprite.Id.ToString()}' references ambiguous SceneLayer ID '{layerId}'.");
+        }
+
+        if (targetLayer is null)
+        {
+            throw new InvalidDataException(
+                $"Sprite '{sprite.Nickname ?? sprite.Id.ToString()}' could not resolve SceneLayer '{layerId}'" +
+                (string.IsNullOrWhiteSpace(sceneId) ? "." : $" in Scene '{sceneId}'."));
+        }
+
+        sprite.RebindSceneLayerAfterDeserialization(targetLayer);
+    }
+
+    private static void DetachSnapshotSprites(List<Sprite>? sprites)
+    {
+        if (sprites is null)
+            return;
+
+        foreach (var sprite in sprites)
+        {
+            if (sprite is not null)
+                SpriteManager.Instance._spriteList.Remove(sprite);
+        }
+    }
+
     private static void MergeSprites(List<Sprite>? sprites, bool overwriteExisting)
     {
         if (sprites is null || sprites.Count == 0)
@@ -945,6 +1007,8 @@ public sealed class EngineState
         {
             if (incoming is null)
                 continue;
+
+            RebindSpriteSceneLayer(incoming);
 
             if (string.IsNullOrWhiteSpace(incoming.Nickname))
                 incoming.Nickname = Guid.NewGuid().ToString();
