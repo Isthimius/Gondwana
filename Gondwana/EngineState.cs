@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using Gondwana.Assets;
 using Gondwana.Audio;
 using Gondwana.Drawing.Animation;
+using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
@@ -41,6 +42,82 @@ public sealed class EngineState
         public TilesheetDefinition? Definition { get; set; }
     }
 
+
+    /// <summary>
+    /// Represents one serialized animation entry, either inline as a GANI definition or by
+    /// reference to an external .gani file.
+    /// </summary>
+    [JsonConverter(typeof(AnimationStateEntryConverter))]
+    private sealed class AnimationStateEntry
+    {
+        /// <summary>
+        /// Gets or sets the path to the external GANI file used for this animation entry.
+        /// </summary>
+        [JsonProperty]
+        public string? GaniPath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the inline GANI definition associated with this entry.
+        /// </summary>
+        [JsonProperty]
+        public AnimationDefinition? Definition { get; set; }
+
+        /// <summary>
+        /// Holds the raw JSON shape used by pre-GANI EngineState files.
+        /// It is converted after tilesheets have been restored so Frame references can resolve.
+        /// </summary>
+        [JsonIgnore]
+        public JObject? LegacyJson { get; set; }
+    }
+
+    /// <summary>
+    /// Reads current GANI state entries while retaining legacy raw Cycle JSON for
+    /// dependency-ordered conversion after tilesheets are available.
+    /// </summary>
+    private sealed class AnimationStateEntryConverter : JsonConverter<AnimationStateEntry>
+    {
+        public override AnimationStateEntry? ReadJson(
+            JsonReader reader,
+            Type objectType,
+            AnimationStateEntry? existingValue,
+            bool hasExistingValue,
+            JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.Null)
+                return null;
+
+            var obj = JObject.Load(reader);
+
+            if (obj.Property(nameof(AnimationStateEntry.GaniPath), StringComparison.OrdinalIgnoreCase) is not null ||
+                obj.Property(nameof(AnimationStateEntry.Definition), StringComparison.OrdinalIgnoreCase) is not null)
+            {
+                return new AnimationStateEntry
+                {
+                    GaniPath = obj.GetValue(
+                        nameof(AnimationStateEntry.GaniPath),
+                        StringComparison.OrdinalIgnoreCase)?.ToObject<string>(serializer),
+                    Definition = obj.GetValue(
+                        nameof(AnimationStateEntry.Definition),
+                        StringComparison.OrdinalIgnoreCase)?.ToObject<AnimationDefinition>(serializer)
+                };
+            }
+
+            // Do not deserialize a legacy Cycle yet. Its Frame values require the
+            // referenced tilesheets, which are restored later in ApplySnapshot().
+            return new AnimationStateEntry
+            {
+                LegacyJson = obj
+            };
+        }
+
+        public override void WriteJson(
+            JsonWriter writer,
+            AnimationStateEntry? value,
+            JsonSerializer serializer) =>
+            throw new NotSupportedException();
+
+        public override bool CanWrite => false;
+    }
 
     /// <summary>
     /// Represents one serialized scene entry, either inline as a GSCN definition or by
@@ -269,11 +346,17 @@ public sealed class EngineState
     /// referenced from the engine-state file. If <c>false</c>, GSCN definitions are
     /// embedded inline in the engine-state JSON.
     /// </param>
+    /// <param name="separateGaniFiles">
+    /// If <c>true</c>, animation definitions are written to separate .gani files and
+    /// referenced from the engine-state file. If <c>false</c>, GANI definitions are
+    /// embedded inline in the engine-state JSON.
+    /// </param>
     public void SaveToFile(string path,
                            bool compress = false,
                            bool separateGtsFiles = false,
                            EngineStateParts parts = EngineStateParts.All,
-                           bool separateGscnFiles = false)
+                           bool separateGscnFiles = false,
+                           bool separateGaniFiles = false)
     {
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Engine state path must be a non-empty string.", nameof(path));
@@ -286,7 +369,8 @@ public sealed class EngineState
             baseDirectory,
             fullPath,
             separateGtsFiles,
-            separateGscnFiles);
+            separateGscnFiles,
+            separateGaniFiles);
 
         var json = JsonConvert.SerializeObject(snapshot, JsonSerializerSettings);
 
@@ -391,7 +475,7 @@ public sealed class EngineState
     {
         [JsonProperty] public List<AssetsFile>? AssetsFiles { get; set; }
         [JsonProperty] public Dictionary<string, TilesheetStateEntry>? Tilesheets { get; set; }
-        [JsonProperty] public Dictionary<string, Cycle>? Cycles { get; set; }
+        [JsonProperty] public Dictionary<string, AnimationStateEntry>? Cycles { get; set; }
         [JsonProperty] public List<SceneStateEntry>? Scenes { get; set; }
         [JsonProperty] public List<Sprite>? Sprites { get; set; }
         [JsonProperty] public Dictionary<string, AudioResource>? SoundResources { get; set; }
@@ -399,7 +483,11 @@ public sealed class EngineState
 
     private static EngineStateParts NormalizeParts(EngineStateParts parts)
     {
-        // Tilesheets and Audio may depend on AssetsFiles for AssetIdentifier.Data
+        // GANI definitions resolve Frame references through the TilesheetRegistry.
+        if (parts.HasFlag(EngineStateParts.Cycles))
+            parts |= EngineStateParts.Tilesheets;
+
+        // Tilesheets and Audio may depend on AssetsFiles for AssetIdentifier.Data.
         if (parts.HasFlag(EngineStateParts.Tilesheets) ||
             parts.HasFlag(EngineStateParts.Audio))
         {
@@ -413,7 +501,8 @@ public sealed class EngineState
                                               string? baseDirectory,
                                               string engineStatePath,
                                               bool separateGtsFiles,
-                                              bool separateGscnFiles)
+                                              bool separateGscnFiles,
+                                              bool separateGaniFiles)
     {
         return new EngineStateSnapshot
         {
@@ -429,7 +518,10 @@ public sealed class EngineState
                 : null,
 
             Cycles = parts.HasFlag(EngineStateParts.Cycles)
-                ? Cycles
+                ? CaptureAnimationEntries(
+                    baseDirectory,
+                    engineStatePath,
+                    separateGaniFiles)
                 : null,
 
             Scenes = parts.HasFlag(EngineStateParts.Scenes)
@@ -447,6 +539,56 @@ public sealed class EngineState
                 ? SoundResources
                 : null,
         };
+    }
+
+    private static Dictionary<string, AnimationStateEntry> CaptureAnimationEntries(
+        string? baseDirectory,
+        string engineStatePath,
+        bool separateGaniFiles)
+    {
+        var result = new Dictionary<string, AnimationStateEntry>(StringComparer.Ordinal);
+        var usedFileNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        // Work from a stable registry snapshot in case definitions are changed while
+        // the EngineState snapshot is being assembled.
+        foreach (var (key, cycle) in Cycle._cycles.ToList())
+        {
+            if (cycle is null)
+                continue;
+
+            if (separateGaniFiles)
+            {
+                var ganiDirectory = GetAnimationStateDirectory(engineStatePath);
+                Directory.CreateDirectory(ganiDirectory);
+
+                var baseFileName = SanitizeFileName(key);
+                var ganiFileName = $"{baseFileName}.gani";
+                int suffix = 2;
+
+                while (!usedFileNames.Add(ganiFileName))
+                    ganiFileName = $"{baseFileName}_{suffix++}.gani";
+
+                var ganiFullPath = Path.Combine(ganiDirectory, ganiFileName);
+
+                // Use the standalone serializer so .gani files do not acquire
+                // EngineState-specific $id/$ref metadata.
+                AnimationDefinitionSerializer.Save(ganiFullPath, cycle);
+
+                result[key] = new AnimationStateEntry
+                {
+                    GaniPath = MakeRelativePath(ganiFullPath, baseDirectory)
+                };
+            }
+            else
+            {
+                result[key] = new AnimationStateEntry
+                {
+                    Definition = AnimationDefinitionSerializer.FromCycle(cycle)
+                };
+            }
+        }
+
+        return result;
     }
 
     private static List<SceneStateEntry> CaptureSceneEntries(
@@ -549,7 +691,7 @@ public sealed class EngineState
             MergeTilesheets(snapshot.Tilesheets, overwriteExisting, baseDirectory);
 
         if (parts.HasFlag(EngineStateParts.Cycles))
-            MergeCycles(snapshot.Cycles, overwriteExisting);
+            MergeAnimations(snapshot.Cycles, overwriteExisting, baseDirectory);
 
         if (parts.HasFlag(EngineStateParts.Scenes))
             MergeScenes(snapshot.Scenes, overwriteExisting, baseDirectory);
@@ -732,6 +874,15 @@ public sealed class EngineState
     }
 
 
+    private static string GetAnimationStateDirectory(string engineStatePath)
+    {
+        var directory = Path.GetDirectoryName(engineStatePath) ?? string.Empty;
+        var fileName = Path.GetFileNameWithoutExtension(engineStatePath);
+
+        return Path.Combine(directory, $"{fileName}.animations");
+    }
+
+
     private static string GetSceneStateDirectory(string engineStatePath)
     {
         var directory = Path.GetDirectoryName(engineStatePath) ?? string.Empty;
@@ -824,18 +975,237 @@ public sealed class EngineState
         return Path.GetFullPath(Path.Combine(baseDirectory, path));
     }
 
-    private static void MergeCycles(Dictionary<string, Cycle>? cycles, bool overwriteExisting)
+    private static void MergeAnimations(
+        Dictionary<string, AnimationStateEntry>? animations,
+        bool overwriteExisting,
+        string? baseDirectory)
     {
-        if (cycles is null || cycles.Count == 0)
+        if (animations is null || animations.Count == 0)
             return;
 
-        foreach (var (key, cycle) in cycles)
+        var legacyIds = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var (key, entry) in animations)
         {
+            var id = entry?.LegacyJson?.GetValue(
+                "$id",
+                StringComparison.OrdinalIgnoreCase)?.Value<string>();
+
+            if (!string.IsNullOrWhiteSpace(id))
+                legacyIds[id] = key;
+        }
+
+        var definitions = new List<AnimationDefinition>();
+
+        foreach (var (key, entry) in animations)
+        {
+            if (entry is null)
+                continue;
+
             if (!overwriteExisting && Cycle._cycles.ContainsKey(key))
                 continue;
 
-            Cycle._cycles[key] = cycle;
+            AnimationDefinition definition;
+
+            if (!string.IsNullOrWhiteSpace(entry.GaniPath))
+            {
+                var ganiPath = ResolvePath(entry.GaniPath, baseDirectory);
+                definition = AnimationDefinitionSerializer.Load(ganiPath);
+            }
+            else if (entry.Definition is not null)
+            {
+                definition = entry.Definition;
+            }
+            else if (entry.LegacyJson is not null)
+            {
+                definition = ConvertLegacyCycleDefinition(
+                    key,
+                    entry.LegacyJson,
+                    legacyIds);
+            }
+            else
+            {
+                throw new InvalidDataException(
+                    $"Animation state entry '{key}' does not contain a GANI path or inline definition.");
+            }
+
+            if (string.IsNullOrWhiteSpace(definition.Key))
+            {
+                definition.Key = key;
+            }
+            else if (!string.Equals(definition.Key, key, StringComparison.Ordinal))
+            {
+                throw new InvalidDataException(
+                    $"Animation state entry '{key}' contains definition key '{definition.Key}'.");
+            }
+
+            definitions.Add(definition);
         }
+
+        // Validate next-cycle identities before mutating the registry. Two-phase
+        // materialization allows circular transitions such as idle -> blink -> idle.
+        var availableKeys = new HashSet<string>(
+            Cycle._cycles.Keys,
+            StringComparer.Ordinal);
+
+        foreach (var definition in definitions)
+            availableKeys.Add(definition.Key);
+
+        foreach (var definition in definitions)
+        {
+            if (!string.IsNullOrWhiteSpace(definition.NextCycleKey) &&
+                !string.Equals(
+                    definition.NextCycleKey,
+                    definition.Key,
+                    StringComparison.Ordinal) &&
+                !availableKeys.Contains(definition.NextCycleKey))
+            {
+                throw new InvalidDataException(
+                    $"GANI animation '{definition.Key}' references next cycle '{definition.NextCycleKey}', but no matching animation is available.");
+            }
+        }
+
+        var materialized = new List<(Cycle Cycle, AnimationDefinition Definition)>();
+
+        foreach (var definition in definitions)
+        {
+            var cycle = AnimationDefinitionSerializer.MaterializeCycle(definition);
+            materialized.Add((cycle, definition));
+        }
+
+        foreach (var (cycle, definition) in materialized)
+            AnimationDefinitionSerializer.ApplyNextCycle(cycle, definition);
+    }
+
+    private static AnimationDefinition ConvertLegacyCycleDefinition(
+        string stateKey,
+        JObject legacyCycle,
+        IReadOnlyDictionary<string, string> legacyIds)
+    {
+        if (legacyCycle.GetValue("$ref", StringComparison.OrdinalIgnoreCase) is JToken rootReference)
+        {
+            var referenceId = rootReference.Value<string>();
+            if (!string.IsNullOrWhiteSpace(referenceId) &&
+                legacyIds.TryGetValue(referenceId, out var referencedKey))
+            {
+                throw new InvalidDataException(
+                    $"Legacy animation state entry '{stateKey}' is a reference to '{referencedKey}' rather than a standalone cycle.");
+            }
+        }
+
+        var sequence = legacyCycle.GetValue(
+            nameof(Cycle.Sequence),
+            StringComparison.OrdinalIgnoreCase) as JObject
+            ?? throw new InvalidDataException(
+                $"Legacy animation state entry '{stateKey}' does not contain a FrameSequence.");
+
+        var cycleType = CycleType.Simple;
+        var cycleTypeToken = sequence.GetValue(
+            nameof(FrameSequence.SequenceCycleType),
+            StringComparison.OrdinalIgnoreCase);
+
+        if (cycleTypeToken is not null && cycleTypeToken.Type != JTokenType.Null)
+            cycleType = cycleTypeToken.ToObject<CycleType>();
+
+        var frameListToken = sequence.GetValue(
+            "frameList",
+            StringComparison.OrdinalIgnoreCase);
+
+        var frameTokens = frameListToken switch
+        {
+            JArray array => array,
+            JObject wrapper when wrapper.GetValue(
+                "$values",
+                StringComparison.OrdinalIgnoreCase) is JArray array => array,
+            null => new JArray(),
+            _ => throw new InvalidDataException(
+                $"Legacy animation state entry '{stateKey}' has an invalid frame list.")
+        };
+
+        var frames = new List<AnimationFrameDefinition>();
+        foreach (var token in frameTokens)
+        {
+            if (token is not JObject frame)
+            {
+                throw new InvalidDataException(
+                    $"Legacy animation state entry '{stateKey}' contains an invalid frame.");
+            }
+
+            var tilesheetToken = frame.GetValue(
+                "tilesheet",
+                StringComparison.OrdinalIgnoreCase);
+
+            string? tilesheetName = tilesheetToken?.Type switch
+            {
+                JTokenType.String => tilesheetToken.Value<string>(),
+                JTokenType.Object => ((JObject)tilesheetToken).GetValue(
+                    "Name",
+                    StringComparison.OrdinalIgnoreCase)?.Value<string>(),
+                _ => null
+            };
+
+            frames.Add(new AnimationFrameDefinition
+            {
+                Tilesheet = tilesheetName ?? string.Empty,
+                RegionName = frame.GetValue(
+                    "regionName",
+                    StringComparison.OrdinalIgnoreCase)?.Value<string>()
+                    ?? TilesheetRegion.DefaultRegionName,
+                XTile = frame.GetValue(
+                    "xTile",
+                    StringComparison.OrdinalIgnoreCase)?.Value<int>() ?? 0,
+                YTile = frame.GetValue(
+                    "yTile",
+                    StringComparison.OrdinalIgnoreCase)?.Value<int>() ?? 0
+            });
+        }
+
+        string? nextCycleKey = stateKey;
+        var nextCycleToken = legacyCycle.GetValue(
+            nameof(Cycle.NextCycle),
+            StringComparison.OrdinalIgnoreCase);
+
+        if (nextCycleToken?.Type == JTokenType.Null)
+        {
+            nextCycleKey = null;
+        }
+        else if (nextCycleToken is JObject nextCycleObject)
+        {
+            var referenceId = nextCycleObject.GetValue(
+                "$ref",
+                StringComparison.OrdinalIgnoreCase)?.Value<string>();
+
+            if (!string.IsNullOrWhiteSpace(referenceId))
+            {
+                if (!legacyIds.TryGetValue(referenceId, out nextCycleKey))
+                {
+                    throw new InvalidDataException(
+                        $"Legacy animation state entry '{stateKey}' references unknown cycle object '{referenceId}'.");
+                }
+            }
+            else
+            {
+                nextCycleKey = nextCycleObject.GetValue(
+                    nameof(Cycle.CycleKey),
+                    StringComparison.OrdinalIgnoreCase)?.Value<string>();
+            }
+        }
+
+        return new AnimationDefinition
+        {
+            Key = legacyCycle.GetValue(
+                nameof(Cycle.CycleKey),
+                StringComparison.OrdinalIgnoreCase)?.Value<string>() ?? stateKey,
+            ThrottleTime = legacyCycle.GetValue(
+                nameof(Cycle.ThrottleTime),
+                StringComparison.OrdinalIgnoreCase)?.Value<double>() ?? 0,
+            CycleType = cycleType,
+            HideTileOnCycleEnd = legacyCycle.GetValue(
+                nameof(Cycle.HideTileOnCycleEnd),
+                StringComparison.OrdinalIgnoreCase)?.Value<bool>() ?? false,
+            NextCycleKey = nextCycleKey,
+            Frames = frames,
+            Source = AnimationDefinitionSource.Generated()
+        };
     }
 
     private static void DetachLegacySnapshotScenes(List<SceneStateEntry>? scenes)
