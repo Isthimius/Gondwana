@@ -215,6 +215,18 @@ public sealed class EngineStateGaniTests : IDisposable
         var serializer = JsonSerializer.Create(EngineState.JsonSerializerSettings);
         var legacyCycles = JToken.FromObject(Cycle._cycles, serializer);
 
+        // This fragment is serialized independently from the EngineState shell below,
+        // so its reference IDs start over at "1". Real legacy files used one serializer
+        // for the whole document. Prefix the fragment IDs to reproduce that uniqueness.
+        foreach (var obj in legacyCycles.DescendantsAndSelf().OfType<JObject>())
+        {
+            foreach (var propertyName in new[] { "$id", "$ref" })
+            {
+                if (obj[propertyName] is JValue { Type: JTokenType.String } value)
+                    value.Value = "legacy-" + value.Value<string>();
+            }
+        }
+
         var path = Path.Combine(_tempDir, "legacy.state");
         new EngineState().SaveToFile(
             path,
