@@ -8,6 +8,7 @@ namespace Gondwana.Tests;
 /// <summary>
 /// Verifies EngineState integration for inline and external GSCN scene definitions.
 /// </summary>
+[Collection("Global engine state")]
 public sealed class EngineStateGscnTests : IDisposable
 {
     private readonly string _tempDir = Path.Combine(
