@@ -217,6 +217,7 @@ public sealed class AnimationEditorControl : UserControl
         var outer = new SplitContainer
         {
             Dock = DockStyle.Fill,
+            Size = new Size(1200, 800),
             SplitterDistance = 320,
             Panel1MinSize = 240,
             Panel2MinSize = 450
@@ -230,6 +231,7 @@ public sealed class AnimationEditorControl : UserControl
         {
             Dock = DockStyle.Fill,
             Orientation = Orientation.Horizontal,
+            Size = new Size(880, 800),
             SplitterDistance = 390,
             Panel1MinSize = 220,
             Panel2MinSize = 230
@@ -242,7 +244,8 @@ public sealed class AnimationEditorControl : UserControl
         var lower = new SplitContainer
         {
             Dock = DockStyle.Fill,
-            SplitterDistance = 620,
+            Size = new Size(880, 410),
+            SplitterDistance = 560,
             Panel1MinSize = 330,
             Panel2MinSize = 280
         };
@@ -255,6 +258,7 @@ public sealed class AnimationEditorControl : UserControl
         {
             Dock = DockStyle.Fill,
             Orientation = Orientation.Horizontal,
+            Size = new Size(320, 410),
             SplitterDistance = 230,
             Panel1MinSize = 130,
             Panel2MinSize = 100
