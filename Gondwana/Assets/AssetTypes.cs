@@ -49,5 +49,10 @@ public enum AssetTypes
     /// <summary>
     /// Represents a scene definition file (.gscn) for <see cref="Gondwana.Scenes.GSCN.SceneDefinition"/>.
     /// </summary>
-    SceneDefinition = 8
+    SceneDefinition = 8,
+
+    /// <summary>
+    /// Represents an animation definition file (.gani) for <see cref="Gondwana.Drawing.Animation.GANI.AnimationDefinition"/>.
+    /// </summary>
+    AnimationDefinition = 9
 }
