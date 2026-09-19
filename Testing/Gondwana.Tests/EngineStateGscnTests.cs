@@ -52,7 +52,7 @@ public sealed class EngineStateGscnTests : IDisposable
         var entry = FirstSceneEntry(root);
 
         Assert.NotNull(entry["Definition"]);
-        Assert.Null(entry["GscnPath"]);
+        AssertJsonNullOrMissing(entry, "GscnPath");
 
         var definition = (JObject)entry["Definition"]!;
         Assert.Equal(scene.ID, definition.Value<string>("ID"));
@@ -75,7 +75,7 @@ public sealed class EngineStateGscnTests : IDisposable
         var root = JObject.Parse(File.ReadAllText(path));
         var entry = FirstSceneEntry(root);
 
-        Assert.Null(entry["Definition"]);
+        AssertJsonNullOrMissing(entry, "Definition");
         var relativePath = Assert.IsType<JValue>(entry["GscnPath"]).Value<string>();
         Assert.False(string.IsNullOrWhiteSpace(relativePath));
 
@@ -255,6 +255,14 @@ public sealed class EngineStateGscnTests : IDisposable
         layer.ShowGridLines = true;
         layer[2, 1]!.Nickname = "corner";
         return scene;
+    }
+
+    private static void AssertJsonNullOrMissing(JObject obj, string propertyName)
+    {
+        var token = obj[propertyName];
+        Assert.True(
+            token is null || token.Type == JTokenType.Null,
+            $"Expected '{propertyName}' to be absent or JSON null, but found {token?.Type}.");
     }
 
     private static JObject FirstSceneEntry(JObject root)
