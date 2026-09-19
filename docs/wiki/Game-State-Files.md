@@ -25,6 +25,7 @@ A game state file should not, however, be confused with a complete application-s
 - [Loading versus merging](#loading-versus-merging)
 - [Compressed state files](#compressed-state-files)
 - [Tilesheets and GTS files](#tilesheets-and-gts-files)
+- [Animations and GANI files](#animations-and-gani-files)
 - [Scenes and GSCN files](#scenes-and-gscn-files)
 - [Loading state files during startup](#loading-state-files-during-startup)
 - [What is not automatically saved](#what-is-not-automatically-saved)
@@ -138,6 +139,7 @@ By default this:
 - writes human-readable JSON
 - does not compress the file
 - stores tilesheet definitions inside the state file
+- stores animation definitions inline as GANI data
 - stores scene definitions inline as GSCN data
 
 If the destination file already exists, it is overwritten.
@@ -196,7 +198,7 @@ Examples include:
 
 Some engine state depends on other engine state.
 
-For example, a tilesheet or audio resource may depend on an `AssetsFile`.
+For example, a tilesheet or audio resource may depend on an `AssetsFile`, and a GANI animation depends on the tilesheets that provide its frames.
 
 When state is restored, Gondwana handles known dependencies and restores engine registries in an appropriate order.
 
@@ -369,6 +371,45 @@ This can be useful when tilesheet definitions should remain individually inspect
 The state file retains the information needed to locate those external definitions when it is loaded again.
 
 For the tilesheet definition format itself, see [[GTS Files]].
+
+---
+
+## Animations and GANI files
+
+Animation cycles receive the same definition-file treatment as tilesheets and scenes.
+
+By default, each registered cycle is converted to an inline GANI `AnimationDefinition`:
+
+```csharp
+Engine.Instance.State.SaveToFile(
+    "session.json");
+```
+
+Animations can instead be written as separate `.gani` files:
+
+```csharp
+Engine.Instance.State.SaveToFile(
+    "session.json",
+    separateGaniFiles: true);
+```
+
+For `session.json`, external definitions are written beneath:
+
+```text
+session.json
+session.animations/
+    actor.walk.gani
+    world.water.gani
+    ...
+```
+
+GANI frame entries reference tilesheets by logical name, region, and coordinates. Animation restoration therefore depends on the referenced tilesheets. When `EngineStateParts.Cycles` is applied, Gondwana includes the tilesheet dependency chain and restores tilesheets before materializing animations.
+
+For a partial state file that must restore independently, save its required `Tilesheets` along with its `Cycles`.
+
+The `separateGaniFiles`, `separateGtsFiles`, and `separateGscnFiles` choices are independent.
+
+For the animation-definition format itself, see [[GANI Files]].
 
 ---
 
@@ -591,6 +632,7 @@ For the implementation details behind state serialization, including snapshot co
 - [[Engine Configuration]]
 - [[Assets Files]]
 - [[GTS Files]]
+- [[GANI Files]]
 - [[GSCN Files]]
 - [[Sprites]]
 

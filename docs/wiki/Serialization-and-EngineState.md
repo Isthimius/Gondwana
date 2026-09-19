@@ -31,6 +31,10 @@ Most of its public collections are facades over the engine's live registries.
   - [Inline tilesheets](#inline-tilesheets)
   - [Separate GTS files](#separate-gts-files)
   - [Relative paths](#relative-paths)
+- [Animation cycles receive special handling](#animation-cycles-receive-special-handling)
+  - [Inline GANI definitions](#inline-gani-definitions)
+  - [Separate GANI files](#separate-gani-files)
+  - [Animation dependencies](#animation-dependencies)
 - [Scenes receive special handling](#scenes-receive-special-handling)
   - [Inline GSCN definitions](#inline-gscn-definitions)
   - [Separate GSCN files](#separate-gscn-files)
@@ -208,7 +212,8 @@ state.SaveToFile(
     compress: false,
     separateGtsFiles: false,
     parts: EngineStateParts.All,
-    separateGscnFiles: false);
+    separateGscnFiles: false,
+    separateGaniFiles: false);
 ```
 
 The save process is approximately:
@@ -285,7 +290,10 @@ Some state parts depend on others.
 Currently:
 
 ```text
-Tilesheets
+Cycles / GANI
+     |
+     v
+Tilesheets / GTS
      |
      +---- may depend on AssetsFiles
 
@@ -299,10 +307,24 @@ When a snapshot is **applied**, Gondwana normalizes the requested parts.
 Requesting:
 
 ```csharp
+EngineStateParts.Cycles
+```
+
+effectively selects:
+
+```text
+Cycles + Tilesheets + AssetsFiles
+```
+
+because GANI frame references require registered tilesheets.
+
+Requesting:
+
+```csharp
 EngineStateParts.Tilesheets
 ```
 
-effectively becomes:
+becomes:
 
 ```text
 Tilesheets + AssetsFiles
@@ -328,12 +350,13 @@ Dependency expansion occurs when state is **loaded or merged**.
 
 It does not make an incomplete saved file magically self-contained.
 
-If you are creating a partial state file that must later restore asset-backed tilesheets or audio independently, explicitly save the required asset files as well:
+If you are creating a partial state file that must later restore animations, asset-backed tilesheets, or audio independently, explicitly save the required dependency chain as well:
 
 ```csharp
 var parts =
     EngineStateParts.AssetsFiles |
-    EngineStateParts.Tilesheets;
+    EngineStateParts.Tilesheets |
+    EngineStateParts.Cycles;
 
 state.SaveToFile(
     "tiles.state",
@@ -510,7 +533,9 @@ The replaced tilesheet is disposed when appropriate.
 
 #### Animation cycles
 
-Cycles are matched by dictionary key.
+GANI definitions are matched by their cycle/registry key.
+
+Without overwrite, an already registered key is retained. With overwrite, the incoming GANI definition is materialized under that key.
 
 #### Scenes
 
@@ -717,6 +742,86 @@ This is particularly important for:
 - test fixtures
 - moving a project between machines
 - Gondwana Studio projects
+
+---
+
+## Animation cycles receive special handling
+
+Animation cycles are persisted through the GANI definition layer rather than serializing runtime `Cycle -> FrameSequence -> Frame` graphs in new EngineState files.
+
+Each registered cycle is represented as:
+
+```text
+AnimationStateEntry
+    |
+    +-- inline AnimationDefinition
+    |
+    +-- external .gani path
+```
+
+This is controlled by `separateGaniFiles`.
+
+### Inline GANI definitions
+
+The default is:
+
+```csharp
+state.SaveToFile(
+    "game.state",
+    separateGaniFiles: false);
+```
+
+Each registered cycle is converted with `AnimationDefinitionSerializer.FromCycle` and embedded as clean definition data inside the EngineState snapshot.
+
+### Separate GANI files
+
+To externalize animation definitions:
+
+```csharp
+state.SaveToFile(
+    "game.state",
+    separateGaniFiles: true);
+```
+
+For:
+
+```text
+game.state
+```
+
+the layout becomes:
+
+```text
+game.state
+
+game.animations/
+    actor.walk.gani
+    actor.idle.gani
+    world.water.gani
+```
+
+The state stores relative `GaniPath` values whenever possible.
+
+External files are written through `AnimationDefinitionSerializer`, so they remain standalone GANI documents without EngineState `$id` / `$ref` metadata.
+
+### Animation dependencies
+
+GANI frame references resolve through `TilesheetRegistry`. Applying `EngineStateParts.Cycles` therefore expands the dependency selection to include `Tilesheets`, which in turn may include `AssetsFiles`.
+
+The restore order remains:
+
+```text
+AssetsFiles
+Audio
+Tilesheets
+Cycles
+Scenes
+Sprites
+```
+
+EngineState materializes all selected animation definitions before applying their `NextCycleKey` relationships. This two-pass step permits definitions to reference one another in either order, including circular relationships such as `idle -> blink -> idle`.
+
+For the standalone format, see [[GANI Files]].
 
 ---
 
@@ -1340,6 +1445,7 @@ var state = new EngineState();
 state.SaveToFile(
     "content.state",
     separateGtsFiles: true,
+    separateGaniFiles: true,
     parts:
         EngineStateParts.AssetsFiles |
         EngineStateParts.Tilesheets |
@@ -1356,6 +1462,10 @@ content.tilesheets/
     terrain.gts
     characters.gts
     effects.gts
+
+content.animations/
+    actor.walk.gani
+    world.water.gani
 ```
 
 ### Merge an expansion
@@ -1425,6 +1535,8 @@ Core implementation:
 Related resource serialization:
 
 - `Gondwana/Drawing/Tilesheets/GTS/*`
+- `Gondwana/Drawing/Animation/GANI/*`
+- `Gondwana/Scenes/GSCN/*`
 - `Gondwana/Assets/AssetsFile.cs`
 - `Gondwana/Audio/*`
 
