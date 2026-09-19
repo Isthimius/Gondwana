@@ -1,6 +1,9 @@
 var hierarchy =
 [
     [ "Gondwana.Physics.Collisions.Aabb", "structGondwana_1_1Physics_1_1Collisions_1_1Aabb.html", null ],
+    [ "Gondwana.Drawing.Animation.GANI.AnimationDefinition", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinition.html", null ],
+    [ "Gondwana.Drawing.Animation.GANI.AnimationDefinitionSource", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinitionSource.html", null ],
+    [ "Gondwana.Drawing.Animation.GANI.AnimationFrameDefinition", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationFrameDefinition.html", null ],
     [ "Gondwana.Assets.AssetsFileIdentifier", "classGondwana_1_1Assets_1_1AssetsFileIdentifier.html", null ],
     [ "Gondwana.Audio.Browser.BrowserAudioManager", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html", null ],
     [ "Gondwana.Audio.Browser.BrowserAudioPlayer", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html", null ],

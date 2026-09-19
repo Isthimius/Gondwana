@@ -56,5 +56,6 @@ var searchData=
   ['currenttime_53',['CurrentTime',['../classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html#a5701d2ba197ecec0809327c2f71dfdd1',1,'Gondwana.Audio.Browser.BrowserAudioPlayer.CurrentTime'],['../classGondwana_1_1Audio_1_1AudioResource.html#a30411094359894d7dcea25ebba282e15',1,'Gondwana.Audio.AudioResource.CurrentTime'],['../interfaceGondwana_1_1Audio_1_1IAudioPlaybackHandle.html#a677efb7d10176e478a9eb29810103621',1,'Gondwana.Audio.IAudioPlaybackHandle.CurrentTime']]],
   ['cyclefinished_54',['CycleFinished',['../structGondwana_1_1Drawing_1_1Animation_1_1FrameSequence.html#af25a1e4ec1fb9b2f9b44221032bd6753',1,'Gondwana::Drawing::Animation::FrameSequence']]],
   ['cycles_55',['Cycles',['../classGondwana_1_1EngineState.html#a23d1c60394e8e62ee482430083cf4f2b',1,'Gondwana.EngineState.Cycles'],['../classGondwana_1_1Timers_1_1Timer.html#ab35c08b756eb3f813af1daf2ec76ab15',1,'Gondwana.Timers.Timer.Cycles']]],
-  ['cyclespersecond_56',['CyclesPerSecond',['../classGondwana_1_1Engine.html#a934c3fbfb438d588870d36142030b112',1,'Gondwana::Engine']]]
+  ['cyclespersecond_56',['CyclesPerSecond',['../classGondwana_1_1Engine.html#a934c3fbfb438d588870d36142030b112',1,'Gondwana::Engine']]],
+  ['cycletype_57',['CycleType',['../classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinition.html#aa1ded900e14630d29184200fc675fe37',1,'Gondwana::Drawing::Animation::GANI::AnimationDefinition']]]
 ];
