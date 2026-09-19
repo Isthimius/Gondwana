@@ -457,7 +457,9 @@ public sealed class EngineState
         var result = new List<SceneStateEntry>();
         var usedFileNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var scene in Scene._allScenes)
+        // Work from a stable snapshot. Scene construction/disposal may occur on
+        // other threads while a state file is being assembled.
+        foreach (var scene in Scene._allScenes.ToList())
         {
             if (scene is null)
                 continue;
