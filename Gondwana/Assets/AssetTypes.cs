@@ -44,5 +44,10 @@ public enum AssetTypes
     /// <summary>
     /// Represents a tilesheet definition file (.gts) for <see cref="Gondwana.Drawing.Tilesheets.GTS.TilesheetDefinition"/>.
     /// </summary>
-    TilesheetDefinition = 7
+    TilesheetDefinition = 7,
+
+    /// <summary>
+    /// Represents a scene definition file (.gscn) for <see cref="Gondwana.Scenes.GSCN.SceneDefinition"/>.
+    /// </summary>
+    SceneDefinition = 8
 }

@@ -31,6 +31,10 @@ Most of its public collections are facades over the engine's live registries.
   - [Inline tilesheets](#inline-tilesheets)
   - [Separate GTS files](#separate-gts-files)
   - [Relative paths](#relative-paths)
+- [Scenes receive special handling](#scenes-receive-special-handling)
+  - [Inline GSCN definitions](#inline-gscn-definitions)
+  - [Separate GSCN files](#separate-gscn-files)
+  - [Sprite scene-layer identity](#sprite-scene-layer-identity)
 - [Asset files are references, not embedded archives](#asset-files-are-references-not-embedded-archives)
 - [Compression](#compression)
   - [Compression is not encryption](#compression-is-not-encryption)
@@ -203,7 +207,8 @@ state.SaveToFile(
     path,
     compress: false,
     separateGtsFiles: false,
-    parts: EngineStateParts.All);
+    parts: EngineStateParts.All,
+    separateGscnFiles: false);
 ```
 
 The save process is approximately:
@@ -712,6 +717,84 @@ This is particularly important for:
 - test fixtures
 - moving a project between machines
 - Gondwana Studio projects
+
+---
+
+## Scenes receive special handling
+
+Scenes now use the GSCN definition layer during EngineState persistence rather than serializing the runtime `Scene -> SceneLayer -> SceneLayerTile` object graph directly.
+
+Each scene is represented by a state entry with one of two forms:
+
+```text
+SceneStateEntry
+    |
+    +-- inline SceneDefinition
+    |
+    +-- external .gscn path
+```
+
+This is controlled by `separateGscnFiles`.
+
+### Inline GSCN definitions
+
+Inline scene definitions are the default:
+
+```csharp
+state.SaveToFile(
+    "game.state",
+    separateGscnFiles: false);
+```
+
+The EngineState JSON contains the GSCN definition data under each scene entry. The scene itself is still reconstructed through `SceneDefinitionSerializer`, so parent ownership references and other runtime-only relationships are rebuilt rather than persisted as back-references.
+
+### Separate GSCN files
+
+To externalize scenes:
+
+```csharp
+state.SaveToFile(
+    "game.state",
+    separateGscnFiles: true);
+```
+
+For a state file named:
+
+```text
+game.state
+```
+
+Gondwana writes scene definitions beneath:
+
+```text
+game.state
+game.scenes/
+    <scene-id>.gscn
+    <scene-id>.gscn
+```
+
+The main EngineState file stores the corresponding relative `GscnPath` values when possible.
+
+Standalone files are written through `SceneDefinitionSerializer`, not the general EngineState serializer. As a result, external `.gscn` files remain clean definition documents without EngineState-specific `$id`/`$ref` reference metadata.
+
+The restore order remains important: tilesheets are restored before scenes, allowing GSCN frame references to resolve registered tilesheets as the scene is materialized.
+
+### Sprite scene-layer identity
+
+Sprites are serialized separately from scenes, but a sprite still needs to know which restored `SceneLayer` owns it.
+
+New EngineState files therefore persist stable identifiers on each sprite:
+
+```text
+SceneId
+SceneLayerId
+```
+
+After GSCN scenes are restored, the sprite is rebound to the canonical runtime layer with those IDs. This avoids embedding a duplicate `SceneLayer` object graph beneath the sprite merely to preserve an object reference.
+
+Older EngineState files that contain the previous raw Scene/SceneLayer reference graph remain readable.
+
+For the standalone scene-definition format itself, see [[GSCN Files]].
 
 ---
 

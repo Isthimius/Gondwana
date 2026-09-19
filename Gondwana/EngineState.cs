@@ -1,6 +1,7 @@
 ﻿using System.IO.Compression;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Gondwana.Assets;
 using Gondwana.Audio;
 using Gondwana.Drawing.Animation;
@@ -9,6 +10,7 @@ using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes;
+using Gondwana.Scenes.GSCN;
 
 namespace Gondwana;
 
@@ -37,6 +39,88 @@ public sealed class EngineState
         /// </summary>
         [JsonProperty]
         public TilesheetDefinition? Definition { get; set; }
+    }
+
+
+    /// <summary>
+    /// Represents one serialized scene entry, either inline as a GSCN definition or by
+    /// reference to an external .gscn file.
+    /// </summary>
+    [JsonConverter(typeof(SceneStateEntryConverter))]
+    private sealed class SceneStateEntry
+    {
+        /// <summary>
+        /// Gets or sets the path to the external GSCN file used for this scene entry, when applicable.
+        /// </summary>
+        [JsonProperty]
+        public string? GscnPath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the inline GSCN definition associated with this entry.
+        /// </summary>
+        [JsonProperty]
+        public SceneDefinition? Definition { get; set; }
+
+        /// <summary>
+        /// Holds a legacy raw Scene while an older EngineState file is being applied.
+        /// It is never emitted by new saves.
+        /// </summary>
+        [JsonIgnore]
+        public Scene? LegacyScene { get; set; }
+    }
+
+    /// <summary>
+    /// Reads both the current SceneStateEntry shape and legacy EngineState files that
+    /// stored raw Scene objects directly in the Scenes collection.
+    /// </summary>
+    private sealed class SceneStateEntryConverter : JsonConverter<SceneStateEntry>
+    {
+        public override SceneStateEntry? ReadJson(
+            JsonReader reader,
+            Type objectType,
+            SceneStateEntry? existingValue,
+            bool hasExistingValue,
+            JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.Null)
+                return null;
+
+            var obj = JObject.Load(reader);
+
+            if (obj.Property(nameof(SceneStateEntry.GscnPath), StringComparison.OrdinalIgnoreCase) is not null ||
+                obj.Property(nameof(SceneStateEntry.Definition), StringComparison.OrdinalIgnoreCase) is not null)
+            {
+                return new SceneStateEntry
+                {
+                    GscnPath = obj.GetValue(
+                        nameof(SceneStateEntry.GscnPath),
+                        StringComparison.OrdinalIgnoreCase)?.ToObject<string>(serializer),
+                    Definition = obj.GetValue(
+                        nameof(SceneStateEntry.Definition),
+                        StringComparison.OrdinalIgnoreCase)?.ToObject<SceneDefinition>(serializer)
+                };
+            }
+
+            // Backward compatibility: pre-GSCN EngineState files stored Scene objects
+            // directly in the Scenes list. Keep the deserialized instance intact so any
+            // preserved references from other legacy objects still resolve to it.
+            var legacyScene = obj.ToObject<Scene>(serializer)
+                ?? throw new JsonSerializationException(
+                    "Legacy EngineState scene entry deserialized to null.");
+
+            return new SceneStateEntry
+            {
+                LegacyScene = legacyScene
+            };
+        }
+
+        public override void WriteJson(
+            JsonWriter writer,
+            SceneStateEntry? value,
+            JsonSerializer serializer) =>
+            throw new NotSupportedException();
+
+        public override bool CanWrite => false;
     }
 
     /// <summary>
@@ -171,16 +255,25 @@ public sealed class EngineState
     /// at the cost of additional processing time. If <c>false</c>, the JSON is written as plain text.
     /// Default is <c>false</c>.
     /// </param>
-    /// <param name="separateGtsFiles"></param>
+    /// <param name="separateGtsFiles">
+    /// If <c>true</c>, tilesheet definitions are written to separate .gts files and
+    /// referenced from the engine-state file.
+    /// </param>
     /// <param name="parts">
     /// Specifies which parts of the engine state should be included in the saved file. Use bitwise
     /// flags from <see cref="EngineStateParts"/> to select specific components, or use
     /// <see cref="EngineStateParts.All"/> to save the complete state. Default is <see cref="EngineStateParts.All"/>.
     /// </param>
+    /// <param name="separateGscnFiles">
+    /// If <c>true</c>, scene definitions are written to separate .gscn files and
+    /// referenced from the engine-state file. If <c>false</c>, GSCN definitions are
+    /// embedded inline in the engine-state JSON.
+    /// </param>
     public void SaveToFile(string path,
                            bool compress = false,
                            bool separateGtsFiles = false,
-                           EngineStateParts parts = EngineStateParts.All)
+                           EngineStateParts parts = EngineStateParts.All,
+                           bool separateGscnFiles = false)
     {
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Engine state path must be a non-empty string.", nameof(path));
@@ -188,7 +281,12 @@ public sealed class EngineState
         var fullPath = Path.GetFullPath(path);
         var baseDirectory = Path.GetDirectoryName(fullPath);
 
-        var snapshot = BuildSnapshot(parts, baseDirectory, fullPath, separateGtsFiles);
+        var snapshot = BuildSnapshot(
+            parts,
+            baseDirectory,
+            fullPath,
+            separateGtsFiles,
+            separateGscnFiles);
 
         var json = JsonConvert.SerializeObject(snapshot, JsonSerializerSettings);
 
@@ -294,7 +392,7 @@ public sealed class EngineState
         [JsonProperty] public List<AssetsFile>? AssetsFiles { get; set; }
         [JsonProperty] public Dictionary<string, TilesheetStateEntry>? Tilesheets { get; set; }
         [JsonProperty] public Dictionary<string, Cycle>? Cycles { get; set; }
-        [JsonProperty] public List<Scene>? Scenes { get; set; }
+        [JsonProperty] public List<SceneStateEntry>? Scenes { get; set; }
         [JsonProperty] public List<Sprite>? Sprites { get; set; }
         [JsonProperty] public Dictionary<string, AudioResource>? SoundResources { get; set; }
     }
@@ -314,7 +412,8 @@ public sealed class EngineState
     private EngineStateSnapshot BuildSnapshot(EngineStateParts parts,
                                               string? baseDirectory,
                                               string engineStatePath,
-                                              bool separateGtsFiles)
+                                              bool separateGtsFiles,
+                                              bool separateGscnFiles)
     {
         return new EngineStateSnapshot
         {
@@ -334,7 +433,10 @@ public sealed class EngineState
                 : null,
 
             Scenes = parts.HasFlag(EngineStateParts.Scenes)
-                ? Scenes
+                ? CaptureSceneEntries(
+                    baseDirectory,
+                    engineStatePath,
+                    separateGscnFiles)
                 : null,
 
             Sprites = parts.HasFlag(EngineStateParts.Sprites)
@@ -345,6 +447,58 @@ public sealed class EngineState
                 ? SoundResources
                 : null,
         };
+    }
+
+    private static List<SceneStateEntry> CaptureSceneEntries(
+        string? baseDirectory,
+        string engineStatePath,
+        bool separateGscnFiles)
+    {
+        var result = new List<SceneStateEntry>();
+        var usedFileNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        // Work from a stable snapshot. Scene construction/disposal may occur on
+        // other threads while a state file is being assembled.
+        foreach (var scene in Scene._allScenes.ToList())
+        {
+            if (scene is null)
+                continue;
+
+            if (separateGscnFiles)
+            {
+                var gscnDirectory = GetSceneStateDirectory(engineStatePath);
+                Directory.CreateDirectory(gscnDirectory);
+
+                var baseFileName = SanitizeFileName(scene.ID);
+                var gscnFileName = $"{baseFileName}.gscn";
+                int suffix = 2;
+
+                while (!usedFileNames.Add(gscnFileName))
+                    gscnFileName = $"{baseFileName}_{suffix++}.gscn";
+
+                var gscnFullPath = Path.Combine(gscnDirectory, gscnFileName);
+
+                // Use the standalone GSCN serializer so the external file remains a
+                // clean scene definition without EngineState $id/$ref metadata.
+                SceneDefinitionSerializer.Save(gscnFullPath, scene);
+
+                result.Add(new SceneStateEntry
+                {
+                    GscnPath = MakeRelativePath(
+                        gscnFullPath,
+                        baseDirectory)
+                });
+            }
+            else
+            {
+                result.Add(new SceneStateEntry
+                {
+                    Definition = SceneDefinitionSerializer.FromScene(scene)
+                });
+            }
+        }
+
+        return result;
     }
 
     private static string ReadJsonFile(string path, bool compressed)
@@ -375,6 +529,12 @@ public sealed class EngineState
     {
         parts = NormalizeParts(parts);
 
+        // Legacy raw objects may register themselves while the snapshot DTO is
+        // deserialized. Detach those incoming instances before clearing or merging so
+        // they are treated as snapshot data rather than pre-existing live state.
+        DetachLegacySnapshotScenes(snapshot.Scenes);
+        DetachSnapshotSprites(snapshot.Sprites);
+
         // clear only what we're about to load.
         if (clearExisting)
             ClearSelected(parts);
@@ -392,7 +552,7 @@ public sealed class EngineState
             MergeCycles(snapshot.Cycles, overwriteExisting);
 
         if (parts.HasFlag(EngineStateParts.Scenes))
-            MergeScenes(snapshot.Scenes, overwriteExisting);
+            MergeScenes(snapshot.Scenes, overwriteExisting, baseDirectory);
 
         if (parts.HasFlag(EngineStateParts.Sprites))
             MergeSprites(snapshot.Sprites, overwriteExisting);
@@ -571,6 +731,15 @@ public sealed class EngineState
         return Path.Combine(directory, $"{fileName}.tilesheets");
     }
 
+
+    private static string GetSceneStateDirectory(string engineStatePath)
+    {
+        var directory = Path.GetDirectoryName(engineStatePath) ?? string.Empty;
+        var fileName = Path.GetFileNameWithoutExtension(engineStatePath);
+
+        return Path.Combine(directory, $"{fileName}.scenes");
+    }
+
     private static string MakeRelativePath(string path, string? baseDirectory)
     {
         if (string.IsNullOrWhiteSpace(baseDirectory))
@@ -669,12 +838,26 @@ public sealed class EngineState
         }
     }
 
-    private static void MergeScenes(List<Scene>? scenes, bool overwriteExisting)
+    private static void DetachLegacySnapshotScenes(List<SceneStateEntry>? scenes)
+    {
+        if (scenes is null)
+            return;
+
+        foreach (var entry in scenes)
+        {
+            if (entry?.LegacyScene is { } legacyScene)
+                Scene._allScenes.Remove(legacyScene);
+        }
+    }
+
+    private static void MergeScenes(
+        List<SceneStateEntry>? scenes,
+        bool overwriteExisting,
+        string? baseDirectory)
     {
         if (scenes is null || scenes.Count == 0)
             return;
 
-        // Index existing scenes by ID (case-sensitive; change if you prefer)
         var existingIndexById = new Dictionary<string, int>(StringComparer.Ordinal);
         for (int i = 0; i < Scene._allScenes.Count; i++)
         {
@@ -683,30 +866,58 @@ public sealed class EngineState
                 existingIndexById.Add(id, i);
         }
 
-        // Avoid duplicating the same incoming ID twice (keeps last one)
+        // Avoid duplicating the same incoming ID twice. A duplicate within one
+        // snapshot is treated as an overwrite so the last incoming entry wins.
         var seenIncoming = new HashSet<string>(StringComparer.Ordinal);
 
-        foreach (var incoming in scenes)
+        foreach (var entry in scenes)
         {
-            if (incoming is null)
+            if (entry is null)
                 continue;
 
-            // Ensure ID exists (important if something created scenes without IDs)
+            Scene incoming;
+            bool materializedFromDefinition = false;
+
+            if (entry.LegacyScene is not null)
+            {
+                incoming = entry.LegacyScene;
+            }
+            else if (!string.IsNullOrWhiteSpace(entry.GscnPath))
+            {
+                var gscnPath = ResolvePath(entry.GscnPath, baseDirectory);
+                incoming = SceneDefinitionSerializer.LoadScene(gscnPath);
+                materializedFromDefinition = true;
+            }
+            else if (entry.Definition is not null)
+            {
+                incoming = SceneDefinitionSerializer.ToScene(entry.Definition);
+                materializedFromDefinition = true;
+            }
+            else
+            {
+                throw new InvalidDataException(
+                    "Scene state entry does not contain a GSCN path or inline definition.");
+            }
+
+            // Scene materialization registers runtime scenes immediately. Detach newly
+            // materialized definitions so this method remains the single merge owner.
+            if (materializedFromDefinition)
+                Scene._allScenes.Remove(incoming);
+
             if (string.IsNullOrWhiteSpace(incoming.ID))
                 incoming.ID = Guid.NewGuid().ToString();
 
-            // If the incoming list contains the same ID multiple times, last one wins.
-            if (!seenIncoming.Add(incoming.ID))
-            {
-                // Replace the previously added/replaced incoming with this one:
-                // easiest way: treat it as overwriteExisting=true for that ID
-                overwriteExisting = true;
-            }
+            bool duplicateIncoming = !seenIncoming.Add(incoming.ID);
 
             if (existingIndexById.TryGetValue(incoming.ID, out int existingIndex))
             {
-                if (!overwriteExisting)
+                if (!overwriteExisting && !duplicateIncoming)
+                {
+                    if (materializedFromDefinition)
+                        incoming.Dispose();
+
                     continue;
+                }
 
                 Scene._allScenes[existingIndex] = incoming;
             }
@@ -715,6 +926,67 @@ public sealed class EngineState
                 existingIndexById[incoming.ID] = Scene._allScenes.Count;
                 Scene._allScenes.Add(incoming);
             }
+        }
+    }
+
+    private static void RebindSpriteSceneLayer(Sprite sprite)
+    {
+        var layerId = sprite.SerializedSceneLayerIdForBinding;
+        if (string.IsNullOrWhiteSpace(layerId))
+        {
+            if (!ReferenceEquals(sprite.SceneLayer, SceneLayer.Empty))
+                return;
+
+            throw new InvalidDataException(
+                $"Sprite '{sprite.Nickname ?? sprite.Id.ToString()}' does not contain a SceneLayer identity.");
+        }
+
+        SceneLayer? targetLayer = null;
+        var sceneId = sprite.SerializedSceneIdForBinding;
+
+        if (!string.IsNullOrWhiteSpace(sceneId))
+        {
+            var scene = Scene._allScenes.FirstOrDefault(
+                candidate => string.Equals(candidate.ID, sceneId, StringComparison.Ordinal));
+
+            targetLayer = scene?.GetSceneLayerByID(layerId);
+        }
+        else
+        {
+            // Older data may have a layer ID but no scene ID. Layer IDs are normally
+            // GUIDs; accept a unique match and reject ambiguity.
+            var matches = Scene._allScenes
+                .SelectMany(scene => scene.SceneLayers)
+                .Where(layer => string.Equals(layer.ID, layerId, StringComparison.Ordinal))
+                .Take(2)
+                .ToList();
+
+            if (matches.Count == 1)
+                targetLayer = matches[0];
+            else if (matches.Count > 1)
+                throw new InvalidDataException(
+                    $"Sprite '{sprite.Nickname ?? sprite.Id.ToString()}' references ambiguous SceneLayer ID '{layerId}'.");
+        }
+
+        if (targetLayer is null)
+        {
+            throw new InvalidDataException(
+                $"Sprite '{sprite.Nickname ?? sprite.Id.ToString()}' could not resolve SceneLayer '{layerId}'" +
+                (string.IsNullOrWhiteSpace(sceneId) ? "." : $" in Scene '{sceneId}'."));
+        }
+
+        sprite.RebindSceneLayerAfterDeserialization(targetLayer);
+    }
+
+    private static void DetachSnapshotSprites(List<Sprite>? sprites)
+    {
+        if (sprites is null)
+            return;
+
+        foreach (var sprite in sprites)
+        {
+            if (sprite is not null)
+                SpriteManager.Instance._spriteList.Remove(sprite);
         }
     }
 
@@ -737,6 +1009,8 @@ public sealed class EngineState
         {
             if (incoming is null)
                 continue;
+
+            RebindSpriteSceneLayer(incoming);
 
             if (string.IsNullOrWhiteSpace(incoming.Nickname))
                 incoming.Nickname = Guid.NewGuid().ToString();

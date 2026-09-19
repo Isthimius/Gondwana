@@ -15,6 +15,7 @@
 - [[Tilesheets]]
   - [[.gts Files|GTS-Files]]
 - [[Scenes and SceneLayers]]
+  - [[.gscn Files|GSCN-Files]]
   - [[Tiles and Tile-Based SceneLayers]]
   - [[SceneLayer Wrapping]]
   - [[Coordinate Spaces]]

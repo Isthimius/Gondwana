@@ -63,7 +63,7 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
     #region IDrawable members
 
     [JsonProperty]
-    public Guid Id { get; private set; } = Guid.NewGuid();
+    public Guid Id { get; internal set; } = Guid.NewGuid();
 
     [JsonProperty]
     public string? Nickname { get; set; }
@@ -389,6 +389,19 @@ public void SetCollisionProfile(string profileName)
         var profile = scene.CollisionProfiles.Get(_collisionProfileName);
         _collider.CollisionGroup = profile.ResolveCollisionGroup(scene.CollisionGroups);
         _collider.CollidesWith = profile.ResolveCollidesWith(scene.CollisionGroups);
+    }
+
+    /// <summary>
+    /// Detaches the current collider from its scene-layer registry without otherwise
+    /// changing this tile's serialized collision state.
+    /// </summary>
+    protected void DetachCollider()
+    {
+        if (_collider is null)
+            return;
+
+        SceneLayer.ColliderRegistry.Unregister(_collider);
+        _collider = null;
     }
 
     /// <summary>

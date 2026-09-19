@@ -224,8 +224,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// The value bag allows games or engine extensions to attach arbitrary structured data
     /// to layers (such as layer-specific properties, AI navigation data, weather effects, or
     /// custom attributes) without modifying the core <see cref="SceneLayer"/> class. Values
-    /// are accessed using strongly-typed <see cref="ValueKey{T}"/> instances and are included
-    /// in layer serialization.
+    /// are accessed using strongly-typed <see cref="ValueKey{T}"/> instances. The value bag is
+    /// runtime-only and is intentionally excluded from JSON serialization.
     /// </remarks>
     [JsonIgnore]
     public TypedValueBag ValueBag { get; } = new();
@@ -311,7 +311,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// <see cref="Scene.AddLayer"/> and cleared when the layer is removed. The scene reference
     /// provides access to scene-level resources such as the collision world.
     /// </remarks>
-    [JsonProperty]
+    [JsonIgnore]
     public Scene Scene { get; internal set; }
 
     [JsonIgnore]
