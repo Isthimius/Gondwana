@@ -132,6 +132,9 @@ public static class AnimationDefinitionSerializer
     /// </summary>
     public static Cycle ToCycle(AnimationDefinition definition)
     {
+        var previous = Cycle._cycles.TryGetValue(definition.Key, out var existing)
+            ? existing
+            : null;
         var cycle = MaterializeCycle(definition);
 
         try
@@ -145,6 +148,8 @@ public static class AnimationDefinitionSerializer
                 ReferenceEquals(registered, cycle))
             {
                 cycle.Dispose();
+                if (previous is not null)
+                    Cycle._cycles[definition.Key] = previous;
             }
 
             throw;
