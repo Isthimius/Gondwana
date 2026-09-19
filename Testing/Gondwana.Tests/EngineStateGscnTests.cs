@@ -1,3 +1,4 @@
+using Gondwana.Drawing.Sprites;
 using Gondwana.Scenes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -16,11 +17,13 @@ public sealed class EngineStateGscnTests : IDisposable
     public EngineStateGscnTests()
     {
         Directory.CreateDirectory(_tempDir);
+        SpriteManager.Instance._spriteList.Clear();
         Scene.ClearAllScenes();
     }
 
     public void Dispose()
     {
+        SpriteManager.Instance._spriteList.Clear();
         Scene.ClearAllScenes();
 
         if (Directory.Exists(_tempDir))
@@ -114,6 +117,51 @@ public sealed class EngineStateGscnTests : IDisposable
         Assert.True(restoredLayer.WrapHorizontally);
         Assert.True(restoredLayer.ShowGridLines);
         Assert.Same(restored, restoredLayer.Scene);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void FullState_RestoresSpriteAgainstCanonicalGscnLayer(bool separateGscnFiles)
+    {
+        using var scene = CreateScene();
+        var layer = Assert.Single(scene.SceneLayers);
+        var sprite = SpriteManager.Instance.CreateSprite(
+            layer,
+            default,
+            id: "hero");
+
+        var sceneId = scene.ID;
+        var layerId = layer.ID;
+        var path = Path.Combine(
+            _tempDir,
+            separateGscnFiles ? "sprite-external.state" : "sprite-inline.state");
+
+        new EngineState().SaveToFile(
+            path,
+            parts: EngineStateParts.Scenes | EngineStateParts.Sprites,
+            separateGscnFiles: separateGscnFiles);
+
+        var json = File.ReadAllText(path);
+        Assert.Contains("\"SceneId\"", json);
+        Assert.Contains("\"SceneLayerId\"", json);
+        Assert.DoesNotContain("\"SceneLayer\":", json);
+
+        SpriteManager.Instance._spriteList.Clear();
+        Scene.ClearAllScenes();
+
+        EngineState.LoadFromFile(
+            path,
+            parts: EngineStateParts.Scenes | EngineStateParts.Sprites);
+
+        var restoredScene = Assert.Single(Scene.GetAllScenes());
+        var restoredLayer = Assert.Single(restoredScene.SceneLayers);
+        var restoredSprite = Assert.Single(SpriteManager.Instance.AllSprites);
+
+        Assert.Equal(sceneId, restoredScene.ID);
+        Assert.Equal(layerId, restoredLayer.ID);
+        Assert.Equal("hero", restoredSprite.Nickname);
+        Assert.Same(restoredLayer, restoredSprite.SceneLayer);
     }
 
     [Fact]
