@@ -22,8 +22,53 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     public event Action<Sprite>? VisualBoundsChanged;
     public event Action<Sprite>? Disposing;
 
-    [JsonProperty("SceneLayer")]
+    [JsonIgnore]
     internal SceneLayer _sceneLayer;
+
+    private string? _serializedSceneId;
+    private string? _serializedSceneLayerId;
+
+    /// <summary>
+    /// Stores a stable scene identity instead of serializing the owning SceneLayer object graph.
+    /// </summary>
+    [JsonProperty("SceneId")]
+    private string? SerializedSceneId
+    {
+        get => !ReferenceEquals(_sceneLayer, SceneLayer.Empty)
+            ? _sceneLayer.Scene?.ID ?? _serializedSceneId
+            : _serializedSceneId;
+        set => _serializedSceneId = value;
+    }
+
+    /// <summary>
+    /// Stores a stable layer identity instead of serializing the owning SceneLayer object graph.
+    /// </summary>
+    [JsonProperty("SceneLayerId")]
+    private string? SerializedSceneLayerId
+    {
+        get => !ReferenceEquals(_sceneLayer, SceneLayer.Empty)
+            ? _sceneLayer.ID
+            : _serializedSceneLayerId;
+        set => _serializedSceneLayerId = value;
+    }
+
+    /// <summary>
+    /// Backward-compatible reader for EngineState files that serialized SceneLayer directly.
+    /// This setter-only property is not emitted by new saves.
+    /// </summary>
+    [JsonProperty("SceneLayer")]
+    private SceneLayer? LegacySerializedSceneLayer
+    {
+        set
+        {
+            if (value is null)
+                return;
+
+            _sceneLayer = value;
+            _serializedSceneId = value.Scene?.ID;
+            _serializedSceneLayerId = value.ID;
+        }
+    }
 
     private HorizontalAlignment _horizAlign;
     private VerticalAlignment _vertAlign;
@@ -38,7 +83,12 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     private PointF _sceneLayerCoordinates;
 
     [JsonConstructor]
-    private Sprite() { }
+    private Sprite()
+    {
+        // New EngineState files bind sprites to the restored scene graph by stable
+        // Scene/SceneLayer IDs after the snapshot's scenes have been materialized.
+        _sceneLayer = SceneLayer.Empty;
+    }
 
     protected internal Sprite(SceneLayer sceneLayer, Frame frame)
         : this(
@@ -142,6 +192,56 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         animator = new Animator(this);
         pauseAnimation = false;
 
+        // Legacy files may still supply the old serialized SceneLayer object/reference.
+        // New files carry SceneId + SceneLayerId and are rebound by EngineState only after
+        // the corresponding GSCN scene has been restored.
+        if (!ReferenceEquals(_sceneLayer, SceneLayer.Empty))
+        {
+            InitializeDeserializedRuntimeBindings();
+            SpriteManager.Instance.AddSprite(this);
+        }
+    }
+
+    /// <summary>
+    /// Gets the scene identity retained while an EngineState sprite waits for rebinding.
+    /// </summary>
+    [JsonIgnore]
+    internal string? SerializedSceneIdForBinding =>
+        !ReferenceEquals(_sceneLayer, SceneLayer.Empty)
+            ? _sceneLayer.Scene?.ID ?? _serializedSceneId
+            : _serializedSceneId;
+
+    /// <summary>
+    /// Gets the scene-layer identity retained while an EngineState sprite waits for rebinding.
+    /// </summary>
+    [JsonIgnore]
+    internal string? SerializedSceneLayerIdForBinding =>
+        !ReferenceEquals(_sceneLayer, SceneLayer.Empty)
+            ? _sceneLayer.ID
+            : _serializedSceneLayerId;
+
+    /// <summary>
+    /// Rebinds a deserialized sprite to the canonical SceneLayer materialized by EngineState.
+    /// </summary>
+    internal void RebindSceneLayerAfterDeserialization(SceneLayer sceneLayer)
+    {
+        ArgumentNullException.ThrowIfNull(sceneLayer);
+
+        if (ReferenceEquals(_sceneLayer, sceneLayer) && Movement is not null)
+            return;
+
+        Movement?.Dispose();
+        DetachCollider();
+
+        _sceneLayer = sceneLayer;
+        _serializedSceneId = sceneLayer.Scene?.ID;
+        _serializedSceneLayerId = sceneLayer.ID;
+
+        InitializeDeserializedRuntimeBindings();
+    }
+
+    private void InitializeDeserializedRuntimeBindings()
+    {
         Movement = new MovementController(
             this,
             MovementState.ForSceneLayer(),
@@ -154,11 +254,10 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
 
         if (string.IsNullOrWhiteSpace(CollisionProfileName))
             SetCollisionProfile(SpriteManager.Instance.DefaultCollisionProfile);
+        else
+            RefreshCollisionProfile();
 
-        if (_sceneLayer != null)
-            _sceneLayer.RefreshQueue.AddWorldRect(VisualBoundsWorld);
-
-        SpriteManager.Instance.AddSprite(this);
+        _sceneLayer.RefreshQueue.AddWorldRect(VisualBoundsWorld);
     }
 
     public MovementSpace PositionSpace => MovementSpace.Grid;
@@ -287,7 +386,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     }
 
     [JsonIgnore]
-    public MovementController Movement { get; private set; }
+    public MovementController Movement { get; private set; } = null!;
 
     [JsonProperty]
     public override Frame CurrentFrame
