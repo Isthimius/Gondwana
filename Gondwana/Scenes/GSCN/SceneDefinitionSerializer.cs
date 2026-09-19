@@ -332,8 +332,7 @@ public static class SceneDefinitionSerializer
             AdjustCollisionArea = tile.AdjustCollisionArea,
             CollisionType = tile.CollisionType,
             CollisionTypeByFrame = tile.CollisionTypeByFrame,
-            CollisionProfileName = tile.CollisionProfileName,
-            CollisionsEnabled = tile.CollisionsEnabled
+            CollisionProfileName = tile.CollisionProfileName
         };
     }
 
@@ -382,15 +381,17 @@ public static class SceneDefinitionSerializer
 
         tile.Visible = definition.Visible;
         tile.EnableFog = definition.EnableFog;
-        tile.AdjustCollisionAreaByFrame = definition.AdjustCollisionAreaByFrame;
+
+        // Apply explicit values first. Enabling a *ByFrame flag immediately
+        // derives the effective value from CurrentFrame, so those flags must be last.
         tile.AdjustCollisionArea = definition.AdjustCollisionArea;
-        tile.CollisionTypeByFrame = definition.CollisionTypeByFrame;
         tile.CollisionType = definition.CollisionType;
 
         if (!string.IsNullOrWhiteSpace(definition.CollisionProfileName))
             tile.SetCollisionProfile(definition.CollisionProfileName);
 
-        tile.CollisionsEnabled = definition.CollisionsEnabled;
+        tile.AdjustCollisionAreaByFrame = definition.AdjustCollisionAreaByFrame;
+        tile.CollisionTypeByFrame = definition.CollisionTypeByFrame;
         tile.EnableAnimator = definition.EnableAnimator;
     }
 

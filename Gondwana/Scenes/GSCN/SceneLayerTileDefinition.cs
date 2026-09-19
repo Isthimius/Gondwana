@@ -72,8 +72,4 @@ public sealed class SceneLayerTileDefinition
     /// </summary>
     public string? CollisionProfileName { get; set; }
 
-    /// <summary>
-    /// Gets or sets whether collisions are enabled for the tile.
-    /// </summary>
-    public bool CollisionsEnabled { get; set; }
 }

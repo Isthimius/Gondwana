@@ -66,6 +66,7 @@ public sealed class SceneGscnTests
         Assert.DoesNotContain("$ref", json);
         Assert.DoesNotContain("parentSceneLayer", json);
         Assert.DoesNotContain("SceneLayerTileArray", json);
+        Assert.DoesNotContain("\"CollisionsEnabled\"", json);
 
         using var restored = SceneDefinitionSerializer.ToScene(jsonDefinition);
 
@@ -105,6 +106,58 @@ public sealed class SceneGscnTests
         Assert.Equal("EnemySensor", restoredTile.CollisionProfileName);
         Assert.True(restoredTile.CollisionsEnabled);
         Assert.True(restoredTile.EnableAnimator);
+    }
+
+    [Fact]
+    public void Definition_ByFrameFlagsOverrideOmittedExplicitCollisionDefaults()
+    {
+        var sheetName = $"GSCN_ByFrame_{Guid.NewGuid():N}";
+        using var sheet = TilesheetRegistry.Instance.LoadFromBitmap(
+            sheetName,
+            new SKBitmap(16, 16));
+
+        sheet.DefaultRegion.TileSize = new Size(16, 16);
+        var frameAdjust = new CollisionAdjust(1, 2, 3, 4);
+        sheet.DefaultRegion.CollisionAdjust = frameAdjust;
+        sheet.DefaultRegion.CollisionType = TileCollisionType.Trigger;
+
+        var definition = new SceneDefinition
+        {
+            Layers =
+            [
+                new SceneLayerDefinition
+                {
+                    Columns = 1,
+                    Rows = 1,
+                    TileWidth = 16,
+                    TileHeight = 16,
+                    Tiles =
+                    [
+                        new SceneLayerTileDefinition
+                        {
+                            X = 0,
+                            Y = 0,
+                            Frame = new SceneFrameDefinition
+                            {
+                                Tilesheet = sheetName,
+                                RegionName = TilesheetRegion.DefaultRegionName,
+                                XTile = 0,
+                                YTile = 0
+                            },
+                            AdjustCollisionAreaByFrame = true,
+                            CollisionTypeByFrame = true
+                        }
+                    ]
+                }
+            ]
+        };
+
+        using var scene = SceneDefinitionSerializer.ToScene(definition);
+        var tile = Assert.Single(scene.SceneLayers)[0, 0]!;
+
+        Assert.Equal(frameAdjust, tile.AdjustCollisionArea);
+        Assert.Equal(TileCollisionType.Trigger, tile.CollisionType);
+        Assert.True(tile.CollisionsEnabled);
     }
 
     [Fact]
