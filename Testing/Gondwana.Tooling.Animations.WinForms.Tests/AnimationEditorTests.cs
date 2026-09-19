@@ -100,11 +100,13 @@ public sealed class AnimationEditorTests
                 var tree = Field<TreeView>(editor, "_sourceTree");
                 Assert.Single(tree.Nodes);
 
-                var regionNode = Assert.Single(tree.Nodes[0].Nodes);
+                var regionNode = Assert.IsType<TreeNode>(
+                    Assert.Single(tree.Nodes[0].Nodes.Cast<TreeNode>()));
                 regionNode.Expand();
                 Application.DoEvents();
 
-                var rowNode = Assert.Single(regionNode.Nodes);
+                var rowNode = Assert.IsType<TreeNode>(
+                    Assert.Single(regionNode.Nodes.Cast<TreeNode>()));
                 rowNode.Expand();
                 Application.DoEvents();
 
