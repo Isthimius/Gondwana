@@ -32,6 +32,13 @@ public sealed class EngineStateGscnTests : IDisposable
     }
 
     [Fact]
+    public void SceneEmpty_IsNotRegisteredAsRuntimeScene()
+    {
+        Assert.DoesNotContain(Scene.Empty, Scene.GetAllScenes());
+        Assert.Empty(Scene.GetAllScenes());
+    }
+
+    [Fact]
     public void SaveToFile_Default_EmbedsInlineGscnDefinition()
     {
         using var scene = CreateScene();
