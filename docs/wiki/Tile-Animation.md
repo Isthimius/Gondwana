@@ -119,6 +119,58 @@ world.torch
 
 ---
 
+## Persisting cycles with GANI
+
+The programmatic `FrameSequence` / `Cycle` API remains valid, but reusable animation definitions can also be stored as `.gani` files.
+
+A GANI definition stores the cycle's key, timing, playback type, ordered frame references, and follow-on cycle identity without embedding runtime tilesheet graphs.
+
+For example:
+
+```json
+{
+  "Key": "world.water",
+  "ThrottleTime": 0.18,
+  "CycleType": "Repeating",
+  "Frames": [
+    {
+      "Tilesheet": "world",
+      "RegionName": "water",
+      "XTile": 0,
+      "YTile": 0
+    },
+    {
+      "Tilesheet": "world",
+      "RegionName": "water",
+      "XTile": 1,
+      "YTile": 0
+    }
+  ]
+}
+```
+
+Load the referenced tilesheet first, then materialize the animation:
+
+```csharp
+using Gondwana.Drawing.Animation.GANI;
+
+Cycle water =
+    AnimationDefinitionSerializer.LoadCycle(
+        "animations/world.water.gani");
+```
+
+The runtime cycle is registered under the GANI definition's `Key`, so ordinary animator code does not change:
+
+```csharp
+waterTile.TileAnimator.StartAnimation("world.water");
+```
+
+GANI frame references are logical references into registered tilesheets. The animation file does not embed GTS data.
+
+See [[.gani Files|GANI-Files]] for the complete format, validation, assets-file support, and EngineState integration.
+
+---
+
 ## Animating a sprite
 
 Sprites always create their animator during construction, so no separate enable step is required:
@@ -293,6 +345,7 @@ Visual frames can change without changing collision bounds. Opt into `AdjustColl
 
 - [[Tilesheets]] — source images, regions, tile size, overhang, and frames
 - [[.gts Files|GTS-Files]] — persisted tilesheet and frame metadata
+- [[.gani Files|GANI-Files]] — persisted animation definitions
 - [[Tiles and Tile-Based SceneLayers]] — fixed map cells and tile-grid behavior
 - [[Sprites]] — movable `Tile` objects
 - [[Timers and Engine Timing]] — simulation timing and engine cycles

@@ -37,6 +37,7 @@
 <summary><strong>Systems</strong></summary>
 
 - [[Tile Animation]]
+  - [[.gani Files|GANI-Files]]
 - [[Movement and Controllers]]
   - [[Moving Sprites and Direct Drawings]]
 - [[Input Handling]]
