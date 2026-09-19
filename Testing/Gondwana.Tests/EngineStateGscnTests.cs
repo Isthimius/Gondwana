@@ -165,6 +165,54 @@ public sealed class EngineStateGscnTests : IDisposable
         Assert.Same(restoredLayer, restoredSprite.SceneLayer);
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void MergeFromFile_GscnSceneHonorsOverwriteExisting(bool separateGscnFiles)
+    {
+        using var incoming = CreateScene();
+        incoming.ID = "shared-scene";
+        var incomingLayerId = Assert.Single(incoming.SceneLayers).ID;
+        var path = Path.Combine(
+            _tempDir,
+            separateGscnFiles ? "merge-external.state" : "merge-inline.state");
+
+        new EngineState().SaveToFile(
+            path,
+            parts: EngineStateParts.Scenes,
+            separateGscnFiles: separateGscnFiles);
+
+        Scene.ClearAllScenes();
+
+        using var existing = new Scene
+        {
+            ID = "shared-scene"
+        };
+        var existingLayer = existing.AddLayer(1, 1, 8, 8);
+        var existingLayerId = existingLayer.ID;
+
+        EngineState.MergeFromFile(
+            path,
+            overwriteExisting: false,
+            parts: EngineStateParts.Scenes);
+
+        var preserved = Assert.Single(Scene.GetAllScenes());
+        Assert.Same(existing, preserved);
+        Assert.Equal(existingLayerId, Assert.Single(preserved.SceneLayers).ID);
+
+        EngineState.MergeFromFile(
+            path,
+            overwriteExisting: true,
+            parts: EngineStateParts.Scenes);
+
+        var replaced = Assert.Single(Scene.GetAllScenes());
+        Assert.NotSame(existing, replaced);
+        Assert.Equal("shared-scene", replaced.ID);
+        Assert.Equal(incomingLayerId, Assert.Single(replaced.SceneLayers).ID);
+        Assert.Equal(3, Assert.Single(replaced.SceneLayers).GridColumnCount);
+        Assert.Equal(2, Assert.Single(replaced.SceneLayers).GridRowCount);
+    }
+
     [Fact]
     public void LoadFromFile_AcceptsLegacyRawSceneEntries()
     {
