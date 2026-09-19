@@ -218,7 +218,8 @@ public sealed class EngineStateGaniTests : IDisposable
         // This fragment is serialized independently from the EngineState shell below,
         // so its reference IDs start over at "1". Real legacy files used one serializer
         // for the whole document. Prefix the fragment IDs to reproduce that uniqueness.
-        foreach (var obj in legacyCycles.DescendantsAndSelf().OfType<JObject>())
+        var legacyContainer = Assert.IsAssignableFrom<JContainer>(legacyCycles);
+        foreach (var obj in legacyContainer.DescendantsAndSelf().OfType<JObject>())
         {
             foreach (var propertyName in new[] { "$id", "$ref" })
             {
