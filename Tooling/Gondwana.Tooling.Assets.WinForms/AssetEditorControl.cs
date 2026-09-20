@@ -12,6 +12,9 @@ namespace Gondwana.Tooling.Assets.WinForms;
 /// </summary>
 public sealed class AssetEditorControl : UserControl
 {
+    public static IReadOnlyList<string> PaneNames { get; } =
+        Array.AsReadOnly(["Assets", "Status"]);
+
     private const string AssetFileFilter = "Asset Files (*.gaf;*.zip)|*.gaf;*.zip|All Files (*.*)|*.*";
 
     private readonly AssetsFile _assetsFile;
@@ -36,6 +39,7 @@ public sealed class AssetEditorControl : UserControl
     private readonly ToolStripButton _renameButton;
     private readonly ToolStripButton _exportButton;
     private readonly ToolStripButton _deleteButton;
+    private EditorDockWorkspace _workspace = null!;
 
     public AssetsFile AssetsFile => _assetsFile;
     public string FilePath => Path.GetFullPath(_assetsFile.FilePath);
@@ -136,11 +140,11 @@ public sealed class AssetEditorControl : UserControl
         _statusLabel = new ToolStripStatusLabel();
         statusStrip.Items.Add(_statusLabel);
 
-        var workspace = new EditorDockWorkspace();
-        Controls.Add(workspace);
-        var dock = workspace.DockPanel;
-        var entries = workspace.AddPane("Assets", _grid, filterTools, fileTools);
-        var status = workspace.AddPane("Status", statusStrip);
+        _workspace = new EditorDockWorkspace();
+        Controls.Add(_workspace);
+        var dock = _workspace.DockPanel;
+        var entries = _workspace.AddPane("Assets", _grid, filterTools, fileTools);
+        var status = _workspace.AddPane("Status", statusStrip);
         entries.Show(dock, DockState.Document);
         status.Show(entries.Pane, DockAlignment.Bottom, 55d / 650);
 
@@ -160,6 +164,15 @@ public sealed class AssetEditorControl : UserControl
         strip.Items.Add(button);
         return button;
     }
+
+    public bool ShowPane(string paneName) =>
+        _workspace.ShowPane(paneName);
+
+    public bool IsPaneVisible(string paneName) =>
+        _workspace.IsPaneVisible(paneName);
+
+    public void ShowAllPanes() =>
+        _workspace.ShowAllPanes();
 
     public void Save()
     {

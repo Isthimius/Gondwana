@@ -15,6 +15,9 @@ namespace Gondwana.Tooling.Tilesheets.WinForms;
 /// </summary>
 public sealed class TilesheetEditorControl : UserControl
 {
+    public static IReadOnlyList<string> PaneNames { get; } =
+        Array.AsReadOnly(["Image", "Definition", "Region", "Frame", "Validation"]);
+
     public TilesheetDocument Document { get; }
     private readonly OverlaySettings _overlaySettings;
     private readonly AssetPackageCatalog _assetPackages;
@@ -32,6 +35,7 @@ public sealed class TilesheetEditorControl : UserControl
     private string? _previewError;
     private bool _refreshing;
     private bool _refreshPending;
+    private EditorDockWorkspace _workspace = null!;
     private TilesheetRegionDefinition? SelectedRegion => _regions.SelectedItem as TilesheetRegionDefinition;
     public Size? ImageSize => _viewport.Image?.Size;
 
@@ -80,14 +84,14 @@ public sealed class TilesheetEditorControl : UserControl
         _column.ValueChanged += (_, _) => SelectFrame();
         _row.ValueChanged += (_, _) => SelectFrame();
         _regions.SelectedIndexChanged += (_, _) => { if (!_refreshing) RefreshView(); };
-        var workspace = new EditorDockWorkspace();
-        Controls.Add(workspace);
-        var dock = workspace.DockPanel;
-        var image = workspace.AddPane("Image", _viewport, BuildPreviewToolbar());
-        var definition = workspace.AddPane("Definition", _definitionProperties);
-        var region = workspace.AddPane("Region", _regionProperties, _regions, regionTools);
-        var frame = workspace.AddPane("Frame", _frameProperties, navigator);
-        var validation = workspace.AddPane("Validation", _validation);
+        _workspace = new EditorDockWorkspace();
+        Controls.Add(_workspace);
+        var dock = _workspace.DockPanel;
+        var image = _workspace.AddPane("Image", _viewport, BuildPreviewToolbar());
+        var definition = _workspace.AddPane("Definition", _definitionProperties);
+        var region = _workspace.AddPane("Region", _regionProperties, _regions, regionTools);
+        var frame = _workspace.AddPane("Frame", _frameProperties, navigator);
+        var validation = _workspace.AddPane("Validation", _validation);
         image.Show(dock, DockState.Document);
         definition.Show(image.Pane, DockAlignment.Right, .36);
         region.Show(definition.Pane, DockAlignment.Bottom, 2d / 3);
@@ -429,6 +433,15 @@ public sealed class TilesheetEditorControl : UserControl
         _validation.Text = string.Join(Environment.NewLine, lines);
         return errors;
     }
+
+    public bool ShowPane(string paneName) =>
+        _workspace.ShowPane(paneName);
+
+    public bool IsPaneVisible(string paneName) =>
+        _workspace.IsPaneVisible(paneName);
+
+    public void ShowAllPanes() =>
+        _workspace.ShowAllPanes();
 
     public bool CommitEdits()
     {
