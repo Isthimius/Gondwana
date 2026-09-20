@@ -70,10 +70,10 @@ public static class AudioDefinitionValidator
                     break;
 
                 case AudioResourceSourceKind.Uri:
-                    if (string.IsNullOrWhiteSpace(resource.FilePath))
-                        errors.Add($"{label}: URI is empty.");
-                    else if (!Uri.TryCreate(resource.FilePath, UriKind.RelativeOrAbsolute, out _))
-                        errors.Add($"{label}: URI is invalid.");
+                    if (string.IsNullOrWhiteSpace(resource.SourceUri))
+                        errors.Add($"{label}: SourceUri is empty.");
+                    else if (!Uri.TryCreate(resource.SourceUri, UriKind.RelativeOrAbsolute, out _))
+                        errors.Add($"{label}: SourceUri is invalid.");
                     break;
             }
         }
