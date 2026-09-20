@@ -30,6 +30,7 @@ public sealed class AnimationEditorControl : UserControl
         int Y);
 
     private readonly List<TilesheetSource> _sources = [];
+    private readonly List<string> _sourceDiagnostics = [];
     private readonly ImageList _sourceFrameImages = new()
     {
         ImageSize = new Size(
@@ -154,6 +155,8 @@ public sealed class AnimationEditorControl : UserControl
 
         Document.Changed += DocumentChanged;
 
+        LoadDefinitionTilesheetSources();
+
         DarkTheme.Apply(this);
         RefreshView();
     }
@@ -180,7 +183,10 @@ public sealed class AnimationEditorControl : UserControl
             RefreshAfterSourceChange();
     }
 
-    private bool AddTilesheetSourceCore(string path)
+    private bool AddTilesheetSourceCore(
+        string path,
+        bool persistReference = true,
+        string? expectedTilesheet = null)
     {
         path = Path.GetFullPath(path);
 
@@ -194,6 +200,17 @@ public sealed class AnimationEditorControl : UserControl
         }
 
         var loaded = TilesheetSource.Load(path);
+
+        if (!string.IsNullOrWhiteSpace(expectedTilesheet) &&
+            !string.Equals(
+                loaded.Definition.Name,
+                expectedTilesheet,
+                StringComparison.Ordinal))
+        {
+            loaded.Dispose();
+            throw new InvalidDataException(
+                $"GANI expects tilesheet '{expectedTilesheet}', but '{path}' defines '{loaded.Definition.Name}'.");
+        }
 
         var duplicateName = _sources.FirstOrDefault(source =>
             string.Equals(
@@ -210,6 +227,14 @@ public sealed class AnimationEditorControl : UserControl
         }
 
         _sources.Add(loaded);
+
+        if (persistReference)
+        {
+            Document.SetLooseTilesheetSource(
+                loaded.Definition.Name,
+                path);
+        }
+
         return true;
     }
 
@@ -220,10 +245,177 @@ public sealed class AnimationEditorControl : UserControl
         _preview.Invalidate();
     }
 
+    private void LoadDefinitionTilesheetSources()
+    {
+        _sourceDiagnostics.Clear();
+
+        var explicitTilesheets = new HashSet<string>(
+            Definition.TilesheetSources
+                .Where(source => !string.IsNullOrWhiteSpace(source.Tilesheet))
+                .Select(source => source.Tilesheet),
+            StringComparer.Ordinal);
+
+        foreach (var sourceReference in Definition.TilesheetSources.ToList())
+        {
+            switch (sourceReference.Kind)
+            {
+                case AnimationTilesheetSourceKind.LooseDefinitionFile:
+                    LoadLooseDefinitionSource(sourceReference);
+                    break;
+
+                case AnimationTilesheetSourceKind.PackedDefinitionFile:
+                    _sourceDiagnostics.Add(
+                        $"INFO: Tilesheet '{sourceReference.Tilesheet}' is recorded as packed GTS entry " +
+                        $"'{sourceReference.AssetEntryName}' in '{sourceReference.AssetsFilePath}'. " +
+                        "Packed GTS authoring sources are preserved but are not previewed by this editor yet.");
+                    break;
+            }
+        }
+
+        foreach (var tilesheet in Definition.Frames
+                     .Select(frame => frame.Tilesheet)
+                     .Where(name => !string.IsNullOrWhiteSpace(name))
+                     .Distinct(StringComparer.Ordinal))
+        {
+            if (FindSource(tilesheet) is not null ||
+                explicitTilesheets.Contains(tilesheet))
+            {
+                continue;
+            }
+
+            TryRecoverLegacyLooseSource(tilesheet);
+        }
+    }
+
+    private void LoadLooseDefinitionSource(
+        AnimationTilesheetSourceDefinition sourceReference)
+    {
+        if (string.IsNullOrWhiteSpace(sourceReference.GtsPath))
+            return;
+
+        try
+        {
+            string path = Document.ResolveReferencePath(
+                sourceReference.GtsPath);
+
+            if (!File.Exists(path))
+            {
+                _sourceDiagnostics.Add(
+                    $"WARNING: Tilesheet '{sourceReference.Tilesheet}' references missing GTS file '{sourceReference.GtsPath}'.");
+                return;
+            }
+
+            AddTilesheetSourceCore(
+                path,
+                persistReference: false,
+                expectedTilesheet: sourceReference.Tilesheet);
+        }
+        catch (Exception ex) when (
+            ex is IOException or
+            InvalidDataException or
+            ArgumentException or
+            UnauthorizedAccessException or
+            InvalidOperationException or
+            NotSupportedException)
+        {
+            _sourceDiagnostics.Add(
+                $"WARNING: Could not load GTS source for tilesheet '{sourceReference.Tilesheet}': {ex.Message}");
+        }
+    }
+
+    private void TryRecoverLegacyLooseSource(string tilesheet)
+    {
+        List<string> matches = [];
+
+        try
+        {
+            foreach (var path in Directory.EnumerateFiles(
+                         Document.BaseDirectory,
+                         "*",
+                         SearchOption.TopDirectoryOnly)
+                     .Where(path =>
+                         Path.GetExtension(path).Equals(
+                             ".gts",
+                             StringComparison.OrdinalIgnoreCase)))
+            {
+                try
+                {
+                    var definition =
+                        TilesheetDefinitionSerializer.Load(path);
+
+                    if (string.Equals(
+                            definition.Name,
+                            tilesheet,
+                            StringComparison.Ordinal))
+                    {
+                        matches.Add(path);
+                    }
+                }
+                catch (Exception ex) when (
+                    ex is IOException or
+                    InvalidDataException or
+                    ArgumentException or
+                    UnauthorizedAccessException or
+                    NotSupportedException)
+                {
+                    // A neighboring unrelated GTS should not prevent opening
+                    // a legacy GANI document.
+                }
+            }
+        }
+        catch (Exception ex) when (
+            ex is IOException or
+            UnauthorizedAccessException)
+        {
+            _sourceDiagnostics.Add(
+                $"WARNING: Could not inspect '{Document.BaseDirectory}' for legacy GTS dependencies: {ex.Message}");
+            return;
+        }
+
+        if (matches.Count == 0)
+            return;
+
+        if (matches.Count > 1)
+        {
+            _sourceDiagnostics.Add(
+                $"WARNING: Legacy GANI references tilesheet '{tilesheet}', but multiple matching GTS files exist beside the GANI. Add the intended source explicitly.");
+            return;
+        }
+
+        try
+        {
+            string path = matches[0];
+            if (AddTilesheetSourceCore(
+                    path,
+                    persistReference: false,
+                    expectedTilesheet: tilesheet))
+            {
+                Document.SetLooseTilesheetSource(
+                    tilesheet,
+                    path);
+
+                _sourceDiagnostics.Add(
+                    $"INFO: Recovered legacy tilesheet source '{tilesheet}' from '{Path.GetFileName(path)}'. Save the GANI to persist this dependency.");
+            }
+        }
+        catch (Exception ex) when (
+            ex is IOException or
+            InvalidDataException or
+            ArgumentException or
+            UnauthorizedAccessException or
+            InvalidOperationException or
+            NotSupportedException)
+        {
+            _sourceDiagnostics.Add(
+                $"WARNING: Could not recover legacy GTS source for tilesheet '{tilesheet}': {ex.Message}");
+        }
+    }
+
     public IReadOnlyList<string> UpdateValidation()
     {
         var errors = Document.Validate().ToList();
         var lines = errors.Select(error => "ERROR: " + error).ToList();
+        lines.AddRange(_sourceDiagnostics);
 
         for (int i = 0; i < Definition.Frames.Count; i++)
         {
@@ -253,7 +445,7 @@ public sealed class AnimationEditorControl : UserControl
             lines.Insert(0, "VALID: GANI structural validation passed.");
 
         lines.Add(
-            "INFO: GTS files are authoring/preview sources only. GANI persists logical tilesheet, region and coordinate references.");
+            "INFO: GANI frame references remain logical at runtime; TilesheetSources records portable authoring locations for GTS dependencies.");
 
         _validation.Text = string.Join(Environment.NewLine, lines.Distinct());
         return errors;
@@ -477,6 +669,7 @@ public sealed class AnimationEditorControl : UserControl
 
         _preview.ClearSourceFrame();
         _sources.Remove(source);
+        Document.RemoveTilesheetSource(source.Definition.Name);
         source.Dispose();
         RefreshSourceTree();
         UpdateValidation();
