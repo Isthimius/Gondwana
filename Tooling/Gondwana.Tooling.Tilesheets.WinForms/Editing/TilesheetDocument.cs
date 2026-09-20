@@ -7,7 +7,7 @@ namespace Gondwana.Tooling.Tilesheets.Editing;
 /// UI-independent editing session. The complete loaded definition remains authoritative;
 /// browsing frames and changing geometry never reconstructs or prunes its metadata.
 /// </summary>
-internal sealed class TilesheetDocument
+public sealed class TilesheetDocument
 {
     public TilesheetDefinition Definition { get; }
     public string? FilePath { get; private set; }
