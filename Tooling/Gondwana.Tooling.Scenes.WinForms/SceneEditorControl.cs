@@ -14,6 +14,18 @@ public sealed class SceneEditorControl : UserControl
 {
     private const int SourceFrameThumbnailSize = 32;
 
+    public static IReadOnlyList<string> PaneNames { get; } =
+        Array.AsReadOnly(
+        [
+            "Scene structure",
+            "Scene preview",
+            "GTS frame sources",
+            "GANI animations",
+            "Properties",
+            "Tile properties",
+            "Validation"
+        ]);
+
     private readonly TreeView _structure = new()
     {
         Dock = DockStyle.Fill,
@@ -72,6 +84,7 @@ public sealed class SceneEditorControl : UserControl
     private readonly List<SceneTilesheetSource> _tilesheetSources = [];
     private readonly List<SceneAnimationSource> _animationSources = [];
     private readonly List<string> _sourceDiagnostics = [];
+    private EditorDockWorkspace _workspace = null!;
 
     private SceneLayerDefinition? _selectedLayer;
     private bool _syncingTileCoordinates;
@@ -259,41 +272,50 @@ public sealed class SceneEditorControl : UserControl
                ValidateChildren();
     }
 
+    public bool ShowPane(string paneName) =>
+        _workspace.ShowPane(paneName);
+
+    public bool IsPaneVisible(string paneName) =>
+        _workspace.IsPaneVisible(paneName);
+
+    public void ShowAllPanes() =>
+        _workspace.ShowAllPanes();
+
     private void BuildLayout()
     {
-        var workspace = new EditorDockWorkspace();
-        Controls.Add(workspace);
+        _workspace = new EditorDockWorkspace();
+        Controls.Add(_workspace);
 
-        var dock = workspace.DockPanel;
-        var structure = workspace.AddPane(
+        var dock = _workspace.DockPanel;
+        var structure = _workspace.AddPane(
             "Scene structure",
             _structure,
             BuildStructureToolbar());
 
-        var preview = workspace.AddPane(
+        var preview = _workspace.AddPane(
             "Scene preview",
             _preview);
 
-        var gts = workspace.AddPane(
+        var gts = _workspace.AddPane(
             "GTS frame sources",
             _sourceTree,
             BuildGtsToolbar());
 
-        var animations = workspace.AddPane(
+        var animations = _workspace.AddPane(
             "GANI animations",
             _animationList,
             BuildAnimationToolbar());
 
-        var properties = workspace.AddPane(
+        var properties = _workspace.AddPane(
             "Properties",
             _properties);
 
-        var tileProperties = workspace.AddPane(
+        var tileProperties = _workspace.AddPane(
             "Tile properties",
             _tileProperties,
             BuildTileToolbar());
 
-        var validation = workspace.AddPane(
+        var validation = _workspace.AddPane(
             "Validation",
             _validation);
 

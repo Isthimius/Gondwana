@@ -53,6 +53,12 @@ Each `SceneEditorControl` owns a nested DockPanelSuite workspace with:
 
 These panes can be split or tabbed only inside their owning scene editor.
 Floating and auto-hide are disabled by the shared `EditorDockWorkspace`.
+
+Closing a pane hides it rather than disposing it. Use **View** to restore any
+individual pane in the active scene document, or choose **Show all scene panes**.
+The same menu restores the outer **Working directory** window. Reopened inner
+panes return to their previous split/tab group for the current document.
+
 Layout persistence is intentionally not implemented; reopening a document uses
 the default layout.
 

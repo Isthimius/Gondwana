@@ -111,6 +111,40 @@ public sealed class SceneEditorTests
                             DockState.Float));
                 });
 
+                Assert.Equal(
+                    panes.Select(pane => pane.Text).Order(),
+                    SceneEditorControl.PaneNames.Order());
+
+                var previewPane = panes.Single(
+                    pane => pane.Text == "Scene preview");
+                var previewPaneBeforeClose = previewPane.Pane;
+
+                previewPane.Activate();
+                previewPane.Pane.CloseActiveContent();
+                Application.DoEvents();
+
+                Assert.True(previewPane.IsHidden);
+                Assert.False(editor.IsPaneVisible("Scene preview"));
+
+                Assert.True(editor.ShowPane("Scene preview"));
+                Application.DoEvents();
+
+                Assert.False(previewPane.IsHidden);
+                Assert.True(editor.IsPaneVisible("Scene preview"));
+                Assert.Same(previewPaneBeforeClose, previewPane.Pane);
+                Assert.False(editor.ShowPane("Not a real pane"));
+
+                var structurePane = panes.Single(
+                    pane => pane.Text == "Scene structure");
+                structurePane.Activate();
+                structurePane.Pane.CloseActiveContent();
+                Application.DoEvents();
+                Assert.True(structurePane.IsHidden);
+
+                editor.ShowAllPanes();
+                Application.DoEvents();
+                Assert.All(panes, pane => Assert.False(pane.IsHidden));
+
                 Assert.Empty(layer.Tiles);
 
                 var tileProperties = Descendants(editor)

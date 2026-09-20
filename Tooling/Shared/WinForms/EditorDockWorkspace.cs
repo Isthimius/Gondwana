@@ -11,7 +11,12 @@ internal sealed class EditorDockWorkspace : UserControl
 {
     private readonly VS2015DarkTheme _theme = new();
     private readonly List<DockContent> _contents = [];
+    private readonly Dictionary<string, DockContent> _contentsByTitle =
+        new(StringComparer.OrdinalIgnoreCase);
+
     internal DockPanel DockPanel { get; }
+    internal IReadOnlyList<string> PaneTitles =>
+        _contents.Select(content => content.Text).ToArray();
 
     internal EditorDockWorkspace()
     {
@@ -41,7 +46,39 @@ internal sealed class EditorDockWorkspace : UserControl
         };
         pane.Controls.AddRange(controls);
         _contents.Add(pane);
+        _contentsByTitle.Add(title, pane);
         return pane;
+    }
+
+    internal bool ShowPane(string title)
+    {
+        if (!_contentsByTitle.TryGetValue(title, out var pane) ||
+            pane.IsDisposed)
+        {
+            return false;
+        }
+
+        // DockPanelSuite remembers the content's VisibleState/Pane when a
+        // HideOnClose pane is hidden. Show() restores that same split/tab group.
+        pane.Show();
+        pane.Activate();
+        return true;
+    }
+
+    internal bool IsPaneVisible(string title) =>
+        _contentsByTitle.TryGetValue(title, out var pane) &&
+        !pane.IsDisposed &&
+        !pane.IsHidden;
+
+    internal void ShowAllPanes()
+    {
+        foreach (var pane in _contents)
+        {
+            if (pane.IsDisposed)
+                continue;
+
+            pane.Show();
+        }
     }
 
     protected override void Dispose(bool disposing)
@@ -53,6 +90,7 @@ internal sealed class EditorDockWorkspace : UserControl
             foreach (var content in _contents)
                 content.Dispose();
             _contents.Clear();
+            _contentsByTitle.Clear();
         }
 
         base.Dispose(disposing);
