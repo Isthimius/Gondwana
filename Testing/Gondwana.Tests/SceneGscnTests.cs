@@ -1,6 +1,7 @@
 using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
+using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Physics.Collisions;
 using Gondwana.Scenes;
@@ -13,6 +14,7 @@ namespace Gondwana.Tests;
 /// <summary>
 /// Verifies the GSCN scene-definition model and runtime parity.
 /// </summary>
+[Collection("Global engine state")]
 public sealed class SceneGscnTests
 {
     [Fact]
@@ -106,6 +108,137 @@ public sealed class SceneGscnTests
         Assert.Equal("EnemySensor", restoredTile.CollisionProfileName);
         Assert.True(restoredTile.CollisionsEnabled);
         Assert.True(restoredTile.EnableAnimator);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void RuntimeScene_RoundTripsGaniAssignmentWithoutEmbeddingCycleGraph(bool startAnimation)
+    {
+        var sheetName = $"GSCN_Animation_{Guid.NewGuid():N}";
+        var animationKey = $"actor.walk.{Guid.NewGuid():N}";
+
+        using var sheet = TilesheetRegistry.Instance.LoadFromBitmap(
+            sheetName,
+            new SKBitmap(32, 16));
+
+        sheet.DefaultRegion.TileSize = new Size(16, 16);
+
+        using var cycle = new Cycle(
+            new FrameSequence(
+                [
+                    sheet.GetFrame(0, 0),
+                    sheet.GetFrame(1, 0)
+                ])
+            {
+                SequenceCycleType = CycleType.Repeating
+            },
+            0.1,
+            animationKey);
+
+        using var original = new Scene();
+        var tile = original.AddLayer(1, 1, 16, 16)[0, 0]!;
+        tile.CurrentFrame = sheet.GetFrame(0, 0);
+        tile.EnableAnimator = true;
+
+        if (startAnimation)
+            tile.TileAnimator.StartAnimation(animationKey);
+        else
+            tile.TileAnimator.SetCurrentCycle(animationKey);
+
+        var definition = SceneDefinitionSerializer.FromScene(original);
+        var tileDefinition = Assert.Single(Assert.Single(definition.Layers).Tiles);
+
+        Assert.True(tileDefinition.EnableAnimator);
+        Assert.Equal(animationKey, tileDefinition.AnimationKey);
+        Assert.Equal(startAnimation, tileDefinition.StartAnimation);
+
+        var json = SceneDefinitionSerializer.ToJson(definition);
+        Assert.Contains($"\"AnimationKey\": \"{animationKey}\"", json);
+        Assert.DoesNotContain("\"CurrentCycle\"", json);
+        Assert.DoesNotContain("\"Sequence\"", json);
+
+        using var restored = SceneDefinitionSerializer.ToScene(
+            SceneDefinitionSerializer.FromJson(json));
+
+        var restoredTile = Assert.Single(restored.SceneLayers)[0, 0]!;
+        Assert.True(restoredTile.EnableAnimator);
+        Assert.NotNull(restoredTile.TileAnimator.CurrentCycle);
+        Assert.Equal(
+            animationKey,
+            restoredTile.TileAnimator.CurrentCycle.CycleKey);
+        Assert.Equal(
+            startAnimation,
+            restoredTile.TileAnimator.IsCycling);
+    }
+
+    [Fact]
+    public void Definition_StartAnimationRequiresAnimationKey()
+    {
+        var definition = new SceneDefinition
+        {
+            Layers =
+            [
+                new SceneLayerDefinition
+                {
+                    Columns = 1,
+                    Rows = 1,
+                    Tiles =
+                    [
+                        new SceneLayerTileDefinition
+                        {
+                            X = 0,
+                            Y = 0,
+                            StartAnimation = true
+                        }
+                    ]
+                }
+            ]
+        };
+
+        var errors = SceneDefinitionValidator.Validate(definition);
+
+        Assert.Contains(
+            errors,
+            error => error.Contains(
+                "StartAnimation requires an AnimationKey",
+                StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Definition_AnimationKeyMustResolveWhenSceneIsMaterialized()
+    {
+        var key = $"missing.animation.{Guid.NewGuid():N}";
+
+        var definition = new SceneDefinition
+        {
+            Layers =
+            [
+                new SceneLayerDefinition
+                {
+                    Columns = 1,
+                    Rows = 1,
+                    Tiles =
+                    [
+                        new SceneLayerTileDefinition
+                        {
+                            X = 0,
+                            Y = 0,
+                            AnimationKey = key
+                        }
+                    ]
+                }
+            ]
+        };
+
+        var exception = Assert.Throws<InvalidDataException>(
+            () => SceneDefinitionSerializer.ToScene(definition));
+
+        Assert.Contains(key, exception.Message, StringComparison.Ordinal);
+        Assert.Contains(
+            "no matching GANI/cycle is registered",
+            exception.Message,
+            StringComparison.Ordinal);
     }
 
     [Fact]

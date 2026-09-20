@@ -16,6 +16,7 @@ and follows the same definition-file approach used by GTS and GSCN.
 
 - [What GANI represents](#what-gani-represents)
 - [Relationship to GTS](#relationship-to-gts)
+- [Relationship to GSCN](#relationship-to-gscn)
 - [Definition model](#definition-model)
 - [Example](#example)
 - [Loading and saving](#loading-and-saving)
@@ -83,7 +84,7 @@ A GANI definition corresponds to one reusable registered `Cycle`.
 
 GANI depends on tilesheet frames.
 
-It does not embed a `Tilesheet` or copy GTS image/region metadata into the animation file. Each animation frame stores a lightweight reference:
+It does not embed a `Tilesheet` or copy GTS image/region metadata into the animation file. Each animation frame stores a lightweight runtime reference:
 
 ```text
 Tilesheet logical name
@@ -105,6 +106,22 @@ For example:
 
 The corresponding tilesheet must be registered before the GANI definition is materialized into a runtime `Cycle`.
 
+For authoring tools, GANI can also record where that logical tilesheet definition came from through `TilesheetSources`. A loose source can point to a relative `.gts` path, while the model also has a packed form for a GTS entry inside a Gondwana assets file:
+
+```json
+"TilesheetSources": [
+  {
+    "Tilesheet": "world",
+    "Kind": "LooseDefinitionFile",
+    "GtsPath": "../tiles/world.gts"
+  }
+]
+```
+
+These source entries are **authoring/dependency metadata**. They help editors reopen the correct GTS definitions, but runtime materialization does not load those files. `AnimationDefinitionSerializer.ToCycle(...)` still resolves frame references through `TilesheetRegistry`.
+
+Relative source paths are interpreted from the containing GANI file.
+
 That gives Gondwana a clear dependency direction:
 
 ```text
@@ -117,6 +134,36 @@ That gives Gondwana a clear dependency direction:
 Changing the source GTS can therefore update the frames available to animations without duplicating tilesheet definitions inside every animation file.
 
 ---
+
+## Relationship to GSCN
+
+GSCN scene tiles can assign a reusable GANI animation by logical key:
+
+```json
+"AnimationKey": "actor.walk",
+"StartAnimation": true
+```
+
+The scene file stores only the key and whether the assignment should begin playing
+when the scene is materialized. It does not copy the GANI frames or serialize the
+runtime `Cycle`/`Animator` graph.
+
+The complete definition dependency direction is therefore:
+
+```text
+.gts
+ |
+ v
+.gani
+ |
+ v
+.gscn
+```
+
+When materializing a GSCN that contains an `AnimationKey`, the corresponding GANI
+cycle must already be registered. EngineState satisfies this when both
+`EngineStateParts.Cycles` and `EngineStateParts.Scenes` are selected because
+cycles are restored before scenes.
 
 ## Definition model
 
@@ -135,8 +182,19 @@ Its persistent fields are:
 | `CycleType` | `Simple`, `Repeating`, or `PingPong` |
 | `HideTileOnCycleEnd` | Runtime cycle behavior flag |
 | `NextCycleKey` | Optional key for the follow-on cycle |
+| `TilesheetSources` | Optional authoring-time locations for logical GTS dependencies |
 | `Frames` | Ordered lightweight GTS frame references |
 | `Source` | Definition provenance |
+
+Each `AnimationTilesheetSourceDefinition` contains:
+
+| Property | Meaning |
+| --- | --- |
+| `Tilesheet` | Logical tilesheet name matched by animation frames |
+| `Kind` | `LooseDefinitionFile` or `PackedDefinitionFile` |
+| `GtsPath` | Loose GTS path, preferably relative to the GANI file |
+| `AssetsFilePath` | Assets-file path for a packed GTS source |
+| `AssetEntryName` | Packed GTS entry name |
 
 Each `AnimationFrameDefinition` contains:
 
@@ -162,6 +220,13 @@ A repeating water animation could be written as:
   "CycleType": "Repeating",
   "HideTileOnCycleEnd": false,
   "NextCycleKey": "world.water",
+  "TilesheetSources": [
+    {
+      "Tilesheet": "world",
+      "Kind": "LooseDefinitionFile",
+      "GtsPath": "../tiles/world.gts"
+    }
+  ],
   "Frames": [
     {
       "Tilesheet": "world",
@@ -262,6 +327,8 @@ Materialization:
 
 A missing tilesheet, missing region, or out-of-range frame coordinate fails with an `InvalidDataException` rather than silently substituting another frame.
 
+`TilesheetSources` is not consulted by runtime materialization. A stale or unavailable authoring path does not replace the normal registry-based runtime dependency model.
+
 ---
 
 ## Next-cycle transitions
@@ -315,6 +382,7 @@ Structural validation includes:
 - non-empty tilesheet and region names
 - non-negative frame coordinates
 - null frame entries
+- duplicate or malformed tilesheet-source entries
 
 Tilesheet existence and actual region bounds are checked during materialization, because those checks require the referenced runtime tilesheets.
 
@@ -423,6 +491,10 @@ Animation
 ```
 
 The editor can validate and save the definition without needing to serialize a live `Animator`.
+
+The WinForms GANI editor persists loose GTS dependencies in `TilesheetSources` and reloads them automatically when a GANI document is reopened. For older GANI files that do not yet contain source metadata, the editor performs a deliberately narrow migration check: it looks only beside the GANI file for a GTS definition whose logical `Name` matches the frame's `Tilesheet`. If exactly one match exists, it is loaded and the document is marked dirty so the recovered dependency is written on the next save. The editor does not recursively search the filesystem.
+
+Saving or **Save As** rebases loose dependency paths relative to the new GANI location when both files are on the same filesystem root.
 
 That same separation makes GANI suitable for both a standalone WinForms animation tool and, later, an embedded Gondwana Studio editor.
 

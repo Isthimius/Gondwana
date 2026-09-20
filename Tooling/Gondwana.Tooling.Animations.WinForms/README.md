@@ -25,11 +25,14 @@ Gondwana Studio host can reuse the same editor surface without depending on
   throttle.
 - **File → Open GANI** opens one or more `.gani` documents.
 - **File → Add GTS source** loads one or more loose `.gts` definitions as authoring
-  sources for the active animation.
+  sources for the active animation and records those dependencies in the GANI definition.
+- Reopening a GANI automatically reloads its recorded loose GTS sources. Legacy GANI
+  files without source metadata can recover exactly one matching sibling GTS by logical
+  tilesheet name and are then marked dirty so the dependency is persisted on save.
 - The left source browser shows tilesheets, regions, rows and frames lazily. Expand
-  a row and double-click a frame (or use **Add frame**) to append its logical
-  reference to the animation.
-- The sequence panel supports removal and Up/Down reordering.
+  a row and single-click a frame to preview it; double-click the frame or its preview
+  image to append it. The **Add** action performs the same append explicitly.
+- The sequence panel provides **Add**, **Remove**, **Up**, and **Down** actions.
 - The property panel edits the GANI key, throttle, cycle type, hide-on-end flag and
   next-cycle key.
 - **Play/Pause**, **Restart**, and **Step** preview the current sequence. Fit, 1x, 2x
@@ -42,7 +45,7 @@ Gondwana Studio host can reuse the same editor surface without depending on
 
 ## GTS dependency model
 
-GANI persists logical references only:
+GANI keeps runtime frame identity logical:
 
 ```text
 Tilesheet name
@@ -50,8 +53,15 @@ Region name
 X/Y frame coordinates
 ```
 
-Loading a GTS into the editor does not embed the GTS or its source image into the
-GANI file.
+It also persists lightweight `TilesheetSources` metadata so tooling can find the
+related GTS again. Loose GTS paths are saved relative to the GANI location whenever
+possible and are rebased by Save As. The source metadata does not embed the GTS or
+its image, and runtime `ToCycle` materialization still resolves frames only through
+`TilesheetRegistry`.
+
+The dependency metadata is also shaped to represent packed GTS entries
+(`AssetsFilePath` + `AssetEntryName`) for future editor support. Packed references
+are preserved today, but this editor currently previews loose GTS sources only.
 
 The editor refuses to load two GTS files with the same logical
 `TilesheetDefinition.Name` into one document because the resulting GANI references

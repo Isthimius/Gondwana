@@ -1,3 +1,4 @@
+using System.Drawing.Drawing2D;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Animations.Editing;
@@ -11,6 +12,8 @@ namespace Gondwana.Tooling.Animations.WinForms;
 /// </summary>
 public sealed class AnimationEditorControl : UserControl
 {
+    private const int SourceFrameThumbnailSize = 32;
+
     private sealed record RegionTag(
         TilesheetSource Source,
         TilesheetRegionDefinition Region);
@@ -27,6 +30,16 @@ public sealed class AnimationEditorControl : UserControl
         int Y);
 
     private readonly List<TilesheetSource> _sources = [];
+    private readonly List<string> _sourceDiagnostics = [];
+    private readonly ImageList _sourceFrameImages = new()
+    {
+        ImageSize = new Size(
+            SourceFrameThumbnailSize,
+            SourceFrameThumbnailSize),
+        ColorDepth = ColorDepth.Depth32Bit,
+        TransparentColor = Color.Transparent
+    };
+
     private readonly TreeView _sourceTree = new()
     {
         Dock = DockStyle.Fill,
@@ -64,6 +77,7 @@ public sealed class AnimationEditorControl : UserControl
     private readonly AnimationPropertyAdapter _propertyAdapter;
     private bool _refreshPending;
     private bool _syncingPreviewSelection;
+    private bool _syncingSourceTreeSelection;
 
     public AnimationDocument Document { get; }
 
@@ -84,25 +98,55 @@ public sealed class AnimationEditorControl : UserControl
         // afterward, but WinForms validates SplitterDistance during construction.
         Size = new Size(1200, 800);
         Dock = DockStyle.Fill;
+
+        _sourceTree.ImageList = _sourceFrameImages;
+        _sourceTree.ImageIndex = -1;
+        _sourceTree.SelectedImageIndex = -1;
+        _sourceTree.ItemHeight = Math.Max(
+            _sourceTree.ItemHeight,
+            SourceFrameThumbnailSize + 4);
+
         BuildLayout();
 
         _properties.SelectedObject = _propertyAdapter;
 
         _sourceTree.BeforeExpand += SourceTreeBeforeExpand;
+        _sourceTree.AfterSelect += SourceTreeAfterSelect;
+        _sourceTree.NodeMouseClick += (_, e) =>
+        {
+            if (e.Button != MouseButtons.Left ||
+                e.Node.Tag is not FrameTag frame)
+            {
+                return;
+            }
+
+            // A click on an already-selected source node does not raise
+            // AfterSelect, so handle the user gesture explicitly as well.
+            ClearAnimationFrameSelection();
+            ShowSourceFrame(frame);
+        };
         _sourceTree.NodeMouseDoubleClick += (_, e) =>
         {
             _sourceTree.SelectedNode = e.Node;
             AddSelectedSourceFrame();
         };
 
+        _preview.DoubleClick += (_, _) =>
+        {
+            if (_preview.IsShowingSourceFrame)
+                AddSelectedSourceFrame();
+        };
+
         _frames.SelectedIndexChanged += (_, _) =>
         {
-            if (!_syncingPreviewSelection &&
-                _frames.SelectedIndices.Count == 1)
-            {
-                _preview.Pause();
-                _playButton.Text = "Play";
-            }
+            if (!_syncingPreviewSelection)
+                ShowSelectedAnimationFrameSource();
+        };
+
+        _frames.ItemActivate += (_, _) =>
+        {
+            if (!_syncingPreviewSelection)
+                ShowSelectedAnimationFrameSource();
         };
 
         _preview.CurrentFrameChanged += (_, _) =>
@@ -123,6 +167,8 @@ public sealed class AnimationEditorControl : UserControl
                 }
             }
         };
+
+        LoadDefinitionTilesheetSources();
 
         Document.Changed += DocumentChanged;
 
@@ -152,7 +198,10 @@ public sealed class AnimationEditorControl : UserControl
             RefreshAfterSourceChange();
     }
 
-    private bool AddTilesheetSourceCore(string path)
+    private bool AddTilesheetSourceCore(
+        string path,
+        bool persistReference = true,
+        string? expectedTilesheet = null)
     {
         path = Path.GetFullPath(path);
 
@@ -166,6 +215,17 @@ public sealed class AnimationEditorControl : UserControl
         }
 
         var loaded = TilesheetSource.Load(path);
+
+        if (!string.IsNullOrWhiteSpace(expectedTilesheet) &&
+            !string.Equals(
+                loaded.Definition.Name,
+                expectedTilesheet,
+                StringComparison.Ordinal))
+        {
+            loaded.Dispose();
+            throw new InvalidDataException(
+                $"GANI expects tilesheet '{expectedTilesheet}', but '{path}' defines '{loaded.Definition.Name}'.");
+        }
 
         var duplicateName = _sources.FirstOrDefault(source =>
             string.Equals(
@@ -182,6 +242,22 @@ public sealed class AnimationEditorControl : UserControl
         }
 
         _sources.Add(loaded);
+
+        if (persistReference)
+        {
+            Document.SetLooseTilesheetSource(
+                loaded.Definition.Name,
+                path);
+
+            string diagnosticKey =
+                $"tilesheet '{loaded.Definition.Name}'";
+
+            _sourceDiagnostics.RemoveAll(message =>
+                message.Contains(
+                    diagnosticKey,
+                    StringComparison.OrdinalIgnoreCase));
+        }
+
         return true;
     }
 
@@ -192,10 +268,178 @@ public sealed class AnimationEditorControl : UserControl
         _preview.Invalidate();
     }
 
+    private void LoadDefinitionTilesheetSources()
+    {
+        _sourceDiagnostics.Clear();
+        Definition.TilesheetSources ??= [];
+
+        var explicitTilesheets = new HashSet<string>(
+            Definition.TilesheetSources
+                .Where(source => !string.IsNullOrWhiteSpace(source.Tilesheet))
+                .Select(source => source.Tilesheet),
+            StringComparer.Ordinal);
+
+        foreach (var sourceReference in Definition.TilesheetSources.ToList())
+        {
+            switch (sourceReference.Kind)
+            {
+                case AnimationTilesheetSourceKind.LooseDefinitionFile:
+                    LoadLooseDefinitionSource(sourceReference);
+                    break;
+
+                case AnimationTilesheetSourceKind.PackedDefinitionFile:
+                    _sourceDiagnostics.Add(
+                        $"INFO: Tilesheet '{sourceReference.Tilesheet}' is recorded as packed GTS entry " +
+                        $"'{sourceReference.AssetEntryName}' in '{sourceReference.AssetsFilePath}'. " +
+                        "Packed GTS authoring sources are preserved but are not previewed by this editor yet.");
+                    break;
+            }
+        }
+
+        foreach (var tilesheet in Definition.Frames
+                     .Select(frame => frame.Tilesheet)
+                     .Where(name => !string.IsNullOrWhiteSpace(name))
+                     .Distinct(StringComparer.Ordinal))
+        {
+            if (FindSource(tilesheet) is not null ||
+                explicitTilesheets.Contains(tilesheet))
+            {
+                continue;
+            }
+
+            TryRecoverLegacyLooseSource(tilesheet);
+        }
+    }
+
+    private void LoadLooseDefinitionSource(
+        AnimationTilesheetSourceDefinition sourceReference)
+    {
+        if (string.IsNullOrWhiteSpace(sourceReference.GtsPath))
+            return;
+
+        try
+        {
+            string path = Document.ResolveReferencePath(
+                sourceReference.GtsPath);
+
+            if (!File.Exists(path))
+            {
+                _sourceDiagnostics.Add(
+                    $"WARNING: Tilesheet '{sourceReference.Tilesheet}' references missing GTS file '{sourceReference.GtsPath}'.");
+                return;
+            }
+
+            AddTilesheetSourceCore(
+                path,
+                persistReference: false,
+                expectedTilesheet: sourceReference.Tilesheet);
+        }
+        catch (Exception ex) when (
+            ex is IOException or
+            InvalidDataException or
+            ArgumentException or
+            UnauthorizedAccessException or
+            InvalidOperationException or
+            NotSupportedException)
+        {
+            _sourceDiagnostics.Add(
+                $"WARNING: Could not load GTS source for tilesheet '{sourceReference.Tilesheet}': {ex.Message}");
+        }
+    }
+
+    private void TryRecoverLegacyLooseSource(string tilesheet)
+    {
+        List<string> matches = [];
+
+        try
+        {
+            foreach (var path in Directory.EnumerateFiles(
+                         Document.BaseDirectory,
+                         "*",
+                         SearchOption.TopDirectoryOnly)
+                     .Where(path =>
+                         Path.GetExtension(path).Equals(
+                             ".gts",
+                             StringComparison.OrdinalIgnoreCase)))
+            {
+                try
+                {
+                    var definition =
+                        TilesheetDefinitionSerializer.Load(path);
+
+                    if (string.Equals(
+                            definition.Name,
+                            tilesheet,
+                            StringComparison.Ordinal))
+                    {
+                        matches.Add(path);
+                    }
+                }
+                catch (Exception ex) when (
+                    ex is IOException or
+                    InvalidDataException or
+                    ArgumentException or
+                    UnauthorizedAccessException or
+                    NotSupportedException)
+                {
+                    // A neighboring unrelated GTS should not prevent opening
+                    // a legacy GANI document.
+                }
+            }
+        }
+        catch (Exception ex) when (
+            ex is IOException or
+            UnauthorizedAccessException)
+        {
+            _sourceDiagnostics.Add(
+                $"WARNING: Could not inspect '{Document.BaseDirectory}' for legacy GTS dependencies: {ex.Message}");
+            return;
+        }
+
+        if (matches.Count == 0)
+            return;
+
+        if (matches.Count > 1)
+        {
+            _sourceDiagnostics.Add(
+                $"WARNING: Legacy GANI references tilesheet '{tilesheet}', but multiple matching GTS files exist beside the GANI. Add the intended source explicitly.");
+            return;
+        }
+
+        try
+        {
+            string path = matches[0];
+            if (AddTilesheetSourceCore(
+                    path,
+                    persistReference: false,
+                    expectedTilesheet: tilesheet))
+            {
+                Document.SetLooseTilesheetSource(
+                    tilesheet,
+                    path);
+
+                _sourceDiagnostics.Add(
+                    $"INFO: Recovered legacy tilesheet source '{tilesheet}' from '{Path.GetFileName(path)}'. Save the GANI to persist this dependency.");
+            }
+        }
+        catch (Exception ex) when (
+            ex is IOException or
+            InvalidDataException or
+            ArgumentException or
+            UnauthorizedAccessException or
+            InvalidOperationException or
+            NotSupportedException)
+        {
+            _sourceDiagnostics.Add(
+                $"WARNING: Could not recover legacy GTS source for tilesheet '{tilesheet}': {ex.Message}");
+        }
+    }
+
     public IReadOnlyList<string> UpdateValidation()
     {
         var errors = Document.Validate().ToList();
         var lines = errors.Select(error => "ERROR: " + error).ToList();
+        lines.AddRange(_sourceDiagnostics);
 
         for (int i = 0; i < Definition.Frames.Count; i++)
         {
@@ -225,7 +469,7 @@ public sealed class AnimationEditorControl : UserControl
             lines.Insert(0, "VALID: GANI structural validation passed.");
 
         lines.Add(
-            "INFO: GTS files are authoring/preview sources only. GANI persists logical tilesheet, region and coordinate references.");
+            "INFO: GANI frame references remain logical at runtime; TilesheetSources records portable authoring locations for GTS dependencies.");
 
         _validation.Text = string.Join(Environment.NewLine, lines.Distinct());
         return errors;
@@ -316,7 +560,6 @@ public sealed class AnimationEditorControl : UserControl
 
         bar.Items.Add("Add GTS…", null, (_, _) => ChooseTilesheetSources());
         bar.Items.Add("Remove", null, (_, _) => RemoveSelectedSource());
-        bar.Items.Add("Add frame", null, (_, _) => AddSelectedSourceFrame());
         return bar;
     }
 
@@ -328,6 +571,7 @@ public sealed class AnimationEditorControl : UserControl
             GripStyle = ToolStripGripStyle.Hidden
         };
 
+        bar.Items.Add("Add", null, (_, _) => AddSelectedSourceFrame());
         bar.Items.Add("Remove", null, (_, _) => RemoveSelectedFrame());
         bar.Items.Add("Up", null, (_, _) => MoveSelectedFrame(-1));
         bar.Items.Add("Down", null, (_, _) => MoveSelectedFrame(1));
@@ -446,7 +690,9 @@ public sealed class AnimationEditorControl : UserControl
         if (node.Tag is not TilesheetSource source)
             return;
 
+        _preview.ClearSourceFrame();
         _sources.Remove(source);
+        Document.RemoveTilesheetSource(source.Definition.Name);
         source.Dispose();
         RefreshSourceTree();
         UpdateValidation();
@@ -561,6 +807,7 @@ public sealed class AnimationEditorControl : UserControl
         try
         {
             _sourceTree.Nodes.Clear();
+            _sourceFrameImages.Images.Clear();
 
             foreach (var source in _sources.OrderBy(
                          source => source.Definition.Name,
@@ -598,6 +845,141 @@ public sealed class AnimationEditorControl : UserControl
         {
             _sourceTree.EndUpdate();
         }
+    }
+
+    private void SourceTreeAfterSelect(
+        object? sender,
+        TreeViewEventArgs e)
+    {
+        if (e.Node.Tag is not FrameTag frame)
+            return;
+
+        if (!_syncingSourceTreeSelection)
+            ClearAnimationFrameSelection();
+
+        ShowSourceFrame(frame);
+    }
+
+    private void ShowSelectedAnimationFrameSource()
+    {
+        if (_frames.SelectedIndices.Count != 1)
+            return;
+
+        var item = _frames.Items[_frames.SelectedIndices[0]];
+        if (item.Tag is not AnimationFrameDefinition frame)
+            return;
+
+        _preview.Pause();
+        _playButton.Text = "Play";
+
+        var sourceNode = FindSourceFrameNode(frame);
+        if (sourceNode?.Tag is not FrameTag sourceFrame)
+        {
+            _sourceTree.SelectedNode = null;
+            _preview.ShowSourceFrame(
+                ResolveFramePreview(frame),
+                $"{frame.Tilesheet}:{frame.RegionName} ({frame.XTile},{frame.YTile})");
+            return;
+        }
+
+        bool selectionChanged =
+            !ReferenceEquals(_sourceTree.SelectedNode, sourceNode);
+
+        _syncingSourceTreeSelection = true;
+        try
+        {
+            _sourceTree.SelectedNode = sourceNode;
+            sourceNode.EnsureVisible();
+        }
+        finally
+        {
+            _syncingSourceTreeSelection = false;
+        }
+
+        // Assigning the already-selected node does not raise AfterSelect.
+        if (!selectionChanged)
+            ShowSourceFrame(sourceFrame);
+    }
+
+    private TreeNode? FindSourceFrameNode(
+        AnimationFrameDefinition frame)
+    {
+        var source = FindSource(frame.Tilesheet);
+        if (source is null)
+            return null;
+
+        var root = _sourceTree.Nodes
+            .Cast<TreeNode>()
+            .FirstOrDefault(node =>
+                ReferenceEquals(node.Tag, source));
+
+        if (root is null)
+            return null;
+
+        var regionNode = root.Nodes
+            .Cast<TreeNode>()
+            .FirstOrDefault(node =>
+                node.Tag is RegionTag tag &&
+                string.Equals(
+                    tag.Region.Name,
+                    frame.RegionName,
+                    StringComparison.OrdinalIgnoreCase));
+
+        if (regionNode?.Tag is not RegionTag regionTag)
+            return null;
+
+        if (regionNode.Nodes.Count == 1 &&
+            regionNode.Nodes[0].Tag is null)
+        {
+            PopulateRows(regionNode, regionTag);
+        }
+
+        regionNode.Expand();
+
+        var rowNode = regionNode.Nodes
+            .Cast<TreeNode>()
+            .FirstOrDefault(node =>
+                node.Tag is RowTag tag &&
+                tag.Y == frame.YTile);
+
+        if (rowNode?.Tag is not RowTag rowTag)
+            return null;
+
+        if (rowNode.Nodes.Count == 1 &&
+            rowNode.Nodes[0].Tag is null)
+        {
+            PopulateFrames(rowNode, rowTag);
+        }
+
+        rowNode.Expand();
+
+        return rowNode.Nodes
+            .Cast<TreeNode>()
+            .FirstOrDefault(node =>
+                node.Tag is FrameTag tag &&
+                tag.X == frame.XTile &&
+                tag.Y == frame.YTile);
+    }
+
+    private void ClearAnimationFrameSelection()
+    {
+        foreach (ListViewItem item in _frames.SelectedItems.Cast<ListViewItem>().ToList())
+            item.Selected = false;
+    }
+
+    private void ShowSourceFrame(FrameTag frame)
+    {
+        _preview.Pause();
+        _playButton.Text = "Play";
+
+        var definition = frame.Source.CreateFrame(
+            frame.Region,
+            frame.X,
+            frame.Y);
+
+        _preview.ShowSourceFrame(
+            ResolveFramePreview(definition),
+            $"{definition.Tilesheet}:{definition.RegionName} ({definition.XTile},{definition.YTile})");
     }
 
     private void SourceTreeBeforeExpand(
@@ -653,7 +1035,7 @@ public sealed class AnimationEditorControl : UserControl
         }
     }
 
-    private static void PopulateFrames(
+    private void PopulateFrames(
         TreeNode node,
         RowTag tag)
     {
@@ -666,16 +1048,86 @@ public sealed class AnimationEditorControl : UserControl
 
         for (int x = 0; x < columnCount; x++)
         {
-            node.Nodes.Add(
-                new TreeNode($"Frame {x},{tag.Y}")
-                {
-                    Tag = new FrameTag(
-                        tag.Source,
-                        tag.Region,
-                        x,
-                        tag.Y)
-                });
+            var frameTag = new FrameTag(
+                tag.Source,
+                tag.Region,
+                x,
+                tag.Y);
+
+            var frameNode = new TreeNode($"Frame {x},{tag.Y}")
+            {
+                Tag = frameTag
+            };
+
+            int imageIndex = AddSourceFrameThumbnail(frameTag);
+            if (imageIndex >= 0)
+            {
+                frameNode.ImageIndex = imageIndex;
+                frameNode.SelectedImageIndex = imageIndex;
+            }
+
+            node.Nodes.Add(frameNode);
         }
+    }
+
+    private int AddSourceFrameThumbnail(FrameTag frame)
+    {
+        if (frame.Source.Image is not { } image)
+            return -1;
+
+        var sourceBounds = TilesheetSource.FrameBounds(
+            frame.Region,
+            frame.X,
+            frame.Y);
+
+        if (sourceBounds.Width <= 0 ||
+            sourceBounds.Height <= 0 ||
+            sourceBounds.X < 0 ||
+            sourceBounds.Y < 0 ||
+            sourceBounds.Right > image.Width ||
+            sourceBounds.Bottom > image.Height)
+        {
+            return -1;
+        }
+
+        var thumbnail = new Bitmap(
+            SourceFrameThumbnailSize,
+            SourceFrameThumbnailSize);
+
+        using (var graphics = Graphics.FromImage(thumbnail))
+        {
+            graphics.Clear(Color.Transparent);
+            graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+            graphics.PixelOffsetMode = PixelOffsetMode.Half;
+            graphics.SmoothingMode = SmoothingMode.None;
+
+            float scale = Math.Min(
+                (float)SourceFrameThumbnailSize / sourceBounds.Width,
+                (float)SourceFrameThumbnailSize / sourceBounds.Height);
+
+            int width = Math.Max(
+                1,
+                (int)Math.Round(sourceBounds.Width * scale));
+            int height = Math.Max(
+                1,
+                (int)Math.Round(sourceBounds.Height * scale));
+
+            var destination = new Rectangle(
+                (SourceFrameThumbnailSize - width) / 2,
+                (SourceFrameThumbnailSize - height) / 2,
+                width,
+                height);
+
+            graphics.DrawImage(
+                image,
+                destination,
+                sourceBounds,
+                GraphicsUnit.Pixel);
+        }
+
+        _sourceFrameImages.Images.Add(thumbnail);
+        thumbnail.Dispose();
+        return _sourceFrameImages.Images.Count - 1;
     }
 
     private FramePreview? ResolveFramePreview(
@@ -717,6 +1169,14 @@ public sealed class AnimationEditorControl : UserControl
 
             if (!IsDisposed)
             {
+                if (!Document.IsDirty)
+                {
+                    _sourceDiagnostics.RemoveAll(message =>
+                        message.StartsWith(
+                            "INFO: Recovered legacy tilesheet source",
+                            StringComparison.Ordinal));
+                }
+
                 _properties.Refresh();
                 RefreshFrameList();
                 _preview.Configure(Definition, ResolveFramePreview);
@@ -743,6 +1203,7 @@ public sealed class AnimationEditorControl : UserControl
                 source.Dispose();
 
             _sources.Clear();
+            _sourceFrameImages.Dispose();
         }
 
         base.Dispose(disposing);

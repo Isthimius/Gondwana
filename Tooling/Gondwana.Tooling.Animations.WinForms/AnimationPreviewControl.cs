@@ -21,9 +21,13 @@ internal sealed class AnimationPreviewControl : Control
     private double _lastAdvanceSeconds;
     private bool _hiddenAtEnd;
     private float? _zoom;
+    private bool _sourcePreviewActive;
+    private FramePreview? _sourcePreview;
+    private string? _sourcePreviewCaption;
 
     public bool IsPlaying => _timer.Enabled;
     public int CurrentFrameIndex => _index;
+    public bool IsShowingSourceFrame => _sourcePreviewActive;
 
     public event EventHandler? CurrentFrameChanged;
 
@@ -50,6 +54,29 @@ internal sealed class AnimationPreviewControl : Control
         Invalidate();
     }
 
+    public void ShowSourceFrame(
+        FramePreview? preview,
+        string caption)
+    {
+        Pause();
+        _sourcePreviewActive = true;
+        _sourcePreview = preview;
+        _sourcePreviewCaption = caption;
+        _hiddenAtEnd = false;
+        Invalidate();
+    }
+
+    public void ClearSourceFrame()
+    {
+        if (!_sourcePreviewActive)
+            return;
+
+        _sourcePreviewActive = false;
+        _sourcePreview = null;
+        _sourcePreviewCaption = null;
+        Invalidate();
+    }
+
     public void TogglePlay()
     {
         if (IsPlaying)
@@ -60,6 +87,7 @@ internal sealed class AnimationPreviewControl : Control
 
     public void Play()
     {
+        ClearSourceFrame();
         if (_definition is null ||
             _definition.Frames.Count == 0 ||
             _definition.ThrottleTime <= 0 ||
@@ -86,6 +114,7 @@ internal sealed class AnimationPreviewControl : Control
 
     public void Restart()
     {
+        ClearSourceFrame();
         _index = 0;
         _direction = 1;
         _hiddenAtEnd = false;
@@ -102,6 +131,7 @@ internal sealed class AnimationPreviewControl : Control
 
     public void Step()
     {
+        ClearSourceFrame();
         Pause();
         Advance();
         Invalidate();
@@ -217,6 +247,25 @@ internal sealed class AnimationPreviewControl : Control
             graphics.FillRectangle(checker, ClientRectangle);
         }
 
+        if (_sourcePreviewActive)
+        {
+            if (_sourcePreview is not { } sourcePreview)
+            {
+                DrawMessage(
+                    graphics,
+                    _sourcePreviewCaption is { Length: > 0 }
+                        ? $"No preview source for {_sourcePreviewCaption}."
+                        : "No preview source for the selected GTS frame.");
+                return;
+            }
+
+            DrawFrame(
+                graphics,
+                sourcePreview,
+                _sourcePreviewCaption ?? "Selected GTS frame");
+            return;
+        }
+
         if (_definition is null ||
             _definition.Frames.Count == 0)
         {
@@ -242,7 +291,19 @@ internal sealed class AnimationPreviewControl : Control
             return;
         }
 
-        var source = preview.Value.SourceBounds;
+        var caption =
+            $"Frame {_index + 1}/{_definition.Frames.Count}  " +
+            $"{frame.Tilesheet}:{frame.RegionName} ({frame.XTile},{frame.YTile})";
+
+        DrawFrame(graphics, preview.Value, caption);
+    }
+
+    private void DrawFrame(
+        Graphics graphics,
+        FramePreview preview,
+        string caption)
+    {
+        var source = preview.SourceBounds;
         if (source.Width <= 0 || source.Height <= 0)
         {
             DrawMessage(graphics, "Selected frame has invalid dimensions.");
@@ -265,14 +326,10 @@ internal sealed class AnimationPreviewControl : Control
         graphics.PixelOffsetMode = PixelOffsetMode.Half;
         graphics.SmoothingMode = SmoothingMode.None;
         graphics.DrawImage(
-            preview.Value.Image,
+            preview.Image,
             destination,
             source,
             GraphicsUnit.Pixel);
-
-        var caption =
-            $"Frame {_index + 1}/{_definition.Frames.Count}  " +
-            $"{frame.Tilesheet}:{frame.RegionName} ({frame.XTile},{frame.YTile})";
 
         TextRenderer.DrawText(
             graphics,

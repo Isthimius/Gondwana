@@ -141,6 +141,15 @@ public static class SceneDefinitionValidator
                     if (frame.XTile < 0 || frame.YTile < 0)
                         errors.Add($"{tileLabel}: frame coordinates cannot be negative.");
                 }
+
+                bool hasAnimationKey =
+                    !string.IsNullOrWhiteSpace(tile.AnimationKey);
+
+                if (tile.AnimationKey is not null && !hasAnimationKey)
+                    errors.Add($"{tileLabel}: AnimationKey cannot be empty.");
+
+                if (tile.StartAnimation && !hasAnimationKey)
+                    errors.Add($"{tileLabel}: StartAnimation requires an AnimationKey.");
             }
 
             layerIndex++;

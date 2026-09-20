@@ -1,5 +1,9 @@
+using System.Drawing;
+using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Sprites;
+using Gondwana.Drawing.Tilesheets;
 using Gondwana.Scenes;
+using SkiaSharp;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -20,12 +24,16 @@ public sealed class EngineStateGscnTests : IDisposable
         Directory.CreateDirectory(_tempDir);
         SpriteManager.Instance._spriteList.Clear();
         Scene.ClearAllScenes();
+        Cycle.ClearAllAnimationCycles();
+        TilesheetRegistry.Instance.Clear();
     }
 
     public void Dispose()
     {
         SpriteManager.Instance._spriteList.Clear();
         Scene.ClearAllScenes();
+        Cycle.ClearAllAnimationCycles();
+        TilesheetRegistry.Instance.Clear();
 
         if (Directory.Exists(_tempDir))
             Directory.Delete(_tempDir, recursive: true);
@@ -125,6 +133,68 @@ public sealed class EngineStateGscnTests : IDisposable
         Assert.True(restoredLayer.WrapHorizontally);
         Assert.True(restoredLayer.ShowGridLines);
         Assert.Same(restored, restoredLayer.Scene);
+    }
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public void LoadFromFile_RestoresGaniAssignmentBeforeGscnMaterialization(
+        bool separateGaniFiles,
+        bool separateGscnFiles)
+    {
+        const string sheetName = "scene-animation-sheet";
+        const string animationKey = "scene.tile.walk";
+
+        var sheet = CreateTilesheet(sheetName);
+        _ = CreateCycle(sheet, animationKey);
+
+        using var original = CreateScene();
+        var tile = Assert.Single(original.SceneLayers)[2, 1]!;
+        tile.CurrentFrame = sheet.GetFrame(0, 0);
+        tile.EnableAnimator = true;
+        tile.TileAnimator.StartAnimation(animationKey);
+
+        var path = Path.Combine(
+            _tempDir,
+            $"animation-{separateGaniFiles}-{separateGscnFiles}.state");
+
+        new EngineState().SaveToFile(
+            path,
+            parts:
+                EngineStateParts.Tilesheets |
+                EngineStateParts.Cycles |
+                EngineStateParts.Scenes,
+            separateGaniFiles: separateGaniFiles,
+            separateGscnFiles: separateGscnFiles);
+
+        var stateJson = File.ReadAllText(path);
+        Assert.Contains(animationKey, stateJson);
+
+        Scene.ClearAllScenes();
+        Cycle.ClearAllAnimationCycles();
+        TilesheetRegistry.Instance.Clear();
+
+        // Cycles normalize their GTS dependency and are restored before Scenes.
+        // Scenes deliberately do not imply Cycles; the caller selects both because
+        // this GSCN contains an animation reference.
+        EngineState.LoadFromFile(
+            path,
+            parts: EngineStateParts.Cycles | EngineStateParts.Scenes);
+
+        var restoredScene = Assert.Single(Scene.GetAllScenes());
+        var restoredTile = Assert.Single(restoredScene.SceneLayers)[2, 1]!;
+
+        Assert.True(restoredTile.EnableAnimator);
+        Assert.NotNull(restoredTile.TileAnimator.CurrentCycle);
+        Assert.Equal(
+            animationKey,
+            restoredTile.TileAnimator.CurrentCycle.CycleKey);
+        Assert.True(restoredTile.TileAnimator.IsCycling);
+        Assert.Equal(
+            sheetName,
+            restoredTile.CurrentFrame.Tilesheet.Name);
     }
 
     [Theory]
@@ -245,6 +315,41 @@ public sealed class EngineStateGscnTests : IDisposable
         var restored = Assert.Single(Scene.GetAllScenes());
         Assert.Equal(sceneId, restored.ID);
         Assert.Equal(layerId, Assert.Single(restored.SceneLayers).ID);
+    }
+
+    private Tilesheet CreateTilesheet(string name)
+    {
+        var imagePath = Path.Combine(_tempDir, $"{name}.png");
+
+        using (var bitmap = new SKBitmap(32, 16))
+        {
+            bitmap.Erase(SKColors.White);
+            using var image = SKImage.FromBitmap(bitmap);
+            using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+            File.WriteAllBytes(imagePath, data.ToArray());
+        }
+
+        var sheet = TilesheetRegistry.Instance.LoadFromImageFile(
+            name,
+            imagePath);
+        sheet.DefaultRegion.TileSize = new Size(16, 16);
+        return sheet;
+    }
+
+    private static Cycle CreateCycle(
+        Tilesheet sheet,
+        string key)
+    {
+        var sequence = new FrameSequence(
+            [
+                sheet.GetFrame(0, 0),
+                sheet.GetFrame(1, 0)
+            ])
+        {
+            SequenceCycleType = CycleType.Repeating
+        };
+
+        return new Cycle(sequence, 0.1, key);
     }
 
     private static Scene CreateScene()

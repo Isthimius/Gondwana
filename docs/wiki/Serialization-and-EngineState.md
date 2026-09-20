@@ -882,6 +882,20 @@ The main EngineState file stores the corresponding relative `GscnPath` values wh
 
 Standalone files are written through `SceneDefinitionSerializer`, not the general EngineState serializer. As a result, external `.gscn` files remain clean definition documents without EngineState-specific `$id`/`$ref` reference metadata.
 
+GSCN tile definitions may also carry an `AnimationKey` that points to a registered
+GANI/cycle definition. EngineState restores `Cycles` before `Scenes`, so a state
+that contains both categories materializes those references deterministically:
+
+```text
+Tilesheets -> Cycles/GANI -> Scenes/GSCN
+```
+
+Saving `Scenes` alone does not automatically include `Cycles`, just as GSCN does
+not embed its GTS dependencies. If a scene depends on GANI definitions that are not
+already registered, include `EngineStateParts.Cycles` when saving/loading that
+content. Loading `Cycles` continues to normalize its own Tilesheets/AssetsFiles
+dependencies.
+
 The restore order remains important: tilesheets are restored before scenes, allowing GSCN frame references to resolve registered tilesheets as the scene is materialized.
 
 ### Sprite scene-layer identity

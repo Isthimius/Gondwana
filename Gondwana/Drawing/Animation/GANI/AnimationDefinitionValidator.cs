@@ -24,6 +24,53 @@ public static class AnimationDefinitionValidator
         if (!Enum.IsDefined(definition.CycleType))
             errors.Add($"Unknown cycle type '{definition.CycleType}'.");
 
+        definition.TilesheetSources ??= [];
+        var sourceNames = new HashSet<string>(StringComparer.Ordinal);
+
+        for (int i = 0; i < definition.TilesheetSources.Count; i++)
+        {
+            var source = definition.TilesheetSources[i];
+            var label = $"Tilesheet source {i}";
+
+            if (source is null)
+            {
+                errors.Add($"{label}: source definition is null.");
+                continue;
+            }
+
+            if (string.IsNullOrWhiteSpace(source.Tilesheet))
+            {
+                errors.Add($"{label}: tilesheet name is empty.");
+            }
+            else if (!sourceNames.Add(source.Tilesheet))
+            {
+                errors.Add(
+                    $"{label}: duplicate source for tilesheet '{source.Tilesheet}'.");
+            }
+
+            if (!Enum.IsDefined(source.Kind))
+            {
+                errors.Add($"{label}: unknown source kind '{source.Kind}'.");
+                continue;
+            }
+
+            switch (source.Kind)
+            {
+                case AnimationTilesheetSourceKind.LooseDefinitionFile:
+                    if (string.IsNullOrWhiteSpace(source.GtsPath))
+                        errors.Add($"{label}: loose GTS source path is empty.");
+                    break;
+
+                case AnimationTilesheetSourceKind.PackedDefinitionFile:
+                    if (string.IsNullOrWhiteSpace(source.AssetsFilePath))
+                        errors.Add($"{label}: assets file path is empty.");
+
+                    if (string.IsNullOrWhiteSpace(source.AssetEntryName))
+                        errors.Add($"{label}: packed GTS entry name is empty.");
+                    break;
+            }
+        }
+
         definition.Frames ??= [];
         if (definition.Frames.Count == 0)
             errors.Add("Animation must contain at least one frame.");

@@ -7,6 +7,7 @@ The format is designed to be usable by both the runtime and scene-editing toolin
 - [The serialization model](#the-serialization-model)
 - [What a GSCN definition stores](#what-a-gscn-definition-stores)
 - [Frames and tilesheets](#frames-and-tilesheets)
+- [Animations and GANI](#animations-and-gani)
 - [Collision settings](#collision-settings)
 - [Loading and saving](#loading-and-saving)
 - [Sparse tile definitions](#sparse-tile-definitions)
@@ -93,6 +94,8 @@ Each `SceneLayerTileDefinition` can store:
 - visibility
 - current frame reference
 - animator enablement
+- optional GANI animation key
+- whether that assigned animation starts when the scene is materialized
 - fog enablement
 - collision adjustment
 - collision type
@@ -118,7 +121,60 @@ A tile frame is represented by a lightweight reference:
 
 The referenced tilesheet must be registered before the scene is materialized.
 
-This is why EngineState restores tilesheets before scenes.
+This is why EngineState restores tilesheets before scenes. When GSCN tiles also
+reference GANI animations, the animation registry must likewise be restored before
+scene materialization. EngineState's restore order is:
+
+```text
+AssetsFiles -> Audio -> Tilesheets -> Cycles/GANI -> Scenes/GSCN -> Sprites
+```
+
+## Animations and GANI
+
+GSCN refers to animations by logical key. It does **not** embed a runtime
+`Cycle`, `Animator`, current frame index, playback direction, timer state, or
+the GANI definition itself.
+
+A scene tile can store:
+
+```json
+"EnableAnimator": true,
+"AnimationKey": "actor.walk",
+"StartAnimation": true
+```
+
+The fields have separate jobs:
+
+| Field | Meaning |
+| --- | --- |
+| `EnableAnimator` | Keep an animator on the tile even if no animation is assigned. |
+| `AnimationKey` | Assign the registered GANI/cycle with this logical key. |
+| `StartAnimation` | Start the assigned animation when the runtime scene is materialized. |
+
+An `AnimationKey` implicitly creates the runtime animator, so a hand-authored
+definition does not need to set `EnableAnimator` merely to assign an animation.
+`EnableAnimator` remains useful for the existing case where a tile should have an
+animator but no initial cycle.
+
+`StartAnimation: true` requires an `AnimationKey`. The structural validator
+checks that relationship, but it does not consult the runtime cycle registry.
+Actual key resolution happens during scene materialization.
+
+The referenced animation must therefore already be registered:
+
+```text
+.gts
+  |
+  v
+.gani
+  |
+  v
+.gscn
+```
+
+If the key is not registered, materialization fails with an
+`InvalidDataException` instead of embedding or reconstructing an animation from
+the scene file.
 
 ## Collision settings
 
@@ -254,6 +310,13 @@ External files are written through `SceneDefinitionSerializer`, so they remain c
 
 `separateGscnFiles` is independent of `separateGtsFiles`; tilesheet and scene definitions can each be inline or external.
 
+When a saved GSCN contains `AnimationKey` values, save the corresponding
+`EngineStateParts.Cycles` data as well (inline GANI or separate `.gani` files).
+On load, select both `Cycles` and `Scenes` unless the required animations are
+already registered. Scenes intentionally do not auto-select every external
+dependency; this matches the existing GSCN/GTS behavior for independently managed
+content.
+
 Sprites remain a separate EngineState category. A serialized sprite stores `SceneId` and `SceneLayerId`; after scenes are restored, EngineState reconnects the sprite to the canonical materialized layer.
 
 Older EngineState files that stored raw Scene/SceneLayer graphs remain readable.
@@ -277,6 +340,8 @@ Validation checks include:
 - invalid collision values
 - missing frame tilesheet/region information
 - invalid frame coordinates
+- empty animation keys
+- `StartAnimation` without an `AnimationKey`
 
 This makes the definition model suitable for incoming scene tooling: editors can inspect and validate GSCN data before loading runtime rendering or collision infrastructure.
 
@@ -285,7 +350,9 @@ This makes the definition model suitable for incoming scene tooling: editors can
 1. GSCN is the portable definition format for Gondwana scenes.
 2. It represents the persistent Scene → SceneLayer → SceneLayerTile hierarchy without ownership back-references.
 3. Frames reference registered tilesheets by logical name, region, and coordinates.
-4. `CollisionType` is authoritative; `CollisionsEnabled` is derived.
-5. `*ByFrame` flags allow a scene tile to follow GTS frame collision metadata.
-6. EngineState can embed GSCN definitions or reference separate `.gscn` files.
-7. The same definition model is intended to support runtime loading and scene UI tooling.
+4. Animations reference registered GANI/cycle definitions by logical `AnimationKey`.
+5. Assignment and automatic start are separate; GSCN does not embed animator runtime state.
+6. `CollisionType` is authoritative; `CollisionsEnabled` is derived.
+7. `*ByFrame` flags allow a scene tile to follow GTS frame collision metadata.
+8. EngineState can embed GSCN definitions or reference separate `.gscn` files.
+9. The same definition model is intended to support runtime loading and scene UI tooling.

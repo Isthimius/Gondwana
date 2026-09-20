@@ -140,6 +140,111 @@ public sealed class AnimationGaniTests : IDisposable
     }
 
     [Fact]
+    public void TilesheetSources_RoundTripAsAuthoringMetadataWithoutChangingRuntimeResolution()
+    {
+        var sheet = CreateTilesheet();
+
+        var definition = new AnimationDefinition
+        {
+            Key = "actor.walk",
+            ThrottleTime = 0.1,
+            CycleType = CycleType.Repeating,
+            TilesheetSources =
+            [
+                AnimationTilesheetSourceDefinition.Loose(
+                    sheet.Name,
+                    "tilesheets/actor.gts"),
+                AnimationTilesheetSourceDefinition.Packed(
+                    "unused-packed-sheet",
+                    "content.gaf",
+                    "tilesheets/unused.gts")
+            ],
+            Frames =
+            [
+                new AnimationFrameDefinition
+                {
+                    Tilesheet = sheet.Name,
+                    RegionName = TilesheetRegion.DefaultRegionName,
+                    XTile = 0,
+                    YTile = 0
+                }
+            ]
+        };
+
+        string json = AnimationDefinitionSerializer.ToJson(definition);
+        var restored = AnimationDefinitionSerializer.FromJson(json);
+
+        Assert.Equal(2, restored.TilesheetSources.Count);
+
+        var loose = restored.TilesheetSources[0];
+        Assert.Equal(sheet.Name, loose.Tilesheet);
+        Assert.Equal(
+            AnimationTilesheetSourceKind.LooseDefinitionFile,
+            loose.Kind);
+        Assert.Equal("tilesheets/actor.gts", loose.GtsPath);
+
+        var packed = restored.TilesheetSources[1];
+        Assert.Equal(
+            AnimationTilesheetSourceKind.PackedDefinitionFile,
+            packed.Kind);
+        Assert.Equal("content.gaf", packed.AssetsFilePath);
+        Assert.Equal("tilesheets/unused.gts", packed.AssetEntryName);
+
+        using var cycle = AnimationDefinitionSerializer.ToCycle(restored);
+        Assert.Single(cycle.Sequence.FrameList);
+        Assert.Same(sheet, cycle.Sequence[0].Tilesheet);
+    }
+
+    [Fact]
+    public void Validator_ReportsMalformedTilesheetSourceMetadata()
+    {
+        var definition = new AnimationDefinition
+        {
+            Key = "actor.walk",
+            TilesheetSources =
+            [
+                new AnimationTilesheetSourceDefinition
+                {
+                    Tilesheet = "actors",
+                    Kind = AnimationTilesheetSourceKind.LooseDefinitionFile
+                },
+                new AnimationTilesheetSourceDefinition
+                {
+                    Tilesheet = "actors",
+                    Kind = AnimationTilesheetSourceKind.PackedDefinitionFile,
+                    AssetsFilePath = "content.gaf"
+                }
+            ],
+            Frames =
+            [
+                new AnimationFrameDefinition
+                {
+                    Tilesheet = "actors",
+                    RegionName = "default"
+                }
+            ]
+        };
+
+        var errors = AnimationDefinitionValidator.Validate(definition);
+
+        Assert.Contains(
+            errors,
+            error => error.Contains(
+                "loose GTS source path is empty",
+                StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(
+            errors,
+            error => error.Contains(
+                "duplicate source",
+                StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(
+            errors,
+            error => error.Contains(
+                "packed GTS entry name is empty",
+                StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
     public void Validator_ReportsMissingKeyFramesAndInvalidCoordinates()
     {
         var definition = new AnimationDefinition
