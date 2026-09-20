@@ -213,8 +213,34 @@ public sealed class AnimationEditorTests
                 Assert.Same(rowNode.Nodes[1], tree.SelectedNode);
                 Assert.True(preview.IsShowingSourceFrame);
 
-                // Activating (double-clicking) an already selected animation row
+                // Clicking the already-selected source node is still a source-side
+                // selection gesture and must clear the animation-row selection.
+                typeof(TreeView)
+                    .GetMethod(
+                        "OnNodeMouseClick",
+                        PrivateInstance)!
+                    .Invoke(
+                        tree,
+                        [
+                            new TreeNodeMouseClickEventArgs(
+                                rowNode.Nodes[1],
+                                MouseButtons.Left,
+                                1,
+                                0,
+                                0)
+                        ]);
+
+                Application.DoEvents();
+
+                Assert.Empty(frames.SelectedIndices.Cast<int>());
+                Assert.Same(rowNode.Nodes[1], tree.SelectedNode);
+                Assert.True(preview.IsShowingSourceFrame);
+
+                // Re-select the animation row, then activating (double-clicking) it
                 // must reassert the matching source node and preview.
+                frames.Items[0].Selected = true;
+                Application.DoEvents();
+
                 preview.ClearSourceFrame();
                 Assert.False(preview.IsShowingSourceFrame);
 
