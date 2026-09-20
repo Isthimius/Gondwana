@@ -1,7 +1,7 @@
-using Gondwana.Tooling.WinForms;
-using WeifenLuo.WinFormsUI.Docking;
 using System.ComponentModel;
 using Gondwana.Assets;
+using Gondwana.Tooling.WinForms;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Assets.WinForms;
 

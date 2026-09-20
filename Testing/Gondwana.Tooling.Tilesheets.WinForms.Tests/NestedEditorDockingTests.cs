@@ -12,6 +12,7 @@ namespace Gondwana.Tooling.Tilesheets.WinForms.Tests;
 
 // Run all three public controls through the same embedding contract in the
 // existing Windows CI suite. Production editors do not reference one another.
+[Collection("WinForms interaction")]
 public sealed class NestedEditorDockingTests
 {
     [Theory]
@@ -95,6 +96,11 @@ public sealed class NestedEditorDockingTests
                 last.Show(first.Pane, DockAlignment.Bottom, .3);
                 Assert.NotSame(first.Pane, last.Pane);
                 Assert.All(panes, pane => Assert.Same(inner, pane.DockPanel));
+                Assert.Throws<ArgumentException>(() => last.DockHandler.DockTo(outer, DockStyle.Right));
+                Assert.Throws<ArgumentException>(() => last.DockHandler.DockTo(InnerDock(siblingEditor), DockStyle.Right));
+                last.Activate();
+                Application.DoEvents();
+                Assert.Same(document, outer.ActiveDocument);
                 // Follow the caption/tab close button path, which honors HideOnClose.
                 last.Pane.CloseActiveContent();
                 Assert.True(last.IsHidden);
@@ -116,6 +122,59 @@ public sealed class NestedEditorDockingTests
                 animation.MarkChanged();
                 Application.DoEvents();
             }
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    });
+
+    [Fact]
+    public void AssetFiltersSelectionAndSaveWorkAfterRearrangingPanes() => RunSta(() =>
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "GondwanaDocking-" + Guid.NewGuid());
+        Directory.CreateDirectory(directory);
+        try
+        {
+            string path = Path.Combine(directory, "test.gaf");
+            using (var assets = AssetsFile.LoadOrCreate(path))
+            {
+                assets.Add(AssetTypes.Misc, "notes", new MemoryStream([1, 2, 3]));
+                assets.Add(AssetTypes.Image, "sprite", new MemoryStream([4, 5]));
+                using var host = new Form { Size = new Size(1100, 750), Opacity = 0, ShowInTaskbar = false };
+                using var editor = new AssetEditorControl(assets);
+                host.Controls.Add(editor);
+                host.Show();
+                Application.DoEvents();
+                var grid = Assert.Single(Descendants(editor).OfType<DataGridView>());
+                var items = Descendants(editor).OfType<ToolStrip>().SelectMany(strip => strip.Items.Cast<ToolStripItem>()).ToArray();
+                var type = Assert.Single(items.OfType<ToolStripComboBox>());
+                var search = Assert.Single(items.OfType<ToolStripTextBox>());
+                Assert.Equal(2, grid.Rows.Count);
+                var dock = InnerDock(editor);
+                var status = dock.Contents.Cast<DockContent>().Single(pane => pane.Text == "Status");
+                status.Show(dock, DockState.DockRight);
+                type.SelectedItem = AssetTypes.Misc;
+                Assert.Single(grid.Rows.Cast<DataGridViewRow>());
+                Assert.Equal("notes", grid.Rows[0].Cells[1].Value);
+                type.SelectedIndex = 0;
+                search.Text = "sprite";
+                Assert.Single(grid.Rows.Cast<DataGridViewRow>());
+                grid.Rows[0].Selected = true;
+                Assert.True(items.Single(item => item.Text == "Replace").Enabled);
+                search.Text = "missing";
+                Assert.Empty(grid.Rows.Cast<DataGridViewRow>());
+                Assert.False(items.Single(item => item.Text == "Replace").Enabled);
+                search.Text = "";
+                int changed = 0;
+                editor.WorkspaceChanged = () => changed++;
+                items.Single(item => item.Text == "Save").PerformClick();
+                Assert.Equal(1, changed);
+                Assert.Contains("Saved:", Assert.Single(items.OfType<ToolStripStatusLabel>()).Text);
+            }
+            using var reopened = AssetsFile.LoadOrCreate(path);
+            using var reopenedEditor = new AssetEditorControl(reopened);
+            Assert.Equal(2, Assert.Single(Descendants(reopenedEditor).OfType<DataGridView>()).Rows.Count);
         }
         finally
         {

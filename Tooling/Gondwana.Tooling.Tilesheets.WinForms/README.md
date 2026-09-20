@@ -150,3 +150,28 @@ dotnet test Testing/Gondwana.Tooling.Tilesheets.WinForms.Tests -c Release
 These tests open all five Zelda sample definitions, click frames across their regions,
 and exercise actual PropertyGrid textbox commits, focus changes and dropdown choices
 for both existing GTS documents and definitions created from images.
+
+## Editor-local docking
+
+TilesheetEditorControl remains a reusable WinForms UserControl. Each instance owns an
+inner DockPanelSuite surface with these panes: Image, Definition, Region, Frame, and Validation.
+The standalone application still hosts the entire editor as **one outer document**;
+the working-directory browser and other documents belong to the outer DockPanel.
+An embedding host does not need to create or manage the internal panes.
+
+The default layout follows the previous editor arrangement. Panes can be docked,
+tabbed, and split inside their own editor; floating is disabled for inner panes.
+Closing a pane using its close button hides it without closing the document.
+Close and reopen the document to recover the default panes and arrangement.
+Layouts reset to their defaults when documents are opened. Layout persistence is
+intentionally not implemented: no layout XML, settings, or registry state is saved.
+
+The small helper in Tooling/Shared/WinForms/EditorDockWorkspace.cs is source-linked
+by the three tooling projects, so they do not depend on one another. It owns the
+inner dock contents (including hidden panes) and theme, and disposes them with the
+editor. Existing editor-specific model, image, preview, and event cleanup remains
+in each editor. Hosts should dispose the whole editor when closing its document.
+
+Nested docking, ownership, hide/dispose/reopen, and GAF filter/save coverage runs
+in Testing/Gondwana.Tooling.Tilesheets.WinForms.Tests as part of the existing
+Windows CI job; GANI's existing interactions remain in its animation test project.

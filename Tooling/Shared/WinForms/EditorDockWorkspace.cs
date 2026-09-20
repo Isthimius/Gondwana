@@ -32,6 +32,8 @@ internal sealed class EditorDockWorkspace : UserControl
         {
             Text = title,
             HideOnClose = true,
+            // DockPanelSuite scopes drag targets to the source DockPanel.
+            // Omitting Float also prevents caption double-click/drag floating.
             DockAreas = DockAreas.Document | DockAreas.DockLeft | DockAreas.DockRight |
                 DockAreas.DockTop | DockAreas.DockBottom
         };
