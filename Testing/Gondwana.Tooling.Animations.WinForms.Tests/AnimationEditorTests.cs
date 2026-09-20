@@ -137,6 +137,9 @@ public sealed class AnimationEditorTests
                 var preview = Field<AnimationPreviewControl>(
                     editor,
                     "_preview");
+                var frames = Field<ListView>(
+                    editor,
+                    "_frames");
 
                 tree.SelectedNode = rowNode.Nodes[1];
                 Application.DoEvents();
@@ -165,10 +168,16 @@ public sealed class AnimationEditorTests
                 Assert.Equal("walk", firstFrame.RegionName);
                 Assert.Equal(1, firstFrame.XTile);
                 Assert.Equal(0, firstFrame.YTile);
+                Assert.Equal(
+                    0,
+                    Assert.Single(frames.SelectedIndices.Cast<int>()));
+                Assert.Same(rowNode.Nodes[1], tree.SelectedNode);
+                Assert.True(preview.IsShowingSourceFrame);
 
                 tree.SelectedNode = rowNode.Nodes[0];
                 Application.DoEvents();
 
+                Assert.Empty(frames.SelectedIndices.Cast<int>());
                 Assert.True(preview.IsShowingSourceFrame);
 
                 typeof(Control)
@@ -186,6 +195,39 @@ public sealed class AnimationEditorTests
                 Assert.Equal(0, secondFrame.XTile);
                 Assert.Equal(0, secondFrame.YTile);
                 Assert.True(document.IsDirty);
+                Assert.Equal(
+                    1,
+                    Assert.Single(frames.SelectedIndices.Cast<int>()));
+                Assert.Same(rowNode.Nodes[0], tree.SelectedNode);
+                Assert.True(preview.IsShowingSourceFrame);
+
+                // A single click/selection in Animation frames should drive the
+                // corresponding GTS source node and source-frame preview.
+                frames.Items[1].Selected = false;
+                frames.Items[0].Selected = true;
+                Application.DoEvents();
+
+                Assert.Equal(
+                    0,
+                    Assert.Single(frames.SelectedIndices.Cast<int>()));
+                Assert.Same(rowNode.Nodes[1], tree.SelectedNode);
+                Assert.True(preview.IsShowingSourceFrame);
+
+                // Activating (double-clicking) an already selected animation row
+                // must reassert the matching source node and preview.
+                preview.ClearSourceFrame();
+                Assert.False(preview.IsShowingSourceFrame);
+
+                typeof(ListView)
+                    .GetMethod(
+                        "OnItemActivate",
+                        PrivateInstance)!
+                    .Invoke(frames, [EventArgs.Empty]);
+
+                Application.DoEvents();
+
+                Assert.Same(rowNode.Nodes[1], tree.SelectedNode);
+                Assert.True(preview.IsShowingSourceFrame);
 
                 var sourceToolbar = Descendants<ToolStrip>(editor)
                     .Single(bar => bar.Items
