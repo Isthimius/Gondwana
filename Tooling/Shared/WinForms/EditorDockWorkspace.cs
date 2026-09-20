@@ -20,7 +20,8 @@ internal sealed class EditorDockWorkspace : UserControl
         {
             Dock = DockStyle.Fill,
             Theme = _theme,
-            DocumentStyle = DocumentStyle.DockingWindow
+            DocumentStyle = DocumentStyle.DockingWindow,
+            DocumentTabStripLocation = DocumentTabStripLocation.Top
         };
         Controls.Add(DockPanel);
     }
@@ -32,10 +33,11 @@ internal sealed class EditorDockWorkspace : UserControl
         {
             Text = title,
             HideOnClose = true,
-            // DockPanelSuite scopes drag targets to the source DockPanel.
-            // Omitting Float also prevents caption double-click/drag floating.
-            DockAreas = DockAreas.Document | DockAreas.DockLeft | DockAreas.DockRight |
-                DockAreas.DockTop | DockAreas.DockBottom
+            // Use document-style split/tab groups throughout the inner workspace.
+            // Tool-window states move tabs to the bottom and make a fill-drop
+            // look like it replaced the original pane. Document-only contents
+            // keep top tabs consistently, and cannot float or auto-hide.
+            DockAreas = DockAreas.Document
         };
         pane.Controls.AddRange(controls);
         _contents.Add(pane);

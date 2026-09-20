@@ -492,14 +492,13 @@ public sealed class AnimationEditorControl : UserControl
         var workspace = new EditorDockWorkspace();
         Controls.Add(workspace);
         var dock = workspace.DockPanel;
-        dock.DockLeftPortion = 320d / 1200;
         var sources = workspace.AddPane("GTS frame sources", _sourceTree, BuildSourceToolbar());
         var preview = workspace.AddPane("Preview", _preview, BuildPreviewToolbar());
         var frames = workspace.AddPane("Animation frames", _frames, BuildSequenceToolbar());
         var properties = workspace.AddPane("Animation properties", _properties);
         var validation = workspace.AddPane("Validation", _validation);
         preview.Show(dock, DockState.Document);
-        sources.Show(dock, DockState.DockLeft);
+        sources.Show(preview.Pane, DockAlignment.Left, 320d / 1200);
         frames.Show(preview.Pane, DockAlignment.Bottom, 410d / 800);
         properties.Show(frames.Pane, DockAlignment.Right, 320d / 880);
         validation.Show(properties.Pane, DockAlignment.Bottom, 180d / 410);

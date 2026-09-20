@@ -89,6 +89,29 @@ public sealed class NestedEditorDockingTests
                 AssertDefaultPlacement(kind, panes);
 
                 var children = panes.SelectMany(pane => Descendants(pane)).ToArray();
+                // Exercise the same fill-drop path as dragging onto each pane,
+                // including GANI sources, GTS inspectors, and GAF status.
+                foreach (var target in panes.Reverse())
+                {
+                    var source = panes.First(pane => pane != target);
+                    source.DockHandler.DockTo(target.Pane, DockStyle.Fill, -1);
+                    Application.DoEvents();
+                    Assert.Same(target.Pane, source.Pane);
+                    Assert.Equal(2, target.Pane.DisplayingContents.Count);
+                    Assert.False(target.IsHidden);
+                    Assert.False(source.IsHidden);
+                    Assert.Equal(DockPane.AppearanceStyle.Document, target.Pane.Appearance);
+                    var strip = Assert.Single(target.Pane.Controls.OfType<DockPaneStripBase>());
+                    Assert.True(strip.Visible && strip.Height > 0);
+                    Assert.True(strip.Bottom <= source.Top, "Merged panes must expose their tabs above the content.");
+                    target.Activate();
+                    Assert.Same(target, target.Pane.ActiveContent);
+                    Assert.True(target.Visible);
+                    source.Activate();
+                    Assert.Same(source, source.Pane.ActiveContent);
+                    Assert.True(source.Visible);
+                    source.Show(target.Pane, DockAlignment.Bottom, .3);
+                }
                 var first = panes[0];
                 var last = panes[^1];
                 last.Show(first.Pane, first);
@@ -153,7 +176,8 @@ public sealed class NestedEditorDockingTests
                 Assert.Equal(2, grid.Rows.Count);
                 var dock = InnerDock(editor);
                 var status = dock.Contents.Cast<DockContent>().Single(pane => pane.Text == "Status");
-                status.Show(dock, DockState.DockRight);
+                var entries = dock.Contents.Cast<DockContent>().Single(pane => pane.Text == "Assets");
+                status.Show(entries.Pane, DockAlignment.Right, .25);
                 type.SelectedItem = AssetTypes.Misc;
                 Assert.Single(grid.Rows.Cast<DataGridViewRow>());
                 Assert.Equal("notes", grid.Rows[0].Cells[1].Value);

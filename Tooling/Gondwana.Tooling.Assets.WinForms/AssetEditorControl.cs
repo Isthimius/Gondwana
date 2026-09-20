@@ -139,11 +139,10 @@ public sealed class AssetEditorControl : UserControl
         var workspace = new EditorDockWorkspace();
         Controls.Add(workspace);
         var dock = workspace.DockPanel;
-        dock.DockBottomPortion = 55;
         var entries = workspace.AddPane("Assets", _grid, filterTools, fileTools);
         var status = workspace.AddPane("Status", statusStrip);
         entries.Show(dock, DockState.Document);
-        status.Show(dock, DockState.DockBottom);
+        status.Show(entries.Pane, DockAlignment.Bottom, 55d / 650);
 
         DarkTheme.Apply(this);
         _typeComboBox.BackColor = DarkTheme.Surface;

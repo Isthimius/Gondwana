@@ -160,7 +160,9 @@ the working-directory browser and other documents belong to the outer DockPanel.
 An embedding host does not need to create or manage the internal panes.
 
 The default layout follows the previous editor arrangement. Panes can be docked,
-tabbed, and split inside their own editor; floating is disabled for inner panes.
+tabbed, and split inside their own editor. All inner panes use document-style
+groups with tabs at the top, including panes initially placed at the sides or
+bottom. Floating and auto-hide are disabled for inner panes.
 Closing a pane using its close button hides it without closing the document.
 Close and reopen the document to recover the default panes and arrangement.
 Layouts reset to their defaults when documents are opened. Layout persistence is

@@ -83,14 +83,13 @@ public sealed class TilesheetEditorControl : UserControl
         var workspace = new EditorDockWorkspace();
         Controls.Add(workspace);
         var dock = workspace.DockPanel;
-        dock.DockRightPortion = .36;
         var image = workspace.AddPane("Image", _viewport, BuildPreviewToolbar());
         var definition = workspace.AddPane("Definition", _definitionProperties);
         var region = workspace.AddPane("Region", _regionProperties, _regions, regionTools);
         var frame = workspace.AddPane("Frame", _frameProperties, navigator);
         var validation = workspace.AddPane("Validation", _validation);
         image.Show(dock, DockState.Document);
-        definition.Show(dock, DockState.DockRight);
+        definition.Show(image.Pane, DockAlignment.Right, .36);
         region.Show(definition.Pane, DockAlignment.Bottom, 2d / 3);
         frame.Show(region.Pane, DockAlignment.Bottom, .5);
         validation.Show(image.Pane, DockAlignment.Bottom, .24);
