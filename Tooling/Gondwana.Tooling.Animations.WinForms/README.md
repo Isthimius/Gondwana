@@ -110,7 +110,7 @@ persistence is intentionally not implemented: no layout XML, settings, or regist
 state is saved.
 
 The small helper in Tooling/Shared/WinForms/EditorDockWorkspace.cs is source-linked
-by the three tooling projects, so they do not depend on one another. It owns the
+by the standalone WinForms tooling projects, so they do not depend on one another. It owns the
 inner dock contents (including hidden panes) and theme, and disposes them with the
 editor. Existing editor-specific model, image, preview, and event cleanup remains
 in each editor. Hosts should dispose the whole editor when closing its document.
