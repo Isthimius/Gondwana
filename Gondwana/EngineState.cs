@@ -792,7 +792,9 @@ public sealed class EngineState
             AudioDefinitionSerializer.LoadIntoManager(
                 definition,
                 overwriteExisting,
-                baseDirectory);
+                string.IsNullOrWhiteSpace(audio.GaudPath)
+                    ? baseDirectory
+                    : null);
             return;
         }
 
