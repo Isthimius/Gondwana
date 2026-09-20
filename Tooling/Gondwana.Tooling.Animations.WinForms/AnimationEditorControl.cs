@@ -123,11 +123,16 @@ public sealed class AnimationEditorControl : UserControl
     {
         bool changed = false;
 
-        foreach (var path in paths)
-            changed |= AddTilesheetSourceCore(path);
-
-        if (changed)
-            RefreshAfterSourceChange();
+        try
+        {
+            foreach (var path in paths)
+                changed |= AddTilesheetSourceCore(path);
+        }
+        finally
+        {
+            if (changed)
+                RefreshAfterSourceChange();
+        }
     }
 
     public void AddTilesheetSource(string path)
