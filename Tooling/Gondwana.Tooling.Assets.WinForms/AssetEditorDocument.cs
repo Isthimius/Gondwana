@@ -41,6 +41,9 @@ internal sealed class AssetEditorDocument : DockContent
     public void Save() => Editor.Save();
     public void SaveAs() => Editor.SaveAs();
     public void RefreshEntries() => Editor.RefreshEntries();
+    public bool ShowPane(string paneName) => Editor.ShowPane(paneName);
+    public bool IsPaneVisible(string paneName) => Editor.IsPaneVisible(paneName);
+    public void ShowAllPanes() => Editor.ShowAllPanes();
 
     protected override void OnFormClosed(FormClosedEventArgs e)
     {

@@ -10,6 +10,9 @@ namespace Gondwana.Tooling.Audio.WinForms;
 /// </summary>
 public sealed class AudioEditorControl : UserControl
 {
+    public static IReadOnlyList<string> PaneNames { get; } =
+        Array.AsReadOnly(["Audio resources", "Properties", "Validation"]);
+
     private readonly ListView _resources = new()
     {
         Dock = DockStyle.Fill,
@@ -25,6 +28,8 @@ public sealed class AudioEditorControl : UserControl
         ToolbarVisible = false,
         HelpVisible = true
     };
+
+    private EditorDockWorkspace _workspace = null!;
 
     private readonly TextBox _validation = new()
     {
@@ -54,12 +59,12 @@ public sealed class AudioEditorControl : UserControl
             UpdateValidation();
         };
 
-        var workspace = new EditorDockWorkspace();
-        Controls.Add(workspace);
-        var dock = workspace.DockPanel;
-        var resources = workspace.AddPane("Audio resources", _resources, BuildResourceToolbar());
-        var properties = workspace.AddPane("Properties", _properties);
-        var validation = workspace.AddPane("Validation", _validation);
+        _workspace = new EditorDockWorkspace();
+        Controls.Add(_workspace);
+        var dock = _workspace.DockPanel;
+        var resources = _workspace.AddPane("Audio resources", _resources, BuildResourceToolbar());
+        var properties = _workspace.AddPane("Properties", _properties);
+        var validation = _workspace.AddPane("Validation", _validation);
 
         resources.Show(dock, DockState.Document);
         properties.Show(resources.Pane, DockAlignment.Right, .38);
@@ -90,6 +95,15 @@ public sealed class AudioEditorControl : UserControl
             : string.Join(Environment.NewLine, errors.Select(error => "ERROR: " + error));
         return errors;
     }
+
+    public bool ShowPane(string paneName) =>
+        _workspace.ShowPane(paneName);
+
+    public bool IsPaneVisible(string paneName) =>
+        _workspace.IsPaneVisible(paneName);
+
+    public void ShowAllPanes() =>
+        _workspace.ShowAllPanes();
 
     public bool CommitEdits()
     {

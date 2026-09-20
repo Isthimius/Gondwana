@@ -100,6 +100,31 @@ public sealed class AudioEditorTests
             propertiesPane.Show(resourcesPane.Pane, DockAlignment.Bottom, .4);
             Application.DoEvents();
             Assert.Same(dock, propertiesPane.DockPanel);
+
+            var hiddenPane = propertiesPane.Pane;
+            propertiesPane.Activate();
+            propertiesPane.Pane.CloseActiveContent();
+            Application.DoEvents();
+
+            Assert.True(propertiesPane.IsHidden);
+            Assert.False(editor.IsPaneVisible("Properties"));
+
+            Assert.True(editor.ShowPane("Properties"));
+            Application.DoEvents();
+
+            Assert.False(propertiesPane.IsHidden);
+            Assert.True(editor.IsPaneVisible("Properties"));
+            Assert.Same(hiddenPane, propertiesPane.Pane);
+            Assert.False(editor.ShowPane("Not a real pane"));
+
+            resourcesPane.Activate();
+            resourcesPane.Pane.CloseActiveContent();
+            Application.DoEvents();
+            Assert.True(resourcesPane.IsHidden);
+
+            editor.ShowAllPanes();
+            Application.DoEvents();
+            Assert.All(panes, pane => Assert.False(pane.IsHidden));
         }
         finally
         {

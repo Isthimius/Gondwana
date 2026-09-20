@@ -87,7 +87,7 @@ internal sealed class MainForm : Form
         Add(file, "E&xit", Keys.Alt | Keys.F4, Close);
 
         var view = new ToolStripMenuItem("&View");
-        Add(
+        var outerWorkspaceItem = Add(
             view,
             "Project sources",
             Keys.None,
@@ -97,6 +97,39 @@ internal sealed class MainForm : Form
             "Refresh directory",
             Keys.F5,
             _workspaceControl.RefreshDirectory);
+
+        view.DropDownItems.Add(new ToolStripSeparator());
+        var paneItems = new Dictionary<string, ToolStripMenuItem>(
+            StringComparer.OrdinalIgnoreCase);
+
+        foreach (var paneName in TilesheetEditorControl.PaneNames)
+        {
+            string capturedName = paneName;
+            paneItems[capturedName] = Add(
+                view,
+                capturedName,
+                Keys.None,
+                () => ActiveEditor?.ShowPane(capturedName));
+        }
+
+        view.DropDownItems.Add(new ToolStripSeparator());
+        var showAllPanesItem = Add(
+            view,
+            "Show all tilesheet panes",
+            Keys.None,
+            () => ActiveEditor?.ShowAllPanes());
+
+        view.DropDownOpening += (_, _) =>
+        {
+            outerWorkspaceItem.Checked = !_workspace.IsHidden;
+            var editor = ActiveEditor;
+            foreach (var (paneName, item) in paneItems)
+            {
+                item.Enabled = editor is not null;
+                item.Checked = editor?.IsPaneVisible(paneName) == true;
+            }
+            showAllPanesItem.Enabled = editor is not null;
+        };
 
         menu.Items.AddRange([file, view]);
         MainMenuStrip = menu;
@@ -129,7 +162,7 @@ internal sealed class MainForm : Form
         };
     }
 
-    private static void Add(
+    private static ToolStripMenuItem Add(
         ToolStripMenuItem menu,
         string label,
         Keys shortcut,
@@ -143,6 +176,7 @@ internal sealed class MainForm : Form
 
         item.Click += (_, _) => action();
         menu.DropDownItems.Add(item);
+        return item;
     }
 
     private void OpenFiles()

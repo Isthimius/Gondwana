@@ -41,6 +41,15 @@ internal sealed class AudioEditorDocument : DockContent
     public void AddLooseFiles(IEnumerable<string> paths) =>
         Editor.AddLooseFiles(paths);
 
+    public bool ShowPane(string paneName) =>
+        Editor.ShowPane(paneName);
+
+    public bool IsPaneVisible(string paneName) =>
+        Editor.IsPaneVisible(paneName);
+
+    public void ShowAllPanes() =>
+        Editor.ShowAllPanes();
+
     public bool ConfirmClose()
     {
         if (!CommitEdits())
