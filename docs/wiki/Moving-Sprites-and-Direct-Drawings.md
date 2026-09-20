@@ -2093,18 +2093,18 @@ sprite.SpriteMoved +=
 
 ## Related Source Files
 
-- [`Gondwana/Physics/Movement/MovementController.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Physics/Movement/MovementController.cs)
-- [`Gondwana/Physics/Movement/MovementController.Follow.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Physics/Movement/MovementController.Follow.cs)
-- [`Gondwana/Physics/Movement/MovementController.Scripted.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Physics/Movement/MovementController.Scripted.cs)
-- [`Gondwana/Physics/Movement/MovementController.Integrated.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Physics/Movement/MovementController.Integrated.cs)
-- [`Gondwana/Physics/Movement/MovementState.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Physics/Movement/MovementState.cs)
-- [`Gondwana/Physics/Movement/MovementSpace.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Physics/Movement/MovementSpace.cs)
-- [`Gondwana/Physics/Movement/IMovable.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Physics/Movement/IMovable.cs)
-- [`Gondwana/Physics/Movement/IMovableOnSceneLayer.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Physics/Movement/IMovableOnSceneLayer.cs)
-- [`Gondwana/Drawing/Sprites/Sprite.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Drawing/Sprites/Sprite.cs)
-- [`Gondwana/Drawing/Sprites/SpriteManager.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Drawing/Sprites/SpriteManager.cs)
-- [`Gondwana/Drawing/Direct/DirectDrawingMovableBase.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Drawing/Direct/DirectDrawingMovableBase.cs)
-- [`Gondwana/Physics/Movement/Easing/EasingKind.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Physics/Movement/Easing/EasingKind.cs)
+- [`Gondwana/Physics/Movement/MovementController.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementController_8cs_source.html)
+- [`Gondwana/Physics/Movement/MovementController.Follow.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementController_8Follow_8cs_source.html)
+- [`Gondwana/Physics/Movement/MovementController.Scripted.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementController_8Scripted_8cs_source.html)
+- [`Gondwana/Physics/Movement/MovementController.Integrated.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementController_8Integrated_8cs_source.html)
+- [`Gondwana/Physics/Movement/MovementState.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementState_8cs_source.html)
+- [`Gondwana/Physics/Movement/MovementSpace.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementSpace_8cs_source.html)
+- [`Gondwana/Physics/Movement/IMovable.cs`](https://isthimius.github.io/Gondwana/api/latest/IMovable_8cs_source.html)
+- [`Gondwana/Physics/Movement/IMovableOnSceneLayer.cs`](https://isthimius.github.io/Gondwana/api/latest/IMovableOnSceneLayer_8cs_source.html)
+- [`Gondwana/Drawing/Sprites/Sprite.cs`](https://isthimius.github.io/Gondwana/api/latest/Sprite_8cs_source.html)
+- [`Gondwana/Drawing/Sprites/SpriteManager.cs`](https://isthimius.github.io/Gondwana/api/latest/SpriteManager_8cs_source.html)
+- [`Gondwana/Drawing/Direct/DirectDrawingMovableBase.cs`](https://isthimius.github.io/Gondwana/api/latest/DirectDrawingMovableBase_8cs_source.html)
+- [`Gondwana/Physics/Movement/Easing/EasingKind.cs`](https://isthimius.github.io/Gondwana/api/latest/EasingKind_8cs_source.html)
 
 Related wiki pages:
 
