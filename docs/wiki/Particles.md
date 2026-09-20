@@ -1584,15 +1584,15 @@ one visual effect
 
 Core implementation:
 
-- `Gondwana/Drawing/Direct/Particles/ParticleSurface.cs`
-- `Gondwana/Drawing/Direct/Particles/ParticleEmitter.cs`
-- `Gondwana/Drawing/Direct/Particles/Particle.cs`
-- `Gondwana/Drawing/Direct/Particles/ParticleSpawnDistribution.cs`
+- [`Gondwana/Drawing/Direct/Particles/ParticleSurface.cs`](https://isthimius.github.io/Gondwana/api/latest/ParticleSurface_8cs_source.html)
+- [`Gondwana/Drawing/Direct/Particles/ParticleEmitter.cs`](https://isthimius.github.io/Gondwana/api/latest/ParticleEmitter_8cs_source.html)
+- [`Gondwana/Drawing/Direct/Particles/Particle.cs`](https://isthimius.github.io/Gondwana/api/latest/Particle_8cs_source.html)
+- [`Gondwana/Drawing/Direct/Particles/ParticleSpawnDistribution.cs`](https://isthimius.github.io/Gondwana/api/latest/ParticleSpawnDistribution_8cs_source.html)
 
 Working examples:
 
-- `Demos/Gondwana.ParticleTest/Form1.cs`
-- `Demos/Gondwana.CoordinateTest/Game.cs`
+- [`Demos/Gondwana.ParticleTest/Form1.cs`](https://github.com/Isthimius/Gondwana/blob/master/Demos/Gondwana.ParticleTest/Form1.cs)
+- [`Demos/Gondwana.CoordinateTest/Game.cs`](https://github.com/Isthimius/Gondwana/blob/master/Demos/Gondwana.CoordinateTest/Game.cs)
 
 Related topics:
 

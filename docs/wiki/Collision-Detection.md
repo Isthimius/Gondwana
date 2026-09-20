@@ -32,9 +32,9 @@ Collision resolution decides whether that position is legal.
 ---
 
 ## Where to read next
-- `Gondwana/Collisions/CollisionResolver.cs`
-- `Gondwana/Collisions/`
-- `Gondwana/Scenes/SceneLayer.cs`
+- [`Gondwana/Physics/Collisions/CollisionResolver.cs`](https://isthimius.github.io/Gondwana/api/latest/CollisionResolver_8cs_source.html)
+- [`Gondwana/Physics/Collisions/`](https://github.com/Isthimius/Gondwana/tree/master/Gondwana/Physics/Collisions)
+- [`Gondwana/Scenes/SceneLayer.cs`](https://isthimius.github.io/Gondwana/api/latest/SceneLayer_8cs_source.html)
 
 ---
 

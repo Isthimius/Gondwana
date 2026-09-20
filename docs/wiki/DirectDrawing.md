@@ -494,22 +494,22 @@ A useful way to think about the major drawing systems is:
 
 Core infrastructure:
 
-- `Gondwana/Drawing/Direct/IDirectDrawable.cs`
-- `Gondwana/Drawing/Direct/IDirectCompositeChild.cs`
-- `Gondwana/Drawing/Direct/IDirectCompositeContainer.cs`
-- `Gondwana/Drawing/Direct/DirectDrawingBase.cs`
-- `Gondwana/Drawing/Direct/DirectDrawingMovableBase.cs`
-- `Gondwana/Drawing/Direct/DirectDrawingManager.cs`
-- `Gondwana/Drawing/Direct/DirectComposite.cs`
+- [`Gondwana/Drawing/Direct/IDirectDrawable.cs`](https://isthimius.github.io/Gondwana/api/latest/IDirectDrawable_8cs_source.html)
+- [`Gondwana/Drawing/Direct/IDirectCompositeChild.cs`](https://isthimius.github.io/Gondwana/api/latest/IDirectCompositeChild_8cs_source.html)
+- [`Gondwana/Drawing/Direct/IDirectCompositeContainer.cs`](https://isthimius.github.io/Gondwana/api/latest/IDirectCompositeContainer_8cs_source.html)
+- [`Gondwana/Drawing/Direct/DirectDrawingBase.cs`](https://isthimius.github.io/Gondwana/api/latest/DirectDrawingBase_8cs_source.html)
+- [`Gondwana/Drawing/Direct/DirectDrawingMovableBase.cs`](https://isthimius.github.io/Gondwana/api/latest/DirectDrawingMovableBase_8cs_source.html)
+- [`Gondwana/Drawing/Direct/DirectDrawingManager.cs`](https://isthimius.github.io/Gondwana/api/latest/DirectDrawingManager_8cs_source.html)
+- [`Gondwana/Drawing/Direct/DirectComposite.cs`](https://isthimius.github.io/Gondwana/api/latest/DirectComposite_8cs_source.html)
 
 Built-in drawings:
 
-- `Gondwana/Drawing/Direct/DirectRectangle.cs`
-- `Gondwana/Drawing/Direct/DirectImage.cs`
-- `Gondwana/Drawing/Direct/DirectSvg.cs`
-- `Gondwana/Drawing/Direct/TextBlock.cs`
-- `Gondwana/Drawing/Direct/ImageLayer/*`
-- `Gondwana/Drawing/Direct/Particles/*`
+- [`Gondwana/Drawing/Direct/DirectRectangle.cs`](https://isthimius.github.io/Gondwana/api/latest/DirectRectangle_8cs_source.html)
+- [`Gondwana/Drawing/Direct/DirectImage.cs`](https://isthimius.github.io/Gondwana/api/latest/DirectImage_8cs_source.html)
+- [`Gondwana/Drawing/Direct/DirectSvg.cs`](https://isthimius.github.io/Gondwana/api/latest/DirectSvg_8cs_source.html)
+- [`Gondwana/Drawing/Direct/TextBlock.cs`](https://isthimius.github.io/Gondwana/api/latest/TextBlock_8cs_source.html)
+- [`Gondwana/Drawing/Direct/ImageLayer/*`](https://github.com/Isthimius/Gondwana/tree/master/Gondwana/Drawing/Direct/ImageLayer)
+- [`Gondwana/Drawing/Direct/Particles/*`](https://github.com/Isthimius/Gondwana/tree/master/Gondwana/Drawing/Direct/Particles)
 
 ---
 

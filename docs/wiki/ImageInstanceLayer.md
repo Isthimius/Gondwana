@@ -1499,18 +1499,18 @@ That is the core design distinction from `ParticleSurface`.
 
 Core implementation:
 
-- `Gondwana/Drawing/Direct/ImageLayer/ImageInstanceLayer.cs`
-- `Gondwana/Drawing/Direct/ImageLayer/ImageInstance.cs`
+- [`Gondwana/Drawing/Direct/ImageLayer/ImageInstanceLayer.cs`](https://isthimius.github.io/Gondwana/api/latest/ImageInstanceLayer_8cs_source.html)
+- [`Gondwana/Drawing/Direct/ImageLayer/ImageInstance.cs`](https://isthimius.github.io/Gondwana/api/latest/ImageInstance_8cs_source.html)
 
 Underlying DirectDrawing behavior:
 
-- `Gondwana/Drawing/Direct/DirectDrawingBase.cs`
-- `Gondwana/Drawing/Direct/DirectDrawingMovableBase.cs`
+- [`Gondwana/Drawing/Direct/DirectDrawingBase.cs`](https://isthimius.github.io/Gondwana/api/latest/DirectDrawingBase_8cs_source.html)
+- [`Gondwana/Drawing/Direct/DirectDrawingMovableBase.cs`](https://isthimius.github.io/Gondwana/api/latest/DirectDrawingMovableBase_8cs_source.html)
 
 For the high-volume alternative:
 
-- `Gondwana/Drawing/Direct/Particles/ParticleSurface.cs`
-- `Gondwana/Drawing/Direct/Particles/ParticleEmitter.cs`
+- [`Gondwana/Drawing/Direct/Particles/ParticleSurface.cs`](https://isthimius.github.io/Gondwana/api/latest/ParticleSurface_8cs_source.html)
+- [`Gondwana/Drawing/Direct/Particles/ParticleEmitter.cs`](https://isthimius.github.io/Gondwana/api/latest/ParticleEmitter_8cs_source.html)
 - [[Particles]]
 
 Related topics:

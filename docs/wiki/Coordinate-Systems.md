@@ -292,11 +292,11 @@ The camera and view system then transform that world geometry into screen space.
 ## Where to read next
 
 - [[Coordinate Spaces]]
-- `Gondwana/Drawing/Coordinates/ISceneLayerCoordinates.cs`
-- `Gondwana/Drawing/Coordinates/CoordinateSystemTypes.cs`
-- coordinate implementations under `Gondwana/Drawing/Coordinates/`
-- `Gondwana/Scenes/SceneLayer.cs`
-- `Gondwana/Scenes/Scene.cs`
+- [`Gondwana/Drawing/Coordinates/ISceneLayerCoordinates.cs`](https://isthimius.github.io/Gondwana/api/latest/ISceneLayerCoordinates_8cs_source.html)
+- [`Gondwana/Drawing/Coordinates/CoordinateSystemTypes.cs`](https://isthimius.github.io/Gondwana/api/latest/CoordinateSystemTypes_8cs_source.html)
+- coordinate implementations under [`Gondwana/Drawing/Coordinates/`](https://github.com/Isthimius/Gondwana/tree/master/Gondwana/Drawing/Coordinates)
+- [`Gondwana/Scenes/SceneLayer.cs`](https://isthimius.github.io/Gondwana/api/latest/SceneLayer_8cs_source.html)
+- [`Gondwana/Scenes/Scene.cs`](https://isthimius.github.io/Gondwana/api/latest/Scene_8cs_source.html)
 
 ---
 

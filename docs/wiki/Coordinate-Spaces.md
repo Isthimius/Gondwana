@@ -460,10 +460,10 @@ Gondwana keeps those concepts separate so that changing how something is **viewe
 
 ## Where to read next
 
-- `Gondwana/Scenes/SceneLayer.cs`
-- `Gondwana/Rendering/Views/View.cs`
-- `Gondwana/Rendering/Views/Viewport.cs`
-- coordinate implementations under `Gondwana/Drawing/Coordinates/`
+- [`Gondwana/Scenes/SceneLayer.cs`](https://isthimius.github.io/Gondwana/api/latest/SceneLayer_8cs_source.html)
+- [`Gondwana/Rendering/Views/View.cs`](https://isthimius.github.io/Gondwana/api/latest/View_8cs_source.html)
+- [`Gondwana/Rendering/Views/Viewport.cs`](https://isthimius.github.io/Gondwana/api/latest/Viewport_8cs_source.html)
+- coordinate implementations under [`Gondwana/Drawing/Coordinates/`](https://github.com/Isthimius/Gondwana/tree/master/Gondwana/Drawing/Coordinates)
 - [[Coordinate Systems]]
 
 ---

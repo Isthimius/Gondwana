@@ -996,16 +996,16 @@ If you remember only one distinction, remember this one:
 
 Relevant source files:
 
-- `Gondwana/Drawing/Sprites/Sprite.cs`
-- `Gondwana/Drawing/Sprites/Sprite.Jiggle.cs`
-- `Gondwana/Drawing/Sprites/Sprite.Resize.cs`
-- `Gondwana/Drawing/Sprites/SpriteManager.cs`
-- `Gondwana/Drawing/Sprites/CompositeSprite.cs`
-- `Gondwana/Drawing/Tile.cs`
-- `Gondwana/Drawing/Frame.cs`
-- `Gondwana/Drawing/Animation/Animator.cs`
-- `Gondwana/Drawing/Animation/Cycle.cs`
-- `Gondwana/Drawing/Animation/FrameSequence.cs`
-- `Gondwana/Drawing/Collisions/TileCollider.cs`
-- `Gondwana/Physics/Movement/MovementController.cs`
-- `Gondwana/Scenes/SceneLayer.cs`
+- [`Gondwana/Drawing/Sprites/Sprite.cs`](https://isthimius.github.io/Gondwana/api/latest/Sprite_8cs_source.html)
+- [`Gondwana/Drawing/Sprites/Sprite.Jiggle.cs`](https://isthimius.github.io/Gondwana/api/latest/Sprite_8Jiggle_8cs_source.html)
+- [`Gondwana/Drawing/Sprites/Sprite.Resize.cs`](https://isthimius.github.io/Gondwana/api/latest/Sprite_8Resize_8cs_source.html)
+- [`Gondwana/Drawing/Sprites/SpriteManager.cs`](https://isthimius.github.io/Gondwana/api/latest/SpriteManager_8cs_source.html)
+- [`Gondwana/Drawing/Sprites/CompositeSprite.cs`](https://isthimius.github.io/Gondwana/api/latest/CompositeSprite_8cs_source.html)
+- [`Gondwana/Drawing/Tile.cs`](https://isthimius.github.io/Gondwana/api/latest/Tile_8cs_source.html)
+- [`Gondwana/Drawing/Frame.cs`](https://isthimius.github.io/Gondwana/api/latest/Frame_8cs_source.html)
+- [`Gondwana/Drawing/Animation/Animator.cs`](https://isthimius.github.io/Gondwana/api/latest/Animator_8cs_source.html)
+- [`Gondwana/Drawing/Animation/Cycle.cs`](https://isthimius.github.io/Gondwana/api/latest/Cycle_8cs_source.html)
+- [`Gondwana/Drawing/Animation/FrameSequence.cs`](https://isthimius.github.io/Gondwana/api/latest/FrameSequence_8cs_source.html)
+- [`Gondwana/Drawing/Collisions/TileCollider.cs`](https://isthimius.github.io/Gondwana/api/latest/TileCollider_8cs_source.html)
+- [`Gondwana/Physics/Movement/MovementController.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementController_8cs_source.html)
+- [`Gondwana/Scenes/SceneLayer.cs`](https://isthimius.github.io/Gondwana/api/latest/SceneLayer_8cs_source.html)
