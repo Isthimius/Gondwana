@@ -53,7 +53,7 @@ public sealed class AssetEditorControl : UserControl
         _saveButton = AddButton(fileTools, "Save", (_, _) => Save());
         _saveAsButton = AddButton(fileTools, "Save As…", (_, _) => SaveAs());
         fileTools.Items.Add(new ToolStripSeparator());
-        _refreshButton = AddButton(fileTools, "Refresh", (_, _) => ReloadGrid());
+        _refreshButton = AddButton(fileTools, "Refresh", (_, _) => RefreshEntries());
         fileTools.Items.Add(new ToolStripSeparator());
         _addButton = AddButton(fileTools, "Add / Import", (_, _) => AddAsset());
         _replaceButton = AddButton(fileTools, "Replace", (_, _) => ReplaceSelectedAsset());
@@ -417,7 +417,7 @@ public sealed class AssetEditorControl : UserControl
         }
     }
 
-    private void ReloadGrid()
+    private void RefreshEntries()
     {
         _records.Clear();
 
