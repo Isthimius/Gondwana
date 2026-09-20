@@ -1,6 +1,6 @@
 # Gondwana Tilesheets (WinForms)
 
-Standalone .NET 8 Windows editor for loose `.gts` definitions. Open this project in
+Standalone .NET 8 Windows editor for `.gts` definitions backed by loose images or image entries in Gondwana asset packages (`.gaf` / `.zip`). Open this project in
 Visual Studio, or run from the repository root:
 
 ```console
@@ -12,8 +12,15 @@ dotnet run --project Tooling/Gondwana.Tooling.Tilesheets.WinForms -c Release
 - **File → Open working directory** selects the workspace; **F5** refreshes it.
   Subdirectories load on expansion. Referenced images appear beneath their GTS,
   even when names differ. A “same name” child is only a browsing hint.
-- Select a GTS to open it. Double-click an image (or use its context menu) to create
-  a definition. The image context menu also replaces the active document's image.
+- Select a GTS to open it. Double-click a loose image (or use its context menu) to
+  create a definition. The image context menu also replaces the active document's image.
+- Asset packages (`.gaf` / `.zip`) appear in the same project-source tree. Expand a
+  package to browse entries stored as `AssetTypes.Image`. Double-click a packed image
+  to create a GTS from it, or use the context menu to assign it to the active GTS.
+  The preview reads the image directly from `AssetsFile`; it is not extracted to disk.
+- The preview toolbar also exposes **GAF image…** for choosing an asset package and
+  image entry directly. **Reload image** invalidates the package cache before re-reading
+  a packed source.
 - Documents and the workspace can be docked, floated, resized and rearranged.
   **View → Working directory** restores the workspace if hidden.
 - **Definition**, **Region**, and **Frame** are stacked in the side inspector,
@@ -84,13 +91,42 @@ Saving invalid data requires an explicit **Save anyway** decision.
   overlays use `CollisionAdjust.ApplyTo` and show geometry even for `None` types.
 - At extreme grid densities, the preview samples cells to keep painting bounded.
   The selected cell is always drawn and every frame remains accessible by X/Y.
-- Packed images cannot be previewed or asset-validated. Their existing fields are
-  retained through unrelated edits. Explicitly changing the image switches to a
-  loose source. Packed definition editing and `.gaf` browsing are not supported.
+- Packed image sources are previewed and validated through `AssetsFile` using
+  `AssetsFilePath` + `AssetEntryName`. Saving keeps the logical package reference
+  and rebases the package path relative to the GTS destination where possible; it does
+  not extract or duplicate the image. The standalone tool can prompt for an encrypted
+  package password, but that password is tooling state and is never written into GTS.
 - Native file dialogs, window chrome and scrollbar parts follow the Windows theme.
   Editor surfaces and docking use the dark theme.
 - No undo/redo, external-file watching, animations, tile maps, or mouse-based
   resizing/collision editing in this pass. Use directory refresh and Reload image.
+
+## Reusable controls and Studio integration
+
+The standalone executable is intentionally a host around reusable editor controls:
+
+```text
+MainForm / DockPanelSuite
+    |
+    +-- TilesheetWorkspaceControl
+    |
+    +-- EditorDocument (thin DockContent wrapper)
+            |
+            +-- TilesheetEditorControl
+                    |
+                    +-- TilesheetDocument
+```
+
+`TilesheetEditorControl` and `TilesheetWorkspaceControl` are public WinForms
+`UserControl` types. `EditorDocument` contains standalone docking/close-prompt
+behavior only. A future Gondwana Studio WinForms host can therefore place the same
+controls inside its own document/tool-window model instead of copying the standalone
+forms.
+
+`AssetPackageCatalog` is a non-visual package/image service that can be shared by
+multiple hosted controls. The GTS standalone app shares one catalog between its
+workspace and open editors; Studio can do the same while eventually composing it
+with the hostable GAF editor.
 
 ## Validation and maintenance
 

@@ -215,6 +215,31 @@ These source forms are intentionally strict:
 
 Ambiguous or incomplete definitions throw instead of quietly choosing one source. Quiet precedence rules are where configuration bugs go to breed.
 
+## Authoring packed image references
+
+The WinForms GTS editor can author the loose-definition/packed-image combination
+directly. Its project-source browser shows `.gaf` and `.zip` files alongside loose
+GTS/image files. Expanding a package lists entries whose `AssetTypes` value is
+`Image`.
+
+Selecting a packed image for a GTS sets:
+
+```json
+"Image": {
+  "AssetsFilePath": "../assets/game.gaf",
+  "AssetEntryName": "images/terrain.png"
+}
+```
+
+The editor previews the image directly from the `AssetsFile` stream and does not
+extract a temporary loose image. When the GTS is saved, the package path is rebased
+relative to the GTS destination where possible, using the same preservation rules as
+loose image paths.
+
+The standalone editor may request a password while browsing an encrypted package.
+That password belongs to the tooling session; it is not serialized into the GTS
+definition.
+
 ## Loose and packed combinations
 
 The definition's storage and the image's storage are independent. Gondwana supports all four basic combinations:

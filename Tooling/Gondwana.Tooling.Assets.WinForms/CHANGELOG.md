@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+- Refactor the asset editor and workspace browser into hostable WinForms controls for reuse by Gondwana Studio.
+- Keep DockPanelSuite document/window ownership in the standalone application shell.
+
+
 
 # v2.6.0 - September 17, 2026
 
