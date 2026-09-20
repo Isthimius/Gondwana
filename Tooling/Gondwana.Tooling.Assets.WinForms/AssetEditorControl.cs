@@ -417,7 +417,7 @@ public sealed class AssetEditorControl : UserControl
         }
     }
 
-    private void RefreshEntries()
+    public void RefreshEntries()
     {
         _records.Clear();
 

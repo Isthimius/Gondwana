@@ -210,8 +210,8 @@ public sealed class EditorInteractionTests
             }
             settings.SetColor(OverlayKind.Collision, Color.Lime);
             Application.DoEvents();
-            Assert.Equal(Color.Lime.ToArgb(), Field<ImageViewport>(first, "_viewport").Colors[OverlayKind.Collision].ToArgb());
-            Assert.Equal(Color.Lime.ToArgb(), Field<ImageViewport>(second, "_viewport").Colors[OverlayKind.Collision].ToArgb());
+            Assert.Equal(Color.Lime.ToArgb(), Field<ImageViewport>(first.Editor, "_viewport").Colors[OverlayKind.Collision].ToArgb());
+            Assert.Equal(Color.Lime.ToArgb(), Field<ImageViewport>(second.Editor, "_viewport").Colors[OverlayKind.Collision].ToArgb());
             Assert.False(first.Document.IsDirty);
             Assert.False(second.Document.IsDirty);
         }
