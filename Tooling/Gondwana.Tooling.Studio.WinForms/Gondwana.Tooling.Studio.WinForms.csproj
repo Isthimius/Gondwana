@@ -11,7 +11,7 @@
     <AssemblyName>Gondwana.Studio.WinForms</AssemblyName>
   </PropertyGroup>
 
-  <!-- DockPanelSuite with VS2015 dark theme mirrors Dock.Avalonia used in Gondwana.Studio -->
+  <!-- The outer shell uses the same DockPanelSuite dark theme as its hosted editors. -->
   <ItemGroup>
     <PackageReference Include="DockPanelSuite" Version="3.1.1" />
     <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />

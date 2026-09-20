@@ -358,4 +358,3 @@ file sealed class DarkColorTable : ProfessionalColorTable
     public override System.Drawing.Color MenuBorder => System.Drawing.Color.FromArgb(60, 60, 60);
     public override System.Drawing.Color MenuItemBorder => System.Drawing.Color.FromArgb(60, 60, 60);
 }
-
