@@ -1,4 +1,5 @@
 using Gondwana.Audio;
+using Gondwana.Audio.GAUD;
 using Gondwana.Assets;
 using Newtonsoft.Json;
 
@@ -246,6 +247,177 @@ public sealed class AudioTests : IDisposable
             if (second is not null) await second;
             backend.BeforeCreate = null;
         }
+    }
+
+    [Fact]
+    public void GaudRoundTripAndMaterializationPreserveLooseSourceAndSettings()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "GondwanaGaud-" + Guid.NewGuid());
+        var mediaDirectory = Path.Combine(root, "media");
+        var definitionDirectory = Path.Combine(root, "definitions");
+        Directory.CreateDirectory(mediaDirectory);
+        Directory.CreateDirectory(definitionDirectory);
+        var audioPath = Path.Combine(mediaDirectory, "music.wav");
+        var gaudPath = Path.Combine(definitionDirectory, "audio.gaud");
+
+        try
+        {
+            File.WriteAllBytes(audioPath, [1, 2, 3, 4]);
+            var sound = manager.LoadFromFile("music", audioPath, .35f, -.2f, 1.5f);
+            sound.IsLooping = true;
+
+            AudioDefinitionSerializer.Save(gaudPath, manager);
+
+            var definition = AudioDefinitionSerializer.Load(gaudPath);
+            var resource = Assert.Single(definition.Resources);
+            Assert.Equal("music", resource.Key);
+            Assert.Equal(AudioResourceSourceKind.LooseFile, resource.SourceKind);
+            Assert.False(Path.IsPathRooted(resource.FilePath));
+            Assert.Equal(.35f, resource.Volume);
+            Assert.Equal(-.2f, resource.Pan);
+            Assert.Equal(1.5f, resource.PlaybackSpeed);
+            Assert.True(resource.IsLooping);
+
+            manager.Clear();
+            AudioDefinitionSerializer.LoadIntoManager(definition);
+
+            var restored = manager.Get("music");
+            Assert.NotNull(restored);
+            Assert.Equal(Path.GetFullPath(audioPath), Path.GetFullPath(restored!.SourceFilePath!));
+            Assert.Equal(.35f, restored.Volume);
+            Assert.Equal(-.2f, restored.Pan);
+            Assert.Equal(1.5f, restored.PlaybackSpeed);
+            Assert.True(restored.IsLooping);
+        }
+        finally
+        {
+            manager.Clear();
+            if (Directory.Exists(root))
+                Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void GaudRoundTripMaterializesPackedAudioFromLoadedGaf()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "GondwanaGaud-" + Guid.NewGuid());
+        var definitionDirectory = Path.Combine(root, "definitions");
+        Directory.CreateDirectory(definitionDirectory);
+        var gafPath = Path.Combine(root, "sounds.gaf");
+        var gaudPath = Path.Combine(definitionDirectory, "audio.gaud");
+
+        try
+        {
+            using var assets = AssetsFile.LoadOrCreate(gafPath);
+            assets.Add(AssetTypes.Audio, "tone.wav", new MemoryStream([4, 3, 2, 1]));
+            var sound = Assert.Single(
+                manager.LoadFromEngineAssetsFile(
+                    assets,
+                    defaultVolume: .6f,
+                    defaultPan: .25f,
+                    defaultPlaybackSpeed: 1.25f));
+            sound.IsLooping = true;
+
+            AudioDefinitionSerializer.Save(gaudPath, manager);
+            var definition = AudioDefinitionSerializer.Load(gaudPath);
+            var resource = Assert.Single(definition.Resources);
+            Assert.Equal(AudioResourceSourceKind.PackedAsset, resource.SourceKind);
+            Assert.False(Path.IsPathRooted(resource.AssetsFilePath));
+            Assert.Equal("tone.wav", resource.AssetEntryName);
+
+            manager.Clear();
+            AudioDefinitionSerializer.LoadIntoManager(definition);
+
+            var restored = manager.Get("tone.wav");
+            Assert.NotNull(restored);
+            Assert.Same(assets, restored!.AssetIdentifier!.AssetsFile);
+            Assert.Equal(.6f, restored.Volume);
+            Assert.Equal(.25f, restored.Pan);
+            Assert.Equal(1.25f, restored.PlaybackSpeed);
+            Assert.True(restored.IsLooping);
+        }
+        finally
+        {
+            manager.Clear();
+            AssetsFile.ClearAll();
+            if (Directory.Exists(root))
+                Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void EngineStateAudioRoundTripsThroughInlineOrExternalGaud(bool separateGaudFile)
+    {
+        var root = Path.Combine(Path.GetTempPath(), "GondwanaGaud-" + Guid.NewGuid());
+        var mediaDirectory = Path.Combine(root, "media");
+        Directory.CreateDirectory(mediaDirectory);
+        var audioPath = Path.Combine(mediaDirectory, "music.wav");
+        var statePath = Path.Combine(root, "state.json");
+
+        try
+        {
+            File.WriteAllBytes(audioPath, [9, 8, 7]);
+            var sound = manager.LoadFromFile("music", audioPath, .4f, .15f, 1.75f);
+            sound.IsLooping = true;
+
+            new EngineState().SaveToFile(
+                statePath,
+                parts: EngineStateParts.Audio,
+                separateGaudFile: separateGaudFile);
+
+            var stateJson = File.ReadAllText(statePath);
+            Assert.Contains("\"Audio\"", stateJson);
+
+            if (separateGaudFile)
+                Assert.True(File.Exists(Path.Combine(root, "state.audio", "audio.gaud")));
+
+            manager.Clear();
+            EngineState.LoadFromFile(statePath, parts: EngineStateParts.Audio);
+
+            var restored = manager.Get("music");
+            Assert.NotNull(restored);
+            Assert.Equal(.4f, restored!.Volume);
+            Assert.Equal(.15f, restored.Pan);
+            Assert.Equal(1.75f, restored.PlaybackSpeed);
+            Assert.True(restored.IsLooping);
+            Assert.Equal(Path.GetFullPath(audioPath), Path.GetFullPath(restored.SourceFilePath!));
+        }
+        finally
+        {
+            manager.Clear();
+            AssetsFile.ClearAll();
+            if (Directory.Exists(root))
+                Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void GaudValidationRejectsDuplicateKeysAndInvalidSource()
+    {
+        var definition = new AudioDefinition
+        {
+            Resources =
+            [
+                new AudioResourceDefinition
+                {
+                    Key = "music",
+                    SourceKind = AudioResourceSourceKind.LooseFile,
+                    FilePath = "music.ogg"
+                },
+                new AudioResourceDefinition
+                {
+                    Key = "music",
+                    SourceKind = AudioResourceSourceKind.Uri,
+                    SourceUri = ""
+                }
+            ]
+        };
+
+        var errors = AudioDefinitionValidator.Validate(definition);
+        Assert.Contains(errors, error => error.Contains("duplicate key", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(errors, error => error.Contains("SourceUri is empty", StringComparison.Ordinal));
     }
 
     private sealed class Backend : IAudioBackend
