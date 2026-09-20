@@ -109,10 +109,17 @@ public sealed class AnimationEditorControl : UserControl
         _properties.SelectedObject = _propertyAdapter;
 
         _sourceTree.BeforeExpand += SourceTreeBeforeExpand;
+        _sourceTree.AfterSelect += SourceTreeAfterSelect;
         _sourceTree.NodeMouseDoubleClick += (_, e) =>
         {
             _sourceTree.SelectedNode = e.Node;
             AddSelectedSourceFrame();
+        };
+
+        _preview.DoubleClick += (_, _) =>
+        {
+            if (_preview.IsShowingSourceFrame)
+                AddSelectedSourceFrame();
         };
 
         _frames.SelectedIndexChanged += (_, _) =>
@@ -121,6 +128,7 @@ public sealed class AnimationEditorControl : UserControl
                 _frames.SelectedIndices.Count == 1)
             {
                 _preview.Pause();
+                _preview.ClearSourceFrame();
                 _playButton.Text = "Play";
             }
         };
@@ -335,8 +343,8 @@ public sealed class AnimationEditorControl : UserControl
         };
 
         bar.Items.Add("Add GTS…", null, (_, _) => ChooseTilesheetSources());
+        bar.Items.Add("Add", null, (_, _) => AddSelectedSourceFrame());
         bar.Items.Add("Remove", null, (_, _) => RemoveSelectedSource());
-        bar.Items.Add("Add frame", null, (_, _) => AddSelectedSourceFrame());
         return bar;
     }
 
@@ -466,6 +474,7 @@ public sealed class AnimationEditorControl : UserControl
         if (node.Tag is not TilesheetSource source)
             return;
 
+        _preview.ClearSourceFrame();
         _sources.Remove(source);
         source.Dispose();
         RefreshSourceTree();
@@ -619,6 +628,26 @@ public sealed class AnimationEditorControl : UserControl
         {
             _sourceTree.EndUpdate();
         }
+    }
+
+    private void SourceTreeAfterSelect(
+        object? sender,
+        TreeViewEventArgs e)
+    {
+        if (e.Node.Tag is not FrameTag frame)
+            return;
+
+        _preview.Pause();
+        _playButton.Text = "Play";
+
+        var definition = frame.Source.CreateFrame(
+            frame.Region,
+            frame.X,
+            frame.Y);
+
+        _preview.ShowSourceFrame(
+            ResolveFramePreview(definition),
+            $"{definition.Tilesheet}:{definition.RegionName} ({definition.XTile},{definition.YTile})");
     }
 
     private void SourceTreeBeforeExpand(
