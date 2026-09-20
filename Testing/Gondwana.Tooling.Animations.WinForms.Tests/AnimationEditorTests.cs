@@ -111,6 +111,20 @@ public sealed class AnimationEditorTests
                 Application.DoEvents();
 
                 Assert.Equal(2, rowNode.Nodes.Count);
+                Assert.NotNull(tree.ImageList);
+                Assert.Equal(new Size(32, 32), tree.ImageList.ImageSize);
+
+                foreach (TreeNode frameNode in rowNode.Nodes)
+                {
+                    Assert.True(frameNode.ImageIndex >= 0);
+                    Assert.Equal(
+                        frameNode.ImageIndex,
+                        frameNode.SelectedImageIndex);
+
+                    Assert.Equal(
+                        new Size(32, 32),
+                        tree.ImageList.Images[frameNode.ImageIndex].Size);
+                }
 
                 tree.SelectedNode = rowNode.Nodes[1];
 
