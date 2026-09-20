@@ -22,6 +22,9 @@ public static class SceneDefinitionValidator
         ArgumentNullException.ThrowIfNull(definition);
 
         var errors = new List<string>();
+        ValidateTilesheetSources(definition, errors);
+        ValidateAnimationSources(definition, errors);
+
         var knownGroups = new HashSet<string>(StandardGroups, StringComparer.OrdinalIgnoreCase);
         var definedGroups = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -156,5 +159,97 @@ public static class SceneDefinitionValidator
         }
 
         return errors;
+    }
+
+    private static void ValidateTilesheetSources(
+        SceneDefinition definition,
+        List<string> errors)
+    {
+        definition.TilesheetSources ??= [];
+        var names = new HashSet<string>(StringComparer.Ordinal);
+
+        for (int i = 0; i < definition.TilesheetSources.Count; i++)
+        {
+            var source = definition.TilesheetSources[i];
+            var label = $"Tilesheet source {i}";
+
+            if (source is null)
+            {
+                errors.Add($"{label}: source definition is null.");
+                continue;
+            }
+
+            if (string.IsNullOrWhiteSpace(source.Tilesheet))
+                errors.Add($"{label}: tilesheet name is empty.");
+            else if (!names.Add(source.Tilesheet))
+                errors.Add($"{label}: duplicate source for tilesheet '{source.Tilesheet}'.");
+
+            if (!Enum.IsDefined(source.Kind))
+            {
+                errors.Add($"{label}: unknown source kind '{source.Kind}'.");
+                continue;
+            }
+
+            switch (source.Kind)
+            {
+                case SceneTilesheetSourceKind.LooseDefinitionFile:
+                    if (string.IsNullOrWhiteSpace(source.GtsPath))
+                        errors.Add($"{label}: loose GTS source path is empty.");
+                    break;
+
+                case SceneTilesheetSourceKind.PackedDefinitionFile:
+                    if (string.IsNullOrWhiteSpace(source.AssetsFilePath))
+                        errors.Add($"{label}: assets file path is empty.");
+                    if (string.IsNullOrWhiteSpace(source.AssetEntryName))
+                        errors.Add($"{label}: packed GTS entry name is empty.");
+                    break;
+            }
+        }
+    }
+
+    private static void ValidateAnimationSources(
+        SceneDefinition definition,
+        List<string> errors)
+    {
+        definition.AnimationSources ??= [];
+        var keys = new HashSet<string>(StringComparer.Ordinal);
+
+        for (int i = 0; i < definition.AnimationSources.Count; i++)
+        {
+            var source = definition.AnimationSources[i];
+            var label = $"Animation source {i}";
+
+            if (source is null)
+            {
+                errors.Add($"{label}: source definition is null.");
+                continue;
+            }
+
+            if (string.IsNullOrWhiteSpace(source.AnimationKey))
+                errors.Add($"{label}: animation key is empty.");
+            else if (!keys.Add(source.AnimationKey))
+                errors.Add($"{label}: duplicate source for animation '{source.AnimationKey}'.");
+
+            if (!Enum.IsDefined(source.Kind))
+            {
+                errors.Add($"{label}: unknown source kind '{source.Kind}'.");
+                continue;
+            }
+
+            switch (source.Kind)
+            {
+                case SceneAnimationSourceKind.LooseDefinitionFile:
+                    if (string.IsNullOrWhiteSpace(source.GaniPath))
+                        errors.Add($"{label}: loose GANI source path is empty.");
+                    break;
+
+                case SceneAnimationSourceKind.PackedDefinitionFile:
+                    if (string.IsNullOrWhiteSpace(source.AssetsFilePath))
+                        errors.Add($"{label}: assets file path is empty.");
+                    if (string.IsNullOrWhiteSpace(source.AssetEntryName))
+                        errors.Add($"{label}: packed GANI entry name is empty.");
+                    break;
+            }
+        }
     }
 }

@@ -242,7 +242,21 @@ public static class SceneDefinitionSerializer
 
             definition.CollisionGroups ??= [];
             definition.CollisionProfiles ??= [];
+            definition.TilesheetSources ??= [];
+            definition.AnimationSources ??= [];
             definition.Layers ??= [];
+
+            for (int i = 0; i < definition.TilesheetSources.Count; i++)
+            {
+                if (definition.TilesheetSources[i] is null)
+                    throw new InvalidDataException($"GSCN TilesheetSources cannot contain a null entry at index {i}.");
+            }
+
+            for (int i = 0; i < definition.AnimationSources.Count; i++)
+            {
+                if (definition.AnimationSources[i] is null)
+                    throw new InvalidDataException($"GSCN AnimationSources cannot contain a null entry at index {i}.");
+            }
 
             foreach (var profile in definition.CollisionProfiles)
             {
