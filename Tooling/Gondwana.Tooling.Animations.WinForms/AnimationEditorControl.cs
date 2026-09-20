@@ -1,3 +1,4 @@
+using System.Drawing.Drawing2D;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Animations.Editing;
@@ -11,6 +12,8 @@ namespace Gondwana.Tooling.Animations.WinForms;
 /// </summary>
 public sealed class AnimationEditorControl : UserControl
 {
+    private const int SourceFrameThumbnailSize = 32;
+
     private sealed record RegionTag(
         TilesheetSource Source,
         TilesheetRegionDefinition Region);
@@ -27,6 +30,15 @@ public sealed class AnimationEditorControl : UserControl
         int Y);
 
     private readonly List<TilesheetSource> _sources = [];
+    private readonly ImageList _sourceFrameImages = new()
+    {
+        ImageSize = new Size(
+            SourceFrameThumbnailSize,
+            SourceFrameThumbnailSize),
+        ColorDepth = ColorDepth.Depth32Bit,
+        TransparentColor = Color.Transparent
+    };
+
     private readonly TreeView _sourceTree = new()
     {
         Dock = DockStyle.Fill,
@@ -84,6 +96,14 @@ public sealed class AnimationEditorControl : UserControl
         // afterward, but WinForms validates SplitterDistance during construction.
         Size = new Size(1200, 800);
         Dock = DockStyle.Fill;
+
+        _sourceTree.ImageList = _sourceFrameImages;
+        _sourceTree.ImageIndex = -1;
+        _sourceTree.SelectedImageIndex = -1;
+        _sourceTree.ItemHeight = Math.Max(
+            _sourceTree.ItemHeight,
+            SourceFrameThumbnailSize + 4);
+
         BuildLayout();
 
         _properties.SelectedObject = _propertyAdapter;
@@ -561,6 +581,7 @@ public sealed class AnimationEditorControl : UserControl
         try
         {
             _sourceTree.Nodes.Clear();
+            _sourceFrameImages.Images.Clear();
 
             foreach (var source in _sources.OrderBy(
                          source => source.Definition.Name,
@@ -653,7 +674,7 @@ public sealed class AnimationEditorControl : UserControl
         }
     }
 
-    private static void PopulateFrames(
+    private void PopulateFrames(
         TreeNode node,
         RowTag tag)
     {
@@ -666,16 +687,86 @@ public sealed class AnimationEditorControl : UserControl
 
         for (int x = 0; x < columnCount; x++)
         {
-            node.Nodes.Add(
-                new TreeNode($"Frame {x},{tag.Y}")
-                {
-                    Tag = new FrameTag(
-                        tag.Source,
-                        tag.Region,
-                        x,
-                        tag.Y)
-                });
+            var frameTag = new FrameTag(
+                tag.Source,
+                tag.Region,
+                x,
+                tag.Y);
+
+            var frameNode = new TreeNode($"Frame {x},{tag.Y}")
+            {
+                Tag = frameTag
+            };
+
+            int imageIndex = AddSourceFrameThumbnail(frameTag);
+            if (imageIndex >= 0)
+            {
+                frameNode.ImageIndex = imageIndex;
+                frameNode.SelectedImageIndex = imageIndex;
+            }
+
+            node.Nodes.Add(frameNode);
         }
+    }
+
+    private int AddSourceFrameThumbnail(FrameTag frame)
+    {
+        if (frame.Source.Image is not { } image)
+            return -1;
+
+        var sourceBounds = TilesheetSource.FrameBounds(
+            frame.Region,
+            frame.X,
+            frame.Y);
+
+        if (sourceBounds.Width <= 0 ||
+            sourceBounds.Height <= 0 ||
+            sourceBounds.X < 0 ||
+            sourceBounds.Y < 0 ||
+            sourceBounds.Right > image.Width ||
+            sourceBounds.Bottom > image.Height)
+        {
+            return -1;
+        }
+
+        var thumbnail = new Bitmap(
+            SourceFrameThumbnailSize,
+            SourceFrameThumbnailSize);
+
+        using (var graphics = Graphics.FromImage(thumbnail))
+        {
+            graphics.Clear(Color.Transparent);
+            graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+            graphics.PixelOffsetMode = PixelOffsetMode.Half;
+            graphics.SmoothingMode = SmoothingMode.None;
+
+            float scale = Math.Min(
+                (float)SourceFrameThumbnailSize / sourceBounds.Width,
+                (float)SourceFrameThumbnailSize / sourceBounds.Height);
+
+            int width = Math.Max(
+                1,
+                (int)Math.Round(sourceBounds.Width * scale));
+            int height = Math.Max(
+                1,
+                (int)Math.Round(sourceBounds.Height * scale));
+
+            var destination = new Rectangle(
+                (SourceFrameThumbnailSize - width) / 2,
+                (SourceFrameThumbnailSize - height) / 2,
+                width,
+                height);
+
+            graphics.DrawImage(
+                image,
+                destination,
+                sourceBounds,
+                GraphicsUnit.Pixel);
+        }
+
+        _sourceFrameImages.Images.Add(thumbnail);
+        thumbnail.Dispose();
+        return _sourceFrameImages.Images.Count - 1;
     }
 
     private FramePreview? ResolveFramePreview(
@@ -743,6 +834,7 @@ public sealed class AnimationEditorControl : UserControl
                 source.Dispose();
 
             _sources.Clear();
+            _sourceFrameImages.Dispose();
         }
 
         base.Dispose(disposing);
