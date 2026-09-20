@@ -41,6 +41,15 @@ internal sealed class AnimationEditorDocument : DockContent
     public void AddTilesheetSources(IEnumerable<string> paths) =>
         Editor.AddTilesheetSources(paths);
 
+    public bool ShowPane(string paneName) =>
+        Editor.ShowPane(paneName);
+
+    public bool IsPaneVisible(string paneName) =>
+        Editor.IsPaneVisible(paneName);
+
+    public void ShowAllPanes() =>
+        Editor.ShowAllPanes();
+
     public bool ConfirmClose()
     {
         if (!CommitEdits())

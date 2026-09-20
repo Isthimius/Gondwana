@@ -23,7 +23,9 @@ The editor follows the same WinForms workspace model as the Gondwana Tilesheets 
 - Every open asset file has its own document tab and independent filters, grid, status,
   and in-memory `AssetsFile` instance.
 - Documents and the **Asset files** workspace can be docked, floated, resized, and
-  rearranged. **View → Asset files** restores the workspace if it is hidden.
+  rearranged. **View → Asset files** restores the outer workspace if it is hidden.
+  The same **View** menu restores **Assets** or **Status** in the active GAF editor,
+  and **Show all asset panes** restores both.
 - The editor surfaces use the same VS2015-style dark docking theme as the Tilesheets
   tool. Native Windows file dialogs and window chrome continue to follow Windows.
 
@@ -178,12 +180,14 @@ tabbed, and split inside their own editor. All inner panes use document-style
 groups with tabs at the top, including panes initially placed at the sides or
 bottom. Floating and auto-hide are disabled for inner panes.
 Closing a pane using its close button hides it without closing the document.
-Close and reopen the document to recover the default panes and arrangement.
-Layouts reset to their defaults when documents are opened. Layout persistence is
-intentionally not implemented: no layout XML, settings, or registry state is saved.
+Use **View** to restore an individual pane in the active GAF document, or choose
+**Show all asset panes**. A restored pane returns to its previous split/tab group
+for that open document. Layouts reset to their defaults when documents are opened.
+Layout persistence is intentionally not implemented: no layout XML, settings, or
+registry state is saved.
 
 The small helper in Tooling/Shared/WinForms/EditorDockWorkspace.cs is source-linked
-by the three tooling projects, so they do not depend on one another. It owns the
+by the standalone WinForms tooling projects, so they do not depend on one another. It owns the
 inner dock contents (including hidden panes) and theme, and disposes them with the
 editor. Existing editor-specific model, image, preview, and event cleanup remains
 in each editor. Hosts should dispose the whole editor when closing its document.

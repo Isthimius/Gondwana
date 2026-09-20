@@ -14,6 +14,16 @@ namespace Gondwana.Tooling.Animations.WinForms;
 /// </summary>
 public sealed class AnimationEditorControl : UserControl
 {
+    public static IReadOnlyList<string> PaneNames { get; } =
+        Array.AsReadOnly(
+        [
+            "GTS frame sources",
+            "Preview",
+            "Animation frames",
+            "Animation properties",
+            "Validation"
+        ]);
+
     private const int SourceFrameThumbnailSize = 32;
 
     private sealed record RegionTag(
@@ -80,6 +90,7 @@ public sealed class AnimationEditorControl : UserControl
     private bool _refreshPending;
     private bool _syncingPreviewSelection;
     private bool _syncingSourceTreeSelection;
+    private EditorDockWorkspace _workspace = null!;
 
     public AnimationDocument Document { get; }
 
@@ -475,6 +486,15 @@ public sealed class AnimationEditorControl : UserControl
         return errors;
     }
 
+    public bool ShowPane(string paneName) =>
+        _workspace.ShowPane(paneName);
+
+    public bool IsPaneVisible(string paneName) =>
+        _workspace.IsPaneVisible(paneName);
+
+    public void ShowAllPanes() =>
+        _workspace.ShowAllPanes();
+
     public bool CommitEdits()
     {
         _validation.Focus();
@@ -489,14 +509,14 @@ public sealed class AnimationEditorControl : UserControl
         _frames.Columns.Add("X", 55, HorizontalAlignment.Right);
         _frames.Columns.Add("Y", 55, HorizontalAlignment.Right);
 
-        var workspace = new EditorDockWorkspace();
-        Controls.Add(workspace);
-        var dock = workspace.DockPanel;
-        var sources = workspace.AddPane("GTS frame sources", _sourceTree, BuildSourceToolbar());
-        var preview = workspace.AddPane("Preview", _preview, BuildPreviewToolbar());
-        var frames = workspace.AddPane("Animation frames", _frames, BuildSequenceToolbar());
-        var properties = workspace.AddPane("Animation properties", _properties);
-        var validation = workspace.AddPane("Validation", _validation);
+        _workspace = new EditorDockWorkspace();
+        Controls.Add(_workspace);
+        var dock = _workspace.DockPanel;
+        var sources = _workspace.AddPane("GTS frame sources", _sourceTree, BuildSourceToolbar());
+        var preview = _workspace.AddPane("Preview", _preview, BuildPreviewToolbar());
+        var frames = _workspace.AddPane("Animation frames", _frames, BuildSequenceToolbar());
+        var properties = _workspace.AddPane("Animation properties", _properties);
+        var validation = _workspace.AddPane("Validation", _validation);
         preview.Show(dock, DockState.Document);
         sources.Show(preview.Pane, DockAlignment.Left, 320d / 1200);
         frames.Show(preview.Pane, DockAlignment.Bottom, 410d / 800);

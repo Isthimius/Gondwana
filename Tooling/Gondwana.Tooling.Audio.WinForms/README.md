@@ -39,7 +39,12 @@ initial small editor pass.
 Each `AudioEditorControl` owns an inner DockPanelSuite workspace containing
 **Audio resources**, **Properties**, and **Validation**. Panes can split or tab
 inside that editor only. Floating and auto-hide are disabled by the shared
-`EditorDockWorkspace` helper. Layout persistence is intentionally not implemented.
+`EditorDockWorkspace` helper.
 
-The standalone application's Working directory and each whole GSND editor remain
-outer docked windows/documents.
+Closing a pane hides it without closing the GSND document. Use **View** to restore
+an individual pane, or choose **Show all audio panes**. **View → Working directory**
+restores the outer workspace. A restored inner pane returns to its previous
+split/tab group for the current document.
+
+Layout persistence is intentionally not implemented. The standalone application's
+Working directory and each whole GSND editor remain outer docked windows/documents.
