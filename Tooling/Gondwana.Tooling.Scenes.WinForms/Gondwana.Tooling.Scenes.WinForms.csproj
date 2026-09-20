@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Gondwana.Tooling.Scenes.WinForms.Tests" />
+    <Compile Include="..\Shared\WinForms\EditorDockWorkspace.cs" Link="Docking\EditorDockWorkspace.cs" />
+    <PackageReference Include="DockPanelSuite" Version="3.1.1" />
+    <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
+    <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
+  </ItemGroup>
+</Project>
