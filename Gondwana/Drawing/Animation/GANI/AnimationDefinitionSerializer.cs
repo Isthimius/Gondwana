@@ -234,6 +234,16 @@ public static class AnimationDefinitionSerializer
                 throw new InvalidDataException($"Failed to deserialize {source}. Result was null.");
             }
 
+            definition.TilesheetSources ??= [];
+            for (int i = 0; i < definition.TilesheetSources.Count; i++)
+            {
+                if (definition.TilesheetSources[i] is null)
+                {
+                    throw new InvalidDataException(
+                        $"GANI TilesheetSources cannot contain a null entry at index {i}.");
+                }
+            }
+
             definition.Frames ??= [];
             for (int i = 0; i < definition.Frames.Count; i++)
             {
