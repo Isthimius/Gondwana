@@ -118,7 +118,7 @@ public static class AudioDefinitionSerializer
         };
 
         if (makePathsRelative && !string.IsNullOrWhiteSpace(baseDirectory))
-            RebaseReferences(definition, oldBaseDirectory: null, baseDirectory);
+            RebaseReferences(definition, null, baseDirectory);
 
         return definition;
     }
