@@ -334,9 +334,9 @@ That separation is what allows Gondwana's CPU renderer to use dirty-region rende
 
 ## Where to read next
 
-- `Gondwana/Rendering/RefreshQueue.cs`
-- `Gondwana/Rendering/RenderSurfaceHost.cs`
-- `Gondwana/Rendering/Backbuffers/BitmapBackbuffer.cs`
+- [`Gondwana/Rendering/RefreshQueue.cs`](https://isthimius.github.io/Gondwana/api/latest/RefreshQueue_8cs_source.html)
+- [`Gondwana/Rendering/RenderSurfaceHost.cs`](https://isthimius.github.io/Gondwana/api/latest/RenderSurfaceHost_8cs_source.html)
+- [`Gondwana/Rendering/Backbuffers/BitmapBackbuffer.cs`](https://isthimius.github.io/Gondwana/api/latest/BitmapBackbuffer_8cs_source.html)
 - [[Dirty Rectangles]]
 - [[Bitmap Rendering Path]]
 - [[GL Rendering Path]]
