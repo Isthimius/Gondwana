@@ -34,6 +34,12 @@ public sealed class AnimationDefinition
     public string? NextCycleKey { get; set; }
 
     /// <summary>
+    /// Gets or sets authoring-time locations for logical GTS dependencies used by this animation.
+    /// Runtime materialization still resolves frames through the registered tilesheet name.
+    /// </summary>
+    public List<AnimationTilesheetSourceDefinition> TilesheetSources { get; set; } = [];
+
+    /// <summary>
     /// Gets or sets the ordered frame references in this animation.
     /// </summary>
     public List<AnimationFrameDefinition> Frames { get; set; } = [];
