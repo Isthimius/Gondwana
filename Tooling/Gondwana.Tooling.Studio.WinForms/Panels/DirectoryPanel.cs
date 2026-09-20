@@ -1,110 +1,80 @@
-using System.Collections.Specialized;
-using Gondwana.Tooling.Studio.ViewModels;
+using Gondwana.Tooling.Studio.WinForms.Documents;
 
 namespace Gondwana.Tooling.Studio.WinForms.Panels;
 
-/// <summary>
-/// Panel that shows the directory tree of loaded project resources.
-/// When WeifenLuo.WinFormsUI.DockPanel is added, this can be made a DockContent.
-/// </summary>
+/// <summary>One lazy filesystem browser for all supported Studio authoring formats.</summary>
 public sealed class DirectoryPanel : UserControl
 {
-    private readonly DirectoryPanelViewModel _vm;
-    private readonly TreeView _treeView;
-
-    /// <summary>
-    /// Raised when the user double-clicks (activates) a node in the directory tree.
-    /// </summary>
-    public event EventHandler<DirectoryNodeViewModel>? NodeActivated;
-
-    /// <summary>
-    /// DirectoryPanel.
-    /// </summary>
-    /// <param name="vm">ViewModel.</param>
-    public DirectoryPanel(DirectoryPanelViewModel vm)
+    private readonly Action<string> _log;
+    internal TreeView Tree { get; } = new()
     {
-        _vm = vm;
+        Dock = DockStyle.Fill, HideSelection = false, ShowNodeToolTips = true,
+        BackColor = Color.FromArgb(30, 30, 30), ForeColor = Color.Gainsboro
+    };
+    public string WorkingDirectory { get; private set; } = Environment.CurrentDirectory;
+    public event Action<string>? FileActivated;
+    public event Action? ChooseDirectoryRequested;
 
-        _treeView = new TreeView
+    public DirectoryPanel(Action<string> log)
+    {
+        _log = log;
+        Dock = DockStyle.Fill;
+        var tools = new ToolStrip { Dock = DockStyle.Top, GripStyle = ToolStripGripStyle.Hidden };
+        tools.Items.Add("Directory…", null, (_, _) => ChooseDirectoryRequested?.Invoke());
+        tools.Items.Add("Refresh", null, (_, _) => RefreshDirectory());
+        Controls.Add(Tree);
+        Controls.Add(tools);
+        Tree.BeforeExpand += (_, e) =>
         {
-            Dock = DockStyle.Fill,
-            HideSelection = false,
-            ShowLines = true,
-            BackColor = System.Drawing.Color.FromArgb(30, 30, 30),
-            ForeColor = System.Drawing.Color.FromArgb(220, 220, 220)
+            if (e.Node?.Tag is DirectoryInfo directory && e.Node.Nodes.Count == 1 && e.Node.Nodes[0].Tag is null)
+                FillDirectory(e.Node, directory.FullName);
         };
-        Controls.Add(_treeView);
-
-        _vm.RootNodes.CollectionChanged += OnRootNodesChanged;
-        _treeView.NodeMouseDoubleClick += OnNodeDoubleClick;
-
-        RebuildTree();
-    }
-
-    private void RebuildTree()
-    {
-        _treeView.BeginUpdate();
-        _treeView.Nodes.Clear();
-        foreach (var node in _vm.RootNodes)
+        Tree.NodeMouseDoubleClick += (_, e) =>
         {
-            var treeNode = CreateTreeNode(node);
-            _treeView.Nodes.Add(treeNode);
-        }
-        _treeView.ExpandAll();
-        _treeView.EndUpdate();
-    }
-
-    private static TreeNode CreateTreeNode(DirectoryNodeViewModel nodeVm)
-    {
-        var treeNode = new TreeNode(nodeVm.DisplayName) { Tag = nodeVm };
-        foreach (var child in nodeVm.Children)
-            treeNode.Nodes.Add(CreateTreeNode(child));
-        nodeVm.Children.CollectionChanged += (_, e) =>
-        {
-            if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems is not null)
-            {
-                foreach (DirectoryNodeViewModel added in e.NewItems)
-                    treeNode.Nodes.Add(CreateTreeNode(added));
-            }
-            else if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems is not null)
-            {
-                foreach (DirectoryNodeViewModel removed in e.OldItems)
-                {
-                    var toRemove = treeNode.Nodes
-                        .Cast<TreeNode>()
-                        .FirstOrDefault(n => n.Tag == removed);
-                    if (toRemove is not null)
-                        treeNode.Nodes.Remove(toRemove);
-                }
-            }
+            if (e.Node.Tag is string path)
+                FileActivated?.Invoke(path);
         };
-        return treeNode;
     }
 
-    private void OnRootNodesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    public void SetDirectory(string path)
     {
-        if (_treeView.InvokeRequired)
+        WorkingDirectory = Path.GetFullPath(path);
+        RefreshDirectory();
+    }
+
+    public void RefreshDirectory()
+    {
+        Tree.BeginUpdate();
+        try
         {
-            _treeView.BeginInvoke(RebuildTree);
-            return;
+            Tree.Nodes.Clear();
+            var root = new TreeNode(WorkingDirectory) { Tag = new DirectoryInfo(WorkingDirectory) };
+            Tree.Nodes.Add(root);
+            FillDirectory(root, WorkingDirectory);
+            root.Expand();
         }
-        RebuildTree();
+        finally { Tree.EndUpdate(); }
     }
 
-    private void OnNodeDoubleClick(object? sender, TreeNodeMouseClickEventArgs e)
+    private void FillDirectory(TreeNode parent, string path)
     {
-        if (e.Node?.Tag is DirectoryNodeViewModel vm)
-            NodeActivated?.Invoke(this, vm);
-    }
-
-    /// <summary>
-    /// Dispose.
-    /// </summary>
-    /// <param name="disposing">disposing.</param>
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-            _vm.RootNodes.CollectionChanged -= OnRootNodesChanged;
-        base.Dispose(disposing);
+        parent.Nodes.Clear();
+        try
+        {
+            foreach (var directory in new DirectoryInfo(path).EnumerateDirectories().OrderBy(item => item.Name))
+            {
+                if ((directory.Attributes & FileAttributes.ReparsePoint) != 0) continue;
+                var node = new TreeNode(directory.Name) { Tag = directory };
+                node.Nodes.Add("Expand to load…");
+                parent.Nodes.Add(node);
+            }
+            foreach (var file in Directory.EnumerateFiles(path).Where(file => StudioDocument.FormatFor(file) is not null).OrderBy(Path.GetFileName))
+                parent.Nodes.Add(new TreeNode(Path.GetFileName(file)) { Tag = file, ToolTipText = file });
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            parent.Nodes.Add("Cannot read directory: " + ex.Message);
+            _log($"Cannot read {path}: {ex.Message}");
+        }
     }
 }

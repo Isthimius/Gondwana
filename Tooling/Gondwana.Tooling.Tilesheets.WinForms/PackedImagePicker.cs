@@ -2,7 +2,8 @@ using Gondwana.Tooling.Tilesheets.Sources;
 
 namespace Gondwana.Tooling.Tilesheets.WinForms;
 
-internal static class PackedImagePicker
+/// <summary>Default packed-image picker shared by standalone and embedded hosts.</summary>
+public static class PackedImagePicker
 {
     public static PackedImageSource? Pick(
         IWin32Window owner,

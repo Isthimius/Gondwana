@@ -17,7 +17,15 @@ public sealed class AssetEditorControl : UserControl
 
     private const string AssetFileFilter = "Asset Files (*.gaf;*.zip)|*.gaf;*.zip|All Files (*.*)|*.*";
 
-    private readonly AssetsFile _assetsFile;
+    private AssetsFile _assetsFile;
+    private AssetsFile? _ownedSavedCopy;
+
+    /// <summary>Dirty state for edits made through this editor.</summary>
+    public bool IsDirty { get; private set; }
+    public event EventHandler? Changed;
+
+    /// <summary>Optional host routing for toolbar Save / Save As commands.</summary>
+    public Action<bool>? SaveRequested { get; set; }
 
     /// <summary>Notifies a host that the underlying package or a saved copy changed.</summary>
     public Action WorkspaceChanged { get; set; } = () => { };
@@ -176,12 +184,10 @@ public sealed class AssetEditorControl : UserControl
 
     public void Save()
     {
+        if (SaveRequested is { } save) { save(false); return; }
         try
         {
-            _assetsFile.Save();
-            RefreshEntries();
-            WorkspaceChanged();
-            SetStatus($"Saved: {FilePath}");
+            SaveTo(FilePath);
         }
         catch (Exception ex)
         {
@@ -191,6 +197,7 @@ public sealed class AssetEditorControl : UserControl
 
     public void SaveAs()
     {
+        if (SaveRequested is { } save) { save(true); return; }
         using var dialog = new SaveFileDialog
         {
             Title = "Save Asset File As",
@@ -258,6 +265,63 @@ public sealed class AssetEditorControl : UserControl
         }
     }
 
+    /// <summary>Notify the editor after a host edits its borrowed AssetsFile directly.</summary>
+    public void MarkChanged()
+    {
+        IsDirty = true;
+        Changed?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Saves and adopts a new path for document hosts. Standalone Save As retains
+    /// its save-copy behavior. The caller still owns the originally supplied file;
+    /// the editor owns any replacement created here. Encryption is preserved.
+    /// </summary>
+    public void SaveTo(string destination)
+    {
+        destination = Path.GetFullPath(destination);
+        if (string.Equals(destination, FilePath, StringComparison.OrdinalIgnoreCase))
+            _assetsFile.Save();
+        else
+        {
+            string temporary = Path.Combine(Path.GetDirectoryName(destination)!, ".studio-" + Guid.NewGuid() + ".gaf");
+            try
+            {
+                using (var copy = AssetsFile.LoadOrCreate(temporary, _assetsFile.Password, _assetsFile.UseEncryption))
+                {
+                    foreach (var entry in _assetsFile.GetAllEntries())
+                    {
+                        using var stream = _assetsFile[entry.AssetType, entry.AssetName];
+                        if (stream is not null) copy.Add(entry.AssetType, entry.AssetName, stream);
+                    }
+                    copy.Save();
+                }
+                File.Move(temporary, destination, overwrite: true);
+                var replacement = AssetsFile.LoadOrCreate(destination, _assetsFile.Password, _assetsFile.UseEncryption);
+                _ownedSavedCopy?.Dispose();
+                _ownedSavedCopy = replacement;
+                _assetsFile = replacement;
+            }
+            finally { if (File.Exists(temporary)) File.Delete(temporary); }
+        }
+        IsDirty = false;
+        RefreshEntries();
+        Changed?.Invoke(this, EventArgs.Empty);
+        WorkspaceChanged();
+        SetStatus($"Saved: {FilePath}");
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            SaveRequested = null;
+            _ownedSavedCopy?.Dispose();
+            _ownedSavedCopy = null;
+        }
+        base.Dispose(disposing);
+    }
+
     private void AddAsset()
     {
         using var dialog = new OpenFileDialog
@@ -289,6 +353,7 @@ public sealed class AssetEditorControl : UserControl
                     continue;
 
                 _assetsFile.Add(typePicker.SelectedType, file, customName);
+                MarkChanged();
                 imported++;
             }
 
@@ -320,6 +385,7 @@ public sealed class AssetEditorControl : UserControl
         {
             using var stream = File.OpenRead(dialog.FileName);
             _assetsFile.Add(selected.AssetType, selected.AssetName, stream);
+            MarkChanged();
             RefreshEntries();
             SetStatus($"Replaced: {selected.AssetName}");
         }
@@ -358,6 +424,7 @@ public sealed class AssetEditorControl : UserControl
 
             _assetsFile.Add(selected.AssetType, newName, stream);
             _assetsFile.Remove(selected.AssetType, selected.AssetName);
+            MarkChanged();
             RefreshEntries();
             SetStatus($"Renamed '{selected.AssetName}' to '{newName}'.");
         }
@@ -426,6 +493,7 @@ public sealed class AssetEditorControl : UserControl
         try
         {
             _assetsFile.Remove(selected.AssetType, selected.AssetName);
+            MarkChanged();
             RefreshEntries();
             SetStatus($"Deleted: {selected.AssetName}");
         }

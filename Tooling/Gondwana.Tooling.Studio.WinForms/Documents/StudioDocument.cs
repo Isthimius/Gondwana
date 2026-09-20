@@ -8,6 +8,7 @@ using Gondwana.Tooling.Scenes.Editing;
 using Gondwana.Tooling.Scenes.WinForms;
 using Gondwana.Tooling.Tilesheets.Editing;
 using Gondwana.Tooling.Tilesheets.WinForms;
+using Gondwana.Tooling.Tilesheets.Sources;
 
 namespace Gondwana.Tooling.Studio.WinForms.Documents;
 
@@ -40,7 +41,8 @@ internal sealed class StudioDocument : IDisposable
         _ => null
     };
 
-    internal static StudioDocument Create(string format, string directory, string? path = null)
+    internal static StudioDocument Create(string format, string directory, string? path = null,
+        AssetPackageCatalog? packages = null, string? password = null, bool encrypt = false)
     {
         StudioDocument result;
         switch (format)
@@ -48,7 +50,9 @@ internal sealed class StudioDocument : IDisposable
             case "gts":
             {
                 var model = path is null ? TilesheetDocument.Create(directory) : TilesheetDocument.Open(path);
-                var editor = new TilesheetEditorControl(model);
+                var editor = packages is null ? new TilesheetEditorControl(model) : new TilesheetEditorControl(model, packages);
+                if (packages is not null)
+                    editor.PackedImagePicker = owner => PackedImagePicker.Pick(owner, packages, directory);
                 result = new()
                 {
                     Kind = "tilesheet", Extension = "gts", Editor = editor,
@@ -113,20 +117,23 @@ internal sealed class StudioDocument : IDisposable
             case "gaf":
             {
                 if (path is null) throw new ArgumentException("Choose an asset file path first.");
-                var assets = AssetsFile.LoadOrCreate(path);
+                var assets = AssetsFile.LoadOrCreate(path, password, encrypt);
                 try
                 {
                     var editor = new AssetEditorControl(assets);
-                    return new()
+                    result = new()
                     {
                         Kind = "asset", Extension = System.IO.Path.GetExtension(path).TrimStart('.'), Editor = editor,
-                        Path = () => editor.FilePath, Dirty = () => false,
+                        Path = () => editor.FilePath, Dirty = () => editor.IsDirty || !File.Exists(editor.FilePath),
                         CommitEdits = () => true, Validate = () => [],
-                        Save = (_, _) => assets.Save(),
+                        Save = (destination, _) => editor.SaveTo(destination),
                         PaneNames = AssetEditorControl.PaneNames, ShowPane = editor.ShowPane,
                         IsPaneVisible = editor.IsPaneVisible, ShowAllPanes = editor.ShowAllPanes,
                         _release = assets.Dispose
                     };
+                    editor.Changed += result.OnChanged;
+                    result._detach = () => editor.Changed -= result.OnChanged;
+                    return result;
                 }
                 catch { assets.Dispose(); throw; }
             }

@@ -43,6 +43,9 @@ jobs:
       - name: Scene WinForms editor interaction tests
         run: dotnet test Testing/Gondwana.Tooling.Scenes.WinForms.Tests/Gondwana.Tooling.Scenes.WinForms.Tests.csproj --configuration Release --nologo
 
+      - name: Studio WinForms composition tests
+        run: dotnet test Testing/Gondwana.Tooling.Studio.WinForms.Tests/Gondwana.Tooling.Studio.WinForms.Tests.csproj --configuration Release --nologo
+
   build:
     runs-on: ubuntu-latest
 
