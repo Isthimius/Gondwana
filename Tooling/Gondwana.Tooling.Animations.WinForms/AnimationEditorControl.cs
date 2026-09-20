@@ -544,7 +544,6 @@ public sealed class AnimationEditorControl : UserControl
         };
 
         bar.Items.Add("Add GTS…", null, (_, _) => ChooseTilesheetSources());
-        bar.Items.Add("Add", null, (_, _) => AddSelectedSourceFrame());
         bar.Items.Add("Remove", null, (_, _) => RemoveSelectedSource());
         return bar;
     }
