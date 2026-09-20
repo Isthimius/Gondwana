@@ -419,6 +419,12 @@ The preview is definition-driven: it does not boot a `GameHost` or register a
 runtime `Scene`. It reuses Gondwana's `SceneLayer` coordinate-conversion math
 to position the authoring data and composes loaded GTS images by layer Z-order.
 
+The Scene preview uses the same zoom interaction as the GTS editor: **Ctrl+mouse
+wheel** and the **− / +** toolbar controls zoom in 1.25× steps, the selector
+provides common fixed percentages plus **Fit**, and scrollbars appear when the
+zoomed scene exceeds the viewport. A checked **Grid** toolbar button controls
+preview grid-line visibility without hiding the selected-tile outline.
+
 GSCN sparse-tile semantics are preserved. Selecting a grid cell does not create a
 tile entry; editing a property or assigning GTS/GANI content does. **Clear tile**
 removes that explicit entry again.
