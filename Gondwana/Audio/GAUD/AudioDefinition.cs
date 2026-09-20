@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace Gondwana.Audio.GAUD;
 
 /// <summary>
@@ -10,7 +12,11 @@ public sealed class AudioDefinition
     /// <summary>Gets or sets the audio resources declared by this definition.</summary>
     public List<AudioResourceDefinition> Resources { get; set; } = [];
 
-    /// <summary>Gets or sets provenance metadata describing where this definition came from.</summary>
+    /// <summary>
+    /// Gets or sets runtime provenance metadata describing where this definition came from.
+    /// Provenance is intentionally not persisted inside GAUD so relative references remain portable.
+    /// </summary>
+    [JsonIgnore]
     public AudioDefinitionSource Source
     {
         get => _source;
