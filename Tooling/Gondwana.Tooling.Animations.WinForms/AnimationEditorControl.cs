@@ -112,6 +112,19 @@ public sealed class AnimationEditorControl : UserControl
 
         _sourceTree.BeforeExpand += SourceTreeBeforeExpand;
         _sourceTree.AfterSelect += SourceTreeAfterSelect;
+        _sourceTree.NodeMouseClick += (_, e) =>
+        {
+            if (e.Button != MouseButtons.Left ||
+                e.Node.Tag is not FrameTag frame)
+            {
+                return;
+            }
+
+            // A click on an already-selected source node does not raise
+            // AfterSelect, so handle the user gesture explicitly as well.
+            ClearAnimationFrameSelection();
+            ShowSourceFrame(frame);
+        };
         _sourceTree.NodeMouseDoubleClick += (_, e) =>
         {
             _sourceTree.SelectedNode = e.Node;
