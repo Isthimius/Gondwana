@@ -311,12 +311,14 @@ var hierarchy =
     [ "Gondwana.Rendering.RenderSurfaceAdapterResizedEventArgs", "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html", null ],
     [ "Gondwana.Drawing.Direct.DirectDarknessOverlay.RevealSource", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay_1_1RevealSource.html", null ],
     [ "Gondwana.Drawing.Direct.DirectSceneLayerDarknessOverlay.RevealSource", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay_1_1RevealSource.html", null ],
+    [ "Gondwana.Scenes.GSCN.SceneAnimationSourceDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition.html", null ],
     [ "Gondwana.Scenes.GSCN.SceneCollisionProfileDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneCollisionProfileDefinition.html", null ],
     [ "Gondwana.Scenes.GSCN.SceneDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinition.html", null ],
     [ "Gondwana.Scenes.GSCN.SceneDefinitionSource", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinitionSource.html", null ],
     [ "Gondwana.Scenes.GSCN.SceneFrameDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneFrameDefinition.html", null ],
     [ "Gondwana.Scenes.GSCN.SceneLayerDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerDefinition.html", null ],
     [ "Gondwana.Scenes.GSCN.SceneLayerTileDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition.html", null ],
+    [ "Gondwana.Scenes.GSCN.SceneTilesheetSourceDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneTilesheetSourceDefinition.html", null ],
     [ "Gondwana.Physics.Movement.Scripted.ScriptedMovement", "structGondwana_1_1Physics_1_1Movement_1_1Scripted_1_1ScriptedMovement.html", null ],
     [ "global.SkiaSharpViews.Blazor.SKGLView", null, [
       [ "Gondwana.Blazor.Rendering.BlazorSkiaGlView", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorSkiaGlView.html", null ]

@@ -110,6 +110,10 @@ Properties</h2></td></tr>
 <tr class="memdesc:ae8c2a1403b5e5bd5e3268249ae4d62d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets collision-group names in definition order.  <br /></td></tr>
 <tr class="memitem:a75c46eefc7c59fc3410afc6c97e64638" id="r_a75c46eefc7c59fc3410afc6c97e64638"><td class="memItemLeft" align="right" valign="top">List&lt; <a class="el" href="classGondwana_1_1Scenes_1_1GSCN_1_1SceneCollisionProfileDefinition.html">SceneCollisionProfileDefinition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a75c46eefc7c59fc3410afc6c97e64638">CollisionProfiles</a> = []<code> [get, set]</code></td></tr>
 <tr class="memdesc:a75c46eefc7c59fc3410afc6c97e64638"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets named collision profiles used by the scene.  <br /></td></tr>
+<tr class="memitem:a16479d8d3de8496b544937f61fd8c9b5" id="r_a16479d8d3de8496b544937f61fd8c9b5"><td class="memItemLeft" align="right" valign="top">List&lt; <a class="el" href="classGondwana_1_1Scenes_1_1GSCN_1_1SceneTilesheetSourceDefinition.html">SceneTilesheetSourceDefinition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a16479d8d3de8496b544937f61fd8c9b5">TilesheetSources</a> = []<code> [get, set]</code></td></tr>
+<tr class="memdesc:a16479d8d3de8496b544937f61fd8c9b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets authoring-time locations for logical GTS dependencies used by this scene. Runtime materialization continues to resolve frames through registered tilesheet names.  <br /></td></tr>
+<tr class="memitem:aa28adc4f047a6d054c436d9a98457f25" id="r_aa28adc4f047a6d054c436d9a98457f25"><td class="memItemLeft" align="right" valign="top">List&lt; <a class="el" href="classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition.html">SceneAnimationSourceDefinition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa28adc4f047a6d054c436d9a98457f25">AnimationSources</a> = []<code> [get, set]</code></td></tr>
+<tr class="memdesc:aa28adc4f047a6d054c436d9a98457f25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets authoring-time locations for logical GANI dependencies used by this scene. Runtime materialization continues to resolve animations through registered cycle keys.  <br /></td></tr>
 <tr class="memitem:adb253ff438c3a461dc60428d8ae1eb0c" id="r_adb253ff438c3a461dc60428d8ae1eb0c"><td class="memItemLeft" align="right" valign="top">List&lt; <a class="el" href="classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerDefinition.html">SceneLayerDefinition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adb253ff438c3a461dc60428d8ae1eb0c">Layers</a> = []<code> [get, set]</code></td></tr>
 <tr class="memdesc:adb253ff438c3a461dc60428d8ae1eb0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the layers contained by the scene.  <br /></td></tr>
 <tr class="memitem:a555d0d3b830ac297f20ec8aa8bc237f5" id="r_a555d0d3b830ac297f20ec8aa8bc237f5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinitionSource.html">SceneDefinitionSource</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a555d0d3b830ac297f20ec8aa8bc237f5">Source</a><code> [get, set]</code></td></tr>
@@ -120,6 +124,32 @@ Properties</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="SceneDefinition_8cs_source.html#l00006">6</a> of file <a class="el" href="SceneDefinition_8cs_source.html">SceneDefinition.cs</a>.</p>
 </div><a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
+<a id="aa28adc4f047a6d054c436d9a98457f25" name="aa28adc4f047a6d054c436d9a98457f25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa28adc4f047a6d054c436d9a98457f25">&#9670;&#160;</a></span>AnimationSources</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">List&lt;<a class="el" href="classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition.html">SceneAnimationSourceDefinition</a>&gt; Gondwana.Scenes.GSCN.SceneDefinition.AnimationSources = []</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets authoring-time locations for logical GANI dependencies used by this scene. Runtime materialization continues to resolve animations through registered cycle keys. </p>
+
+<p class="definition">Definition at line <a class="el" href="SceneDefinition_8cs_source.html#l00035">35</a> of file <a class="el" href="SceneDefinition_8cs_source.html">SceneDefinition.cs</a>.</p>
+
+</div>
+</div>
 <a id="ae8c2a1403b5e5bd5e3268249ae4d62d8" name="ae8c2a1403b5e5bd5e3268249ae4d62d8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae8c2a1403b5e5bd5e3268249ae4d62d8">&#9670;&#160;</a></span>CollisionGroups</h2>
 
@@ -220,7 +250,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the layers contained by the scene. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneDefinition_8cs_source.html#l00028">28</a> of file <a class="el" href="SceneDefinition_8cs_source.html">SceneDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneDefinition_8cs_source.html#l00040">40</a> of file <a class="el" href="SceneDefinition_8cs_source.html">SceneDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -246,7 +276,33 @@ Properties</h2></td></tr>
 
 <p>Gets or sets provenance metadata describing where this definition came from. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneDefinition_8cs_source.html#l00033">33</a> of file <a class="el" href="SceneDefinition_8cs_source.html">SceneDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneDefinition_8cs_source.html#l00045">45</a> of file <a class="el" href="SceneDefinition_8cs_source.html">SceneDefinition.cs</a>.</p>
+
+</div>
+</div>
+<a id="a16479d8d3de8496b544937f61fd8c9b5" name="a16479d8d3de8496b544937f61fd8c9b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16479d8d3de8496b544937f61fd8c9b5">&#9670;&#160;</a></span>TilesheetSources</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">List&lt;<a class="el" href="classGondwana_1_1Scenes_1_1GSCN_1_1SceneTilesheetSourceDefinition.html">SceneTilesheetSourceDefinition</a>&gt; Gondwana.Scenes.GSCN.SceneDefinition.TilesheetSources = []</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets authoring-time locations for logical GTS dependencies used by this scene. Runtime materialization continues to resolve frames through registered tilesheet names. </p>
+
+<p class="definition">Definition at line <a class="el" href="SceneDefinition_8cs_source.html#l00029">29</a> of file <a class="el" href="SceneDefinition_8cs_source.html">SceneDefinition.cs</a>.</p>
 
 </div>
 </div>

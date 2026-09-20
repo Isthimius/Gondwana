@@ -101,6 +101,8 @@ $(function(){initNavTree('namespaceGondwana_1_1Scenes_1_1GSCN.html','',''); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:SceneAnimationSourceDefinition" id="r_SceneAnimationSourceDefinition"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition.html">SceneAnimationSourceDefinition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes an authoring-time source for a logical animation key referenced by a <a class="el" href="namespaceGondwana_1_1Scenes_1_1GSCN.html">GSCN</a> definition. Runtime scene materialization continues to resolve animations through the cycle registry.  <a href="classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition.html#details">More...</a><br /></td></tr>
 <tr class="memitem:SceneCollisionProfileDefinition" id="r_SceneCollisionProfileDefinition"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Scenes_1_1GSCN_1_1SceneCollisionProfileDefinition.html">SceneCollisionProfileDefinition</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines one named scene collision profile using group names rather than runtime masks.  <a href="classGondwana_1_1Scenes_1_1GSCN_1_1SceneCollisionProfileDefinition.html#details">More...</a><br /></td></tr>
 <tr class="memitem:SceneDefinition" id="r_SceneDefinition"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinition.html">SceneDefinition</a></td></tr>
@@ -117,17 +119,49 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines one layer in a <a class="el" href="namespaceGondwana_1_1Scenes_1_1GSCN.html">GSCN</a> scene.  <a href="classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerDefinition.html#details">More...</a><br /></td></tr>
 <tr class="memitem:SceneLayerTileDefinition" id="r_SceneLayerTileDefinition"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition.html">SceneLayerTileDefinition</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines persistent state for one tile cell in a <a class="el" href="namespaceGondwana_1_1Scenes_1_1GSCN.html">GSCN</a> scene layer.  <a href="classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition.html#details">More...</a><br /></td></tr>
+<tr class="memitem:SceneTilesheetSourceDefinition" id="r_SceneTilesheetSourceDefinition"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Scenes_1_1GSCN_1_1SceneTilesheetSourceDefinition.html">SceneTilesheetSourceDefinition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes an authoring-time source for a logical tilesheet referenced by a <a class="el" href="namespaceGondwana_1_1Scenes_1_1GSCN.html">GSCN</a> definition. Runtime scene materialization continues to resolve frame references through the tilesheet registry.  <a href="classGondwana_1_1Scenes_1_1GSCN_1_1SceneTilesheetSourceDefinition.html#details">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
+<tr class="memitem:aade3fd7c229d2639c9d31616a37daeaf" id="r_aade3fd7c229d2639c9d31616a37daeaf"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aade3fd7c229d2639c9d31616a37daeaf">SceneAnimationSourceKind</a> { <a class="el" href="#aade3fd7c229d2639c9d31616a37daeafa1b6a597f499a174695074341ea7a2cf6">LooseDefinitionFile</a>
+, <a class="el" href="#aade3fd7c229d2639c9d31616a37daeafa89e42ca2f7d2fa6981f4fcc9df275297">PackedDefinitionFile</a>
+ }</td></tr>
+<tr class="memdesc:aade3fd7c229d2639c9d31616a37daeaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Identifies how a GSCN definition can locate one of its logical GANI dependencies for authoring and tooling purposes.  <a href="#aade3fd7c229d2639c9d31616a37daeaf">More...</a><br /></td></tr>
 <tr class="memitem:a2171ac4346c9f5ac439c4d6e0ec1a626" id="r_a2171ac4346c9f5ac439c4d6e0ec1a626"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2171ac4346c9f5ac439c4d6e0ec1a626">SceneDefinitionSourceKind</a> { <a class="el" href="#a2171ac4346c9f5ac439c4d6e0ec1a626a6adf97f83acf6453d4a6a4b1070f3754">None</a> = 0
 , <a class="el" href="#a2171ac4346c9f5ac439c4d6e0ec1a626a1b6a597f499a174695074341ea7a2cf6">LooseDefinitionFile</a> = 1
 , <a class="el" href="#a2171ac4346c9f5ac439c4d6e0ec1a626a89e42ca2f7d2fa6981f4fcc9df275297">PackedDefinitionFile</a> = 2
 , <a class="el" href="#a2171ac4346c9f5ac439c4d6e0ec1a626a5c5f06440fcb85cd5c8cfafe32e34b78">Generated</a> = 3
  }</td></tr>
 <tr class="memdesc:a2171ac4346c9f5ac439c4d6e0ec1a626"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates where a scene definition came from.  <a href="#a2171ac4346c9f5ac439c4d6e0ec1a626">More...</a><br /></td></tr>
+<tr class="memitem:aca4b287b317b561a56f736bd904653f5" id="r_aca4b287b317b561a56f736bd904653f5"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aca4b287b317b561a56f736bd904653f5">SceneTilesheetSourceKind</a> { <a class="el" href="#aca4b287b317b561a56f736bd904653f5a1b6a597f499a174695074341ea7a2cf6">LooseDefinitionFile</a>
+, <a class="el" href="#aca4b287b317b561a56f736bd904653f5a89e42ca2f7d2fa6981f4fcc9df275297">PackedDefinitionFile</a>
+ }</td></tr>
+<tr class="memdesc:aca4b287b317b561a56f736bd904653f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Identifies how a GSCN definition can locate one of its logical GTS dependencies for authoring and tooling purposes.  <a href="#aca4b287b317b561a56f736bd904653f5">More...</a><br /></td></tr>
 </table>
 <a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
+<a id="aade3fd7c229d2639c9d31616a37daeaf" name="aade3fd7c229d2639c9d31616a37daeaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aade3fd7c229d2639c9d31616a37daeaf">&#9670;&#160;</a></span>SceneAnimationSourceKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#aade3fd7c229d2639c9d31616a37daeaf">Gondwana.Scenes.GSCN.SceneAnimationSourceKind</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Identifies how a <a class="el" href="namespaceGondwana_1_1Scenes_1_1GSCN.html">GSCN</a> definition can locate one of its logical GANI dependencies for authoring and tooling purposes. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aade3fd7c229d2639c9d31616a37daeafa1b6a597f499a174695074341ea7a2cf6" name="aade3fd7c229d2639c9d31616a37daeafa1b6a597f499a174695074341ea7a2cf6"></a>LooseDefinitionFile&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aade3fd7c229d2639c9d31616a37daeafa89e42ca2f7d2fa6981f4fcc9df275297" name="aade3fd7c229d2639c9d31616a37daeafa89e42ca2f7d2fa6981f4fcc9df275297"></a>PackedDefinitionFile&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="SceneAnimationSourceDefinition_8cs_source.html#l00011">11</a> of file <a class="el" href="SceneAnimationSourceDefinition_8cs_source.html">SceneAnimationSourceDefinition.cs</a>.</p>
+
+</div>
+</div>
 <a id="a2171ac4346c9f5ac439c4d6e0ec1a626" name="a2171ac4346c9f5ac439c4d6e0ec1a626"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2171ac4346c9f5ac439c4d6e0ec1a626">&#9670;&#160;</a></span>SceneDefinitionSourceKind</h2>
 
@@ -149,6 +183,28 @@ Enumerations</h2></td></tr>
 </table>
 
 <p class="definition">Definition at line <a class="el" href="SceneDefinitionSourceKind_8cs_source.html#l00006">6</a> of file <a class="el" href="SceneDefinitionSourceKind_8cs_source.html">SceneDefinitionSourceKind.cs</a>.</p>
+
+</div>
+</div>
+<a id="aca4b287b317b561a56f736bd904653f5" name="aca4b287b317b561a56f736bd904653f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca4b287b317b561a56f736bd904653f5">&#9670;&#160;</a></span>SceneTilesheetSourceKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#aca4b287b317b561a56f736bd904653f5">Gondwana.Scenes.GSCN.SceneTilesheetSourceKind</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Identifies how a <a class="el" href="namespaceGondwana_1_1Scenes_1_1GSCN.html">GSCN</a> definition can locate one of its logical GTS dependencies for authoring and tooling purposes. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aca4b287b317b561a56f736bd904653f5a1b6a597f499a174695074341ea7a2cf6" name="aca4b287b317b561a56f736bd904653f5a1b6a597f499a174695074341ea7a2cf6"></a>LooseDefinitionFile&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aca4b287b317b561a56f736bd904653f5a89e42ca2f7d2fa6981f4fcc9df275297" name="aca4b287b317b561a56f736bd904653f5a89e42ca2f7d2fa6981f4fcc9df275297"></a>PackedDefinitionFile&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="SceneTilesheetSourceDefinition_8cs_source.html#l00011">11</a> of file <a class="el" href="SceneTilesheetSourceDefinition_8cs_source.html">SceneTilesheetSourceDefinition.cs</a>.</p>
 
 </div>
 </div>

@@ -267,12 +267,14 @@ var annotated_dup =
       ] ],
       [ "Scenes", "namespaceGondwana_1_1Scenes.html", [
         [ "GSCN", "namespaceGondwana_1_1Scenes_1_1GSCN.html", [
+          [ "SceneAnimationSourceDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition" ],
           [ "SceneCollisionProfileDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneCollisionProfileDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneCollisionProfileDefinition" ],
           [ "SceneDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinition" ],
           [ "SceneDefinitionSource", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinitionSource.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinitionSource" ],
           [ "SceneFrameDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneFrameDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneFrameDefinition" ],
           [ "SceneLayerDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerDefinition" ],
-          [ "SceneLayerTileDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition" ]
+          [ "SceneLayerTileDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition" ],
+          [ "SceneTilesheetSourceDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneTilesheetSourceDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneTilesheetSourceDefinition" ]
         ] ],
         [ "Scene", "classGondwana_1_1Scenes_1_1Scene.html", "classGondwana_1_1Scenes_1_1Scene" ],
         [ "SceneLayer", "classGondwana_1_1Scenes_1_1SceneLayer.html", "classGondwana_1_1Scenes_1_1SceneLayer" ],
