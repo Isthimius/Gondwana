@@ -191,6 +191,18 @@ public sealed class AnimationEditorTests
                         .Select(item => item.Text)
                         .ToArray());
 
+                var sequenceToolbar = Descendants<ToolStrip>(editor)
+                    .Single(bar => bar.Items
+                        .Cast<ToolStripItem>()
+                        .Any(item => item.Text == "Up"));
+
+                Assert.Equal(
+                    ["Add", "Remove", "Up", "Down"],
+                    sequenceToolbar.Items
+                        .Cast<ToolStripItem>()
+                        .Select(item => item.Text)
+                        .ToArray());
+
                 var errors = editor.UpdateValidation();
                 Assert.Empty(errors);
             }
