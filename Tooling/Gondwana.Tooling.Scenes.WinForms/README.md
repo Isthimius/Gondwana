@@ -144,6 +144,15 @@ animation-key tiles.
 Clicking the preview chooses a tile in the currently selected SceneLayer. The
 Tile properties pane and X/Y selector follow that selection.
 
+The preview uses the same zoom interaction as the GTS editor:
+
+- **Ctrl+mouse-wheel** zooms in/out in 1.25× steps.
+- **−** and **+** in the preview toolbar use the same 1.25× step.
+- The zoom selector provides 25%, 50%, 100%, 200%, 400%, and **Fit**.
+- Horizontal and vertical scrollbars appear when the zoomed scene exceeds the
+  preview viewport.
+- **Grid** toggles preview grid lines without hiding the selected-tile outline.
+
 The preview is an authoring aid, not a replacement for runtime rendering. It
 does not execute effects, collision simulation, camera/view behavior, runtime
 animation timing, or a game loop.

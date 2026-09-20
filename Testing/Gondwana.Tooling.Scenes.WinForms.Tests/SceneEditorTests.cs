@@ -119,6 +119,51 @@ public sealed class SceneEditorTests
                     pane => pane.Text == "Scene preview");
                 var previewPaneBeforeClose = previewPane.Pane;
 
+                var previewControl = Descendants(previewPane)
+                    .OfType<ScenePreviewControl>()
+                    .Single();
+
+                var previewToolbar = Descendants(previewPane)
+                    .OfType<ToolStrip>()
+                    .Single();
+
+                Assert.Contains(
+                    previewToolbar.Items.Cast<ToolStripItem>(),
+                    item => item.Text == "−");
+                Assert.Contains(
+                    previewToolbar.Items.Cast<ToolStripItem>(),
+                    item => item.Text == "+");
+
+                var gridToggle = Assert.IsType<ToolStripButton>(
+                    previewToolbar.Items
+                        .Cast<ToolStripItem>()
+                        .Single(item => item.Text == "Grid"));
+
+                Assert.True(gridToggle.Checked);
+                Assert.True(previewControl.ShowGridLines);
+
+                gridToggle.PerformClick();
+                Assert.False(gridToggle.Checked);
+                Assert.False(previewControl.ShowGridLines);
+
+                previewControl.SetZoom(1f);
+                Assert.Equal(1f, previewControl.Zoom, 3);
+
+                previewControl.ZoomIn();
+                Assert.Equal(1.25f, previewControl.Zoom, 3);
+
+                previewControl.ZoomOut();
+                Assert.Equal(1f, previewControl.Zoom, 3);
+
+                Assert.True(
+                    previewControl.ZoomWithMouseWheel(
+                        new Point(10, 10),
+                        120,
+                        controlPressed: true));
+                Assert.Equal(1.25f, previewControl.Zoom, 3);
+
+                previewControl.SetZoom(1f);
+
                 previewPane.Activate();
                 previewPane.Pane.CloseActiveContent();
                 Application.DoEvents();
@@ -144,6 +189,22 @@ public sealed class SceneEditorTests
                 editor.ShowAllPanes();
                 Application.DoEvents();
                 Assert.All(panes, pane => Assert.False(pane.IsHidden));
+
+                layer.Columns = 100;
+                layer.Rows = 100;
+                editor.UpdateValidation();
+                previewControl.Configure(
+                    document.Definition,
+                    _ => null,
+                    _ => null);
+                Application.DoEvents();
+
+                Assert.True(
+                    previewControl.AutoScrollMinSize.Width >
+                    previewControl.ClientSize.Width);
+                Assert.True(
+                    previewControl.AutoScrollMinSize.Height >
+                    previewControl.ClientSize.Height);
 
                 Assert.Empty(layer.Tiles);
 

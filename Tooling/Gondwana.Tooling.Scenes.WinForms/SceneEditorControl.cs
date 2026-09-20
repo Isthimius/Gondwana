@@ -314,7 +314,8 @@ public sealed class SceneEditorControl : UserControl
 
         var preview = _workspace.AddPane(
             "Scene preview",
-            _preview);
+            _preview,
+            BuildPreviewToolbar());
 
         var gts = _workspace.AddPane(
             "GTS frame sources",
@@ -361,6 +362,59 @@ public sealed class SceneEditorControl : UserControl
         gts.Show(preview.Pane, DockAlignment.Bottom, .34);
         animations.Show(gts.Pane, DockAlignment.Right, .34);
         validation.Show(tileProperties.Pane, DockAlignment.Bottom, .28);
+    }
+
+    private ToolStrip BuildPreviewToolbar()
+    {
+        var bar = NewToolbar();
+
+        bar.Items.Add("−", null, (_, _) => _preview.ZoomOut());
+
+        var zoom = new ToolStripComboBox
+        {
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            Width = 75,
+            BackColor = DarkTheme.Background,
+            ForeColor = DarkTheme.Foreground,
+            FlatStyle = FlatStyle.Flat
+        };
+
+        zoom.Items.AddRange(
+            ["25%", "50%", "100%", "200%", "400%", "Fit"]);
+        zoom.SelectedIndex = 2;
+        zoom.SelectedIndexChanged += (_, _) =>
+        {
+            if (zoom.SelectedIndex == 5)
+            {
+                _preview.Fit();
+            }
+            else
+            {
+                _preview.SetZoom(
+                    new[] { .25f, .5f, 1f, 2f, 4f }[
+                        zoom.SelectedIndex]);
+            }
+        };
+
+        bar.Items.Add(zoom);
+        bar.Items.Add("+", null, (_, _) => _preview.ZoomIn());
+        bar.Items.Add(new ToolStripSeparator());
+
+        var grid = new ToolStripButton("Grid")
+        {
+            CheckOnClick = true,
+            Checked = true,
+            ToolTipText = "Show or hide scene preview grid lines"
+        };
+
+        grid.CheckedChanged += (_, _) =>
+        {
+            _preview.ShowGridLines = grid.Checked;
+            _preview.Invalidate();
+        };
+
+        bar.Items.Add(grid);
+        return bar;
     }
 
     private ToolStrip BuildStructureToolbar()

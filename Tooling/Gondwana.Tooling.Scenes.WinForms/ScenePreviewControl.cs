@@ -1,4 +1,5 @@
 using System.Drawing.Drawing2D;
+using System.Runtime.InteropServices;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Scenes;
 using Gondwana.Scenes.GSCN;
@@ -10,29 +11,37 @@ namespace Gondwana.Tooling.Scenes.WinForms;
 /// Lightweight definition-driven GSCN preview. It uses SceneLayer's coordinate
 /// conversion implementation but does not create or register a runtime Scene.
 /// </summary>
-internal sealed class ScenePreviewControl : UserControl
+internal sealed class ScenePreviewControl : UserControl, IMessageFilter
 {
+    private const float ZoomStepFactor = 1.25f;
+    private const float PreviewMargin = 28f;
     private SceneDefinition? _definition;
     private Func<string, SceneTilesheetSource?>? _findTilesheet;
     private Func<string, SceneAnimationSource?>? _findAnimation;
     private SceneLayerDefinition? _selectedLayer;
     private int _selectedX;
     private int _selectedY;
+    private int _zoomWheelDelta;
+    private bool _fitToWindow;
 
     private RectangleF _worldBounds = RectangleF.Empty;
-    private float _scale = 1f;
     private PointF _offset;
     private readonly Dictionary<SceneLayerDefinition, ProjectionCache> _projections = [];
+
+    public float Zoom { get; private set; } = 1f;
+    public bool ShowGridLines { get; set; } = true;
 
     public event Action<SceneLayerDefinition, int, int>? TileSelected;
 
     public ScenePreviewControl()
     {
         DoubleBuffered = true;
+        AutoScroll = true;
         Dock = DockStyle.Fill;
         BackColor = Color.FromArgb(24, 24, 24);
         ForeColor = Color.Gainsboro;
-        Resize += (_, _) => Invalidate();
+        ResizeRedraw = true;
+        Resize += (_, _) => UpdateExtent();
     }
 
     public void Configure(
@@ -53,6 +62,144 @@ internal sealed class ScenePreviewControl : UserControl
             _projections.Remove(stale);
         }
 
+        UpdateSceneBounds();
+        UpdateExtent();
+    }
+
+    public void SetZoom(float zoom)
+    {
+        PointF? centerWorld = _worldBounds.IsEmpty || Zoom <= 0
+            ? null
+            : new PointF(
+                (ClientSize.Width / 2f - _offset.X) / Zoom,
+                (ClientSize.Height / 2f - _offset.Y) / Zoom);
+
+        _fitToWindow = false;
+        Zoom = Math.Clamp(zoom, .05f, 16f);
+        UpdateExtent();
+
+        if (centerWorld is { } center)
+        {
+            float contentX =
+                PreviewMargin +
+                (center.X - _worldBounds.Left) * Zoom;
+            float contentY =
+                PreviewMargin +
+                (center.Y - _worldBounds.Top) * Zoom;
+
+            AutoScrollPosition = new Point(
+                Math.Max(
+                    0,
+                    (int)Math.Round(
+                        contentX - ClientSize.Width / 2f)),
+                Math.Max(
+                    0,
+                    (int)Math.Round(
+                        contentY - ClientSize.Height / 2f)));
+
+            UpdateOffset();
+        }
+
+        Invalidate();
+    }
+
+    internal void ZoomIn() =>
+        SetZoom(Zoom * ZoomStepFactor);
+
+    internal void ZoomOut() =>
+        SetZoom(Zoom / ZoomStepFactor);
+
+    public void Fit()
+    {
+        _fitToWindow = true;
+        AutoScrollPosition = Point.Empty;
+        UpdateExtent();
+    }
+
+    internal bool ZoomWithMouseWheel(
+        Point location,
+        int delta,
+        bool controlPressed)
+    {
+        if (!controlPressed ||
+            _worldBounds.IsEmpty ||
+            !ClientRectangle.Contains(location))
+        {
+            _zoomWheelDelta = 0;
+            return false;
+        }
+
+        _zoomWheelDelta += delta;
+        const int WheelNotch = 120;
+
+        while (_zoomWheelDelta >= WheelNotch)
+        {
+            ZoomIn();
+            _zoomWheelDelta -= WheelNotch;
+        }
+
+        while (_zoomWheelDelta <= -WheelNotch)
+        {
+            ZoomOut();
+            _zoomWheelDelta += WheelNotch;
+        }
+
+        return true;
+    }
+
+    protected override void OnHandleCreated(EventArgs e)
+    {
+        base.OnHandleCreated(e);
+        Application.AddMessageFilter(this);
+    }
+
+    protected override void OnHandleDestroyed(EventArgs e)
+    {
+        Application.RemoveMessageFilter(this);
+        base.OnHandleDestroyed(e);
+    }
+
+    bool IMessageFilter.PreFilterMessage(ref Message message)
+    {
+        const int MouseWheel = 0x020A;
+        const int ControlKey = 0x0008;
+
+        if (message.Msg != MouseWheel)
+            return false;
+
+        long buttonsAndDelta = message.WParam.ToInt64();
+        if ((buttonsAndDelta & ControlKey) == 0)
+        {
+            _zoomWheelDelta = 0;
+            return false;
+        }
+
+        long position = message.LParam.ToInt64();
+        var screenPoint = new Point(
+            unchecked((short)position),
+            unchecked((short)(position >> 16)));
+
+        if (!Visible ||
+            !IsHandleCreated ||
+            WindowFromPoint(screenPoint) != Handle)
+        {
+            _zoomWheelDelta = 0;
+            return false;
+        }
+
+        return ZoomWithMouseWheel(
+            PointToClient(screenPoint),
+            unchecked((short)(buttonsAndDelta >> 16)),
+            controlPressed: true);
+    }
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr WindowFromPoint(Point point);
+
+    protected override void OnScroll(ScrollEventArgs se)
+    {
+        base.OnScroll(se);
+        UpdateOffset();
         Invalidate();
     }
 
@@ -93,14 +240,13 @@ internal sealed class ScenePreviewControl : UserControl
             return;
         }
 
-        _worldBounds = CalculateWorldBounds(visibleLayers);
         if (_worldBounds.Width <= 0 || _worldBounds.Height <= 0)
         {
             DrawCenteredMessage(e.Graphics, "Scene bounds are empty.");
             return;
         }
 
-        CalculateTransform(_worldBounds);
+        UpdateOffset();
 
         foreach (var layer in visibleLayers)
             DrawLayer(e.Graphics, layer);
@@ -129,13 +275,13 @@ internal sealed class ScenePreviewControl : UserControl
         if (layer is null ||
             layer.Columns <= 0 ||
             layer.Rows <= 0 ||
-            _scale <= 0)
+            Zoom <= 0)
         {
             return;
         }
 
-        float worldX = (e.X - _offset.X) / _scale;
-        float worldY = (e.Y - _offset.Y) / _scale;
+        float worldX = (e.X - _offset.X) / Zoom;
+        float worldY = (e.Y - _offset.Y) / Zoom;
 
         var projection = GetProjection(layer);
         PointF grid = projection.WorldPxToGrid(new PointF(worldX, worldY));
@@ -179,24 +325,104 @@ internal sealed class ScenePreviewControl : UserControl
         return bounds;
     }
 
-    private void CalculateTransform(RectangleF bounds)
+    private void UpdateSceneBounds()
     {
-        const float margin = 28f;
-        float availableWidth = Math.Max(1, ClientSize.Width - margin * 2);
-        float availableHeight = Math.Max(1, ClientSize.Height - margin * 2);
+        if (_definition is null)
+        {
+            _worldBounds = RectangleF.Empty;
+            return;
+        }
 
-        _scale = Math.Min(
-            availableWidth / Math.Max(1, bounds.Width),
-            availableHeight / Math.Max(1, bounds.Height));
+        var visibleLayers = _definition.Layers
+            .Where(layer =>
+                layer.Visible &&
+                layer.Columns > 0 &&
+                layer.Rows > 0)
+            .OrderBy(layer => layer.ZOrder)
+            .ToList();
 
-        _scale = Math.Clamp(_scale, 0.05f, 8f);
+        _worldBounds = CalculateWorldBounds(visibleLayers);
+    }
 
-        float renderedWidth = bounds.Width * _scale;
-        float renderedHeight = bounds.Height * _scale;
+    private float CalculateFitZoom()
+    {
+        if (_worldBounds.IsEmpty)
+            return 1f;
+
+        float availableWidth =
+            Math.Max(1, ClientSize.Width - PreviewMargin * 2);
+        float availableHeight =
+            Math.Max(1, ClientSize.Height - PreviewMargin * 2);
+
+        return Math.Clamp(
+            Math.Min(
+                availableWidth / Math.Max(1, _worldBounds.Width),
+                availableHeight / Math.Max(1, _worldBounds.Height)),
+            .05f,
+            16f);
+    }
+
+    private void UpdateExtent()
+    {
+        if (_worldBounds.IsEmpty)
+        {
+            AutoScrollMinSize = Size.Empty;
+            AutoScrollPosition = Point.Empty;
+            _offset = Point.Empty;
+            Invalidate();
+            return;
+        }
+
+        if (_fitToWindow)
+        {
+            Zoom = CalculateFitZoom();
+            AutoScrollPosition = Point.Empty;
+        }
+
+        AutoScrollMinSize = new Size(
+            Math.Max(
+                1,
+                (int)Math.Ceiling(
+                    _worldBounds.Width * Zoom +
+                    PreviewMargin * 2)),
+            Math.Max(
+                1,
+                (int)Math.Ceiling(
+                    _worldBounds.Height * Zoom +
+                    PreviewMargin * 2)));
+
+        UpdateOffset();
+        Invalidate();
+    }
+
+    private void UpdateOffset()
+    {
+        if (_worldBounds.IsEmpty)
+        {
+            _offset = Point.Empty;
+            return;
+        }
+
+        float renderedWidth = _worldBounds.Width * Zoom;
+        float renderedHeight = _worldBounds.Height * Zoom;
+
+        float baseX =
+            renderedWidth + PreviewMargin * 2 <= ClientSize.Width
+                ? (ClientSize.Width - renderedWidth) / 2f
+                : PreviewMargin;
+
+        float baseY =
+            renderedHeight + PreviewMargin * 2 <= ClientSize.Height
+                ? (ClientSize.Height - renderedHeight) / 2f
+                : PreviewMargin;
 
         _offset = new PointF(
-            (ClientSize.Width - renderedWidth) / 2f - bounds.Left * _scale,
-            (ClientSize.Height - renderedHeight) / 2f - bounds.Top * _scale);
+            baseX +
+            AutoScrollPosition.X -
+            _worldBounds.Left * Zoom,
+            baseY +
+            AutoScrollPosition.Y -
+            _worldBounds.Top * Zoom);
     }
 
     private void DrawLayer(Graphics graphics, SceneLayerDefinition layer)
@@ -239,7 +465,8 @@ internal sealed class ScenePreviewControl : UserControl
                 GraphicsUnit.Pixel);
         }
 
-        if (layer.ShowGridLines || ReferenceEquals(layer, _selectedLayer))
+        if (ShowGridLines &&
+            (layer.ShowGridLines || ReferenceEquals(layer, _selectedLayer)))
         {
             int maxCells = 20000;
             int count = 0;
@@ -387,15 +614,15 @@ internal sealed class ScenePreviewControl : UserControl
 
     private RectangleF ToScreen(RectangleF world) =>
         new(
-            world.X * _scale + _offset.X,
-            world.Y * _scale + _offset.Y,
-            world.Width * _scale,
-            world.Height * _scale);
+            world.X * Zoom + _offset.X,
+            world.Y * Zoom + _offset.Y,
+            world.Width * Zoom,
+            world.Height * Zoom);
 
     private PointF ToScreen(PointF world) =>
         new(
-            world.X * _scale + _offset.X,
-            world.Y * _scale + _offset.Y);
+            world.X * Zoom + _offset.X,
+            world.Y * Zoom + _offset.Y);
 
     private void DrawCenteredMessage(Graphics graphics, string text)
     {
