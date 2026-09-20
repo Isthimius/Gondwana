@@ -28,6 +28,10 @@ This folder contains developer tooling projects and scripts used across the Gond
   WinForms editor for Gondwana `.gani` animation definitions, with GTS-backed frame browsing and live preview.  
   See: [`Gondwana.Tooling.Animations.WinForms/README.md`](./Gondwana.Tooling.Animations.WinForms/README.md)
 
+- [`Gondwana.Tooling.Audio.WinForms`](./Gondwana.Tooling.Audio.WinForms/)  
+  WinForms editor for Gondwana `.gsnd` audio definitions, including source metadata and playback settings.  
+  See: [`Gondwana.Tooling.Audio.WinForms/README.md`](./Gondwana.Tooling.Audio.WinForms/README.md)
+
 - [`Gondwana.Tooling.Tilesheets.WinForms`](./Gondwana.Tooling.Tilesheets.WinForms/)  
   WinForms editor for Gondwana `.gts` tilesheet definitions.  
   See: [`Gondwana.Tooling.Tilesheets.WinForms/README.md`](./Gondwana.Tooling.Tilesheets.WinForms/README.md)

@@ -38,6 +38,7 @@ $ChangelogProjects = @(
     [pscustomobject]@{ Path = "Tooling/Gondwana.Templates"; RootName = "Tooling / Gondwana.Templates"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Assets.WinForms"; RootName = "Tooling / Gondwana.Tooling.Assets.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Animations.WinForms"; RootName = "Tooling / Gondwana.Tooling.Animations.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Audio.WinForms"; RootName = "Tooling / Gondwana.Tooling.Audio.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.Avalonia"; RootName = "Tooling / Gondwana.Tooling.Studio.Avalonia"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.Core"; RootName = "Tooling / Gondwana.Tooling.Studio.Core"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Tooling/Gondwana.Tooling.Studio.WinForms"; RootName = "Tooling / Gondwana.Tooling.Studio.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },

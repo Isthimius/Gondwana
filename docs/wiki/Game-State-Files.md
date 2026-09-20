@@ -27,6 +27,7 @@ A game state file should not, however, be confused with a complete application-s
 - [Tilesheets and GTS files](#tilesheets-and-gts-files)
 - [Animations and GANI files](#animations-and-gani-files)
 - [Scenes and GSCN files](#scenes-and-gscn-files)
+- [Audio and GSND files](#audio-and-gsnd-files)
 - [Loading state files during startup](#loading-state-files-during-startup)
 - [What is not automatically saved](#what-is-not-automatically-saved)
 - [Choosing what belongs in EngineState](#choosing-what-belongs-in-enginestate)
@@ -141,6 +142,7 @@ By default this:
 - stores tilesheet definitions inside the state file
 - stores animation definitions inline as GANI data
 - stores scene definitions inline as GSCN data
+- stores audio resources inline as a GSND definition
 
 If the destination file already exists, it is overwritten.
 
@@ -407,7 +409,7 @@ GANI frame entries reference tilesheets by logical name, region, and coordinates
 
 For a partial state file that must restore independently, save its required `Tilesheets` along with its `Cycles`.
 
-The `separateGaniFiles`, `separateGtsFiles`, and `separateGscnFiles` choices are independent.
+The `separateGaniFiles`, `separateGtsFiles`, `separateGscnFiles`, and `separateGsndFile` choices are independent.
 
 For the animation-definition format itself, see [[GANI Files]].
 
@@ -448,6 +450,43 @@ This works independently of `separateGtsFiles`. A project can therefore choose a
 Sprites remain a separate EngineState category. When restored, their saved `SceneId` and `SceneLayerId` values are used to reconnect them to the canonical layers created from GSCN.
 
 For the scene-definition format itself, see [[GSCN Files]]. For implementation details, see [[Serialization and EngineState]].
+
+---
+
+## Audio and GSND files
+
+Audio resources use the GSND sound-definition layer when EngineState is saved.
+
+By default, the selected audio resources are converted into one inline GSND `AudioDefinition` inside the state file:
+
+```csharp
+Engine.Instance.State.SaveToFile(
+    "session.json",
+    parts: EngineStateParts.Audio);
+```
+
+Audio can instead be externalized as a standalone `.gsnd` file:
+
+```csharp
+Engine.Instance.State.SaveToFile(
+    "session.json",
+    parts: EngineStateParts.Audio,
+    separateGsndFile: true);
+```
+
+For `session.json`, the external definition is written as:
+
+```text
+session.json
+session.audio/
+    audio.gsnd
+```
+
+GSND persists reproducible source metadata and portable settings such as volume, pan, playback speed, and looping. It does **not** persist a backend playback handle, current playback position, or device state. Configure the appropriate audio backend before restoring audio.
+
+Packed GSND entries can reference audio stored in a GAF. When Audio is restored, Gondwana includes the `AssetsFiles` dependency and restores asset files before materializing GSND resources.
+
+For the standalone sound-definition format itself, see [[GSND Files]].
 
 ---
 
