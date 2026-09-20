@@ -256,6 +256,7 @@ public sealed class AnimationEditorControl : UserControl
     private void LoadDefinitionTilesheetSources()
     {
         _sourceDiagnostics.Clear();
+        Definition.TilesheetSources ??= [];
 
         var explicitTilesheets = new HashSet<string>(
             Definition.TilesheetSources
