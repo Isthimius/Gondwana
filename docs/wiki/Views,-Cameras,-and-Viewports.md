@@ -45,10 +45,10 @@ Because rendering flows through views, multiple cameras are not a bolt-on featur
 ---
 
 ## Where to read next
-- `Gondwana/Rendering/Views/View.cs`
-- `Gondwana/Rendering/Views/Camera.cs`
-- `Gondwana/Rendering/Views/Viewport.cs`
-- `Gondwana/Rendering/Views/ViewManager.cs`
+- [`Gondwana/Rendering/Views/View.cs`](https://isthimius.github.io/Gondwana/api/latest/View_8cs_source.html)
+- [`Gondwana/Rendering/Views/Camera.cs`](https://isthimius.github.io/Gondwana/api/latest/Camera_8cs_source.html)
+- [`Gondwana/Rendering/Views/Viewport.cs`](https://isthimius.github.io/Gondwana/api/latest/Viewport_8cs_source.html)
+- [`Gondwana/Rendering/Views/ViewManager.cs`](https://isthimius.github.io/Gondwana/api/latest/ViewManager_8cs_source.html)
 
 ---
 
