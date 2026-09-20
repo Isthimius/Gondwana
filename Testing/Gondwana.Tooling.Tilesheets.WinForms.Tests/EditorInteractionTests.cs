@@ -144,6 +144,49 @@ public sealed class EditorInteractionTests
     });
 
     [Fact]
+    public void PackedGafImage_CanBePreviewedAndSavedAsReference() => RunSta(() =>
+    {
+        var sourceImage = Path.Combine(AppContext.BaseDirectory, "assets", "forest.png");
+        var directory = Path.Combine(Path.GetTempPath(), "GtsGaf_" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+
+        try
+        {
+            var gaf = Path.Combine(directory, "images.gaf");
+            using (var package = Gondwana.Assets.AssetsFile.LoadOrCreate(gaf))
+            {
+                package.Add(Gondwana.Assets.AssetTypes.Image, sourceImage, "forest-packed.png");
+                package.Save();
+            }
+
+            var document = TilesheetDocument.Create(directory);
+            using var catalog = new Gondwana.Tooling.Tilesheets.Sources.AssetPackageCatalog();
+            using var form = new Form { Opacity = 0, ShowInTaskbar = false, Size = new Size(1200, 800) };
+            using var editor = new TilesheetEditorControl(document, null, catalog);
+            form.Controls.Add(editor);
+            form.Show();
+            Application.DoEvents();
+
+            editor.ChoosePackedImage(new Gondwana.Tooling.Tilesheets.Sources.PackedImageSource(gaf, "forest-packed.png"));
+            Assert.NotNull(editor.ImageSize);
+            Assert.True(editor.ImageSize!.Value.Width > 0);
+            Assert.Empty(editor.UpdateValidation());
+
+            var output = Path.Combine(directory, "packed.gts");
+            document.Save(output, editor.ImageSize);
+            var loaded = TilesheetDefinitionSerializer.Load(output);
+
+            Assert.Null(loaded.Image.FilePath);
+            Assert.Equal("images.gaf", loaded.Image.AssetsFilePath);
+            Assert.Equal("forest-packed.png", loaded.Image.AssetEntryName);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    });
+
+    [Fact]
     public void OverlayColors_UpdateOpenDocumentsAndLegendWithoutDirtyingGts() => RunSta(() =>
     {
         string path = Path.Combine(Path.GetTempPath(), "GtsColors_" + Guid.NewGuid().ToString("N") + ".json");

@@ -44,10 +44,28 @@ public sealed class TilesheetDocument
     public string? ResolveImagePath() => string.IsNullOrWhiteSpace(Definition.Image?.FilePath)
         ? null : Path.GetFullPath(Definition.Image.FilePath, BaseDirectory);
 
+    public string? ResolveAssetsFilePath() => string.IsNullOrWhiteSpace(Definition.Image?.AssetsFilePath)
+        ? null : Path.GetFullPath(Definition.Image.AssetsFilePath, BaseDirectory);
+
     public void SetImage(string path)
     {
         // Changing the source is explicit. Unrelated edits never clear packed fields.
         Definition.Image = new() { FilePath = path };
+        MarkChanged();
+    }
+
+    public void SetPackedImage(string assetsFilePath, string assetEntryName)
+    {
+        if (string.IsNullOrWhiteSpace(assetsFilePath))
+            throw new ArgumentException("Assets file path must be a non-empty string.", nameof(assetsFilePath));
+        if (string.IsNullOrWhiteSpace(assetEntryName))
+            throw new ArgumentException("Asset entry name must be a non-empty string.", nameof(assetEntryName));
+
+        Definition.Image = new()
+        {
+            AssetsFilePath = Path.GetFullPath(assetsFilePath),
+            AssetEntryName = assetEntryName
+        };
         MarkChanged();
     }
 

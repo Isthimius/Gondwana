@@ -1,6 +1,7 @@
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.SkiaSharp;
 using Gondwana.Tooling.Tilesheets.Editing;
+using Gondwana.Tooling.Tilesheets.Sources;
 using SkiaSharp;
 
 namespace Gondwana.Tooling.Tilesheets.WinForms;
@@ -14,6 +15,8 @@ public sealed class TilesheetEditorControl : UserControl
 {
     public TilesheetDocument Document { get; }
     private readonly OverlaySettings _overlaySettings;
+    private readonly AssetPackageCatalog _assetPackages;
+    private readonly bool _ownsAssetPackages;
     private readonly ImageViewport _viewport = new();
     private readonly PropertyGrid _definitionProperties = CreatePropertyGrid();
     private readonly PropertyGrid _regionProperties = CreatePropertyGrid();
@@ -30,10 +33,26 @@ public sealed class TilesheetEditorControl : UserControl
     private TilesheetRegionDefinition? SelectedRegion => _regions.SelectedItem as TilesheetRegionDefinition;
     public Size? ImageSize => _viewport.Image?.Size;
 
-    public TilesheetEditorControl(TilesheetDocument document, OverlaySettings? overlaySettings = null)
+    /// <summary>
+    /// Optional host callback for choosing a packed GAF image. The standalone app
+    /// supplies one; Studio can provide its own project-aware picker.
+    /// </summary>
+    public Func<IWin32Window, PackedImageSource?>? PackedImagePicker { get; set; }
+
+    public TilesheetEditorControl(TilesheetDocument document)
+        : this(document, overlaySettings: null, assetPackages: null)
+    {
+    }
+
+    internal TilesheetEditorControl(
+        TilesheetDocument document,
+        OverlaySettings? overlaySettings,
+        AssetPackageCatalog? assetPackages)
     {
         Document = document ?? throw new ArgumentNullException(nameof(document));
         _overlaySettings = overlaySettings ?? OverlaySettings.Default;
+        _assetPackages = assetPackages ?? new AssetPackageCatalog();
+        _ownsAssetPackages = assetPackages is null;
         _viewport.Colors = _overlaySettings;
         Size = new Size(1000, 650);
         Dock = DockStyle.Fill;
@@ -97,7 +116,14 @@ public sealed class TilesheetEditorControl : UserControl
     {
         var bar = new ToolStrip { Dock = DockStyle.Top, GripStyle = ToolStripGripStyle.Hidden };
         bar.Items.Add("Image…", null, (_, _) => ChooseImage());
-        bar.Items.Add("Reload image", null, (_, _) => { _previewKey = null; RefreshView(); });
+        bar.Items.Add("GAF image…", null, (_, _) => ChoosePackedImage());
+        bar.Items.Add("Reload image", null, (_, _) =>
+        {
+            if (Document.ResolveAssetsFilePath() is { } assetsFilePath)
+                _assetPackages.Invalidate(assetsFilePath);
+            _previewKey = null;
+            RefreshView();
+        });
         bar.Items.Add("−", null, (_, _) => _viewport.ZoomOut());
         var zoom = new ToolStripComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 75,
             BackColor = DarkTheme.Background, ForeColor = DarkTheme.Foreground, FlatStyle = FlatStyle.Flat };
@@ -157,11 +183,37 @@ public sealed class TilesheetEditorControl : UserControl
     {
         if (path is null)
         {
-            using var dialog = new OpenFileDialog { Filter = MainForm.ImageFilter, InitialDirectory = Document.BaseDirectory };
+            using var dialog = new OpenFileDialog { Filter = TilesheetWorkspaceControl.ImageFilter, InitialDirectory = Document.BaseDirectory };
             if (dialog.ShowDialog(this) != DialogResult.OK) return;
             path = dialog.FileName;
         }
         Document.SetImage(Path.GetFullPath(path));
+        RefreshView();
+    }
+
+    public void ChoosePackedImage()
+    {
+        if (PackedImagePicker is null)
+        {
+            MessageBox.Show(
+                this,
+                "This host has not provided a GAF image picker.",
+                "GAF image source",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+            return;
+        }
+
+        var source = PackedImagePicker(this);
+        if (source is not null)
+            ChoosePackedImage(source);
+    }
+
+    public void ChoosePackedImage(PackedImageSource source)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        Document.SetPackedImage(source.AssetsFilePath, source.AssetEntryName);
+        _previewKey = null;
         RefreshView();
     }
 
@@ -319,14 +371,9 @@ public sealed class TilesheetEditorControl : UserControl
         _previewError = null;
         try
         {
-            if (Document.ResolveImagePath() is not { } path)
-            {
-                _viewport.Message = "No loose image source. Packed .gaf images cannot be previewed; their fields are preserved.";
-                return;
-            }
             // Use the runtime decoder for format parity (including WebP), then GDI+ for
             // all display and overlays. No runtime tilesheet or engine is instantiated.
-            using var decoded = SKBitmap.Decode(path) ?? throw new InvalidDataException("Unsupported or corrupt image.");
+            using var decoded = DecodeImageSource();
             using var rgba = new SKBitmap(new SKImageInfo(decoded.Width, decoded.Height, SKColorType.Bgra8888, SKAlphaType.Unpremul));
             using var pixels = decoded.PeekPixels();
             if (!pixels.ReadPixels(rgba.Info, rgba.GetPixels(), rgba.RowBytes, 0, 0))
@@ -345,14 +392,47 @@ public sealed class TilesheetEditorControl : UserControl
         finally { _viewport.UpdateExtent(); }
     }
 
+    private SKBitmap DecodeImageSource()
+    {
+        if (Document.ResolveImagePath() is { } loosePath)
+        {
+            return SKBitmap.Decode(loosePath)
+                ?? throw new InvalidDataException("Unsupported or corrupt image.");
+        }
+
+        var image = Document.Definition.Image;
+        var assetsFilePath = Document.ResolveAssetsFilePath();
+
+        if (image is null ||
+            assetsFilePath is null ||
+            string.IsNullOrWhiteSpace(image.AssetEntryName))
+        {
+            throw new InvalidDataException(
+                "The tilesheet does not specify a complete loose or packed image source.");
+        }
+
+        using var stream = _assetPackages.OpenImage(
+            new PackedImageSource(
+                assetsFilePath,
+                image.AssetEntryName));
+
+        return SKBitmap.Decode(stream)
+            ?? throw new InvalidDataException(
+                $"Packed image '{image.AssetEntryName}' is unsupported or corrupt.");
+    }
+
     public IReadOnlyList<string> UpdateValidation()
     {
         var errors = Document.Validate(ImageSize).ToList();
         if (_previewError is not null) errors.Add(_previewError);
         var lines = errors.Select(e => "ERROR: " + e).ToList();
         if (_overlaySettings.Warning is { } settingsWarning) lines.Add("WARNING: " + settingsWarning);
-        if (string.IsNullOrWhiteSpace(Document.Definition.Image?.FilePath))
-            lines.Add("WARNING: Packed image preview and asset validation are deferred; existing packed fields are preserved.");
+        if (!string.IsNullOrWhiteSpace(Document.Definition.Image?.AssetsFilePath) &&
+            !string.IsNullOrWhiteSpace(Document.Definition.Image?.AssetEntryName) &&
+            _previewError is null)
+        {
+            lines.Add("INFO: Packed GAF image resolved successfully without extracting it.");
+        }
         lines.Add("INFO: Geometry changes retain frame metadata at its original coordinates. Use Prune invalid frames only to explicitly discard it.");
         lines.Add("INFO: Overhang shows world extent at source scale; it does not change the extracted frame. Dense grids are sampled visually; use X/Y to inspect any frame.");
         if (Document.Definition.Mask is not null)
@@ -376,6 +456,8 @@ public sealed class TilesheetEditorControl : UserControl
             _overlaySettings.Changed -= OverlayColorsChanged;
             _viewport.Image?.Dispose();
             _viewport.Image = null;
+            if (_ownsAssetPackages)
+                _assetPackages.Dispose();
         }
         base.Dispose(disposing);
     }

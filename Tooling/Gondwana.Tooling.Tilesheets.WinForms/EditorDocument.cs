@@ -1,4 +1,5 @@
 using Gondwana.Tooling.Tilesheets.Editing;
+using Gondwana.Tooling.Tilesheets.Sources;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Tilesheets.WinForms;
@@ -19,11 +20,16 @@ internal sealed class EditorDocument : DockContent
     public EditorDocument(
         TilesheetDocument document,
         Func<EditorDocument, bool, bool> save,
-        OverlaySettings? overlaySettings = null)
+        OverlaySettings? overlaySettings = null,
+        AssetPackageCatalog? assetPackages = null,
+        Func<IWin32Window, PackedImageSource?>? packedImagePicker = null)
     {
         Document = document ?? throw new ArgumentNullException(nameof(document));
         _save = save ?? throw new ArgumentNullException(nameof(save));
-        Editor = new TilesheetEditorControl(document, overlaySettings);
+        Editor = new TilesheetEditorControl(document, overlaySettings, assetPackages)
+        {
+            PackedImagePicker = packedImagePicker
+        };
 
         DockAreas = DockAreas.Document | DockAreas.Float;
         Controls.Add(Editor);
@@ -40,6 +46,7 @@ internal sealed class EditorDocument : DockContent
     }
 
     public void ChooseImage(string? path = null) => Editor.ChooseImage(path);
+    public void ChoosePackedImage(PackedImageSource source) => Editor.ChoosePackedImage(source);
     public void AddRegion() => Editor.AddRegion();
     public void RefreshView() => Editor.RefreshView();
     public IReadOnlyList<string> UpdateValidation() => Editor.UpdateValidation();
