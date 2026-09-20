@@ -14,6 +14,7 @@ namespace Gondwana.Tests;
 /// <summary>
 /// Verifies the GSCN scene-definition model and runtime parity.
 /// </summary>
+[Collection("Global engine state")]
 public sealed class SceneGscnTests
 {
     [Fact]
@@ -202,6 +203,42 @@ public sealed class SceneGscnTests
             error => error.Contains(
                 "StartAnimation requires an AnimationKey",
                 StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Definition_AnimationKeyMustResolveWhenSceneIsMaterialized()
+    {
+        var key = $"missing.animation.{Guid.NewGuid():N}";
+
+        var definition = new SceneDefinition
+        {
+            Layers =
+            [
+                new SceneLayerDefinition
+                {
+                    Columns = 1,
+                    Rows = 1,
+                    Tiles =
+                    [
+                        new SceneLayerTileDefinition
+                        {
+                            X = 0,
+                            Y = 0,
+                            AnimationKey = key
+                        }
+                    ]
+                }
+            ]
+        };
+
+        var exception = Assert.Throws<InvalidDataException>(
+            () => SceneDefinitionSerializer.ToScene(definition));
+
+        Assert.Contains(key, exception.Message, StringComparison.Ordinal);
+        Assert.Contains(
+            "no matching GANI/cycle is registered",
+            exception.Message,
+            StringComparison.Ordinal);
     }
 
     [Fact]

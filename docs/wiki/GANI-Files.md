@@ -16,6 +16,7 @@ and follows the same definition-file approach used by GTS and GSCN.
 
 - [What GANI represents](#what-gani-represents)
 - [Relationship to GTS](#relationship-to-gts)
+- [Relationship to GSCN](#relationship-to-gscn)
 - [Definition model](#definition-model)
 - [Example](#example)
 - [Loading and saving](#loading-and-saving)
@@ -117,6 +118,36 @@ That gives Gondwana a clear dependency direction:
 Changing the source GTS can therefore update the frames available to animations without duplicating tilesheet definitions inside every animation file.
 
 ---
+
+## Relationship to GSCN
+
+GSCN scene tiles can assign a reusable GANI animation by logical key:
+
+```json
+"AnimationKey": "actor.walk",
+"StartAnimation": true
+```
+
+The scene file stores only the key and whether the assignment should begin playing
+when the scene is materialized. It does not copy the GANI frames or serialize the
+runtime `Cycle`/`Animator` graph.
+
+The complete definition dependency direction is therefore:
+
+```text
+.gts
+ |
+ v
+.gani
+ |
+ v
+.gscn
+```
+
+When materializing a GSCN that contains an `AnimationKey`, the corresponding GANI
+cycle must already be registered. EngineState satisfies this when both
+`EngineStateParts.Cycles` and `EngineStateParts.Scenes` are selected because
+cycles are restored before scenes.
 
 ## Definition model
 

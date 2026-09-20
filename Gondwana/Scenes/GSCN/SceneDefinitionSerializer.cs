@@ -166,7 +166,8 @@ public static class SceneDefinitionSerializer
 
     /// <summary>
     /// Materializes a runtime scene from a GSCN definition.
-    /// Referenced tilesheets must already be registered in <see cref="TilesheetRegistry"/>.
+    /// Referenced tilesheets must already be registered in <see cref="TilesheetRegistry"/>,
+    /// and referenced animation keys must already exist in the GANI/cycle registry.
     /// </summary>
     public static Scene ToScene(SceneDefinition definition)
     {
