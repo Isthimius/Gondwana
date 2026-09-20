@@ -1,3 +1,5 @@
+using Gondwana.Tooling.WinForms;
+using WeifenLuo.WinFormsUI.Docking;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.SkiaSharp;
 using Gondwana.Tooling.Tilesheets.Editing;
@@ -68,14 +70,6 @@ public sealed class TilesheetEditorControl : UserControl
         _viewport.Colors = _overlaySettings;
         Size = new Size(1000, 650);
         Dock = DockStyle.Fill;
-        var split = new SplitContainer { Dock = DockStyle.Fill, Size = new Size(1000, 650), SplitterDistance = 640, Panel2MinSize = 270 };
-        var previewSplit = new SplitContainer { Dock = DockStyle.Fill, Orientation = Orientation.Horizontal,
-            Size = new Size(640, 650), SplitterDistance = 495, Panel2MinSize = 70 };
-        previewSplit.Panel1.Controls.Add(_viewport);
-        previewSplit.Panel1.Controls.Add(BuildPreviewToolbar());
-        previewSplit.Panel2.Controls.Add(_validation);
-        split.Panel1.Controls.Add(previewSplit);
-
         var regionTools = new ToolStrip { Dock = DockStyle.Top, GripStyle = ToolStripGripStyle.Hidden };
         regionTools.Items.Add("+ Region", null, (_, _) => AddRegion());
         regionTools.Items.Add("− Region", null, (_, _) => RemoveRegion());
@@ -86,24 +80,20 @@ public sealed class TilesheetEditorControl : UserControl
         _column.ValueChanged += (_, _) => SelectFrame();
         _row.ValueChanged += (_, _) => SelectFrame();
         _regions.SelectedIndexChanged += (_, _) => { if (!_refreshing) RefreshView(); };
-        var lowerInspectors = new SplitContainer
-        {
-            Dock = DockStyle.Fill, Orientation = Orientation.Horizontal,
-            Size = new Size(360, 430), SplitterDistance = 210,
-            Panel1MinSize = 100, Panel2MinSize = 100
-        };
-        lowerInspectors.Panel1.Controls.Add(InspectorSection("Region", _regionProperties, regionTools, _regions));
-        lowerInspectors.Panel2.Controls.Add(InspectorSection("Frame", _frameProperties, navigator));
-        var inspectors = new SplitContainer
-        {
-            Dock = DockStyle.Fill, Orientation = Orientation.Horizontal,
-            Size = new Size(360, 650), SplitterDistance = 210,
-            Panel1MinSize = 100, Panel2MinSize = 204
-        };
-        inspectors.Panel1.Controls.Add(InspectorSection("Definition", _definitionProperties));
-        inspectors.Panel2.Controls.Add(lowerInspectors);
-        split.Panel2.Controls.Add(inspectors);
-        Controls.Add(split);
+        var workspace = new EditorDockWorkspace();
+        Controls.Add(workspace);
+        var dock = workspace.DockPanel;
+        dock.DockRightPortion = .36;
+        var image = workspace.AddPane("Image", _viewport, BuildPreviewToolbar());
+        var definition = workspace.AddPane("Definition", _definitionProperties);
+        var region = workspace.AddPane("Region", _regionProperties, _regions, regionTools);
+        var frame = workspace.AddPane("Frame", _frameProperties, navigator);
+        var validation = workspace.AddPane("Validation", _validation);
+        image.Show(dock, DockState.Document);
+        definition.Show(dock, DockState.DockRight);
+        region.Show(definition.Pane, DockAlignment.Bottom, 2d / 3);
+        frame.Show(region.Pane, DockAlignment.Bottom, .5);
+        validation.Show(image.Pane, DockAlignment.Bottom, .24);
         DarkTheme.Apply(this);
         _viewport.FrameSelected += (region, p) =>
         {
@@ -284,19 +274,6 @@ public sealed class TilesheetEditorControl : UserControl
     {
         Dock = DockStyle.Fill, ToolbarVisible = false, HelpVisible = false
     };
-
-    private static Control InspectorSection(string title, PropertyGrid grid, params Control[] controls)
-    {
-        var panel = new Panel { Dock = DockStyle.Fill };
-        panel.Controls.Add(grid);
-        foreach (var control in controls.Reverse()) panel.Controls.Add(control);
-        panel.Controls.Add(new Label
-        {
-            Text = title, Dock = DockStyle.Top, Height = 26,
-            TextAlign = ContentAlignment.MiddleLeft, Padding = new Padding(6, 0, 0, 0)
-        });
-        return panel;
-    }
 
     private void RefreshProperties()
     {
