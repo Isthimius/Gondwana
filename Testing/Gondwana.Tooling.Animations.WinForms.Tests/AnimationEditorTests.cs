@@ -193,7 +193,7 @@ public sealed class AnimationEditorTests
                         .Any(item => item.Text == "Add GTS…"));
 
                 Assert.Equal(
-                    ["Add GTS…", "Add", "Remove"],
+                    ["Add GTS…", "Remove"],
                     sourceToolbar.Items
                         .Cast<ToolStripItem>()
                         .Select(item => item.Text)
