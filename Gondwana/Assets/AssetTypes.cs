@@ -54,5 +54,10 @@ public enum AssetTypes
     /// <summary>
     /// Represents an animation definition file (.gani) for <see cref="Gondwana.Drawing.Animation.GANI.AnimationDefinition"/>.
     /// </summary>
-    AnimationDefinition = 9
+    AnimationDefinition = 9,
+
+    /// <summary>
+    /// Represents an audio definition file (.gaud) for <see cref="Gondwana.Audio.GAUD.AudioDefinition"/>.
+    /// </summary>
+    AudioDefinition = 10
 }
