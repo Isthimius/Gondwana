@@ -22,6 +22,7 @@ internal sealed class ScenePreviewControl : UserControl
     private RectangleF _worldBounds = RectangleF.Empty;
     private float _scale = 1f;
     private PointF _offset;
+    private readonly Dictionary<SceneLayerDefinition, ProjectionCache> _projections = [];
 
     public event Action<SceneLayerDefinition, int, int>? TileSelected;
 
@@ -42,6 +43,16 @@ internal sealed class ScenePreviewControl : UserControl
         _definition = definition;
         _findTilesheet = findTilesheet;
         _findAnimation = findAnimation;
+
+        var currentLayers = definition.Layers.ToHashSet();
+        foreach (var stale in _projections.Keys
+                     .Where(layer => !currentLayers.Contains(layer))
+                     .ToArray())
+        {
+            _projections[stale].Layer.Dispose();
+            _projections.Remove(stale);
+        }
+
         Invalidate();
     }
 
@@ -126,7 +137,7 @@ internal sealed class ScenePreviewControl : UserControl
         float worldX = (e.X - _offset.X) / _scale;
         float worldY = (e.Y - _offset.Y) / _scale;
 
-        using var projection = ProjectionLayer.Create(layer);
+        var projection = GetProjection(layer);
         PointF grid = projection.WorldPxToGrid(new PointF(worldX, worldY));
 
         int x = (int)Math.Floor(grid.X + 0.0001f);
@@ -150,7 +161,7 @@ internal sealed class ScenePreviewControl : UserControl
 
         foreach (var layer in layers)
         {
-            using var projection = ProjectionLayer.Create(layer);
+            var projection = GetProjection(layer);
             var rect = projection.GetLayerBoundsPx();
             if (rect.IsEmpty)
                 continue;
@@ -190,7 +201,7 @@ internal sealed class ScenePreviewControl : UserControl
 
     private void DrawLayer(Graphics graphics, SceneLayerDefinition layer)
     {
-        using var projection = ProjectionLayer.Create(layer);
+        var projection = GetProjection(layer);
 
         using var gridPen = new Pen(
             ReferenceEquals(layer, _selectedLayer)
@@ -345,6 +356,32 @@ internal sealed class ScenePreviewControl : UserControl
                 .ToArray();
     }
 
+    private ProjectionLayer GetProjection(SceneLayerDefinition definition)
+    {
+        var fingerprint = new ProjectionFingerprint(
+            definition.Columns,
+            definition.Rows,
+            definition.TileWidth,
+            definition.TileHeight,
+            definition.CoordinateSystemType,
+            definition.OriginPx);
+
+        if (_projections.TryGetValue(definition, out var cached) &&
+            cached.Fingerprint == fingerprint)
+        {
+            return cached.Layer;
+        }
+
+        if (cached is not null)
+            cached.Layer.Dispose();
+
+        var projection = ProjectionLayer.Create(definition);
+        _projections[definition] = new ProjectionCache(
+            fingerprint,
+            projection);
+        return projection;
+    }
+
     private RectangleF ToScreen(RectangleF world) =>
         new(
             world.X * _scale + _offset.X,
@@ -369,6 +406,30 @@ internal sealed class ScenePreviewControl : UserControl
                 (ClientSize.Width - size.Width) / 2f,
                 (ClientSize.Height - size.Height) / 2f));
     }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            foreach (var cached in _projections.Values)
+                cached.Layer.Dispose();
+            _projections.Clear();
+        }
+
+        base.Dispose(disposing);
+    }
+
+    private sealed record ProjectionCache(
+        ProjectionFingerprint Fingerprint,
+        ProjectionLayer Layer);
+
+    private readonly record struct ProjectionFingerprint(
+        int Columns,
+        int Rows,
+        int TileWidth,
+        int TileHeight,
+        CoordinateSystemTypes CoordinateSystemType,
+        Point OriginPx);
 
     private sealed class ProjectionLayer : SceneLayer
     {
