@@ -44,7 +44,10 @@ public sealed class TilesheetEditorControl : UserControl
     {
     }
 
-
+    /// <summary>
+    /// Creates an editor that uses a host-owned asset-package catalog. Studio can
+    /// share one catalog across its workspace and all open tilesheet editors.
+    /// </summary>
     public TilesheetEditorControl(TilesheetDocument document, AssetPackageCatalog assetPackages)
         : this(
             document,

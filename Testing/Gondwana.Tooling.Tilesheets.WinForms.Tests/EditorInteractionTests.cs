@@ -187,6 +187,62 @@ public sealed class EditorInteractionTests
     });
 
     [Fact]
+    public void AssetPackageCatalog_RequiresExactPackedImageName()
+    {
+        var sourceImage = Path.Combine(AppContext.BaseDirectory, "assets", "forest.png");
+        var directory = Path.Combine(
+            Path.GetTempPath(),
+            "GtsGafExact_" + Guid.NewGuid().ToString("N"));
+
+        Directory.CreateDirectory(directory);
+
+        try
+        {
+            var gaf = Path.Combine(directory, "images.gaf");
+
+            using (var package = Gondwana.Assets.AssetsFile.LoadOrCreate(gaf))
+            {
+                package.Add(
+                    Gondwana.Assets.AssetTypes.Image,
+                    sourceImage,
+                    "forest.jpg");
+                package.Save();
+            }
+
+            using var catalog =
+                new Gondwana.Tooling.Tilesheets.Sources.AssetPackageCatalog();
+
+            var staleReference =
+                new Gondwana.Tooling.Tilesheets.Sources.PackedImageSource(
+                    gaf,
+                    "forest.png");
+
+            Assert.False(catalog.ContainsImage(staleReference));
+
+            var exception = Assert.Throws<InvalidDataException>(
+                () => catalog.OpenImage(staleReference));
+
+            Assert.Contains(
+                "forest.png",
+                exception.Message,
+                StringComparison.OrdinalIgnoreCase);
+
+            var exactReference =
+                new Gondwana.Tooling.Tilesheets.Sources.PackedImageSource(
+                    gaf,
+                    "FOREST.JPG");
+
+            Assert.True(catalog.ContainsImage(exactReference));
+            using var stream = catalog.OpenImage(exactReference);
+            Assert.True(stream.Length > 0);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    [Fact]
     public void OverlayColors_UpdateOpenDocumentsAndLegendWithoutDirtyingGts() => RunSta(() =>
     {
         string path = Path.Combine(Path.GetTempPath(), "GtsColors_" + Guid.NewGuid().ToString("N") + ".json");

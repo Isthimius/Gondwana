@@ -33,16 +33,28 @@ public sealed class AssetPackageCatalog : IDisposable
     {
         ArgumentNullException.ThrowIfNull(source);
 
+        var fullPath = NormalizeExistingPath(source.AssetsFilePath);
         var package = GetPackage(fullPath);
-        if (!package.GetAllEntries().Any(entry =>
-                entry.AssetType == AssetTypes.Image &&
-                string.Equals(entry.AssetName, source.AssetEntryName, StringComparison.Ordinal)))
+
+        // AssetsFile.Get intentionally falls back to base-name matching when an
+        // exact name is absent. Persistent GTS references must not use that fallback:
+        // "forest.png" must never silently resolve to "forest.jpg".
+        var exactEntry = package.GetAllEntries().FirstOrDefault(entry =>
+            entry.AssetType == AssetTypes.Image &&
+            string.Equals(
+                entry.AssetName,
+                source.AssetEntryName,
+                StringComparison.OrdinalIgnoreCase));
+
+        if (exactEntry is null)
         {
             throw new InvalidDataException(
                 $"Image asset '{source.AssetEntryName}' was not found in '{fullPath}'.");
         }
 
-        return package.Get(AssetTypes.Image, source.AssetEntryName)!;
+        return package.Get(AssetTypes.Image, exactEntry.AssetName)
+            ?? throw new InvalidDataException(
+                $"Image asset '{source.AssetEntryName}' could not be read from '{fullPath}'.");
     }
 
     public bool ContainsImage(PackedImageSource source)
@@ -52,7 +64,13 @@ public sealed class AssetPackageCatalog : IDisposable
             using var stream = OpenImage(source);
             return true;
         }
-        catch (InvalidDataException)
+        catch (Exception ex) when (
+            ex is IOException or
+            InvalidDataException or
+            ArgumentException or
+            UnauthorizedAccessException or
+            NotSupportedException or
+            InvalidOperationException)
         {
             return false;
         }
