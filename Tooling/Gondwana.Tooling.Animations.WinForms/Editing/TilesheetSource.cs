@@ -70,7 +70,7 @@ internal sealed class TilesheetSource : IDisposable
             candidate => string.Equals(
                 candidate.Name,
                 frame.RegionName,
-                StringComparison.Ordinal));
+                StringComparison.OrdinalIgnoreCase));
 
         if (region is null)
             return false;
