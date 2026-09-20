@@ -1529,21 +1529,21 @@ That is the core architecture.
 
 Core implementation:
 
-- `Gondwana/EngineState.cs`
-- `Gondwana/EngineStateParts.cs`
+- [`Gondwana/EngineState.cs`](https://isthimius.github.io/Gondwana/api/latest/EngineState_8cs_source.html)
+- [`Gondwana/EngineStateParts.cs`](https://isthimius.github.io/Gondwana/api/latest/EngineStateParts_8cs_source.html)
 
 Related resource serialization:
 
-- `Gondwana/Drawing/Tilesheets/GTS/*`
-- `Gondwana/Drawing/Animation/GANI/*`
-- `Gondwana/Scenes/GSCN/*`
-- `Gondwana/Assets/AssetsFile.cs`
-- `Gondwana/Audio/*`
+- [`Gondwana/Drawing/Tilesheets/GTS/*`](https://github.com/Isthimius/Gondwana/tree/master/Gondwana/Drawing/Tilesheets/GTS)
+- [`Gondwana/Drawing/Animation/GANI/*`](https://github.com/Isthimius/Gondwana/tree/master/Gondwana/Drawing/Animation/GANI)
+- [`Gondwana/Scenes/GSCN/*`](https://github.com/Isthimius/Gondwana/tree/master/Gondwana/Scenes/GSCN)
+- [`Gondwana/Assets/AssetsFile.cs`](https://isthimius.github.io/Gondwana/api/latest/AssetsFile_8cs_source.html)
+- [`Gondwana/Audio/*`](https://github.com/Isthimius/Gondwana/tree/master/Gondwana/Audio)
 
 Startup state mounting:
 
-- `Gondwana/Configuration/StateFileMount.cs`
-- `Gondwana/Configuration/EngineConfiguration.cs`
-- `Gondwana/Engine.cs`
+- [`Gondwana/Configuration/StateFileMount.cs`](https://isthimius.github.io/Gondwana/api/latest/StateFileMount_8cs_source.html)
+- [`Gondwana/Configuration/EngineConfiguration.cs`](https://isthimius.github.io/Gondwana/api/latest/EngineConfiguration_8cs_source.html)
+- [`Gondwana/Engine.cs`](https://isthimius.github.io/Gondwana/api/latest/Engine_8cs_source.html)
 
 For a practical introduction to creating, loading, and organizing state files, see [[Game State Files]].
