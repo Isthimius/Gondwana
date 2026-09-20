@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Gondwana.Assets;
 using Gondwana.Audio;
+using Gondwana.Audio.GAUD;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing;
@@ -60,6 +61,19 @@ public sealed class EngineState
         /// </summary>
         [JsonProperty]
         public AnimationDefinition? Definition { get; set; }
+    }
+
+    /// <summary>
+    /// Represents serialized audio state, either inline as a GAUD definition or by
+    /// reference to an external .gaud file.
+    /// </summary>
+    private sealed class AudioStateEntry
+    {
+        [JsonProperty]
+        public string? GaudPath { get; set; }
+
+        [JsonProperty]
+        public AudioDefinition? Definition { get; set; }
     }
 
     /// <summary>
@@ -294,12 +308,18 @@ public sealed class EngineState
     /// referenced from the engine-state file. If <c>false</c>, GANI definitions are
     /// embedded inline in the engine-state JSON.
     /// </param>
+    /// <param name="separateGaudFile">
+    /// If <c>true</c>, audio resources are written to a separate .gaud file and
+    /// referenced from the engine-state file. If <c>false</c>, the GAUD definition is
+    /// embedded inline in the engine-state JSON.
+    /// </param>
     public void SaveToFile(string path,
                            bool compress = false,
                            bool separateGtsFiles = false,
                            EngineStateParts parts = EngineStateParts.All,
                            bool separateGscnFiles = false,
-                           bool separateGaniFiles = false)
+                           bool separateGaniFiles = false,
+                           bool separateGaudFile = false)
     {
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Engine state path must be a non-empty string.", nameof(path));
@@ -313,7 +333,8 @@ public sealed class EngineState
             fullPath,
             separateGtsFiles,
             separateGscnFiles,
-            separateGaniFiles);
+            separateGaniFiles,
+            separateGaudFile);
 
         var json = JsonConvert.SerializeObject(snapshot, JsonSerializerSettings);
 
@@ -421,6 +442,10 @@ public sealed class EngineState
         [JsonProperty] public Dictionary<string, AnimationStateEntry>? Cycles { get; set; }
         [JsonProperty] public List<SceneStateEntry>? Scenes { get; set; }
         [JsonProperty] public List<Sprite>? Sprites { get; set; }
+        [JsonProperty] public AudioStateEntry? Audio { get; set; }
+
+        // Legacy compatibility: pre-GAUD EngineState files serialized runtime
+        // AudioResource objects directly under SoundResources.
         [JsonProperty] public Dictionary<string, AudioResource>? SoundResources { get; set; }
     }
 
@@ -445,7 +470,8 @@ public sealed class EngineState
                                               string engineStatePath,
                                               bool separateGtsFiles,
                                               bool separateGscnFiles,
-                                              bool separateGaniFiles)
+                                              bool separateGaniFiles,
+                                              bool separateGaudFile)
     {
         return new EngineStateSnapshot
         {
@@ -478,9 +504,46 @@ public sealed class EngineState
                 ? Sprites
                 : null,
 
-            SoundResources = parts.HasFlag(EngineStateParts.Audio)
-                ? SoundResources
+            Audio = parts.HasFlag(EngineStateParts.Audio)
+                ? CaptureAudioEntry(
+                    baseDirectory,
+                    engineStatePath,
+                    separateGaudFile)
                 : null,
+
+            // New saves use the clean GAUD definition shape. This member remains
+            // only so older EngineState files can still be read.
+            SoundResources = null,
+        };
+    }
+
+    private static AudioStateEntry CaptureAudioEntry(
+        string? baseDirectory,
+        string engineStatePath,
+        bool separateGaudFile)
+    {
+        if (separateGaudFile)
+        {
+            var gaudDirectory = GetAudioStateDirectory(engineStatePath);
+            Directory.CreateDirectory(gaudDirectory);
+
+            var gaudFullPath = Path.Combine(gaudDirectory, "audio.gaud");
+            AudioDefinitionSerializer.Save(
+                gaudFullPath,
+                AudioResourceManager.Instance);
+
+            return new AudioStateEntry
+            {
+                GaudPath = MakeRelativePath(gaudFullPath, baseDirectory)
+            };
+        }
+
+        return new AudioStateEntry
+        {
+            Definition = AudioDefinitionSerializer.FromManager(
+                AudioResourceManager.Instance,
+                baseDirectory,
+                makePathsRelative: !string.IsNullOrWhiteSpace(baseDirectory))
         };
     }
 
@@ -628,7 +691,12 @@ public sealed class EngineState
             LoadAssetsFiles(snapshot.AssetsFiles ?? Enumerable.Empty<AssetsFile>(), overwriteExisting);
 
         if (parts.HasFlag(EngineStateParts.Audio))
-            MergeAudio(snapshot.AssetsFiles, snapshot.SoundResources, overwriteExisting);
+            MergeAudio(
+                snapshot.AssetsFiles,
+                snapshot.Audio,
+                snapshot.SoundResources,
+                overwriteExisting,
+                baseDirectory);
 
         if (parts.HasFlag(EngineStateParts.Tilesheets))
             MergeTilesheets(snapshot.Tilesheets, overwriteExisting, baseDirectory);
@@ -697,10 +765,39 @@ public sealed class EngineState
 
     private static void MergeAudio(
         List<AssetsFile>? assetsFiles,
+        AudioStateEntry? audio,
         Dictionary<string, AudioResource>? soundSpecs,
-        bool overwriteExisting)
+        bool overwriteExisting,
+        string? baseDirectory)
     {
-        // 1) Load from asset packs
+        if (audio is not null)
+        {
+            AudioDefinition definition;
+
+            if (!string.IsNullOrWhiteSpace(audio.GaudPath))
+            {
+                definition = AudioDefinitionSerializer.Load(
+                    ResolvePath(audio.GaudPath, baseDirectory));
+            }
+            else if (audio.Definition is not null)
+            {
+                definition = audio.Definition;
+            }
+            else
+            {
+                throw new InvalidDataException(
+                    "Audio state entry does not contain a GAUD path or inline definition.");
+            }
+
+            AudioDefinitionSerializer.LoadIntoManager(
+                definition,
+                overwriteExisting,
+                baseDirectory);
+            return;
+        }
+
+        // Legacy EngineState compatibility: load old asset packs first, then
+        // apply the serialized AudioResource specs / overrides.
         if (assetsFiles is not null)
         {
             foreach (var af in assetsFiles)
@@ -823,6 +920,15 @@ public sealed class EngineState
         var fileName = Path.GetFileNameWithoutExtension(engineStatePath);
 
         return Path.Combine(directory, $"{fileName}.animations");
+    }
+
+
+    private static string GetAudioStateDirectory(string engineStatePath)
+    {
+        var directory = Path.GetDirectoryName(engineStatePath) ?? string.Empty;
+        var fileName = Path.GetFileNameWithoutExtension(engineStatePath);
+
+        return Path.Combine(directory, $"{fileName}.audio");
     }
 
 
