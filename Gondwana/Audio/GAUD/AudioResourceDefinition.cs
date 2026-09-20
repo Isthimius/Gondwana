@@ -18,6 +18,9 @@ public sealed class AudioResourceDefinition
     /// <summary>Audio entry name inside a packed GAF source.</summary>
     public string? AssetEntryName { get; set; }
 
+    /// <summary>Source URI for URI-backed audio.</summary>
+    public string? SourceUri { get; set; }
+
     /// <summary>Optional format hint such as .wav or .ogg, required when a packed entry name has no extension.</summary>
     public string? SourceExtension { get; set; }
 
