@@ -40,7 +40,7 @@ Those are different axes of composition, and Gondwana supports both at once.
 ---
 
 ## Where to read next
-- `Gondwana/Scenes/SceneLayer.cs`
-- `Gondwana/Rendering/Views/View.cs`
-- `Gondwana/Rendering/Views/ViewManager.cs`
-- `Gondwana/Rendering/RenderSurfaceHost.cs`
+- [`Gondwana/Scenes/SceneLayer.cs`](https://isthimius.github.io/Gondwana/api/latest/SceneLayer_8cs_source.html)
+- [`Gondwana/Rendering/Views/View.cs`](https://isthimius.github.io/Gondwana/api/latest/View_8cs_source.html)
+- [`Gondwana/Rendering/Views/ViewManager.cs`](https://isthimius.github.io/Gondwana/api/latest/ViewManager_8cs_source.html)
+- [`Gondwana/Rendering/RenderSurfaceHost.cs`](https://isthimius.github.io/Gondwana/api/latest/RenderSurfaceHost_8cs_source.html)
