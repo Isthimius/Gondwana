@@ -24,5 +24,13 @@ This folder contains developer tooling projects and scripts used across the Gond
   WinForms-oriented tooling for managing Gondwana asset files.  
   See: [`Gondwana.Assets.WinForms/README.md`](./Gondwana.Assets.WinForms/README.md)
 
+- [`Gondwana.Tooling.Animations.WinForms`](./Gondwana.Tooling.Animations.WinForms/)  
+  WinForms editor for Gondwana `.gani` animation definitions, with GTS-backed frame browsing and live preview.  
+  See: [`Gondwana.Tooling.Animations.WinForms/README.md`](./Gondwana.Tooling.Animations.WinForms/README.md)
+
+- [`Gondwana.Tooling.Tilesheets.WinForms`](./Gondwana.Tooling.Tilesheets.WinForms/)  
+  WinForms editor for Gondwana `.gts` tilesheet definitions.  
+  See: [`Gondwana.Tooling.Tilesheets.WinForms/README.md`](./Gondwana.Tooling.Tilesheets.WinForms/README.md)
+
 - [`Gondwana.Studio`](./Gondwana.Studio/)  
   Studio/editor tooling project (work in progress).

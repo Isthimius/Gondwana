@@ -106,6 +106,7 @@ The `gondwana` command-line tool.
 - `Tooling/Gondwana.Tooling.Studio.Avalonia/`
 - `Tooling/Gondwana.Tooling.Studio.WinForms/`
 - `Tooling/Gondwana.Tooling.Assets.WinForms/`
+- `Tooling/Gondwana.Tooling.Animations.WinForms/`
 - `Tooling/Gondwana.Tooling.Tilesheets.WinForms/`
 - `Tooling/scripts/`
 
