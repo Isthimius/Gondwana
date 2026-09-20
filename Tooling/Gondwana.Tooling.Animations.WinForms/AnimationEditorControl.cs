@@ -356,6 +356,7 @@ public sealed class AnimationEditorControl : UserControl
             GripStyle = ToolStripGripStyle.Hidden
         };
 
+        bar.Items.Add("Add", null, (_, _) => AddSelectedSourceFrame());
         bar.Items.Add("Remove", null, (_, _) => RemoveSelectedFrame());
         bar.Items.Add("Up", null, (_, _) => MoveSelectedFrame(-1));
         bar.Items.Add("Down", null, (_, _) => MoveSelectedFrame(1));
