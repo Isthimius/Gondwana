@@ -43,7 +43,7 @@ public sealed class EditorInteractionTests
     {
         var document = TilesheetDocument.Create(Path.Combine(AppContext.BaseDirectory, "assets"));
         using var editor = Show(document);
-        var viewport = Field<ImageViewport>(editor, "_viewport");
+        var viewport = Field<ImageViewport>(editor.Editor, "_viewport");
         var buttons = Descendants(editor).OfType<ToolStrip>().SelectMany(strip => strip.Items.Cast<ToolStripItem>()).ToArray();
         var zoomOut = buttons.Single(item => item.Text == "−");
         var zoomIn = buttons.Single(item => item.Text == "+");
@@ -68,20 +68,20 @@ public sealed class EditorInteractionTests
         var document = TilesheetDocument.Open(Path.Combine(AppContext.BaseDirectory, "assets", name + ".gts"));
         string before = TilesheetDefinitionSerializer.ToJson(document.Definition);
         using var editor = Show(document);
-        var definitionGrid = Field<PropertyGrid>(editor, "_definitionProperties");
-        var regionGrid = Field<PropertyGrid>(editor, "_regionProperties");
-        var frameGrid = Field<PropertyGrid>(editor, "_frameProperties");
+        var definitionGrid = Field<PropertyGrid>(editor.Editor, "_definitionProperties");
+        var regionGrid = Field<PropertyGrid>(editor.Editor, "_regionProperties");
+        var frameGrid = Field<PropertyGrid>(editor.Editor, "_frameProperties");
         Assert.True(definitionGrid.Visible && regionGrid.Visible && frameGrid.Visible);
         Assert.True(definitionGrid.PointToScreen(Point.Empty).Y < regionGrid.PointToScreen(Point.Empty).Y);
         Assert.True(regionGrid.PointToScreen(Point.Empty).Y < frameGrid.PointToScreen(Point.Empty).Y);
-        var viewport = Field<ImageViewport>(editor, "_viewport");
+        var viewport = Field<ImageViewport>(editor.Editor, "_viewport");
         viewport.Fit();
         var region = document.Definition.Regions.Last();
         var bounds = FrameGeometry.Bounds(region, 0, 0);
         Click(viewport, new PointF(bounds.X + bounds.Width / 2f, bounds.Y + bounds.Height / 2f));
         Assert.Same(region, viewport.SelectedRegion);
         Assert.Equal(Point.Empty, viewport.SelectedFrame);
-        var grid = Field<PropertyGrid>(editor, "_frameProperties");
+        var grid = Field<PropertyGrid>(editor.Editor, "_frameProperties");
         Assert.Contains(Items(grid), item => item.PropertyDescriptor?.Name == "XTile");
         Assert.Equal(before, TilesheetDefinitionSerializer.ToJson(document.Definition));
         Assert.False(document.IsDirty);
@@ -100,14 +100,14 @@ public sealed class EditorInteractionTests
             editor.ChooseImage(Path.Combine(assets, "forest.png"));
             editor.AddRegion();
         }
-        var grid = Field<PropertyGrid>(editor, "_frameProperties");
-        grid = Field<PropertyGrid>(editor, "_definitionProperties");
+        var grid = Field<PropertyGrid>(editor.Editor, "_frameProperties");
+        grid = Field<PropertyGrid>(editor.Editor, "_definitionProperties");
         Edit(grid, "Name", "Edited in the inspector");
         Assert.Equal("Edited in the inspector", document.Definition.Name);
         Edit(grid, "PremultiplyAlpha", "True");
         Assert.True(document.Definition.PremultiplyAlpha);
 
-        grid = Field<PropertyGrid>(editor, "_regionProperties");
+        grid = Field<PropertyGrid>(editor.Editor, "_regionProperties");
         var region = document.Definition.Regions[0];
         Edit(grid, "CollisionAdjust.Left", "-3");
         Assert.Equal(-3, region.CollisionAdjust.Left);
@@ -117,11 +117,11 @@ public sealed class EditorInteractionTests
         Edit(grid, "Overhang.Top", "2");
         Assert.Equal(2, region.Overhang.Top);
 
-        var viewport = Field<ImageViewport>(editor, "_viewport");
+        var viewport = Field<ImageViewport>(editor.Editor, "_viewport");
         viewport.Fit();
         var bounds = FrameGeometry.Bounds(region, 0, 0);
         Click(viewport, new PointF(bounds.X + bounds.Width / 2f, bounds.Y + bounds.Height / 2f));
-        grid = Field<PropertyGrid>(editor, "_frameProperties");
+        grid = Field<PropertyGrid>(editor.Editor, "_frameProperties");
         Assert.True(Items(grid).Single(i => i.PropertyDescriptor?.Name == "Left").PropertyDescriptor!.IsReadOnly);
         Edit(grid, "CollisionAdjust mode", "Override");
         Edit(grid, "Left", "-7");
@@ -142,6 +142,105 @@ public sealed class EditorInteractionTests
         }
         finally { File.Delete(output); }
     });
+
+    [Fact]
+    public void PackedGafImage_CanBePreviewedAndSavedAsReference() => RunSta(() =>
+    {
+        var sourceImage = Path.Combine(AppContext.BaseDirectory, "assets", "forest.png");
+        var directory = Path.Combine(Path.GetTempPath(), "GtsGaf_" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+
+        try
+        {
+            var gaf = Path.Combine(directory, "images.gaf");
+            using (var package = Gondwana.Assets.AssetsFile.LoadOrCreate(gaf))
+            {
+                package.Add(Gondwana.Assets.AssetTypes.Image, sourceImage, "forest-packed.png");
+                package.Save();
+            }
+
+            var document = TilesheetDocument.Create(directory);
+            using var catalog = new Gondwana.Tooling.Tilesheets.Sources.AssetPackageCatalog();
+            using var form = new Form { Opacity = 0, ShowInTaskbar = false, Size = new Size(1200, 800) };
+            using var editor = new TilesheetEditorControl(document, catalog);
+            form.Controls.Add(editor);
+            form.Show();
+            Application.DoEvents();
+
+            editor.ChoosePackedImage(new Gondwana.Tooling.Tilesheets.Sources.PackedImageSource(gaf, "forest-packed.png"));
+            Assert.NotNull(editor.ImageSize);
+            Assert.True(editor.ImageSize!.Value.Width > 0);
+            Assert.Empty(editor.UpdateValidation());
+
+            var output = Path.Combine(directory, "packed.gts");
+            document.Save(output, editor.ImageSize);
+            var loaded = TilesheetDefinitionSerializer.Load(output);
+
+            Assert.Null(loaded.Image.FilePath);
+            Assert.Equal("images.gaf", loaded.Image.AssetsFilePath);
+            Assert.Equal("forest-packed.png", loaded.Image.AssetEntryName);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    });
+
+    [Fact]
+    public void AssetPackageCatalog_RequiresExactPackedImageName()
+    {
+        var sourceImage = Path.Combine(AppContext.BaseDirectory, "assets", "forest.png");
+        var directory = Path.Combine(
+            Path.GetTempPath(),
+            "GtsGafExact_" + Guid.NewGuid().ToString("N"));
+
+        Directory.CreateDirectory(directory);
+
+        try
+        {
+            var gaf = Path.Combine(directory, "images.gaf");
+
+            using (var package = Gondwana.Assets.AssetsFile.LoadOrCreate(gaf))
+            {
+                package.Add(
+                    Gondwana.Assets.AssetTypes.Image,
+                    sourceImage,
+                    "forest.jpg");
+                package.Save();
+            }
+
+            using var catalog =
+                new Gondwana.Tooling.Tilesheets.Sources.AssetPackageCatalog();
+
+            var staleReference =
+                new Gondwana.Tooling.Tilesheets.Sources.PackedImageSource(
+                    gaf,
+                    "forest.png");
+
+            Assert.False(catalog.ContainsImage(staleReference));
+
+            var exception = Assert.Throws<InvalidDataException>(
+                () => catalog.OpenImage(staleReference));
+
+            Assert.Contains(
+                "forest.png",
+                exception.Message,
+                StringComparison.OrdinalIgnoreCase);
+
+            var exactReference =
+                new Gondwana.Tooling.Tilesheets.Sources.PackedImageSource(
+                    gaf,
+                    "FOREST.JPG");
+
+            Assert.True(catalog.ContainsImage(exactReference));
+            using var stream = catalog.OpenImage(exactReference);
+            Assert.True(stream.Length > 0);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
 
     [Fact]
     public void OverlayColors_UpdateOpenDocumentsAndLegendWithoutDirtyingGts() => RunSta(() =>
@@ -167,8 +266,8 @@ public sealed class EditorInteractionTests
             }
             settings.SetColor(OverlayKind.Collision, Color.Lime);
             Application.DoEvents();
-            Assert.Equal(Color.Lime.ToArgb(), Field<ImageViewport>(first, "_viewport").Colors[OverlayKind.Collision].ToArgb());
-            Assert.Equal(Color.Lime.ToArgb(), Field<ImageViewport>(second, "_viewport").Colors[OverlayKind.Collision].ToArgb());
+            Assert.Equal(Color.Lime.ToArgb(), Field<ImageViewport>(first.Editor, "_viewport").Colors[OverlayKind.Collision].ToArgb());
+            Assert.Equal(Color.Lime.ToArgb(), Field<ImageViewport>(second.Editor, "_viewport").Colors[OverlayKind.Collision].ToArgb());
             Assert.False(first.Document.IsDirty);
             Assert.False(second.Document.IsDirty);
         }

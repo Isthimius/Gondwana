@@ -27,6 +27,32 @@ The editor follows the same WinForms workspace model as the Gondwana Tilesheets 
 - The editor surfaces use the same VS2015-style dark docking theme as the Tilesheets
   tool. Native Windows file dialogs and window chrome continue to follow Windows.
 
+## Reusable controls and Studio integration
+
+The standalone application shell no longer owns the asset-editing UI directly.
+The reusable pieces are:
+
+```text
+MainForm / DockPanelSuite
+    |
+    +-- AssetWorkspaceControl
+    |
+    +-- AssetEditorDocument (thin DockContent wrapper)
+            |
+            +-- AssetEditorControl
+                    |
+                    +-- AssetsFile
+```
+
+`AssetEditorControl` and `AssetWorkspaceControl` are public WinForms
+`UserControl` types. The DockPanelSuite document remains an application-shell
+adapter and owns disposal of the `AssetsFile` in the standalone tool.
+
+This mirrors the GTS/GANI direction so Gondwana Studio can host the same editing
+surfaces rather than maintaining copied versions of the tools. Host-specific concerns
+such as which files are already open and when a workspace should refresh are exposed
+as callbacks instead of being hard-wired to `MainForm`.
+
 ## Asset-file workflow
 
 - **New** creates a new `.gaf` (or `.zip`) asset file. New files can be created

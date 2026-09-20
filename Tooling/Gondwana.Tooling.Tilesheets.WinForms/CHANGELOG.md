@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- Browse, select, preview, and validate images stored in Gondwana `.gaf` / `.zip` asset packages without extracting them.
+- Create GTS definitions directly from packed image entries and persist logical GAF references.
+
+### Changed
+- Refactor the tilesheet editor and project-source browser into hostable WinForms controls for future Gondwana Studio composition.
+- Keep DockPanelSuite document/window behavior in thin standalone-app wrappers.
+
+
 # v2.6.0 - September 17, 2026
 
 
