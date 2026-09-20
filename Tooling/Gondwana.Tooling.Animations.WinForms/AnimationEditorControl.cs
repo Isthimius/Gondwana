@@ -121,15 +121,22 @@ public sealed class AnimationEditorControl : UserControl
 
     public void AddTilesheetSources(IEnumerable<string> paths)
     {
-        foreach (var path in paths)
-            AddTilesheetSource(path);
+        bool changed = false;
 
-        RefreshSourceTree();
-        UpdateValidation();
-        _preview.Invalidate();
+        foreach (var path in paths)
+            changed |= AddTilesheetSourceCore(path);
+
+        if (changed)
+            RefreshAfterSourceChange();
     }
 
     public void AddTilesheetSource(string path)
+    {
+        if (AddTilesheetSourceCore(path))
+            RefreshAfterSourceChange();
+    }
+
+    private bool AddTilesheetSourceCore(string path)
     {
         path = Path.GetFullPath(path);
 
@@ -139,7 +146,7 @@ public sealed class AnimationEditorControl : UserControl
                     path,
                     StringComparison.OrdinalIgnoreCase)))
         {
-            return;
+            return false;
         }
 
         var loaded = TilesheetSource.Load(path);
@@ -159,6 +166,14 @@ public sealed class AnimationEditorControl : UserControl
         }
 
         _sources.Add(loaded);
+        return true;
+    }
+
+    private void RefreshAfterSourceChange()
+    {
+        RefreshSourceTree();
+        UpdateValidation();
+        _preview.Invalidate();
     }
 
     public IReadOnlyList<string> UpdateValidation()
