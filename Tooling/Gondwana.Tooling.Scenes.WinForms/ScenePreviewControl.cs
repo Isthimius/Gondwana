@@ -151,16 +151,14 @@ internal sealed class ScenePreviewControl : UserControl
         foreach (var layer in layers)
         {
             using var projection = ProjectionLayer.Create(layer);
+            var rect = projection.GetLayerBoundsPx();
+            if (rect.IsEmpty)
+                continue;
 
-            for (int y = 0; y < layer.Rows; y++)
-            for (int x = 0; x < layer.Columns; x++)
-            {
-                var rect = TileBounds(projection, layer, x, y);
-                bounds = hasBounds
-                    ? RectangleF.Union(bounds, rect)
-                    : rect;
-                hasBounds = true;
-            }
+            bounds = hasBounds
+                ? RectangleF.Union(bounds, rect)
+                : rect;
+            hasBounds = true;
         }
 
         if (!hasBounds)
@@ -327,21 +325,10 @@ internal sealed class ScenePreviewControl : UserControl
         int x,
         int y)
     {
-        PointF anchor = projection.GridToWorldPx(new PointF(x, y));
-
-        return definition.CoordinateSystemType is
-            CoordinateSystemTypes.IsometricRhombic or
-            CoordinateSystemTypes.IsometricAxial
-            ? new RectangleF(
-                anchor.X - definition.TileWidth / 2f,
-                anchor.Y,
-                definition.TileWidth,
-                definition.TileHeight)
-            : new RectangleF(
-                anchor.X,
-                anchor.Y,
-                definition.TileWidth,
-                definition.TileHeight);
+        var tile = projection[x, y];
+        return tile is null
+            ? RectangleF.Empty
+            : tile.DrawLocationWorld;
     }
 
     private static PointF[] TileOutline(
@@ -350,49 +337,12 @@ internal sealed class ScenePreviewControl : UserControl
         int x,
         int y)
     {
-        var rect = TileBounds(projection, definition, x, y);
-        float cx = rect.Left + rect.Width / 2f;
-        float cy = rect.Top + rect.Height / 2f;
-
-        return definition.CoordinateSystemType switch
-        {
-            CoordinateSystemTypes.IsometricRhombic or
-            CoordinateSystemTypes.IsometricAxial =>
-            [
-                new(cx, rect.Top),
-                new(rect.Right, cy),
-                new(cx, rect.Bottom),
-                new(rect.Left, cy)
-            ],
-
-            CoordinateSystemTypes.HexAxialFlatTop =>
-            [
-                new(rect.Left + rect.Width * .25f, rect.Top),
-                new(rect.Left + rect.Width * .75f, rect.Top),
-                new(rect.Right, cy),
-                new(rect.Left + rect.Width * .75f, rect.Bottom),
-                new(rect.Left + rect.Width * .25f, rect.Bottom),
-                new(rect.Left, cy)
-            ],
-
-            CoordinateSystemTypes.HexAxialPointedTop =>
-            [
-                new(cx, rect.Top),
-                new(rect.Right, rect.Top + rect.Height * .25f),
-                new(rect.Right, rect.Top + rect.Height * .75f),
-                new(cx, rect.Bottom),
-                new(rect.Left, rect.Top + rect.Height * .75f),
-                new(rect.Left, rect.Top + rect.Height * .25f)
-            ],
-
-            _ =>
-            [
-                new(rect.Left, rect.Top),
-                new(rect.Right, rect.Top),
-                new(rect.Right, rect.Bottom),
-                new(rect.Left, rect.Bottom)
-            ]
-        };
+        var tile = projection[x, y];
+        return tile is null
+            ? []
+            : tile.OutlinePointsWorld
+                .Select(point => new PointF(point.X, point.Y))
+                .ToArray();
     }
 
     private RectangleF ToScreen(RectangleF world) =>
@@ -423,16 +373,26 @@ internal sealed class ScenePreviewControl : UserControl
     private sealed class ProjectionLayer : SceneLayer
     {
         private ProjectionLayer(
+            int columns,
+            int rows,
             int width,
             int height,
             CoordinateSystemTypes coordinateSystem)
-            : base(1, 1, width, height, 1f, coordinateSystem)
+            : base(
+                Math.Max(1, columns),
+                Math.Max(1, rows),
+                width,
+                height,
+                1f,
+                coordinateSystem)
         {
         }
 
         public static ProjectionLayer Create(SceneLayerDefinition definition)
         {
             var layer = new ProjectionLayer(
+                definition.Columns,
+                definition.Rows,
                 Math.Max(1, definition.TileWidth),
                 Math.Max(1, definition.TileHeight),
                 definition.CoordinateSystemType)

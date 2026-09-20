@@ -42,9 +42,15 @@ internal sealed class TilePropertyAdapter
 
     private void Change(Action<SceneLayerTileDefinition> change)
     {
+        bool existed = Tile is not null;
         var tile = Mutable();
         change(tile);
-        _document.MarkChanged();
+
+        // GetOrCreateTile marks a newly materialized sparse cell dirty.
+        // Existing cells still need an explicit notification after mutation.
+        if (existed)
+            _document.MarkChanged();
+
         _changed();
     }
 
