@@ -4,6 +4,7 @@ var hierarchy =
     [ "Gondwana.Drawing.Animation.GANI.AnimationDefinition", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinition.html", null ],
     [ "Gondwana.Drawing.Animation.GANI.AnimationDefinitionSource", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinitionSource.html", null ],
     [ "Gondwana.Drawing.Animation.GANI.AnimationFrameDefinition", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationFrameDefinition.html", null ],
+    [ "Gondwana.Drawing.Animation.GANI.AnimationTilesheetSourceDefinition", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationTilesheetSourceDefinition.html", null ],
     [ "Gondwana.Assets.AssetsFileIdentifier", "classGondwana_1_1Assets_1_1AssetsFileIdentifier.html", null ],
     [ "Gondwana.Audio.Browser.BrowserAudioManager", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html", null ],
     [ "Gondwana.Audio.Browser.BrowserAudioPlayer", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html", null ],

@@ -114,6 +114,8 @@ Properties</h2></td></tr>
 <tr class="memdesc:a583cdfb7c996aa9aa68b41cd94da5f39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets whether the owning tile should be hidden when this cycle ends.  <br /></td></tr>
 <tr class="memitem:a352a3b49ff796fd5409ebe2e9b045807" id="r_a352a3b49ff796fd5409ebe2e9b045807"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a352a3b49ff796fd5409ebe2e9b045807">NextCycleKey</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a352a3b49ff796fd5409ebe2e9b045807"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the key of the cycle to transition to when this cycle ends. A null or empty value uses the runtime default of transitioning to this cycle.  <br /></td></tr>
+<tr class="memitem:a65d508caadd8371ba44bc68e9f6b7673" id="r_a65d508caadd8371ba44bc68e9f6b7673"><td class="memItemLeft" align="right" valign="top">List&lt; <a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationTilesheetSourceDefinition.html">AnimationTilesheetSourceDefinition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a65d508caadd8371ba44bc68e9f6b7673">TilesheetSources</a> = []<code> [get, set]</code></td></tr>
+<tr class="memdesc:a65d508caadd8371ba44bc68e9f6b7673"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets authoring-time locations for logical GTS dependencies used by this animation. Runtime materialization still resolves frames through the registered tilesheet name.  <br /></td></tr>
 <tr class="memitem:abf15a5fc59883cc9ae0c788505e35bf8" id="r_abf15a5fc59883cc9ae0c788505e35bf8"><td class="memItemLeft" align="right" valign="top">List&lt; <a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationFrameDefinition.html">AnimationFrameDefinition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abf15a5fc59883cc9ae0c788505e35bf8">Frames</a> = []<code> [get, set]</code></td></tr>
 <tr class="memdesc:abf15a5fc59883cc9ae0c788505e35bf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the ordered frame references in this animation.  <br /></td></tr>
 <tr class="memitem:a038e1eede224c088dc545294608f8624" id="r_a038e1eede224c088dc545294608f8624"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinitionSource.html">AnimationDefinitionSource</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a038e1eede224c088dc545294608f8624">Source</a><code> [get, set]</code></td></tr>
@@ -172,7 +174,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the ordered frame references in this animation. </p>
 
-<p class="definition">Definition at line <a class="el" href="AnimationDefinition_8cs_source.html#l00039">39</a> of file <a class="el" href="AnimationDefinition_8cs_source.html">AnimationDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AnimationDefinition_8cs_source.html#l00045">45</a> of file <a class="el" href="AnimationDefinition_8cs_source.html">AnimationDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -276,7 +278,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets provenance metadata describing where this definition came from. </p>
 
-<p class="definition">Definition at line <a class="el" href="AnimationDefinition_8cs_source.html#l00044">44</a> of file <a class="el" href="AnimationDefinition_8cs_source.html">AnimationDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AnimationDefinition_8cs_source.html#l00050">50</a> of file <a class="el" href="AnimationDefinition_8cs_source.html">AnimationDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -303,6 +305,32 @@ Properties</h2></td></tr>
 <p>Gets or sets the time in seconds between frame transitions. </p>
 
 <p class="definition">Definition at line <a class="el" href="AnimationDefinition_8cs_source.html#l00018">18</a> of file <a class="el" href="AnimationDefinition_8cs_source.html">AnimationDefinition.cs</a>.</p>
+
+</div>
+</div>
+<a id="a65d508caadd8371ba44bc68e9f6b7673" name="a65d508caadd8371ba44bc68e9f6b7673"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65d508caadd8371ba44bc68e9f6b7673">&#9670;&#160;</a></span>TilesheetSources</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">List&lt;<a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationTilesheetSourceDefinition.html">AnimationTilesheetSourceDefinition</a>&gt; Gondwana.Drawing.Animation.GANI.AnimationDefinition.TilesheetSources = []</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets authoring-time locations for logical GTS dependencies used by this animation. Runtime materialization still resolves frames through the registered tilesheet name. </p>
+
+<p class="definition">Definition at line <a class="el" href="AnimationDefinition_8cs_source.html#l00040">40</a> of file <a class="el" href="AnimationDefinition_8cs_source.html">AnimationDefinition.cs</a>.</p>
 
 </div>
 </div>

@@ -117,7 +117,11 @@ Properties</h2></td></tr>
 <tr class="memitem:a8101b889f6cb7d9c490a43ddd139761b" id="r_a8101b889f6cb7d9c490a43ddd139761b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Scenes_1_1GSCN_1_1SceneFrameDefinition.html">SceneFrameDefinition</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8101b889f6cb7d9c490a43ddd139761b">Frame</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a8101b889f6cb7d9c490a43ddd139761b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the lightweight tilesheet frame reference, or null for an unassigned frame.  <br /></td></tr>
 <tr class="memitem:a5e673de6174f616fdc54c1e3532d7652" id="r_a5e673de6174f616fdc54c1e3532d7652"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5e673de6174f616fdc54c1e3532d7652">EnableAnimator</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a5e673de6174f616fdc54c1e3532d7652"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets whether an animator should exist for this tile.  <br /></td></tr>
+<tr class="memdesc:a5e673de6174f616fdc54c1e3532d7652"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets whether an animator should exist for this tile even when no animation is assigned. An <a class="el" href="#a829b7e9db1cf07e53cc247406df54308" title="Gets or sets the logical GANI/cycle key assigned to this tile, or null when no animation is assigned.">AnimationKey</a> also causes an animator to be materialized.  <br /></td></tr>
+<tr class="memitem:a829b7e9db1cf07e53cc247406df54308" id="r_a829b7e9db1cf07e53cc247406df54308"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a829b7e9db1cf07e53cc247406df54308">AnimationKey</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a829b7e9db1cf07e53cc247406df54308"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the logical GANI/cycle key assigned to this tile, or null when no animation is assigned.  <br /></td></tr>
+<tr class="memitem:af5162ad878cc09717d1e24f4377e778d" id="r_af5162ad878cc09717d1e24f4377e778d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af5162ad878cc09717d1e24f4377e778d">StartAnimation</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:af5162ad878cc09717d1e24f4377e778d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets whether the assigned animation should begin playing when the scene is materialized.  <br /></td></tr>
 <tr class="memitem:ad9523371fa8850471470762b6fa2c9f0" id="r_ad9523371fa8850471470762b6fa2c9f0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad9523371fa8850471470762b6fa2c9f0">EnableFog</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:ad9523371fa8850471470762b6fa2c9f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets whether fog affects the tile.  <br /></td></tr>
 <tr class="memitem:a6c778eb81c78c9305f67090a577c7c0c" id="r_a6c778eb81c78c9305f67090a577c7c0c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6c778eb81c78c9305f67090a577c7c0c">AdjustCollisionAreaByFrame</a><code> [get, set]</code></td></tr>
@@ -158,7 +162,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the tile collision adjustment. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTileDefinition_8cs_source.html#l00058">58</a> of file <a class="el" href="SceneLayerTileDefinition_8cs_source.html">SceneLayerTileDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTileDefinition_8cs_source.html#l00069">69</a> of file <a class="el" href="SceneLayerTileDefinition_8cs_source.html">SceneLayerTileDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -184,7 +188,33 @@ Properties</h2></td></tr>
 
 <p>Gets or sets whether frame changes update collision adjustment. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTileDefinition_8cs_source.html#l00053">53</a> of file <a class="el" href="SceneLayerTileDefinition_8cs_source.html">SceneLayerTileDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTileDefinition_8cs_source.html#l00064">64</a> of file <a class="el" href="SceneLayerTileDefinition_8cs_source.html">SceneLayerTileDefinition.cs</a>.</p>
+
+</div>
+</div>
+<a id="a829b7e9db1cf07e53cc247406df54308" name="a829b7e9db1cf07e53cc247406df54308"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a829b7e9db1cf07e53cc247406df54308">&#9670;&#160;</a></span>AnimationKey</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">string? Gondwana.Scenes.GSCN.SceneLayerTileDefinition.AnimationKey</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the logical GANI/cycle key assigned to this tile, or null when no animation is assigned. </p>
+
+<p class="definition">Definition at line <a class="el" href="SceneLayerTileDefinition_8cs_source.html#l00049">49</a> of file <a class="el" href="SceneLayerTileDefinition_8cs_source.html">SceneLayerTileDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -210,7 +240,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the named scene collision profile assigned to the tile. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTileDefinition_8cs_source.html#l00073">73</a> of file <a class="el" href="SceneLayerTileDefinition_8cs_source.html">SceneLayerTileDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTileDefinition_8cs_source.html#l00084">84</a> of file <a class="el" href="SceneLayerTileDefinition_8cs_source.html">SceneLayerTileDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -236,7 +266,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the tile collision behavior. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTileDefinition_8cs_source.html#l00063">63</a> of file <a class="el" href="SceneLayerTileDefinition_8cs_source.html">SceneLayerTileDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTileDefinition_8cs_source.html#l00074">74</a> of file <a class="el" href="SceneLayerTileDefinition_8cs_source.html">SceneLayerTileDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -262,7 +292,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets whether frame changes update collision type. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTileDefinition_8cs_source.html#l00068">68</a> of file <a class="el" href="SceneLayerTileDefinition_8cs_source.html">SceneLayerTileDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTileDefinition_8cs_source.html#l00079">79</a> of file <a class="el" href="SceneLayerTileDefinition_8cs_source.html">SceneLayerTileDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -286,9 +316,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets whether an animator should exist for this tile. </p>
+<p>Gets or sets whether an animator should exist for this tile even when no animation is assigned. An <a class="el" href="#a829b7e9db1cf07e53cc247406df54308" title="Gets or sets the logical GANI/cycle key assigned to this tile, or null when no animation is assigned.">AnimationKey</a> also causes an animator to be materialized. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTileDefinition_8cs_source.html#l00043">43</a> of file <a class="el" href="SceneLayerTileDefinition_8cs_source.html">SceneLayerTileDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTileDefinition_8cs_source.html#l00044">44</a> of file <a class="el" href="SceneLayerTileDefinition_8cs_source.html">SceneLayerTileDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -314,7 +344,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets whether fog affects the tile. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTileDefinition_8cs_source.html#l00048">48</a> of file <a class="el" href="SceneLayerTileDefinition_8cs_source.html">SceneLayerTileDefinition.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTileDefinition_8cs_source.html#l00059">59</a> of file <a class="el" href="SceneLayerTileDefinition_8cs_source.html">SceneLayerTileDefinition.cs</a>.</p>
 
 </div>
 </div>
@@ -393,6 +423,32 @@ Properties</h2></td></tr>
 <p>Gets or sets an optional logical nickname. </p>
 
 <p class="definition">Definition at line <a class="el" href="SceneLayerTileDefinition_8cs_source.html#l00028">28</a> of file <a class="el" href="SceneLayerTileDefinition_8cs_source.html">SceneLayerTileDefinition.cs</a>.</p>
+
+</div>
+</div>
+<a id="af5162ad878cc09717d1e24f4377e778d" name="af5162ad878cc09717d1e24f4377e778d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5162ad878cc09717d1e24f4377e778d">&#9670;&#160;</a></span>StartAnimation</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Gondwana.Scenes.GSCN.SceneLayerTileDefinition.StartAnimation</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets whether the assigned animation should begin playing when the scene is materialized. </p>
+
+<p class="definition">Definition at line <a class="el" href="SceneLayerTileDefinition_8cs_source.html#l00054">54</a> of file <a class="el" href="SceneLayerTileDefinition_8cs_source.html">SceneLayerTileDefinition.cs</a>.</p>
 
 </div>
 </div>

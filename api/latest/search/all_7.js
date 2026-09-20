@@ -160,5 +160,6 @@ var searchData=
   ['grosscps_157',['GrossCPS',['../classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#a037cfb72bc48bb3952d4a5c74572bb7d',1,'Gondwana::CyclesPerSecondCalculatedEventArgs']]],
   ['group_158',['Group',['../classGondwana_1_1Widgets_1_1Controls_1_1RadioButtonWidget.html#a574703b69c13d32125a4e4306fc958e4',1,'Gondwana::Widgets::Controls::RadioButtonWidget']]],
   ['gscnfilepath_159',['GscnFilePath',['../classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinitionSource.html#a224b55bc0ad04ee0cca2df9a8a1575fd',1,'Gondwana::Scenes::GSCN::SceneDefinitionSource']]],
-  ['gtsfilepath_160',['GtsFilePath',['../classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html#a848b142832ea0500a83599f5bc11fc94',1,'Gondwana::Drawing::Tilesheets::GTS::TilesheetDefinitionSource']]]
+  ['gtsfilepath_160',['GtsFilePath',['../classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html#a848b142832ea0500a83599f5bc11fc94',1,'Gondwana::Drawing::Tilesheets::GTS::TilesheetDefinitionSource']]],
+  ['gtspath_161',['GtsPath',['../classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationTilesheetSourceDefinition.html#adcd674d26460934ffd5a579e8aed2c7b',1,'Gondwana::Drawing::Animation::GANI::AnimationTilesheetSourceDefinition']]]
 ];
