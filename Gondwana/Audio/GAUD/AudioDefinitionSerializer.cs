@@ -101,11 +101,14 @@ public static class AudioDefinitionSerializer
     public static AudioDefinition FromJson(string json) =>
         FromJson(json, sourceDescription: null);
 
-    public static AudioDefinition FromManager(AudioResourceManager manager)
+    public static AudioDefinition FromManager(
+        AudioResourceManager manager,
+        string? baseDirectory = null,
+        bool makePathsRelative = false)
     {
         ArgumentNullException.ThrowIfNull(manager);
 
-        return new AudioDefinition
+        var definition = new AudioDefinition
         {
             Resources = manager.GetAll()
                 .OrderBy(pair => pair.Key, StringComparer.Ordinal)
@@ -113,6 +116,11 @@ public static class AudioDefinitionSerializer
                 .ToList(),
             Source = AudioDefinitionSource.Generated()
         };
+
+        if (makePathsRelative && !string.IsNullOrWhiteSpace(baseDirectory))
+            RebaseReferences(definition, oldBaseDirectory: null, baseDirectory);
+
+        return definition;
     }
 
     public static AudioResourceDefinition FromResource(AudioResource resource)
