@@ -557,11 +557,11 @@ Once those distinctions are clear, Gondwana configuration is straightforward: lo
 
 ## Source files
 
-- [`Gondwana/Configuration/EngineConfiguration.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Configuration/EngineConfiguration.cs)
-- [`Gondwana/Configuration/EngineConfigurationFile.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Configuration/EngineConfigurationFile.cs)
-- [`Gondwana/Configuration/StateFileMount.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Configuration/StateFileMount.cs)
-- [`Gondwana/Engine.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Engine.cs)
-- [`Gondwana.Hosting/GameHostBase.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Hosting/GameHostBase.cs)
+- [`Gondwana/Configuration/EngineConfiguration.cs`](https://isthimius.github.io/Gondwana/api/latest/EngineConfiguration_8cs_source.html)
+- [`Gondwana/Configuration/EngineConfigurationFile.cs`](https://isthimius.github.io/Gondwana/api/latest/EngineConfigurationFile_8cs_source.html)
+- [`Gondwana/Configuration/StateFileMount.cs`](https://isthimius.github.io/Gondwana/api/latest/StateFileMount_8cs_source.html)
+- [`Gondwana/Engine.cs`](https://isthimius.github.io/Gondwana/api/latest/Engine_8cs_source.html)
+- [`Gondwana.Hosting/GameHostBase.cs`](https://isthimius.github.io/Gondwana/api/latest/GameHostBase_8cs_source.html)
 
 ## Related wiki pages
 

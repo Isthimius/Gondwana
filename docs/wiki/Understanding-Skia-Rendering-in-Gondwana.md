@@ -2174,18 +2174,18 @@ The following rules summarize the intended architecture.
 
 The following files are the best places to continue reading:
 
-- [`Gondwana/Rendering/RenderSurfaceHost.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Rendering/RenderSurfaceHost.cs)
-- [`Gondwana/Rendering/RenderSurfaceHostBase.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Rendering/RenderSurfaceHostBase.cs)
-- [`Gondwana/Rendering/Backbuffers/BackbufferBase.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Rendering/Backbuffers/BackbufferBase.cs)
-- [`Gondwana/Rendering/Backbuffers/BitmapBackbuffer.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Rendering/Backbuffers/BitmapBackbuffer.cs)
-- [`Gondwana/Rendering/Backbuffers/GpuBackbuffer.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Rendering/Backbuffers/GpuBackbuffer.cs)
-- [`Gondwana/Rendering/Views/View.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Rendering/Views/View.cs)
-- [`Gondwana/Rendering/Views/Viewport.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Rendering/Views/Viewport.cs)
-- [`Gondwana/Rendering/Views/Camera.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Rendering/Views/Camera.cs)
-- [`Gondwana/Drawing/IDrawable.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Drawing/IDrawable.cs)
-- [`Gondwana/Drawing/Direct/DirectDrawingBase.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Drawing/Direct/DirectDrawingBase.cs)
-- [`Gondwana/Drawing/Direct/DirectDrawingManager.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Drawing/Direct/DirectDrawingManager.cs)
-- [`Gondwana/Rendering/RenderContext.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Rendering/RenderContext.cs)
+- [`Gondwana/Rendering/RenderSurfaceHost.cs`](https://isthimius.github.io/Gondwana/api/latest/RenderSurfaceHost_8cs_source.html)
+- [`Gondwana/Rendering/RenderSurfaceHostBase.cs`](https://isthimius.github.io/Gondwana/api/latest/RenderSurfaceHostBase_8cs_source.html)
+- [`Gondwana/Rendering/Backbuffers/BackbufferBase.cs`](https://isthimius.github.io/Gondwana/api/latest/BackbufferBase_8cs_source.html)
+- [`Gondwana/Rendering/Backbuffers/BitmapBackbuffer.cs`](https://isthimius.github.io/Gondwana/api/latest/BitmapBackbuffer_8cs_source.html)
+- [`Gondwana/Rendering/Backbuffers/GpuBackbuffer.cs`](https://isthimius.github.io/Gondwana/api/latest/GpuBackbuffer_8cs_source.html)
+- [`Gondwana/Rendering/Views/View.cs`](https://isthimius.github.io/Gondwana/api/latest/View_8cs_source.html)
+- [`Gondwana/Rendering/Views/Viewport.cs`](https://isthimius.github.io/Gondwana/api/latest/Viewport_8cs_source.html)
+- [`Gondwana/Rendering/Views/Camera.cs`](https://isthimius.github.io/Gondwana/api/latest/Camera_8cs_source.html)
+- [`Gondwana/Drawing/IDrawable.cs`](https://isthimius.github.io/Gondwana/api/latest/IDrawable_8cs_source.html)
+- [`Gondwana/Drawing/Direct/DirectDrawingBase.cs`](https://isthimius.github.io/Gondwana/api/latest/DirectDrawingBase_8cs_source.html)
+- [`Gondwana/Drawing/Direct/DirectDrawingManager.cs`](https://isthimius.github.io/Gondwana/api/latest/DirectDrawingManager_8cs_source.html)
+- [`Gondwana/Rendering/RenderContext.cs`](https://isthimius.github.io/Gondwana/api/latest/RenderContext_8cs_source.html)
 
 Related wiki topics:
 

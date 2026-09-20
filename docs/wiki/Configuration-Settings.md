@@ -284,10 +284,10 @@ Changing a property changes the live `EngineConfiguration` object. It is written
 
 ## Source files
 
-- [`Gondwana/Configuration/EngineConfiguration.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Configuration/EngineConfiguration.cs)
-- [`Gondwana/Configuration/StateFileMount.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Configuration/StateFileMount.cs)
-- [`Gondwana/Logging/EngineLoggingMode.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Logging/EngineLoggingMode.cs)
-- [`Gondwana/EngineStateParts.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/EngineStateParts.cs)
+- [`Gondwana/Configuration/EngineConfiguration.cs`](https://isthimius.github.io/Gondwana/api/latest/EngineConfiguration_8cs_source.html)
+- [`Gondwana/Configuration/StateFileMount.cs`](https://isthimius.github.io/Gondwana/api/latest/StateFileMount_8cs_source.html)
+- [`Gondwana/Logging/EngineLoggingMode.cs`](https://isthimius.github.io/Gondwana/api/latest/EngineLoggingMode_8cs_source.html)
+- [`Gondwana/EngineStateParts.cs`](https://isthimius.github.io/Gondwana/api/latest/EngineStateParts_8cs_source.html)
 
 ## Related wiki pages
 

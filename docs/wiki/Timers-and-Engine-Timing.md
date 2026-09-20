@@ -553,8 +553,8 @@ void Dispose()
 
 ## Source reference
 
-- [`Gondwana/Timers/HighResTimer.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Timers/HighResTimer.cs)
-- [`Gondwana/Timers/Timer.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Timers/Timer.cs)
-- [`Gondwana/Timers/TimerType.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Timers/TimerType.cs)
-- [`Gondwana/Timers/TimerCycles.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Timers/TimerCycles.cs)
-- [`Gondwana/Engine.cs`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana/Engine.cs)
+- [`Gondwana/Timers/HighResTimer.cs`](https://isthimius.github.io/Gondwana/api/latest/HighResTimer_8cs_source.html)
+- [`Gondwana/Timers/Timer.cs`](https://isthimius.github.io/Gondwana/api/latest/Timer_8cs_source.html)
+- [`Gondwana/Timers/TimerType.cs`](https://isthimius.github.io/Gondwana/api/latest/TimerType_8cs_source.html)
+- [`Gondwana/Timers/TimerCycles.cs`](https://isthimius.github.io/Gondwana/api/latest/TimerCycles_8cs_source.html)
+- [`Gondwana/Engine.cs`](https://isthimius.github.io/Gondwana/api/latest/Engine_8cs_source.html)

@@ -39,7 +39,7 @@ The system gives you one controller abstraction instead of making you choose bet
 ---
 
 ## Where to read next
-- `Gondwana/Movement/MovementController.cs`
-- `Gondwana/Movement/MovementController.Follow.cs`
-- `Gondwana/Movement/MovementController.Scripted.cs`
-- `Gondwana/Movement/MovementController.Integrated.cs`
+- [`Gondwana/Physics/Movement/MovementController.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementController_8cs_source.html)
+- [`Gondwana/Physics/Movement/MovementController.Follow.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementController_8Follow_8cs_source.html)
+- [`Gondwana/Physics/Movement/MovementController.Scripted.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementController_8Scripted_8cs_source.html)
+- [`Gondwana/Physics/Movement/MovementController.Integrated.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementController_8Integrated_8cs_source.html)

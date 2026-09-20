@@ -592,11 +592,11 @@ That separation keeps asset packaging independent from rendering, audio, tileshe
 
 ## Where to read next
 
-- `Gondwana/Assets/AssetsFile.cs`
-- `Gondwana/Assets/AssetsFileEntry.cs`
-- `Gondwana/Assets/AssetsFileIdentifier.cs`
-- `Gondwana/Assets/AssetTypes.cs`
-- `Gondwana/Audio/AudioResourceManager.cs`
-- `Gondwana/Drawing/SvgResourceManager.cs`
-- `Tooling/Gondwana.Cli/Commands/Assets/`
-- `Tooling/Gondwana.Assets.WinForms/`
+- [`Gondwana/Assets/AssetsFile.cs`](https://isthimius.github.io/Gondwana/api/latest/AssetsFile_8cs_source.html)
+- [`Gondwana/Assets/AssetsFileEntry.cs`](https://isthimius.github.io/Gondwana/api/latest/AssetsFileEntry_8cs_source.html)
+- [`Gondwana/Assets/AssetsFileIdentifier.cs`](https://isthimius.github.io/Gondwana/api/latest/AssetsFileIdentifier_8cs_source.html)
+- [`Gondwana/Assets/AssetTypes.cs`](https://isthimius.github.io/Gondwana/api/latest/AssetTypes_8cs_source.html)
+- [`Gondwana/Audio/AudioResourceManager.cs`](https://isthimius.github.io/Gondwana/api/latest/AudioResourceManager_8cs_source.html)
+- [`Gondwana/Drawing/SvgResourceManager.cs`](https://isthimius.github.io/Gondwana/api/latest/SvgResourceManager_8cs_source.html)
+- [`Tooling/Gondwana.Cli/Commands/Assets/`](https://github.com/Isthimius/Gondwana/tree/master/Tooling/Gondwana.Cli/Commands/Assets)
+- [`Tooling/Gondwana.Assets.WinForms/`](https://github.com/Isthimius/Gondwana/tree/master/Tooling/Gondwana.Assets.WinForms)

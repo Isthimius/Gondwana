@@ -472,10 +472,10 @@ That approach keeps useful evidence available without turning the log into a sec
 
 Relevant source files:
 
-- `Gondwana/Logging/EngineLogger.cs`
-- `Gondwana/Logging/ModeLogger.cs`
-- `Gondwana/Logging/LogEvent.cs`
-- `Gondwana/Logging/EngineLoggingMode.cs`
-- `Gondwana/Configuration/EngineConfiguration.cs`
-- `Gondwana/Engine.cs`
-- `Gondwana.Hosting/GameHostBase.cs`
+- [`Gondwana/Logging/EngineLogger.cs`](https://isthimius.github.io/Gondwana/api/latest/EngineLogger_8cs_source.html)
+- [`Gondwana/Logging/ModeLogger.cs`](https://isthimius.github.io/Gondwana/api/latest/ModeLogger_8cs_source.html)
+- [`Gondwana/Logging/LogEvent.cs`](https://isthimius.github.io/Gondwana/api/latest/LogEvent_8cs_source.html)
+- [`Gondwana/Logging/EngineLoggingMode.cs`](https://isthimius.github.io/Gondwana/api/latest/EngineLoggingMode_8cs_source.html)
+- [`Gondwana/Configuration/EngineConfiguration.cs`](https://isthimius.github.io/Gondwana/api/latest/EngineConfiguration_8cs_source.html)
+- [`Gondwana/Engine.cs`](https://isthimius.github.io/Gondwana/api/latest/Engine_8cs_source.html)
+- [`Gondwana.Hosting/GameHostBase.cs`](https://isthimius.github.io/Gondwana/api/latest/GameHostBase_8cs_source.html)
