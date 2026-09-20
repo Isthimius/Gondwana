@@ -39,6 +39,10 @@ Most of its public collections are facades over the engine's live registries.
   - [Inline GSCN definitions](#inline-gscn-definitions)
   - [Separate GSCN files](#separate-gscn-files)
   - [Sprite scene-layer identity](#sprite-scene-layer-identity)
+- [Audio receives special handling](#audio-receives-special-handling)
+  - [Inline GSND definitions](#inline-gsnd-definitions)
+  - [Separate GSND files](#separate-gsnd-files)
+  - [Legacy audio state](#legacy-audio-state)
 - [Asset files are references, not embedded archives](#asset-files-are-references-not-embedded-archives)
 - [Compression](#compression)
   - [Compression is not encryption](#compression-is-not-encryption)
@@ -170,7 +174,8 @@ Tilesheets
 Cycles
 Scenes
 Sprites
-SoundResources
+Audio
+SoundResources    (legacy read compatibility only)
 ```
 
 The DTO is also used during deserialization.
@@ -213,7 +218,8 @@ state.SaveToFile(
     separateGtsFiles: false,
     parts: EngineStateParts.All,
     separateGscnFiles: false,
-    separateGaniFiles: false);
+    separateGaniFiles: false,
+    separateGsndFile: false);
 ```
 
 The save process is approximately:
@@ -917,6 +923,56 @@ For the standalone scene-definition format itself, see [[GSCN Files]].
 
 ---
 
+## Audio receives special handling
+
+New EngineState saves use the GSND definition layer rather than serializing runtime `AudioResource` objects directly. One audio state entry contains either an inline `AudioDefinition` or a reference to an external `.gsnd` file.
+
+GSND captures the source needed to recreate each resource—loose file, packed GAF entry, or URI—plus portable playback settings. Backend handles, current playback position, and device state remain runtime-only.
+
+### Inline GSND definitions
+
+Inline GSND is the default:
+
+```csharp
+state.SaveToFile(
+    "game.state",
+    parts: EngineStateParts.Audio,
+    separateGsndFile: false);
+```
+
+Loose file and GAF references are made relative to the EngineState location when practical.
+
+### Separate GSND files
+
+To externalize audio:
+
+```csharp
+state.SaveToFile(
+    "game.state",
+    parts: EngineStateParts.Audio,
+    separateGsndFile: true);
+```
+
+For `game.state`, Gondwana writes:
+
+```text
+game.state
+game.audio/
+    audio.gsnd
+```
+
+The main state file stores a relative `GsndPath` when possible. The external document is written through `AudioDefinitionSerializer`, so it remains a clean standalone GSND file rather than acquiring EngineState reference metadata.
+
+Audio restoration occurs after `AssetsFiles` and before tilesheets/cycles/scenes. This allows packed GAF audio references to resolve before an audio backend materializes the resources. The application must configure a compatible backend before restoring Audio.
+
+### Legacy audio state
+
+Older EngineState files stored serialized `AudioResource` values under `SoundResources`. That member remains readable for backward compatibility, but new saves write the GSND-based `Audio` entry instead.
+
+For the standalone format, see [[GSND Files]].
+
+---
+
 ## Asset files are references, not embedded archives
 
 An `AssetsFile` entry in EngineState stores metadata including:
@@ -1460,6 +1516,7 @@ state.SaveToFile(
     "content.state",
     separateGtsFiles: true,
     separateGaniFiles: true,
+    separateGsndFile: true,
     parts:
         EngineStateParts.AssetsFiles |
         EngineStateParts.Tilesheets |
@@ -1480,6 +1537,9 @@ content.tilesheets/
 content.animations/
     actor.walk.gani
     world.water.gani
+
+content.audio/
+    audio.gsnd
 ```
 
 ### Merge an expansion
@@ -1551,6 +1611,7 @@ Related resource serialization:
 - [`Gondwana/Drawing/Tilesheets/GTS/*`](https://github.com/Isthimius/Gondwana/tree/master/Gondwana/Drawing/Tilesheets/GTS)
 - [`Gondwana/Drawing/Animation/GANI/*`](https://github.com/Isthimius/Gondwana/tree/master/Gondwana/Drawing/Animation/GANI)
 - [`Gondwana/Scenes/GSCN/*`](https://github.com/Isthimius/Gondwana/tree/master/Gondwana/Scenes/GSCN)
+- [`Gondwana/Audio/GSND/*`](https://github.com/Isthimius/Gondwana/tree/master/Gondwana/Audio/GSND)
 - [`Gondwana/Assets/AssetsFile.cs`](https://isthimius.github.io/Gondwana/api/latest/AssetsFile_8cs_source.html)
 - [`Gondwana/Audio/*`](https://github.com/Isthimius/Gondwana/tree/master/Gondwana/Audio)
 

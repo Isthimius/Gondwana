@@ -48,6 +48,7 @@
     - [[Touch Input Quick Start]]
 - [[Collision Detection]]
 - [[Audio]]
+  - [[.gsnd Files|GSND-Files]]
   - [[NAudio|Audio---NAudio]]
   - [[Browser Audio|Audio---Browser-Audio]]
 - [[Timers and Engine Timing]]

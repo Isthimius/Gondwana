@@ -190,6 +190,8 @@ var secondLaser = audio.Clone("laser", "laser-2", volume: 0.5f);
 
 Serialized engine state retains the source metadata and portable playback settings. Restoring an audio resource requires the appropriate backend to have been configured first.
 
+For standalone authoring and EngineState externalization, Gondwana uses the **GSND** (`.gsnd`) definition format. A GSND document describes named audio sources and their portable playback settings without serializing backend handles or current playback position. See [[GSND Files]].
+
 ---
 
 ## Completion and disposal
@@ -217,6 +219,7 @@ This keeps platform selection explicit and prevents the core engine from acquiri
 
 See also:
 
+- [[GSND Files]]
 - [[NAudio|Audio---NAudio]]
 - [[Browser Audio|Audio---Browser-Audio]]
 - [[Assets Files]]
