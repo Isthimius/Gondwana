@@ -51,6 +51,9 @@ internal sealed class EditorDocument : DockContent
     public void RefreshView() => Editor.RefreshView();
     public IReadOnlyList<string> UpdateValidation() => Editor.UpdateValidation();
     public bool CommitEdits() => Editor.CommitEdits();
+    public bool ShowPane(string paneName) => Editor.ShowPane(paneName);
+    public bool IsPaneVisible(string paneName) => Editor.IsPaneVisible(paneName);
+    public void ShowAllPanes() => Editor.ShowAllPanes();
 
     public bool ConfirmClose()
     {
