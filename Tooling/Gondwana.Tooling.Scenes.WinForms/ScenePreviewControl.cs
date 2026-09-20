@@ -214,6 +214,9 @@ internal sealed class ScenePreviewControl : UserControl
             if (!tile.Visible)
                 continue;
 
+            if (tile.X < 0 || tile.Y < 0 || tile.X >= layer.Columns || tile.Y >= layer.Rows)
+                continue;
+
             var frame = ResolvePreviewFrame(tile);
             if (frame is null)
                 continue;
