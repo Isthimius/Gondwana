@@ -440,6 +440,30 @@ public sealed class SceneGscnTests
     }
 
     [Fact]
+    public void AuthoringSources_DoNotPerformFilesystemIoDuringRuntimeMaterialization()
+    {
+        var definition = new SceneDefinition
+        {
+            TilesheetSources =
+            [
+                SceneTilesheetSourceDefinition.Loose(
+                    "not-used",
+                    "definitely-does-not-exist.gts")
+            ],
+            AnimationSources =
+            [
+                SceneAnimationSourceDefinition.Loose(
+                    "not-used",
+                    "definitely-does-not-exist.gani")
+            ]
+        };
+
+        using var scene = SceneDefinitionSerializer.ToScene(definition);
+
+        Assert.NotNull(scene);
+    }
+
+    [Fact]
     public void Validator_ReportsInvalidAndDuplicateAuthoringSources()
     {
         var definition = new SceneDefinition
