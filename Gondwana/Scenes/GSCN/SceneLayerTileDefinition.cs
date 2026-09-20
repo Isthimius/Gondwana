@@ -38,9 +38,20 @@ public sealed class SceneLayerTileDefinition
     public SceneFrameDefinition? Frame { get; set; }
 
     /// <summary>
-    /// Gets or sets whether an animator should exist for this tile.
+    /// Gets or sets whether an animator should exist for this tile even when no animation is assigned.
+    /// An <see cref="AnimationKey"/> also causes an animator to be materialized.
     /// </summary>
     public bool EnableAnimator { get; set; }
+
+    /// <summary>
+    /// Gets or sets the logical GANI/cycle key assigned to this tile, or null when no animation is assigned.
+    /// </summary>
+    public string? AnimationKey { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the assigned animation should begin playing when the scene is materialized.
+    /// </summary>
+    public bool StartAnimation { get; set; }
 
     /// <summary>
     /// Gets or sets whether fog affects the tile.

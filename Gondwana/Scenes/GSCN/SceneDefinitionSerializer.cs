@@ -1,5 +1,6 @@
 using Gondwana.Assets;
 using Gondwana.Drawing;
+using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Physics.Collisions;
 using Newtonsoft.Json;
@@ -327,6 +328,11 @@ public static class SceneDefinitionSerializer
             Visible = tile.Visible,
             Frame = frame,
             EnableAnimator = tile.EnableAnimator,
+            AnimationKey = tile.EnableAnimator
+                ? tile.TileAnimator.CurrentCycle?.CycleKey
+                : null,
+            StartAnimation = tile.EnableAnimator &&
+                tile.TileAnimator.IsCycling,
             EnableFog = tile.EnableFog,
             AdjustCollisionAreaByFrame = tile.AdjustCollisionAreaByFrame,
             AdjustCollisionArea = tile.AdjustCollisionArea,
@@ -392,7 +398,26 @@ public static class SceneDefinitionSerializer
 
         tile.AdjustCollisionAreaByFrame = definition.AdjustCollisionAreaByFrame;
         tile.CollisionTypeByFrame = definition.CollisionTypeByFrame;
-        tile.EnableAnimator = definition.EnableAnimator;
+
+        var animationKey = string.IsNullOrWhiteSpace(definition.AnimationKey)
+            ? null
+            : definition.AnimationKey.Trim();
+
+        tile.EnableAnimator =
+            definition.EnableAnimator ||
+            animationKey is not null;
+
+        if (animationKey is not null)
+        {
+            var cycle = Cycle.GetAnimationCycle(animationKey)
+                ?? throw new InvalidDataException(
+                    $"GSCN references animation '{animationKey}', but no matching GANI/cycle is registered.");
+
+            tile.TileAnimator.CurrentCycle = cycle;
+
+            if (definition.StartAnimation)
+                tile.TileAnimator.StartAnimation();
+        }
     }
 
     private static Frame ResolveFrame(SceneFrameDefinition definition)
