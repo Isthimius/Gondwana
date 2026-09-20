@@ -21,8 +21,9 @@ dotnet run --project Tooling/Gondwana.Tooling.Tilesheets.WinForms -c Release
 - The preview toolbar also exposes **GAF image…** for choosing an asset package and
   image entry directly. **Reload image** invalidates the package cache before re-reading
   a packed source.
-- Documents and the workspace can be docked, floated, resized and rearranged.
-  **View → Working directory** restores the workspace if hidden.
+- Documents and the **Project sources** workspace can be docked, floated, resized and rearranged.
+  **View → Project sources** restores the outer workspace if hidden. The same **View**
+  menu can restore any hidden pane in the active GTS editor, or **Show all tilesheet panes**.
 - **Definition**, **Region**, and **Frame** are stacked in the side inspector,
   all visible together. Drag the horizontal dividers to resize each section;
   each property list scrolls independently.
@@ -164,9 +165,11 @@ tabbed, and split inside their own editor. All inner panes use document-style
 groups with tabs at the top, including panes initially placed at the sides or
 bottom. Floating and auto-hide are disabled for inner panes.
 Closing a pane using its close button hides it without closing the document.
-Close and reopen the document to recover the default panes and arrangement.
-Layouts reset to their defaults when documents are opened. Layout persistence is
-intentionally not implemented: no layout XML, settings, or registry state is saved.
+Use **View** to restore an individual pane in the active GTS document, or choose
+**Show all tilesheet panes**. A restored pane returns to its previous split/tab
+group for that open document. Layouts reset to their defaults when documents are
+opened. Layout persistence is intentionally not implemented: no layout XML,
+settings, or registry state is saved.
 
 The small helper in Tooling/Shared/WinForms/EditorDockWorkspace.cs is source-linked
 by the three tooling projects, so they do not depend on one another. It owns the

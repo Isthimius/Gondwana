@@ -125,11 +125,59 @@ public sealed class NestedEditorDockingTests
                 Application.DoEvents();
                 Assert.Same(document, outer.ActiveDocument);
                 // Follow the caption/tab close button path, which honors HideOnClose.
+                var hiddenPane = last.Pane;
                 last.Pane.CloseActiveContent();
                 Assert.True(last.IsHidden);
                 Assert.False(last.IsDisposed);
                 Assert.False(editor.IsDisposed);
                 Assert.False(document.IsDisposed);
+
+                bool IsPaneVisible(string paneName) => kind switch
+                {
+                    "GTS" => ((TilesheetEditorControl)editor).IsPaneVisible(paneName),
+                    "GAF" => ((AssetEditorControl)editor).IsPaneVisible(paneName),
+                    _ => ((AnimationEditorControl)editor).IsPaneVisible(paneName)
+                };
+
+                bool ShowPane(string paneName) => kind switch
+                {
+                    "GTS" => ((TilesheetEditorControl)editor).ShowPane(paneName),
+                    "GAF" => ((AssetEditorControl)editor).ShowPane(paneName),
+                    _ => ((AnimationEditorControl)editor).ShowPane(paneName)
+                };
+
+                void ShowAllPanes()
+                {
+                    switch (kind)
+                    {
+                        case "GTS":
+                            ((TilesheetEditorControl)editor).ShowAllPanes();
+                            break;
+                        case "GAF":
+                            ((AssetEditorControl)editor).ShowAllPanes();
+                            break;
+                        default:
+                            ((AnimationEditorControl)editor).ShowAllPanes();
+                            break;
+                    }
+                }
+
+                Assert.False(IsPaneVisible(last.Text));
+                Assert.True(ShowPane(last.Text));
+                Application.DoEvents();
+                Assert.False(last.IsHidden);
+                Assert.True(IsPaneVisible(last.Text));
+                Assert.Same(hiddenPane, last.Pane);
+                Assert.False(ShowPane("Not a real pane"));
+
+                first.Activate();
+                first.Pane.CloseActiveContent();
+                Application.DoEvents();
+                Assert.True(first.IsHidden);
+
+                ShowAllPanes();
+                Application.DoEvents();
+                Assert.All(panes, pane => Assert.False(pane.IsHidden));
 
                 document.Close();
                 Application.DoEvents();

@@ -102,9 +102,12 @@ tabbed, and split inside their own editor. All inner panes use document-style
 groups with tabs at the top, including panes initially placed at the sides or
 bottom. Floating and auto-hide are disabled for inner panes.
 Closing a pane using its close button hides it without closing the document.
-Close and reopen the document to recover the default panes and arrangement.
-Layouts reset to their defaults when documents are opened. Layout persistence is
-intentionally not implemented: no layout XML, settings, or registry state is saved.
+Use **View** to restore an individual pane in the active GANI document, or choose
+**Show all animation panes**. **View → Working directory** restores the outer
+workspace. A restored inner pane returns to its previous split/tab group for that
+open document. Layouts reset to their defaults when documents are opened. Layout
+persistence is intentionally not implemented: no layout XML, settings, or registry
+state is saved.
 
 The small helper in Tooling/Shared/WinForms/EditorDockWorkspace.cs is source-linked
 by the three tooling projects, so they do not depend on one another. It owns the
