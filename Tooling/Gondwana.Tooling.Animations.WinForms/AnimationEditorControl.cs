@@ -153,9 +153,9 @@ public sealed class AnimationEditorControl : UserControl
             }
         };
 
-        Document.Changed += DocumentChanged;
-
         LoadDefinitionTilesheetSources();
+
+        Document.Changed += DocumentChanged;
 
         DarkTheme.Apply(this);
         RefreshView();
@@ -233,6 +233,14 @@ public sealed class AnimationEditorControl : UserControl
             Document.SetLooseTilesheetSource(
                 loaded.Definition.Name,
                 path);
+
+            string diagnosticKey =
+                $"tilesheet '{loaded.Definition.Name}'";
+
+            _sourceDiagnostics.RemoveAll(message =>
+                message.Contains(
+                    diagnosticKey,
+                    StringComparison.OrdinalIgnoreCase));
         }
 
         return true;
