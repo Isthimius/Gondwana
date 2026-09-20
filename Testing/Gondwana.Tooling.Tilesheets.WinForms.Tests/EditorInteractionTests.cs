@@ -8,6 +8,7 @@ using Gondwana.Tooling.Tilesheets.WinForms;
 namespace Gondwana.Tooling.Tilesheets.WinForms.Tests;
 
 /// <summary>Exercise real Windows controls; descriptor-only tests cannot verify editing or focus.</summary>
+[Collection("WinForms interaction")]
 public sealed class EditorInteractionTests
 {
     private const BindingFlags PrivateInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;

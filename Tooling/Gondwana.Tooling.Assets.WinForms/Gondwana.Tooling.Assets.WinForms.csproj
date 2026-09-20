@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\Shared\WinForms\EditorDockWorkspace.cs" Link="Docking\EditorDockWorkspace.cs" />
     <PackageReference Include="DockPanelSuite" Version="3.1.1" />
     <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
     <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />

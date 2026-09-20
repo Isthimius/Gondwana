@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Gondwana.Tooling.Animations.WinForms.Tests" />
+    <Compile Include="..\Shared\WinForms\EditorDockWorkspace.cs" Link="Docking\EditorDockWorkspace.cs" />
     <PackageReference Include="DockPanelSuite" Version="3.1.1" />
     <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
     <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />

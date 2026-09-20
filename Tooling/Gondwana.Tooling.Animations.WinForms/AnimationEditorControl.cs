@@ -2,6 +2,8 @@ using System.Drawing.Drawing2D;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Animations.Editing;
+using Gondwana.Tooling.WinForms;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Animations.WinForms;
 
@@ -93,9 +95,7 @@ public sealed class AnimationEditorControl : UserControl
         Document = document ?? throw new ArgumentNullException(nameof(document));
         _propertyAdapter = new AnimationPropertyAdapter(Document);
 
-        // Give the reusable editor a sensible construction-time size before
-        // SplitContainer minimum sizes are applied. A host may resize it immediately
-        // afterward, but WinForms validates SplitterDistance during construction.
+        // Start with the existing editor proportions; the host may resize it.
         Size = new Size(1200, 800);
         Dock = DockStyle.Fill;
 
@@ -489,65 +489,19 @@ public sealed class AnimationEditorControl : UserControl
         _frames.Columns.Add("X", 55, HorizontalAlignment.Right);
         _frames.Columns.Add("Y", 55, HorizontalAlignment.Right);
 
-        var outer = new SplitContainer
-        {
-            Dock = DockStyle.Fill,
-            Size = new Size(1200, 800),
-            SplitterDistance = 320,
-            Panel1MinSize = 240,
-            Panel2MinSize = 450
-        };
-
-        outer.Panel1.Controls.Add(_sourceTree);
-        outer.Panel1.Controls.Add(BuildSourceToolbar());
-        outer.Panel1.Controls.Add(SectionLabel("GTS frame sources"));
-
-        var right = new SplitContainer
-        {
-            Dock = DockStyle.Fill,
-            Orientation = Orientation.Horizontal,
-            Size = new Size(880, 800),
-            SplitterDistance = 390,
-            Panel1MinSize = 220,
-            Panel2MinSize = 230
-        };
-
-        right.Panel1.Controls.Add(_preview);
-        right.Panel1.Controls.Add(BuildPreviewToolbar());
-        right.Panel1.Controls.Add(SectionLabel("Preview"));
-
-        var lower = new SplitContainer
-        {
-            Dock = DockStyle.Fill,
-            Size = new Size(880, 410),
-            SplitterDistance = 560,
-            Panel1MinSize = 330,
-            Panel2MinSize = 280
-        };
-
-        lower.Panel1.Controls.Add(_frames);
-        lower.Panel1.Controls.Add(BuildSequenceToolbar());
-        lower.Panel1.Controls.Add(SectionLabel("Animation frames"));
-
-        var inspector = new SplitContainer
-        {
-            Dock = DockStyle.Fill,
-            Orientation = Orientation.Horizontal,
-            Size = new Size(320, 410),
-            SplitterDistance = 230,
-            Panel1MinSize = 130,
-            Panel2MinSize = 100
-        };
-
-        inspector.Panel1.Controls.Add(_properties);
-        inspector.Panel1.Controls.Add(SectionLabel("Animation properties"));
-        inspector.Panel2.Controls.Add(_validation);
-        inspector.Panel2.Controls.Add(SectionLabel("Validation"));
-
-        lower.Panel2.Controls.Add(inspector);
-        right.Panel2.Controls.Add(lower);
-        outer.Panel2.Controls.Add(right);
-        Controls.Add(outer);
+        var workspace = new EditorDockWorkspace();
+        Controls.Add(workspace);
+        var dock = workspace.DockPanel;
+        var sources = workspace.AddPane("GTS frame sources", _sourceTree, BuildSourceToolbar());
+        var preview = workspace.AddPane("Preview", _preview, BuildPreviewToolbar());
+        var frames = workspace.AddPane("Animation frames", _frames, BuildSequenceToolbar());
+        var properties = workspace.AddPane("Animation properties", _properties);
+        var validation = workspace.AddPane("Validation", _validation);
+        preview.Show(dock, DockState.Document);
+        sources.Show(preview.Pane, DockAlignment.Left, 320d / 1200);
+        frames.Show(preview.Pane, DockAlignment.Bottom, 410d / 800);
+        properties.Show(frames.Pane, DockAlignment.Right, 320d / 880);
+        validation.Show(properties.Pane, DockAlignment.Bottom, 180d / 410);
     }
 
     private ToolStrip BuildSourceToolbar()
@@ -639,16 +593,6 @@ public sealed class AnimationEditorControl : UserControl
 
         return bar;
     }
-
-    private static Label SectionLabel(string text) =>
-        new()
-        {
-            Text = text,
-            Dock = DockStyle.Top,
-            Height = 26,
-            TextAlign = ContentAlignment.MiddleLeft,
-            Padding = new Padding(6, 0, 0, 0)
-        };
 
     private void ChooseTilesheetSources()
     {

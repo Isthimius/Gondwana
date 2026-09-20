@@ -1,5 +1,7 @@
 using System.ComponentModel;
 using Gondwana.Assets;
+using Gondwana.Tooling.WinForms;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Assets.WinForms;
 
@@ -134,10 +136,13 @@ public sealed class AssetEditorControl : UserControl
         _statusLabel = new ToolStripStatusLabel();
         statusStrip.Items.Add(_statusLabel);
 
-        Controls.Add(_grid);
-        Controls.Add(filterTools);
-        Controls.Add(fileTools);
-        Controls.Add(statusStrip);
+        var workspace = new EditorDockWorkspace();
+        Controls.Add(workspace);
+        var dock = workspace.DockPanel;
+        var entries = workspace.AddPane("Assets", _grid, filterTools, fileTools);
+        var status = workspace.AddPane("Status", statusStrip);
+        entries.Show(dock, DockState.Document);
+        status.Show(entries.Pane, DockAlignment.Bottom, 55d / 650);
 
         DarkTheme.Apply(this);
         _typeComboBox.BackColor = DarkTheme.Surface;
