@@ -43,6 +43,7 @@ internal sealed class AnimationPreviewControl : Control
     {
         _definition = definition;
         _resolver = resolver;
+        _hiddenAtEnd = false;
         if (_index >= definition.Frames.Count)
             _index = Math.Max(0, definition.Frames.Count - 1);
 
