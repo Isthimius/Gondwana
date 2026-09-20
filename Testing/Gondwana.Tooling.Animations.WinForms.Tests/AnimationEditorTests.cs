@@ -126,22 +126,70 @@ public sealed class AnimationEditorTests
                         tree.ImageList.Images[frameNode.ImageIndex].Size);
                 }
 
-                tree.SelectedNode = rowNode.Nodes[1];
+                var preview = Field<AnimationPreviewControl>(
+                    editor,
+                    "_preview");
 
-                editor.GetType()
+                tree.SelectedNode = rowNode.Nodes[1];
+                Application.DoEvents();
+
+                Assert.True(preview.IsShowingSourceFrame);
+
+                typeof(TreeView)
                     .GetMethod(
-                        "AddSelectedSourceFrame",
+                        "OnNodeMouseDoubleClick",
                         PrivateInstance)!
-                    .Invoke(editor, null);
+                    .Invoke(
+                        tree,
+                        [
+                            new TreeNodeMouseClickEventArgs(
+                                rowNode.Nodes[1],
+                                MouseButtons.Left,
+                                2,
+                                0,
+                                0)
+                        ]);
 
                 Application.DoEvents();
 
-                var frame = Assert.Single(document.Definition.Frames);
-                Assert.Equal("test-sheet", frame.Tilesheet);
-                Assert.Equal("walk", frame.RegionName);
-                Assert.Equal(1, frame.XTile);
-                Assert.Equal(0, frame.YTile);
+                var firstFrame = Assert.Single(document.Definition.Frames);
+                Assert.Equal("test-sheet", firstFrame.Tilesheet);
+                Assert.Equal("walk", firstFrame.RegionName);
+                Assert.Equal(1, firstFrame.XTile);
+                Assert.Equal(0, firstFrame.YTile);
+
+                tree.SelectedNode = rowNode.Nodes[0];
+                Application.DoEvents();
+
+                Assert.True(preview.IsShowingSourceFrame);
+
+                typeof(Control)
+                    .GetMethod(
+                        "OnDoubleClick",
+                        PrivateInstance)!
+                    .Invoke(preview, [EventArgs.Empty]);
+
+                Application.DoEvents();
+
+                Assert.Equal(2, document.Definition.Frames.Count);
+                var secondFrame = document.Definition.Frames[1];
+                Assert.Equal("test-sheet", secondFrame.Tilesheet);
+                Assert.Equal("walk", secondFrame.RegionName);
+                Assert.Equal(0, secondFrame.XTile);
+                Assert.Equal(0, secondFrame.YTile);
                 Assert.True(document.IsDirty);
+
+                var sourceToolbar = Descendants<ToolStrip>(editor)
+                    .Single(bar => bar.Items
+                        .Cast<ToolStripItem>()
+                        .Any(item => item.Text == "Add GTS…"));
+
+                Assert.Equal(
+                    ["Add GTS…", "Add", "Remove"],
+                    sourceToolbar.Items
+                        .Cast<ToolStripItem>()
+                        .Select(item => item.Text)
+                        .ToArray());
 
                 var errors = editor.UpdateValidation();
                 Assert.Empty(errors);
@@ -303,6 +351,20 @@ public sealed class AnimationEditorTests
 
         Directory.CreateDirectory(path);
         return path;
+    }
+
+    private static IEnumerable<T> Descendants<T>(
+        Control root)
+        where T : Control
+    {
+        foreach (Control child in root.Controls)
+        {
+            if (child is T match)
+                yield return match;
+
+            foreach (var descendant in Descendants<T>(child))
+                yield return descendant;
+        }
     }
 
     private static T Field<T>(
