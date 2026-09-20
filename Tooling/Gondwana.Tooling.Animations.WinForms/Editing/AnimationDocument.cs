@@ -61,6 +61,79 @@ public sealed class AnimationDocument
     public IReadOnlyList<string> Validate() =>
         AnimationDefinitionValidator.Validate(Definition);
 
+    public bool SetLooseTilesheetSource(
+        string tilesheet,
+        string gtsPath)
+    {
+        if (string.IsNullOrWhiteSpace(tilesheet))
+            throw new ArgumentException("Tilesheet name must be a non-empty string.", nameof(tilesheet));
+
+        if (string.IsNullOrWhiteSpace(gtsPath))
+            throw new ArgumentException("GTS path must be a non-empty string.", nameof(gtsPath));
+
+        string fullPath = Path.GetFullPath(gtsPath);
+        string persistedPath = MakeReferencePath(fullPath, BaseDirectory);
+
+        var existing = Definition.TilesheetSources.FirstOrDefault(source =>
+            string.Equals(
+                source.Tilesheet,
+                tilesheet,
+                StringComparison.Ordinal));
+
+        if (existing is not null &&
+            existing.Kind == AnimationTilesheetSourceKind.LooseDefinitionFile &&
+            !string.IsNullOrWhiteSpace(existing.GtsPath))
+        {
+            string existingFullPath = ResolveReferencePath(existing.GtsPath);
+            if (string.Equals(
+                    existingFullPath,
+                    fullPath,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+        }
+
+        Definition.TilesheetSources.RemoveAll(source =>
+            string.Equals(
+                source.Tilesheet,
+                tilesheet,
+                StringComparison.Ordinal));
+
+        Definition.TilesheetSources.Add(
+            AnimationTilesheetSourceDefinition.Loose(
+                tilesheet,
+                persistedPath));
+
+        MarkChanged();
+        return true;
+    }
+
+    public bool RemoveTilesheetSource(string tilesheet)
+    {
+        int removed = Definition.TilesheetSources.RemoveAll(source =>
+            string.Equals(
+                source.Tilesheet,
+                tilesheet,
+                StringComparison.Ordinal));
+
+        if (removed == 0)
+            return false;
+
+        MarkChanged();
+        return true;
+    }
+
+    public string ResolveReferencePath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentException("Reference path must be a non-empty string.", nameof(path));
+
+        return Path.IsPathRooted(path)
+            ? Path.GetFullPath(path)
+            : Path.GetFullPath(path, BaseDirectory);
+    }
+
     public void Save(string path, bool allowInvalid = false)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -79,6 +152,11 @@ public sealed class AnimationDocument
         var snapshot = AnimationDefinitionSerializer.FromJson(
             AnimationDefinitionSerializer.ToJson(Definition));
 
+        RebaseTilesheetSources(
+            snapshot,
+            BaseDirectory,
+            directory);
+
         var temporary = Path.Combine(
             directory,
             $".{Path.GetFileName(path)}.{Guid.NewGuid():N}.tmp");
@@ -94,9 +172,84 @@ public sealed class AnimationDocument
                 File.Delete(temporary);
         }
 
+        Definition.TilesheetSources = snapshot.TilesheetSources
+            .Select(CloneTilesheetSource)
+            .ToList();
+
         FilePath = path;
         BaseDirectory = directory;
         IsDirty = false;
         Changed?.Invoke(this, EventArgs.Empty);
+    }
+
+    private static void RebaseTilesheetSources(
+        AnimationDefinition definition,
+        string oldBaseDirectory,
+        string newBaseDirectory)
+    {
+        foreach (var source in definition.TilesheetSources)
+        {
+            switch (source.Kind)
+            {
+                case AnimationTilesheetSourceKind.LooseDefinitionFile
+                    when !string.IsNullOrWhiteSpace(source.GtsPath):
+                    source.GtsPath = MakeReferencePath(
+                        ResolveReferencePath(
+                            source.GtsPath,
+                            oldBaseDirectory),
+                        newBaseDirectory);
+                    break;
+
+                case AnimationTilesheetSourceKind.PackedDefinitionFile
+                    when !string.IsNullOrWhiteSpace(source.AssetsFilePath):
+                    source.AssetsFilePath = MakeReferencePath(
+                        ResolveReferencePath(
+                            source.AssetsFilePath,
+                            oldBaseDirectory),
+                        newBaseDirectory);
+                    break;
+            }
+        }
+    }
+
+    private static AnimationTilesheetSourceDefinition CloneTilesheetSource(
+        AnimationTilesheetSourceDefinition source) =>
+        new()
+        {
+            Tilesheet = source.Tilesheet,
+            Kind = source.Kind,
+            GtsPath = source.GtsPath,
+            AssetsFilePath = source.AssetsFilePath,
+            AssetEntryName = source.AssetEntryName
+        };
+
+    private static string ResolveReferencePath(
+        string path,
+        string baseDirectory) =>
+        Path.IsPathRooted(path)
+            ? Path.GetFullPath(path)
+            : Path.GetFullPath(path, baseDirectory);
+
+    private static string MakeReferencePath(
+        string path,
+        string baseDirectory)
+    {
+        string fullPath = Path.GetFullPath(path);
+        string fullBaseDirectory = Path.GetFullPath(baseDirectory);
+
+        string? pathRoot = Path.GetPathRoot(fullPath);
+        string? baseRoot = Path.GetPathRoot(fullBaseDirectory);
+
+        if (!string.Equals(
+                pathRoot,
+                baseRoot,
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return fullPath;
+        }
+
+        return Path.GetRelativePath(
+            fullBaseDirectory,
+            fullPath);
     }
 }
