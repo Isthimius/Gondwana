@@ -400,6 +400,54 @@ public sealed class AnimationEditorTests
     }
 
     [Fact]
+    public void RemovingGtsSource_RemovesDependencyButPreservesAnimationFrames() =>
+        RunSta(() =>
+        {
+            string directory = CreateTempDirectory();
+
+            try
+            {
+                string gtsPath = CreateGts(directory);
+                var document = AnimationDocument.Create(directory);
+                document.Definition.Frames.Add(
+                    new AnimationFrameDefinition
+                    {
+                        Tilesheet = "test-sheet",
+                        RegionName = "walk",
+                        XTile = 0,
+                        YTile = 0
+                    });
+
+                using var editor =
+                    new AnimationEditorControl(document);
+
+                editor.AddTilesheetSource(gtsPath);
+
+                var tree = Field<TreeView>(
+                    editor,
+                    "_sourceTree");
+                tree.SelectedNode = tree.Nodes[0];
+
+                editor.GetType()
+                    .GetMethod(
+                        "RemoveSelectedSource",
+                        PrivateInstance)!
+                    .Invoke(editor, null);
+
+                Assert.Empty(document.Definition.TilesheetSources);
+                Assert.Empty(tree.Nodes);
+                Assert.Single(document.Definition.Frames);
+                Assert.Equal(
+                    "test-sheet",
+                    document.Definition.Frames[0].Tilesheet);
+            }
+            finally
+            {
+                Directory.Delete(directory, recursive: true);
+            }
+        });
+
+    [Fact]
     public void DuplicateLogicalTilesheetNamesAreRejected() =>
         RunSta(() =>
         {
