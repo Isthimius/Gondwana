@@ -77,6 +77,7 @@ public sealed class AnimationEditorControl : UserControl
     private readonly AnimationPropertyAdapter _propertyAdapter;
     private bool _refreshPending;
     private bool _syncingPreviewSelection;
+    private bool _syncingSourceTreeSelection;
 
     public AnimationDocument Document { get; }
 
@@ -125,13 +126,14 @@ public sealed class AnimationEditorControl : UserControl
 
         _frames.SelectedIndexChanged += (_, _) =>
         {
-            if (!_syncingPreviewSelection &&
-                _frames.SelectedIndices.Count == 1)
-            {
-                _preview.Pause();
-                _preview.ClearSourceFrame();
-                _playButton.Text = "Play";
-            }
+            if (!_syncingPreviewSelection)
+                ShowSelectedAnimationFrameSource();
+        };
+
+        _frames.ItemActivate += (_, _) =>
+        {
+            if (!_syncingPreviewSelection)
+                ShowSelectedAnimationFrameSource();
         };
 
         _preview.CurrentFrameChanged += (_, _) =>
@@ -839,6 +841,121 @@ public sealed class AnimationEditorControl : UserControl
         if (e.Node.Tag is not FrameTag frame)
             return;
 
+        if (!_syncingSourceTreeSelection)
+            ClearAnimationFrameSelection();
+
+        ShowSourceFrame(frame);
+    }
+
+    private void ShowSelectedAnimationFrameSource()
+    {
+        if (_frames.SelectedIndices.Count != 1)
+            return;
+
+        var item = _frames.Items[_frames.SelectedIndices[0]];
+        if (item.Tag is not AnimationFrameDefinition frame)
+            return;
+
+        _preview.Pause();
+        _playButton.Text = "Play";
+
+        var sourceNode = FindSourceFrameNode(frame);
+        if (sourceNode?.Tag is not FrameTag sourceFrame)
+        {
+            _sourceTree.SelectedNode = null;
+            _preview.ShowSourceFrame(
+                ResolveFramePreview(frame),
+                $"{frame.Tilesheet}:{frame.RegionName} ({frame.XTile},{frame.YTile})");
+            return;
+        }
+
+        bool selectionChanged =
+            !ReferenceEquals(_sourceTree.SelectedNode, sourceNode);
+
+        _syncingSourceTreeSelection = true;
+        try
+        {
+            _sourceTree.SelectedNode = sourceNode;
+            sourceNode.EnsureVisible();
+        }
+        finally
+        {
+            _syncingSourceTreeSelection = false;
+        }
+
+        // Assigning the already-selected node does not raise AfterSelect.
+        if (!selectionChanged)
+            ShowSourceFrame(sourceFrame);
+    }
+
+    private TreeNode? FindSourceFrameNode(
+        AnimationFrameDefinition frame)
+    {
+        var source = FindSource(frame.Tilesheet);
+        if (source is null)
+            return null;
+
+        var root = _sourceTree.Nodes
+            .Cast<TreeNode>()
+            .FirstOrDefault(node =>
+                ReferenceEquals(node.Tag, source));
+
+        if (root is null)
+            return null;
+
+        var regionNode = root.Nodes
+            .Cast<TreeNode>()
+            .FirstOrDefault(node =>
+                node.Tag is RegionTag tag &&
+                string.Equals(
+                    tag.Region.Name,
+                    frame.RegionName,
+                    StringComparison.OrdinalIgnoreCase));
+
+        if (regionNode?.Tag is not RegionTag regionTag)
+            return null;
+
+        if (regionNode.Nodes.Count == 1 &&
+            regionNode.Nodes[0].Tag is null)
+        {
+            PopulateRows(regionNode, regionTag);
+        }
+
+        regionNode.Expand();
+
+        var rowNode = regionNode.Nodes
+            .Cast<TreeNode>()
+            .FirstOrDefault(node =>
+                node.Tag is RowTag tag &&
+                tag.Y == frame.YTile);
+
+        if (rowNode?.Tag is not RowTag rowTag)
+            return null;
+
+        if (rowNode.Nodes.Count == 1 &&
+            rowNode.Nodes[0].Tag is null)
+        {
+            PopulateFrames(rowNode, rowTag);
+        }
+
+        rowNode.Expand();
+
+        return rowNode.Nodes
+            .Cast<TreeNode>()
+            .FirstOrDefault(node =>
+                node.Tag is FrameTag tag &&
+                tag.X == frame.XTile &&
+                tag.Y == frame.YTile);
+    }
+
+    private void ClearAnimationFrameSelection()
+    {
+        foreach (ListViewItem item in _frames.SelectedItems.Cast<ListViewItem>().ToList())
+            item.Selected = false;
+    }
+
+    private void ShowSourceFrame(FrameTag frame)
+    {
         _preview.Pause();
         _playButton.Text = "Play";
 
