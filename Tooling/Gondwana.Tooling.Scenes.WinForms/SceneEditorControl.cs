@@ -84,6 +84,8 @@ public sealed class SceneEditorControl : UserControl
     private readonly List<SceneTilesheetSource> _tilesheetSources = [];
     private readonly List<SceneAnimationSource> _animationSources = [];
     private readonly List<string> _sourceDiagnostics = [];
+    private readonly Dictionary<string, DockContent> _panes =
+        new(StringComparer.OrdinalIgnoreCase);
     private EditorDockWorkspace _workspace = null!;
 
     private SceneLayerDefinition? _selectedLayer;
@@ -272,14 +274,32 @@ public sealed class SceneEditorControl : UserControl
                ValidateChildren();
     }
 
-    public bool ShowPane(string paneName) =>
-        _workspace.ShowPane(paneName);
+    public bool ShowPane(string paneName)
+    {
+        if (!_panes.TryGetValue(paneName, out var pane) ||
+            pane.IsDisposed)
+        {
+            return false;
+        }
+
+        pane.Show();
+        pane.Activate();
+        return true;
+    }
 
     public bool IsPaneVisible(string paneName) =>
-        _workspace.IsPaneVisible(paneName);
+        _panes.TryGetValue(paneName, out var pane) &&
+        !pane.IsDisposed &&
+        !pane.IsHidden;
 
-    public void ShowAllPanes() =>
-        _workspace.ShowAllPanes();
+    public void ShowAllPanes()
+    {
+        foreach (var pane in _panes.Values)
+        {
+            if (!pane.IsDisposed)
+                pane.Show();
+        }
+    }
 
     private void BuildLayout()
     {
@@ -318,6 +338,21 @@ public sealed class SceneEditorControl : UserControl
         var validation = _workspace.AddPane(
             "Validation",
             _validation);
+
+        _panes.Clear();
+        foreach (var pane in new[]
+                 {
+                     structure,
+                     preview,
+                     gts,
+                     animations,
+                     properties,
+                     tileProperties,
+                     validation
+                 })
+        {
+            _panes.Add(pane.Text, pane);
+        }
 
         preview.Show(dock, DockState.Document);
         structure.Show(preview.Pane, DockAlignment.Left, 300d / 1400);
@@ -1307,6 +1342,7 @@ public sealed class SceneEditorControl : UserControl
             _animationSources.Clear();
 
             _sourceFrameImages.Dispose();
+            _panes.Clear();
         }
 
         base.Dispose(disposing);
