@@ -8,12 +8,14 @@ The format is designed to be usable by both the runtime and scene-editing toolin
 - [What a GSCN definition stores](#what-a-gscn-definition-stores)
 - [Frames and tilesheets](#frames-and-tilesheets)
 - [Animations and GANI](#animations-and-gani)
+- [Authoring dependency sources](#authoring-dependency-sources)
 - [Collision settings](#collision-settings)
 - [Loading and saving](#loading-and-saving)
 - [Sparse tile definitions](#sparse-tile-definitions)
 - [Provenance](#provenance)
 - [EngineState integration](#enginestate-integration)
 - [Validation](#validation)
+- [Standalone GSCN editor](#standalone-gscn-editor)
 
 ## The serialization model
 
@@ -68,6 +70,8 @@ At the root, `SceneDefinition` stores:
 - the scene `ID`
 - collision group names
 - collision profiles
+- authoring-time GTS source locations
+- authoring-time GANI source locations
 - layer definitions
 - source/provenance metadata
 
@@ -175,6 +179,52 @@ The referenced animation must therefore already be registered:
 If the key is not registered, materialization fails with an
 `InvalidDataException` instead of embedding or reconstructing an animation from
 the scene file.
+
+## Authoring dependency sources
+
+Logical runtime references deliberately do not contain filesystem paths. Tooling
+nevertheless needs to reopen the GTS and GANI definitions used to author a scene.
+
+`SceneDefinition` therefore carries two authoring-only collections:
+
+```csharp
+List<SceneTilesheetSourceDefinition> TilesheetSources
+List<SceneAnimationSourceDefinition> AnimationSources
+```
+
+A tilesheet source maps a logical tilesheet name to either a loose `.gts` path
+or a packed GAF definition entry. An animation source does the same for a logical
+`AnimationKey` and GANI definition.
+
+For example:
+
+```json
+"TilesheetSources": [
+  {
+    "Tilesheet": "Terrain",
+    "Kind": "LooseDefinitionFile",
+    "GtsPath": "../tiles/terrain.gts"
+  }
+],
+"AnimationSources": [
+  {
+    "AnimationKey": "world.water",
+    "Kind": "LooseDefinitionFile",
+    "GaniPath": "../animations/water.gani"
+  }
+]
+```
+
+These values are for **authoring and tooling only**. `ToScene()` still resolves
+frames through the registered tilesheet name and animations through the registered
+cycle key; it performs no filesystem loading from these collections.
+
+Loose paths are preferably relative to the containing GSCN. The standalone editor
+rebases them on Save As. Packed source metadata is preserved for future/tooling
+use even when that editor cannot preview the packed definition directly.
+
+The metadata is optional for runtime compatibility. Older GSCN documents with only
+logical references remain valid.
 
 ## Collision settings
 
@@ -343,7 +393,45 @@ Validation checks include:
 - empty animation keys
 - `StartAnimation` without an `AnimationKey`
 
-This makes the definition model suitable for incoming scene tooling: editors can inspect and validate GSCN data before loading runtime rendering or collision infrastructure.
+This makes the definition model suitable for scene tooling: editors can inspect and validate GSCN data before loading runtime rendering or collision infrastructure.
+
+## Standalone GSCN editor
+
+`Tooling/Gondwana.Tooling.Scenes.WinForms` provides the standalone Windows GSCN
+editor. Its public `SceneEditorControl` is also the reusable surface intended for
+Gondwana Studio.
+
+Each scene editor owns an inner DockPanelSuite workspace with:
+
+- Scene structure
+- Scene preview
+- GTS frame sources
+- GANI animations
+- Properties
+- Tile properties
+- Validation
+
+The outer application treats the entire editor as one document. Inner panes can be
+split or tabbed only inside that editor. Layout persistence is intentionally not
+implemented.
+
+The preview is definition-driven: it does not boot a `GameHost` or register a
+runtime `Scene`. It reuses Gondwana's `SceneLayer` coordinate-conversion math
+to position the authoring data and composes loaded GTS images by layer Z-order.
+
+The Scene preview uses the same zoom interaction as the GTS editor: **Ctrl+mouse
+wheel** and the **− / +** toolbar controls zoom in 1.25× steps, the selector
+provides common fixed percentages plus **Fit**, and scrollbars appear when the
+zoomed scene exceeds the viewport. A checked **Grid** toolbar button controls
+preview grid-line visibility without hiding the selected-tile outline.
+
+GSCN sparse-tile semantics are preserved. Selecting a grid cell does not create a
+tile entry; editing a property or assigning GTS/GANI content does. **Clear tile**
+removes that explicit entry again.
+
+For legacy GSCN documents without source metadata, the editor may recover an
+unambiguous matching GTS/GANI from the GSCN's own directory. Recovery is
+non-recursive and never chooses among multiple matches.
 
 ## In short
 
@@ -351,8 +439,9 @@ This makes the definition model suitable for incoming scene tooling: editors can
 2. It represents the persistent Scene → SceneLayer → SceneLayerTile hierarchy without ownership back-references.
 3. Frames reference registered tilesheets by logical name, region, and coordinates.
 4. Animations reference registered GANI/cycle definitions by logical `AnimationKey`.
-5. Assignment and automatic start are separate; GSCN does not embed animator runtime state.
-6. `CollisionType` is authoritative; `CollisionsEnabled` is derived.
-7. `*ByFrame` flags allow a scene tile to follow GTS frame collision metadata.
-8. EngineState can embed GSCN definitions or reference separate `.gscn` files.
-9. The same definition model is intended to support runtime loading and scene UI tooling.
+5. Optional `TilesheetSources` / `AnimationSources` locate authoring definitions without changing runtime resolution.
+6. Assignment and automatic start are separate; GSCN does not embed animator runtime state.
+7. `CollisionType` is authoritative; `CollisionsEnabled` is derived.
+8. `*ByFrame` flags allow a scene tile to follow GTS frame collision metadata.
+9. EngineState can embed GSCN definitions or reference separate `.gscn` files.
+10. The same definition model is intended to support runtime loading and scene UI tooling.

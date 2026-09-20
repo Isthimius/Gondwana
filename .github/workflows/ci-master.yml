@@ -40,6 +40,9 @@ jobs:
       - name: Audio WinForms editor interaction tests
         run: dotnet test Testing/Gondwana.Tooling.Audio.WinForms.Tests/Gondwana.Tooling.Audio.WinForms.Tests.csproj --configuration Release --nologo
 
+      - name: Scene WinForms editor interaction tests
+        run: dotnet test Testing/Gondwana.Tooling.Scenes.WinForms.Tests/Gondwana.Tooling.Scenes.WinForms.Tests.csproj --configuration Release --nologo
+
   build:
     runs-on: ubuntu-latest
 
@@ -94,6 +97,7 @@ jobs:
           mkdir -p publish/Gondwana.WinForms.Hosting
           mkdir -p publish/Tooling/Gondwana.Tooling.Assets.WinForms
           mkdir -p publish/Tooling/Gondwana.Tooling.Animations.WinForms
+          mkdir -p publish/Tooling/Gondwana.Tooling.Scenes.WinForms
           mkdir -p publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms
           mkdir -p publish/Demos/Slider
           mkdir -p publish/Demos/Spot
@@ -112,6 +116,7 @@ jobs:
           dotnet publish Tooling/Gondwana.Tooling.Assets.WinForms/Gondwana.Tooling.Assets.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Assets.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Tooling/Gondwana.Tooling.Animations.WinForms/Gondwana.Tooling.Animations.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Animations.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Tooling/Gondwana.Tooling.Audio.WinForms/Gondwana.Tooling.Audio.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Audio.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Tooling/Gondwana.Tooling.Scenes.WinForms/Gondwana.Tooling.Scenes.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Scenes.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Tooling/Gondwana.Tooling.Tilesheets.WinForms/Gondwana.Tooling.Tilesheets.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Demos/Slider/Slider.csproj -c Release -o publish/Demos/Slider -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Demos/Spot/Spot.csproj -c Release -o publish/Demos/Spot -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
@@ -137,6 +142,7 @@ jobs:
           cp publish/Tooling/Gondwana.Tooling.Assets.WinForms/Gondwana.Tooling.Assets.WinForms.exe artifacts/Tooling/
           cp -r publish/Tooling/Gondwana.Tooling.Animations.WinForms artifacts/Tooling/
           cp -r publish/Tooling/Gondwana.Tooling.Audio.WinForms artifacts/Tooling/
+          cp -r publish/Tooling/Gondwana.Tooling.Scenes.WinForms artifacts/Tooling/
           cp -r publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms artifacts/Tooling/
           cp publish/Demos/Slider/Slider.exe artifacts/Demos/
           cp publish/Demos/Spot/Spot.exe artifacts/Demos/

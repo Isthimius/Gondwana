@@ -108,10 +108,11 @@ The `gondwana` command-line tool.
 - `Tooling/Gondwana.Tooling.Assets.WinForms/`
 - `Tooling/Gondwana.Tooling.Animations.WinForms/`
 - `Tooling/Gondwana.Tooling.Audio.WinForms/`
+- `Tooling/Gondwana.Tooling.Scenes.WinForms/`
 - `Tooling/Gondwana.Tooling.Tilesheets.WinForms/`
 - `Tooling/scripts/`
 
-Tooling is supplemental. Do not infer that runtime projects require Studio or a proprietary editor-owned project format.
+The standalone GTS/GAF/GANI/GSND/GSCN WinForms editors are reusable authoring controls intended for later Studio composition. Tooling is supplemental; do not infer that runtime projects require Studio or a proprietary editor-owned project format.
 
 ## Repository-Level References
 

@@ -381,6 +381,123 @@ public sealed class SceneGscnTests
     }
 
     [Fact]
+    public void Definition_AuthoringSourcesRoundTripWithoutChangingRuntimeReferences()
+    {
+        var definition = new SceneDefinition
+        {
+            TilesheetSources =
+            [
+                SceneTilesheetSourceDefinition.Loose(
+                    "terrain",
+                    "../tiles/terrain.gts")
+            ],
+            AnimationSources =
+            [
+                SceneAnimationSourceDefinition.Loose(
+                    "water",
+                    "../animations/water.gani")
+            ],
+            Layers =
+            [
+                new SceneLayerDefinition
+                {
+                    Columns = 1,
+                    Rows = 1,
+                    Tiles =
+                    [
+                        new SceneLayerTileDefinition
+                        {
+                            X = 0,
+                            Y = 0,
+                            Frame = new SceneFrameDefinition
+                            {
+                                Tilesheet = "terrain",
+                                RegionName = "default",
+                                XTile = 0,
+                                YTile = 0
+                            },
+                            AnimationKey = "water"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        var json = SceneDefinitionSerializer.ToJson(definition);
+        var restored = SceneDefinitionSerializer.FromJson(json);
+
+        var tilesheet = Assert.Single(restored.TilesheetSources);
+        Assert.Equal("terrain", tilesheet.Tilesheet);
+        Assert.Equal("../tiles/terrain.gts", tilesheet.GtsPath);
+
+        var animation = Assert.Single(restored.AnimationSources);
+        Assert.Equal("water", animation.AnimationKey);
+        Assert.Equal("../animations/water.gani", animation.GaniPath);
+
+        var tile = Assert.Single(Assert.Single(restored.Layers).Tiles);
+        Assert.Equal("terrain", tile.Frame!.Tilesheet);
+        Assert.Equal("water", tile.AnimationKey);
+    }
+
+    [Fact]
+    public void AuthoringSources_DoNotPerformFilesystemIoDuringRuntimeMaterialization()
+    {
+        var definition = new SceneDefinition
+        {
+            TilesheetSources =
+            [
+                SceneTilesheetSourceDefinition.Loose(
+                    "not-used",
+                    "definitely-does-not-exist.gts")
+            ],
+            AnimationSources =
+            [
+                SceneAnimationSourceDefinition.Loose(
+                    "not-used",
+                    "definitely-does-not-exist.gani")
+            ]
+        };
+
+        using var scene = SceneDefinitionSerializer.ToScene(definition);
+
+        Assert.NotNull(scene);
+    }
+
+    [Fact]
+    public void Validator_ReportsInvalidAndDuplicateAuthoringSources()
+    {
+        var definition = new SceneDefinition
+        {
+            TilesheetSources =
+            [
+                SceneTilesheetSourceDefinition.Loose("terrain", "terrain.gts"),
+                SceneTilesheetSourceDefinition.Loose("terrain", "other.gts")
+            ],
+            AnimationSources =
+            [
+                new SceneAnimationSourceDefinition
+                {
+                    AnimationKey = "walk",
+                    Kind = SceneAnimationSourceKind.LooseDefinitionFile
+                }
+            ]
+        };
+
+        var errors = SceneDefinitionValidator.Validate(definition);
+
+        Assert.Contains(
+            errors,
+            error => error.Contains(
+                "duplicate source for tilesheet 'terrain'",
+                StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(
+            errors,
+            error => error.Contains(
+                "loose GANI source path is empty",
+                StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
     public void JsonModel_UsesNamedListsRatherThanRuntimeReferenceGraph()
     {
         using var scene = new Scene();

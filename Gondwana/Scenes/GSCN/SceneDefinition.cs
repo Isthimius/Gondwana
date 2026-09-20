@@ -23,6 +23,18 @@ public sealed class SceneDefinition
     public List<SceneCollisionProfileDefinition> CollisionProfiles { get; set; } = [];
 
     /// <summary>
+    /// Gets or sets authoring-time locations for logical GTS dependencies used by this scene.
+    /// Runtime materialization continues to resolve frames through registered tilesheet names.
+    /// </summary>
+    public List<SceneTilesheetSourceDefinition> TilesheetSources { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets authoring-time locations for logical GANI dependencies used by this scene.
+    /// Runtime materialization continues to resolve animations through registered cycle keys.
+    /// </summary>
+    public List<SceneAnimationSourceDefinition> AnimationSources { get; set; } = [];
+
+    /// <summary>
     /// Gets or sets the layers contained by the scene.
     /// </summary>
     public List<SceneLayerDefinition> Layers { get; set; } = [];
