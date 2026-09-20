@@ -13,6 +13,7 @@ var namespaceGondwana_1_1Assets =
       [ "Svg", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a1a9a612a14f347adfbf122cc7c0e985b", null ],
       [ "TilesheetDefinition", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a1801c24952fa2488fee7afa49852a685", null ],
       [ "SceneDefinition", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a7fd64fb5bc53100c381715f071885f66", null ],
-      [ "AnimationDefinition", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a530dd6d4d3b54c01a3ad040f8de79586", null ]
+      [ "AnimationDefinition", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a530dd6d4d3b54c01a3ad040f8de79586", null ],
+      [ "AudioDefinition", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1af70d3c1295240449f0db0efcc4ee7482", null ]
     ] ]
 ];

@@ -14,7 +14,8 @@ var searchData=
   ['updated_11',['Updated',['../namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#a2618e09d93b4f70dcc496cb140b8ed62aff0a3b7f3daef040faf89a88fdac01b7',1,'Gondwana::Input::Touch::Gestures']]],
   ['updateinstance_12',['UpdateInstance',['../classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#a633abe5b6b9e2c7cd7243171d59d8385',1,'Gondwana::Drawing::Direct::ImageLayer::ImageInstanceLayer']]],
   ['updatesize_13',['UpdateSize',['../classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a4bb11aed72f485c90ce42d395cb9678a',1,'Gondwana::Rendering::Backbuffers::BackbufferBase']]],
-  ['useencryption_14',['UseEncryption',['../classGondwana_1_1Assets_1_1AssetsFile.html#ad30ad0393a0e95c6def5e3d50d5ac08e',1,'Gondwana::Assets::AssetsFile']]],
-  ['useoutline_15',['UseOutline',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a0be918626de2683fd88258e59e0ca5b5',1,'Gondwana::Drawing::Direct::TextBlock']]],
-  ['useshadow_16',['UseShadow',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a84f54c79d304723a0c3e362aaae5998e',1,'Gondwana::Drawing::Direct::TextBlock']]]
+  ['uri_14',['Uri',['../namespaceGondwana_1_1Audio_1_1GSND.html#a401e76f38f63c88d19354870f02f6c77a3840cd8f73026713059f0ed0562c5493',1,'Gondwana::Audio::GSND']]],
+  ['useencryption_15',['UseEncryption',['../classGondwana_1_1Assets_1_1AssetsFile.html#ad30ad0393a0e95c6def5e3d50d5ac08e',1,'Gondwana::Assets::AssetsFile']]],
+  ['useoutline_16',['UseOutline',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a0be918626de2683fd88258e59e0ca5b5',1,'Gondwana::Drawing::Direct::TextBlock']]],
+  ['useshadow_17',['UseShadow',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a84f54c79d304723a0c3e362aaae5998e',1,'Gondwana::Drawing::Direct::TextBlock']]]
 ];

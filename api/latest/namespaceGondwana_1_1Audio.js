@@ -1,6 +1,7 @@
 var namespaceGondwana_1_1Audio =
 [
     [ "Browser", "namespaceGondwana_1_1Audio_1_1Browser.html", "namespaceGondwana_1_1Audio_1_1Browser" ],
+    [ "GSND", "namespaceGondwana_1_1Audio_1_1GSND.html", "namespaceGondwana_1_1Audio_1_1GSND" ],
     [ "Midi", "namespaceGondwana_1_1Audio_1_1Midi.html", "namespaceGondwana_1_1Audio_1_1Midi" ],
     [ "NAudio", "namespaceGondwana_1_1Audio_1_1NAudio.html", "namespaceGondwana_1_1Audio_1_1NAudio" ],
     [ "AudioResource", "classGondwana_1_1Audio_1_1AudioResource.html", "classGondwana_1_1Audio_1_1AudioResource" ],

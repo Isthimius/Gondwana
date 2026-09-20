@@ -12,6 +12,11 @@ var annotated_dup =
           [ "BrowserAudioManager", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager" ],
           [ "BrowserAudioPlayer", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html", "classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer" ]
         ] ],
+        [ "GSND", "namespaceGondwana_1_1Audio_1_1GSND.html", [
+          [ "AudioDefinition", "classGondwana_1_1Audio_1_1GSND_1_1AudioDefinition.html", "classGondwana_1_1Audio_1_1GSND_1_1AudioDefinition" ],
+          [ "AudioDefinitionSource", "classGondwana_1_1Audio_1_1GSND_1_1AudioDefinitionSource.html", "classGondwana_1_1Audio_1_1GSND_1_1AudioDefinitionSource" ],
+          [ "AudioResourceDefinition", "classGondwana_1_1Audio_1_1GSND_1_1AudioResourceDefinition.html", "classGondwana_1_1Audio_1_1GSND_1_1AudioResourceDefinition" ]
+        ] ],
         [ "Midi", "namespaceGondwana_1_1Audio_1_1Midi.html", [
           [ "SynthesizerSampleProvider", "classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider.html", "classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider" ],
           [ "WaveProviderToWaveStream", "classGondwana_1_1Audio_1_1Midi_1_1WaveProviderToWaveStream.html", "classGondwana_1_1Audio_1_1Midi_1_1WaveProviderToWaveStream" ]
