@@ -9,7 +9,7 @@ internal static class InputDialog
     /// Shows a modal text-input dialog and returns the entered text, or
     /// <see langword="null"/> if the user cancelled.
     /// </summary>
-    public static string? Show(string message, string title, string? defaultValue = null, IWin32Window? owner = null)
+    public static string? Show(string message, string title, string? defaultValue = null, IWin32Window? owner = null, bool password = false)
     {
         using var form = new Form
         {
@@ -33,6 +33,7 @@ internal static class InputDialog
 
         var textBox = new TextBox
         {
+            UseSystemPasswordChar = password,
             Text = defaultValue ?? string.Empty,
             Width = 390,
             Location = new System.Drawing.Point(16, 58)

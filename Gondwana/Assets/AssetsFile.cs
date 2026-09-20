@@ -10,7 +10,7 @@ namespace Gondwana.Assets;
 /// <remarks>
 /// The <see cref="AssetsFile"/> class allows for the creation, loading, and management of
 /// asset files used by the engine. It supports encryption, asset retrieval by type and name, and saving assets
-/// to a zip file. Instances of this class are tracked globally and can be accessed via the static
+/// to a zip file. Instances are registered by default and can be accessed via the static
 /// <see cref="AllAssetsFiles"/> property.
 /// </remarks>
 [JsonObject(IsReference = true)]
@@ -19,7 +19,7 @@ public sealed class AssetsFile : IDisposable
     private static readonly List<AssetsFile> _allAssetsFiles = new();
 
     /// <summary>
-    /// Gets a read-only list of all instantiated <see cref="AssetsFile"/> instances.
+    /// Gets a read-only list of registered <see cref="AssetsFile"/> instances.
     /// </summary>
     public static IReadOnlyList<AssetsFile> AllAssetsFiles => _allAssetsFiles.AsReadOnly();
 
@@ -64,9 +64,13 @@ public sealed class AssetsFile : IDisposable
     }
 
     [JsonConstructor]
-    private AssetsFile()
+    private AssetsFile() : this(register: true)
     {
-        _allAssetsFiles.Add(this);
+    }
+
+    private AssetsFile(bool register)
+    {
+        if (register) _allAssetsFiles.Add(this);
     }
 
     /// <summary>
@@ -78,23 +82,42 @@ public sealed class AssetsFile : IDisposable
     /// <returns>An <see cref="AssetsFile"/> instance representing the loaded or newly created asset file.</returns>
     /// <exception cref="ArgumentException">Thrown if <paramref name="path"/> is null, empty, or consists only of whitespace.</exception>
     public static AssetsFile LoadOrCreate(string path, string? password = null, bool encrypt = false)
+        => LoadOrCreate(path, password, encrypt, register: true);
+
+    /// <summary>
+    /// Loads or creates an asset file, optionally without adding it to the runtime
+    /// collection. Authoring hosts can own detached packages without changing runtime state.
+    /// </summary>
+    /// <param name="path">The asset file path to load or create.</param>
+    /// <param name="password">The optional archive password.</param>
+    /// <param name="encrypt">Whether saves use encryption.</param>
+    /// <param name="register">Whether to add this instance to <see cref="AllAssetsFiles"/>.</param>
+    /// <returns>The loaded or newly created package, owned by the caller.</returns>
+    public static AssetsFile LoadOrCreate(string path, string? password, bool encrypt, bool register)
     {
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("path cannot be null or empty.", nameof(path));
 
-        var assetFile = new AssetsFile
+        var assetFile = new AssetsFile(register)
         {
             FilePath = path,
             Password = password,
             UseEncryption = encrypt
         };
 
-        if (File.Exists(path))
-            assetFile.LoadZip();
-        else
-            assetFile._isLoaded = true;
-
-        return assetFile;
+        try
+        {
+            if (File.Exists(path))
+                assetFile.LoadZip();
+            else
+                assetFile._isLoaded = true;
+            return assetFile;
+        }
+        catch
+        {
+            assetFile.Dispose();
+            throw;
+        }
     }
 
     /// <summary>

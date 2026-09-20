@@ -2,7 +2,7 @@ namespace Gondwana.Tooling.Studio.Core.Extensibility;
 
 /// <summary>
 /// Framework-neutral interface for Gondwana Studio plugins.
-/// Platform-specific extensions (Avalonia, WinForms) extend this interface
+/// Platform-specific extensions such as WinForms extend this interface
 /// to add UI panel and menu-item contributions.
 /// </summary>
 public interface IStudioPlugin

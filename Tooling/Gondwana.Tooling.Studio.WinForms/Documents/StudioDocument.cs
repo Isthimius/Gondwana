@@ -117,7 +117,7 @@ internal sealed class StudioDocument : IDisposable
             case "gaf":
             {
                 if (path is null) throw new ArgumentException("Choose an asset file path first.");
-                var assets = AssetsFile.LoadOrCreate(path, password, encrypt);
+                var assets = AssetsFile.LoadOrCreate(path, password, encrypt || !string.IsNullOrEmpty(password), register: false);
                 try
                 {
                     var editor = new AssetEditorControl(assets);

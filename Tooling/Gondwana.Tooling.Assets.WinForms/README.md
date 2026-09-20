@@ -192,6 +192,15 @@ inner dock contents (including hidden panes) and theme, and disposes them with t
 editor. Existing editor-specific model, image, preview, and event cleanup remains
 in each editor. Hosts should dispose the whole editor when closing its document.
 
+Document hosts such as Studio can observe `IsDirty` / `Changed` and route the
+toolbar through `SaveRequested`. `SaveTo(path)` saves and adopts that path while
+preserving encryption; standalone Save As keeps its existing save-copy behavior.
+The caller owns the originally supplied `AssetsFile`; the editor owns and disposes
+replacement packages created by `SaveTo`. Hosts making direct package changes
+should call `MarkChanged`. Authoring hosts can load packages with
+`AssetsFile.LoadOrCreate(path, password, encrypt, register: false)` to keep them
+outside the runtime asset registry.
+
 Nested docking, ownership, hide/dispose/reopen, and GAF filter/save coverage runs
 in Testing/Gondwana.Tooling.Tilesheets.WinForms.Tests as part of the existing
 Windows CI job; GANI's existing interactions remain in its animation test project.

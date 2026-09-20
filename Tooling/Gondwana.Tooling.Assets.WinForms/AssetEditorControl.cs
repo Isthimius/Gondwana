@@ -284,10 +284,10 @@ public sealed class AssetEditorControl : UserControl
             _assetsFile.Save();
         else
         {
-            string temporary = Path.Combine(Path.GetDirectoryName(destination)!, ".studio-" + Guid.NewGuid() + ".gaf");
+            string temporary = Path.Combine(Path.GetDirectoryName(destination)!, ".gondwana-" + Guid.NewGuid() + ".gaf");
             try
             {
-                using (var copy = AssetsFile.LoadOrCreate(temporary, _assetsFile.Password, _assetsFile.UseEncryption))
+                using (var copy = AssetsFile.LoadOrCreate(temporary, _assetsFile.Password, _assetsFile.UseEncryption, register: false))
                 {
                     foreach (var entry in _assetsFile.GetAllEntries())
                     {
@@ -297,7 +297,8 @@ public sealed class AssetEditorControl : UserControl
                     copy.Save();
                 }
                 File.Move(temporary, destination, overwrite: true);
-                var replacement = AssetsFile.LoadOrCreate(destination, _assetsFile.Password, _assetsFile.UseEncryption);
+                var replacement = AssetsFile.LoadOrCreate(destination, _assetsFile.Password, _assetsFile.UseEncryption,
+                    register: AssetsFile.AllAssetsFiles.Contains(_assetsFile));
                 _ownedSavedCopy?.Dispose();
                 _ownedSavedCopy = replacement;
                 _assetsFile = replacement;

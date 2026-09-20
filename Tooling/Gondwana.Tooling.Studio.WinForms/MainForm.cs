@@ -22,8 +22,6 @@ public sealed class MainForm : Form
     private readonly List<StudioDockDocument> _documents = [];
     private readonly List<DockContent> _tools = [];
     private readonly ToolStripMenuItem _view = new("&View");
-    private readonly DockContent _directoryWindow;
-    private readonly DockContent _outputWindow;
     private bool _disposed;
     internal DockPanel Workspace { get; }
     internal DirectoryPanel Browser { get; }
@@ -33,6 +31,7 @@ public sealed class MainForm : Form
     internal Func<StudioDocument, string?> SavePath { get; set; }
     internal Func<IReadOnlyList<string>, bool> AllowInvalidSave { get; set; }
     internal Action<Exception> ReportError { get; set; }
+    internal Func<string, string?> AssetPassword { get; set; }
 
     public MainForm() : this(loadPlugins: true) { }
 
@@ -53,15 +52,16 @@ public sealed class MainForm : Form
         Browser = new DirectoryPanel(_output.Log);
         Browser.FileActivated += path => TryOpen(path);
         Browser.ChooseDirectoryRequested += ChooseDirectory;
-        _directoryWindow = AddTool("Working directory", Browser, DockState.DockLeft);
-        _outputWindow = AddTool("Output", new OutputPanel(_output), DockState.DockBottom);
+        AddTool("Working directory", Browser, DockState.DockLeft);
+        AddTool("Output", new OutputPanel(_output), DockState.DockBottom);
         AskSave = document => MessageBox.Show(this, $"Save changes to {Path.GetFileName(document.Path()) ?? "Untitled." + document.Extension}?",
             "Unsaved changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
         SavePath = ChooseSavePath;
         AllowInvalidSave = _ => MessageBox.Show(this, "This definition has validation errors. See its Validation pane. Save it anyway?",
             "Validation failed", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes;
         ReportError = ex => { _output.Log(ex.Message); MessageBox.Show(this, ex.Message, "Gondwana Studio", MessageBoxButtons.OK, MessageBoxIcon.Error); };
-        _packages.PasswordProvider = path => InputDialog.Show($"Password for {Path.GetFileName(path)}:", "Asset password", owner: this);
+        AssetPassword = path => InputDialog.Show($"Password for {Path.GetFileName(path)}:", "Asset password", owner: this, password: true);
+        _packages.PasswordProvider = path => AssetPassword(path);
         MainMenuStrip = BuildMenu();
         Controls.Add(Workspace);
         Controls.Add(MainMenuStrip);
@@ -142,6 +142,7 @@ public sealed class MainForm : Form
     private void TryOpen(string path)
     {
         try { OpenDocument(path); }
+        catch (OperationCanceledException) { }
         catch (Exception ex) { ReportError(ex); }
     }
 
@@ -155,7 +156,7 @@ public sealed class MainForm : Form
         try { model = StudioDocument.Create(format, Browser.WorkingDirectory, path, _packages, password); }
         catch (Exception) when (format == "gaf" && password is null)
         {
-            password = InputDialog.Show($"Password for {Path.GetFileName(path)}:", "Asset password", owner: this);
+            password = AssetPassword(path);
             if (password is null) throw new OperationCanceledException("Asset file opening cancelled.");
             model = StudioDocument.Create(format, Browser.WorkingDirectory, path, _packages, password);
         }
@@ -171,7 +172,7 @@ public sealed class MainForm : Form
             if (dialog.ShowDialog(this) != DialogResult.OK) return;
             if (File.Exists(dialog.FileName)) { TryOpen(dialog.FileName); return; }
             bool encrypt = MessageBox.Show(this, "Enable password protection?", "New asset file", MessageBoxButtons.YesNo) == DialogResult.Yes;
-            string? password = encrypt ? InputDialog.Show("Password:", "New asset file", owner: this) : null;
+            string? password = encrypt ? InputDialog.Show("Password:", "New asset file", owner: this, password: true) : null;
             if (encrypt && string.IsNullOrWhiteSpace(password)) return;
             var document = NewDocument(format, dialog.FileName, password, encrypt);
             SaveDocument(document);

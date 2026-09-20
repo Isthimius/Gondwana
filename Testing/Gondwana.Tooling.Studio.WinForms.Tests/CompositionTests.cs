@@ -37,6 +37,16 @@ public sealed class CompositionTests
         Assert.True(studio.SaveDocument(document, destination: firstPath));
         Assert.False(model.Dirty());
         Assert.Equal("first." + format, document.Text);
+        switch (model.Editor)
+        {
+            case TilesheetEditorControl editor: editor.Document.MarkChanged(); break;
+            case AnimationEditorControl editor: editor.Document.MarkChanged(); break;
+            case AudioEditorControl editor: editor.Document.MarkChanged(); break;
+            case SceneEditorControl editor: editor.Document.MarkChanged(); break;
+            case AssetEditorControl editor: editor.MarkChanged(); break;
+        }
+        Assert.True(model.Dirty());
+        Assert.EndsWith(" *", document.Text);
         Assert.Same(document, studio.OpenDocument(Path.Combine(directory, ".", "FIRST." + format)));
 
         var target = contents[^1];
@@ -106,6 +116,93 @@ public sealed class CompositionTests
         Assert.Equal(4, prompts);
         Assert.All(documents, doc => Assert.True(doc.IsDisposed));
         Assert.All(documents, doc => Assert.True(doc.Document.Editor.IsDisposed));
+    });
+
+    [Fact]
+    public void EncryptedAssetToolbarSaveAsAdoptsPathWithoutRegisteringRuntimeAssets() => RunSta(directory =>
+    {
+        var registry = AssetsFile.AllAssetsFiles.ToArray();
+        var source = Path.Combine(directory, "source.gaf");
+        using (var assets = AssetsFile.LoadOrCreate(source, "secret", true, register: false))
+        {
+            using var bytes = new MemoryStream([1, 2, 3]);
+            assets.Add(AssetTypes.Misc, "example", bytes);
+            assets.Save();
+        }
+        using var studio = Host(directory);
+        studio.AssetPassword = _ => "secret";
+        var document = studio.OpenDocument(source);
+        var editor = Assert.IsType<AssetEditorControl>(document.Document.Editor);
+        var destination = Path.Combine(directory, "copy.zip");
+        studio.SavePath = _ => destination;
+        editor.MarkChanged();
+        editor.SaveRequested!(true);
+        Assert.Equal(destination, editor.FilePath);
+        Assert.False(editor.IsDirty);
+        Assert.Same(document, studio.OpenDocument(destination));
+        Assert.Equal(registry, AssetsFile.AllAssetsFiles);
+        using (var saved = AssetsFile.LoadOrCreate(destination, "secret", true, register: false))
+        using (var stream = saved[AssetTypes.Misc, "example"])
+        {
+            Assert.NotNull(stream);
+            Assert.Equal(1, stream.ReadByte());
+        }
+        Assert.ThrowsAny<Exception>(() => AssetsFile.LoadOrCreate(destination));
+        Assert.Equal(registry, AssetsFile.AllAssetsFiles);
+        document.Close();
+        Assert.Null(editor.SaveRequested);
+        Assert.Equal(registry, AssetsFile.AllAssetsFiles);
+    });
+
+    [Fact]
+    public void CancelledOrFailedSavesKeepDocumentOpenAndPathUnchanged() => RunSta(directory =>
+    {
+        using var studio = Host(directory);
+        var document = studio.NewDocument("gani");
+        studio.AskSave = _ => DialogResult.Yes;
+        studio.SavePath = _ => null;
+        document.Close();
+        Assert.False(document.IsDisposed);
+        Assert.Null(document.Document.Path());
+        var destination = Path.Combine(directory, "animation.gani");
+        studio.AllowInvalidSave = _ => false;
+        Assert.False(studio.SaveDocument(document, destination: destination));
+        Assert.False(File.Exists(destination));
+        studio.AllowInvalidSave = _ => true;
+        Exception? failure = null;
+        studio.ReportError = ex => failure = ex;
+        var blocked = Path.Combine(directory, "not-a-directory");
+        File.WriteAllText(blocked, "occupied");
+        Assert.False(studio.SaveDocument(document, destination: Path.Combine(blocked, "animation.gani")));
+        Assert.NotNull(failure);
+        Assert.Null(document.Document.Path());
+        Assert.True(document.Document.Dirty());
+        Assert.True(studio.SaveDocument(document, destination: destination));
+        Assert.Same(document, studio.OpenDocument(destination));
+    });
+
+    [Fact]
+    public void ViewTracksActiveEditorAndRestoresGlobalTools() => RunSta(directory =>
+    {
+        using var studio = Host(directory);
+        var animation = studio.NewDocument("gani");
+        var scene = studio.NewDocument("gscn");
+        var view = (ToolStripMenuItem)studio.MainMenuStrip!.Items[1];
+        foreach (var document in new[] { animation, scene, animation })
+        {
+            document.Activate();
+            Application.DoEvents();
+            studio.RebuildViewMenu();
+            var items = view.DropDownItems.OfType<ToolStripMenuItem>().ToArray();
+            Assert.Equal(document.Document.PaneNames, items.Skip(2).SkipLast(1).Select(item => item.Text));
+        }
+        var output = studio.Workspace.Contents.Cast<DockContent>().Single(content => content.Text == "Output");
+        output.Hide();
+        studio.RebuildViewMenu();
+        var item = view.DropDownItems.OfType<ToolStripMenuItem>().Single(item => item.Text == "Output");
+        Assert.False(item.Checked);
+        item.PerformClick();
+        Assert.False(output.IsHidden);
     });
 
     [Theory]

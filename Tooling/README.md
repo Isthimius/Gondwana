@@ -1,7 +1,7 @@
 # Tooling
 
 This folder contains Gondwana's developer tools, standalone content-authoring
-utilities, Studio prototypes, shared tooling UI infrastructure, and repository
+utilities, the Studio shell, shared tooling UI infrastructure, and repository
 automation scripts.
 
 The standalone WinForms authoring tools are deliberately reusable: their primary
@@ -55,20 +55,23 @@ Studio rather than reimplemented there.
 
 ## Gondwana Studio
 
-Studio remains a work in progress. The current projects are:
+Studio composes the five standalone authoring controls in one WinForms shell:
 
 - [`Gondwana.Tooling.Studio.Core`](./Gondwana.Tooling.Studio.Core/)  
-  UI-independent Studio infrastructure and shared models/services.
+  UI-independent plugin infrastructure and shell Output state.
 
 - [`Gondwana.Tooling.Studio.WinForms`](./Gondwana.Tooling.Studio.WinForms/)  
-  WinForms Studio shell/prototype.
-
-- [`Gondwana.Tooling.Studio.Avalonia`](./Gondwana.Tooling.Studio.Avalonia/)  
-  Avalonia Studio shell/prototype.
+  Combined Windows authoring shell for GAF/ZIP, GTS, GANI, GSND, and GSCN.
+  See its [embedding and architecture documentation](./Gondwana.Tooling.Studio.WinForms/README.md).
 
 The newer standalone GAF/GTS/GANI/GSND/GSCN editors are the authoritative
-format-specific authoring surfaces. Studio should compose those reusable controls
-where appropriate rather than maintaining parallel copies of their editor logic.
+format-specific authoring surfaces. Studio hosts them directly as individual
+outer documents; each reusable UserControl owns its nested docking workspace.
+Working directory and Output are global tools. View restores global and active
+editor panes through the existing editor APIs. Layouts reset when documents
+open; layout persistence is not implemented. No GameHost is needed for editing.
+EngineState project composition remains out of scope. The deprecated Avalonia
+Studio prototype and its duplicate editor stack have been retired.
 
 ## Shared tooling infrastructure
 

@@ -101,7 +101,7 @@ public sealed class AssetPackageCatalog : IDisposable
 
         try
         {
-            package = AssetsFile.LoadOrCreate(fullPath);
+            package = AssetsFile.LoadOrCreate(fullPath, password: null, encrypt: false, register: false);
             _ = package.GetAllEntries().ToList();
         }
         catch (Exception ex)
@@ -124,7 +124,8 @@ public sealed class AssetPackageCatalog : IDisposable
                 package = AssetsFile.LoadOrCreate(
                     fullPath,
                     password,
-                    encrypt: true);
+                    encrypt: true,
+                    register: false);
                 _ = package.GetAllEntries().ToList();
             }
             catch
