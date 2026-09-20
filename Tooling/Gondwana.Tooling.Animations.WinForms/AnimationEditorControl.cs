@@ -1040,6 +1040,14 @@ public sealed class AnimationEditorControl : UserControl
 
             if (!IsDisposed)
             {
+                if (!Document.IsDirty)
+                {
+                    _sourceDiagnostics.RemoveAll(message =>
+                        message.StartsWith(
+                            "INFO: Recovered legacy tilesheet source",
+                            StringComparison.Ordinal));
+                }
+
                 _properties.Refresh();
                 RefreshFrameList();
                 _preview.Configure(Definition, ResolveFramePreview);
