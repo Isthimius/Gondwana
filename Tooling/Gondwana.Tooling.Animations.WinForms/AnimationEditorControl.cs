@@ -63,6 +63,7 @@ public sealed class AnimationEditorControl : UserControl
     private readonly ToolStripButton _playButton = new("Play");
     private readonly AnimationPropertyAdapter _propertyAdapter;
     private bool _refreshPending;
+    private bool _syncingPreviewSelection;
 
     public AnimationDocument Document { get; }
 
@@ -96,7 +97,8 @@ public sealed class AnimationEditorControl : UserControl
 
         _frames.SelectedIndexChanged += (_, _) =>
         {
-            if (_frames.SelectedIndices.Count == 1)
+            if (!_syncingPreviewSelection &&
+                _frames.SelectedIndices.Count == 1)
             {
                 _preview.Pause();
                 _playButton.Text = "Play";
@@ -108,8 +110,17 @@ public sealed class AnimationEditorControl : UserControl
             if (_preview.CurrentFrameIndex >= 0 &&
                 _preview.CurrentFrameIndex < _frames.Items.Count)
             {
-                _frames.Items[_preview.CurrentFrameIndex].Selected = true;
-                _frames.Items[_preview.CurrentFrameIndex].EnsureVisible();
+                _syncingPreviewSelection = true;
+
+                try
+                {
+                    _frames.Items[_preview.CurrentFrameIndex].Selected = true;
+                    _frames.Items[_preview.CurrentFrameIndex].EnsureVisible();
+                }
+                finally
+                {
+                    _syncingPreviewSelection = false;
+                }
             }
         };
 

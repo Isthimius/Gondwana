@@ -172,6 +172,73 @@ public sealed class AnimationEditorTests
             }
         });
 
+    [Fact]
+    public void PreviewAdvanceDoesNotPausePlaybackWhenSelectingAdvancedFrame() =>
+        RunSta(() =>
+        {
+            string directory = CreateTempDirectory();
+
+            try
+            {
+                var document = AnimationDocument.Create(directory);
+                document.Definition.ThrottleTime = 0.125;
+                document.Definition.Frames.Add(
+                    new AnimationFrameDefinition
+                    {
+                        Tilesheet = "test-sheet",
+                        RegionName = "walk",
+                        XTile = 0,
+                        YTile = 0
+                    });
+                document.Definition.Frames.Add(
+                    new AnimationFrameDefinition
+                    {
+                        Tilesheet = "test-sheet",
+                        RegionName = "walk",
+                        XTile = 1,
+                        YTile = 0
+                    });
+
+                using var form = new Form
+                {
+                    Opacity = 0,
+                    ShowInTaskbar = false,
+                    Size = new Size(1200, 800)
+                };
+
+                using var editor = new AnimationEditorControl(document)
+                {
+                    Dock = DockStyle.Fill
+                };
+
+                form.Controls.Add(editor);
+                form.Show();
+                Application.DoEvents();
+
+                var preview = Field<AnimationPreviewControl>(editor, "_preview");
+                var frames = Field<ListView>(editor, "_frames");
+
+                preview.Play();
+
+                bool advanced = (bool)preview.GetType()
+                    .GetMethod("Advance", PrivateInstance)!
+                    .Invoke(preview, null)!;
+
+                Application.DoEvents();
+
+                Assert.True(advanced);
+                Assert.True(preview.IsPlaying);
+                Assert.Equal(1, preview.CurrentFrameIndex);
+                int selectedIndex = Assert.Single(
+                    frames.SelectedIndices.Cast<int>());
+                Assert.Equal(1, selectedIndex);
+            }
+            finally
+            {
+                Directory.Delete(directory, recursive: true);
+            }
+        });
+
     private static string CreateGts(
         string directory,
         string name = "test-sheet")
