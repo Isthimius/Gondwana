@@ -44,6 +44,15 @@ public sealed class TilesheetEditorControl : UserControl
     {
     }
 
+
+    public TilesheetEditorControl(TilesheetDocument document, AssetPackageCatalog assetPackages)
+        : this(
+            document,
+            overlaySettings: null,
+            assetPackages: assetPackages ?? throw new ArgumentNullException(nameof(assetPackages)))
+    {
+    }
+
     internal TilesheetEditorControl(
         TilesheetDocument document,
         OverlaySettings? overlaySettings,
@@ -462,4 +471,3 @@ public sealed class TilesheetEditorControl : UserControl
         base.Dispose(disposing);
     }
 }
-

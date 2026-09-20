@@ -162,7 +162,7 @@ public sealed class EditorInteractionTests
             var document = TilesheetDocument.Create(directory);
             using var catalog = new Gondwana.Tooling.Tilesheets.Sources.AssetPackageCatalog();
             using var form = new Form { Opacity = 0, ShowInTaskbar = false, Size = new Size(1200, 800) };
-            using var editor = new TilesheetEditorControl(document, null, catalog);
+            using var editor = new TilesheetEditorControl(document, catalog);
             form.Controls.Add(editor);
             form.Show();
             Application.DoEvents();
