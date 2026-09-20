@@ -33,11 +33,16 @@ public sealed class AssetPackageCatalog : IDisposable
     {
         ArgumentNullException.ThrowIfNull(source);
 
-        var fullPath = NormalizeExistingPath(source.AssetsFilePath);
-        var stream = GetPackage(fullPath).Get(AssetTypes.Image, source.AssetEntryName);
+        var package = GetPackage(fullPath);
+        if (!package.GetAllEntries().Any(entry =>
+                entry.AssetType == AssetTypes.Image &&
+                string.Equals(entry.AssetName, source.AssetEntryName, StringComparison.Ordinal)))
+        {
+            throw new InvalidDataException(
+                $"Image asset '{source.AssetEntryName}' was not found in '{fullPath}'.");
+        }
 
-        return stream ?? throw new InvalidDataException(
-            $"Image asset '{source.AssetEntryName}' was not found in '{fullPath}'.");
+        return package.Get(AssetTypes.Image, source.AssetEntryName)!;
     }
 
     public bool ContainsImage(PackedImageSource source)
