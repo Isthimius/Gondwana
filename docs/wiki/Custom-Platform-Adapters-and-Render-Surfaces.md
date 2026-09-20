@@ -1596,45 +1596,45 @@ The built-in platform implementations are the best examples of the intended sepa
 
 ## Core rendering
 
-- `Gondwana/Rendering/RenderSurfaceAdapterBase.cs`
-- `Gondwana/Rendering/RenderSurfaceHostBase.cs`
-- `Gondwana/Rendering/RenderSurfaceHost.cs`
-- `Gondwana/Rendering/Backbuffers/BackbufferBase.cs`
-- `Gondwana/Rendering/Backbuffers/BitmapBackbuffer.cs`
-- `Gondwana/Rendering/Backbuffers/GpuBackbuffer.cs`
+- [`Gondwana/Rendering/RenderSurfaceAdapterBase.cs`](https://isthimius.github.io/Gondwana/api/latest/RenderSurfaceAdapterBase_8cs_source.html)
+- [`Gondwana/Rendering/RenderSurfaceHostBase.cs`](https://isthimius.github.io/Gondwana/api/latest/RenderSurfaceHostBase_8cs_source.html)
+- [`Gondwana/Rendering/RenderSurfaceHost.cs`](https://isthimius.github.io/Gondwana/api/latest/RenderSurfaceHost_8cs_source.html)
+- [`Gondwana/Rendering/Backbuffers/BackbufferBase.cs`](https://isthimius.github.io/Gondwana/api/latest/BackbufferBase_8cs_source.html)
+- [`Gondwana/Rendering/Backbuffers/BitmapBackbuffer.cs`](https://isthimius.github.io/Gondwana/api/latest/BitmapBackbuffer_8cs_source.html)
+- [`Gondwana/Rendering/Backbuffers/GpuBackbuffer.cs`](https://isthimius.github.io/Gondwana/api/latest/GpuBackbuffer_8cs_source.html)
 
 ## WinForms
 
 Bitmap:
 
-- `Gondwana.WinForms/Rendering/WinFormBitmapRenderSurfaceAdapter.cs`
-- `Gondwana.WinForms/Rendering/WinFormBitmapRenderSurfaceControl.cs`
+- [`Gondwana.WinForms/Rendering/WinFormBitmapRenderSurfaceAdapter.cs`](https://isthimius.github.io/Gondwana/api/latest/WinFormBitmapRenderSurfaceAdapter_8cs_source.html)
+- [`Gondwana.WinForms/Rendering/WinFormBitmapRenderSurfaceControl.cs`](https://isthimius.github.io/Gondwana/api/latest/WinFormBitmapRenderSurfaceControl_8cs_source.html)
 
 GPU:
 
-- `Gondwana.WinForms/Rendering/WinFormGpuRenderSurfaceAdapter.cs`
-- `Gondwana.WinForms/Rendering/WinFormGpuRenderSurfaceControl.cs`
+- [`Gondwana.WinForms/Rendering/WinFormGpuRenderSurfaceAdapter.cs`](https://isthimius.github.io/Gondwana/api/latest/WinFormGpuRenderSurfaceAdapter_8cs_source.html)
+- [`Gondwana.WinForms/Rendering/WinFormGpuRenderSurfaceControl.cs`](https://isthimius.github.io/Gondwana/api/latest/WinFormGpuRenderSurfaceControl_8cs_source.html)
 
 Hosting:
 
-- `Gondwana.WinForms.Hosting/WinFormsGameHostBase.cs`
-- `Gondwana.WinForms.Hosting/WinFormsBitmapGameHost.cs`
-- `Gondwana.WinForms.Hosting/WinFormsGpuGameHost.cs`
+- [`Gondwana.WinForms.Hosting/WinFormsGameHostBase.cs`](https://isthimius.github.io/Gondwana/api/latest/WinFormsGameHostBase_8cs_source.html)
+- [`Gondwana.WinForms.Hosting/WinFormsBitmapGameHost.cs`](https://isthimius.github.io/Gondwana/api/latest/WinFormsBitmapGameHost_8cs_source.html)
+- [`Gondwana.WinForms.Hosting/WinFormsGpuGameHost.cs`](https://isthimius.github.io/Gondwana/api/latest/WinFormsGpuGameHost_8cs_source.html)
 
 ## Avalonia
 
-- `Gondwana.Avalonia/Rendering/AvaloniaBitmapRenderSurfaceAdapter.cs`
-- `Gondwana.Avalonia/Rendering/AvaloniaBitmapRenderSurfaceControl.cs`
-- `Gondwana.Avalonia/Rendering/AvaloniaGpuRenderSurfaceAdapter.cs`
-- `Gondwana.Avalonia/Rendering/AvaloniaGpuRenderSurfaceControl.cs`
-- platform hosting under `Gondwana.Avalonia.Hosting/`
+- [`Gondwana.Avalonia/Rendering/AvaloniaBitmapRenderSurfaceAdapter.cs`](https://isthimius.github.io/Gondwana/api/latest/AvaloniaBitmapRenderSurfaceAdapter_8cs_source.html)
+- [`Gondwana.Avalonia/Rendering/AvaloniaBitmapRenderSurfaceControl.cs`](https://isthimius.github.io/Gondwana/api/latest/AvaloniaBitmapRenderSurfaceControl_8cs_source.html)
+- [`Gondwana.Avalonia/Rendering/AvaloniaGpuRenderSurfaceAdapter.cs`](https://isthimius.github.io/Gondwana/api/latest/AvaloniaGpuRenderSurfaceAdapter_8cs_source.html)
+- [`Gondwana.Avalonia/Rendering/AvaloniaGpuRenderSurfaceControl.cs`](https://isthimius.github.io/Gondwana/api/latest/AvaloniaGpuRenderSurfaceControl_8cs_source.html)
+- platform hosting under [`Gondwana.Avalonia.Hosting/`](https://github.com/Isthimius/Gondwana/tree/master/Gondwana.Avalonia.Hosting)
 
 ## Blazor
 
-- `Gondwana.Blazor/Rendering/BlazorBitmapRenderSurfaceAdapter.cs`
-- `Gondwana.Blazor/Rendering/BlazorBitmapRenderSurfaceComponent.razor`
-- `Gondwana.Blazor/Rendering/BlazorBitmapRenderSurfaceComponent.razor.cs`
-- platform hosting under `Gondwana.Blazor.Hosting/`
+- [`Gondwana.Blazor/Rendering/BlazorBitmapRenderSurfaceAdapter.cs`](https://isthimius.github.io/Gondwana/api/latest/BlazorBitmapRenderSurfaceAdapter_8cs_source.html)
+- [`Gondwana.Blazor/Rendering/BlazorBitmapRenderSurfaceComponent.razor`](https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Blazor/Rendering/BlazorBitmapRenderSurfaceComponent.razor)
+- [`Gondwana.Blazor/Rendering/BlazorBitmapRenderSurfaceComponent.razor.cs`](https://isthimius.github.io/Gondwana/api/latest/BlazorBitmapRenderSurfaceComponent_8razor_8cs_source.html)
+- platform hosting under [`Gondwana.Blazor.Hosting/`](https://github.com/Isthimius/Gondwana/tree/master/Gondwana.Blazor.Hosting)
 
 The three implementations are useful precisely because they solve presentation very differently while preserving the same engine-side model.
 
