@@ -56,6 +56,34 @@ public sealed class SpriteGsprPersistenceTests
     }
 
     [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void EmptyRenderSizeUsesSpriteCreationDefault(bool sizeNewSpritesToSceneLayer)
+    {
+        using var sheet = TilesheetRegistry.Instance.LoadFromBitmap("default-size-" + Guid.NewGuid(), new SKBitmap(32, 16));
+        sheet.DefaultRegion.TileSize = new Size(16, 16);
+        using var scene = new Scene();
+        var layer = scene.AddLayer(1, 1, 24, 18);
+        var entry = Valid();
+        entry.SceneId = scene.ID;
+        entry.SceneLayerId = layer.ID;
+        entry.Frame = new() { Tilesheet = sheet.Name, RegionName = sheet.DefaultRegion.Name, XTile = 1, YTile = 0 };
+        var original = SpriteManager.Instance.SizeNewSpritesToSceneLayer;
+        Sprite? sprite = null;
+        try
+        {
+            SpriteManager.Instance.SizeNewSpritesToSceneLayer = sizeNewSpritesToSceneLayer;
+            sprite = SpriteDefinitionSerializer.ToSprite(entry);
+            Assert.Equal(sizeNewSpritesToSceneLayer ? new Size(layer.TileWidth, layer.TileHeight) : new Size(16, 16), sprite.RenderSize);
+        }
+        finally
+        {
+            SpriteManager.Instance.SizeNewSpritesToSceneLayer = original;
+            if (sprite is not null) { SpriteManager.Instance._spriteList.Remove(sprite); sprite.DisposeImmediate(); }
+        }
+    }
+
+    [Theory]
     [InlineData("scene")]
     [InlineData("layer")]
     [InlineData("tilesheet")]

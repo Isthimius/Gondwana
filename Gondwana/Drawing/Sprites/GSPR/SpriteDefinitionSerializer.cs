@@ -166,7 +166,7 @@ public static class SpriteDefinitionSerializer
                 sprite.VertAlign = entry.VertAlign;
                 sprite.NudgeX = entry.NudgeX;
                 sprite.NudgeY = entry.NudgeY;
-                sprite.RenderSize = entry.RenderSize;
+                if (!entry.RenderSize.IsEmpty) sprite.RenderSize = entry.RenderSize;
                 sprite.EnableFog = entry.EnableFog;
                 sprite.AdjustCollisionArea = entry.AdjustCollisionArea;
                 sprite.CollisionType = entry.CollisionType;

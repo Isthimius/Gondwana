@@ -32,7 +32,7 @@ public sealed class InteractionTests
         var gscn = Path.Combine(directory, "level.gscn");
         SceneDefinitionSerializer.Save(gscn, new SceneDefinition() { ID = "level", Layers = [new() { ID = "actors-layer", Columns = 1, Rows = 1, TileWidth = 16, TileHeight = 24 }] });
         var document = SpriteDocument.Create(directory);
-        var entry = document.AddSprite(); entry.RenderSize = new Size(48, 48);
+        var entry = document.AddSprite();
         using var host = new Form { ShowInTaskbar = false, Opacity = 0, Size = new Size(1200, 800) };
         using var editor = new SpriteEditorControl(document);
         host.Controls.Add(editor); host.Show(); Application.DoEvents();

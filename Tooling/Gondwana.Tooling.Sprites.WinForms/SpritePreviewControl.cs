@@ -65,7 +65,17 @@ internal sealed class SpritePreviewControl : UserControl
             }
             _anchor = entry is null || _projection is null ? Point.Empty : Point.Round(_projection.GridToWorldPx(entry.Position));
             _origin = _projection?.GridToWorldPx(PointF.Empty) ?? PointF.Empty;
-            var size = entry?.RenderSize ?? Size.Empty;
+            Size frameSize = Size.Empty;
+            if (entry?.Frame is { } frame && source?.TryResolve(frame, out var region, out _) == true && region is not null)
+                frameSize = region.TileSize;
+            var sceneLayerSize = _projection is null ? Size.Empty : new Size(_projection.TileWidth, _projection.TileHeight);
+            var size = entry is null
+                ? Size.Empty
+                : entry.RenderSize != Size.Empty
+                    ? entry.RenderSize
+                    : SpriteManager.Instance.SizeNewSpritesToSceneLayer
+                        ? sceneLayerSize
+                        : frameSize;
             int x = _anchor.X + (entry?.NudgeX ?? 0), y = _anchor.Y + (entry?.NudgeY ?? 0);
             if (entry is not null && _projection is not null)
             {
