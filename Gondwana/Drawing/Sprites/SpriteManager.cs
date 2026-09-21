@@ -91,18 +91,7 @@ public string DefaultCollisionProfile
 
         var sprite = new Sprite(sceneLayer, frame, profileName);
         sprite.Nickname = id;
-        try
-        {
-            SpriteCreated?.Invoke(sprite);
-        }
-        catch
-        {
-            // The caller cannot roll back an instance that never returned from CreateSprite.
-            lock (_spriteListLock)
-                _spriteList.Remove(sprite);
-            sprite.DisposeImmediate();
-            throw;
-        }
+        PublishCreatedSprite(sprite);
         return sprite;
     }
 
@@ -123,7 +112,7 @@ public string DefaultCollisionProfile
     {
         Sprite newSprite = new Sprite(sprite, sceneLayer);
 
-        SpriteCreated?.Invoke(newSprite);
+        PublishCreatedSprite(newSprite);
         return newSprite;
     }
 
@@ -382,6 +371,22 @@ public string DefaultCollisionProfile
             int last = _spriteList.Count - 1;
             _spriteList[i] = _spriteList[last];
             _spriteList.RemoveAt(last);
+        }
+    }
+
+    private void PublishCreatedSprite(Sprite sprite)
+    {
+        try
+        {
+            SpriteCreated?.Invoke(sprite);
+        }
+        catch
+        {
+            // The caller cannot roll back an instance that never returned from CreateSprite/CloneSprite.
+            lock (_spriteListLock)
+                _spriteList.Remove(sprite);
+            sprite.DisposeImmediate();
+            throw;
         }
     }
 
