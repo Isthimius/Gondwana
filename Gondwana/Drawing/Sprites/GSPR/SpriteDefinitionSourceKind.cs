@@ -10,4 +10,3 @@ public enum SpriteDefinitionSourceKind
     PackedDefinitionFile = 2,
     Generated = 3
 }
-

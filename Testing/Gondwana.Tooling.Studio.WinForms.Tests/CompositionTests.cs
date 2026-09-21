@@ -292,6 +292,3 @@ public sealed class CompositionTests
         if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
     }
 }
-
-
-

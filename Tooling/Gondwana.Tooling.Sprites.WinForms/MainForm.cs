@@ -469,4 +469,3 @@ internal sealed class MainForm : Form
         base.Dispose(disposing);
     }
 }
-

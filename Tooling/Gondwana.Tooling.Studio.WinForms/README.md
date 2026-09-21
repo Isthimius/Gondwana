@@ -97,4 +97,3 @@ no source-document paths or unsaved content are stored, and documents are never 
 on startup. Missing or corrupt preferences fall back to defaults without a dialog.
 Available plugin tools in Studio use stable plugin identities; missing plugins are ignored.
 Changes are saved after a short settling interval and flushed on disposal.
-

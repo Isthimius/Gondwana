@@ -1622,4 +1622,3 @@ Startup state mounting:
 - [`Gondwana/Engine.cs`](https://isthimius.github.io/Gondwana/api/latest/Engine_8cs_source.html)
 
 For a practical introduction to creating, loading, and organizing state files, see [[Game State Files]].
-

@@ -171,4 +171,3 @@ internal sealed class SpriteTilesheetSource : IDisposable
         Image = null;
     }
 }
-

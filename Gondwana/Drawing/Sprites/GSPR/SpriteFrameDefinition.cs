@@ -27,4 +27,3 @@ public sealed class SpriteFrameDefinition
     /// </summary>
     public int YTile { get; set; }
 }
-

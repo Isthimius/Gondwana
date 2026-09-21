@@ -682,4 +682,3 @@ The distinction is intentional:
 ## External sprite collections
 
 `separateGsprFile: true` writes one `<state-name>.sprites.gspr` holding all captured sprites and stores a relative GsprPath. The default embeds the same collection inline. Legacy raw Sprite arrays remain readable. See [[.gspr Files|GSPR-Files]].
-

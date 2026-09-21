@@ -55,5 +55,3 @@ public sealed class SpriteSceneSourceDefinition
         };
     }
 }
-
-

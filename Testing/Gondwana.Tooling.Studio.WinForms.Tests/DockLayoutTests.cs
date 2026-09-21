@@ -310,5 +310,3 @@ public sealed class DockLayoutTests
         if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
     }
 }
-
-

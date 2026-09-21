@@ -86,4 +86,3 @@ public sealed class SpriteDefinitionSource
             Kind = SpriteDefinitionSourceKind.None
         };
 }
-

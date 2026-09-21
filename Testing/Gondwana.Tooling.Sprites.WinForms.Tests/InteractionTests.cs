@@ -149,4 +149,3 @@ public sealed class InteractionTests
         if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
     }
 }
-

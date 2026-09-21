@@ -244,4 +244,3 @@ public sealed class SpriteEditorControl : UserControl
         base.Dispose(disposing);
     }
 }
-

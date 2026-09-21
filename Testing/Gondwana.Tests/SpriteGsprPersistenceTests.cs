@@ -185,4 +185,3 @@ public sealed class SpriteGsprPersistenceTests
 
     private static SpriteInstanceDefinition Valid() => new() { Id = Guid.NewGuid(), Nickname = Guid.NewGuid().ToString(), SceneId = "level", SceneLayerId = "actors" };
 }
-

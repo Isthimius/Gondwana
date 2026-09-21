@@ -1009,4 +1009,3 @@ Relevant source files:
 - [`Gondwana/Drawing/Collisions/TileCollider.cs`](https://isthimius.github.io/Gondwana/api/latest/TileCollider_8cs_source.html)
 - [`Gondwana/Physics/Movement/MovementController.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementController_8cs_source.html)
 - [`Gondwana/Scenes/SceneLayer.cs`](https://isthimius.github.io/Gondwana/api/latest/SceneLayer_8cs_source.html)
-

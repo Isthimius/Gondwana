@@ -96,4 +96,3 @@ internal sealed class SpriteEditorDocument : DockContent
         base.Dispose(disposing);
     }
 }
-

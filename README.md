@@ -232,4 +232,3 @@ Gondwana uses **[Skia](https://skia.org/)** (© Google), licensed under the [BSD
 ## ☕ Support Gondwana
 
 Gondwana is developed and maintained independently. If you find the engine useful, consider [buying me a coffee](https://www.buymeacoffee.com/mikeleeisback) to support its continued development.
-

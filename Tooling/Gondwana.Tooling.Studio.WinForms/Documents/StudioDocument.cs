@@ -172,4 +172,3 @@ internal sealed class StudioDocument : IDisposable
         _release = null;
     }
 }
-

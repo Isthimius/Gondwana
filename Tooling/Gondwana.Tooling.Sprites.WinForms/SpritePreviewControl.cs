@@ -116,4 +116,3 @@ internal sealed class SpritePreviewControl : UserControl
         public ProjectionLayer(SceneLayerDefinition layer) : base(1, 1, Math.Max(1, layer.TileWidth), Math.Max(1, layer.TileHeight), 1f, layer.CoordinateSystemType) { OriginPx = layer.OriginPx; }
     }
 }
-

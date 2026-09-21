@@ -48,4 +48,3 @@ internal static class DarkTheme
         public override Color ToolStripGradientEnd => Surface;
     }
 }
-
