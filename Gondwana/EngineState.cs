@@ -9,6 +9,7 @@ using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
+using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes;
@@ -25,6 +26,36 @@ namespace Gondwana;
 [JsonObject(IsReference = true)]
 public sealed class EngineState
 {
+    [JsonConverter(typeof(SpriteStateEntryConverter))]
+    private sealed class SpriteStateEntry
+    {
+        public string? GsprPath { get; set; }
+        public SpriteDefinition? Definition { get; set; }
+        [JsonIgnore] public List<Sprite>? LegacySprites { get; set; }
+    }
+
+    private sealed class SpriteStateEntryConverter : JsonConverter<SpriteStateEntry>
+    {
+        public override SpriteStateEntry? ReadJson(JsonReader reader, Type objectType,
+            SpriteStateEntry? existingValue, bool hasExistingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.Null) return null;
+            var token = JToken.Load(reader);
+            // PreserveReferencesHandling.All wrapped historical arrays in $values.
+            if (token is JArray || token["$values"] is not null)
+                return new() { LegacySprites = token.ToObject<List<Sprite>>(serializer) };
+            if (token is not JObject obj)
+                throw new JsonSerializationException("Invalid Sprite state entry.");
+            return new()
+            {
+                GsprPath = obj.GetValue("GsprPath", StringComparison.OrdinalIgnoreCase)?.ToObject<string>(serializer),
+                Definition = obj.GetValue("Definition", StringComparison.OrdinalIgnoreCase)?.ToObject<SpriteDefinition>(serializer)
+            };
+        }
+        public override bool CanWrite => false;
+        public override void WriteJson(JsonWriter writer, SpriteStateEntry? value, JsonSerializer serializer) => throw new NotSupportedException();
+    }
+
     /// <summary>
     /// Represents the serialized tilesheet data captured for a single tilesheet entry.
     /// </summary>
@@ -319,7 +350,8 @@ public sealed class EngineState
                            EngineStateParts parts = EngineStateParts.All,
                            bool separateGscnFiles = false,
                            bool separateGaniFiles = false,
-                           bool separateGsndFile = false)
+                           bool separateGsndFile = false,
+                           bool separateGsprFile = false)
     {
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Engine state path must be a non-empty string.", nameof(path));
@@ -334,7 +366,8 @@ public sealed class EngineState
             separateGtsFiles,
             separateGscnFiles,
             separateGaniFiles,
-            separateGsndFile);
+            separateGsndFile,
+            separateGsprFile);
 
         var json = JsonConvert.SerializeObject(snapshot, JsonSerializerSettings);
 
@@ -441,7 +474,7 @@ public sealed class EngineState
         [JsonProperty] public Dictionary<string, TilesheetStateEntry>? Tilesheets { get; set; }
         [JsonProperty] public Dictionary<string, AnimationStateEntry>? Cycles { get; set; }
         [JsonProperty] public List<SceneStateEntry>? Scenes { get; set; }
-        [JsonProperty] public List<Sprite>? Sprites { get; set; }
+        [JsonProperty] public SpriteStateEntry? Sprites { get; set; }
         [JsonProperty] public AudioStateEntry? Audio { get; set; }
 
         // Legacy compatibility: pre-GSND EngineState files serialized runtime
@@ -471,7 +504,8 @@ public sealed class EngineState
                                               bool separateGtsFiles,
                                               bool separateGscnFiles,
                                               bool separateGaniFiles,
-                                              bool separateGsndFile)
+                                              bool separateGsndFile,
+                                              bool separateGsprFile)
     {
         return new EngineStateSnapshot
         {
@@ -501,7 +535,7 @@ public sealed class EngineState
                 : null,
 
             Sprites = parts.HasFlag(EngineStateParts.Sprites)
-                ? Sprites
+                ? CaptureSpriteEntry(baseDirectory, engineStatePath, separateGsprFile)
                 : null,
 
             Audio = parts.HasFlag(EngineStateParts.Audio)
@@ -515,6 +549,16 @@ public sealed class EngineState
             // only so older EngineState files can still be read.
             SoundResources = null,
         };
+    }
+
+    private SpriteStateEntry CaptureSpriteEntry(string? baseDirectory, string engineStatePath, bool separate)
+    {
+        var definition = SpriteDefinitionSerializer.FromSprites(Sprites.ToList());
+        if (!separate) return new() { Definition = definition };
+        var path = Path.Combine(Path.GetDirectoryName(engineStatePath)!,
+            Path.GetFileNameWithoutExtension(engineStatePath) + ".sprites.gspr");
+        SpriteDefinitionSerializer.Save(path, definition);
+        return new() { GsprPath = MakeRelativePath(path, baseDirectory) };
     }
 
     private static AudioStateEntry CaptureAudioEntry(
@@ -681,7 +725,7 @@ public sealed class EngineState
         // deserialized. Detach those incoming instances before clearing or merging so
         // they are treated as snapshot data rather than pre-existing live state.
         DetachLegacySnapshotScenes(snapshot.Scenes);
-        DetachSnapshotSprites(snapshot.Sprites);
+        DetachSnapshotSprites(snapshot.Sprites?.LegacySprites);
 
         // clear only what we're about to load.
         if (clearExisting)
@@ -708,7 +752,22 @@ public sealed class EngineState
             MergeScenes(snapshot.Scenes, overwriteExisting, baseDirectory);
 
         if (parts.HasFlag(EngineStateParts.Sprites))
-            MergeSprites(snapshot.Sprites, overwriteExisting);
+        {
+            var entry = snapshot.Sprites;
+            if (entry is not null)
+            {
+                var incoming = entry.LegacySprites;
+                if (incoming is null)
+                {
+                    var definition = !string.IsNullOrWhiteSpace(entry.GsprPath)
+                        ? SpriteDefinitionSerializer.Load(ResolvePath(entry.GsprPath, baseDirectory))
+                        : entry.Definition ?? throw new InvalidDataException("Sprite state entry requires GsprPath or Definition.");
+                    incoming = SpriteDefinitionSerializer.ToSprites(definition);
+                    DetachSnapshotSprites(incoming);
+                }
+                MergeSprites(incoming, overwriteExisting);
+            }
+        }
     }
 
     private static void ClearSelected(EngineStateParts parts)

@@ -140,7 +140,7 @@ public static class SpriteDefinitionSerializer
                     ?? throw new InvalidDataException($"Sprite '{entry.Nickname}': Scene '{entry.SceneId}' is not loaded.");
                 var layer = scene.GetSceneLayerByID(entry.SceneLayerId)
                     ?? throw new InvalidDataException($"Sprite '{entry.Nickname}': SceneLayer '{entry.SceneLayerId}' is not loaded.");
-                var frame = ResolveFrame(entry.Frame!);
+                var frame = entry.Frame is null ? default : ResolveFrame(entry.Frame);
                 if (!string.IsNullOrWhiteSpace(entry.CollisionProfileName) && !scene.CollisionProfiles.GetProfileNames().Contains(entry.CollisionProfileName))
                     throw new InvalidDataException($"Sprite '{entry.Nickname}': collision profile '{entry.CollisionProfileName}' does not exist.");
                 var sprite = SpriteManager.Instance.CreateSprite(layer, frame, entry.Nickname, entry.CollisionProfileName);

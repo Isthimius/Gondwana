@@ -1,5 +1,6 @@
 using System.Runtime.ExceptionServices;
 using Gondwana.Assets;
+using Gondwana.Tooling.Sprites.WinForms;
 using Gondwana.Tooling.Animations.WinForms;
 using Gondwana.Tooling.Assets.WinForms;
 using Gondwana.Tooling.Audio.WinForms;
@@ -19,6 +20,7 @@ public sealed class CompositionTests
     [InlineData("gani", typeof(AnimationEditorControl))]
     [InlineData("gsnd", typeof(AudioEditorControl))]
     [InlineData("gscn", typeof(SceneEditorControl))]
+    [InlineData("gspr", typeof(SpriteEditorControl))]
     public void RealEditors_SaveRekeyRecoverPanesAndDispose(string format, Type editorType) => RunSta(directory =>
     {
         using var studio = Host(directory);
@@ -43,6 +45,7 @@ public sealed class CompositionTests
             case AnimationEditorControl editor: editor.Document.MarkChanged(); break;
             case AudioEditorControl editor: editor.Document.MarkChanged(); break;
             case SceneEditorControl editor: editor.Document.MarkChanged(); break;
+            case SpriteEditorControl editor: editor.Document.MarkChanged(); break;
             case AssetEditorControl editor: editor.MarkChanged(); break;
         }
         Assert.True(model.Dirty());
@@ -92,10 +95,10 @@ public sealed class CompositionTests
     public void MixedDocuments_CloseCancelSaveAndShutdownAreTransactional() => RunSta(directory =>
     {
         using var studio = Host(directory);
-        foreach (var format in new[] { "gts", "gani", "gsnd", "gscn", "gaf" })
+        foreach (var format in new[] { "gts", "gani", "gsnd", "gscn", "gspr", "gaf" })
             studio.NewDocument(format, format == "gaf" ? Path.Combine(directory, "assets.gaf") : null);
-        Assert.Equal(5, studio.Documents.Count);
-        Assert.Equal(7, studio.Workspace.Contents.Count);
+        Assert.Equal(6, studio.Documents.Count);
+        Assert.Equal(8, studio.Workspace.Contents.Count);
         var documents = studio.Documents.ToArray();
         int prompts = 0;
         studio.AskSave = _ => ++prompts == 2 ? DialogResult.Cancel : DialogResult.No;
@@ -113,7 +116,7 @@ public sealed class CompositionTests
         prompts = 0;
         studio.AskSave = _ => { prompts++; return DialogResult.No; };
         studio.Close();
-        Assert.Equal(4, prompts);
+        Assert.Equal(5, prompts);
         Assert.All(documents, doc => Assert.True(doc.IsDisposed));
         Assert.All(documents, doc => Assert.True(doc.Document.Editor.IsDisposed));
     });
@@ -276,3 +279,4 @@ public sealed class CompositionTests
         if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
     }
 }
+

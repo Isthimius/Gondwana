@@ -18,6 +18,7 @@ public sealed class DockLayoutTests
     [InlineData(typeof(Gondwana.Tooling.Animations.WinForms.AnimationEditorControl))]
     [InlineData(typeof(Gondwana.Tooling.Audio.WinForms.AudioEditorControl))]
     [InlineData(typeof(Gondwana.Tooling.Scenes.WinForms.SceneEditorControl))]
+    [InlineData(typeof(Gondwana.Tooling.Sprites.WinForms.SpriteEditorControl))]
     public void StandaloneShellRestoresHiddenToolAndViewResetsIt(Type editorType) => Sta(() =>
     {
         Form Open()
@@ -83,6 +84,7 @@ public sealed class DockLayoutTests
     [InlineData("gani", 5)]
     [InlineData("gsnd", 3)]
     [InlineData("gscn", 7)]
+    [InlineData("gspr", 6)]
     public void EditorSplitTabsSizingVisibilityRecoveryAndResetSurviveNewInstances(string kind, int count) => Sta(() =>
     {
         string[] names;
@@ -305,3 +307,4 @@ public sealed class DockLayoutTests
         if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
     }
 }
+

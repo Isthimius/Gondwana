@@ -1,4 +1,6 @@
 using Gondwana.Assets;
+using Gondwana.Tooling.Sprites.Editing;
+using Gondwana.Tooling.Sprites.WinForms;
 using Gondwana.Tooling.Animations.Editing;
 using Gondwana.Tooling.Animations.WinForms;
 using Gondwana.Tooling.Assets.WinForms;
@@ -39,6 +41,7 @@ internal sealed class StudioDocument : IDisposable
         ".gani" => "gani",
         ".gsnd" => "gsnd",
         ".gscn" => "gscn",
+        ".gspr" => "gspr",
         _ => null
     };
 
@@ -115,6 +118,22 @@ internal sealed class StudioDocument : IDisposable
                 result._detach = () => model.Changed -= result.OnChanged;
                 return result;
             }
+            case "gspr":
+            {
+                var model = path is null ? SpriteDocument.Create(directory) : SpriteDocument.Open(path);
+                var editor = new SpriteEditorControl(model);
+                result = new()
+                {
+                    Kind = "sprite", Extension = "gspr", Editor = editor,
+                    Path = () => model.FilePath, Dirty = () => model.IsDirty,
+                    CommitEdits = editor.CommitEdits, Validate = editor.UpdateValidation, Save = model.Save,
+                    PaneNames = SpriteEditorControl.PaneNames, ShowPane = editor.ShowPane,
+                    IsPaneVisible = editor.IsPaneVisible, ShowAllPanes = editor.ShowAllPanes, ResetLayout = editor.ResetLayout
+                };
+                model.Changed += result.OnChanged;
+                result._detach = () => model.Changed -= result.OnChanged;
+                return result;
+            }
             case "gaf":
             {
                 if (path is null) throw new ArgumentException("Choose an asset file path first.");
@@ -153,3 +172,4 @@ internal sealed class StudioDocument : IDisposable
         _release = null;
     }
 }
+

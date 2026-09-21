@@ -14,7 +14,7 @@ namespace Gondwana.Tooling.Studio.WinForms;
 /// <summary>Studio owns outer documents and tools; authoring controls own their inner workspaces.</summary>
 public sealed class MainForm : Form
 {
-    internal const string OpenFilter = "Gondwana authoring files|*.gaf;*.zip;*.gts;*.gani;*.gsnd;*.gscn|All files|*.*";
+    internal const string OpenFilter = "Gondwana authoring files|*.gaf;*.zip;*.gts;*.gani;*.gsnd;*.gscn;*.gspr|All files|*.*";
     private readonly OutputViewModel _output = new();
     private readonly StudioPluginHost _plugins;
     private readonly VS2015DarkTheme _theme = new();
@@ -85,7 +85,7 @@ public sealed class MainForm : Form
         var file = new ToolStripMenuItem("&File");
         var create = new ToolStripMenuItem("&New");
         foreach (var (format, label) in new[] { ("gaf", "Asset file / GAF…"), ("gts", "Tilesheet / GTS"),
-            ("gani", "Animation / GANI"), ("gsnd", "Sound / GSND"), ("gscn", "Scene / GSCN") })
+            ("gani", "Animation / GANI"), ("gsnd", "Sound / GSND"), ("gscn", "Scene / GSCN"), ("gspr", "Sprite / GSPR") })
             Add(create, label, Keys.None, () => TryNew(format));
         file.DropDownItems.Add(create);
         Add(file, "&Open…", Keys.Control | Keys.O, OpenFiles);
@@ -367,3 +367,4 @@ file sealed class DarkColorTable : ProfessionalColorTable
     public override System.Drawing.Color MenuBorder => System.Drawing.Color.FromArgb(60, 60, 60);
     public override System.Drawing.Color MenuItemBorder => System.Drawing.Color.FromArgb(60, 60, 60);
 }
+

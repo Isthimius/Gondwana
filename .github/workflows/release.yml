@@ -72,6 +72,7 @@ jobs:
           mkdir -p publish/Tooling/Gondwana.Tooling.Animations.WinForms
           mkdir -p publish/Tooling/Gondwana.Tooling.Audio.WinForms
           mkdir -p publish/Tooling/Gondwana.Tooling.Scenes.WinForms
+          mkdir -p publish/Tooling/Gondwana.Tooling.Sprites.WinForms
           mkdir -p publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms
           mkdir -p publish/Tooling/Gondwana.Templates
           mkdir -p publish/Demos/Slider
@@ -94,6 +95,7 @@ jobs:
           dotnet publish Tooling/Gondwana.Tooling.Animations.WinForms/Gondwana.Tooling.Animations.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Animations.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Tooling/Gondwana.Tooling.Audio.WinForms/Gondwana.Tooling.Audio.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Audio.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Tooling/Gondwana.Tooling.Scenes.WinForms/Gondwana.Tooling.Scenes.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Scenes.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Tooling/Gondwana.Tooling.Sprites.WinForms/Gondwana.Tooling.Sprites.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Sprites.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Tooling/Gondwana.Tooling.Tilesheets.WinForms/Gondwana.Tooling.Tilesheets.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Demos/Slider/Slider.csproj -c Release -o publish/Demos/Slider -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Demos/Spot/Spot.csproj -c Release -o publish/Demos/Spot -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
@@ -125,6 +127,7 @@ jobs:
           cp -r publish/Tooling/Gondwana.Tooling.Animations.WinForms release-assets/Tooling/
           cp -r publish/Tooling/Gondwana.Tooling.Audio.WinForms release-assets/Tooling/
           cp -r publish/Tooling/Gondwana.Tooling.Scenes.WinForms release-assets/Tooling/
+          cp -r publish/Tooling/Gondwana.Tooling.Sprites.WinForms release-assets/Tooling/
           cp -r publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms release-assets/Tooling/
           cp -r publish/Demos/Slider release-assets/Demos/
           cp -r publish/Demos/Spot release-assets/Demos/

@@ -19,8 +19,8 @@ public static class SpriteDefinitionValidator
             if (!string.IsNullOrWhiteSpace(sprite.Nickname) && !names.Add(sprite.Nickname)) errors.Add($"{label}: duplicate Nickname.");
             if (string.IsNullOrWhiteSpace(sprite.SceneId)) errors.Add($"{label}: SceneId is required.");
             if (string.IsNullOrWhiteSpace(sprite.SceneLayerId)) errors.Add($"{label}: SceneLayerId is required.");
-            if (sprite.Frame is not { } frame) errors.Add($"{label}: Frame is required.");
-            else
+            // A default/unassigned frame is valid in the existing Sprite persistence contract.
+            if (sprite.Frame is { } frame)
             {
                 if (string.IsNullOrWhiteSpace(frame.Tilesheet)) errors.Add($"{label}: Frame Tilesheet is required.");
                 if (string.IsNullOrWhiteSpace(frame.RegionName)) errors.Add($"{label}: Frame RegionName is required.");
