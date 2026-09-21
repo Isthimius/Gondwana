@@ -10,6 +10,19 @@ All notable changes to this project will be documented in this file.
 
 
 
+# [Unreleased]
+
+
+
+## Added
+- Modernize Assets editor workspace ([#370](https://github.com/Isthimius/Gondwana/pull/370))
+- Add editor-local docking to GTS, GAF, and GANI ([#378](https://github.com/Isthimius/Gondwana/pull/378))
+
+
+
+## Fixed
+- Restore closed panes in standalone editors ([#382](https://github.com/Isthimius/Gondwana/pull/382))
+
 # v2.6.0 - September 17, 2026
 
 
