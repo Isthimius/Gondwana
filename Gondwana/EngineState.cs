@@ -554,7 +554,7 @@ public sealed class EngineState
 
     private SpriteStateEntry CaptureSpriteEntry(string? baseDirectory, string engineStatePath, bool separate)
     {
-        var definition = SpriteDefinitionSerializer.FromSprites(Sprites.ToList());
+var definition = SpriteDefinitionSerializer.FromSprites(SpriteManager.Instance.AllSprites);
         if (!separate) return new() { Definition = definition };
         var path = Path.Combine(Path.GetDirectoryName(engineStatePath)!,
             Path.GetFileNameWithoutExtension(engineStatePath) + ".sprites.gspr");
