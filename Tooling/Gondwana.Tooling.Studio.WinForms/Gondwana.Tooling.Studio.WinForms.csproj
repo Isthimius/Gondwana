@@ -11,13 +11,19 @@
     <AssemblyName>Gondwana.Studio.WinForms</AssemblyName>
   </PropertyGroup>
 
-  <!-- DockPanelSuite with VS2015 dark theme mirrors Dock.Avalonia used in Gondwana.Studio -->
+  <!-- The outer shell uses the same DockPanelSuite dark theme as its hosted editors. -->
   <ItemGroup>
     <PackageReference Include="DockPanelSuite" Version="3.1.1" />
     <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="Gondwana.Tooling.Studio.WinForms.Tests" />
     <ProjectReference Include="..\Gondwana.Tooling.Studio.Core\Gondwana.Tooling.Studio.Core.csproj" />
+    <ProjectReference Include="..\Gondwana.Tooling.Assets.WinForms\Gondwana.Tooling.Assets.WinForms.csproj" />
+    <ProjectReference Include="..\Gondwana.Tooling.Tilesheets.WinForms\Gondwana.Tooling.Tilesheets.WinForms.csproj" />
+    <ProjectReference Include="..\Gondwana.Tooling.Animations.WinForms\Gondwana.Tooling.Animations.WinForms.csproj" />
+    <ProjectReference Include="..\Gondwana.Tooling.Audio.WinForms\Gondwana.Tooling.Audio.WinForms.csproj" />
+    <ProjectReference Include="..\Gondwana.Tooling.Scenes.WinForms\Gondwana.Tooling.Scenes.WinForms.csproj" />
   </ItemGroup>
 
 </Project>

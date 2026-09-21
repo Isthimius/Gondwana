@@ -2,7 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-# [Unreleased]
+## Unreleased
+
+- Host the real GAF/GTS/GANI/GSND/GSCN editor controls as individual Studio documents with editor-local docking.
+- Add combined file commands, lazy working-directory browsing, dirty/close handling, Save As path tracking, and View pane recovery.
+- Remove duplicate Studio editors and the deprecated Avalonia Studio prototype; retain shell/plugin infrastructure.
+- Add Windows composition tests covering nested ownership, saving, cancellation, encrypted assets, and disposal.
 
 # v2.6.0 - September 17, 2026
 

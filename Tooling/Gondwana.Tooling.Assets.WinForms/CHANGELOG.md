@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Changed
+- Expose dirty/change notifications and host-routed saves; support path-adopting SaveTo with encryption and explicit package ownership for Studio.
 - Refactor the asset editor and workspace browser into hostable WinForms controls for reuse by Gondwana Studio.
 - Keep DockPanelSuite document/window ownership in the standalone application shell.
 

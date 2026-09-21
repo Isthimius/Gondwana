@@ -1,341 +1,320 @@
-using System.IO;
+using Gondwana.Tooling.Assets.WinForms;
 using Gondwana.Tooling.Studio.ViewModels;
+using Gondwana.Tooling.Studio.WinForms.Documents;
 using Gondwana.Tooling.Studio.WinForms.Extensibility;
 using Gondwana.Tooling.Studio.WinForms.Panels;
 using Gondwana.Tooling.Studio.WinForms.Services;
+using Gondwana.Tooling.Tilesheets.Sources;
 using WeifenLuo.WinFormsUI.Docking;
 using WeifenLuo.WinFormsUI.ThemeVS2015;
 
 namespace Gondwana.Tooling.Studio.WinForms;
 
-/// <summary>
-/// Main application window with DockPanelSuite layout and VS dark theme.
-/// </summary>
+/// <summary>Studio owns outer documents and tools; authoring controls own their inner workspaces.</summary>
 public sealed class MainForm : Form
 {
-    private static readonly System.Drawing.Color DarkBackground = System.Drawing.Color.FromArgb(37, 37, 38);
-    private static readonly System.Drawing.Color DarkSurface = System.Drawing.Color.FromArgb(30, 30, 30);
-    private static readonly System.Drawing.Color DarkForeground = System.Drawing.Color.FromArgb(220, 220, 220);
+    internal const string OpenFilter = "Gondwana authoring files|*.gaf;*.zip;*.gts;*.gani;*.gsnd;*.gscn|All files|*.*";
+    private readonly OutputViewModel _output = new();
+    private readonly StudioPluginHost _plugins;
+    private readonly VS2015DarkTheme _theme = new();
+    private readonly AssetPackageCatalog _packages = new();
+    private readonly Dictionary<string, StudioDockDocument> _paths = new(StringComparer.OrdinalIgnoreCase);
+    private readonly List<StudioDockDocument> _documents = [];
+    private readonly List<DockContent> _tools = [];
+    private readonly ToolStripMenuItem _view = new("&View");
+    private bool _disposed;
+    internal DockPanel Workspace { get; }
+    internal DirectoryPanel Browser { get; }
+    internal IReadOnlyList<StudioDockDocument> Documents => _documents;
+    internal StudioDockDocument? ActiveDocument => Workspace.ActiveDocument as StudioDockDocument;
+    internal Func<StudioDocument, DialogResult> AskSave { get; set; }
+    internal Func<StudioDocument, string?> SavePath { get; set; }
+    internal Func<IReadOnlyList<string>, bool> AllowInvalidSave { get; set; }
+    internal Action<Exception> ReportError { get; set; }
+    internal Func<string, string?> AssetPassword { get; set; }
 
-    private readonly WinFormsDialogService _dialogService;
-    private readonly StudioPluginHost _pluginHost;
-    private readonly DirectoryPanelViewModel _directoryVm;
-    private readonly OutputViewModel _outputVm;
-    private readonly DockPanel _dockPanel;
-    private readonly VS2015DarkTheme _dockTheme;
+    public MainForm() : this(loadPlugins: true) { }
 
-    private readonly DirectoryPanel _directoryPanel;
-    private readonly OutputPanel _outputPanel;
-
-    // Track open documents by key to avoid duplicates
-    private readonly Dictionary<string, DockContent> _openDocuments = [];
-
-    /// <summary>
-    /// MainForm.
-    /// </summary>
-    public MainForm()
+    internal MainForm(bool loadPlugins)
     {
-        _directoryVm = new DirectoryPanelViewModel();
-        _outputVm = new OutputViewModel();
-        _dialogService = new WinFormsDialogService(this);
-        _pluginHost = new StudioPluginHost(msg => _outputVm.Log(msg));
-        _dockTheme = new VS2015DarkTheme();
-
         Text = "Gondwana Studio";
-        Width = 1280;
-        Height = 800;
-        MinimumSize = new System.Drawing.Size(800, 600);
+        Size = new Size(1450, 950);
+        MinimumSize = new Size(900, 650);
         StartPosition = FormStartPosition.CenterScreen;
-        BackColor = DarkBackground;
-        ForeColor = DarkForeground;
-
-        var menuStrip = BuildMenuStrip();
-
-        _directoryPanel = new DirectoryPanel(_directoryVm) { Dock = DockStyle.Fill };
-        _directoryPanel.NodeActivated += OnNodeActivated;
-        ApplyStudioTheme(_directoryPanel);
-        _outputPanel = new OutputPanel(_outputVm) { Dock = DockStyle.Fill };
-        ApplyStudioTheme(_outputPanel);
-
-        _dockPanel = new DockPanel
+        BackColor = Color.FromArgb(37, 37, 38);
+        ForeColor = Color.Gainsboro;
+        Workspace = new DockPanel
         {
-            Dock = DockStyle.Fill,
-            BackColor = DarkBackground,
-            Theme = _dockTheme
+            Dock = DockStyle.Fill, Theme = _theme, DocumentStyle = DocumentStyle.DockingWindow,
+            DockLeftPortion = 250, DockBottomPortion = 130
         };
-
-        Controls.Add(_dockPanel);
-        Controls.Add(menuStrip);
-        MainMenuStrip = menuStrip;
-
-        ShowToolWindows();
-
-        _outputVm.Log("Gondwana Studio WinForms ready.");
-
-        _pluginHost.DiscoverAndLoad();
-        AttachPlugins();
+        _plugins = new StudioPluginHost(_output.Log);
+        Browser = new DirectoryPanel(_output.Log);
+        Browser.FileActivated += path => TryOpen(path);
+        Browser.ChooseDirectoryRequested += ChooseDirectory;
+        AddTool("Working directory", Browser, DockState.DockLeft);
+        AddTool("Output", new OutputPanel(_output), DockState.DockBottom);
+        AskSave = document => MessageBox.Show(this, $"Save changes to {Path.GetFileName(document.Path()) ?? "Untitled." + document.Extension}?",
+            "Unsaved changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+        SavePath = ChooseSavePath;
+        AllowInvalidSave = _ => MessageBox.Show(this, "This definition has validation errors. See its Validation pane. Save it anyway?",
+            "Validation failed", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes;
+        ReportError = ex => { _output.Log(ex.Message); MessageBox.Show(this, ex.Message, "Gondwana Studio", MessageBoxButtons.OK, MessageBoxIcon.Error); };
+        AssetPassword = path => InputDialog.Show($"Password for {Path.GetFileName(path)}:", "Asset password", owner: this, password: true);
+        _packages.PasswordProvider = path => AssetPassword(path);
+        MainMenuStrip = BuildMenu();
+        Controls.Add(Workspace);
+        Controls.Add(MainMenuStrip);
+        _view.DropDownOpening += (_, _) => RebuildViewMenu();
+        if (loadPlugins)
+        {
+            _plugins.DiscoverAndLoad();
+            AttachPlugins();
+        }
+        SetWorkingDirectory(Environment.CurrentDirectory);
+        _output.Log("Gondwana Studio ready.");
     }
 
-    private MenuStrip BuildMenuStrip()
+    private MenuStrip BuildMenu()
     {
-        var menuStrip = new MenuStrip { BackColor = DarkBackground, ForeColor = DarkForeground, Renderer = new DarkMenuRenderer() };
-
-        var fileMenu = new ToolStripMenuItem("&File");
-        var openProjectItem = new ToolStripMenuItem("&Open Project…");
-        var closeProjectItem = new ToolStripMenuItem("&Close Project");
-        var newMenu = new ToolStripMenuItem("&New");
-        var newTilesheetItem = new ToolStripMenuItem("Tilesheet Editor");
-        var newAnimationItem = new ToolStripMenuItem("Animation Editor");
-        var newSceneItem = new ToolStripMenuItem("Scene Editor");
-        newMenu.DropDownItems.AddRange([newTilesheetItem, newAnimationItem, newSceneItem]);
-        var openMenu = new ToolStripMenuItem("&Open");
-        var openTilesheetItem = new ToolStripMenuItem("Tilesheet…");
-        var openAnimationItem = new ToolStripMenuItem("Animation…");
-        var openSceneItem = new ToolStripMenuItem("Scene…");
-        openMenu.DropDownItems.AddRange([openTilesheetItem, openAnimationItem, openSceneItem]);
-        var exitItem = new ToolStripMenuItem("E&xit");
-
-        openProjectItem.Click += OnOpenProjectClicked;
-        closeProjectItem.Click += OnCloseProjectClicked;
-        newTilesheetItem.Click += OnNewTilesheetClicked;
-        newAnimationItem.Click += OnNewAnimationClicked;
-        newSceneItem.Click += OnNewSceneClicked;
-        openTilesheetItem.Click += async (_, _) => await OpenTypedFileFromMenuAsync("*.gts", "*.gondwana-tilesheet");
-        openAnimationItem.Click += async (_, _) => await OpenTypedFileFromMenuAsync("*.gondwana-animation");
-        openSceneItem.Click += async (_, _) => await OpenTypedFileFromMenuAsync("*.gondwana-scene");
-        exitItem.Click += (_, _) => Close();
-
-        fileMenu.DropDownItems.AddRange([
-            openProjectItem, closeProjectItem,
-            new ToolStripSeparator(),
-            newMenu, openMenu,
-            new ToolStripSeparator(),
-            exitItem
-        ]);
-
-        var pluginsMenu = new ToolStripMenuItem("&Plugins") { Name = "PluginsMenu" };
-
-        menuStrip.Items.AddRange([fileMenu, pluginsMenu]);
-        return menuStrip;
+        var menu = new MenuStrip { Renderer = new DarkMenuRenderer(), BackColor = BackColor, ForeColor = ForeColor };
+        var file = new ToolStripMenuItem("&File");
+        var create = new ToolStripMenuItem("&New");
+        foreach (var (format, label) in new[] { ("gaf", "Asset file / GAF…"), ("gts", "Tilesheet / GTS"),
+            ("gani", "Animation / GANI"), ("gsnd", "Sound / GSND"), ("gscn", "Scene / GSCN") })
+            Add(create, label, Keys.None, () => TryNew(format));
+        file.DropDownItems.Add(create);
+        Add(file, "&Open…", Keys.Control | Keys.O, OpenFiles);
+        Add(file, "Open working &directory…", Keys.None, ChooseDirectory);
+        file.DropDownItems.Add(new ToolStripSeparator());
+        Add(file, "&Save", Keys.Control | Keys.S, () => { if (ActiveDocument is { } doc) SaveDocument(doc); });
+        Add(file, "Save &As…", Keys.Control | Keys.Shift | Keys.S, () => { if (ActiveDocument is { } doc) SaveDocument(doc, saveAs: true); });
+        Add(file, "&Close", Keys.Control | Keys.W, () => ActiveDocument?.Close());
+        Add(file, "E&xit", Keys.Alt | Keys.F4, Close);
+        menu.Items.AddRange([file, _view, new ToolStripMenuItem("&Plugins") { Name = "PluginsMenu" }]);
+        return menu;
     }
 
-    // ------------------------------------------------------------------ Event handlers
-
-    private void OnOpenProjectClicked(object? sender, EventArgs e)
+    private static ToolStripMenuItem Add(ToolStripMenuItem menu, string label, Keys shortcut, Action action)
     {
-        using var dialog = new FolderBrowserDialog { Description = "Select Project Folder", UseDescriptionForTitle = true };
-        if (dialog.ShowDialog(this) != DialogResult.OK)
-            return;
-
-        RegisterProjectFiles(dialog.SelectedPath);
-        _outputVm.Log($"Opened project: {dialog.SelectedPath}");
+        var item = new ToolStripMenuItem(label) { ShortcutKeys = shortcut };
+        item.Click += (_, _) => action();
+        menu.DropDownItems.Add(item);
+        return item;
     }
 
-    private void OnCloseProjectClicked(object? sender, EventArgs e)
+    internal void RebuildViewMenu()
     {
-        foreach (var node in _directoryVm.RootNodes)
-            node.Children.Clear();
-        _outputVm.Log("Project closed.");
+        while (_view.DropDownItems.Count > 0) _view.DropDownItems[0].Dispose();
+        foreach (var tool in _tools)
+            Add(_view, tool.Text, Keys.None, () => tool.Show(Workspace)).Checked = !tool.IsHidden;
+        if (ActiveDocument is not { } active) return;
+        _view.DropDownItems.Add(new ToolStripSeparator());
+        foreach (var name in active.Document.PaneNames)
+            Add(_view, name, Keys.None, () => active.Document.ShowPane(name)).Checked = active.Document.IsPaneVisible(name);
+        Add(_view, $"Show all {active.Document.Kind} panes", Keys.None, active.Document.ShowAllPanes);
     }
 
-    private void OnNewTilesheetClicked(object? sender, EventArgs e) =>
-        OpenDocumentPanel($"Tilesheet:{Guid.NewGuid()}", "Tilesheet Editor",
-            new TilesheetEditorPanel(new TilesheetEditorViewModelBase(_dialogService)));
-
-    private void OnNewAnimationClicked(object? sender, EventArgs e) =>
-        OpenDocumentPanel($"Animation:{Guid.NewGuid()}", "Animation Editor",
-            new AnimationEditorPanel(new AnimationEditorViewModel(_dialogService)));
-
-    private void OnNewSceneClicked(object? sender, EventArgs e) =>
-        OpenDocumentPanel($"Scene:{Guid.NewGuid()}", "Scene Editor",
-            new SceneEditorPanel(new SceneEditorViewModel(_dialogService)));
-
-    private async Task OpenTypedFileAsync(params string[] patterns)
+    internal void SetWorkingDirectory(string path)
     {
-        var path = await _dialogService.OpenFileAsync("Open File", patterns);
-        if (!string.IsNullOrWhiteSpace(path))
-            OpenByPath(path);
+        path = Path.GetFullPath(path);
+        if (_workingDirectory is not null) _plugins.NotifyProjectClosed();
+        Browser.SetDirectory(path);
+        _workingDirectory = path;
+        _plugins.NotifyProjectOpened(path);
+        _output.Log($"Working directory: {path}");
+    }
+    private string? _workingDirectory;
+
+    private void ChooseDirectory()
+    {
+        using var dialog = new FolderBrowserDialog { Description = "Choose working directory", UseDescriptionForTitle = true, SelectedPath = Browser.WorkingDirectory };
+        if (dialog.ShowDialog(this) == DialogResult.OK) SetWorkingDirectory(dialog.SelectedPath);
     }
 
-    private async Task OpenTypedFileFromMenuAsync(params string[] patterns)
+    private void OpenFiles()
+    {
+        using var dialog = new OpenFileDialog { Filter = OpenFilter, Multiselect = true, InitialDirectory = Browser.WorkingDirectory };
+        if (dialog.ShowDialog(this) == DialogResult.OK)
+            foreach (var path in dialog.FileNames) TryOpen(path);
+    }
+
+    private void TryOpen(string path)
+    {
+        try { OpenDocument(path); }
+        catch (OperationCanceledException) { }
+        catch (Exception ex) { ReportError(ex); }
+    }
+
+    internal StudioDockDocument OpenDocument(string path, string? password = null)
+    {
+        path = Path.GetFullPath(path);
+        if (_paths.TryGetValue(path, out var existing)) { existing.Activate(); return existing; }
+        if (!File.Exists(path)) throw new FileNotFoundException("Authoring file does not exist.", path);
+        var format = StudioDocument.FormatFor(path) ?? throw new NotSupportedException("Unsupported authoring file: " + path);
+        StudioDocument model;
+        try { model = StudioDocument.Create(format, Browser.WorkingDirectory, path, _packages, password); }
+        catch (Exception) when (format == "gaf" && password is null)
+        {
+            password = AssetPassword(path);
+            if (password is null) throw new OperationCanceledException("Asset file opening cancelled.");
+            model = StudioDocument.Create(format, Browser.WorkingDirectory, path, _packages, password);
+        }
+        return ShowDocument(model);
+    }
+
+    private void TryNew(string format)
     {
         try
         {
-            await OpenTypedFileAsync(patterns);
+            if (format != "gaf") { NewDocument(format); return; }
+            using var dialog = new SaveFileDialog { Filter = "Asset files|*.gaf;*.zip", DefaultExt = "gaf", InitialDirectory = Browser.WorkingDirectory };
+            if (dialog.ShowDialog(this) != DialogResult.OK) return;
+            if (File.Exists(dialog.FileName)) { TryOpen(dialog.FileName); return; }
+            bool encrypt = MessageBox.Show(this, "Enable password protection?", "New asset file", MessageBoxButtons.YesNo) == DialogResult.Yes;
+            string? password = encrypt ? InputDialog.Show("Password:", "New asset file", owner: this, password: true) : null;
+            if (encrypt && string.IsNullOrWhiteSpace(password)) return;
+            var document = NewDocument(format, dialog.FileName, password, encrypt);
+            SaveDocument(document);
         }
-        catch (Exception ex)
-        {
-            _outputVm.Log($"Failed to open file: {ex.Message}");
-        }
+        catch (Exception ex) { ReportError(ex); }
     }
 
-    private void OnNodeActivated(object? sender, DirectoryNodeViewModel node)
+    internal StudioDockDocument NewDocument(string format, string? assetPath = null, string? password = null, bool encrypt = false)
     {
-        if (node.IsCategory && node.Category == EngineStatePartsCategory.AssetsFiles)
-        {
-            OpenDocumentPanel($"AssetFiles:{Guid.NewGuid()}", "Asset Files",
-                new AssetFilesPanel(new AssetFilesViewModel(_dialogService)));
-            return;
-        }
-
-        if (node.Tag is string path)
-            OpenByPath(path);
+        if (assetPath is not null && _paths.TryGetValue(Path.GetFullPath(assetPath), out var existing))
+        { existing.Activate(); return existing; }
+        return ShowDocument(StudioDocument.Create(format, Browser.WorkingDirectory, assetPath, _packages, password, encrypt));
     }
 
-    // ------------------------------------------------------------------ Helpers
-
-    private void OpenByPath(string path)
+    private StudioDockDocument ShowDocument(StudioDocument model)
     {
-        if (_openDocuments.TryGetValue(path, out var existing))
+        var document = new StudioDockDocument(model, ConfirmClose);
+        _documents.Add(document);
+        if (model.Path() is { } path) _paths.Add(Path.GetFullPath(path), document);
+        if (model.Editor is AssetEditorControl assets)
         {
-            existing.Activate();
-            return;
+            assets.SaveRequested = saveAs => SaveDocument(document, saveAs);
+            assets.IsDocumentOpen = path => _paths.ContainsKey(Path.GetFullPath(path));
+            assets.WorkspaceChanged = Browser.RefreshDirectory;
         }
-
-        if (path.EndsWith(".gts", StringComparison.OrdinalIgnoreCase)
-            || path.EndsWith(".gondwana-tilesheet", StringComparison.OrdinalIgnoreCase))
+        document.Disposed += (_, _) =>
         {
-            var vm = new TilesheetEditorViewModelBase(_dialogService);
-            vm.LoadMetadata(path);
-            OpenDocumentPanel(path, Path.GetFileName(path), new TilesheetEditorPanel(vm));
-        }
-        else if (path.EndsWith(".gondwana-animation", StringComparison.OrdinalIgnoreCase))
-        {
-            var vm = new AnimationEditorViewModel(_dialogService);
-            vm.LoadAnimation(path);
-            OpenDocumentPanel(path, Path.GetFileName(path), new AnimationEditorPanel(vm));
-        }
-        else if (path.EndsWith(".gondwana-scene", StringComparison.OrdinalIgnoreCase))
-        {
-            var vm = new SceneEditorViewModel(_dialogService);
-            vm.LoadScene(path);
-            OpenDocumentPanel(path, Path.GetFileName(path), new SceneEditorPanel(vm));
-        }
-        else if (path.EndsWith(".gaf", StringComparison.OrdinalIgnoreCase)
-                 || path.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-        {
-            var vm = new AssetFilesViewModel(_dialogService);
-            OpenDocumentPanel(path, Path.GetFileName(path), new AssetFilesPanel(vm));
-        }
-    }
-
-    private void RegisterProjectFiles(string projectPath)
-    {
-        foreach (var node in _directoryVm.RootNodes)
-            node.Children.Clear();
-
-        foreach (var file in Directory.EnumerateFiles(projectPath, "*.gondwana-tilesheet", SearchOption.AllDirectories))
-            _directoryVm.AddEntry(EngineStatePartsCategory.Tilesheets, Path.GetFileName(file), file);
-        foreach (var file in Directory.EnumerateFiles(projectPath, "*.gts", SearchOption.AllDirectories))
-            _directoryVm.AddEntry(EngineStatePartsCategory.Tilesheets, Path.GetFileName(file), file);
-
-        foreach (var file in Directory.EnumerateFiles(projectPath, "*.gondwana-animation", SearchOption.AllDirectories))
-            _directoryVm.AddEntry(EngineStatePartsCategory.Cycles, Path.GetFileName(file), file);
-
-        foreach (var file in Directory.EnumerateFiles(projectPath, "*.gondwana-scene", SearchOption.AllDirectories))
-            _directoryVm.AddEntry(EngineStatePartsCategory.Scenes, Path.GetFileName(file), file);
-    }
-
-    private void OpenDocumentPanel(string key, string title, Control content)
-    {
-        if (_openDocuments.TryGetValue(key, out var existing))
-        {
-            existing.Activate();
-            return;
-        }
-
-        ApplyStudioTheme(content);
-
-        var doc = new StudioDockContent(title, content, closeable: true, onClosed: () => _openDocuments.Remove(key))
-        {
-            DockAreas = DockAreas.Document | DockAreas.Float
+            _documents.Remove(document);
+            foreach (var key in _paths.Where(pair => pair.Value == document).Select(pair => pair.Key).ToArray()) _paths.Remove(key);
         };
-        _openDocuments[key] = doc;
-        doc.Show(_dockPanel, DockState.Document);
-        doc.Activate();
+        document.Show(Workspace, DockState.Document);
+        document.Activate();
+        _output.Log($"Opened {model.Path() ?? document.Text}");
+        return document;
+    }
+
+    internal bool SaveDocument(StudioDockDocument document, bool saveAs = false, string? destination = null)
+    {
+        try
+        {
+            var model = document.Document;
+            if (!model.CommitEdits()) return false;
+            destination ??= saveAs || model.Path() is null ? SavePath(model) : model.Path();
+            if (destination is null) return false;
+            destination = Path.GetFullPath(destination);
+            if (StudioDocument.FormatFor(destination) != StudioDocument.FormatFor("file." + model.Extension))
+                throw new InvalidOperationException("Choose a filename with the document's format extension.");
+            if (_paths.TryGetValue(destination, out var existing) && existing != document)
+                throw new InvalidOperationException("That destination is already open in another document. Close it before overwriting it.");
+            var errors = model.Validate();
+            if (errors.Count > 0 && !AllowInvalidSave(errors)) return false;
+            model.Save(destination, errors.Count > 0);
+            foreach (var key in _paths.Where(pair => pair.Value == document).Select(pair => pair.Key).ToArray()) _paths.Remove(key);
+            _paths.Add(Path.GetFullPath(model.Path()!), document);
+            document.UpdateCaption();
+            _packages.Invalidate(destination);
+            Browser.RefreshDirectory();
+            _output.Log($"Saved {destination}");
+            return true;
+        }
+        catch (Exception ex) { ReportError(ex); return false; }
+    }
+
+    private string? ChooseSavePath(StudioDocument model)
+    {
+        using var dialog = new SaveFileDialog
+        {
+            Filter = model.Kind == "asset" ? "Asset files|*.gaf;*.zip" : $"Gondwana {model.Kind}|*.{model.Extension}",
+            DefaultExt = model.Extension, AddExtension = true,
+            InitialDirectory = model.Path() is { } path ? Path.GetDirectoryName(path) : Browser.WorkingDirectory,
+            FileName = model.Path() is { } name ? Path.GetFileName(name) : $"Untitled.{model.Extension}"
+        };
+        return dialog.ShowDialog(this) == DialogResult.OK ? dialog.FileName : null;
+    }
+
+    internal bool ConfirmClose(StudioDockDocument document)
+    {
+        if (!document.Document.CommitEdits()) return false;
+        if (!document.Document.Dirty()) return true;
+        return AskSave(document.Document) switch
+        {
+            DialogResult.No => true,
+            DialogResult.Yes => SaveDocument(document),
+            _ => false
+        };
+    }
+
+    internal bool ApproveShutdown()
+    {
+        foreach (var document in _documents.ToArray())
+            if (!ConfirmClose(document)) return false;
+        foreach (var document in _documents) document.CloseApproved = true;
+        return true;
+    }
+
+    protected override void OnFormClosing(FormClosingEventArgs e)
+    {
+        base.OnFormClosing(e);
+        if (!e.Cancel) e.Cancel = !ApproveShutdown();
+    }
+
+    private DockContent AddTool(string title, Control control, DockState state)
+    {
+        var tool = new DockContent { Text = title, HideOnClose = true };
+        control.Dock = DockStyle.Fill;
+        ApplyTheme(control);
+        tool.Controls.Add(control);
+        _tools.Add(tool);
+        tool.Show(Workspace, state);
+        return tool;
     }
 
     private void AttachPlugins()
     {
-        if (MainMenuStrip?.Items["PluginsMenu"] is not ToolStripMenuItem pluginsMenu)
-            return;
-
-        pluginsMenu.DropDownItems.Clear();
-        foreach (var item in _pluginHost.GetPluginMenuItems())
-            pluginsMenu.DropDownItems.Add(item);
-
-        foreach (var (pluginName, control) in _pluginHost.GetPluginPanels())
-            OpenDocumentPanel($"Plugin:{pluginName}", pluginName, control);
+        var menu = (ToolStripMenuItem)MainMenuStrip!.Items["PluginsMenu"]!;
+        foreach (var item in _plugins.GetPluginMenuItems()) menu.DropDownItems.Add(item);
+        foreach (var (name, control) in _plugins.GetPluginPanels()) AddTool(name, control, DockState.DockRight);
     }
 
-    private void ShowToolWindows()
+    private void ApplyTheme(Control control)
     {
-        var directoryWindow = new StudioDockContent("Directory", _directoryPanel, closeable: false)
+        control.BackColor = Color.FromArgb(30, 30, 30);
+        control.ForeColor = Color.Gainsboro;
+        if (control is ToolStrip strip) _theme.ApplyTo(strip);
+        foreach (Control child in control.Controls) ApplyTheme(child);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing && !_disposed)
         {
-            DockAreas = DockAreas.DockLeft | DockAreas.Float
-        };
-        directoryWindow.Show(_dockPanel, DockState.DockLeft);
-
-        var outputWindow = new StudioDockContent("Output", _outputPanel, closeable: false)
-        {
-            DockAreas = DockAreas.DockBottom | DockAreas.Float
-        };
-        outputWindow.Show(_dockPanel, DockState.DockBottom);
-    }
-
-    private void ApplyStudioTheme(Control control)
-    {
-        ApplyDarkColors(control);
-        ApplyDockTheme(control);
-    }
-
-    private void ApplyDockTheme(Control control)
-    {
-        if (control is ToolStrip toolStrip)
-            _dockTheme.ApplyTo(toolStrip);
-
-        if (control.ContextMenuStrip is { } contextMenuStrip)
-            _dockTheme.ApplyTo(contextMenuStrip);
-
-        foreach (Control child in control.Controls)
-            ApplyDockTheme(child);
-    }
-
-    private static void ApplyDarkColors(Control control)
-    {
-        if (control.BackColor == default || control.BackColor == SystemColors.Control)
-            control.BackColor = DarkSurface;
-
-        if (control.ForeColor == default || control.ForeColor == SystemColors.ControlText)
-            control.ForeColor = DarkForeground;
-
-        foreach (Control child in control.Controls)
-            ApplyDarkColors(child);
+            _disposed = true;
+            if (_workingDirectory is not null) _plugins.NotifyProjectClosed();
+            foreach (var document in _documents.ToArray()) document.Dispose();
+            foreach (var tool in _tools) tool.Dispose();
+            _tools.Clear();
+            _packages.Dispose();
+        }
+        base.Dispose(disposing);
+        if (disposing) _theme.Dispose();
     }
 }
-
-file sealed class StudioDockContent : DockContent
-{
-    private readonly Action? _onClosed;
-
-    public StudioDockContent(string title, Control content, bool closeable, Action? onClosed = null)
-    {
-        Text = title;
-        CloseButton = closeable;
-        CloseButtonVisible = closeable;
-        _onClosed = onClosed;
-
-        content.Dock = DockStyle.Fill;
-        Controls.Add(content);
-    }
-
-    protected override void OnFormClosed(FormClosedEventArgs e)
-    {
-        _onClosed?.Invoke();
-        base.OnFormClosed(e);
-    }
-}
-
 /// <summary>
 /// Custom ToolStrip/MenuStrip renderer that applies dark colors.
 /// </summary>

@@ -103,7 +103,6 @@ The `gondwana` command-line tool.
 ### Studio and asset tooling
 
 - `Tooling/Gondwana.Tooling.Studio.Core/`
-- `Tooling/Gondwana.Tooling.Studio.Avalonia/`
 - `Tooling/Gondwana.Tooling.Studio.WinForms/`
 - `Tooling/Gondwana.Tooling.Assets.WinForms/`
 - `Tooling/Gondwana.Tooling.Animations.WinForms/`
@@ -112,7 +111,7 @@ The `gondwana` command-line tool.
 - `Tooling/Gondwana.Tooling.Tilesheets.WinForms/`
 - `Tooling/scripts/`
 
-The standalone GTS/GAF/GANI/GSND/GSCN WinForms editors are reusable authoring controls intended for later Studio composition. Tooling is supplemental; do not infer that runtime projects require Studio or a proprietary editor-owned project format.
+The standalone GTS/GAF/GANI/GSND/GSCN WinForms editors are reusable authoring controls hosted directly by Studio.WinForms. Studio owns outer documents and global tools; every editor owns its inner docking surface. The internal Studio document adapter only binds lifecycle, saving, dirty state, and pane recovery to the existing editor APIs. Studio.Core contains plugin infrastructure and shell Output state, not format editors. The deprecated Studio Avalonia prototype has been removed. See `Tooling/Gondwana.Tooling.Studio.WinForms/README.md` and `Testing/Gondwana.Tooling.Studio.WinForms.Tests/` for composition and lifecycle coverage. Tooling is supplemental; runtime projects do not require Studio, a GameHost for authoring, or an editor-owned project format. Layout persistence and EngineState project composition are not implemented in the shell.
 
 ## Repository-Level References
 

@@ -5,7 +5,7 @@ namespace Gondwana.Tooling.Studio.WinForms.Panels;
 
 /// <summary>
 /// Panel that shows log output from the studio.
-/// When WeifenLuo.WinFormsUI.DockPanel is added, this can be made a DockContent.
+/// MainForm hosts this control in a global tool DockContent.
 /// </summary>
 public sealed class OutputPanel : UserControl
 {
@@ -40,6 +40,7 @@ public sealed class OutputPanel : UserControl
 
     private void OnLinesChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
+        if (IsDisposed || Disposing) return;
         if (_textBox.InvokeRequired)
         {
             _textBox.BeginInvoke(() => OnLinesChanged(sender, e));
