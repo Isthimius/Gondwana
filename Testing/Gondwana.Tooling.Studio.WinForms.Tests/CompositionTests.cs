@@ -36,6 +36,16 @@ public sealed class CompositionTests
         var contents = inner.Contents.Cast<DockContent>().ToArray();
         Assert.Equal(model.PaneNames.Count, contents.Length);
         Assert.All(contents, pane => Assert.Same(inner, pane.DockPanel));
+        if (model.Editor is SpriteEditorControl sprites)
+        {
+            foreach (var name in new[] { "player", "guard-01", "guard-02" })
+            {
+                var entry = sprites.Document.AddSprite();
+                entry.Nickname = name;
+                entry.SceneId = "level";
+                entry.SceneLayerId = "actors";
+            }
+        }
         Assert.True(studio.SaveDocument(document, destination: firstPath));
         Assert.False(model.Dirty());
         Assert.Equal("first." + format, document.Text);
@@ -88,6 +98,8 @@ public sealed class CompositionTests
         Assert.All(contents, pane => Assert.True(pane.IsDisposed));
         var reopened = studio.OpenDocument(secondPath);
         Assert.NotSame(document, reopened);
+        if (reopened.Document.Editor is SpriteEditorControl restoredSprites)
+            Assert.Equal(new[] { "player", "guard-01", "guard-02" }, restoredSprites.Document.Definition.Sprites.Select(sprite => sprite.Nickname));
         Assert.Equal(model.PaneNames.Count, Assert.Single(Descendants(reopened.Document.Editor).OfType<DockPanel>()).Contents.Count);
     });
 

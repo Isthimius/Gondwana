@@ -1,6 +1,9 @@
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Scenes;
+using Gondwana.Drawing.Tilesheets;
+using System.Drawing;
+using SkiaSharp;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -37,6 +40,62 @@ public sealed class EngineStateGsprTests : IDisposable
         Assert.Equal(ids, SpriteManager.Instance.AllSprites.Select(sprite => sprite.Id));
         var restored = Assert.Single(Scene.GetAllScenes()).SceneLayers.Single();
         Assert.All(SpriteManager.Instance.AllSprites, sprite => Assert.Same(restored, sprite.SceneLayer));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void CompleteDependenciesRestoreFramesAgainstCanonicalTilesheets(bool external)
+    {
+        var imagePath = Path.Combine(_directory, "actors.png");
+        using (var bitmap = new SKBitmap(32, 16))
+        using (var image = SKImage.FromBitmap(bitmap))
+        using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
+            File.WriteAllBytes(imagePath, data.ToArray());
+        var sheet = TilesheetRegistry.Instance.LoadFromImageFile("actors-gspr", imagePath);
+        sheet.DefaultRegion.TileSize = new Size(16, 16);
+        using var scene = new Scene();
+        var layer = scene.AddLayer(1, 1, 16, 16);
+        for (int i = 0; i < 3; i++)
+            SpriteManager.Instance.CreateSprite(layer, sheet.GetFrame(i % 2, 0), "actor-" + i);
+        var parts = EngineStateParts.Tilesheets | EngineStateParts.Scenes | EngineStateParts.Sprites;
+        var path = Path.Combine(_directory, "complete.state");
+        try
+        {
+            new EngineState().SaveToFile(path, parts: parts, separateGtsFiles: external,
+                separateGscnFiles: external, separateGsprFile: external);
+            Cleanup();
+            TilesheetRegistry.Instance.Clear();
+            EngineState.LoadFromFile(path, parts: parts);
+            var restoredSheet = TilesheetRegistry.Instance.GetOrNull("actors-gspr");
+            var restoredLayer = Assert.Single(Scene.GetAllScenes()).SceneLayers.Single();
+            Assert.Equal(3, SpriteManager.Instance.AllSprites.Count);
+            for (int i = 0; i < 3; i++)
+            {
+                var sprite = SpriteManager.Instance.AllSprites[i];
+                Assert.Same(restoredSheet, sprite.CurrentFrame.Tilesheet);
+                Assert.Same(restoredLayer, sprite.SceneLayer);
+                Assert.Equal(i % 2, sprite.CurrentFrame.XTile);
+            }
+        }
+        finally { Cleanup(); TilesheetRegistry.Instance.Clear(); }
+    }
+
+    [Fact]
+    public void LegacyEmbeddedLayerIsReboundAndRegisteredOnce()
+    {
+        using var scene = new Scene();
+        var layer = scene.AddLayer(1, 1, 16, 16);
+        var id = Guid.NewGuid();
+        var path = Path.Combine(_directory, "old-layer.state");
+        File.WriteAllText(path, JsonConvert.SerializeObject(new
+        {
+            Sprites = new[] { new { Id = id, Nickname = "legacy-layer", SceneLayer = layer } }
+        }, EngineState.JsonSerializerSettings));
+        EngineState.LoadFromFile(path, parts: EngineStateParts.Sprites);
+        var sprite = Assert.Single(SpriteManager.Instance.AllSprites);
+        Assert.Equal(id, sprite.Id);
+        Assert.Same(layer, sprite.SceneLayer);
     }
 
     [Theory]
