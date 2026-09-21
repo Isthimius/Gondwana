@@ -59,16 +59,17 @@ public sealed class AudioEditorControl : UserControl
             UpdateValidation();
         };
 
-        _workspace = new EditorDockWorkspace();
+        _workspace = new EditorDockWorkspace("gsnd");
         Controls.Add(_workspace);
         var dock = _workspace.DockPanel;
-        var resources = _workspace.AddPane("Audio resources", _resources, BuildResourceToolbar());
-        var properties = _workspace.AddPane("Properties", _properties);
-        var validation = _workspace.AddPane("Validation", _validation);
+        var resources = _workspace.AddPane("resources", "Audio resources", _resources, BuildResourceToolbar());
+        var properties = _workspace.AddPane("properties", "Properties", _properties);
+        var validation = _workspace.AddPane("validation", "Validation", _validation);
 
-        resources.Show(dock, DockState.Document);
-        properties.Show(resources.Pane, DockAlignment.Right, .38);
-        validation.Show(properties.Pane, DockAlignment.Bottom, .30);
+        _workspace.Place(resources, () => resources.Show(dock, DockState.Document));
+        _workspace.Place(properties, () => properties.Show(resources.Pane, DockAlignment.Right, .38));
+        _workspace.Place(validation, () => validation.Show(properties.Pane, DockAlignment.Bottom, .30));
+        _workspace.InitializeLayout();
 
         DarkTheme.Apply(this);
         RefreshView();
@@ -101,6 +102,9 @@ public sealed class AudioEditorControl : UserControl
 
     public bool IsPaneVisible(string paneName) =>
         _workspace.IsPaneVisible(paneName);
+
+    /// <summary>Restore the default pane arrangement for this editor type.</summary>
+    public void ResetLayout() => _workspace.ResetLayout();
 
     public void ShowAllPanes() =>
         _workspace.ShowAllPanes();

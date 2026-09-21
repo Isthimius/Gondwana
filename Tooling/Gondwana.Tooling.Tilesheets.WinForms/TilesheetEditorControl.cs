@@ -84,19 +84,20 @@ public sealed class TilesheetEditorControl : UserControl
         _column.ValueChanged += (_, _) => SelectFrame();
         _row.ValueChanged += (_, _) => SelectFrame();
         _regions.SelectedIndexChanged += (_, _) => { if (!_refreshing) RefreshView(); };
-        _workspace = new EditorDockWorkspace();
+        _workspace = new EditorDockWorkspace("gts");
         Controls.Add(_workspace);
         var dock = _workspace.DockPanel;
-        var image = _workspace.AddPane("Image", _viewport, BuildPreviewToolbar());
-        var definition = _workspace.AddPane("Definition", _definitionProperties);
-        var region = _workspace.AddPane("Region", _regionProperties, _regions, regionTools);
-        var frame = _workspace.AddPane("Frame", _frameProperties, navigator);
-        var validation = _workspace.AddPane("Validation", _validation);
-        image.Show(dock, DockState.Document);
-        definition.Show(image.Pane, DockAlignment.Right, .36);
-        region.Show(definition.Pane, DockAlignment.Bottom, 2d / 3);
-        frame.Show(region.Pane, DockAlignment.Bottom, .5);
-        validation.Show(image.Pane, DockAlignment.Bottom, .24);
+        var image = _workspace.AddPane("image", "Image", _viewport, BuildPreviewToolbar());
+        var definition = _workspace.AddPane("definition", "Definition", _definitionProperties);
+        var region = _workspace.AddPane("region", "Region", _regionProperties, _regions, regionTools);
+        var frame = _workspace.AddPane("frame", "Frame", _frameProperties, navigator);
+        var validation = _workspace.AddPane("validation", "Validation", _validation);
+        _workspace.Place(image, () => image.Show(dock, DockState.Document));
+        _workspace.Place(definition, () => definition.Show(image.Pane, DockAlignment.Right, .36));
+        _workspace.Place(region, () => region.Show(definition.Pane, DockAlignment.Bottom, 2d / 3));
+        _workspace.Place(frame, () => frame.Show(region.Pane, DockAlignment.Bottom, .5));
+        _workspace.Place(validation, () => validation.Show(image.Pane, DockAlignment.Bottom, .24));
+        _workspace.InitializeLayout();
         DarkTheme.Apply(this);
         _viewport.FrameSelected += (region, p) =>
         {
@@ -439,6 +440,9 @@ public sealed class TilesheetEditorControl : UserControl
 
     public bool IsPaneVisible(string paneName) =>
         _workspace.IsPaneVisible(paneName);
+
+    /// <summary>Restore the default pane arrangement for this editor type.</summary>
+    public void ResetLayout() => _workspace.ResetLayout();
 
     public void ShowAllPanes() =>
         _workspace.ShowAllPanes();

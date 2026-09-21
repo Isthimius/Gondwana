@@ -194,7 +194,7 @@ public sealed class CompositionTests
             Application.DoEvents();
             studio.RebuildViewMenu();
             var items = view.DropDownItems.OfType<ToolStripMenuItem>().ToArray();
-            Assert.Equal(document.Document.PaneNames, items.Skip(2).SkipLast(1).Select(item => item.Text));
+            Assert.Equal(document.Document.PaneNames, items.Where(item => document.Document.PaneNames.Contains(item.Text)).Select(item => item.Text));
         }
         var output = studio.Workspace.Contents.Cast<DockContent>().Single(content => content.Text == "Output");
         output.Hide();

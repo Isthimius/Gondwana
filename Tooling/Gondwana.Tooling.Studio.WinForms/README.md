@@ -45,8 +45,7 @@ Each editor owns its **inner** docking surface. Its panes stay inside that
 editor; they are not global Studio tools. **View** restores global tools and
 uses the active editor's `PaneNames`, `IsPaneVisible`, `ShowPane`, and
 `ShowAllPanes` APIs to recover hidden panes. Restoration reuses the existing
-contents and arrangement. Newly opened documents use default layouts; layout
-persistence is not implemented.
+contents and arrangement. Newly opened documents use the last saved layout for their editor type.
 
 On close, Studio detaches document change handlers and disposes the editor,
 including its inner dock contents and preview resources. Asset documents and
@@ -76,3 +75,24 @@ threads: outer/inner ownership, all format adapters, dirty state, saving and
 path adoption, duplicate activation, pane recovery, cancellation, encryption,
 and disposal. Run it on Windows alongside the standalone interaction suites
 and the baseline `Gondwana.Tests` suite.
+
+## Dock layout preferences
+
+DockPanelSuite layouts are saved per user under
+`%LOCALAPPDATA%/Hidden Worlds Games/Gondwana/Tooling/<entry-application>/Docking/`.
+Outer tool windows and each editor type (GAF, GTS, GANI, GSND, GSCN) have separate
+profiles. Dock locations, tabs, splits, relative sizes, and hidden-pane visibility
+survive restart. Studio and the standalone executables use independent profiles.
+New documents use their editor type's last saved arrangement, regardless of file path.
+
+Use **View → Reset application layout** to restore the outer tool arrangement, or
+**View → Reset active editor layout** to restore the active editor type's defaults.
+Individual View commands and **Show all … panes** recover hidden panes without resetting.
+Reset does not change document data. Open sibling editors keep their current layouts;
+the next newly opened editor uses the reset profile until another layout is changed.
+
+These are UI preferences only: no Gondwana content files or EngineState are modified,
+no source-document paths or unsaved content are stored, and documents are never reopened
+on startup. Missing or corrupt preferences fall back to defaults without a dialog.
+Available plugin tools in Studio use stable plugin identities; missing plugins are ignored.
+Changes are saved after a short settling interval and flushed on disposal.

@@ -1,3 +1,4 @@
+using Gondwana.Tooling.WinForms;
 using Gondwana.Tooling.Assets.WinForms;
 using Gondwana.Tooling.Studio.ViewModels;
 using Gondwana.Tooling.Studio.WinForms.Documents;
@@ -22,6 +23,7 @@ public sealed class MainForm : Form
     private readonly List<StudioDockDocument> _documents = [];
     private readonly List<DockContent> _tools = [];
     private readonly ToolStripMenuItem _view = new("&View");
+    private readonly DockLayoutPersistence _layout;
     private bool _disposed;
     internal DockPanel Workspace { get; }
     internal DirectoryPanel Browser { get; }
@@ -48,12 +50,13 @@ public sealed class MainForm : Form
             Dock = DockStyle.Fill, Theme = _theme, DocumentStyle = DocumentStyle.DockingWindow,
             DockLeftPortion = 250, DockBottomPortion = 130
         };
+        _layout = new DockLayoutPersistence(Workspace, "shell");
         _plugins = new StudioPluginHost(_output.Log);
         Browser = new DirectoryPanel(_output.Log);
         Browser.FileActivated += path => TryOpen(path);
         Browser.ChooseDirectoryRequested += ChooseDirectory;
-        AddTool("Working directory", Browser, DockState.DockLeft);
-        AddTool("Output", new OutputPanel(_output), DockState.DockBottom);
+        AddTool("shell.working-directory", "Working directory", Browser, DockState.DockLeft);
+        AddTool("shell.output", "Output", new OutputPanel(_output), DockState.DockBottom);
         AskSave = document => MessageBox.Show(this, $"Save changes to {Path.GetFileName(document.Path()) ?? "Untitled." + document.Extension}?",
             "Unsaved changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
         SavePath = ChooseSavePath;
@@ -71,6 +74,7 @@ public sealed class MainForm : Form
             _plugins.DiscoverAndLoad();
             AttachPlugins();
         }
+        _layout.Start();
         SetWorkingDirectory(Environment.CurrentDirectory);
         _output.Log("Gondwana Studio ready.");
     }
@@ -108,11 +112,13 @@ public sealed class MainForm : Form
         while (_view.DropDownItems.Count > 0) _view.DropDownItems[0].Dispose();
         foreach (var tool in _tools)
             Add(_view, tool.Text, Keys.None, () => tool.Show(Workspace)).Checked = !tool.IsHidden;
+        Add(_view, "Reset application layout", Keys.None, _layout.Reset);
         if (ActiveDocument is not { } active) return;
         _view.DropDownItems.Add(new ToolStripSeparator());
         foreach (var name in active.Document.PaneNames)
             Add(_view, name, Keys.None, () => active.Document.ShowPane(name)).Checked = active.Document.IsPaneVisible(name);
         Add(_view, $"Show all {active.Document.Kind} panes", Keys.None, active.Document.ShowAllPanes);
+        Add(_view, "Reset active editor layout", Keys.None, active.Document.ResetLayout);
     }
 
     internal void SetWorkingDirectory(string path)
@@ -274,13 +280,14 @@ public sealed class MainForm : Form
         if (!e.Cancel) e.Cancel = !ApproveShutdown();
     }
 
-    private DockContent AddTool(string title, Control control, DockState state)
+    private DockContent AddTool(string id, string title, Control control, DockState state)
     {
-        var tool = new DockContent { Text = title, HideOnClose = true };
+        var tool = new PersistentDockContent(id) { Text = title, HideOnClose = true };
         control.Dock = DockStyle.Fill;
         ApplyTheme(control);
         tool.Controls.Add(control);
         _tools.Add(tool);
+        _layout.Register(tool, () => tool.Show(Workspace, state));
         tool.Show(Workspace, state);
         return tool;
     }
@@ -289,7 +296,8 @@ public sealed class MainForm : Form
     {
         var menu = (ToolStripMenuItem)MainMenuStrip!.Items["PluginsMenu"]!;
         foreach (var item in _plugins.GetPluginMenuItems()) menu.DropDownItems.Add(item);
-        foreach (var (name, control) in _plugins.GetPluginPanels()) AddTool(name, control, DockState.DockRight);
+        foreach (var (id, name, control) in _plugins.GetPersistentPluginPanels())
+            AddTool(id, name, control, DockState.DockRight);
     }
 
     private void ApplyTheme(Control control)
@@ -305,6 +313,7 @@ public sealed class MainForm : Form
         if (disposing && !_disposed)
         {
             _disposed = true;
+            _layout.Dispose();
             if (_workingDirectory is not null) _plugins.NotifyProjectClosed();
             foreach (var document in _documents.ToArray()) document.Dispose();
             foreach (var tool in _tools) tool.Dispose();

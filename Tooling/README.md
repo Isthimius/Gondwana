@@ -68,8 +68,8 @@ The newer standalone GAF/GTS/GANI/GSND/GSCN editors are the authoritative
 format-specific authoring surfaces. Studio hosts them directly as individual
 outer documents; each reusable UserControl owns its nested docking workspace.
 Working directory and Output are global tools. View restores global and active
-editor panes through the existing editor APIs. Layouts reset when documents
-open; layout persistence is not implemented. No GameHost is needed for editing.
+editor panes through the existing editor APIs. Layouts persist per editor type
+and entry application. No GameHost is needed for editing.
 EngineState project composition remains out of scope. The deprecated Avalonia
 Studio prototype and its duplicate editor stack have been retired.
 
@@ -93,3 +93,24 @@ These projects are development tooling. Gondwana games do not require the
 authoring applications or Studio at runtime. File formats such as GAF, GTS, GANI,
 GSND, and GSCN are defined by the engine/runtime projects; the tools edit those
 formats rather than introducing editor-only equivalents.
+
+## Dock layout preferences
+
+DockPanelSuite layouts are saved per user under
+`%LOCALAPPDATA%/Hidden Worlds Games/Gondwana/Tooling/<entry-application>/Docking/`.
+Outer tool windows and each editor type (GAF, GTS, GANI, GSND, GSCN) have separate
+profiles. Dock locations, tabs, splits, relative sizes, and hidden-pane visibility
+survive restart. Studio and the standalone executables use independent profiles.
+New documents use their editor type's last saved arrangement, regardless of file path.
+
+Use **View → Reset application layout** to restore the outer tool arrangement, or
+**View → Reset active editor layout** to restore the active editor type's defaults.
+Individual View commands and **Show all … panes** recover hidden panes without resetting.
+Reset does not change document data. Open sibling editors keep their current layouts;
+the next newly opened editor uses the reset profile until another layout is changed.
+
+These are UI preferences only: no Gondwana content files or EngineState are modified,
+no source-document paths or unsaved content are stored, and documents are never reopened
+on startup. Missing or corrupt preferences fall back to defaults without a dialog.
+Available plugin tools in Studio use stable plugin identities; missing plugins are ignored.
+Changes are saved after a short settling interval and flushed on disposal.

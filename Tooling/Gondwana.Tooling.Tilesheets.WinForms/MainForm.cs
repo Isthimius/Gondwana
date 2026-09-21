@@ -1,3 +1,4 @@
+using Gondwana.Tooling.WinForms;
 using Gondwana.Tooling.Tilesheets.Editing;
 using Gondwana.Tooling.Tilesheets.Sources;
 using WeifenLuo.WinFormsUI.Docking;
@@ -9,7 +10,8 @@ internal sealed class MainForm : Form
 {
     private readonly VS2015DarkTheme _theme = new();
     private readonly DockPanel _dock;
-    private readonly DockContent _workspace = new()
+    private readonly DockLayoutPersistence _layout;
+    private readonly PersistentDockContent _workspace = new("shell.workspace")
     {
         Text = "Project sources",
         HideOnClose = true
@@ -55,6 +57,9 @@ internal sealed class MainForm : Form
             DocumentStyle = DocumentStyle.DockingWindow
         };
 
+        _layout = new DockLayoutPersistence(_dock, "shell");
+        _layout.Register(_workspace, () => _workspace.Show(_dock, DockState.DockLeft));
+
         var menu = new MenuStrip();
 
         var file = new ToolStripMenuItem("&File");
@@ -91,7 +96,7 @@ internal sealed class MainForm : Form
             view,
             "Project sources",
             Keys.None,
-            () => _workspace.Show(_dock, DockState.DockLeft));
+            () => _workspace.Show());
         Add(
             view,
             "Refresh directory",
@@ -119,6 +124,9 @@ internal sealed class MainForm : Form
             Keys.None,
             () => ActiveEditor?.ShowAllPanes());
 
+        Add(view, "Reset application layout", Keys.None, () => _layout.Reset());
+        var resetEditor = Add(view, "Reset active editor layout", Keys.None, () => ActiveEditor?.Editor.ResetLayout());
+
         view.DropDownOpening += (_, _) =>
         {
             outerWorkspaceItem.Checked = !_workspace.IsHidden;
@@ -129,6 +137,7 @@ internal sealed class MainForm : Form
                 item.Checked = editor?.IsPaneVisible(paneName) == true;
             }
             showAllPanesItem.Enabled = editor is not null;
+            resetEditor.Enabled = editor is not null;
         };
 
         menu.Items.AddRange([file, view]);
@@ -143,6 +152,7 @@ internal sealed class MainForm : Form
         Shown += (_, _) =>
         {
             _workspace.Show(_dock, DockState.DockLeft);
+            _layout.Start();
             _workspaceControl.RefreshDirectory();
         };
 
@@ -368,6 +378,7 @@ internal sealed class MainForm : Form
     {
         if (disposing)
         {
+            _layout.Dispose();
             _workspace.Dispose();
             _assetPackages.Dispose();
             _dock.Dispose();

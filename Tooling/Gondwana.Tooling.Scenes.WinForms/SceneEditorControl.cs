@@ -292,6 +292,9 @@ public sealed class SceneEditorControl : UserControl
         !pane.IsDisposed &&
         !pane.IsHidden;
 
+    /// <summary>Restore the default pane arrangement for this editor type.</summary>
+    public void ResetLayout() => _workspace.ResetLayout();
+
     public void ShowAllPanes()
     {
         foreach (var pane in _panes.Values)
@@ -303,41 +306,34 @@ public sealed class SceneEditorControl : UserControl
 
     private void BuildLayout()
     {
-        _workspace = new EditorDockWorkspace();
+        _workspace = new EditorDockWorkspace("gscn");
         Controls.Add(_workspace);
 
         var dock = _workspace.DockPanel;
-        var structure = _workspace.AddPane(
-            "Scene structure",
+        var structure = _workspace.AddPane("scene-structure", "Scene structure",
             _structure,
             BuildStructureToolbar());
 
-        var preview = _workspace.AddPane(
-            "Scene preview",
+        var preview = _workspace.AddPane("scene-preview", "Scene preview",
             _preview,
             BuildPreviewToolbar());
 
-        var gts = _workspace.AddPane(
-            "GTS frame sources",
+        var gts = _workspace.AddPane("gts-sources", "GTS frame sources",
             _sourceTree,
             BuildGtsToolbar());
 
-        var animations = _workspace.AddPane(
-            "GANI animations",
+        var animations = _workspace.AddPane("gani-animations", "GANI animations",
             _animationList,
             BuildAnimationToolbar());
 
-        var properties = _workspace.AddPane(
-            "Properties",
+        var properties = _workspace.AddPane("properties", "Properties",
             _properties);
 
-        var tileProperties = _workspace.AddPane(
-            "Tile properties",
+        var tileProperties = _workspace.AddPane("tile-properties", "Tile properties",
             _tileProperties,
             BuildTileToolbar());
 
-        var validation = _workspace.AddPane(
-            "Validation",
+        var validation = _workspace.AddPane("validation", "Validation",
             _validation);
 
         _panes.Clear();
@@ -355,13 +351,14 @@ public sealed class SceneEditorControl : UserControl
             _panes.Add(pane.Text, pane);
         }
 
-        preview.Show(dock, DockState.Document);
-        structure.Show(preview.Pane, DockAlignment.Left, 300d / 1400);
-        properties.Show(preview.Pane, DockAlignment.Right, 330d / 1100);
-        tileProperties.Show(properties.Pane, DockAlignment.Bottom, .52);
-        gts.Show(preview.Pane, DockAlignment.Bottom, .34);
-        animations.Show(gts.Pane, DockAlignment.Right, .34);
-        validation.Show(tileProperties.Pane, DockAlignment.Bottom, .28);
+        _workspace.Place(preview, () => preview.Show(dock, DockState.Document));
+        _workspace.Place(structure, () => structure.Show(preview.Pane, DockAlignment.Left, 300d / 1400));
+        _workspace.Place(properties, () => properties.Show(preview.Pane, DockAlignment.Right, 330d / 1100));
+        _workspace.Place(tileProperties, () => tileProperties.Show(properties.Pane, DockAlignment.Bottom, .52));
+        _workspace.Place(gts, () => gts.Show(preview.Pane, DockAlignment.Bottom, .34));
+        _workspace.Place(animations, () => animations.Show(gts.Pane, DockAlignment.Right, .34));
+        _workspace.Place(validation, () => validation.Show(tileProperties.Pane, DockAlignment.Bottom, .28));
+        _workspace.InitializeLayout();
     }
 
     private ToolStrip BuildPreviewToolbar()

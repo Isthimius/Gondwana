@@ -5,10 +5,12 @@ namespace Gondwana.Tooling.WinForms;
 
 /// <summary>
 /// Editor-owned docking surface, source-linked by the standalone tooling projects.
-/// Content belongs to this workspace even while hidden. No layout is persisted.
+/// Content belongs to this workspace even while hidden. Layouts are per editor type.
 /// </summary>
 internal sealed class EditorDockWorkspace : UserControl
 {
+    private readonly DockLayoutPersistence _layout;
+    private readonly string _profile;
     private readonly VS2015DarkTheme _theme = new();
     private readonly List<DockContent> _contents = [];
     private readonly Dictionary<string, DockContent> _contentsByTitle =
@@ -18,7 +20,7 @@ internal sealed class EditorDockWorkspace : UserControl
     internal IReadOnlyList<string> PaneTitles =>
         _contents.Select(content => content.Text).ToArray();
 
-    internal EditorDockWorkspace()
+    internal EditorDockWorkspace(string profile)
     {
         Dock = DockStyle.Fill;
         DockPanel = new DockPanel
@@ -29,12 +31,14 @@ internal sealed class EditorDockWorkspace : UserControl
             DocumentTabStripLocation = DocumentTabStripLocation.Top
         };
         Controls.Add(DockPanel);
+        _profile = profile;
+        _layout = new DockLayoutPersistence(DockPanel, profile);
     }
 
     // The controls are passed in WinForms z-order: fill content, then top toolbars.
-    internal DockContent AddPane(string title, params Control[] controls)
+    internal DockContent AddPane(string id, string title, params Control[] controls)
     {
-        var pane = new DockContent
+        var pane = new PersistentDockContent(_profile + "." + id)
         {
             Text = title,
             HideOnClose = true,
@@ -49,6 +53,14 @@ internal sealed class EditorDockWorkspace : UserControl
         _contentsByTitle.Add(title, pane);
         return pane;
     }
+
+    internal void Place(DockContent pane, Action placement)
+    {
+        _layout.Register((PersistentDockContent)pane, placement);
+    }
+
+    internal void InitializeLayout() => _layout.Start();
+    internal void ResetLayout() => _layout.Reset();
 
     internal bool ShowPane(string title)
     {
@@ -81,6 +93,7 @@ internal sealed class EditorDockWorkspace : UserControl
     {
         if (disposing)
         {
+            _layout.Dispose();
             // Hidden contents need explicit ownership too; do not rely on the
             // visible control hierarchy or DockPanel's pane disposal behavior.
             foreach (var content in _contents)

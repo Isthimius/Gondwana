@@ -1,3 +1,4 @@
+using Gondwana.Tooling.WinForms;
 using Gondwana.Assets;
 using WeifenLuo.WinFormsUI.Docking;
 using WeifenLuo.WinFormsUI.ThemeVS2015;
@@ -8,7 +9,8 @@ public sealed class MainForm : Form
 {
     private readonly VS2015DarkTheme _theme = new();
     private readonly DockPanel _dock;
-    private readonly DockContent _workspace = new()
+    private readonly DockLayoutPersistence _layout;
+    private readonly PersistentDockContent _workspace = new("shell.workspace")
     {
         Text = "Asset files",
         HideOnClose = true
@@ -46,6 +48,9 @@ public sealed class MainForm : Form
             DocumentStyle = DocumentStyle.DockingWindow
         };
 
+        _layout = new DockLayoutPersistence(_dock, "shell");
+        _layout.Register(_workspace, () => _workspace.Show(_dock, DockState.DockLeft));
+
         var menu = new MenuStrip();
 
         var file = new ToolStripMenuItem("&File");
@@ -75,7 +80,7 @@ public sealed class MainForm : Form
             view,
             "Asset files",
             Keys.None,
-            () => _workspace.Show(_dock, DockState.DockLeft));
+            () => _workspace.Show());
         Add(
             view,
             "Refresh directory",
@@ -103,6 +108,9 @@ public sealed class MainForm : Form
             Keys.None,
             () => ActiveEditor?.ShowAllPanes());
 
+        Add(view, "Reset application layout", Keys.None, () => _layout.Reset());
+        var resetEditor = Add(view, "Reset active editor layout", Keys.None, () => ActiveEditor?.Editor.ResetLayout());
+
         view.DropDownOpening += (_, _) =>
         {
             outerWorkspaceItem.Checked = !_workspace.IsHidden;
@@ -113,6 +121,7 @@ public sealed class MainForm : Form
                 item.Checked = editor?.IsPaneVisible(paneName) == true;
             }
             showAllPanesItem.Enabled = editor is not null;
+            resetEditor.Enabled = editor is not null;
         };
 
         menu.Items.AddRange([file, view]);
@@ -127,6 +136,7 @@ public sealed class MainForm : Form
         Shown += (_, _) =>
         {
             _workspace.Show(_dock, DockState.DockLeft);
+            _layout.Start();
             _workspaceControl.RefreshDirectory();
         };
     }
@@ -334,13 +344,15 @@ public sealed class MainForm : Form
             MessageBoxIcon.Error);
     }
 
-    protected override void OnFormClosed(FormClosedEventArgs e)
+    protected override void Dispose(bool disposing)
     {
-        foreach (var document in _documents.ToArray())
-            document.Dispose();
-
-        _workspace.Dispose();
-        _theme.Dispose();
-        base.OnFormClosed(e);
+        if (disposing)
+        {
+            _layout.Dispose();
+            foreach (var document in _documents.ToArray()) document.Dispose();
+            _workspace.Dispose();
+        }
+        base.Dispose(disposing);
+        if (disposing) _theme.Dispose();
     }
 }
