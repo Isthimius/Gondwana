@@ -16,7 +16,7 @@ Gondwana targets Windows, Linux, macOS, and WebAssembly through SkiaSharp-based 
 
 Gondwana remains fundamentally **code-first**: game behavior is ordinary C#, and developers can reach the rendering and update pipeline directly when needed. Visual tooling is additive rather than mandatory. **Gondwana Studio** provides integrated authoring for assets, tilesheets, animations, audio, scenes, and sprites without turning those files into opaque editor-owned project data.
 
-Developers can work directly in code, use Gondwana Studio for content that benefits from visual authoring, or use the official **Gondwana Game Engine** plugin with ChatGPT and Codex for engine-aware assistance grounded in the current public source, tests, and documentation.
+Developers can work directly in code, use Gondwana Studio for content that benefits from visual authoring, or, when available, use the official **Gondwana Game Engine** plugin with ChatGPT and Codex for engine-aware assistance grounded in the current public source, tests, and documentation.
 
 The engine carries forward the predictability of classic Win32/GDI-era rendering—explicit draw order, dirty-region updates where appropriate, scene composition, and timing—inside a modern, modular architecture. The result is an engine intended to remain understandable and debuggable without demanding that a project surrender control as it grows.
 
