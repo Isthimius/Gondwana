@@ -21,6 +21,7 @@ public sealed class AssetsFileRegistrationTests
             Assert.DoesNotContain(runtime, AssetsFile.AllAssetsFiles);
         }
         finally { File.Delete(path); }
+    }
 
     [Fact]
     public void FailedLoadDoesNotLeaveRegisteredPackage()
