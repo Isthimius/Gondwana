@@ -135,11 +135,13 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memdesc:a2beea2fa23c72caa8d55ae359dc34e36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strictly validates an existing bundle's entry keys and archive integrity. Unlike runtime loading, rejects unrecognized and duplicate entries.  <br /></td></tr>
 <tr class="memitem:aadcdc298f95ac3f58ab46793667d3363" id="r_aadcdc298f95ac3f58ab46793667d3363"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html">AssetsFile</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aadcdc298f95ac3f58ab46793667d3363">LoadOrCreate</a> (string path, string? password=null, bool encrypt=false)</td></tr>
 <tr class="memdesc:aadcdc298f95ac3f58ab46793667d3363"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads an existing asset file from the specified path or creates a new one if the file does not exist.  <br /></td></tr>
+<tr class="memitem:ae728e2dcbe1812183246027c24896cf2" id="r_ae728e2dcbe1812183246027c24896cf2"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html">AssetsFile</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae728e2dcbe1812183246027c24896cf2">LoadOrCreate</a> (string path, string? password, bool encrypt, bool register)</td></tr>
+<tr class="memdesc:ae728e2dcbe1812183246027c24896cf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads or creates an asset file, optionally without adding it to the runtime collection. Authoring hosts can own detached packages without changing runtime state.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:aa5fec607a0437f5c00bf2188625538f9" id="r_aa5fec607a0437f5c00bf2188625538f9"><td class="memItemLeft" align="right" valign="top">static IReadOnlyList&lt; <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html">AssetsFile</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa5fec607a0437f5c00bf2188625538f9">AllAssetsFiles</a><code> [get]</code></td></tr>
-<tr class="memdesc:aa5fec607a0437f5c00bf2188625538f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a read-only list of all instantiated <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> instances.  <br /></td></tr>
+<tr class="memdesc:aa5fec607a0437f5c00bf2188625538f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a read-only list of registered <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> instances.  <br /></td></tr>
 <tr class="memitem:a213f251f4ca110270f0433a2ffb209bf" id="r_a213f251f4ca110270f0433a2ffb209bf"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a213f251f4ca110270f0433a2ffb209bf">FilePath</a> = string.Empty<code> [get]</code></td></tr>
 <tr class="memdesc:a213f251f4ca110270f0433a2ffb209bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the file path associated with the current instance.  <br /></td></tr>
 <tr class="memitem:a3efb1643fabaa10f3c97325a2cab57f3" id="r_a3efb1643fabaa10f3c97325a2cab57f3"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3efb1643fabaa10f3c97325a2cab57f3">Password</a><code> [get]</code></td></tr>
@@ -151,7 +153,7 @@ Properties</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents an asset file used by the engine, providing functionality to load, manage, and save assets. </p>
-<p>The <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> class allows for the creation, loading, and management of asset files used by the engine. It supports encryption, asset retrieval by type and name, and saving assets to a zip file. Instances of this class are tracked globally and can be accessed via the static <a class="el" href="#aa5fec607a0437f5c00bf2188625538f9" title="Gets a read-only list of all instantiated AssetsFile instances.">AllAssetsFiles</a> property. </p>
+<p>The <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> class allows for the creation, loading, and management of asset files used by the engine. It supports encryption, asset retrieval by type and name, and saving assets to a zip file. Instances are registered by default and can be accessed via the static <a class="el" href="#aa5fec607a0437f5c00bf2188625538f9" title="Gets a read-only list of registered AssetsFile instances.">AllAssetsFiles</a> property. </p>
 
 <p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00017">17</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
@@ -190,7 +192,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00225">225</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00248">248</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -229,7 +231,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00205">205</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00228">228</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -275,7 +277,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00247">247</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00270">270</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -325,7 +327,7 @@ Properties</h2></td></tr>
 
 <p>Releases all resources used by the <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> instance. </p>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00399">399</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00422">422</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -359,7 +361,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A Stream containing the asset data if a match is found; otherwise, <code>null</code>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00311">311</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00334">334</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -381,12 +383,65 @@ Properties</h2></td></tr>
 <p>Retrieves all entries from the asset file. </p>
 <dl class="section return"><dt>Returns</dt><dd>An IEnumerable&lt;T&gt; containing all entries in the asset file.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00345">345</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00368">368</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+
+</div>
+</div>
+<a id="ae728e2dcbe1812183246027c24896cf2" name="ae728e2dcbe1812183246027c24896cf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae728e2dcbe1812183246027c24896cf2">&#9670;&#160;</a></span>LoadOrCreate() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html">AssetsFile</a> Gondwana.Assets.AssetsFile.LoadOrCreate </td>
+          <td>(</td>
+          <td class="paramtype">string</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string?</td>          <td class="paramname"><span class="paramname"><em>password</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>encrypt</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>register</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Loads or creates an asset file, optionally without adding it to the runtime collection. Authoring hosts can own detached packages without changing runtime state. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td>The asset file path to load or create.</td></tr>
+    <tr><td class="paramname">password</td><td>The optional archive password.</td></tr>
+    <tr><td class="paramname">encrypt</td><td>Whether saves use encryption.</td></tr>
+    <tr><td class="paramname">register</td><td>Whether to add this instance to <a class="el" href="#aa5fec607a0437f5c00bf2188625538f9" title="Gets a read-only list of registered AssetsFile instances.">AllAssetsFiles</a>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The loaded or newly created package, owned by the caller.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00096">96</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
 <a id="aadcdc298f95ac3f58ab46793667d3363" name="aadcdc298f95ac3f58ab46793667d3363"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aadcdc298f95ac3f58ab46793667d3363">&#9670;&#160;</a></span>LoadOrCreate()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aadcdc298f95ac3f58ab46793667d3363">&#9670;&#160;</a></span>LoadOrCreate() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -434,8 +489,6 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00080">80</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
-
 </div>
 </div>
 <a id="aea8fb99a8e1e98ddbe9f382d19bac6e1" name="aea8fb99a8e1e98ddbe9f382d19bac6e1"></a>
@@ -466,7 +519,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00276">276</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00299">299</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -487,7 +540,7 @@ Properties</h2></td></tr>
 
 <p>Saves the current set of entries to a zip file at the specified file path. </p>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00354">354</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00377">377</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -558,7 +611,7 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets a read-only list of all instantiated <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> instances. </p>
+<p>Gets a read-only list of registered <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> instances. </p>
 
 <p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00024">24</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
@@ -586,7 +639,7 @@ Properties</h2></td></tr>
 
 <p>Gets the file path associated with the current instance. </p>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00104">104</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00127">127</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -612,7 +665,7 @@ Properties</h2></td></tr>
 
 <p>Gets the password associated with the current instance. </p>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00110">110</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00133">133</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -646,7 +699,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A readable stream if found; otherwise, <code>null</code>.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00298">298</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00321">321</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -672,7 +725,7 @@ Properties</h2></td></tr>
 
 <p>Gets a value indicating whether encryption is enabled for the current operation. </p>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00116">116</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00139">139</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
