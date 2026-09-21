@@ -123,8 +123,11 @@ internal sealed class SpritePreviewControl : UserControl
             g.RotateTransform(_entry.Rotation);
             g.TranslateTransform(-_bounds.X - _bounds.Width / 2f, -_bounds.Y - _bounds.Height / 2f);
             g.InterpolationMode = InterpolationMode.NearestNeighbor;
-            if (_entry.Visible && _entry.Frame is { } frame && _source?.Image is { } image && _source.TryResolve(frame, out _, out var bounds))
-                g.DrawImage(image, _bounds, bounds, GraphicsUnit.Pixel);
+if (_entry.Visible && _entry.Frame is { } frame && _source?.Image is { } image &&
+    _source.TryResolve(frame, out _, out var bounds) &&
+    bounds.Width > 0 && bounds.Height > 0 && bounds.X >= 0 && bounds.Y >= 0 &&
+    bounds.Right <= image.Width && bounds.Bottom <= image.Height)
+    g.DrawImage(image, _bounds, bounds, GraphicsUnit.Pixel);
             g.DrawRectangle(Pens.Gray, _bounds);
             g.Restore(state);
             // Runtime Tile.CollisionArea is axis-aligned and uses the logical draw bounds.
