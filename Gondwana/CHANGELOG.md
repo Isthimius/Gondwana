@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 
 
+# [Unreleased]
+
+
+
+## Added
+- Add GSCN format and EngineState integration ([#372](https://github.com/Isthimius/Gondwana/pull/372))
+- Add GANI format and EngineState integration ([#373](https://github.com/Isthimius/Gondwana/pull/373))
+
+
+
+## Tests
+- Cover repeated GTS source selection ([#377](https://github.com/Isthimius/Gondwana/pull/377))
+
 # v2.6.0 - September 17, 2026
 
 

@@ -2,6 +2,65 @@
 
 All notable changes to this project will be documented in this file.
 
+# [Unreleased]
+
+## Gondwana
+
+### Added
+- Add GSCN format and EngineState integration ([#372](https://github.com/Isthimius/Gondwana/pull/372))
+- Add GANI format and EngineState integration ([#373](https://github.com/Isthimius/Gondwana/pull/373))
+
+
+
+### Tests
+- Cover repeated GTS source selection ([#377](https://github.com/Isthimius/Gondwana/pull/377))
+
+## Tooling / Gondwana.Tooling.Assets.WinForms
+
+### Added
+- Modernize Assets editor workspace ([#370](https://github.com/Isthimius/Gondwana/pull/370))
+- Add editor-local docking to GTS, GAF, and GANI ([#378](https://github.com/Isthimius/Gondwana/pull/378))
+
+
+
+### Fixed
+- Restore closed panes in standalone editors ([#382](https://github.com/Isthimius/Gondwana/pull/382))
+
+## Tooling / Gondwana.Tooling.Animations.WinForms
+
+### Added
+- Add editor-local docking to GTS, GAF, and GANI ([#378](https://github.com/Isthimius/Gondwana/pull/378))
+
+
+
+### Fixed
+- Restore closed panes in standalone editors ([#382](https://github.com/Isthimius/Gondwana/pull/382))
+
+
+
+### Tests
+- Cover repeated GTS source selection ([#377](https://github.com/Isthimius/Gondwana/pull/377))
+
+## Tooling / Gondwana.Tooling.Audio.WinForms
+
+### Fixed
+- Restore closed panes in standalone editors ([#382](https://github.com/Isthimius/Gondwana/pull/382))
+
+## Tooling / Gondwana.Tooling.Tilesheets.WinForms
+
+### Added
+- Add editor-local docking to GTS, GAF, and GANI ([#378](https://github.com/Isthimius/Gondwana/pull/378))
+
+
+
+### Fixed
+- Restore closed panes in standalone editors ([#382](https://github.com/Isthimius/Gondwana/pull/382))
+
+## Build / Repository
+
+### Maintenance
+- Rename WinForms editor test job ([#384](https://github.com/Isthimius/Gondwana/pull/384))
+
 # [v2.6.0] - 2026-09-17
 
 ## Gondwana
