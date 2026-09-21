@@ -13,6 +13,71 @@ public sealed class DockLayoutTests
     private static string Layout(string profile, string app = "test-host") => Path.Combine(Root, app, "Docking", profile + ".xml");
 
     [Theory]
+    [InlineData(typeof(Gondwana.Tooling.Assets.WinForms.AssetEditorControl))]
+    [InlineData(typeof(Gondwana.Tooling.Tilesheets.WinForms.TilesheetEditorControl))]
+    [InlineData(typeof(Gondwana.Tooling.Animations.WinForms.AnimationEditorControl))]
+    [InlineData(typeof(Gondwana.Tooling.Audio.WinForms.AudioEditorControl))]
+    [InlineData(typeof(Gondwana.Tooling.Scenes.WinForms.SceneEditorControl))]
+    public void StandaloneShellRestoresHiddenToolAndViewResetsIt(Type editorType) => Sta(() =>
+    {
+        Form Open()
+        {
+            var type = editorType.Assembly.GetType(editorType.Namespace + ".MainForm")!;
+            var form = (Form)Activator.CreateInstance(type, nonPublic: true)!;
+            form.Opacity = 0;
+            form.ShowInTaskbar = false;
+            form.Show();
+            Application.DoEvents();
+            return form;
+        }
+        using (var first = Open())
+        {
+            var dock = first.Controls.OfType<DockPanel>().Single();
+            var tool = dock.Contents.OfType<DockContent>().Single(p => p.HideOnClose);
+            tool.Show(dock, DockState.DockRight);
+            dock.DockRightPortion = .42;
+            tool.Hide();
+        }
+        using (var second = Open())
+        {
+            var dock = second.Controls.OfType<DockPanel>().Single();
+            var tool = dock.Contents.OfType<DockContent>().Single(p => p.HideOnClose);
+            Assert.True(tool.IsHidden);
+            Assert.Equal(DockState.DockRight, tool.Pane.DockState);
+            Assert.InRange(dock.DockRightPortion, .41, .43);
+            var view = second.MainMenuStrip!.Items.OfType<ToolStripMenuItem>().Single(i => i.Text == "&View");
+            view.ShowDropDown();
+            var item = view.DropDownItems.OfType<ToolStripMenuItem>().Single(i => i.Text == tool.Text);
+            Assert.False(item.Checked);
+            item.PerformClick();
+            Assert.False(tool.IsHidden);
+            Assert.Equal(DockState.DockRight, tool.DockState);
+            view.DropDownItems.OfType<ToolStripMenuItem>().Single(i => i.Text == "Reset application layout").PerformClick();
+            view.HideDropDown();
+            Assert.Equal(DockState.DockLeft, tool.DockState);
+            Assert.False(File.Exists(Layout("shell")));
+        }
+        using (var third = Open())
+        {
+            var tool = third.Controls.OfType<DockPanel>().Single().Contents.OfType<DockContent>().Single(p => p.HideOnClose);
+            Assert.False(tool.IsHidden);
+            Assert.Equal(DockState.DockLeft, tool.DockState);
+        }
+    });
+
+    [Fact]
+    public void UnwritablePreferenceLocationDoesNotBreakAuthoringOrReset() => Sta(() =>
+    {
+        // A regular file in place of the application's directory deterministically denies writes.
+        File.WriteAllText(Path.Combine(Root, "test-host"), "occupied");
+        using var editor = Editor("gts");
+        Panes(editor.Model).Single(p => p.Text == "Validation").Hide();
+        editor.Model.ResetLayout();
+        Assert.True(editor.Model.IsPaneVisible("Validation"));
+        Panes(editor.Model).Single(p => p.Text == "Validation").Hide();
+    });
+
+    [Theory]
     [InlineData("gaf", 2)]
     [InlineData("gts", 5)]
     [InlineData("gani", 5)]
@@ -22,6 +87,7 @@ public sealed class DockLayoutTests
     {
         string[] names;
         DockContent[] owned;
+        int splitWidth;
         using (var editor = Editor(kind))
         {
             var panes = Panes(editor.Model);
@@ -30,6 +96,7 @@ public sealed class DockLayoutTests
             names = panes.Select(pane => pane.Text).ToArray();
             panes[1].Show(panes[0].Pane, DockAlignment.Right, .62);
             Application.DoEvents();
+            splitWidth = panes[1].Width;
             panes[1].Hide();
             owned = panes;
         }
@@ -47,7 +114,7 @@ public sealed class DockLayoutTests
             Assert.True(editor.Model.ShowPane(names[1]));
             Application.DoEvents();
             Assert.False(panes[1].IsHidden);
-            Assert.True(panes[1].Width > 100);
+            Assert.InRange(panes[1].Width, splitWidth - 10, splitWidth + 10);
             Assert.All(panes, pane =>
             {
                 Assert.False(pane.DockHandler.IsDockStateValid(DockState.Float));
