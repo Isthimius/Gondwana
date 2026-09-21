@@ -27,6 +27,7 @@ internal sealed class StudioDocument : IDisposable
     internal required Func<string, bool> ShowPane { get; init; }
     internal required Func<string, bool> IsPaneVisible { get; init; }
     internal required Action ShowAllPanes { get; init; }
+    internal required Action ResetLayout { get; init; }
     private Action? _detach;
     private Action? _release;
     internal event EventHandler? Changed;
@@ -60,7 +61,7 @@ internal sealed class StudioDocument : IDisposable
                     CommitEdits = editor.CommitEdits, Validate = editor.UpdateValidation,
                     Save = (destination, invalid) => model.Save(destination, editor.ImageSize, invalid),
                     PaneNames = TilesheetEditorControl.PaneNames, ShowPane = editor.ShowPane,
-                    IsPaneVisible = editor.IsPaneVisible, ShowAllPanes = editor.ShowAllPanes
+                    IsPaneVisible = editor.IsPaneVisible, ShowAllPanes = editor.ShowAllPanes, ResetLayout = editor.ResetLayout
                 };
                 model.Changed += result.OnChanged;
                 result._detach = () => model.Changed -= result.OnChanged;
@@ -76,7 +77,7 @@ internal sealed class StudioDocument : IDisposable
                     Path = () => model.FilePath, Dirty = () => model.IsDirty,
                     CommitEdits = editor.CommitEdits, Validate = editor.UpdateValidation, Save = model.Save,
                     PaneNames = AnimationEditorControl.PaneNames, ShowPane = editor.ShowPane,
-                    IsPaneVisible = editor.IsPaneVisible, ShowAllPanes = editor.ShowAllPanes
+                    IsPaneVisible = editor.IsPaneVisible, ShowAllPanes = editor.ShowAllPanes, ResetLayout = editor.ResetLayout
                 };
                 model.Changed += result.OnChanged;
                 result._detach = () => model.Changed -= result.OnChanged;
@@ -92,7 +93,7 @@ internal sealed class StudioDocument : IDisposable
                     Path = () => model.FilePath, Dirty = () => model.IsDirty,
                     CommitEdits = editor.CommitEdits, Validate = editor.UpdateValidation, Save = model.Save,
                     PaneNames = AudioEditorControl.PaneNames, ShowPane = editor.ShowPane,
-                    IsPaneVisible = editor.IsPaneVisible, ShowAllPanes = editor.ShowAllPanes
+                    IsPaneVisible = editor.IsPaneVisible, ShowAllPanes = editor.ShowAllPanes, ResetLayout = editor.ResetLayout
                 };
                 model.Changed += result.OnChanged;
                 result._detach = () => model.Changed -= result.OnChanged;
@@ -108,7 +109,7 @@ internal sealed class StudioDocument : IDisposable
                     Path = () => model.FilePath, Dirty = () => model.IsDirty,
                     CommitEdits = editor.CommitEdits, Validate = editor.UpdateValidation, Save = model.Save,
                     PaneNames = SceneEditorControl.PaneNames, ShowPane = editor.ShowPane,
-                    IsPaneVisible = editor.IsPaneVisible, ShowAllPanes = editor.ShowAllPanes
+                    IsPaneVisible = editor.IsPaneVisible, ShowAllPanes = editor.ShowAllPanes, ResetLayout = editor.ResetLayout
                 };
                 model.Changed += result.OnChanged;
                 result._detach = () => model.Changed -= result.OnChanged;
@@ -128,7 +129,7 @@ internal sealed class StudioDocument : IDisposable
                         CommitEdits = () => true, Validate = () => [],
                         Save = (destination, _) => editor.SaveTo(destination),
                         PaneNames = AssetEditorControl.PaneNames, ShowPane = editor.ShowPane,
-                        IsPaneVisible = editor.IsPaneVisible, ShowAllPanes = editor.ShowAllPanes,
+                        IsPaneVisible = editor.IsPaneVisible, ShowAllPanes = editor.ShowAllPanes, ResetLayout = editor.ResetLayout,
                         _release = assets.Dispose
                     };
                     editor.Changed += result.OnChanged;

@@ -492,6 +492,9 @@ public sealed class AnimationEditorControl : UserControl
     public bool IsPaneVisible(string paneName) =>
         _workspace.IsPaneVisible(paneName);
 
+    /// <summary>Restore the default pane arrangement for this editor type.</summary>
+    public void ResetLayout() => _workspace.ResetLayout();
+
     public void ShowAllPanes() =>
         _workspace.ShowAllPanes();
 
@@ -509,19 +512,20 @@ public sealed class AnimationEditorControl : UserControl
         _frames.Columns.Add("X", 55, HorizontalAlignment.Right);
         _frames.Columns.Add("Y", 55, HorizontalAlignment.Right);
 
-        _workspace = new EditorDockWorkspace();
+        _workspace = new EditorDockWorkspace("gani");
         Controls.Add(_workspace);
         var dock = _workspace.DockPanel;
-        var sources = _workspace.AddPane("GTS frame sources", _sourceTree, BuildSourceToolbar());
-        var preview = _workspace.AddPane("Preview", _preview, BuildPreviewToolbar());
-        var frames = _workspace.AddPane("Animation frames", _frames, BuildSequenceToolbar());
-        var properties = _workspace.AddPane("Animation properties", _properties);
-        var validation = _workspace.AddPane("Validation", _validation);
-        preview.Show(dock, DockState.Document);
-        sources.Show(preview.Pane, DockAlignment.Left, 320d / 1200);
-        frames.Show(preview.Pane, DockAlignment.Bottom, 410d / 800);
-        properties.Show(frames.Pane, DockAlignment.Right, 320d / 880);
-        validation.Show(properties.Pane, DockAlignment.Bottom, 180d / 410);
+        var sources = _workspace.AddPane("gts-sources", "GTS frame sources", _sourceTree, BuildSourceToolbar());
+        var preview = _workspace.AddPane("preview", "Preview", _preview, BuildPreviewToolbar());
+        var frames = _workspace.AddPane("frames", "Animation frames", _frames, BuildSequenceToolbar());
+        var properties = _workspace.AddPane("properties", "Animation properties", _properties);
+        var validation = _workspace.AddPane("validation", "Validation", _validation);
+        _workspace.Place(preview, () => preview.Show(dock, DockState.Document));
+        _workspace.Place(sources, () => sources.Show(preview.Pane, DockAlignment.Left, 320d / 1200));
+        _workspace.Place(frames, () => frames.Show(preview.Pane, DockAlignment.Bottom, 410d / 800));
+        _workspace.Place(properties, () => properties.Show(frames.Pane, DockAlignment.Right, 320d / 880));
+        _workspace.Place(validation, () => validation.Show(properties.Pane, DockAlignment.Bottom, 180d / 410));
+        _workspace.InitializeLayout();
     }
 
     private ToolStrip BuildSourceToolbar()

@@ -13,6 +13,8 @@
 
   <!-- The outer shell uses the same DockPanelSuite dark theme as its hosted editors. -->
   <ItemGroup>
+    <Compile Include="../Shared/WinForms/DockLayoutStore.cs" Link="Docking/DockLayoutStore.cs" />
+    <Compile Include="../Shared/WinForms/DockLayoutPersistence.cs" Link="Docking/DockLayoutPersistence.cs" />
     <PackageReference Include="DockPanelSuite" Version="3.1.1" />
     <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
   </ItemGroup>

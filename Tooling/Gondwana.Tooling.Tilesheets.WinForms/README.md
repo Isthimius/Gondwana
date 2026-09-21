@@ -167,9 +167,7 @@ bottom. Floating and auto-hide are disabled for inner panes.
 Closing a pane using its close button hides it without closing the document.
 Use **View** to restore an individual pane in the active GTS document, or choose
 **Show all tilesheet panes**. A restored pane returns to its previous split/tab
-group for that open document. Layouts reset to their defaults when documents are
-opened. Layout persistence is intentionally not implemented: no layout XML,
-settings, or registry state is saved.
+group for that open document. Layouts, including hidden panes, persist per editor type and entry application.
 
 The small helper in Tooling/Shared/WinForms/EditorDockWorkspace.cs is source-linked
 by the standalone WinForms tooling projects, so they do not depend on one another. It owns the
@@ -180,3 +178,24 @@ in each editor. Hosts should dispose the whole editor when closing its document.
 Nested docking, ownership, hide/dispose/reopen, and GAF filter/save coverage runs
 in Testing/Gondwana.Tooling.Tilesheets.WinForms.Tests as part of the existing
 Windows CI job; GANI's existing interactions remain in its animation test project.
+
+## Dock layout preferences
+
+DockPanelSuite layouts are saved per user under
+`%LOCALAPPDATA%/Hidden Worlds Games/Gondwana/Tooling/<entry-application>/Docking/`.
+Outer tool windows and each editor type (GAF, GTS, GANI, GSND, GSCN) have separate
+profiles. Dock locations, tabs, splits, relative sizes, and hidden-pane visibility
+survive restart. Studio and the standalone executables use independent profiles.
+New documents use their editor type's last saved arrangement, regardless of file path.
+
+Use **View → Reset application layout** to restore the outer tool arrangement, or
+**View → Reset active editor layout** to restore the active editor type's defaults.
+Individual View commands and **Show all … panes** recover hidden panes without resetting.
+Reset does not change document data. Open sibling editors keep their current layouts;
+the next newly opened editor uses the reset profile until another layout is changed.
+
+These are UI preferences only: no Gondwana content files or EngineState are modified,
+no source-document paths or unsaved content are stored, and documents are never reopened
+on startup. Missing or corrupt preferences fall back to defaults without a dialog.
+Available plugin tools in Studio use stable plugin identities; missing plugins are ignored.
+Changes are saved after a short settling interval and flushed on disposal.

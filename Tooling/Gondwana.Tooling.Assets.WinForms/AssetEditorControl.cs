@@ -148,13 +148,14 @@ public sealed class AssetEditorControl : UserControl
         _statusLabel = new ToolStripStatusLabel();
         statusStrip.Items.Add(_statusLabel);
 
-        _workspace = new EditorDockWorkspace();
+        _workspace = new EditorDockWorkspace("gaf");
         Controls.Add(_workspace);
         var dock = _workspace.DockPanel;
-        var entries = _workspace.AddPane("Assets", _grid, filterTools, fileTools);
-        var status = _workspace.AddPane("Status", statusStrip);
-        entries.Show(dock, DockState.Document);
-        status.Show(entries.Pane, DockAlignment.Bottom, 55d / 650);
+        var entries = _workspace.AddPane("assets", "Assets", _grid, filterTools, fileTools);
+        var status = _workspace.AddPane("status", "Status", statusStrip);
+        _workspace.Place(entries, () => entries.Show(dock, DockState.Document));
+        _workspace.Place(status, () => status.Show(entries.Pane, DockAlignment.Bottom, 55d / 650));
+        _workspace.InitializeLayout();
 
         DarkTheme.Apply(this);
         _typeComboBox.BackColor = DarkTheme.Surface;
@@ -178,6 +179,9 @@ public sealed class AssetEditorControl : UserControl
 
     public bool IsPaneVisible(string paneName) =>
         _workspace.IsPaneVisible(paneName);
+
+    /// <summary>Restore the default pane arrangement for this editor type.</summary>
+    public void ResetLayout() => _workspace.ResetLayout();
 
     public void ShowAllPanes() =>
         _workspace.ShowAllPanes();

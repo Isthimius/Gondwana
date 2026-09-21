@@ -60,12 +60,13 @@ public sealed class NestedEditorDockingTests
             sibling.Show(outer, DockState.Document);
             host.Show();
 
-            // Reopen the same model in a fresh editor: hidden/rearranged panes
-            // must not leak into the next instance or a sibling document.
+            // Explicitly reset each fresh editor for the default-placement/isolation checks.
+            // Persistence across instances is covered by DockLayoutTests.
             for (int attempt = 0; attempt < 2; attempt++)
             {
                 using var document = new DockContent { Text = kind };
                 using var editor = CreateEditor();
+                editor.GetType().GetMethod("ResetLayout")!.Invoke(editor, null);
                 document.Controls.Add(editor);
                 document.Show(outer, DockState.Document);
                 Application.DoEvents();

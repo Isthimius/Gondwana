@@ -46,5 +46,26 @@ an individual pane, or choose **Show all audio panes**. **View → Working direc
 restores the outer workspace. A restored inner pane returns to its previous
 split/tab group for the current document.
 
-Layout persistence is intentionally not implemented. The standalone application's
+Layouts persist per editor type and entry application. The standalone application's
 Working directory and each whole GSND editor remain outer docked windows/documents.
+
+## Dock layout preferences
+
+DockPanelSuite layouts are saved per user under
+`%LOCALAPPDATA%/Hidden Worlds Games/Gondwana/Tooling/<entry-application>/Docking/`.
+Outer tool windows and each editor type (GAF, GTS, GANI, GSND, GSCN) have separate
+profiles. Dock locations, tabs, splits, relative sizes, and hidden-pane visibility
+survive restart. Studio and the standalone executables use independent profiles.
+New documents use their editor type's last saved arrangement, regardless of file path.
+
+Use **View → Reset application layout** to restore the outer tool arrangement, or
+**View → Reset active editor layout** to restore the active editor type's defaults.
+Individual View commands and **Show all … panes** recover hidden panes without resetting.
+Reset does not change document data. Open sibling editors keep their current layouts;
+the next newly opened editor uses the reset profile until another layout is changed.
+
+These are UI preferences only: no Gondwana content files or EngineState are modified,
+no source-document paths or unsaved content are stored, and documents are never reopened
+on startup. Missing or corrupt preferences fall back to defaults without a dialog.
+Available plugin tools in Studio use stable plugin identities; missing plugins are ignored.
+Changes are saved after a short settling interval and flushed on disposal.

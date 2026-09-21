@@ -20,15 +20,18 @@ public sealed class StudioPluginHost : CoreHost
     /// Returns panels contributed by WinForms-compatible plugins.
     /// </summary>
     public IEnumerable<(string pluginName, Control panel)> GetPluginPanels()
+        => GetPersistentPluginPanels().Select(entry => (entry.Name, entry.Panel));
+
+    internal IEnumerable<(string Id, string Name, Control Panel)> GetPersistentPluginPanels()
     {
-        var result = new List<(string, Control)>();
+        var result = new List<(string, string, Control)>();
         foreach (var plugin in GetPluginsAs<IStudioPlugin>())
         {
             try
             {
                 var panel = plugin.CreatePanel();
                 if (panel is not null)
-                    result.Add((plugin.Name, panel));
+                    result.Add(($"plugin.{plugin.GetType().Assembly.GetName().Name}.{plugin.GetType().FullName}.{plugin.Name}", plugin.Name, panel));
             }
             catch (Exception ex)
             {
