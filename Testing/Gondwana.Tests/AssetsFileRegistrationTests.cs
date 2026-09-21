@@ -9,15 +9,18 @@ public sealed class AssetsFileRegistrationTests
     public void DetachedAuthoringPackagesDoNotChangeRuntimeRegistry()
     {
         var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".gaf");
-        using var runtime = AssetsFile.LoadOrCreate(path);
-        Assert.Contains(runtime, AssetsFile.AllAssetsFiles);
-        using var authoring = AssetsFile.LoadOrCreate(path, null, false, register: false);
-        Assert.DoesNotContain(authoring, AssetsFile.AllAssetsFiles);
-        authoring.Dispose();
-        Assert.Contains(runtime, AssetsFile.AllAssetsFiles);
-        runtime.Dispose();
-        Assert.DoesNotContain(runtime, AssetsFile.AllAssetsFiles);
-    }
+        try
+        {
+            using var runtime = AssetsFile.LoadOrCreate(path);
+            Assert.Contains(runtime, AssetsFile.AllAssetsFiles);
+            using var authoring = AssetsFile.LoadOrCreate(path, null, false, register: false);
+            Assert.DoesNotContain(authoring, AssetsFile.AllAssetsFiles);
+            authoring.Dispose();
+            Assert.Contains(runtime, AssetsFile.AllAssetsFiles);
+            runtime.Dispose();
+            Assert.DoesNotContain(runtime, AssetsFile.AllAssetsFiles);
+        }
+        finally { File.Delete(path); }
 
     [Fact]
     public void FailedLoadDoesNotLeaveRegisteredPackage()
