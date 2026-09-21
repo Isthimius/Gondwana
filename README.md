@@ -236,19 +236,19 @@ Gondwana's development tools sit above the same public engine APIs and definitio
 
 ```text
               Authoring / Development
-        ┌───────────┬───────────┬──────────────┐
-        │           │           │
-      C# code     Studio    ChatGPT / Codex
-        │           │           │
-        └───────────┴─────┬─────┘
-                          │
+        ┌─────────────┬────────────────┐
+        │             │                │
+      C# code       Studio     ChatGPT / Codex
+        │             │                │
+        └─────────────+────────────────┘
+                      │
                  Gondwana APIs +
                definition formats
           GAF / GTS / GANI / GSND /
                  GSCN / GSPR
-                          │
-                          ▼
-                     Engine runtime
+                      │
+                      ▼
+                 Engine runtime
 ```
 
 Studio and the standalone tools use the same definition models, serializers, and reusable editor controls. They do not maintain a second Studio-specific representation of Gondwana content.
