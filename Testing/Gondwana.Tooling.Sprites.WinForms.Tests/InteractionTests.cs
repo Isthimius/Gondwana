@@ -58,7 +58,34 @@ public sealed class InteractionTests
         entry.Visible = false; editor.SelectSprite(entry);
         using var after = new Bitmap(canvas.Width, canvas.Height);
         canvas.DrawToBitmap(after, canvas.ClientRectangle);
-        Assert.NotEqual(before.GetPixel(45, 45), after.GetPixel(45, 45));
+        Point? FirstRedPixel(Bitmap bitmap)
+        {
+            for (int y = 0; y < bitmap.Height; y++)
+                for (int x = 0; x < bitmap.Width; x++)
+                {
+                    var pixel = bitmap.GetPixel(x, y);
+                    if (pixel.R > 200 && pixel.G < 30 && pixel.B < 30) return new Point(x, y);
+                }
+            return null;
+        }
+        Assert.NotNull(FirstRedPixel(before));
+        Assert.Null(FirstRedPixel(after));
+        entry.Visible = true;
+        entry.Position = new PointF(3, 2);
+        editor.SelectSprite(entry);
+        using var moved = new Bitmap(canvas.Width, canvas.Height);
+        canvas.DrawToBitmap(moved, canvas.ClientRectangle);
+        Assert.NotNull(FirstRedPixel(moved));
+        Assert.NotEqual(FirstRedPixel(before), FirstRedPixel(moved));
+        var zoom = Descendants(preview).OfType<ComboBox>().Single();
+        zoom.SelectedIndex = 0;
+        Assert.Equal(.25f, preview.Zoom);
+        Descendants(preview).OfType<Button>().Single(button => button.Text == "+").PerformClick();
+        Assert.Equal(.3125f, preview.Zoom);
+        Descendants(preview).OfType<Button>().Single(button => button.Text == "−").PerformClick();
+        Assert.Equal(.25f, preview.Zoom);
+        zoom.SelectedIndex = 5;
+        Assert.True(preview.Zoom > 0);
         Assert.Empty(editor.UpdateValidation());
     });
 
