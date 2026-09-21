@@ -215,6 +215,7 @@ public sealed class CompositionTests
     [InlineData(".gani", "gani")]
     [InlineData(".gsnd", "gsnd")]
     [InlineData(".gscn", "gscn")]
+    [InlineData(".gspr", "gspr")]
     [InlineData(".gondwana-scene", null)]
     public void DispatchUsesCurrentFormats(string extension, string? format) =>
         Assert.Equal(format, StudioDocument.FormatFor("test" + extension));
@@ -224,11 +225,11 @@ public sealed class CompositionTests
     {
         var child = Directory.CreateDirectory(Path.Combine(directory, "child"));
         File.WriteAllText(Path.Combine(child.FullName, "nested.gts"), "{}");
-        foreach (var extension in new[] { "gaf", "zip", "gts", "gani", "gsnd", "gscn", "txt" })
+        foreach (var extension in new[] { "gaf", "zip", "gts", "gani", "gsnd", "gscn", "gspr", "txt" })
             File.WriteAllText(Path.Combine(directory, "file." + extension), "{}");
         using var studio = Host(directory);
         var root = Assert.Single(studio.Browser.Tree.Nodes.Cast<TreeNode>());
-        Assert.Equal(7, root.Nodes.Count);
+        Assert.Equal(8, root.Nodes.Count);
         var folder = root.Nodes.Cast<TreeNode>().Single(node => node.Tag is DirectoryInfo);
         Assert.Null(Assert.Single(folder.Nodes.Cast<TreeNode>()).Tag);
         folder.Expand();
@@ -279,4 +280,6 @@ public sealed class CompositionTests
         if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
     }
 }
+
+
 

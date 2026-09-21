@@ -56,6 +56,10 @@ public static class SpriteDefinitionSerializer
             definition.Sprites ??= [];
             definition.TilesheetSources ??= [];
             definition.SceneSources ??= [];
+            if (definition.Sprites.Any(sprite => sprite is null) ||
+                definition.TilesheetSources.Any(source => source is null) ||
+                definition.SceneSources.Any(source => source is null))
+                throw new InvalidDataException("GSPR collections cannot contain null entries.");
             return definition;
         }
         catch (JsonException ex) { throw new InvalidDataException("Failed to deserialize GSPR JSON.", ex); }
@@ -128,18 +132,26 @@ public static class SpriteDefinitionSerializer
 
     /// <summary>Resolves only registered runtime dependencies. Rolls back on any failure.</summary>
     public static List<Sprite> ToSprites(SpriteDefinition definition)
+        => ToSprites(definition, allowDuplicateNicknames: false);
+
+    // EngineState retains its historical last-incoming-nickname-wins merge contract.
+    internal static List<Sprite> ToSprites(SpriteDefinition definition, bool allowDuplicateNicknames)
     {
-        var errors = SpriteDefinitionValidator.Validate(definition);
+        var errors = SpriteDefinitionValidator.Validate(definition, allowDuplicateNicknames);
         if (errors.Count != 0) throw new InvalidDataException("Invalid GSPR definition:\n" + string.Join("\n", errors));
         var created = new List<Sprite>();
         try
         {
             foreach (var entry in definition.Sprites)
             {
-                var scene = Scene._allScenes.SingleOrDefault(scene => scene.ID == entry.SceneId)
-                    ?? throw new InvalidDataException($"Sprite '{entry.Nickname}': Scene '{entry.SceneId}' is not loaded.");
-                var layer = scene.GetSceneLayerByID(entry.SceneLayerId)
-                    ?? throw new InvalidDataException($"Sprite '{entry.Nickname}': SceneLayer '{entry.SceneLayerId}' is not loaded.");
+                var scenes = Scene._allScenes.Where(scene => scene.ID == entry.SceneId).Take(2).ToArray();
+                if (scenes.Length != 1)
+                    throw new InvalidDataException($"Sprite '{entry.Nickname}': Scene '{entry.SceneId}' is missing or ambiguous.");
+                var scene = scenes[0];
+                var layers = scene.SceneLayers.Where(layer => layer.ID == entry.SceneLayerId).Take(2).ToArray();
+                if (layers.Length != 1)
+                    throw new InvalidDataException($"Sprite '{entry.Nickname}': SceneLayer '{entry.SceneLayerId}' is missing or ambiguous.");
+                var layer = layers[0];
                 var frame = entry.Frame is null ? default : ResolveFrame(entry.Frame);
                 if (!string.IsNullOrWhiteSpace(entry.CollisionProfileName) && !scene.CollisionProfiles.GetProfileNames().Contains(entry.CollisionProfileName))
                     throw new InvalidDataException($"Sprite '{entry.Nickname}': collision profile '{entry.CollisionProfileName}' does not exist.");

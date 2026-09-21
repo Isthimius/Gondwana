@@ -1,4 +1,5 @@
 using System.Drawing;
+using Gondwana.Assets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.SkiaSharp;
@@ -30,6 +31,15 @@ internal sealed class SpriteTilesheetSource : IDisposable
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         path = Path.GetFullPath(path);
         return new(path, TilesheetDefinitionSerializer.Load(path));
+    }
+
+    public static SpriteTilesheetSource Load(string archivePath, string entry)
+    {
+        archivePath = Path.GetFullPath(archivePath);
+        using var archive = AssetsFile.LoadOrCreate(archivePath, null, false, register: false);
+        using var stream = archive.Get(AssetTypes.TilesheetDefinition, entry)
+            ?? throw new FileNotFoundException($"Packed GTS entry not found: {entry}");
+        return new(archivePath, TilesheetDefinitionSerializer.Load(stream));
     }
 
     public SpriteFrameDefinition CreateFrame(

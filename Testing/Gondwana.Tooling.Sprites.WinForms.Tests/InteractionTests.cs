@@ -1,4 +1,6 @@
 using System.Runtime.ExceptionServices;
+using System.Reflection;
+using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets;
@@ -12,6 +14,54 @@ namespace Gondwana.Tooling.Sprites.WinForms.Tests;
 
 public sealed class InteractionTests
 {
+    [Fact]
+    public void SourceTreesAssignSelectedEntryAndPreviewRespondsToProperties() => Sta(directory =>
+    {
+        var imagePath = Path.Combine(directory, "actors.png");
+        using (var bitmap = new Bitmap(32, 16))
+        {
+            using var graphics = Graphics.FromImage(bitmap); graphics.Clear(Color.Red);
+            bitmap.Save(imagePath);
+        }
+        var gts = Path.Combine(directory, "actors.gts");
+        TilesheetDefinitionSerializer.Save(gts, new TilesheetDefinition
+        {
+            Name = "actors", Image = new() { FilePath = "actors.png" },
+            Regions = [new() { Name = "default", Area = new Rectangle(0, 0, 32, 16), TileSize = new Size(16, 16) }]
+        });
+        var gscn = Path.Combine(directory, "level.gscn");
+        SceneDefinitionSerializer.Save(gscn, new SceneDefinition() { ID = "level", Layers = [new() { ID = "actors-layer", Columns = 1, Rows = 1, TileWidth = 16, TileHeight = 24 }] });
+        var document = SpriteDocument.Create(directory);
+        var entry = document.AddSprite(); entry.RenderSize = new Size(48, 48);
+        using var host = new Form { ShowInTaskbar = false, Opacity = 0, Size = new Size(1200, 800) };
+        using var editor = new SpriteEditorControl(document);
+        host.Controls.Add(editor); host.Show(); Application.DoEvents();
+        editor.AddTilesheetSources([gts]); editor.AddSceneSources([gscn]); editor.SelectSprite(entry);
+        var trees = Descendants(editor).OfType<TreeView>().ToArray();
+        void DoubleClick(TreeView tree, TreeNode node) => typeof(TreeView).GetMethod("OnNodeMouseDoubleClick", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .Invoke(tree, [new TreeNodeMouseClickEventArgs(node, MouseButtons.Left, 2, 0, 0)]);
+        var sceneTree = trees.Single(tree => tree.Nodes[0].Text == "level");
+        DoubleClick(sceneTree, sceneTree.Nodes[0].Nodes[0]);
+        Assert.Equal("level", entry.SceneId); Assert.Equal("actors-layer", entry.SceneLayerId);
+        var frameTree = trees.Single(tree => tree.Nodes[0].Text == "actors");
+        DoubleClick(frameTree, frameTree.Nodes[0].Nodes[0].Nodes[1]);
+        Assert.Equal(1, entry.Frame!.XTile);
+        Assert.Equal("actors", entry.Frame.Tilesheet);
+        var grid = Descendants(editor).OfType<PropertyGrid>().Single();
+        var properties = Assert.IsType<SpriteProperties>(grid.SelectedObject);
+        properties.NudgeX = 9; properties.CollisionLeft = 2;
+        Assert.Equal(9, entry.NudgeX); Assert.Equal(2, entry.AdjustCollisionArea.Left);
+        var preview = Descendants(editor).OfType<SpritePreviewControl>().Single();
+        var canvas = preview.Controls.OfType<UserControl>().Single();
+        using var before = new Bitmap(canvas.Width, canvas.Height);
+        canvas.DrawToBitmap(before, canvas.ClientRectangle);
+        entry.Visible = false; editor.SelectSprite(entry);
+        using var after = new Bitmap(canvas.Width, canvas.Height);
+        canvas.DrawToBitmap(after, canvas.ClientRectangle);
+        Assert.NotEqual(before.GetPixel(45, 45), after.GetPixel(45, 45));
+        Assert.Empty(editor.UpdateValidation());
+    });
+
     [Fact]
     public void CollectionEditingSaveAsAndPreviewDoNotPolluteRuntime() => Sta(directory =>
     {
@@ -99,3 +149,4 @@ public sealed class InteractionTests
         if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
     }
 }
+

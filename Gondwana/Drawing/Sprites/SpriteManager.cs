@@ -91,7 +91,18 @@ public string DefaultCollisionProfile
 
         var sprite = new Sprite(sceneLayer, frame, profileName);
         sprite.Nickname = id;
-        SpriteCreated?.Invoke(sprite);
+        try
+        {
+            SpriteCreated?.Invoke(sprite);
+        }
+        catch
+        {
+            // The caller cannot roll back an instance that never returned from CreateSprite.
+            lock (_spriteListLock)
+                _spriteList.Remove(sprite);
+            sprite.DisposeImmediate();
+            throw;
+        }
         return sprite;
     }
 

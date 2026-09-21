@@ -3,7 +3,9 @@ namespace Gondwana.Drawing.Sprites.GSPR;
 /// <summary>Non-mutating structural validation; authoring paths are never opened.</summary>
 public static class SpriteDefinitionValidator
 {
-    public static IReadOnlyList<string> Validate(SpriteDefinition definition)
+    public static IReadOnlyList<string> Validate(SpriteDefinition definition) => Validate(definition, false);
+
+    internal static IReadOnlyList<string> Validate(SpriteDefinition definition, bool allowDuplicateNicknames)
     {
         ArgumentNullException.ThrowIfNull(definition);
         var errors = new List<string>();
@@ -16,7 +18,7 @@ public static class SpriteDefinitionValidator
             if (sprite is null) { errors.Add("Sprites cannot contain null entries."); continue; }
             var label = $"Sprite '{sprite.Nickname ?? sprite.Id.ToString()}'";
             if (sprite.Id != Guid.Empty && !ids.Add(sprite.Id)) errors.Add($"{label}: duplicate Id.");
-            if (!string.IsNullOrWhiteSpace(sprite.Nickname) && !names.Add(sprite.Nickname)) errors.Add($"{label}: duplicate Nickname.");
+            if (!string.IsNullOrWhiteSpace(sprite.Nickname) && !names.Add(sprite.Nickname) && !allowDuplicateNicknames) errors.Add($"{label}: duplicate Nickname.");
             if (string.IsNullOrWhiteSpace(sprite.SceneId)) errors.Add($"{label}: SceneId is required.");
             if (string.IsNullOrWhiteSpace(sprite.SceneLayerId)) errors.Add($"{label}: SceneLayerId is required.");
             // A default/unassigned frame is valid in the existing Sprite persistence contract.

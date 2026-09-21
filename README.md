@@ -179,7 +179,7 @@ Runtime packages are available on NuGet. Install only the pieces your project ne
 | --- | --- | --- |
 | **Gondwana.Templates** | `dotnet new install Gondwana.Templates` | Project templates for `gondwana-winforms`, `gondwana-avalonia`, and `gondwana-blazor` |
 | **Gondwana.Cli** | `dotnet tool install --global Gondwana.Cli` | The `gondwana` CLI for creating projects, checking an environment with `gondwana doctor`, and packing or inspecting asset files |
-| **Gondwana.Tooling.Studio.WinForms** | Build from `Tooling/Gondwana.Tooling.Studio.WinForms` | Combined Windows authoring shell hosting the standalone GAF/GTS/GANI/GSND/GSCN editor controls with nested docking |
+| **Gondwana.Tooling.Studio.WinForms** | Build from `Tooling/Gondwana.Tooling.Studio.WinForms` | Combined Windows authoring shell hosting the standalone GAF/GTS/GANI/GSND/GSCN/GSPR editor controls with nested docking |
 
 ---
 
@@ -232,3 +232,4 @@ Gondwana uses **[Skia](https://skia.org/)** (© Google), licensed under the [BSD
 ## ☕ Support Gondwana
 
 Gondwana is developed and maintained independently. If you find the engine useful, consider [buying me a coffee](https://www.buymeacoffee.com/mikeleeisback) to support its continued development.
+

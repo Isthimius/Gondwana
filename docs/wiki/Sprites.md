@@ -842,7 +842,7 @@ SpriteManager.Instance.Clear();
 
 ## Saving sprites with EngineState
 
-Sprites are included when `EngineStateParts.Sprites` is selected:
+Sprites are included as one clean GSPR collection when `EngineStateParts.Sprites` is selected. Use `separateGsprFile: true` to write one external collection file, or leave it false for an inline definition. See [[.gspr Files|GSPR-Files]].
 
 ```csharp
 Engine.Instance.State.SaveToFile(
@@ -1009,3 +1009,4 @@ Relevant source files:
 - [`Gondwana/Drawing/Collisions/TileCollider.cs`](https://isthimius.github.io/Gondwana/api/latest/TileCollider_8cs_source.html)
 - [`Gondwana/Physics/Movement/MovementController.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementController_8cs_source.html)
 - [`Gondwana/Scenes/SceneLayer.cs`](https://isthimius.github.io/Gondwana/api/latest/SceneLayer_8cs_source.html)
+

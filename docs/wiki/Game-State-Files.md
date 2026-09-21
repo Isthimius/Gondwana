@@ -409,7 +409,7 @@ GANI frame entries reference tilesheets by logical name, region, and coordinates
 
 For a partial state file that must restore independently, save its required `Tilesheets` along with its `Cycles`.
 
-The `separateGaniFiles`, `separateGtsFiles`, `separateGscnFiles`, and `separateGsndFile` choices are independent.
+The `separateGaniFiles`, `separateGtsFiles`, `separateGscnFiles`, `separateGsndFile`, and `separateGsprFile` choices are independent.
 
 For the animation-definition format itself, see [[GANI Files]].
 
@@ -678,3 +678,8 @@ For the implementation details behind state serialization, including snapshot co
 The distinction is intentional:
 
 **Game State Files** explains how a game uses persisted state. **Serialization and EngineState** explains how Gondwana implements it.
+
+## External sprite collections
+
+`separateGsprFile: true` writes one `<state-name>.sprites.gspr` holding all captured sprites and stores a relative GsprPath. The default embeds the same collection inline. Legacy raw Sprite arrays remain readable. See [[.gspr Files|GSPR-Files]].
+

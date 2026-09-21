@@ -51,7 +51,7 @@ internal sealed class MainForm : Form
         Add(file, "&New", Keys.Control | Keys.N, NewDocument);
         Add(file, "&Open GSPR…", Keys.Control | Keys.O, OpenFiles);
         Add(file, "Add &GTS…", Keys.Control | Keys.Shift | Keys.T, ChooseTilesheets);
-        Add(file, "Add G&ANI…", Keys.Control | Keys.Shift | Keys.A, ChooseScenes);
+        Add(file, "Add G&SCN…", Keys.Control | Keys.Shift | Keys.A, ChooseScenes);
         Add(file, "Open working &directory…", Keys.None, ChooseDirectory);
         Add(file, "&Save", Keys.Control | Keys.S, () =>
         {
@@ -318,7 +318,7 @@ internal sealed class MainForm : Form
     {
         using var dialog = new OpenFileDialog
         {
-            Filter = "Gondwana animations|*.gscn",
+            Filter = "Gondwana scenes|*.gscn",
             Multiselect = true,
             InitialDirectory = _directory
         };

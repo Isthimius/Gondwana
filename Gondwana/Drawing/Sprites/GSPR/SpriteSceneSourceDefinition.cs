@@ -15,8 +15,8 @@ public enum SpriteSceneSourceKind
 }
 
 /// <summary>
-/// Describes an authoring-time source for a logical sceneId referenced by a GSPR definition.
-/// Runtime scene materialization continues to resolve frame references through the sceneId registry.
+/// Describes an authoring-time source for a logical scene referenced by a GSPR definition.
+/// Runtime sprite materialization resolves scene identities against already loaded scenes.
 /// </summary>
 public sealed class SpriteSceneSourceDefinition
 {

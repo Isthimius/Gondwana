@@ -45,6 +45,14 @@ internal sealed class SpritePreviewControl : UserControl
             _projection = layer is null ? null : new ProjectionLayer(layer);
             _entry = entry;
             _source = source;
+            if (entry is not null && (!float.IsFinite(entry.Position.X) || !float.IsFinite(entry.Position.Y) ||
+                !float.IsFinite(entry.Rotation) || entry.RenderSize.Width < 0 || entry.RenderSize.Height < 0))
+            {
+                _entry = null;
+                _bounds = Rectangle.Empty;
+                SetZoom(Zoom);
+                return;
+            }
             _anchor = entry is null || _projection is null ? Point.Empty : Point.Round(_projection.GridToWorldPx(entry.Position));
             var size = entry?.RenderSize ?? Size.Empty;
             int x = _anchor.X + (entry?.NudgeX ?? 0), y = _anchor.Y + (entry?.NudgeY ?? 0);
@@ -86,8 +94,20 @@ internal sealed class SpritePreviewControl : UserControl
             if (_entry.Visible && _entry.Frame is { } frame && _source?.Image is { } image && _source.TryResolve(frame, out _, out var bounds))
                 g.DrawImage(image, _bounds, bounds, GraphicsUnit.Pixel);
             g.DrawRectangle(Pens.Gray, _bounds);
-            if (_entry.CollisionsEnabled) g.DrawRectangle(Pens.LimeGreen, _entry.AdjustCollisionArea.ApplyTo(_bounds));
             g.Restore(state);
+            // Runtime Tile.CollisionArea is axis-aligned and uses the logical draw bounds.
+            if (_entry.CollisionsEnabled)
+            {
+                var adjust = _entry.AdjustCollisionArea;
+                if (_entry.AdjustCollisionAreaByFrame && _entry.Frame is { } collisionFrame &&
+                    _source is not null && _source.TryResolve(collisionFrame, out var region, out _) && region is not null)
+                {
+                    adjust = region.Frames.FirstOrDefault(frame => frame.XTile == collisionFrame.XTile && frame.YTile == collisionFrame.YTile)?.CollisionAdjust
+                        ?? region.CollisionAdjust;
+                }
+                var collision = adjust.ApplyTo(_bounds);
+                if (collision.Width > 0 && collision.Height > 0) g.DrawRectangle(Pens.LimeGreen, collision);
+            }
         }
         protected override void Dispose(bool disposing) { if (disposing) _projection?.Dispose(); base.Dispose(disposing); }
     }

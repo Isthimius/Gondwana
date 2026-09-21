@@ -344,6 +344,7 @@ public sealed class EngineState
     /// referenced from the engine-state file. If <c>false</c>, the GSND definition is
     /// embedded inline in the engine-state JSON.
     /// </param>
+    /// <param name="separateGsprFile">Writes the complete sprite collection to one external GSPR file.</param>
     public void SaveToFile(string path,
                            bool compress = false,
                            bool separateGtsFiles = false,
@@ -762,7 +763,7 @@ public sealed class EngineState
                     var definition = !string.IsNullOrWhiteSpace(entry.GsprPath)
                         ? SpriteDefinitionSerializer.Load(ResolvePath(entry.GsprPath, baseDirectory))
                         : entry.Definition ?? throw new InvalidDataException("Sprite state entry requires GsprPath or Definition.");
-                    incoming = SpriteDefinitionSerializer.ToSprites(definition);
+                    incoming = SpriteDefinitionSerializer.ToSprites(definition, allowDuplicateNicknames: true);
                     DetachSnapshotSprites(incoming);
                 }
                 MergeSprites(incoming, overwriteExisting);
@@ -788,7 +789,14 @@ public sealed class EngineState
             Scene.ClearAllScenes();
 
         if (parts.HasFlag(EngineStateParts.Sprites))
-            SpriteManager.Instance.Clear();
+        {
+            // EngineState replacement is synchronous; normal game-loop disposal is deferred.
+            foreach (var sprite in SpriteManager.Instance.AllSprites)
+            {
+                SpriteManager.Instance._spriteList.Remove(sprite);
+                sprite.DisposeImmediate();
+            }
+        }
 
         if (parts.HasFlag(EngineStateParts.Audio))
             AudioResourceManager.Instance.Dispose();
@@ -1345,17 +1353,17 @@ public sealed class EngineState
             if (string.IsNullOrWhiteSpace(incoming.Nickname))
                 incoming.Nickname = Guid.NewGuid().ToString();
 
-            if (!seenIncoming.Add(incoming.Nickname))
-            {
-                // Same-ID appears again in the incoming list: last one wins.
-                overwriteExisting = true;
-            }
+            bool duplicateIncoming = !seenIncoming.Add(incoming.Nickname);
 
             if (existingIndexById.TryGetValue(incoming.Nickname, out int existingIndex))
             {
-                if (!overwriteExisting)
+                if (!overwriteExisting && !duplicateIncoming)
+                {
+                    incoming.DisposeImmediate();
                     continue;
+                }
 
+                SpriteManager.Instance._spriteList[existingIndex].DisposeImmediate();
                 SpriteManager.Instance._spriteList[existingIndex] = incoming;
             }
             else
