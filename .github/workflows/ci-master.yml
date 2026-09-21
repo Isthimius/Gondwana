@@ -22,7 +22,7 @@ permissions:
   contents: read
   actions: read
 jobs:
-  tilesheet-editor-tests:
+  winforms-editor-tests:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
