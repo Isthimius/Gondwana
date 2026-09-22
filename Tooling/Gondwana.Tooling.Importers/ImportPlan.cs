@@ -34,7 +34,7 @@ public sealed class ImportPlan(ExternalImportRequest request)
     {
         foreach (var error in SceneDefinitionValidator.Validate(definition)) Report(ExternalImportSeverity.Error, "native.validation", error);
         definition.Source = SceneDefinitionSource.Generated();
-        Add(filename, "GSCN", null, Encoding.UTF8.GetBytes(SceneDefinitionSerializer.ToJson(definition)));
+        Add(filename, "GSCN", definition.ID, Encoding.UTF8.GetBytes(SceneDefinitionSerializer.ToJson(definition)));
     }
 
     public void Add(string filename, string kind, string? key, byte[] content)
@@ -67,6 +67,7 @@ public sealed class ImportPlan(ExternalImportRequest request)
 /// <summary>Providers build an in-memory plan. Only this shared pipeline writes files.</summary>
 public abstract class ExternalAssetImporter : IExternalAssetImporter
 {
+    private static readonly SemaphoreSlim WriteGate = new(1, 1);
     public abstract string Id { get; }
     public abstract string DisplayName { get; }
     public abstract IReadOnlyList<string> SupportedExtensions { get; }
@@ -82,7 +83,7 @@ public abstract class ExternalAssetImporter : IExternalAssetImporter
             plan.Dependencies.Add(Path.GetFullPath(request.SourcePath));
             BuildPlan(plan, token);
         }
-        catch (Exception ex) when (ex is IOException or InvalidDataException or UnauthorizedAccessException or FormatException or OverflowException or ArgumentException or System.Xml.XmlException)
+        catch (Exception ex) when (ex is IOException or InvalidDataException or UnauthorizedAccessException or FormatException or OverflowException or ArgumentException or System.Xml.XmlException or System.Text.Json.JsonException or KeyNotFoundException)
         {
             plan.Report(ExternalImportSeverity.Error, "source.invalid", ex.Message);
         }
@@ -93,6 +94,13 @@ public abstract class ExternalAssetImporter : IExternalAssetImporter
 
     public ExternalImportResult Import(ExternalImportRequest request, CancellationToken cancellationToken = default)
     {
+        WriteGate.Wait(cancellationToken);
+        try { return ImportCore(request, cancellationToken); }
+        finally { WriteGate.Release(); }
+    }
+
+    private ExternalImportResult ImportCore(ExternalImportRequest request, CancellationToken cancellationToken)
+    {
         var (plan, analysis) = Prepare(request, cancellationToken);
         if (!analysis.CanImport) return new(analysis, []);
         cancellationToken.ThrowIfCancellationRequested();
@@ -100,6 +108,7 @@ public abstract class ExternalAssetImporter : IExternalAssetImporter
         var stage = Path.Combine(Path.GetFullPath(request.OutputDirectory), ".gondwana-import-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(stage);
         var committed = new List<(string Target, string? Backup)>();
+        bool cleanup = true;
         try
         {
             for (int i = 0; i < plan.Outputs.Count; i++)
@@ -125,13 +134,17 @@ public abstract class ExternalAssetImporter : IExternalAssetImporter
         }
         catch
         {
-            foreach (var (target, backup) in committed.AsEnumerable().Reverse())
+            try
             {
-                File.Delete(target);
-                if (backup is not null) File.Move(backup, target);
+                foreach (var (target, backup) in committed.AsEnumerable().Reverse())
+                {
+                    File.Delete(target);
+                    if (backup is not null) File.Move(backup, target);
+                }
             }
+            catch { cleanup = false; throw new IOException($"Import rollback could not complete. Recovery files remain in {stage}."); }
             throw;
         }
-        finally { Directory.Delete(stage, recursive: true); }
+        finally { if (cleanup) Directory.Delete(stage, recursive: true); }
     }
 }

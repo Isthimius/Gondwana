@@ -227,6 +227,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Importers"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Importers.Tests", "Testing\Gondwana.Tooling.Importers.Tests\Gondwana.Tooling.Importers.Tests.csproj", "{377B88D7-6EA7-42F2-BD3C-718DBC59E09B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Studio.Plugin.ExternalImport", "Tooling\Gondwana.Tooling.Studio.Plugin.ExternalImport\Gondwana.Tooling.Studio.Plugin.ExternalImport.csproj", "{EA6A761D-AD76-4EB5-9094-D5517792B537}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1033,6 +1035,22 @@ Global
 		{377B88D7-6EA7-42F2-BD3C-718DBC59E09B}.Release|x64.Build.0 = Release|Any CPU
 		{377B88D7-6EA7-42F2-BD3C-718DBC59E09B}.Release|x86.ActiveCfg = Release|Any CPU
 		{377B88D7-6EA7-42F2-BD3C-718DBC59E09B}.Release|x86.Build.0 = Release|Any CPU
+		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Debug|x64.Build.0 = Debug|Any CPU
+		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Debug|x86.Build.0 = Debug|Any CPU
+		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Release|x64.ActiveCfg = Release|Any CPU
+		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Release|x64.Build.0 = Release|Any CPU
+		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Release|x86.ActiveCfg = Release|Any CPU
+		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1079,6 +1097,7 @@ Global
 		{61D946ED-3063-4B95-A502-3855FEE97485} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
 		{F323CE2C-57FB-4F47-B3D2-6B73C9BECC0A} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
 		{377B88D7-6EA7-42F2-BD3C-718DBC59E09B} = {9E16DEC8-4A17-4DE9-B359-132983D65993}
+		{EA6A761D-AD76-4EB5-9094-D5517792B537} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A027047D-3D9C-4015-B3E0-DEEAE46DA4CC}

@@ -139,6 +139,12 @@ public sealed record AsepriteFile(int Width, int Height, int Depth, uint Flags, 
                     case 0x2006:
                         if ((r.ReadUInt32() & 1) != 0) throw new InvalidDataException("Precise/scaled cel bounds are unsupported.");
                         break;
+                    case 0x2007:
+                        int profile = r.ReadUInt16(), profileFlags = r.ReadUInt16();
+                        if (profile == 2 || profileFlags != 0)
+                            throw new InvalidDataException("Embedded ICC and custom-gamma Aseprite color profiles are unsupported.");
+                        report(ExternalImportSeverity.Info, "aseprite.profile", "Color profile metadata is omitted; pixel values are preserved.");
+                        break;
                     case 0x2008:
                     case 0x2023:
                         throw new InvalidDataException("External Aseprite dependencies and tilemaps are unsupported.");
