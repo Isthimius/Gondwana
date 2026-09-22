@@ -35,6 +35,7 @@ public sealed class AnimationEditorTests
                 {
                     Tilesheet = "actors",
                     RegionName = "walk",
+                    DurationSeconds = 0.375,
                     XTile = 2,
                     YTile = 1
                 });
@@ -60,6 +61,7 @@ public sealed class AnimationEditorTests
             Assert.Equal("walk", frame.RegionName);
             Assert.Equal(2, frame.XTile);
             Assert.Equal(1, frame.YTile);
+            Assert.Equal(0.375, frame.DurationSeconds);
             Assert.False(loaded.IsDirty);
         }
         finally

@@ -63,6 +63,7 @@ public class Cycle : ICloneable, IDisposable
     {
         Sequence = fromCycle.Sequence;
         _throttle = fromCycle._throttle;
+        _throttleTime = fromCycle._throttleTime;
         NextCycle = this;
         CycleKey = fromCycle.CycleKey;
     }
@@ -81,6 +82,20 @@ public class Cycle : ICloneable, IDisposable
     #region public properties
 
     private double _throttleTime;
+
+    /// <summary>Effective duration of the currently displayed frame.</summary>
+    [JsonIgnore]
+    public double CurrentFrameDurationSeconds =>
+        Sequence.GetDurationSeconds(Sequence.CurrentFrameIdx) ?? ThrottleTime;
+
+    internal long CurrentFrameThrottle
+    {
+        get
+        {
+            var ticks = CurrentFrameDurationSeconds * HighResTimer.TicksPerSecond;
+            return !double.IsFinite(ticks) || ticks < 1 || ticks >= long.MaxValue ? 0 : (long)ticks;
+        }
+    }
 
     /// <summary>
     /// Gets or sets the time in seconds between frame transitions in the animation cycle
@@ -104,6 +119,18 @@ public class Cycle : ICloneable, IDisposable
     {
         get
         {
+            if (Enumerable.Range(0, Sequence.FrameCount).Any(i => Sequence.GetDurationSeconds(i).HasValue))
+            {
+                double total = 0;
+                for (int i = 0; i < Sequence.FrameCount; i++)
+                {
+                    double duration = Sequence.GetDurationSeconds(i) ?? ThrottleTime;
+                    total += duration;
+                    if (Sequence.SequenceCycleType == CycleType.PingPong && i > 0 && i < Sequence.FrameCount - 1)
+                        total += duration;
+                }
+                return total;
+            }
             switch (Sequence.SequenceCycleType)
             {
                 case CycleType.Simple:

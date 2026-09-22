@@ -72,6 +72,48 @@ public sealed class AnimationGaniTests : IDisposable
         Assert.Equal(1, restored.Sequence[1].XTile);
     }
 
+    [Theory]
+    [InlineData(CycleType.Simple, 0.6)]
+    [InlineData(CycleType.Repeating, 0.6)]
+    [InlineData(CycleType.PingPong, 0.8)]
+    public void MixedDurationsRoundTripAndFollowDisplayedFrame(CycleType type, double total)
+    {
+        var sheet = CreateTilesheet();
+        var sequence = new FrameSequence([sheet.GetFrame(0, 0), sheet.GetFrame(1, 0), sheet.GetFrame(0, 0)])
+        { SequenceCycleType = type };
+        sequence.SetDurationSeconds(0, 0.1);
+        sequence.SetDurationSeconds(2, 0.3);
+        var original = new Cycle(sequence, 0.2, "mixed");
+        var definition = AnimationDefinitionSerializer.FromJson(AnimationDefinitionSerializer.ToJson(original));
+        original.Dispose();
+        var cycle = AnimationDefinitionSerializer.ToCycle(definition);
+        Assert.Null(definition.Frames[1].DurationSeconds);
+        Assert.Equal(total, cycle.TotalCycleTime, 8);
+        Assert.Equal(0.1, cycle.CurrentFrameDurationSeconds);
+        cycle.Sequence.AdvanceFrame();
+        Assert.Equal(0.2, cycle.CurrentFrameDurationSeconds);
+        cycle.Sequence.AdvanceFrame();
+        Assert.Equal(0.3, cycle.CurrentFrameDurationSeconds);
+        cycle.Sequence.AdvanceFrame();
+        Assert.Equal(type == CycleType.PingPong ? 0.2 : type == CycleType.Repeating ? 0.1 : 0.3,
+            cycle.CurrentFrameDurationSeconds);
+        var clone = (Cycle)cycle.Clone();
+        Assert.Equal(0.2, clone.ThrottleTime);
+        clone.Sequence.SetDurationSeconds(0, 0.9);
+        Assert.Equal(0.1, cycle.Sequence.GetDurationSeconds(0));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(double.NaN)]
+    [InlineData(double.PositiveInfinity)]
+    public void InvalidFrameDurationsAreRejected(double duration)
+    {
+        var definition = new AnimationDefinition { Key = "invalid", Frames = [new() { Tilesheet = "test", DurationSeconds = duration }] };
+        Assert.Contains(AnimationDefinitionValidator.Validate(definition), e => e.Contains("DurationSeconds"));
+    }
+
     [Fact]
     public void Definition_ResolvesRegisteredTilesheetFrames()
     {

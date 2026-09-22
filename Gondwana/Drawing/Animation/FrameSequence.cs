@@ -21,6 +21,25 @@ public struct FrameSequence : IEnumerable<Frame>
     [JsonProperty]
     private List<Frame> frameList;
 
+    [JsonProperty]
+    private List<double?>? frameDurations;
+
+    /// <summary>Gets the optional display duration for a frame occurrence.</summary>
+    public double? GetDurationSeconds(int index) =>
+        frameDurations is not null && index < frameDurations.Count ? frameDurations[index] : null;
+
+    /// <summary>Sets a positive display duration, or null to use the cycle default.</summary>
+    public void SetDurationSeconds(int index, double? seconds)
+    {
+        if (index < 0 || index >= FrameCount) throw new ArgumentOutOfRangeException(nameof(index));
+        if (seconds is { } duration && (!double.IsFinite(duration) || duration <= 0))
+            throw new ArgumentOutOfRangeException(nameof(seconds));
+        // Copy on write: cloned cycles share images, but editing timing must not change the original.
+        frameDurations = frameDurations is null ? new List<double?>() : new(frameDurations);
+        while (frameDurations.Count < FrameCount) frameDurations.Add(null);
+        frameDurations[index] = seconds;
+    }
+
     private int currentFrameIdx;
     private int curFrameIncrement;
     private bool cycleFinished;
@@ -175,7 +194,14 @@ public struct FrameSequence : IEnumerable<Frame>
     public void RemoveFrame(int idx)
     {
         if (idx < frameList.Count)
+        {
             frameList.RemoveAt(idx);
+            if (frameDurations is not null && idx < frameDurations.Count)
+            {
+                frameDurations = new(frameDurations);
+                frameDurations.RemoveAt(idx);
+            }
+        }
     }
 
     /// <summary>

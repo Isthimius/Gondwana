@@ -116,7 +116,12 @@ public static class AnimationDefinitionSerializer
             HideTileOnCycleEnd = cycle.HideTileOnCycleEnd,
             NextCycleKey = cycle.NextCycle?.CycleKey,
             Frames = cycle.Sequence.FrameList
-                .Select(CreateFrameDefinition)
+                .Select((frame, index) =>
+                {
+                    var definition = CreateFrameDefinition(frame);
+                    definition.DurationSeconds = cycle.Sequence.GetDurationSeconds(index);
+                    return definition;
+                })
                 .ToList(),
             Source = AnimationDefinitionSource.Generated()
         };
@@ -181,6 +186,9 @@ public static class AnimationDefinitionSerializer
         {
             SequenceCycleType = definition.CycleType
         };
+
+        for (int i = 0; i < definition.Frames.Count; i++)
+            sequence.SetDurationSeconds(i, definition.Frames[i].DurationSeconds);
 
         return new Cycle(
             sequence,

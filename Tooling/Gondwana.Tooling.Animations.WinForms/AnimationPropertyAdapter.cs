@@ -8,6 +8,25 @@ internal sealed class AnimationPropertyAdapter
 {
     private readonly AnimationDocument _document;
 
+    [Browsable(false)]
+    public int SelectedFrameIndex { get; set; } = -1;
+
+    [Category("Selected frame")]
+    [Description("Display duration in seconds. Clear to use Throttle time. Select a frame in the frame list first.")]
+    public double? DurationSeconds
+    {
+        get => SelectedFrameIndex >= 0 && SelectedFrameIndex < _document.Definition.Frames.Count
+            ? _document.Definition.Frames[SelectedFrameIndex].DurationSeconds : null;
+        set
+        {
+            if (SelectedFrameIndex < 0 || SelectedFrameIndex >= _document.Definition.Frames.Count) return;
+            if (value is { } duration && (!double.IsFinite(duration) || duration <= 0))
+                throw new ArgumentOutOfRangeException(nameof(value), "Duration must be finite and positive.");
+            _document.Definition.Frames[SelectedFrameIndex].DurationSeconds = value;
+            _document.MarkChanged();
+        }
+    }
+
     public AnimationPropertyAdapter(AnimationDocument document)
     {
         _document = document;
