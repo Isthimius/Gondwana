@@ -18,6 +18,7 @@ public sealed class DockLayoutTests
     [InlineData(typeof(Gondwana.Tooling.Animations.WinForms.AnimationEditorControl))]
     [InlineData(typeof(Gondwana.Tooling.Audio.WinForms.AudioEditorControl))]
     [InlineData(typeof(Gondwana.Tooling.Scenes.WinForms.SceneEditorControl))]
+    [InlineData(typeof(Gondwana.Tooling.Sprites.WinForms.SpriteEditorControl))]
     public void StandaloneShellRestoresHiddenToolAndViewResetsIt(Type editorType) => Sta(() =>
     {
         Form Open()
@@ -83,6 +84,7 @@ public sealed class DockLayoutTests
     [InlineData("gani", 5)]
     [InlineData("gsnd", 3)]
     [InlineData("gscn", 7)]
+    [InlineData("gspr", 6)]
     public void EditorSplitTabsSizingVisibilityRecoveryAndResetSurviveNewInstances(string kind, int count) => Sta(() =>
     {
         string[] names;
@@ -164,26 +166,29 @@ public sealed class DockLayoutTests
     });
 
     [Theory]
-    [InlineData("malformed")]
-    [InlineData("unknown")]
-    [InlineData("partial-load-failure")]
-    public void BadAndStalePreferencesDoNotPreventEditorStartup(string fault) => Sta(() =>
+    [InlineData("malformed", "gscn")]
+    [InlineData("malformed", "gspr")]
+    [InlineData("unknown", "gscn")]
+    [InlineData("unknown", "gspr")]
+    [InlineData("partial-load-failure", "gscn")]
+    [InlineData("partial-load-failure", "gspr")]
+    public void BadAndStalePreferencesDoNotPreventEditorStartup(string fault, string kind) => Sta(() =>
     {
-        using (var editor = Editor("gscn"))
+        using (var editor = Editor(kind))
             Panes(editor.Model).Single(p => p.Text == "Validation").Hide();
-        if (fault == "malformed") File.WriteAllText(Layout("gscn"), "<broken");
+        if (fault == "malformed") File.WriteAllText(Layout(kind), "<broken");
         else
         {
-            var xml = XDocument.Load(Layout("gscn"));
+            var xml = XDocument.Load(Layout(kind));
             if (fault == "unknown")
-                xml.Root!.Element("Contents")!.Elements().Single(e => (string?)e.Attribute("PersistString") == "gscn.gani-animations")
+                xml.Root!.Element("Contents")!.Elements().Single(e => (string?)e.Attribute("PersistString") == (kind == "gspr" ? "gspr.scene-sources" : "gscn.gani-animations"))
                     .SetAttributeValue("PersistString", "plugin.removed");
             else xml.Root!.Element("Panes")!.Elements().First().SetAttributeValue("ActiveContent", "9999");
-            xml.Save(Layout("gscn"));
+            xml.Save(Layout(kind));
         }
-        using var restored = Editor("gscn");
-        Assert.Equal(7, Panes(restored.Model).Length);
-        Assert.True(restored.Model.IsPaneVisible("GANI animations"));
+        using var restored = Editor(kind);
+        Assert.Equal(kind == "gspr" ? 6 : 7, Panes(restored.Model).Length);
+        Assert.True(restored.Model.IsPaneVisible(kind == "gspr" ? "GSCN scene/layer sources" : "GANI animations"));
         Assert.Equal(fault != "unknown", restored.Model.IsPaneVisible("Validation"));
         restored.Model.ShowAllPanes();
         Assert.All(Panes(restored.Model), pane => Assert.False(pane.IsHidden));

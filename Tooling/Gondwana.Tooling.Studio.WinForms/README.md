@@ -1,7 +1,7 @@
 # Gondwana Studio
 
 Gondwana Studio is the Windows authoring shell for `.gaf` / `.zip` asset
-containers, `.gts` tilesheets, `.gani` animations, `.gsnd` sounds, and `.gscn`
+containers, `.gts` tilesheets, `.gani` animations, `.gsnd` sounds, `.gspr` sprite collections, and `.gscn`
 scenes. It hosts the same public editor controls as the standalone utilities.
 It does not require a GameHost or a running game loop.
 
@@ -13,7 +13,7 @@ dotnet run --project Tooling/Gondwana.Tooling.Studio.WinForms --configuration Re
 
 Choose **File > Open working directory…** to browse authoring files. Directories
 expand lazily. Double-click files or use **File > Open…**; opening a path already
-in the workspace activates its existing document. **File > New** offers all five
+in the workspace activates its existing document. **File > New** offers all six
 formats. GAF creation asks for a destination and optional password protection.
 
 **Save**, **Save As**, and **Close** operate on the active outer document. A `*`
@@ -35,10 +35,11 @@ file commands, document tracking, and plugin contributions. Each
 | GANI | `AnimationEditorControl` | `AnimationDocument` |
 | GSND | `AudioEditorControl` | `AudioDocument` |
 | GSCN | `SceneEditorControl` | `SceneDocument` |
+| GSPR | `SpriteEditorControl` | `SpriteDocument` |
 
 The internal `StudioDocument` adapter binds shell operations to those existing
 APIs. It owns no alternate format model, serializer, dependency resolver, or
-editor implementation. Studio directly references the five tooling projects.
+editor implementation. Studio directly references the six tooling projects.
 The existing project path and `Gondwana.Studio.WinForms` assembly name remain.
 
 Each editor owns its **inner** docking surface. Its panes stay inside that
@@ -80,7 +81,7 @@ and the baseline `Gondwana.Tests` suite.
 
 DockPanelSuite layouts are saved per user under
 `%LOCALAPPDATA%/Hidden Worlds Games/Gondwana/Tooling/<entry-application>/Docking/`.
-Outer tool windows and each editor type (GAF, GTS, GANI, GSND, GSCN) have separate
+Outer tool windows and each editor type (GAF, GTS, GANI, GSND, GSCN, GSPR) have separate
 profiles. Dock locations, tabs, splits, relative sizes, and hidden-pane visibility
 survive restart. Studio and the standalone executables use independent profiles.
 New documents use their editor type's last saved arrangement, regardless of file path.

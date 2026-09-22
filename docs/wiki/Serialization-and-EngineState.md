@@ -906,7 +906,7 @@ The restore order remains important: tilesheets are restored before scenes, allo
 
 ### Sprite scene-layer identity
 
-Sprites are serialized separately from scenes, but a sprite still needs to know which restored `SceneLayer` owns it.
+New saves persist one GSPR `SpriteDefinition` collection, inline or via one external `GsprPath`. They do not serialize runtime Sprite graphs. Each `SpriteInstanceDefinition` identifies the canonical SceneLayer that owns it. See [[.gspr Files|GSPR-Files]].
 
 New EngineState files therefore persist stable identifiers on each sprite:
 

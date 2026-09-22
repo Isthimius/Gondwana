@@ -108,10 +108,11 @@ The `gondwana` command-line tool.
 - `Tooling/Gondwana.Tooling.Animations.WinForms/`
 - `Tooling/Gondwana.Tooling.Audio.WinForms/`
 - `Tooling/Gondwana.Tooling.Scenes.WinForms/`
+- `Tooling/Gondwana.Tooling.Sprites.WinForms/`
 - `Tooling/Gondwana.Tooling.Tilesheets.WinForms/`
 - `Tooling/scripts/`
 
-The standalone GTS/GAF/GANI/GSND/GSCN WinForms editors are reusable authoring controls hosted directly by Studio.WinForms. Studio owns outer documents and global tools; every editor owns its inner docking surface. The internal Studio document adapter only binds lifecycle, saving, dirty state, and pane recovery to the existing editor APIs. Studio.Core contains plugin infrastructure and shell Output state, not format editors. The deprecated Studio Avalonia prototype has been removed. See `Tooling/Gondwana.Tooling.Studio.WinForms/README.md` and `Testing/Gondwana.Tooling.Studio.WinForms.Tests/` for composition and lifecycle coverage. Tooling is supplemental; runtime projects do not require Studio, a GameHost for authoring, or an editor-owned project format. Layout persistence and EngineState project composition are not implemented in the shell.
+The standalone GTS/GAF/GANI/GSND/GSCN/GSPR WinForms editors are reusable authoring controls hosted directly by Studio.WinForms. Studio owns outer documents and global tools; every editor owns its inner docking surface. The internal Studio document adapter only binds lifecycle, saving, dirty state, and pane recovery to the existing editor APIs. Studio.Core contains plugin infrastructure and shell Output state, not format editors. The deprecated Studio Avalonia prototype has been removed. See `Tooling/Gondwana.Tooling.Studio.WinForms/README.md` and `Testing/Gondwana.Tooling.Studio.WinForms.Tests/` for composition and lifecycle coverage. Tooling is supplemental; runtime projects do not require Studio, a GameHost for authoring, or an editor-owned project format. Shared docking infrastructure persists layouts by editor and entry application. EngineState project composition is not implemented in the shell.
 
 ## Repository-Level References
 

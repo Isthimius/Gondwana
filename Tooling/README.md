@@ -55,16 +55,16 @@ Studio rather than reimplemented there.
 
 ## Gondwana Studio
 
-Studio composes the five standalone authoring controls in one WinForms shell:
+Studio composes the six standalone authoring controls in one WinForms shell:
 
 - [`Gondwana.Tooling.Studio.Core`](./Gondwana.Tooling.Studio.Core/)  
   UI-independent plugin infrastructure and shell Output state.
 
 - [`Gondwana.Tooling.Studio.WinForms`](./Gondwana.Tooling.Studio.WinForms/)  
-  Combined Windows authoring shell for GAF/ZIP, GTS, GANI, GSND, and GSCN.
+  Combined Windows authoring shell for GAF/ZIP, GTS, GANI, GSND, GSCN, and GSPR.
   See its [embedding and architecture documentation](./Gondwana.Tooling.Studio.WinForms/README.md).
 
-The newer standalone GAF/GTS/GANI/GSND/GSCN editors are the authoritative
+The newer standalone GAF/GTS/GANI/GSND/GSCN/GSPR editors are the authoritative
 format-specific authoring surfaces. Studio hosts them directly as individual
 outer documents; each reusable UserControl owns its nested docking workspace.
 Working directory and Output are global tools. View restores global and active
@@ -91,14 +91,14 @@ Studio prototype and its duplicate editor stack have been retired.
 
 These projects are development tooling. Gondwana games do not require the
 authoring applications or Studio at runtime. File formats such as GAF, GTS, GANI,
-GSND, and GSCN are defined by the engine/runtime projects; the tools edit those
+GSND, GSCN, and GSPR are defined by the engine/runtime projects; the tools edit those
 formats rather than introducing editor-only equivalents.
 
 ## Dock layout preferences
 
 DockPanelSuite layouts are saved per user under
 `%LOCALAPPDATA%/Hidden Worlds Games/Gondwana/Tooling/<entry-application>/Docking/`.
-Outer tool windows and each editor type (GAF, GTS, GANI, GSND, GSCN) have separate
+Outer tool windows and each editor type (GAF, GTS, GANI, GSND, GSCN, GSPR) have separate
 profiles. Dock locations, tabs, splits, relative sizes, and hidden-pane visibility
 survive restart. Studio and the standalone executables use independent profiles.
 New documents use their editor type's last saved arrangement, regardless of file path.
@@ -114,3 +114,8 @@ no source-document paths or unsaved content are stored, and documents are never 
 on startup. Missing or corrupt preferences fall back to defaults without a dialog.
 Available plugin tools in Studio use stable plugin identities; missing plugins are ignored.
 Changes are saved after a short settling interval and flushed on disposal.
+
+
+### Sprite authoring
+
+[Gondwana.Tooling.Sprites.WinForms](Gondwana.Tooling.Sprites.WinForms/README.md) edits collection-oriented GSPR files. The standalone shell and Studio share SpriteEditorControl, with GSCN/GTS sources, property editing, preview, validation, and independently scoped persisted layouts.

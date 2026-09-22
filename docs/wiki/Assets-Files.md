@@ -99,6 +99,10 @@ The current `AssetTypes` categories are:
 | `Misc` | General miscellaneous data; currently not directly interpreted by the engine |
 | `Svg` | Scalable vector graphics |
 | `TilesheetDefinition` | Gondwana `.gts` tilesheet definitions |
+| `SceneDefinition` | Gondwana `.gscn` scene definitions |
+| `AnimationDefinition` | Gondwana `.gani` animation definitions |
+| `AudioDefinition` | Gondwana `.gsnd` sound collections |
+| `SpriteDefinition` | Gondwana `.gspr` sprite collections (numeric value 11) |
 
 The type is primarily classification metadata.
 

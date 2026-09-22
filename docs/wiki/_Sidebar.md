@@ -21,6 +21,7 @@
   - [[Coordinate Spaces]]
   - [[Coordinate Systems]]
 - [[Sprites]]
+  - [[.gspr Files|GSPR-Files]]
 - [[Views, Cameras, and Viewports]]
   - [[Parallax and Multi-View Rendering]]
   - [[Using Views and Cameras]]

@@ -101,6 +101,31 @@ public sealed class SpriteCompositionTests : IDisposable
         Assert.Equal(new Vector2(1, 0), clone.GetPosition());
     }
 
+    [Fact]
+    public void CloneSprite_WhenCreationCallbackThrows_RollsBackClone()
+    {
+        SceneLayer layer = CreateLayer(
+            columns: 10,
+            rows: 10,
+            tileWidth: 32,
+            tileHeight: 16);
+
+        Sprite source = CreateSprite(layer, new Vector2(2, 3));
+        Sprite[] before = [.. SpriteManager.Instance.AllSprites];
+
+        void Fail(Sprite sprite) => throw new InvalidOperationException("Creation failed");
+        SpriteManager.Instance.SpriteCreated += Fail;
+        try
+        {
+            Assert.Throws<InvalidOperationException>(() => SpriteManager.Instance.CloneSprite(source, layer));
+            Assert.Equal(before, SpriteManager.Instance.AllSprites);
+        }
+        finally
+        {
+            SpriteManager.Instance.SpriteCreated -= Fail;
+        }
+    }
+
     public void Dispose()
     {
         foreach (Sprite sprite in _sprites)
