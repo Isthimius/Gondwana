@@ -30,6 +30,31 @@ public sealed class TilesheetGtsParityTests : IDisposable
             Directory.Delete(_tempDir, recursive: true);
     }
 
+    [Theory]
+    [InlineData(-2, true)]
+    [InlineData(-3, false)]
+    public void TrailingMarginOnlyCancelsFinalPadding(int trailing, bool valid)
+    {
+        var definition = new TilesheetDefinition
+        {
+            Name = "spacing",
+            Image = new() { FilePath = CreateImageFile("spacing.png", 52, 16) },
+            Regions = [new() { Area = new Rectangle(0, 0, 52, 16), TileSize = new Size(16, 16),
+                TilePadding = new Spacing { Right = 2 }, RegionMargin = new Spacing { Right = trailing } }]
+        };
+        var errors = TilesheetDefinitionValidator.Validate(definition, 52, 16);
+        Assert.Equal(valid, errors.Count == 0);
+        if (!valid)
+        {
+            Assert.Throws<InvalidOperationException>(() => TilesheetFactory.FromDefinition(definition));
+            return;
+        }
+        var restored = TilesheetDefinitionSerializer.FromJson(TilesheetDefinitionSerializer.ToJson(definition));
+        using var sheet = TilesheetFactory.FromDefinition(restored);
+        Assert.Equal(3, sheet.GetRegion(TilesheetRegion.DefaultRegionName)!.Columns);
+        Assert.Equal((3L, 1L), TilesheetDefinitionValidator.GridSize(restored.Regions[0]));
+    }
+
     /// <summary>
     /// Verifies that all persistent file-backed tilesheet and region metadata survives
     /// runtime-to-definition-to-runtime conversion.

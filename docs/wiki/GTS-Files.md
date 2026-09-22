@@ -459,3 +459,18 @@ The engine-state file stores relative references to those definitions when possi
 7. Load through `TilesheetRegistry` when you want a registered runtime tilesheet; load through `TilesheetDefinitionSerializer` when a tool only needs the definition.
 
 That is the complete practical model: the `.gts` says what the tilesheet is, provenance says where that definition came from, and the image reference says where its pixels live.
+## Inter-tile spacing and trailing margins
+
+Use `TilePadding.Right` and `TilePadding.Bottom` for spacing between atlas cells,
+with leading padding zero. Grid sizing counts padding in every stride. To avoid
+requiring a final gap after the last tile, set trailing `RegionMargin` to the
+source's trailing image margin minus that axis's spacing. For symmetric source
+margin M and spacing S, leading margins are M and trailing margins are M - S.
+
+Leading margins must be non-negative. Right and Bottom may be negative only down
+to `-TilePadding.Right` and `-TilePadding.Bottom`, respectively. This compensates
+for a final padding interval without permitting frame pixels beyond the region.
+For example, three 16-pixel tiles separated by 2-pixel gaps fit a 52-pixel region
+using right padding 2 and right margin -2. Runtime and Studio validation enforce
+these bounds; there is no separate tile-separation property.
+
