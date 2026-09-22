@@ -65,4 +65,70 @@ public sealed class TiledImportTests : IDisposable
         Assert.Contains(result.Analysis.Diagnostics, d => d.Message.Contains("Collection-of-images"));
         Assert.False(Directory.Exists(request.OutputDirectory));
     }
+
+    [Theory]
+    [InlineData("orthogonal")]
+    [InlineData("isometric")]
+    public void MapImportsMixedTilesetsEmptyCellsAndAnimation(string orientation)
+    {
+        Tileset();
+        File.WriteAllText(Path.Combine(directory, "second.tsx"), File.ReadAllText(Path.Combine(directory, "terrain.tsx")).Replace("name=\"terrain\"", "name=\"second\""));
+        var source = Path.Combine(directory, "level.tmx");
+        File.WriteAllText(source, $"""
+            <map orientation="{orientation}" width="3" height="1" tilewidth="2" tileheight="2">
+              <tileset firstgid="1" source="terrain.tsx"/><tileset firstgid="5" source="second.tsx"/>
+              <group visible="0" offsetx="4"><layer width="3" height="1"><data encoding="csv">1,0,6</data></layer></group>
+              <objectgroup name="objects"/>
+            </map>
+            """);
+        var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var scene = Gondwana.Scenes.GSCN.SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "level.gscn"));
+        Assert.Empty(Gondwana.Scenes.GSCN.SceneDefinitionValidator.Validate(scene));
+        var layer = Assert.Single(scene.Layers);
+        Assert.Equal(2, layer.Tiles.Count);
+        Assert.False(layer.Visible);
+        Assert.Equal(orientation == "orthogonal" ? -4 : -5, layer.OriginPx.X);
+        Assert.Equal("terrain", layer.Tiles[0].Frame!.Tilesheet);
+        Assert.Equal("second", layer.Tiles[1].Frame!.Tilesheet);
+        Assert.True(layer.Tiles[0].StartAnimation);
+        Assert.Equal(1, layer.Tiles[0].Frame!.XTile);
+        Assert.Equal(2, layer.Tiles[1].X);
+        Assert.Equal(2, scene.AnimationSources.Count);
+        Assert.Contains(result.Analysis.Diagnostics, d => d.Code == "tiled.layer.unsupported");
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("zlib")]
+    [InlineData("gzip")]
+    public void DecodesBase64Layer(string compression)
+    {
+        byte[] raw = [1, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0];
+        using var memory = new MemoryStream();
+        if (compression.Length == 0) memory.Write(raw);
+        else
+        {
+            using Stream compressed = compression == "zlib"
+                ? new System.IO.Compression.ZLibStream(memory, System.IO.Compression.CompressionLevel.Optimal, true)
+                : new System.IO.Compression.GZipStream(memory, System.IO.Compression.CompressionLevel.Optimal, true);
+            compressed.Write(raw);
+        }
+        var data = System.Xml.Linq.XElement.Parse($"<data encoding='base64' compression='{compression}'>{Convert.ToBase64String(memory.ToArray())}</data>");
+        Assert.Equal(new uint[] { 1, 0, 6 }, TiledMapImporter.DecodeLayer(data, 3));
+    }
+
+    [Fact]
+    public void XmlDataAndTransformDiagnostics()
+    {
+        Assert.Equal(new uint[] { 1, 0 }, TiledMapImporter.DecodeLayer(System.Xml.Linq.XElement.Parse("<data><tile gid='1'/><tile gid='0'/></data>"), 2));
+        Tileset();
+        string source = Path.Combine(directory, "flipped.tmx");
+        File.WriteAllText(source, "<map orientation='orthogonal' width='1' height='1' tilewidth='2' tileheight='2'><tileset firstgid='1' source='terrain.tsx'/><layer><data encoding='csv'>2147483649</data></layer></map>");
+        var result = new TiledMapImporter().Import(new(source, Path.Combine(directory, "output")));
+        Assert.False(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics, d => d.Code == "tiled.transform");
+        Assert.Empty(result.WrittenFiles);
+    }
 }
