@@ -28,6 +28,20 @@ Tooling/Gondwana.Tooling.Studio.WinForms/bin/Release/net8.0-windows/plugins/
   Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.dll
 ```
 
+The configurations must match. A Release plugin is not discovered by a Debug
+Studio because each application output has its own `plugins/` directory. For a
+normal Visual Studio/F5 or default `dotnet run` session, build the Debug plugin:
+
+```console
+dotnet build Tooling/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics -c Debug
+dotnet run --project Tooling/Gondwana.Tooling.Studio.WinForms -c Debug --no-build
+```
+
+An empty **Plugins** menu means that this Studio executable discovered no menu-
+contributing plugin. Confirm that its own output directory contains
+`plugins/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.dll`, then restart
+Studio; discovery occurs only at startup.
+
 Studio itself has no reference to this project. Building only Studio leaves
 plugin deployment unchanged; build the plugin again after editing it. Close
 Studio before rebuilding a loaded DLL. To remove the plugin, close Studio and

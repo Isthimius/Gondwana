@@ -149,6 +149,7 @@ public class StudioPluginHost
         /// PluginLoadContext.
         /// </summary>
         /// <param name="dllPath">dllPath.</param>
+        /// <param name="sharedContracts">Contract assemblies supplied by the host/default load context.</param>
         public PluginLoadContext(string dllPath, Assembly[] sharedContracts)
             : base(name: $"studio-plugin:{Path.GetFileNameWithoutExtension(dllPath)}", isCollectible: true)
         {
