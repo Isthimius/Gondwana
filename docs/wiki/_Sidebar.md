@@ -99,14 +99,8 @@
   <summary><strong>Dialogs</strong></summary>
 
   - [[AboutBox|Widgets---AboutBox]]
-  - [[DialogBox|Widgets---DialogBox]] — base class for custom dialogs
-
-  </details>
-
-- <details>
-  <summary><strong>Dialogue</strong></summary>
-
   - [[ConversationBox|Widgets---ConversationBox]]
+  - [[DialogBox|Widgets---DialogBox]] — base class for custom dialogs
 
   </details>
 
