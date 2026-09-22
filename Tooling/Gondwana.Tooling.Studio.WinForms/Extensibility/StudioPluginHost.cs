@@ -12,7 +12,7 @@ public sealed class StudioPluginHost : CoreHost
     /// StudioPluginHost.
     /// </summary>
     /// <param name="log">Logging callback.</param>
-    public StudioPluginHost(Action<string> log) : base(log)
+    public StudioPluginHost(Action<string> log) : base(log, typeof(IStudioPlugin).Assembly)
     {
     }
 
