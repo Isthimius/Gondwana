@@ -64,6 +64,16 @@ contract and its WinForms extension to contribute global panels and menu items.
 The working-directory lifecycle invokes the existing project-open/close hooks;
 this does not imply an EngineState project format.
 
+[Project Diagnostics](../Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/README.md)
+is the first working plugin and the reference for writing another one. It adds a
+dockable authoring-file/reference report and **Plugins > Project Diagnostics >
+Rescan**. Building its project or the solution automatically deploys its DLL
+under Studio's output `plugins/` directory. Build that project before the run
+command above to include it. Studio works without it; all six editors remain
+built in. The loader shares Core and WinForms contracts with the host to preserve
+interface identity across plugin load contexts. See the plugin README for
+lifecycle, deployment, dependency rules, and a minimal plugin example.
+
 The deprecated Studio Avalonia prototype and duplicate Studio format editors
 have been retired. The runtime Avalonia adapters and game templates are
 unaffected. EngineState project composition is a separate follow-up. Studio

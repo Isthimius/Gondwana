@@ -15,4 +15,10 @@
     <ProjectReference Include="../../Tooling/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics.csproj" />
     <Using Include="Xunit" />
   </ItemGroup>
+  <Target Name="DeployPluginForIntegrationTests" AfterTargets="Build">
+    <ItemGroup>
+      <DiagnosticsPlugin Include="@(ReferenceCopyLocalPaths)" Condition="'%(Filename)' == 'Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics' and '%(Extension)' == '.dll'" />
+    </ItemGroup>
+    <Copy SourceFiles="@(DiagnosticsPlugin)" DestinationFolder="$(TargetDir)plugins" SkipUnchangedFiles="true" />
+  </Target>
 </Project>

@@ -138,6 +138,23 @@ public sealed class ProjectDiagnosticsTests : IDisposable
     }
 
     [Fact]
+    public void StudioDiscoversDeployedPluginAndHostsItsDockAndMenu() => RunSta(() =>
+    {
+        File.WriteAllText(FilePath("sample.gspr"), "{}");
+        using var studio = new Gondwana.Tooling.Studio.WinForms.MainForm();
+        studio.SetWorkingDirectory(_root);
+        var tool = Assert.Single(studio.Workspace.Contents.OfType<WeifenLuo.WinFormsUI.Docking.DockContent>(),
+            content => content.Text == "Project Diagnostics");
+        var menu = (ToolStripMenuItem)studio.MainMenuStrip!.Items["PluginsMenu"]!;
+        var pluginMenu = Assert.Single(menu.DropDownItems.OfType<ToolStripMenuItem>(), item => item.Text == "Project Diagnostics");
+        Assert.Equal("Rescan", pluginMenu.DropDownItems[0].Text);
+        var tree = Descendants(tool).OfType<TreeView>().Single();
+        PumpUntil(() => tree.Nodes.Count == 1);
+        Assert.Contains("sample.gspr", tree.Nodes[0].Text);
+        Assert.Same(studio.Workspace, tool.DockPanel);
+    });
+
+    [Fact]
     public void PluginPanelMenuAndLifecycleReplaceAndClearResults() => RunSta(() =>
     {
         File.WriteAllText(FilePath("first.gspr"), "{}");
