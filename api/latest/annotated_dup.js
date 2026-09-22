@@ -126,6 +126,14 @@ var annotated_dup =
           [ "TextBlock", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock" ]
         ] ],
         [ "Sprites", "namespaceGondwana_1_1Drawing_1_1Sprites.html", [
+          [ "GSPR", "namespaceGondwana_1_1Drawing_1_1Sprites_1_1GSPR.html", [
+            [ "SpriteDefinition", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinition.html", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinition" ],
+            [ "SpriteDefinitionSource", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinitionSource.html", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinitionSource" ],
+            [ "SpriteFrameDefinition", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteFrameDefinition.html", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteFrameDefinition" ],
+            [ "SpriteInstanceDefinition", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition" ],
+            [ "SpriteSceneSourceDefinition", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteSceneSourceDefinition.html", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteSceneSourceDefinition" ],
+            [ "SpriteTilesheetSourceDefinition", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteTilesheetSourceDefinition.html", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteTilesheetSourceDefinition" ]
+          ] ],
           [ "CompositeSprite", "classGondwana_1_1Drawing_1_1Sprites_1_1CompositeSprite.html", "classGondwana_1_1Drawing_1_1Sprites_1_1CompositeSprite" ],
           [ "Sprite", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite" ],
           [ "SpriteManager", "classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html", "classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager" ],

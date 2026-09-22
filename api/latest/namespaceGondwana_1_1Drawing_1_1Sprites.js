@@ -1,5 +1,6 @@
 var namespaceGondwana_1_1Drawing_1_1Sprites =
 [
+    [ "GSPR", "namespaceGondwana_1_1Drawing_1_1Sprites_1_1GSPR.html", "namespaceGondwana_1_1Drawing_1_1Sprites_1_1GSPR" ],
     [ "CompositeSprite", "classGondwana_1_1Drawing_1_1Sprites_1_1CompositeSprite.html", "classGondwana_1_1Drawing_1_1Sprites_1_1CompositeSprite" ],
     [ "Sprite", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html", "classGondwana_1_1Drawing_1_1Sprites_1_1Sprite" ],
     [ "SpriteManager", "classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html", "classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager" ],

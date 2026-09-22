@@ -323,6 +323,12 @@ var hierarchy =
     [ "global.SkiaSharpViews.Blazor.SKGLView", null, [
       [ "Gondwana.Blazor.Rendering.BlazorSkiaGlView", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorSkiaGlView.html", null ]
     ] ],
+    [ "Gondwana.Drawing.Sprites.GSPR.SpriteDefinition", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinition.html", null ],
+    [ "Gondwana.Drawing.Sprites.GSPR.SpriteDefinitionSource", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinitionSource.html", null ],
+    [ "Gondwana.Drawing.Sprites.GSPR.SpriteFrameDefinition", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteFrameDefinition.html", null ],
+    [ "Gondwana.Drawing.Sprites.GSPR.SpriteInstanceDefinition", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html", null ],
+    [ "Gondwana.Drawing.Sprites.GSPR.SpriteSceneSourceDefinition", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteSceneSourceDefinition.html", null ],
+    [ "Gondwana.Drawing.Sprites.GSPR.SpriteTilesheetSourceDefinition", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteTilesheetSourceDefinition.html", null ],
     [ "Gondwana.Drawing.Tilesheets.GTS.TilesheetDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinition.html", null ],
     [ "Gondwana.Drawing.Tilesheets.GTS.TilesheetDefinitionSource", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html", null ],
     [ "Gondwana.Drawing.Tilesheets.GTS.TilesheetFrameDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetFrameDefinition.html", null ],

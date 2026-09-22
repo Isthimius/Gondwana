@@ -14,6 +14,7 @@ var namespaceGondwana_1_1Assets =
       [ "TilesheetDefinition", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a1801c24952fa2488fee7afa49852a685", null ],
       [ "SceneDefinition", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a7fd64fb5bc53100c381715f071885f66", null ],
       [ "AnimationDefinition", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a530dd6d4d3b54c01a3ad040f8de79586", null ],
-      [ "AudioDefinition", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1af70d3c1295240449f0db0efcc4ee7482", null ]
+      [ "AudioDefinition", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1af70d3c1295240449f0db0efcc4ee7482", null ],
+      [ "SpriteDefinition", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a16a8098599916ee5dbf52c4972f241d3", null ]
     ] ]
 ];

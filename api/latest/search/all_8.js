@@ -33,7 +33,7 @@ var searchData=
   ['holdsec_30',['HoldSec',['../classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html#a5e162a6ca1d2675df3161bff370c4d63',1,'Gondwana::Widgets::Overlays::SplashScreen']]],
   ['home_31',['Home',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a8cf04a9734132302f96da8e113e80ce5',1,'Gondwana::Blazor::Input::Keyboard']]],
   ['homekey_32',['HomeKey',['../classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html#af941517ec369b0531d16d997d04c1e84',1,'Gondwana::Widgets::Controls::TextBoxWidget']]],
-  ['horizalign_33',['HorizAlign',['../classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#aa0c9cb286ffdd480798244f9e07a66ab',1,'Gondwana::Drawing::Sprites::Sprite']]],
+  ['horizalign_33',['HorizAlign',['../classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a3252dcfff4132cead215ac7d600bf1e0',1,'Gondwana.Drawing.Sprites.GSPR.SpriteInstanceDefinition.HorizAlign'],['../classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#aa0c9cb286ffdd480798244f9e07a66ab',1,'Gondwana.Drawing.Sprites.Sprite.HorizAlign']]],
   ['horizontal_34',['Horizontal',['../namespaceGondwana_1_1Widgets_1_1Layout.html#a173595ba9707fbd81c954faa018b5a42ac1b5fa03ecdb95d4a45dd1c40b02527f',1,'Gondwana::Widgets::Layout']]],
   ['horizontalalignment_35',['HorizontalAlignment',['../namespaceGondwana_1_1Drawing_1_1Sprites.html#ab3dde0a5b955ae7bce32212444fdf778',1,'Gondwana::Drawing::Sprites']]],
   ['horizontalpadding_36',['HorizontalPadding',['../classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a34b030cbc1c2cb02b7018546f027c662',1,'Gondwana::Drawing::Direct::TextBlock']]],

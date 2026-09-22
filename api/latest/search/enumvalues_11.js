@@ -18,13 +18,14 @@ var searchData=
   ['smoothstep_15',['SmoothStep',['../namespaceGondwana_1_1Physics_1_1Movement_1_1Easing.html#afc5970aaefa30a4c61cc1f800f15e5bcab4cb90d3e50a3e043cabff0b7be07f88',1,'Gondwana::Physics::Movement::Easing']]],
   ['solid_16',['Solid',['../namespaceGondwana_1_1Physics_1_1Collisions.html#a37c66388b8160dcd6146a1a759e987a5ae41480b6bbfbf7407974a88d3d34f4fa',1,'Gondwana::Physics::Collisions']]],
   ['space_17',['Space',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864ad511f8439ecde36647437fbba67a4394',1,'Gondwana::Blazor::Input::Keyboard']]],
-  ['sprites_18',['Sprites',['../namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575a0c8651846cd269d069a6a93ddbfaedbf',1,'Gondwana']]],
-  ['stationary_19',['Stationary',['../namespaceGondwana_1_1Input_1_1Touch.html#ae45771976c0d97929be599f0dac9a837a5146a957bfa51752bd6020691fda598e',1,'Gondwana::Input::Touch']]],
-  ['stopped_20',['Stopped',['../namespaceGondwana_1_1Audio.html#a973077d5a560e4e7b680cb56380053b9ac23e2b09ebe6bf4cb5e2a9abe85c0be2',1,'Gondwana::Audio']]],
-  ['stretch_21',['Stretch',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3afbb09a82eafab60150d0996e8fe46560',1,'Gondwana.Drawing.Direct.DirectImage.Stretch'],['../classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html#abb215c806adc4c504524cca236740751afbb09a82eafab60150d0996e8fe46560',1,'Gondwana.Drawing.Direct.DirectRectangle.Stretch']]],
-  ['stylus_22',['Stylus',['../namespaceGondwana_1_1Widgets.html#a4f23503be12c54428a2e6fb6efd473feaf9eccd07c9abd3e633298d3239fa3b98',1,'Gondwana::Widgets']]],
-  ['svg_23',['Svg',['../namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a1a9a612a14f347adfbf122cc7c0e985b',1,'Gondwana::Assets']]],
-  ['sw_24',['SW',['../namespaceGondwana_1_1Drawing_1_1Coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5a6f56aa4e2561eb66f17f6d8de8070a77',1,'Gondwana::Drawing::Coordinates']]],
-  ['swipe_25',['Swipe',['../namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#ac89a5051928081046ddb6e64f6cf563fa78076ce792c4640bf99c598c92bd69e7',1,'Gondwana::Input::Touch::Gestures']]],
-  ['synchronous_26',['Synchronous',['../namespaceGondwana_1_1Logging.html#a13d81980428de8344a144441d03b249da2fe4167817733fec8e6ba1afddf78f1b',1,'Gondwana::Logging']]]
+  ['spritedefinition_18',['SpriteDefinition',['../namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a16a8098599916ee5dbf52c4972f241d3',1,'Gondwana::Assets']]],
+  ['sprites_19',['Sprites',['../namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575a0c8651846cd269d069a6a93ddbfaedbf',1,'Gondwana']]],
+  ['stationary_20',['Stationary',['../namespaceGondwana_1_1Input_1_1Touch.html#ae45771976c0d97929be599f0dac9a837a5146a957bfa51752bd6020691fda598e',1,'Gondwana::Input::Touch']]],
+  ['stopped_21',['Stopped',['../namespaceGondwana_1_1Audio.html#a973077d5a560e4e7b680cb56380053b9ac23e2b09ebe6bf4cb5e2a9abe85c0be2',1,'Gondwana::Audio']]],
+  ['stretch_22',['Stretch',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3afbb09a82eafab60150d0996e8fe46560',1,'Gondwana.Drawing.Direct.DirectImage.Stretch'],['../classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html#abb215c806adc4c504524cca236740751afbb09a82eafab60150d0996e8fe46560',1,'Gondwana.Drawing.Direct.DirectRectangle.Stretch']]],
+  ['stylus_23',['Stylus',['../namespaceGondwana_1_1Widgets.html#a4f23503be12c54428a2e6fb6efd473feaf9eccd07c9abd3e633298d3239fa3b98',1,'Gondwana::Widgets']]],
+  ['svg_24',['Svg',['../namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a1a9a612a14f347adfbf122cc7c0e985b',1,'Gondwana::Assets']]],
+  ['sw_25',['SW',['../namespaceGondwana_1_1Drawing_1_1Coordinates.html#aa6e576eaf3606eeb09ed97f167eba7c5a6f56aa4e2561eb66f17f6d8de8070a77',1,'Gondwana::Drawing::Coordinates']]],
+  ['swipe_26',['Swipe',['../namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#ac89a5051928081046ddb6e64f6cf563fa78076ce792c4640bf99c598c92bd69e7',1,'Gondwana::Input::Touch::Gestures']]],
+  ['synchronous_27',['Synchronous',['../namespaceGondwana_1_1Logging.html#a13d81980428de8344a144441d03b249da2fe4167817733fec8e6ba1afddf78f1b',1,'Gondwana::Logging']]]
 ];
