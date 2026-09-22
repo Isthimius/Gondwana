@@ -137,9 +137,9 @@ public sealed class ProjectDiagnosticsScanner
                             case AudioResourceSourceKind.LooseFile: Reference(property + ".FilePath", resource.FilePath); break;
                             case AudioResourceSourceKind.PackedAsset: Reference(property + ".AssetsFilePath", resource.AssetsFilePath, resource.AssetEntryName, AssetTypes.Audio); break;
                             case AudioResourceSourceKind.Uri:
-                                var error = Uri.TryCreate(resource.SourceUri, UriKind.Absolute, out _) ? null : "Invalid absolute media URI.";
-                                references.Add(new(property + ".SourceUri", resource.SourceUri ?? "", null, error));
-                                if (error is not null) problems.Add(new(relative, property + ".SourceUri", error));
+                                // The public validator accepts both relative and absolute URIs.
+                                // Their resolution belongs to the audio backend, not the project filesystem.
+                                references.Add(new(property + ".SourceUri", resource.SourceUri ?? "", null, null));
                                 break;
                             default: Unsupported(property, (int)resource.SourceKind); break;
                         }

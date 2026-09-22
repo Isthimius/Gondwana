@@ -45,7 +45,7 @@ Studio distribution, place the built plugin DLL in that application's
 | GSCN | `TilesheetSources` and `AnimationSources`: GTS/GANI or packed entries |
 | GSPR | `TilesheetSources` and `SceneSources`: GTS/GSCN or packed entries |
 | GTS | `Image.FilePath` or `Image.AssetsFilePath` / `AssetEntryName` |
-| GSND | Loose media, GAF audio entries, and absolute media URI syntax |
+| GSND | Loose media, GAF audio entries, and media URI syntax via the public validator |
 | GAF | Public archive structure/key validation |
 
 Paths are resolved relative to the containing definition file, matching the
@@ -61,7 +61,9 @@ distinct: a loaded file can still have validation problems. GAF uses
 all media. Packed references use a detached `AssetsFile` and typed `Get`; missing
 entries and unreadable/password-protected packages become problems. No password
 prompt is presented. Packed definitions are not recursively inspected, media
-is not decoded, and URIs are not fetched. An existing loose reference is checked
+is not decoded, and URIs are not fetched or treated as project-relative file paths.
+Both relative and absolute audio URIs are supported by the current model.
+An existing loose reference is checked
 for existence; its target is parsed separately if discovered under the root.
 
 Scans skip `bin`, `obj`, `.git`, `.vs`, `node_modules`, and filesystem links or

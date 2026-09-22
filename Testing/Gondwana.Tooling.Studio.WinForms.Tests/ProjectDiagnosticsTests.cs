@@ -112,7 +112,8 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         AudioDefinitionSerializer.Save(FilePath("sound.gsnd"), new AudioDefinition
         {
             Resources = [new() { Key = "sound", FilePath = "missing.wav" },
-                new() { Key = "remote", SourceKind = AudioResourceSourceKind.Uri, SourceUri = "https://example.invalid/sound.ogg" }]
+                new() { Key = "remote", SourceKind = AudioResourceSourceKind.Uri, SourceUri = "https://example.invalid/sound.ogg" },
+                new() { Key = "relative-uri", SourceKind = AudioResourceSourceKind.Uri, SourceUri = "audio/sound.ogg" }]
         });
         var result = new ProjectDiagnosticsScanner().Scan(_root);
         var animation = result.Definitions.Single(d => d.Format == "GANI");
@@ -122,6 +123,8 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         var audio = result.Definitions.Single(d => d.Format == "GSND");
         Assert.Contains("not found", audio.References[0].Problem);
         Assert.Null(audio.References[1].Problem);
+        Assert.Null(audio.References[2].Problem);
+        Assert.Single(result.Problems, p => p.SourcePath == "sound.gsnd");
     }
 
     [Fact]
