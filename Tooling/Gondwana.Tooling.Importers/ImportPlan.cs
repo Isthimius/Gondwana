@@ -1,0 +1,137 @@
+using System.Text;
+using Gondwana.Drawing.Animation.GANI;
+using Gondwana.Drawing.Tilesheets.GTS;
+using Gondwana.Scenes.GSCN;
+
+namespace Gondwana.Tooling.Importers;
+
+/// <summary>Shared native serialization, validation and conflict analysis.</summary>
+public sealed class ImportPlan(ExternalImportRequest request)
+{
+    internal List<(ExternalImportArtifact Artifact, byte[] Content)> Outputs { get; } = [];
+    public List<string> Dependencies { get; } = [];
+    public List<ExternalImportDiagnostic> Diagnostics { get; } = [];
+    public ExternalImportRequest Request { get; } = request;
+
+    public void Report(ExternalImportSeverity severity, string code, string message) =>
+        Diagnostics.Add(new(severity, code, message, Request.SourcePath));
+
+    public void Add(string filename, TilesheetDefinition definition)
+    {
+        foreach (var error in TilesheetDefinitionValidator.Validate(definition)) Report(ExternalImportSeverity.Error, "native.validation", error);
+        definition.Source = TilesheetDefinitionSource.Generated();
+        Add(filename, "GTS", definition.Name, Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(definition)));
+    }
+
+    public void Add(string filename, AnimationDefinition definition)
+    {
+        foreach (var error in AnimationDefinitionValidator.Validate(definition)) Report(ExternalImportSeverity.Error, "native.validation", error);
+        definition.Source = AnimationDefinitionSource.Generated();
+        Add(filename, "GANI", definition.Key, Encoding.UTF8.GetBytes(AnimationDefinitionSerializer.ToJson(definition)));
+    }
+
+    public void Add(string filename, SceneDefinition definition)
+    {
+        foreach (var error in SceneDefinitionValidator.Validate(definition)) Report(ExternalImportSeverity.Error, "native.validation", error);
+        definition.Source = SceneDefinitionSource.Generated();
+        Add(filename, "GSCN", null, Encoding.UTF8.GetBytes(SceneDefinitionSerializer.ToJson(definition)));
+    }
+
+    public void Add(string filename, string kind, string? key, byte[] content)
+    {
+        if (filename != Path.GetFileName(filename) || filename is "." or "..")
+            throw new InvalidDataException("Generated output must be a filename within the output directory.");
+        Outputs.Add((new(kind, Path.Combine(Path.GetFullPath(Request.OutputDirectory), filename), key), content));
+    }
+
+    internal ExternalImportAnalysis Analyze(string providerId)
+    {
+        var paths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var (artifact, _) in Outputs)
+        {
+            if (!paths.Add(artifact.OutputPath)) Report(ExternalImportSeverity.Error, "output.duplicate", $"Duplicate output: {artifact.OutputPath}");
+            if (artifact.LogicalKey is { } key && !keys.Add(artifact.Kind + ":" + key))
+                Report(ExternalImportSeverity.Error, "key.duplicate", $"Duplicate {artifact.Kind} key: {key}");
+            if (Directory.Exists(artifact.OutputPath) || (File.Exists(artifact.OutputPath) && !Request.Overwrite))
+                Report(ExternalImportSeverity.Error, "output.exists", $"Output already exists: {artifact.OutputPath}. Enable overwrite to replace generated files.");
+            if (Dependencies.Append(Path.GetFullPath(Request.SourcePath)).Any(p => string.Equals(Path.GetFullPath(p), artifact.OutputPath, StringComparison.OrdinalIgnoreCase)))
+                Report(ExternalImportSeverity.Error, "output.source", $"Output would replace a source dependency: {artifact.OutputPath}");
+        }
+        foreach (var dependency in Dependencies.Distinct(StringComparer.OrdinalIgnoreCase))
+            if (!File.Exists(dependency)) Report(ExternalImportSeverity.Error, "dependency.missing", $"Missing source dependency: {dependency}");
+        return new(providerId, Dependencies.Distinct(StringComparer.OrdinalIgnoreCase).ToArray(), Outputs.Select(x => x.Artifact).ToArray(), Diagnostics.ToArray());
+    }
+}
+
+/// <summary>Providers build an in-memory plan. Only this shared pipeline writes files.</summary>
+public abstract class ExternalAssetImporter : IExternalAssetImporter
+{
+    public abstract string Id { get; }
+    public abstract string DisplayName { get; }
+    public abstract IReadOnlyList<string> SupportedExtensions { get; }
+    public virtual bool CanImport(string sourcePath) => SupportedExtensions.Contains(Path.GetExtension(sourcePath), StringComparer.OrdinalIgnoreCase);
+    protected abstract void BuildPlan(ImportPlan plan, CancellationToken cancellationToken);
+
+    private (ImportPlan Plan, ExternalImportAnalysis Analysis) Prepare(ExternalImportRequest request, CancellationToken token)
+    {
+        var plan = new ImportPlan(request);
+        try
+        {
+            token.ThrowIfCancellationRequested();
+            plan.Dependencies.Add(Path.GetFullPath(request.SourcePath));
+            BuildPlan(plan, token);
+        }
+        catch (Exception ex) when (ex is IOException or InvalidDataException or UnauthorizedAccessException or FormatException or OverflowException or ArgumentException or System.Xml.XmlException)
+        {
+            plan.Report(ExternalImportSeverity.Error, "source.invalid", ex.Message);
+        }
+        return (plan, plan.Analyze(Id));
+    }
+
+    public ExternalImportAnalysis Analyze(ExternalImportRequest request, CancellationToken cancellationToken = default) => Prepare(request, cancellationToken).Analysis;
+
+    public ExternalImportResult Import(ExternalImportRequest request, CancellationToken cancellationToken = default)
+    {
+        var (plan, analysis) = Prepare(request, cancellationToken);
+        if (!analysis.CanImport) return new(analysis, []);
+        cancellationToken.ThrowIfCancellationRequested();
+        Directory.CreateDirectory(request.OutputDirectory);
+        var stage = Path.Combine(Path.GetFullPath(request.OutputDirectory), ".gondwana-import-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(stage);
+        var committed = new List<(string Target, string? Backup)>();
+        try
+        {
+            for (int i = 0; i < plan.Outputs.Count; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                File.WriteAllBytes(Path.Combine(stage, i.ToString()), plan.Outputs[i].Content);
+            }
+            for (int i = 0; i < plan.Outputs.Count; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var target = plan.Outputs[i].Artifact.OutputPath;
+                string? backup = null;
+                if (File.Exists(target) && request.Overwrite)
+                {
+                    backup = Path.Combine(stage, i + ".backup");
+                    File.Move(target, backup);
+                }
+                try { File.Move(Path.Combine(stage, i.ToString()), target); }
+                catch { if (backup is not null) File.Move(backup, target); throw; }
+                committed.Add((target, backup));
+            }
+            return new(analysis, committed.Select(x => x.Target).ToArray());
+        }
+        catch
+        {
+            foreach (var (target, backup) in committed.AsEnumerable().Reverse())
+            {
+                File.Delete(target);
+                if (backup is not null) File.Move(backup, target);
+            }
+            throw;
+        }
+        finally { Directory.Delete(stage, recursive: true); }
+    }
+}
