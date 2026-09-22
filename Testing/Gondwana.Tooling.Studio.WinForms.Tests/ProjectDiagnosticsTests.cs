@@ -1,14 +1,23 @@
 using System.Runtime.ExceptionServices;
+using System.Reflection;
 using Gondwana.Assets;
 using Gondwana.Drawing.Animation.GANI;
+using Gondwana.Logging;
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Audio.GSND;
 using Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
+[CollectionDefinition("Project diagnostics global state", DisableParallelization = true)]
+public sealed class ProjectDiagnosticsGlobalStateCollection
+{
+}
+
+[Collection("Project diagnostics global state")]
 public sealed class ProjectDiagnosticsTests : IDisposable
 {
     private readonly string _root = Path.Combine(Path.GetTempPath(), "GondwanaDiagnostics-" + Guid.NewGuid().ToString("N"));
@@ -128,6 +137,34 @@ public sealed class ProjectDiagnosticsTests : IDisposable
     }
 
     [Fact]
+    public void ReusesLoadedPackedArchiveAcrossReferencesWithinScan()
+    {
+        using (var assets = AssetsFile.LoadOrCreate(FilePath("assets.gaf"), null, false, register: false))
+        {
+            using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes("{}"));
+            assets.Add(AssetTypes.TilesheetDefinition, "tiles-1", stream);
+            assets.Add(AssetTypes.TilesheetDefinition, "tiles-2", () => new MemoryStream(System.Text.Encoding.UTF8.GetBytes("{}")));
+            assets.Save();
+        }
+        AnimationDefinitionSerializer.Save(FilePath("walk.gani"), new AnimationDefinition
+        {
+            TilesheetSources =
+            [
+                AnimationTilesheetSourceDefinition.Packed("tiles-1", "assets.gaf", "tiles-1"),
+                AnimationTilesheetSourceDefinition.Packed("tiles-2", "assets.gaf", "tiles-2"),
+                AnimationTilesheetSourceDefinition.Packed("missing", "assets.gaf", "missing")
+            ]
+        });
+
+        using var logging = new EngineLoggerCaptureScope();
+
+        var result = new ProjectDiagnosticsScanner().Scan(_root);
+
+        Assert.Equal(1, logging.Messages.Count(message => message == "Loading assets file."));
+        Assert.Contains(result.Problems, p => p.Property == "TilesheetSources[2].AssetsFilePath");
+    }
+
+    [Fact]
     public void RescanReplacesResultsAndSupportsCancellation()
     {
         File.WriteAllText(FilePath("first.gspr"), "{}");
@@ -210,5 +247,84 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         thread.Start();
         thread.Join();
         if (error is not null) ExceptionDispatchInfo.Capture(error).Throw();
+    }
+
+    private sealed class EngineLoggerCaptureScope : IDisposable
+    {
+        private static readonly FieldInfo LoggerFactoryField =
+            typeof(EngineLogger).GetField("_loggerFactory", BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        private static readonly FieldInfo ExternalFactoryField =
+            typeof(EngineLogger).GetField("_usingExternalLoggerFactory", BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        private static readonly FieldInfo LoggerCacheField =
+            typeof(EngineLogger).GetField("_loggerCache", BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        private readonly object? _originalFactory = LoggerFactoryField.GetValue(null);
+        private readonly bool _originalExternalFactory = (bool)ExternalFactoryField.GetValue(null)!;
+        private readonly EngineLoggingMode _originalMode = EngineLogger.Mode;
+
+        public List<string> Messages { get; } = [];
+
+        public EngineLoggerCaptureScope()
+        {
+            EngineLogger.SwitchToSyncAndFlush();
+            LoggerFactoryField.SetValue(null, new CapturingLoggerFactory(Messages));
+            ExternalFactoryField.SetValue(null, true);
+            LoggerCacheField.GetValue(null)!.GetType()
+                .GetMethod(nameof(System.Collections.IDictionary.Clear))!
+                .Invoke(LoggerCacheField.GetValue(null), null);
+        }
+
+        public void Dispose()
+        {
+            LoggerFactoryField.SetValue(null, _originalFactory);
+            ExternalFactoryField.SetValue(null, _originalExternalFactory);
+            LoggerCacheField.GetValue(null)!.GetType()
+                .GetMethod(nameof(System.Collections.IDictionary.Clear))!
+                .Invoke(LoggerCacheField.GetValue(null), null);
+            EngineLogger.Mode = _originalMode;
+        }
+    }
+
+    private sealed class CapturingLoggerFactory(List<string> messages) : ILoggerFactory
+    {
+        public void AddProvider(ILoggerProvider provider)
+        {
+        }
+
+        public ILogger CreateLogger(string categoryName) => new CapturingLogger(messages);
+
+        public void Dispose()
+        {
+        }
+    }
+
+    private sealed class CapturingLogger(List<string> messages) : ILogger
+    {
+        public IDisposable BeginScope<TState>(TState state)
+            where TState : notnull =>
+            NoOpScope.Instance;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            Exception? exception,
+            Func<TState, Exception?, string> formatter)
+        {
+            messages.Add(formatter(state, exception));
+        }
+    }
+
+    private sealed class NoOpScope : IDisposable
+    {
+        public static NoOpScope Instance { get; } = new();
+
+        public void Dispose()
+        {
+        }
     }
 }

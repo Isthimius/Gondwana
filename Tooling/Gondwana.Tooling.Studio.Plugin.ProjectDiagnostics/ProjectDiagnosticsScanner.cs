@@ -22,42 +22,53 @@ public sealed class ProjectDiagnosticsScanner
         var definitions = new List<DefinitionResult>();
         var problems = new List<ProjectProblem>();
         var pending = new Stack<string>();
+        var packages = new Dictionary<string, AssetsFile>(StringComparer.OrdinalIgnoreCase);
         pending.Push(root);
-        while (pending.TryPop(out var directory))
+        try
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            try
+            while (pending.TryPop(out var directory))
             {
-                foreach (var entry in Directory.EnumerateFileSystemEntries(directory))
+                cancellationToken.ThrowIfCancellationRequested();
+                try
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    try
+                    foreach (var entry in Directory.EnumerateFileSystemEntries(directory))
                     {
-                        var attributes = File.GetAttributes(entry);
-                        // Do not follow links/junctions outside the project or into cycles.
-                        if ((attributes & FileAttributes.ReparsePoint) != 0) continue;
-                        if ((attributes & FileAttributes.Directory) != 0)
+                        cancellationToken.ThrowIfCancellationRequested();
+                        try
                         {
-                            if (!IgnoredDirectories.Contains(Path.GetFileName(entry))) pending.Push(entry);
+                            var attributes = File.GetAttributes(entry);
+                            // Do not follow links/junctions outside the project or into cycles.
+                            if ((attributes & FileAttributes.ReparsePoint) != 0) continue;
+                            if ((attributes & FileAttributes.Directory) != 0)
+                            {
+                                if (!IgnoredDirectories.Contains(Path.GetFileName(entry))) pending.Push(entry);
+                            }
+                            else if (Extensions.Contains(Path.GetExtension(entry)))
+                                definitions.Add(Inspect(root, entry, problems, packages, cancellationToken));
                         }
-                        else if (Extensions.Contains(Path.GetExtension(entry)))
-                            definitions.Add(Inspect(root, entry, problems, cancellationToken));
-                    }
-                    catch (Exception ex) when (ex is not OperationCanceledException)
-                    {
-                        problems.Add(new(Path.GetRelativePath(root, entry), "Discovery", ex.Message));
+                        catch (Exception ex) when (ex is not OperationCanceledException)
+                        {
+                            problems.Add(new(Path.GetRelativePath(root, entry), "Discovery", ex.Message));
+                        }
                     }
                 }
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    problems.Add(new(Path.GetRelativePath(root, directory), "Discovery", ex.Message));
+                }
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+            return new(definitions.OrderBy(d => d.RelativePath, StringComparer.OrdinalIgnoreCase).ToArray(), problems.ToArray());
+        }
+        finally
+        {
+            foreach (var package in packages.Values)
             {
-                problems.Add(new(Path.GetRelativePath(root, directory), "Discovery", ex.Message));
+                package.Dispose();
             }
         }
-        return new(definitions.OrderBy(d => d.RelativePath, StringComparer.OrdinalIgnoreCase).ToArray(), problems.ToArray());
     }
 
-    private static DefinitionResult Inspect(string root, string path, List<ProjectProblem> problems, CancellationToken token)
+    private static DefinitionResult Inspect(string root, string path, List<ProjectProblem> problems, Dictionary<string, AssetsFile> packages, CancellationToken token)
     {
         var relative = Path.GetRelativePath(root, path);
         var references = new List<DefinitionReference>();
@@ -186,7 +197,11 @@ public sealed class ProjectDiagnosticsScanner
                 if (assetType is not null)
                 {
                     if (string.IsNullOrWhiteSpace(entry)) throw new InvalidDataException("Packed reference AssetEntryName is empty.");
-                    using var package = AssetsFile.LoadOrCreate(resolved, null, false, register: false);
+                    if (!packages.TryGetValue(resolved, out var package))
+                    {
+                        package = AssetsFile.LoadOrCreate(resolved, null, false, register: false);
+                        packages.Add(resolved, package);
+                    }
                     using var stream = package.Get(assetType.Value, entry);
                     if (stream is null) throw new FileNotFoundException($"Packed {assetType} entry not found: {entry}");
                 }
