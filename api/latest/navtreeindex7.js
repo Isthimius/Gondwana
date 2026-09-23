@@ -1,5 +1,9 @@
 var NAVTREEINDEX7 =
 {
+"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteSceneSourceDefinition.html#abe5936b10e45bfd34caf808337afb8c6":[1,0,0,5,3,0,4,0],
+"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteTilesheetSourceDefinition.html":[0,0,0,5,4,0,5],
+"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteTilesheetSourceDefinition.html":[1,0,0,5,3,0,5],
+"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteTilesheetSourceDefinition.html#a27a5b0594262897ef86aabcbb8cc3ccf":[0,0,0,5,4,0,5,4],
 "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteTilesheetSourceDefinition.html#a27a5b0594262897ef86aabcbb8cc3ccf":[1,0,0,5,3,0,5,4],
 "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteTilesheetSourceDefinition.html#a35fa6755a39b76328b3d47273fdd0ee1":[0,0,0,5,4,0,5,3],
 "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteTilesheetSourceDefinition.html#a35fa6755a39b76328b3d47273fdd0ee1":[1,0,0,5,3,0,5,3],
@@ -245,9 +249,5 @@ var NAVTREEINDEX7 =
 "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinition.html#a8dec06e6e8ba91b6be1e2c6da1540971":[1,0,0,5,4,0,0,5],
 "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html":[0,0,0,5,5,0,1],
 "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html":[1,0,0,5,4,0,1],
-"classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html#a0a1815ba86b3450dfcd52848a322b0d4":[0,0,0,5,5,0,1,3],
-"classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html#a0a1815ba86b3450dfcd52848a322b0d4":[1,0,0,5,4,0,1,3],
-"classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html#a664511d8759d2b553a9a08c4e9af0019":[0,0,0,5,5,0,1,0],
-"classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html#a664511d8759d2b553a9a08c4e9af0019":[1,0,0,5,4,0,1,0],
-"classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html#a80f8b51a74b4e9c99de4d60c7bea8c6f":[0,0,0,5,5,0,1,1]
+"classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html#a0a1815ba86b3450dfcd52848a322b0d4":[0,0,0,5,5,0,1,3]
 };

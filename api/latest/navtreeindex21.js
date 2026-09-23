@@ -1,5 +1,9 @@
 var NAVTREEINDEX21 =
 {
+"interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeContainer.html#ac991ccd89cf3855425924d84507af2c7":[1,0,0,5,2,15,2],
+"interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeContainer.html#afbef6fb60dd6105d79336467ad19ad7d":[0,0,0,5,3,15,1],
+"interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeContainer.html#afbef6fb60dd6105d79336467ad19ad7d":[1,0,0,5,2,15,1],
+"interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html":[0,0,0,5,3,16],
 "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html":[1,0,0,5,2,16],
 "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html#a227e62e198129037c15f7b2f5f30cf73":[0,0,0,5,3,16,3],
 "interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable.html#a227e62e198129037c15f7b2f5f30cf73":[1,0,0,5,2,16,3],
@@ -245,9 +249,5 @@ var NAVTREEINDEX21 =
 "namespaceGondwana_1_1Audio_1_1Midi.html":[0,0,0,1,2],
 "namespaceGondwana_1_1Audio_1_1NAudio.html":[0,0,0,1,3],
 "namespaceGondwana_1_1Avalonia.html":[0,0,0,2],
-"namespaceGondwana_1_1Avalonia_1_1Hosting.html":[0,0,0,2,0],
-"namespaceGondwana_1_1Avalonia_1_1Input.html":[0,0,0,2,1],
-"namespaceGondwana_1_1Avalonia_1_1Input_1_1Keyboard.html":[0,0,0,2,1,0],
-"namespaceGondwana_1_1Avalonia_1_1Input_1_1Mouse.html":[0,0,0,2,1,1],
-"namespaceGondwana_1_1Avalonia_1_1Input_1_1Touch.html":[0,0,0,2,1,2]
+"namespaceGondwana_1_1Avalonia_1_1Hosting.html":[0,0,0,2,0]
 };

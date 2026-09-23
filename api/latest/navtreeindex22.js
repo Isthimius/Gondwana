@@ -1,5 +1,9 @@
 var NAVTREEINDEX22 =
 {
+"namespaceGondwana_1_1Avalonia_1_1Input.html":[0,0,0,2,1],
+"namespaceGondwana_1_1Avalonia_1_1Input_1_1Keyboard.html":[0,0,0,2,1,0],
+"namespaceGondwana_1_1Avalonia_1_1Input_1_1Mouse.html":[0,0,0,2,1,1],
+"namespaceGondwana_1_1Avalonia_1_1Input_1_1Touch.html":[0,0,0,2,1,2],
 "namespaceGondwana_1_1Avalonia_1_1Rendering.html":[0,0,0,2,2],
 "namespaceGondwana_1_1Blazor.html":[0,0,0,3],
 "namespaceGondwana_1_1Blazor_1_1Hosting.html":[0,0,0,3,0],
@@ -245,9 +249,5 @@ var NAVTREEINDEX22 =
 "namespaceGondwana_1_1Input_1_1Touch.html#ae45771976c0d97929be599f0dac9a837a0157fbb99be9622bdaa6e544270c0622":[0,0,0,9,4,6,3],
 "namespaceGondwana_1_1Input_1_1Touch.html#ae45771976c0d97929be599f0dac9a837a5146a957bfa51752bd6020691fda598e":[0,0,0,9,4,6,2],
 "namespaceGondwana_1_1Input_1_1Touch.html#ae45771976c0d97929be599f0dac9a837a7b81520329371177ede3ccbc307bc85d":[0,0,0,9,4,6,0],
-"namespaceGondwana_1_1Input_1_1Touch.html#ae45771976c0d97929be599f0dac9a837a95bfdefaaf01553cbf21ccd942855c69":[0,0,0,9,4,6,1],
-"namespaceGondwana_1_1Input_1_1Touch.html#ae45771976c0d97929be599f0dac9a837aa149e85a44aeec9140e92733d9ed694e":[0,0,0,9,4,6,4],
-"namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html":[0,0,0,9,4,0],
-"namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#a2618e09d93b4f70dcc496cb140b8ed62":[0,0,0,9,4,0,8],
-"namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#a2618e09d93b4f70dcc496cb140b8ed62a0157fbb99be9622bdaa6e544270c0622":[0,0,0,9,4,0,8,2]
+"namespaceGondwana_1_1Input_1_1Touch.html#ae45771976c0d97929be599f0dac9a837a95bfdefaaf01553cbf21ccd942855c69":[0,0,0,9,4,6,1]
 };

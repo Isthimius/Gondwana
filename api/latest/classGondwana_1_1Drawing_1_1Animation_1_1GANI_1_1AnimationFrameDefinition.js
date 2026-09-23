@@ -1,5 +1,6 @@
 var classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationFrameDefinition =
 [
+    [ "DurationSeconds", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationFrameDefinition.html#acb79241aad13baf5ef7480f6eddaed3d", null ],
     [ "RegionName", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationFrameDefinition.html#ae5157e72d8156a1f218fc478a02c44fe", null ],
     [ "Tilesheet", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationFrameDefinition.html#a27d3c5900692d06f82131bda93c88b84", null ],
     [ "XTile", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationFrameDefinition.html#a8767a283a9e8e9111fc1286a7ac43dba", null ],

@@ -110,6 +110,10 @@ Inheritance diagram for Gondwana.Drawing.Animation.FrameSequence:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a0af24f6ee2e8d12691ae3e1b3a29c45e" id="r_a0af24f6ee2e8d12691ae3e1b3a29c45e"><td class="memItemLeft" align="right" valign="top">double?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0af24f6ee2e8d12691ae3e1b3a29c45e">GetDurationSeconds</a> (int index)</td></tr>
+<tr class="memdesc:a0af24f6ee2e8d12691ae3e1b3a29c45e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the optional display duration for a frame occurrence.  <br /></td></tr>
+<tr class="memitem:ac57e3fc31112053bda1c33f77cadb72a" id="r_ac57e3fc31112053bda1c33f77cadb72a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac57e3fc31112053bda1c33f77cadb72a">SetDurationSeconds</a> (int index, double? seconds)</td></tr>
+<tr class="memdesc:ac57e3fc31112053bda1c33f77cadb72a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a positive display duration, or null to use the cycle default.  <br /></td></tr>
 <tr class="memitem:a96f583d8b111d25f4d2b8468ff23a00a" id="r_a96f583d8b111d25f4d2b8468ff23a00a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a96f583d8b111d25f4d2b8468ff23a00a">FrameSequence</a> (<a class="el" href="structGondwana_1_1Drawing_1_1Frame.html">Frame</a> frame)</td></tr>
 <tr class="memdesc:a96f583d8b111d25f4d2b8468ff23a00a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="structGondwana_1_1Drawing_1_1Animation_1_1FrameSequence.html" title="Represents a sequence of animation frames that can be cycled through using different animation patter...">FrameSequence</a> struct with a single frame.  <br /></td></tr>
 <tr class="memitem:ad05efde23ccc4b4811887bffa18d49bd" id="r_ad05efde23ccc4b4811887bffa18d49bd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad05efde23ccc4b4811887bffa18d49bd">FrameSequence</a> (List&lt; <a class="el" href="structGondwana_1_1Drawing_1_1Frame.html">Frame</a> &gt; frames)</td></tr>
@@ -177,7 +181,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00036">36</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00063">63</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
 
 </div>
 </div>
@@ -204,7 +208,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00050">50</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00077">77</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
 
 </div>
 </div>
@@ -233,7 +237,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The added <a class="el" href="structGondwana_1_1Drawing_1_1Frame.html" title="Represents the source Tilesheet and its coordinates to render on a destination.">Frame</a></dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00162">162</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00189">189</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
 
 </div>
 </div>
@@ -272,7 +276,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The newly created and added <a class="el" href="structGondwana_1_1Drawing_1_1Frame.html" title="Represents the source Tilesheet and its coordinates to render on a destination.">Frame</a></dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00152">152</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00179">179</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
 
 </div>
 </div>
@@ -317,7 +321,26 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The newly created and added <a class="el" href="structGondwana_1_1Drawing_1_1Frame.html" title="Represents the source Tilesheet and its coordinates to render on a destination.">Frame</a></dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00140">140</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00167">167</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
+
+</div>
+</div>
+<a id="a0af24f6ee2e8d12691ae3e1b3a29c45e" name="a0af24f6ee2e8d12691ae3e1b3a29c45e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0af24f6ee2e8d12691ae3e1b3a29c45e">&#9670;&#160;</a></span>GetDurationSeconds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double? Gondwana.Drawing.Animation.FrameSequence.GetDurationSeconds </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>index</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the optional display duration for a frame occurrence. </p>
 
 </div>
 </div>
@@ -339,7 +362,7 @@ Properties</h2></td></tr>
 <p>Returns an enumerator that iterates through the frame sequence. </p>
 <dl class="section return"><dt>Returns</dt><dd>An IEnumerator for the frame sequence</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00276">276</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00310">310</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
 
 </div>
 </div>
@@ -361,7 +384,7 @@ Properties</h2></td></tr>
 <p>Returns a strongly-typed enumerator that iterates through the frame sequence. </p>
 <dl class="section return"><dt>Returns</dt><dd>An IEnumerator&lt;Frame&gt; for the frame sequence</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00286">286</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00320">320</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
 
 </div>
 </div>
@@ -388,7 +411,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00175">175</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00202">202</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
 
 </div>
 </div>
@@ -409,7 +432,32 @@ Properties</h2></td></tr>
 
 <p>Resets the sequence to its initial state, starting from the first frame. </p>
 
-<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00184">184</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00218">218</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
+
+</div>
+</div>
+<a id="ac57e3fc31112053bda1c33f77cadb72a" name="ac57e3fc31112053bda1c33f77cadb72a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac57e3fc31112053bda1c33f77cadb72a">&#9670;&#160;</a></span>SetDurationSeconds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Drawing.Animation.FrameSequence.SetDurationSeconds </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>index</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double?</td>          <td class="paramname"><span class="paramname"><em>seconds</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets a positive display duration, or null to use the cycle default. </p>
+
+<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00032">32</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
 
 </div>
 </div>
@@ -455,7 +503,7 @@ Properties</h2></td></tr>
 
 <p>Gets the frame currently active in the animation sequence. </p>
 
-<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00099">99</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00126">126</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
 
 </div>
 </div>
@@ -481,7 +529,7 @@ Properties</h2></td></tr>
 
 <p>Gets the zero-based index of the current frame in the sequence. </p>
 
-<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00114">114</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00141">141</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
 
 </div>
 </div>
@@ -507,7 +555,7 @@ Properties</h2></td></tr>
 
 <p>Gets a value indicating whether the animation cycle has finished playing through the sequence. </p>
 
-<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00075">75</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00102">102</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
 
 </div>
 </div>
@@ -533,7 +581,7 @@ Properties</h2></td></tr>
 
 <p>Gets the total number of frames in the sequence. </p>
 
-<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00084">84</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00111">111</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
 
 </div>
 </div>
@@ -559,7 +607,7 @@ Properties</h2></td></tr>
 
 <p>Gets a read-only view of the list of frames in the sequence. </p>
 
-<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00123">123</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00150">150</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
 
 </div>
 </div>
@@ -592,7 +640,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The <a class="el" href="structGondwana_1_1Drawing_1_1Frame.html" title="Represents the source Tilesheet and its coordinates to render on a destination.">Frame</a> at the specified index</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00263">263</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FrameSequence_8cs_source.html#l00297">297</a> of file <a class="el" href="FrameSequence_8cs_source.html">FrameSequence.cs</a>.</p>
 
 </div>
 </div>

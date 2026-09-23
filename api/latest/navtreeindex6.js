@@ -1,5 +1,9 @@
 var NAVTREEINDEX6 =
 {
+"classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a1836eaa0000ed366375054f7bbe14d8c":[1,0,0,5,2,17,51],
+"classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a1a5790cc5eebe65731a0f50061e04873":[0,0,0,5,3,17,0],
+"classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a1a5790cc5eebe65731a0f50061e04873":[1,0,0,5,2,17,0],
+"classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a1a5790cc5eebe65731a0f50061e04873a5e5500cb2b82eb72d550de644bd1b64b":[0,0,0,5,3,17,0,1],
 "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a1a5790cc5eebe65731a0f50061e04873a5e5500cb2b82eb72d550de644bd1b64b":[1,0,0,5,2,17,0,1],
 "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a1a5790cc5eebe65731a0f50061e04873a6ca9e2d793f678aba7c1b19526592a46":[0,0,0,5,3,17,0,0],
 "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a1a5790cc5eebe65731a0f50061e04873a6ca9e2d793f678aba7c1b19526592a46":[1,0,0,5,2,17,0,0],
@@ -245,9 +249,5 @@ var NAVTREEINDEX6 =
 "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteSceneSourceDefinition.html#a47a2443372560344807098d38f837e4b":[1,0,0,5,3,0,4,4],
 "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteSceneSourceDefinition.html#abdf3e57ab6785fb0fdbae5450e5aab50":[0,0,0,5,4,0,4,3],
 "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteSceneSourceDefinition.html#abdf3e57ab6785fb0fdbae5450e5aab50":[1,0,0,5,3,0,4,3],
-"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteSceneSourceDefinition.html#abe5936b10e45bfd34caf808337afb8c6":[0,0,0,5,4,0,4,0],
-"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteSceneSourceDefinition.html#abe5936b10e45bfd34caf808337afb8c6":[1,0,0,5,3,0,4,0],
-"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteTilesheetSourceDefinition.html":[0,0,0,5,4,0,5],
-"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteTilesheetSourceDefinition.html":[1,0,0,5,3,0,5],
-"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteTilesheetSourceDefinition.html#a27a5b0594262897ef86aabcbb8cc3ccf":[0,0,0,5,4,0,5,4]
+"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteSceneSourceDefinition.html#abe5936b10e45bfd34caf808337afb8c6":[0,0,0,5,4,0,4,0]
 };

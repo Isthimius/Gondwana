@@ -141,6 +141,8 @@ Public Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
+<tr class="memitem:a6e8f59f12bffedf44375805a1fd1bd70" id="r_a6e8f59f12bffedf44375805a1fd1bd70"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6e8f59f12bffedf44375805a1fd1bd70">CurrentFrameDurationSeconds</a><code> [get]</code></td></tr>
+<tr class="memdesc:a6e8f59f12bffedf44375805a1fd1bd70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Effective duration of the currently displayed frame.  <br /></td></tr>
 <tr class="memitem:a4b3c5498aa2e991a7056b6f1be51329f" id="r_a4b3c5498aa2e991a7056b6f1be51329f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b3c5498aa2e991a7056b6f1be51329f">ThrottleTime</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a4b3c5498aa2e991a7056b6f1be51329f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the time in seconds between frame transitions in the animation cycle.  <br /></td></tr>
 <tr class="memitem:a41b758418ec539a9798cc6f23a722aa7" id="r_a41b758418ec539a9798cc6f23a722aa7"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a41b758418ec539a9798cc6f23a722aa7">TotalCycleTime</a><code> [get]</code></td></tr>
@@ -225,7 +227,7 @@ Properties</h2></td></tr>
 
 <p>Removes and disposes all registered animation cycles. </p>
 
-<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00216">216</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00243">243</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
 
 </div>
 </div>
@@ -260,7 +262,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00207">207</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00234">234</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
 
 </div>
 </div>
@@ -282,7 +284,7 @@ Properties</h2></td></tr>
 <p>Creates a shallow copy of the current <a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html" title="References a FrameSequence object, along with a particular Throttle value for animating through Frame...">Cycle</a> instance. </p>
 <dl class="section return"><dt>Returns</dt><dd>A new <a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html" title="References a FrameSequence object, along with a particular Throttle value for animating through Frame...">Cycle</a> object that is a copy of this instance</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00142">142</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00169">169</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
 
 </div>
 </div>
@@ -303,7 +305,7 @@ Properties</h2></td></tr>
 
 <p>Releases all resources used by the <a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html" title="References a FrameSequence object, along with a particular Throttle value for animating through Frame...">Cycle</a> and removes it from the static cycle collection. </p>
 
-<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00154">154</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00181">181</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
 
 </div>
 </div>
@@ -339,7 +341,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A cloned <a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html" title="References a FrameSequence object, along with a particular Throttle value for animating through Frame...">Cycle</a> instance if found; otherwise, null</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00195">195</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00222">222</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
 
 </div>
 </div>
@@ -477,7 +479,33 @@ Properties</h2></td></tr>
 
 <p>Gets the total number of animation cycles currently registered. </p>
 
-<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00176">176</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00203">203</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
+
+</div>
+</div>
+<a id="a6e8f59f12bffedf44375805a1fd1bd70" name="a6e8f59f12bffedf44375805a1fd1bd70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e8f59f12bffedf44375805a1fd1bd70">&#9670;&#160;</a></span>CurrentFrameDurationSeconds</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Gondwana.Drawing.Animation.Cycle.CurrentFrameDurationSeconds</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Effective duration of the currently displayed frame. </p>
+
+<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00088">88</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
 
 </div>
 </div>
@@ -503,7 +531,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the next cycle to transition to when this cycle completes. </p>
 
-<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00132">132</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00159">159</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
 
 </div>
 </div>
@@ -529,7 +557,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the time in seconds between frame transitions in the animation cycle. </p>
 
-<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00089">89</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00104">104</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
 
 </div>
 </div>
@@ -555,7 +583,7 @@ Properties</h2></td></tr>
 
 <p>Returns the total time in seconds for the <a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html" title="References a FrameSequence object, along with a particular Throttle value for animating through Frame...">Cycle</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00103">103</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Cycle_8cs_source.html#l00118">118</a> of file <a class="el" href="Cycle_8cs_source.html">Cycle.cs</a>.</p>
 
 </div>
 </div>

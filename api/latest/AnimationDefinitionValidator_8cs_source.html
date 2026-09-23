@@ -187,11 +187,14 @@ $(function(){initNavTree('AnimationDefinitionValidator_8cs_source.html','',''); 
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            <span class="keywordflow">if</span> (frame.XTile &lt; 0 || frame.YTile &lt; 0)</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                errors.Add($<span class="stringliteral">&quot;{label}: frame coordinates cannot be negative.&quot;</span>);</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        }</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keywordflow">return</span> errors;</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    }</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>}</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <span class="keywordflow">if</span> (frame.DurationSeconds is { } duration &amp;&amp; (!<span class="keywordtype">double</span>.IsFinite(duration) || duration &lt;= 0))</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                errors.Add($<span class="stringliteral">&quot;{label}: DurationSeconds must be finite and positive, or null for ThrottleTime.&quot;</span>);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keywordflow">return</span> errors;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>}</div>
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_1_1Animation_1_1GANI_html"><div class="ttname"><a href="namespaceGondwana_1_1Drawing_1_1Animation_1_1GANI.html">Gondwana.Drawing.Animation.GANI</a></div><div class="ttdef"><b>Definition</b> <a href="AnimationDefinition_8cs_source.html#l00001">AnimationDefinition.cs:1</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_1_1Animation_1_1GANI_html_aa4098ec806b5b7136f402f53f74a66f6"><div class="ttname"><a href="namespaceGondwana_1_1Drawing_1_1Animation_1_1GANI.html#aa4098ec806b5b7136f402f53f74a66f6">Gondwana.Drawing.Animation.GANI.AnimationTilesheetSourceKind</a></div><div class="ttdeci">AnimationTilesheetSourceKind</div><div class="ttdoc">Identifies how a GANI definition can locate one of its logical GTS dependencies for authoring and too...</div><div class="ttdef"><b>Definition</b> <a href="AnimationTilesheetSourceDefinition_8cs_source.html#l00011">AnimationTilesheetSourceDefinition.cs:12</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
