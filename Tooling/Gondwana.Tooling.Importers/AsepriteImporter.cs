@@ -79,15 +79,16 @@ public sealed class AsepriteImporter : ExternalAssetImporter
         AsepriteCel Resolve(AsepriteCel cel)
         {
             int current = frameIndex;
+            var source = cel;
             var seen = new HashSet<int>();
-            while (cel.LinkedFrame is { } link)
+            while (source.LinkedFrame is { } link)
             {
                 if (link < 0 || link >= sprite.Frames.Count || !seen.Add(link)) throw new InvalidDataException("Invalid or cyclic linked cel.");
                 current = link;
-                cel = sprite.Frames[current].Cels.SingleOrDefault(c => c.Layer == cel.Layer)
+                source = sprite.Frames[current].Cels.SingleOrDefault(c => c.Layer == cel.Layer)
                     ?? throw new InvalidDataException("Linked cel target is missing.");
             }
-            return cel;
+            return cel with { Width = source.Width, Height = source.Height, Pixels = source.Pixels, LinkedFrame = null };
         }
         SKBitmap RenderGroup(int parent)
         {
