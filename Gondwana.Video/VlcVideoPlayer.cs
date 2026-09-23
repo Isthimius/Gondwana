@@ -166,7 +166,7 @@ public sealed class VlcVideoPlayer : IVideoPlayer
     private void PublishMetadata(Media media, bool ready)
     {
         var metadata = ready
-            ? new VideoMetadata(VideoMetadataStatus.Ready, Array.Exists(media.Tracks, t => t.TrackType == TrackType.Audio),
+? new VideoMetadata(VideoMetadataStatus.Ready, media.Tracks is { } tracks && Array.Exists(tracks, t => t.TrackType == TrackType.Audio),
                 TimeSpan.FromMilliseconds(Math.Max(0, media.Duration)))
             : new VideoMetadata(VideoMetadataStatus.Failed, false, TimeSpan.Zero);
         if (_metadata.Complete(_generation, metadata))
