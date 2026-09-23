@@ -1,5 +1,6 @@
 var namespaceGondwana_1_1Video =
 [
+    [ "Widgets", "namespaceGondwana_1_1Video_1_1Widgets.html", "namespaceGondwana_1_1Video_1_1Widgets" ],
     [ "IVideoPlayer", "interfaceGondwana_1_1Video_1_1IVideoPlayer.html", "interfaceGondwana_1_1Video_1_1IVideoPlayer" ],
     [ "VideoFrameReadyEventArgs", "classGondwana_1_1Video_1_1VideoFrameReadyEventArgs.html", "classGondwana_1_1Video_1_1VideoFrameReadyEventArgs" ],
     [ "VideoSource", "classGondwana_1_1Video_1_1VideoSource.html", null ],

@@ -1,7 +1,7 @@
 var searchData=
 [
   ['handled_0',['Handled',['../classGondwana_1_1Widgets_1_1WidgetEventArgs.html#a654f674c6f8eeb09f212e3a76756f71b',1,'Gondwana::Widgets::WidgetEventArgs']]],
-  ['hasaudio_1',['HasAudio',['../interfaceGondwana_1_1Video_1_1IVideoPlayer.html#a714353983bcfeb11a8db94be1aa42b1e',1,'Gondwana.Video.IVideoPlayer.HasAudio'],['../classGondwana_1_1Video_1_1VlcVideoPlayer.html#a7014c183df70614ad2cc3181626c7359',1,'Gondwana.Video.VlcVideoPlayer.HasAudio']]],
+  ['hasaudio_1',['HasAudio',['../classGondwana_1_1Video_1_1Widgets_1_1VideoWidget.html#a30fa02f55e6b65a4266396cea3bcdee8',1,'Gondwana.Video.Widgets.VideoWidget.HasAudio'],['../interfaceGondwana_1_1Video_1_1IVideoPlayer.html#a714353983bcfeb11a8db94be1aa42b1e',1,'Gondwana.Video.IVideoPlayer.HasAudio'],['../classGondwana_1_1Video_1_1VlcVideoPlayer.html#a7014c183df70614ad2cc3181626c7359',1,'Gondwana.Video.VlcVideoPlayer.HasAudio']]],
   ['hascollisionadjustoverride_2',['HasCollisionAdjustOverride',['../structGondwana_1_1Drawing_1_1Frame.html#abd7fb6139c430adec8211e386639caec',1,'Gondwana::Drawing::Frame']]],
   ['hascollisiontypeoverride_3',['HasCollisionTypeOverride',['../structGondwana_1_1Drawing_1_1Frame.html#a64f081ca1cb36045f6146e441670cce1',1,'Gondwana::Drawing::Frame']]],
   ['hasmotion_4',['HasMotion',['../structGondwana_1_1Physics_1_1Movement_1_1MovementState.html#afa202fe5395f81f2b599c14c4ab9834a',1,'Gondwana::Physics::Movement::MovementState']]],

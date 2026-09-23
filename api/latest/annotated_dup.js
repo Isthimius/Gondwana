@@ -292,6 +292,9 @@ var annotated_dup =
         [ "Timer", "classGondwana_1_1Timers_1_1Timer.html", "classGondwana_1_1Timers_1_1Timer" ]
       ] ],
       [ "Video", "namespaceGondwana_1_1Video.html", [
+        [ "Widgets", "namespaceGondwana_1_1Video_1_1Widgets.html", [
+          [ "VideoWidget", "classGondwana_1_1Video_1_1Widgets_1_1VideoWidget.html", "classGondwana_1_1Video_1_1Widgets_1_1VideoWidget" ]
+        ] ],
         [ "IVideoPlayer", "interfaceGondwana_1_1Video_1_1IVideoPlayer.html", "interfaceGondwana_1_1Video_1_1IVideoPlayer" ],
         [ "VideoFrameReadyEventArgs", "classGondwana_1_1Video_1_1VideoFrameReadyEventArgs.html", "classGondwana_1_1Video_1_1VideoFrameReadyEventArgs" ],
         [ "VideoSource", "classGondwana_1_1Video_1_1VideoSource.html", null ],

@@ -64,7 +64,7 @@ var searchData=
   ['statefiles_61',['StateFiles',['../classGondwana_1_1Configuration_1_1EngineConfiguration.html#a9b0e346219ec6961dcdfb9425538bc55',1,'Gondwana::Configuration::EngineConfiguration']]],
   ['staticcolliders_62',['StaticColliders',['../classGondwana_1_1Physics_1_1Collisions_1_1ColliderRegistry.html#af06d6eb4d66c7390dc7d7a380b16a805',1,'Gondwana::Physics::Collisions::ColliderRegistry']]],
   ['status_63',['Status',['../classGondwana_1_1Effects_1_1DisplayEffect.html#a8b9a13b9cef8b3123e49726770b1b02e',1,'Gondwana::Effects::DisplayEffect']]],
-  ['stretch_64',['Stretch',['../classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html#af3cc70ded3f6c4bf4169be8d8c44fde2',1,'Gondwana::Drawing::Direct::DirectVideo']]],
+  ['stretch_64',['Stretch',['../classGondwana_1_1Video_1_1Widgets_1_1VideoWidget.html#a97ed4bfbece0d13bb5ca20d6948a88af',1,'Gondwana.Video.Widgets.VideoWidget.Stretch'],['../classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html#af3cc70ded3f6c4bf4169be8d8c44fde2',1,'Gondwana.Drawing.Direct.DirectVideo.Stretch']]],
   ['stride_65',['Stride',['../classGondwana_1_1Video_1_1VideoFrameReadyEventArgs.html#aff0389632fd4b356ff1fe9352cc391cc',1,'Gondwana::Video::VideoFrameReadyEventArgs']]],
   ['submenu_66',['SubMenu',['../classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html#ace3df1201c6990713f7a9f8d58f2ac8f',1,'Gondwana::Widgets::Menus::MenuItemWidget']]],
   ['submitkey_67',['SubmitKey',['../classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html#adf887443d126918fb398f156a6f59672',1,'Gondwana::Widgets::Controls::TextBoxWidget']]],

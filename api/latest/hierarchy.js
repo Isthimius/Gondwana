@@ -100,13 +100,13 @@ var hierarchy =
           [ "Gondwana.Drawing.Direct.DirectImage", "classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html", null ],
           [ "Gondwana.Drawing.Direct.DirectRectangle", "classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html", null ],
           [ "Gondwana.Drawing.Direct.DirectSvg", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSvg.html", null ],
+          [ "Gondwana.Drawing.Direct.DirectVideo", "classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html", null ],
           [ "Gondwana.Drawing.Direct.ImageLayer.ImageInstanceLayer", "classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html", null ],
           [ "Gondwana.Drawing.Direct.Particles.ParticleSurface", "classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html", null ],
           [ "Gondwana.Drawing.Direct.TextBlock", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html", null ]
         ] ],
         [ "Gondwana.Drawing.Direct.DirectRadialLight", "classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html", null ],
-        [ "Gondwana.Drawing.Direct.DirectSceneLayerDarknessOverlay", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html", null ],
-        [ "Gondwana.Drawing.Direct.DirectVideo", "classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html", null ]
+        [ "Gondwana.Drawing.Direct.DirectSceneLayerDarknessOverlay", "classGondwana_1_1Drawing_1_1Direct_1_1DirectSceneLayerDarknessOverlay.html", null ]
       ] ],
       [ "Gondwana.Drawing.Tile", "classGondwana_1_1Drawing_1_1Tile.html", null ]
     ] ],
@@ -134,7 +134,9 @@ var hierarchy =
           [ "Gondwana.Widgets.Controls.RadioButtonWidget", "classGondwana_1_1Widgets_1_1Controls_1_1RadioButtonWidget.html", null ],
           [ "Gondwana.Widgets.Controls.TextBoxWidget", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html", null ],
           [ "Gondwana.Widgets.Dialogs.ConversationBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1ConversationBox.html", null ],
-          [ "Gondwana.Widgets.DraggableWidgetBase", "classGondwana_1_1Widgets_1_1DraggableWidgetBase.html", null ],
+          [ "Gondwana.Widgets.DraggableWidgetBase", "classGondwana_1_1Widgets_1_1DraggableWidgetBase.html", [
+            [ "Gondwana.Video.Widgets.VideoWidget", "classGondwana_1_1Video_1_1Widgets_1_1VideoWidget.html", null ]
+          ] ],
           [ "Gondwana.Widgets.Hud.HealthBarWidget", "classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget.html", null ],
           [ "Gondwana.Widgets.Hud.NameTagWidget", "classGondwana_1_1Widgets_1_1Hud_1_1NameTagWidget.html", null ],
           [ "Gondwana.Widgets.Menus.MenuHeaderWidget", "classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget.html", null ],
