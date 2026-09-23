@@ -210,9 +210,14 @@ public sealed class AssetsFile : IDisposable
             // SharpZipLib's ZipFile expects seekable input. Buffering here also gives
             // stream-loaded GAFs the same lifetime semantics as path-loaded GAFs:
             // the source stream is needed only for the duration of this call.
-            using var archiveStream = new MemoryStream();
-            stream.CopyTo(archiveStream);
-            archiveStream.Position = 0;
+            MemoryStream? bufferedStream = stream.CanSeek ? null : new MemoryStream();
+            Stream archiveStream = stream;
+            if (bufferedStream is not null)
+            {
+                stream.CopyTo(bufferedStream);
+                bufferedStream.Position = 0;
+                archiveStream = bufferedStream;
+            }
 
             _zipFile = new ZipFile(archiveStream) { IsStreamOwner = false };
 
