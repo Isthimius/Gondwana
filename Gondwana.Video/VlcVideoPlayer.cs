@@ -67,7 +67,8 @@ public sealed class VlcVideoPlayer : IVideoPlayer
     /// <param name="initialHeight">Legacy compatibility argument; actual dimensions come from format negotiation.</param>
     public VlcVideoPlayer(string[]? vlcArgs = null, int initialWidth = 1280, int initialHeight = 720)
     {
-        if (initialWidth <= 0 || initialHeight <= 0) throw new ArgumentOutOfRangeException(nameof(initialWidth));
+if (initialWidth <= 0) throw new ArgumentOutOfRangeException(nameof(initialWidth));
+        if (initialHeight <= 0) throw new ArgumentOutOfRangeException(nameof(initialHeight));
         if (OperatingSystem.IsBrowser() || !BitConverter.IsLittleEndian)
             throw new PlatformNotSupportedException("Gondwana.Video requires a little-endian native desktop LibVLC 3 runtime.");
         try
