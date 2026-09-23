@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
@@ -102,25 +102,6 @@ public sealed class DirectVideo : DirectDrawingBase
     /// </remarks>
     /// <value>The default value is <see cref="StretchMode.Fill"/>.</value>
     public StretchMode Stretch { get; set; } = StretchMode.Fill;
-
-    private float _opacity = 1f;              // 0..1
-
-    /// <summary>
-    /// Gets or sets the opacity level of the video overlay.
-    /// </summary>
-    /// <remarks>
-    /// This value controls the alpha transparency applied to the entire video frame during rendering.
-    /// Values are automatically clamped to the valid range.
-    /// </remarks>
-    /// <value>
-    /// A floating-point value between 0.0 (fully transparent) and 1.0 (fully opaque).
-    /// The default value is 1.0.
-    /// </value>
-    public float Opacity
-    {
-        get => _opacity;
-        set => _opacity = Math.Clamp(value, 0f, 1f);
-    }
 
     private double _playbackRate = 1.0;
 
@@ -377,8 +358,8 @@ public sealed class DirectVideo : DirectDrawingBase
         var canvas = backbuffer.Canvas;
         var dest = ComputeDestRect(destRectScreen, bmp.Width, bmp.Height, Stretch);
 
-        using var paint = new SKPaint { Color = new SKColor(255, 255, 255, (byte)(Opacity * 255)) };
-        canvas.DrawBitmap(bmp, dest, paint);
+        // DirectDrawingBase.Draw applies opacity and fades once.
+        canvas.DrawBitmap(bmp, dest);
     }
 
     /// <summary>
