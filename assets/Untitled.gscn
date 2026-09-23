@@ -1,0 +1,54 @@
+{
+  "ID": "scene",
+  "CollisionGroups": [],
+  "CollisionProfiles": [],
+  "TilesheetSources": [
+    {
+      "Tilesheet": "rooster",
+      "Kind": "LooseDefinitionFile",
+      "GtsPath": "rooster.gts"
+    }
+  ],
+  "AnimationSources": [],
+  "Layers": [
+    {
+      "ID": "layer-1",
+      "CoordinateSystemType": 0,
+      "Columns": 10,
+      "Rows": 10,
+      "TileWidth": 32,
+      "TileHeight": 32,
+      "ZOrder": 0,
+      "Parallax": 1.0,
+      "Visible": true,
+      "WrapHorizontally": false,
+      "WrapVertically": false,
+      "ShowGridLines": false,
+      "ShowCollisionBoxes": false,
+      "OriginPx": "0, 0",
+      "DefaultTileCollisionProfile": "World",
+      "Tiles": []
+    },
+    {
+      "ID": "layer-2",
+      "CoordinateSystemType": 0,
+      "Columns": 10,
+      "Rows": 10,
+      "TileWidth": 32,
+      "TileHeight": 32,
+      "ZOrder": 1,
+      "Parallax": 1.0,
+      "Visible": true,
+      "WrapHorizontally": false,
+      "WrapVertically": false,
+      "ShowGridLines": false,
+      "ShowCollisionBoxes": false,
+      "OriginPx": "0, 0",
+      "DefaultTileCollisionProfile": "World",
+      "Tiles": []
+    }
+  ],
+  "Source": {
+    "Kind": 3
+  }
+}
