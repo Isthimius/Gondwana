@@ -24,13 +24,21 @@ public sealed class VideoWidget : DraggableWidgetBase
         VideoSource source, Func<IVideoPlayer>? playerFactory = null, string? nickname = null)
         : base(renderSurfaceHost, DirectDrawingMode.View, ValidateBounds(bounds).Location, nickname)
     {
-        ArgumentNullException.ThrowIfNull(view);
-        ArgumentNullException.ThrowIfNull(source);
-        IVideoPlayer? player = null;
-        Video = new DirectVideo(() => player = (playerFactory ?? DefaultPlayerFactory)(),
-            source, renderSurfaceHost, view, bounds, $"{Nickname}.video");
-        _player = player!;
-        InitializeVideo();
+        try
+        {
+            ArgumentNullException.ThrowIfNull(view);
+            ArgumentNullException.ThrowIfNull(source);
+            IVideoPlayer? player = null;
+            Video = new DirectVideo(() => player = (playerFactory ?? DefaultPlayerFactory)(),
+                source, renderSurfaceHost, view, bounds, $"{Nickname}.video");
+            _player = player!;
+            InitializeVideo();
+        }
+        catch
+        {
+            base.Dispose(); // DirectComposite registered this instance before construction completed.
+            throw;
+        }
     }
 
     /// <summary>Creates a scene-layer/world-space widget. The default factory creates VlcVideoPlayer.</summary>
@@ -38,13 +46,21 @@ public sealed class VideoWidget : DraggableWidgetBase
         VideoSource source, Func<IVideoPlayer>? playerFactory = null, string? nickname = null)
         : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, ValidateBounds(bounds).Location, nickname)
     {
-        ArgumentNullException.ThrowIfNull(sceneLayer);
-        ArgumentNullException.ThrowIfNull(source);
-        IVideoPlayer? player = null;
-        Video = new DirectVideo(() => player = (playerFactory ?? DefaultPlayerFactory)(),
-            source, renderSurfaceHost, sceneLayer, bounds, $"{Nickname}.video");
-        _player = player!;
-        InitializeVideo();
+        try
+        {
+            ArgumentNullException.ThrowIfNull(sceneLayer);
+            ArgumentNullException.ThrowIfNull(source);
+            IVideoPlayer? player = null;
+            Video = new DirectVideo(() => player = (playerFactory ?? DefaultPlayerFactory)(),
+                source, renderSurfaceHost, sceneLayer, bounds, $"{Nickname}.video");
+            _player = player!;
+            InitializeVideo();
+        }
+        catch
+        {
+            base.Dispose();
+            throw;
+        }
     }
 
     /// <summary>Creates a view widget transferring player ownership to DirectVideo.</summary>

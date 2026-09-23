@@ -2,6 +2,9 @@ using Gondwana.Assets;
 using Gondwana.Drawing.Direct;
 using Gondwana.Scenes;
 using Gondwana.Video;
+using Gondwana.Video.Widgets;
+using Gondwana.Widgets;
+using Gondwana.Widgets.Controls;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
 
@@ -46,32 +49,14 @@ internal sealed class VideoWindow : Form
     {
         _source = source;
         ClientSize = new Size(1000, 650);
-        var bar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 70, AutoSize = false };
-        void Add(string title, Action action)
-        {
-            var button = new Button { Text = title, AutoSize = true };
-            button.Click += (_, _) => action();
-            bar.Controls.Add(button);
-        }
-        Add("Play", () => _host?.Video?.Play());
-        Add("Pause", () => _host?.Video?.Pause());
-        Add("Seek +5s", () => _host?.Video?.Seek(_host.Player!.Position + TimeSpan.FromSeconds(5)));
-        Add("Loop on/off", () => { if (_host?.Video is { } video) video.Loop = !video.Loop; });
-        Add("0.5x", () => { if (_host?.Video is { } video) video.PlaybackRate = 0.5; });
-        Add("1x", () => { if (_host?.Video is { } video) video.PlaybackRate = 1; });
-        Add("2x", () => { if (_host?.Video is { } video) video.PlaybackRate = 2; });
-        Add("Stop", () => _host?.Video?.Stop());
-        Add("Fade out", () => _host?.Video?.FadeOut(1));
-        Add("Fade in", () => _host?.Video?.FadeIn(1));
-        Add("Dispose", () => _host?.DisposeVideo());
         Controls.Add(_surface);
-        Controls.Add(bar);
         _statusTimer.Tick += (_, _) =>
         {
             var player = _host?.Player;
             Text = player is null ? "VideoTest — disposed" :
                 $"VideoTest — {player.NaturalSize} {player.Metadata.Status} audio={player.HasAudio} " +
-                $"{player.Position:mm\\:ss}/{player.Duration:mm\\:ss} loop={player.Loop} error={player.LastError?.Message}";
+                $"{player.Position:mm\\:ss}/{player.Duration:mm\\:ss} loop={player.Loop} " +
+                $"stretch={_host?.Video?.Stretch} drag={_host?.Video?.IsDragEnabled} error={player.LastError?.Message}";
         };
     }
     protected override void OnShown(EventArgs e)
@@ -92,16 +77,66 @@ internal sealed class VideoWindow : Form
 internal sealed class VideoHost(WinFormGpuRenderSurfaceControl surface, VideoSource source) : WinFormsGpuGameHost(surface)
 {
     internal VlcVideoPlayer? Player { get; private set; }
-    internal DirectVideo? Video { get; private set; }
+    internal VideoWidget? Video { get; private set; }
+    private readonly List<WidgetBase> _controls = [];
     protected override Scene CreateInitialScene() => Scene.Empty;
     protected override void CreateInitialViews() => RenderSurface.Host.ViewManager.ConfigureSingleFullView();
     protected override void CreateDirectDrawings()
     {
         var host = RenderSurface.Host;
+        var view = host.ViewManager.Views[0];
         Player = new VlcVideoPlayer();
-        Video = new DirectVideo(Player, source, host, host.ViewManager.Views[0], new Rectangle(20, 20, 940, 500))
+        Video = new VideoWidget(host, view, new Rectangle(20, 20, 640, 360), source, Player)
         { Stretch = StretchMode.Uniform };
+        Video.IsDragEnabled = true; // Explicit demo choice; the package default is false.
+        var status = new LabelWidget(host, view, new Rectangle(20, 405, 950, 45),
+            "Drag the video. Click logs an event; playback does not toggle. Controls below are separate Widgets.");
+        status.SetZOrder(100);
+        status.Show();
+        _controls.Add(status);
+        int clicks = 0;
+        Video.PointerClick += _ => status.SetText($"Consumer PointerClick #{++clicks}; playback unchanged.");
+        Video.PointerEnter += _ => status.SetText("Pointer entered video. Drag anywhere inside its bounds.");
+        Video.PointerLeave += _ => status.SetText("Pointer left video.");
+        Video.KeyboardInput += e => status.SetText($"Consumer KeyboardInput: {e.Key}; no playback command assigned.");
+        Video.DragEnded += _ => status.SetText($"Drag ended at {Video.Bounds.Location}; no click emitted.");
+        Video.Show();
+
+        // Ordinary consumer-owned Widgets; VideoWidget itself contains no playback chrome.
+        void Add(string text, Action<VideoWidget> action)
+        {
+            int index = _controls.Count - 1;
+            var button = new ButtonWidget(host, view,
+                new Rectangle(20 + index % 7 * 138, 465 + index / 7 * 48, 130, 40), text);
+            button.Clicked += () => { if (Video is { } video) action(video); };
+            button.SetZOrder(100);
+            button.Show();
+            _controls.Add(button);
+        }
+        Add("Play", v => v.Play());
+        Add("Pause", v => v.Pause());
+        Add("Stop", v => v.Stop());
+        Add("Seek +5s", v => v.Seek(v.Position + TimeSpan.FromSeconds(5)));
+        Add("Loop toggle", v => v.Loop = !v.Loop);
+        Add("0.5x", v => v.PlaybackRate = 0.5);
+        Add("1x", v => v.PlaybackRate = 1);
+        Add("Show", v => v.Show());
+        Add("Hide", v => v.Hide());
+        Add("Drag toggle", v => v.IsDragEnabled = !v.IsDragEnabled);
+        Add("Fade out", v => v.FadeOut(1));
+        Add("Fade in", v => v.FadeIn(1));
+        Add("Opacity 50%", v => v.SetOpacity(0.5f));
+        Add("Stretch next", v => v.Stretch = (StretchMode)(((int)v.Stretch + 1) % 4));
+        Add("Reset bounds", v => v.SetBounds(new Rectangle(20, 20, 640, 360)));
+        Add("Resize", v => v.SetBounds(new Rectangle(v.Bounds.Location,
+            v.Bounds.Width == 640 ? new Size(400, 300) : new Size(640, 360))));
+        Add("Dispose", _ => DisposeVideo());
     }
     internal void DisposeVideo() { Video?.Dispose(); Video = null; Player = null; }
-    protected override void OnDisposing() => DisposeVideo();
+    protected override void OnDisposing()
+    {
+        foreach (var control in _controls) control.Dispose();
+        _controls.Clear();
+        DisposeVideo();
+    }
 }
