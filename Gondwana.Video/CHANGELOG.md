@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
+## Fixed
+- Match LibVLC RV32 BGRX output to Skia BGRA, explicitly normalize opaque alpha, and copy padded rows safely.
+- Consume decoded frames through a bounded reusable mailbox on the engine update thread; handle format changes and callback shutdown.
+- Publish deterministic asynchronous metadata and actual decoded source dimensions instead of nominal 1280x720 frames.
+- Use inherited opacity/fades once, require constructor bounds, and clip aspect-fill presentation.
+- Cancel obsolete parsing on reopen, preserve native media-input lifetimes, and restart loops outside native callbacks.
+
+## Added
+- Stream-backed playback and `VideoSource.FromAsset` for GAF video without extraction files, with explicit ownership.
+- Metadata snapshots/readiness, actionable native loading errors, fake-player regression tests and an opt-in GPU/native smoke demo.
+
+## Documentation
+- Document Windows/macOS/Linux native deployment, required bounds, event threading and a clean-consumer smoke procedure.
+- Clarify desktop-only scope and custom-backend BGRX compatibility requirements.
+
 # v2.6.0 - September 17, 2026
 
 

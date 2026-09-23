@@ -27,6 +27,23 @@ public sealed class ProjectDevelopmentTests : IDisposable
     }
 
     [Fact]
+    public void DoctorExplainsAppLocalVideoRuntimeWithoutClaimingSystemProbeValidatesIt()
+    {
+        Project("<PackageReference Include=\"Gondwana.Video\" Version=\"2.6.0\" /><PackageReference Include=\"VideoLAN.LibVLC.Windows\" Version=\"3.0.23.1\" />");
+        string previous = Directory.GetCurrentDirectory();
+        try
+        {
+            Directory.SetCurrentDirectory(root);
+            var result = DoctorCommand.CheckLibVlc();
+            Assert.Equal(CheckStatus.Warning, result.Status);
+            Assert.Contains("app-local", result.Detail);
+            Assert.Contains("VideoLAN.LibVLC.Windows", result.Detail);
+            Assert.Contains("cannot validate", result.Detail);
+        }
+        finally { Directory.SetCurrentDirectory(previous); }
+    }
+
+    [Fact]
     public void Resolution_AcceptsFileOrDirectory_RejectsMissingAndAmbiguous()
     {
         var path = Project();

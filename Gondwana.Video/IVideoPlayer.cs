@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Video;
+namespace Gondwana.Video;
 
 /// <summary>
 /// Defines the contract for a video player that can play, pause, stop, and seek video content.
@@ -12,6 +12,17 @@ public interface IVideoPlayer : IDisposable
     /// </summary>
     /// <param name="source">The URI of the video source to open.</param>
     void Open(Uri source);
+
+    /// <summary>Opens a readable stream. Ownership transfers on success unless leaveOpen is true.
+    /// Keep a borrowed stream alive and unused until the next Open or Dispose. Seek/loop require
+    /// a seekable stream. Backends without stream support throw without taking ownership.</summary>
+    void Open(Stream source, bool leaveOpen = false) => throw new NotSupportedException("This video backend does not support streams.");
+
+    /// <summary>Gets an atomic snapshot of metadata availability and values for the current source.</summary>
+    VideoMetadata Metadata => VideoMetadata.Unavailable;
+
+    /// <summary>True only when metadata for the current source is available.</summary>
+    bool IsMetadataReady => Metadata.Status == VideoMetadataStatus.Ready;
 
     /// <summary>
     /// Starts or resumes playback of the video.
@@ -68,7 +79,7 @@ public interface IVideoPlayer : IDisposable
     (int width, int height) NaturalSize { get; }
     
     /// <summary>
-    /// Gets a value indicating whether the video has an audio track.
+    /// Gets whether the video has an audio track. Consult IsMetadataReady before interpreting false.
     /// </summary>
     bool HasAudio { get; }
 
@@ -95,12 +106,15 @@ public interface IVideoPlayer : IDisposable
     event EventHandler Ended;
 
     /// <summary>
-    /// Occurs when the video state changes.
+    /// Occurs when the video state changes, including MediaOpening, MediaOpened, MetadataReady,
+    /// and MetadataFailed. MediaOpening must precede frames for a replacement source, after
+    /// callbacks for the prior source have stopped. Events may run on background threads.
     /// </summary>
     event EventHandler<VideoStateChangedEventArgs> StateChanged;    // generic hook
 
     /// <summary>
-    /// Occurs when a decoded video frame is ready for rendering.
+    /// Occurs when a decoded BGRX frame is ready. The pointer is valid only during the callback.
+    /// Copy it before returning. Do not call engine/render operations or player controls here.
     /// </summary>
     event EventHandler<VideoFrameReadyEventArgs> FrameReady;        // decoded frame callback
 }
