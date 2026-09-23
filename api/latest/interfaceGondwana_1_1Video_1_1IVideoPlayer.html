@@ -107,7 +107,7 @@ Inheritance diagram for Gondwana.Video.IVideoPlayer:</div>
  <div class="center">
   <img src="interfaceGondwana_1_1Video_1_1IVideoPlayer.png" usemap="#Gondwana_2EVideo_2EIVideoPlayer_map" alt=""/>
   <map id="Gondwana_2EVideo_2EIVideoPlayer_map" name="Gondwana_2EVideo_2EIVideoPlayer_map">
-<area href="classGondwana_1_1Video_1_1VlcVideoPlayer.html" title="Provides a video player implementation using LibVLC for video playback and frame rendering." alt="Gondwana.Video.VlcVideoPlayer" shape="rect" coords="0,112,202,136"/>
+<area href="classGondwana_1_1Video_1_1VlcVideoPlayer.html" title="Desktop/native LibVLC 3 player. Controls are serialized; event handlers must not block on the engine ..." alt="Gondwana.Video.VlcVideoPlayer" shape="rect" coords="0,112,202,136"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -115,6 +115,8 @@ Inheritance diagram for Gondwana.Video.IVideoPlayer:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:afae982201b1096b5500576f6f2ab9d7d" id="r_afae982201b1096b5500576f6f2ab9d7d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afae982201b1096b5500576f6f2ab9d7d">Open</a> (Uri source)</td></tr>
 <tr class="memdesc:afae982201b1096b5500576f6f2ab9d7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens a video from the specified source URI.  <br /></td></tr>
+<tr class="memitem:ae4de560d17fb42969171db033dbed368" id="r_ae4de560d17fb42969171db033dbed368"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae4de560d17fb42969171db033dbed368">Open</a> (Stream source, bool leaveOpen=false)</td></tr>
+<tr class="memdesc:ae4de560d17fb42969171db033dbed368"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens a readable stream. Ownership transfers on success unless leaveOpen is true. Keep a borrowed stream alive and unused until the next Open or Dispose. Seek/loop require a seekable stream. Backends without stream support throw without taking ownership.  <br /></td></tr>
 <tr class="memitem:a42d62a49d09e85da1759425f5617945c" id="r_a42d62a49d09e85da1759425f5617945c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a42d62a49d09e85da1759425f5617945c">Play</a> ()</td></tr>
 <tr class="memdesc:a42d62a49d09e85da1759425f5617945c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts or resumes playback of the video.  <br /></td></tr>
 <tr class="memitem:a3b76918587808d0a0acdf0fdbefcce92" id="r_a3b76918587808d0a0acdf0fdbefcce92"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3b76918587808d0a0acdf0fdbefcce92">Pause</a> ()</td></tr>
@@ -133,6 +135,10 @@ Public Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
+<tr class="memitem:a6c0ab54cae42e513b6faf783e3b78a18" id="r_a6c0ab54cae42e513b6faf783e3b78a18"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Video.html#ae4b135c627fb1044dded06cf13c0d333">VideoMetadata</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6c0ab54cae42e513b6faf783e3b78a18">Metadata</a><code> [get]</code></td></tr>
+<tr class="memdesc:a6c0ab54cae42e513b6faf783e3b78a18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an atomic snapshot of metadata availability and values for the current source.  <br /></td></tr>
+<tr class="memitem:a0f545b3b737e42457526f76799db5ac3" id="r_a0f545b3b737e42457526f76799db5ac3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0f545b3b737e42457526f76799db5ac3">IsMetadataReady</a><code> [get]</code></td></tr>
+<tr class="memdesc:a0f545b3b737e42457526f76799db5ac3"><td class="mdescLeft">&#160;</td><td class="mdescRight">True only when metadata for the current source is available.  <br /></td></tr>
 <tr class="memitem:aaf5a59666b46c648f49828bdf7339184" id="r_aaf5a59666b46c648f49828bdf7339184"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaf5a59666b46c648f49828bdf7339184">Loop</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:aaf5a59666b46c648f49828bdf7339184"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether the video should loop when it reaches the end.  <br /></td></tr>
 <tr class="memitem:a7a6df989c41bd7efde838edde8a6faa4" id="r_a7a6df989c41bd7efde838edde8a6faa4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a6df989c41bd7efde838edde8a6faa4">IsPlaying</a><code> [get]</code></td></tr>
@@ -143,7 +149,7 @@ Properties</h2></td></tr>
 <tr class="memdesc:a0e5b1117eb5ba547f7afeef8c7092793"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current playback position in the video.  <br /></td></tr>
 <tr class="memitem:a284aa180c33f05e06b1be663e2ffc446" id="r_a284aa180c33f05e06b1be663e2ffc446"><td class="memItemLeft" align="right" valign="top">int int height&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a284aa180c33f05e06b1be663e2ffc446">NaturalSize</a><code> [get]</code></td></tr>
 <tr class="memitem:a714353983bcfeb11a8db94be1aa42b1e" id="r_a714353983bcfeb11a8db94be1aa42b1e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a714353983bcfeb11a8db94be1aa42b1e">HasAudio</a><code> [get]</code></td></tr>
-<tr class="memdesc:a714353983bcfeb11a8db94be1aa42b1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the video has an audio track.  <br /></td></tr>
+<tr class="memdesc:a714353983bcfeb11a8db94be1aa42b1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether the video has an audio track. Consult IsMetadataReady before interpreting false.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-events" class="groupheader"><a id="events" name="events"></a>
 Events</h2></td></tr>
@@ -156,17 +162,42 @@ Events</h2></td></tr>
 <tr class="memitem:aaf84952557188d186564bd1dc7ac240a" id="r_aaf84952557188d186564bd1dc7ac240a"><td class="memItemLeft" align="right" valign="top">EventHandler&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaf84952557188d186564bd1dc7ac240a">Ended</a></td></tr>
 <tr class="memdesc:aaf84952557188d186564bd1dc7ac240a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the video playback reaches the end.  <br /></td></tr>
 <tr class="memitem:a5b82ef74e8cd0508efc69e3b54084540" id="r_a5b82ef74e8cd0508efc69e3b54084540"><td class="memItemLeft" align="right" valign="top">EventHandler&lt; <a class="el" href="classGondwana_1_1Video_1_1VideoStateChangedEventArgs.html">VideoStateChangedEventArgs</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b82ef74e8cd0508efc69e3b54084540">StateChanged</a></td></tr>
-<tr class="memdesc:a5b82ef74e8cd0508efc69e3b54084540"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the video state changes.  <br /></td></tr>
+<tr class="memdesc:a5b82ef74e8cd0508efc69e3b54084540"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the video state changes, including MediaOpening, MediaOpened, MetadataReady, and MetadataFailed. MediaOpening must precede frames for a replacement source, after callbacks for the prior source have stopped. Events may run on background threads.  <br /></td></tr>
 <tr class="memitem:a5884aac4123ba1047432a9a0fd409fd4" id="r_a5884aac4123ba1047432a9a0fd409fd4"><td class="memItemLeft" align="right" valign="top">EventHandler&lt; <a class="el" href="classGondwana_1_1Video_1_1VideoFrameReadyEventArgs.html">VideoFrameReadyEventArgs</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5884aac4123ba1047432a9a0fd409fd4">FrameReady</a></td></tr>
-<tr class="memdesc:a5884aac4123ba1047432a9a0fd409fd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when a decoded video frame is ready for rendering.  <br /></td></tr>
+<tr class="memdesc:a5884aac4123ba1047432a9a0fd409fd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when a decoded BGRX frame is ready. The pointer is valid only during the callback. Copy it before returning. Do not call engine/render operations or player controls here.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Defines the contract for a video player that can play, pause, stop, and seek video content. </p>
 
 <p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00006">6</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="ae4de560d17fb42969171db033dbed368" name="ae4de560d17fb42969171db033dbed368"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4de560d17fb42969171db033dbed368">&#9670;&#160;</a></span>Open() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Video.IVideoPlayer.Open </td>
+          <td>(</td>
+          <td class="paramtype">Stream</td>          <td class="paramname"><span class="paramname"><em>source</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>leaveOpen</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Opens a readable stream. Ownership transfers on success unless leaveOpen is true. Keep a borrowed stream alive and unused until the next Open or Dispose. Seek/loop require a seekable stream. Backends without stream support throw without taking ownership. </p>
+
+<p>Implemented in <a class="el" href="classGondwana_1_1Video_1_1VlcVideoPlayer.html#ab0945639fffd360dcc87c8486802cd30">Gondwana.Video.VlcVideoPlayer</a>.</p>
+
+</div>
+</div>
 <a id="afae982201b1096b5500576f6f2ab9d7d" name="afae982201b1096b5500576f6f2ab9d7d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afae982201b1096b5500576f6f2ab9d7d">&#9670;&#160;</a></span>Open()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#afae982201b1096b5500576f6f2ab9d7d">&#9670;&#160;</a></span>Open() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -324,7 +355,7 @@ Events</h2></td></tr>
 
 <p>Gets the natural size (width and height) of the video in pixels. </p>
 
-<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00068">68</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00079">79</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -353,7 +384,7 @@ Events</h2></td></tr>
 
 <p>Implemented in <a class="el" href="classGondwana_1_1Video_1_1VlcVideoPlayer.html#acf4e193b2436f1fa2c7eba75bda64d1d">Gondwana.Video.VlcVideoPlayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00058">58</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00069">69</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -377,11 +408,39 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets a value indicating whether the video has an audio track. </p>
+<p>Gets whether the video has an audio track. Consult IsMetadataReady before interpreting false. </p>
 
 <p>Implemented in <a class="el" href="classGondwana_1_1Video_1_1VlcVideoPlayer.html#a7014c183df70614ad2cc3181626c7359">Gondwana.Video.VlcVideoPlayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00073">73</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00084">84</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
+
+</div>
+</div>
+<a id="a0f545b3b737e42457526f76799db5ac3" name="a0f545b3b737e42457526f76799db5ac3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f545b3b737e42457526f76799db5ac3">&#9670;&#160;</a></span>IsMetadataReady</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Gondwana.Video.IVideoPlayer.IsMetadataReady</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True only when metadata for the current source is available. </p>
+
+<p>Implemented in <a class="el" href="classGondwana_1_1Video_1_1VlcVideoPlayer.html#ad4b8f186bc5633cbbd45de55a0df3a6c">Gondwana.Video.VlcVideoPlayer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00025">25</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -409,7 +468,7 @@ Events</h2></td></tr>
 
 <p>Implemented in <a class="el" href="classGondwana_1_1Video_1_1VlcVideoPlayer.html#a13c85c9dbcc9e4a27c1fa250afb5fd1c">Gondwana.Video.VlcVideoPlayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00053">53</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00064">64</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -437,7 +496,35 @@ Events</h2></td></tr>
 
 <p>Implemented in <a class="el" href="classGondwana_1_1Video_1_1VlcVideoPlayer.html#a1db48c5f04fd7bf310c353bd8dbf4b33">Gondwana.Video.VlcVideoPlayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00046">46</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00057">57</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
+
+</div>
+</div>
+<a id="a6c0ab54cae42e513b6faf783e3b78a18" name="a6c0ab54cae42e513b6faf783e3b78a18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c0ab54cae42e513b6faf783e3b78a18">&#9670;&#160;</a></span>Metadata</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceGondwana_1_1Video.html#ae4b135c627fb1044dded06cf13c0d333">VideoMetadata</a> Gondwana.Video.IVideoPlayer.Metadata</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets an atomic snapshot of metadata availability and values for the current source. </p>
+
+<p>Implemented in <a class="el" href="classGondwana_1_1Video_1_1VlcVideoPlayer.html#ac9c4b1bc0445b9fcfd3c19936d5e7588">Gondwana.Video.VlcVideoPlayer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00022">22</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -463,7 +550,7 @@ Events</h2></td></tr>
 
 <p>Implemented in <a class="el" href="classGondwana_1_1Video_1_1VlcVideoPlayer.html#a2aefcf29438ced796438b4213914ff95">Gondwana.Video.VlcVideoPlayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00068">68</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00079">79</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -491,7 +578,7 @@ Events</h2></td></tr>
 
 <p>Implemented in <a class="el" href="classGondwana_1_1Video_1_1VlcVideoPlayer.html#ab33b54f6159b932915f92b439c5d6e88">Gondwana.Video.VlcVideoPlayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00063">63</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00074">74</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -510,7 +597,7 @@ Events</h2></td></tr>
 
 <p>Occurs when the video playback reaches the end. </p>
 
-<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00095">95</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00106">106</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -526,9 +613,9 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Occurs when a decoded video frame is ready for rendering. </p>
+<p>Occurs when a decoded BGRX frame is ready. The pointer is valid only during the callback. Copy it before returning. Do not call engine/render operations or player controls here. </p>
 
-<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00105">105</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00119">119</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -546,7 +633,7 @@ Events</h2></td></tr>
 
 <p>Occurs when the video playback is paused. </p>
 
-<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00085">85</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00096">96</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -564,7 +651,7 @@ Events</h2></td></tr>
 
 <p>Occurs when the video playback starts. </p>
 
-<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00080">80</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00091">91</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -580,9 +667,9 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Occurs when the video state changes. </p>
+<p>Occurs when the video state changes, including MediaOpening, MediaOpened, MetadataReady, and MetadataFailed. MediaOpening must precede frames for a replacement source, after callbacks for the prior source have stopped. Events may run on background threads. </p>
 
-<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00100">100</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00113">113</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
 
 </div>
 </div>
@@ -600,7 +687,7 @@ Events</h2></td></tr>
 
 <p>Occurs when the video playback is stopped. </p>
 
-<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00090">90</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IVideoPlayer_8cs_source.html#l00101">101</a> of file <a class="el" href="IVideoPlayer_8cs_source.html">IVideoPlayer.cs</a>.</p>
 
 </div>
 </div>

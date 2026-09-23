@@ -339,6 +339,7 @@ var hierarchy =
       [ "Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceControl", "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceControl.html", null ],
       [ "Gondwana.WinForms.Rendering.WinFormGpuRenderSurfaceControl", "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceControl.html", null ]
     ] ],
+    [ "Gondwana.Video.VideoSource", "classGondwana_1_1Video_1_1VideoSource.html", null ],
     [ "Gondwana.Rendering.Views.View", "classGondwana_1_1Rendering_1_1Views_1_1View.html", null ],
     [ "Gondwana.Rendering.Views.ViewManager", "classGondwana_1_1Rendering_1_1Views_1_1ViewManager.html", null ],
     [ "Gondwana.Rendering.Views.Viewport", "classGondwana_1_1Rendering_1_1Views_1_1Viewport.html", null ],

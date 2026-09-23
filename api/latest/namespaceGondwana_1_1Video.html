@@ -103,13 +103,96 @@ $(function(){initNavTree('namespaceGondwana_1_1Video.html','',''); });
 Classes</h2></td></tr>
 <tr class="memitem:IVideoPlayer" id="r_IVideoPlayer"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html">IVideoPlayer</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the contract for a video player that can play, pause, stop, and seek video content.  <a href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html#details">More...</a><br /></td></tr>
+<tr class="memitem:VideoDecodeBuffer" id="r_VideoDecodeBuffer"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>VideoDecodeBuffer</b></td></tr>
+<tr class="memitem:VideoFrameMailbox" id="r_VideoFrameMailbox"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>VideoFrameMailbox</b></td></tr>
 <tr class="memitem:VideoFrameReadyEventArgs" id="r_VideoFrameReadyEventArgs"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Video_1_1VideoFrameReadyEventArgs.html">VideoFrameReadyEventArgs</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides data for video frame ready events, containing frame buffer information and timing data.  <a href="classGondwana_1_1Video_1_1VideoFrameReadyEventArgs.html#details">More...</a><br /></td></tr>
+<tr class="memitem:VideoMetadataState" id="r_VideoMetadataState"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>VideoMetadataState</b></td></tr>
+<tr class="memitem:VideoSource" id="r_VideoSource"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Video_1_1VideoSource.html">VideoSource</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A URI, borrowed/owned stream, or GAF asset to open with a video backend.  <a href="classGondwana_1_1Video_1_1VideoSource.html#details">More...</a><br /></td></tr>
 <tr class="memitem:VideoStateChangedEventArgs" id="r_VideoStateChangedEventArgs"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Video_1_1VideoStateChangedEventArgs.html">VideoStateChangedEventArgs</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides data for video state changed events.  <a href="classGondwana_1_1Video_1_1VideoStateChangedEventArgs.html#details">More...</a><br /></td></tr>
 <tr class="memitem:VlcVideoPlayer" id="r_VlcVideoPlayer"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Video_1_1VlcVideoPlayer.html">VlcVideoPlayer</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides a video player implementation using LibVLC for video playback and frame rendering.  <a href="classGondwana_1_1Video_1_1VlcVideoPlayer.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Desktop/native LibVLC 3 player. Controls are serialized; event handlers must not block on the engine thread. FrameReady runs on a decoder thread and is copy-only.  <a href="classGondwana_1_1Video_1_1VlcVideoPlayer.html#details">More...</a><br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:ab4fee478b3a0b01f9e591f7883c003f4" id="r_ab4fee478b3a0b01f9e591f7883c003f4"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab4fee478b3a0b01f9e591f7883c003f4">VideoMetadataStatus</a> { <a class="el" href="#ab4fee478b3a0b01f9e591f7883c003f4a453e6aa38d87b28ccae545967c53004f">Unavailable</a>
+, <a class="el" href="#ab4fee478b3a0b01f9e591f7883c003f4a2d13df6f8b5e4c5af9f87e0dc39df69d">Pending</a>
+, <a class="el" href="#ab4fee478b3a0b01f9e591f7883c003f4ae7d31fc0602fb2ede144d18cdffd816b">Ready</a>
+, <a class="el" href="#ab4fee478b3a0b01f9e591f7883c003f4ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>
+ }</td></tr>
+<tr class="memdesc:ab4fee478b3a0b01f9e591f7883c003f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">The availability of metadata for the active source.  <a href="#ab4fee478b3a0b01f9e591f7883c003f4">More...</a><br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ae4b135c627fb1044dded06cf13c0d333" id="r_ae4b135c627fb1044dded06cf13c0d333"><td class="memItemLeft" align="right" valign="top">record&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae4b135c627fb1044dded06cf13c0d333">VideoMetadata</a> (<a class="el" href="#ab4fee478b3a0b01f9e591f7883c003f4">VideoMetadataStatus</a> Status, bool HasAudio, TimeSpan Duration)</td></tr>
+<tr class="memdesc:ae4b135c627fb1044dded06cf13c0d333"><td class="mdescLeft">&#160;</td><td class="mdescRight">An immutable metadata snapshot. Values are authoritative only when status is Ready.  <br /></td></tr>
 </table>
+<a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
+<a id="ab4fee478b3a0b01f9e591f7883c003f4" name="ab4fee478b3a0b01f9e591f7883c003f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4fee478b3a0b01f9e591f7883c003f4">&#9670;&#160;</a></span>VideoMetadataStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#ab4fee478b3a0b01f9e591f7883c003f4">Gondwana.Video.VideoMetadataStatus</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The availability of metadata for the active source. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab4fee478b3a0b01f9e591f7883c003f4a453e6aa38d87b28ccae545967c53004f" name="ab4fee478b3a0b01f9e591f7883c003f4a453e6aa38d87b28ccae545967c53004f"></a>Unavailable&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab4fee478b3a0b01f9e591f7883c003f4a2d13df6f8b5e4c5af9f87e0dc39df69d" name="ab4fee478b3a0b01f9e591f7883c003f4a2d13df6f8b5e4c5af9f87e0dc39df69d"></a>Pending&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab4fee478b3a0b01f9e591f7883c003f4ae7d31fc0602fb2ede144d18cdffd816b" name="ab4fee478b3a0b01f9e591f7883c003f4ae7d31fc0602fb2ede144d18cdffd816b"></a>Ready&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab4fee478b3a0b01f9e591f7883c003f4ad7c8c85bf79bbe1b7188497c32c3b0ca" name="ab4fee478b3a0b01f9e591f7883c003f4ad7c8c85bf79bbe1b7188497c32c3b0ca"></a>Failed&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="VideoMetadata_8cs_source.html#l00004">4</a> of file <a class="el" href="VideoMetadata_8cs_source.html">VideoMetadata.cs</a>.</p>
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="ae4b135c627fb1044dded06cf13c0d333" name="ae4b135c627fb1044dded06cf13c0d333"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4b135c627fb1044dded06cf13c0d333">&#9670;&#160;</a></span>VideoMetadata()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">record Gondwana.Video.VideoMetadata </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#ab4fee478b3a0b01f9e591f7883c003f4">VideoMetadataStatus</a></td>          <td class="paramname"><span class="paramname"><em>Status</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>HasAudio</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">TimeSpan</td>          <td class="paramname"><span class="paramname"><em>Duration</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel sealed">sealed</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>An immutable metadata snapshot. Values are authoritative only when status is Ready. </p>
+
+<p class="definition">Definition at line <a class="el" href="VideoMetadata_8cs_source.html#l00007">7</a> of file <a class="el" href="VideoMetadata_8cs_source.html">VideoMetadata.cs</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

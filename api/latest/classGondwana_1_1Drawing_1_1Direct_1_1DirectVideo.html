@@ -99,7 +99,7 @@ $(function(){initNavTree('classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html
 </div><!--header-->
 <div class="contents">
 
-<p>Draws video frames provided by <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html" title="Defines the contract for a video player that can play, pause, stop, and seek video content.">IVideoPlayer</a> onto the backbuffer. <a class="el" href="namespaceGondwana_1_1Audio.html">Audio</a> is handled by the <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html" title="Defines the contract for a video player that can play, pause, stop, and seek video content.">IVideoPlayer</a> implementation (e.g., VLC system output on desktop).  
+<p>Draws video frames provided by <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html" title="Defines the contract for a video player that can play, pause, stop, and seek video content.">IVideoPlayer</a> onto the backbuffer. <a class="el" href="namespaceGondwana_1_1Audio.html">Audio</a> is handled by the <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html" title="Defines the contract for a video player that can play, pause, stop, and seek video content.">IVideoPlayer</a> implementation (e.g., VLC system output on desktop). Construct, control, update, draw and dispose on the engine/UI thread.  
  <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Drawing.Direct.DirectVideo:</div>
@@ -115,14 +115,28 @@ Inheritance diagram for Gondwana.Drawing.Direct.DirectVideo:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aff07be2bd3e22b4c2c4f4dc4d53e5e8a" id="r_aff07be2bd3e22b4c2c4f4dc4d53e5e8a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aff07be2bd3e22b4c2c4f4dc4d53e5e8a">DirectVideo</a> (<a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html">IVideoPlayer</a> player, Uri source, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a> sceneLayer, Rectangle? worldBounds, string? name=null)</td></tr>
-<tr class="memdesc:aff07be2bd3e22b4c2c4f4dc4d53e5e8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a> class that renders to a specific <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#ab464e191526e772a9cf74077c7f36f55" title="Gets the scene layer to which this direct drawing is attached, or null if the drawing is in view mode...">SceneLayer</a> using world coordinates.  <br /></td></tr>
-<tr class="memitem:a7b3e316fa4b7994cc034149a2447bf14" id="r_a7b3e316fa4b7994cc034149a2447bf14"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b3e316fa4b7994cc034149a2447bf14">DirectVideo</a> (<a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html">IVideoPlayer</a> player, Uri source, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> view, Rectangle? screenBounds, string? name=null)</td></tr>
-<tr class="memdesc:a7b3e316fa4b7994cc034149a2447bf14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a> class that renders to a specific <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a45228a4aba8bc2629472cb6560b8d554" title="Gets the view to which this direct drawing is attached, or null if the drawing is in scene-layer mode...">View</a> using screen coordinates.  <br /></td></tr>
-<tr class="memitem:aa46591b35a81ef83fc74a8e384009c61" id="r_aa46591b35a81ef83fc74a8e384009c61"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa46591b35a81ef83fc74a8e384009c61">DirectVideo</a> (Func&lt; <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html">IVideoPlayer</a> &gt; playerFactory, Uri source, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a> sceneLayer, Rectangle? worldBounds, string? name=null)</td></tr>
-<tr class="memdesc:aa46591b35a81ef83fc74a8e384009c61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a> class using a factory to create the player, rendering to a specific <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#ab464e191526e772a9cf74077c7f36f55" title="Gets the scene layer to which this direct drawing is attached, or null if the drawing is in view mode...">SceneLayer</a> using world coordinates.  <br /></td></tr>
-<tr class="memitem:a1d86e2052e137f3896b9617ee98f50fb" id="r_a1d86e2052e137f3896b9617ee98f50fb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1d86e2052e137f3896b9617ee98f50fb">DirectVideo</a> (Func&lt; <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html">IVideoPlayer</a> &gt; playerFactory, Uri source, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> view, Rectangle? screenBounds, string? name=null)</td></tr>
-<tr class="memdesc:a1d86e2052e137f3896b9617ee98f50fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a> class using a factory to create the player, rendering to a specific <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a45228a4aba8bc2629472cb6560b8d554" title="Gets the view to which this direct drawing is attached, or null if the drawing is in scene-layer mode...">View</a> using screen coordinates.  <br /></td></tr>
+<tr class="memitem:a46261cf0592c86ff4bdfc81dc8dd5423" id="r_a46261cf0592c86ff4bdfc81dc8dd5423"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a46261cf0592c86ff4bdfc81dc8dd5423">DirectVideo</a> (<a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html">IVideoPlayer</a> player, Uri source, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a> sceneLayer, Rectangle worldBounds, string? name=null)</td></tr>
+<tr class="memdesc:a46261cf0592c86ff4bdfc81dc8dd5423"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a world-space video with required presentation bounds. Owns the player.  <br /></td></tr>
+<tr class="memitem:a3e442f0d845b91a78229b21ada986441" id="r_a3e442f0d845b91a78229b21ada986441"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3e442f0d845b91a78229b21ada986441">DirectVideo</a> (<a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html">IVideoPlayer</a> player, Uri source, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> view, Rectangle screenBounds, string? name=null)</td></tr>
+<tr class="memdesc:a3e442f0d845b91a78229b21ada986441"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a screen-space video with required presentation bounds. Owns the player.  <br /></td></tr>
+<tr class="memitem:ad7cd1cb8cf26171fb782ce7bd8f70270" id="r_ad7cd1cb8cf26171fb782ce7bd8f70270"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad7cd1cb8cf26171fb782ce7bd8f70270">DirectVideo</a> (Func&lt; <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html">IVideoPlayer</a> &gt; playerFactory, Uri source, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a> sceneLayer, Rectangle worldBounds, string? name=null)</td></tr>
+<tr class="memdesc:ad7cd1cb8cf26171fb782ce7bd8f70270"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a world-space video using an owned player from the factory.  <br /></td></tr>
+<tr class="memitem:a0a5b3a50dbdf335f7bed2f8d005a05c7" id="r_a0a5b3a50dbdf335f7bed2f8d005a05c7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0a5b3a50dbdf335f7bed2f8d005a05c7">DirectVideo</a> (Func&lt; <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html">IVideoPlayer</a> &gt; playerFactory, Uri source, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> view, Rectangle screenBounds, string? name=null)</td></tr>
+<tr class="memdesc:a0a5b3a50dbdf335f7bed2f8d005a05c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a screen-space video using an owned player from the factory.  <br /></td></tr>
+<tr class="memitem:a6c90176b357b7ccefaaa6eed1e1ff789" id="r_a6c90176b357b7ccefaaa6eed1e1ff789"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6c90176b357b7ccefaaa6eed1e1ff789">DirectVideo</a> (<a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html">IVideoPlayer</a> player, <a class="el" href="classGondwana_1_1Video_1_1VideoSource.html">VideoSource</a> source, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a> sceneLayer, Rectangle worldBounds, string? name=null)</td></tr>
+<tr class="memdesc:a6c90176b357b7ccefaaa6eed1e1ff789"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a world-space URI/stream/GAF video and starts playback. Owns the player.  <br /></td></tr>
+<tr class="memitem:a2585a4010e96dea235ab58ea3cb2e30e" id="r_a2585a4010e96dea235ab58ea3cb2e30e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2585a4010e96dea235ab58ea3cb2e30e">DirectVideo</a> (<a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html">IVideoPlayer</a> player, <a class="el" href="classGondwana_1_1Video_1_1VideoSource.html">VideoSource</a> source, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> view, Rectangle screenBounds, string? name=null)</td></tr>
+<tr class="memdesc:a2585a4010e96dea235ab58ea3cb2e30e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a screen-space URI/stream/GAF video and starts playback. Owns the player.  <br /></td></tr>
+<tr class="memitem:a225ec6ead38ec780ebfc944ebea1be8c" id="r_a225ec6ead38ec780ebfc944ebea1be8c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a225ec6ead38ec780ebfc944ebea1be8c">DirectVideo</a> (Func&lt; <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html">IVideoPlayer</a> &gt; playerFactory, <a class="el" href="classGondwana_1_1Video_1_1VideoSource.html">VideoSource</a> source, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a> sceneLayer, Rectangle worldBounds, string? name=null)</td></tr>
+<tr class="memdesc:a225ec6ead38ec780ebfc944ebea1be8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a world-space URI/stream/GAF video using an owned player from the factory.  <br /></td></tr>
+<tr class="memitem:a5fde76d404a3e45414bdea98d4149405" id="r_a5fde76d404a3e45414bdea98d4149405"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5fde76d404a3e45414bdea98d4149405">DirectVideo</a> (Func&lt; <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html">IVideoPlayer</a> &gt; playerFactory, <a class="el" href="classGondwana_1_1Video_1_1VideoSource.html">VideoSource</a> source, <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> view, Rectangle screenBounds, string? name=null)</td></tr>
+<tr class="memdesc:a5fde76d404a3e45414bdea98d4149405"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a screen-space URI/stream/GAF video using an owned player from the factory.  <br /></td></tr>
+<tr class="memitem:aef1bdebc0902ac4cf95ef1c3e709961c" id="r_aef1bdebc0902ac4cf95ef1c3e709961c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aef1bdebc0902ac4cf95ef1c3e709961c">Open</a> (<a class="el" href="classGondwana_1_1Video_1_1VideoSource.html">VideoSource</a> source)</td></tr>
+<tr class="memdesc:aef1bdebc0902ac4cf95ef1c3e709961c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the source and starts playback. Call on the engine/UI thread.  <br /></td></tr>
+<tr class="memitem:a1b3bd0d3798cccd5bfd043b7ce884afe" id="r_a1b3bd0d3798cccd5bfd043b7ce884afe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1b3bd0d3798cccd5bfd043b7ce884afe">Open</a> (Uri source)</td></tr>
+<tr class="memdesc:a1b3bd0d3798cccd5bfd043b7ce884afe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the URI source and starts playback on the engine/UI thread.  <br /></td></tr>
+<tr class="memitem:aef8c55cce2ddb9e4fea5dba5f2df9a72" id="r_aef8c55cce2ddb9e4fea5dba5f2df9a72"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aef8c55cce2ddb9e4fea5dba5f2df9a72">Update</a> (long tick)</td></tr>
+<tr class="memdesc:aef8c55cce2ddb9e4fea5dba5f2df9a72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consumes the latest decoded frame on the engine thread, then advances fades.  <br /></td></tr>
 <tr class="memitem:abe9b03085143af612d96d6ca96145684" id="r_abe9b03085143af612d96d6ca96145684"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abe9b03085143af612d96d6ca96145684">Play</a> ()</td></tr>
 <tr class="memdesc:abe9b03085143af612d96d6ca96145684"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts or resumes video playback.  <br /></td></tr>
 <tr class="memitem:a89f38b6c548b3bd20a402807bdc1c07e" id="r_a89f38b6c548b3bd20a402807bdc1c07e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a89f38b6c548b3bd20a402807bdc1c07e">Pause</a> ()</td></tr>
@@ -154,8 +168,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a15fd13ea5e88a25cfd4dc2130765852d inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initiates a smooth reveal animation to the specified target progress over the given duration, optionally using a custom easing function.  <br /></td></tr>
 <tr class="memitem:a0a5f209be89adc606988bc4948fe11a6 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase" id="r_a0a5f209be89adc606988bc4948fe11a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html">DirectDrawingBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a0a5f209be89adc606988bc4948fe11a6">CancelReveal</a> ()</td></tr>
 <tr class="memdesc:a0a5f209be89adc606988bc4948fe11a6 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops an active reveal animation at its current progress.  <br /></td></tr>
-<tr class="memitem:a52ae59743dbd89bda3f0c721321939f0 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase" id="r_a52ae59743dbd89bda3f0c721321939f0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a52ae59743dbd89bda3f0c721321939f0">Update</a> (long tick)</td></tr>
-<tr class="memdesc:a52ae59743dbd89bda3f0c721321939f0 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs per-frame update logic for this direct drawing, including fade and reveal animations.  <br /></td></tr>
 <tr class="memitem:a5432f8b27319c8fc17a93dcbebdd6609 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase" id="r_a5432f8b27319c8fc17a93dcbebdd6609"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a5432f8b27319c8fc17a93dcbebdd6609">CompareTo</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html">DirectDrawingBase</a>? other)</td></tr>
 <tr class="memdesc:a5432f8b27319c8fc17a93dcbebdd6609 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares this direct drawing to another for sorting by <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a0ff816d3ac12017ee6caff6e522e8cea" title="Gets or sets the Z-order (depth) used for sorting this direct drawing relative to other drawables.">ZOrder</a>.  <br /></td></tr>
 <tr class="memitem:a397f33126e99162c868cc5195529f2d7 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase" id="r_a397f33126e99162c868cc5195529f2d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a397f33126e99162c868cc5195529f2d7">Dispose</a> ()</td></tr>
@@ -164,6 +176,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aa3708fe5956d7eedb4bef2ed9befda3a inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the specified object is equal to the current direct drawing.  <br /></td></tr>
 <tr class="memitem:a4471bb0951bdc229324127f0b545bfb2 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase" id="r_a4471bb0951bdc229324127f0b545bfb2"><td class="memItemLeft" align="right" valign="top">override int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a4471bb0951bdc229324127f0b545bfb2">GetHashCode</a> ()</td></tr>
 <tr class="memdesc:a4471bb0951bdc229324127f0b545bfb2 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a hash code for this direct drawing.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a27dbb42c1a661587a0a8496d10696d72" id="r_a27dbb42c1a661587a0a8496d10696d72"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a27dbb42c1a661587a0a8496d10696d72">width</a></td></tr>
+<tr class="memdesc:a27dbb42c1a661587a0a8496d10696d72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decoded source dimensions, or (0,0) until known.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -179,14 +196,15 @@ Protected Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
-<tr class="memitem:af3cc70ded3f6c4bf4169be8d8c44fde2" id="r_af3cc70ded3f6c4bf4169be8d8c44fde2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93">StretchMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af3cc70ded3f6c4bf4169be8d8c44fde2">Stretch</a> = <a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93adb3e3f51c9107e26c9bccf9a188ce2ed">StretchMode.Fill</a><code> [get, set]</code></td></tr>
+<tr class="memitem:af3cc70ded3f6c4bf4169be8d8c44fde2" id="r_af3cc70ded3f6c4bf4169be8d8c44fde2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93">StretchMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af3cc70ded3f6c4bf4169be8d8c44fde2">Stretch</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:af3cc70ded3f6c4bf4169be8d8c44fde2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the stretch mode that determines how the video frame is scaled to fit within the destination bounds.  <br /></td></tr>
-<tr class="memitem:aae3d2e4f49c8d84902cc5bd26ce854df" id="r_aae3d2e4f49c8d84902cc5bd26ce854df"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aae3d2e4f49c8d84902cc5bd26ce854df">Opacity</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:aae3d2e4f49c8d84902cc5bd26ce854df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the opacity level of the video overlay.  <br /></td></tr>
 <tr class="memitem:a00363050bb2bbde92858ff8d0fbc8bc9" id="r_a00363050bb2bbde92858ff8d0fbc8bc9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a00363050bb2bbde92858ff8d0fbc8bc9">PlaybackRate</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a00363050bb2bbde92858ff8d0fbc8bc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the playback speed multiplier.  <br /></td></tr>
 <tr class="memitem:af015036b7c8bc013d8b701ae8b9c8219" id="r_af015036b7c8bc013d8b701ae8b9c8219"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af015036b7c8bc013d8b701ae8b9c8219">Loop</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:af015036b7c8bc013d8b701ae8b9c8219"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether the video should automatically restart from the beginning when it reaches the end.  <br /></td></tr>
+<tr class="memitem:af526fe39ffd7a17424fa0baafcec84a7" id="r_af526fe39ffd7a17424fa0baafcec84a7"><td class="memItemLeft" align="right" valign="top">VideoMetadata&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af526fe39ffd7a17424fa0baafcec84a7">Metadata</a><code> [get]</code></td></tr>
+<tr class="memdesc:af526fe39ffd7a17424fa0baafcec84a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Metadata snapshot for the active source; Pending values are not authoritative.  <br /></td></tr>
+<tr class="memitem:a0569557c5916c4fe709e9ffc3a20c9ac" id="r_a0569557c5916c4fe709e9ffc3a20c9ac"><td class="memItemLeft" align="right" valign="top">int int height&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0569557c5916c4fe709e9ffc3a20c9ac">NaturalSize</a><code> [get]</code></td></tr>
 <tr class="inherit_header properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Properties inherited from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html">Gondwana.Drawing.Direct.DirectDrawingBase</a></td></tr>
 <tr class="memitem:a3a1c304b55d725c4f002a15556ab79cc inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase" id="r_a3a1c304b55d725c4f002a15556ab79cc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a3a1c304b55d725c4f002a15556ab79cc">HideWhenFullyTransparent</a> = true<code> [get, set]</code></td></tr>
 <tr class="memdesc:a3a1c304b55d725c4f002a15556ab79cc inherit properties_classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether this direct drawing should be automatically hidden when its opacity reaches zero during fade transitions.  <br /></td></tr>
@@ -260,21 +278,12 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memdesc:af6121c7773fe8333043c8f4c74f8e97b inherit events_interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectDrawable"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the object is being disposed.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Draws video frames provided by <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html" title="Defines the contract for a video player that can play, pause, stop, and seek video content.">IVideoPlayer</a> onto the backbuffer. <a class="el" href="namespaceGondwana_1_1Audio.html">Audio</a> is handled by the <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html" title="Defines the contract for a video player that can play, pause, stop, and seek video content.">IVideoPlayer</a> implementation (e.g., VLC system output on desktop). </p>
-<p>*** Basic Playback (fixed size in a HUD corner): var clip = new <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a>(surface, new Rectangle(64, 64, 640, 360), playerFactory: () =&gt; videoPlayerFactory.Create(), source: new Uri("file:///C:/media/intro.mp4")) { ZOrder = 100, // above tiles/UI as needed Stretch = <a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93af19516d11f2946f894070e92fcb56b6d" title="Scales the video uniformly to fit inside the bounds while preserving the aspect ratio....">StretchMode.Uniform</a>, // preserve aspect, fit inside box Loop = false };</p>
-<p>*** Full-bleed Cutscene (cover viewport, crop overflow): var cutscene = new <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a>(surface, viewportBounds, () =&gt; videoPlayerFactory.Create(), new Uri("file:///C:/media/cutscene.mkv")) { ZOrder = 1000, Stretch = <a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93ab726f36782df417dfda25a259d6493cf" title="Scales the video uniformly to cover the entire bounds while preserving the aspect ratio....">StretchMode.UniformToFill</a>, // cover the whole bounds Opacity = 1.0f, Loop = false };</p>
-<p>*** Faded Picture-in-Picture (overlay, semi-transparent): var pip = new <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a>(surface, new Rectangle(20, 20, 320, 180), () =&gt; videoPlayerFactory.Create(), new Uri("file:///C:/media/camfeed.webm")) { ZOrder = 500, Stretch = <a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93adb3e3f51c9107e26c9bccf9a188ce2ed" title="Stretches the video to fill the entire bounds, ignoring the aspect ratio.">StretchMode.Fill</a>, // ignore AR, fill the box Opacity = 0.75f, Loop = true };</p>
-<p>*** Playback Control (pause/seek/rate) during your update tick: // Pause on a modal if (ui.ShowingModal) pip.Pause();</p>
-<p>// Resume when modal closes if (!ui.ShowingModal &amp;&amp; !pipIsPlaying) pip.Play();</p>
-<p>// Jump to 10s (for scrubbing thumbnails or replays) pip.Seek(TimeSpan.FromSeconds(10));</p>
-<p>// Slow-mo or fast-forward pip.PlaybackRate = 0.5; // half-speed // pip.PlaybackRate = 1.25; // 25% faster</p>
-<p>*** Swap Source (re-use the same player instance path): var trailer = new <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a>(surface, new Rectangle(80, 80, 960, 540), myExistingIVideoPlayerInstance, new Uri("file:///C:/media/trailer.mp4")) { Stretch = <a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93af19516d11f2946f894070e92fcb56b6d" title="Scales the video uniformly to fit inside the bounds while preserving the aspect ratio....">StretchMode.Uniform</a>, Opacity = 1.0f };</p>
-<p>*** Animated Slide-in (using your engine's movement/scrolling): // Start off-screen, then slide into position over 0.4s cutscene.ScrollToSourceGridPoint(0.4, new Rectangle(0, 0, viewportBounds.Width, viewportBounds.Height));</p>
+<div class="textblock"><p>Draws video frames provided by <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html" title="Defines the contract for a video player that can play, pause, stop, and seek video content.">IVideoPlayer</a> onto the backbuffer. <a class="el" href="namespaceGondwana_1_1Audio.html">Audio</a> is handled by the <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html" title="Defines the contract for a video player that can play, pause, stop, and seek video content.">IVideoPlayer</a> implementation (e.g., VLC system output on desktop). Construct, control, update, draw and dispose on the engine/UI thread. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00081">81</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00016">16</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aff07be2bd3e22b4c2c4f4dc4d53e5e8a" name="aff07be2bd3e22b4c2c4f4dc4d53e5e8a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aff07be2bd3e22b4c2c4f4dc4d53e5e8a">&#9670;&#160;</a></span>DirectVideo() <span class="overload">[1/4]</span></h2>
+<a id="a46261cf0592c86ff4bdfc81dc8dd5423" name="a46261cf0592c86ff4bdfc81dc8dd5423"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46261cf0592c86ff4bdfc81dc8dd5423">&#9670;&#160;</a></span>DirectVideo() <span class="overload">[1/8]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -302,7 +311,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Rectangle?</td>          <td class="paramname"><span class="paramname"><em>worldBounds</em></span>, </td>
+          <td class="paramtype">Rectangle</td>          <td class="paramname"><span class="paramname"><em>worldBounds</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -312,32 +321,14 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes a new instance of the <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a> class that renders to a specific <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#ab464e191526e772a9cf74077c7f36f55" title="Gets the scene layer to which this direct drawing is attached, or null if the drawing is in view mode...">SceneLayer</a> using world coordinates. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">player</td><td>The video player instance responsible for decoding and providing frames.</td></tr>
-    <tr><td class="paramname">source</td><td>The URI of the video source to play.</td></tr>
-    <tr><td class="paramname">renderSurfaceHost</td><td>The render surface host that will display the video.</td></tr>
-    <tr><td class="paramname">sceneLayer</td><td>The scene layer to which this video will be attached.</td></tr>
-    <tr><td class="paramname">worldBounds</td><td>The rectangular bounds in world coordinates where the video will be rendered. If <code>null</code>, the video's natural size will be used. </td></tr>
-    <tr><td class="paramname">name</td><td>An optional name for this video instance, useful for debugging or identification.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">ArgumentNullException</td><td>Thrown if <em>player</em>  is <code>null</code>.</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>The video begins playing automatically after initialization. </p>
+<p>Creates a world-space video with required presentation bounds. Owns the player. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00220">220</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00092">92</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
 
 </div>
 </div>
-<a id="a7b3e316fa4b7994cc034149a2447bf14" name="a7b3e316fa4b7994cc034149a2447bf14"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b3e316fa4b7994cc034149a2447bf14">&#9670;&#160;</a></span>DirectVideo() <span class="overload">[2/4]</span></h2>
+<a id="a3e442f0d845b91a78229b21ada986441" name="a3e442f0d845b91a78229b21ada986441"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e442f0d845b91a78229b21ada986441">&#9670;&#160;</a></span>DirectVideo() <span class="overload">[2/8]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -365,7 +356,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Rectangle?</td>          <td class="paramname"><span class="paramname"><em>screenBounds</em></span>, </td>
+          <td class="paramtype">Rectangle</td>          <td class="paramname"><span class="paramname"><em>screenBounds</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -375,32 +366,14 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes a new instance of the <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a> class that renders to a specific <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a45228a4aba8bc2629472cb6560b8d554" title="Gets the view to which this direct drawing is attached, or null if the drawing is in scene-layer mode...">View</a> using screen coordinates. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">player</td><td>The video player instance responsible for decoding and providing frames.</td></tr>
-    <tr><td class="paramname">source</td><td>The URI of the video source to play.</td></tr>
-    <tr><td class="paramname">renderSurfaceHost</td><td>The render surface host that will display the video.</td></tr>
-    <tr><td class="paramname">view</td><td>The view to which this video will be attached.</td></tr>
-    <tr><td class="paramname">screenBounds</td><td>The rectangular bounds in screen coordinates where the video will be rendered. If <code>null</code>, the video's natural size will be used. </td></tr>
-    <tr><td class="paramname">name</td><td>An optional name for this video instance, useful for debugging or identification.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">ArgumentNullException</td><td>Thrown if <em>player</em>  is <code>null</code>.</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>This constructor is useful for HUD overlays, menus, or other UI-aligned video elements. The video begins playing automatically after initialization. </p>
+<p>Creates a screen-space video with required presentation bounds. Owns the player. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00249">249</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00097">97</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
 
 </div>
 </div>
-<a id="aa46591b35a81ef83fc74a8e384009c61" name="aa46591b35a81ef83fc74a8e384009c61"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa46591b35a81ef83fc74a8e384009c61">&#9670;&#160;</a></span>DirectVideo() <span class="overload">[3/4]</span></h2>
+<a id="ad7cd1cb8cf26171fb782ce7bd8f70270" name="ad7cd1cb8cf26171fb782ce7bd8f70270"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7cd1cb8cf26171fb782ce7bd8f70270">&#9670;&#160;</a></span>DirectVideo() <span class="overload">[3/8]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -428,7 +401,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Rectangle?</td>          <td class="paramname"><span class="paramname"><em>worldBounds</em></span>, </td>
+          <td class="paramtype">Rectangle</td>          <td class="paramname"><span class="paramname"><em>worldBounds</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -438,32 +411,14 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes a new instance of the <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a> class using a factory to create the player, rendering to a specific <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#ab464e191526e772a9cf74077c7f36f55" title="Gets the scene layer to which this direct drawing is attached, or null if the drawing is in view mode...">SceneLayer</a> using world coordinates. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">playerFactory</td><td>A factory function that creates and returns an <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html" title="Defines the contract for a video player that can play, pause, stop, and seek video content.">IVideoPlayer</a> instance. This allows for platform-specific player implementations or dependency injection patterns. </td></tr>
-    <tr><td class="paramname">source</td><td>The URI of the video source to play.</td></tr>
-    <tr><td class="paramname">renderSurfaceHost</td><td>The render surface host that will display the video.</td></tr>
-    <tr><td class="paramname">sceneLayer</td><td>The scene layer to which this video will be attached.</td></tr>
-    <tr><td class="paramname">worldBounds</td><td>The rectangular bounds in world coordinates where the video will be rendered. If <code>null</code>, the video's natural size will be used. </td></tr>
-    <tr><td class="paramname">name</td><td>An optional name for this video instance, useful for debugging or identification.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">ArgumentNullException</td><td>Thrown if <em>playerFactory</em>  is <code>null</code>.</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>The factory pattern is useful when the player implementation varies by platform (e.g., VLC on desktop, HTML5 on web). The video begins playing automatically after initialization. </p>
+<p>Creates a world-space video using an owned player from the factory. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00313">313</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00102">102</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
 
 </div>
 </div>
-<a id="a1d86e2052e137f3896b9617ee98f50fb" name="a1d86e2052e137f3896b9617ee98f50fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1d86e2052e137f3896b9617ee98f50fb">&#9670;&#160;</a></span>DirectVideo() <span class="overload">[4/4]</span></h2>
+<a id="a0a5b3a50dbdf335f7bed2f8d005a05c7" name="a0a5b3a50dbdf335f7bed2f8d005a05c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a5b3a50dbdf335f7bed2f8d005a05c7">&#9670;&#160;</a></span>DirectVideo() <span class="overload">[4/8]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -491,7 +446,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Rectangle?</td>          <td class="paramname"><span class="paramname"><em>screenBounds</em></span>, </td>
+          <td class="paramtype">Rectangle</td>          <td class="paramname"><span class="paramname"><em>screenBounds</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -501,27 +456,189 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes a new instance of the <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a> class using a factory to create the player, rendering to a specific <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a45228a4aba8bc2629472cb6560b8d554" title="Gets the view to which this direct drawing is attached, or null if the drawing is in scene-layer mode...">View</a> using screen coordinates. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">playerFactory</td><td>A factory function that creates and returns an <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html" title="Defines the contract for a video player that can play, pause, stop, and seek video content.">IVideoPlayer</a> instance. This allows for platform-specific player implementations or dependency injection patterns. </td></tr>
-    <tr><td class="paramname">source</td><td>The URI of the video source to play.</td></tr>
-    <tr><td class="paramname">renderSurfaceHost</td><td>The render surface host that will display the video.</td></tr>
-    <tr><td class="paramname">view</td><td>The view to which this video will be attached.</td></tr>
-    <tr><td class="paramname">screenBounds</td><td>The rectangular bounds in screen coordinates where the video will be rendered. If <code>null</code>, the video's natural size will be used. </td></tr>
-    <tr><td class="paramname">name</td><td>An optional name for this video instance, useful for debugging or identification.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">ArgumentNullException</td><td>Thrown if <em>playerFactory</em>  is <code>null</code>.</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>This constructor is useful for HUD overlays, menus, or other UI-aligned video elements. The factory pattern allows for platform-specific implementations. The video begins playing automatically after initialization. </p>
+<p>Creates a screen-space video using an owned player from the factory. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00346">346</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00107">107</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
+
+</div>
+</div>
+<a id="a6c90176b357b7ccefaaa6eed1e1ff789" name="a6c90176b357b7ccefaaa6eed1e1ff789"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c90176b357b7ccefaaa6eed1e1ff789">&#9670;&#160;</a></span>DirectVideo() <span class="overload">[5/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Gondwana.Drawing.Direct.DirectVideo.DirectVideo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html">IVideoPlayer</a></td>          <td class="paramname"><span class="paramname"><em>player</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Video_1_1VideoSource.html">VideoSource</a></td>          <td class="paramname"><span class="paramname"><em>source</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a></td>          <td class="paramname"><span class="paramname"><em>renderSurfaceHost</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a></td>          <td class="paramname"><span class="paramname"><em>sceneLayer</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Rectangle</td>          <td class="paramname"><span class="paramname"><em>worldBounds</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string?</td>          <td class="paramname"><span class="paramname"><em>name</em></span><span class="paramdefsep"> = </span><span class="paramdefval">null</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a world-space URI/stream/GAF video and starts playback. Owns the player. </p>
+
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00112">112</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
+
+</div>
+</div>
+<a id="a2585a4010e96dea235ab58ea3cb2e30e" name="a2585a4010e96dea235ab58ea3cb2e30e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2585a4010e96dea235ab58ea3cb2e30e">&#9670;&#160;</a></span>DirectVideo() <span class="overload">[6/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Gondwana.Drawing.Direct.DirectVideo.DirectVideo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html">IVideoPlayer</a></td>          <td class="paramname"><span class="paramname"><em>player</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Video_1_1VideoSource.html">VideoSource</a></td>          <td class="paramname"><span class="paramname"><em>source</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a></td>          <td class="paramname"><span class="paramname"><em>renderSurfaceHost</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a></td>          <td class="paramname"><span class="paramname"><em>view</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Rectangle</td>          <td class="paramname"><span class="paramname"><em>screenBounds</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string?</td>          <td class="paramname"><span class="paramname"><em>name</em></span><span class="paramdefsep"> = </span><span class="paramdefval">null</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a screen-space URI/stream/GAF video and starts playback. Owns the player. </p>
+
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00117">117</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
+
+</div>
+</div>
+<a id="a225ec6ead38ec780ebfc944ebea1be8c" name="a225ec6ead38ec780ebfc944ebea1be8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a225ec6ead38ec780ebfc944ebea1be8c">&#9670;&#160;</a></span>DirectVideo() <span class="overload">[7/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Gondwana.Drawing.Direct.DirectVideo.DirectVideo </td>
+          <td>(</td>
+          <td class="paramtype">Func&lt; <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html">IVideoPlayer</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>playerFactory</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Video_1_1VideoSource.html">VideoSource</a></td>          <td class="paramname"><span class="paramname"><em>source</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a></td>          <td class="paramname"><span class="paramname"><em>renderSurfaceHost</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a></td>          <td class="paramname"><span class="paramname"><em>sceneLayer</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Rectangle</td>          <td class="paramname"><span class="paramname"><em>worldBounds</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string?</td>          <td class="paramname"><span class="paramname"><em>name</em></span><span class="paramdefsep"> = </span><span class="paramdefval">null</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a world-space URI/stream/GAF video using an owned player from the factory. </p>
+
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00122">122</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
+
+</div>
+</div>
+<a id="a5fde76d404a3e45414bdea98d4149405" name="a5fde76d404a3e45414bdea98d4149405"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fde76d404a3e45414bdea98d4149405">&#9670;&#160;</a></span>DirectVideo() <span class="overload">[8/8]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Gondwana.Drawing.Direct.DirectVideo.DirectVideo </td>
+          <td>(</td>
+          <td class="paramtype">Func&lt; <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html">IVideoPlayer</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>playerFactory</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Video_1_1VideoSource.html">VideoSource</a></td>          <td class="paramname"><span class="paramname"><em>source</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a></td>          <td class="paramname"><span class="paramname"><em>renderSurfaceHost</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a></td>          <td class="paramname"><span class="paramname"><em>view</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Rectangle</td>          <td class="paramname"><span class="paramname"><em>screenBounds</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string?</td>          <td class="paramname"><span class="paramname"><em>name</em></span><span class="paramdefsep"> = </span><span class="paramdefval">null</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a screen-space URI/stream/GAF video using an owned player from the factory. </p>
+
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00127">127</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
 
 </div>
 </div>
@@ -559,7 +676,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#ad239dc0e99d67621d35385086d91e98f">Gondwana.Drawing.Direct.DirectDrawingBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00577">577</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00333">333</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
 
 </div>
 </div>
@@ -599,7 +716,47 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00371">371</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00192">192</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
+
+</div>
+</div>
+<a id="a1b3bd0d3798cccd5bfd043b7ce884afe" name="a1b3bd0d3798cccd5bfd043b7ce884afe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b3bd0d3798cccd5bfd043b7ce884afe">&#9670;&#160;</a></span>Open() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Drawing.Direct.DirectVideo.Open </td>
+          <td>(</td>
+          <td class="paramtype">Uri</td>          <td class="paramname"><span class="paramname"><em>source</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces the URI source and starts playback on the engine/UI thread. </p>
+
+</div>
+</div>
+<a id="aef1bdebc0902ac4cf95ef1c3e709961c" name="aef1bdebc0902ac4cf95ef1c3e709961c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef1bdebc0902ac4cf95ef1c3e709961c">&#9670;&#160;</a></span>Open() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Drawing.Direct.DirectVideo.Open </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Video_1_1VideoSource.html">VideoSource</a></td>          <td class="paramname"><span class="paramname"><em>source</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces the source and starts playback. Call on the engine/UI thread. </p>
+
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00160">160</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
 
 </div>
 </div>
@@ -691,7 +848,57 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Stops video playback and resets the playback position to the beginning. </p>
-<p>After calling this method, the video will return to its first frame. Call <a class="el" href="#abe9b03085143af612d96d6ca96145684" title="Starts or resumes video playback.">Play</a> to start playback again from the beginning. </p>
+<p>The last consumed frame remains visible until another frame arrives or the source changes. Call <a class="el" href="#abe9b03085143af612d96d6ca96145684" title="Starts or resumes video playback.">Play</a> to start playback again from the beginning. </p>
+
+</div>
+</div>
+<a id="aef8c55cce2ddb9e4fea5dba5f2df9a72" name="aef8c55cce2ddb9e4fea5dba5f2df9a72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef8c55cce2ddb9e4fea5dba5f2df9a72">&#9670;&#160;</a></span>Update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">override void Gondwana.Drawing.Direct.DirectVideo.Update </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>tick</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Consumes the latest decoded frame on the engine thread, then advances fades. </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a52ae59743dbd89bda3f0c721321939f0">Gondwana.Drawing.Direct.DirectDrawingBase</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00264">264</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a27dbb42c1a661587a0a8496d10696d72" name="a27dbb42c1a661587a0a8496d10696d72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27dbb42c1a661587a0a8496d10696d72">&#9670;&#160;</a></span>width</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Gondwana.Drawing.Direct.DirectVideo.width</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decoded source dimensions, or (0,0) until known. </p>
+
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00177">177</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
 
 </div>
 </div>
@@ -720,12 +927,12 @@ Additional Inherited Members</h2></td></tr>
 <p>When set to <code>true</code>, the video will continuously play in a loop. When set to <code>false</code>, playback stops when the video reaches its end. </p>
 <p><code>true</code> to enable looping; otherwise, <code>false</code>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00165">165</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00085">85</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
 
 </div>
 </div>
-<a id="aae3d2e4f49c8d84902cc5bd26ce854df" name="aae3d2e4f49c8d84902cc5bd26ce854df"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aae3d2e4f49c8d84902cc5bd26ce854df">&#9670;&#160;</a></span>Opacity</h2>
+<a id="af526fe39ffd7a17424fa0baafcec84a7" name="af526fe39ffd7a17424fa0baafcec84a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af526fe39ffd7a17424fa0baafcec84a7">&#9670;&#160;</a></span>Metadata</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -734,21 +941,43 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">float Gondwana.Drawing.Direct.DirectVideo.Opacity</td>
+          <td class="memname">VideoMetadata Gondwana.Drawing.Direct.DirectVideo.Metadata</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets or sets the opacity level of the video overlay. </p>
-<p>This value controls the alpha transparency applied to the entire video frame during rendering. Values are automatically clamped to the valid range. </p>
-<p>A floating-point value between 0.0 (fully transparent) and 1.0 (fully opaque). The default value is 1.0. </p>
+<p>Metadata snapshot for the active source; Pending values are not authoritative. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00119">119</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00174">174</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
+
+</div>
+</div>
+<a id="a0569557c5916c4fe709e9ffc3a20c9ac" name="a0569557c5916c4fe709e9ffc3a20c9ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0569557c5916c4fe709e9ffc3a20c9ac">&#9670;&#160;</a></span>NaturalSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int int height Gondwana.Drawing.Direct.DirectVideo.NaturalSize</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00177">177</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
 
 </div>
 </div>
@@ -786,7 +1015,7 @@ Additional Inherited Members</h2></td></tr>
 </ul>
 <p>A multiplier for playback speed. The default value is 1.0 (normal speed).</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00146">146</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00066">66</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
 
 </div>
 </div>
@@ -800,7 +1029,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93">StretchMode</a> Gondwana.Drawing.Direct.DirectVideo.Stretch = <a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93adb3e3f51c9107e26c9bccf9a188ce2ed">StretchMode.Fill</a></td>
+          <td class="memname"><a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93">StretchMode</a> Gondwana.Drawing.Direct.DirectVideo.Stretch</td>
         </tr>
       </table>
   </td>
@@ -823,7 +1052,7 @@ Additional Inherited Members</h2></td></tr>
 </ul>
 <p>The default value is <a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#ad3b55ec229dd229b5194dc54b1a7eb93adb3e3f51c9107e26c9bccf9a188ce2ed" title="Stretches the video to fill the entire bounds, ignoring the aspect ratio.">StretchMode.Fill</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00104">104</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectVideo_8cs_source.html#l00039">39</a> of file <a class="el" href="DirectVideo_8cs_source.html">DirectVideo.cs</a>.</p>
 
 </div>
 </div>

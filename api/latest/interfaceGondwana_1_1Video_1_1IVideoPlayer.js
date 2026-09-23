@@ -1,5 +1,6 @@
 var interfaceGondwana_1_1Video_1_1IVideoPlayer =
 [
+    [ "Open", "interfaceGondwana_1_1Video_1_1IVideoPlayer.html#ae4de560d17fb42969171db033dbed368", null ],
     [ "Open", "interfaceGondwana_1_1Video_1_1IVideoPlayer.html#afae982201b1096b5500576f6f2ab9d7d", null ],
     [ "Pause", "interfaceGondwana_1_1Video_1_1IVideoPlayer.html#a3b76918587808d0a0acdf0fdbefcce92", null ],
     [ "Play", "interfaceGondwana_1_1Video_1_1IVideoPlayer.html#a42d62a49d09e85da1759425f5617945c", null ],
@@ -9,8 +10,10 @@ var interfaceGondwana_1_1Video_1_1IVideoPlayer =
     [ "width", "interfaceGondwana_1_1Video_1_1IVideoPlayer.html#af80d673d5888b32d16d6732985cbde08", null ],
     [ "Duration", "interfaceGondwana_1_1Video_1_1IVideoPlayer.html#a53feaa0611ae5017b263236332806e64", null ],
     [ "HasAudio", "interfaceGondwana_1_1Video_1_1IVideoPlayer.html#a714353983bcfeb11a8db94be1aa42b1e", null ],
+    [ "IsMetadataReady", "interfaceGondwana_1_1Video_1_1IVideoPlayer.html#a0f545b3b737e42457526f76799db5ac3", null ],
     [ "IsPlaying", "interfaceGondwana_1_1Video_1_1IVideoPlayer.html#a7a6df989c41bd7efde838edde8a6faa4", null ],
     [ "Loop", "interfaceGondwana_1_1Video_1_1IVideoPlayer.html#aaf5a59666b46c648f49828bdf7339184", null ],
+    [ "Metadata", "interfaceGondwana_1_1Video_1_1IVideoPlayer.html#a6c0ab54cae42e513b6faf783e3b78a18", null ],
     [ "NaturalSize", "interfaceGondwana_1_1Video_1_1IVideoPlayer.html#a284aa180c33f05e06b1be663e2ffc446", null ],
     [ "Position", "interfaceGondwana_1_1Video_1_1IVideoPlayer.html#a0e5b1117eb5ba547f7afeef8c7092793", null ],
     [ "Ended", "interfaceGondwana_1_1Video_1_1IVideoPlayer.html#aaf84952557188d186564bd1dc7ac240a", null ],
