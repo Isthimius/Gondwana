@@ -298,6 +298,7 @@ Gondwana's tooling is optional. The engine does not require Studio, the standalo
 | **Standalone editors** | `Tooling/Gondwana.Tooling.*.WinForms` | Individual authoring utilities for assets, tilesheets, animations, sounds, scenes, and sprites, using the same reusable controls hosted by Studio |
 | **Gondwana.Templates** | `dotnet new install Gondwana.Templates` | Project templates for `gondwana-winforms`, `gondwana-avalonia`, and `gondwana-blazor` |
 | **Gondwana.Cli** | `dotnet tool install --global Gondwana.Cli` | The `gondwana` CLI for creating projects, checking an environment with `gondwana doctor`, and packing or inspecting asset files |
+| **Gondwana.Tooling.Studio.WinForms** | Build from `Tooling/Gondwana.Tooling.Studio.WinForms` | Combined Windows authoring shell hosting the standalone GAF/GTS/GANI/GSND/GSCN/GSPR editor controls with nested docking |
 | **Gondwana Game Engine plugin** | ChatGPT / Codex Plugin Directory | Engine-aware AI assistance using the current public Gondwana source, tests, and wiki |
 | **Gondwana.Mcp** | [`Tooling/Gondwana.Mcp`](Tooling/Gondwana.Mcp) | Read-only MCP service that powers the official Gondwana AI integration |
 

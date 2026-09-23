@@ -13,24 +13,45 @@ public class StudioPluginHost
 {
     private readonly List<LoadedPlugin> _plugins = [];
     private readonly Action<string> _log;
+    private readonly Assembly[] _sharedContracts;
 
     /// <summary>
     /// StudioPluginHost.
     /// </summary>
     /// <param name="log">Logging callback.</param>
-    public StudioPluginHost(Action<string> log)
+    public StudioPluginHost(Action<string> log) : this(log, []) { }
+
+    /// <summary>Creates a host sharing the core contract and the supplied platform contracts.</summary>
+    public StudioPluginHost(Action<string> log, params Assembly[] sharedContracts)
     {
         _log = log;
+        _sharedContracts = [typeof(IStudioPlugin).Assembly, .. sharedContracts];
     }
 
     /// <summary>Gets the currently enabled plugins.</summary>
     public IReadOnlyList<IStudioPlugin> Plugins =>
         _plugins.Where(p => p.Enabled).Select(p => p.Instance).ToArray();
 
+    /// <summary>Attaches optional services to already discovered plugins on the UI thread.</summary>
+    public void AttachHostServices(IStudioPluginHostServices services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        foreach (var plugin in _plugins.Where(p => p.Enabled))
+        {
+            if (plugin.Instance is not IStudioPluginHostServicesAware aware) continue;
+            try { aware.AttachHostServices(services); }
+            catch (Exception ex) { DisablePlugin(plugin, $"AttachHostServices threw: {ex.Message}"); }
+        }
+    }
+
     /// <summary>Scans the <c>plugins/</c> directory and loads all valid assemblies.</summary>
     public void DiscoverAndLoad()
+        => DiscoverAndLoad(Path.Combine(AppContext.BaseDirectory, "plugins"));
+
+    /// <summary>Discovers plugins in an explicit directory, useful for hosts and integration tests.</summary>
+    public void DiscoverAndLoad(string pluginDir)
     {
-        var pluginDir = Path.Combine(AppContext.BaseDirectory, "plugins");
+        pluginDir = Path.GetFullPath(pluginDir);
 
         if (!Directory.Exists(pluginDir))
         {
@@ -97,7 +118,7 @@ public class StudioPluginHost
     {
         try
         {
-            var loadContext = new PluginLoadContext(dllPath);
+            var loadContext = new PluginLoadContext(dllPath, _sharedContracts);
             var assembly = loadContext.LoadFromAssemblyPath(dllPath);
             var pluginTypes = assembly.GetTypes()
                 .Where(t => !t.IsAbstract && typeof(IStudioPlugin).IsAssignableFrom(t))
@@ -134,20 +155,27 @@ public class StudioPluginHost
     private sealed class PluginLoadContext : AssemblyLoadContext
     {
         private readonly AssemblyDependencyResolver _resolver;
+        private readonly Assembly[] _sharedContracts;
 
         /// <summary>
         /// PluginLoadContext.
         /// </summary>
         /// <param name="dllPath">dllPath.</param>
-        public PluginLoadContext(string dllPath)
+        /// <param name="sharedContracts">Contract assemblies supplied by the host/default load context.</param>
+        public PluginLoadContext(string dllPath, Assembly[] sharedContracts)
             : base(name: $"studio-plugin:{Path.GetFileNameWithoutExtension(dllPath)}", isCollectible: true)
         {
             _resolver = new AssemblyDependencyResolver(dllPath);
+            _sharedContracts = sharedContracts;
         }
 
         /// <summary>Load.</summary>
         protected override Assembly? Load(AssemblyName assemblyName)
         {
+            // Contracts must have host identity even when a plugin ships private copies.
+            var shared = _sharedContracts.FirstOrDefault(assembly =>
+                string.Equals(assembly.GetName().Name, assemblyName.Name, StringComparison.OrdinalIgnoreCase));
+            if (shared is not null) return shared;
             var path = _resolver.ResolveAssemblyToPath(assemblyName);
             return path is not null ? LoadFromAssemblyPath(path) : null;
         }

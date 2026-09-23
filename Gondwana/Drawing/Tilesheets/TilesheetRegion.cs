@@ -440,9 +440,9 @@ public sealed class TilesheetRegion : IDisposable
         }
 
         if (_regionMargin.Left < 0 || _regionMargin.Top < 0 ||
-            _regionMargin.Right < 0 || _regionMargin.Bottom < 0)
+            _regionMargin.Right < -_tilePadding.Right || _regionMargin.Bottom < -_tilePadding.Bottom)
         {
-            throw new InvalidOperationException("Tilesheet region margin cannot be negative.");
+            throw new InvalidOperationException("Leading region margins cannot be negative; trailing margins may only cancel trailing tile padding.");
         }
 
         if (TileWidthIncludingPadding <= 0 || TileHeightIncludingPadding <= 0)

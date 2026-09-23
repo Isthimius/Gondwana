@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Gondwana.Tooling.Studio.WinForms/Gondwana.Tooling.Studio.WinForms.csproj" />
+    <ProjectReference Include="../Gondwana.Tooling.Importers/Gondwana.Tooling.Importers.csproj" />
+  </ItemGroup>
+  <Target Name="DeployStudioPlugin" AfterTargets="Build" Condition="'$(DesignTimeBuild)' != 'true'">
+    <MSBuild Projects="../Gondwana.Tooling.Studio.WinForms/Gondwana.Tooling.Studio.WinForms.csproj" Targets="GetTargetPath" Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)">
+      <Output TaskParameter="TargetOutputs" ItemName="StudioTarget" />
+    </MSBuild>
+    <Copy SourceFiles="$(TargetPath);$(TargetDir)Gondwana.Tooling.Importers.dll;$(TargetDir)$(AssemblyName).deps.json" DestinationFolder="@(StudioTarget->'%(RootDir)%(Directory)plugins')" SkipUnchangedFiles="true" />
+  </Target>
+</Project>

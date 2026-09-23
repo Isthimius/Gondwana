@@ -12,9 +12,13 @@ using WeifenLuo.WinFormsUI.ThemeVS2015;
 namespace Gondwana.Tooling.Studio.WinForms;
 
 /// <summary>Studio owns outer documents and tools; authoring controls own their inner workspaces.</summary>
-public sealed class MainForm : Form
+public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices
 {
-    internal const string OpenFilter = "Gondwana authoring files|*.gaf;*.zip;*.gts;*.gani;*.gsnd;*.gscn|All files|*.*";
+    string Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices.CurrentWorkingDirectory => Browser.WorkingDirectory;
+    void Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices.Log(string message) => _output.Log(message);
+    void Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices.RefreshWorkingDirectory() => Browser.RefreshDirectory();
+    void Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices.OpenDocument(string path) => OpenDocument(path);
+    internal const string OpenFilter = "Gondwana authoring files|*.gaf;*.zip;*.gts;*.gani;*.gsnd;*.gscn;*.gspr|All files|*.*";
     private readonly OutputViewModel _output = new();
     private readonly StudioPluginHost _plugins;
     private readonly VS2015DarkTheme _theme = new();
@@ -72,6 +76,7 @@ public sealed class MainForm : Form
         if (loadPlugins)
         {
             _plugins.DiscoverAndLoad();
+            _plugins.AttachHostServices(this);
             AttachPlugins();
         }
         _layout.Start();
@@ -85,7 +90,7 @@ public sealed class MainForm : Form
         var file = new ToolStripMenuItem("&File");
         var create = new ToolStripMenuItem("&New");
         foreach (var (format, label) in new[] { ("gaf", "Asset file / GAF…"), ("gts", "Tilesheet / GTS"),
-            ("gani", "Animation / GANI"), ("gsnd", "Sound / GSND"), ("gscn", "Scene / GSCN") })
+            ("gani", "Animation / GANI"), ("gsnd", "Sound / GSND"), ("gscn", "Scene / GSCN"), ("gspr", "Sprite / GSPR") })
             Add(create, label, Keys.None, () => TryNew(format));
         file.DropDownItems.Add(create);
         Add(file, "&Open…", Keys.Control | Keys.O, OpenFiles);

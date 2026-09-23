@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
+## Tooling / Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics
+
+### Added
+- Add the optional Project Diagnostics Studio plugin and canonical plugin example, with background scanning, definition/reference problems, a dockable panel, Rescan, and automatic development deployment.
+
+## Tooling / Gondwana.Tooling.Studio.Core
+
+### Fixed
+- Preserve shared plugin contract identity across assembly load contexts.
+
+## Tooling / Gondwana.Tooling.Studio.WinForms
+
+### Added
+- Exercise external plugin discovery, docking and working-directory lifecycle with Project Diagnostics.
+
 ## Gondwana
 
 ### Added

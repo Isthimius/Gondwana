@@ -421,3 +421,6 @@ FodyWeavers.xsd
 /Gondwana/doxygen
 /puml
 /package-lock.json
+
+# Avalonia build-service caches created during desktop builds
+**/AvaloniaUI/BuildServices/

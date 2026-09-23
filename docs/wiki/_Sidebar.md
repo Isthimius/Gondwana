@@ -21,6 +21,7 @@
   - [[Coordinate Spaces]]
   - [[Coordinate Systems]]
 - [[Sprites]]
+  - [[.gspr Files|GSPR-Files]]
 - [[Views, Cameras, and Viewports]]
   - [[Parallax and Multi-View Rendering]]
   - [[Using Views and Cameras]]
@@ -98,14 +99,8 @@
   <summary><strong>Dialogs</strong></summary>
 
   - [[AboutBox|Widgets---AboutBox]]
-  - [[DialogBox|Widgets---DialogBox]] — base class for custom dialogs
-
-  </details>
-
-- <details>
-  <summary><strong>Dialogue</strong></summary>
-
   - [[ConversationBox|Widgets---ConversationBox]]
+  - [[DialogBox|Widgets---DialogBox]] — base class for custom dialogs
 
   </details>
 
@@ -153,6 +148,7 @@
 - [[Adding a New Deployable Project]]
 - [[GitHub Automation and Workflows]]
 - [[Tooling Scripts]]
+- [[External Asset Importing]]
 - [[Using Gondwana with ChatGPT and Codex]]
 
 </details>

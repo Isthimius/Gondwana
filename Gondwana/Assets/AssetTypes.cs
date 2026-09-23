@@ -59,5 +59,8 @@ public enum AssetTypes
     /// <summary>
     /// Represents an audio definition file (.gsnd) for <see cref="Gondwana.Audio.GSND.AudioDefinition"/>.
     /// </summary>
-    AudioDefinition = 10
+    AudioDefinition = 10,
+
+    /// <summary>Gondwana sprite collection definition (.gspr).</summary>
+    SpriteDefinition = 11
 }

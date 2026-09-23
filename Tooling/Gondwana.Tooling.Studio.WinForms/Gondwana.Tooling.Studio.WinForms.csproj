@@ -26,6 +26,7 @@
     <ProjectReference Include="..\Gondwana.Tooling.Animations.WinForms\Gondwana.Tooling.Animations.WinForms.csproj" />
     <ProjectReference Include="..\Gondwana.Tooling.Audio.WinForms\Gondwana.Tooling.Audio.WinForms.csproj" />
     <ProjectReference Include="..\Gondwana.Tooling.Scenes.WinForms\Gondwana.Tooling.Scenes.WinForms.csproj" />
+    <ProjectReference Include="..\Gondwana.Tooling.Sprites.WinForms\Gondwana.Tooling.Sprites.WinForms.csproj" />
   </ItemGroup>
 
 </Project>

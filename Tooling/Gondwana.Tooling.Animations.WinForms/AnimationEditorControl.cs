@@ -150,6 +150,8 @@ public sealed class AnimationEditorControl : UserControl
 
         _frames.SelectedIndexChanged += (_, _) =>
         {
+            _propertyAdapter.SelectedFrameIndex = _frames.SelectedIndices.Count == 1 ? _frames.SelectedIndices[0] : -1;
+            _properties.Refresh();
             if (!_syncingPreviewSelection)
                 ShowSelectedAnimationFrameSource();
         };
@@ -511,6 +513,7 @@ public sealed class AnimationEditorControl : UserControl
         _frames.Columns.Add("Region", 130);
         _frames.Columns.Add("X", 55, HorizontalAlignment.Right);
         _frames.Columns.Add("Y", 55, HorizontalAlignment.Right);
+        _frames.Columns.Add("Duration (s)", 100);
 
         _workspace = new EditorDockWorkspace("gani");
         Controls.Add(_workspace);
@@ -757,6 +760,7 @@ public sealed class AnimationEditorControl : UserControl
                 item.SubItems.Add(frame.RegionName);
                 item.SubItems.Add(frame.XTile.ToString());
                 item.SubItems.Add(frame.YTile.ToString());
+                item.SubItems.Add(frame.DurationSeconds?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "Default");
                 _frames.Items.Add(item);
             }
         }

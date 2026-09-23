@@ -842,7 +842,7 @@ SpriteManager.Instance.Clear();
 
 ## Saving sprites with EngineState
 
-Sprites are included when `EngineStateParts.Sprites` is selected:
+Sprites are included as one clean GSPR collection when `EngineStateParts.Sprites` is selected. Use `separateGsprFile: true` to write one external collection file, or leave it false for an inline definition. See [[.gspr Files|GSPR-Files]].
 
 ```csharp
 Engine.Instance.State.SaveToFile(
