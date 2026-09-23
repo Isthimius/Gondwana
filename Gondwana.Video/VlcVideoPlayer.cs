@@ -1,267 +1,288 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using LibVLCSharp.Shared;
 
 namespace Gondwana.Video;
 
-/// <summary>
-/// Provides a video player implementation using LibVLC for video playback and frame rendering.
-/// </summary>
+/// <summary>Desktop/native LibVLC 3 player. Controls are serialized; event handlers must not
+/// block on the engine thread. FrameReady runs on a decoder thread and is copy-only.</summary>
 public sealed class VlcVideoPlayer : IVideoPlayer
 {
     private readonly LibVLC _vlc;
     private readonly MediaPlayer _player;
+    private readonly object _control = new();
+    private readonly object _frames = new();
+    private readonly VideoMetadataState _metadata = new();
+    private readonly MediaPlayer.LibVLCVideoLockCb _lockCb;
+    private readonly MediaPlayer.LibVLCVideoUnlockCb _unlockCb;
+    private readonly MediaPlayer.LibVLCVideoDisplayCb _displayCb;
+    private readonly MediaPlayer.LibVLCVideoFormatCb _formatCb;
+    private readonly MediaPlayer.LibVLCVideoCleanupCb _cleanupCb;
+    private Media? _media;
+    private StreamMediaInput? _input;
+    private Stream? _ownedStream;
+    private CancellationTokenSource? _parseCancellation;
+    private Task<MediaParsedStatus>? _parseTask;
+    private long _generation;
+    private bool _disposed, _acceptFrames;
+    private volatile bool _loop;
+    private (int width, int height) _naturalSize;
+    private Exception? _lastError;
 
-    // keep delegates alive; initialize with null-forgiving default
-    private MediaPlayer.LibVLCVideoLockCb _lockCb = default!;
-
-    private MediaPlayer.LibVLCVideoUnlockCb _unlockCb = default!;
-    private MediaPlayer.LibVLCVideoDisplayCb _displayCb = default!;
-
-    private int _width, _height, _stride;
-    private GCHandle _frameHandle;
-    private IntPtr _framePtr = IntPtr.Zero;
-    private byte[]? _frameBuffer;
-    private readonly object _lock = new();
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the video should loop when playback ends.
-    /// </summary>
-    public bool Loop { get; set; }
-    
-    /// <summary>
-    /// Gets a value indicating whether the video is currently playing.
-    /// </summary>
-    public bool IsPlaying => _player.IsPlaying;
-    
-    /// <summary>
-    /// Gets the total duration of the currently loaded video.
-    /// </summary>
-    public TimeSpan Duration => TimeSpan.FromMilliseconds(_player.Length);
-    
-    /// <summary>
-    /// Gets the current playback position of the video.
-    /// </summary>
-    public TimeSpan Position => TimeSpan.FromMilliseconds(_player.Time);
-    
-    /// <summary>
-    /// Gets the natural size (width and height) of the video in pixels.
-    /// </summary>
-    public (int width, int height) NaturalSize => (_width, _height);
-    
-    /// <summary>
-    /// Gets a value indicating whether the currently loaded media has an audio track.
-    /// </summary>
-    public bool HasAudio { get; private set; } = true;
-
-    /// <summary>
-    /// Occurs when video playback has started.
-    /// </summary>
+    public bool Loop { get => _loop; set => _loop = value; }
+    public bool IsPlaying { get { lock (_control) return !_disposed && _player.IsPlaying; } }
+    public VideoMetadata Metadata => _metadata.Current;
+    public bool IsMetadataReady => Metadata.Status == VideoMetadataStatus.Ready;
+    public bool HasAudio => Metadata.HasAudio;
+    public TimeSpan Duration => Metadata.Duration;
+    public TimeSpan Position { get { lock (_control) return _disposed ? TimeSpan.Zero : TimeSpan.FromMilliseconds(Math.Max(0, _player.Time)); } }
+    /// <summary>Decoded source dimensions, or (0,0) before format negotiation. No presentation scaling is requested.</summary>
+    public (int width, int height) NaturalSize { get { lock (_frames) return _naturalSize; } }
+    /// <summary>The most recent native callback or playback failure, if any.</summary>
+    public Exception? LastError => Volatile.Read(ref _lastError);
     public event EventHandler? Started;
-
-    /// <summary>
-    /// Occurs when video playback has been paused.
-    /// </summary>
     public event EventHandler? Paused;
-
-    /// <summary>
-    /// Occurs when video playback has been stopped.
-    /// </summary>
     public event EventHandler? Stopped;
-
-    /// <summary>
-    /// Occurs when video playback has reached the end of the media.
-    /// </summary>
     public event EventHandler? Ended;
-
-    /// <summary>
-    /// Occurs when the video player state changes.
-    /// </summary>
     public event EventHandler<VideoStateChangedEventArgs>? StateChanged;
-
-    /// <summary>
-    /// Occurs when a new video frame is ready for rendering.
-    /// </summary>
     public event EventHandler<VideoFrameReadyEventArgs>? FrameReady;
 
-    private static bool _vlcCoreInitialized = false;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="VlcVideoPlayer"/> class.
-    /// </summary>
-    /// <param name="vlcArgs">Optional command-line arguments to pass to LibVLC.</param>
-    /// <param name="initialWidth">The initial width of the video frame buffer in pixels. Default is 1280.</param>
-    /// <param name="initialHeight">The initial height of the video frame buffer in pixels. Default is 720.</param>
+    /// <summary>Creates a native desktop player. Native libraries are supplied by the application.</summary>
+    /// <param name="vlcArgs">Optional LibVLC arguments.</param>
+    /// <param name="initialWidth">Compatibility fallback hint; no buffer or scaling is forced from this value.</param>
+    /// <param name="initialHeight">Compatibility fallback hint; actual dimensions come from format negotiation.</param>
     public VlcVideoPlayer(string[]? vlcArgs = null, int initialWidth = 1280, int initialHeight = 720)
     {
-        // Call Core.Initialize once per process, but ALWAYS create _vlc/_player.
-        if (!_vlcCoreInitialized)
+        if (initialWidth <= 0 || initialHeight <= 0) throw new ArgumentOutOfRangeException(nameof(initialWidth));
+        if (OperatingSystem.IsBrowser() || !BitConverter.IsLittleEndian)
+            throw new PlatformNotSupportedException("Gondwana.Video requires a little-endian native desktop LibVLC 3 runtime.");
+        try
         {
+            // LibVLCSharp serializes process-wide initialization itself.
             Core.Initialize();
-            _vlcCoreInitialized = true;
+            _vlc = new LibVLC(vlcArgs ?? []);
+            try { _player = new MediaPlayer(_vlc); }
+            catch { _vlc.Dispose(); throw; }
         }
-
-        _vlc = new LibVLC(vlcArgs ?? Array.Empty<string>());
-        _player = new MediaPlayer(_vlc);
-
-        _width = initialWidth;
-        _height = initialHeight;
-        _stride = _width * 4;
-        AllocateFrameBuffer(_width, _height);
-
+        catch (Exception ex) when (ex is DllNotFoundException or BadImageFormatException or TypeInitializationException or VLCException)
+        {
+            throw new InvalidOperationException("Gondwana.Video could not load native LibVLC 3. Add VideoLAN.LibVLC.Windows to the Windows app, or VideoLAN.LibVLC.Mac to a compatible macOS app; on Linux install libvlc-dev and VLC codec plugins. Match the process architecture and deploy the plugins directory. See Gondwana.Video/README.md. For a custom runtime call LibVLCSharp.Shared.Core.Initialize(path) before creating the player.", ex);
+        }
+        _lockCb = LockFrame;
+        _unlockCb = (_, _, _) => { };
+        _displayCb = DisplayFrame;
+        _formatCb = SetupFormat;
+        _cleanupCb = CleanupFormat;
+        _player.SetVideoCallbacks(_lockCb, _unlockCb, _displayCb);
+        _player.SetVideoFormatCallbacks(_formatCb, _cleanupCb);
         _player.Playing += OnStarted;
         _player.Paused += OnPaused;
         _player.Stopped += OnStopped;
-        _player.EndReached += OnEndReached;
+        _player.EndReached += OnEnded;
+        _player.EncounteredError += OnError;
     }
 
-    private void OnStarted(object? s, EventArgs e)
-    {
-        Started?.Invoke(this, EventArgs.Empty);
-    }
-
-    private void OnPaused(object? s, EventArgs e)
-    {
-        Paused?.Invoke(this, EventArgs.Empty);
-    }
-
-    private void OnStopped(object? s, EventArgs e)
-    {
-        Stopped?.Invoke(this, EventArgs.Empty);
-    }
-
-    private void OnEndReached(object? s, EventArgs e)
-    {
-        Ended?.Invoke(this, EventArgs.Empty);
-
-        if (Loop)
-        {
-            _player.Position = 0f;
-            _player.Play();
-        }
-    }
-
-    private Media? _media;
-
-    /// <summary>
-    /// Opens a video from the specified URI for playback.
-    /// </summary>
-    /// <param name="source">The URI of the video source to open.</param>
     public void Open(Uri source)
     {
-        _media?.Dispose();                  // cleanup previous
-        _media = new Media(_vlc, source);
-        _player.Media = _media;
-
-        // optional; populates duration/tracks
-        _media.Parse(MediaParseOptions.ParseNetwork);
-        HasAudio = _media.Tracks != null && Array.Exists(_media.Tracks, t => t.TrackType == TrackType.Audio);
-        StateChanged?.Invoke(this, new VideoStateChangedEventArgs("MediaOpened"));
-
-        // Fixed pixel format (RV32 = RGBA), using our preallocated buffer size
-        _player.SetVideoFormat("RV32", (uint)_width, (uint)_height, (uint)_stride);
-
-        // ---- keep delegates alive on fields; assign BEFORE SetVideoCallbacks ----
-        _lockCb = (IntPtr opaque, IntPtr planes) =>
+        ArgumentNullException.ThrowIfNull(source);
+        if (!source.IsAbsoluteUri) source = new Uri(Path.GetFullPath(source.OriginalString));
+        lock (_control)
         {
-            // planes points to an array of plane pointers; for RV32 it's one element.
-            lock (_lock)
-            {
-                Marshal.WriteIntPtr(planes, _framePtr);   // planes[0] = _framePtr
-                return IntPtr.Zero;                       // return picture (opaque), unused
-            }
-        };
-
-        _unlockCb = (IntPtr opaque, IntPtr picture, IntPtr planes) =>
-        {
-            // no-op; buffer is pinned for the life of the player
-        };
-
-        _displayCb = (IntPtr opaque, IntPtr picture) =>
-        {
-            long pts100ns;
-            IntPtr ptr;
-            int w, h, stride;
-
-            lock (_lock)
-            {
-                if (_framePtr == IntPtr.Zero) return;
-                pts100ns = (long)(_player.Time * 10_000);
-                ptr = _framePtr;
-                w = _width;
-                h = _height;
-                stride = _stride;
-            }
-
-            FrameReady?.Invoke(this, new VideoFrameReadyEventArgs(ptr, w, h, stride, pts100ns));
-        };
-
-        _player.SetVideoCallbacks(_lockCb, _unlockCb, _displayCb);
-    }
-
-    /// <summary>
-    /// Starts or resumes video playback.
-    /// </summary>
-    public void Play() => _player.Play();
-
-    /// <summary>
-    /// Pauses video playback.
-    /// </summary>
-    public void Pause() => _player.Pause();
-
-    /// <summary>
-    /// Stops video playback and resets the position.
-    /// </summary>
-    public void Stop() => _player.Stop();
-
-    /// <summary>
-    /// Seeks to the specified position in the video.
-    /// </summary>
-    /// <param name="position">The target position to seek to.</param>
-    public void Seek(TimeSpan position) => _player.Time = (long)position.TotalMilliseconds;
-
-    /// <summary>
-    /// Sets the playback rate (speed) of the video.
-    /// </summary>
-    /// <param name="rate">The playback rate multiplier (e.g., 1.0 for normal speed, 2.0 for double speed).</param>
-    public void SetRate(double rate) => _player.SetRate((float)rate);
-
-    // ---------- buffer plumbing ----------
-    private void AllocateFrameBuffer(int width, int height)
-    {
-        var bytes = width * 4 * height; // RGBA
-        lock (_lock)
-        {
-            if (_frameHandle.IsAllocated) _frameHandle.Free();
-            _frameBuffer = new byte[bytes];
-            _frameHandle = GCHandle.Alloc(_frameBuffer, GCHandleType.Pinned);
-            _framePtr = _frameHandle.AddrOfPinnedObject();
+            ThrowIfDisposed();
+            ReplaceMedia(() => new Media(_vlc, source));
+            var media = _media!;
+            long generation = _generation;
+            _parseCancellation = new CancellationTokenSource();
+            _parseTask = media.Parse(source.IsFile ? MediaParseOptions.ParseLocal : MediaParseOptions.ParseNetwork,
+                cancellationToken: _parseCancellation.Token);
+            // The continuation does not own the media. Generation validation under _control
+            // prevents any access after replacement/disposal. Open never waits for network parse.
+            _ = ObserveParseAsync(_parseTask, media, generation);
         }
     }
 
-    /// <summary>
-    /// Releases all resources used by the <see cref="VlcVideoPlayer"/>.
-    /// </summary>
+    public void Open(Stream source, bool leaveOpen = false)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        if (!source.CanRead) throw new ArgumentException("Video stream must be readable.", nameof(source));
+        lock (_control)
+        {
+            ThrowIfDisposed();
+            var input = new StreamMediaInput(source);
+            try
+            {
+                ReplaceMedia(() => new Media(_vlc, input));
+                _input = input;
+                _ownedStream = leaveOpen ? null : source;
+            }
+            catch { input.Dispose(); throw; }
+            // Do not preparse and play against the same stream cursor concurrently.
+            // LibVLC discovers stream tracks during playback; Playing publishes metadata.
+        }
+    }
+
+    private void ReplaceMedia(Func<Media> create)
+    {
+        lock (_frames) _acceptFrames = false;
+        ++_generation;
+        ReleaseMedia();
+        lock (_frames) _naturalSize = (0, 0);
+        _metadata.Reset();
+        Volatile.Write(ref _lastError, null);
+        StateChanged?.Invoke(this, new("MediaOpening"));
+        _media = create();
+        _player.Media = _media;
+        _generation = _metadata.Begin();
+        StateChanged?.Invoke(this, new("MediaOpened"));
+        lock (_frames) _acceptFrames = true;
+    }
+
+    private async Task ObserveParseAsync(Task<MediaParsedStatus> parse, Media media, long generation)
+    {
+        MediaParsedStatus status;
+        try { status = await parse.ConfigureAwait(false); }
+        catch (OperationCanceledException) { return; }
+        catch (Exception ex) { Volatile.Write(ref _lastError, ex); status = MediaParsedStatus.Failed; }
+        // Always queue: even a synchronous Parse completion must not raise user events inside Open.
+        QueueForSource(generation, () => PublishMetadata(media, status == MediaParsedStatus.Done));
+    }
+
+    private void PublishMetadata(Media media, bool ready)
+    {
+        var metadata = ready
+            ? new VideoMetadata(VideoMetadataStatus.Ready, Array.Exists(media.Tracks, t => t.TrackType == TrackType.Audio),
+                TimeSpan.FromMilliseconds(Math.Max(0, media.Duration)))
+            : new VideoMetadata(VideoMetadataStatus.Failed, false, TimeSpan.Zero);
+        if (_metadata.Complete(_generation, metadata))
+            StateChanged?.Invoke(this, new(ready ? "MetadataReady" : "MetadataFailed"));
+    }
+
+    private void QueueForSource(long generation, Action action) => ThreadPool.QueueUserWorkItem(_ =>
+    {
+        lock (_control)
+        {
+            if (_disposed || generation != _generation) return;
+            try { action(); }
+            catch (Exception ex) { Volatile.Write(ref _lastError, ex); }
+        }
+    });
+
+    private void OnStarted(object? sender, EventArgs e)
+    {
+        long generation = Volatile.Read(ref _generation);
+        QueueForSource(generation, () =>
+        {
+            if (_input is not null && !IsMetadataReady) PublishMetadata(_media!, true);
+            Started?.Invoke(this, EventArgs.Empty);
+        });
+    }
+    private void OnPaused(object? sender, EventArgs e) => QueueForSource(Volatile.Read(ref _generation), () => Paused?.Invoke(this, EventArgs.Empty));
+    private void OnStopped(object? sender, EventArgs e) => QueueForSource(Volatile.Read(ref _generation), () => Stopped?.Invoke(this, EventArgs.Empty));
+    private void OnError(object? sender, EventArgs e) => QueueForSource(Volatile.Read(ref _generation), () =>
+    {
+        Volatile.Write(ref _lastError, new InvalidOperationException("LibVLC could not play the active source. Check its format, access, and installed codec plugins."));
+        StateChanged?.Invoke(this, new("Error"));
+    });
+    private void OnEnded(object? sender, EventArgs e) => QueueForSource(Volatile.Read(ref _generation), () =>
+    {
+        long generation = _generation;
+        Ended?.Invoke(this, EventArgs.Empty);
+        if (!_disposed && generation == _generation && Loop)
+        {
+            // Never reenter libvlc from its EndReached callback (documented deadlock risk).
+            _player.Stop();
+            _player.Play();
+        }
+    });
+
+    private uint SetupFormat(ref IntPtr opaque, IntPtr chroma, ref uint width, ref uint height, ref uint pitches, ref uint lines)
+    {
+        try
+        {
+            var buffer = new VideoDecodeBuffer(checked((int)width), checked((int)height));
+            opaque = buffer.Context;
+            // LibVLC 3 vmem masks: R=0xff0000 G=0xff00 B=0xff. On little endian
+            // RV32 is B,G,R,X (not alpha). Skia uses Bgra8888 + Opaque without swizzling.
+            Marshal.Copy(new byte[] { (byte)'R', (byte)'V', (byte)'3', (byte)'2' }, 0, chroma, 4);
+            pitches = (uint)buffer.Stride;
+            lines = (uint)buffer.Lines;
+            lock (_frames) _naturalSize = (buffer.Width, buffer.Height);
+            return 1;
+        }
+        catch (Exception ex) { Volatile.Write(ref _lastError, ex); return 0; }
+    }
+    private static IntPtr LockFrame(IntPtr opaque, IntPtr planes)
+    {
+        var buffer = (VideoDecodeBuffer)GCHandle.FromIntPtr(Marshal.ReadIntPtr(opaque)).Target!;
+        Marshal.WriteIntPtr(planes, buffer.Pixels);
+        return opaque;
+    }
+    private void DisplayFrame(IntPtr opaque, IntPtr picture)
+    {
+        try
+        {
+            lock (_frames)
+            {
+                if (!_acceptFrames) return;
+                var buffer = (VideoDecodeBuffer)GCHandle.FromIntPtr(Marshal.ReadIntPtr(opaque)).Target!;
+                FrameReady?.Invoke(this, new(buffer.Pixels, buffer.Width, buffer.Height, buffer.Stride, 0));
+            }
+        }
+        catch (Exception ex) { Volatile.Write(ref _lastError, ex); }
+    }
+    private static void CleanupFormat(ref IntPtr opaque)
+    {
+        var handle = GCHandle.FromIntPtr(opaque);
+        ((VideoDecodeBuffer)handle.Target!).Dispose();
+        // VideoDecodeBuffer releases its context and handle.
+    }
+
+    public void Play() { lock (_control) { ThrowIfDisposed(); _player.Play(); } }
+    public void Pause() { lock (_control) { ThrowIfDisposed(); _player.SetPause(true); } }
+    public void Stop() { lock (_control) { ThrowIfDisposed(); _player.Stop(); } }
+    public void Seek(TimeSpan position) { lock (_control) { ThrowIfDisposed(); _player.Time = Math.Max(0, (long)position.TotalMilliseconds); } }
+    public void SetRate(double rate)
+    {
+        if (!double.IsFinite(rate) || rate <= 0) throw new ArgumentOutOfRangeException(nameof(rate));
+        lock (_control) { ThrowIfDisposed(); _player.SetRate((float)rate); }
+    }
+    private void ThrowIfDisposed() => ObjectDisposedException.ThrowIf(_disposed, this);
+    private void ReleaseMedia()
+    {
+        _player.Stop(); // Joins decoder callbacks before media/input/buffer ownership is released.
+        _parseCancellation?.Cancel();
+        if (_parseTask is not null)
+        {
+            try { _parseTask.GetAwaiter().GetResult(); }
+            catch (OperationCanceledException) { }
+        }
+        _parseTask = null;
+        _parseCancellation?.Dispose();
+        _parseCancellation = null;
+        _player.Media = null;
+        _media?.Dispose(); _media = null;
+        _input?.Dispose(); _input = null;
+        _ownedStream?.Dispose(); _ownedStream = null;
+    }
     public void Dispose()
     {
-        Stop();
-
-        _player.Playing -= OnStarted;
-        _player.Paused -= OnPaused;
-        _player.Stopped -= OnStopped;
-        _player.EndReached -= OnEndReached;
-
-        _player?.Dispose();
-        _media?.Dispose(); _media = null;
-
-        lock (_lock)
+        lock (_control)
         {
-            if (_frameHandle.IsAllocated)
-                _frameHandle.Free();
-
-            _frameBuffer = null;
-            _framePtr = IntPtr.Zero;
+            if (_disposed) return;
+            _disposed = true;
+            ++_generation;
+            lock (_frames) _acceptFrames = false;
+            ReleaseMedia();
+            _metadata.Reset();
+            _player.Playing -= OnStarted;
+            _player.Paused -= OnPaused;
+            _player.Stopped -= OnStopped;
+            _player.EndReached -= OnEnded;
+            _player.EncounteredError -= OnError;
+            _player.Dispose();
+            _vlc.Dispose();
         }
-
-        _vlc?.Dispose();
     }
 }
+
+
+

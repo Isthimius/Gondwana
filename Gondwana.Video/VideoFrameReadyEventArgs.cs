@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Video;
+namespace Gondwana.Video;
 
 /// <summary>
 /// Provides data for video frame ready events, containing frame buffer information and timing data.
@@ -6,9 +6,9 @@
 public sealed class VideoFrameReadyEventArgs : EventArgs
 {
     /// <summary>
-    /// Gets a pointer to the pinned RGBA pixel buffer.
+    /// Gets a pointer to the BGRX pixel buffer (8 bits per channel; the fourth byte is unused).
     /// </summary>
-    public IntPtr Pixels { get; } // pinned RGBA buffer
+    public IntPtr Pixels { get; } // Valid only for the duration of FrameReady; consumers must copy.
     
     /// <summary>
     /// Gets the width of the video frame in pixels.
@@ -33,7 +33,7 @@ public sealed class VideoFrameReadyEventArgs : EventArgs
     /// <summary>
     /// Initializes a new instance of the <see cref="VideoFrameReadyEventArgs"/> class.
     /// </summary>
-    /// <param name="pixels">A pointer to the pinned RGBA pixel buffer.</param>
+    /// <param name="pixels">A pointer to the BGRX pixel buffer (8 bits per channel; the fourth byte is unused).</param>
     /// <param name="width">The width of the video frame in pixels.</param>
     /// <param name="height">The height of the video frame in pixels.</param>
     /// <param name="stride">The stride (bytes per row) of the pixel buffer.</param>
