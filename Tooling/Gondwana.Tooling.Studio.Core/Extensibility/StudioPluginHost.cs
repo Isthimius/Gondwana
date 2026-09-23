@@ -32,6 +32,18 @@ public class StudioPluginHost
     public IReadOnlyList<IStudioPlugin> Plugins =>
         _plugins.Where(p => p.Enabled).Select(p => p.Instance).ToArray();
 
+    /// <summary>Attaches optional services to already discovered plugins on the UI thread.</summary>
+    public void AttachHostServices(IStudioPluginHostServices services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        foreach (var plugin in _plugins.Where(p => p.Enabled))
+        {
+            if (plugin.Instance is not IStudioPluginHostServicesAware aware) continue;
+            try { aware.AttachHostServices(services); }
+            catch (Exception ex) { DisablePlugin(plugin, $"AttachHostServices threw: {ex.Message}"); }
+        }
+    }
+
     /// <summary>Scans the <c>plugins/</c> directory and loads all valid assemblies.</summary>
     public void DiscoverAndLoad()
         => DiscoverAndLoad(Path.Combine(AppContext.BaseDirectory, "plugins"));

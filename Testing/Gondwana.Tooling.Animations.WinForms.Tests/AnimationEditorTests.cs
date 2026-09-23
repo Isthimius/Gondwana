@@ -35,6 +35,7 @@ public sealed class AnimationEditorTests
                 {
                     Tilesheet = "actors",
                     RegionName = "walk",
+                    DurationSeconds = 0.375,
                     XTile = 2,
                     YTile = 1
                 });
@@ -60,6 +61,7 @@ public sealed class AnimationEditorTests
             Assert.Equal("walk", frame.RegionName);
             Assert.Equal(2, frame.XTile);
             Assert.Equal(1, frame.YTile);
+            Assert.Equal(0.375, frame.DurationSeconds);
             Assert.False(loaded.IsDirty);
         }
         finally
@@ -212,6 +214,18 @@ public sealed class AnimationEditorTests
                     Assert.Single(frames.SelectedIndices.Cast<int>()));
                 Assert.Same(rowNode.Nodes[1], tree.SelectedNode);
                 Assert.True(preview.IsShowingSourceFrame);
+
+                var adapter = Field<object>(editor, "_propertyAdapter");
+                var durationProperty = adapter.GetType().GetProperty("DurationSeconds")!;
+                durationProperty.SetValue(adapter, 0.375);
+                Assert.Equal(0.375, firstFrame.DurationSeconds);
+                Assert.Null(secondFrame.DurationSeconds);
+                string timingPath = Path.Combine(directory, "timed.gani");
+                document.Save(timingPath);
+                Assert.Equal(0.375, AnimationDefinitionSerializer.Load(timingPath).Frames[0].DurationSeconds);
+                durationProperty.SetValue(adapter, null);
+                Assert.Null(firstFrame.DurationSeconds);
+                Assert.True(document.IsDirty);
 
                 // Clicking the already-selected source node is still a source-side
                 // selection gesture and must clear the animation-row selection.

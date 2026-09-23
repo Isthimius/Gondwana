@@ -1,5 +1,18 @@
 GANI is Gondwana's portable definition format for reusable tile animations.
 
+Each frame may specify `DurationSeconds`, a finite positive display duration.
+Omitting it (or using null) retains the cycle's `ThrottleTime`. Timing belongs
+to a sequence occurrence, so the same image can appear twice with different
+durations. Runtime playback and Studio preview use the currently displayed
+frame's duration, including the return leg of ping-pong playback. Select a frame
+in Studio to edit its duration in the property grid; clear it to use the default.
+
+For cycles with explicit frame durations, `TotalCycleTime` sums display durations
+(counting interior ping-pong frames twice). Simple cycles include the final
+frame's display duration. Cycles without overrides retain their historical total
+time calculation, including Simple's transition-time convention. A zero legacy
+`ThrottleTime` still stops playback safely; explicit overrides must be positive.
+
 A `.gani` file describes one registered animation cycle without serializing the runtime `Cycle`, `FrameSequence`, `Frame`, or `Tilesheet` object graphs.
 
 The format lives under:

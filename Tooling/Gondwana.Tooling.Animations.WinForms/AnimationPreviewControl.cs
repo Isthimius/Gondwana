@@ -90,8 +90,8 @@ internal sealed class AnimationPreviewControl : Control
         ClearSourceFrame();
         if (_definition is null ||
             _definition.Frames.Count == 0 ||
-            _definition.ThrottleTime <= 0 ||
-            !double.IsFinite(_definition.ThrottleTime))
+            EffectiveDuration <= 0 ||
+            !double.IsFinite(EffectiveDuration))
         {
             Pause();
             Invalidate();
@@ -152,7 +152,7 @@ internal sealed class AnimationPreviewControl : Control
             return;
         }
 
-        var throttle = _definition.ThrottleTime;
+        var throttle = EffectiveDuration;
         if (throttle <= 0 || !double.IsFinite(throttle))
         {
             Pause();
@@ -168,10 +168,19 @@ internal sealed class AnimationPreviewControl : Control
             _lastAdvanceSeconds += throttle;
             if (!Advance())
                 break;
+            throttle = EffectiveDuration;
+            if (throttle <= 0 || !double.IsFinite(throttle))
+            {
+                Pause();
+                break;
+            }
         }
 
         Invalidate();
     }
+
+    private double EffectiveDuration => _definition is null || _definition.Frames.Count == 0
+        ? 0 : _definition.Frames[_index].DurationSeconds ?? _definition.ThrottleTime;
 
     private bool Advance()
     {

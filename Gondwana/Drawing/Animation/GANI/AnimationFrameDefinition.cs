@@ -7,6 +7,9 @@ namespace Gondwana.Drawing.Animation.GANI;
 /// </summary>
 public sealed class AnimationFrameDefinition
 {
+    /// <summary>Display duration in seconds; null uses the animation's ThrottleTime.</summary>
+    public double? DurationSeconds { get; set; }
+
     /// <summary>
     /// Gets or sets the logical name of the registered tilesheet.
     /// </summary>
