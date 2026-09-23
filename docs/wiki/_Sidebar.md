@@ -148,6 +148,7 @@
 - [[Adding a New Deployable Project]]
 - [[GitHub Automation and Workflows]]
 - [[Tooling Scripts]]
+- [[External Asset Importing]]
 - [[Using Gondwana with ChatGPT and Codex]]
 
 </details>

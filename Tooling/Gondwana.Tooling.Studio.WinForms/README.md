@@ -81,6 +81,14 @@ does not replace the standalone utilities or introduce Studio-owned file formats
 
 ## Validation
 
+The optional **External Asset Importer** plugin converts supported Godot 4 atlas
+TileSets, Tiled TSX/TMX content and Aseprite sprites into native authoring files.
+Build `Tooling/Gondwana.Tooling.Studio.Plugin.ExternalImport` with Studio's matching
+Debug/Release configuration, then restart Studio. Its build deploys the plugin and
+headless importer dependency into Studio's `plugins/` directory. See the
+[plugin README](../Gondwana.Tooling.Studio.Plugin.ExternalImport/README.md) for
+deployment, lifecycle, analysis/import workflow and supported-format limits.
+
 `Testing/Gondwana.Tooling.Studio.WinForms.Tests` exercises actual controls on STA
 threads: outer/inner ownership, all format adapters, dirty state, saving and
 path adoption, duplicate activation, pane recovery, cancellation, encryption,
