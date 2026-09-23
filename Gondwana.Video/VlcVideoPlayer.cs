@@ -105,9 +105,8 @@ if (initialWidth <= 0) throw new ArgumentOutOfRangeException(nameof(initialWidth
         lock (_control)
         {
             ThrowIfDisposed();
-            ReplaceMedia(() => new Media(_vlc, source));
+            if (!ReplaceMedia(() => new Media(_vlc, source), out long generation)) return;
             var media = _media!;
-            long generation = _generation;
             _parseCancellation = new CancellationTokenSource();
             _parseTask = media.Parse(source.IsFile ? MediaParseOptions.ParseLocal : MediaParseOptions.ParseNetwork,
                 cancellationToken: _parseCancellation.Token);
@@ -128,7 +127,11 @@ if (initialWidth <= 0) throw new ArgumentOutOfRangeException(nameof(initialWidth
             var input = new StreamMediaInput(source);
             try
             {
-                ReplaceMedia(() => new Media(_vlc, input));
+                if (!ReplaceMedia(() => new Media(_vlc, input), out _))
+                {
+                    input.Dispose();
+                    return;
+                }
                 _input = input;
                 _ownedStream = leaveOpen ? null : source;
             }
@@ -138,20 +141,28 @@ if (initialWidth <= 0) throw new ArgumentOutOfRangeException(nameof(initialWidth
         }
     }
 
-    private void ReplaceMedia(Func<Media> create)
+    private bool ReplaceMedia(Func<Media> create, out long generation)
     {
         lock (_frames) _acceptFrames = false;
         ++_generation;
+        long replacementGeneration = _generation;
         ReleaseMedia();
         lock (_frames) _naturalSize = (0, 0);
         _metadata.Reset();
         Volatile.Write(ref _lastError, null);
         StateChanged?.Invoke(this, new("MediaOpening"));
+        if (_disposed || replacementGeneration != _generation)
+        {
+            generation = 0;
+            return false;
+        }
         _media = create();
         _player.Media = _media;
-        _generation = _metadata.Begin();
+        generation = _generation = _metadata.Begin();
         StateChanged?.Invoke(this, new("MediaOpened"));
+        if (_disposed || generation != _generation) return false;
         lock (_frames) _acceptFrames = true;
+        return true;
     }
 
     private async Task ObserveParseAsync(Task<MediaParsedStatus> parse, Media media, long generation)
