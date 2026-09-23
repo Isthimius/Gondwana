@@ -11,6 +11,7 @@ namespace Gondwana.Drawing.Direct;
 /// <summary>
 /// Draws video frames provided by IVideoPlayer onto the backbuffer.
 /// Audio is handled by the IVideoPlayer implementation (e.g., VLC system output on desktop).
+/// Construct, control, update, draw and dispose on the engine/UI thread.
 /// </summary>
 public sealed class DirectVideo : DirectDrawingBase
 {
@@ -18,6 +19,7 @@ public sealed class DirectVideo : DirectDrawingBase
     private readonly VideoFrameMailbox _mailbox = new();
     private SKBitmap? _frame;
     private bool _videoDisposed;
+    private StretchMode _stretch = StretchMode.Fill;
 
     // ---- knobs ----
     
@@ -34,7 +36,6 @@ public sealed class DirectVideo : DirectDrawingBase
     /// </list>
     /// </remarks>
     /// <value>The default value is <see cref="StretchMode.Fill"/>.</value>
-    private StretchMode _stretch = StretchMode.Fill;
     public StretchMode Stretch
     {
         get => _stretch;

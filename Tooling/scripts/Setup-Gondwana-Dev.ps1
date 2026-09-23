@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
     Sets up a local Gondwana development environment from scratch.
@@ -343,6 +343,7 @@ if ($SkipOptional) {
     INFO '  macOS app:   VideoLAN.LibVLC.Mac with a matching process architecture'
     INFO '  Linux host:  sudo apt install libvlc-dev vlc-plugin-base'
     INFO 'Restore/build the desktop app and follow Gondwana.Video/README.md smoke instructions.'
+
     # ─── Step 11: git-cliff ────────────────────────────────────────────────────
 
     Step '11/13 git-cliff'

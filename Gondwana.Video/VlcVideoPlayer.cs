@@ -24,7 +24,8 @@ public sealed class VlcVideoPlayer : IVideoPlayer
     private CancellationTokenSource? _parseCancellation;
     private Task<MediaParsedStatus>? _parseTask;
     private long _generation;
-    private bool _disposed, _acceptFrames;
+    private long _playbackRevision;
+    private bool _disposed, _acceptFrames, _playRequested;
     private volatile bool _loop;
     private (int width, int height) _naturalSize;
     private Exception? _lastError;
@@ -198,17 +199,22 @@ public sealed class VlcVideoPlayer : IVideoPlayer
         Volatile.Write(ref _lastError, new InvalidOperationException("LibVLC could not play the active source. Check its format, access, and installed codec plugins."));
         StateChanged?.Invoke(this, new("Error"));
     });
-    private void OnEnded(object? sender, EventArgs e) => QueueForSource(Volatile.Read(ref _generation), () =>
+    private void OnEnded(object? sender, EventArgs e)
     {
-        long generation = _generation;
-        Ended?.Invoke(this, EventArgs.Empty);
-        if (!_disposed && generation == _generation && Loop)
+        long revision = Volatile.Read(ref _playbackRevision);
+        QueueForSource(Volatile.Read(ref _generation), () =>
         {
-            // Never reenter libvlc from its EndReached callback (documented deadlock risk).
-            _player.Stop();
-            _player.Play();
-        }
-    });
+            long generation = _generation;
+            Ended?.Invoke(this, EventArgs.Empty);
+            if (!_disposed && _playRequested && generation == _generation && revision == _playbackRevision && Loop)
+            {
+                // Explicit controls, including Stop from an Ended handler, cancel a queued loop.
+                // Never reenter libvlc from its EndReached callback (documented deadlock risk).
+                _player.Stop();
+                _player.Play();
+            }
+        });
+    }
 
     private uint SetupFormat(ref IntPtr opaque, IntPtr chroma, ref uint width, ref uint height, ref uint pitches, ref uint lines)
     {
@@ -261,11 +267,11 @@ public sealed class VlcVideoPlayer : IVideoPlayer
         }
     }
     /// <inheritdoc />
-    public void Play() { lock (_control) { ThrowIfDisposed(); _player.Play(); } }
+    public void Play() { lock (_control) { ThrowIfDisposed(); ++_playbackRevision; _playRequested = true; _player.Play(); } }
     /// <inheritdoc />
-    public void Pause() { lock (_control) { ThrowIfDisposed(); _player.SetPause(true); } }
+    public void Pause() { lock (_control) { ThrowIfDisposed(); ++_playbackRevision; _playRequested = false; _player.SetPause(true); } }
     /// <inheritdoc />
-    public void Stop() { lock (_control) { ThrowIfDisposed(); _player.Stop(); } }
+    public void Stop() { lock (_control) { ThrowIfDisposed(); ++_playbackRevision; _playRequested = false; _player.Stop(); } }
     /// <inheritdoc />
     public void Seek(TimeSpan position) { lock (_control) { ThrowIfDisposed(); _player.Time = Math.Max(0, (long)position.TotalMilliseconds); } }
     /// <inheritdoc />
@@ -277,6 +283,7 @@ public sealed class VlcVideoPlayer : IVideoPlayer
     private void ThrowIfDisposed() => ObjectDisposedException.ThrowIf(_disposed, this);
     private void ReleaseMedia()
     {
+        _playRequested = false;
         _player.Stop(); // Joins decoder callbacks before media/input/buffer ownership is released.
         lock (_frames) { _decodeBuffer?.Dispose(); _decodeBuffer = null; }
         _parseCancellation?.Cancel();
@@ -284,6 +291,7 @@ public sealed class VlcVideoPlayer : IVideoPlayer
         {
             try { _parseTask.GetAwaiter().GetResult(); }
             catch (OperationCanceledException) { }
+            catch (Exception ex) { Volatile.Write(ref _lastError, ex); }
         }
         _parseTask = null;
         _parseCancellation?.Dispose();

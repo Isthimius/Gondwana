@@ -184,8 +184,10 @@ dotnet run --project Demos/VideoTest -c Release -- "C:\media\clip.mp4" --headles
 ```
 
 The headless check disables audio output but verifies audio **track detection**,
-URI/stream decoding, dimensions, controls, actual loop restart frames, repeated
-opening and disposal. It requires native LibVLC but no GPU/window; it is opt-in and
+URI/stream/GAF decoding, controls, actual loop restart frames, Stop from an Ended
+handler, repeated opening and disposal. It also generates temporary lossless red/blue
+images to check native BGRX channel order and exact 640×480 / 1920×1080 dimensions.
+It requires native LibVLC but no GPU/window; it is opt-in and
 excluded from normal CI. The window uses the normal GPU host and audible playback.
 
 Use a known-color clip with a recognizable circle/square, audio, and at least a few
