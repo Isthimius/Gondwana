@@ -44,7 +44,7 @@ Services are called only from UI-thread completion polling.
 
 Choose source/output, Analyze, review diagnostics and proposed files, then Import.
 Overwrite is opt-in. Errors prevent writing; warnings explain omitted behavior.
-See the [support matrix](../../../docs/wiki/External-Asset-Importing.md) for exact
+See the [support matrix](../../docs/wiki/External-Asset-Importing.md) for exact limits, naming, relative image dependencies and playback semantics.
 limits, naming, relative image dependencies and playback semantics.
 
 Headless tests generate their own XML, PNG and binary ASE fixtures; they assert
