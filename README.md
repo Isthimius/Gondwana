@@ -102,7 +102,9 @@ The plugin is designed to ground AI assistance in the current engine instead of 
 
 See **[Using Gondwana with ChatGPT and Codex](https://github.com/Isthimius/Gondwana/wiki/Using-Gondwana-with-ChatGPT-and-Codex)**.
 
-> **[SMALL SCREENSHOT PLACEHOLDER — ChatGPT or Codex using the Gondwana Game Engine plugin, preferably showing a concise Gondwana-specific request and source-grounded response.]**
+<img width="49%" height="1456" alt="image" src="https://github.com/user-attachments/assets/9bdb6082-3058-4326-aa18-7f29a2ae98bf" />
+
+---
 
 ## Documentation & Resources
 
