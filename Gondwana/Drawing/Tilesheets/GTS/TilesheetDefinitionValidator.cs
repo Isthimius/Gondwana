@@ -25,7 +25,11 @@ public static class TilesheetDefinitionValidator
             if (region.Area.X < 0 || region.Area.Y < 0 ||
                 (imageWidth.HasValue && (long)region.Area.X + region.Area.Width > imageWidth) ||
                 (imageHeight.HasValue && (long)region.Area.Y + region.Area.Height > imageHeight)) errors.Add($"{label}: area is outside the source image.");
-            if (Negative(region.TilePadding) || Negative(region.RegionMargin)) errors.Add($"{label}: tile padding and region margins cannot be negative.");
+            if (Negative(region.TilePadding)) errors.Add($"{label}: tile padding cannot be negative.");
+            if (region.RegionMargin.Left < 0 || region.RegionMargin.Top < 0 ||
+                region.RegionMargin.Right < -region.TilePadding.Right ||
+                region.RegionMargin.Bottom < -region.TilePadding.Bottom)
+                errors.Add($"{label}: leading margins cannot be negative; trailing margins may only cancel trailing tile padding.");
             if (Negative(region.Overhang)) errors.Add($"{label}: overhang cannot be negative.");
             var (columns, rows) = GridSize(region);
             if (columns <= 0 || rows <= 0) errors.Add($"{label}: layout contains no complete frames.");

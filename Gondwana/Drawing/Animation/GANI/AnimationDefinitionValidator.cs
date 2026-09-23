@@ -94,6 +94,9 @@ public static class AnimationDefinitionValidator
 
             if (frame.XTile < 0 || frame.YTile < 0)
                 errors.Add($"{label}: frame coordinates cannot be negative.");
+
+            if (frame.DurationSeconds is { } duration && (!double.IsFinite(duration) || duration <= 0))
+                errors.Add($"{label}: DurationSeconds must be finite and positive, or null for ThrottleTime.");
         }
 
         return errors;

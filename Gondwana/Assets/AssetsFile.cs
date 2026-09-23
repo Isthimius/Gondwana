@@ -121,6 +121,41 @@ public sealed class AssetsFile : IDisposable
     }
 
     /// <summary>
+    /// Loads an existing asset file from a readable stream.
+    /// </summary>
+    /// <remarks>
+    /// The stream is consumed immediately and is not retained or disposed by the returned
+    /// <see cref="AssetsFile"/>. Archive contents are buffered in memory, so the caller may
+    /// dispose the source stream as soon as this method returns.
+    /// </remarks>
+    /// <param name="stream">The stream containing the GAF archive.</param>
+    /// <param name="password">The optional archive password.</param>
+    /// <param name="register">Whether to add this instance to <see cref="AllAssetsFiles"/>.</param>
+    /// <returns>The loaded package, owned by the caller.</returns>
+    public static AssetsFile Load(Stream stream, string? password = null, bool register = true)
+    {
+        ArgumentNullException.ThrowIfNull(stream);
+        if (!stream.CanRead)
+            throw new ArgumentException("Stream must be readable.", nameof(stream));
+
+        var assetFile = new AssetsFile(register)
+        {
+            Password = password
+        };
+
+        try
+        {
+            assetFile.LoadZip(stream);
+            return assetFile;
+        }
+        catch
+        {
+            assetFile.Dispose();
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Gets the file path associated with the current instance.
     /// </summary>
     [JsonProperty]
@@ -149,6 +184,21 @@ public sealed class AssetsFile : IDisposable
         if (_isLoaded)
             return;
 
+        if (!File.Exists(FilePath))
+        {
+            _isLoaded = true;
+            return;
+        }
+
+        using var stream = File.OpenRead(FilePath);
+        LoadZip(stream);
+    }
+
+    private void LoadZip(Stream stream)
+    {
+        if (_isLoaded)
+            return;
+
         try
         {
             Engine.Logger.LogInformation("Loading assets file.");
@@ -157,13 +207,19 @@ public sealed class AssetsFile : IDisposable
             _zipFile = null;
             _zipEntries.Clear();
 
-            if (!File.Exists(FilePath))
+            // SharpZipLib's ZipFile expects seekable input. Buffering here also gives
+            // stream-loaded GAFs the same lifetime semantics as path-loaded GAFs:
+            // the source stream is needed only for the duration of this call.
+            MemoryStream? bufferedStream = stream.CanSeek ? null : new MemoryStream();
+            Stream archiveStream = stream;
+            if (bufferedStream is not null)
             {
-                _isLoaded = true;
-                return;
+                stream.CopyTo(bufferedStream);
+                bufferedStream.Position = 0;
+                archiveStream = bufferedStream;
             }
 
-            _zipFile = new ZipFile(File.OpenRead(FilePath));
+            _zipFile = new ZipFile(archiveStream) { IsStreamOwner = false };
 
             if (!string.IsNullOrEmpty(Password))
                 _zipFile.Password = Password;
@@ -209,7 +265,7 @@ public sealed class AssetsFile : IDisposable
         }
         finally
         {
-            // Once contents are buffered, no need to keep the file handle open.
+            // Once contents are buffered, no need to keep the archive or source stream open.
             _zipFile?.Close();
             _zipFile = null;
         }
