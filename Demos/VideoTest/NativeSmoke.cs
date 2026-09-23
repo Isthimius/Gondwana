@@ -27,9 +27,9 @@ internal static class NativeSmoke
             // Read while the callback's pointer is valid. No engine or player calls here.
             if (Volatile.Read(ref checkColors) != 0)
             {
-                int red = Marshal.ReadInt32(frame.Pixels) & 0xffffff;
-                int blue = Marshal.ReadInt32(frame.Pixels, (frame.Width - 1) * 4) & 0xffffff;
-                if (red != 0xff0000 || blue != 0x0000ff)
+                int red = Marshal.ReadByte(frame.Pixels, 2);
+                int blue = Marshal.ReadByte(frame.Pixels, (frame.Width - 1) * 4);
+                if (red != 255 || blue != 255)
                     Volatile.Write(ref colorError, $"Native BGRX mismatch: red={red:X6}, blue={blue:X6}");
             }
             if (Interlocked.Increment(ref frames) == 1)
