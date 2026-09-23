@@ -26,10 +26,12 @@ public sealed class ProjectDevelopmentTests : IDisposable
         return app.Run(args);
     }
 
-    [Fact]
-    public void DoctorExplainsAppLocalVideoRuntimeWithoutClaimingSystemProbeValidatesIt()
+    [Theory]
+    [InlineData("Gondwana.Video")]
+    [InlineData("Gondwana.Video.Widgets")]
+    public void DoctorExplainsAppLocalVideoRuntimeWithoutClaimingSystemProbeValidatesIt(string package)
     {
-        Project("<PackageReference Include=\"Gondwana.Video\" Version=\"2.6.0\" /><PackageReference Include=\"VideoLAN.LibVLC.Windows\" Version=\"3.0.23.1\" />");
+        Project($"<PackageReference Include=\"{package}\" Version=\"2.6.0\" /><PackageReference Include=\"VideoLAN.LibVLC.Windows\" Version=\"3.0.23.1\" />");
         string previous = Directory.GetCurrentDirectory();
         try
         {
@@ -41,6 +43,21 @@ public sealed class ProjectDevelopmentTests : IDisposable
             Assert.Contains("cannot validate", result.Detail);
         }
         finally { Directory.SetCurrentDirectory(previous); }
+    }
+
+    [Theory]
+    [InlineData("WinForms", true)]
+    [InlineData("Avalonia", true)]
+    [InlineData("Blazor", false)]
+    public void VideoWidgetsFeatureIsDesktopOnly(string host, bool supported)
+    {
+        var path = Project($"<PackageReference Include=\"Gondwana.{host}\" Version=\"2.6.0\" />");
+        var before = File.ReadAllBytes(path);
+        Assert.Equal(supported ? 0 : 1, Run("add", "video-widgets", "-p", path));
+        if (supported)
+            Assert.Contains(new ProjectPackages(path).Packages, p => p.Name == "Gondwana.Video.Widgets");
+        else
+            Assert.Equal(before, File.ReadAllBytes(path));
     }
 
     [Fact]

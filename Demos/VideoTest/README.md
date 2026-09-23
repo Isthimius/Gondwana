@@ -24,7 +24,7 @@ the standard Widget input router.
 
 - Drag the video anywhere; its pixels and hit area must move together. Reset bounds restores it.
 - Hover/click changes the status label. A completed drag must not increment the click counter.
-- Drag toggle disables movement. Keyboard input after focusing video logs the key without playback shortcuts.
+- Drag toggle disables movement. A–Z, Space, Enter and Escape after focusing video log the key without playback shortcuts; the demo host monitors these keys.
 - Play/Pause/Stop, seek +5 seconds, rate and loop buttons use the Widget's thin playback API.
 - Hide must remove pixels/input while playback time continues; Show must not restart a paused video.
 - Fade in/out and 50% opacity should affect the video once. Show/Hide retains normal opacity semantics.

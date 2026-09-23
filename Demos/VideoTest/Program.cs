@@ -81,6 +81,15 @@ internal sealed class VideoHost(WinFormGpuRenderSurfaceControl surface, VideoSou
     private readonly List<WidgetBase> _controls = [];
     protected override Scene CreateInitialScene() => Scene.Empty;
     protected override void CreateInitialViews() => RenderSurface.Host.ViewManager.ConfigureSingleFullView();
+    protected override void OnKeyboardAdapterInitialized()
+    {
+        // Monitoring is a host policy; VideoWidget assigns no keys or commands.
+        var keyboard = Engine.Input.KeyboardEventPoller!;
+        for (int key = (int)Keys.A; key <= (int)Keys.Z; key++)
+            keyboard.StartMonitoringKey(key);
+        foreach (var key in new[] { Keys.Space, Keys.Enter, Keys.Escape })
+            keyboard.StartMonitoringKey((int)key);
+    }
     protected override void CreateDirectDrawings()
     {
         var host = RenderSurface.Host;

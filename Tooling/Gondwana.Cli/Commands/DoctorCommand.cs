@@ -586,7 +586,9 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             {
                 var project = new ProjectPackages(projectPath!);
                 if (project.Packages.Any(p => p.Name.Equals("Gondwana.Video", StringComparison.OrdinalIgnoreCase)) ||
-                    project.References.Contains("Gondwana.Video", StringComparer.OrdinalIgnoreCase))
+                    project.References.Contains("Gondwana.Video", StringComparer.OrdinalIgnoreCase) ||
+                    project.Packages.Any(p => p.Name.Equals("Gondwana.Video.Widgets", StringComparison.OrdinalIgnoreCase)) ||
+                    project.References.Contains("Gondwana.Video.Widgets", StringComparer.OrdinalIgnoreCase))
                     return CheckResult.Warning("Gondwana.Video requires an app-local native runtime: Windows: dotnet add package VideoLAN.LibVLC.Windows; macOS: VideoLAN.LibVLC.Mac (match architecture); Linux: libvlc-dev and VLC plugins. Restore/build and run the VideoTest smoke procedure to verify the app's output. A CLI process cannot validate app-local deployment. See Gondwana.Video/README.md.");
             }
             catch (Exception ex) when (ex is IOException or System.Xml.XmlException or UnauthorizedAccessException)

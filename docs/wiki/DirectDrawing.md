@@ -516,3 +516,13 @@ Built-in drawings:
 ## Periodic layer content
 
 SceneLayer-bound drawings repeat with their layer's world-space period vectors, including copies several periods away. View-bound drawings remain fixed. See [[SceneLayer Wrapping]] for instance selection and refresh behavior.
+
+## Interactive video
+
+`DirectVideo` in `Gondwana.Video` is the drawable video primitive. It supports
+normal DirectComposite movement/ownership via `DirectDrawingMovableBase` and
+uses the existing video decoder/frame handoff.
+[`VideoWidget`](https://github.com/Isthimius/Gondwana/tree/master/Gondwana.Video.Widgets)
+in the optional `Gondwana.Video.Widgets` bridge adds Widget input, focus and
+opt-in dragging around that primitive. Choose the wrapper when video should
+participate in `WidgetInputRouter`; use the primitive when only drawing is needed.

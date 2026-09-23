@@ -71,6 +71,7 @@ projects can be checked but must manage package versions in their source reposit
 | `midi` | `Gondwana.Audio.Midi` for Windows-targeted WinForms or other desktop projects; unavailable for Blazor and cross-platform desktop targets |
 | `gamepad` | `Gondwana.Input.SDL2` (desktop; requires native SDL2) |
 | `video` | `Gondwana.Video` (desktop; requires native LibVLC) |
+| `video-widgets` | `Gondwana.Video.Widgets` (optional desktop Widget bridge; requires native LibVLC) |
 | `hosting` | `Gondwana.WinForms.Hosting`, `Gondwana.Avalonia.Hosting`, or `Gondwana.Blazor.Hosting`, based on an unambiguous adapter |
 
 `add` uses the existing aligned Gondwana version and makes no change if the
@@ -696,6 +697,7 @@ Assets:
 -   `Gondwana.Hosting` --- Standard platform-agnostic scaffolding for initializing and running Gondwana games
 -   `Gondwana.Input.SDL2` --- SDL2-based input handling
 -   `Gondwana.Video` --- Video playback support
+-   `Gondwana.Video.Widgets` --- Optional interactive video Widgets with opt-in dragging
 -   `Gondwana.Widgets` --- UI widget library for creating in-game menus, HUDs, and overlays
 -   `Gondwana.WinForms` --- WinForms rendering and input adapters
 -   `Gondwana.WinForms.Hosting` --- WinForms-specific game host that integrates rendering and input into the Gondwana lifecycle

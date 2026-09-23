@@ -4,6 +4,12 @@ Optional **native desktop** video playback for .NET 8: `DirectVideo` → `IVideo
 `VlcVideoPlayer` → LibVLCSharp / LibVLC 3. Core Gondwana has no dependency on Video.
 Blazor/browser playback is not supported by this backend.
 
+`DirectVideo` is the drawable primitive and now participates in DirectComposite
+movement/ownership through `DirectDrawingMovableBase`. For focus, pointer/keyboard
+events and opt-in dragging, use the separate
+[`Gondwana.Video.Widgets` bridge](../Gondwana.Video.Widgets/README.md).
+Its `VideoWidget` composes DirectVideo; this package still has no Widgets dependency.
+
 ## Install and deploy
 
 ```console

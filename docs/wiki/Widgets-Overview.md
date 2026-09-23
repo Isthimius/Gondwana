@@ -12,6 +12,16 @@ They are intended for interface elements rendered inside the game itself rather 
 
 Widgets use the same Gondwana rendering pipeline as the rest of the game and can participate in either screen-space or world-space rendering.
 
+Desktop video has an optional companion package:
+[`Gondwana.Video.Widgets`](https://github.com/Isthimius/Gondwana/tree/master/Gondwana.Video.Widgets).
+`VideoWidget` wraps the `DirectVideo` primitive with normal Widget input, focus,
+opacity/fades, lifecycle and composite movement. Set `IsDragEnabled = true` to opt
+into inherited dragging; its default is false. Pointer/keyboard events belong to
+game-specific behavior, with no default play/pause command. `Show()`/`Hide()` do
+not change playback. Both View and SceneLayer targets and URI/stream/GAF sources
+are supported. Neither Widgets nor Video depends on the other; the bridge references
+both and retains Video's native desktop LibVLC requirements.
+
 ---
 
 ## Built on DirectDrawing

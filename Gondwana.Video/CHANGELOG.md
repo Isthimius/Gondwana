@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - Cancel obsolete parsing on reopen, preserve native media-input lifetimes, and restart loops outside native callbacks.
 
 ## Added
+- DirectComposite child compatibility through `DirectDrawingMovableBase`, enabling the optional `Gondwana.Video.Widgets` bridge without a Widgets dependency.
 - Stream-backed playback and `VideoSource.FromAsset` for GAF video without extraction files, with explicit ownership.
 - Metadata snapshots/readiness, actionable native loading errors, fake-player regression tests and an opt-in GPU/native smoke demo.
 
