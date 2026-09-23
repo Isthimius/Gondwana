@@ -33,27 +33,6 @@ Spot! is Gondwana's primary playable showcase.
   <img width="49%" alt="Spot gameplay showing animated scene rendering" src="https://github.com/user-attachments/assets/0aef0b63-1c16-44be-b6a6-d456f4799ce8" />
 </p>
 
-## 🛠 Gondwana Studio
-
-**Gondwana Studio** is the integrated Windows authoring environment for Gondwana's current persistent content-definition model. It hosts the same reusable editor controls as the standalone utilities, with multi-document editing, visual previews, validation, dependency-aware authoring, nested docking, and persisted workspace layouts.
-
-> **[LARGE SCREENSHOT PLACEHOLDER — Gondwana Studio with several authoring documents open, ideally showing GSCN/GSPR/GTS panes and the dark docked layout.]**
-
-Studio currently authors:
-
-| Format | Content |
-| --- | --- |
-| **GAF** | Asset packages |
-| **GTS** | Tilesheets, regions, frames, and collision metadata |
-| **GANI** | Animation definitions |
-| **GSND** | Sound definitions |
-| **GSCN** | Scenes and SceneLayers |
-| **GSPR** | Sprite definitions |
-
-Studio is an authoring environment, not an embedded game runtime. Game behavior, application structure, and runtime control remain in C#.
-
-See **[Gondwana Studio](Tooling/Gondwana.Tooling.Studio.WinForms)** for details.
-
 ## Get Started
 
 Requires the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
@@ -76,33 +55,36 @@ Gondwana does not require one development style. The engine, Studio, standalone 
 
 ### 💻 Code First
 
-Use the .NET templates, NuGet packages, and `gondwana` CLI to build directly in C#.
+Build directly in ordinary C# using Gondwana's NuGet packages, project templates, and `gondwana` CLI.
 
-```console
-dotnet new install Gondwana.Templates
-dotnet new gondwana-winforms -n MyGame
-```
-
-Game behavior remains normal C# code, with direct access to Gondwana's rendering, scene, input, movement, collision, audio, widgets, and hosting APIs.
+Game behavior remains normal C# code, with direct access to Gondwana's rendering, scene, input, movement, collision, audio, widgets, video, and hosting APIs.
 
 ### 🛠️ Visual Authoring with Gondwana Studio
 
-Use Studio when structured game content benefits from visual authoring.
+Use **Gondwana Studio** when structured game content benefits from visual authoring.
 
-Studio works directly with Gondwana's first-class definition formats:
+Studio is the integrated Windows authoring environment for Gondwana's persistent content-definition model. It hosts the same reusable editor controls as the standalone utilities, with multi-document editing, visual previews, validation, dependency-aware authoring, nested docking, and persisted workspace layouts.
 
-```text
-GAF   Assets and packaged resources
-GTS   Tilesheets
-GANI  Animations
-GSND  Audio definitions
-GSCN  Scenes and SceneLayers
-GSPR  Sprites
-```
+> **[LARGE SCREENSHOT PLACEHOLDER — Gondwana Studio with several authoring documents open, ideally showing GSCN/GSPR/GTS panes and the dark docked layout.]**
 
-Together, these formats provide first-class definition coverage for the current persistent content categories represented by `EngineState`.
+Studio currently authors:
+
+| Format   | Content                                             |
+| -------- | --------------------------------------------------- |
+| **GAF**  | Asset packages                                      |
+| **GTS**  | Tilesheets, regions, frames, and collision metadata |
+| **GANI** | Animation definitions                               |
+| **GSND** | Sound definitions                                   |
+| **GSCN** | Scenes and SceneLayers                              |
+| **GSPR** | Sprite definitions                                  |
+
+These are first-class Gondwana definition formats, not Studio-specific project data. Applications can use them where persistent, reusable content definitions are useful while continuing to keep game behavior and application structure in ordinary C#.
 
 Studio does not maintain simplified copies of the standalone editors. It hosts the same reusable WinForms authoring controls, so improvements to the standalone tools are designed to carry into Studio as well.
+
+Studio is currently an authoring environment, not an embedded game runtime. Game behavior, application structure, and runtime control remain in C#.
+
+See **[Gondwana Studio](Tooling/Gondwana.Tooling.Studio.WinForms)** for details.
 
 ### 🤖 ChatGPT and Codex
 
@@ -133,19 +115,6 @@ See **[Using Gondwana with ChatGPT and Codex](https://github.com/Isthimius/Gondw
 - 📜 **[Release History](https://github.com/Isthimius/Gondwana/blob/master/CHANGELOG.md)**
 - ✅ **[Latest CI Run](https://github.com/Isthimius/Gondwana/actions/workflows/ci-master.yml)**
 - 💬 **[Discussions](https://github.com/Isthimius/Gondwana/discussions)**
-
----
-
-## 🌐 Repository Mirrors
-
-GitHub is the canonical repository for [Gondwana](https://github.com/Isthimius/Gondwana). Issues, pull requests, discussions, releases, and development activity should be submitted there.
-
-Read-only mirrors are maintained for availability and discoverability:
-
-- **[Bitbucket](https://bitbucket.org/isthimius/gondwana)** — source mirror
-- **[Codeberg](https://codeberg.org/Isthimius/Gondwana)** — source mirror
-- **[GitLab](https://gitlab.com/isthimius/gondwana)** — source mirror
-- **[SourceForge](https://sourceforge.net/projects/gondwana/)** — source mirror and release downloads
 
 ---
 
@@ -181,7 +150,8 @@ Gondwana is deliberately an engine and framework, not an all-encompassing visual
 - **High-resolution timing** and thread-safe drawable management with stable z-order sorting
 - **Asset support** for tilesheets, sprites, fonts, audio, and packaged Gondwana asset files
 - **Unified keyboard, mouse, touch, and gamepad input**, with SDL2 gamepad support available as a dedicated package
-- **Audio, MIDI, browser audio, and experimental video integration** through optional packages
+- **Audio and MIDI support** through optional desktop and browser backends
+- **Native desktop video playback** through LibVLCSharp, including `DirectVideo` rendering and optional interactive `VideoWidget` integration
 - **First-class authoring formats** for packaged assets (GAF), tilesheets (GTS), animations (GANI), sounds (GSND), scenes (GSCN), and sprites (GSPR)
 - **Gondwana Studio** for integrated multi-document authoring, visual previews, validation, dependency-aware workflows, reusable docked editors, and persistent layouts
 - **AI-assisted development** through the official Gondwana Game Engine plugin for ChatGPT and Codex, grounded in the current source, tests, and documentation
@@ -232,23 +202,30 @@ See the **[Engine Wiki](https://github.com/Isthimius/Gondwana/wiki)** for detail
 
 ### Authoring architecture
 
-Gondwana's development tools sit above the same public engine APIs and definition models used by applications.
+Gondwana's development tools sit above the same public engine APIs and definition models used by applications. Applications may use those definition formats for persistent content, or construct and configure the same engine objects directly in C#.
 
 ```text
-              Authoring / Development
-        ┌─────────────┬────────────────┐
-        │             │                │
-      C# code       Studio     ChatGPT / Codex
-        │             │                │
-        └─────────────+────────────────┘
-                      │
-                 Gondwana APIs +
-               definition formats
-          GAF / GTS / GANI / GSND /
-                 GSCN / GSPR
-                      │
-                      ▼
-                 Engine runtime
+                    Authoring / Development
+
+              ┌───────────────┬───────────────┐
+              │                               │
+          C# directly                 Visual authoring
+              │                               │
+              │                         Gondwana Studio
+              │                               │
+              │                       Definition formats
+              │                   GAF / GTS / GANI / GSND /
+              │                          GSCN / GSPR
+              │                               │
+              └───────────────┬───────────────┘
+                              │
+                              ▼
+                         Gondwana APIs
+                              │
+                              ▼
+                         Engine runtime
+
+               ChatGPT / Codex can assist either workflow
 ```
 
 Studio and the standalone tools use the same definition models, serializers, and reusable editor controls. They do not maintain a second Studio-specific representation of Gondwana content.
@@ -284,7 +261,8 @@ Runtime packages are available on NuGet. Install only the pieces your project ne
 | [`Gondwana.Audio.NAudio`](https://www.nuget.org/packages/Gondwana.Audio.NAudio) | Windows audio backend for the common core audio API, including Vorbis and variable playback speed |
 | [`Gondwana.Audio.Midi`](https://www.nuget.org/packages/Gondwana.Audio.Midi) | Windows MIDI playback and SoundFont support layered on the NAudio backend |
 | [`Gondwana.Audio.Browser`](https://www.nuget.org/packages/Gondwana.Audio.Browser) | Browser and WebAssembly audio through the HTML5 Audio API and JavaScript interop |
-| [`Gondwana.Video`](https://www.nuget.org/packages/Gondwana.Video) | Experimental video playback through LibVLCSharp |
+| [`Gondwana.Video`](https://www.nuget.org/packages/Gondwana.Video) | Native desktop video playback through LibVLCSharp |
+| [`Gondwana.Video.Widgets`](https://www.nuget.org/packages/Gondwana.Video.Widgets) | Optional interactive and draggable `VideoWidget` bridge between Gondwana.Video and Gondwana.Widgets |
 
 ---
 
@@ -298,7 +276,6 @@ Gondwana's tooling is optional. The engine does not require Studio, the standalo
 | **Standalone editors** | `Tooling/Gondwana.Tooling.*.WinForms` | Individual authoring utilities for assets, tilesheets, animations, sounds, scenes, and sprites, using the same reusable controls hosted by Studio |
 | **Gondwana.Templates** | `dotnet new install Gondwana.Templates` | Project templates for `gondwana-winforms`, `gondwana-avalonia`, and `gondwana-blazor` |
 | **Gondwana.Cli** | `dotnet tool install --global Gondwana.Cli` | The `gondwana` CLI for creating projects, checking an environment with `gondwana doctor`, and packing or inspecting asset files |
-| **Gondwana.Tooling.Studio.WinForms** | Build from `Tooling/Gondwana.Tooling.Studio.WinForms` | Combined Windows authoring shell hosting the standalone GAF/GTS/GANI/GSND/GSCN/GSPR editor controls with nested docking |
 | **Gondwana Game Engine plugin** | ChatGPT / Codex Plugin Directory | Engine-aware AI assistance using the current public Gondwana source, tests, and wiki |
 | **Gondwana.Mcp** | [`Tooling/Gondwana.Mcp`](Tooling/Gondwana.Mcp) | Read-only MCP service that powers the official Gondwana AI integration |
 
@@ -329,7 +306,7 @@ _Gondwana is actively evolving, with an emphasis on strengthening the engine, au
 * [x] First-class GAF, GTS, GANI, GSND, GSCN, and GSPR authoring
 * [x] Full platformer sample
 * [x] WebGL-backed Blazor rendering adapter
-* [ ] TMX import / tile-map interchange tooling
+* [x] External content import tooling for TMX/TSX tile maps, Godot 4 resources, and Aseprite assets
 * [ ] Expanded 2D physics, including momentum, elasticity, and additional collision shapes
 * [ ] Native, first-class pathfinding
 * [ ] Initial client/server networking support
@@ -343,6 +320,19 @@ Contributions are welcome.
 
 - Open an issue for a bug report or feature request.
 - Fork the repository, create a focused branch, and submit a pull request.
+
+---
+
+## 🌐 Repository Mirrors
+
+GitHub is the canonical repository for [Gondwana](https://github.com/Isthimius/Gondwana). Issues, pull requests, discussions, releases, and development activity should be submitted there.
+
+Read-only mirrors are maintained for availability and discoverability:
+
+- **[Bitbucket](https://bitbucket.org/isthimius/gondwana)** — source mirror
+- **[Codeberg](https://codeberg.org/Isthimius/Gondwana)** — source mirror
+- **[GitLab](https://gitlab.com/isthimius/gondwana)** — source mirror
+- **[SourceForge](https://sourceforge.net/projects/gondwana/)** — source mirror and release downloads
 
 ---
 
