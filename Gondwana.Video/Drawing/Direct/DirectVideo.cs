@@ -13,7 +13,7 @@ namespace Gondwana.Drawing.Direct;
 /// Audio is handled by the IVideoPlayer implementation (e.g., VLC system output on desktop).
 /// Construct, control, update, draw and dispose on the engine/UI thread.
 /// </summary>
-public sealed class DirectVideo : DirectDrawingBase
+public sealed class DirectVideo : DirectDrawingMovableBase
 {
     private readonly IVideoPlayer _player;
     private readonly VideoFrameMailbox _mailbox = new();
