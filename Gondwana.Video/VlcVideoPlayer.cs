@@ -240,7 +240,11 @@ public sealed class VlcVideoPlayer : IVideoPlayer
     {
         // vmem serializes lock -> copy -> display for one active video output.
         // The buffer remains alive until that output's cleanup callback or Stop joins it.
-        lock (_frames) Marshal.WriteIntPtr(planes, _decodeBuffer!.Pixels);
+lock (_frames)
+        {
+            if (_decodeBuffer is not { } buffer || planes == IntPtr.Zero) return IntPtr.Zero;
+            Marshal.WriteIntPtr(planes, buffer.Pixels);
+        }
         return IntPtr.Zero;
     }
     private void DisplayFrame(IntPtr opaque, IntPtr picture)
