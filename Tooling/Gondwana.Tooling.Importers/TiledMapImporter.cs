@@ -50,7 +50,7 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                 tilesetRoot = ReadXml(source);
                 basename = ImportNaming.Sanitize(Path.GetFileNameWithoutExtension(source));
             }
-else { tilesetRoot = reference.Element("tileset") ?? throw new InvalidDataException("Embedded tileset data is missing."); basename = $"{name}-tileset-{first}"; }
+else { tilesetRoot = reference; basename = $"{name}-tileset-{first}"; }
             var set = ConvertTileset(tilesetRoot, source, basename, plan, token);
             if (set.TileSize != new Size(tw, th))
                 throw new InvalidDataException("Tileset frame size differs from map cell size; tile anchoring/scaling cannot be preserved in this import.");
