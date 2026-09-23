@@ -28,6 +28,10 @@ public sealed class TiledMapImporter : ExternalAssetImporter
         };
         int width = Int(root, "width"), height = Int(root, "height"), tw = Int(root, "tilewidth"), th = Int(root, "tileheight");
         if (width <= 0 || height <= 0 || tw <= 0 || th <= 0) throw new InvalidDataException("Map dimensions must be positive.");
+        if ((string?)root.Attribute("renderorder") is { } order && order != "right-down")
+            throw new InvalidDataException($"Unsupported Tiled render order '{order}'.");
+        if (Number(root, "parallaxoriginx", 0) != 0 || Number(root, "parallaxoriginy", 0) != 0)
+            throw new InvalidDataException("Nonzero Tiled parallax origins are unsupported.");
         string name = ImportNaming.Sanitize(Path.GetFileNameWithoutExtension(plan.Request.SourcePath));
         var scene = new SceneDefinition { ID = name };
         var tilesets = new List<(uint First, Tileset Set)>();
@@ -76,13 +80,14 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                 if (kind == "group") { Layers(element, shown, x, y, parallaxX, parallaxY); continue; }
                 if (Int(element, "x", 0) != 0 || Int(element, "y", 0) != 0)
                     throw new InvalidDataException("Nonzero legacy layer tile coordinates are unsupported; use pixel offsets.");
-                if (orientation == CoordinateSystemTypes.IsometricRhombic) x += height * tw / 2.0;
+                if (orientation == CoordinateSystemTypes.IsometricRhombic) x += (double)height * tw / 2.0;
                 if (x != Math.Truncate(x) || y != Math.Truncate(y)) throw new InvalidDataException("Fractional pixel layer offsets cannot be represented exactly.");
                 if (parallaxX != parallaxY)
                     plan.Report(ExternalImportSeverity.Warning, "tiled.parallax", "Independent X/Y parallax cannot be represented; using 1.");
                 var layer = new SceneLayerDefinition { ID = $"{name}.layer.{scene.Layers.Count}", Columns = Int(element, "width", width), Rows = Int(element, "height", height),
                     TileWidth = tw, TileHeight = th, CoordinateSystemType = orientation, Visible = shown, ZOrder = scene.Layers.Count,
                     OriginPx = new Point(checked((int)-x), checked((int)-y)), Parallax = parallaxX == parallaxY ? (float)parallaxX : 1 };
+                if (layer.Columns <= 0 || layer.Rows <= 0) throw new InvalidDataException("Layer dimensions must be positive.");
                 var gids = DecodeLayer(element.Element("data") ?? throw new InvalidDataException("Missing layer data."), checked(layer.Columns * layer.Rows));
                 for (int i = 0; i < gids.Length; i++)
                 {

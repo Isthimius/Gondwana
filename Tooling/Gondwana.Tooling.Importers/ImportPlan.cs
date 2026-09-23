@@ -60,7 +60,43 @@ public sealed class ImportPlan(ExternalImportRequest request)
         }
         foreach (var dependency in Dependencies.Distinct(StringComparer.OrdinalIgnoreCase))
             if (!File.Exists(dependency)) Report(ExternalImportSeverity.Error, "dependency.missing", $"Missing source dependency: {dependency}");
+        CheckExistingKeys();
         return new(providerId, Dependencies.Distinct(StringComparer.OrdinalIgnoreCase).ToArray(), Outputs.Select(x => x.Artifact).ToArray(), Diagnostics.ToArray());
+    }
+
+    private void CheckExistingKeys()
+    {
+        if (!Directory.Exists(Request.OutputDirectory)) return;
+        var plannedPaths = Outputs.Select(o => o.Artifact.OutputPath).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var plannedKeys = Outputs.Where(o => o.Artifact.LogicalKey is not null)
+            .Select(o => o.Artifact.Kind + ":" + o.Artifact.LogicalKey).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        try
+        {
+            foreach (string file in Directory.EnumerateFiles(Request.OutputDirectory).OrderBy(p => p, StringComparer.Ordinal))
+            {
+                if (plannedPaths.Contains(Path.GetFullPath(file))) continue;
+                string? key;
+                try
+                {
+                    key = Path.GetExtension(file).ToLowerInvariant() switch
+                    {
+                        ".gts" => "GTS:" + TilesheetDefinitionSerializer.Load(file).Name,
+                        ".gani" => "GANI:" + AnimationDefinitionSerializer.Load(file).Key,
+                        ".gscn" => "GSCN:" + SceneDefinitionSerializer.Load(file).ID,
+                        _ => null
+                    };
+                }
+                catch (Exception ex) when (ex is IOException or InvalidDataException or UnauthorizedAccessException or ArgumentException)
+                {
+                    Report(ExternalImportSeverity.Warning, "key.unchecked", $"Cannot inspect existing native keys in {file}: {ex.Message}");
+                    continue;
+                }
+                if (key is not null && plannedKeys.Contains(key))
+                    Report(ExternalImportSeverity.Error, "key.exists", $"Logical key {key} already exists in {file}.");
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        { Report(ExternalImportSeverity.Error, "output.unreadable", ex.Message); }
     }
 }
 
@@ -80,6 +116,8 @@ public abstract class ExternalAssetImporter : IExternalAssetImporter
         try
         {
             token.ThrowIfCancellationRequested();
+            var outputDirectory = Path.GetFullPath(request.OutputDirectory);
+            if (File.Exists(outputDirectory)) throw new InvalidDataException("Output directory points to an existing file.");
             plan.Dependencies.Add(Path.GetFullPath(request.SourcePath));
             BuildPlan(plan, token);
         }
@@ -107,7 +145,7 @@ public abstract class ExternalAssetImporter : IExternalAssetImporter
         Directory.CreateDirectory(request.OutputDirectory);
         var stage = Path.Combine(Path.GetFullPath(request.OutputDirectory), ".gondwana-import-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(stage);
-        var committed = new List<(string Target, string? Backup)>();
+        var committed = new List<(string Target, string? Backup, bool Installed)>();
         bool cleanup = true;
         try
         {
@@ -126,19 +164,22 @@ public abstract class ExternalAssetImporter : IExternalAssetImporter
                     backup = Path.Combine(stage, i + ".backup");
                     File.Move(target, backup);
                 }
-                try { File.Move(Path.Combine(stage, i.ToString()), target); }
-                catch { if (backup is not null) File.Move(backup, target); throw; }
-                committed.Add((target, backup));
+                // Journal the backup before installing the replacement so recovery also
+                // covers a failure between those two operations.
+                committed.Add((target, backup, false));
+                File.Move(Path.Combine(stage, i.ToString()), target);
+                committed[^1] = (target, backup, true);
             }
+            cancellationToken.ThrowIfCancellationRequested();
             return new(analysis, committed.Select(x => x.Target).ToArray());
         }
         catch
         {
             try
             {
-                foreach (var (target, backup) in committed.AsEnumerable().Reverse())
+                foreach (var (target, backup, installed) in committed.AsEnumerable().Reverse())
                 {
-                    File.Delete(target);
+                    if (installed) File.Delete(target);
                     if (backup is not null) File.Move(backup, target);
                 }
             }

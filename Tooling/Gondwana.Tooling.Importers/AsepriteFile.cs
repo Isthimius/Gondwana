@@ -72,7 +72,7 @@ public sealed record AsepriteFile(int Width, int Height, int Depth, uint Flags, 
                         if (type is not (0 or 1)) throw new InvalidDataException("Aseprite tilemap layers are unsupported.");
                         if ((layerFlags & 64) != 0) throw new InvalidDataException("Aseprite reference layers are unsupported.");
                         if (type == 1 && (flags & 2) == 0) { blend = 0; opacity = 255; }
-                        else if ((flags & 1) == 0) opacity = 255;
+                        else if (type == 0 && (flags & 1) == 0) opacity = 255;
                         if (blend != 0) throw new InvalidDataException($"Aseprite blend mode {blend} is unsupported; only Normal is currently rendered.");
                         layers.Add(new(layerFlags, type, level, blend, opacity, layerName));
                         break;

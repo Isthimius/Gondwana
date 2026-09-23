@@ -66,6 +66,22 @@ public sealed class TiledImportTests : IDisposable
         Assert.False(Directory.Exists(request.OutputDirectory));
     }
 
+    [Fact]
+    public void EmptyAnimationIsDiagnosedAndRepeatedImportsAreDeterministic()
+    {
+        string source = Tileset();
+        var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
+        var importer = new TiledTilesetImporter();
+        var first = importer.Import(request).WrittenFiles.ToDictionary(p => p, File.ReadAllBytes);
+        importer.Import(request with { Overwrite = true });
+        foreach (var (path, bytes) in first) Assert.Equal(bytes, File.ReadAllBytes(path));
+        File.WriteAllText(source, File.ReadAllText(source).Replace("<frame tileid=\"1\" duration=\"100\"/><frame tileid=\"0\" duration=\"250\"/>", ""));
+        var result = importer.Import(request with { Overwrite = true });
+        Assert.False(result.Analysis.CanImport); Assert.Empty(result.WrittenFiles);
+        Assert.Contains(result.Analysis.Diagnostics, d => d.Message.Contains("animation", StringComparison.OrdinalIgnoreCase));
+        foreach (var (path, bytes) in first) Assert.Equal(bytes, File.ReadAllBytes(path));
+    }
+
     [Theory]
     [InlineData("orthogonal")]
     [InlineData("isometric")]

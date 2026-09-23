@@ -6,7 +6,7 @@ namespace Gondwana.Tooling.Studio.Plugin.ExternalImport;
 /// <summary>Presentation and UI-thread polling only. Providers and workers never access controls.</summary>
 public sealed class ExternalImportPanel : UserControl
 {
-    private readonly IReadOnlyList<IExternalAssetImporter> providers = ExternalImporterRegistry.CreateProviders();
+    private readonly IReadOnlyList<IExternalAssetImporter> providers;
     private readonly ComboBox format = new() { DropDownStyle = ComboBoxStyle.DropDownList, Dock = DockStyle.Fill };
     private readonly TextBox source = new() { Dock = DockStyle.Fill };
     private readonly TextBox output = new() { Dock = DockStyle.Fill };
@@ -30,8 +30,11 @@ public sealed class ExternalImportPanel : UserControl
     public ExternalImportAnalysis? Analysis { get; private set; }
     public IReadOnlyList<string> Formats => format.Items.Cast<string>().ToArray();
 
-    public ExternalImportPanel()
+    public ExternalImportPanel() : this(ExternalImporterRegistry.CreateProviders()) { }
+
+    public ExternalImportPanel(IReadOnlyList<IExternalAssetImporter> providers)
     {
+        this.providers = providers;
         Dock = DockStyle.Fill;
         format.Items.Add("Auto-detect");
         foreach (var provider in providers) format.Items.Add(provider.DisplayName);
@@ -55,7 +58,7 @@ public sealed class ExternalImportPanel : UserControl
         body.RowStyles.Add(new(SizeType.Percent, 45)); body.RowStyles.Add(new(SizeType.Percent, 55)); body.Controls.Add(artifacts); body.Controls.Add(diagnostics);
         Controls.Add(body); Controls.Add(buttons); Controls.Add(inputs);
         analyze.Click += (_, _) => Analyze(); import.Click += (_, _) => Import(); cancel.Click += (_, _) => Cancel();
-        source.TextChanged += (_, _) => InvalidateAnalysis(); output.TextChanged += (_, _) => InvalidateAnalysis(); overwrite.CheckedChanged += (_, _) => InvalidateAnalysis(); format.SelectedIndexChanged += (_, _) => InvalidateAnalysis();
+        source.TextChanged += (_, _) => Cancel(); output.TextChanged += (_, _) => Cancel(); overwrite.CheckedChanged += (_, _) => Cancel(); format.SelectedIndexChanged += (_, _) => Cancel();
         timer.Tick += (_, _) => Poll(); timer.Start();
     }
 

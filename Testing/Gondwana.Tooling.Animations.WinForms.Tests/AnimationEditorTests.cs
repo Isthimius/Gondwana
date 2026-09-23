@@ -215,6 +215,18 @@ public sealed class AnimationEditorTests
                 Assert.Same(rowNode.Nodes[1], tree.SelectedNode);
                 Assert.True(preview.IsShowingSourceFrame);
 
+                var adapter = Field<object>(editor, "_propertyAdapter");
+                var durationProperty = adapter.GetType().GetProperty("DurationSeconds")!;
+                durationProperty.SetValue(adapter, 0.375);
+                Assert.Equal(0.375, firstFrame.DurationSeconds);
+                Assert.Null(secondFrame.DurationSeconds);
+                string timingPath = Path.Combine(directory, "timed.gani");
+                document.Save(timingPath);
+                Assert.Equal(0.375, AnimationDefinitionSerializer.Load(timingPath).Frames[0].DurationSeconds);
+                durationProperty.SetValue(adapter, null);
+                Assert.Null(firstFrame.DurationSeconds);
+                Assert.True(document.IsDirty);
+
                 // Clicking the already-selected source node is still a source-side
                 // selection gesture and must clear the animation-row selection.
                 typeof(TreeView)

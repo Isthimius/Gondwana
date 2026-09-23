@@ -79,20 +79,24 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
         string gts = filename + ".gts";
         plan.Add(gts, definition);
         var animations = new Dictionary<int, AnimationDefinition>();
+        var tileIds = new HashSet<int>();
         foreach (var tile in root.Elements("tile"))
         {
             token.ThrowIfCancellationRequested();
             int id = Int(tile, "id");
             if (id < 0 || id >= count) throw new InvalidDataException($"Tile ID {id} is outside tilecount.");
+            if (!tileIds.Add(id)) throw new InvalidDataException($"Duplicate tile ID {id}.");
             if (tile.Element("animation") is not { } animation) continue;
             var gani = new AnimationDefinition { Key = $"{name}.tile.{id}", CycleType = CycleType.Repeating,
                 TilesheetSources = [AnimationTilesheetSourceDefinition.Loose(name, gts)] };
             foreach (var frame in animation.Elements("frame"))
             {
+                token.ThrowIfCancellationRequested();
                 int frameId = Int(frame, "tileid"), duration = Int(frame, "duration");
                 if (frameId < 0 || frameId >= count || duration <= 0) throw new InvalidDataException("Animation frame ID or duration is invalid.");
                 gani.Frames.Add(new() { Tilesheet = name, XTile = frameId % columns, YTile = frameId / columns, DurationSeconds = duration / 1000.0 });
             }
+            if (gani.Frames.Count == 0) throw new InvalidDataException($"Animation for tile {id} has no frames.");
             if (!animations.TryAdd(id, gani)) throw new InvalidDataException($"Duplicate animated tile ID {id}.");
             plan.Add($"{filename}-tile-{id}.gani", gani);
         }

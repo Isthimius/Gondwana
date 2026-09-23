@@ -187,8 +187,7 @@ public static class AnimationDefinitionSerializer
             SequenceCycleType = definition.CycleType
         };
 
-        for (int i = 0; i < definition.Frames.Count; i++)
-            sequence.SetDurationSeconds(i, definition.Frames[i].DurationSeconds);
+        sequence.SetDurations(definition.Frames.Select(frame => frame.DurationSeconds));
 
         return new Cycle(
             sequence,

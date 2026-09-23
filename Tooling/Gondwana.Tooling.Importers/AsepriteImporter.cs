@@ -75,6 +75,7 @@ public sealed class AsepriteImporter : ExternalAssetImporter
         }
         var cels = sprite.Frames[frameIndex].Cels.ToDictionary(c => c.Layer);
         if (cels.Keys.Any(i => i < 0 || i >= sprite.Layers.Count)) throw new InvalidDataException("Cel references an unknown layer.");
+        if (cels.Keys.Any(i => sprite.Layers[i].Type != 0)) throw new InvalidDataException("Image cels must reference image layers.");
         AsepriteCel Resolve(AsepriteCel cel)
         {
             int current = frameIndex;

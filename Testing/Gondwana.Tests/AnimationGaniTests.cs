@@ -114,6 +114,36 @@ public sealed class AnimationGaniTests : IDisposable
         Assert.Contains(AnimationDefinitionValidator.Validate(definition), e => e.Contains("DurationSeconds"));
     }
 
+    [Theory]
+    [InlineData(CycleType.Simple)]
+    [InlineData(CycleType.Repeating)]
+    [InlineData(CycleType.PingPong)]
+    public void AnimatorConsumesCurrentFrameDelayIncludingCatchUp(CycleType type)
+    {
+        Gondwana.Timers.EngineSimulationClock.BeginTimerDriven(0);
+        try
+        {
+            var sheet = CreateTilesheet();
+            var sequence = new FrameSequence([sheet.GetFrame(0, 0), sheet.GetFrame(1, 0), sheet.GetFrame(0, 0)]) { SequenceCycleType = type };
+            sequence.SetDurationSeconds(0, 0.1); sequence.SetDurationSeconds(2, 0.3);
+            using var cycle = new Cycle(sequence, 0.2, "animator.mixed");
+            using var scene = new Gondwana.Scenes.Scene();
+            var tile = scene.AddLayer(1, 1, 16, 16)[0, 0]!;
+            tile.CurrentFrame = sheet.GetFrame(0, 0); tile.EnableAnimator = true;
+            var animator = tile.TileAnimator; animator.StartAnimation("animator.mixed");
+            long Tick(double seconds) => (long)(seconds * Gondwana.Timers.HighResTimer.TicksPerSecond);
+            animator.CycleAnimation(Tick(0.09)); Assert.Equal(0, animator.CurrentCycle.Sequence.CurrentFrameIdx);
+            animator.CycleAnimation(Tick(0.11)); Assert.Equal(1, animator.CurrentCycle.Sequence.CurrentFrameIdx);
+            animator.CycleAnimation(Tick(0.29)); Assert.Equal(1, animator.CurrentCycle.Sequence.CurrentFrameIdx);
+            animator.CycleAnimation(Tick(0.59)); Assert.Equal(2, animator.CurrentCycle.Sequence.CurrentFrameIdx);
+            animator.CycleAnimation(Tick(0.61));
+            Assert.Equal(type == CycleType.Repeating ? 0 : type == CycleType.PingPong ? 1 : 2, animator.CurrentCycle.Sequence.CurrentFrameIdx);
+            Assert.Equal(type != CycleType.Simple, animator.IsCycling);
+            animator.StopAnimation();
+        }
+        finally { Gondwana.Timers.EngineSimulationClock.UseWallClock(); }
+    }
+
     [Fact]
     public void Definition_ResolvesRegisteredTilesheetFrames()
     {

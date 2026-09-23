@@ -21,6 +21,12 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
         if (sections.Count == 0 || sections[0].Kind != "gd_resource" ||
             !sections[0].Attributes.TryGetValue("type", out var type) || GodotTextResource.String(type) != "TileSet")
             throw new InvalidDataException("Expected a Godot text TileSet resource.");
+        if (!sections[0].Attributes.TryGetValue("format", out var format) || format != "3")
+            throw new InvalidDataException("Only Godot 4 text resource format 3 is supported.");
+        if (sections.Count(s => s.Kind == "resource") != 1 ||
+            sections.Where(s => s.Kind is "sub_resource" or "ext_resource")
+                .GroupBy(s => (s.Kind, Id: Get(s.Attributes, "id"))).Any(g => g.Count() != 1))
+            throw new InvalidDataException("Duplicate or missing Godot resource sections/IDs.");
         var root = sections.SingleOrDefault(s => s.Kind == "resource") ?? throw new InvalidDataException("Missing resource section.");
         var sources = root.Properties.Where(p => Regex.IsMatch(p.Key, @"^sources/\d+$")).OrderBy(p => int.Parse(p.Key[8..], CultureInfo.InvariantCulture)).ToArray();
         if (sources.Length == 0) throw new InvalidDataException("No atlas sources found.");

@@ -40,6 +40,14 @@ public struct FrameSequence : IEnumerable<Frame>
         frameDurations[index] = seconds;
     }
 
+    internal void SetDurations(IEnumerable<double?> durations)
+    {
+        var values = durations.ToList();
+        if (values.Count != FrameCount || values.Any(v => v is { } d && (!double.IsFinite(d) || d <= 0)))
+            throw new ArgumentException("Durations must match the sequence and be positive finite values or null.", nameof(durations));
+        frameDurations = values.Any(v => v.HasValue) ? values : null;
+    }
+
     private int currentFrameIdx;
     private int curFrameIncrement;
     private bool cycleFinished;
