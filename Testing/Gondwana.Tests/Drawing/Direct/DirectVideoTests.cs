@@ -172,7 +172,3 @@ internal sealed class FakeVideoPlayer : IVideoPlayer
         finally { handle.Free(); }
     }
 }
-
-
-
-

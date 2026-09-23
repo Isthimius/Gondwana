@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
+## Fixed
+- Explain app-local native LibVLC deployment for Video projects in `doctor`; do not treat a system probe as proof of application deployment.
+- Development setup documents official desktop runtime dependencies instead of installing global VLC for optional Video support.
+
 # v2.6.0 - September 17, 2026
 
 

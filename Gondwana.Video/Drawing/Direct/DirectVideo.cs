@@ -291,7 +291,7 @@ public sealed class DirectVideo : DirectDrawingBase
     /// Stops video playback and resets the playback position to the beginning.
     /// </summary>
     /// <remarks>
-    /// After calling this method, the video will return to its first frame.
+    /// The last consumed frame remains visible until another frame arrives or the source changes.
     /// Call <see cref="Play"/> to start playback again from the beginning.
     /// </remarks>
     public void Stop() => _player.Stop();
@@ -346,4 +346,3 @@ public sealed class DirectVideo : DirectDrawingBase
         }
     }
 }
-

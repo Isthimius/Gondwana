@@ -17,6 +17,7 @@ public sealed class VlcVideoPlayer : IVideoPlayer
     private readonly MediaPlayer.LibVLCVideoDisplayCb _displayCb;
     private readonly MediaPlayer.LibVLCVideoFormatCb _formatCb;
     private readonly MediaPlayer.LibVLCVideoCleanupCb _cleanupCb;
+    private VideoDecodeBuffer? _decodeBuffer;
     private Media? _media;
     private StreamMediaInput? _input;
     private Stream? _ownedStream;
@@ -28,28 +29,41 @@ public sealed class VlcVideoPlayer : IVideoPlayer
     private (int width, int height) _naturalSize;
     private Exception? _lastError;
 
+    /// <inheritdoc />
     public bool Loop { get => _loop; set => _loop = value; }
+    /// <inheritdoc />
     public bool IsPlaying { get { lock (_control) return !_disposed && _player.IsPlaying; } }
+    /// <inheritdoc />
     public VideoMetadata Metadata => _metadata.Current;
+    /// <inheritdoc />
     public bool IsMetadataReady => Metadata.Status == VideoMetadataStatus.Ready;
+    /// <inheritdoc />
     public bool HasAudio => Metadata.HasAudio;
+    /// <inheritdoc />
     public TimeSpan Duration => Metadata.Duration;
+    /// <inheritdoc />
     public TimeSpan Position { get { lock (_control) return _disposed ? TimeSpan.Zero : TimeSpan.FromMilliseconds(Math.Max(0, _player.Time)); } }
     /// <summary>Decoded source dimensions, or (0,0) before format negotiation. No presentation scaling is requested.</summary>
     public (int width, int height) NaturalSize { get { lock (_frames) return _naturalSize; } }
     /// <summary>The most recent native callback or playback failure, if any.</summary>
     public Exception? LastError => Volatile.Read(ref _lastError);
+    /// <inheritdoc />
     public event EventHandler? Started;
+    /// <inheritdoc />
     public event EventHandler? Paused;
+    /// <inheritdoc />
     public event EventHandler? Stopped;
+    /// <inheritdoc />
     public event EventHandler? Ended;
+    /// <inheritdoc />
     public event EventHandler<VideoStateChangedEventArgs>? StateChanged;
+    /// <inheritdoc />
     public event EventHandler<VideoFrameReadyEventArgs>? FrameReady;
 
     /// <summary>Creates a native desktop player. Native libraries are supplied by the application.</summary>
     /// <param name="vlcArgs">Optional LibVLC arguments.</param>
-    /// <param name="initialWidth">Compatibility fallback hint; no buffer or scaling is forced from this value.</param>
-    /// <param name="initialHeight">Compatibility fallback hint; actual dimensions come from format negotiation.</param>
+    /// <param name="initialWidth">Legacy compatibility argument, validated but not used to force a decode size.</param>
+    /// <param name="initialHeight">Legacy compatibility argument; actual dimensions come from format negotiation.</param>
     public VlcVideoPlayer(string[]? vlcArgs = null, int initialWidth = 1280, int initialHeight = 720)
     {
         if (initialWidth <= 0 || initialHeight <= 0) throw new ArgumentOutOfRangeException(nameof(initialWidth));
@@ -81,6 +95,7 @@ public sealed class VlcVideoPlayer : IVideoPlayer
         _player.EncounteredError += OnError;
     }
 
+    /// <inheritdoc />
     public void Open(Uri source)
     {
         ArgumentNullException.ThrowIfNull(source);
@@ -100,6 +115,7 @@ public sealed class VlcVideoPlayer : IVideoPlayer
         }
     }
 
+    /// <inheritdoc />
     public void Open(Stream source, bool leaveOpen = false)
     {
         ArgumentNullException.ThrowIfNull(source);
@@ -199,7 +215,11 @@ public sealed class VlcVideoPlayer : IVideoPlayer
         try
         {
             var buffer = new VideoDecodeBuffer(checked((int)width), checked((int)height));
-            opaque = buffer.Context;
+            lock (_frames)
+            {
+                _decodeBuffer?.Dispose();
+                _decodeBuffer = buffer;
+            }
             // LibVLC 3 vmem masks: R=0xff0000 G=0xff00 B=0xff. On little endian
             // RV32 is B,G,R,X (not alpha). Skia uses Bgra8888 + Opaque without swizzling.
             Marshal.Copy(new byte[] { (byte)'R', (byte)'V', (byte)'3', (byte)'2' }, 0, chroma, 4);
@@ -210,11 +230,12 @@ public sealed class VlcVideoPlayer : IVideoPlayer
         }
         catch (Exception ex) { Volatile.Write(ref _lastError, ex); return 0; }
     }
-    private static IntPtr LockFrame(IntPtr opaque, IntPtr planes)
+    private IntPtr LockFrame(IntPtr opaque, IntPtr planes)
     {
-        var buffer = (VideoDecodeBuffer)GCHandle.FromIntPtr(Marshal.ReadIntPtr(opaque)).Target!;
-        Marshal.WriteIntPtr(planes, buffer.Pixels);
-        return opaque;
+        // vmem serializes lock -> copy -> display for one active video output.
+        // The buffer remains alive until that output's cleanup callback or Stop joins it.
+        lock (_frames) Marshal.WriteIntPtr(planes, _decodeBuffer!.Pixels);
+        return IntPtr.Zero;
     }
     private void DisplayFrame(IntPtr opaque, IntPtr picture)
     {
@@ -222,24 +243,32 @@ public sealed class VlcVideoPlayer : IVideoPlayer
         {
             lock (_frames)
             {
-                if (!_acceptFrames) return;
-                var buffer = (VideoDecodeBuffer)GCHandle.FromIntPtr(Marshal.ReadIntPtr(opaque)).Target!;
+                if (!_acceptFrames || _decodeBuffer is not { } buffer) return;
                 FrameReady?.Invoke(this, new(buffer.Pixels, buffer.Width, buffer.Height, buffer.Stride, 0));
             }
         }
         catch (Exception ex) { Volatile.Write(ref _lastError, ex); }
     }
-    private static void CleanupFormat(ref IntPtr opaque)
+    private void CleanupFormat(ref IntPtr opaque)
     {
-        var handle = GCHandle.FromIntPtr(opaque);
-        ((VideoDecodeBuffer)handle.Target!).Dispose();
-        // VideoDecodeBuffer releases its context and handle.
+        // LibVLCSharp 3.9.7 passes cleanup straight to native code, unlike its
+        // format/lock/display shims. Its ref IntPtr is NOT our format user data.
+        // Never read/write it. This instance owns the single active vmem output.
+        lock (_frames)
+        {
+            _decodeBuffer?.Dispose();
+            _decodeBuffer = null;
+        }
     }
-
+    /// <inheritdoc />
     public void Play() { lock (_control) { ThrowIfDisposed(); _player.Play(); } }
+    /// <inheritdoc />
     public void Pause() { lock (_control) { ThrowIfDisposed(); _player.SetPause(true); } }
+    /// <inheritdoc />
     public void Stop() { lock (_control) { ThrowIfDisposed(); _player.Stop(); } }
+    /// <inheritdoc />
     public void Seek(TimeSpan position) { lock (_control) { ThrowIfDisposed(); _player.Time = Math.Max(0, (long)position.TotalMilliseconds); } }
+    /// <inheritdoc />
     public void SetRate(double rate)
     {
         if (!double.IsFinite(rate) || rate <= 0) throw new ArgumentOutOfRangeException(nameof(rate));
@@ -249,6 +278,7 @@ public sealed class VlcVideoPlayer : IVideoPlayer
     private void ReleaseMedia()
     {
         _player.Stop(); // Joins decoder callbacks before media/input/buffer ownership is released.
+        lock (_frames) { _decodeBuffer?.Dispose(); _decodeBuffer = null; }
         _parseCancellation?.Cancel();
         if (_parseTask is not null)
         {
@@ -263,6 +293,7 @@ public sealed class VlcVideoPlayer : IVideoPlayer
         _input?.Dispose(); _input = null;
         _ownedStream?.Dispose(); _ownedStream = null;
     }
+    /// <inheritdoc />
     public void Dispose()
     {
         lock (_control)
@@ -283,6 +314,3 @@ public sealed class VlcVideoPlayer : IVideoPlayer
         }
     }
 }
-
-
-

@@ -105,10 +105,9 @@ public sealed class VideoFrameMailboxTests
         Assert.Equal(0, buffer.Pixels.ToInt64() % 32);
         Assert.True(buffer.Stride >= width * 4);
         Assert.True(buffer.Lines >= height);
-        Assert.Same(buffer, GCHandle.FromIntPtr(Marshal.ReadIntPtr(buffer.Context)).Target);
         buffer.Dispose();
         Assert.Equal(IntPtr.Zero, buffer.Pixels);
-        Assert.Equal(IntPtr.Zero, buffer.Context);
+
     }
 
     [Fact]

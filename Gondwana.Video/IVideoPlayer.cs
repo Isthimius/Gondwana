@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Video;
+namespace Gondwana.Video;
 
 /// <summary>
 /// Defines the contract for a video player that can play, pause, stop, and seek video content.

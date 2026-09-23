@@ -204,7 +204,11 @@ Checks performed:
 - `butler` installed (from `PATH` or the default user install directory used by `gondwana doctor --fix`)
 - SkiaSharp native binaries
 - SDL2 native binaries (for `Gondwana.Input.SDL2`; system-wide runtime available from [libsdl-org/SDL releases](https://github.com/libsdl-org/SDL/releases))
-- LibVLC (for `Gondwana.Video`)
+- LibVLC (for optional desktop `Gondwana.Video`). In a project directly referencing Video,
+  doctor provides app-local deployment guidance; it cannot verify that project's published
+  native output. Windows apps should add `VideoLAN.LibVLC.Windows`, macOS apps a compatible
+  `VideoLAN.LibVLC.Mac`, and Linux deployments distribution LibVLC and codec plugins.
+  See [Video deployment and smoke checks](../../Gondwana.Video/README.md).
 
 Pass `--fix` to automatically resolve issues that have a known fix:
 

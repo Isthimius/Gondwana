@@ -26,9 +26,9 @@ public sealed class VideoFrameReadyEventArgs : EventArgs
     public int Stride { get; }
     
     /// <summary>
-    /// Gets the presentation timestamp in 100-nanosecond units for precise synchronization.
+    /// Gets an optional presentation timestamp in 100-nanosecond units; zero means unavailable.
     /// </summary>
-    public long Pts100ns { get; } // raw 100‑ns PTS for precise sync
+    public long Pts100ns { get; } // LibVLC vmem does not supply a frame PTS.
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VideoFrameReadyEventArgs"/> class.

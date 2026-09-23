@@ -93,7 +93,7 @@ The current `AssetTypes` categories are:
 |---|---|
 | `Image` | Raster image resources |
 | `Audio` | Audio resources |
-| `Video` | Video resources handled through platform-specific media support |
+| `Video` | Native desktop playback through optional `Gondwana.Video` |
 | `Cursor` | Cursor resources; currently not supported |
 | `Font` | Font resources |
 | `Misc` | General miscellaneous data; currently not directly interpreted by the engine |
@@ -107,6 +107,32 @@ The current `AssetTypes` categories are:
 The type is primarily classification metadata.
 
 An `AssetsFile` itself does not decode an image or play a sound. It stores the bytes and identifies what kind of asset they represent.
+
+### Playing a GAF video on desktop
+
+The optional `Gondwana.Video` package connects video assets to `DirectVideo` without
+extracting a permanent file:
+
+```csharp
+var video = new Gondwana.Drawing.Direct.DirectVideo(
+    () => new Gondwana.Video.VlcVideoPlayer(),
+    Gondwana.Video.VideoSource.FromAsset(assets, "intro.mp4"),
+    renderSurfaceHost, view, new System.Drawing.Rectangle(0, 0, 960, 540))
+{
+    Stretch = Gondwana.Drawing.Direct.StretchMode.Uniform
+};
+```
+
+The source obtains a fresh `AssetTypes.Video` stream when opened, and the player
+owns it until replacement or disposal. Current GAF streams are backed by asset
+bytes in memory; no temporary extraction is involved. Keep the archive alive until
+Open/construction completes. Dispose the drawing when finished. Bounds are required;
+natural video dimensions and metadata arrive asynchronously. Check the metadata
+snapshot's readiness before interpreting audio presence or duration.
+
+This backend requires native desktop LibVLC and does not support Blazor. See the
+[Video deployment and smoke guide](https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Video/README.md)
+for Windows/macOS/Linux dependencies, ownership and engine-thread requirements.
 
 The appropriate Gondwana subsystem handles those bytes afterward.
 
