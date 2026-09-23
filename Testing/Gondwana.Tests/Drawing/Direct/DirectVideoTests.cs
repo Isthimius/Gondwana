@@ -139,14 +139,15 @@ internal sealed class FakeVideoPlayer : IVideoPlayer
     public double Rate { get; private set; }
     public bool Loop { get; set; }
     public bool IsPlaying { get; private set; }
-    public TimeSpan Duration => TimeSpan.Zero;
+    public VideoMetadata Metadata { get; set; } = VideoMetadata.Unavailable;
+    public TimeSpan Duration => Metadata.Duration;
     public TimeSpan Position { get; private set; }
     public (int width, int height) NaturalSize { get; private set; }
-    public bool HasAudio => false;
+    public bool HasAudio => Metadata.HasAudio;
     public event EventHandler? Started;
     public event EventHandler? Paused;
     public event EventHandler? Stopped;
-    public event EventHandler? Ended { add { } remove { } }
+    public event EventHandler? Ended;
     public event EventHandler<VideoStateChangedEventArgs>? StateChanged;
     public event EventHandler<VideoFrameReadyEventArgs>? FrameReady;
     public void Open(Uri source) { _ownedStream?.Dispose(); _ownedStream = null; OpenCount++; StateChanged?.Invoke(this, new("MediaOpened")); }
@@ -163,6 +164,8 @@ internal sealed class FakeVideoPlayer : IVideoPlayer
     public void Stop() { IsPlaying = false; Stopped?.Invoke(this, EventArgs.Empty); }
     public void Seek(TimeSpan position) => Position = position;
     public void SetRate(double rate) => Rate = rate;
+    public void EmitEnded() => Ended?.Invoke(this, EventArgs.Empty);
+    public void EmitState(string state) => StateChanged?.Invoke(this, new(state));
     public void Dispose() { DisposeCount++; _ownedStream?.Dispose(); }
     public void Emit(byte[] pixels, int width, int height, int stride)
     {

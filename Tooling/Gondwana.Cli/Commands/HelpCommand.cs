@@ -18,7 +18,7 @@ internal sealed class HelpCommand : Command
         table.AddRow("[cyan]gondwana info[/]",                    "Show information about the Gondwana project in the current directory.");
         table.AddRow("[cyan]gondwana check [[--fix]][/]",          "Check project packages, resources, and configuration; optionally align older packages to core.");
         table.AddRow("[cyan]gondwana upgrade[/]",                 "Upgrade referenced Gondwana packages together; supports --version and --dry-run.");
-        table.AddRow("[cyan]gondwana add <feature>[/]",           "Add widgets, audio, midi, gamepad, video, or hosting.");
+        table.AddRow("[cyan]gondwana add <feature>[/]",           "Add widgets, audio, midi, gamepad, video, video-widgets, or hosting.");
         table.AddRow("[cyan]gondwana serve[/]",                   "Serve a published browser build with WASM isolation headers.");
         table.AddRow("[cyan]gondwana tilesheet info <file>[/]",    "Show GTS image, region, frame, and collision metadata.");
         table.AddRow("[cyan]gondwana tilesheet validate <file>[/]", "Check GTS image references and geometry.");

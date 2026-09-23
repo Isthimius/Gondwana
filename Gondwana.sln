@@ -229,6 +229,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Importers.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Studio.Plugin.ExternalImport", "Tooling\Gondwana.Tooling.Studio.Plugin.ExternalImport\Gondwana.Tooling.Studio.Plugin.ExternalImport.csproj", "{EA6A761D-AD76-4EB5-9094-D5517792B537}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Video.Widgets", "Gondwana.Video.Widgets\Gondwana.Video.Widgets.csproj", "{BCD9906E-485D-48DD-9C2E-35154D4A9143}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1051,6 +1053,22 @@ Global
 		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Release|x64.Build.0 = Release|Any CPU
 		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Release|x86.ActiveCfg = Release|Any CPU
 		{EA6A761D-AD76-4EB5-9094-D5517792B537}.Release|x86.Build.0 = Release|Any CPU
+		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Debug|x64.Build.0 = Debug|Any CPU
+		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Debug|x86.Build.0 = Debug|Any CPU
+		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Release|x64.ActiveCfg = Release|Any CPU
+		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Release|x64.Build.0 = Release|Any CPU
+		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Release|x86.ActiveCfg = Release|Any CPU
+		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

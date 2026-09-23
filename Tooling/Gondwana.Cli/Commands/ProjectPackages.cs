@@ -164,10 +164,11 @@ internal sealed class ProjectPackages
             $"'{feature}' requires a compatible backend. Gondwana.Audio.NAudio and Gondwana.Audio.Midi require Windows. No cross-platform desktop audio backend is automatically selected; explicitly choose and configure a compatible backend. The project target framework has not been changed."),
         "gamepad" when Host != "Blazor" => "Gondwana.Input.SDL2",
         "video" when Host != "Blazor" => "Gondwana.Video",
+        "video-widgets" when Host != "Blazor" => "Gondwana.Video.Widgets",
         "hosting" when Host is not null => $"Gondwana.{Host}.Hosting",
         "hosting" => throw new InvalidOperationException("Cannot select hosting without one unambiguous WinForms, Avalonia, or Blazor adapter."),
-        "midi" or "gamepad" or "video" => throw new InvalidOperationException($"'{feature}' uses native desktop dependencies and cannot be added to a Blazor game."),
-        _ => throw new InvalidOperationException($"Unknown feature '{feature}'. Available: widgets, audio, midi, gamepad, video, hosting.")
+        "midi" or "gamepad" or "video" or "video-widgets" => throw new InvalidOperationException($"'{feature}' uses native desktop dependencies and cannot be added to a Blazor game."),
+        _ => throw new InvalidOperationException($"Unknown feature '{feature}'. Available: widgets, audio, midi, gamepad, video, video-widgets, hosting.")
     };
 
     public IReadOnlyList<string> Add(string feature)

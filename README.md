@@ -170,6 +170,7 @@ Runtime packages are available on NuGet. Install only the pieces your project ne
 | [`Gondwana.Audio.Midi`](https://www.nuget.org/packages/Gondwana.Audio.Midi) | Windows MIDI playback and SoundFont support layered on the NAudio backend |
 | [`Gondwana.Audio.Browser`](https://www.nuget.org/packages/Gondwana.Audio.Browser) | Browser and WebAssembly audio through the HTML5 Audio API and JavaScript interop |
 | [`Gondwana.Video`](https://www.nuget.org/packages/Gondwana.Video) | Experimental video playback through LibVLCSharp |
+| [`Gondwana.Video.Widgets`](Gondwana.Video.Widgets/README.md) | Optional interactive video Widget with opt-in dragging; bridges Video and Widgets |
 
 ---
 
