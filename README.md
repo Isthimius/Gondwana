@@ -102,7 +102,7 @@ The plugin is designed to ground AI assistance in the current engine instead of 
 
 See **[Using Gondwana with ChatGPT and Codex](https://github.com/Isthimius/Gondwana/wiki/Using-Gondwana-with-ChatGPT-and-Codex)**.
 
-<img width="49%" height="1456" alt="image" src="https://github.com/user-attachments/assets/9bdb6082-3058-4326-aa18-7f29a2ae98bf" />
+<img width="49%" alt="image" src="https://github.com/user-attachments/assets/ef37a6d8-73f0-4ebc-bfe7-acd2ea357d95" />
 
 ---
 
@@ -208,8 +208,9 @@ Gondwana's development tools sit above the same public engine APIs and definitio
 
 ```text
                     Authoring / Development
-
-              ┌───────────────┬───────────────┐
+                              │
+                              ▼
+              ┌───────────────────────────────┐
               │                               │
           C# directly                 Visual authoring
               │                               │
