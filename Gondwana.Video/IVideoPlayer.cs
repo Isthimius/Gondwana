@@ -6,7 +6,7 @@ namespace Gondwana.Video;
 public interface IVideoPlayer : IDisposable
 {
     // Control
-    
+
     /// <summary>
     /// Opens a video from the specified source URI.
     /// </summary>
@@ -57,7 +57,7 @@ public interface IVideoPlayer : IDisposable
     bool Loop { get; set; }
 
     // Info
-    
+
     /// <summary>
     /// Gets a value indicating whether the video is currently playing.
     /// </summary>
@@ -67,24 +67,24 @@ public interface IVideoPlayer : IDisposable
     /// Gets the total duration of the video.
     /// </summary>
     TimeSpan Duration { get; }
-    
+
     /// <summary>
     /// Gets the current playback position in the video.
     /// </summary>
     TimeSpan Position { get; }
-    
+
     /// <summary>
     /// Gets the natural size (width and height) of the video in pixels.
     /// </summary>
     (int width, int height) NaturalSize { get; }
-    
+
     /// <summary>
     /// Gets whether the video has an audio track. Consult IsMetadataReady before interpreting false.
     /// </summary>
     bool HasAudio { get; }
 
     // Events
-    
+
     /// <summary>
     /// Occurs when the video playback starts.
     /// </summary>

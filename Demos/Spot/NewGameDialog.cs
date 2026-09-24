@@ -1,4 +1,4 @@
-﻿using SkiaSharp;
+using SkiaSharp;
 using Gondwana.Demos.Spot.Game;
 using System;
 using System.Drawing;

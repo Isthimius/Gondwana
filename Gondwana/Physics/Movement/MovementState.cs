@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 using Gondwana.Physics.Movement;
 using Gondwana.Physics.Movement.Scripted;
 

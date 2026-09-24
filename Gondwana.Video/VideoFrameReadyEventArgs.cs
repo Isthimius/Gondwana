@@ -9,22 +9,22 @@ public sealed class VideoFrameReadyEventArgs : EventArgs
     /// Gets a pointer to the BGRX pixel buffer (8 bits per channel; the fourth byte is unused).
     /// </summary>
     public IntPtr Pixels { get; } // Valid only for the duration of FrameReady; consumers must copy.
-    
+
     /// <summary>
     /// Gets the width of the video frame in pixels.
     /// </summary>
     public int Width { get; }
-    
+
     /// <summary>
     /// Gets the height of the video frame in pixels.
     /// </summary>
     public int Height { get; }
-    
+
     /// <summary>
     /// Gets the stride (bytes per row) of the pixel buffer.
     /// </summary>
     public int Stride { get; }
-    
+
     /// <summary>
     /// Gets an optional presentation timestamp in 100-nanosecond units; zero means unavailable.
     /// </summary>

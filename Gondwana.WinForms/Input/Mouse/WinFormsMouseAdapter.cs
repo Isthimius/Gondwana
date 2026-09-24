@@ -25,7 +25,7 @@ public sealed class WinFormsMouseAdapter : IMouseAdapter, IDisposable
         WinFormBitmapRenderSurfaceControl bitmap => bitmap.Adapter.AdapterPxToScreenPx(_currentPosition),
         _ => _currentPosition
     };
-    
+
     /// <summary>
     /// Gets the set of currently pressed mouse buttons, reconciled against the actual OS button
     /// state to prevent stale "button down" entries that can occur when a MouseUp
@@ -46,12 +46,12 @@ public sealed class WinFormsMouseAdapter : IMouseAdapter, IDisposable
             }
         }
     }
-    
+
     /// <summary>
     /// Gets the current state of keyboard modifiers (Shift, Ctrl, Alt).
     /// </summary>
     public KeyboardModifierState CurrentKeyboardModifiers => _modifiers;
-    
+
     /// <summary>
     /// Gets the accumulated scroll wheel delta since the last read, then resets it to zero.
     /// </summary>

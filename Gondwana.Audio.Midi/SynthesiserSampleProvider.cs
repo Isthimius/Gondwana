@@ -1,4 +1,4 @@
-﻿using MeltySynth;
+using MeltySynth;
 using NAudio.Wave;
 
 namespace Gondwana.Audio.Midi;

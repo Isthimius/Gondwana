@@ -26,7 +26,8 @@ public sealed class InteractionTests
         var gts = Path.Combine(directory, "actors.gts");
         TilesheetDefinitionSerializer.Save(gts, new TilesheetDefinition
         {
-            Name = "actors", Image = new() { FilePath = "actors.png" },
+            Name = "actors",
+            Image = new() { FilePath = "actors.png" },
             Regions = [new() { Name = "default", Area = new Rectangle(0, 0, 32, 16), TileSize = new Size(16, 16) }]
         });
         var gscn = Path.Combine(directory, "level.gscn");

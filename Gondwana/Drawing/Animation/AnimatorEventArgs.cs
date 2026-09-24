@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Drawing.Animation;
+namespace Gondwana.Drawing.Animation;
 
 /// <summary>
 /// Provides data for animator-related events, containing references to the tile and animator involved in the event.

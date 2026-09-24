@@ -91,7 +91,7 @@ internal sealed class WidgetDragBehavior
             float thresholdSquared = DragThresholdPx * DragThresholdPx;
             if (totalScreenDeltaPx.LengthSquared() < thresholdSquared)
                 return;
-            
+
             IsDragging = true;
             _suppressNextPointerClick = true;
 

@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using Gondwana.Input.Keyboard;
 using Microsoft.Extensions.Logging;
 

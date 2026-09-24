@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Physics.Collisions;
+namespace Gondwana.Physics.Collisions;
 
 /// <summary>
 /// Manages registration and querying of colliders, separating them into static and dynamic collections
@@ -42,7 +42,7 @@ public sealed class ColliderRegistry
     /// Gets the collection of static colliders registered in this registry.
     /// </summary>
     public IEnumerable<ICollider> StaticColliders => _static;
-    
+
     /// <summary>
     /// Gets the collection of dynamic colliders registered in this registry.
     /// </summary>

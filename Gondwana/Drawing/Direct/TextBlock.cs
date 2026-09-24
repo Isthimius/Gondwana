@@ -161,7 +161,8 @@ public class TextBlock : DirectDrawingMovableBase
                view,
                screenBounds: null,
                worldBounds: worldBounds,
-               nickname: nickname) { }
+               nickname: nickname)
+    { }
 
     /// <summary>
     /// Creates a new <see cref="TextBlock"/> that draws in screen space relative to a view.
@@ -180,7 +181,8 @@ public class TextBlock : DirectDrawingMovableBase
                view: view,
                screenBounds: screenBounds,
                worldBounds: null,
-               nickname: nickname) { }
+               nickname: nickname)
+    { }
 
     /// <summary>
     /// Gets or sets a scale factor applied to the computed line height (1.0 = natural spacing).

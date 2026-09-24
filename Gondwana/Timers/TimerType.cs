@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Timers
+namespace Gondwana.Timers
 {
     /// <summary>
     /// Specifies when a <see cref="Timer"/> should have its <see cref="Timer.Tick"/> event raised

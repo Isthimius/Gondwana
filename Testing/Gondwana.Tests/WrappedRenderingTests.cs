@@ -43,9 +43,9 @@ public sealed class WrappedRenderingTests
         {
             Assert.Equal(SKColors.Blue, bitmap.GetPixel(1, 1));
             for (int x = 0; x < 4; x++)
-            for (int y = 0; y < 4; y++)
-                Assert.Equal((horizontal || x == 1) && (vertical || y == 1) ? SKColors.Red : SKColors.Black,
-                    bitmap.GetPixel(x * 32 + 5, y * 32 + 5));
+                for (int y = 0; y < 4; y++)
+                    Assert.Equal((horizontal || x == 1) && (vertical || y == 1) ? SKColors.Red : SKColors.Black,
+                        bitmap.GetPixel(x * 32 + 5, y * 32 + 5));
             Assert.Equal(SKColors.Black, bitmap.GetPixel(33, 33));
         }
         host.Backbuffer.BeginFrame();
@@ -57,8 +57,8 @@ public sealed class WrappedRenderingTests
         {
             Assert.Equal(SKColors.Blue, bitmap.GetPixel(1, 1));
             for (int x = 0; x < 4; x++)
-            for (int y = 0; y < 4; y++)
-                Assert.Equal(SKColors.Black, bitmap.GetPixel(x * 32 + 5, y * 32 + 5));
+                for (int y = 0; y < 4; y++)
+                    Assert.Equal(SKColors.Black, bitmap.GetPixel(x * 32 + 5, y * 32 + 5));
         }
         host.Backbuffer.BeginFrame();
     }

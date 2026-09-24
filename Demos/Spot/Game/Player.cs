@@ -1,4 +1,4 @@
-﻿using Gondwana.Drawing;
+using Gondwana.Drawing;
 
 namespace Gondwana.Demos.Spot.Game;
 

@@ -58,7 +58,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     [JsonIgnore]
     private RenderSurfaceHostBase? _boundRenderSurfaceHost;
-    
+
     #region Scene events
 
     /// <summary>

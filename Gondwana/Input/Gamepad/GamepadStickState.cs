@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Input.Gamepad;
+namespace Gondwana.Input.Gamepad;
 
 /// <summary>
 /// Represents the state of an analog stick on a gamepad, including both normalized floating-point

@@ -1,4 +1,4 @@
-﻿using Gondwana.Drawing.Direct;
+using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Scenes;
 using Gondwana.Drawing.Coordinates;
@@ -53,7 +53,7 @@ public partial class Form1 : Form
         Engine.Instance.Start();
         Engine.Instance.Configuration.TargetFPS = 60;
 
-        _particleSurface = new ParticleSurface(renderSurface,renderSurface.ViewManager.Views[0], new Rectangle(0, 0, adapter.Width, adapter.Height), null, 10000);
+        _particleSurface = new ParticleSurface(renderSurface, renderSurface.ViewManager.Views[0], new Rectangle(0, 0, adapter.Width, adapter.Height), null, 10000);
         _particleSurface.CullingMarginX = 1300f;
         _particleSurface.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
         //_particleSurface.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
@@ -92,7 +92,7 @@ public partial class Form1 : Form
             .UseShadow()
             .SetShadow(6, 6, 200, 3.0f)
             .UseOutline();
-            //.StartTypewriter(5); 
+        //.StartTypewriter(5); 
 
         _textBlock.ZOrder = 10;
 
@@ -194,7 +194,7 @@ public partial class Form1 : Form
             VelocityRangeY = (500f, 700f),   // falling fast
             SizeRange = (1f, 2f),            // thin drops
             Color = new SKColor(120, 160, 255, 180),
-            
+
             OnSpawn = (ref Particle p) =>
             {
                 // spawn anywhere across the top edge

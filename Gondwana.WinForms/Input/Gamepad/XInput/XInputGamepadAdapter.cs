@@ -1,4 +1,4 @@
-﻿using Gondwana.Input.Gamepad;
+using Gondwana.Input.Gamepad;
 using static Gondwana.WinForms.Input.Gamepad.XInput.XInput;
 
 namespace Gondwana.WinForms.Input.Gamepad.XInput;

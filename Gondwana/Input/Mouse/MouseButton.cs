@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Input.Mouse;
+namespace Gondwana.Input.Mouse;
 
 /// <summary>
 /// Represents mouse button identifiers that can be used individually or combined to represent

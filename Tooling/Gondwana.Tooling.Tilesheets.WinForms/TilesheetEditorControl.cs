@@ -131,8 +131,14 @@ public sealed class TilesheetEditorControl : UserControl
             RefreshView();
         });
         bar.Items.Add("−", null, (_, _) => _viewport.ZoomOut());
-        var zoom = new ToolStripComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 75,
-            BackColor = DarkTheme.Background, ForeColor = DarkTheme.Foreground, FlatStyle = FlatStyle.Flat };
+        var zoom = new ToolStripComboBox
+        {
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            Width = 75,
+            BackColor = DarkTheme.Background,
+            ForeColor = DarkTheme.Foreground,
+            FlatStyle = FlatStyle.Flat
+        };
         zoom.Items.AddRange(["25%", "50%", "100%", "200%", "400%", "Fit"]);
         zoom.SelectedIndex = 2;
         zoom.SelectedIndexChanged += (_, _) =>
@@ -229,8 +235,12 @@ public sealed class TilesheetEditorControl : UserControl
         int number = 1;
         while (Document.Definition.Regions.Any(r => string.Equals(r.Name, name, StringComparison.OrdinalIgnoreCase))) name = "region" + number++;
         var size = ImageSize ?? new Size(32, 32);
-        var region = new TilesheetRegionDefinition { Name = name, Area = new Rectangle(Point.Empty, size),
-            TileSize = new Size(Math.Min(32, size.Width), Math.Min(32, size.Height)) };
+        var region = new TilesheetRegionDefinition
+        {
+            Name = name,
+            Area = new Rectangle(Point.Empty, size),
+            TileSize = new Size(Math.Min(32, size.Width), Math.Min(32, size.Height))
+        };
         Document.Definition.Regions.Add(region);
         Document.MarkChanged();
         RefreshView();
@@ -276,7 +286,9 @@ public sealed class TilesheetEditorControl : UserControl
 
     private static PropertyGrid CreatePropertyGrid() => new()
     {
-        Dock = DockStyle.Fill, ToolbarVisible = false, HelpVisible = false
+        Dock = DockStyle.Fill,
+        ToolbarVisible = false,
+        HelpVisible = false
     };
 
     private void RefreshProperties()

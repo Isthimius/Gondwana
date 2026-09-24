@@ -35,10 +35,10 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
 
         Zoom = Math.Clamp(zoom, .05f, 16f);
         UpdateExtent();
-        
+
         AutoScrollPosition = new Point(Math.Max(0, (int)(center.X * Zoom - ClientSize.Width / 2f)),
             Math.Max(0, (int)(center.Y * Zoom - ClientSize.Height / 2f)));
-        
+
         Invalidate();
     }
 
@@ -72,10 +72,10 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
             _zoomWheelDelta = 0;
             return false;
         }
-        
+
         long position = message.LParam.ToInt64();
         var screenPoint = new Point(unchecked((short)position), unchecked((short)(position >> 16)));
-        
+
         // Wheel messages can target the focused property editor. Route Ctrl+wheel
         // by the window under the pointer without taking focus or committing edits.
         if (!Visible || !IsHandleCreated || WindowFromPoint(screenPoint) != Handle)
@@ -107,7 +107,7 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
             ZoomOut();
             _zoomWheelDelta += WheelNotch;
         }
-        
+
         return true;
     }
 
@@ -118,7 +118,7 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
     {
         if (Image is null)
             return;
-        
+
         SetZoom(Math.Min((ClientSize.Width - 24f) / Image.Width, (ClientSize.Height - 24f) / Image.Height));
         AutoScrollPosition = Point.Empty;
     }
@@ -135,7 +135,7 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
             return;
 
         Rectangle bounds;
-        
+
         try
         {
             bounds = FrameGeometry.Bounds(region, frame.X, frame.Y);
@@ -147,13 +147,13 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
 
         float left = bounds.X * Zoom, top = bounds.Y * Zoom;
         float currentX = -AutoScrollPosition.X, currentY = -AutoScrollPosition.Y;
-        
+
         if (left < currentX || left + bounds.Width * Zoom > currentX + ClientSize.Width)
             currentX = left;
-        
+
         if (top < currentY || top + bounds.Height * Zoom > currentY + ClientSize.Height)
             currentY = top;
-        
+
         AutoScrollPosition = new Point((int)Math.Clamp(currentX, 0, int.MaxValue), (int)Math.Clamp(currentY, 0, int.MaxValue));
     }
 
@@ -180,32 +180,32 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
     {
         base.OnPaint(e);
         var g = e.Graphics;
-        
+
         if (Image is null)
         {
             TextRenderer.DrawText(g, Message, Font, ClientRectangle, Color.Silver,
                 TextFormatFlags.WordBreak | TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
             return;
         }
-        
+
         using (var checker = new HatchBrush(HatchStyle.LargeCheckerBoard, Color.FromArgb(52, 52, 52), Color.FromArgb(40, 40, 40)))
             g.FillRectangle(checker, ClientRectangle);
-        
+
         g.TranslateTransform(AutoScrollPosition.X, AutoScrollPosition.Y);
         g.ScaleTransform(Zoom, Zoom);
         g.InterpolationMode = InterpolationMode.NearestNeighbor;
         g.PixelOffsetMode = PixelOffsetMode.Half;
         g.SmoothingMode = SmoothingMode.None;
         g.DrawImage(Image, new Rectangle(0, 0, Image.Width, Image.Height));
-        
+
         if (Definition is null)
             return;
-        
+
         if (Overlays.Contains("Regions") || Overlays.Contains("SelectedRegion"))
             foreach (var region in Definition.Regions)
                 if (Overlays.Contains(region == SelectedRegion ? "SelectedRegion" : "Regions"))
                     Outline(g, region.Area, Colors[region == SelectedRegion ? OverlayKind.SelectedRegion : OverlayKind.Regions], region == SelectedRegion ? 2 : 1);
-        
+
         if (SelectedRegion is not { } r)
             return;
 
@@ -216,7 +216,7 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
         var (columns, rows) = TilesheetDefinitionValidator.GridSize(r);
         long pitchX = (long)r.TileSize.Width + r.TilePadding.Left + r.TilePadding.Right;
         long pitchY = (long)r.TileSize.Height + r.TilePadding.Top + r.TilePadding.Bottom;
-        
+
         if (columns <= 0 || rows <= 0 || pitchX <= 0 || pitchY <= 0)
             return;
 
@@ -234,7 +234,7 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
         for (long y = firstY; y <= lastY; y += step)
             for (long x = firstX; x <= lastX; x += step)
                 DrawFrame((int)x, (int)y, false);
-        
+
         if (SelectedFrame is { } selected && selected.X < columns && selected.Y < rows)
             DrawFrame(selected.X, selected.Y, true);
 
@@ -253,19 +253,19 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
             if (Overlays.Contains("Padding"))
                 Outline(g, RectangleF.FromLTRB((float)bounds.X - r.TilePadding.Left, (float)bounds.Y - r.TilePadding.Top,
                     (float)bounds.X + bounds.Width + r.TilePadding.Right, (float)bounds.Y + bounds.Height + r.TilePadding.Bottom), Colors[OverlayKind.Padding], 1, DashStyle.Dot);
-            
+
             if (Overlays.Contains("Overhang"))
                 Outline(g, RectangleF.FromLTRB((float)bounds.X - r.Overhang.Left, (float)bounds.Y - r.Overhang.Top,
                     (float)bounds.X + bounds.Width + r.Overhang.Right, (float)bounds.Y + bounds.Height + r.Overhang.Bottom), Colors[OverlayKind.Overhang], 1, DashStyle.Dash);
-            
+
             if (Overlays.Contains("Frames")) Outline(g, bounds, Colors[OverlayKind.Frames]);
-            
+
             if (Overlays.Contains("Collision"))
             {
                 metadata.TryGetValue((x, y), out var frame);
                 Outline(g, (frame?.CollisionAdjust ?? r.CollisionAdjust).ApplyTo(bounds), Colors[OverlayKind.Collision], 1, DashStyle.DashDot);
             }
-            
+
             if (selected && Overlays.Contains("SelectedFrame")) Outline(g, bounds, Colors[OverlayKind.SelectedFrame], 3);
         }
     }

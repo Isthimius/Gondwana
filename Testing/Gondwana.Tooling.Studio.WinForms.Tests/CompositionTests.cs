@@ -285,7 +285,8 @@ public sealed class CompositionTests
             }
             catch (Exception ex) { error = ex; }
             finally { Directory.Delete(directory, recursive: true); }
-        }) { IsBackground = true };
+        })
+        { IsBackground = true };
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(60)), "Studio interaction timed out.");

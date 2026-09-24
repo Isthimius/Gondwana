@@ -39,8 +39,11 @@ internal sealed class MenuIndicatorDrawing : DirectDrawingMovableBase
         float y = destRectScreen.Y + (destRectScreen.Height - size) / 2;
         using var paint = new SKPaint
         {
-            Color = _color, IsAntialias = true, StrokeWidth = _theme.IndicatorStrokeWidth,
-            StrokeCap = SKStrokeCap.Round, StrokeJoin = SKStrokeJoin.Round,
+            Color = _color,
+            IsAntialias = true,
+            StrokeWidth = _theme.IndicatorStrokeWidth,
+            StrokeCap = SKStrokeCap.Round,
+            StrokeJoin = SKStrokeJoin.Round,
             Style = _shape == Shape.Radio ? SKPaintStyle.Fill : SKPaintStyle.Stroke
         };
         if (_shape == Shape.Radio)

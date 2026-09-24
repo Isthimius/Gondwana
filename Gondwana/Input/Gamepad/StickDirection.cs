@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Input.Gamepad;
+namespace Gondwana.Input.Gamepad;
 
 /// <summary>
 /// Represents the directional state of an analog stick on a gamepad. This is a flags enumeration,

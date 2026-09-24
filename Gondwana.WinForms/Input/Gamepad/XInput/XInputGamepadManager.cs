@@ -1,4 +1,4 @@
-﻿using Gondwana.Input.Gamepad;
+using Gondwana.Input.Gamepad;
 using Microsoft.Extensions.Logging;
 using static Gondwana.WinForms.Input.Gamepad.XInput.XInput;
 

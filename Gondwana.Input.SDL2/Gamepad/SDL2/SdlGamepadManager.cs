@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using static SDL2.SDL;
 
 namespace Gondwana.Input.Gamepad.SDL2;

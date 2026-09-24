@@ -37,7 +37,7 @@ public sealed class Engine : IDisposable
     #region static members
 
     private static readonly Lazy<Engine> _instance = new(() => new Engine());
-    
+
     /// <summary>
     /// Gets the singleton instance of the <see cref="Engine"/>.
     /// </summary>

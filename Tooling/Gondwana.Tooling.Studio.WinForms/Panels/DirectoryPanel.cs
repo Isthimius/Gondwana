@@ -8,8 +8,11 @@ public sealed class DirectoryPanel : UserControl
     private readonly Action<string> _log;
     internal TreeView Tree { get; } = new()
     {
-        Dock = DockStyle.Fill, HideSelection = false, ShowNodeToolTips = true,
-        BackColor = Color.FromArgb(30, 30, 30), ForeColor = Color.Gainsboro
+        Dock = DockStyle.Fill,
+        HideSelection = false,
+        ShowNodeToolTips = true,
+        BackColor = Color.FromArgb(30, 30, 30),
+        ForeColor = Color.Gainsboro
     };
     public string WorkingDirectory { get; private set; } = Environment.CurrentDirectory;
     public event Action<string>? FileActivated;

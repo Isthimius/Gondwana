@@ -53,8 +53,12 @@ public sealed class AsepriteImporter : ExternalAssetImporter
                 }
                 sequence = expanded; type = CycleType.Simple;
             }
-            var gani = new AnimationDefinition { Key = name + "." + key, CycleType = type,
-                TilesheetSources = [AnimationTilesheetSourceDefinition.Loose(name, name + ".gts")] };
+            var gani = new AnimationDefinition
+            {
+                Key = name + "." + key,
+                CycleType = type,
+                TilesheetSources = [AnimationTilesheetSourceDefinition.Loose(name, name + ".gts")]
+            };
             foreach (int index in sequence)
                 gani.Frames.Add(new() { Tilesheet = name, RegionName = $"row-{index / columns}", XTile = index % columns, YTile = 0, DurationSeconds = sprite.Frames[index].DurationMilliseconds / 1000.0 });
             plan.Add(name + "-" + key + ".gani", gani);

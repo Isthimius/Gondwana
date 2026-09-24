@@ -1,4 +1,4 @@
-﻿using Gondwana.Physics.Movement;
+using Gondwana.Physics.Movement;
 using Gondwana.Physics.Movement.Easing;
 using Gondwana.Scenes;
 using System.Drawing;

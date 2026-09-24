@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Physics.Collisions;
+namespace Gondwana.Physics.Collisions;
 
 /// <summary>
 /// Provides predefined collision mask constants for common collision filtering scenarios.
@@ -10,7 +10,7 @@ public static class CollisionMasks
     /// Used to indicate that no collisions should be detected.
     /// </summary>
     public const int None = 0;
-    
+
     /// <summary>
     /// Represents a collision mask with all groups enabled (all bits set).
     /// Used to indicate that collisions with all groups should be detected.

@@ -14,12 +14,12 @@ internal sealed class GameWindow : Form
 
     internal GameWindow()
     {
-        this.Text             = "WidgetsTest";
-        this.ClientSize       = new Size(640, 640);
-        this.FormBorderStyle  = FormBorderStyle.FixedSingle;
-        this.StartPosition    = FormStartPosition.CenterScreen;
-        this.MinimizeBox      = false;
-        this.MaximizeBox      = false;
+        this.Text = "WidgetsTest";
+        this.ClientSize = new Size(640, 640);
+        this.FormBorderStyle = FormBorderStyle.FixedSingle;
+        this.StartPosition = FormStartPosition.CenterScreen;
+        this.MinimizeBox = false;
+        this.MaximizeBox = false;
 
         _renderSurface.Dock = DockStyle.Fill;
         Controls.Add(_renderSurface);

@@ -628,21 +628,21 @@ public sealed class Camera
         float bestDistanceSquared = (best.X - reference.X) * (best.X - reference.X) + (best.Y - reference.Y) * (best.Y - reference.Y);
 
         for (int c = minColumn; c <= maxColumn; c++)
-        for (int r = minRow; r <= maxRow; r++)
-        {
-            var offset = period.Offset(c, r);
-            var candidate = new PointF(point.X + offset.X, point.Y + offset.Y);
-            float axisDistance = followX ? Math.Abs(candidate.X - reference.X) : Math.Abs(candidate.Y - reference.Y);
-            float distanceSquared = (candidate.X - reference.X) * (candidate.X - reference.X) +
-                                    (candidate.Y - reference.Y) * (candidate.Y - reference.Y);
-            if (axisDistance < bestAxisDistance ||
-                (axisDistance == bestAxisDistance && distanceSquared < bestDistanceSquared))
+            for (int r = minRow; r <= maxRow; r++)
             {
-                best = candidate;
-                bestAxisDistance = axisDistance;
-                bestDistanceSquared = distanceSquared;
+                var offset = period.Offset(c, r);
+                var candidate = new PointF(point.X + offset.X, point.Y + offset.Y);
+                float axisDistance = followX ? Math.Abs(candidate.X - reference.X) : Math.Abs(candidate.Y - reference.Y);
+                float distanceSquared = (candidate.X - reference.X) * (candidate.X - reference.X) +
+                                        (candidate.Y - reference.Y) * (candidate.Y - reference.Y);
+                if (axisDistance < bestAxisDistance ||
+                    (axisDistance == bestAxisDistance && distanceSquared < bestDistanceSquared))
+                {
+                    best = candidate;
+                    bestAxisDistance = axisDistance;
+                    bestDistanceSquared = distanceSquared;
+                }
             }
-        }
 
         return best;
     }

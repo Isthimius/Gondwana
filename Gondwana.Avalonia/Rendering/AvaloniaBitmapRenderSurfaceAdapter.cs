@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using Avalonia;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;

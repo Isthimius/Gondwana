@@ -1,4 +1,4 @@
-﻿using Gondwana.Rendering;
+using Gondwana.Rendering;
 
 namespace Gondwana.Widgets;
 

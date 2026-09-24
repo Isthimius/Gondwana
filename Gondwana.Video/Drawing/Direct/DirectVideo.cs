@@ -22,7 +22,7 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     private StretchMode _stretch = StretchMode.Fill;
 
     // ---- knobs ----
-    
+
     /// <summary>
     /// Gets or sets the stretch mode that determines how the video frame is scaled 
     /// to fit within the destination bounds.

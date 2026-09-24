@@ -1,4 +1,4 @@
-﻿using Gondwana.Rendering;
+using Gondwana.Rendering;
 using System.Drawing;
 
 namespace Gondwana.Drawing.Direct;

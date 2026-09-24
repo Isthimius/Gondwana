@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Logging;
 
@@ -47,28 +47,28 @@ public static partial class EngineLogger
         /// Gets the category name for the logger, typically representing the source type of the log message.
         /// </summary>
         public string CategoryName { get; }
-        
+
         /// <summary>
         /// Gets the severity level of this log entry (e.g., Information, Warning, Error).
         /// </summary>
         public LogLevel LogLevel { get; }
-        
+
         /// <summary>
         /// Gets the event identifier associated with this log entry, used for filtering and categorization.
         /// </summary>
         public EventId EventId { get; }
-        
+
         /// <summary>
         /// Gets the state object containing the log message data and any structured logging information.
         /// May be <c>null</c> if no state was provided.
         /// </summary>
         public object? State { get; }
-        
+
         /// <summary>
         /// Gets the exception associated with this log entry, or <c>null</c> if no exception was logged.
         /// </summary>
         public Exception? Exception { get; }
-        
+
         /// <summary>
         /// Gets the formatter function that converts the <see cref="State"/> and <see cref="Exception"/> 
         /// into a formatted log message string.

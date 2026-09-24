@@ -24,13 +24,13 @@ internal sealed class GameWindow : Window
 
     internal GameWindow()
     {
-        Title     = "Spot (Avalonia)";
-        Width     = 769;
-        Height    = 800;   // render area (769) + menu bar
+        Title = "Spot (Avalonia)";
+        Width = 769;
+        Height = 800;   // render area (769) + menu bar
         CanResize = false;
 
         _renderSurface.HorizontalAlignment = HorizontalAlignment.Stretch;
-        _renderSurface.VerticalAlignment   = VerticalAlignment.Stretch;
+        _renderSurface.VerticalAlignment = VerticalAlignment.Stretch;
 
         var grid = new Grid();
         grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
@@ -68,9 +68,9 @@ internal sealed class GameWindow : Window
 
         _musicMenuItem = new MenuItem
         {
-            Header     = "Music",
+            Header = "Music",
             ToggleType = MenuItemToggleType.CheckBox,
-            IsChecked  = true,
+            IsChecked = true,
         };
         _musicMenuItem.Click += (_, _) =>
         {
@@ -80,9 +80,9 @@ internal sealed class GameWindow : Window
 
         _soundEffectsMenuItem = new MenuItem
         {
-            Header     = "Sound Effects",
+            Header = "Sound Effects",
             ToggleType = MenuItemToggleType.CheckBox,
-            IsChecked  = true,
+            IsChecked = true,
         };
         _soundEffectsMenuItem.Click += (_, _) =>
         {
@@ -92,9 +92,9 @@ internal sealed class GameWindow : Window
 
         _jiggleMenuItem = new MenuItem
         {
-            Header     = "Jiggle",
+            Header = "Jiggle",
             ToggleType = MenuItemToggleType.CheckBox,
-            IsChecked  = true,
+            IsChecked = true,
         };
         _jiggleMenuItem.Click += (_, _) =>
         {
@@ -104,9 +104,9 @@ internal sealed class GameWindow : Window
 
         _cloudsMenuItem = new MenuItem
         {
-            Header     = "Clouds",
+            Header = "Clouds",
             ToggleType = MenuItemToggleType.CheckBox,
-            IsChecked  = true,
+            IsChecked = true,
         };
         _cloudsMenuItem.Click += (_, _) =>
         {

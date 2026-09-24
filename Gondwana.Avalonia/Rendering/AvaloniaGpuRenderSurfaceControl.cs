@@ -56,12 +56,12 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase
     /// </summary>
     public AvaloniaGpuRenderSurfaceControl()
     {
-        var scaling  = VisualRoot?.RenderScaling ?? 1.0;
-        var physW    = Math.Max(1, (int)Math.Round(Bounds.Width  * scaling));
-        var physH    = Math.Max(1, (int)Math.Round(Bounds.Height * scaling));
+        var scaling = VisualRoot?.RenderScaling ?? 1.0;
+        var physW = Math.Max(1, (int)Math.Round(Bounds.Width * scaling));
+        var physH = Math.Max(1, (int)Math.Round(Bounds.Height * scaling));
 
-        Adapter      = new AvaloniaGpuRenderSurfaceAdapter(physW, physH);
-        Host         = new RenderSurfaceHost<GpuBackbuffer>(Adapter);
+        Adapter = new AvaloniaGpuRenderSurfaceAdapter(physW, physH);
+        Host = new RenderSurfaceHost<GpuBackbuffer>(Adapter);
         _gpuBackbuffer = (GpuBackbuffer)Host.Backbuffer;
 
         // Pacing: post RequestNextFrameRendering() after each engine foreground cycle.
@@ -79,13 +79,13 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase
         // pointers from it without requiring any explicit proc-address lookup delegate.
         _glInterface = GRGlInterface.Create();
         if (_glInterface == null) return;
-        _grContext   = GRContext.CreateGl(_glInterface);
+        _grContext = GRContext.CreateGl(_glInterface);
 
         if (_grContext == null) return;
 
         var scaling = VisualRoot?.RenderScaling ?? 1.0;
-        var physW   = (int)Math.Round(Bounds.Width * scaling);
-        var physH   = (int)Math.Round(Bounds.Height * scaling);
+        var physW = (int)Math.Round(Bounds.Width * scaling);
+        var physH = (int)Math.Round(Bounds.Height * scaling);
 
         if (physW <= 0 || physH <= 0) return;
 
@@ -106,8 +106,8 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase
         _grContext.ResetContext();
 
         var scaling = VisualRoot?.RenderScaling ?? 1.0;
-        var physW   = (int)Math.Round(Bounds.Width * scaling);
-        var physH   = (int)Math.Round(Bounds.Height * scaling);
+        var physW = (int)Math.Round(Bounds.Width * scaling);
+        var physH = (int)Math.Round(Bounds.Height * scaling);
 
         if (physW <= 0 || physH <= 0)
         {
@@ -129,7 +129,7 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase
 
         // Wrap the Avalonia-provided framebuffer in a SkiaSharp surface for compositing.
         // The framebuffer uses OpenGL bottom-left origin, RGBA8 color format.
-        var fbInfo      = new GRGlFramebufferInfo((uint)fb, GlRgba8);
+        var fbInfo = new GRGlFramebufferInfo((uint)fb, GlRgba8);
         using var renderTarget = new GRBackendRenderTarget(physW, physH, sampleCount: 0, stencilBits: 0, fbInfo);
         using var fbSurface = SKSurface.Create(_grContext, renderTarget, GRSurfaceOrigin.BottomLeft, SKColorType.Rgba8888);
 

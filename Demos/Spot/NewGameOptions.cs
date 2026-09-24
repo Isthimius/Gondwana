@@ -1,4 +1,4 @@
-﻿using Gondwana.Demos.Spot.Game;
+using Gondwana.Demos.Spot.Game;
 using System.Collections.Generic;
 
 namespace Gondwana.Demos.Spot;

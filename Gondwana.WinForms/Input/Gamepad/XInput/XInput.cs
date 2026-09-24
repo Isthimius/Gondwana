@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 
 namespace Gondwana.WinForms.Input.Gamepad.XInput;
 
@@ -26,7 +26,7 @@ internal static class XInput
         /// State packet number. The packet number indicates whether there have been any changes in the state of the controller.
         /// </summary>
         public uint dwPacketNumber;
-        
+
         /// <summary>
         /// <see cref="XINPUT_GAMEPAD"/> structure containing the current state of an Xbox controller.
         /// </summary>
@@ -43,32 +43,32 @@ internal static class XInput
         /// Bitmask of the device digital buttons. A set bit indicates that the corresponding button is pressed.
         /// </summary>
         public ushort wButtons;
-        
+
         /// <summary>
         /// The current value of the left trigger analog control. The value ranges from 0 to 255.
         /// </summary>
         public byte bLeftTrigger;
-        
+
         /// <summary>
         /// The current value of the right trigger analog control. The value ranges from 0 to 255.
         /// </summary>
         public byte bRightTrigger;
-        
+
         /// <summary>
         /// Left thumbstick x-axis value. The value ranges from -32768 to 32767.
         /// </summary>
         public short sThumbLX;
-        
+
         /// <summary>
         /// Left thumbstick y-axis value. The value ranges from -32768 to 32767.
         /// </summary>
         public short sThumbLY;
-        
+
         /// <summary>
         /// Right thumbstick x-axis value. The value ranges from -32768 to 32767.
         /// </summary>
         public short sThumbRX;
-        
+
         /// <summary>
         /// Right thumbstick y-axis value. The value ranges from -32768 to 32767.
         /// </summary>
@@ -85,67 +85,67 @@ internal static class XInput
         /// A button.
         /// </summary>
         A = 0x1000,
-        
+
         /// <summary>
         /// B button.
         /// </summary>
         B = 0x2000,
-        
+
         /// <summary>
         /// X button.
         /// </summary>
         X = 0x4000,
-        
+
         /// <summary>
         /// Y button.
         /// </summary>
         Y = 0x8000,
-        
+
         /// <summary>
         /// Directional pad up.
         /// </summary>
         DPadUp = 0x0001,
-        
+
         /// <summary>
         /// Directional pad down.
         /// </summary>
         DPadDown = 0x0002,
-        
+
         /// <summary>
         /// Directional pad left.
         /// </summary>
         DPadLeft = 0x0004,
-        
+
         /// <summary>
         /// Directional pad right.
         /// </summary>
         DPadRight = 0x0008,
-        
+
         /// <summary>
         /// START button.
         /// </summary>
         Start = 0x0010,
-        
+
         /// <summary>
         /// BACK button.
         /// </summary>
         Back = 0x0020,
-        
+
         /// <summary>
         /// Left shoulder button.
         /// </summary>
         LeftShoulder = 0x0100,
-        
+
         /// <summary>
         /// Right shoulder button.
         /// </summary>
         RightShoulder = 0x0200,
-        
+
         /// <summary>
         /// Left thumbstick button (pressing down on the left stick).
         /// </summary>
         LeftThumb = 0x0040,
-        
+
         /// <summary>
         /// Right thumbstick button (pressing down on the right stick).
         /// </summary>

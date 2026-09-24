@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Input.Mouse;
+namespace Gondwana.Input.Mouse;
 
 /// <summary>
 /// Represents the current and transitional state of a mouse button, tracking whether the button

@@ -328,9 +328,9 @@ internal sealed class SpotAvaloniaGameHost : AvaloniaBitmapGameHost
 
         var options = new NewGameOptions
         {
-            BoardWidth  = 8,
+            BoardWidth = 8,
             BoardHeight = 8,
-            Players     = players,
+            Players = players,
         };
 
         StartNewGame(options);

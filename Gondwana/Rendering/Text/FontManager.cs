@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using SkiaSharp;
 
 namespace Gondwana.Rendering.Text;

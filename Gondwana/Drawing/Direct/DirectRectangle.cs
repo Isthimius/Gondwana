@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Runtime.CompilerServices;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
@@ -1313,7 +1313,7 @@ public class DirectRectangle : DirectDrawingMovableBase
         byte g = (byte)(a.Green + (b.Green - a.Green) * t01);
         byte bch = (byte)(a.Blue + (b.Blue - a.Blue) * t01);
         byte aA = (byte)(a.Alpha + (b.Alpha - a.Alpha) * t01);
-        
+
         return new SKColor(r, g, bch, aA);
     }
 }

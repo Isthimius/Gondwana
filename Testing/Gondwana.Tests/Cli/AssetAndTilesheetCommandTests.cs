@@ -116,7 +116,8 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         using (var output = File.Create(Path.Combine(root, "image.png"))) data.SaveTo(output);
         return new TilesheetDefinition
         {
-            Name = "fixture", Image = new() { FilePath = "image.png" },
+            Name = "fixture",
+            Image = new() { FilePath = "image.png" },
             Regions = [new() { Name = "main", Area = new Rectangle(0, 0, 32, 32), TileSize = new Size(16, 16), Frames = [new() { XTile = 1, YTile = 1 }] }]
         };
     }

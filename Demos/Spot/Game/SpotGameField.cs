@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -57,7 +57,7 @@ internal partial class SpotGameField : SceneLayer
 
         // upper left
         if (players.Length >= 1)
-        { 
+        {
             var cell = field.GetCell(0, 0);
             cell.OccupiedBy = players[0];
             var sprite = SpriteManager.Instance.CreateSprite(field, players[0].DefaultFrame);

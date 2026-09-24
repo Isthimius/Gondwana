@@ -132,7 +132,7 @@ public sealed class ButtonWidget : WidgetBase
     }
 
     #endregion public methods
-    
+
     #region protected methods
 
     /// <inheritdoc/>

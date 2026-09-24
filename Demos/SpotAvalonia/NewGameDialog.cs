@@ -21,18 +21,18 @@ internal sealed class NewGameDialog : Window
     private static readonly string[] _boardSizes = GameConfig.BoardSizes;
 
     private readonly ComboBox _cboPlayerCount = new();
-    private readonly ComboBox _cboWidth       = new();
-    private readonly ComboBox _cboHeight      = new();
+    private readonly ComboBox _cboWidth = new();
+    private readonly ComboBox _cboHeight = new();
 
-    private readonly TextBox[]   _nameBoxes    = new TextBox[4];
-    private readonly ComboBox[]  _typeSelects  = new ComboBox[4];
-    private readonly ComboBox[]  _colorSelects = new ComboBox[4];
-    private readonly Border[]    _playerBorders = new Border[4];
+    private readonly TextBox[] _nameBoxes = new TextBox[4];
+    private readonly ComboBox[] _typeSelects = new ComboBox[4];
+    private readonly ComboBox[] _colorSelects = new ComboBox[4];
+    private readonly Border[] _playerBorders = new Border[4];
 
     internal NewGameDialog(NewGameOptions? initialOptions = null)
     {
-        Title  = "New Game";
-        Width  = 510;
+        Title = "New Game";
+        Width = 510;
         SizeToContent = SizeToContent.Height;
         CanResize = false;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -72,7 +72,7 @@ internal sealed class NewGameDialog : Window
     {
         var root = new Border
         {
-            Padding    = new Thickness(12),
+            Padding = new Thickness(12),
             Background = Brushes.CornflowerBlue,
         };
         var outerStack = new StackPanel { Spacing = 8 };
@@ -88,29 +88,29 @@ internal sealed class NewGameDialog : Window
         topRow.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
         topRow.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
 
-        var playersLabel   = Label("Players", margin: new Thickness(0, 0, 6, 0));
+        var playersLabel = Label("Players", margin: new Thickness(0, 0, 6, 0));
         var boardSizeLabel = Label("Board Size", margin: new Thickness(16, 0, 6, 0));
-        var xLabel         = Label("×", margin: new Thickness(4, 0));
+        var xLabel = Label("×", margin: new Thickness(4, 0));
 
-        _cboPlayerCount.ItemsSource    = new[] { "2", "3", "4" };
-        _cboPlayerCount.SelectedIndex  = GameConfig.DefaultPlayerCountIndex;
-        _cboPlayerCount.MinWidth       = 55;
+        _cboPlayerCount.ItemsSource = new[] { "2", "3", "4" };
+        _cboPlayerCount.SelectedIndex = GameConfig.DefaultPlayerCountIndex;
+        _cboPlayerCount.MinWidth = 55;
         _cboPlayerCount.SelectionChanged += CboPlayerCount_SelectionChanged;
 
-        _cboWidth.ItemsSource   = _boardSizes;
+        _cboWidth.ItemsSource = _boardSizes;
         _cboWidth.SelectedIndex = GameConfig.DefaultBoardSizeIndex;   // 8
-        _cboWidth.MinWidth      = 55;
+        _cboWidth.MinWidth = 55;
 
-        _cboHeight.ItemsSource   = _boardSizes;
+        _cboHeight.ItemsSource = _boardSizes;
         _cboHeight.SelectedIndex = GameConfig.DefaultBoardSizeIndex;  // 8
-        _cboHeight.MinWidth      = 55;
+        _cboHeight.MinWidth = 55;
 
-        Grid.SetColumn(playersLabel,   0);
+        Grid.SetColumn(playersLabel, 0);
         Grid.SetColumn(_cboPlayerCount, 1);
         Grid.SetColumn(boardSizeLabel, 3);
-        Grid.SetColumn(_cboWidth,      4);
-        Grid.SetColumn(xLabel,         5);
-        Grid.SetColumn(_cboHeight,     6);
+        Grid.SetColumn(_cboWidth, 4);
+        Grid.SetColumn(xLabel, 5);
+        Grid.SetColumn(_cboHeight, 6);
 
         topRow.Children.Add(playersLabel);
         topRow.Children.Add(_cboPlayerCount);
@@ -125,10 +125,10 @@ internal sealed class NewGameDialog : Window
         {
             var border = new Border
             {
-                BorderBrush     = Brushes.White,
+                BorderBrush = Brushes.White,
                 BorderThickness = new Thickness(1),
-                CornerRadius    = new CornerRadius(4),
-                Padding         = new Thickness(8, 6),
+                CornerRadius = new CornerRadius(4),
+                Padding = new Thickness(8, 6),
             };
 
             var rowGrid = new Grid();
@@ -140,14 +140,14 @@ internal sealed class NewGameDialog : Window
             var nameBox = new TextBox { Text = defaultName, Watermark = defaultName };
             var typeCombo = new ComboBox
             {
-                ItemsSource   = new[] { "Human", "Computer" },
+                ItemsSource = new[] { "Human", "Computer" },
                 SelectedIndex = i == 0 ? 0 : 1,
-                MinWidth      = 110,
+                MinWidth = 110,
             };
 
             var colorCombo = CreateColorCombo(i);
 
-            Grid.SetColumn(nameBox,   0);
+            Grid.SetColumn(nameBox, 0);
             Grid.SetColumn(typeCombo, 1);
             Grid.SetColumn(colorCombo, 2);
 
@@ -158,15 +158,15 @@ internal sealed class NewGameDialog : Window
             var headerStack = new StackPanel { Spacing = 4 };
             headerStack.Children.Add(new TextBlock
             {
-                Text       = $"Player {i + 1}",
+                Text = $"Player {i + 1}",
                 FontWeight = FontWeight.SemiBold,
-                Margin     = new Thickness(0, 0, 0, 4),
+                Margin = new Thickness(0, 0, 0, 4),
             });
             headerStack.Children.Add(rowGrid);
             border.Child = headerStack;
 
-            _nameBoxes[i]    = nameBox;
-            _typeSelects[i]  = typeCombo;
+            _nameBoxes[i] = nameBox;
+            _typeSelects[i] = typeCombo;
             _playerBorders[i] = border;
             outerStack.Children.Add(border);
         }
@@ -174,15 +174,15 @@ internal sealed class NewGameDialog : Window
         // ── Button row ──────────────────────────────────────────────────────
         var buttonRow = new StackPanel
         {
-            Orientation         = Orientation.Horizontal,
+            Orientation = Orientation.Horizontal,
             HorizontalAlignment = HorizontalAlignment.Center,
-            Spacing             = 12,
-            Margin              = new Thickness(0, 4, 0, 0),
+            Spacing = 12,
+            Margin = new Thickness(0, 4, 0, 0),
         };
 
-        var startBtn  = new Button { Content = "Start",  MinWidth = 120 };
+        var startBtn = new Button { Content = "Start", MinWidth = 120 };
         var cancelBtn = new Button { Content = "Cancel", MinWidth = 120 };
-        startBtn.Click  += StartButton_Click;
+        startBtn.Click += StartButton_Click;
         cancelBtn.Click += (_, _) => Close(null);
 
         buttonRow.Children.Add(startBtn);
@@ -207,16 +207,16 @@ internal sealed class NewGameDialog : Window
 
                 var panel = new StackPanel
                 {
-                    Orientation         = Orientation.Horizontal,
-                    Spacing             = 6,
-                    VerticalAlignment   = VerticalAlignment.Center,
+                    Orientation = Orientation.Horizontal,
+                    Spacing = 6,
+                    VerticalAlignment = VerticalAlignment.Center,
                 };
                 panel.Children.Add(new Border
                 {
-                    Width           = 20,
-                    Height          = 14,
-                    Background      = new SolidColorBrush(new Color(255, item.Color.Red, item.Color.Green, item.Color.Blue)),
-                    BorderBrush     = Brushes.Black,
+                    Width = 20,
+                    Height = 14,
+                    Background = new SolidColorBrush(new Color(255, item.Color.Red, item.Color.Green, item.Color.Blue)),
+                    BorderBrush = Brushes.Black,
                     BorderThickness = new Thickness(1),
                 });
                 panel.Children.Add(new TextBlock { Text = item.Name });
@@ -226,7 +226,7 @@ internal sealed class NewGameDialog : Window
 
         _colorSelects[playerIndex] = combo;
 
-        combo.ItemsSource   = _availableColors;
+        combo.ItemsSource = _availableColors;
         combo.SelectedIndex = playerIndex < _availableColors.Length ? playerIndex : 0;
         combo.SelectionChanged += (s, _) => OnColorChanged((ComboBox)s!);
 
@@ -236,9 +236,9 @@ internal sealed class NewGameDialog : Window
     private static TextBlock Label(string text, Thickness? margin = null)
         => new TextBlock
         {
-            Text                = text,
-            VerticalAlignment   = VerticalAlignment.Center,
-            Margin              = margin ?? new Thickness(0),
+            Text = text,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = margin ?? new Thickness(0),
         };
 
     private void CboPlayerCount_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -290,12 +290,12 @@ internal sealed class NewGameDialog : Window
     internal NewGameOptions GetCurrentOptions()
     {
         int playerCount = int.Parse((string)_cboPlayerCount.SelectedItem!);
-        int boardWidth  = int.Parse((string)_cboWidth.SelectedItem!);
+        int boardWidth = int.Parse((string)_cboWidth.SelectedItem!);
         int boardHeight = int.Parse((string)_cboHeight.SelectedItem!);
 
         var options = new NewGameOptions
         {
-            BoardWidth  = boardWidth,
+            BoardWidth = boardWidth,
             BoardHeight = boardHeight,
         };
 
@@ -304,8 +304,8 @@ internal sealed class NewGameDialog : Window
             var colorItem = (ColorItem)_colorSelects[i].SelectedItem!;
             options.Players.Add(new Player
             {
-                Name      = _nameBoxes[i].Text ?? GameConfig.DefaultPlayerNames[i],
-                Type      = _typeSelects[i].SelectedIndex == 0 ? PlayerType.Human : PlayerType.Computer,
+                Name = _nameBoxes[i].Text ?? GameConfig.DefaultPlayerNames[i],
+                Type = _typeSelects[i].SelectedIndex == 0 ? PlayerType.Human : PlayerType.Computer,
                 ColorItem = colorItem,
             });
         }

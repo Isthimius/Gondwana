@@ -1,4 +1,4 @@
-﻿using Gondwana.Logging;
+using Gondwana.Logging;
 using Gondwana.Rendering;
 using Gondwana.Scenes;
 using Gondwana.Widgets;

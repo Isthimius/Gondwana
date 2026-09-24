@@ -1,4 +1,4 @@
-﻿using Gondwana.Drawing.Coordinates;
+using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Input.Gamepad;
@@ -104,7 +104,7 @@ public class Game : IDisposable
     {
         // Implementation for creating sprites goes here
         var tilesheet = TilesheetRegistry.Instance.GetAll()["rooster"];
-        
+
         var sprite1 = SpriteManager.Instance.CreateSprite(Scene[0], tilesheet[0, 0], "rooster_1");
         sprite1.Visible = true;
         sprite1.CollisionsEnabled = true;

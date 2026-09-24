@@ -1,4 +1,4 @@
-﻿using Gondwana.Assets;
+using Gondwana.Assets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;

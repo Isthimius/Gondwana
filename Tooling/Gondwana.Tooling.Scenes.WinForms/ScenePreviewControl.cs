@@ -471,18 +471,18 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
             int maxCells = 20000;
             int count = 0;
             for (int y = 0; y < layer.Rows && count < maxCells; y++)
-            for (int x = 0; x < layer.Columns && count < maxCells; x++, count++)
-            {
-                var points = TileOutline(projection, layer, x, y)
-                    .Select(ToScreen)
-                    .ToArray();
+                for (int x = 0; x < layer.Columns && count < maxCells; x++, count++)
+                {
+                    var points = TileOutline(projection, layer, x, y)
+                        .Select(ToScreen)
+                        .ToArray();
 
-                if (points.Length >= 3)
-                    graphics.DrawPolygon(gridPen, points);
-                else
-                    graphics.DrawRectangle(gridPen, Rectangle.Round(ToScreen(
-                        TileBounds(projection, layer, x, y))));
-            }
+                    if (points.Length >= 3)
+                        graphics.DrawPolygon(gridPen, points);
+                    else
+                        graphics.DrawRectangle(gridPen, Rectangle.Round(ToScreen(
+                            TileBounds(projection, layer, x, y))));
+                }
         }
 
         if (ReferenceEquals(layer, _selectedLayer) &&

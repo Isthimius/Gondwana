@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Rendering;
+namespace Gondwana.Rendering;
 
 /// <summary>
 /// Provides data for the <see cref="RenderSurfaceAdapterBase.Resized"/> event.

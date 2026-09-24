@@ -314,9 +314,9 @@ public sealed class SplashScreen : WidgetBase
         }
         catch (OperationCanceledException)
             when (_disposed)
-            {
-                return;
-            }
+        {
+            return;
+        }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Unexpected error during SplashScreen hold phase");

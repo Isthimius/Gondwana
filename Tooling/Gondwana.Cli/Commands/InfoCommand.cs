@@ -28,11 +28,11 @@ internal sealed class InfoCommand : Command
         }
 
         var projectName = Path.GetFileNameWithoutExtension(csproj);
-        var framework   = GetProperty(doc, "TargetFramework") ?? GetProperty(doc, "TargetFrameworks") ?? "unknown";
+        var framework = GetProperty(doc, "TargetFramework") ?? GetProperty(doc, "TargetFrameworks") ?? "unknown";
         var gondwanaVer = GetGondwanaVersion(doc);
-        var adapters    = GetGondwanaAdapters(doc);
-        var assetFiles  = FindAssetFiles(Path.GetDirectoryName(csproj)!);
-        var host        = DetectHost(adapters);
+        var adapters = GetGondwanaAdapters(doc);
+        var assetFiles = FindAssetFiles(Path.GetDirectoryName(csproj)!);
+        var host = DetectHost(adapters);
 
         AnsiConsole.MarkupLine($"[bold]Project:[/]    {Markup.Escape(projectName)}");
         AnsiConsole.MarkupLine($"[bold]Framework:[/]  {Markup.Escape(framework)}");

@@ -169,7 +169,7 @@ public class DirectComposite : IDirectCompositeChild, IDirectCompositeContainer
     /// Gets the union of all visible descendants' world-space bounds.
     /// </summary>
     public Rectangle WorldBounds => GetBounds(static child => child.WorldBounds);
-    
+
     #endregion public properties
 
     #region public methods

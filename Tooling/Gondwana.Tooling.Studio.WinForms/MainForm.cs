@@ -51,8 +51,11 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         ForeColor = Color.Gainsboro;
         Workspace = new DockPanel
         {
-            Dock = DockStyle.Fill, Theme = _theme, DocumentStyle = DocumentStyle.DockingWindow,
-            DockLeftPortion = 250, DockBottomPortion = 130
+            Dock = DockStyle.Fill,
+            Theme = _theme,
+            DocumentStyle = DocumentStyle.DockingWindow,
+            DockLeftPortion = 250,
+            DockBottomPortion = 130
         };
         _layout = new DockLayoutPersistence(Workspace, "shell");
         _plugins = new StudioPluginHost(_output.Log);
@@ -252,7 +255,8 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         using var dialog = new SaveFileDialog
         {
             Filter = model.Kind == "asset" ? "Asset files|*.gaf;*.zip" : $"Gondwana {model.Kind}|*.{model.Extension}",
-            DefaultExt = model.Extension, AddExtension = true,
+            DefaultExt = model.Extension,
+            AddExtension = true,
             InitialDirectory = model.Path() is { } path ? Path.GetDirectoryName(path) : Browser.WorkingDirectory,
             FileName = model.Path() is { } name ? Path.GetFileName(name) : $"Untitled.{model.Extension}"
         };

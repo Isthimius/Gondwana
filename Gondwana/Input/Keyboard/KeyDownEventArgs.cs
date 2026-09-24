@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Input.Keyboard;
+namespace Gondwana.Input.Keyboard;
 
 /// <summary>
 /// Provides data for keyboard key events, including information about the key that was pressed,
