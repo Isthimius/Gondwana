@@ -22,8 +22,10 @@ public sealed class SdlGamepadManager : IGamepadManager<SdlGamepadAdapter>
 
     private SdlGamepadManager()
     {
-        SDL_Init(SDL_INIT_GAMECONTROLLER);
-        SDL_GameControllerEventState(SDL_DISABLE); // Polling only
+        if (SDL_Init(SDL_INIT_GAMECONTROLLER) < 0)
+            throw new InvalidOperationException($"SDL gamepad initialization failed: {SDL_GetError()}");
+
+        _ = SDL_GameControllerEventState(SDL_DISABLE); // Polling only
 
         Engine.Logger.LogInformation("SdlGamepadManager initialized. Polling enabled.");
     }

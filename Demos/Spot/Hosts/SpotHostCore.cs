@@ -160,7 +160,7 @@ internal sealed class SpotHostCore
         Logging.EngineLogger.SetLogLevel(LogLevel.Information);
         Gondwana.Engine.Instance.CPSCalculated += (args) =>
         {
-            Engine.Logger.LogInformation(args.ToString());
+            Engine.Logger.LogInformation("{CyclesPerSecond}", args);
         };
 
         var scene = new Scene();

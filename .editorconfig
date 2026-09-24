@@ -39,3 +39,89 @@ resharper_csharp_wrap_arguments_style = chop_if_long
 resharper_csharp_max_invocation_arguments_on_line = 3
 resharper_csharp_wrap_after_invocation_lpar = true
 resharper_csharp_wrap_before_invocation_rpar = false
+
+# Analyzer policy
+#
+# The .NET 8 recommended analyzer set is enabled repository-wide in
+# Directory.Build.props. Existing API-shape, naming, globalization and
+# micro-performance findings remain visible to developers without producing
+# build noise. Correctness/lifecycle rules below are enforced in CI.
+
+# Existing design/naming conventions and modernization opportunities: advisory.
+dotnet_diagnostic.CA1036.severity = suggestion
+dotnet_diagnostic.CA1051.severity = suggestion
+dotnet_diagnostic.CA1305.severity = suggestion
+dotnet_diagnostic.CA1310.severity = suggestion
+dotnet_diagnostic.CA1507.severity = suggestion
+dotnet_diagnostic.CA1510.severity = suggestion
+dotnet_diagnostic.CA1512.severity = suggestion
+dotnet_diagnostic.CA1513.severity = suggestion
+dotnet_diagnostic.CA1707.severity = suggestion
+dotnet_diagnostic.CA1708.severity = suggestion
+dotnet_diagnostic.CA1711.severity = suggestion
+dotnet_diagnostic.CA1716.severity = suggestion
+dotnet_diagnostic.CA1725.severity = suggestion
+dotnet_diagnostic.CA1805.severity = suggestion
+dotnet_diagnostic.CA1822.severity = suggestion
+dotnet_diagnostic.CA1826.severity = suggestion
+dotnet_diagnostic.CA1836.severity = suggestion
+dotnet_diagnostic.CA1848.severity = suggestion
+dotnet_diagnostic.CA1852.severity = suggestion
+dotnet_diagnostic.CA1854.severity = suggestion
+dotnet_diagnostic.CA1859.severity = suggestion
+dotnet_diagnostic.CA1860.severity = suggestion
+dotnet_diagnostic.CA1861.severity = suggestion
+dotnet_diagnostic.CA1865.severity = suggestion
+dotnet_diagnostic.CA1869.severity = suggestion
+dotnet_diagnostic.CA2211.severity = suggestion
+dotnet_diagnostic.CA2253.severity = suggestion
+
+# High-signal correctness/lifecycle rules: fail CI for new violations.
+dotnet_diagnostic.CA1806.severity = error
+dotnet_diagnostic.CA1816.severity = error
+dotnet_diagnostic.CA2012.severity = error
+dotnet_diagnostic.CA2016.severity = error
+dotnet_diagnostic.CA2215.severity = error
+
+# Keep these useful checks as warnings. Existing intentional cases are narrowed
+# below instead of disabling the rule repository-wide.
+dotnet_diagnostic.CA1001.severity = warning
+dotnet_diagnostic.CA2201.severity = warning
+dotnet_diagnostic.CA2254.severity = warning
+
+# Intentional lifecycle/deferred-disposal patterns.
+[Gondwana/Drawing/Sprites/Sprite.cs]
+dotnet_diagnostic.CA1816.severity = suggestion
+dotnet_diagnostic.CA2215.severity = suggestion
+
+[Gondwana/Scenes/Scene.cs]
+dotnet_diagnostic.CA2215.severity = suggestion
+
+# Event handlers deliberately launch operations that own their exception
+# reporting; synchronous browser lifecycle hooks cannot await JS disposal.
+[Gondwana.Widgets/Controls/HyperlinkWidget.cs]
+dotnet_diagnostic.CA2012.severity = suggestion
+
+[Gondwana.Blazor/**/*.cs]
+dotnet_diagnostic.CA2012.severity = suggestion
+
+[Gondwana.Blazor.Hosting/**/*.cs]
+dotnet_diagnostic.CA2012.severity = suggestion
+
+# Test-only finalizer suppression and deliberately broad exception doubles.
+[Testing/**/*.cs]
+dotnet_diagnostic.CA1816.severity = suggestion
+dotnet_diagnostic.CA2201.severity = suggestion
+
+# Framework-owned demo/plugin lifecycles dispose their resources through
+# close/detach/project-close callbacks rather than IDisposable.
+[Demos/**/*.cs]
+dotnet_diagnostic.CA1001.severity = suggestion
+dotnet_diagnostic.CA1806.severity = suggestion
+
+[Tooling/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/**/*.cs]
+dotnet_diagnostic.CA1001.severity = suggestion
+
+# Native allocation failure is intentionally surfaced as OutOfMemoryException.
+[Gondwana.Video/VideoDecodeBuffer.cs]
+dotnet_diagnostic.CA2201.severity = suggestion
