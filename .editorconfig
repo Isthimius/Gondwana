@@ -108,6 +108,12 @@ dotnet_diagnostic.CA2012.severity = suggestion
 [Gondwana.Blazor.Hosting/**/*.cs]
 dotnet_diagnostic.CA2012.severity = suggestion
 
+# BlazorGameHostBase lives at the project root; the nested glob above does not
+# cover it. Its synchronous lifecycle overrides intentionally fire-and-forget
+# JS interop because their base contracts cannot be awaited.
+[Gondwana.Blazor.Hosting/BlazorGameHostBase.cs]
+dotnet_diagnostic.CA2012.severity = suggestion
+
 # Test-only finalizer suppression and deliberately broad exception doubles.
 [Testing/**/*.cs]
 dotnet_diagnostic.CA1816.severity = suggestion
@@ -120,6 +126,9 @@ dotnet_diagnostic.CA1001.severity = suggestion
 dotnet_diagnostic.CA1806.severity = suggestion
 
 [Tooling/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/**/*.cs]
+dotnet_diagnostic.CA1001.severity = suggestion
+
+[Tooling/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/ProjectDiagnosticsPlugin.cs]
 dotnet_diagnostic.CA1001.severity = suggestion
 
 # Native allocation failure is intentionally surfaced as OutOfMemoryException.
