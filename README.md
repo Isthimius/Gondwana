@@ -102,7 +102,7 @@ The plugin is designed to ground AI assistance in the current engine instead of 
 
 See **[Using Gondwana with ChatGPT and Codex](https://github.com/Isthimius/Gondwana/wiki/Using-Gondwana-with-ChatGPT-and-Codex)**.
 
-<img width="49%" alt="image" src="https://github.com/user-attachments/assets/ef37a6d8-73f0-4ebc-bfe7-acd2ea357d95" />
+<img width="725px" alt="image" src="https://github.com/user-attachments/assets/6464afec-eb3f-4402-932c-a3179ab229b8" />
 
 ---
 
@@ -184,9 +184,9 @@ Gondwana is deliberately an engine and framework, not an all-encompassing visual
 
 ### Runtime architecture
 
-Gondwana uses a central `Engine` cycle to advance timing, input, movement, animation, and game state. Active `View` instances then project and composite their `SceneLayer` contents through cameras and viewports into a platform backbuffer.
+Gondwana uses a central `Engine` cycle to advance timing, input, movement, animation, and game state. Active `View` instances project and composite `SceneLayer` contents through cameras and viewports into a platform backbuffer.
 
-CPU bitmap backbuffers support world-space dirty-region rendering, while GPU-backed surfaces render the full viewport. WinForms, Avalonia, and Blazor adapters handle presentation and native input at the edges, leaving the core engine platform-agnostic.
+Platform adapters for WinForms, Avalonia, and Blazor handle presentation and native input at the edges, leaving the core engine platform-agnostic.
 
 ```text
 Engine
@@ -234,16 +234,6 @@ Gondwana's development tools sit above the same public engine APIs and definitio
 Studio and the standalone tools use the same definition models, serializers, and reusable editor controls. They do not maintain a second Studio-specific representation of Gondwana content.
 
 The AI plugin is similarly additive: it provides current Gondwana-specific context and workflows without changing the runtime architecture or making AI a dependency of a Gondwana game.
-
-### Render resolution and window resizing
-
-`Engine.Instance.Configuration.RenderScale` establishes the logical Backbuffer resolution
-(default `1f`; values above one enable supersampling). Window/canvas resize now fits the existing
-Backbuffer with centered letterboxing instead of resizing it. Explicitly changing RenderScale
-requests a new resolution from the current adapter size. PresentationScale is read-only, and
-RenderScalingFilter selects Linear (default) or NearestNeighbor. See the
-[viewport scaling migration and validation notes](docs/viewport-scaling.md) for input coordinates,
-backend behavior, and Bitmap performance measurements.
 
 ## 📦 Packages
 
