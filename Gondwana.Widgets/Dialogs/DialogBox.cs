@@ -254,6 +254,7 @@ public abstract class DialogBox : DraggableContainerWidget
         }
 
         base.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     #endregion exposed methods and hooks

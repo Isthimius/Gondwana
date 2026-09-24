@@ -510,6 +510,7 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
             SceneLayer.ColliderRegistry.Unregister(_collider);
 
         _collider = null;
+        GC.SuppressFinalize(this);
     }
 
     #endregion IDisposable Members

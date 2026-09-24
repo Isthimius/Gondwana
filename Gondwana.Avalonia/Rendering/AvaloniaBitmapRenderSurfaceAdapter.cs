@@ -226,5 +226,7 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
 
         _bitmap?.Dispose();
         _bitmap = null;
+
+        GC.SuppressFinalize(this);
     }
 }
