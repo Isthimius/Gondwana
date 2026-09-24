@@ -47,6 +47,12 @@ resharper_csharp_wrap_before_invocation_rpar = false
 # micro-performance findings remain visible to developers without producing
 # build noise. Correctness/lifecycle rules below are enforced in CI.
 
+# Dead-code/usings hygiene. These are warnings in the IDE/build and are also
+# verified explicitly by CI through dotnet format style.
+dotnet_diagnostic.IDE0005.severity = warning
+dotnet_diagnostic.IDE0059.severity = warning
+dotnet_diagnostic.IDE0051.severity = warning
+
 # Existing design/naming conventions and modernization opportunities: advisory.
 dotnet_diagnostic.CA1036.severity = suggestion
 dotnet_diagnostic.CA1051.severity = suggestion

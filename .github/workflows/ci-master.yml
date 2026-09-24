@@ -74,6 +74,9 @@ jobs:
       - name: Verify formatting
         run: dotnet format whitespace Gondwana.sln --verify-no-changes --no-restore --verbosity minimal
 
+      - name: Verify dead-code and using cleanup
+        run: dotnet format style Gondwana.sln --verify-no-changes --no-restore --severity warn --diagnostics IDE0005 IDE0059 IDE0051 --verbosity minimal
+
       - name: Build
         run: dotnet build --configuration Release --no-restore --nologo /p:EnableWindowsTargeting=true
 
