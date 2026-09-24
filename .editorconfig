@@ -1,0 +1,41 @@
+root = true
+
+[*]
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.cs]
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+# Keep the existing Gondwana C# brace and spacing conventions.
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_space_after_comma = true
+csharp_space_before_comma = false
+csharp_space_around_binary_operators = before_and_after
+csharp_space_between_method_declaration_name_and_open_parenthesis = false
+csharp_space_between_method_call_name_and_opening_parenthesis = false
+csharp_preserve_single_line_blocks = true
+csharp_preserve_single_line_statements = true
+
+# Keep using directives deterministic without forcing grouping changes.
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+
+# JetBrains/ReSharper/Rider extension settings.
+# Up to three parameters/arguments may stay on one line. Four or more are
+# chopped so each parameter/argument is placed on its own line.
+resharper_csharp_wrap_parameters_style = chop_if_long
+resharper_csharp_max_formal_parameters_on_line = 3
+resharper_csharp_wrap_after_declaration_lpar = true
+resharper_csharp_wrap_before_declaration_rpar = false
+
+resharper_csharp_wrap_arguments_style = chop_if_long
+resharper_csharp_max_invocation_arguments_on_line = 3
+resharper_csharp_wrap_after_invocation_lpar = true
+resharper_csharp_wrap_before_invocation_rpar = false

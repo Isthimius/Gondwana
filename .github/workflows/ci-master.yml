@@ -71,6 +71,9 @@ jobs:
         # configuration, preventing NETSDK1047 errors in the subsequent --no-restore build.
         run: dotnet restore --nologo /p:Configuration=Release /p:EnableWindowsTargeting=true
 
+      - name: Verify formatting
+        run: dotnet format whitespace Gondwana.sln --verify-no-changes --no-restore --verbosity minimal
+
       - name: Build
         run: dotnet build --configuration Release --no-restore --nologo /p:EnableWindowsTargeting=true
 
