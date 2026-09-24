@@ -296,7 +296,7 @@ _Gondwana is actively evolving, with an emphasis on strengthening the engine, au
 
 * [x] WebAssembly support through Blazor
 * [x] Integrated Gondwana Studio authoring environment
-* [x] First-class GAF, GTS, GANI, GSND, GSCN, and GSPR authoring
+* [x] First-class visual authoring
 * [x] Full platformer sample
 * [x] WebGL-backed Blazor rendering adapter
 * [x] External content import tooling for TMX/TSX tile maps, Godot 4 resources, and Aseprite assets
