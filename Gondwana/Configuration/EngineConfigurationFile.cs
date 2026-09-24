@@ -118,5 +118,7 @@ public partial class EngineConfigurationFile : IDisposable
     {
         if (AutoSave)
             Save();
+
+        GC.SuppressFinalize(this);
     }
 }

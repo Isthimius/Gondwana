@@ -505,6 +505,8 @@ public class DirectComposite : IDirectCompositeChild, IDirectCompositeContainer
         _localOffsetPx.Clear();
         ResetTargetWhenEmpty();
         Disposing = null;
+
+        GC.SuppressFinalize(this);
     }
 
     #endregion public methods

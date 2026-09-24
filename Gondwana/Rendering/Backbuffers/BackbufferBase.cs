@@ -511,5 +511,7 @@ public abstract class BackbufferBase : IDisposable
         FogPaint.Dispose();
         GridLinePaint.Dispose();
         CollisionBoxPaint.Dispose();
+
+        GC.SuppressFinalize(this);
     }
 }

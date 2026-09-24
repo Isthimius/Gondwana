@@ -320,5 +320,6 @@ public class GpuBackbuffer : BackbufferBase
         _disposed = true;
         base.Dispose();
         DisposeSurface();
+        GC.SuppressFinalize(this);
     }
 }
