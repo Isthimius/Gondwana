@@ -4,7 +4,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Windows.Forms;
 using Gondwana.Audio;
 using Gondwana.Demos.Spot.Game;
 using Gondwana.Drawing;
@@ -18,7 +17,6 @@ using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
 using Gondwana.Widgets.Overlays;
-using Gondwana.WinForms.Input.Keyboard;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
@@ -38,6 +36,8 @@ internal sealed class SpotHostCore
     private RenderSurfaceHostBase SurfaceHost => _ctx.SurfaceHost;
     private int SurfaceWidth => _ctx.SurfaceWidth;
     private int SurfaceHeight => _ctx.SurfaceHeight;
+
+    private const int ScoreToggleKey = 192; // Backtick / tilde virtual-key code.
 
     private bool _initialGameStarted = false;
     private bool _handleHumanInput = false;
@@ -203,7 +203,7 @@ internal sealed class SpotHostCore
             return;
 
         Engine.Input.KeyboardEventPoller.KeyDown += KeyboardEventPoller_KeyDown;
-        Engine.Input.KeyboardEventPoller.StartMonitoringKey((int)Keys.Oemtilde);
+        Engine.Input.KeyboardEventPoller.StartMonitoringKey(ScoreToggleKey);
     }
 
     internal void UnhookEvents()
@@ -382,15 +382,8 @@ internal sealed class SpotHostCore
         if (args.KeyAction != KeyAction.Pressed)
             return;
 
-        var key = WinFormsKeyboardAdapter.GetKeyFromString(args.KeyConfig.Key);
-        switch (key)
-        {
-            case Keys.Oemtilde:
-                SetScoreVisible(!_showScores);
-                break;
-            default:
-                break;
-        }
+        if (int.TryParse(args.KeyConfig.Key, out int key) && key == ScoreToggleKey)
+            SetScoreVisible(!_showScores);
     }
 
     private void MouseEventPoller_MouseEvent(Gondwana.Input.Mouse.MouseEventArgs args)
