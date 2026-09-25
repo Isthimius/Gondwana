@@ -47,7 +47,7 @@ dotnet run
 For a guided introduction, see **[Make Your First Game in 30 Minutes with Gondwana](https://github.com/Isthimius/Gondwana/wiki/Make-Your-First-Game-in-30-Minutes)**.
 
 > [!NOTE]
-> Gondwana is actively developed. Its public API is usable today, but breaking changes may occur as the engine and tooling mature.
+> Gondwana is actively developed. Its public API is usable today, but breaking changes may occur between versions as the engine and tooling mature.
 
 ## Choose Your Workflow
 
