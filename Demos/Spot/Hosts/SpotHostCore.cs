@@ -38,8 +38,8 @@ internal sealed class SpotHostCore
     private int SurfaceHeight => _ctx.SurfaceHeight;
 
     private const int ScoreToggleKey = 9; // Tab virtual-key code.
+    private const int PersistentMenuHeight = 32;
 
-    private bool _initialGameStarted = false;
     private bool _handleHumanInput = false;
     private int _dialogOpen = 0; // 0 = not open; 1 = open/pending. Use Interlocked for thread-safe access.
     private bool _showScores = true;
@@ -173,6 +173,7 @@ internal sealed class SpotHostCore
             coordinateSystem: CoordinateSystemTypes.Orthogonal);
 
         sceneLayer1.ShowGridLines = false;
+        sceneLayer1.OriginPx = new Point(0, -PersistentMenuHeight);
 
         return scene;
     }
@@ -354,14 +355,20 @@ internal sealed class SpotHostCore
         _pendingComputerMoveTimer?.Dispose();
         _pendingComputerMoveTimer = null;
 
-        _particleSurface = null;    // pre-null before ClearAll() disposes it, to avoid a double-dispose via DisposeParticleSurface()
-        Engine.Managers.DirectDrawings.ClearAll();
+        ClearGamePresentation();
         Engine.Managers.Sprites.Clear();
         Scene.RemoveAllLayers();
 
         SetPlayerFrames(options.Players);
 
         var newGameResult = SpotGame.NewGame(options.BoardWidth, options.BoardHeight, options.Players.ToArray());
+
+        newGameResult.Field.OriginPx = new Point(
+            newGameResult.Field.OriginPx.X,
+            newGameResult.Field.OriginPx.Y - PersistentMenuHeight);
+        newGameResult.BackgroundField.OriginPx = new Point(
+            newGameResult.BackgroundField.OriginPx.X,
+            newGameResult.BackgroundField.OriginPx.Y - PersistentMenuHeight);
 
         Scene.AddLayer(newGameResult.Field);
         Scene.AddLayer(newGameResult.BackgroundField);
@@ -391,12 +398,6 @@ internal sealed class SpotHostCore
         if (Volatile.Read(ref _dialogOpen) != 0)
             return;
 
-        if (!_initialGameStarted && args.LeftButtonJustPressed)
-        {
-            OpenNewGameDialog(_lastNewGameOptions);
-            return;
-        }
-
         if (!_handleHumanInput)
             return;
 
@@ -424,6 +425,45 @@ internal sealed class SpotHostCore
                     SpotGame.ExecuteMove(playerMovement.Value);
             }
         }
+    }
+
+    private void ClearGamePresentation()
+    {
+        // Preserve persistent view-space UI such as the MenuBarWidget. Only Spot's
+        // scene-layer presentation and tracked game HUD drawings belong to a game reset.
+        _particleSurface = null;
+
+        var sceneDrawings = Engine.Managers.DirectDrawings.DirectDrawings
+            .Where(drawing => drawing.Mode == DirectDrawingMode.SceneLayer)
+            .ToArray();
+
+        foreach (var drawing in sceneDrawings)
+            drawing.Dispose();
+
+        _player1Text?.Dispose();
+        _player1Text = null;
+        _player1Rectangle?.Dispose();
+        _player1Rectangle = null;
+
+        _player2Text?.Dispose();
+        _player2Text = null;
+        _player2Rectangle?.Dispose();
+        _player2Rectangle = null;
+
+        _player3Text?.Dispose();
+        _player3Text = null;
+        _player3Rectangle?.Dispose();
+        _player3Rectangle = null;
+
+        _player4Text?.Dispose();
+        _player4Text = null;
+        _player4Rectangle?.Dispose();
+        _player4Rectangle = null;
+
+        _gameMessageText?.Dispose();
+        _gameMessageText = null;
+        _gameMessageRectangle?.Dispose();
+        _gameMessageRectangle = null;
     }
 
     private void SetPlayerFrames(List<Player> players)
@@ -588,7 +628,7 @@ internal sealed class SpotHostCore
         // upper left
         _player1Text = new TextBlock(SurfaceHost,
                                      SurfaceHost.ViewManager.Views[0],
-                                     new Rectangle(10, 10, 200, 50));
+                                     new Rectangle(10, PersistentMenuHeight + 10, 200, 50));
         _player1Text.SetFont(_font, 24, 12)
                     .SetColors(SpotGame.Players[0].ColorItem.TextColor, SKColors.Transparent)
                     .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
@@ -630,7 +670,7 @@ internal sealed class SpotHostCore
             // upper right
             _player3Text = new TextBlock(SurfaceHost,
                                          SurfaceHost.ViewManager.Views[0],
-                                         new Rectangle(SurfaceWidth - 210, 10, 200, 50));
+                                         new Rectangle(SurfaceWidth - 210, PersistentMenuHeight + 10, 200, 50));
             _player3Text.SetFont(_font, 24, 12)
                         .SetColors(SpotGame.Players[2].ColorItem.TextColor, SKColors.Transparent)
                         .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
@@ -757,7 +797,11 @@ internal sealed class SpotHostCore
 
         _gameMessageText = new TextBlock(SurfaceHost,
                                          SurfaceHost.ViewManager.Views[0],
-                                         new Rectangle(SurfaceWidth / 2 - 180, SurfaceHeight / 2 - 40, 360, 80));
+                                         new Rectangle(
+                                             SurfaceWidth / 2 - 180,
+                                             PersistentMenuHeight + ((SurfaceHeight - PersistentMenuHeight) / 2) - 40,
+                                             360,
+                                             80));
         _gameMessageText.SetFont(_font, 48, 16)
                         .SetColors(primaryTextColor.ToSKColor(), SKColors.Transparent)
                         .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
@@ -832,8 +876,6 @@ internal sealed class SpotHostCore
     private void OnGameStarted(SpotGame game)
     {
         Engine.Logger.LogDebug("Game started with players: {0}", string.Join(", ", game.Players.Select(p => p.Name)));
-
-        _initialGameStarted = true;
 
         if (MusicEnabled && !_music.IsPlaying)
             _music.Play();
