@@ -1,10 +1,19 @@
 using System;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
+using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gondwana.Configuration;
 using Gondwana.Demos.Spot.Hosts;
+using Gondwana.Drawing.Direct;
+using Gondwana.Widgets.Controls;
+using Gondwana.Widgets.Dialogs;
 using Gondwana.Widgets.Menus;
 using Gondwana.WinForms.Rendering;
+using SkiaSharp;
 
 namespace Gondwana.Demos.Spot;
 
@@ -14,6 +23,10 @@ internal partial class GameWindow : Form
     private WinFormGpuRenderSurfaceControl? _gpuRenderSurface;
     private EngineConfigurationFile? _configFile;
     private MenuBarWidget? _menuBar;
+    private AboutBox? _aboutBox;
+    private SKImage? _aboutSpotLogo;
+    private SKImage? _aboutGondwanaLogo;
+    private SKTypeface? _aboutTypeface;
 
     private static readonly Size DefaultWindowSize = new(769, 769);
 
@@ -22,6 +35,7 @@ internal partial class GameWindow : Form
     private const string KeySoundEffects = "soundEffects";
     private const string KeyJiggle = "jiggle";
     private const string KeyClouds = "clouds";
+    private const string RepoUrl = "https://github.com/isthimius/gondwana";
     private const int GpuTargetFps = 0;
     private const int GpuMsaaSampleCount = 4;
 
@@ -125,6 +139,18 @@ internal partial class GameWindow : Form
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
         // Clean shutdown
+        _aboutBox?.Dispose();
+        _aboutBox = null;
+
+        _aboutSpotLogo?.Dispose();
+        _aboutSpotLogo = null;
+
+        _aboutGondwanaLogo?.Dispose();
+        _aboutGondwanaLogo = null;
+
+        _aboutTypeface?.Dispose();
+        _aboutTypeface = null;
+
         _menuBar?.Dispose();
         _menuBar = null;
 
@@ -232,7 +258,7 @@ internal partial class GameWindow : Form
                 "Help",
                 help => help.AddItem(
                     "About",
-                    () => BeginInvoke((Action)OpenAboutDialog),
+                    OpenAboutBox,
                     mnemonic: 'A'),
                 mnemonic: 'H');
 
@@ -279,9 +305,150 @@ internal partial class GameWindow : Form
         _gameHost?.Engine.EngineDispatcher.Post(() => _gameHost.SetCloudsEnabled(enabled));
     }
 
-    private void OpenAboutDialog()
+    private void OpenAboutBox()
     {
-        using var dialog = new AboutDialog();
-        dialog.ShowDialog(this);
+        if (_aboutBox is not null)
+        {
+            _aboutBox.Activate();
+            return;
+        }
+
+        if (_gpuRenderSurface is null)
+            return;
+
+        EnsureAboutResources();
+
+        var host = _gpuRenderSurface.Host;
+        var view = host.ViewManager.Views[0];
+        Rectangle viewport = view.Viewport.TargetRectPx;
+
+        // The former WinForms dialog used a 420x570 client area plus its native title bar.
+        // Keeping 420x606 here preserves nearly the same overall proportions while allowing
+        // the Widgets title bar to live inside the dialog bounds.
+        const int dialogWidth = 420;
+        const int dialogHeight = 606;
+        var bounds = new Rectangle(
+            viewport.Left + (viewport.Width - dialogWidth) / 2,
+            viewport.Top + (viewport.Height - dialogHeight) / 2,
+            dialogWidth,
+            dialogHeight);
+
+        var about = new AboutBox(
+            host,
+            view,
+            applicationName: "Spot!",
+            version: string.Empty,
+            description: "Built with Gondwana Game Engine",
+            logo: _aboutSpotLogo,
+            bounds: bounds,
+            nickname: "spot.about",
+            uriLauncher: new WinFormsExternalUriLauncher(),
+            hyperlinkUri: new Uri(RepoUrl),
+            hyperlinkText: "View Gondwana on GitHub");
+
+        _aboutBox = about;
+        about.Closed += _ => _aboutBox = null;
+
+        // Match the previous About window's black client area and square-edged,
+        // understated presentation rather than the stock generic dialog styling.
+        about.Panel.SetColor(Color.Black)
+                   .SetBorderColor(Color.FromArgb(255, 90, 90, 90))
+                   .SetCornerRadius(0f);
+        about.TitleBar.SetColor(Color.FromArgb(255, 32, 32, 32))
+                      .SetCornerRadius(0f);
+        about.TitleText.SetText("About Spot!")
+                       .SetColors(SKColors.White, SKColors.Transparent);
+
+        // Reuse the built-in logo slot for the large Spot artwork and size it to
+        // the same 360x240 region as the old PictureBox.
+        if (about.Logo is not null)
+        {
+            about.Logo.ScreenBounds = new Rectangle(bounds.Left + 30, bounds.Top + 36, 360, 240);
+            about.SetLocalOffset(about.Logo, new Vector2(30, 36));
+            about.Logo.SetScaleMode(DirectImage.ScaleMode.Fit);
+        }
+
+        // The stock AboutBox supports one logo. Add the former Gondwana logo as
+        // another owned DirectImage so the visual hierarchy remains unchanged.
+        var gondwanaLogo = new DirectImage(
+            _aboutGondwanaLogo!,
+            host,
+            view,
+            new Rectangle(bounds.Left + 110, bounds.Top + 231, 200, 200),
+            "spot.about.gondwanaLogo")
+            .SetScaleMode(DirectImage.ScaleMode.Fit);
+        gondwanaLogo.ZOrder = 10_002;
+        about.Add(gondwanaLogo);
+
+        // Repurpose the AboutBox header text for the same custom-font caption the
+        // WinForms dialog displayed near the bottom.
+        about.HeaderText.ScreenBounds = new Rectangle(bounds.Left, bounds.Top + 441, 420, 30);
+        about.SetLocalOffset(about.HeaderText, new Vector2(0, 441));
+        about.HeaderText.SetText("Built with Gondwana Game Engine")
+                        .SetFont(_aboutTypeface!, 21f, minSize: 16f)
+                        .SetColors(SKColors.White, SKColors.Transparent)
+                        .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
+                        .EnableWrapping(false);
+
+        about.VersionText.SetText(string.Empty);
+        about.DetailsText.SetText(string.Empty);
+
+        if (about.Hyperlink is not null)
+        {
+            about.Hyperlink.Label.ScreenBounds = new Rectangle(bounds.Left, bounds.Top + 486, 420, 25);
+            about.SetLocalOffset(about.Hyperlink, new Vector2(0, 486));
+            about.Hyperlink.Label.SetFont(SKTypeface.Default, 19f, minSize: 14f)
+                                 .SetColors(new SKColor(135, 206, 250), SKColors.Transparent)
+                                 .SetAlignment(SKTextAlign.Center, TextBlock.VerticalAlign.Center)
+                                 .EnableWrapping(false);
+        }
+
+        // Match the former 100x32 centered OK button.
+        about.OkButton.Background.ScreenBounds = new Rectangle(bounds.Left + 160, bounds.Top + 541, 100, 32);
+        about.OkButton.Label.ScreenBounds = new Rectangle(bounds.Left + 160, bounds.Top + 541, 100, 32);
+        about.SetLocalOffset(about.OkButton, new Vector2(160, 541));
+        about.OkButton.SetBackgroundColors(
+                         Color.FromArgb(255, 52, 52, 52),
+                         Color.FromArgb(255, 70, 70, 70),
+                         Color.FromArgb(255, 38, 38, 38))
+                      .SetTextColor(Color.White);
+
+        about.Show();
+        about.Activate();
+    }
+
+    private void EnsureAboutResources()
+    {
+        string assetsPath = Path.Combine(AppContext.BaseDirectory, "assets");
+
+        _aboutSpotLogo ??= LoadImage(Path.Combine(assetsPath, "spot.png"));
+        _aboutGondwanaLogo ??= LoadImage(Path.Combine(assetsPath, "gondwana-logo-text.png"));
+        _aboutTypeface ??= SKTypeface.FromFile(Path.Combine(assetsPath, "ArchitectsDaughter-Regular.ttf"))
+            ?? throw new InvalidOperationException("Failed to load the Spot About-box font.");
+    }
+
+    private static SKImage LoadImage(string path)
+    {
+        using SKData data = SKData.Create(path)
+            ?? throw new InvalidOperationException($"Failed to read About-box image: {path}");
+
+        return SKImage.FromEncodedData(data)
+            ?? throw new InvalidOperationException($"Failed to decode About-box image: {path}");
+    }
+
+    private sealed class WinFormsExternalUriLauncher : IExternalUriLauncher
+    {
+        public ValueTask OpenAsync(Uri uri, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = uri.AbsoluteUri,
+                UseShellExecute = true
+            });
+
+            return ValueTask.CompletedTask;
+        }
     }
 }
