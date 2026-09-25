@@ -11,7 +11,6 @@ namespace Gondwana.Demos.Spot;
 internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost, ISpotHostContext
 {
     private readonly SpotHostCore _spot;
-    private SpotWidgetHud? _widgetHud;
 
     internal SpotGpuGameHost(WinFormGpuRenderSurfaceControl renderSurface)
         : base(renderSurface)
@@ -39,10 +38,7 @@ internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost, ISpo
         => _spot.CreateInitialScene();
 
     protected override void OnSceneGraphCreated()
-    {
-        _spot.CreateSceneGraph();
-        _widgetHud = new SpotWidgetHud(RenderSurface.Host, _spot.SpotGame);
-    }
+        => _spot.CreateSceneGraph();
 
     protected override void CreateDirectDrawings()
     {
@@ -63,11 +59,7 @@ internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost, ISpo
         => _spot.OnKeyboardAdapterInitialized();
 
     protected override void UnhookEvents()
-    {
-        _widgetHud?.Dispose();
-        _widgetHud = null;
-        _spot.UnhookEvents();
-    }
+        => _spot.UnhookEvents();
 
     public void BeginPostSplashStartup()
         => _spot.BeginPostSplashStartup();
