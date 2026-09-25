@@ -140,3 +140,18 @@ dotnet_diagnostic.CA1001.severity = suggestion
 # Native allocation failure is intentionally surfaced as OutOfMemoryException.
 [Gondwana.Video/VideoDecodeBuffer.cs]
 dotnet_diagnostic.CA2201.severity = suggestion
+
+# These files are compiled both in their owning project and as linked source in
+# test projects. System.Drawing may be implicit in one compilation but required
+# explicitly in another, so IDE0005 cannot be enforced consistently per file.
+[Demos/Gondwana.Platformer/EnemyContact.cs]
+dotnet_diagnostic.IDE0005.severity = suggestion
+
+[Tooling/Gondwana.Tooling.Tilesheets.WinForms/Editing/TilesheetDocument.cs]
+dotnet_diagnostic.IDE0005.severity = suggestion
+
+[Tooling/Gondwana.Tooling.Tilesheets.WinForms/Editing/FrameGeometry.cs]
+dotnet_diagnostic.IDE0005.severity = suggestion
+
+[Tooling/Gondwana.Tooling.Tilesheets.WinForms/Editing/OverlaySettings.cs]
+dotnet_diagnostic.IDE0005.severity = suggestion
