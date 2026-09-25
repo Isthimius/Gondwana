@@ -277,8 +277,20 @@ internal partial class GameWindow : Form
         for (int key = 'A'; key <= 'Z'; key++)
             keyboard.StartMonitoringKey(key, timeBetweenEvents: repeatIntervalSec);
 
-        foreach (int key in new[] { 13, 27, 32, 37, 38, 39, 40 })
+        for (int key = '0'; key <= '9'; key++)
             keyboard.StartMonitoringKey(key, timeBetweenEvents: repeatIntervalSec);
+
+        for (int key = 96; key <= 111; key++)
+            keyboard.StartMonitoringKey(key, timeBetweenEvents: repeatIntervalSec);
+
+        foreach (int key in new[]
+                 {
+                     8, 13, 27, 32, 35, 36, 37, 38, 39, 40, 46,
+                     186, 187, 188, 189, 190, 191, 192, 219, 220, 221, 222
+                 })
+        {
+            keyboard.StartMonitoringKey(key, timeBetweenEvents: repeatIntervalSec);
+        }
     }
 
     private void SetMusicEnabled(bool enabled)
