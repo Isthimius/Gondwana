@@ -193,7 +193,7 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents the values stored at a single location on a <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00015">15</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00014">14</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 </div><a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
 <a id="aedb6ed48475fb84d505557d259c8427a" name="aedb6ed48475fb84d505557d259c8427a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aedb6ed48475fb84d505557d259c8427a">&#9670;&#160;</a></span>DrawLocationWorld</h2>
@@ -220,7 +220,7 @@ Additional Inherited Members</h2></td></tr>
 <p>This property uses the parent layer's coordinate system to transform the tile's grid coordinates into world-space pixel coordinates. The returned rectangle includes any overhang pixels defined by the tile's tilesheet, ensuring that tall or wide tiles (such as trees or buildings) are rendered with their full graphical extent. </p>
 <p>The coordinate transformation depends on the layer's active coordinate system type (orthogonal, isometric, hexagonal, etc.) and accounts for the layer's tile size, origin offset, and other rendering properties. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00121">121</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00120">120</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 
 </div>
 </div>
@@ -250,7 +250,7 @@ Additional Inherited Members</h2></td></tr>
 <p>The animator manages frame cycling for animated tiles, allowing tiles to display animated sequences defined by <a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html" title="References a FrameSequence object, along with a particular Throttle value for animating through Frame...">Cycle</a> definitions. Animations are updated automatically during the engine's background update phase. </p>
 <p>Creating animators adds overhead, so this property should only be set to <code>true</code> for tiles that require animation. Static tiles should keep this property as <code>false</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00230">230</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00229">229</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 
 </div>
 </div>
@@ -279,7 +279,7 @@ Additional Inherited Members</h2></td></tr>
 <p>This property provides integer-based access to the tile's grid position, which is more appropriate for most tile-based operations than the floating-point <a class="el" href="#abf50427cb4f1e2bb85d5583cf0cfd289" title="Gets the grid coordinates of this tile within its parent scene layer as a floating-point value.">SceneLayerCoordinates</a> property. Grid coordinates are zero-based, with (0, 0) representing the top-left tile. </p>
 <p>Use this property when you need exact grid indices for array access, adjacency checks, or other grid-based calculations that require integer precision. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00185">185</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00184">184</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 
 </div>
 </div>
@@ -308,7 +308,7 @@ Additional Inherited Members</h2></td></tr>
 <p><a class="el" href="classGondwana_1_1Scenes_1_1Scene.html" title="Represents a game scene containing multiple layers of tiles, sprites, and game objects....">Scene</a> layer tiles are fundamentally different from sprites in that they occupy fixed positions within the layer's tile grid. While the entire layer can be scrolled, individual tiles cannot move to arbitrary positions. This property distinguishes tiles from sprites for rendering and collision detection purposes. </p>
 <p>This property overrides <a class="el" href="classGondwana_1_1Drawing_1_1Tile.html#af2c80d03dc7693f9ea706e9d426e30b0">Tile.IsPositionFixed</a> to reflect the fixed nature of tiles within scene layers. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00143">143</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00142">142</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 
 </div>
 </div>
@@ -337,7 +337,7 @@ Additional Inherited Members</h2></td></tr>
 <p>This property provides access to the tile's parent layer, which is useful for accessing layer-level properties such as tile size, coordinate system, parallax settings, and other rendering parameters that affect how the tile is displayed. </p>
 <p>Every scene layer tile is associated with exactly one parent layer, established when the layer is created. The relationship is immutable for the tile's lifetime. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00205">205</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00204">204</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 
 </div>
 </div>
@@ -366,7 +366,7 @@ Additional Inherited Members</h2></td></tr>
 <p>This property returns the tile's position in grid space (column, row), not pixel space. Grid coordinates are zero-based, with (0, 0) representing the top-left tile of the layer. </p>
 <p>For integer grid coordinates, use <a class="el" href="#a142c95716894c9150af7af6d2e5665dd" title="Gets the absolute grid coordinates of this tile within its parent scene layer as integer values.">GridCoordinatesAbs</a> instead. This property returns a PointF for compatibility with base class APIs that work with fractional coordinates. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00164">164</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00163">163</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 
 </div>
 </div>
@@ -396,7 +396,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#afe2fb2cda22db383aa386dc3c97af76c">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00098">98</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayerTile_8cs_source.html#l00097">97</a> of file <a class="el" href="SceneLayerTile_8cs_source.html">SceneLayerTile.cs</a>.</p>
 
 </div>
 </div>

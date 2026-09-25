@@ -120,13 +120,13 @@ $(function(){initNavTree('LayerPeriod_8cs_source.html','',''); });
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>            {</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>                <span class="comment">// Includes both stagger parities and pixel-rounding phases.</span></div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = -2; x &lt;= 2; x++)</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = -2; y &lt;= 2; y++)</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>                {</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>                    var a = coordinates.GetAnchorPixelAtSceneLayerCoordinates(layer, <span class="keyword">new</span>(x, y));</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>                    var b = coordinates.GetAnchorPixelAtSceneLayerCoordinates(layer, <span class="keyword">new</span>(x + columns, y + rows));</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                    <span class="keywordflow">if</span> (b.X - a.X != delta.X || b.Y - a.Y != delta.Y)</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                        <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidOperationException($<span class="stringliteral">&quot;{layer.CoordinateSystemType} cannot repeat cleanly with these dimensions. Flat-top hex column wrapping requires even columns; pointed-top hex row wrapping requires even rows. Pixel-rounded projections also require an integral world-space period.&quot;</span>);</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>                }</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>                    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = -2; y &lt;= 2; y++)</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>                    {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>                        var a = coordinates.GetAnchorPixelAtSceneLayerCoordinates(layer, <span class="keyword">new</span>(x, y));</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>                        var b = coordinates.GetAnchorPixelAtSceneLayerCoordinates(layer, <span class="keyword">new</span>(x + columns, y + rows));</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                        <span class="keywordflow">if</span> (b.X - a.X != delta.X || b.Y - a.Y != delta.Y)</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                            <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidOperationException($<span class="stringliteral">&quot;{layer.CoordinateSystemType} cannot repeat cleanly with these dimensions. Flat-top hex column wrapping requires even columns; pointed-top hex row wrapping requires even rows. Pixel-rounded projections also require an integral world-space period.&quot;</span>);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>                    }</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            }</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <span class="keywordflow">return</span> delta;</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        }</div>
@@ -193,14 +193,14 @@ $(function(){initNavTree('LayerPeriod_8cs_source.html','',''); });
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keywordflow">if</span> (!<span class="keywordtype">double</span>.IsFinite(count) || count &gt; 1_000_000 || Math.Abs(minX) &gt; <span class="keywordtype">int</span>.MaxValue || Math.Abs(maxX) &gt; <span class="keywordtype">int</span>.MaxValue || Math.Abs(minY) &gt; <span class="keywordtype">int</span>.MaxValue || Math.Abs(maxY) &gt; <span class="keywordtype">int</span>.MaxValue)</div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidOperationException(<span class="stringliteral">&quot;The requested wrapped region exceeds the supported instance range.&quot;</span>);</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keywordflow">for</span> (<span class="keywordtype">double</span> x = minX; x &lt;= maxX; x++)</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="keywordflow">for</span> (<span class="keywordtype">double</span> y = minY; y &lt;= maxY; y++)</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        {</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            var offset = Offset(x, y);</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            var translated = content;</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            translated.Offset(offset);</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            <span class="keywordflow">if</span> (translated.IntersectsWith(query))</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                yield <span class="keywordflow">return</span> offset;</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keywordflow">for</span> (<span class="keywordtype">double</span> y = minY; y &lt;= maxY; y++)</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                var offset = Offset(x, y);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                var translated = content;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                translated.Offset(offset);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                <span class="keywordflow">if</span> (translated.IntersectsWith(query))</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                    yield <span class="keywordflow">return</span> offset;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            }</div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    }</div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>}</div>
 <div class="ttc" id="aclassGondwana_1_1Scenes_1_1SceneLayer_html_a07994ff52aae5a303748d8be3cf3e81b"><div class="ttname"><a href="classGondwana_1_1Scenes_1_1SceneLayer.html#a07994ff52aae5a303748d8be3cf3e81b">Gondwana.Scenes.SceneLayer.WrapVertically</a></div><div class="ttdeci">bool WrapVertically</div><div class="ttdoc">Gets or sets a value indicating whether this layer repeats along its row axis at the grid boundaries.</div><div class="ttdef"><b>Definition</b> <a href="SceneLayer_8cs_source.html#l00547">SceneLayer.cs:548</a></div></div>

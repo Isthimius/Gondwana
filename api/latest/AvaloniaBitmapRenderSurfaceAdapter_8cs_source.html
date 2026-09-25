@@ -311,9 +311,11 @@ $(function(){initNavTree('AvaloniaBitmapRenderSurfaceAdapter_8cs_source.html',''
 <div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span> </div>
 <div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        _bitmap?.Dispose();</div>
 <div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        _bitmap = <span class="keyword">null</span>;</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    }</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span> </div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        GC.SuppressFinalize(<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    }</div>
 </div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>}</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>}</div>
 </div>
 </div>
 <div class="ttc" id="aclassGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceAdapter_html_a29013bdadcdcbe04deaa2e07ec9971bc"><div class="ttname"><a href="classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceAdapter.html#a29013bdadcdcbe04deaa2e07ec9971bc">Gondwana.Avalonia.Rendering.AvaloniaBitmapRenderSurfaceAdapter.Present</a></div><div class="ttdeci">override void Present(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)</div><div class="ttdoc">Presents the specified buffer image to the render surface by copying pixels into an Avalonia Writeabl...</div><div class="ttdef"><b>Definition</b> <a href="#l00071">AvaloniaBitmapRenderSurfaceAdapter.cs:71</a></div></div>
@@ -326,7 +328,7 @@ $(function(){initNavTree('AvaloniaBitmapRenderSurfaceAdapter_8cs_source.html',''
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase_html_ae5ec6cc715ff40b37cad1828c0164868"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#ae5ec6cc715ff40b37cad1828c0164868">Gondwana.Rendering.RenderSurfaceAdapterBase.RenderSurfaceAdapterBase</a></div><div class="ttdeci">RenderSurfaceAdapterBase(int destWidth, int destHeight)</div><div class="ttdoc">Initializes a new instance of the RenderSurfaceAdapterBase class with the specified dimensions.</div><div class="ttdef"><b>Definition</b> <a href="RenderSurfaceAdapterBase_8cs_source.html#l00097">RenderSurfaceAdapterBase.cs:97</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase_html_ae84340b8de8d385ce27da526d9a87317"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#ae84340b8de8d385ce27da526d9a87317">Gondwana.Rendering.RenderSurfaceAdapterBase.Height</a></div><div class="ttdeci">int Height</div><div class="ttdoc">Gets the current height of the render surface in pixels.</div><div class="ttdef"><b>Definition</b> <a href="RenderSurfaceAdapterBase_8cs_source.html#l00086">RenderSurfaceAdapterBase.cs:87</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Avalonia_1_1Rendering_html"><div class="ttname"><a href="namespaceGondwana_1_1Avalonia_1_1Rendering.html">Gondwana.Avalonia.Rendering</a></div><div class="ttdef"><b>Definition</b> <a href="#l00009">AvaloniaBitmapRenderSurfaceAdapter.cs:9</a></div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Rendering_html"><div class="ttname"><a href="namespaceGondwana_1_1Rendering.html">Gondwana.Rendering</a></div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00009">BackbufferBase.cs:9</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Rendering_html"><div class="ttname"><a href="namespaceGondwana_1_1Rendering.html">Gondwana.Rendering</a></div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00008">BackbufferBase.cs:8</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

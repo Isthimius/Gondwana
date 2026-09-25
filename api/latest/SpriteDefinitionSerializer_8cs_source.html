@@ -210,91 +210,101 @@ $(function(){initNavTree('SpriteDefinitionSerializer_8cs_source.html','',''); })
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        var frame = sprite.CurrentFrame;</div>
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordflow">return</span> <span class="keyword">new</span>()</div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        {</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            Id = sprite.Id, Nickname = sprite.Nickname,</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            SceneId = sprite.SceneLayer.Scene?.ID ?? <span class="keywordtype">string</span>.Empty, SceneLayerId = sprite.SceneLayer.ID,</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            Position = sprite.SceneLayerCoordinates,</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            Frame = frame.Tilesheet is <span class="keyword">null</span> ? null : <span class="keyword">new</span>() { Tilesheet = frame.Tilesheet.Name, RegionName = frame.RegionName, XTile = frame.XTile, YTile = frame.YTile },</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            Visible = sprite.Visible, ZOrder = sprite.ZOrder, Rotation = sprite.Rotation,</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            HorizAlign = sprite.HorizAlign, VertAlign = sprite.VertAlign,</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            NudgeX = sprite.NudgeX, NudgeY = sprite.NudgeY, RenderSize = sprite.RenderSize,</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            EnableFog = sprite.EnableFog, AdjustCollisionArea = sprite.AdjustCollisionArea,</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>            AdjustCollisionAreaByFrame = sprite.AdjustCollisionAreaByFrame,</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            CollisionType = sprite.CollisionType, CollisionTypeByFrame = sprite.CollisionTypeByFrame,</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>            CollisionProfileName = sprite.CollisionProfileName, CollisionsEnabled = sprite.CollisionsEnabled</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        };</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    }</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keyword">public</span> <span class="keyword">static</span> List&lt;Sprite&gt; LoadSprites(<span class="keywordtype">string</span> filePath) =&gt; ToSprites(Load(filePath));</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keyword">public</span> <span class="keyword">static</span> List&lt;Sprite&gt; LoadSprites(AssetsFile assetsFile, <span class="keywordtype">string</span> entryName) =&gt; ToSprites(Load(assetsFile, entryName));</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keyword">public</span> <span class="keyword">static</span> Sprite ToSprite(SpriteInstanceDefinition definition) =&gt; ToSprites(<span class="keyword">new</span>() { <a class="code hl_enumvalue" href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575a0c8651846cd269d069a6a93ddbfaedbf">Sprites</a> = [definition] })[0];</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span></div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keyword">public</span> <span class="keyword">static</span> List&lt;Sprite&gt; ToSprites(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a16a8098599916ee5dbf52c4972f241d3">SpriteDefinition</a> definition)</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        =&gt; ToSprites(definition, allowDuplicateNicknames: <span class="keyword">false</span>);</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="comment">// EngineState retains its historical last-incoming-nickname-wins merge contract.</span></div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keyword">internal</span> <span class="keyword">static</span> List&lt;Sprite&gt; ToSprites(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a16a8098599916ee5dbf52c4972f241d3">SpriteDefinition</a> definition, <span class="keywordtype">bool</span> allowDuplicateNicknames)</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    {</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        var errors = SpriteDefinitionValidator.Validate(definition, allowDuplicateNicknames);</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        <span class="keywordflow">if</span> (errors.Count != 0) <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException(<span class="stringliteral">&quot;Invalid GSPR definition:\n&quot;</span> + <span class="keywordtype">string</span>.Join(<span class="stringliteral">&quot;\n&quot;</span>, errors));</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        var created = <span class="keyword">new</span> List&lt;Sprite&gt;();</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        <span class="keywordflow">try</span></div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        {</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>            <span class="keywordflow">foreach</span> (var entry <span class="keywordflow">in</span> definition.Sprites)</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>            {</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>                var scenes = Scene._allScenes.Where(scene =&gt; scene.ID == entry.SceneId).Take(2).ToArray();</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                <span class="keywordflow">if</span> (scenes.Length != 1)</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>                    <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;Sprite &#39;{entry.Nickname}&#39;: Scene &#39;{entry.SceneId}&#39; is missing or ambiguous.&quot;</span>);</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>                var scene = scenes[0];</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>                var layers = scene.SceneLayers.Where(layer =&gt; layer.ID == entry.SceneLayerId).Take(2).ToArray();</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>                <span class="keywordflow">if</span> (layers.Length != 1)</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>                    <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;Sprite &#39;{entry.Nickname}&#39;: SceneLayer &#39;{entry.SceneLayerId}&#39; is missing or ambiguous.&quot;</span>);</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>                var layer = layers[0];</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>                var frame = entry.Frame is <span class="keyword">null</span> ? default : ResolveFrame(entry.Frame);</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>                <span class="keywordflow">if</span> (!<span class="keywordtype">string</span>.IsNullOrWhiteSpace(entry.CollisionProfileName) &amp;&amp; !scene.CollisionProfiles.GetProfileNames().Contains(entry.CollisionProfileName))</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>                    <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;Sprite &#39;{entry.Nickname}&#39;: collision profile &#39;{entry.CollisionProfileName}&#39; does not exist.&quot;</span>);</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>                var sprite = SpriteManager.Instance.CreateSprite(layer, frame, entry.Nickname, entry.CollisionProfileName);</div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>                created.Add(sprite);</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>                <span class="keywordflow">if</span> (entry.Id != Guid.Empty) sprite.Id = entry.Id;</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>                sprite.SetPosition(<span class="keyword">new</span> Vector2(entry.Position.X, entry.Position.Y));</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>                sprite.Visible = entry.Visible;</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>                sprite.ZOrder = entry.ZOrder;</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>                sprite.Rotation = entry.Rotation;</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>                sprite.HorizAlign = entry.HorizAlign;</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>                sprite.VertAlign = entry.VertAlign;</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>                sprite.NudgeX = entry.NudgeX;</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>                sprite.NudgeY = entry.NudgeY;</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>                <span class="keywordflow">if</span> (!entry.RenderSize.IsEmpty) sprite.RenderSize = entry.RenderSize;</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>                sprite.EnableFog = entry.EnableFog;</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                sprite.AdjustCollisionArea = entry.AdjustCollisionArea;</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>                sprite.CollisionType = entry.CollisionType;</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>                sprite.AdjustCollisionAreaByFrame = entry.AdjustCollisionAreaByFrame;</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>                sprite.CollisionTypeByFrame = entry.CollisionTypeByFrame;</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>                sprite.CollisionsEnabled = entry.CollisionsEnabled;</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>            }</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>            <span class="keywordflow">return</span> created;</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        }</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        <span class="keywordflow">catch</span></div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        {</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>            <span class="keywordflow">foreach</span> (var sprite <span class="keywordflow">in</span> created)</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>            {</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>                SpriteManager.Instance._spriteList.Remove(sprite);</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>                sprite.DisposeImmediate();</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>            }</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>            <span class="keywordflow">throw</span>;</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        }</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    }</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keyword">private</span> <span class="keyword">static</span> Frame ResolveFrame(SpriteFrameDefinition definition)</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    {</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        var sheet = TilesheetRegistry.Instance.GetOrNull(definition.Tilesheet)</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>            ?? <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;GSPR tilesheet &#39;{definition.Tilesheet}&#39; is not registered.&quot;</span>);</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        var region = sheet.GetRegion(definition.RegionName)</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>            ?? <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;GSPR region &#39;{definition.RegionName}&#39; is missing on &#39;{definition.Tilesheet}&#39;.&quot;</span>);</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        <span class="keywordflow">if</span> (definition.XTile &gt;= region.Columns || definition.YTile &gt;= region.Rows)</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;GSPR frame ({definition.XTile}, {definition.YTile}) is outside region &#39;{definition.RegionName}&#39;.&quot;</span>);</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="keywordflow">return</span> sheet.GetFrame(definition.RegionName, definition.XTile, definition.YTile);</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    }</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>}</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            Id = sprite.Id,</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            Nickname = sprite.Nickname,</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            SceneId = sprite.SceneLayer.Scene?.ID ?? <span class="keywordtype">string</span>.Empty,</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            SceneLayerId = sprite.SceneLayer.ID,</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            Position = sprite.SceneLayerCoordinates,</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            Frame = frame.Tilesheet is <span class="keyword">null</span> ? null : <span class="keyword">new</span>() { Tilesheet = frame.Tilesheet.Name, RegionName = frame.RegionName, XTile = frame.XTile, YTile = frame.YTile },</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            Visible = sprite.Visible,</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            ZOrder = sprite.ZOrder,</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>            Rotation = sprite.Rotation,</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            HorizAlign = sprite.HorizAlign,</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>            VertAlign = sprite.VertAlign,</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>            NudgeX = sprite.NudgeX,</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            NudgeY = sprite.NudgeY,</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>            RenderSize = sprite.RenderSize,</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>            EnableFog = sprite.EnableFog,</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>            AdjustCollisionArea = sprite.AdjustCollisionArea,</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>            AdjustCollisionAreaByFrame = sprite.AdjustCollisionAreaByFrame,</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>            CollisionType = sprite.CollisionType,</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            CollisionTypeByFrame = sprite.CollisionTypeByFrame,</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>            CollisionProfileName = sprite.CollisionProfileName,</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>            CollisionsEnabled = sprite.CollisionsEnabled</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        };</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    }</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keyword">public</span> <span class="keyword">static</span> List&lt;Sprite&gt; LoadSprites(<span class="keywordtype">string</span> filePath) =&gt; ToSprites(Load(filePath));</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keyword">public</span> <span class="keyword">static</span> List&lt;Sprite&gt; LoadSprites(AssetsFile assetsFile, <span class="keywordtype">string</span> entryName) =&gt; ToSprites(Load(assetsFile, entryName));</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keyword">public</span> <span class="keyword">static</span> Sprite ToSprite(SpriteInstanceDefinition definition) =&gt; ToSprites(<span class="keyword">new</span>() { <a class="code hl_enumvalue" href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575a0c8651846cd269d069a6a93ddbfaedbf">Sprites</a> = [definition] })[0];</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span></div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keyword">public</span> <span class="keyword">static</span> List&lt;Sprite&gt; ToSprites(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a16a8098599916ee5dbf52c4972f241d3">SpriteDefinition</a> definition)</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        =&gt; ToSprites(definition, allowDuplicateNicknames: <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="comment">// EngineState retains its historical last-incoming-nickname-wins merge contract.</span></div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keyword">internal</span> <span class="keyword">static</span> List&lt;Sprite&gt; ToSprites(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a16a8098599916ee5dbf52c4972f241d3">SpriteDefinition</a> definition, <span class="keywordtype">bool</span> allowDuplicateNicknames)</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    {</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        var errors = SpriteDefinitionValidator.Validate(definition, allowDuplicateNicknames);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        <span class="keywordflow">if</span> (errors.Count != 0) <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException(<span class="stringliteral">&quot;Invalid GSPR definition:\n&quot;</span> + <span class="keywordtype">string</span>.Join(<span class="stringliteral">&quot;\n&quot;</span>, errors));</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        var created = <span class="keyword">new</span> List&lt;Sprite&gt;();</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keywordflow">try</span></div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        {</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>            <span class="keywordflow">foreach</span> (var entry <span class="keywordflow">in</span> definition.Sprites)</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>            {</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>                var scenes = Scene._allScenes.Where(scene =&gt; scene.ID == entry.SceneId).Take(2).ToArray();</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>                <span class="keywordflow">if</span> (scenes.Length != 1)</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>                    <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;Sprite &#39;{entry.Nickname}&#39;: Scene &#39;{entry.SceneId}&#39; is missing or ambiguous.&quot;</span>);</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>                var scene = scenes[0];</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>                var layers = scene.SceneLayers.Where(layer =&gt; layer.ID == entry.SceneLayerId).Take(2).ToArray();</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>                <span class="keywordflow">if</span> (layers.Length != 1)</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>                    <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;Sprite &#39;{entry.Nickname}&#39;: SceneLayer &#39;{entry.SceneLayerId}&#39; is missing or ambiguous.&quot;</span>);</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>                var layer = layers[0];</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>                var frame = entry.Frame is <span class="keyword">null</span> ? default : ResolveFrame(entry.Frame);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>                <span class="keywordflow">if</span> (!<span class="keywordtype">string</span>.IsNullOrWhiteSpace(entry.CollisionProfileName) &amp;&amp; !scene.CollisionProfiles.GetProfileNames().Contains(entry.CollisionProfileName))</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>                    <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;Sprite &#39;{entry.Nickname}&#39;: collision profile &#39;{entry.CollisionProfileName}&#39; does not exist.&quot;</span>);</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>                var sprite = SpriteManager.Instance.CreateSprite(layer, frame, entry.Nickname, entry.CollisionProfileName);</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>                created.Add(sprite);</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>                <span class="keywordflow">if</span> (entry.Id != Guid.Empty) sprite.Id = entry.Id;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                sprite.SetPosition(<span class="keyword">new</span> Vector2(entry.Position.X, entry.Position.Y));</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>                sprite.Visible = entry.Visible;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>                sprite.ZOrder = entry.ZOrder;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>                sprite.Rotation = entry.Rotation;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>                sprite.HorizAlign = entry.HorizAlign;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>                sprite.VertAlign = entry.VertAlign;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>                sprite.NudgeX = entry.NudgeX;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>                sprite.NudgeY = entry.NudgeY;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>                <span class="keywordflow">if</span> (!entry.RenderSize.IsEmpty) sprite.RenderSize = entry.RenderSize;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>                sprite.EnableFog = entry.EnableFog;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>                sprite.AdjustCollisionArea = entry.AdjustCollisionArea;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>                sprite.CollisionType = entry.CollisionType;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>                sprite.AdjustCollisionAreaByFrame = entry.AdjustCollisionAreaByFrame;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>                sprite.CollisionTypeByFrame = entry.CollisionTypeByFrame;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>                sprite.CollisionsEnabled = entry.CollisionsEnabled;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>            }</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>            <span class="keywordflow">return</span> created;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        }</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keywordflow">catch</span></div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        {</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>            <span class="keywordflow">foreach</span> (var sprite <span class="keywordflow">in</span> created)</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>            {</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>                SpriteManager.Instance._spriteList.Remove(sprite);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>                sprite.DisposeImmediate();</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>            }</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>            <span class="keywordflow">throw</span>;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        }</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    }</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keyword">private</span> <span class="keyword">static</span> Frame ResolveFrame(SpriteFrameDefinition definition)</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    {</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        var sheet = TilesheetRegistry.Instance.GetOrNull(definition.Tilesheet)</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            ?? <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;GSPR tilesheet &#39;{definition.Tilesheet}&#39; is not registered.&quot;</span>);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        var region = sheet.GetRegion(definition.RegionName)</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>            ?? <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;GSPR region &#39;{definition.RegionName}&#39; is missing on &#39;{definition.Tilesheet}&#39;.&quot;</span>);</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="keywordflow">if</span> (definition.XTile &gt;= region.Columns || definition.YTile &gt;= region.Rows)</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;GSPR frame ({definition.XTile}, {definition.YTile}) is outside region &#39;{definition.RegionName}&#39;.&quot;</span>);</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keywordflow">return</span> sheet.GetFrame(definition.RegionName, definition.XTile, definition.YTile);</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    }</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>}</div>
 <div class="ttc" id="aclassGondwana_1_1Assets_1_1AssetsFile_html_a213f251f4ca110270f0433a2ffb209bf"><div class="ttname"><a href="classGondwana_1_1Assets_1_1AssetsFile.html#a213f251f4ca110270f0433a2ffb209bf">Gondwana.Assets.AssetsFile.FilePath</a></div><div class="ttdeci">string FilePath</div><div class="ttdoc">Gets the file path associated with the current instance.</div><div class="ttdef"><b>Definition</b> <a href="AssetsFile_8cs_source.html#l00162">AssetsFile.cs:162</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Assets_1_1AssetsFile_html_af83feec6975360ffad01a659951dd7c9"><div class="ttname"><a href="classGondwana_1_1Assets_1_1AssetsFile.html#af83feec6975360ffad01a659951dd7c9">Gondwana.Assets.AssetsFile.Get</a></div><div class="ttdeci">Stream? Get(AssetTypes type, string name)</div><div class="ttdoc">Retrieves a stream for the specified asset type and name.</div><div class="ttdef"><b>Definition</b> <a href="AssetsFile_8cs_source.html#l00390">AssetsFile.cs:390</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Assets_html"><div class="ttname"><a href="namespaceGondwana_1_1Assets.html">Gondwana.Assets</a></div><div class="ttdef"><b>Definition</b> <a href="AssetsFile_8cs_source.html#l00005">AssetsFile.cs:5</a></div></div>

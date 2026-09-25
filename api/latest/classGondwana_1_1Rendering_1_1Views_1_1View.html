@@ -135,7 +135,7 @@ Properties</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a rendered view of a scene, combining a camera position with a viewport configuration to control what portion of the world is visible and how it is displayed on screen. Multiple views can be used to create split-screen, picture-in-picture, or other multi-viewport rendering scenarios. </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00015">15</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00013">13</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="aa8ae663f298ee55f3fc813ec3dc7c843" name="aa8ae663f298ee55f3fc813ec3dc7c843"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa8ae663f298ee55f3fc813ec3dc7c843">&#9670;&#160;</a></span>ScreenPxToGrid()</h2>
@@ -166,7 +166,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The grid coordinate (column/row or axial) under the screen pixel.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00309">309</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00307">307</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -201,7 +201,7 @@ Properties</h2></td></tr>
 <p>The transformation formula is: </p><div class="fragment"><div class="line">world = camera * parallax + (screen - offset) / zoom</div>
 </div><!-- fragment --><p> This is commonly used for mouse picking and screen-to-world raycasting. </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00234">234</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00232">232</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -227,7 +227,7 @@ Properties</h2></td></tr>
 <p>Converts a screen-space rectangle (on the logical Backbuffer) into a world-space rectangle for the given layer, respecting zoom, camera position, viewport offsets, and the layer's parallax factor. </p>
 <p>Inverse of: screen = offset + (world - camera * p) * zoom </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00369">369</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00367">367</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -262,7 +262,7 @@ Properties</h2></td></tr>
 <p>The transformation formula is: </p><div class="fragment"><div class="line">screen = offset + (world - camera * parallax) * zoom</div>
 </div><!-- fragment --><p> This is commonly used for rendering world objects to screen coordinates and for UI elements that track world positions. </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00279">279</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00277">277</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -296,7 +296,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Screen-space rectangle on the render surface.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00325">325</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00323">323</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -341,7 +341,7 @@ Properties</h2></td></tr>
 </dl>
 <p>During a smooth zoom, the viewport zoom is animated and the camera position is recomputed after every intermediate zoom update. This prevents the anchor point from drifting while zoom and camera movement are in progress. </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00112">112</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00110">110</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -369,7 +369,7 @@ Properties</h2></td></tr>
 <p>Gets the camera that controls the world-space position and following behavior for this view. The camera determines which part of the world is visible. </p>
 <p>The <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1Camera.html" title="Represents a world-space camera for a Scene. The camera tracks a world-space upper-left position in p...">Views.Camera</a> instance associated with this view. </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00036">36</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00034">34</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -396,7 +396,7 @@ Properties</h2></td></tr>
 <p>Gets the unique identifier for this view instance. </p>
 <p>A GUID that uniquely identifies this view throughout its lifetime. </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00027">27</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00025">25</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -422,7 +422,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the maximum zoom level allowed for this <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00062">62</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00060">60</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -448,7 +448,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the minimum zoom level allowed for this <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00057">57</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00055">55</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -475,7 +475,7 @@ Properties</h2></td></tr>
 <p>Gets the viewport that defines the screen-space rectangle, zoom level, and other rendering parameters for this view. The viewport controls how the camera's visible world region is mapped to screen pixels. </p>
 <p>The <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1Viewport.html" title="A rectangular window on the render target with its own zoom and placement. Viewport never moves the w...">Views.Viewport</a> instance associated with this view. </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00046">46</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00044">44</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>
@@ -501,7 +501,7 @@ Properties</h2></td></tr>
 
 <p>Controls the draw order of this view relative to other views. Lower values are drawn first (behind); higher values are drawn later (in front). </p>
 
-<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00052">52</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="View_8cs_source.html#l00050">50</a> of file <a class="el" href="View_8cs_source.html">View.cs</a>.</p>
 
 </div>
 </div>

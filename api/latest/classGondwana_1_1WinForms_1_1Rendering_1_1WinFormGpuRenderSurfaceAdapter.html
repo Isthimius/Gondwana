@@ -171,7 +171,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="textblock"><p>Provides a GPU-accelerated render surface adapter for Windows Forms using OpenGL and SKGLControl. </p>
 <p>All scene rendering and presentation are driven from within <code>PaintSurface</code> on the GL thread <code>Invalidate()</code> is posted to the UI thread via <a class="el" href="classGondwana_1_1Engine.html#ab77dee07cb432a785afea9b92c28c4b4" title="Gets the UI dispatcher used for marshalling operations to the UI thread.">Engine.UiDispatcher</a> at the end of each <code>Engine.DoForegroundTasks</code> cycle (via <code><a class="el" href="classGondwana_1_1Engine.html#a3376a217fab6a271437d14854831a65c" title="Occurs immediately after DoForegroundTasks(long) completes within each engine cycle.">Engine.AfterFrameRender</a></code>), so the paint loop stays in lockstep with the engine's own frame rate. The engine's background render loop skips GPU-rendered surfaces entirely (see <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a123d04c913f9489067a65ff33b639bc0">GpuBackbuffer.IsGlThreadRendered</a>). </p>
 
-<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00020">20</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00018">18</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ad5328a019e588c488860179cc2e4a6ac" name="ad5328a019e588c488860179cc2e4a6ac"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad5328a019e588c488860179cc2e4a6ac">&#9670;&#160;</a></span>WinFormGpuRenderSurfaceAdapter()</h2>
@@ -196,7 +196,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00093">93</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00091">91</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -218,7 +218,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Releases all resources used by the <a class="el" href="classGondwana_1_1WinForms_1_1Rendering_1_1WinFormGpuRenderSurfaceAdapter.html" title="Provides a GPU-accelerated render surface adapter for Windows Forms using OpenGL and SKGLControl.">WinFormGpuRenderSurfaceAdapter</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00268">268</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00266">266</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -248,7 +248,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Not used in the GL-thread path. <a class="el" href="namespaceGondwana_1_1WinForms_1_1Rendering.html">Rendering</a> is driven by <a class="el" href="#a1438aaad384c2ef1a67e22d3c1b0745e" title="Registers the RenderSurfaceHostBase whose scene this adapter should render and wires the GL paint loo...">SetHost</a> and <code>SKGLControl.PaintSurface</code>. The image is disposed immediately to avoid a leak. </p>
 
-<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00155">155</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00153">153</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -269,7 +269,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Refreshes the destination size based on the current client size of the presentation control. A non-positive size marks presentation as unavailable without resizing the logical Backbuffer. </p>
 
-<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00076">76</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00074">74</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -297,7 +297,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00136">136</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00134">134</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -324,7 +324,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets or sets the color used to clear the surface before rendering. </p>
 
-<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00050">50</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00048">48</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -350,7 +350,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the GL/Skia GPU context that should be shared with the <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html" title="Provides a fully GPU-rendered backbuffer implementation using SkiaSharp and OpenGL.">GpuBackbuffer</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00055">55</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00053">53</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -369,7 +369,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Raised once, the first time the GRContext becomes available in OnPaintSurface. Subscribe to this event to call <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a4fef1b4ad8a55fd62cbaa501ec89290a" title="Creates (or recreates) the GPU render-target surface for this backbuffer.">GpuBackbuffer.Initialize</a> on the GL thread. </p>
 
-<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00062">62</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00060">60</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
 
 </div>
 </div>
@@ -387,7 +387,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Raised on the GL thread when the control has been resized and a valid GRContext is available. The arguments are the context and the new width and height in adapter pixels. This event is for presentation resources; it must not be used to resize the logical Backbuffer. </p>
 
-<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00070">70</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html#l00068">68</a> of file <a class="el" href="WinFormGpuRenderSurfaceAdapter_8cs_source.html">WinFormGpuRenderSurfaceAdapter.cs</a>.</p>
 
 </div>
 </div>
