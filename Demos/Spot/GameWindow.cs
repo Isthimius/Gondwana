@@ -28,7 +28,8 @@ internal partial class GameWindow : Form
     private SKImage? _aboutGondwanaLogo;
     private SKTypeface? _aboutTypeface;
 
-    private static readonly Size DefaultWindowSize = new(769, 769);
+    private const int MenuBarHeight = 32;
+    private static readonly Size DefaultWindowSize = new(769, 769 + MenuBarHeight);
 
     private const string ConfigSection = "spot";
     private const string KeyMusic = "music";
@@ -210,7 +211,7 @@ internal partial class GameWindow : Form
         _menuBar = new MenuBarWidget(
             _gpuRenderSurface.Host,
             view,
-            new Rectangle(0, 0, view.Viewport.TargetRectPx.Width, 32));
+            new Rectangle(0, 0, view.Viewport.TargetRectPx.Width, MenuBarHeight));
 
         _menuBar
             .AddMenu(
