@@ -25,10 +25,9 @@ using SkiaSharp;
 namespace Gondwana.Demos.Spot;
 
 /// <summary>
-/// Contains all Spot game host behavior, independent of the rendering backend.
-/// Both <see cref="SpotGameHost"/> (bitmap) and <see cref="SpotGpuGameHost"/> (GPU)
-/// delegate to an instance of this class and expose themselves as <see cref="ISpotHostContext"/>.
-/// This is only needed to allow for both Bitmap and GPU rendering from the same project.
+/// Contains the shared Spot game behavior used by <see cref="SpotGpuGameHost"/>.
+/// The host exposes its engine, scene, and render-surface state through <see cref="ISpotHostContext"/>
+/// so the presentation logic remains separated from WinForms host plumbing.
 /// </summary>
 internal sealed class SpotHostCore
 {
