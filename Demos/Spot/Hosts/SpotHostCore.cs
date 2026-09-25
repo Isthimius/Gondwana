@@ -17,6 +17,7 @@ using Gondwana.Rendering;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
+using Gondwana.Widgets.Dialogs;
 using Gondwana.Widgets.Overlays;
 using Gondwana.WinForms.Input.Keyboard;
 using Microsoft.Extensions.Logging;
@@ -44,6 +45,7 @@ internal sealed class SpotHostCore
     private int _dialogOpen = 0; // 0 = not open; 1 = open/pending. Use Interlocked for thread-safe access.
     private bool _showScores = true;
     private NewGameOptions? _lastNewGameOptions;
+    private NewGameDialog? _newGameDialog;
 
     private ParticleSurface? _particleSurface;
 
@@ -207,6 +209,10 @@ internal sealed class SpotHostCore
 
     internal void UnhookEvents()
     {
+        _newGameDialog?.Dispose();
+        _newGameDialog = null;
+        Interlocked.Exchange(ref _dialogOpen, 0);
+
         if (Engine.Input.MouseEventPoller is not null)
             Engine.Input.MouseEventPoller.MouseEvent -= MouseEventPoller_MouseEvent;
 
@@ -260,34 +266,35 @@ internal sealed class SpotHostCore
 
     public void OpenNewGameDialog(NewGameOptions? newGameOptions = null)
     {
-        if (Engine.UiDispatcher is not null && !Engine.UiDispatcher.IsOnUIThread)
+        if (Interlocked.CompareExchange(ref _dialogOpen, 1, 0) != 0)
         {
-            // Atomically claim the dialog slot; bail out if one is already open/pending.
-            if (Interlocked.CompareExchange(ref _dialogOpen, 1, 0) != 0) return;
-            Engine.UiDispatcher.Post(() => OpenNewGameDialog(newGameOptions));
+            _newGameDialog?.Activate();
             return;
         }
 
-        // Called directly on the UI thread (e.g. from the menu). Ensure the flag is set.
-        Interlocked.Exchange(ref _dialogOpen, 1);
-        try
-        {
-            using var dialog = new NewGameDialog(newGameOptions);
-            if (dialog.ShowDialog(Form.ActiveForm) == DialogResult.OK)
-            {
-                _lastNewGameOptions = dialog.Options;
-                var options = dialog.Options;
-                Engine.EngineDispatcher.Post(() => StartNewGame(options));
-            }
-            else
-            {
-                _lastNewGameOptions = dialog.Options;
-            }
-        }
-        finally
+        if (SurfaceHost.ViewManager.Views.Count == 0)
         {
             Interlocked.Exchange(ref _dialogOpen, 0);
+            return;
         }
+
+        var view = SurfaceHost.ViewManager.Views[0];
+        var dialog = new NewGameDialog(SurfaceHost, view, newGameOptions);
+        _newGameDialog = dialog;
+
+        dialog.Closed += result =>
+        {
+            NewGameOptions options = dialog.Options;
+            _lastNewGameOptions = options;
+            _newGameDialog = null;
+            Interlocked.Exchange(ref _dialogOpen, 0);
+
+            if (result == DialogResult.OK)
+                Engine.EngineDispatcher.Post(() => StartNewGame(options));
+        };
+
+        dialog.Show();
+        dialog.Activate();
     }
 
     #endregion public game interface
@@ -370,6 +377,9 @@ internal sealed class SpotHostCore
 
     private void KeyboardEventPoller_KeyDown(KeyDownEventArgs args)
     {
+        if (Volatile.Read(ref _dialogOpen) != 0)
+            return;
+
         if (args.KeyAction != KeyAction.Pressed)
             return;
 
@@ -386,6 +396,9 @@ internal sealed class SpotHostCore
 
     private void MouseEventPoller_MouseEvent(Gondwana.Input.Mouse.MouseEventArgs args)
     {
+        if (Volatile.Read(ref _dialogOpen) != 0)
+            return;
+
         if (!_initialGameStarted && args.LeftButtonJustPressed)
         {
             OpenNewGameDialog(_lastNewGameOptions);
