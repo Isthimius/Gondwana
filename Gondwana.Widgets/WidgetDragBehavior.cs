@@ -1,5 +1,5 @@
-using System.Numerics;
 using System.Drawing;
+using System.Numerics;
 using Gondwana.Drawing.Direct;
 using Gondwana.Rendering.Views;
 
@@ -91,7 +91,7 @@ internal sealed class WidgetDragBehavior
             float thresholdSquared = DragThresholdPx * DragThresholdPx;
             if (totalScreenDeltaPx.LengthSquared() < thresholdSquared)
                 return;
-            
+
             IsDragging = true;
             _suppressNextPointerClick = true;
 

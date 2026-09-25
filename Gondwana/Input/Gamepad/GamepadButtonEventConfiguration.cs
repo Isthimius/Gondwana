@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Input.Gamepad;
+namespace Gondwana.Input.Gamepad;
 
 /// <summary>
 /// Represents the configuration for gamepad button events, including button identification

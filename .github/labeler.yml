@@ -61,7 +61,7 @@ gondwana-input:
 gondwana-video:
   - changed-files:
     - all-globs-to-any-file:
-      - 'Gondwana.Video/**'
+      - 'Gondwana.Video*/**'
       - '!**/CHANGELOG.md'
 
 gondwana-cli:

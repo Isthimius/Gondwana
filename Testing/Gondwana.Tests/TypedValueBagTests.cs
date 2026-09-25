@@ -1,5 +1,3 @@
-using Gondwana;
-
 namespace Gondwana.Tests;
 
 /// <summary>

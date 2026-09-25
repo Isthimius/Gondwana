@@ -172,7 +172,7 @@ public sealed class DirectImage : DirectDrawingMovableBase
     /// must ensure the bitmap remains valid for the lifetime of this DirectImage instance.
     /// </para>
     /// </remarks>
-    public DirectImage (SKBitmap bitmap,
+    public DirectImage(SKBitmap bitmap,
                         RenderSurfaceHostBase renderSurfaceHost,
                         SceneLayer sceneLayer,
                         Rectangle worldBounds,
@@ -197,7 +197,7 @@ public sealed class DirectImage : DirectDrawingMovableBase
     /// must ensure the bitmap remains valid for the lifetime of this DirectImage instance.
     /// </para>
     /// </remarks>
-    public DirectImage (SKBitmap bitmap,
+    public DirectImage(SKBitmap bitmap,
                         RenderSurfaceHostBase renderSurfaceHost,
                         View view,
                         Rectangle screenBounds,
@@ -644,7 +644,8 @@ public sealed class DirectImage : DirectDrawingMovableBase
         {
             ScaleMode.Fit => MathF.Min(scaleX, scaleY),
             ScaleMode.Fill => MathF.Max(scaleX, scaleY),
-            ScaleMode.PixelPerfect => MathF.Max(1f, MathF.Floor(MathF.Min(scaleX, scaleY))), _ => 1f
+            ScaleMode.PixelPerfect => MathF.Max(1f, MathF.Floor(MathF.Min(scaleX, scaleY))),
+            _ => 1f
         };
 
         float w2 = srcW * scale, h2 = srcH * scale;

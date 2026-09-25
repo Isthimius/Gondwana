@@ -1,0 +1,157 @@
+root = true
+
+[*]
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.cs]
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+# Keep the existing Gondwana C# brace and spacing conventions.
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_space_after_comma = true
+csharp_space_before_comma = false
+csharp_space_around_binary_operators = before_and_after
+csharp_space_between_method_declaration_name_and_open_parenthesis = false
+csharp_space_between_method_call_name_and_opening_parenthesis = false
+csharp_preserve_single_line_blocks = true
+csharp_preserve_single_line_statements = true
+
+# Keep using directives deterministic without forcing grouping changes.
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+
+# JetBrains/ReSharper/Rider extension settings.
+# Up to three parameters/arguments may stay on one line. Four or more are
+# chopped so each parameter/argument is placed on its own line.
+resharper_csharp_wrap_parameters_style = chop_if_long
+resharper_csharp_max_formal_parameters_on_line = 3
+resharper_csharp_wrap_after_declaration_lpar = true
+resharper_csharp_wrap_before_declaration_rpar = false
+
+resharper_csharp_wrap_arguments_style = chop_if_long
+resharper_csharp_max_invocation_arguments_on_line = 3
+resharper_csharp_wrap_after_invocation_lpar = true
+resharper_csharp_wrap_before_invocation_rpar = false
+
+# Analyzer policy
+#
+# The .NET 8 recommended analyzer set is enabled repository-wide in
+# Directory.Build.props. Existing API-shape, naming, globalization and
+# micro-performance findings remain visible to developers without producing
+# build noise. Correctness/lifecycle rules below are enforced in CI.
+
+# Dead-code/usings hygiene. These are warnings in the IDE/build and are also
+# verified explicitly by CI through dotnet format style.
+dotnet_diagnostic.IDE0005.severity = warning
+dotnet_diagnostic.IDE0059.severity = warning
+dotnet_diagnostic.IDE0051.severity = warning
+
+# Existing design/naming conventions and modernization opportunities: advisory.
+dotnet_diagnostic.CA1036.severity = suggestion
+dotnet_diagnostic.CA1051.severity = suggestion
+dotnet_diagnostic.CA1305.severity = suggestion
+dotnet_diagnostic.CA1310.severity = suggestion
+dotnet_diagnostic.CA1507.severity = suggestion
+dotnet_diagnostic.CA1510.severity = suggestion
+dotnet_diagnostic.CA1512.severity = suggestion
+dotnet_diagnostic.CA1513.severity = suggestion
+dotnet_diagnostic.CA1707.severity = suggestion
+dotnet_diagnostic.CA1708.severity = suggestion
+dotnet_diagnostic.CA1711.severity = suggestion
+dotnet_diagnostic.CA1716.severity = suggestion
+dotnet_diagnostic.CA1725.severity = suggestion
+dotnet_diagnostic.CA1805.severity = suggestion
+dotnet_diagnostic.CA1822.severity = suggestion
+dotnet_diagnostic.CA1826.severity = suggestion
+dotnet_diagnostic.CA1836.severity = suggestion
+dotnet_diagnostic.CA1848.severity = suggestion
+dotnet_diagnostic.CA1852.severity = suggestion
+dotnet_diagnostic.CA1854.severity = suggestion
+dotnet_diagnostic.CA1859.severity = suggestion
+dotnet_diagnostic.CA1860.severity = suggestion
+dotnet_diagnostic.CA1861.severity = suggestion
+dotnet_diagnostic.CA1865.severity = suggestion
+dotnet_diagnostic.CA1869.severity = suggestion
+dotnet_diagnostic.CA2211.severity = suggestion
+dotnet_diagnostic.CA2253.severity = suggestion
+
+# High-signal correctness/lifecycle rules: fail CI for new violations.
+dotnet_diagnostic.CA1806.severity = error
+dotnet_diagnostic.CA1816.severity = error
+dotnet_diagnostic.CA2012.severity = error
+dotnet_diagnostic.CA2016.severity = error
+dotnet_diagnostic.CA2215.severity = error
+
+# Keep these useful checks as warnings. Existing intentional cases are narrowed
+# below instead of disabling the rule repository-wide.
+dotnet_diagnostic.CA1001.severity = warning
+dotnet_diagnostic.CA2201.severity = warning
+dotnet_diagnostic.CA2254.severity = warning
+
+# Intentional lifecycle/deferred-disposal patterns.
+[Gondwana/Drawing/Sprites/Sprite.cs]
+dotnet_diagnostic.CA1816.severity = suggestion
+dotnet_diagnostic.CA2215.severity = suggestion
+
+[Gondwana/Scenes/Scene.cs]
+dotnet_diagnostic.CA2215.severity = suggestion
+
+# Event handlers deliberately launch operations that own their exception
+# reporting; synchronous browser lifecycle hooks cannot await JS disposal.
+[Gondwana.Widgets/Controls/HyperlinkWidget.cs]
+dotnet_diagnostic.CA2012.severity = suggestion
+
+[Gondwana.Blazor/**/*.cs]
+dotnet_diagnostic.CA2012.severity = suggestion
+
+[Gondwana.Blazor.Hosting/**/*.cs]
+dotnet_diagnostic.CA2012.severity = suggestion
+
+# BlazorGameHostBase lives at the project root; the nested glob above does not
+# cover it. Its synchronous lifecycle overrides intentionally fire-and-forget
+# JS interop because their base contracts cannot be awaited.
+[Gondwana.Blazor.Hosting/BlazorGameHostBase.cs]
+dotnet_diagnostic.CA2012.severity = suggestion
+
+# Test-only finalizer suppression and deliberately broad exception doubles.
+[Testing/**/*.cs]
+dotnet_diagnostic.CA1816.severity = suggestion
+dotnet_diagnostic.CA2201.severity = suggestion
+
+# Framework-owned demo/plugin lifecycles dispose their resources through
+# close/detach/project-close callbacks rather than IDisposable.
+[Demos/**/*.cs]
+dotnet_diagnostic.CA1001.severity = suggestion
+dotnet_diagnostic.CA1806.severity = suggestion
+
+[Tooling/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/**/*.cs]
+dotnet_diagnostic.CA1001.severity = suggestion
+
+[Tooling/Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/ProjectDiagnosticsPlugin.cs]
+dotnet_diagnostic.CA1001.severity = suggestion
+
+# Native allocation failure is intentionally surfaced as OutOfMemoryException.
+[Gondwana.Video/VideoDecodeBuffer.cs]
+dotnet_diagnostic.CA2201.severity = suggestion
+
+# These files are compiled both in their owning project and as linked source in
+# test projects. System.Drawing may be implicit in one compilation but required
+# explicitly in another, so IDE0005 cannot be enforced consistently per file.
+[Demos/Gondwana.Platformer/EnemyContact.cs]
+dotnet_diagnostic.IDE0005.severity = suggestion
+
+[Tooling/Gondwana.Tooling.Tilesheets.WinForms/Editing/TilesheetDocument.cs]
+dotnet_diagnostic.IDE0005.severity = suggestion
+
+[Tooling/Gondwana.Tooling.Tilesheets.WinForms/Editing/FrameGeometry.cs]
+dotnet_diagnostic.IDE0005.severity = suggestion
+
+[Tooling/Gondwana.Tooling.Tilesheets.WinForms/Editing/OverlaySettings.cs]
+dotnet_diagnostic.IDE0005.severity = suggestion

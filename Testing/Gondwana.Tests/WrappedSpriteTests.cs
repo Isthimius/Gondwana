@@ -1,7 +1,4 @@
-using System.Drawing;
-using System.Numerics;
 using Gondwana.Drawing;
-using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Physics.Collisions;
 using Gondwana.Rendering.Views;

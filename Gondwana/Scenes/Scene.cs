@@ -37,6 +37,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
 
     // Read legacy state files that used the private field name without
     // continuing to emit that implementation detail in new JSON.
+#pragma warning disable IDE0051 // Used by Newtonsoft.Json via reflection for legacy state.
     [JsonProperty("_sceneLayers")]
     private List<SceneLayer>? LegacySceneLayers
     {
@@ -53,12 +54,14 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
         }
     }
 
+#pragma warning restore IDE0051
+
     [JsonIgnore]
     private readonly object _renderSurfaceHostSync = new();
 
     [JsonIgnore]
     private RenderSurfaceHostBase? _boundRenderSurfaceHost;
-    
+
     #region Scene events
 
     /// <summary>

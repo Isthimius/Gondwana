@@ -71,6 +71,12 @@ jobs:
         # configuration, preventing NETSDK1047 errors in the subsequent --no-restore build.
         run: dotnet restore --nologo /p:Configuration=Release /p:EnableWindowsTargeting=true
 
+      - name: Verify formatting
+        run: dotnet format whitespace Gondwana.sln --verify-no-changes --no-restore --verbosity minimal
+
+      - name: Verify dead-code and using cleanup
+        run: dotnet format style Gondwana.sln --verify-no-changes --no-restore --severity warn --diagnostics IDE0005 IDE0059 IDE0051 --verbosity minimal
+
       - name: Build
         run: dotnet build --configuration Release --no-restore --nologo /p:EnableWindowsTargeting=true
 
@@ -98,6 +104,7 @@ jobs:
           mkdir -p publish/Gondwana.Hosting
           mkdir -p publish/Gondwana.Input.SDL2
           mkdir -p publish/Gondwana.Video
+          mkdir -p publish/Gondwana.Video.Widgets
           mkdir -p publish/Gondwana.Widgets
           mkdir -p publish/Gondwana.WinForms
           mkdir -p publish/Gondwana.WinForms.Hosting
@@ -117,6 +124,7 @@ jobs:
           dotnet publish Gondwana.Hosting/Gondwana.Hosting.csproj -c Release -o publish/Gondwana.Hosting --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.Input.SDL2/Gondwana.Input.SDL2.csproj -c Release -o publish/Gondwana.Input.SDL2 --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.Video/Gondwana.Video.csproj -c Release -o publish/Gondwana.Video --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Gondwana.Video.Widgets/Gondwana.Video.Widgets.csproj -c Release -o publish/Gondwana.Video.Widgets --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.Widgets/Gondwana.Widgets.csproj -c Release -o publish/Gondwana.Widgets --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.WinForms/Gondwana.WinForms.csproj -c Release -o publish/Gondwana.WinForms --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.csproj -c Release -o publish/Gondwana.WinForms.Hosting --nologo /p:EnableWindowsTargeting=true
@@ -143,6 +151,7 @@ jobs:
           cp publish/Gondwana.Hosting/Gondwana.Hosting.dll artifacts/
           cp publish/Gondwana.Input.SDL2/Gondwana.Input.SDL2.dll artifacts/
           cp publish/Gondwana.Video/Gondwana.Video.dll artifacts/
+          cp publish/Gondwana.Video.Widgets/Gondwana.Video.Widgets.dll artifacts/
           cp publish/Gondwana.Widgets/Gondwana.Widgets.dll artifacts/
           cp publish/Gondwana.WinForms/Gondwana.WinForms.dll artifacts/
           cp publish/Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.dll artifacts/

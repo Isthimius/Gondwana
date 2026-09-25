@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Runtime.CompilerServices;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
@@ -812,13 +812,10 @@ public class DirectRectangle : DirectDrawingMovableBase
         if (tick <= _lastTick)
             return;
 
-        // Compute dt from ticks (seconds)
-        float dt = 0f;
-
         // no previous tick assume first frame, so skip dt-based updates
         if (_pulseLastTick > 0)
         {
-            dt = HighResTimer.GetDuration(_pulseLastTick, tick);
+            float dt = HighResTimer.GetDuration(_pulseLastTick, tick);
             _timeSec += dt;
         }
 
@@ -1249,7 +1246,7 @@ public class DirectRectangle : DirectDrawingMovableBase
             // If border color set, use it for stroke; else match fill/base color
             if (_borderColor.HasValue)
             {
-                var sc = _strokePaint.Color; // preserve alpha if you want; otherwise:
+                _ = _strokePaint.Color; // preserve alpha if you want; otherwise:
                 _strokePaint.Color = _borderColor.Value;
             }
             else
@@ -1313,7 +1310,7 @@ public class DirectRectangle : DirectDrawingMovableBase
         byte g = (byte)(a.Green + (b.Green - a.Green) * t01);
         byte bch = (byte)(a.Blue + (b.Blue - a.Blue) * t01);
         byte aA = (byte)(a.Alpha + (b.Alpha - a.Alpha) * t01);
-        
+
         return new SKColor(r, g, bch, aA);
     }
 }

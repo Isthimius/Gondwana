@@ -50,23 +50,23 @@ public sealed class SpriteManager : IDisposable
     /// </summary>
     public bool SizeNewSpritesToSceneLayer { get; set; } = true;
 
-private string _defaultCollisionProfile = CollisionProfileNames.Actor;
+    private string _defaultCollisionProfile = CollisionProfileNames.Actor;
 
-/// <summary>
-/// Gets or sets the scene collision profile assigned to newly created sprites
-/// when no profile is specified explicitly.
-/// </summary>
-public string DefaultCollisionProfile
-{
-    get => _defaultCollisionProfile;
-    set
+    /// <summary>
+    /// Gets or sets the scene collision profile assigned to newly created sprites
+    /// when no profile is specified explicitly.
+    /// </summary>
+    public string DefaultCollisionProfile
     {
-        if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("Default collision profile cannot be empty.", nameof(value));
+        get => _defaultCollisionProfile;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                throw new ArgumentException("Default collision profile cannot be empty.", nameof(value));
 
-        _defaultCollisionProfile = value;
+            _defaultCollisionProfile = value;
+        }
     }
-}
     #region public methods
 
     /// <summary>

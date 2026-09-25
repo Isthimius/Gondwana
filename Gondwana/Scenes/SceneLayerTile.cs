@@ -3,7 +3,6 @@ using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Collisions;
 using Gondwana.Physics.Collisions;
-using Gondwana.Rendering;
 using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;

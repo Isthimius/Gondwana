@@ -1,13 +1,12 @@
+using System.Drawing;
+using System.Numerics;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
-using Gondwana.Rendering;
 using Gondwana.Input.Keyboard;
+using Gondwana.Rendering;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.Widgets;
-using System.Drawing;
-using System.Numerics;
-using Gondwana.Tests;
 
 namespace Gondwana.Tests.Widgets;
 

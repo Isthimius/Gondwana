@@ -45,6 +45,7 @@ dotnet add package Gondwana
 -   `Gondwana.Hosting` --- Standard platform-agnostic scaffolding for initializing and running Gondwana games
 -   `Gondwana.Input.SDL2` --- SDL2-based input handling
 -   `Gondwana.Video` --- Video playback support
+-   `Gondwana.Video.Widgets` --- Optional interactive video Widget bridge with opt-in dragging
 -   `Gondwana.Widgets` --- UI widget library for creating in-game menus, HUDs, and overlays
 -   `Gondwana.WinForms` --- WinForms rendering and input adapters
 -   `Gondwana.WinForms.Hosting` --- WinForms-specific game host that integrates rendering and input into the Gondwana lifecycle

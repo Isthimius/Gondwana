@@ -1,13 +1,11 @@
-using System.Runtime.ExceptionServices;
 using System.Reflection;
-using Gondwana.Drawing.Tilesheets.GTS;
+using System.Runtime.ExceptionServices;
 using Gondwana.Drawing.Sprites;
-using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets;
+using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Sprites.Editing;
-using Gondwana.Tooling.Sprites.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Sprites.WinForms.Tests;
@@ -26,7 +24,8 @@ public sealed class InteractionTests
         var gts = Path.Combine(directory, "actors.gts");
         TilesheetDefinitionSerializer.Save(gts, new TilesheetDefinition
         {
-            Name = "actors", Image = new() { FilePath = "actors.png" },
+            Name = "actors",
+            Image = new() { FilePath = "actors.png" },
             Regions = [new() { Name = "default", Area = new Rectangle(0, 0, 32, 16), TileSize = new Size(16, 16) }]
         });
         var gscn = Path.Combine(directory, "level.gscn");

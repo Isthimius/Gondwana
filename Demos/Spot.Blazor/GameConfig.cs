@@ -1,6 +1,4 @@
-using Gondwana.Demos.SpotBlazor.Game;
 using SkiaSharp;
-using System.Linq;
 
 namespace Gondwana.Demos.SpotBlazor;
 

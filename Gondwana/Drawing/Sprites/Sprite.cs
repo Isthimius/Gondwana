@@ -28,6 +28,8 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     private string? _serializedSceneId;
     private string? _serializedSceneLayerId;
 
+#pragma warning disable IDE0051 // Used by Newtonsoft.Json via reflection for state serialization.
+
     /// <summary>
     /// Stores a stable scene identity instead of serializing the owning SceneLayer object graph.
     /// </summary>
@@ -69,6 +71,8 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             _serializedSceneLayerId = value.ID;
         }
     }
+
+#pragma warning restore IDE0051
 
     private HorizontalAlignment _horizAlign;
     private VerticalAlignment _vertAlign;

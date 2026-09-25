@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Numerics;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
@@ -117,7 +116,8 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
         RectangleF bounds = Scene!.GetWorldBoundsPx();
         _particles = new ParticleSurface(RenderSurface.Host, _gameplayLayer,
             Rectangle.FromLTRB((int)bounds.Left, (int)bounds.Top, (int)bounds.Right, (int)bounds.Bottom),
-            "azure-strike-particles", 1000) { ZOrder = 80 };
+            "azure-strike-particles", 1000)
+        { ZOrder = 80 };
 
         var view = RenderSurface.Host.ViewManager.Views[0];
         _hud = new TextBlock(RenderSurface.Host, view, new Rectangle(18, 16, 720, 58), "hud")
@@ -281,8 +281,14 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
         _particles.Burst(new ParticleEmitter
         {
             Position = new PointF(area.Left + area.Width / 2f, area.Top + area.Height / 2f),
-            EmitRate = 0, LifeRange = (.3f, .9f), VelocityRangeX = (-260, 260), VelocityRangeY = (-260, 260),
-            SizeRange = (3, 9), Color = new SKColor(255, 145, 50), SpawnDistribution = ParticleSpawnDistribution.Gaussian, GravityY = 0
+            EmitRate = 0,
+            LifeRange = (.3f, .9f),
+            VelocityRangeX = (-260, 260),
+            VelocityRangeY = (-260, 260),
+            SizeRange = (3, 9),
+            Color = new SKColor(255, 145, 50),
+            SpawnDistribution = ParticleSpawnDistribution.Gaussian,
+            GravityY = 0
         }, count);
     }
 

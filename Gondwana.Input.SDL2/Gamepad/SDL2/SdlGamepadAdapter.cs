@@ -1,4 +1,4 @@
-﻿using static SDL2.SDL;
+using static SDL2.SDL;
 
 namespace Gondwana.Input.Gamepad.SDL2;
 
@@ -19,22 +19,22 @@ public sealed class SdlGamepadAdapter : IGamepadAdapter
     /// Gets the collection of currently pressed button names.
     /// </summary>
     public IReadOnlyCollection<string> PressedButtons => _pressedButtons;
-    
+
     /// <summary>
     /// Gets the current state of the left analog stick.
     /// </summary>
     public GamepadStickState? LeftStick { get; private set; }
-    
+
     /// <summary>
     /// Gets the current state of the right analog stick.
     /// </summary>
     public GamepadStickState? RightStick { get; private set; }
-    
+
     /// <summary>
     /// Gets the current pressure value of the left trigger (0.0 to 1.0).
     /// </summary>
     public float LeftTrigger { get; private set; }
-    
+
     /// <summary>
     /// Gets the current pressure value of the right trigger (0.0 to 1.0).
     /// </summary>

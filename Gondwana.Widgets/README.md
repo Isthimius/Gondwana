@@ -20,6 +20,12 @@ and backbuffers using the same engine-driven drawing pipeline as the rest of the
 
 ## Installation
 
+Interactive desktop video is available separately in
+[`Gondwana.Video.Widgets`](../Gondwana.Video.Widgets/README.md). Its `VideoWidget`
+composes `DirectVideo` with ordinary Widget input/lifecycle and dragging (disabled
+by default). Installing Widgets alone adds no Video or LibVLC dependency. Native
+requirements remain those of Gondwana.Video.
+
 ```bash
 dotnet add package Gondwana.Widgets
 ```

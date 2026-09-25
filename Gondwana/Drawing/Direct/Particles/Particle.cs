@@ -1,4 +1,4 @@
-﻿using SkiaSharp;
+using SkiaSharp;
 
 namespace Gondwana.Drawing.Direct.Particles;
 

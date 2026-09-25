@@ -14,6 +14,7 @@ $ChangelogProjects = @(
     [pscustomobject]@{ Path = "Gondwana.Hosting"; RootName = "Gondwana.Hosting"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Gondwana.Input.SDL2"; RootName = "Gondwana.Input.SDL2"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Gondwana.Video"; RootName = "Gondwana.Video"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
+    [pscustomobject]@{ Path = "Gondwana.Video.Widgets"; RootName = "Gondwana.Video.Widgets"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Gondwana.Widgets"; RootName = "Gondwana.Widgets"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Gondwana.WinForms"; RootName = "Gondwana.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $true },
     [pscustomobject]@{ Path = "Gondwana.WinForms.Hosting"; RootName = "Gondwana.WinForms.Hosting"; GenerateChangelog = $true; IncludeInRootChangelog = $true },

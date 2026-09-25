@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Input.Gamepad;
+namespace Gondwana.Input.Gamepad;
 
 /// <summary>
 /// Provides centralized polling and event management for gamepad button inputs across multiple gamepad devices.

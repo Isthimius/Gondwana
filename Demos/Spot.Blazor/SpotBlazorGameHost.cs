@@ -1,15 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using Microsoft.Extensions.Logging;
-using Microsoft.JSInterop;
-using SkiaSharp;
-using Gondwana;
-using Gondwana.Audio.Browser;
 using Gondwana.Blazor.Hosting;
 using Gondwana.Blazor.Rendering;
+using Gondwana.Demos.SpotBlazor.Game;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
@@ -18,7 +10,8 @@ using Gondwana.Drawing.Tilesheets;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
-using Gondwana.Demos.SpotBlazor.Game;
+using Microsoft.JSInterop;
+using SkiaSharp;
 
 namespace Gondwana.Demos.SpotBlazor;
 
@@ -213,7 +206,7 @@ internal sealed class SpotBlazorGameHost : BlazorGpuGameHost
     internal void SetMusicEnabled(bool enabled)
     {
         MusicEnabled = enabled;
-        
+
         var audioManager = Engine.Instance.GetBrowserAudioManager();
         if (audioManager.Contains("music"))
         {
@@ -316,23 +309,23 @@ internal sealed class SpotBlazorGameHost : BlazorGpuGameHost
             {
                 case "Blue":
                     player.DefaultFrame = new Frame(_spotSheetDefault, 0, 0);
-                    player.ActiveFrame  = new Frame(_spotSheetSelected, 0, 0);
+                    player.ActiveFrame = new Frame(_spotSheetSelected, 0, 0);
                     break;
                 case "Green":
                     player.DefaultFrame = new Frame(_spotSheetDefault, 0, 1);
-                    player.ActiveFrame  = new Frame(_spotSheetSelected, 1, 0);
+                    player.ActiveFrame = new Frame(_spotSheetSelected, 1, 0);
                     break;
                 case "Violet":
                     player.DefaultFrame = new Frame(_spotSheetDefault, 0, 2);
-                    player.ActiveFrame  = new Frame(_spotSheetSelected, 2, 0);
+                    player.ActiveFrame = new Frame(_spotSheetSelected, 2, 0);
                     break;
                 case "Red":
                     player.DefaultFrame = new Frame(_spotSheetDefault, 0, 3);
-                    player.ActiveFrame  = new Frame(_spotSheetSelected, 3, 0);
+                    player.ActiveFrame = new Frame(_spotSheetSelected, 3, 0);
                     break;
                 case "Yellow":
                     player.DefaultFrame = new Frame(_spotSheetDefault, 0, 4);
-                    player.ActiveFrame  = new Frame(_spotSheetSelected, 4, 0);
+                    player.ActiveFrame = new Frame(_spotSheetSelected, 4, 0);
                     break;
             }
         }
@@ -362,7 +355,7 @@ internal sealed class SpotBlazorGameHost : BlazorGpuGameHost
     private void PlaySound(string key)
     {
         if (!SoundEffectsEnabled) return;
-        
+
         var audioManager = Engine.Instance.GetBrowserAudioManager();
         if (audioManager.Contains(key))
         {
@@ -387,15 +380,15 @@ internal sealed class SpotBlazorGameHost : BlazorGpuGameHost
 
         return new ParticleEmitter
         {
-            Position      = new PointF(width * 1.1f, height * 0.5f),
-            JitterY       = height * 0.5f,
-            EmitRate      = 0.65f,
-            LifeRange     = (1000f, 2000f),
+            Position = new PointF(width * 1.1f, height * 0.5f),
+            JitterY = height * 0.5f,
+            EmitRate = 0.65f,
+            LifeRange = (1000f, 2000f),
             VelocityRangeX = (-100f, -50f),
             VelocityRangeY = (-1f, 1f),
-            SizeRange     = (40f, 80f),
-            GravityY      = 0f,
-            BlendMode     = SKBlendMode.SrcOver,
+            SizeRange = (40f, 80f),
+            GravityY = 0f,
+            BlendMode = SKBlendMode.SrcOver,
             OnSpawn = (ref Particle p) =>
             {
                 var baseColor = colors[_rng.Next(colors.Length)];
@@ -428,22 +421,22 @@ internal sealed class SpotBlazorGameHost : BlazorGpuGameHost
     {
         return new ParticleEmitter
         {
-            Position       = new PointF(width * 1.4f, height * 0.5f),
-            JitterY        = height * 0.5f,
-            EmitRate       = 0.075f,
-            LifeRange      = (2000f, 2000f),
+            Position = new PointF(width * 1.4f, height * 0.5f),
+            JitterY = height * 0.5f,
+            EmitRate = 0.075f,
+            LifeRange = (2000f, 2000f),
             VelocityRangeX = (-50f, -25f),
             VelocityRangeY = (-1f, 1f),
-            SizeRange      = (200f, 500f),
-            GravityY       = 0f,
-            BlendMode      = SKBlendMode.SrcOver,
+            SizeRange = (200f, 500f),
+            GravityY = 0f,
+            BlendMode = SKBlendMode.SrcOver,
             ParticleSprite = _clouds?.SkBitmap,
             OnSpawn = (ref Particle p) =>
             {
                 p.AngularVel = 0;
-                p.Rotation   = 0;
-                byte alpha   = (byte)_rng.Next(100, 180);
-                p.Tint       = new SKColor(255, 255, 255, alpha);
+                p.Rotation = 0;
+                byte alpha = (byte)_rng.Next(100, 180);
+                p.Tint = new SKColor(255, 255, 255, alpha);
             }
         };
     }
@@ -552,10 +545,10 @@ internal sealed class SpotBlazorGameHost : BlazorGpuGameHost
         bool multipleWinners;
         string message;
 
-        var primaryTextColor  = winningPlayers[0].ColorItem.TextColor.ToColor();
-        Color? secondaryTextColor  = null;
-        var primaryFillColor  = winningPlayers[0].ColorItem.Color.ToColor();
-        Color? secondaryFillColor  = null;
+        var primaryTextColor = winningPlayers[0].ColorItem.TextColor.ToColor();
+        Color? secondaryTextColor = null;
+        var primaryFillColor = winningPlayers[0].ColorItem.Color.ToColor();
+        Color? secondaryFillColor = null;
 
         if (winningPlayers.Count == 1)
         {
@@ -613,35 +606,35 @@ internal sealed class SpotBlazorGameHost : BlazorGpuGameHost
 
     private void HookSpotGameEvents()
     {
-        SpotGame.GameStarted              += OnGameStarted;
-        SpotGame.PlayerTurnStarted        += OnPlayerTurnStarted;
-        SpotGame.PlayerTurnEnded          += OnPlayerTurnEnded;
-        SpotGame.SpotSelected             += OnSpotSelected;
-        SpotGame.SpotDeselected           += OnSpotDeselected;
+        SpotGame.GameStarted += OnGameStarted;
+        SpotGame.PlayerTurnStarted += OnPlayerTurnStarted;
+        SpotGame.PlayerTurnEnded += OnPlayerTurnEnded;
+        SpotGame.SpotSelected += OnSpotSelected;
+        SpotGame.SpotDeselected += OnSpotDeselected;
         SpotGame.InvalidSelectionAttempted += OnInvalidSelectionAttempted;
-        SpotGame.InvalidMoveAttempted      += OnInvalidMoveAttempted;
-        SpotGame.PlayerMoveStarted        += OnPlayerMoveStarted;
-        SpotGame.PlayerMoveStopped        += OnPlayerMoveStopped;
-        SpotGame.CellsCaptured            += OnCellsCaptured;
-        SpotGame.NoValidMovesAvailable    += OnNoValidMovesAvailable;
-        SpotGame.GameOver                 += OnGameOver;
+        SpotGame.InvalidMoveAttempted += OnInvalidMoveAttempted;
+        SpotGame.PlayerMoveStarted += OnPlayerMoveStarted;
+        SpotGame.PlayerMoveStopped += OnPlayerMoveStopped;
+        SpotGame.CellsCaptured += OnCellsCaptured;
+        SpotGame.NoValidMovesAvailable += OnNoValidMovesAvailable;
+        SpotGame.GameOver += OnGameOver;
     }
 
     private void UnhookSpotGameEvents()
     {
         if (SpotGame is null) return;
-        SpotGame.GameStarted              -= OnGameStarted;
-        SpotGame.PlayerTurnStarted        -= OnPlayerTurnStarted;
-        SpotGame.PlayerTurnEnded          -= OnPlayerTurnEnded;
-        SpotGame.SpotSelected             -= OnSpotSelected;
-        SpotGame.SpotDeselected           -= OnSpotDeselected;
+        SpotGame.GameStarted -= OnGameStarted;
+        SpotGame.PlayerTurnStarted -= OnPlayerTurnStarted;
+        SpotGame.PlayerTurnEnded -= OnPlayerTurnEnded;
+        SpotGame.SpotSelected -= OnSpotSelected;
+        SpotGame.SpotDeselected -= OnSpotDeselected;
         SpotGame.InvalidSelectionAttempted -= OnInvalidSelectionAttempted;
-        SpotGame.InvalidMoveAttempted      -= OnInvalidMoveAttempted;
-        SpotGame.PlayerMoveStarted        -= OnPlayerMoveStarted;
-        SpotGame.PlayerMoveStopped        -= OnPlayerMoveStopped;
-        SpotGame.CellsCaptured            -= OnCellsCaptured;
-        SpotGame.NoValidMovesAvailable    -= OnNoValidMovesAvailable;
-        SpotGame.GameOver                 -= OnGameOver;
+        SpotGame.InvalidMoveAttempted -= OnInvalidMoveAttempted;
+        SpotGame.PlayerMoveStarted -= OnPlayerMoveStarted;
+        SpotGame.PlayerMoveStopped -= OnPlayerMoveStopped;
+        SpotGame.CellsCaptured -= OnCellsCaptured;
+        SpotGame.NoValidMovesAvailable -= OnNoValidMovesAvailable;
+        SpotGame.GameOver -= OnGameOver;
     }
 
     private void OnGameStarted(SpotGame game)
@@ -665,7 +658,7 @@ internal sealed class SpotBlazorGameHost : BlazorGpuGameHost
             timer.Tick += () =>
             {
                 timer.Dispose();
-                var moves    = SpotGame.SpotGameField.GetBestMovesForPlayer(player);
+                var moves = SpotGame.SpotGameField.GetBestMovesForPlayer(player);
                 var bestMove = moves[_rng.Next(moves.Count)];
                 SpotGame.AttemptSelectCell(bestMove.FromCell, out _);
 
@@ -690,7 +683,7 @@ internal sealed class SpotBlazorGameHost : BlazorGpuGameHost
         sprite.StopJiggle();
         sprite.CurrentFrame = cell.OccupiedBy!.ActiveFrame;
         sprite.PulseBy(1.1f, 0.4f, 0.4f, true);
-        
+
         PlaySound("spotSelected");
     }
 
@@ -700,7 +693,7 @@ internal sealed class SpotBlazorGameHost : BlazorGpuGameHost
         sprite.StartJiggle(loop: true);
         sprite.CurrentFrame = cell.OccupiedBy!.DefaultFrame;
         sprite.StopPulse(true, 0.2f);
-        
+
         PlaySound("spotDeselected");
     }
 
@@ -723,7 +716,7 @@ internal sealed class SpotBlazorGameHost : BlazorGpuGameHost
     {
         if (_showScores) SetPlayerScores();
         SpotGame.NextPlayer();
-        
+
         PlaySound("drop");
     }
 
@@ -738,13 +731,13 @@ internal sealed class SpotBlazorGameHost : BlazorGpuGameHost
             handler = () =>
             {
                 oldSprite.ResizeComplete -= handler;
-                oldSprite.CurrentFrame   = cell.OccupiedBy!.DefaultFrame;
+                oldSprite.CurrentFrame = cell.OccupiedBy!.DefaultFrame;
                 oldSprite.ResizeTo(new(56, 56), 0.2f);
             };
             oldSprite.ResizeComplete += handler;
             oldSprite.ResizeTo(new(1, 1), 0.2f);
         }
-        
+
         if (cellsCaptured.Count > 0)
         {
             PlaySound("knock");
@@ -764,12 +757,12 @@ internal sealed class SpotBlazorGameHost : BlazorGpuGameHost
         StopPlayerJiggle(SpotGame.CurrentPlayer);
         JiggleAllPlayers();
 
-        var allScores    = SpotGame.GetAllPlayerScores();
-        var maxScore     = allScores.Values.Max();
-        var winners      = allScores.Where(kvp => kvp.Value == maxScore).Select(kvp => kvp.Key).ToList();
+        var allScores = SpotGame.GetAllPlayerScores();
+        var maxScore = allScores.Values.Max();
+        var winners = allScores.Where(kvp => kvp.Value == maxScore).Select(kvp => kvp.Key).ToList();
 
         CreateGameOverText(winners);
-        
+
         // Play win or lose sound
         bool currentPlayerWon = winners.Contains(SpotGame.CurrentPlayer);
         PlaySound(currentPlayerWon ? "gameWin" : "gameLose");

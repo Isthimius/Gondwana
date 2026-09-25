@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Physics.Movement.Scripted;
 using Gondwana.Scenes;

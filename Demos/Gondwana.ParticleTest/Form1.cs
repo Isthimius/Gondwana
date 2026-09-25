@@ -1,12 +1,10 @@
-﻿using Gondwana.Drawing.Direct;
-using Gondwana.Drawing.Direct.Particles;
-using Gondwana.Scenes;
-using Gondwana.Drawing.Coordinates;
-using SkiaSharp;
-using System.Text;
-using static Gondwana.Drawing.Direct.TextBlock;
 using System.Numerics;
+using System.Text;
+using Gondwana.Drawing.Direct;
+using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Physics.Movement.Easing;
+using SkiaSharp;
+using static Gondwana.Drawing.Direct.TextBlock;
 
 namespace Gondwana.Demos.ParticleTest;
 
@@ -53,7 +51,7 @@ public partial class Form1 : Form
         Engine.Instance.Start();
         Engine.Instance.Configuration.TargetFPS = 60;
 
-        _particleSurface = new ParticleSurface(renderSurface,renderSurface.ViewManager.Views[0], new Rectangle(0, 0, adapter.Width, adapter.Height), null, 10000);
+        _particleSurface = new ParticleSurface(renderSurface, renderSurface.ViewManager.Views[0], new Rectangle(0, 0, adapter.Width, adapter.Height), null, 10000);
         _particleSurface.CullingMarginX = 1300f;
         _particleSurface.Emitters.Add(GetSparks(adapter.Width, adapter.Height));
         //_particleSurface.Emitters.Add(GetColorfulSparks(adapter.Width, adapter.Height));
@@ -92,7 +90,7 @@ public partial class Form1 : Form
             .UseShadow()
             .SetShadow(6, 6, 200, 3.0f)
             .UseOutline();
-            //.StartTypewriter(5); 
+        //.StartTypewriter(5); 
 
         _textBlock.ZOrder = 10;
 
@@ -127,6 +125,7 @@ public partial class Form1 : Form
         return sparks;
     }
 
+#pragma warning disable IDE0051 // Optional particle presets retained for manual demo selection.
     private ParticleEmitter GetColorfulSparks(float width, float height)
     {
         var rng = new Random();
@@ -164,7 +163,7 @@ public partial class Form1 : Form
         float x = c * (1 - Math.Abs((h / 60f) % 2 - 1));
         float m = v - c;
 
-        float r = 0, g = 0, b = 0;
+        float r, g, b;
         if (h < 60) (r, g, b) = (c, x, 0);
         else if (h < 120) (r, g, b) = (x, c, 0);
         else if (h < 180) (r, g, b) = (0, c, x);
@@ -194,7 +193,7 @@ public partial class Form1 : Form
             VelocityRangeY = (500f, 700f),   // falling fast
             SizeRange = (1f, 2f),            // thin drops
             Color = new SKColor(120, 160, 255, 180),
-            
+
             OnSpawn = (ref Particle p) =>
             {
                 // spawn anywhere across the top edge
@@ -447,4 +446,6 @@ public partial class Form1 : Form
             }
         };
     }
+#pragma warning restore IDE0051
+
 }

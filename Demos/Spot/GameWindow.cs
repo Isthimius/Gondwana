@@ -1,12 +1,9 @@
 using System;
 using System.Drawing;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.Extensions.Logging;
 using Gondwana.Configuration;
-using Gondwana.WinForms.Rendering;
 using Gondwana.Demos.Spot.Hosts;
+using Gondwana.WinForms.Rendering;
 
 namespace Gondwana.Demos.Spot;
 
@@ -182,7 +179,7 @@ internal partial class GameWindow : Form
         var raw = _configFile.EngineConfig.GetConfigurationValue(ConfigSection, key, defaultValue ? "true" : "false");
         return string.Equals(raw, "true", StringComparison.OrdinalIgnoreCase);
     }
-    
+
     private void PersistSetting(string key, string value)
     {
         if (_configFile == null)
@@ -206,7 +203,7 @@ internal partial class GameWindow : Form
 
         #region Game menu
         var gameMenu = new ToolStripMenuItem("Game");
-var newGameMenuItem = new ToolStripMenuItem("New Game", null, (s, e) => _gameHost?.OpenNewGameDialog(_gameHost?.LastNewGameOptions));
+        var newGameMenuItem = new ToolStripMenuItem("New Game", null, (s, e) => _gameHost?.OpenNewGameDialog(_gameHost?.LastNewGameOptions));
         var exitMenuItem = new ToolStripMenuItem("Exit", null, (s, e) => Close());
 
         gameMenu.DropDownItems.Add(newGameMenuItem);

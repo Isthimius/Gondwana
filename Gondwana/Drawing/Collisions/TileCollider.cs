@@ -1,4 +1,4 @@
-﻿using Gondwana.Physics.Collisions;
+using Gondwana.Physics.Collisions;
 
 namespace Gondwana.Drawing.Collisions;
 
@@ -29,27 +29,27 @@ public sealed class TileCollider : ICollider
     /// Gets the world-space axis-aligned bounding box in scene world pixels.
     /// </summary>
     public Aabb BoundsWorldPx => Aabb.FromRectangle(_tile.CollisionArea);
-    
+
     /// <summary>
     /// Gets the tile that owns this collider.
     /// </summary>
     public ICollisionEntity Owner => _tile;
-    
+
     /// <summary>
     /// Gets a value indicating whether this is a static, non-moving collider based on the tile's fixed position state.
     /// </summary>
     public bool IsStatic => _tile.IsPositionFixed;
-    
+
     /// <summary>
     /// Gets or sets the bitmask identifying what this collider is (e.g., Player = 1, World = 2, Enemy = 4).
     /// </summary>
     public int CollisionGroup { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the bitmask of collision groups this collider interacts with.
     /// </summary>
     public int CollidesWith { get; set; }
-    
+
     /// <summary>
     /// Gets or sets how this collider responds to collisions (Solid blocks movement, Trigger reports only).
     /// </summary>

@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Drawing.Coordinates;
+namespace Gondwana.Drawing.Coordinates;
 
 /// <summary>
 /// Identifies the layout and math rules used to map tiles to world pixels

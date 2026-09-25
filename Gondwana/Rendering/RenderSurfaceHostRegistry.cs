@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Rendering;
+namespace Gondwana.Rendering;
 
 /// <summary>
 /// Provides a central registry for tracking all active <see cref="RenderSurfaceHostBase"/> instances

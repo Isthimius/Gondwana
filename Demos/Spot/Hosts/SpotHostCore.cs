@@ -4,25 +4,23 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.Extensions.Logging;
-using SkiaSharp;
 using Gondwana.Audio;
+using Gondwana.Demos.Spot.Game;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Drawing.Tilesheets;
-using Gondwana.Hosting;
 using Gondwana.Input.Keyboard;
+using Gondwana.Rendering;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
-using Gondwana.WinForms.Input.Keyboard;
-using Gondwana.Demos.Spot.Game;
-using Gondwana.Rendering;
 using Gondwana.Widgets.Overlays;
+using Gondwana.WinForms.Input.Keyboard;
+using Microsoft.Extensions.Logging;
+using SkiaSharp;
 
 namespace Gondwana.Demos.Spot;
 
@@ -160,7 +158,7 @@ internal sealed class SpotHostCore
         Logging.EngineLogger.SetLogLevel(LogLevel.Information);
         Gondwana.Engine.Instance.CPSCalculated += (args) =>
         {
-            Engine.Logger.LogInformation(args.ToString());
+            Engine.Logger.LogInformation("{CyclesPerSecond}", args);
         };
 
         var scene = new Scene();

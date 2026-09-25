@@ -78,7 +78,7 @@ Checks performed:
 - SDL2 native binaries for `Gondwana.Input.SDL2`
 - LibVLC for `Gondwana.Video`
 
-A missing `wasm-tools` workload is a failure when the current directory contains a Blazor/WASM project; otherwise it is an optional warning. LibVLC may be reported as **Not checked** when the current project does not reference `Gondwana.Video`.
+A missing `wasm-tools` workload is a failure when the current directory contains a Blazor/WASM project; otherwise it is an optional warning. When the current project directly references `Gondwana.Video`, doctor explains app-local native deployment and asks you to run the application's smoke test. The CLI cannot validate a separate application's published native files. Outside a Video project, it probes system LibVLC and may report **Not checked**. Windows applications should reference `VideoLAN.LibVLC.Windows`; macOS uses a compatible `VideoLAN.LibVLC.Mac` runtime; Linux uses distribution LibVLC and codec plugins. See the [Video guide](https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Video/README.md). Development setup does not install global VLC for this optional package.
 
 Currently auto-fixable:
 

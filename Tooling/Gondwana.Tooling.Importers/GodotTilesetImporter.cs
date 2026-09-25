@@ -56,9 +56,13 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                 throw new InvalidDataException("Invalid atlas dimensions/margins/separation.");
             string file = sources.Length == 1 ? basename : $"{basename}-source-{id}";
             string name = sources.Length == 1 ? basename : $"{basename}.source.{id}";
-            var region = new TilesheetRegionDefinition { Area = new Rectangle(0, 0, image.Width, image.Height), TileSize = new Size(size.X, size.Y),
+            var region = new TilesheetRegionDefinition
+            {
+                Area = new Rectangle(0, 0, image.Width, image.Height),
+                TileSize = new Size(size.X, size.Y),
                 TilePadding = new Spacing { Right = gap.X, Bottom = gap.Y },
-                RegionMargin = new Spacing { Left = margin.X, Top = margin.Y, Right = -gap.X, Bottom = -gap.Y } };
+                RegionMargin = new Spacing { Left = margin.X, Top = margin.Y, Right = -gap.X, Bottom = -gap.Y }
+            };
             var grid = TilesheetDefinitionValidator.GridSize(region);
             if (Vector(Get(root.Properties, "tile_size", "Vector2i(16, 16)")) != size)
                 plan.Report(ExternalImportSeverity.Info, "godot.cellsize", "Preserving atlas texture-region frame size; TileSet logical map cell size differs.");
@@ -93,8 +97,12 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                 double speed = Number(Get(p, coord + "/animation_speed", "1"));
                 if (columns < 0 || separation.X < 0 || separation.Y < 0 || speed <= 0) throw new InvalidDataException("Invalid Godot animation layout/speed.");
                 if (Get(p, coord + "/animation_mode", "0") != "0") plan.Report(ExternalImportSeverity.Warning, "godot.randomstart", "Random animation start times are not represented.");
-                var gani = new AnimationDefinition { Key = $"{name}.tile.{xy[0]}.{xy[1]}", CycleType = CycleType.Repeating,
-                    TilesheetSources = [AnimationTilesheetSourceDefinition.Loose(name, file + ".gts")] };
+                var gani = new AnimationDefinition
+                {
+                    Key = $"{name}.tile.{xy[0]}.{xy[1]}",
+                    CycleType = CycleType.Repeating,
+                    TilesheetSources = [AnimationTilesheetSourceDefinition.Loose(name, file + ".gts")]
+                };
                 for (int frame = 0; frame < count; frame++)
                 {
                     int x = checked(xy[0] + (1 + separation.X) * (columns > 0 ? frame % columns : frame));

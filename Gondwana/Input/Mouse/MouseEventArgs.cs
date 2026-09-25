@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using Gondwana.Input.Keyboard;
 
 namespace Gondwana.Input.Mouse;
@@ -85,7 +85,7 @@ public sealed class MouseEventArgs : EventArgs
     /// <summary>
     /// Gets the engine tick at the time this mouse event was generated.
     /// </summary>
-public long Tick { get; }
+    public long Tick { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MouseEventArgs"/> class with comprehensive mouse state information

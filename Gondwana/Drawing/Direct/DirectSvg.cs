@@ -1,5 +1,4 @@
 using System.Drawing;
-using Gondwana.Drawing;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;

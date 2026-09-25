@@ -1,12 +1,12 @@
-using System.Runtime.ExceptionServices;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using Gondwana.Assets;
+using Gondwana.Audio.GSND;
 using Gondwana.Drawing.Animation.GANI;
-using Gondwana.Logging;
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets.GTS;
+using Gondwana.Logging;
 using Gondwana.Scenes.GSCN;
-using Gondwana.Audio.GSND;
 using Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics;
 using Microsoft.Extensions.Logging;
 
@@ -62,7 +62,8 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         TilesheetDefinitionSerializer.Save(FilePath("tiles.gts"), new TilesheetDefinition { Name = "tiles" });
         AnimationDefinitionSerializer.Save(FilePath("nested/walk.gani"), new AnimationDefinition
         {
-            Key = "walk", TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("tiles", "../tiles.gts")]
+            Key = "walk",
+            TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("tiles", "../tiles.gts")]
         });
         SceneDefinitionSerializer.Save(FilePath("scene.gscn"), new SceneDefinition
         {
@@ -86,7 +87,8 @@ public sealed class ProjectDiagnosticsTests : IDisposable
     {
         AnimationDefinitionSerializer.Save(FilePath("walk.gani"), new AnimationDefinition
         {
-            Key = "walk", TilesheetSources =
+            Key = "walk",
+            TilesheetSources =
             [
                 AnimationTilesheetSourceDefinition.Loose("missing", "missing.gts"),
                 AnimationTilesheetSourceDefinition.Loose("malformed", "bad\0path"),

@@ -67,10 +67,11 @@ changelog:
         - gondwana-input
         - Gondwana.Input.SDL2
 
-    - title: Gondwana.Video
+    - title: Gondwana.Video and Video.Widgets
       labels:
         - gondwana-video
         - Gondwana.Video
+        - Gondwana.Video.Widgets
 
     - title: Testing
       labels:

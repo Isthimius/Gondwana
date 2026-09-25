@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Physics.Movement.Easing;
+namespace Gondwana.Physics.Movement.Easing;
 
 /// <summary>
 /// Common easing functions for scripted/tweened movement.

@@ -1,5 +1,4 @@
 using System.Drawing;
-using Gondwana.Drawing;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Physics.Collisions;

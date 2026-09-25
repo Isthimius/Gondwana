@@ -1,11 +1,10 @@
 using System.Runtime.ExceptionServices;
 using Gondwana.Assets;
-using Gondwana.Tooling.Sprites.WinForms;
 using Gondwana.Tooling.Animations.WinForms;
 using Gondwana.Tooling.Assets.WinForms;
 using Gondwana.Tooling.Audio.WinForms;
 using Gondwana.Tooling.Scenes.WinForms;
-using Gondwana.Tooling.Studio.WinForms;
+using Gondwana.Tooling.Sprites.WinForms;
 using Gondwana.Tooling.Studio.WinForms.Documents;
 using Gondwana.Tooling.Tilesheets.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
@@ -285,7 +284,8 @@ public sealed class CompositionTests
             }
             catch (Exception ex) { error = ex; }
             finally { Directory.Delete(directory, recursive: true); }
-        }) { IsBackground = true };
+        })
+        { IsBackground = true };
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(60)), "Studio interaction timed out.");

@@ -1,4 +1,4 @@
-﻿using Gondwana.Drawing.Tilesheets;
+using Gondwana.Drawing.Tilesheets;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

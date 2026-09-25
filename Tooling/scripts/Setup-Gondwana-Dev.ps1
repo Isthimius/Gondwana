@@ -19,8 +19,7 @@
       7.  Installs/updates Gondwana project templates (Gondwana.Templates).
       8.  Installs wasm-tools (if missing) and updates installed workloads.
       9.  Checks for SDL2 native binaries required by Gondwana.Input.SDL2.
-      10. Checks for LibVLC native binaries required by Gondwana.Video;
-          installs VLC (which includes LibVLC) via winget if missing (Windows only).
+      10. Explains app-local native LibVLC deployment for optional Gondwana.Video.
       11. Ensures git-cliff is installed; updates via winget when available (Windows).
       12. Installs butler (itch.io) by downloading the latest binary from the broth CDN
           (with fallback endpoints documented at https://itch.io/docs/butler/installing.html)
@@ -338,38 +337,12 @@ if ($SkipOptional) {
 
     # ─── Step 10: LibVLC native library ───────────────────────────────────────
 
-    Step '10/13 LibVLC native library (Gondwana.Video)'
-    $vlcDlls = if ($isWindowsOS) { @('libvlc.dll') } else { @('libvlc.so.5', 'libvlc.so') }
-    if (Test-NativeDll $vlcDlls) {
-        OK "LibVLC native library found."
-    } else {
-        INFO "LibVLC not detected. Attempting to install VLC via winget..."
-        if ($isWindowsOS -and (Get-Command winget -ErrorAction SilentlyContinue)) {
-            try {
-                Invoke-Cmd winget @('install', '--id', 'VideoLAN.VLC', '--silent',
-                                    '--accept-source-agreements', '--accept-package-agreements')
-                # Refresh PATH so the newly installed VLC directory is visible
-                $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine') + ';' +
-                            [System.Environment]::GetEnvironmentVariable('PATH', 'User')
-                if (Test-NativeDll $vlcDlls) {
-                    OK 'LibVLC is now available.'
-                } else {
-                    OK "VLC installed. libvlc.dll is in VLC's install directory."
-                    INFO "Add 'C:\Program Files\VideoLAN\VLC' to your PATH if you use Gondwana.Video."
-                }
-            } catch {
-                WARN "winget install VideoLAN.VLC failed: $_"
-                WARN "Download and install VLC manually from https://www.videolan.org/vlc/"
-                INFO "LibVLC is only required if you use the Gondwana.Video package."
-            }
-        } else {
-            WARN "LibVLC not found. Install VLC to get libvlc:"
-            INFO "  Windows: https://www.videolan.org/vlc/  or  winget install VideoLAN.VLC"
-            INFO "  Linux:   sudo apt install libvlc-dev  (or equivalent)"
-            INFO "  macOS:   brew install vlc"
-            INFO "LibVLC is only required if you use the Gondwana.Video package."
-        }
-    }
+    Step '10/13 LibVLC native library (optional Gondwana.Video)'
+    INFO 'Native LibVLC belongs in the application deployment; no global VLC installation is required.'
+    INFO '  Windows app: dotnet add package VideoLAN.LibVLC.Windows --version 3.0.23.1'
+    INFO '  macOS app:   VideoLAN.LibVLC.Mac with a matching process architecture'
+    INFO '  Linux host:  sudo apt install libvlc-dev vlc-plugin-base'
+    INFO 'Restore/build the desktop app and follow Gondwana.Video/README.md smoke instructions.'
 
     # ─── Step 11: git-cliff ────────────────────────────────────────────────────
 

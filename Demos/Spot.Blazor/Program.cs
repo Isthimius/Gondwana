@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices.JavaScript;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Gondwana.Demos.SpotBlazor;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    <PackageId>Gondwana.Video.Widgets</PackageId>
+    <Title>Gondwana Video Widgets</Title>
+    <Description>Optional interactive and draggable video widgets composing Gondwana Video and Widgets for desktop games.</Description>
+    <PackageProjectUrl>https://github.com/Isthimius/Gondwana/tree/master/Gondwana.Video.Widgets</PackageProjectUrl>
+    <PackageTags>gondwana video widgets gamedev desktop directdrawing</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>gondwana-logo.png</PackageIcon>
+    <PackageReleaseNotes>Full changelog: https://github.com/Isthimius/Gondwana/blob/master/Gondwana.Video.Widgets/CHANGELOG.md</PackageReleaseNotes>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Gondwana.Video/Gondwana.Video.csproj" />
+    <ProjectReference Include="../Gondwana.Widgets/Gondwana.Widgets.csproj" />
+    <None Include="README.md" Pack="true" PackagePath="" />
+    <None Include="CHANGELOG.md" Pack="true" PackagePath="" />
+    <None Include="../gondwana-logo.png" Pack="true" PackagePath="" Link="gondwana-logo.png" />
+  </ItemGroup>
+</Project>

@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Assets;
+namespace Gondwana.Assets;
 
 /// <summary>
 /// Defines the types of assets that can be stored and managed by the engine.

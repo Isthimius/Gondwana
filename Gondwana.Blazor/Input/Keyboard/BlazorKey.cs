@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Blazor.Input.Keyboard;
+namespace Gondwana.Blazor.Input.Keyboard;
 
 /// <summary>
 /// Maps browser <c>KeyboardEvent.code</c> values to stable integer key codes used by

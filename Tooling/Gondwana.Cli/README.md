@@ -71,6 +71,7 @@ projects can be checked but must manage package versions in their source reposit
 | `midi` | `Gondwana.Audio.Midi` for Windows-targeted WinForms or other desktop projects; unavailable for Blazor and cross-platform desktop targets |
 | `gamepad` | `Gondwana.Input.SDL2` (desktop; requires native SDL2) |
 | `video` | `Gondwana.Video` (desktop; requires native LibVLC) |
+| `video-widgets` | `Gondwana.Video.Widgets` (optional desktop Widget bridge; requires native LibVLC) |
 | `hosting` | `Gondwana.WinForms.Hosting`, `Gondwana.Avalonia.Hosting`, or `Gondwana.Blazor.Hosting`, based on an unambiguous adapter |
 
 `add` uses the existing aligned Gondwana version and makes no change if the
@@ -204,7 +205,11 @@ Checks performed:
 - `butler` installed (from `PATH` or the default user install directory used by `gondwana doctor --fix`)
 - SkiaSharp native binaries
 - SDL2 native binaries (for `Gondwana.Input.SDL2`; system-wide runtime available from [libsdl-org/SDL releases](https://github.com/libsdl-org/SDL/releases))
-- LibVLC (for `Gondwana.Video`)
+- LibVLC (for optional desktop `Gondwana.Video`). In a project directly referencing Video,
+  doctor provides app-local deployment guidance; it cannot verify that project's published
+  native output. Windows apps should add `VideoLAN.LibVLC.Windows`, macOS apps a compatible
+  `VideoLAN.LibVLC.Mac`, and Linux deployments distribution LibVLC and codec plugins.
+  See [Video deployment and smoke checks](../../Gondwana.Video/README.md).
 
 Pass `--fix` to automatically resolve issues that have a known fix:
 
@@ -692,6 +697,7 @@ Assets:
 -   `Gondwana.Hosting` --- Standard platform-agnostic scaffolding for initializing and running Gondwana games
 -   `Gondwana.Input.SDL2` --- SDL2-based input handling
 -   `Gondwana.Video` --- Video playback support
+-   `Gondwana.Video.Widgets` --- Optional interactive video Widgets with opt-in dragging
 -   `Gondwana.Widgets` --- UI widget library for creating in-game menus, HUDs, and overlays
 -   `Gondwana.WinForms` --- WinForms rendering and input adapters
 -   `Gondwana.WinForms.Hosting` --- WinForms-specific game host that integrates rendering and input into the Gondwana lifecycle

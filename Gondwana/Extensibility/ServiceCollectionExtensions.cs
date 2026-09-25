@@ -1,4 +1,4 @@
-﻿using Gondwana.Logging;
+using Gondwana.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

@@ -1,4 +1,4 @@
-﻿using Gondwana.Scenes;
+using Gondwana.Scenes;
 
 namespace Gondwana.Physics.Movement;
 

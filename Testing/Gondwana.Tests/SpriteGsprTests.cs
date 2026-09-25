@@ -61,8 +61,13 @@ public sealed class SpriteGsprTests
         var layer = scene.AddLayer(1, 1, 16, 16);
         var definition = new SpriteDefinition();
         foreach (var name in new[] { "first", "second" })
-            definition.Sprites.Add(new() { Nickname = name, SceneId = scene.ID, SceneLayerId = layer.ID,
-                Frame = new() { Tilesheet = sheet.Name, RegionName = sheet.DefaultRegion.Name } });
+            definition.Sprites.Add(new()
+            {
+                Nickname = name,
+                SceneId = scene.ID,
+                SceneLayerId = layer.ID,
+                Frame = new() { Tilesheet = sheet.Name, RegionName = sheet.DefaultRegion.Name }
+            });
         definition.Sprites[1].SceneLayerId = "missing";
         var count = SpriteManager.Instance.AllSprites.Count;
         Assert.Throws<InvalidDataException>(() => SpriteDefinitionSerializer.ToSprites(definition));

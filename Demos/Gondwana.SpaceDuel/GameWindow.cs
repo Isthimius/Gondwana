@@ -1,4 +1,3 @@
-using System.IO;
 using Gondwana.Widgets.Overlays;
 using Gondwana.WinForms.Rendering;
 using Microsoft.Extensions.Logging;

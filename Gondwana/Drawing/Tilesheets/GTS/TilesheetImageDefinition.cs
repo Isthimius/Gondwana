@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Drawing.Tilesheets.GTS;
+namespace Gondwana.Drawing.Tilesheets.GTS;
 
 /// <summary>
 /// Represents the image source definition for a tilesheet, specifying where the image data can be loaded from.

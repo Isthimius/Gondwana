@@ -2,7 +2,6 @@ using Gondwana.Assets;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Tilesheets;
-using Gondwana.Physics.Collisions;
 using Newtonsoft.Json;
 
 namespace Gondwana.Scenes.GSCN;

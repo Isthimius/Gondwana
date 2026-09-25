@@ -33,9 +33,21 @@ public readonly record struct KeyGesture
         {
             >= 65 and <= 90 or >= 48 and <= 57 => ((char)Key).ToString(),
             >= 112 and <= 135 => $"F{Key - 111}",
-            8 => "Backspace", 9 => "Tab", 13 => "Enter", 27 => "Esc", 32 => "Space",
-            33 => "PageUp", 34 => "PageDown", 35 => "End", 36 => "Home",
-            37 => "Left", 38 => "Up", 39 => "Right", 40 => "Down", 45 => "Insert", 46 => "Delete",
+            8 => "Backspace",
+            9 => "Tab",
+            13 => "Enter",
+            27 => "Esc",
+            32 => "Space",
+            33 => "PageUp",
+            34 => "PageDown",
+            35 => "End",
+            36 => "Home",
+            37 => "Left",
+            38 => "Up",
+            39 => "Right",
+            40 => "Down",
+            45 => "Insert",
+            46 => "Delete",
             _ => Key.ToString(System.Globalization.CultureInfo.InvariantCulture)
         };
         return (Modifiers.HasFlag(KeyboardModifierState.Ctrl) ? "Ctrl+" : "") +

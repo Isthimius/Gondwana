@@ -2,7 +2,6 @@ using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.SkiaSharp;
 using SkiaSharp;
-using Gondwana;
 
 namespace Gondwana.Rendering.Backbuffers;
 
@@ -320,5 +319,6 @@ public class GpuBackbuffer : BackbufferBase
         _disposed = true;
         base.Dispose();
         DisposeSurface();
+        GC.SuppressFinalize(this);
     }
 }

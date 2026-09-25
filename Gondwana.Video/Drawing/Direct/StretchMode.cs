@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Drawing.Direct;
+namespace Gondwana.Drawing.Direct;
 
 /// <summary>
 /// Defines how video content should be stretched or scaled to fit within its display bounds.

@@ -56,6 +56,7 @@ Do not move platform-specific behavior into the core merely because more than on
 - `Gondwana.Audio.Midi/` — Windows MIDI and SoundFont support layered on the NAudio backend.
 - `Gondwana.Input.SDL2/` — optional SDL2 gamepad input.
 - `Gondwana.Video/` — experimental video integration.
+- `Gondwana.Video.Widgets/` — optional interactive `VideoWidget` bridge referencing Video and Widgets; neither base package depends on it.
 
 Inspect package boundaries before introducing dependencies from core runtime code into an optional package.
 

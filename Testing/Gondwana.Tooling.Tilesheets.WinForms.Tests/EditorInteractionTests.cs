@@ -3,7 +3,6 @@ using System.Runtime.ExceptionServices;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Physics.Collisions;
 using Gondwana.Tooling.Tilesheets.Editing;
-using Gondwana.Tooling.Tilesheets.WinForms;
 
 namespace Gondwana.Tooling.Tilesheets.WinForms.Tests;
 
@@ -279,7 +278,10 @@ public sealed class EditorInteractionTests
     {
         var editor = new EditorDocument(document, (_, _) => false, settings)
         {
-            Opacity = 0, ShowInTaskbar = false, Size = new Size(1200, 800), CloseApproved = true
+            Opacity = 0,
+            ShowInTaskbar = false,
+            Size = new Size(1200, 800),
+            CloseApproved = true
         };
         editor.Show();
         Application.DoEvents();
@@ -377,7 +379,8 @@ public sealed class EditorInteractionTests
                 test();
             }
             catch (Exception ex) { error = ex; }
-        }) { IsBackground = true };
+        })
+        { IsBackground = true };
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(30)), "Windows interaction test timed out.");

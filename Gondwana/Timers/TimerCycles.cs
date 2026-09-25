@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Timers
+namespace Gondwana.Timers
 {
     /// <summary>
     /// Specifies the cycle behavior of a <see cref="Timer"/>, determining whether it executes

@@ -1,4 +1,3 @@
-using Gondwana.Demos.SpotAvalonia;
 using Gondwana.Drawing;
 
 namespace Gondwana.Demos.SpotAvalonia.Game;

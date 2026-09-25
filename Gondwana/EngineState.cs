@@ -1,19 +1,19 @@
-﻿using System.IO.Compression;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.IO.Compression;
 using Gondwana.Assets;
 using Gondwana.Audio;
 using Gondwana.Audio.GSND;
+using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Animation.GANI;
-using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes;
 using Gondwana.Scenes.GSCN;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Gondwana;
 
@@ -554,7 +554,7 @@ public sealed class EngineState
 
     private SpriteStateEntry CaptureSpriteEntry(string? baseDirectory, string engineStatePath, bool separate)
     {
-var definition = SpriteDefinitionSerializer.FromSprites(SpriteManager.Instance.AllSprites);
+        var definition = SpriteDefinitionSerializer.FromSprites(SpriteManager.Instance.AllSprites);
         if (!separate) return new() { Definition = definition };
         var path = Path.Combine(Path.GetDirectoryName(engineStatePath)!,
             Path.GetFileNameWithoutExtension(engineStatePath) + ".sprites.gspr");

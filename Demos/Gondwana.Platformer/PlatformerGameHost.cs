@@ -1,5 +1,4 @@
 using System.Numerics;
-using Gondwana.Timers;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
@@ -8,6 +7,7 @@ using Gondwana.Input.Keyboard;
 using Gondwana.Physics.Collisions;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
+using Gondwana.Timers;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
 using SkiaSharp;

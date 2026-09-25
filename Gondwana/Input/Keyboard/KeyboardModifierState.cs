@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Input.Keyboard;
+namespace Gondwana.Input.Keyboard;
 
 /// <summary>
 /// Represents the state of keyboard modifier keys (Shift, Ctrl, Alt) that can be pressed simultaneously

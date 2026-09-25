@@ -23,6 +23,8 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
+		<ProjectReference Include="..\..\Gondwana.Video\Gondwana.Video.csproj" />
+		<ProjectReference Include="..\..\Gondwana.Video.Widgets\Gondwana.Video.Widgets.csproj" />
 		<ProjectReference Include="..\..\Gondwana.Widgets\Gondwana.Widgets.csproj" />
 		<ProjectReference Include="..\..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
 		<ProjectReference Include="..\..\Tooling\Gondwana.Cli\Gondwana.Cli.csproj" />

@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Configuration;
+namespace Gondwana.Configuration;
 
 /// <summary>
 /// Represents the configuration for mounting a state file used to restore or merge engine state components.

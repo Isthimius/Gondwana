@@ -1,5 +1,4 @@
 using WeifenLuo.WinFormsUI.Docking;
-using WeifenLuo.WinFormsUI.ThemeVS2015;
 
 namespace Gondwana.Tooling.WinForms;
 

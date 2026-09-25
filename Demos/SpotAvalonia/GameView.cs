@@ -23,20 +23,20 @@ internal sealed class GameView : UserControl
     private SpotAvaloniaGameHost? _host;
 
     // Overlay controls kept so they can be hidden once the game starts.
-    private Border?   _overlay;
-    private Button?   _startButton;
-    private ComboBox  _cboPlayerCount = new();
-    private ComboBox  _cboWidth       = new();
-    private ComboBox  _cboHeight      = new();
-    private readonly TextBox[]  _nameBoxes   = new TextBox[4];
+    private Border? _overlay;
+    private Button? _startButton;
+    private ComboBox _cboPlayerCount = new();
+    private ComboBox _cboWidth = new();
+    private ComboBox _cboHeight = new();
+    private readonly TextBox[] _nameBoxes = new TextBox[4];
     private readonly ComboBox[] _typeSelects = new ComboBox[4];
     private readonly ComboBox[] _colorSelects = new ComboBox[4];
-    private readonly Border[]   _playerBorders = new Border[4];
+    private readonly Border[] _playerBorders = new Border[4];
 
     internal GameView()
     {
         _renderSurface.HorizontalAlignment = HorizontalAlignment.Stretch;
-        _renderSurface.VerticalAlignment   = VerticalAlignment.Stretch;
+        _renderSurface.VerticalAlignment = VerticalAlignment.Stretch;
 
         _overlay = BuildOverlay();
 
@@ -88,27 +88,27 @@ internal sealed class GameView : UserControl
         // ── Top row: player count + board size ──────────────────────────────
         var topRow = new WrapPanel { Orientation = Orientation.Horizontal };
 
-        _cboPlayerCount.ItemsSource    = new[] { "2", "3", "4" };
-        _cboPlayerCount.SelectedIndex  = GameConfig.DefaultPlayerCountIndex;
-        _cboPlayerCount.MinWidth       = 55;
-        _cboPlayerCount.Margin         = new Thickness(4);
+        _cboPlayerCount.ItemsSource = new[] { "2", "3", "4" };
+        _cboPlayerCount.SelectedIndex = GameConfig.DefaultPlayerCountIndex;
+        _cboPlayerCount.MinWidth = 55;
+        _cboPlayerCount.Margin = new Thickness(4);
         _cboPlayerCount.SelectionChanged += CboPlayerCount_SelectionChanged;
 
-        _cboWidth.ItemsSource   = boardSizes;
+        _cboWidth.ItemsSource = boardSizes;
         _cboWidth.SelectedIndex = GameConfig.DefaultBoardSizeIndex;
-        _cboWidth.MinWidth      = 55;
-        _cboWidth.Margin        = new Thickness(4);
+        _cboWidth.MinWidth = 55;
+        _cboWidth.Margin = new Thickness(4);
 
-        _cboHeight.ItemsSource   = boardSizes;
+        _cboHeight.ItemsSource = boardSizes;
         _cboHeight.SelectedIndex = GameConfig.DefaultBoardSizeIndex;
-        _cboHeight.MinWidth      = 55;
-        _cboHeight.Margin        = new Thickness(4);
+        _cboHeight.MinWidth = 55;
+        _cboHeight.Margin = new Thickness(4);
 
         topRow.Children.Add(new TextBlock { Text = "Players", VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4) });
         topRow.Children.Add(_cboPlayerCount);
-        topRow.Children.Add(new TextBlock { Text = "Board",   VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4) });
+        topRow.Children.Add(new TextBlock { Text = "Board", VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4) });
         topRow.Children.Add(_cboWidth);
-        topRow.Children.Add(new TextBlock { Text = "×",       VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(2) });
+        topRow.Children.Add(new TextBlock { Text = "×", VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(2) });
         topRow.Children.Add(_cboHeight);
         outerStack.Children.Add(topRow);
 
@@ -117,10 +117,10 @@ internal sealed class GameView : UserControl
         {
             var rowBorder = new Border
             {
-                BorderBrush     = Brushes.White,
+                BorderBrush = Brushes.White,
                 BorderThickness = new Thickness(1),
-                CornerRadius    = new CornerRadius(4),
-                Padding         = new Thickness(6, 4),
+                CornerRadius = new CornerRadius(4),
+                Padding = new Thickness(6, 4),
             };
 
             var rowPanel = new WrapPanel { Orientation = Orientation.Horizontal };
@@ -128,10 +128,10 @@ internal sealed class GameView : UserControl
             var nameBox = new TextBox { Text = $"Player {i + 1}", MinWidth = 100, Margin = new Thickness(4) };
             var typeCombo = new ComboBox
             {
-                ItemsSource   = new[] { "Human", "Computer" },
+                ItemsSource = new[] { "Human", "Computer" },
                 SelectedIndex = i == 0 ? 0 : 1,
-                MinWidth      = 110,
-                Margin        = new Thickness(4),
+                MinWidth = 110,
+                Margin = new Thickness(4),
             };
             var colorCombo = CreateColorCombo(i);
 
@@ -142,8 +142,8 @@ internal sealed class GameView : UserControl
 
             rowBorder.Child = rowPanel;
 
-            _nameBoxes[i]     = nameBox;
-            _typeSelects[i]   = typeCombo;
+            _nameBoxes[i] = nameBox;
+            _typeSelects[i] = typeCombo;
             _playerBorders[i] = rowBorder;
             outerStack.Children.Add(rowBorder);
         }
@@ -151,11 +151,11 @@ internal sealed class GameView : UserControl
         // ── Start button ────────────────────────────────────────────────────
         _startButton = new Button
         {
-            Content             = "Start Game",
+            Content = "Start Game",
             HorizontalAlignment = HorizontalAlignment.Center,
-            MinWidth            = 140,
-            Margin              = new Thickness(0, 8, 0, 0),
-            IsEnabled           = false,
+            MinWidth = 140,
+            Margin = new Thickness(0, 8, 0, 0),
+            IsEnabled = false,
         };
         _startButton.Click += StartButton_Click;
         outerStack.Children.Add(_startButton);
@@ -163,14 +163,14 @@ internal sealed class GameView : UserControl
         // Wrap in a semi-transparent panel centered on screen
         var overlay = new Border
         {
-            Background          = new SolidColorBrush(Colors.CornflowerBlue, 0.92),
-            BorderBrush         = Brushes.White,
-            BorderThickness     = new Thickness(2),
-            CornerRadius        = new CornerRadius(8),
-            Padding             = new Thickness(16),
+            Background = new SolidColorBrush(Colors.CornflowerBlue, 0.92),
+            BorderBrush = Brushes.White,
+            BorderThickness = new Thickness(2),
+            CornerRadius = new CornerRadius(8),
+            Padding = new Thickness(16),
             HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment   = VerticalAlignment.Center,
-            Child               = outerStack,
+            VerticalAlignment = VerticalAlignment.Center,
+            Child = outerStack,
         };
 
         UpdatePlayerVisibility(4);
@@ -182,23 +182,23 @@ internal sealed class GameView : UserControl
         var combo = new ComboBox
         {
             MinWidth = 110,
-            Margin   = new Thickness(4),
+            Margin = new Thickness(4),
             ItemTemplate = new FuncDataTemplate<ColorItem>((item, _) =>
             {
                 if (item is null)
                     return new TextBlock();
                 var panel = new StackPanel
                 {
-                    Orientation       = Orientation.Horizontal,
-                    Spacing           = 6,
+                    Orientation = Orientation.Horizontal,
+                    Spacing = 6,
                     VerticalAlignment = VerticalAlignment.Center,
                 };
                 panel.Children.Add(new Border
                 {
-                    Width           = 20,
-                    Height          = 14,
-                    Background      = new SolidColorBrush(new Color(255, item.Color.Red, item.Color.Green, item.Color.Blue)),
-                    BorderBrush     = Brushes.Black,
+                    Width = 20,
+                    Height = 14,
+                    Background = new SolidColorBrush(new Color(255, item.Color.Red, item.Color.Green, item.Color.Blue)),
+                    BorderBrush = Brushes.Black,
                     BorderThickness = new Thickness(1),
                 });
                 panel.Children.Add(new TextBlock { Text = item.Name });
@@ -208,7 +208,7 @@ internal sealed class GameView : UserControl
 
         _colorSelects[playerIndex] = combo;
 
-        combo.ItemsSource   = _availableColors;
+        combo.ItemsSource = _availableColors;
         combo.SelectedIndex = playerIndex < _availableColors.Length ? playerIndex : 0;
         combo.SelectionChanged += (s, _) => OnColorChanged((ComboBox)s!);
 
@@ -263,12 +263,12 @@ internal sealed class GameView : UserControl
     private void StartButton_Click(object? sender, RoutedEventArgs e)
     {
         int playerCount = int.Parse((string)_cboPlayerCount.SelectedItem!);
-        int boardWidth  = int.Parse((string)_cboWidth.SelectedItem!);
+        int boardWidth = int.Parse((string)_cboWidth.SelectedItem!);
         int boardHeight = int.Parse((string)_cboHeight.SelectedItem!);
 
         var options = new NewGameOptions
         {
-            BoardWidth  = boardWidth,
+            BoardWidth = boardWidth,
             BoardHeight = boardHeight,
         };
 
@@ -277,8 +277,8 @@ internal sealed class GameView : UserControl
             var colorItem = (ColorItem)_colorSelects[i].SelectedItem!;
             options.Players.Add(new Player
             {
-                Name      = _nameBoxes[i].Text ?? $"Player {i + 1}",
-                Type      = _typeSelects[i].SelectedIndex == 0 ? PlayerType.Human : PlayerType.Computer,
+                Name = _nameBoxes[i].Text ?? $"Player {i + 1}",
+                Type = _typeSelects[i].SelectedIndex == 0 ? PlayerType.Human : PlayerType.Computer,
                 ColorItem = colorItem,
             });
         }

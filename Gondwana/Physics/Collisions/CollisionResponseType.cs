@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace Gondwana.Physics.Collisions;
@@ -13,7 +13,7 @@ public enum CollisionResponseType
     /// Solid collision response that pushes out overlapping colliders and blocks movement.
     /// </summary>
     Solid,
-    
+
     /// <summary>
     /// Trigger collision response that reports overlaps without applying push-out or blocking movement.
     /// </summary>
