@@ -33,7 +33,7 @@ The game ends when no legal moves remain anywhere on the board or only one playe
 | Input | Action |
 | --- | --- |
 | **Left mouse button** | Select a spot or choose its destination. |
-| **Backtick / tilde key** | Show or hide the score display. |
+| **Tab** | Show or hide the score display. |
 | **Game > New Game** | Configure and start another game. |
 | **Options** | Toggle music, sound effects, spot jiggle, or clouds. |
 
