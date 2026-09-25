@@ -157,13 +157,7 @@ public sealed class ComboBoxWidget : ContainerWidget
     /// </summary>
     public ComboBoxWidget CloseDropDown()
     {
-        if (!_isDropDownOpen)
-            return this;
-
-        _isDropDownOpen = false;
-        DropDown.Hide();
-        Header.Activate();
-        WidgetInputRouterRegistry.TryFocus(Header);
+        CollapseDropDown(restoreHeaderFocus: true);
         return this;
     }
 
@@ -195,6 +189,7 @@ public sealed class ComboBoxWidget : ContainerWidget
         Header.Clicked -= OnHeaderClicked;
         DropDown.SelectedIndexChanged -= OnSelectedIndexChanged;
         DropDown.SelectionCommitted -= OnDropDownSelectionCommitted;
+        DropDown.FocusLost -= OnDropDownFocusLost;
         base.Dispose();
     }
 
@@ -222,6 +217,7 @@ public sealed class ComboBoxWidget : ContainerWidget
         Header.Clicked += OnHeaderClicked;
         DropDown.SelectedIndexChanged += OnSelectedIndexChanged;
         DropDown.SelectionCommitted += OnDropDownSelectionCommitted;
+        DropDown.FocusLost += OnDropDownFocusLost;
 
         IsInputEnabled = false;
         IsPointerInputEnabled = false;
@@ -248,6 +244,37 @@ public sealed class ComboBoxWidget : ContainerWidget
     {
         if (index >= 0)
             CloseDropDown();
+    }
+
+    private void OnDropDownFocusLost()
+    {
+        if (!_isDropDownOpen)
+            return;
+
+        // Pointer-down moves focus before the header click is dispatched. If focus
+        // moved back to this combo's own header, leave the list open long enough
+        // for that click to toggle it closed normally. Any other focus target means
+        // the user has moved on, so collapse without stealing focus back.
+        WidgetBase? focusedWidget = WidgetInputRouterRegistry.GetFocusedWidget(DropDown);
+        if (ReferenceEquals(focusedWidget, Header))
+            return;
+
+        CollapseDropDown(restoreHeaderFocus: false);
+    }
+
+    private void CollapseDropDown(bool restoreHeaderFocus)
+    {
+        if (!_isDropDownOpen)
+            return;
+
+        _isDropDownOpen = false;
+        DropDown.Hide();
+
+        if (!restoreHeaderFocus)
+            return;
+
+        Header.Activate();
+        WidgetInputRouterRegistry.TryFocus(Header);
     }
 
     private void RefreshHeaderText()
