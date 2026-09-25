@@ -574,43 +574,46 @@ public sealed class Engine : IDisposable
             return;
         }
 
-        EngineDispatcher.Drain();
-
-        long driverTick = HighResTimer.GetCurrentTick();
-        var batch = _timerDrivenSteps.Advance(
-            driverTick,
-            Configuration.TimerDrivenSimulationRate,
-            Configuration.MaxTimerDrivenSimulationSteps);
-
-        bool render = IsTimerDrivenForegroundDue(driverTick);
-        double frameDelta = HighResTimer.GetDuration(_lastForegroundTick, driverTick);
-
-        if (batch.StepCount == 0)
+        lock (RenderStateSynchronization.SyncRoot)
         {
-            if (render)
-                RenderFrame(driverTick, frameDelta);
+            EngineDispatcher.Drain();
 
-            if (Configuration.SamplingTimeForCPS > 0)
-                CalculateCPS(driverTick);
-
-            return;
-        }
-
-        double fixedDelta = batch.StepTicks / (double)HighResTimer.TicksPerSecond;
-
-        for (int step = 0; step < batch.StepCount && IsRunning; step++)
-        {
-            long simulationTick = batch.GetStepTick(step);
-            EngineSimulationClock.SetTimerDrivenTick(simulationTick);
-
-            bool isLastStep = step == batch.StepCount - 1;
-            RunSimulationCycle(
-                simulationTick,
-                fixedDelta,
-                render && isLastStep,
+            long driverTick = HighResTimer.GetCurrentTick();
+            var batch = _timerDrivenSteps.Advance(
                 driverTick,
-                frameDelta,
-                sampleCps: isLastStep);
+                Configuration.TimerDrivenSimulationRate,
+                Configuration.MaxTimerDrivenSimulationSteps);
+
+            bool render = IsTimerDrivenForegroundDue(driverTick);
+            double frameDelta = HighResTimer.GetDuration(_lastForegroundTick, driverTick);
+
+            if (batch.StepCount == 0)
+            {
+                if (render)
+                    RenderFrame(driverTick, frameDelta);
+
+                if (Configuration.SamplingTimeForCPS > 0)
+                    CalculateCPS(driverTick);
+
+                return;
+            }
+
+            double fixedDelta = batch.StepTicks / (double)HighResTimer.TicksPerSecond;
+
+            for (int step = 0; step < batch.StepCount && IsRunning; step++)
+            {
+                long simulationTick = batch.GetStepTick(step);
+                EngineSimulationClock.SetTimerDrivenTick(simulationTick);
+
+                bool isLastStep = step == batch.StepCount - 1;
+                RunSimulationCycle(
+                    simulationTick,
+                    fixedDelta,
+                    render && isLastStep,
+                    driverTick,
+                    frameDelta,
+                    sampleCps: isLastStep);
+            }
         }
     }
 
@@ -901,19 +904,22 @@ public sealed class Engine : IDisposable
 
     private void Cycle()
     {
-        EngineDispatcher.Drain();
+        lock (RenderStateSynchronization.SyncRoot)
+        {
+            EngineDispatcher.Drain();
 
-        long tick = HighResTimer.GetCurrentTick();
-        var deltaSeconds = HighResTimer.GetDuration(_lastCycleTick, tick);
-        _lastCycleTick = tick;
+            long tick = HighResTimer.GetCurrentTick();
+            var deltaSeconds = HighResTimer.GetDuration(_lastCycleTick, tick);
+            _lastCycleTick = tick;
 
-        RunSimulationCycle(
-            tick,
-            deltaSeconds,
-            IsForegroundDue(tick),
-            tick,
-            deltaSeconds,
-            sampleCps: true);
+            RunSimulationCycle(
+                tick,
+                deltaSeconds,
+                IsForegroundDue(tick),
+                tick,
+                deltaSeconds,
+                sampleCps: true);
+        }
     }
 
     private void RunSimulationCycle(
