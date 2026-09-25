@@ -125,6 +125,7 @@ public partial class Form1 : Form
         return sparks;
     }
 
+#pragma warning disable IDE0051 // Optional particle presets retained for manual demo selection.
     private ParticleEmitter GetColorfulSparks(float width, float height)
     {
         var rng = new Random();
@@ -445,4 +446,6 @@ public partial class Form1 : Form
             }
         };
     }
+#pragma warning restore IDE0051
+
 }

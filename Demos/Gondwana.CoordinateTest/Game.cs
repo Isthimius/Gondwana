@@ -224,6 +224,7 @@ public class Game : IDisposable
         //_particleSurface.Emitters.Add(GetSmoke(bounds.Width, bounds.Height));
     }
 
+#pragma warning disable IDE0051 // Optional demo preset retained for manual selection.
     private ParticleEmitter GetSmoke(float width, float height)
     {
         return new ParticleEmitter
@@ -238,6 +239,8 @@ public class Game : IDisposable
             GravityY = -20f // slight upward drift
         };
     }
+
+#pragma warning restore IDE0051
 
     #endregion load and init game content
 

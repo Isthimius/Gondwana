@@ -33,6 +33,7 @@ public sealed class CollisionGroupRegistry
     /// </summary>
     /// <param name="groups">The serialized group dictionary.</param>
     /// <param name="nextBit">The next available bit index.</param>
+#pragma warning disable IDE0051 // Used by Newtonsoft.Json via reflection.
     [JsonConstructor]
     private CollisionGroupRegistry(Dictionary<string, int> groups, int nextBit)
     {
@@ -40,6 +41,8 @@ public sealed class CollisionGroupRegistry
                                               StringComparer.OrdinalIgnoreCase);
         _nextBit = nextBit;
     }
+
+#pragma warning restore IDE0051
 
     /// <summary>
     /// Defines a new collision group with the specified name, or returns the existing group value if already defined.
