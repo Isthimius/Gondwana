@@ -193,8 +193,9 @@ public class GpuBackbuffer : BackbufferBase
     /// Creates (or recreates) the GPU render-target surface for this backbuffer.
     /// </summary>
     /// <remarks>
-    /// Called from the owning GL thread for initial setup or an explicit logical resolution change.  Replaces the temporary CPU raster surface with a
-    /// hardware-accelerated off-screen render target backed by <paramref name="grContext"/>.
+    /// Called from the owning GL thread for initial setup, an explicit logical resolution change,
+    /// or an MSAA configuration change. Replaces the current surface with a hardware-accelerated
+    /// off-screen render target backed by <paramref name="grContext"/>.
     /// </remarks>
     /// <param name="grContext">The active Skia GPU context.  Must not be <see langword="null"/>.</param>
     /// <param name="width">The new surface width in pixels.</param>
@@ -212,8 +213,7 @@ public class GpuBackbuffer : BackbufferBase
         _context = grContext;
         UpdateSize(width, height);
 
-        Volatile.Write(ref _actualMsaaSampleCount, actualSampleCount);
-        Volatile.Write(ref _appliedMsaaConfigurationRevision, configurationRevision);
+        MarkMsaaConfigurationApplied(configurationRevision, actualSampleCount);
 
         // Set canvas into a known state for the first frame on the new surface.
         BeginFrame();
@@ -325,10 +325,16 @@ public class GpuBackbuffer : BackbufferBase
 
     // ── Surface creation helpers ─────────────────────────────────────────────
 
-    private (int SampleCount, long Revision) GetMsaaConfigurationSnapshot()
+    internal (int SampleCount, long Revision) GetMsaaConfigurationSnapshot()
     {
         lock (_msaaSyncRoot)
             return (_msaaSampleCount, _msaaConfigurationRevision);
+    }
+
+    internal void MarkMsaaConfigurationApplied(long revision, int actualSampleCount)
+    {
+        Volatile.Write(ref _actualMsaaSampleCount, actualSampleCount);
+        Volatile.Write(ref _appliedMsaaConfigurationRevision, revision);
     }
 
     private int CreateGpuSurface(
