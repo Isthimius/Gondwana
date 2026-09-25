@@ -108,6 +108,10 @@ internal sealed class SpotHostCore
                                             host: host,
                                             view: view,
                                             onSplashCompleted: onSplashCompleted);
+
+        // Preserve the source aspect ratio while covering the taller client area.
+        // The small amount of cropping is preferable to letterboxing above/below the splash.
+        splash?.Image.SetScaleMode(DirectImage.ScaleMode.Fill);
         return splash;
     }
 
