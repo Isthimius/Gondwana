@@ -429,10 +429,7 @@ internal partial class GameWindow : Form
 
     private static SKImage LoadImage(string path)
     {
-        using SKData data = SKData.Create(path)
-            ?? throw new InvalidOperationException($"Failed to read About-box image: {path}");
-
-        return SKImage.FromEncodedData(data)
+        return SKImage.FromEncodedData(path)
             ?? throw new InvalidOperationException($"Failed to decode About-box image: {path}");
     }
 
