@@ -4,6 +4,7 @@ using System.Reflection;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Input.Keyboard;
+using Gondwana.Rendering;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.Widgets;
