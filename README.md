@@ -65,7 +65,7 @@ Use **Gondwana Studio** when structured game content benefits from visual author
 
 Studio is the integrated Windows authoring environment for Gondwana's persistent content-definition model. It hosts the same reusable editor controls as the standalone utilities, with multi-document editing, visual previews, validation, dependency-aware authoring, nested docking, and persisted workspace layouts.
 
-> **[LARGE SCREENSHOT PLACEHOLDER — Gondwana Studio with several authoring documents open, ideally showing GSCN/GSPR/GTS panes and the dark docked layout.]**
+> **[SCREENSHOT PLACEHOLDER]**
 
 Studio currently authors:
 
