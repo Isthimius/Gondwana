@@ -1,4 +1,3 @@
-using System.Drawing;
 using Gondwana.Drawing.Tilesheets.GTS;
 
 namespace Gondwana.Tooling.Tilesheets.Editing;

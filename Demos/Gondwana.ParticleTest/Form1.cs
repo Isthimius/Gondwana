@@ -163,7 +163,7 @@ public partial class Form1 : Form
         float x = c * (1 - Math.Abs((h / 60f) % 2 - 1));
         float m = v - c;
 
-        float r = 0, g = 0, b = 0;
+        float r, g, b;
         if (h < 60) (r, g, b) = (c, x, 0);
         else if (h < 120) (r, g, b) = (x, c, 0);
         else if (h < 180) (r, g, b) = (0, c, x);

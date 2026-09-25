@@ -812,13 +812,10 @@ public class DirectRectangle : DirectDrawingMovableBase
         if (tick <= _lastTick)
             return;
 
-        // Compute dt from ticks (seconds)
-        float dt = 0f;
-
         // no previous tick assume first frame, so skip dt-based updates
         if (_pulseLastTick > 0)
         {
-            dt = HighResTimer.GetDuration(_pulseLastTick, tick);
+            float dt = HighResTimer.GetDuration(_pulseLastTick, tick);
             _timeSec += dt;
         }
 
