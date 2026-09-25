@@ -37,7 +37,7 @@ internal sealed class SpotHostCore
     private int SurfaceWidth => _ctx.SurfaceWidth;
     private int SurfaceHeight => _ctx.SurfaceHeight;
 
-    private const int ScoreToggleKey = 192; // Backtick / tilde virtual-key code.
+    private const int ScoreToggleKey = 9; // Tab virtual-key code.
 
     private bool _initialGameStarted = false;
     private bool _handleHumanInput = false;
@@ -96,7 +96,7 @@ internal sealed class SpotHostCore
         _ctx = context;
     }
 
-    #region WinFormsGameHost lifecycle hooks
+    #region host lifecycle hooks
 
     internal SplashScreen? CreateSplash(Gondwana.Rendering.RenderSurfaceHostBase host, Action onSplashCompleted)
     {
@@ -221,7 +221,7 @@ internal sealed class SpotHostCore
         UnhookSpotGameEvents();
     }
 
-    #endregion WinFormsGameHost lifecycle hooks
+    #endregion host lifecycle hooks
 
     #region public game interface
 
