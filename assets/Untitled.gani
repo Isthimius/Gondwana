@@ -1,0 +1,42 @@
+{
+  "Key": "Untitled",
+  "ThrottleTime": 0.05,
+  "CycleType": "PingPong",
+  "HideTileOnCycleEnd": false,
+  "TilesheetSources": [
+    {
+      "Tilesheet": "rooster",
+      "Kind": "LooseDefinitionFile",
+      "GtsPath": "rooster.gts"
+    }
+  ],
+  "Frames": [
+    {
+      "Tilesheet": "rooster",
+      "RegionName": "default",
+      "XTile": 0,
+      "YTile": 0
+    },
+    {
+      "Tilesheet": "rooster",
+      "RegionName": "default",
+      "XTile": 1,
+      "YTile": 0
+    },
+    {
+      "Tilesheet": "rooster",
+      "RegionName": "default",
+      "XTile": 2,
+      "YTile": 0
+    },
+    {
+      "Tilesheet": "rooster",
+      "RegionName": "default",
+      "XTile": 3,
+      "YTile": 0
+    }
+  ],
+  "Source": {
+    "Kind": 3
+  }
+}

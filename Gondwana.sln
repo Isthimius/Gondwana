@@ -19,7 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.targets = Directory.Build.targets
 		gondwana-logo.png = gondwana-logo.png
 		README.md = README.md
-		ROADMAP.md = ROADMAP.md
 		version.json = version.json
 	EndProjectSection
 EndProject
@@ -230,6 +229,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.Studio.Plugin.ExternalImport", "Tooling\Gondwana.Tooling.Studio.Plugin.ExternalImport\Gondwana.Tooling.Studio.Plugin.ExternalImport.csproj", "{EA6A761D-AD76-4EB5-9094-D5517792B537}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Video.Widgets", "Gondwana.Video.Widgets\Gondwana.Video.Widgets.csproj", "{BCD9906E-485D-48DD-9C2E-35154D4A9143}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoTest", "Demos\VideoTest\VideoTest.csproj", "{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1069,6 +1070,22 @@ Global
 		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Release|x64.Build.0 = Release|Any CPU
 		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Release|x86.ActiveCfg = Release|Any CPU
 		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Release|x86.Build.0 = Release|Any CPU
+		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
+		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Debug|Mixed Platforms.Build.0 = Debug|x64
+		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Debug|x64.ActiveCfg = Debug|x64
+		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Debug|x64.Build.0 = Debug|x64
+		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Debug|x86.ActiveCfg = Debug|x86
+		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Debug|x86.Build.0 = Debug|x86
+		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Release|Mixed Platforms.Build.0 = Release|x64
+		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Release|x64.ActiveCfg = Release|x64
+		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Release|x64.Build.0 = Release|x64
+		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Release|x86.ActiveCfg = Release|x86
+		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1116,6 +1133,7 @@ Global
 		{F323CE2C-57FB-4F47-B3D2-6B73C9BECC0A} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
 		{377B88D7-6EA7-42F2-BD3C-718DBC59E09B} = {9E16DEC8-4A17-4DE9-B359-132983D65993}
 		{EA6A761D-AD76-4EB5-9094-D5517792B537} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
+		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD} = {9E16DEC8-4A17-4DE9-B359-132983D65993}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A027047D-3D9C-4015-B3E0-DEEAE46DA4CC}
