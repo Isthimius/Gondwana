@@ -1,5 +1,3 @@
-using Gondwana.Audio;
-
 namespace Gondwana.Audio.NAudio;
 
 /// <summary>Windows desktop audio backend implemented with NAudio.</summary>

@@ -1,10 +1,9 @@
+using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Rendering.Views;
 using Gondwana.SkiaSharp;
-using Microsoft.Extensions.Logging;
 using SkiaSharp;
-using System.Drawing;
 
 namespace Gondwana.Rendering.Backbuffers;
 

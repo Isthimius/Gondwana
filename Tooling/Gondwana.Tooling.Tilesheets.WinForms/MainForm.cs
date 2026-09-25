@@ -1,8 +1,7 @@
-using Gondwana.Tooling.WinForms;
 using Gondwana.Tooling.Tilesheets.Editing;
 using Gondwana.Tooling.Tilesheets.Sources;
+using Gondwana.Tooling.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
-using WeifenLuo.WinFormsUI.ThemeVS2015;
 
 namespace Gondwana.Tooling.Tilesheets.WinForms;
 

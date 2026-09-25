@@ -2,7 +2,6 @@ using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.SkiaSharp;
 using SkiaSharp;
-using Gondwana;
 
 namespace Gondwana.Rendering.Backbuffers;
 

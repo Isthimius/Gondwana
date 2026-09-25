@@ -1,6 +1,10 @@
+using System.Numerics;
+using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
+using Gondwana.Drawing.Sprites;
+using Gondwana.Drawing.Tilesheets;
 using Gondwana.Input.Gamepad;
 using Gondwana.Logging;
 using Gondwana.Scenes;
@@ -8,12 +12,6 @@ using Gondwana.WinForms;
 using Gondwana.WinForms.Rendering;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
-using System.Drawing;
-using Microsoft.Extensions.Logging;
-using Gondwana.Drawing.Tilesheets;
-using Gondwana.Drawing.Sprites;
-using System.Numerics;
-using Gondwana.Drawing.Animation;
 
 namespace Gondwana.Demos.CoordinateTest;
 
@@ -392,7 +390,7 @@ public class Game : IDisposable
         var screenPos = args.CurrentPosition;
 
         var worldPx = view.ScreenPxToWorldPx(layer, screenPos);
-        var screenPx = view.WorldPxToScreenPx(layer, worldPx);
+        _ = view.WorldPxToScreenPx(layer, worldPx);
         //Engine.Logger.LogTrace($"mouse={screenPos} roundtrip={s} cam={view.Camera.PositionPx} zoom={view.Viewport.Zoom} p={layer.Parallax}");
         //Engine.Logger.LogTrace($"\r\nscreen1 = {screenPos} \r\nworld   = {worldPx} \r\nscreen2 = {screenPx}\r\n");
 
@@ -407,9 +405,8 @@ public class Game : IDisposable
 
         // 4) world → screen (via View)
         var screenFromGrid = view.WorldPxToScreenPx(layer, worldFromGrid);
-
-        var dx = screenFromGrid.X - screenPos.X;
-        var dy = screenFromGrid.Y - screenPos.Y;
+        _ = screenFromGrid.X - screenPos.X;
+        _ = screenFromGrid.Y - screenPos.Y;
 
         // Existing HUD text
         var cameraPos = view.Camera.PositionPx;

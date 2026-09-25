@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using System.Xml.Linq;
-using Gondwana.Tooling.Studio.WinForms;
 using Gondwana.Tooling.Studio.WinForms.Documents;
 using WeifenLuo.WinFormsUI.Docking;
 

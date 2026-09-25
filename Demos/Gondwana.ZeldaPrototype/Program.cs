@@ -1,5 +1,3 @@
-using System.Windows.Forms;
-
 namespace Gondwana.ZeldaPrototype;
 
 internal static class Program

@@ -3,7 +3,6 @@ using System.Runtime.ExceptionServices;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Physics.Collisions;
 using Gondwana.Tooling.Tilesheets.Editing;
-using Gondwana.Tooling.Tilesheets.WinForms;
 
 namespace Gondwana.Tooling.Tilesheets.WinForms.Tests;
 

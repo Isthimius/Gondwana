@@ -1,12 +1,10 @@
+using System.Numerics;
+using System.Text;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
-using Gondwana.Scenes;
-using Gondwana.Drawing.Coordinates;
-using SkiaSharp;
-using System.Text;
-using static Gondwana.Drawing.Direct.TextBlock;
-using System.Numerics;
 using Gondwana.Physics.Movement.Easing;
+using SkiaSharp;
+using static Gondwana.Drawing.Direct.TextBlock;
 
 namespace Gondwana.Demos.ParticleTest;
 

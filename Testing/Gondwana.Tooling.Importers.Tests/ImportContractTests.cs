@@ -1,5 +1,3 @@
-using Gondwana.Tooling.Importers;
-
 namespace Gondwana.Tooling.Importers.Tests;
 
 public sealed class ImportContractTests

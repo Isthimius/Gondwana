@@ -2,7 +2,6 @@ using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Physics.Collisions;
-using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Newtonsoft.Json;
 

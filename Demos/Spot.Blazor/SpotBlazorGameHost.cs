@@ -1,15 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using Microsoft.Extensions.Logging;
-using Microsoft.JSInterop;
-using SkiaSharp;
-using Gondwana;
-using Gondwana.Audio.Browser;
 using Gondwana.Blazor.Hosting;
 using Gondwana.Blazor.Rendering;
+using Gondwana.Demos.SpotBlazor.Game;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
@@ -18,7 +10,8 @@ using Gondwana.Drawing.Tilesheets;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
-using Gondwana.Demos.SpotBlazor.Game;
+using Microsoft.JSInterop;
+using SkiaSharp;
 
 namespace Gondwana.Demos.SpotBlazor;
 

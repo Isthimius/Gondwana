@@ -1,13 +1,11 @@
-using System.Runtime.ExceptionServices;
 using System.Reflection;
-using Gondwana.Drawing.Tilesheets.GTS;
+using System.Runtime.ExceptionServices;
 using Gondwana.Drawing.Sprites;
-using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets;
+using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Sprites.Editing;
-using Gondwana.Tooling.Sprites.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Sprites.WinForms.Tests;

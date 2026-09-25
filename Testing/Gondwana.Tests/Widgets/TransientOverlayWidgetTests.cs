@@ -1,7 +1,6 @@
 using System.Drawing;
 using System.Numerics;
 using Gondwana.Drawing.Coordinates;
-using Gondwana.Drawing.Direct;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.Timers;

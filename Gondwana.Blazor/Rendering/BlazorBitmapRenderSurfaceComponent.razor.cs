@@ -1,7 +1,6 @@
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 
 namespace Gondwana.Blazor.Rendering;

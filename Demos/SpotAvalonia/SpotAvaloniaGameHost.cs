@@ -1,27 +1,21 @@
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Linq;
 using Avalonia.Input;
-using Microsoft.Extensions.Logging;
-using SkiaSharp;
-using Gondwana;
 using Gondwana.Audio;
 using Gondwana.Avalonia.Hosting;
 using Gondwana.Avalonia.Rendering;
+using Gondwana.Demos.SpotAvalonia.Game;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Drawing.Tilesheets;
-using Gondwana.Hosting;
 using Gondwana.Input.Keyboard;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
-using Gondwana.Demos.SpotAvalonia.Game;
 using Gondwana.Widgets.Overlays;
+using Microsoft.Extensions.Logging;
+using SkiaSharp;
 
 namespace Gondwana.Demos.SpotAvalonia;
 

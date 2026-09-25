@@ -1,7 +1,6 @@
 using System.Runtime.ExceptionServices;
 using Gondwana.Audio.GSND;
 using Gondwana.Tooling.Audio.Editing;
-using Gondwana.Tooling.Audio.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Audio.WinForms.Tests;

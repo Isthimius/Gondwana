@@ -3,7 +3,6 @@ using System.Numerics;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Physics.Movement;
 using Gondwana.Scenes;
-using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Rendering.Views;
 

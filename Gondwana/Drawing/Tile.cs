@@ -1,7 +1,6 @@
 using System.Drawing;
 using System.Runtime.Serialization;
 using Gondwana.Drawing.Animation;
-using Gondwana.Drawing.Collisions;
 using Gondwana.Physics.Collisions;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;

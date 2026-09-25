@@ -1,9 +1,7 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Threading;
 using Gondwana.Avalonia.Rendering;
-using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Demos.SpotAvalonia;
 

@@ -1,5 +1,3 @@
-using System.Drawing;
-using System.Windows.Forms;
 using Gondwana.WinForms.Rendering;
 using Microsoft.Extensions.Logging;
 

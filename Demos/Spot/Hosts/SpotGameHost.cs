@@ -1,13 +1,11 @@
 using System;
 using Gondwana.Demos.Spot.Hosts;
-using Gondwana.Hosting;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
 using Gondwana.Widgets.Overlays;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
-using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
 namespace Gondwana.Demos.Spot;

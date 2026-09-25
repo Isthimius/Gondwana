@@ -1,5 +1,4 @@
 using System;
-using Gondwana.Demos.Spot.Game;
 using Gondwana.Rendering;
 using Gondwana.Widgets.Overlays;
 using Microsoft.Extensions.Logging;

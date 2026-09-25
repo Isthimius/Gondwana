@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Numerics;
 using Gondwana.Drawing.Collisions;
 using Gondwana.Drawing.Sprites;

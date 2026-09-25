@@ -1,4 +1,3 @@
-using Gondwana.Cli.Commands;
 using Spectre.Console.Cli;
 
 namespace Gondwana.Cli.Commands.Templates;

@@ -1249,7 +1249,7 @@ public class DirectRectangle : DirectDrawingMovableBase
             // If border color set, use it for stroke; else match fill/base color
             if (_borderColor.HasValue)
             {
-                var sc = _strokePaint.Color; // preserve alpha if you want; otherwise:
+                _ = _strokePaint.Color; // preserve alpha if you want; otherwise:
                 _strokePaint.Color = _borderColor.Value;
             }
             else

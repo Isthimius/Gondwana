@@ -1,11 +1,10 @@
 using System.Runtime.ExceptionServices;
 using Gondwana.Assets;
-using Gondwana.Tooling.Sprites.WinForms;
 using Gondwana.Tooling.Animations.WinForms;
 using Gondwana.Tooling.Assets.WinForms;
 using Gondwana.Tooling.Audio.WinForms;
 using Gondwana.Tooling.Scenes.WinForms;
-using Gondwana.Tooling.Studio.WinForms;
+using Gondwana.Tooling.Sprites.WinForms;
 using Gondwana.Tooling.Studio.WinForms.Documents;
 using Gondwana.Tooling.Tilesheets.WinForms;
 using WeifenLuo.WinFormsUI.Docking;

@@ -1,5 +1,4 @@
 using Gondwana.Demos.SpotBlazor.Game;
-using System.Collections.Generic;
 
 namespace Gondwana.Demos.SpotBlazor;
 

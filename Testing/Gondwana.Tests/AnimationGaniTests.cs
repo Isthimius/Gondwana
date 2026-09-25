@@ -1,5 +1,4 @@
 using System.Drawing;
-using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets;

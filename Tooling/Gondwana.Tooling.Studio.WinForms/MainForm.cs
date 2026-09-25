@@ -1,4 +1,3 @@
-using Gondwana.Tooling.WinForms;
 using Gondwana.Tooling.Assets.WinForms;
 using Gondwana.Tooling.Studio.ViewModels;
 using Gondwana.Tooling.Studio.WinForms.Documents;
@@ -6,8 +5,8 @@ using Gondwana.Tooling.Studio.WinForms.Extensibility;
 using Gondwana.Tooling.Studio.WinForms.Panels;
 using Gondwana.Tooling.Studio.WinForms.Services;
 using Gondwana.Tooling.Tilesheets.Sources;
+using Gondwana.Tooling.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
-using WeifenLuo.WinFormsUI.ThemeVS2015;
 
 namespace Gondwana.Tooling.Studio.WinForms;
 

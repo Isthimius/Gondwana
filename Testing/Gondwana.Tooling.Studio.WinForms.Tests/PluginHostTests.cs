@@ -1,6 +1,6 @@
 using CorePlugin = Gondwana.Tooling.Studio.Core.Extensibility.IStudioPlugin;
-using WinPlugin = Gondwana.Tooling.Studio.WinForms.Extensibility.IStudioPlugin;
 using Host = Gondwana.Tooling.Studio.WinForms.Extensibility.StudioPluginHost;
+using WinPlugin = Gondwana.Tooling.Studio.WinForms.Extensibility.IStudioPlugin;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 

@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Numerics;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;

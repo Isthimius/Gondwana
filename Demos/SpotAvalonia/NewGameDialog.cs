@@ -6,7 +6,6 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Gondwana.Demos.SpotAvalonia.Game;
-using System.Linq;
 
 namespace Gondwana.Demos.SpotAvalonia;
 

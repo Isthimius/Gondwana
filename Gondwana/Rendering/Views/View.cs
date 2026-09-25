@@ -1,8 +1,6 @@
 using System.Drawing;
 using Gondwana.Effects;
-using Gondwana.Logging;
 using Gondwana.Scenes;
-using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Rendering.Views;
 

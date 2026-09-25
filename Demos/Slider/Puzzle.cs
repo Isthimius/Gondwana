@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Numerics;
 using Gondwana;
 using Gondwana.Audio;
 using Gondwana.Drawing;
@@ -8,10 +12,6 @@ using Gondwana.Physics.Movement.Scripted;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Numerics;
 
 namespace Slider
 {

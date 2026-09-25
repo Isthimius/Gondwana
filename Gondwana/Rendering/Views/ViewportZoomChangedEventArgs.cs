@@ -1,5 +1,3 @@
-using System.Drawing;
-
 namespace Gondwana.Rendering.Views;
 
 /// <summary>
