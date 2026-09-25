@@ -139,6 +139,10 @@ internal sealed class NewGameDialog : DialogBox
             ApplyInitialOptions(initialOptions);
 
         HookEvents();
+
+        for (int i = 0; i < _playerColors.Length; i++)
+            OnColorSelectionChanged(i);
+
         UpdatePlayerVisibility();
         RefreshAllColorHeaders();
     }
@@ -254,10 +258,17 @@ internal sealed class NewGameDialog : DialogBox
                 _playerHeaders[playerIndex].SetText(string.IsNullOrWhiteSpace(text)
                     ? $"Player {playerIndex + 1}"
                     : text);
+            _playerNames[i].Submitted += _ => OnStartClicked();
 
             _playerColors[i].SelectedIndexChanged += _ =>
                 OnColorSelectionChanged(playerIndex);
         }
+    }
+
+    protected override void ProcessShown()
+    {
+        base.ProcessShown();
+        UpdatePlayerVisibility();
     }
 
     private void UpdatePlayerVisibility()
