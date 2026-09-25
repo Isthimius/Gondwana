@@ -390,7 +390,7 @@ internal partial class GameWindow : Form
             new Rectangle(bounds.Left + 110, bounds.Top + 231, 200, 200),
             "spot.about.gondwanaLogo")
             .SetScaleMode(DirectImage.ScaleMode.Fit);
-        gondwanaLogo.ZOrder = 10_002;
+        gondwanaLogo.ZOrder = 10_004;
         about.Add(gondwanaLogo);
 
         // Repurpose the AboutBox header text for the same custom-font caption the
