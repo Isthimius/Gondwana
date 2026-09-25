@@ -184,6 +184,61 @@ public sealed class WidgetsTests : IDisposable
     }
 
     [Fact]
+    public void TextBoxWidget_RepeatedKeyActionsUseWidgetRepeatInterval()
+    {
+        using var host = new TestRenderSurfaceHost();
+        View view = AddView(host);
+        using var textBox = new TextBoxWidget(
+            host,
+            view,
+            new Rectangle(10, 20, 220, 32));
+
+        DispatchKeyboard(textBox, 65, KeyAction.Pressed);
+        Assert.Equal("a", textBox.Text);
+
+        DispatchKeyboard(textBox, 65, KeyAction.Repeated);
+        Assert.Equal("a", textBox.Text);
+
+        Thread.Sleep(TimeSpan.FromMilliseconds(70));
+
+        DispatchKeyboard(textBox, 65, KeyAction.Repeated);
+        Assert.Equal("aa", textBox.Text);
+    }
+
+    [Fact]
+    public void DialogBox_ActivateBringsEntireVisualTreeAboveOtherDialogs()
+    {
+        using var host = new TestRenderSurfaceHost();
+        View view = AddView(host);
+
+        using var first = new StackingTestDialog(
+            host,
+            view,
+            new Rectangle(20, 20, 260, 180),
+            "First");
+
+        using var second = new StackingTestDialog(
+            host,
+            view,
+            new Rectangle(60, 60, 260, 180),
+            "Second");
+
+        first.Show();
+        first.Activate();
+        int firstMaximum = first.VisualZOrders.Max();
+
+        second.Show();
+        second.Activate();
+
+        Assert.True(second.VisualZOrders.Min() > firstMaximum);
+
+        int secondMaximum = second.VisualZOrders.Max();
+        first.Activate();
+
+        Assert.True(first.VisualZOrders.Min() > secondMaximum);
+    }
+
+    [Fact]
     public void ConversationBox_UpdatesContentAndRaisesAdvanceRequest()
     {
         using var host = new TestRenderSurfaceHost();
@@ -341,6 +396,37 @@ public sealed class WidgetsTests : IDisposable
         sprite.SetPosition(position);
         _sprites.Add(sprite);
         return sprite;
+    }
+
+    private sealed class StackingTestDialog : DialogBox
+    {
+        internal StackingTestDialog(
+            RenderSurfaceHostBase host,
+            View view,
+            Rectangle bounds,
+            string title)
+            : base(host, view, bounds, title, showCloseButton: false)
+        {
+            ContentButton = new ButtonWidget(
+                host,
+                view,
+                new Rectangle(bounds.Left + 20, bounds.Top + 60, 120, 32),
+                "Content")
+                .SetButtonZOrder(10_100);
+
+            Add(ContentButton);
+        }
+
+        internal ButtonWidget ContentButton { get; }
+
+        internal int[] VisualZOrders =>
+        [
+            Panel.ZOrder,
+            TitleBar.ZOrder,
+            TitleText.ZOrder,
+            ContentButton.Background.ZOrder,
+            ContentButton.Label.ZOrder
+        ];
     }
 
     private static void DispatchKeyboard(
