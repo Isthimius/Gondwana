@@ -13,6 +13,10 @@ namespace Gondwana.Demos.Spot;
 
 internal sealed class NewGameDialog : DialogBox
 {
+    private const int TopRowLabelZOrder = 10_090;
+    private const int TopRowComboZOrder = 10_100;
+    private const int BoardSizeDropDownHeight = 244;
+
     private static readonly string[] PlayerCountItems = ["2", "3", "4"];
     private static readonly string[] BoardSizeItems = ["3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
     private static readonly string[] PlayerTypeItems = ["Human", "Computer"];
@@ -58,6 +62,7 @@ internal sealed class NewGameDialog : DialogBox
                 .SetCornerRadius(4f);
 
         var playersLabel = CreateLabel(host, view, Offset(bounds, 18, 48, 66, 28), "Players");
+        playersLabel.TextBlock.ZOrder = TopRowLabelZOrder;
         Add(playersLabel, keepCurrentOffset: false, explicitLocalOffsetPx: new Vector2(18, 48));
 
         _playerCount = new ComboBoxWidget(
@@ -67,10 +72,11 @@ internal sealed class NewGameDialog : DialogBox
             PlayerCountItems,
             dropDownHeight: 84,
             nickname: "spot.newGame.playerCount");
-        _playerCount.SetComboBoxZOrder(10_020);
+        _playerCount.SetComboBoxZOrder(TopRowComboZOrder);
         Add(_playerCount, keepCurrentOffset: false, explicitLocalOffsetPx: new Vector2(82, 48));
 
         var boardLabel = CreateLabel(host, view, Offset(bounds, 190, 48, 90, 28), "Board Size");
+        boardLabel.TextBlock.ZOrder = TopRowLabelZOrder;
         Add(boardLabel, keepCurrentOffset: false, explicitLocalOffsetPx: new Vector2(190, 48));
 
         _boardWidth = new ComboBoxWidget(
@@ -78,13 +84,14 @@ internal sealed class NewGameDialog : DialogBox
             view,
             Offset(bounds, 282, 48, 70, 28),
             BoardSizeItems,
-            dropDownHeight: 150,
+            dropDownHeight: BoardSizeDropDownHeight,
             nickname: "spot.newGame.boardWidth");
-        _boardWidth.SetComboBoxZOrder(10_020);
+        _boardWidth.SetComboBoxZOrder(TopRowComboZOrder);
         Add(_boardWidth, keepCurrentOffset: false, explicitLocalOffsetPx: new Vector2(282, 48));
 
         var byLabel = CreateLabel(host, view, Offset(bounds, 356, 48, 24, 28), "×")
             .SetAlignment(SKTextAlign.Center, Gondwana.Drawing.Direct.TextBlock.VerticalAlign.Center);
+        byLabel.TextBlock.ZOrder = TopRowLabelZOrder;
         Add(byLabel, keepCurrentOffset: false, explicitLocalOffsetPx: new Vector2(356, 48));
 
         _boardHeight = new ComboBoxWidget(
@@ -92,9 +99,9 @@ internal sealed class NewGameDialog : DialogBox
             view,
             Offset(bounds, 384, 48, 70, 28),
             BoardSizeItems,
-            dropDownHeight: 150,
+            dropDownHeight: BoardSizeDropDownHeight,
             nickname: "spot.newGame.boardHeight");
-        _boardHeight.SetComboBoxZOrder(10_020);
+        _boardHeight.SetComboBoxZOrder(TopRowComboZOrder);
         Add(_boardHeight, keepCurrentOffset: false, explicitLocalOffsetPx: new Vector2(384, 48));
 
         for (int i = 0; i < 4; i++)
