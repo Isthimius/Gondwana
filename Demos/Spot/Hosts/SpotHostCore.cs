@@ -17,7 +17,6 @@ using Gondwana.Rendering;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
-using Gondwana.Widgets.Dialogs;
 using Gondwana.Widgets.Overlays;
 using Gondwana.WinForms.Input.Keyboard;
 using Microsoft.Extensions.Logging;
@@ -289,7 +288,7 @@ internal sealed class SpotHostCore
             _newGameDialog = null;
             Interlocked.Exchange(ref _dialogOpen, 0);
 
-            if (result == DialogResult.OK)
+            if (result == Gondwana.Widgets.Dialogs.DialogResult.OK)
                 Engine.EngineDispatcher.Post(() => StartNewGame(options));
         };
 
