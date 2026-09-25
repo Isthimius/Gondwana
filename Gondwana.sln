@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.8.12009.203
@@ -1072,20 +1072,8 @@ Global
 		{BCD9906E-485D-48DD-9C2E-35154D4A9143}.Release|x86.Build.0 = Release|Any CPU
 		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
-		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Debug|Mixed Platforms.Build.0 = Debug|x64
-		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Debug|x64.ActiveCfg = Debug|x64
-		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Debug|x64.Build.0 = Debug|x64
-		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Debug|x86.ActiveCfg = Debug|x86
-		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Debug|x86.Build.0 = Debug|x86
 		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Release|Mixed Platforms.ActiveCfg = Release|x64
-		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Release|Mixed Platforms.Build.0 = Release|x64
-		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Release|x64.ActiveCfg = Release|x64
-		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Release|x64.Build.0 = Release|x64
-		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Release|x86.ActiveCfg = Release|x86
-		{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1139,3 +1127,4 @@ Global
 		SolutionGuid = {A027047D-3D9C-4015-B3E0-DEEAE46DA4CC}
 	EndGlobalSection
 EndGlobal
+
