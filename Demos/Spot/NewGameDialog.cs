@@ -191,9 +191,9 @@ internal sealed class NewGameDialog : DialogBox
             PlayerTypeItems,
             dropDownHeight: 60,
             nickname: $"spot.newGame.player{index + 1}.type");
-        type.SetComboBoxZOrder(10_020);
         _playerTypes[index] = type;
         panel.AddWidget(type, new Point(204, 23));
+        type.SetComboBoxZOrder(10_030);
 
         var color = new ComboBoxWidget(
             host,
@@ -202,9 +202,9 @@ internal sealed class NewGameDialog : DialogBox
             AvailableColors.Select(static item => item.Name),
             dropDownHeight: 130,
             nickname: $"spot.newGame.player{index + 1}.color");
-        color.SetComboBoxZOrder(10_040);
         _playerColors[index] = color;
         panel.AddWidget(color, new Point(330, 23));
+        color.SetComboBoxZOrder(10_040);
     }
 
     private void ApplyDefaults()
