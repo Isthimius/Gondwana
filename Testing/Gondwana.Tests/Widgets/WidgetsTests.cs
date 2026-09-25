@@ -122,6 +122,39 @@ public sealed class WidgetsTests : IDisposable
     }
 
     [Fact]
+    public void ComboBoxWidget_LosingDropDownFocus_CollapsesWithoutStealingFocus()
+    {
+        using var host = new TestRenderSurfaceHost();
+        using var router = new WidgetInputRouter(host, null, null, null);
+        View view = AddView(host);
+        router.Start();
+
+        using var comboBox = new ComboBoxWidget(
+            host,
+            view,
+            new Rectangle(10, 20, 200, 32),
+            ["Easy", "Normal", "Hard"]);
+
+        using var otherButton = new ButtonWidget(
+            host,
+            view,
+            new Rectangle(10, 70, 120, 32),
+            "Other");
+
+        comboBox.Show();
+        otherButton.Show();
+        comboBox.OpenDropDown();
+
+        Assert.True(comboBox.IsDropDownOpen);
+        Assert.Same(comboBox.DropDown, router.FocusedWidget);
+
+        router.Focus(otherButton);
+
+        Assert.False(comboBox.IsDropDownOpen);
+        Assert.Same(otherButton, router.FocusedWidget);
+    }
+
+    [Fact]
     public void TextBoxWidget_SupportsCaretInsertionDeletionAndMaxLength()
     {
         using var host = new TestRenderSurfaceHost();
