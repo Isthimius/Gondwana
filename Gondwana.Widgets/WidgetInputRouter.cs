@@ -330,6 +330,16 @@ public sealed class WidgetInputRouter : IDisposable
             ProcessMouseMove(args.PreviousPosition, currentPosition, args.Tick);
         }
 
+        if (args.ScrollDelta != 0 && initialHit is not null)
+        {
+            initialHit.Widget.DispatchMouseWheel(new WidgetMouseWheelEventArgs(
+                initialHit.Widget,
+                initialHit.View,
+                new PointF(currentPosition.X, currentPosition.Y),
+                args.ScrollDelta,
+                args.Tick));
+        }
+
         foreach (MouseButton mouseButton in _mouseButtons)
         {
             if (args.IsButtonJustReleased(mouseButton))
