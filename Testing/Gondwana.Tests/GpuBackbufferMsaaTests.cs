@@ -1,4 +1,6 @@
+using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
+using SkiaSharp;
 
 namespace Gondwana.Tests;
 
@@ -52,6 +54,19 @@ public sealed class GpuBackbufferMsaaTests : IDisposable
     }
 
     [Fact]
+    public void EngineConfigurationChangePropagatesAndRequestsRecreation()
+    {
+        using var host = new RenderSurfaceHost<GpuBackbuffer>(new TestAdapter(320, 200));
+        using var backbuffer = Assert.IsType<GpuBackbuffer>(host.Backbuffer);
+        MarkCurrentConfigurationApplied(backbuffer);
+
+        Engine.Instance.Configuration.MsaaSampleCount = 4;
+
+        Assert.Equal(4, backbuffer.MsaaSampleCount);
+        Assert.True(backbuffer.IsMsaaSurfaceRecreationPending);
+    }
+
+    [Fact]
     public void ReassigningSameMsaaDoesNotRequestAnotherRecreation()
     {
         using var backbuffer = new GpuBackbuffer(320, 200);
@@ -93,5 +108,17 @@ public sealed class GpuBackbufferMsaaTests : IDisposable
     {
         var configuration = backbuffer.GetMsaaConfigurationSnapshot();
         backbuffer.MarkMsaaConfigurationApplied(configuration.Revision, configuration.SampleCount);
+    }
+
+    private sealed class TestAdapter(int width, int height)
+        : RenderSurfaceAdapterBase(width, height)
+    {
+        public override void Present(
+            SKImage bufferImage,
+            SKRectI bufferRect,
+            SKRect destRect)
+        {
+            bufferImage.Dispose();
+        }
     }
 }
