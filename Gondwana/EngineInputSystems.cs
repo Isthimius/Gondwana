@@ -1,4 +1,4 @@
-﻿using Gondwana.Input.Gamepad;
+using Gondwana.Input.Gamepad;
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.Input.Touch;

@@ -1,4 +1,4 @@
-﻿namespace Gondwana;
+namespace Gondwana;
 
 /// <summary>
 /// Provides a concrete implementation of <see cref="IUiDispatcher"/> for dispatching actions

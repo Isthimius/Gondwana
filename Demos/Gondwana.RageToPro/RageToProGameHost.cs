@@ -1,6 +1,5 @@
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Input.Keyboard;
-using Gondwana.Input.Mouse;
 using Gondwana.Scenes;
 using Gondwana.Timers;
 using Gondwana.WinForms.Hosting;

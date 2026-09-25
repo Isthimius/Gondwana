@@ -1,6 +1,3 @@
-using System;
-using System.Windows.Forms;
-
 namespace WidgetsTest;
 
 internal static class Program

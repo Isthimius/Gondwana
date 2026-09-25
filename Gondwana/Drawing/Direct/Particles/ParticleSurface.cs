@@ -1,4 +1,4 @@
-﻿using System.Buffers;
+using System.Buffers;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using Gondwana.Rendering;
@@ -221,7 +221,8 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
                worldBounds,
                nickname,
                maxParticles,
-               particleSprite) { }
+               particleSprite)
+    { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ParticleSurface"/> class for view-based rendering
@@ -233,7 +234,7 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// <param name="nickname">An optional friendly name for debugging and identification.</param>
     /// <param name="maxParticles">The maximum number of particles this system can manage simultaneously. Default is 2000.</param>
     /// <param name="particleSprite">An optional bitmap texture to use for particles instead of circles.</param>
-    public ParticleSurface (RenderSurfaceHostBase renderSurfaceHost,
+    public ParticleSurface(RenderSurfaceHostBase renderSurfaceHost,
                             View view,
                             Rectangle? screenBounds,
                             string? nickname = null,
@@ -247,7 +248,8 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
               null,
               nickname,
               maxParticles,
-              particleSprite) { }
+              particleSprite)
+    { }
 
     /// <summary>
     /// Immediately spawns a fixed number of particles from the given emitter.

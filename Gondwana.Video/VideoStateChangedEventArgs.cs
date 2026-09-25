@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Video;
+namespace Gondwana.Video;
 
 /// <summary>
 /// Provides data for video state changed events.

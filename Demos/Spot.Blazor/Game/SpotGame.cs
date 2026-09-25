@@ -1,9 +1,6 @@
+using System.Drawing;
 using Gondwana.Physics.Movement.Easing;
 using Gondwana.Physics.Movement.Scripted;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 
 namespace Gondwana.Demos.SpotBlazor.Game;
 

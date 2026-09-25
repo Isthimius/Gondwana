@@ -1,6 +1,4 @@
-using Gondwana.Demos.SpotAvalonia.Game;
 using SkiaSharp;
-using System.Linq;
 
 namespace Gondwana.Demos.SpotAvalonia;
 

@@ -1,6 +1,10 @@
-﻿using Gondwana.Drawing.Coordinates;
+using System.Numerics;
+using Gondwana.Drawing.Animation;
+using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
+using Gondwana.Drawing.Sprites;
+using Gondwana.Drawing.Tilesheets;
 using Gondwana.Input.Gamepad;
 using Gondwana.Logging;
 using Gondwana.Scenes;
@@ -8,12 +12,6 @@ using Gondwana.WinForms;
 using Gondwana.WinForms.Rendering;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
-using System.Drawing;
-using Microsoft.Extensions.Logging;
-using Gondwana.Drawing.Tilesheets;
-using Gondwana.Drawing.Sprites;
-using System.Numerics;
-using Gondwana.Drawing.Animation;
 
 namespace Gondwana.Demos.CoordinateTest;
 
@@ -104,7 +102,7 @@ public class Game : IDisposable
     {
         // Implementation for creating sprites goes here
         var tilesheet = TilesheetRegistry.Instance.GetAll()["rooster"];
-        
+
         var sprite1 = SpriteManager.Instance.CreateSprite(Scene[0], tilesheet[0, 0], "rooster_1");
         sprite1.Visible = true;
         sprite1.CollisionsEnabled = true;
@@ -226,6 +224,7 @@ public class Game : IDisposable
         //_particleSurface.Emitters.Add(GetSmoke(bounds.Width, bounds.Height));
     }
 
+#pragma warning disable IDE0051 // Optional demo preset retained for manual selection.
     private ParticleEmitter GetSmoke(float width, float height)
     {
         return new ParticleEmitter
@@ -240,6 +239,8 @@ public class Game : IDisposable
             GravityY = -20f // slight upward drift
         };
     }
+
+#pragma warning restore IDE0051
 
     #endregion load and init game content
 
@@ -392,7 +393,7 @@ public class Game : IDisposable
         var screenPos = args.CurrentPosition;
 
         var worldPx = view.ScreenPxToWorldPx(layer, screenPos);
-        var screenPx = view.WorldPxToScreenPx(layer, worldPx);
+        _ = view.WorldPxToScreenPx(layer, worldPx);
         //Engine.Logger.LogTrace($"mouse={screenPos} roundtrip={s} cam={view.Camera.PositionPx} zoom={view.Viewport.Zoom} p={layer.Parallax}");
         //Engine.Logger.LogTrace($"\r\nscreen1 = {screenPos} \r\nworld   = {worldPx} \r\nscreen2 = {screenPx}\r\n");
 
@@ -407,9 +408,8 @@ public class Game : IDisposable
 
         // 4) world → screen (via View)
         var screenFromGrid = view.WorldPxToScreenPx(layer, worldFromGrid);
-
-        var dx = screenFromGrid.X - screenPos.X;
-        var dy = screenFromGrid.Y - screenPos.Y;
+        _ = screenFromGrid.X - screenPos.X;
+        _ = screenFromGrid.Y - screenPos.Y;
 
         // Existing HUD text
         var cameraPos = view.Camera.PositionPx;

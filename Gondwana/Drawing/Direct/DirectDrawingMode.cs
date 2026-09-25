@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Drawing.Direct;
+namespace Gondwana.Drawing.Direct;
 
 /// <summary>
 /// Specifies where direct drawing operations are applied within the rendering pipeline.

@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 
@@ -21,12 +21,12 @@ public interface IDrawable
     /// Optional human-readable name associated with the object.
     /// </summary>
     string? Nickname { get; }
-    
+
     /// <summary>
     /// Gets a value indicating whether the object is visible.
     /// </summary>
     bool Visible { get; }
-    
+
     /// <summary>
     /// Gets the z-order of the element, which determines its visual stacking order relative to other elements.
     /// Higher z-order values are drawn on top of lower ones.

@@ -1,6 +1,4 @@
 using System.Drawing;
-using Microsoft.Extensions.Logging;
-using SkiaSharp;
 using Gondwana.Drawing.Direct;
 using Gondwana.Effects;
 using Gondwana.Extensibility;
@@ -8,6 +6,8 @@ using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
+using Microsoft.Extensions.Logging;
+using SkiaSharp;
 
 namespace Gondwana.Rendering;
 

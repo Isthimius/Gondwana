@@ -1,7 +1,6 @@
 using System.Drawing;
-using Gondwana.Drawing;
-using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Animation;
+using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Physics.Collisions;
 using Gondwana.Scenes;

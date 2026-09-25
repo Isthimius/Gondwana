@@ -1,7 +1,6 @@
 using System.Numerics;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Input.Keyboard;
-using Gondwana.Input.Mouse;
 using Gondwana.Scenes;
 using Gondwana.Timers;
 using Gondwana.WinForms.Hosting;
@@ -238,8 +237,11 @@ internal sealed class PlopState
             float value = MathF.Round(1 + pressure * pressure * 235) * (flaming ? 2 : 1) * (Plutonium ? 3 : 1);
             Plops.Add(new Plop
             {
-                Position = Cow + new Vector2(-18 + i * 38, 32), Radius = radius,
-                Value = value, Flaming = flaming, Radioactive = Plutonium,
+                Position = Cow + new Vector2(-18 + i * 38, 32),
+                Radius = radius,
+                Value = value,
+                Flaming = flaming,
+                Radioactive = Plutonium,
                 Velocity = new Vector2((i == 0 ? -1 : 1) * 18, 35)
             });
         }
@@ -252,9 +254,12 @@ internal sealed class PlopState
     {
         (float cost, bool owned, string name) item = slot switch
         {
-            0 => (45, Alfalfa, "High-Fiber Alfalfa"), 1 => (90, Chili, "Volcanic Chili Beans"),
-            2 => (160, Plutonium, "Plutonium Sludge"), 3 => (240, DualCore, "Dual Chamber"),
-            4 => (350, Compressor, "Compressor"), _ => (600, Beetle, "Beetle Assistant")
+            0 => (45, Alfalfa, "High-Fiber Alfalfa"),
+            1 => (90, Chili, "Volcanic Chili Beans"),
+            2 => (160, Plutonium, "Plutonium Sludge"),
+            3 => (240, DualCore, "Dual Chamber"),
+            4 => (350, Compressor, "Compressor"),
+            _ => (600, Beetle, "Beetle Assistant")
         };
         if (item.owned) { Message = $"{item.name} already installed."; MessageTime = 1.5f; return; }
         if (Money < item.cost) { Message = $"Need ${item.cost:0} for {item.name}."; MessageTime = 1.5f; return; }

@@ -2,11 +2,11 @@ using Gondwana.Configuration;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
+using Gondwana.Extensibility;
 using Gondwana.Input.Gamepad;
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.Input.Touch;
-using Gondwana.Extensibility;
 using Gondwana.Logging;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
@@ -37,7 +37,7 @@ public sealed class Engine : IDisposable
     #region static members
 
     private static readonly Lazy<Engine> _instance = new(() => new Engine());
-    
+
     /// <summary>
     /// Gets the singleton instance of the <see cref="Engine"/>.
     /// </summary>

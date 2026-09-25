@@ -64,7 +64,7 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
     /// <param name="worldPixelRange">The rectangular pixel range to check for intersections.</param>
     /// <param name="includeOverhang">Whether to include tile overhang in intersection calculations.</param>
     /// <returns>A list of <see cref="SceneLayerTile"/> objects that intersect with the pixel range.</returns>
-    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer  sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
+    public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
         var ul = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Left, worldPixelRange.Top));
@@ -81,7 +81,7 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
         {
             for (int x = minX; x <= maxX; x++)
             {
-                var gp =  sceneLayer[x, y];
+                var gp = sceneLayer[x, y];
                 if (gp == null) continue;
                 var r = GetPixelRangeForTile(gp, includeOverhang);
                 if (r.IntersectsWith(worldPixelRange)) result.Add(gp);

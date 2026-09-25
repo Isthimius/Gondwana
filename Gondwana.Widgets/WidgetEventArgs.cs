@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Widgets;
+namespace Gondwana.Widgets;
 
 /// <summary>
 /// Base event argument type for Gondwana widget callbacks.

@@ -1,4 +1,4 @@
-﻿using Gondwana.Avalonia.Rendering;
+using Gondwana.Avalonia.Rendering;
 using Gondwana.Hosting;
 
 namespace Gondwana.Avalonia.Hosting;

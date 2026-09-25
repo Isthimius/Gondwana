@@ -1,5 +1,4 @@
 using System.Drawing;
-using SkiaSharp;
 
 namespace Gondwana.Rendering.Views;
 

@@ -20,13 +20,13 @@ internal readonly record struct LayerPeriod(PointF Columns, PointF Rows, bool Wr
             {
                 // Includes both stagger parities and pixel-rounding phases.
                 for (int x = -2; x <= 2; x++)
-                for (int y = -2; y <= 2; y++)
-                {
-                    var a = coordinates.GetAnchorPixelAtSceneLayerCoordinates(layer, new(x, y));
-                    var b = coordinates.GetAnchorPixelAtSceneLayerCoordinates(layer, new(x + columns, y + rows));
-                    if (b.X - a.X != delta.X || b.Y - a.Y != delta.Y)
-                        throw new InvalidOperationException($"{layer.CoordinateSystemType} cannot repeat cleanly with these dimensions. Flat-top hex column wrapping requires even columns; pointed-top hex row wrapping requires even rows. Pixel-rounded projections also require an integral world-space period.");
-                }
+                    for (int y = -2; y <= 2; y++)
+                    {
+                        var a = coordinates.GetAnchorPixelAtSceneLayerCoordinates(layer, new(x, y));
+                        var b = coordinates.GetAnchorPixelAtSceneLayerCoordinates(layer, new(x + columns, y + rows));
+                        if (b.X - a.X != delta.X || b.Y - a.Y != delta.Y)
+                            throw new InvalidOperationException($"{layer.CoordinateSystemType} cannot repeat cleanly with these dimensions. Flat-top hex column wrapping requires even columns; pointed-top hex row wrapping requires even rows. Pixel-rounded projections also require an integral world-space period.");
+                    }
             }
             return delta;
         }
@@ -93,13 +93,13 @@ internal readonly record struct LayerPeriod(PointF Columns, PointF Rows, bool Wr
         if (!double.IsFinite(count) || count > 1_000_000 || Math.Abs(minX) > int.MaxValue || Math.Abs(maxX) > int.MaxValue || Math.Abs(minY) > int.MaxValue || Math.Abs(maxY) > int.MaxValue)
             throw new InvalidOperationException("The requested wrapped region exceeds the supported instance range.");
         for (double x = minX; x <= maxX; x++)
-        for (double y = minY; y <= maxY; y++)
-        {
-            var offset = Offset(x, y);
-            var translated = content;
-            translated.Offset(offset);
-            if (translated.IntersectsWith(query))
-                yield return offset;
-        }
+            for (double y = minY; y <= maxY; y++)
+            {
+                var offset = Offset(x, y);
+                var translated = content;
+                translated.Offset(offset);
+                if (translated.IntersectsWith(query))
+                    yield return offset;
+            }
     }
 }

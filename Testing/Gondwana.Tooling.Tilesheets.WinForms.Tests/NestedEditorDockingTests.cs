@@ -4,9 +4,7 @@ using Gondwana.Tooling.Animations.Editing;
 using Gondwana.Tooling.Animations.WinForms;
 using Gondwana.Tooling.Assets.WinForms;
 using Gondwana.Tooling.Tilesheets.Editing;
-using Gondwana.Tooling.Tilesheets.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
-using WeifenLuo.WinFormsUI.ThemeVS2015;
 
 namespace Gondwana.Tooling.Tilesheets.WinForms.Tests;
 
@@ -49,7 +47,9 @@ public sealed class NestedEditorDockingTests
             using var host = new Form { Size = new Size(1400, 900), Opacity = 0, ShowInTaskbar = false };
             using var outer = new DockPanel
             {
-                Dock = DockStyle.Fill, Theme = theme, DocumentStyle = DocumentStyle.DockingWindow
+                Dock = DockStyle.Fill,
+                Theme = theme,
+                DocumentStyle = DocumentStyle.DockingWindow
             };
             host.Controls.Add(outer);
             using var browser = new DockContent { Text = "Working directory" };
@@ -299,7 +299,8 @@ public sealed class NestedEditorDockingTests
                 test();
             }
             catch (Exception ex) { error = ex; }
-        }) { IsBackground = true };
+        })
+        { IsBackground = true };
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(60)), "Nested docking test timed out.");

@@ -1,3 +1,5 @@
+using System.Drawing;
+using System.Numerics;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Physics.Movement;
@@ -5,9 +7,6 @@ using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
-using System.Drawing;
-using System.Numerics;
-using Gondwana.Tests;
 
 namespace Gondwana.Tests.Drawing.Direct;
 

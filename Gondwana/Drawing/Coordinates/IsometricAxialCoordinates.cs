@@ -28,7 +28,7 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
     /// <returns>The anchor pixel position (top vertex of the diamond) in world space.</returns>
     public Point GetAnchorPixelAtSceneLayerCoordinates(SceneLayer sceneLayer, PointF gp)
     {
-        WH(sceneLayer, out int W, out int H, out float halfW, out float halfH);
+        WH(sceneLayer, out int W, out _, out float halfW, out float halfH);
 
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;
@@ -47,7 +47,7 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
     /// <returns>The corresponding grid coordinates in the scene layer.</returns>
     public PointF GetSceneLayerCoordinatesAtPixel(SceneLayer sceneLayer, PointF pixelPt)
     {
-        WH(sceneLayer, out int W, out int H, out float halfW, out float halfH);
+        WH(sceneLayer, out int W, out _, out float halfW, out float halfH);
 
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;
@@ -68,7 +68,7 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
     public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
-        WH(sceneLayer, out int W, out int H, out float halfW, out float halfH);
+        WH(sceneLayer, out _, out _, out _, out _);
 
         // Corner → coarse grid bounds (continuous)
         var ul = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Left, worldPixelRange.Top));
@@ -113,7 +113,7 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
     /// <returns>The rectangular pixel bounds of the tile in world space.</returns>
     public Rectangle GetPixelRangeForTile(Tile tile, bool includeOverhang)
     {
-        WH(tile.SceneLayer, out int W, out int H, out float halfW, out float halfH);
+        WH(tile.SceneLayer, out int W, out int H, out float halfW, out _);
 
         // Top vertex of the diamond
         var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);

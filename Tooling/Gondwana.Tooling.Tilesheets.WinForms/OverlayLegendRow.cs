@@ -27,8 +27,14 @@ internal sealed class OverlayLegendRow : UserControl
             using var brush = new SolidBrush(_settings[_kind]);
             e.Graphics.FillRectangle(brush, _swatch.ClientRectangle);
         };
-        var button = new Button { Text = "...", UseCompatibleTextRendering = true, Dock = DockStyle.Fill,
-            Margin = new Padding(2), AccessibleName = $"Choose {label} color" };
+        var button = new Button
+        {
+            Text = "...",
+            UseCompatibleTextRendering = true,
+            Dock = DockStyle.Fill,
+            Margin = new Padding(2),
+            AccessibleName = $"Choose {label} color"
+        };
         button.Click += (_, _) => chooseColor();
         layout.Controls.Add(toggle, 0, 0);
         layout.Controls.Add(_swatch, 1, 0);

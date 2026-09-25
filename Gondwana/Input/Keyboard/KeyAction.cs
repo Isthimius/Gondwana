@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Input.Keyboard;
+namespace Gondwana.Input.Keyboard;
 
 /// <summary>
 /// Represents the type of action performed on a keyboard key, indicating whether the key

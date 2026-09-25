@@ -2,7 +2,6 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using Gondwana.Drawing.Direct;
 using Gondwana.Rendering.Backbuffers;
-using Gondwana.Rendering.Views;
 using Gondwana.Video;
 using SkiaSharp;
 

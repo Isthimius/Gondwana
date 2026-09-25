@@ -20,6 +20,7 @@ public sealed class CollisionProfileRegistry
         EnsureStandardProfiles();
     }
 
+#pragma warning disable IDE0051 // Used by Newtonsoft.Json via reflection.
     [JsonConstructor]
     private CollisionProfileRegistry(Dictionary<string, CollisionProfile>? profiles)
     {
@@ -29,6 +30,8 @@ public sealed class CollisionProfileRegistry
 
         EnsureStandardProfiles();
     }
+
+#pragma warning restore IDE0051
 
     /// <summary>
     /// Defines or replaces a named profile.

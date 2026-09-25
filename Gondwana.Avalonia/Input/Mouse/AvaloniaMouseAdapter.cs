@@ -2,8 +2,8 @@ using System.Drawing;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Gondwana.Input.Keyboard;
-using GondwanaMouseButton = Gondwana.Input.Mouse.MouseButton;
 using Gondwana.Input.Mouse;
+using GondwanaMouseButton = Gondwana.Input.Mouse.MouseButton;
 
 namespace Gondwana.Avalonia.Input.Mouse;
 

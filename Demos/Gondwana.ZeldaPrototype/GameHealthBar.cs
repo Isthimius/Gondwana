@@ -1,4 +1,3 @@
-using System.Drawing;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Rendering;

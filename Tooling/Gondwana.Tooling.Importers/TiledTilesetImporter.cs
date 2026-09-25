@@ -53,7 +53,8 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
         string name = ImportNaming.Sanitize((string?)root.Attribute("name") ?? filename);
         var region = new TilesheetRegionDefinition
         {
-            Area = new Rectangle(0, 0, bitmap.Width, bitmap.Height), TileSize = new Size(width, height),
+            Area = new Rectangle(0, 0, bitmap.Width, bitmap.Height),
+            TileSize = new Size(width, height),
             TilePadding = new Spacing { Right = spacing, Bottom = spacing },
             RegionMargin = new Spacing { Left = margin, Top = margin, Right = margin - spacing, Bottom = margin - spacing }
         };
@@ -87,8 +88,12 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             if (id < 0 || id >= count) throw new InvalidDataException($"Tile ID {id} is outside tilecount.");
             if (!tileIds.Add(id)) throw new InvalidDataException($"Duplicate tile ID {id}.");
             if (tile.Element("animation") is not { } animation) continue;
-            var gani = new AnimationDefinition { Key = $"{name}.tile.{id}", CycleType = CycleType.Repeating,
-                TilesheetSources = [AnimationTilesheetSourceDefinition.Loose(name, gts)] };
+            var gani = new AnimationDefinition
+            {
+                Key = $"{name}.tile.{id}",
+                CycleType = CycleType.Repeating,
+                TilesheetSources = [AnimationTilesheetSourceDefinition.Loose(name, gts)]
+            };
             foreach (var frame in animation.Elements("frame"))
             {
                 token.ThrowIfCancellationRequested();

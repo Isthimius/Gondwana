@@ -1,4 +1,4 @@
-﻿namespace Gondwana;
+namespace Gondwana;
 
 /// <summary>
 /// Defines a contract for dispatching actions to the engine's background thread in a thread-safe manner.

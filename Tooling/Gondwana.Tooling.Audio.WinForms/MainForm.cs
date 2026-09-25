@@ -1,7 +1,6 @@
-using Gondwana.Tooling.WinForms;
 using Gondwana.Tooling.Audio.Editing;
+using Gondwana.Tooling.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
-using WeifenLuo.WinFormsUI.ThemeVS2015;
 
 namespace Gondwana.Tooling.Audio.WinForms;
 

@@ -20,7 +20,7 @@ public sealed record AsepriteFile(int Width, int Height, int Depth, uint Flags, 
         uint flags = reader.ReadUInt32();
         int speed = reader.ReadUInt16();
         reader.ReadBytes(8);
-byte transparent = reader.ReadByte();
+        byte transparent = reader.ReadByte();
         reader.ReadBytes(3);
         int ratioX = reader.ReadByte(), ratioY = reader.ReadByte();
         if (ratioX > 0 && ratioY > 0 && ratioX != ratioY) throw new InvalidDataException("Non-square Aseprite pixel aspect ratio is unsupported.");

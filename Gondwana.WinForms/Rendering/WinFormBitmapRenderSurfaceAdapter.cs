@@ -160,5 +160,6 @@ public class WinFormBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisp
         DisposeStaleImages();
 
         currentImage?.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using Avalonia;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
@@ -226,5 +226,7 @@ public class AvaloniaBitmapRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDis
 
         _bitmap?.Dispose();
         _bitmap = null;
+
+        GC.SuppressFinalize(this);
     }
 }

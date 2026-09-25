@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Logging;
+namespace Gondwana.Logging;
 
 /// <summary>
 /// Specifies the logging mode for the engine.

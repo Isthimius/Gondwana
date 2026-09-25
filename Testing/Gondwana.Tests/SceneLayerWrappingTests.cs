@@ -2,7 +2,6 @@ using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Physics.Collisions;
-using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Newtonsoft.Json;
 
@@ -41,15 +40,15 @@ public sealed class SceneLayerWrappingTests
         layer.WrapHorizontally = layer.WrapVertically = true;
         var period = layer.GetPeriod();
         for (int x = -9; x < 10; x++)
-        for (int y = -13; y < 14; y++)
-        {
-            var canonical = layer.WrapGrid(new(x, y));
-            var anchor = layer.GridToWorldPx(new(x, y));
-            var original = layer.GridToWorldPx(canonical);
-            var offset = period.Offset((x - canonical.X) / 4, (y - canonical.Y) / 6);
-            Assert.Equal(new PointF(original.X + offset.X, original.Y + offset.Y), anchor);
-            Assert.Same(layer[(int)canonical.X, (int)canonical.Y], layer.ResolveWrappedTile(x, y));
-        }
+            for (int y = -13; y < 14; y++)
+            {
+                var canonical = layer.WrapGrid(new(x, y));
+                var anchor = layer.GridToWorldPx(new(x, y));
+                var original = layer.GridToWorldPx(canonical);
+                var offset = period.Offset((x - canonical.X) / 4, (y - canonical.Y) / 6);
+                Assert.Equal(new PointF(original.X + offset.X, original.Y + offset.Y), anchor);
+                Assert.Same(layer[(int)canonical.X, (int)canonical.Y], layer.ResolveWrappedTile(x, y));
+            }
         var target = period.Offset(-3, 4);
         var rect = layer[0, 0]!.DrawLocationWorld;
         rect.Offset(Point.Round(target));

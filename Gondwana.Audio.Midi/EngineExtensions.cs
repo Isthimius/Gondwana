@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Audio.Midi;
+namespace Gondwana.Audio.Midi;
 
 /// <summary>
 /// Provides extension methods for the <see cref="Engine"/> class to support MIDI audio functionality.

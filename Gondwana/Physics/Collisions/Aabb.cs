@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 
 namespace Gondwana.Physics.Collisions;
 
@@ -12,17 +12,17 @@ public readonly struct Aabb
     /// Gets the minimum X coordinate of the bounding box.
     /// </summary>
     public float MinX { get; }
-    
+
     /// <summary>
     /// Gets the minimum Y coordinate of the bounding box.
     /// </summary>
     public float MinY { get; }
-    
+
     /// <summary>
     /// Gets the maximum X coordinate of the bounding box.
     /// </summary>
     public float MaxX { get; }
-    
+
     /// <summary>
     /// Gets the maximum Y coordinate of the bounding box.
     /// </summary>
@@ -32,7 +32,7 @@ public readonly struct Aabb
     /// Gets the width of the bounding box.
     /// </summary>
     public float Width => MaxX - MinX;
-    
+
     /// <summary>
     /// Gets the height of the bounding box.
     /// </summary>

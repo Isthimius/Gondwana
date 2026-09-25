@@ -153,9 +153,9 @@ public sealed class PinchGestureRecognizer : IDisposable
         using var enumerator = _activePoints.Values.GetEnumerator();
         if (!enumerator.MoveNext())
             return 0;
-        
+
         var a = enumerator.Current;
-        
+
         if (!enumerator.MoveNext())
             return 0;
 

@@ -1,7 +1,5 @@
 using System.Runtime.ExceptionServices;
-using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Scenes.Editing;
-using Gondwana.Tooling.Scenes.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Scenes.WinForms.Tests;

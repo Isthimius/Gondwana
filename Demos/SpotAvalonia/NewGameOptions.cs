@@ -1,5 +1,4 @@
 using Gondwana.Demos.SpotAvalonia.Game;
-using System.Collections.Generic;
 
 namespace Gondwana.Demos.SpotAvalonia;
 

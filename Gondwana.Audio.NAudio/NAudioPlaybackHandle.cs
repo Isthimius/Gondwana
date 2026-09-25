@@ -19,7 +19,7 @@ internal sealed class NAudioPlaybackHandle : IAudioPlaybackHandle
     private PanningSampleProvider? _monoPanProvider;
     private StereoPanSampleProvider? _stereoPanProvider;
     private VolumeSampleProvider? _volumeProvider;
-    
+
     private bool _stopRequested;
     private bool? _pendingPlay;
     private TimeSpan? _pendingPosition;

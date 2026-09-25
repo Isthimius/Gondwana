@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Drawing.Tilesheets.GTS;
+namespace Gondwana.Drawing.Tilesheets.GTS;
 
 /// <summary>
 /// Represents the root definition of a tilesheet in the GTS (Gondwana Tilesheet) file format.

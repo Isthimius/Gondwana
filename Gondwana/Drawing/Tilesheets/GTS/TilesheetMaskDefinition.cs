@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Drawing.Tilesheets.GTS;
+namespace Gondwana.Drawing.Tilesheets.GTS;
 
 /// <summary>
 /// Defines a color mask used to identify and process specific colors within a tilesheet image.

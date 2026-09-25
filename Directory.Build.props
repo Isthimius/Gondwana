@@ -18,6 +18,10 @@
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
 
+		<!-- Static analysis: keep the rule set pinned to the .NET 8 SDK baseline. -->
+		<AnalysisLevel>8.0-recommended</AnalysisLevel>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+
 		<!-- Disable Android workload auto-import to avoid SDK version mismatch issues -->
 		<DisableAndroidWorkload>true</DisableAndroidWorkload>
 		<DisableImplicitWorkloadImports>true</DisableImplicitWorkloadImports>

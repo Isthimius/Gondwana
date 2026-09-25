@@ -1,4 +1,4 @@
-﻿using Gondwana.Input.Keyboard;
+using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.WinForms.Input.Gamepad.XInput;
 using Gondwana.WinForms.Input.Keyboard;

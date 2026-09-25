@@ -112,17 +112,27 @@ public static class SpriteDefinitionSerializer
         var frame = sprite.CurrentFrame;
         return new()
         {
-            Id = sprite.Id, Nickname = sprite.Nickname,
-            SceneId = sprite.SceneLayer.Scene?.ID ?? string.Empty, SceneLayerId = sprite.SceneLayer.ID,
+            Id = sprite.Id,
+            Nickname = sprite.Nickname,
+            SceneId = sprite.SceneLayer.Scene?.ID ?? string.Empty,
+            SceneLayerId = sprite.SceneLayer.ID,
             Position = sprite.SceneLayerCoordinates,
             Frame = frame.Tilesheet is null ? null : new() { Tilesheet = frame.Tilesheet.Name, RegionName = frame.RegionName, XTile = frame.XTile, YTile = frame.YTile },
-            Visible = sprite.Visible, ZOrder = sprite.ZOrder, Rotation = sprite.Rotation,
-            HorizAlign = sprite.HorizAlign, VertAlign = sprite.VertAlign,
-            NudgeX = sprite.NudgeX, NudgeY = sprite.NudgeY, RenderSize = sprite.RenderSize,
-            EnableFog = sprite.EnableFog, AdjustCollisionArea = sprite.AdjustCollisionArea,
+            Visible = sprite.Visible,
+            ZOrder = sprite.ZOrder,
+            Rotation = sprite.Rotation,
+            HorizAlign = sprite.HorizAlign,
+            VertAlign = sprite.VertAlign,
+            NudgeX = sprite.NudgeX,
+            NudgeY = sprite.NudgeY,
+            RenderSize = sprite.RenderSize,
+            EnableFog = sprite.EnableFog,
+            AdjustCollisionArea = sprite.AdjustCollisionArea,
             AdjustCollisionAreaByFrame = sprite.AdjustCollisionAreaByFrame,
-            CollisionType = sprite.CollisionType, CollisionTypeByFrame = sprite.CollisionTypeByFrame,
-            CollisionProfileName = sprite.CollisionProfileName, CollisionsEnabled = sprite.CollisionsEnabled
+            CollisionType = sprite.CollisionType,
+            CollisionTypeByFrame = sprite.CollisionTypeByFrame,
+            CollisionProfileName = sprite.CollisionProfileName,
+            CollisionsEnabled = sprite.CollisionsEnabled
         };
     }
 

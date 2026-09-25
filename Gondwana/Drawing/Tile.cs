@@ -1,7 +1,6 @@
 using System.Drawing;
 using System.Runtime.Serialization;
 using Gondwana.Drawing.Animation;
-using Gondwana.Drawing.Collisions;
 using Gondwana.Physics.Collisions;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
@@ -282,22 +281,22 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
     /// yet been attached to a scene, the name is retained and resolved later when
     /// the collider is attached or the profile is reapplied.
     /// </summary>
-public void SetCollisionProfile(string profileName)
-{
-    if (string.IsNullOrWhiteSpace(profileName))
-        throw new ArgumentException("Collision profile name cannot be empty.", nameof(profileName));
-
-    var scene = SceneLayer.Scene;
-    if (scene is not null)
+    public void SetCollisionProfile(string profileName)
     {
-        var profile = scene.CollisionProfiles.Get(profileName);
-        _ = profile.ResolveCollisionGroup(scene.CollisionGroups);
-        _ = profile.ResolveCollidesWith(scene.CollisionGroups);
-    }
+        if (string.IsNullOrWhiteSpace(profileName))
+            throw new ArgumentException("Collision profile name cannot be empty.", nameof(profileName));
 
-    CollisionProfileName = profileName;
-    ApplyCollisionProfileToCollider();
-}
+        var scene = SceneLayer.Scene;
+        if (scene is not null)
+        {
+            var profile = scene.CollisionProfiles.Get(profileName);
+            _ = profile.ResolveCollisionGroup(scene.CollisionGroups);
+            _ = profile.ResolveCollidesWith(scene.CollisionGroups);
+        }
+
+        CollisionProfileName = profileName;
+        ApplyCollisionProfileToCollider();
+    }
 
     /// <summary>
     /// Resolves the retained profile name again after the tile's layer becomes
@@ -510,6 +509,7 @@ public void SetCollisionProfile(string profileName)
             SceneLayer.ColliderRegistry.Unregister(_collider);
 
         _collider = null;
+        GC.SuppressFinalize(this);
     }
 
     #endregion IDisposable Members

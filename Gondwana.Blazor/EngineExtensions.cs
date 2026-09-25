@@ -1,4 +1,4 @@
-﻿using Gondwana.Blazor.Input.Keyboard;
+using Gondwana.Blazor.Input.Keyboard;
 using Gondwana.Blazor.Input.Mouse;
 using Gondwana.Blazor.Input.Touch;
 using Gondwana.Blazor.Rendering;

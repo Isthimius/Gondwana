@@ -1,8 +1,7 @@
-﻿using Gondwana.Physics.Movement;
-using Gondwana.Physics.Movement.Easing;
-using Gondwana.Scenes;
 using System.Drawing;
 using System.Numerics;
+using Gondwana.Physics.Movement.Easing;
+using Gondwana.Scenes;
 
 namespace Gondwana.Physics.Movement;
 

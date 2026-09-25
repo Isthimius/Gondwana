@@ -1,9 +1,7 @@
-using System.Drawing;
 using System.Numerics;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Sprites;
-using Gondwana.Drawing.Tilesheets;
 using Gondwana.Input.Keyboard;
 using Gondwana.Scenes;
 using Gondwana.Timers;

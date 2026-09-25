@@ -1,6 +1,4 @@
 using System.Numerics;
-using System.Windows.Forms;
-using Gondwana.Drawing.Sprites;
 
 namespace Gondwana.ZeldaPrototype;
 

@@ -1,4 +1,4 @@
-﻿using Gondwana.Assets;
+using Gondwana.Assets;
 
 namespace Gondwana.Tooling.Assets.WinForms;
 

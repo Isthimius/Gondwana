@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using System.Xml.Linq;
-using Gondwana.Tooling.Studio.WinForms;
 using Gondwana.Tooling.Studio.WinForms.Documents;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -303,7 +302,8 @@ public sealed class DockLayoutTests
                 action();
             }
             catch (Exception ex) { error = ex; }
-        }) { IsBackground = true };
+        })
+        { IsBackground = true };
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         Assert.True(thread.Join(TimeSpan.FromSeconds(60)), "Layout interaction timed out.");

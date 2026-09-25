@@ -1,12 +1,12 @@
+using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Numerics;
 using Gondwana.Physics.Movement;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.Timers;
-using System.Collections.ObjectModel;
-using System.Drawing;
-using System.Numerics;
 
 namespace Gondwana.Drawing.Direct;
 
@@ -169,7 +169,7 @@ public class DirectComposite : IDirectCompositeChild, IDirectCompositeContainer
     /// Gets the union of all visible descendants' world-space bounds.
     /// </summary>
     public Rectangle WorldBounds => GetBounds(static child => child.WorldBounds);
-    
+
     #endregion public properties
 
     #region public methods
@@ -505,6 +505,8 @@ public class DirectComposite : IDirectCompositeChild, IDirectCompositeContainer
         _localOffsetPx.Clear();
         ResetTargetWhenEmpty();
         Disposing = null;
+
+        GC.SuppressFinalize(this);
     }
 
     #endregion public methods

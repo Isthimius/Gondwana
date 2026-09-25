@@ -1,4 +1,3 @@
-using System.Drawing;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
 using Gondwana.SkiaSharp;

@@ -1,4 +1,4 @@
-﻿using Gondwana.Timers;
+using Gondwana.Timers;
 
 namespace Gondwana.Input;
 

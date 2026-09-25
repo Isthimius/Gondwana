@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Numerics;
 using Gondwana;
 using Gondwana.Audio;
 using Gondwana.Drawing;
@@ -8,10 +12,6 @@ using Gondwana.Physics.Movement.Scripted;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Numerics;
 
 namespace Slider
 {
@@ -53,7 +53,7 @@ namespace Slider
             int adjHeight = tileHeight * rows;
 
             tilesheet.DefaultRegion.TileSize = new Size(tileWidth, tileHeight);
-            
+
             originalSize = new Size(tilesheet.SkBitmap.Width, tilesheet.SkBitmap.Height);
             numColumns = columns;
             numRows = rows;
@@ -167,7 +167,7 @@ namespace Slider
                 Point startPt = new Point((int)sprite.SceneLayerCoordinates.X, (int)sprite.SceneLayerCoordinates.Y);
 
                 // move the sprite to the open space
-                sprite.Movement.MoveTo(new Vector2(openSpace.X, openSpace.Y), slideTime, null , 0.01f);
+                sprite.Movement.MoveTo(new Vector2(openSpace.X, openSpace.Y), slideTime, null, 0.01f);
 
                 // make the openSpace value equal to the original sprite starting point
                 openSpace = startPt;

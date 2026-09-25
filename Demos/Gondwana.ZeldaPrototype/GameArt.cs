@@ -1,4 +1,3 @@
-using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Tilesheets;
 

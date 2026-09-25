@@ -2,7 +2,6 @@ using System.Numerics;
 using Gondwana.Drawing.Direct;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
-using Gondwana.Rendering.Views;
 using SkiaSharp;
 using GondwanaView = Gondwana.Rendering.Views.View;
 

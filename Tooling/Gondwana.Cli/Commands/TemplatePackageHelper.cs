@@ -1,5 +1,5 @@
-using Spectre.Console;
 using System.Text.RegularExpressions;
+using Spectre.Console;
 
 namespace Gondwana.Cli.Commands;
 

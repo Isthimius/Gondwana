@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Widgets.Controls;
+namespace Gondwana.Widgets.Controls;
 
 /// <summary>
 /// Defines a platform-specific service for opening external URIs.

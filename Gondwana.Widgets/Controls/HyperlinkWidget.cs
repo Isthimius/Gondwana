@@ -1,10 +1,10 @@
-﻿using System.Drawing;
-using SkiaSharp;
+using System.Drawing;
 using Gondwana.Drawing.Direct;
 using Gondwana.Input.Keyboard;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
+using SkiaSharp;
 
 namespace Gondwana.Widgets.Controls;
 
@@ -114,7 +114,7 @@ public sealed class HyperlinkWidget : WidgetBase
     public TextBlock Label { get; }
 
     #endregion public properties
-    
+
     #region public methods
 
     /// <summary>

@@ -1,4 +1,4 @@
-﻿namespace Gondwana.Widgets;
+namespace Gondwana.Widgets;
 
 /// <summary>
 /// Represents a pointer button used by a widget interaction.

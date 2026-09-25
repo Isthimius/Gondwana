@@ -82,10 +82,10 @@ internal sealed class RefreshQueue
     {
         if (!_isEnabled() || screenPixelRange.IsEmpty)
             return;
-        
+
         if (view is null)
             throw new ArgumentNullException(nameof(view));
-        
+
         if (sceneLayer is null)
             throw new ArgumentNullException(nameof(sceneLayer));
 

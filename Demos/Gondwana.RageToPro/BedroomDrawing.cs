@@ -52,7 +52,10 @@ internal sealed class BedroomDrawing : DirectDrawingBase
         c.DrawRect(275, 425, 25, 185, _paint); c.DrawRect(670, 425, 25, 185, _paint);
         SKColor pc = _game.UpgradeLevel switch
         {
-            0 => new(88, 86, 82), 1 => new(74, 81, 91), 2 => new(30, 34, 43), _ => new(24, 25, 35)
+            0 => new(88, 86, 82),
+            1 => new(74, 81, 91),
+            2 => new(30, 34, 43),
+            _ => new(24, 25, 35)
         };
         _paint.Color = pc; c.DrawRoundRect(new SKRect(548, 205, 706, 374), 10, 10, _paint);
         _paint.Color = _game.Playing ? new SKColor(67, 238, 158) : new SKColor(43, 53, 63); c.DrawRoundRect(new SKRect(563, 220, 691, 348), 5, 5, _paint);

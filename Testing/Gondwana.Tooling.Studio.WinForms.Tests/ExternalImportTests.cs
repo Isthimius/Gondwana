@@ -1,7 +1,7 @@
 using System.Runtime.ExceptionServices;
+using Gondwana.Tooling.Importers;
 using Gondwana.Tooling.Studio.Core.Extensibility;
 using Gondwana.Tooling.Studio.Plugin.ExternalImport;
-using Gondwana.Tooling.Importers;
 using SkiaSharp;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
@@ -72,7 +72,7 @@ public sealed class ExternalImportTests
         public ExternalImportAnalysis Analyze(ExternalImportRequest request, CancellationToken cancellationToken = default)
         {
             Token = cancellationToken; Started.Set();
-            if (!Release.Wait(TimeSpan.FromSeconds(10))) throw new TimeoutException();
+            if (!Release.Wait(TimeSpan.FromSeconds(10), CancellationToken.None)) throw new TimeoutException();
             Finished.Set();
             // Deliberately return a stale success to exercise the panel's abandoned-result handling.
             return new(Id, [], [new("GTS", "stale.gts", "stale")], []);

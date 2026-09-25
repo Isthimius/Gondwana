@@ -50,7 +50,7 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                 tilesetRoot = ReadXml(source);
                 basename = ImportNaming.Sanitize(Path.GetFileNameWithoutExtension(source));
             }
-else { tilesetRoot = reference; basename = $"{name}-tileset-{first}"; }
+            else { tilesetRoot = reference; basename = $"{name}-tileset-{first}"; }
             var set = ConvertTileset(tilesetRoot, source, basename, plan, token);
             if (set.TileSize != new Size(tw, th))
                 throw new InvalidDataException("Tileset frame size differs from map cell size; tile anchoring/scaling cannot be preserved in this import.");
@@ -84,9 +84,19 @@ else { tilesetRoot = reference; basename = $"{name}-tileset-{first}"; }
                 if (x != Math.Truncate(x) || y != Math.Truncate(y)) throw new InvalidDataException("Fractional pixel layer offsets cannot be represented exactly.");
                 if (parallaxX != parallaxY)
                     plan.Report(ExternalImportSeverity.Warning, "tiled.parallax", "Independent X/Y parallax cannot be represented; using 1.");
-                var layer = new SceneLayerDefinition { ID = $"{name}.layer.{scene.Layers.Count}", Columns = Int(element, "width", width), Rows = Int(element, "height", height),
-                    TileWidth = tw, TileHeight = th, CoordinateSystemType = orientation, Visible = shown, ZOrder = scene.Layers.Count,
-                    OriginPx = new Point(checked((int)-x), checked((int)-y)), Parallax = parallaxX == parallaxY ? (float)parallaxX : 1 };
+                var layer = new SceneLayerDefinition
+                {
+                    ID = $"{name}.layer.{scene.Layers.Count}",
+                    Columns = Int(element, "width", width),
+                    Rows = Int(element, "height", height),
+                    TileWidth = tw,
+                    TileHeight = th,
+                    CoordinateSystemType = orientation,
+                    Visible = shown,
+                    ZOrder = scene.Layers.Count,
+                    OriginPx = new Point(checked((int)-x), checked((int)-y)),
+                    Parallax = parallaxX == parallaxY ? (float)parallaxX : 1
+                };
                 if (layer.Columns <= 0 || layer.Rows <= 0) throw new InvalidDataException("Layer dimensions must be positive.");
                 var gids = DecodeLayer(element.Element("data") ?? throw new InvalidDataException("Missing layer data."), checked(layer.Columns * layer.Rows));
                 for (int i = 0; i < gids.Length; i++)
@@ -98,8 +108,12 @@ else { tilesetRoot = reference; basename = $"{name}-tileset-{first}"; }
                     var match = tilesets.LastOrDefault(t => t.First <= gid);
                     if (match.Set is null || gid - match.First >= match.Set.Count) throw new InvalidDataException($"Unresolved tile GID {gid}.");
                     int local = (int)(gid - match.First);
-                    var tile = new SceneLayerTileDefinition { X = i % layer.Columns, Y = i / layer.Columns,
-                        Frame = new() { Tilesheet = match.Set.Name, XTile = local % match.Set.Columns, YTile = local / match.Set.Columns } };
+                    var tile = new SceneLayerTileDefinition
+                    {
+                        X = i % layer.Columns,
+                        Y = i / layer.Columns,
+                        Frame = new() { Tilesheet = match.Set.Name, XTile = local % match.Set.Columns, YTile = local / match.Set.Columns }
+                    };
                     if (match.Set.Animations.TryGetValue(local, out var animation))
                     {
                         var frame = animation.Frames[0];

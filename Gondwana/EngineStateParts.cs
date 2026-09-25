@@ -1,4 +1,4 @@
-﻿namespace Gondwana;
+namespace Gondwana;
 
 /// <summary>
 /// Represents different parts of the engine state that can be managed, saved, or loaded independently.

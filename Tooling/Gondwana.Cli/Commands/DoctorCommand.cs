@@ -324,9 +324,9 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 File.SetUnixFileMode(butlerExe,
-                    UnixFileMode.UserRead    | UnixFileMode.UserWrite  | UnixFileMode.UserExecute |
-                    UnixFileMode.GroupRead   | UnixFileMode.GroupExecute |
-                    UnixFileMode.OtherRead   | UnixFileMode.OtherExecute);
+                    UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute |
+                    UnixFileMode.GroupRead | UnixFileMode.GroupExecute |
+                    UnixFileMode.OtherRead | UnixFileMode.OtherExecute);
             }
 
             AddDirectoryToProcessPath(installDir);
@@ -374,7 +374,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
         var processPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process) ?? string.Empty;
         var machinePath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine) ?? string.Empty;
-        var userPath    = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.User)    ?? string.Empty;
+        var userPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.User) ?? string.Empty;
 
         var mergedPathEntries = new List<string>();
         var seenPathEntries = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -458,7 +458,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
         bool hasWinForms = output.Contains("gondwana-winforms", StringComparison.OrdinalIgnoreCase);
         bool hasAvalonia = output.Contains("gondwana-avalonia", StringComparison.OrdinalIgnoreCase);
-        bool hasBlazor   = output.Contains("gondwana-blazor",   StringComparison.OrdinalIgnoreCase);
+        bool hasBlazor = output.Contains("gondwana-blazor", StringComparison.OrdinalIgnoreCase);
 
         const string templateNames = "gondwana-winforms, gondwana-avalonia, gondwana-blazor";
         var installedVersion = TemplatePackageHelper.GetInstalledVersion();
@@ -471,7 +471,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         var found = new List<string>();
         if (hasWinForms) found.Add("gondwana-winforms");
         if (hasAvalonia) found.Add("gondwana-avalonia");
-        if (hasBlazor)   found.Add("gondwana-blazor");
+        if (hasBlazor) found.Add("gondwana-blazor");
 
         if (found.Count > 0)
             return CheckResult.Ok(string.IsNullOrWhiteSpace(installedVersion)
