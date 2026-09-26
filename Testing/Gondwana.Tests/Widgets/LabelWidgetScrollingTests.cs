@@ -128,7 +128,7 @@ public sealed class LabelWidgetScrollingTests
 
     private static LabelWidget CreateLabel(TestRenderSurfaceHost host, View view, string text)
         => new LabelWidget(host, view, new Rectangle(10, 20, 220, 90), text)
-            .SetFont(SkiaSharp.SKTypeface.Default, 16f)
+            .SetFont(global::SkiaSharp.SKTypeface.Default, 16f)
             .SetPadding(6f, 4f)
             .EnableWrapping();
 
