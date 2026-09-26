@@ -386,11 +386,6 @@ public sealed class LabelWidget : WidgetBase
     {
         bool scrollingEnabled = VerticalScrollBarVisibility != ScrollBarVisibility.Never;
 
-        IsInputEnabled = scrollingEnabled;
-        IsPointerInputEnabled = scrollingEnabled;
-        IsKeyboardInputEnabled = false;
-        CanReceiveFocus = false;
-
         Rectangle bounds = Bounds;
         SetTextBlockBounds(bounds);
 
@@ -413,6 +408,11 @@ public sealed class LabelWidget : WidgetBase
                 bounds.Height);
             SetTextBlockBounds(contentBounds);
         }
+
+        IsInputEnabled = showScrollBar;
+        IsPointerInputEnabled = showScrollBar;
+        IsKeyboardInputEnabled = false;
+        CanReceiveFocus = false;
 
         SetVerticalScrollOffset(_verticalScrollOffsetPx);
 
