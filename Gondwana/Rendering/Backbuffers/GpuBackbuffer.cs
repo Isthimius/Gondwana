@@ -52,6 +52,7 @@ public class GpuBackbuffer : BackbufferBase
     private long _msaaConfigurationRevision;
     private long _appliedMsaaConfigurationRevision = -1;
     private int _actualMsaaSampleCount = 1;
+    private int _maxSupportedMsaaSampleCount = 1;
 
     // Frame counter used to compute the actual rendered FPS.
     // Incremented on the GL thread by RecordFrame(); consumed atomically by the engine's CPS sampler.
@@ -159,6 +160,16 @@ public class GpuBackbuffer : BackbufferBase
     public int ActualMsaaSampleCount => Volatile.Read(ref _actualMsaaSampleCount);
 
     /// <summary>
+    /// Gets the maximum MSAA sample count reported by the active GPU context for
+    /// <see cref="SKColorType.Rgba8888"/> render-target surfaces.
+    /// </summary>
+    /// <remarks>
+    /// Before the first GPU initialization this reports <c>1</c>. A value of <c>1</c> means the
+    /// active context reports no multisample support for Gondwana's GPU render-target color type.
+    /// </remarks>
+    public int MaxSupportedMsaaSampleCount => Volatile.Read(ref _maxSupportedMsaaSampleCount);
+
+    /// <summary>
     /// Gets whether the active GPU surface was created from the current MSAA configuration.
     /// </summary>
     internal bool IsMsaaSurfaceRecreationPending =>
@@ -208,6 +219,8 @@ public class GpuBackbuffer : BackbufferBase
         if (_disposed) return;
 
         (int requestedSampleCount, long configurationRevision) = GetMsaaConfigurationSnapshot();
+        int maxSupportedSampleCount = grContext.GetMaxSurfaceSampleCount(SKColorType.Rgba8888);
+        Volatile.Write(ref _maxSupportedMsaaSampleCount, maxSupportedSampleCount);
 
         DisposeSurface();
         int actualSampleCount = CreateGpuSurface(grContext, width, height, requestedSampleCount);
