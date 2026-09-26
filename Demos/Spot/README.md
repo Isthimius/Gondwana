@@ -63,7 +63,7 @@ The release configuration produces a self-contained, single-file `win-x64` execu
 At 10,000 feet, Spot! is a conventional turn-based game sitting on top of Gondwana's real-time engine loop:
 
 - [`GameWindow`](GameWindow.cs) is the native WinForms shell. It owns saved options, startup splash, and the in-engine `MenuBarWidget`.
-- [`SpotGpuGameHost`](Hosts/SpotGpuGameHost.cs) connects that window to Gondwana's WinForms GPU hosting and render surface; its [`SpotGpuGameHost.Game`](Hosts/SpotGpuGameHost.Game.cs) partial contains the game's asset loading, mouse input, AI turns, animation, particles, audio, scores, dialogs, and game-over presentation.
+- [`SpotGameHost`](Hosts/SpotGameHost.cs) connects that window to Gondwana's WinForms GPU hosting and render surface. Focused partials keep content/lifecycle, input, dialogs, gameplay, presentation, particles, and HUD code in bite-sized showcase files.
 - [`SpotGame`](Game/SpotGame.cs) owns the turn sequence, selection and move execution, scoring, capture events, and end-game rules.
 - [`SpotGameField`](Game/SpotGameField.cs) represents the board as a Gondwana `SceneLayer`. Each logical cell stores its game state while Gondwana sprites provide the visible spots.
 
