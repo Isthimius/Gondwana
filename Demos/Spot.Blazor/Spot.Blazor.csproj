@@ -36,7 +36,7 @@
     <ItemGroup>
         <SpotAssetSource Include="$(SpotAssetSourceRoot)\*.*" />
         <Content Remove="wwwroot\assets\spot.gaf" />
-        <Content Include="$(SpotGafPath)" />
+        <Content Include="wwwroot\assets\spot.gaf" />
         <Content Include="..\Spot\assets\spot_ico.png" Link="wwwroot\assets\spot_ico.png" />
     </ItemGroup>
 
