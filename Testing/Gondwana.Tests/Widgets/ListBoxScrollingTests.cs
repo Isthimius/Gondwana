@@ -340,7 +340,7 @@ public sealed class ListBoxScrollingTests
     {
         var buttons = new Dictionary<MouseButton, MouseButtonState>
         {
-            [MouseButton.Left] = new() { IsDown = down, JustPressed = down, JustReleased = release }
+            [MouseButton.Left] = new() { IsDown = down, JustPressed = down && !previous.HasValue, JustReleased = release }
         };
         var args = new MouseEventArgs(new MouseEventConfiguration(true), KeyboardModifierState.None,
                                       buttons, previous ?? position, position, delta, 1);

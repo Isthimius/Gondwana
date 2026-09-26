@@ -37,8 +37,7 @@ public interface IMouseAdapter
     /// Gets the accumulated scroll wheel delta since the last poll, measured in implementation-defined units.
     /// Positive values indicate upward scrolling (scrolling away from the user), while negative values
     /// indicate downward scrolling (scrolling toward the user). The magnitude represents the distance
-    /// or speed of the scroll. This value is typically reset or accumulated between polling intervals.
+    /// or speed of the scroll. Reading consumes the accumulated delta and resets it to zero.
     /// </summary>
-    // Reading consumes the accumulated delta since the previous read.
     int ScrollDelta { get; }  // Positive = scroll up, negative = scroll down
 }
