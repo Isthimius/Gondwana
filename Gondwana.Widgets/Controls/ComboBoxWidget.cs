@@ -193,8 +193,10 @@ public sealed class ComboBoxWidget : ContainerWidget
 
         _disposed = true;
         Header.Clicked -= OnHeaderClicked;
+        Header.FocusLost -= OnDropDownFocusLost;
         DropDown.SelectedIndexChanged -= OnSelectedIndexChanged;
         DropDown.SelectionCommitted -= OnDropDownSelectionCommitted;
+        DropDown.FocusLost -= OnDropDownFocusLost;
         base.Dispose();
     }
 
@@ -220,8 +222,10 @@ public sealed class ComboBoxWidget : ContainerWidget
         Add(DropDown, new Vector2(0f, bounds.Height));
 
         Header.Clicked += OnHeaderClicked;
+        Header.FocusLost += OnDropDownFocusLost;
         DropDown.SelectedIndexChanged += OnSelectedIndexChanged;
         DropDown.SelectionCommitted += OnDropDownSelectionCommitted;
+        DropDown.FocusLost += OnDropDownFocusLost;
 
         IsInputEnabled = false;
         IsPointerInputEnabled = false;
@@ -248,6 +252,16 @@ public sealed class ComboBoxWidget : ContainerWidget
     {
         if (index >= 0)
             CloseDropDown();
+    }
+
+    private void OnDropDownFocusLost()
+    {
+        if (!_isDropDownOpen || ReferenceEquals(WidgetInputRouterRegistry.GetFocusedWidget(this), Header)
+                            || ReferenceEquals(WidgetInputRouterRegistry.GetFocusedWidget(this), DropDown))
+            return;
+
+        _isDropDownOpen = false;
+        DropDown.Hide();
     }
 
     private void RefreshHeaderText()

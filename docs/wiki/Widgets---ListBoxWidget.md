@@ -68,10 +68,23 @@ saves.ClearItems();
 saves.ItemHeight = 28;
 saves.SelectedIndex = 5;
 
-// The control automatically keeps the selected row visible.
+// Changing the selection scrolls that row into view.
 int firstVisible = saves.TopIndex;
 int rowsVisible = saves.VisibleItemCount;
+
+// Scroll without changing selection.
+saves.TopIndex = 2;
+saves.MouseWheelScrollItems = 3; // Items per wheel notch; must be positive.
+saves.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
 ```
+
+Wheel-up decreases `TopIndex`; wheel-down increases it. Scrolling clamps at the first and last page without wrapping or changing `SelectedIndex`. Wheel input works over the list, track, or thumb without requiring keyboard focus. A selected row can scroll out of view and retains its highlight when it returns.
+
+`VerticalScrollBarVisibility` defaults to `Auto`, showing a scrollbar only when `Items.Count > VisibleItemCount`. `Always` shows it even when everything fits (with a full-track thumb); `Never` hides it while preserving wheel and keyboard scrolling. `IsVerticalScrollBarVisible` reports whether it is currently shown.
+
+Drag the thumb to scroll continuously, or click above/below it to move one visible page. Thumb size reflects the visible fraction, with an 18-pixel minimum capped by the track height. Scrollbar gestures do not commit selection. Rows reserve space for the scrollbar and text is clipped to each row. Item changes and `ItemHeight` changes refresh the layout automatically. The list has fixed construction bounds; move it with `SetPosition()`.
+
+Keyboard navigation keeps the selected row visible and moves the thumb with it. `SetListBoxZOrder()` also raises the track and thumb. The retained `VerticalScrollBarTrack` and `VerticalScrollBarThumb` rectangles are available for color styling; the list owns their bounds and visibility.
 
 ## Useful members
 
@@ -82,6 +95,9 @@ int rowsVisible = saves.VisibleItemCount;
 | `TopIndex` | First visible item. |
 | `ItemHeight` | Height of each row. |
 | `VisibleItemCount` | Number of complete rows currently visible. |
+| `MouseWheelScrollItems` | Items scrolled per wheel notch (default 3). |
+| `VerticalScrollBarVisibility` | `Auto`, `Always`, or `Never`. |
+| `IsVerticalScrollBarVisible` | Whether the scrollbar is currently shown. |
 | `SelectionCommitted` | Explicit user selection event. |
 | `SetSelectionColor()` | Changes the selection highlight. |
 | `SetListBoxZOrder()` | Sets list visual ordering. |

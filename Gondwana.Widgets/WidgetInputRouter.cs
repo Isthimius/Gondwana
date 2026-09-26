@@ -330,7 +330,7 @@ public sealed class WidgetInputRouter : IDisposable
             ProcessMouseMove(args.PreviousPosition, currentPosition, args.Tick);
         }
 
-        if (args.ScrollDelta != 0 && initialHit is not null)
+        if (args.ScrollDelta != 0 && initialHit is not null && IsPointerRoutable(initialHit.Widget, initialHit.View))
         {
             initialHit.Widget.DispatchMouseWheel(new WidgetMouseWheelEventArgs(
                 initialHit.Widget,

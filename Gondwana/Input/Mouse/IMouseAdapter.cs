@@ -39,5 +39,6 @@ public interface IMouseAdapter
     /// indicate downward scrolling (scrolling toward the user). The magnitude represents the distance
     /// or speed of the scroll. This value is typically reset or accumulated between polling intervals.
     /// </summary>
+    // Reading consumes the accumulated delta since the previous read.
     int ScrollDelta { get; }  // Positive = scroll up, negative = scroll down
 }
