@@ -5,6 +5,7 @@ var classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer =
     [ "EnsureInitialized", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a9fd9bb2abb6158420b144d0fcfefbf6b", null ],
     [ "Initialize", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a4fef1b4ad8a55fd62cbaa501ec89290a", null ],
     [ "RecordFrame", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#ad6ec6f40683db71c71ebf19b5a360516", null ],
+    [ "ActualMsaaSampleCount", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a232155eee8a4f53ded4ea5980ecb3328", null ],
     [ "Canvas", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#af0584f5f0b09937cfafd3b512c838252", null ],
     [ "IsGlThreadRendered", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a123d04c913f9489067a65ff33b639bc0", null ],
     [ "MsaaSampleCount", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a3ba7ffe088870c2242440b60c75ddc00", null ],

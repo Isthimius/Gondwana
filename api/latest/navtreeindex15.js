@@ -1,5 +1,7 @@
 var NAVTREEINDEX15 =
 {
+"classGondwana_1_1Video_1_1VlcVideoPlayer.html#a6594dbaf6e554a50070a101e65f5e313":[1,0,0,15,5,22],
+"classGondwana_1_1Video_1_1VlcVideoPlayer.html#a65df0784f059714d46cb4a112cd0f3b8":[0,0,0,16,5,23],
 "classGondwana_1_1Video_1_1VlcVideoPlayer.html#a65df0784f059714d46cb4a112cd0f3b8":[1,0,0,15,5,23],
 "classGondwana_1_1Video_1_1VlcVideoPlayer.html#a7014c183df70614ad2cc3181626c7359":[0,0,0,16,5,10],
 "classGondwana_1_1Video_1_1VlcVideoPlayer.html#a7014c183df70614ad2cc3181626c7359":[1,0,0,15,5,10],
@@ -247,7 +249,5 @@ var NAVTREEINDEX15 =
 "classGondwana_1_1Widgets_1_1Controls_1_1HyperlinkWidget.html#a7f3030f229e5e593fbe705c70d062964":[1,0,0,16,0,3,2],
 "classGondwana_1_1Widgets_1_1Controls_1_1HyperlinkWidget.html#a8927bcbc480e5e0ecc88b0d1510905b8":[0,0,0,17,0,3,4],
 "classGondwana_1_1Widgets_1_1Controls_1_1HyperlinkWidget.html#a8927bcbc480e5e0ecc88b0d1510905b8":[1,0,0,16,0,3,4],
-"classGondwana_1_1Widgets_1_1Controls_1_1HyperlinkWidget.html#a90928fa5f9a97e49971693f91ae7f027":[0,0,0,17,0,3,7],
-"classGondwana_1_1Widgets_1_1Controls_1_1HyperlinkWidget.html#a90928fa5f9a97e49971693f91ae7f027":[1,0,0,16,0,3,7],
-"classGondwana_1_1Widgets_1_1Controls_1_1HyperlinkWidget.html#a9b9328582b263d212efa520c95fd829c":[0,0,0,17,0,3,9]
+"classGondwana_1_1Widgets_1_1Controls_1_1HyperlinkWidget.html#a90928fa5f9a97e49971693f91ae7f027":[0,0,0,17,0,3,7]
 };

@@ -135,6 +135,8 @@ Properties</h2></td></tr>
 <tr class="memdesc:a187c5db40cc71e3159ea4f6be0f6a3fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether vertical synchronisation (vsync) is enabled.  <br /></td></tr>
 <tr class="memitem:a3ba7ffe088870c2242440b60c75ddc00" id="r_a3ba7ffe088870c2242440b60c75ddc00"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3ba7ffe088870c2242440b60c75ddc00">MsaaSampleCount</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a3ba7ffe088870c2242440b60c75ddc00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the number of MSAA (multisample anti-aliasing) samples used when creating the GPU render-target surface.  <br /></td></tr>
+<tr class="memitem:a232155eee8a4f53ded4ea5980ecb3328" id="r_a232155eee8a4f53ded4ea5980ecb3328"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a232155eee8a4f53ded4ea5980ecb3328">ActualMsaaSampleCount</a><code> [get]</code></td></tr>
+<tr class="memdesc:a232155eee8a4f53ded4ea5980ecb3328"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the sample count used by the currently active GPU render-target surface.  <br /></td></tr>
 <tr class="memitem:a123d04c913f9489067a65ff33b639bc0" id="r_a123d04c913f9489067a65ff33b639bc0"><td class="memItemLeft" align="right" valign="top">override bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a123d04c913f9489067a65ff33b639bc0">IsGlThreadRendered</a><code> [get]</code></td></tr>
 <tr class="memitem:af0584f5f0b09937cfafd3b512c838252" id="r_af0584f5f0b09937cfafd3b512c838252"><td class="memItemLeft" align="right" valign="top">override SKCanvas&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af0584f5f0b09937cfafd3b512c838252">Canvas</a><code> [get]</code></td></tr>
 <tr class="memdesc:af0584f5f0b09937cfafd3b512c838252"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="namespaceGondwana_1_1SkiaSharp.html">SkiaSharp</a> canvas for drawing operations.  <br /></td></tr>
@@ -203,7 +205,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00134">134</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00172">172</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
@@ -235,7 +237,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#ad337f9fed366bb07672919518bd3b7c2">Gondwana.Rendering.Backbuffers.BackbufferBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00316">316</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00387">387</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
@@ -256,7 +258,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Initializes on the owning GL thread, or applies an explicit logical resolution request. Adapter dimensions are deliberately absent: window resize never reallocates this surface. Returns true when a new surface needs its first complete frame. </p>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00190">190</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00233">233</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
@@ -285,7 +287,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Creates (or recreates) the GPU render-target surface for this backbuffer. </p>
-<p>Called from the owning GL thread for initial setup or an explicit logical resolution change. Replaces the temporary CPU raster surface with a hardware-accelerated off-screen render target backed by <em>grContext</em> . </p>
+<p>Called from the owning GL thread for initial setup, an explicit logical resolution change, or an MSAA configuration change. Replaces the current surface with a hardware-accelerated off-screen render target backed by <em>grContext</em> . </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">grContext</td><td>The active Skia GPU context. Must not be <code>null</code>.</td></tr>
@@ -295,7 +297,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00164">164</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00203">203</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
@@ -319,6 +321,33 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
+<a id="a232155eee8a4f53ded4ea5980ecb3328" name="a232155eee8a4f53ded4ea5980ecb3328"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a232155eee8a4f53ded4ea5980ecb3328">&#9670;&#160;</a></span>ActualMsaaSampleCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Gondwana.Rendering.Backbuffers.GpuBackbuffer.ActualMsaaSampleCount</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the sample count used by the currently active GPU render-target surface. </p>
+<p>Before the first GPU initialization this reports <code>1</code> for the temporary CPU surface. If the requested <a class="el" href="#a3ba7ffe088870c2242440b60c75ddc00" title="Gets or sets the number of MSAA (multisample anti-aliasing) samples used when creating the GPU render...">MsaaSampleCount</a> is unsupported and surface creation falls back to non-MSAA rendering, this property reports <code>1</code> while <a class="el" href="#a3ba7ffe088870c2242440b60c75ddc00" title="Gets or sets the number of MSAA (multisample anti-aliasing) samples used when creating the GPU render...">MsaaSampleCount</a> continues to report the requested value. </p>
+
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00158">158</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+
+</div>
+</div>
 <a id="af0584f5f0b09937cfafd3b512c838252" name="af0584f5f0b09937cfafd3b512c838252"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af0584f5f0b09937cfafd3b512c838252">&#9670;&#160;</a></span>Canvas</h2>
 
@@ -341,7 +370,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the <a class="el" href="namespaceGondwana_1_1SkiaSharp.html">SkiaSharp</a> canvas for drawing operations. </p>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00205">205</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00255">255</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
@@ -366,7 +395,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>Always returns <code>true</code>. The engine loop will skip this surface; the platform adapter drives rendering from <code>SKGLControl.PaintSurface</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00152">152</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00190">190</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
@@ -393,11 +422,11 @@ Additional Inherited Members</h2></td></tr>
 <p>Gets or sets the number of MSAA (multisample anti-aliasing) samples used when creating the GPU render-target surface. </p>
 <p>This property only applies to <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html" title="Provides a fully GPU-rendered backbuffer implementation using SkiaSharp and OpenGL.">GpuBackbuffer</a>; other backbuffer types ignore it. </p>
 <p>This value is kept in sync with <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#ab614f324c6124fb90cbd818886755602" title="Gets or sets the number of MSAA (multisample anti-aliasing) samples used when creating GPU render-tar...">Gondwana.Configuration.EngineConfiguration.MsaaSampleCount</a> (which propagates its value to all registered GPU backbuffers). A value of <code>1</code> disables MSAA. Common values are <code>2</code>, <code>4</code>, or <code>8</code>, subject to hardware support. </p>
-<p>Changing this property on an already-initialized backbuffer takes effect the next time <a class="el" href="#a4fef1b4ad8a55fd62cbaa501ec89290a" title="Creates (or recreates) the GPU render-target surface for this backbuffer.">Initialize</a> is called (e.g. on an explicit resolution change), because the GPU render-target surface must be recreated with the new sample count. </p>
+<p>Changing this property on an already-initialized backbuffer schedules the GPU render-target surface for recreation. The new sample count is applied by the next owning GL-thread <a class="el" href="#a9fd9bb2abb6158420b144d0fcfefbf6b" title="Initializes on the owning GL thread, or applies an explicit logical resolution request....">EnsureInitialized</a> call; callers do not need to resize the backbuffer. </p>
 <p>If the requested sample count is not supported by the hardware or driver, <a class="el" href="#a4fef1b4ad8a55fd62cbaa501ec89290a" title="Creates (or recreates) the GPU render-target surface for this backbuffer.">Initialize</a> will automatically fall back to a sample count of <code>1</code> (no MSAA) so the surface is always valid. </p>
 <p>The MSAA sample count. Values less than <code>1</code> are clamped to <code>1</code>. The default is <code>1</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00123">123</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00127">127</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
@@ -425,7 +454,7 @@ Additional Inherited Members</h2></td></tr>
 <p>This value is kept in sync with <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#aedc1761c6b8c8261ec99bd8bc1b17a33" title="Target screen refresh rate for the Engine. Setting the number lower allows more time for the processo...">Gondwana.Configuration.EngineConfiguration.TargetFPS</a> (which propagates its value to all registered GPU backbuffers). The engine's own foreground cycle — not the backbuffer — is responsible for throttling the frame rate; see <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#aedc1761c6b8c8261ec99bd8bc1b17a33" title="Target screen refresh rate for the Engine. Setting the number lower allows more time for the processo...">Gondwana.Configuration.EngineConfiguration.TargetFPS</a> for details. </p>
 <p>The desired frames per second. Negative values are clamped to zero. The default is 60. </p>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00067">67</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00071">71</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
@@ -454,7 +483,7 @@ Additional Inherited Members</h2></td></tr>
 <p>This value is kept in sync with <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#abb8f7812aaf01854910f2230c530ec79" title="Gets or sets a value indicating whether vertical synchronisation (vsync) is enabled.">Gondwana.Configuration.EngineConfiguration.VSync</a> (which propagates its value to all registered GPU backbuffers). The value is read by the platform adapter (e.g. <code>WinFormGpuRenderSurfaceAdapter</code>) at the start of each <code>PaintSurface</code> call and applied to the underlying <code>GLControl.VSync</code> property when it changes. Enabling vsync prevents screen tearing but caps the frame rate to the monitor refresh rate. Disabling vsync allows higher frame rates at the cost of potential tearing. </p>
 <p><code>true</code> to synchronise presentation with the monitor refresh; otherwise <code>false</code>. The default is <code>true</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00093">93</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuBackbuffer_8cs_source.html#l00097">97</a> of file <a class="el" href="GpuBackbuffer_8cs_source.html">GpuBackbuffer.cs</a>.</p>
 
 </div>
 </div>
