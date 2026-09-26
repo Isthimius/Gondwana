@@ -2,7 +2,6 @@ using System;
 using System.Drawing;
 using System.IO;
 using Gondwana.Audio;
-using Gondwana.Demos.Spot.Game;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.SkiaSharp;
