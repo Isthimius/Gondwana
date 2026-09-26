@@ -1,4 +1,6 @@
+#if !SPOT_BLAZOR
 using System.Threading;
+#endif
 
 namespace Gondwana.Demos.Spot;
 

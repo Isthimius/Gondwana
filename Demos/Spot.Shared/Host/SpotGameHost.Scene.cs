@@ -4,7 +4,9 @@ using Gondwana.Drawing.Coordinates;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
+#if !SPOT_BLAZOR
 using Microsoft.Extensions.Logging;
+#endif
 
 namespace Gondwana.Demos.Spot;
 

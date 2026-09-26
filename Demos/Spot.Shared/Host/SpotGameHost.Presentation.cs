@@ -1,6 +1,10 @@
+#if !SPOT_BLAZOR
 using System.Collections.Generic;
+#endif
 using System.Drawing;
+#if !SPOT_BLAZOR
 using System.Linq;
+#endif
 using Gondwana.Demos.Spot.Game;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Direct;

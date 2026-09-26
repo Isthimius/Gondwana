@@ -1,4 +1,6 @@
+#if !SPOT_BLAZOR
 using System;
+#endif
 using System.Drawing;
 using Gondwana.Drawing.Direct.Particles;
 using SkiaSharp;

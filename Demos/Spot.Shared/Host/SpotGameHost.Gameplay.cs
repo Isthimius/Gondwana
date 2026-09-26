@@ -1,10 +1,16 @@
+#if !SPOT_BLAZOR
 using System;
+#endif
 using System.Collections.Generic;
 using System.Drawing;
+#if !SPOT_BLAZOR
 using System.Linq;
+#endif
 using Gondwana.Demos.Spot.Game;
 using Gondwana.Timers;
+#if !SPOT_BLAZOR
 using Microsoft.Extensions.Logging;
+#endif
 
 namespace Gondwana.Demos.Spot;
 

@@ -1,4 +1,6 @@
+#if !SPOT_BLAZOR
 using System.Threading;
+#endif
 using Gondwana.Input.Keyboard;
 
 namespace Gondwana.Demos.Spot;
