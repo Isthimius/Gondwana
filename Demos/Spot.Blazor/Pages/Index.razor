@@ -150,15 +150,18 @@
         var gpuBackbuffer = _renderSurface?.Host.Backbuffer as GpuBackbuffer;
         var requestedMsaa = gpuBackbuffer?.MsaaSampleCount.ToString() ?? "n/a";
         var actualMsaa = gpuBackbuffer?.ActualMsaaSampleCount.ToString() ?? "n/a";
+        var maxMsaa = gpuBackbuffer?.MaxSupportedMsaaSampleCount.ToString() ?? "n/a";
 
         Logger.LogTrace(
             "Gondwana: CPS {Cps:0.0} | engine FPS {EngineFps:0.0} | GPU FPS {GpuFps} | " +
-            "MSAA requested {MsaaSampleCount} | MSAA actual {ActualMsaaSampleCount}",
+            "MSAA requested {MsaaSampleCount} | MSAA actual {ActualMsaaSampleCount} | " +
+            "MSAA max {MaxSupportedMsaaSampleCount}",
             e.GrossCPS,
             e.NetCPS,
             gpuFps,
             requestedMsaa,
-            actualMsaa);
+            actualMsaa,
+            maxMsaa);
     }
 
     private async Task<Dictionary<string, byte[]>> LoadAssetDataAsync()
