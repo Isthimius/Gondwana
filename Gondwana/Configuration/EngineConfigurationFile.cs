@@ -9,7 +9,7 @@ namespace Gondwana.Configuration;
 /// <remarks>This class manages the persistence of <see cref="EngineConfiguration"/> to and from a JSON file.
 /// It supports automatic saving on disposal and can be created from scratch or loaded from an existing file.</remarks>
 [JsonObject(IsReference = true)]
-public partial class EngineConfigurationFile : IDisposable
+public partial class EngineConfigurationFile : IEngineConfigurationStore
 {
     private const string _defaultConfigFileName = "gondwana.json";
     private string _fileName = _defaultConfigFileName;
@@ -87,6 +87,12 @@ public partial class EngineConfigurationFile : IDisposable
     /// Gets the engine configuration settings.
     /// </summary>
     public EngineConfiguration EngineConfig { get; private set; } = new();
+
+    /// <summary>
+    /// Gets the engine configuration represented by this file-backed store.
+    /// </summary>
+    [JsonIgnore]
+    public EngineConfiguration Configuration => EngineConfig;
 
     /// <summary>
     /// Saves the configuration to the file specified by <see cref="FilePath"/>.

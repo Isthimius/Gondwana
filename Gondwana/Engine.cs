@@ -79,7 +79,7 @@ public sealed class Engine : IDisposable
     private double _netFPS = 0;
 
     private Task? _cycleTask;
-    private EngineConfigurationFile? _configurationFile;
+    private IEngineConfigurationStore? _configurationStore;
     private bool _deferredDisposeScheduled;
 
     #endregion private fields
@@ -283,7 +283,8 @@ public sealed class Engine : IDisposable
         IKeyboardAdapter? keyboardAdapter = null,
         IMouseAdapter? mouseAdapter = null,
         ITouchAdapter? touchAdapter = null,
-        IGamepadManager<IGamepadAdapter>? gamepadManager = null)
+        IGamepadManager<IGamepadAdapter>? gamepadManager = null,
+        IEngineConfigurationStore? configurationStore = null)
     {
         if (_isInitialized || _isInitializing)
             return;
@@ -301,15 +302,18 @@ public sealed class Engine : IDisposable
 
             try
             {
-                _configurationFile?.Dispose();
+                _configurationStore?.Dispose();
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error saving the engine configuration during initialization.");
             }
 
-            _configurationFile = EngineConfigurationFile.Load(configFileName, autoSaveConfig);
-            Configuration = _configurationFile.EngineConfig;
+            _configurationStore = configurationStore ?? EngineConfigurationFile.Load(configFileName, autoSaveConfig);
+            if (configurationStore is not null && autoSaveConfig.HasValue)
+                _configurationStore.AutoSave = autoSaveConfig.Value;
+
+            Configuration = _configurationStore.Configuration;
 
             ConfigureLogging(Configuration);
 
@@ -351,6 +355,20 @@ public sealed class Engine : IDisposable
             _isInitializing = false;
             _initDone.Set();
         }
+    }
+
+    /// <summary>
+    /// Persists the current engine configuration through the store supplied during initialization.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the engine has not yet been initialized with a configuration store.
+    /// </exception>
+    public void SaveConfiguration()
+    {
+        var store = _configurationStore
+            ?? throw new InvalidOperationException("The engine has no initialized configuration store.");
+
+        store.Save();
     }
 
     /// <summary>
@@ -1225,7 +1243,7 @@ public sealed class Engine : IDisposable
 
         try
         {
-            _configurationFile?.Dispose();
+            _configurationStore?.Dispose();
         }
         catch (Exception ex)
         {
@@ -1233,7 +1251,7 @@ public sealed class Engine : IDisposable
         }
         finally
         {
-            _configurationFile = null;
+            _configurationStore = null;
         }
 
         if (EngineLogger.Mode == EngineLoggingMode.Asynchronous)

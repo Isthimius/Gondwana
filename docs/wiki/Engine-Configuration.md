@@ -34,7 +34,8 @@ Gondwana configuration is built around three related types:
 | Type | Purpose |
 | --- | --- |
 | `EngineConfiguration` | The actual collection of engine and application settings. |
-| `EngineConfigurationFile` | Loads and saves an `EngineConfiguration` as JSON. |
+| `IEngineConfigurationStore` | Persistence boundary used by the engine for file, browser, or custom configuration storage. |
+| `EngineConfigurationFile` | Default file-backed `IEngineConfigurationStore` that loads and saves configuration as JSON. |
 | `StateFileMount` | Describes an `EngineState` file that should be merged during startup. |
 
 At runtime, the active configuration is available from the engine singleton:
@@ -570,3 +571,30 @@ Once those distinctions are clear, Gondwana configuration is straightforward: lo
 - [[Backbuffers]]
 - [[GL Rendering Path]]
 - [[Input Handling]]
+
+
+## Platform-specific configuration stores
+
+`Engine.Initialize` and `GameHostBase.Initialize` accept an optional
+`IEngineConfigurationStore`. When omitted, Gondwana continues to use
+`EngineConfigurationFile` exactly as before.
+
+Blazor WebAssembly can use
+`BrowserLocalStorageEngineConfigurationStore` from `Gondwana.Blazor`:
+
+```csharp
+var store = new BrowserLocalStorageEngineConfigurationStore(
+    JS,
+    "my-game.configuration",
+    autoSave: true);
+
+host.Initialize(configurationStore: store);
+
+// Persist immediately when a user-facing option changes.
+host.Engine.Configuration.SetConfigurationValue("audio", "music", "false");
+host.Engine.SaveConfiguration();
+```
+
+The engine owns the supplied store and disposes it during reinitialization or
+shutdown. Stores with `AutoSave = true` persist their current configuration
+during disposal.
