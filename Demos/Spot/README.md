@@ -36,6 +36,7 @@ The game ends when no legal moves remain anywhere on the board or only one playe
 | **Tab** | Show or hide the score display. |
 | **Game > New Game** | Configure and start another game. |
 | **Options** | Toggle music, sound effects, spot jiggle, or clouds. |
+| **Help > How to play** | Open the in-game rules and controls reference. |
 
 ## Run the Windows version
 
