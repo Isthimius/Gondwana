@@ -5,7 +5,7 @@
  *   await JSHost.ImportAsync("gondwana-audio", "./gondwana-audio.js");
  */
 
-/** @type {Map<string, {audio: HTMLAudioElement, context: AudioContext|null, source: MediaElementAudioSourceNode|null, panner: StereoPannerNode|null, state: number}>} */
+/** @type {Map<string, {audio: HTMLAudioElement, context: AudioContext|null, source: MediaElementAudioSourceNode|null, panner: StereoPannerNode|null, state: number, objectUrl: string|null}>} */
 const _players = new Map();
 
 // One context per module, retained until page teardown. Tracks own only their
@@ -46,6 +46,11 @@ function disposeEntry(entry) {
 
     entry.audio.removeAttribute("src");
     entry.audio.load();
+
+    if (entry.objectUrl) {
+        URL.revokeObjectURL(entry.objectUrl);
+        entry.objectUrl = null;
+    }
 }
 
 /**
@@ -101,7 +106,7 @@ export function load(key, src, loop, volume, pan, playbackSpeed, onEnded) {
     audio.volume = clamp(volume, 0, 1);
     audio.playbackRate = clamp(playbackSpeed, 0.25, 4);
 
-    const entry = { audio, context, source, panner, state: 0, disposed: false };
+    const entry = { audio, context, source, panner, state: 0, disposed: false, objectUrl: null };
 
     entry.onEnded = () => {
         if (entry.disposed || audio.loop)
@@ -113,6 +118,34 @@ export function load(key, src, loop, volume, pan, playbackSpeed, onEnded) {
 
     audio.addEventListener("ended", entry.onEnded);
     _players.set(key, entry);
+}
+
+/**
+ * Loads raw audio bytes by exposing them to HTMLAudioElement through a Blob URL.
+ * The Blob URL is revoked automatically when the track is replaced or unloaded.
+ */
+export function loadBytes(key, base64Data, mimeType, loop, volume, pan, playbackSpeed, onEnded) {
+    const binary = atob(base64Data);
+    const bytes = new Uint8Array(binary.length);
+
+    for (let i = 0; i < binary.length; i++)
+        bytes[i] = binary.charCodeAt(i);
+
+    const blob = new Blob([bytes], { type: mimeType || "application/octet-stream" });
+    const objectUrl = URL.createObjectURL(blob);
+
+    try {
+        load(key, objectUrl, loop, volume, pan, playbackSpeed, onEnded);
+        const entry = _players.get(key);
+        if (entry)
+            entry.objectUrl = objectUrl;
+        else
+            URL.revokeObjectURL(objectUrl);
+    }
+    catch {
+        URL.revokeObjectURL(objectUrl);
+        throw;
+    }
 }
 
 export function play(key, fromStart) {
