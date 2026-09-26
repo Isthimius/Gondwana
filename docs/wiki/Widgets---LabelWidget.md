@@ -2,7 +2,7 @@
 
 `LabelWidget` is the general-purpose retained-mode text widget. Use it for captions, headings, status text, score displays, instructions, and other non-editable text.
 
-It intentionally does not receive pointer or keyboard input.
+By default it remains non-interactive. Optional vertical scrolling can be enabled for longer read-only text; in that mode the label accepts pointer input for the mouse wheel, scrollbar track, and draggable thumb while remaining non-focusable.
 
 > These examples assume you already have a `RenderSurfaceHostBase` named `host` and, where appropriate, a `View` named `view`, a `SceneLayer` named `sceneLayer`, or a `Sprite` named `sprite`.
 
@@ -46,6 +46,31 @@ var instructions = new LabelWidget(
     .SetPadding(horizontal: 8f, vertical: 6f);
 ```
 
+## Optional vertical scrolling
+
+Labels keep their traditional non-interactive behavior unless scrolling is enabled.
+
+```csharp
+var helpText = new LabelWidget(
+        host,
+        view,
+        new Rectangle(40, 80, 480, 320),
+        longInstructions)
+    .SetFont(SKTypeface.Default, 17f)
+    .SetAlignment(
+        SKTextAlign.Left,
+        Gondwana.Drawing.Direct.TextBlock.VerticalAlign.Top)
+    .EnableWrapping()
+    .SetPadding(horizontal: 8f, vertical: 6f);
+
+helpText.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+helpText.MouseWheelScrollPixels = 48;
+```
+
+`VerticalScrollBarVisibility` supports `Auto`, `Always`, and `Never`. The default is `Never`. When visible, the scrollbar reserves a narrow gutter so wrapped text does not render underneath it.
+
+Users can scroll with the mouse wheel, click above or below the thumb to page, or drag the thumb directly. `VerticalScrollOffsetPx` can also be set programmatically and clamps to `MaximumVerticalScrollOffsetPx`.
+
 ## Colors
 
 ```csharp
@@ -71,6 +96,13 @@ scoreLabel.Size = new Size(320, 36);
 | `SetAlignment()` | Configures horizontal and vertical alignment. |
 | `EnableWrapping()` | Enables or disables wrapping. |
 | `SetPadding()` | Sets horizontal and vertical padding. |
+| `VerticalScrollBarVisibility` | Controls `Auto`, `Always`, or `Never` scrollbar display; defaults to `Never`. |
+| `MouseWheelScrollPixels` | Number of native pixels scrolled per wheel notch. |
+| `VerticalScrollOffsetPx` | Current content offset. |
+| `MaximumVerticalScrollOffsetPx` | Maximum valid content offset for the current layout. |
+| `IsVerticalScrollBarVisible` | Reports whether the scrollbar is currently shown. |
+| `VerticalScrollBarTrack` / `VerticalScrollBarThumb` | Access to the retained scrollbar drawings. |
+| `SetLabelZOrder()` | Sets the label text Z-order and keeps the scrollbar above it. |
 | `TextBlock` | Access to the underlying `TextBlock`. |
 
 `LabelWidget` supports both view-level and scene-layer text.
