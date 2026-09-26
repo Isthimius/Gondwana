@@ -20,7 +20,7 @@ public sealed class LabelWidget : WidgetBase
     private SKColor _foregroundColor = SKColors.White;
     private SKColor _backgroundColor = SKColors.Transparent;
     private string _text;
-    private Rectangle _bounds;
+    private Size _size;
     private ScrollBarVisibility _verticalScrollBarVisibility = ScrollBarVisibility.Never;
     private int _mouseWheelScrollPixels = 48;
     private float _verticalScrollOffsetPx;
@@ -41,7 +41,7 @@ public sealed class LabelWidget : WidgetBase
         ArgumentNullException.ThrowIfNull(view);
 
         _text = text ?? string.Empty;
-        _bounds = bounds;
+        _size = bounds.Size;
         TextBlock = new TextBlock(renderSurfaceHost, view, bounds, $"{Nickname}.text")
             .SetText(_text)
             .SetColors(_foregroundColor, _backgroundColor);
@@ -67,7 +67,7 @@ public sealed class LabelWidget : WidgetBase
         ArgumentNullException.ThrowIfNull(sceneLayer);
 
         _text = text ?? string.Empty;
-        _bounds = bounds;
+        _size = bounds.Size;
         TextBlock = new TextBlock(renderSurfaceHost, sceneLayer, view: null, worldBounds: bounds, nickname: $"{Nickname}.text")
             .SetText(_text)
             .SetColors(_foregroundColor, _backgroundColor);
@@ -99,7 +99,18 @@ public sealed class LabelWidget : WidgetBase
     /// <summary>
     /// Gets the label bounds in its native coordinate space.
     /// </summary>
-    public Rectangle Bounds => _bounds;
+    public Rectangle Bounds
+    {
+        get
+        {
+            Vector2 position = GetPosition();
+            return new Rectangle(
+                (int)MathF.Round(position.X),
+                (int)MathF.Round(position.Y),
+                _size.Width,
+                _size.Height);
+        }
+    }
 
     /// <summary>
     /// Gets or sets the label size while preserving its current position.
@@ -110,7 +121,7 @@ public sealed class LabelWidget : WidgetBase
         set
         {
             ValidateSize(value);
-            _bounds = new Rectangle(_bounds.Location, value);
+            _size = value;
             RefreshScrollState();
         }
     }
@@ -380,7 +391,8 @@ public sealed class LabelWidget : WidgetBase
         IsKeyboardInputEnabled = false;
         CanReceiveFocus = false;
 
-        SetTextBlockBounds(_bounds);
+        Rectangle bounds = Bounds;
+        SetTextBlockBounds(bounds);
 
         if (!scrollingEnabled)
         {
@@ -395,10 +407,10 @@ public sealed class LabelWidget : WidgetBase
         if (showScrollBar)
         {
             Rectangle contentBounds = new(
-                _bounds.Left,
-                _bounds.Top,
-                Math.Max(1, _bounds.Width - ScrollBarWidth - ScrollBarMargin * 2),
-                _bounds.Height);
+                bounds.Left,
+                bounds.Top,
+                Math.Max(1, bounds.Width - ScrollBarWidth - ScrollBarMargin * 2),
+                bounds.Height);
             SetTextBlockBounds(contentBounds);
         }
 
@@ -444,10 +456,10 @@ public sealed class LabelWidget : WidgetBase
     private Rectangle GetScrollBarTrackBounds()
     {
         return new Rectangle(
-            _bounds.Right - ScrollBarMargin - ScrollBarWidth,
-            _bounds.Top + ScrollBarMargin,
+            Bounds.Right - ScrollBarMargin - ScrollBarWidth,
+            Bounds.Top + ScrollBarMargin,
             ScrollBarWidth,
-            Math.Max(1, _bounds.Height - ScrollBarMargin * 2));
+            Math.Max(1, Bounds.Height - ScrollBarMargin * 2));
     }
 
     private Rectangle GetScrollBarThumbBounds()
@@ -491,8 +503,8 @@ public sealed class LabelWidget : WidgetBase
         float scaleY = screenBounds.Height / textBounds.Height;
 
         return new PointF(
-            _bounds.Left + (args.ScreenPositionPx.X - screenBounds.Left) / scaleX,
-            _bounds.Top + (args.ScreenPositionPx.Y - screenBounds.Top) / scaleY);
+            Bounds.Left + (args.ScreenPositionPx.X - screenBounds.Left) / scaleX,
+            Bounds.Top + (args.ScreenPositionPx.Y - screenBounds.Top) / scaleY);
     }
 
     private void SetTextBlockBounds(Rectangle bounds)
@@ -502,7 +514,10 @@ public sealed class LabelWidget : WidgetBase
         else
             TextBlock.WorldBounds = bounds;
 
-        SetLocalOffset(TextBlock, new Vector2(bounds.Location.X - _bounds.Location.X, bounds.Location.Y - _bounds.Location.Y));
+        Rectangle overallBounds = Bounds;
+        SetLocalOffset(
+            TextBlock,
+            new Vector2(bounds.X - overallBounds.X, bounds.Y - overallBounds.Y));
     }
 
     private void SetRectangleBounds(DirectRectangle rectangle, Rectangle bounds)
@@ -514,7 +529,7 @@ public sealed class LabelWidget : WidgetBase
 
         SetLocalOffset(
             rectangle,
-            new Vector2(bounds.X - _bounds.X, bounds.Y - _bounds.Y));
+            new Vector2(bounds.X - Bounds.X, bounds.Y - Bounds.Y));
     }
 
     private static DirectRectangle CreateScrollBarTrack(
