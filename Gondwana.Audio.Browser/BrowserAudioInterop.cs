@@ -13,6 +13,17 @@ internal static partial class BrowserAudioInterop
     internal static partial void Load(string key, string src, bool loop, float volume, float pan, float playbackSpeed,
         [JSMarshalAs<JSType.Function>] Action onEnded);
 
+    [JSImport("loadBytes", Module)]
+    internal static partial void LoadBytes(
+        string key,
+        string base64Data,
+        string mimeType,
+        bool loop,
+        float volume,
+        float pan,
+        float playbackSpeed,
+        [JSMarshalAs<JSType.Function>] Action onEnded);
+
     [JSImport("play", Module)]
     internal static partial void Play(string key, bool fromStart);
 

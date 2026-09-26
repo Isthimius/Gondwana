@@ -1,3 +1,4 @@
+using Gondwana.Configuration;
 using Gondwana.Logging;
 using Gondwana.Rendering;
 using Gondwana.Scenes;
@@ -53,7 +54,8 @@ public abstract class GameHostBase : IDisposable
     public void Initialize(
         string? configPath = null,
         bool? autoSaveConfig = null,
-        LogLevel logLevel = LogLevel.Warning)
+        LogLevel logLevel = LogLevel.Warning,
+        IEngineConfigurationStore? configurationStore = null)
     {
         EnsureNotDisposed();
         EnsureNotInitialized();
@@ -65,7 +67,7 @@ public abstract class GameHostBase : IDisposable
         ConfigureInput();
         InitializeGameContent();
 
-        InitializeEngine(configPath, autoSaveConfig);
+        InitializeEngine(configPath, autoSaveConfig, configurationStore);
         StartEngine();
 
         _initialized = true;
@@ -310,9 +312,13 @@ public abstract class GameHostBase : IDisposable
     /// </param>
     protected void InitializeEngine(
         string? configPath,
-        bool? autoSaveConfig)
+        bool? autoSaveConfig,
+        IEngineConfigurationStore? configurationStore)
     {
-        Engine.Instance.Initialize(configPath, autoSaveConfig);
+        Engine.Instance.Initialize(
+            configFileName: configPath,
+            autoSaveConfig: autoSaveConfig,
+            configurationStore: configurationStore);
         _engineInitialized = true;
 
         OnEngineInitialized();
