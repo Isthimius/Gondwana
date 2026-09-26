@@ -28,7 +28,74 @@
         <ProjectReference Include="..\..\Gondwana.Audio.Browser\Gondwana.Audio.Browser.csproj" />
     </ItemGroup>
 
-    <!-- Copy gondwana-audio.js from Gondwana.Audio.Browser to our wwwroot -->
+    <PropertyGroup>
+        <SpotAssetSourceRoot>$(MSBuildProjectDirectory)\..\Spot\assets</SpotAssetSourceRoot>
+        <SpotGafPath>$(MSBuildProjectDirectory)\wwwroot\assets\spot.gaf</SpotGafPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <SpotAssetSource Include="$(SpotAssetSourceRoot)\*.*" />
+        <Content Remove="wwwroot\assets\spot.gaf" />
+        <Content Include="$(SpotGafPath)" />
+        <Content Include="..\Spot\assets\spot_ico.png" Link="wwwroot\assets\spot_ico.png" />
+    </ItemGroup>
+
+    <UsingTask TaskName="PackSpotGaf"
+               TaskFactory="RoslynCodeTaskFactory"
+               AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
+        <ParameterGroup>
+            <SourceRoot ParameterType="System.String" Required="true" />
+            <OutputPath ParameterType="System.String" Required="true" />
+        </ParameterGroup>
+        <Task>
+            <Reference Include="System.IO.Compression" />
+            <Using Namespace="System" />
+            <Using Namespace="System.IO" />
+            <Using Namespace="System.IO.Compression" />
+            <Using Namespace="System.Linq" />
+            <Code Type="Fragment" Language="cs"><![CDATA[
+                Directory.CreateDirectory(Path.GetDirectoryName(OutputPath)!);
+
+                if (File.Exists(OutputPath))
+                    File.Delete(OutputPath);
+
+                using var output = File.Create(OutputPath);
+                using var archive = new ZipArchive(output, ZipArchiveMode.Create, leaveOpen: false);
+
+                foreach (var file in Directory.GetFiles(SourceRoot, "*", SearchOption.TopDirectoryOnly)
+                                              .OrderBy(path => path, StringComparer.OrdinalIgnoreCase))
+                {
+                    var extension = Path.GetExtension(file).ToLowerInvariant();
+                    var assetType = extension switch
+                    {
+                        ".png" or ".jpg" or ".jpeg" or ".bmp" or ".gif" or ".ico" => "Image",
+                        ".mp3" or ".wav" or ".ogg" or ".flac" or ".m4a" or ".aac" or ".opus" or ".webm" => "Audio",
+                        ".ttf" or ".otf" => "Font",
+                        ".gts" => "TilesheetDefinition",
+                        _ => "Misc"
+                    };
+
+                    var assetName = Path.GetFileName(file).ToLowerInvariant();
+                    var entry = archive.CreateEntry(
+                        $"{assetType}_{assetName}",
+                        CompressionLevel.Optimal);
+                    entry.LastWriteTime = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero);
+
+                    using var source = File.OpenRead(file);
+                    using var destination = entry.Open();
+                    source.CopyTo(destination);
+                }
+            ]]></Code>
+        </Task>
+    </UsingTask>
+
+    <Target Name="GenerateSpotGaf"
+            BeforeTargets="PrepareForBuild"
+            Inputs="@(SpotAssetSource)"
+            Outputs="$(SpotGafPath)">
+        <PackSpotGaf SourceRoot="$(SpotAssetSourceRoot)" OutputPath="$(SpotGafPath)" />
+    </Target>
+
     <Target Name="CopyAudioJS" BeforeTargets="Build">
         <Copy SourceFiles="..\..\Gondwana.Audio.Browser\wwwroot\gondwana-audio.js" DestinationFolder="$(MSBuildProjectDirectory)\wwwroot\" SkipUnchangedFiles="true" />
     </Target>

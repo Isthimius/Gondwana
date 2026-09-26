@@ -1,9 +1,13 @@
 @page "/"
 @using Gondwana
+@using Gondwana.Assets
+@using Gondwana.Blazor
+@using Gondwana.Blazor.Configuration
 @using Gondwana.Blazor.Rendering
-@using Gondwana.Demos.SpotBlazor.Game
-@using Gondwana.Rendering.Backbuffers
+@using Gondwana.Widgets.Dialogs
+@using Gondwana.Widgets.Menus
 @using Microsoft.Extensions.Logging
+@using SkiaSharp
 @inject HttpClient Http
 @inject IJSRuntime JS
 @inject ILogger<Index> Logger
@@ -11,224 +15,324 @@
 
 <PageTitle>Spot!</PageTitle>
 
-<div class="game-wrapper">
-    <BlazorGpuRenderSurfaceComponent @ref="_renderSurface" style="position: absolute; inset: 0;" />
+<div class="page-shell">
+    <div class="game-wrapper">
+        <BlazorGpuRenderSurfaceComponent @ref="_renderSurface" style="position:absolute; inset:0;" />
 
-    @if (_showOverlay)
-    {
-        <div class="game-overlay">
-            <div class="setup-panel">
-                <h2 class="setup-title">Spot!</h2>
+        @if (_loading)
+        {
+            <div class="status-overlay">Loading Spot!…</div>
+        }
 
-                <div class="setup-row">
-                    <label>Players</label>
-                    <select @bind="_playerCount">
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4" selected>4</option>
-                    </select>
-                    <label style="margin-left:12px">Board</label>
-                    <select @bind="_boardWidth">
-                        @foreach (var size in GameConfig.BoardSizes)
-                        {
-                            <option value="@size" selected="@(size == GameConfig.BoardSizes[GameConfig.DefaultBoardSizeIndex])">@size</option>
-                        }
-                    </select>
-                    <span style="margin: 0 4px">×</span>
-                    <select @bind="_boardHeight">
-                        @foreach (var size in GameConfig.BoardSizes)
-                        {
-                            <option value="@size" selected="@(size == GameConfig.BoardSizes[GameConfig.DefaultBoardSizeIndex])">@size</option>
-                        }
-                    </select>
-                </div>
-
-                @for (int i = 0; i < 4; i++)
-                {
-                    var idx = i; // capture for lambda
-                    <div class="player-row @(idx >= _playerCount ? "hidden" : "")">
-                        <span class="player-label">Player @(idx + 1)</span>
-                        <input class="player-name" type="text" @bind="_playerNames[idx]" />
-                        <select @bind="_playerTypes[idx]">
-                            <option value="Human">Human</option>
-                            <option value="Computer">Computer</option>
-                        </select>
-                        <select @bind="_playerColorNames[idx]">
-                            @foreach (var color in GameConfig.AvailableColors)
-                            {
-                                <option value="@color.Name">@color.Name</option>
-                            }
-                        </select>
-                    </div>
-                }
-
-                <div class="setup-row" style="justify-content: center; margin-top: 12px;">
-                    <button class="start-btn" @onclick="StartGame" disabled="@(!_engineReady)">
-                        @(_engineReady ? "Start Game" : "Loading…")
-                    </button>
-                </div>
-
-                @if (!string.IsNullOrEmpty(_errorMessage))
-                {
-                    <p class="error-msg">@_errorMessage</p>
-                }
-            </div>
-        </div>
-    }
-
-    @if (_assetsLoading)
-    {
-        <div class="loading-overlay">
-            <p>Loading assets…</p>
-        </div>
-    }
+        @if (!string.IsNullOrWhiteSpace(_errorMessage))
+        {
+            <div class="status-overlay error">@_errorMessage</div>
+        }
+    </div>
 </div>
 
 @code {
+    private const int GpuTargetFps = 0;
+    private const int GpuMsaaSampleCount = 4;
+    private const string ConfigurationKey = "spot.configuration";
+
     private BlazorGpuRenderSurfaceComponent? _renderSurface;
-    private SpotBlazorGameHost? _host;
-
-    private bool _showOverlay   = true;
-    private bool _engineReady   = false;
-    private bool _assetsLoading = true;
-    private string _errorMessage = string.Empty;
-
-    // Setup form state
-    private int _playerCount = 4;
-    private string _boardWidth  = GameConfig.BoardSizes[GameConfig.DefaultBoardSizeIndex];
-    private string _boardHeight = GameConfig.BoardSizes[GameConfig.DefaultBoardSizeIndex];
-
-    private readonly string[] _playerNames = [.. GameConfig.DefaultPlayerNames];
-    private readonly string[] _playerTypes = ["Human", "Computer", "Computer", "Computer"];
-    private readonly string[] _playerColorNames;
-
-    public Index()
-    {
-        _playerColorNames = GameConfig.AvailableColors.Take(4).Select(c => c.Name).ToArray();
-    }
+    private SpotGameHost? _gameHost;
+    private MenuBarWidget? _menuBar;
+    private HowToPlayDialog? _howToPlayDialog;
+    private AboutBox? _aboutBox;
+    private SKImage? _aboutSpotLogo;
+    private SKImage? _aboutGondwanaLogo;
+    private SKTypeface? _aboutTypeface;
+    private bool _loading = true;
+    private string? _errorMessage;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender || _renderSurface is null) return;
+        if (!firstRender || _renderSurface is null)
+            return;
+
+        AssetsFile? assets = null;
 
         try
         {
-            // Pre-fetch all assets via HttpClient before calling Initialize()
-            var assetData = await LoadAssetDataAsync();
+            using var packageStream = await Http.GetStreamAsync("assets/spot.gaf");
+            assets = AssetsFile.Load(packageStream);
 
-            _host = new SpotBlazorGameHost(_renderSurface, JS, assetData);
-            _host.Engine.CPSCalculated += OnCpsCalculated;
+            _gameHost = new SpotGameHost(_renderSurface, JS, assets);
+            assets = null; // Ownership transferred to the host.
 
-            _host.Engine.InitializationComplete += () =>
-            {
-                _host.Engine.Configuration.TargetFPS = 60;
-                _host.Engine.Configuration.TimerDrivenSimulationRate = 60;
-                _engineReady = true;
-                InvokeAsync(StateHasChanged);
-            };
+            _gameHost.Engine.InitializationComplete += ConfigureEngine;
 
-            _host.Initialize(logLevel: LogLevel.Warning);
+            var configurationStore = new BrowserLocalStorageEngineConfigurationStore(
+                JS,
+                ConfigurationKey,
+                autoSave: true);
+
+            _gameHost.Initialize(
+                logLevel: LogLevel.Warning,
+                configurationStore: configurationStore);
+
+            _loading = false;
+            StateHasChanged();
+
+            _gameHost.CreateSplash(
+                _renderSurface.Host,
+                () =>
+                {
+                    _gameHost.BeginPostSplashStartup();
+                    ApplyLoadedSettings();
+                    CreateMenu();
+                });
         }
         catch (Exception ex)
         {
-            _errorMessage  = $"Initialization failed: {ex.Message}";
+            assets?.Dispose();
+            _loading = false;
+            _errorMessage = $"Failed to initialize Spot!: {ex.Message}";
             Logger.LogError(ex, "Failed to initialize Spot.Blazor");
-        }
-        finally
-        {
-            _assetsLoading = false;
             StateHasChanged();
         }
     }
 
-    private void OnCpsCalculated(CyclesPerSecondCalculatedEventArgs e)
+    private void ConfigureEngine()
     {
-        var gpuFps = e.GpuFps.HasValue
-            ? e.GpuFps.Value.ToString("0.0")
-            : "n/a";
+        if (_gameHost is null)
+            return;
 
-        var gpuBackbuffer = _renderSurface?.Host.Backbuffer as GpuBackbuffer;
-        var requestedMsaa = gpuBackbuffer?.MsaaSampleCount.ToString() ?? "n/a";
-        var actualMsaa = gpuBackbuffer?.ActualMsaaSampleCount.ToString() ?? "n/a";
-        var maxMsaa = gpuBackbuffer?.MaxSupportedMsaaSampleCount.ToString() ?? "n/a";
-
-        Logger.LogTrace(
-            "Gondwana: CPS {Cps:0.0} | engine FPS {EngineFps:0.0} | GPU FPS {GpuFps} | " +
-            "MSAA requested {MsaaSampleCount} | MSAA actual {ActualMsaaSampleCount} | " +
-            "MSAA max {MaxSupportedMsaaSampleCount}",
-            e.GrossCPS,
-            e.NetCPS,
-            gpuFps,
-            requestedMsaa,
-            actualMsaa,
-            maxMsaa);
+        _gameHost.Engine.Configuration.TargetFPS = GpuTargetFps;
+        _gameHost.Engine.Configuration.VSync = false;
+        _gameHost.Engine.Configuration.MsaaSampleCount = GpuMsaaSampleCount;
     }
 
-    private async Task<Dictionary<string, byte[]>> LoadAssetDataAsync()
+    private void ApplyLoadedSettings()
     {
-        var assets = new Dictionary<string, byte[]>();
-        var filenames = new[]
-        {
-            "ArchitectsDaughter-Regular.ttf",
-            "spot.png",
-            "spot_defaults.png",
-            "spot_selected.png",
-            "clouds.png",
-        };
+        if (_gameHost is null)
+            return;
 
-        foreach (var filename in filenames)
-        {
-            try
-            {
-                assets[filename] = await Http.GetByteArrayAsync($"assets/{filename}");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogWarning(ex, "Could not load asset: {Filename}", filename);
-            }
-        }
+        bool music = ReadBoolSetting(SpotSettings.Music);
+        bool soundEffects = ReadBoolSetting(SpotSettings.SoundEffects);
+        bool jiggle = ReadBoolSetting(SpotSettings.Jiggle);
+        bool clouds = ReadBoolSetting(SpotSettings.Clouds);
 
-        return assets;
+        _gameHost.Engine.EngineDispatcher.Post(() =>
+        {
+            _gameHost.SetMusicEnabled(music);
+            _gameHost.SetSoundEffectsEnabled(soundEffects);
+            _gameHost.SetJiggleEnabled(jiggle);
+            _gameHost.SetCloudsEnabled(clouds);
+        });
     }
 
-    private void StartGame()
+    private bool ReadBoolSetting(string key)
     {
-        if (_host is null || !_engineReady) return;
+        return _gameHost is not null
+            ? SpotSettings.ReadBool(_gameHost.Engine.Configuration, key, defaultValue: true)
+            : true;
+    }
 
-        int w = int.TryParse(_boardWidth, out var bw) ? bw : 8;
-        int h = int.TryParse(_boardHeight, out var bh) ? bh : 8;
+    private void PersistSetting(string key, bool value)
+    {
+        if (_gameHost is null)
+            return;
 
-        var options = new NewGameOptions
-        {
-            BoardWidth  = w,
-            BoardHeight = h,
-        };
+        SpotSettings.WriteBool(_gameHost.Engine, key, value);
+    }
 
-        for (int i = 0; i < _playerCount; i++)
-        {
-            var colorItem = GameConfig.AvailableColors
-                .FirstOrDefault(c => c.Name == _playerColorNames[i])
-                ?? GameConfig.AvailableColors[i % GameConfig.AvailableColors.Length];
+    private void CreateMenu()
+    {
+        if (_menuBar is not null || _gameHost is null || _renderSurface is null)
+            return;
 
-            options.Players.Add(new Player
+        var view = _renderSurface.Host.ViewManager.Views[0];
+        var state = new SpotMenuState(
+            ReadBoolSetting(SpotSettings.Music),
+            ReadBoolSetting(SpotSettings.SoundEffects),
+            ReadBoolSetting(SpotSettings.Jiggle),
+            ReadBoolSetting(SpotSettings.Clouds));
+
+        _menuBar = SpotMenuFactory.Create(
+            _renderSurface.Host,
+            view,
+            state,
+            new SpotMenuActions
             {
-                Name      = _playerNames[i],
-                Type      = _playerTypes[i] == "Human" ? PlayerType.Human : PlayerType.Computer,
-                ColorItem = colorItem,
+                NewGame = () => _gameHost.OpenNewGameDialog(_gameHost.LastNewGameOptions),
+                MusicChanged = SetMusicEnabled,
+                SoundEffectsChanged = SetSoundEffectsEnabled,
+                JiggleChanged = SetJiggleEnabled,
+                CloudsChanged = SetCloudsEnabled,
+                HowToPlay = OpenHowToPlayDialog,
+                About = OpenAboutBox,
+                Exit = null
             });
+
+        StartMonitoringMenuKeys();
+    }
+
+    private void StartMonitoringMenuKeys()
+    {
+        var keyboard = _gameHost?.Engine.Input.KeyboardEventPoller;
+        if (keyboard is null)
+            return;
+
+        const double repeatIntervalSec = 0.10;
+
+        for (int key = 'A'; key <= 'Z'; key++)
+            keyboard.StartMonitoringKey(key, timeBetweenEvents: repeatIntervalSec);
+
+        for (int key = '0'; key <= '9'; key++)
+            keyboard.StartMonitoringKey(key, timeBetweenEvents: repeatIntervalSec);
+
+        for (int key = 96; key <= 111; key++)
+            keyboard.StartMonitoringKey(key, timeBetweenEvents: repeatIntervalSec);
+
+        foreach (int key in new[]
+                 {
+                     8, 13, 27, 32, 33, 34, 35, 36, 37, 38, 39, 40, 46,
+                     186, 187, 188, 189, 190, 191, 192, 219, 220, 221, 222
+                 })
+        {
+            keyboard.StartMonitoringKey(key, timeBetweenEvents: repeatIntervalSec);
+        }
+    }
+
+    private void SetMusicEnabled(bool enabled)
+    {
+        if (_gameHost is null)
+            return;
+
+        PersistSetting(SpotSettings.Music, enabled);
+        _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetMusicEnabled(enabled));
+    }
+
+    private void SetSoundEffectsEnabled(bool enabled)
+    {
+        if (_gameHost is null)
+            return;
+
+        PersistSetting(SpotSettings.SoundEffects, enabled);
+        _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetSoundEffectsEnabled(enabled));
+    }
+
+    private void SetJiggleEnabled(bool enabled)
+    {
+        if (_gameHost is null)
+            return;
+
+        PersistSetting(SpotSettings.Jiggle, enabled);
+        _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetJiggleEnabled(enabled));
+    }
+
+    private void SetCloudsEnabled(bool enabled)
+    {
+        if (_gameHost is null)
+            return;
+
+        PersistSetting(SpotSettings.Clouds, enabled);
+        _gameHost.Engine.EngineDispatcher.Post(() => _gameHost.SetCloudsEnabled(enabled));
+    }
+
+    private void OpenHowToPlayDialog()
+    {
+        if (_howToPlayDialog is not null)
+        {
+            _howToPlayDialog.Activate();
+            return;
         }
 
-        _showOverlay = false;
-        _host.Engine.EngineDispatcher.Post(() => _host.StartNewGame(options));
+        if (_renderSurface is null)
+            return;
+
+        var dialog = new HowToPlayDialog(
+            _renderSurface.Host,
+            _renderSurface.Host.ViewManager.Views[0]);
+
+        _howToPlayDialog = dialog;
+        dialog.Closed += _ => _howToPlayDialog = null;
+        dialog.Show();
+        dialog.Activate();
+    }
+
+    private void OpenAboutBox()
+    {
+        if (_aboutBox is not null)
+        {
+            _aboutBox.Activate();
+            return;
+        }
+
+        if (_gameHost is null || _renderSurface is null)
+            return;
+
+        EnsureAboutResources();
+
+        var about = SpotAboutBoxFactory.Create(
+            _renderSurface.Host,
+            _renderSurface.Host.ViewManager.Views[0],
+            _aboutSpotLogo!,
+            _aboutGondwanaLogo!,
+            _aboutTypeface!,
+            new BlazorExternalUriLauncher(JS));
+
+        _aboutBox = about;
+        about.Closed += _ => _aboutBox = null;
+        about.Show();
+        about.Activate();
+    }
+
+    private void EnsureAboutResources()
+    {
+        if (_gameHost is null)
+            return;
+
+        if (_aboutSpotLogo is null)
+        {
+            using var stream = _gameHost.OpenAsset(AssetTypes.Image, "spot.png");
+            _aboutSpotLogo = SKImage.FromEncodedData(stream)
+                ?? throw new InvalidOperationException("Failed to decode Spot About-box image.");
+        }
+
+        if (_aboutGondwanaLogo is null)
+        {
+            using var stream = _gameHost.OpenAsset(AssetTypes.Image, "gondwana-logo-text.png");
+            _aboutGondwanaLogo = SKImage.FromEncodedData(stream)
+                ?? throw new InvalidOperationException("Failed to decode Gondwana About-box image.");
+        }
+
+        if (_aboutTypeface is null)
+        {
+            using var stream = _gameHost.OpenAsset(AssetTypes.Font, "ArchitectsDaughter-Regular.ttf");
+            _aboutTypeface = SKTypeface.FromStream(stream)
+                ?? throw new InvalidOperationException("Failed to decode Spot About-box font.");
+        }
     }
 
     public void Dispose()
     {
-        if (_host is not null)
+        _howToPlayDialog?.Dispose();
+        _howToPlayDialog = null;
+
+        _aboutBox?.Dispose();
+        _aboutBox = null;
+
+        _aboutSpotLogo?.Dispose();
+        _aboutSpotLogo = null;
+
+        _aboutGondwanaLogo?.Dispose();
+        _aboutGondwanaLogo = null;
+
+        _aboutTypeface?.Dispose();
+        _aboutTypeface = null;
+
+        _menuBar?.Dispose();
+        _menuBar = null;
+
+        if (_gameHost is not null)
         {
-            _host.Engine.CPSCalculated -= OnCpsCalculated;
-            _host.Dispose();
-            _host = null;
+            _gameHost.Engine.InitializationComplete -= ConfigureEngine;
+            _gameHost.Dispose();
+            _gameHost = null;
         }
     }
 }
