@@ -381,6 +381,13 @@ public sealed class LabelWidget : WidgetBase
         CanReceiveFocus = false;
 
         SetTextBlockBounds(_bounds);
+
+        if (!scrollingEnabled)
+        {
+            _verticalScrollOffsetPx = 0f;
+            TextBlock.VerticalScrollOffsetPx = 0f;
+        }
+
         bool showScrollBar = VerticalScrollBarVisibility == ScrollBarVisibility.Always ||
             (VerticalScrollBarVisibility == ScrollBarVisibility.Auto &&
              TextBlock.MeasureMaximumVerticalScrollOffsetPx() > 0.5f);
@@ -417,7 +424,13 @@ public sealed class LabelWidget : WidgetBase
         => TextBlock.MeasureMaximumVerticalScrollOffsetPx();
 
     private float GetViewportContentHeight()
-        => Math.Max(0f, TextBlock.Bounds.Height - TextBlock.VerticalPadding * 2f);
+    {
+        Rectangle textBounds = Mode == DirectDrawingMode.View
+            ? TextBlock.ScreenBounds
+            : TextBlock.WorldBounds;
+
+        return Math.Max(0f, textBounds.Height - TextBlock.VerticalPadding * 2f);
+    }
 
     private void RefreshScrollBarBounds()
     {
