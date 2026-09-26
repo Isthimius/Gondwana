@@ -111,7 +111,7 @@ Inside the native GL callback the adapter:
 
 1. synchronizes the current WinForms VSync setting;
 2. captures or refreshes the active `GRContext`;
-3. lets `GpuBackbuffer.EnsureInitialized(grContext)` perform first-time GPU initialization or apply an explicit logical-resolution request;
+3. lets `GpuBackbuffer.EnsureInitialized(grContext)` perform first-time GPU initialization or apply a logical-resolution/MSAA reconfiguration request;
 4. calls `Host.GlRenderAndSnapshot()`;
 5. applies the current presentation transform through `RenderSurfaceAdapterBase.DrawImage(...)`;
 6. draws the GPU-backed image into the native GL surface;
@@ -182,7 +182,7 @@ The Backbuffer is centered in the destination, with letterboxing or pillarboxing
 
 A new logical GPU resolution is requested only when Gondwana explicitly changes logical rendering resolution, such as when `EngineConfiguration.RenderScale` changes. `GpuBackbuffer.RequestResize(...)` queues that request, and `EnsureInitialized(...)` applies it from the next GL callback where the context is valid.
 
-A replaced `GRContext` also forces GPU surface recreation.
+Changing `EngineConfiguration.MsaaSampleCount` also causes `EnsureInitialized(...)` to recreate the GPU surface on the next GL callback, without changing logical dimensions. A replaced `GRContext` likewise forces recreation.
 
 ---
 

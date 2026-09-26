@@ -360,6 +360,9 @@ Disable VSync only when testing uncapped throughput or when the application deli
 - common higher values are `2`, `4`, and `8`
 - support depends on the graphics hardware and driver
 - unsupported values fall back to `1`
+- runtime changes recreate the GPU render target on the next owning GL/WebGL callback
+
+`GpuBackbuffer.ActualMsaaSampleCount` can be used to confirm whether the requested count was applied or fell back to `1`.
 
 Higher sample counts improve edge quality but increase GPU memory and fill work. Test them at the game's actual output resolution.
 

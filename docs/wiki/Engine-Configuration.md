@@ -209,7 +209,7 @@ engine.Start();
 
 `VSync` is GPU-only. Changes are propagated to registered GPU backbuffers and applied lazily during a later paint callback.
 
-`MsaaSampleCount` is also GPU-only. Changing it updates the requested value, but an existing GPU render target must be recreated before the new sample count takes effect. A resize or another call to `GpuBackbuffer.Initialize` can cause that recreation. Unsupported sample counts fall back to `1`.
+`MsaaSampleCount` is also GPU-only. Changing it updates the requested value and schedules the active GPU render target for recreation on the next owning GL/WebGL callback. No resize is required. Unsupported sample counts fall back to `1`; `GpuBackbuffer.ActualMsaaSampleCount` reports the sample count used by the active surface.
 
 ### Performance sampling
 
@@ -432,7 +432,7 @@ Some configuration properties are read continuously or propagate changes. Others
 | --- | --- |
 | `TargetFPS` | Takes effect without restarting and updates registered GPU backbuffers. |
 | `VSync` | Propagates to GPU backbuffers; applied on a later GPU paint. |
-| `MsaaSampleCount` | Stores and propagates the request; takes effect after GPU render-target recreation. |
+| `MsaaSampleCount` | Stores and propagates the request; the GPU render target is recreated automatically on the next owning GL/WebGL callback. |
 | `SamplingTimeForCPS` | Read by the running engine's sampling logic. |
 | Input intervals | Used as defaults when monitors are created or reconfigured. Existing monitor settings remain unchanged. |
 | Logging settings | Mode and queue capacity are applied during initialization. Later configuration-only assignments do not rebuild the active logger. |
@@ -515,7 +515,7 @@ Both settings are GPU-specific. `BitmapBackbuffer` ignores them.
 
 ### Changing `MsaaSampleCount` does not alter the current frame
 
-The GPU render target must be recreated before the new sample count can take effect.
+The current frame finishes on the existing surface. The next owning GL/WebGL callback recreates the GPU render target with the requested sample count. If the request is unsupported, Gondwana falls back to `1`.
 
 ### A runtime change is gone after restarting
 

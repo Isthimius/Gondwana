@@ -227,7 +227,7 @@ A `RenderScale` change requests a new logical Backbuffer resolution based on the
 backbuffer.EnsureInitialized(grContext)
 ```
 
-The GPU surface is recreated only while the proper `GRContext` is current.
+The GPU surface is recreated only while the proper `GRContext` is current. A runtime `MsaaSampleCount` change uses the same path: the next WebGL callback recreates the surface at the requested sample count without changing logical dimensions.
 
 When `EnsureInitialized(...)` reports that a new GPU surface was created, `BlazorGpuRenderSurfaceComponent` sets `_backbufferNeedsRender = true`, ensuring the new surface receives a complete Scene frame before being reused.
 

@@ -26,7 +26,7 @@ Every setting is optional. When a property is omitted, Gondwana uses the default
 | --- | --- | ---: | --- | --- |
 | `TargetFPS` | `int` | `60` | Sets the maximum foreground render rate. Use `0` for no engine-imposed upper limit. Negative values are clamped to `0`. | Immediately. The value is read by the engine loop and propagated to registered GPU backbuffers. |
 | `VSync` | `bool` | `true` | Synchronizes GPU presentation with the monitor to reduce tearing. It can limit the effective frame rate to the display refresh rate. Bitmap backbuffers ignore it. | On the next GPU paint after the change. |
-| `MsaaSampleCount` | `int` | `1` | Requests multisample anti-aliasing for GPU rendering. `1` disables MSAA; common enabled values are `2`, `4`, and `8`. Values below `1` are clamped to `1`. | After the GPU render target is recreated, such as during a resize or another backbuffer initialization. |
+| `MsaaSampleCount` | `int` | `1` | Requests multisample anti-aliasing for GPU rendering. `1` disables MSAA; common enabled values are `2`, `4`, and `8`. Values below `1` are clamped to `1`. | On the next owning GL/WebGL callback; the GPU render target is recreated automatically. |
 
 ### `TargetFPS`
 
@@ -54,7 +54,9 @@ This setting applies only to `GpuBackbuffer`.
 "MsaaSampleCount": 4
 ```
 
-Higher sample counts can smooth polygon and line edges, but consume more GPU memory and rendering time. Hardware support varies. If the requested count is unsupported, the GPU backbuffer falls back to `1` so that it can still create a valid render target.
+Higher sample counts can smooth polygon and line edges, but consume more GPU memory and rendering time. Hardware support varies. If the requested count is unsupported, the GPU backbuffer falls back to `1` so that it can still create a valid render target. `GpuBackbuffer.ActualMsaaSampleCount` reports the sample count used by the active surface.
+
+Changing the value at runtime schedules the GPU render target for recreation on the next owning GL/WebGL callback; no resize is required.
 
 This setting applies only to `GpuBackbuffer`.
 
@@ -271,7 +273,7 @@ Hand-written JSON can use enum names such as `"Asynchronous"` and `"All"`. A fil
 | Behavior | Settings |
 | --- | --- |
 | Read or propagated while the engine is running | `TargetFPS`, `VSync`, `SamplingTimeForCPS` |
-| Requires GPU render-target recreation | `MsaaSampleCount` |
+| Automatically recreates the GPU render target on the next GL/WebGL callback | `MsaaSampleCount` |
 | Copied when an input monitor is configured | `TimeBetweenKeyboardEvents`, `TimeBetweenGamepadEvents`, `TimeBetweenMouseEvents`, `TimeBetweenTouchEvents` |
 | Applied to the logger during initialization | `LoggingMode`, `LoggingQueueCapacity` |
 | Read during shutdown | `FlushAsyncLogsOnShutdown` |

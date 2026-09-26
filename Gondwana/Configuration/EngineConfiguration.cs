@@ -188,11 +188,11 @@ public partial class EngineConfiguration
     /// <para>
     /// Setting this property propagates the value to
     /// <see cref="Gondwana.Rendering.Backbuffers.GpuBackbuffer.MsaaSampleCount"/> on all currently
-    /// registered GPU surfaces.  It also serves as the default value for any new
-    /// <see cref="GpuBackbuffer"/> instances created after this property is set.  Because the
-    /// GPU render-target surface must be recreated to change the sample count, the new value takes
-    /// effect the next time <see cref="GpuBackbuffer.Initialize"/> is called on each surface
-    /// (e.g. on an explicit render-resolution change).
+    /// registered GPU surfaces. It also serves as the default value for any new
+    /// <see cref="GpuBackbuffer"/> instances created after this property is set. Because the
+    /// GPU render-target surface must be recreated to change the sample count, active GPU
+    /// backbuffers apply the new value on their next owning GL-thread
+    /// <see cref="GpuBackbuffer.EnsureInitialized"/> call.
     /// </para>
     /// <para>
     /// A value of <c>1</c> disables MSAA.  Common higher values are <c>2</c>, <c>4</c>, and
