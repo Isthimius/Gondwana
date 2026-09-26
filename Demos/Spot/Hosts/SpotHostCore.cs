@@ -171,12 +171,14 @@ internal sealed class SpotHostCore
 
                 Engine.Logger.LogInformation(
                     "CPS {Cps:0.0} | engine FPS {EngineFps:0.0} | GPU FPS {GpuFps} | " +
-                    "MSAA requested {MsaaSampleCount} | MSAA actual {ActualMsaaSampleCount}",
+                    "MSAA requested {MsaaSampleCount} | MSAA actual {ActualMsaaSampleCount} | " +
+                    "MSAA max {MaxSupportedMsaaSampleCount}",
                     args.GrossCPS,
                     args.NetCPS,
                     gpuFps,
                     gpuBackbuffer.MsaaSampleCount,
-                    gpuBackbuffer.ActualMsaaSampleCount);
+                    gpuBackbuffer.ActualMsaaSampleCount,
+                    gpuBackbuffer.MaxSupportedMsaaSampleCount);
 
                 return;
             }
