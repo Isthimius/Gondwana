@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Scenes;
 
