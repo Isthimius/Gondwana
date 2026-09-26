@@ -3,6 +3,7 @@ using Gondwana.Assets;
 using Gondwana.Audio;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Tilesheets;
+using Gondwana.Rendering;
 using Gondwana.SkiaSharp;
 using Gondwana.Widgets.Overlays;
 using SkiaSharp;
