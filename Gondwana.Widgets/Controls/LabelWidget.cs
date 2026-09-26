@@ -509,10 +509,9 @@ public sealed class LabelWidget : WidgetBase
 
     private void SetTextBlockBounds(Rectangle bounds)
     {
-        if (Mode == DirectDrawingMode.View)
-            TextBlock.ScreenBounds = bounds;
-        else
-            TextBlock.WorldBounds = bounds;
+        // Use TextBlock's size API so width changes invalidate wrapping/layout.
+        TextBlock.SetSize(bounds.Size);
+        TextBlock.SetPosition(bounds.X, bounds.Y);
 
         Rectangle overallBounds = Bounds;
         SetLocalOffset(
