@@ -37,4 +37,9 @@ internal sealed partial class SpotGameHost : WinFormsGpuGameHost
         // Deliberately empty: startup music begins in BeginPostSplashStartup()
         // after the Gondwana splash has fully faded out.
     }
+
+    partial void PersistGameState()
+    {
+        Engine.Instance.State.SaveToFile("savegame.json", false, true);
+    }
 }

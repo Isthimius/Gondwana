@@ -315,6 +315,8 @@ internal sealed partial class SpotGameHost
                 _gameLose?.Play();
         }
 
-        Engine.Instance.State.SaveToFile("savegame.json", false, true);
+        PersistGameState();
     }
+
+    partial void PersistGameState();
 }

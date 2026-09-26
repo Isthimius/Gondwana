@@ -6,7 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <IsPackable>false</IsPackable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <RootNamespace>Gondwana.Demos.SpotBlazor</RootNamespace>
+        <RootNamespace>Gondwana.Demos.Spot</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -15,6 +15,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Compile Include="..\Spot.Shared\Host\*.cs" Link="Host\%(Filename)%(Extension)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Spot.Shared\Spot.Shared.csproj" />
         <ProjectReference Include="..\..\Gondwana.Widgets\Gondwana.Widgets.csproj" />
         <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
         <ProjectReference Include="..\..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
