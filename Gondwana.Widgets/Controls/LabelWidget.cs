@@ -512,7 +512,7 @@ public sealed class LabelWidget : WidgetBase
     {
         // Use TextBlock's size API so width changes invalidate wrapping/layout.
         TextBlock.SetSize(bounds.Size);
-        TextBlock.SetPosition(bounds.X, bounds.Y);
+        TextBlock.SetPosition(new Vector2(bounds.X, bounds.Y));
 
         Rectangle overallBounds = Bounds;
         SetLocalOffset(
