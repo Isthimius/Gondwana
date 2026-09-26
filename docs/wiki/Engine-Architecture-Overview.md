@@ -49,7 +49,7 @@ A thorough explanation of the engine lifecycle is available at [[Gondwana Engine
 
 ## 3. Read a Real Demo End-to-End
 
-**`Demos/Spot/Hosts/SpotGpuGameHost.cs`** + **`Demos/Spot/GameWindow.cs`** — This is the most complete working game in the repo. Read `SpotGpuGameHost` and `SpotHostCore` to see how a real game wires up assets, scene layers, tilesheets, sprites, audio, input, widgets, and particle systems. The host subclasses `WinFormsGpuGameHost`, so you also see the Windows GPU adapter in practice.
+**`Demos/Spot/Hosts/SpotGpuGameHost.cs`** + **`Demos/Spot/GameWindow.cs`** — This is the most complete working game in the repo. Read the `SpotGpuGameHost` partials to see how a real game wires up assets, scene layers, tilesheets, sprites, audio, input, widgets, and particle systems. The host subclasses `WinFormsGpuGameHost`, so you also see the Windows GPU adapter in practice.
 
 ## 4. Understand the Core Engine Loop
 

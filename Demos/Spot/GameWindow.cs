@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gondwana.Configuration;
-using Gondwana.Demos.Spot.Hosts;
 using Gondwana.Drawing.Direct;
 using Gondwana.Widgets.Controls;
 using Gondwana.Widgets.Dialogs;
@@ -19,7 +18,7 @@ namespace Gondwana.Demos.Spot;
 
 internal partial class GameWindow : Form
 {
-    private ISpotGameHost? _gameHost;
+    private SpotGpuGameHost? _gameHost;
     private WinFormGpuRenderSurfaceControl? _gpuRenderSurface;
     private EngineConfigurationFile? _configFile;
     private MenuBarWidget? _menuBar;

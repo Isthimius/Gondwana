@@ -24,19 +24,18 @@ using SkiaSharp;
 namespace Gondwana.Demos.Spot;
 
 /// <summary>
-/// Contains the shared Spot game behavior used by <see cref="SpotGpuGameHost"/>.
-/// The host exposes its engine, scene, and render-surface state through <see cref="ISpotHostContext"/>
-/// so the presentation logic remains separated from WinForms host plumbing.
+/// Contains Spot's game-specific lifecycle, presentation, input, audio, and UI behavior.
+/// This is a partial of <see cref="SpotGpuGameHost"/> so the host remains readable without
+/// introducing a second host abstraction.
 /// </summary>
-internal sealed class SpotHostCore
+internal sealed partial class SpotGpuGameHost
 {
-    private readonly ISpotHostContext _ctx;
+    private Scene ActiveScene => Scene
+        ?? throw new InvalidOperationException("Spot scene has not been created.");
 
-    private Engine Engine => _ctx.Engine;
-    private Scene Scene => _ctx.Scene;
-    private RenderSurfaceHostBase SurfaceHost => _ctx.SurfaceHost;
-    private int SurfaceWidth => _ctx.SurfaceWidth;
-    private int SurfaceHeight => _ctx.SurfaceHeight;
+    private RenderSurfaceHostBase SurfaceHost => RenderSurface.Host;
+    private int SurfaceWidth => RenderSurface.Width;
+    private int SurfaceHeight => RenderSurface.Height;
 
     private const int ScoreToggleKey = 9; // Tab virtual-key code.
     private const int PersistentMenuHeight = 32;
@@ -92,11 +91,6 @@ internal sealed class SpotHostCore
     public bool JiggleEnabled { get; private set; } = true;
     public bool CloudsEnabled { get; private set; } = true;
 
-    internal SpotHostCore(ISpotHostContext context)
-    {
-        _ctx = context;
-    }
-
     #region host lifecycle hooks
 
     internal SplashScreen? CreateSplash(Gondwana.Rendering.RenderSurfaceHostBase host, Action onSplashCompleted)
@@ -116,7 +110,7 @@ internal sealed class SpotHostCore
         return splash;
     }
 
-    internal void LoadAssets()
+    protected override void LoadAssets()
     {
         // load standalone audio files
         _music = Engine.Managers.AudioResources.LoadFromFile("music", "assets\\sounovamusic-puzzle-amp-casual-game-music-460543.mp3");
@@ -143,7 +137,7 @@ internal sealed class SpotHostCore
         // load standalone cursor files
     }
 
-    internal void LoadTilesheets()
+    protected override void LoadTilesheets()
     {
         // splash logo
         var splash = Engine.Managers.Tilesheets.LoadFromImageFile("splash", "assets\\spot.png");
@@ -158,7 +152,7 @@ internal sealed class SpotHostCore
         _clouds = Engine.Managers.Tilesheets.LoadFromImageFile("clouds", "assets\\clouds.png");
     }
 
-    internal Scene CreateInitialScene()
+    protected override Scene CreateInitialScene()
     {
         Logging.EngineLogger.SetLogLevel(LogLevel.Information);
         Gondwana.Engine.Instance.CPSCalculated += (args) =>
@@ -206,7 +200,7 @@ internal sealed class SpotHostCore
     /// <summary>
     /// Called from the adapter's <c>CreateSceneGraph</c> override, after <c>base.CreateSceneGraph()</c>.
     /// </summary>
-    internal void CreateSceneGraph()
+    protected override void OnSceneGraphCreated()
     {
         SurfaceHost.Backbuffer.ClearColor = Color.CornflowerBlue.ToSKColor();
 
@@ -214,7 +208,7 @@ internal sealed class SpotHostCore
         HookSpotGameEvents();
     }
 
-    internal void OnMouseAdapterInitialized()
+    protected override void OnMouseAdapterInitialized()
     {
         if (Engine.Input.MouseEventPoller is null)
             return;
@@ -223,7 +217,7 @@ internal sealed class SpotHostCore
         Engine.Input.MouseEventPoller.StartMonitoringMouse();
     }
 
-    internal void OnKeyboardAdapterInitialized()
+    protected override void OnKeyboardAdapterInitialized()
     {
         if (Engine.Input.KeyboardEventPoller is null)
             return;
@@ -232,7 +226,7 @@ internal sealed class SpotHostCore
         Engine.Input.KeyboardEventPoller.StartMonitoringKey(ScoreToggleKey);
     }
 
-    internal void UnhookEvents()
+    protected override void UnhookEvents()
     {
         _newGameDialog?.Dispose();
         _newGameDialog = null;
@@ -265,7 +259,7 @@ internal sealed class SpotHostCore
             var directImage = new DirectImage(
                 tilesheet.SkBitmap,
                 SurfaceHost,
-                Scene[0],
+                ActiveScene[0],
                 new Rectangle(0, 0, 769, 769));
 
             directImage.ZOrder = 100;
@@ -274,7 +268,7 @@ internal sealed class SpotHostCore
 
         var particleSurface = new ParticleSurface(
             SurfaceHost,
-            Scene[0],
+            ActiveScene[0],
             new Rectangle(0, 0, 769, 769));
 
         particleSurface.CullingMarginX = 1300f;
@@ -295,7 +289,7 @@ internal sealed class SpotHostCore
         {
             _newGameDialog?.Activate();
             if (_newGameDialog is not null)
-                _ctx.WidgetInputRouter?.Focus(_newGameDialog.InitialFocusTarget);
+                WidgetInputRouter?.Focus(_newGameDialog.InitialFocusTarget);
             return;
         }
 
@@ -307,7 +301,7 @@ internal sealed class SpotHostCore
 
         var view = SurfaceHost.ViewManager.Views[0];
         var dialog = new NewGameDialog(SurfaceHost, view, newGameOptions);
-        var previousFocus = _ctx.WidgetInputRouter?.FocusedWidget;
+        var previousFocus = WidgetInputRouter?.FocusedWidget;
         _newGameDialog = dialog;
 
         dialog.Closed += result =>
@@ -316,7 +310,7 @@ internal sealed class SpotHostCore
             _lastNewGameOptions = options;
             _newGameDialog = null;
             Interlocked.Exchange(ref _dialogOpen, 0);
-            _ctx.WidgetInputRouter?.Focus(previousFocus);
+            WidgetInputRouter?.Focus(previousFocus);
 
             if (result == Gondwana.Widgets.Dialogs.DialogResult.OK)
                 Engine.EngineDispatcher.Post(() => StartNewGame(options));
@@ -324,7 +318,7 @@ internal sealed class SpotHostCore
 
         dialog.Show();
         dialog.Activate();
-        _ctx.WidgetInputRouter?.Focus(dialog.InitialFocusTarget);
+        WidgetInputRouter?.Focus(dialog.InitialFocusTarget);
     }
 
     #endregion public game interface
@@ -387,7 +381,7 @@ internal sealed class SpotHostCore
 
         ClearGamePresentation();
         Engine.Managers.Sprites.Clear();
-        Scene.RemoveAllLayers();
+        ActiveScene.RemoveAllLayers();
 
         SetPlayerFrames(options.Players);
 
@@ -400,8 +394,8 @@ internal sealed class SpotHostCore
             newGameResult.BackgroundField.OriginPx.X,
             newGameResult.BackgroundField.OriginPx.Y - PersistentMenuHeight);
 
-        Scene.AddLayer(newGameResult.Field);
-        Scene.AddLayer(newGameResult.BackgroundField);
+        ActiveScene.AddLayer(newGameResult.Field);
+        ActiveScene.AddLayer(newGameResult.BackgroundField);
         _music.Volume = 0.1f;
 
         CreateTextBlockFields();
@@ -431,14 +425,14 @@ internal sealed class SpotHostCore
         if (!_handleHumanInput)
             return;
 
-        if (Scene is null || Scene.SceneLayers.Count == 0)
+        if (Scene is null || ActiveScene.SceneLayers.Count == 0)
             return;
 
         if (SurfaceHost.ViewManager.Views.Count == 0)
             return;
 
         var view = SurfaceHost.ViewManager.Views[0];
-        var layer = Scene.SceneLayers[0];
+        var layer = ActiveScene.SceneLayers[0];
 
         var screenPos = args.CurrentPosition;
 
