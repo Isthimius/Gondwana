@@ -20,9 +20,8 @@ internal sealed partial class SpotGameHost
 
         _startupPresentationShown = true;
 
-        Tilesheet tilesheet;
-
-        if (TilesheetRegistry.Instance.TryGet("splash", out tilesheet))
+        if (TilesheetRegistry.Instance.TryGet("splash", out Tilesheet? tilesheet) &&
+            tilesheet is not null)
         {
             var directImage = new DirectImage(
                 tilesheet.SkBitmap,

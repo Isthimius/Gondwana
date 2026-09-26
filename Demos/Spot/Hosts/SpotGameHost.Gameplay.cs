@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using Gondwana.Demos.Spot.Game;
 using Gondwana.Timers;
+using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Demos.Spot;
 
