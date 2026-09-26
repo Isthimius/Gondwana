@@ -11,5 +11,10 @@ var namespaceGondwana_1_1Widgets_1_1Controls =
     [ "ProgressBarWidget", "classGondwana_1_1Widgets_1_1Controls_1_1ProgressBarWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1ProgressBarWidget" ],
     [ "RadioButtonGroup", "classGondwana_1_1Widgets_1_1Controls_1_1RadioButtonGroup.html", "classGondwana_1_1Widgets_1_1Controls_1_1RadioButtonGroup" ],
     [ "RadioButtonWidget", "classGondwana_1_1Widgets_1_1Controls_1_1RadioButtonWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1RadioButtonWidget" ],
-    [ "TextBoxWidget", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget" ]
+    [ "TextBoxWidget", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget" ],
+    [ "ScrollBarVisibility", "namespaceGondwana_1_1Widgets_1_1Controls.html#a5e584d4499255f2d04d820f96559a2cc", [
+      [ "Auto", "namespaceGondwana_1_1Widgets_1_1Controls.html#a5e584d4499255f2d04d820f96559a2cca06b9281e396db002010bde1de57262eb", null ],
+      [ "Always", "namespaceGondwana_1_1Widgets_1_1Controls.html#a5e584d4499255f2d04d820f96559a2cca68eec46437c384d8dad18d5464ebc35c", null ],
+      [ "Never", "namespaceGondwana_1_1Widgets_1_1Controls.html#a5e584d4499255f2d04d820f96559a2cca6e7b34fa59e1bd229b207892956dc41c", null ]
+    ] ]
 ];

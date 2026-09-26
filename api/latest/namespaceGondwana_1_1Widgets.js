@@ -14,6 +14,7 @@ var namespaceGondwana_1_1Widgets =
     [ "WidgetEventArgs", "classGondwana_1_1Widgets_1_1WidgetEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetEventArgs" ],
     [ "WidgetInputRouter", "classGondwana_1_1Widgets_1_1WidgetInputRouter.html", "classGondwana_1_1Widgets_1_1WidgetInputRouter" ],
     [ "WidgetKeyboardEventArgs", "classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs" ],
+    [ "WidgetMouseWheelEventArgs", "classGondwana_1_1Widgets_1_1WidgetMouseWheelEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetMouseWheelEventArgs" ],
     [ "WidgetPointerEventArgs", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs" ],
     [ "WidgetAnchor", "namespaceGondwana_1_1Widgets.html#a62d65747e03d2a846c1b732103bae9b6", [
       [ "TopLeft", "namespaceGondwana_1_1Widgets.html#a62d65747e03d2a846c1b732103bae9b6ab32beb056fbfe36afbabc6c88c81ab36", null ],

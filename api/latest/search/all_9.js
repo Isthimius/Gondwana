@@ -98,11 +98,12 @@ var searchData=
   ['isswipe_95',['IsSwipe',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1GestureEventArgs.html#a9b7418cf0b9c23c921dce08f71fa55ea',1,'Gondwana::Input::Touch::Gestures::GestureEventArgs']]],
   ['istap_96',['IsTap',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1GestureEventArgs.html#aa0e9fd6091fc1abaee83ff4e35c4836d',1,'Gondwana::Input::Touch::Gestures::GestureEventArgs']]],
   ['isvalid_97',['IsValid',['../classGondwana_1_1Assets_1_1AssetsFileIdentifier.html#a136a7eb153d2b486bd5125d9a25a3a3a',1,'Gondwana::Assets::AssetsFileIdentifier']]],
-  ['itemheight_98',['ItemHeight',['../classGondwana_1_1Widgets_1_1Controls_1_1ListBoxWidget.html#a843a7f407bc3bdb2fd42f622c9961bd0',1,'Gondwana::Widgets::Controls::ListBoxWidget']]],
-  ['iteminvoked_99',['ItemInvoked',['../classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html#acbda6e95cd17338e072e83bf67bfd182',1,'Gondwana::Widgets::Menus::MenuBarWidget']]],
-  ['items_100',['Items',['../classGondwana_1_1Widgets_1_1Controls_1_1ComboBoxWidget.html#aa307f40931ad413414a45b4b9f8056cb',1,'Gondwana.Widgets.Controls.ComboBoxWidget.Items'],['../classGondwana_1_1Widgets_1_1Controls_1_1ListBoxWidget.html#a215f419963c07a8091b48399aeac89e7',1,'Gondwana.Widgets.Controls.ListBoxWidget.Items'],['../classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#a8804b66c01b251d5616090889a63674b',1,'Gondwana.Widgets.Menus.MenuDropDownWidget.Items']]],
-  ['itouchadapter_101',['ITouchAdapter',['../interfaceGondwana_1_1Input_1_1Touch_1_1ITouchAdapter.html',1,'Gondwana::Input::Touch']]],
-  ['itouchinput_102',['ITouchInput',['../interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html',1,'Gondwana::Input::Touch']]],
-  ['iuidispatcher_103',['IUiDispatcher',['../interfaceGondwana_1_1IUiDispatcher.html',1,'Gondwana']]],
-  ['ivideoplayer_104',['IVideoPlayer',['../interfaceGondwana_1_1Video_1_1IVideoPlayer.html',1,'Gondwana::Video']]]
+  ['isverticalscrollbarvisible_98',['IsVerticalScrollBarVisible',['../classGondwana_1_1Widgets_1_1Controls_1_1ListBoxWidget.html#ac34f280a88d3c9b0de92c20d1f87aa20',1,'Gondwana::Widgets::Controls::ListBoxWidget']]],
+  ['itemheight_99',['ItemHeight',['../classGondwana_1_1Widgets_1_1Controls_1_1ListBoxWidget.html#a843a7f407bc3bdb2fd42f622c9961bd0',1,'Gondwana::Widgets::Controls::ListBoxWidget']]],
+  ['iteminvoked_100',['ItemInvoked',['../classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html#acbda6e95cd17338e072e83bf67bfd182',1,'Gondwana::Widgets::Menus::MenuBarWidget']]],
+  ['items_101',['Items',['../classGondwana_1_1Widgets_1_1Controls_1_1ComboBoxWidget.html#aa307f40931ad413414a45b4b9f8056cb',1,'Gondwana.Widgets.Controls.ComboBoxWidget.Items'],['../classGondwana_1_1Widgets_1_1Controls_1_1ListBoxWidget.html#a215f419963c07a8091b48399aeac89e7',1,'Gondwana.Widgets.Controls.ListBoxWidget.Items'],['../classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#a8804b66c01b251d5616090889a63674b',1,'Gondwana.Widgets.Menus.MenuDropDownWidget.Items']]],
+  ['itouchadapter_102',['ITouchAdapter',['../interfaceGondwana_1_1Input_1_1Touch_1_1ITouchAdapter.html',1,'Gondwana::Input::Touch']]],
+  ['itouchinput_103',['ITouchInput',['../interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html',1,'Gondwana::Input::Touch']]],
+  ['iuidispatcher_104',['IUiDispatcher',['../interfaceGondwana_1_1IUiDispatcher.html',1,'Gondwana']]],
+  ['ivideoplayer_105',['IVideoPlayer',['../interfaceGondwana_1_1Video_1_1IVideoPlayer.html',1,'Gondwana::Video']]]
 ];

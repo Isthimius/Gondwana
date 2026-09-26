@@ -349,6 +349,7 @@ var annotated_dup =
         [ "WidgetEventArgs", "classGondwana_1_1Widgets_1_1WidgetEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetEventArgs" ],
         [ "WidgetInputRouter", "classGondwana_1_1Widgets_1_1WidgetInputRouter.html", "classGondwana_1_1Widgets_1_1WidgetInputRouter" ],
         [ "WidgetKeyboardEventArgs", "classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs" ],
+        [ "WidgetMouseWheelEventArgs", "classGondwana_1_1Widgets_1_1WidgetMouseWheelEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetMouseWheelEventArgs" ],
         [ "WidgetPointerEventArgs", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs" ]
       ] ],
       [ "WinForms", "namespaceGondwana_1_1WinForms.html", [

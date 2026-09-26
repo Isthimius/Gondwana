@@ -67,6 +67,7 @@ var hierarchy =
       [ "Gondwana.Widgets.WidgetEventArgs", "classGondwana_1_1Widgets_1_1WidgetEventArgs.html", [
         [ "Gondwana.Widgets.WidgetDragEventArgs", "classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html", null ],
         [ "Gondwana.Widgets.WidgetKeyboardEventArgs", "classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html", null ],
+        [ "Gondwana.Widgets.WidgetMouseWheelEventArgs", "classGondwana_1_1Widgets_1_1WidgetMouseWheelEventArgs.html", null ],
         [ "Gondwana.Widgets.WidgetPointerEventArgs", "classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html", null ]
       ] ]
     ] ],
