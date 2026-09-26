@@ -4,6 +4,7 @@ using System.Reflection;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Input.Keyboard;
+using Gondwana.Rendering;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.Widgets;
@@ -122,6 +123,39 @@ public sealed class WidgetsTests : IDisposable
     }
 
     [Fact]
+    public void ComboBoxWidget_LosingDropDownFocus_CollapsesWithoutStealingFocus()
+    {
+        using var host = new TestRenderSurfaceHost();
+        using var router = new WidgetInputRouter(host, null, null, null);
+        View view = AddView(host);
+        router.Start();
+
+        using var comboBox = new ComboBoxWidget(
+            host,
+            view,
+            new Rectangle(10, 20, 200, 32),
+            ["Easy", "Normal", "Hard"]);
+
+        using var otherButton = new ButtonWidget(
+            host,
+            view,
+            new Rectangle(10, 70, 120, 32),
+            "Other");
+
+        comboBox.Show();
+        otherButton.Show();
+        comboBox.OpenDropDown();
+
+        Assert.True(comboBox.IsDropDownOpen);
+        Assert.Same(comboBox.DropDown, router.FocusedWidget);
+
+        router.Focus(otherButton);
+
+        Assert.False(comboBox.IsDropDownOpen);
+        Assert.Same(otherButton, router.FocusedWidget);
+    }
+
+    [Fact]
     public void TextBoxWidget_SupportsCaretInsertionDeletionAndMaxLength()
     {
         using var host = new TestRenderSurfaceHost();
@@ -148,6 +182,61 @@ public sealed class WidgetsTests : IDisposable
         textBox.MaxLength = 3;
         textBox.InsertText("bcdef");
         Assert.Equal("abc", textBox.Text);
+    }
+
+    [Fact]
+    public void TextBoxWidget_RepeatedKeyActionsUseWidgetRepeatInterval()
+    {
+        using var host = new TestRenderSurfaceHost();
+        View view = AddView(host);
+        using var textBox = new TextBoxWidget(
+            host,
+            view,
+            new Rectangle(10, 20, 220, 32));
+
+        DispatchKeyboard(textBox, 65, KeyAction.Pressed);
+        Assert.Equal("a", textBox.Text);
+
+        DispatchKeyboard(textBox, 65, KeyAction.Repeated);
+        Assert.Equal("a", textBox.Text);
+
+        Thread.Sleep(TimeSpan.FromMilliseconds(70));
+
+        DispatchKeyboard(textBox, 65, KeyAction.Repeated);
+        Assert.Equal("aa", textBox.Text);
+    }
+
+    [Fact]
+    public void DialogBox_ActivateBringsEntireVisualTreeAboveOtherDialogs()
+    {
+        using var host = new TestRenderSurfaceHost();
+        View view = AddView(host);
+
+        using var first = new StackingTestDialog(
+            host,
+            view,
+            new Rectangle(20, 20, 260, 180),
+            "First");
+
+        using var second = new StackingTestDialog(
+            host,
+            view,
+            new Rectangle(60, 60, 260, 180),
+            "Second");
+
+        first.Show();
+        first.Activate();
+        int firstMaximum = first.VisualZOrders.Max();
+
+        second.Show();
+        second.Activate();
+
+        Assert.True(second.VisualZOrders.Min() > firstMaximum);
+
+        int secondMaximum = second.VisualZOrders.Max();
+        first.Activate();
+
+        Assert.True(first.VisualZOrders.Min() > secondMaximum);
     }
 
     [Fact]
@@ -308,6 +397,37 @@ public sealed class WidgetsTests : IDisposable
         sprite.SetPosition(position);
         _sprites.Add(sprite);
         return sprite;
+    }
+
+    private sealed class StackingTestDialog : DialogBox
+    {
+        internal StackingTestDialog(
+            RenderSurfaceHostBase host,
+            View view,
+            Rectangle bounds,
+            string title)
+            : base(host, view, bounds, title, showCloseButton: false)
+        {
+            ContentButton = new ButtonWidget(
+                host,
+                view,
+                new Rectangle(bounds.Left + 20, bounds.Top + 60, 120, 32),
+                "Content")
+                .SetButtonZOrder(10_100);
+
+            Add(ContentButton);
+        }
+
+        internal ButtonWidget ContentButton { get; }
+
+        internal int[] VisualZOrders =>
+        [
+            Panel.ZOrder,
+            TitleBar.ZOrder,
+            TitleText.ZOrder,
+            ContentButton.Background.ZOrder,
+            ContentButton.Label.ZOrder
+        ];
     }
 
     private static void DispatchKeyboard(

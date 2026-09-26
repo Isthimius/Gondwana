@@ -4,6 +4,7 @@ using Gondwana.Input.Keyboard;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
+using Gondwana.Timers;
 using SkiaSharp;
 
 namespace Gondwana.Widgets.Controls;
@@ -30,6 +31,9 @@ public sealed class TextBoxWidget : WidgetBase
     private string _placeholder = string.Empty;
     private int _caretIndex;
     private int? _maxLength;
+    private double _repeatedKeyIntervalSeconds = 0.05;
+    private int? _lastRepeatedKey;
+    private long _lastRepeatTick;
     private Func<WidgetKeyboardEventArgs, char?> _characterResolver = ResolveWindowsVirtualKeyCharacter;
 
     /// <summary>
@@ -154,6 +158,22 @@ public sealed class TextBoxWidget : WidgetBase
 
             if (_maxLength.HasValue && _text.Length > _maxLength.Value)
                 SetText(_text[.._maxLength.Value]);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the minimum interval, in seconds, between repeated held-key
+    /// actions processed by this text box. Pressed events remain immediate.
+    /// </summary>
+    public double RepeatedKeyIntervalSeconds
+    {
+        get => _repeatedKeyIntervalSeconds;
+        set
+        {
+            if (!double.IsFinite(value) || value < 0d)
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            _repeatedKeyIntervalSeconds = value;
         }
     }
 
@@ -378,8 +398,39 @@ public sealed class TextBoxWidget : WidgetBase
     {
         base.OnKeyboardInput(args);
 
+        if (args.KeyAction == KeyAction.Released)
+        {
+            if (_lastRepeatedKey == args.Key)
+            {
+                _lastRepeatedKey = null;
+                _lastRepeatTick = 0;
+            }
+
+            return;
+        }
+
         if (args.KeyAction is not KeyAction.Pressed and not KeyAction.Repeated)
             return;
+
+        long currentTick = HighResTimer.GetCurrentTick();
+
+        if (args.KeyAction == KeyAction.Pressed)
+        {
+            _lastRepeatedKey = args.Key;
+            _lastRepeatTick = currentTick;
+        }
+        else if (_lastRepeatedKey == args.Key &&
+                 _lastRepeatTick != 0 &&
+                 HighResTimer.GetDuration(_lastRepeatTick, currentTick) < _repeatedKeyIntervalSeconds)
+        {
+            args.Handled = true;
+            return;
+        }
+        else
+        {
+            _lastRepeatedKey = args.Key;
+            _lastRepeatTick = currentTick;
+        }
 
         if (args.Key == SubmitKey)
         {

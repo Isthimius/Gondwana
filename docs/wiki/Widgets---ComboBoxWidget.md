@@ -63,7 +63,7 @@ difficulty.CloseDropDown();
 difficulty.ToggleDropDown();
 ```
 
-The drop-down receives focus while open. Selecting an item with the pointer commits the choice and closes the drop-down; keyboard navigation can move the selection before it is committed.
+The drop-down receives focus while open. Selecting an item with the pointer commits the choice and closes the drop-down; keyboard navigation can move the selection before it is committed. If focus moves to another widget, the open drop-down collapses automatically.
 
 Moving focus to another widget collapses the drop-down. Its `ListBoxWidget` automatically provides mouse-wheel scrolling, a draggable thumb, and page scrolling when the items exceed the visible rows. Small lists hide the scrollbar by default. Scrolling does not commit a selection or close the drop-down.
 

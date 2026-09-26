@@ -921,8 +921,11 @@ public abstract class DirectDrawingBase : IDirectDrawable, IComparable<DirectDra
     /// </remarks>
     public void Dispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        lock (RenderStateSynchronization.SyncRoot)
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
     }
 
     /// <summary>

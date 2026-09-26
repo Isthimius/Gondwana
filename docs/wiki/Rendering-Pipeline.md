@@ -130,7 +130,7 @@ Engine foreground pass
            -> RecordFrame()
 ```
 
-Ordinary adapter resize changes the presentation transform only. It does not recreate the logical `GpuBackbuffer`. An explicit logical resolution change, such as a `RenderScale` change, is queued and applied by `GpuBackbuffer.EnsureInitialized()` on the owning GL callback.
+Ordinary adapter resize changes the presentation transform only. It does not recreate the logical `GpuBackbuffer`. An explicit logical resolution change, such as a `RenderScale` change, is queued and applied by `GpuBackbuffer.EnsureInitialized()` on the owning GL callback. A changed `MsaaSampleCount` also causes `EnsureInitialized()` to recreate the GPU surface at the same logical dimensions.
 
 See [[GL Rendering Path]].
 

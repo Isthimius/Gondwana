@@ -18,7 +18,8 @@ A derived dialog automatically receives:
 - `CancelKey` (Escape by default);
 - `DialogResult`;
 - a `Closed` event;
-- optional automatic disposal after closing.
+- optional automatic disposal after closing;
+- visual bring-to-front behavior when `Activate()` is called, preserving the dialog's internal Z-order relationships.
 
 ## Minimal custom dialog
 

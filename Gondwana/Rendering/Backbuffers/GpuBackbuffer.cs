@@ -46,7 +46,11 @@ public class GpuBackbuffer : BackbufferBase
     private Resolution? _requestedResolution;
 
     private int _targetFps = 60;
+    private readonly object _msaaSyncRoot = new();
     private int _msaaSampleCount = 1;
+    private long _msaaConfigurationRevision;
+    private long _appliedMsaaConfigurationRevision = -1;
+    private int _actualMsaaSampleCount = 1;
 
     // Frame counter used to compute the actual rendered FPS.
     // Incremented on the GL thread by RecordFrame(); consumed atomically by the engine's CPS sampler.
@@ -107,9 +111,9 @@ public class GpuBackbuffer : BackbufferBase
     /// values are <c>2</c>, <c>4</c>, or <c>8</c>, subject to hardware support.
     /// </para>
     /// <para>
-    /// Changing this property on an already-initialized backbuffer takes effect the next time
-    /// <see cref="Initialize"/> is called (e.g. on an explicit resolution change), because the GPU
-    /// render-target surface must be recreated with the new sample count.
+    /// Changing this property on an already-initialized backbuffer schedules the GPU render-target
+    /// surface for recreation. The new sample count is applied by the next owning GL-thread
+    /// <see cref="EnsureInitialized"/> call; callers do not need to resize the backbuffer.
     /// </para>
     /// <para>
     /// If the requested sample count is not supported by the hardware or driver,
@@ -122,9 +126,43 @@ public class GpuBackbuffer : BackbufferBase
     /// </value>
     public int MsaaSampleCount
     {
-        get => _msaaSampleCount;
-        set => _msaaSampleCount = value < 1 ? 1 : value;
+        get
+        {
+            lock (_msaaSyncRoot)
+                return _msaaSampleCount;
+        }
+        set
+        {
+            int normalized = value < 1 ? 1 : value;
+
+            lock (_msaaSyncRoot)
+            {
+                if (_msaaSampleCount == normalized)
+                    return;
+
+                _msaaSampleCount = normalized;
+                _msaaConfigurationRevision++;
+            }
+        }
     }
+
+    /// <summary>
+    /// Gets the sample count used by the currently active GPU render-target surface.
+    /// </summary>
+    /// <remarks>
+    /// Before the first GPU initialization this reports <c>1</c> for the temporary CPU surface.
+    /// If the requested <see cref="MsaaSampleCount"/> is unsupported and surface creation falls
+    /// back to non-MSAA rendering, this property reports <c>1</c> while
+    /// <see cref="MsaaSampleCount"/> continues to report the requested value.
+    /// </remarks>
+    public int ActualMsaaSampleCount => Volatile.Read(ref _actualMsaaSampleCount);
+
+    /// <summary>
+    /// Gets whether the active GPU surface was created from the current MSAA configuration.
+    /// </summary>
+    internal bool IsMsaaSurfaceRecreationPending =>
+        Volatile.Read(ref _appliedMsaaConfigurationRevision) !=
+        Volatile.Read(ref _msaaConfigurationRevision);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GpuBackbuffer"/> class with the specified dimensions.
@@ -155,8 +193,9 @@ public class GpuBackbuffer : BackbufferBase
     /// Creates (or recreates) the GPU render-target surface for this backbuffer.
     /// </summary>
     /// <remarks>
-    /// Called from the owning GL thread for initial setup or an explicit logical resolution change.  Replaces the temporary CPU raster surface with a
-    /// hardware-accelerated off-screen render target backed by <paramref name="grContext"/>.
+    /// Called from the owning GL thread for initial setup, an explicit logical resolution change,
+    /// or an MSAA configuration change. Replaces the current surface with a hardware-accelerated
+    /// off-screen render target backed by <paramref name="grContext"/>.
     /// </remarks>
     /// <param name="grContext">The active Skia GPU context.  Must not be <see langword="null"/>.</param>
     /// <param name="width">The new surface width in pixels.</param>
@@ -167,10 +206,14 @@ public class GpuBackbuffer : BackbufferBase
             return;
         if (_disposed) return;
 
+        (int requestedSampleCount, long configurationRevision) = GetMsaaConfigurationSnapshot();
+
         DisposeSurface();
-        CreateGpuSurface(grContext, width, height);
+        int actualSampleCount = CreateGpuSurface(grContext, width, height, requestedSampleCount);
         _context = grContext;
         UpdateSize(width, height);
+
+        MarkMsaaConfigurationApplied(configurationRevision, actualSampleCount);
 
         // Set canvas into a known state for the first frame on the new surface.
         BeginFrame();
@@ -194,7 +237,14 @@ public class GpuBackbuffer : BackbufferBase
         var request = Interlocked.Exchange(ref _requestedResolution, null);
         int width = request?.Width ?? Width;
         int height = request?.Height ?? Height;
-        if (ReferenceEquals(_context, context) && width == Width && height == Height) return false;
+        if (ReferenceEquals(_context, context) &&
+            width == Width &&
+            height == Height &&
+            !IsMsaaSurfaceRecreationPending)
+        {
+            return false;
+        }
+
         Initialize(context, width, height);
         return true;
     }
@@ -275,22 +325,43 @@ public class GpuBackbuffer : BackbufferBase
 
     // ── Surface creation helpers ─────────────────────────────────────────────
 
-    private void CreateGpuSurface(GRContext grContext, int width, int height)
+    internal (int SampleCount, long Revision) GetMsaaConfigurationSnapshot()
+    {
+        lock (_msaaSyncRoot)
+            return (_msaaSampleCount, _msaaConfigurationRevision);
+    }
+
+    internal void MarkMsaaConfigurationApplied(long revision, int actualSampleCount)
+    {
+        Volatile.Write(ref _actualMsaaSampleCount, actualSampleCount);
+        Volatile.Write(ref _appliedMsaaConfigurationRevision, revision);
+    }
+
+    private int CreateGpuSurface(
+        GRContext grContext,
+        int width,
+        int height,
+        int requestedSampleCount)
     {
         // Rgba8888 / Premul is the natural format for an OpenGL render target.
         var info = new SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Premul);
-        _surface = SKSurface.Create(grContext, budgeted: true, info, _msaaSampleCount);
+        _surface = SKSurface.Create(grContext, budgeted: true, info, requestedSampleCount);
+
+        if (_surface is not null)
+            return requestedSampleCount;
 
         // SKSurface.Create returns null when the requested MSAA sample count is not supported
-        // by the hardware or driver.  Fall back to no MSAA (sample count 1) so the surface
+        // by the hardware or driver. Fall back to no MSAA (sample count 1) so the surface
         // is always valid after Initialize() completes.
-        if (_surface is null && _msaaSampleCount > 1)
+        if (requestedSampleCount > 1)
             _surface = SKSurface.Create(grContext, budgeted: true, info, sampleCount: 1);
 
         if (_surface is null)
             throw new InvalidOperationException(
                 $"Failed to create a {nameof(GpuBackbuffer)} GPU surface ({width}x{height}). " +
                 "The GRContext may be invalid or the pixel format is not renderable.");
+
+        return 1;
     }
 
     private void CreateCpuSurface(int width, int height)

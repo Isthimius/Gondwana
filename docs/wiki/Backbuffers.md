@@ -201,9 +201,9 @@ The same transform is also inverted for pointer input through `AdapterPxToScreen
 | --- | --- |
 | `TargetFps` | Mirrors Gondwana's requested foreground render cadence. The engine/browser loop performs the actual pacing. |
 | `VSync` | Used by WinForms GL presentation. Avalonia delegates synchronization to its compositor; browser WebGL follows browser animation/compositor behavior. |
-| `MsaaSampleCount` | Requested MSAA sample count for the off-screen GPU surface. Unsupported values fall back to sample count `1`. |
+| `MsaaSampleCount` | Requested MSAA sample count for the off-screen GPU surface. Unsupported values fall back to sample count `1`; `GpuBackbuffer.ActualMsaaSampleCount` reports the active value. |
 
-Changing MSAA affects the next GPU surface creation/recreation rather than mutating the existing render target in place.
+Changing MSAA schedules the GPU surface for recreation on the next owning GL/WebGL callback. The render target is rebuilt on the correct GPU thread without requiring a resize.
 
 ---
 
