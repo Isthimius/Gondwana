@@ -1,5 +1,7 @@
 var NAVTREEINDEX24 =
 {
+"namespaceGondwana_1_1Widgets_1_1Controls.html#a5e584d4499255f2d04d820f96559a2cca06b9281e396db002010bde1de57262eb":[0,0,0,17,0,12,0],
+"namespaceGondwana_1_1Widgets_1_1Controls.html#a5e584d4499255f2d04d820f96559a2cca68eec46437c384d8dad18d5464ebc35c":[0,0,0,17,0,12,1],
 "namespaceGondwana_1_1Widgets_1_1Controls.html#a5e584d4499255f2d04d820f96559a2cca6e7b34fa59e1bd229b207892956dc41c":[0,0,0,17,0,12,2],
 "namespaceGondwana_1_1Widgets_1_1Dialogs.html":[0,0,0,17,1],
 "namespaceGondwana_1_1Widgets_1_1Dialogs.html#a71046fc66000d377827932c0e7919ddb":[0,0,0,17,1,3],
@@ -247,7 +249,5 @@ var NAVTREEINDEX24 =
 "structGondwana_1_1Physics_1_1Movement_1_1Scripted_1_1ScriptedMovement.html#a0ce4ed89ce4cde66ad002bb14c8d2afd":[0,0,0,11,1,1,0,0],
 "structGondwana_1_1Physics_1_1Movement_1_1Scripted_1_1ScriptedMovement.html#a0ce4ed89ce4cde66ad002bb14c8d2afd":[1,0,0,11,1,0,0,0],
 "structGondwana_1_1Physics_1_1Movement_1_1Scripted_1_1ScriptedMovement.html#a16c69693540d6a84898f6bf8a05e7b3a":[0,0,0,11,1,1,0,6],
-"structGondwana_1_1Physics_1_1Movement_1_1Scripted_1_1ScriptedMovement.html#a16c69693540d6a84898f6bf8a05e7b3a":[1,0,0,11,1,0,0,6],
-"structGondwana_1_1Physics_1_1Movement_1_1Scripted_1_1ScriptedMovement.html#a18802e47d5d7ea5c892855e09186e72a":[0,0,0,11,1,1,0,5],
-"structGondwana_1_1Physics_1_1Movement_1_1Scripted_1_1ScriptedMovement.html#a18802e47d5d7ea5c892855e09186e72a":[1,0,0,11,1,0,0,5]
+"structGondwana_1_1Physics_1_1Movement_1_1Scripted_1_1ScriptedMovement.html#a16c69693540d6a84898f6bf8a05e7b3a":[1,0,0,11,1,0,0,6]
 };

@@ -1,5 +1,7 @@
 var NAVTREEINDEX23 =
 {
+"namespaceGondwana_1_1Blazor_1_1Rendering.html":[0,0,0,3,2],
+"namespaceGondwana_1_1Configuration.html":[0,0,0,4],
 "namespaceGondwana_1_1Drawing.html":[0,0,0,5],
 "namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068":[0,0,0,5,11],
 "namespaceGondwana_1_1Drawing_1_1Animation.html":[0,0,0,5,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX23 =
 "namespaceGondwana_1_1Widgets.html#a62d65747e03d2a846c1b732103bae9b6ab32beb056fbfe36afbabc6c88c81ab36":[0,0,0,17,16,0],
 "namespaceGondwana_1_1Widgets.html#a62d65747e03d2a846c1b732103bae9b6abf7d9c8ad2f89a37cf5378b5fec0b420":[0,0,0,17,16,7],
 "namespaceGondwana_1_1Widgets_1_1Controls.html":[0,0,0,17,0],
-"namespaceGondwana_1_1Widgets_1_1Controls.html#a5e584d4499255f2d04d820f96559a2cc":[0,0,0,17,0,12],
-"namespaceGondwana_1_1Widgets_1_1Controls.html#a5e584d4499255f2d04d820f96559a2cca06b9281e396db002010bde1de57262eb":[0,0,0,17,0,12,0],
-"namespaceGondwana_1_1Widgets_1_1Controls.html#a5e584d4499255f2d04d820f96559a2cca68eec46437c384d8dad18d5464ebc35c":[0,0,0,17,0,12,1]
+"namespaceGondwana_1_1Widgets_1_1Controls.html#a5e584d4499255f2d04d820f96559a2cc":[0,0,0,17,0,12]
 };

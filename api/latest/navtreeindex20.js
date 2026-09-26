@@ -1,5 +1,7 @@
 var NAVTREEINDEX20 =
 {
+"classGondwana_1_1Widgets_1_1WidgetBase.html#af68f779ee36ea91d59fe2d375c2c0eeb":[1,0,0,16,9,18],
+"classGondwana_1_1Widgets_1_1WidgetBase.html#af937571ce24b0d2a60522eef876b6218":[0,0,0,17,9,8],
 "classGondwana_1_1Widgets_1_1WidgetBase.html#af937571ce24b0d2a60522eef876b6218":[1,0,0,16,9,8],
 "classGondwana_1_1Widgets_1_1WidgetBase.html#afb806ddaae8d6fa99ba3598c9a3023d5":[0,0,0,17,9,5],
 "classGondwana_1_1Widgets_1_1WidgetBase.html#afb806ddaae8d6fa99ba3598c9a3023d5":[1,0,0,16,9,5],
@@ -247,7 +249,5 @@ var NAVTREEINDEX20 =
 "functions_func.html":[1,3,1],
 "functions_func.html":[1,3,1,0],
 "functions_func_b.html":[1,3,1,1],
-"functions_func_c.html":[1,3,1,2],
-"functions_func_d.html":[1,3,1,3],
-"functions_func_e.html":[1,3,1,4]
+"functions_func_c.html":[1,3,1,2]
 };

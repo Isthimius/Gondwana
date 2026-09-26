@@ -1,5 +1,7 @@
 var NAVTREEINDEX21 =
 {
+"functions_func_d.html":[1,3,1,3],
+"functions_func_e.html":[1,3,1,4],
 "functions_func_f.html":[1,3,1,5],
 "functions_func_g.html":[1,3,1,6],
 "functions_func_h.html":[1,3,1,7],
@@ -247,7 +249,5 @@ var NAVTREEINDEX21 =
 "interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html":[1,0,0,9,3,2],
 "interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a15badb9c0a75e2c4594bbe2d01e08a91":[0,0,0,9,4,2,1],
 "interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a15badb9c0a75e2c4594bbe2d01e08a91":[1,0,0,9,3,2,1],
-"interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a2ac3d2b2d2a4d89e0f83b338e761ed97":[0,0,0,9,4,2,0],
-"interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a2ac3d2b2d2a4d89e0f83b338e761ed97":[1,0,0,9,3,2,0],
-"interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a4516416101a94764ee5a89378de02801":[0,0,0,9,4,2,2]
+"interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a2ac3d2b2d2a4d89e0f83b338e761ed97":[0,0,0,9,4,2,0]
 };

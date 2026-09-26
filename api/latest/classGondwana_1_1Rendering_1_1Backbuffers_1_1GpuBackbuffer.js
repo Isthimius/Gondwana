@@ -8,6 +8,7 @@ var classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer =
     [ "ActualMsaaSampleCount", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a232155eee8a4f53ded4ea5980ecb3328", null ],
     [ "Canvas", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#af0584f5f0b09937cfafd3b512c838252", null ],
     [ "IsGlThreadRendered", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a123d04c913f9489067a65ff33b639bc0", null ],
+    [ "MaxSupportedMsaaSampleCount", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a4e131692290351bbb2224cf3966c3e0d", null ],
     [ "MsaaSampleCount", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a3ba7ffe088870c2242440b60c75ddc00", null ],
     [ "TargetFps", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a68033b8c7cccdc042fa6c352e977fcfc", null ],
     [ "VSync", "classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a187c5db40cc71e3159ea4f6be0f6a3fe", null ]

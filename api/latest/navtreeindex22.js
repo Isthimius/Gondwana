@@ -1,5 +1,7 @@
 var NAVTREEINDEX22 =
 {
+"interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a2ac3d2b2d2a4d89e0f83b338e761ed97":[1,0,0,9,3,2,0],
+"interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a4516416101a94764ee5a89378de02801":[0,0,0,9,4,2,2],
 "interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a4516416101a94764ee5a89378de02801":[1,0,0,9,3,2,2],
 "interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a79eef09f33cc62e2a54852f854d526e0":[0,0,0,9,4,2,3],
 "interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html#a79eef09f33cc62e2a54852f854d526e0":[1,0,0,9,3,2,3],
@@ -247,7 +249,5 @@ var NAVTREEINDEX22 =
 "namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864afa78892b0c0fd9b6f2d9dc2400956255":[0,0,0,3,1,0,1,18],
 "namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864afe5c3684dce76cdd9f7f42430868aa74":[0,0,0,3,1,0,1,64],
 "namespaceGondwana_1_1Blazor_1_1Input_1_1Mouse.html":[0,0,0,3,1,1],
-"namespaceGondwana_1_1Blazor_1_1Input_1_1Touch.html":[0,0,0,3,1,2],
-"namespaceGondwana_1_1Blazor_1_1Rendering.html":[0,0,0,3,2],
-"namespaceGondwana_1_1Configuration.html":[0,0,0,4]
+"namespaceGondwana_1_1Blazor_1_1Input_1_1Touch.html":[0,0,0,3,1,2]
 };
