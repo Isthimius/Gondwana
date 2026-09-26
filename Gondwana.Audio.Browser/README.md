@@ -65,7 +65,7 @@ var music = audio.Load("music", "assets/theme.mp3", volume: 0.5f, loop: true);
 
 ## Browser-specific behavior
 
-Browser assets are loaded by URI. The current backend does not implement the byte/stream loading path used by `LoadFromFile`, `LoadFromStream`, or packed `AssetsFile` audio.
+Browser audio supports both URI-addressable assets and raw byte/stream sources. Byte-backed resources, including audio entries from a streamed or file-backed `AssetsFile`, are exposed to the browser through temporary Blob URLs that are revoked when the resource is unloaded.
 
 Autoplay remains subject to browser policy; games should normally begin playback in response to user interaction when the browser blocks autoplay.
 

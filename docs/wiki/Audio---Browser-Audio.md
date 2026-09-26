@@ -46,7 +46,7 @@ Pan uses Web Audio and cross-origin media must allow anonymous CORS requests.
 Duration is zero until browser metadata is available. URI loading, autoplay,
 codec support, and seekability remain browser/platform constraints.
 
-The current browser backend does not implement the byte/stream loading path used by `LoadFromFile`, `LoadFromStream`, and packed `AssetsFile` audio. Browser assets should therefore be addressable through the application's web root.
+The browser backend supports both URI and byte/stream loading. Byte-backed audio, including entries read from a streamed or file-backed `AssetsFile`, is exposed to `HTMLAudioElement` through a temporary Blob URL and can therefore use the same `AudioResourceManager.LoadFromStream` and packed-asset paths as desktop backends.
 
 ---
 

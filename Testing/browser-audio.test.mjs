@@ -58,6 +58,32 @@ test("portable browser controls, natural completion and callback disposal", () =
     assert.equal(media.src, "");
 });
 
+test("packed byte audio uses and revokes a Blob URL", () => {
+    const created = [];
+    const revoked = [];
+    const originalCreate = URL.createObjectURL;
+    const originalRevoke = URL.revokeObjectURL;
+
+    URL.createObjectURL = blob => {
+        assert.equal(blob.type, "audio/mpeg");
+        const url = `blob:gondwana-${created.length}`;
+        created.push(url);
+        return url;
+    };
+    URL.revokeObjectURL = url => revoked.push(url);
+
+    try {
+        audio.loadBytes("packed", "AQIDBA==", "audio/mpeg", false, 1, 0, 1);
+        assert.equal(elements.at(-1).src, created[0]);
+        audio.unload("packed");
+        assert.deepEqual(revoked, created);
+    }
+    finally {
+        URL.createObjectURL = originalCreate;
+        URL.revokeObjectURL = originalRevoke;
+    }
+});
+
 test("replacement removes old callbacks and unavailable metadata is safe", () => {
     let completed = 0;
     audio.load("music", "one.ogg", false, 1, 0, 1, () => completed++);
