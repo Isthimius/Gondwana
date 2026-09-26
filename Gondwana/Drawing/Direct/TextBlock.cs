@@ -267,7 +267,12 @@ public class TextBlock : DirectDrawingMovableBase
                 continue;
             }
 
-            return Math.Max(0f, contentHeight - innerHeight);
+            float maximumOffset = Math.Max(0f, contentHeight - innerHeight);
+
+            // Measurement may have laid out at an auto-shrunk font size. Force the next draw
+            // to rebuild from the configured font settings rather than reusing measurement state.
+            _layoutDirty = true;
+            return maximumOffset;
         }
     }
 
