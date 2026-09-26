@@ -1,5 +1,4 @@
 using System.Threading;
-using Gondwana.Drawing.Coordinates;
 using Gondwana.Input.Keyboard;
 
 namespace Gondwana.Demos.Spot;
