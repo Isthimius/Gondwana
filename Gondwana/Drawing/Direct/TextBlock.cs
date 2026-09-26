@@ -915,14 +915,16 @@ public class TextBlock : DirectDrawingMovableBase
         float baselineShift = -fm.Ascent;
 
         float contentH = linesToDraw * _lineHeight;
-        float yStart = _vAlign switch
-        {
-            VerticalAlign.Center => rect.Top + vPad + Math.Max(0, (innerH - contentH) * 0.5f),
-            VerticalAlign.Bottom => rect.Bottom - vPad - contentH,
-            _ => rect.Top + vPad
-        };
-
         float maximumScrollOffset = Math.Max(0f, contentH - innerH);
+        float yStart = maximumScrollOffset > 0f
+            ? rect.Top + vPad
+            : _vAlign switch
+            {
+                VerticalAlign.Center => rect.Top + vPad + Math.Max(0, (innerH - contentH) * 0.5f),
+                VerticalAlign.Bottom => rect.Bottom - vPad - contentH,
+                _ => rect.Top + vPad
+            };
+
         float scrollOffset = Math.Min(_verticalScrollOffsetPx * zoom, maximumScrollOffset);
         yStart -= scrollOffset;
 
