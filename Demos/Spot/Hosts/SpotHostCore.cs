@@ -13,6 +13,7 @@ using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Input.Keyboard;
 using Gondwana.Rendering;
+using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using Gondwana.Timers;
@@ -162,6 +163,26 @@ internal sealed class SpotHostCore
         Logging.EngineLogger.SetLogLevel(LogLevel.Information);
         Gondwana.Engine.Instance.CPSCalculated += (args) =>
         {
+            if (SurfaceHost.Backbuffer is GpuBackbuffer gpuBackbuffer)
+            {
+                string gpuFps = args.GpuFps.HasValue
+                    ? args.GpuFps.Value.ToString("0.0")
+                    : "n/a";
+
+                Engine.Logger.LogInformation(
+                    "CPS {Cps:0.0} | engine FPS {EngineFps:0.0} | GPU FPS {GpuFps} | " +
+                    "MSAA requested {MsaaSampleCount} | MSAA actual {ActualMsaaSampleCount} | " +
+                    "MSAA max {MaxSupportedMsaaSampleCount}",
+                    args.GrossCPS,
+                    args.NetCPS,
+                    gpuFps,
+                    gpuBackbuffer.MsaaSampleCount,
+                    gpuBackbuffer.ActualMsaaSampleCount,
+                    gpuBackbuffer.MaxSupportedMsaaSampleCount);
+
+                return;
+            }
+
             Engine.Logger.LogInformation("{CyclesPerSecond}", args);
         };
 

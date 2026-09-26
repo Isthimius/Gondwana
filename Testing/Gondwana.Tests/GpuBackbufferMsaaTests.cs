@@ -27,6 +27,7 @@ public sealed class GpuBackbufferMsaaTests : IDisposable
 
         Assert.Equal(1, backbuffer.MsaaSampleCount);
         Assert.Equal(1, backbuffer.ActualMsaaSampleCount);
+        Assert.Equal(1, backbuffer.MaxSupportedMsaaSampleCount);
         Assert.True(backbuffer.IsMsaaSurfaceRecreationPending);
 
         MarkCurrentConfigurationApplied(backbuffer);

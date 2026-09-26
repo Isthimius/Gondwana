@@ -2,6 +2,7 @@
 @using Gondwana
 @using Gondwana.Blazor.Rendering
 @using Gondwana.Demos.SpotBlazor.Game
+@using Gondwana.Rendering.Backbuffers
 @using Microsoft.Extensions.Logging
 @inject HttpClient Http
 @inject IJSRuntime JS
@@ -146,11 +147,21 @@
             ? e.GpuFps.Value.ToString("0.0")
             : "n/a";
 
+        var gpuBackbuffer = _renderSurface?.Host.Backbuffer as GpuBackbuffer;
+        var requestedMsaa = gpuBackbuffer?.MsaaSampleCount.ToString() ?? "n/a";
+        var actualMsaa = gpuBackbuffer?.ActualMsaaSampleCount.ToString() ?? "n/a";
+        var maxMsaa = gpuBackbuffer?.MaxSupportedMsaaSampleCount.ToString() ?? "n/a";
+
         Logger.LogTrace(
-            "Gondwana: CPS {Cps:0.0} | engine FPS {EngineFps:0.0} | GPU FPS {GpuFps}",
+            "Gondwana: CPS {Cps:0.0} | engine FPS {EngineFps:0.0} | GPU FPS {GpuFps} | " +
+            "MSAA requested {MsaaSampleCount} | MSAA actual {ActualMsaaSampleCount} | " +
+            "MSAA max {MaxSupportedMsaaSampleCount}",
             e.GrossCPS,
             e.NetCPS,
-            gpuFps);
+            gpuFps,
+            requestedMsaa,
+            actualMsaa,
+            maxMsaa);
     }
 
     private async Task<Dictionary<string, byte[]>> LoadAssetDataAsync()
