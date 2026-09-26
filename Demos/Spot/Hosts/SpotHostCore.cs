@@ -273,6 +273,8 @@ internal sealed class SpotHostCore
         if (Interlocked.CompareExchange(ref _dialogOpen, 1, 0) != 0)
         {
             _newGameDialog?.Activate();
+            if (_newGameDialog is not null)
+                _ctx.WidgetInputRouter?.Focus(_newGameDialog.InitialFocusTarget);
             return;
         }
 
@@ -284,6 +286,7 @@ internal sealed class SpotHostCore
 
         var view = SurfaceHost.ViewManager.Views[0];
         var dialog = new NewGameDialog(SurfaceHost, view, newGameOptions);
+        var previousFocus = _ctx.WidgetInputRouter?.FocusedWidget;
         _newGameDialog = dialog;
 
         dialog.Closed += result =>
@@ -292,6 +295,7 @@ internal sealed class SpotHostCore
             _lastNewGameOptions = options;
             _newGameDialog = null;
             Interlocked.Exchange(ref _dialogOpen, 0);
+            _ctx.WidgetInputRouter?.Focus(previousFocus);
 
             if (result == Gondwana.Widgets.Dialogs.DialogResult.OK)
                 Engine.EngineDispatcher.Post(() => StartNewGame(options));
@@ -299,6 +303,7 @@ internal sealed class SpotHostCore
 
         dialog.Show();
         dialog.Activate();
+        _ctx.WidgetInputRouter?.Focus(dialog.InitialFocusTarget);
     }
 
     #endregion public game interface

@@ -5,6 +5,7 @@ using System.Numerics;
 using Gondwana.Demos.Spot.Game;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Views;
+using Gondwana.Widgets;
 using Gondwana.Widgets.Controls;
 using Gondwana.Widgets.Dialogs;
 using SkiaSharp;
@@ -46,6 +47,7 @@ internal sealed class NewGameDialog : DialogBox
     private bool _optionsCaptured;
 
     internal NewGameOptions Options { get; private set; }
+    internal WidgetBase InitialFocusTarget => _playerNames[0];
 
     internal NewGameDialog(
         RenderSurfaceHostBase host,

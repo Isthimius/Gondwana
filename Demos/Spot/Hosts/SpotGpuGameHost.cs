@@ -2,6 +2,7 @@ using System;
 using Gondwana.Demos.Spot.Hosts;
 using Gondwana.Rendering;
 using Gondwana.Scenes;
+using Gondwana.Widgets;
 using Gondwana.Widgets.Overlays;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
@@ -20,6 +21,7 @@ internal sealed class SpotGpuGameHost : WinFormsGpuGameHost, ISpotGameHost, ISpo
 
     Scene ISpotHostContext.Scene => Scene!;
     RenderSurfaceHostBase ISpotHostContext.SurfaceHost => RenderSurface.Host;
+    WidgetInputRouter? ISpotHostContext.WidgetInputRouter => WidgetInputRouter;
     int ISpotHostContext.SurfaceWidth => RenderSurface.Width;
     int ISpotHostContext.SurfaceHeight => RenderSurface.Height;
 
