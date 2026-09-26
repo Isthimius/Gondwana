@@ -94,6 +94,7 @@
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="..\Spot.Shared\Spot.Shared.csproj" />
         <ProjectReference Include="..\..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
         <ProjectReference Include="..\..\Gondwana.Widgets\Gondwana.Widgets.csproj" />
         <ProjectReference Include="..\..\Gondwana.WinForms.Hosting\Gondwana.WinForms.Hosting.csproj" />
