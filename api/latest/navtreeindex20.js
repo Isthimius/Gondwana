@@ -1,5 +1,9 @@
 var NAVTREEINDEX20 =
 {
+"classGondwana_1_1Widgets_1_1WidgetInputRouter.html":[1,0,0,16,12],
+"classGondwana_1_1Widgets_1_1WidgetInputRouter.html#a10887ceed9ade7523c66881d2c485f62":[0,0,0,17,12,4],
+"classGondwana_1_1Widgets_1_1WidgetInputRouter.html#a10887ceed9ade7523c66881d2c485f62":[1,0,0,16,12,4],
+"classGondwana_1_1Widgets_1_1WidgetInputRouter.html#a10a51c28bf60036aec8db9023bc5321a":[0,0,0,17,12,8],
 "classGondwana_1_1Widgets_1_1WidgetInputRouter.html#a10a51c28bf60036aec8db9023bc5321a":[1,0,0,16,12,8],
 "classGondwana_1_1Widgets_1_1WidgetInputRouter.html#a274f956e9c69b5dfef96081a951cf8ff":[0,0,0,17,12,2],
 "classGondwana_1_1Widgets_1_1WidgetInputRouter.html#a274f956e9c69b5dfef96081a951cf8ff":[1,0,0,16,12,2],
@@ -245,9 +249,5 @@ var NAVTREEINDEX20 =
 "functions_prop_d.html":[1,3,4,3],
 "functions_prop_e.html":[1,3,4,4],
 "functions_prop_f.html":[1,3,4,5],
-"functions_prop_g.html":[1,3,4,6],
-"functions_prop_h.html":[1,3,4,7],
-"functions_prop_i.html":[1,3,4,8],
-"functions_prop_j.html":[1,3,4,9],
-"functions_prop_k.html":[1,3,4,10]
+"functions_prop_g.html":[1,3,4,6]
 };

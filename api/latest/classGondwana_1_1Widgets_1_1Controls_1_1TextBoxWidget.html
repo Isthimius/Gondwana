@@ -279,6 +279,8 @@ Properties</h2></td></tr>
 <tr class="memdesc:af7bb2565a86c3c71041eb4a0dc28568b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the caret position in the range zero through <a class="el" href="#a675820235967ddcc5ba4f2de1b29b262" title="Gets or sets the current text.">Text</a> length.  <br /></td></tr>
 <tr class="memitem:adbc2c4412c084447ee981385d763c3a8" id="r_adbc2c4412c084447ee981385d763c3a8"><td class="memItemLeft" align="right" valign="top">int?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adbc2c4412c084447ee981385d763c3a8">MaxLength</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:adbc2c4412c084447ee981385d763c3a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the maximum permitted text length. A null value means unlimited.  <br /></td></tr>
+<tr class="memitem:aeb83beaea816682ac9d73cbfe327ce9f" id="r_aeb83beaea816682ac9d73cbfe327ce9f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb83beaea816682ac9d73cbfe327ce9f">RepeatedKeyIntervalSeconds</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:aeb83beaea816682ac9d73cbfe327ce9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the minimum interval, in seconds, between repeated held-key actions processed by this text box. Pressed events remain immediate.  <br /></td></tr>
 <tr class="memitem:a909855ab20a78e91aacf127d09381d36" id="r_a909855ab20a78e91aacf127d09381d36"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a909855ab20a78e91aacf127d09381d36">IsReadOnly</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a909855ab20a78e91aacf127d09381d36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets whether user editing is disabled.  <br /></td></tr>
 <tr class="memitem:ace8a9648e5c49568605cb3de69a869c8" id="r_ace8a9648e5c49568605cb3de69a869c8"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ace8a9648e5c49568605cb3de69a869c8">Bounds</a><code> [get]</code></td></tr>
@@ -382,7 +384,7 @@ Events</h2></td></tr>
 <div class="textblock"><p>Provides a single-line editable text box with keyboard caret navigation. </p>
 <p><a class="el" href="namespaceGondwana.html">Gondwana</a> keyboard events expose host key codes. The default key bindings and character resolver use Windows virtual-key values, matching the existing widget keyboard conventions. Other hosts can replace <a class="el" href="#a3c9abf358239f7e19f3ffd4db47dc494" title="Gets or sets the function used to convert routed key events into printable characters.">CharacterResolver</a> and the configurable special-key properties without subclassing the widget. Text can also be supplied directly through <a class="el" href="#a2b4588b557b24a0d1555aca76f6f144c" title="Inserts text at the current caret position.">InsertText(string?)</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00021">21</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00022">22</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a6c61f5c0ddbeb5ae0d293f045780493d" name="a6c61f5c0ddbeb5ae0d293f045780493d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6c61f5c0ddbeb5ae0d293f045780493d">&#9670;&#160;</a></span>TextBoxWidget() <span class="overload">[1/2]</span></h2>
@@ -425,7 +427,7 @@ Events</h2></td></tr>
 
 <p>Creates a view-level text box. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00048">48</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00052">52</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -470,7 +472,7 @@ Events</h2></td></tr>
 
 <p>Creates a scene-layer text box. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00074">74</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00078">78</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -492,7 +494,7 @@ Events</h2></td></tr>
 
 <p>Removes the character before the caret when possible. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00272">272</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00292">292</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -513,7 +515,7 @@ Events</h2></td></tr>
 
 <p>Removes the character at the caret when possible. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00287">287</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00307">307</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -534,7 +536,7 @@ Events</h2></td></tr>
 
 <p>Inserts text at the current caret position. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00243">243</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00263">263</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -555,7 +557,7 @@ Events</h2></td></tr>
 
 <p>Moves the caret by the specified character delta. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00301">301</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00321">321</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -586,7 +588,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af937571ce24b0d2a60522eef876b6218">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00359">359</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00379">379</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -617,7 +619,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#add8b8efa8e9e5511ad9863f7f0f7e578">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00368">368</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00388">388</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -654,7 +656,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#aaec953c2a7d8d8d45daa4886b95f779b">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00377">377</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00397">397</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -691,7 +693,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a7d02dee6a2c67a4c1365aad41a19d4c0">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00346">346</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00366">366</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -721,7 +723,7 @@ Events</h2></td></tr>
 
 <p>Sets the background and border colors used for normal and focused states. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00310">310</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00330">330</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -742,7 +744,7 @@ Events</h2></td></tr>
 
 <p>Replaces the text and moves the caret to the end. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00219">219</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00239">239</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -763,7 +765,7 @@ Events</h2></td></tr>
 
 <p>Sets the base Z-order used by the text-box visuals. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00338">338</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00358">358</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -788,7 +790,7 @@ Events</h2></td></tr>
 
 <p>Sets the text and placeholder colors. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00327">327</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00347">347</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -815,7 +817,7 @@ Events</h2></td></tr>
 
 <p>Gets the text-box background and border drawing. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00100">100</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00104">104</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -841,7 +843,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the key code used for backspace. Defaults to 8. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00180">180</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00200">200</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -867,7 +869,7 @@ Events</h2></td></tr>
 
 <p>Gets the text-box bounds in its native coordinate space. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00168">168</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00188">188</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -893,7 +895,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the caret position in the range zero through <a class="el" href="#a675820235967ddcc5ba4f2de1b29b262" title="Gets or sets the current text.">Text</a> length. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00132">132</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00136">136</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -919,7 +921,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the function used to convert routed key events into printable characters. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00210">210</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00230">230</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -945,7 +947,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the key code used for Delete. Defaults to 46. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00185">185</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00205">205</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -971,7 +973,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the key code used to move to the end. Defaults to 35. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00205">205</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00225">225</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -997,7 +999,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the key code used to move to the beginning. Defaults to 36. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00200">200</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00220">220</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1023,7 +1025,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets whether user editing is disabled. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00163">163</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00183">183</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1049,7 +1051,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the key code used to move left. Defaults to 37. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00190">190</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00210">210</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1075,7 +1077,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the maximum permitted text length. A null value means unlimited. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00145">145</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00149">149</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1101,7 +1103,33 @@ Events</h2></td></tr>
 
 <p>Gets or sets placeholder text shown while the control is empty and unfocused. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00119">119</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00123">123</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="aeb83beaea816682ac9d73cbfe327ce9f" name="aeb83beaea816682ac9d73cbfe327ce9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb83beaea816682ac9d73cbfe327ce9f">&#9670;&#160;</a></span>RepeatedKeyIntervalSeconds</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Gondwana.Widgets.Controls.TextBoxWidget.RepeatedKeyIntervalSeconds</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the minimum interval, in seconds, between repeated held-key actions processed by this text box. Pressed events remain immediate. </p>
+
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00168">168</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1127,7 +1155,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the key code used to move right. Defaults to 39. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00195">195</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00215">215</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1153,7 +1181,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the key code used to submit the text. Defaults to Enter (13). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00175">175</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00195">195</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1179,7 +1207,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the current text. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00110">110</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00114">114</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1205,7 +1233,7 @@ Events</h2></td></tr>
 
 <p>Gets the text drawing used by the text box. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00105">105</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00109">109</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1224,7 +1252,7 @@ Events</h2></td></tr>
 
 <p>Occurs when the configured submit key is pressed. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00043">43</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00047">47</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1242,7 +1270,7 @@ Events</h2></td></tr>
 
 <p>Occurs when the text changes. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00038">38</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBoxWidget_8cs_source.html#l00042">42</a> of file <a class="el" href="TextBoxWidget_8cs_source.html">TextBoxWidget.cs</a>.</p>
 
 </div>
 </div>

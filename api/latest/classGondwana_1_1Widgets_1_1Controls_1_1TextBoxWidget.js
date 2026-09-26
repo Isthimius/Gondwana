@@ -26,6 +26,7 @@ var classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget =
     [ "LeftKey", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html#a67a9d5791c23366dda0a148831959acd", null ],
     [ "MaxLength", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html#adbc2c4412c084447ee981385d763c3a8", null ],
     [ "Placeholder", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html#a5d50c5203bb8dea2bdd8a78f92ff6e22", null ],
+    [ "RepeatedKeyIntervalSeconds", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html#aeb83beaea816682ac9d73cbfe327ce9f", null ],
     [ "RightKey", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html#a63fac1b8f1d4419f23f6165d58c64d7a", null ],
     [ "SubmitKey", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html#adf887443d126918fb398f156a6f59672", null ],
     [ "Text", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html#a675820235967ddcc5ba4f2de1b29b262", null ],

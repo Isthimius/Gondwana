@@ -9,6 +9,7 @@ var classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox =
     [ "OnCancelled", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#af43320a015c59398665954d09c3f38e1", null ],
     [ "OnClosed", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#abbeeb30f75bc72e469424cf0ce26e80c", null ],
     [ "OnKeyboardInput", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a09ce406c347bd5a1fe1fbe021483b23e", null ],
+    [ "ProcessActivated", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a0e6561861a96b63696103675758ccdbf", null ],
     [ "AcceptKey", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a5a2ac7580f39b77130019536f1b5fd56", null ],
     [ "CancelKey", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#af90a73236139110fa16e0a3b86aa4721", null ],
     [ "CloseButton", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a110c441055fc5604d5fd182df83ba299", null ],

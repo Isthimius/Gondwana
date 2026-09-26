@@ -210,6 +210,8 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:abbeeb30f75bc72e469424cf0ce26e80c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called after the dialog closes.  <br /></td></tr>
 <tr class="memitem:a431619f6939aa629b8a84f5329910c2f" id="r_a431619f6939aa629b8a84f5329910c2f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a431619f6939aa629b8a84f5329910c2f">OnAcceptRequested</a> ()</td></tr>
 <tr class="memdesc:a431619f6939aa629b8a84f5329910c2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the accept key is pressed.  <br /></td></tr>
+<tr class="memitem:a0e6561861a96b63696103675758ccdbf" id="r_a0e6561861a96b63696103675758ccdbf"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0e6561861a96b63696103675758ccdbf">ProcessActivated</a> ()</td></tr>
+<tr class="memdesc:a0e6561861a96b63696103675758ccdbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget is activated before notification callbacks are invoked.  <br /></td></tr>
 <tr class="memitem:ac4e628fdf8e2c5e07af5f47398aa2df4" id="r_ac4e628fdf8e2c5e07af5f47398aa2df4"><td class="memItemLeft" align="right" valign="top">override bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac4e628fdf8e2c5e07af5f47398aa2df4">CanStartDrag</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
 <tr class="memdesc:ac4e628fdf8e2c5e07af5f47398aa2df4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether a pointer-down event may begin drag tracking.  <br /></td></tr>
 <tr class="memitem:a09ce406c347bd5a1fe1fbe021483b23e" id="r_a09ce406c347bd5a1fe1fbe021483b23e"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a09ce406c347bd5a1fe1fbe021483b23e">OnKeyboardInput</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html">WidgetKeyboardEventArgs</a> args)</td></tr>
@@ -297,8 +299,6 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
   <br /></td></tr>
 <tr class="memitem:aa6169c0eb64d7861a1dbb583b8d2f0d6 inherit pro_methods_classGondwana_1_1Widgets_1_1ContainerWidget" id="r_aa6169c0eb64d7861a1dbb583b8d2f0d6"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1ContainerWidget.html#aa6169c0eb64d7861a1dbb583b8d2f0d6">ProcessShown</a> ()</td></tr>
 <tr class="memdesc:aa6169c0eb64d7861a1dbb583b8d2f0d6 inherit pro_methods_classGondwana_1_1Widgets_1_1ContainerWidget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget is shown before notification callbacks are invoked.  <br /></td></tr>
-<tr class="memitem:ab728b5a5f4c0d06c1d03981b00cc0755 inherit pro_methods_classGondwana_1_1Widgets_1_1ContainerWidget" id="r_ab728b5a5f4c0d06c1d03981b00cc0755"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1ContainerWidget.html#ab728b5a5f4c0d06c1d03981b00cc0755">ProcessActivated</a> ()</td></tr>
-<tr class="memdesc:ab728b5a5f4c0d06c1d03981b00cc0755 inherit pro_methods_classGondwana_1_1Widgets_1_1ContainerWidget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget is activated before notification callbacks are invoked.  <br /></td></tr>
 <tr class="inherit_header pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classGondwana_1_1Widgets_1_1WidgetBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">Gondwana.Widgets.WidgetBase</a></td></tr>
 <tr class="memitem:a32f2b40b9c48a2f855f3332d2c1b1013 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a32f2b40b9c48a2f855f3332d2c1b1013"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a32f2b40b9c48a2f855f3332d2c1b1013">WidgetBase</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a> mode, PointF anchor=default, string? nickname=null)</td></tr>
 <tr class="memdesc:a32f2b40b9c48a2f855f3332d2c1b1013 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html" title="Provides the base implementation for widgets that can be drawn and receive pointer,...">WidgetBase</a> class.  <br /></td></tr>
@@ -513,7 +513,7 @@ Events</h2></td></tr>
 
 <p>Initializes a view-level dialog. </p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00038">38</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00044">44</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -566,7 +566,7 @@ Events</h2></td></tr>
 
 <p>Initializes a scene-layer dialog. </p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00072">72</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00078">78</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -598,7 +598,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1DraggableContainerWidget.html#a8ec77d2f3d14494ac92c3518c0b20dc6">Gondwana.Widgets.DraggableContainerWidget</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00203">203</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00253">253</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -619,7 +619,7 @@ Events</h2></td></tr>
 
 <p>Closes the dialog with the specified result. </p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00170">170</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00176">176</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -650,7 +650,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ab4a9dddd84ec27a3a4701275077ef3e7">Gondwana.Drawing.Direct.DirectComposite</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00244">244</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00294">294</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -681,7 +681,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox.html#a2b3bbd620e5c2193669d2d9de0ee17e4">Gondwana.Widgets.Dialogs.AboutBox</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00197">197</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00203">203</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -712,7 +712,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a99ba373c22e1a376afe2ae706aac8d53">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00237">237</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00287">287</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -741,7 +741,7 @@ Events</h2></td></tr>
 
 <p>Called after the dialog closes. </p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00190">190</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00196">196</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -778,7 +778,38 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#aaec953c2a7d8d8d45daa4886b95f779b">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00215">215</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00265">265</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+
+</div>
+</div>
+<a id="a0e6561861a96b63696103675758ccdbf" name="a0e6561861a96b63696103675758ccdbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e6561861a96b63696103675758ccdbf">&#9670;&#160;</a></span>ProcessActivated()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">override void Gondwana.Widgets.Dialogs.DialogBox.ProcessActivated </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Performs processing when the widget is activated before notification callbacks are invoked. </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1ContainerWidget.html#ab728b5a5f4c0d06c1d03981b00cc0755">Gondwana.Widgets.ContainerWidget</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00209">209</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -927,7 +958,7 @@ Events</h2></td></tr>
 <p>Gets or sets the key value used to accept the dialog. </p>
 <p>The default value is the conventional Enter virtual-key value, 13. </p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00153">153</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00159">159</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -954,7 +985,7 @@ Events</h2></td></tr>
 <p>Gets or sets the key value used to cancel the dialog. </p>
 <p>The default value is the conventional Escape virtual-key value, 27. </p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00161">161</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00167">167</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -980,7 +1011,7 @@ Events</h2></td></tr>
 
 <p>Gets the optional close button. </p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00125">125</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00131">131</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -1006,7 +1037,7 @@ Events</h2></td></tr>
 
 <p>Gets the dialog size. </p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00130">130</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00136">136</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -1032,7 +1063,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets whether closing the dialog disposes it. </p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00145">145</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00151">151</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -1058,7 +1089,7 @@ Events</h2></td></tr>
 
 <p>Gets whether the dialog has closed. </p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00135">135</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00141">141</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -1084,7 +1115,7 @@ Events</h2></td></tr>
 
 <p>Gets the dialog panel. </p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00110">110</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00116">116</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -1110,7 +1141,7 @@ Events</h2></td></tr>
 
 <p>Gets the result selected when the dialog closed. </p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00140">140</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00146">146</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -1136,7 +1167,7 @@ Events</h2></td></tr>
 
 <p>Gets the title-bar rectangle. </p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00115">115</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00121">121</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -1162,7 +1193,7 @@ Events</h2></td></tr>
 
 <p>Gets the title text block. </p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00120">120</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00126">126</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
@@ -1181,7 +1212,7 @@ Events</h2></td></tr>
 
 <p>Occurs when the dialog closes. </p>
 
-<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00031">31</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DialogBox_8cs_source.html#l00037">37</a> of file <a class="el" href="DialogBox_8cs_source.html">DialogBox.cs</a>.</p>
 
 </div>
 </div>
