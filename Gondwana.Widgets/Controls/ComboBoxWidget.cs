@@ -213,7 +213,6 @@ public sealed class ComboBoxWidget : ContainerWidget
     {
         Add(Header, Vector2.Zero);
         Add(DropDown, new Vector2(0f, bounds.Height));
-
         Header.Clicked += OnHeaderClicked;
         DropDown.SelectedIndexChanged += OnSelectedIndexChanged;
         DropDown.SelectionCommitted += OnDropDownSelectionCommitted;
@@ -256,7 +255,7 @@ public sealed class ComboBoxWidget : ContainerWidget
         // for that click to toggle it closed normally. Any other focus target means
         // the user has moved on, so collapse without stealing focus back.
         WidgetBase? focusedWidget = WidgetInputRouterRegistry.GetFocusedWidget(DropDown);
-        if (ReferenceEquals(focusedWidget, Header))
+        if (ReferenceEquals(focusedWidget, Header) || ReferenceEquals(focusedWidget, DropDown))
             return;
 
         CollapseDropDown(restoreHeaderFocus: false);

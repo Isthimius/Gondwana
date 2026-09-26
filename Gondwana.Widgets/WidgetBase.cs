@@ -66,6 +66,11 @@ public abstract class WidgetBase : DirectComposite
     public event Action<WidgetPointerEventArgs>? PointerClick;
 
     /// <summary>
+    /// Occurs when mouse-wheel input is routed to the widget while the pointer is over it.
+    /// </summary>
+    public event Action<WidgetMouseWheelEventArgs>? MouseWheel;
+
+    /// <summary>
     /// Occurs when the widget gains keyboard focus.
     /// </summary>
     public event Action? FocusGained;
@@ -406,6 +411,17 @@ public abstract class WidgetBase : DirectComposite
     }
 
     /// <summary>
+    /// Dispatches mouse-wheel input to the widget.
+    /// </summary>
+    protected internal void DispatchMouseWheel(WidgetMouseWheelEventArgs args)
+    {
+        ArgumentNullException.ThrowIfNull(args);
+
+        OnMouseWheel(args);
+        MouseWheel?.Invoke(args);
+    }
+
+    /// <summary>
     /// Dispatches a focus-gained event to the widget.
     /// </summary>
     protected internal void DispatchFocusGained()
@@ -569,6 +585,11 @@ public abstract class WidgetBase : DirectComposite
     /// </summary>
     /// <param name="args">The pointer event data.</param>
     protected virtual void OnPointerUp(WidgetPointerEventArgs args) { }
+
+    /// <summary>
+    /// Called when mouse-wheel input is routed to the widget.
+    /// </summary>
+    protected virtual void OnMouseWheel(WidgetMouseWheelEventArgs args) { }
 
     /// <summary>
     /// Called when a pointer click is dispatched to the widget.

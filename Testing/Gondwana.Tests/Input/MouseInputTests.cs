@@ -27,6 +27,22 @@ public sealed class MouseInputTests : IDisposable
     }
 
     [Fact]
+    public void Poller_EmitsEqualWheelDeltasOnConsecutivePolls()
+    {
+        var adapter = new FakeMouseAdapter();
+        MouseEventPoller.Initialize(adapter, new MouseEventConfiguration(trackMouseMovement: false, secondsBetweenEvents: 0));
+        var deltas = new List<int>();
+        MouseEventPoller.Instance!.MouseEvent += e => deltas.Add(e.ScrollDelta);
+
+        adapter.ScrollDelta = -120;
+        MouseEventPoller.Instance.PollForEvents(100);
+        adapter.ScrollDelta = -120;
+        MouseEventPoller.Instance.PollForEvents(101);
+
+        Assert.Equal([-120, -120], deltas);
+    }
+
+    [Fact]
     public void Poller_AdvancesThrottleTimestampAfterEvent()
     {
         var adapter = new FakeMouseAdapter();
@@ -65,10 +81,15 @@ public sealed class MouseInputTests : IDisposable
 
     private sealed class FakeMouseAdapter : IMouseAdapter, IDisposable
     {
+        private int _scrollDelta;
         public Point CurrentPosition { get; set; }
         public HashSet<MouseButton> PressedButtons { get; } = [];
         public KeyboardModifierState CurrentKeyboardModifiers => KeyboardModifierState.None;
-        public int ScrollDelta { get; set; }
+        public int ScrollDelta
+        {
+            get => Interlocked.Exchange(ref _scrollDelta, 0);
+            set => _scrollDelta = value;
+        }
         public bool IsDisposed { get; private set; }
         public void Dispose() => IsDisposed = true;
     }

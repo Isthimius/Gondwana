@@ -16,6 +16,9 @@ public sealed class ListBoxWidget : WidgetBase
 {
     private const int ContentPadding = 2;
     private const int DefaultItemHeight = 24;
+    private const int ScrollBarWidth = 12;
+    private const int ScrollBarMargin = 3;
+    private const int MinimumScrollBarThumbHeight = 18;
 
     private readonly List<string> _items = [];
     private readonly List<TextBlock> _rowTextBlocks = [];
@@ -24,6 +27,12 @@ public sealed class ListBoxWidget : WidgetBase
     private int _topIndex;
     private int _itemHeight = DefaultItemHeight;
     private int _baseZOrder;
+    private int _mouseWheelScrollItems = 3;
+    private ScrollBarVisibility _verticalScrollBarVisibility = ScrollBarVisibility.Auto;
+    private bool _isDraggingScrollBarThumb;
+    private float _scrollBarDragOffset;
+    private int? _scrollBarPointerId;
+    private bool _suppressScrollBarClick;
 
     /// <summary>
     /// Occurs when <see cref="SelectedIndex"/> changes.
@@ -49,9 +58,13 @@ public sealed class ListBoxWidget : WidgetBase
 
         Background = CreateBackground(renderSurfaceHost, view, bounds);
         SelectionHighlight = CreateSelectionHighlight(renderSurfaceHost, view, GetInitialSelectionBounds(bounds));
+        VerticalScrollBarTrack = CreateScrollBarTrack(renderSurfaceHost, view, bounds);
+        VerticalScrollBarThumb = CreateScrollBarThumb(renderSurfaceHost, view, bounds);
 
         Add(Background);
         Add(SelectionHighlight);
+        Add(VerticalScrollBarTrack);
+        Add(VerticalScrollBarThumb);
 
         CompleteInitialization(items);
     }
@@ -70,9 +83,13 @@ public sealed class ListBoxWidget : WidgetBase
 
         Background = CreateBackground(renderSurfaceHost, sceneLayer, bounds);
         SelectionHighlight = CreateSelectionHighlight(renderSurfaceHost, sceneLayer, GetInitialSelectionBounds(bounds));
+        VerticalScrollBarTrack = CreateScrollBarTrack(renderSurfaceHost, sceneLayer, bounds);
+        VerticalScrollBarThumb = CreateScrollBarThumb(renderSurfaceHost, sceneLayer, bounds);
 
         Add(Background);
         Add(SelectionHighlight);
+        Add(VerticalScrollBarTrack);
+        Add(VerticalScrollBarThumb);
 
         CompleteInitialization(items);
     }
@@ -86,6 +103,12 @@ public sealed class ListBoxWidget : WidgetBase
     /// Gets the rectangle used to highlight the selected row.
     /// </summary>
     public DirectRectangle SelectionHighlight { get; }
+
+    /// <summary>Gets the vertical scrollbar track.</summary>
+    public DirectRectangle VerticalScrollBarTrack { get; }
+
+    /// <summary>Gets the vertical scrollbar thumb.</summary>
+    public DirectRectangle VerticalScrollBarThumb { get; }
 
     /// <summary>
     /// Gets the current items.
@@ -124,6 +147,41 @@ public sealed class ListBoxWidget : WidgetBase
     /// Gets the number of complete rows that can currently be displayed.
     /// </summary>
     public int VisibleItemCount => Math.Max(1, (Bounds.Height - ContentPadding * 2) / ItemHeight);
+
+    /// <summary>Gets or sets when the vertical scrollbar is displayed.</summary>
+    public ScrollBarVisibility VerticalScrollBarVisibility
+    {
+        get => _verticalScrollBarVisibility;
+        set
+        {
+            if (!Enum.IsDefined(value))
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            if (_verticalScrollBarVisibility == value)
+                return;
+
+            _verticalScrollBarVisibility = value;
+            RefreshRows();
+        }
+    }
+
+    /// <summary>Gets whether the vertical scrollbar is currently displayed.</summary>
+    public bool IsVerticalScrollBarVisible => Visible && NeedsVerticalScrollBar;
+
+    private bool NeedsVerticalScrollBar => VerticalScrollBarVisibility != ScrollBarVisibility.Never
+        && (VerticalScrollBarVisibility == ScrollBarVisibility.Always || _items.Count > VisibleItemCount);
+
+    /// <summary>Gets or sets the number of items scrolled for one wheel notch.</summary>
+    public int MouseWheelScrollItems
+    {
+        get => _mouseWheelScrollItems;
+        set => _mouseWheelScrollItems = value > 0
+            ? value
+            : throw new ArgumentOutOfRangeException(nameof(value), "Mouse-wheel scrolling must advance at least one item.");
+    }
+
+    /// <summary>Gets the minimum height used for a visible scrollbar thumb.</summary>
+    public int VerticalScrollBarMinimumThumbHeight => MinimumScrollBarThumbHeight;
 
     /// <summary>
     /// Gets or sets the index of the first visible item.
@@ -252,7 +310,10 @@ public sealed class ListBoxWidget : WidgetBase
             throw new ArgumentOutOfRangeException(nameof(index));
 
         if (_selectedIndex == index)
+        {
+            EnsureSelectionVisible();
             return this;
+        }
 
         _selectedIndex = index;
         EnsureSelectionVisible();
@@ -297,6 +358,9 @@ public sealed class ListBoxWidget : WidgetBase
         foreach (TextBlock row in _rowTextBlocks)
             row.ZOrder = zOrder + 2;
 
+        VerticalScrollBarTrack.ZOrder = zOrder + 3;
+        VerticalScrollBarThumb.ZOrder = zOrder + 4;
+
         return this;
     }
 
@@ -314,7 +378,17 @@ public sealed class ListBoxWidget : WidgetBase
     protected override void ProcessShown()
     {
         base.ProcessShown();
+        RefreshScrollBar();
         RefreshSelectionHighlight();
+    }
+
+    /// <inheritdoc/>
+    protected override void ProcessHidden()
+    {
+        _isDraggingScrollBarThumb = false;
+        _scrollBarPointerId = null;
+        _suppressScrollBarClick = false;
+        base.ProcessHidden();
     }
 
     /// <inheritdoc/>
@@ -324,6 +398,13 @@ public sealed class ListBoxWidget : WidgetBase
 
         if (!args.IsPrimaryButton || _items.Count == 0)
             return;
+
+        if (_suppressScrollBarClick || IsPointerOverScrollBar(args))
+        {
+            _suppressScrollBarClick = false;
+            args.Handled = true;
+            return;
+        }
 
         RectangleF screenBounds = Background.GetDrawLocationScreen(args.View);
         screenBounds.Offset(args.WrappedOffsetWorldPx.X * args.View.Viewport.Zoom, args.WrappedOffsetWorldPx.Y * args.View.Viewport.Zoom);
@@ -346,6 +427,87 @@ public sealed class ListBoxWidget : WidgetBase
         args.Handled = true;
         SetSelectedIndex(index);
         SelectionCommitted?.Invoke(index);
+    }
+
+    /// <inheritdoc/>
+    protected override void OnPointerDown(WidgetPointerEventArgs args)
+    {
+        base.OnPointerDown(args);
+
+        if (_scrollBarPointerId.HasValue)
+            return;
+
+        _suppressScrollBarClick = false;
+
+        if (!args.IsPrimaryButton || !IsVerticalScrollBarVisible)
+            return;
+
+        PointF local = GetLocalPointerPosition(args);
+        Rectangle thumbBounds = GetScrollBarThumbBounds(Bounds);
+        Rectangle trackBounds = GetScrollBarTrackBounds(Bounds);
+
+        if (!trackBounds.Contains(Point.Round(local)))
+            return;
+
+        args.Handled = true;
+        _scrollBarPointerId = args.PointerId;
+        _suppressScrollBarClick = true;
+        if (thumbBounds.Contains(Point.Round(local)))
+        {
+            _isDraggingScrollBarThumb = true;
+            _scrollBarDragOffset = local.Y - thumbBounds.Top;
+            return;
+        }
+
+        TopIndex += local.Y < thumbBounds.Top ? -VisibleItemCount : VisibleItemCount;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnPointerMove(WidgetPointerEventArgs args)
+    {
+        base.OnPointerMove(args);
+
+        if (!_isDraggingScrollBarThumb || _scrollBarPointerId != args.PointerId || !IsVerticalScrollBarVisible)
+            return;
+
+        Rectangle trackBounds = GetScrollBarTrackBounds(Bounds);
+        Rectangle thumbBounds = GetScrollBarThumbBounds(Bounds);
+        float travel = trackBounds.Height - thumbBounds.Height;
+
+        if (travel <= 0f || GetMaximumTopIndex() == 0)
+            return;
+
+        float desiredTop = GetLocalPointerPosition(args).Y - _scrollBarDragOffset;
+        float fraction = Math.Clamp((desiredTop - trackBounds.Top) / travel, 0f, 1f);
+        TopIndex = (int)MathF.Round(fraction * GetMaximumTopIndex());
+        args.Handled = true;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnPointerUp(WidgetPointerEventArgs args)
+    {
+        base.OnPointerUp(args);
+
+        if (_scrollBarPointerId == args.PointerId)
+        {
+            _isDraggingScrollBarThumb = false;
+            _scrollBarPointerId = null;
+            args.Handled = true;
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override void OnMouseWheel(WidgetMouseWheelEventArgs args)
+    {
+        base.OnMouseWheel(args);
+
+        if (args.Delta == 0 || GetMaximumTopIndex() == 0)
+            return;
+
+        long notches = Math.Max(1, Math.Abs((long)args.Delta) / 120);
+        long change = notches * MouseWheelScrollItems * (args.Delta > 0 ? -1 : 1);
+        TopIndex = (int)Math.Clamp(TopIndex + change, 0, GetMaximumTopIndex());
+        args.Handled = true;
     }
 
     /// <inheritdoc/>
@@ -399,6 +561,8 @@ public sealed class ListBoxWidget : WidgetBase
     private void CompleteInitialization(IEnumerable<string>? items)
     {
         SelectionHighlight.Visible = false;
+        VerticalScrollBarTrack.Visible = false;
+        VerticalScrollBarThumb.Visible = false;
         CanReceiveFocus = true;
         IsKeyboardInputEnabled = true;
         SetListBoxZOrder(0);
@@ -443,6 +607,8 @@ public sealed class ListBoxWidget : WidgetBase
     {
         bool wasVisible = Visible;
 
+        RefreshScrollBar();
+
         foreach (TextBlock row in _rowTextBlocks)
         {
             Remove(row);
@@ -486,7 +652,7 @@ public sealed class ListBoxWidget : WidgetBase
 
     private void RefreshSelectionHighlight()
     {
-        if (_selectedIndex < TopIndex || _selectedIndex >= TopIndex + VisibleItemCount || _selectedIndex >= _items.Count)
+        if (!Visible || _selectedIndex < TopIndex || _selectedIndex >= TopIndex + VisibleItemCount || _selectedIndex >= _items.Count)
         {
             SelectionHighlight.Visible = false;
             return;
@@ -516,8 +682,72 @@ public sealed class ListBoxWidget : WidgetBase
         int y = bounds.Y + ContentPadding + rowIndex * ItemHeight;
         return new Rectangle(bounds.X + ContentPadding,
                              y,
-                             Math.Max(1, bounds.Width - ContentPadding * 2),
-                             ItemHeight);
+                             Math.Max(1, bounds.Width - ContentPadding * 2 - (NeedsVerticalScrollBar ? ScrollBarWidth + ScrollBarMargin * 2 : 0)),
+                             Math.Min(ItemHeight, Math.Max(1, bounds.Bottom - ContentPadding - y)));
+    }
+
+    private void RefreshScrollBar()
+    {
+        bool visible = IsVerticalScrollBarVisible;
+        VerticalScrollBarTrack.Visible = visible;
+        VerticalScrollBarThumb.Visible = visible;
+
+        if (!visible)
+            return;
+
+        Rectangle trackBounds = GetScrollBarTrackBounds(Bounds);
+        Rectangle thumbBounds = GetScrollBarThumbBounds(Bounds);
+        SetRectangleBounds(VerticalScrollBarTrack, trackBounds);
+        SetRectangleBounds(VerticalScrollBarThumb, thumbBounds);
+    }
+
+    private Rectangle GetScrollBarTrackBounds(Rectangle bounds)
+    {
+        return new Rectangle(bounds.Right - ScrollBarMargin - ScrollBarWidth,
+                             bounds.Top + ContentPadding + ScrollBarMargin,
+                             ScrollBarWidth,
+                             Math.Max(1, bounds.Height - (ContentPadding + ScrollBarMargin) * 2));
+    }
+
+    private Rectangle GetScrollBarThumbBounds(Rectangle bounds)
+    {
+        Rectangle trackBounds = GetScrollBarTrackBounds(bounds);
+        int thumbHeight = _items.Count == 0
+            ? trackBounds.Height
+            : Math.Clamp((int)MathF.Round(trackBounds.Height * Math.Min(1f, (float)VisibleItemCount / _items.Count)),
+                         Math.Min(MinimumScrollBarThumbHeight, trackBounds.Height),
+                         trackBounds.Height);
+        int travel = trackBounds.Height - thumbHeight;
+        int maximumTopIndex = GetMaximumTopIndex();
+        int offset = maximumTopIndex == 0 ? 0 : (int)MathF.Round(travel * ((float)TopIndex / maximumTopIndex));
+        return new Rectangle(trackBounds.Left, trackBounds.Top + offset, trackBounds.Width, thumbHeight);
+    }
+
+    private PointF GetLocalPointerPosition(WidgetPointerEventArgs args)
+    {
+        RectangleF screenBounds = Background.GetDrawLocationScreen(args.View);
+        screenBounds.Offset(args.WrappedOffsetWorldPx.X * args.View.Viewport.Zoom,
+                            args.WrappedOffsetWorldPx.Y * args.View.Viewport.Zoom);
+        float scaleX = screenBounds.Width / Bounds.Width;
+        float scaleY = screenBounds.Height / Bounds.Height;
+        return new PointF(Bounds.Left + (args.ScreenPositionPx.X - screenBounds.Left) / scaleX,
+                          Bounds.Top + (args.ScreenPositionPx.Y - screenBounds.Top) / scaleY);
+    }
+
+    private bool IsPointerOverScrollBar(WidgetPointerEventArgs args)
+    {
+        // The entire reserved gutter belongs to the scrollbar, including its margins.
+        return IsVerticalScrollBarVisible && GetLocalPointerPosition(args).X >= GetRowBounds(Bounds, 0).Right;
+    }
+
+    private void SetRectangleBounds(DirectRectangle rectangle, Rectangle bounds)
+    {
+        if (Mode == DirectDrawingMode.View)
+            rectangle.ScreenBounds = bounds;
+        else
+            rectangle.WorldBounds = bounds;
+
+        SetLocalOffset(rectangle, new Vector2(bounds.X, bounds.Y) - GetPosition());
     }
 
     private static DirectRectangle CreateBackground(RenderSurfaceHostBase host,
@@ -561,6 +791,36 @@ public sealed class ListBoxWidget : WidgetBase
         return highlight.SetFilled(true)
                         .SetStrokeWidth(0f)
                         .SetCornerRadius(2f);
+    }
+
+    private static DirectRectangle CreateScrollBarTrack(RenderSurfaceHostBase host, View view, Rectangle bounds)
+    {
+        return ConfigureScrollBarTrack(new DirectRectangle(Color.FromArgb(255, 26, 26, 32), host, view, bounds));
+    }
+
+    private static DirectRectangle CreateScrollBarTrack(RenderSurfaceHostBase host, SceneLayer layer, Rectangle bounds)
+    {
+        return ConfigureScrollBarTrack(new DirectRectangle(Color.FromArgb(255, 26, 26, 32), host, layer, bounds));
+    }
+
+    private static DirectRectangle ConfigureScrollBarTrack(DirectRectangle track)
+    {
+        return track.SetFilled(true).SetStrokeWidth(0f).SetCornerRadius(3f);
+    }
+
+    private static DirectRectangle CreateScrollBarThumb(RenderSurfaceHostBase host, View view, Rectangle bounds)
+    {
+        return ConfigureScrollBarThumb(new DirectRectangle(Color.FromArgb(255, 126, 126, 142), host, view, bounds));
+    }
+
+    private static DirectRectangle CreateScrollBarThumb(RenderSurfaceHostBase host, SceneLayer layer, Rectangle bounds)
+    {
+        return ConfigureScrollBarThumb(new DirectRectangle(Color.FromArgb(255, 126, 126, 142), host, layer, bounds));
+    }
+
+    private static DirectRectangle ConfigureScrollBarThumb(DirectRectangle thumb)
+    {
+        return thumb.SetFilled(true).SetStrokeWidth(0f).SetCornerRadius(3f);
     }
 
     private static Rectangle GetInitialSelectionBounds(Rectangle bounds)
