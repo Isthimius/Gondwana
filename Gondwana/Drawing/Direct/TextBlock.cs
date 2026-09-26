@@ -95,6 +95,7 @@ public class TextBlock : DirectDrawingMovableBase
 
     private SKTextAlign _hAlign = SKTextAlign.Left;
     private VerticalAlign _vAlign = VerticalAlign.Top;
+    private float _verticalScrollOffsetPx;
 
     // --- Pulse (text color) ---
     private bool _pulseTextEnabled;
@@ -198,6 +199,77 @@ public class TextBlock : DirectDrawingMovableBase
     /// Gets or sets the vertical padding (in pixels) on both top and bottom sides of the text.
     /// </summary>
     public float VerticalPadding { get; set; } = 0f;
+
+    /// <summary>
+    /// Gets or sets the vertical text-content scroll offset in native pixels.
+    /// </summary>
+    /// <remarks>
+    /// The offset is applied after text layout and is clipped to this text block's bounds.
+    /// Use <see cref="MeasureMaximumVerticalScrollOffsetPx"/> to determine the valid upper bound.
+    /// </remarks>
+    public float VerticalScrollOffsetPx
+    {
+        get => _verticalScrollOffsetPx;
+        set
+        {
+            if (!float.IsFinite(value) || value < 0f)
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            if (Math.Abs(_verticalScrollOffsetPx - value) < 0.001f)
+                return;
+
+            _verticalScrollOffsetPx = value;
+            ForceRefresh();
+        }
+    }
+
+    /// <summary>
+    /// Measures the maximum vertical scroll offset required to expose all currently laid-out text.
+    /// </summary>
+    /// <returns>
+    /// The maximum scroll offset in the text block's native coordinate units, or zero when the
+    /// laid-out text fits within the available content height.
+    /// </returns>
+    public float MeasureMaximumVerticalScrollOffsetPx()
+    {
+        Rectangle bounds = Mode == DirectDrawingMode.View ? ScreenBounds : WorldBounds;
+        float innerWidth = Math.Max(0f, bounds.Width - HorizontalPadding * 2f);
+        float innerHeight = Math.Max(0f, bounds.Height - VerticalPadding * 2f);
+
+        _typeface ??= SKTypeface.Default;
+        using var paint = new SKPaint
+        {
+            Typeface = _typeface,
+            TextSize = _fontSize,
+            TextAlign = _hAlign
+        };
+
+        float fontSize = _fontSize;
+        float minimumFontSize = _minFontSize ?? 0f;
+
+        while (true)
+        {
+            paint.TextSize = fontSize;
+            RebuildLayout(paint, innerWidth);
+
+            int drawableLines = _maxLines.HasValue
+                ? Math.Min(_lines.Count, _maxLines.Value)
+                : _lines.Count;
+            float contentHeight = drawableLines * _lineHeight;
+            bool exceedsHeight = contentHeight > innerHeight;
+            bool exceedsWidth = _lines.Any(line => paint.MeasureText(line) > innerWidth);
+
+            if (_minFontSize.HasValue &&
+                (exceedsHeight || exceedsWidth) &&
+                fontSize > minimumFontSize)
+            {
+                fontSize = Math.Max(minimumFontSize, fontSize - 1f);
+                continue;
+            }
+
+            return Math.Max(0f, contentHeight - innerHeight);
+        }
+    }
 
     /// <summary>
     /// Sets symmetric horizontal and vertical padding and invalidates cached layout.
@@ -844,6 +916,10 @@ public class TextBlock : DirectDrawingMovableBase
             VerticalAlign.Bottom => rect.Bottom - vPad - contentH,
             _ => rect.Top + vPad
         };
+
+        float maximumScrollOffset = Math.Max(0f, contentH - innerH);
+        float scrollOffset = Math.Min(_verticalScrollOffsetPx * zoom, maximumScrollOffset);
+        yStart -= scrollOffset;
 
         // Horizontal anchor per line
         float xAnchorLeft = rect.Left + hPad;
