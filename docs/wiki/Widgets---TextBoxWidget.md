@@ -1,6 +1,6 @@
 # TextBoxWidget
 
-`TextBoxWidget` is a single-line editable text control with a visible caret, placeholder text, keyboard navigation, deletion, and submit behavior.
+`TextBoxWidget` is a single-line editable text control with a visible caret, placeholder text, keyboard navigation, deletion, submit behavior, and a small widget-local held-key repeat throttle.
 
 Use it for player names, chat-entry fields, search/filter text, seed values, server addresses, and other short text input.
 
@@ -88,6 +88,7 @@ Setting `CharacterResolver` to `null` suppresses printable character conversion.
 | `CaretIndex` | Current insertion position. |
 | `MaxLength` | Optional maximum length. |
 | `IsReadOnly` | Disables user editing. |
+| `RepeatedKeyIntervalSeconds` | Minimum interval between processed held-key repeats; pressed keys remain immediate. |
 | `TextChanged` | Raised when text changes. |
 | `Submitted` | Raised when the submit key is pressed. |
 | `SetColors()` | Sets background, normal border, and focused border colors. |

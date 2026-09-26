@@ -104,16 +104,19 @@ public abstract class RenderSurfaceHostBase : IDisposable
         if (!Backbuffer.IsGlThreadRendered)
             return null;
 
-        var tick = HighResTimer.GetCurrentTick();
+        lock (RenderStateSynchronization.SyncRoot)
+        {
+            var tick = HighResTimer.GetCurrentTick();
 
-        RenderToBackbuffer(tick);
-        Backbuffer.EndFrame();
+            RenderToBackbuffer(tick);
+            Backbuffer.EndFrame();
 
-        var img = Backbuffer.Snapshot();
+            var img = Backbuffer.Snapshot();
 
-        Backbuffer.BeginFrame();
+            Backbuffer.BeginFrame();
 
-        return img;
+            return img;
+        }
     }
 
     /// <summary>
@@ -135,19 +138,22 @@ public abstract class RenderSurfaceHostBase : IDisposable
         if (!Backbuffer.IsGlThreadRendered)
             return false;
 
-        var tick = HighResTimer.GetCurrentTick();
-
-        RenderToBackbuffer(tick);
-        Backbuffer.EndFrame();
-
-        try
+        lock (RenderStateSynchronization.SyncRoot)
         {
-            DrawCurrentSurface(destinationCanvas);
-            return true;
-        }
-        finally
-        {
-            Backbuffer.BeginFrame();
+            var tick = HighResTimer.GetCurrentTick();
+
+            RenderToBackbuffer(tick);
+            Backbuffer.EndFrame();
+
+            try
+            {
+                DrawCurrentSurface(destinationCanvas);
+                return true;
+            }
+            finally
+            {
+                Backbuffer.BeginFrame();
+            }
         }
     }
 

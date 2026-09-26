@@ -23,6 +23,12 @@ public abstract class DialogBox : DraggableContainerWidget
     protected readonly static Color DefaultPanelBorderColor = Color.FromArgb(255, 140, 140, 155);
     protected readonly static Color DefaultTitleBarColor = Color.FromArgb(255, 57, 57, 72);
 
+    private const int DialogZOrderStart = 100_000;
+    private const int DialogZOrderGap = 100;
+
+    private static readonly object _zOrderSyncRoot = new();
+    private static int _nextDialogZOrder = DialogZOrderStart;
+
     private bool _disposed;
 
     /// <summary>
@@ -197,6 +203,50 @@ public abstract class DialogBox : DraggableContainerWidget
     protected virtual void OnAcceptRequested()
     {
         Close(DialogResult.OK);
+    }
+
+    /// <inheritdoc/>
+    protected override void ProcessActivated()
+    {
+        BringVisualTreeToFront();
+        base.ProcessActivated();
+    }
+
+    private void BringVisualTreeToFront()
+    {
+        DirectDrawingBase[] visuals = GetVisualDescendants(this).ToArray();
+        if (visuals.Length == 0)
+            return;
+
+        int minimumZOrder = visuals.Min(static visual => visual.ZOrder);
+        int maximumZOrder = visuals.Max(static visual => visual.ZOrder);
+        int span = maximumZOrder - minimumZOrder;
+
+        int targetMinimum;
+        lock (_zOrderSyncRoot)
+        {
+            targetMinimum = _nextDialogZOrder;
+            _nextDialogZOrder = checked(targetMinimum + span + DialogZOrderGap);
+        }
+
+        int delta = targetMinimum - minimumZOrder;
+        foreach (DirectDrawingBase visual in visuals)
+            visual.ZOrder += delta;
+    }
+
+    private static IEnumerable<DirectDrawingBase> GetVisualDescendants(IDirectCompositeContainer container)
+    {
+        foreach (IDirectCompositeChild child in container.Children)
+        {
+            if (child is DirectDrawingBase visual)
+                yield return visual;
+
+            if (child is not IDirectCompositeContainer childContainer)
+                continue;
+
+            foreach (DirectDrawingBase descendant in GetVisualDescendants(childContainer))
+                yield return descendant;
+        }
     }
 
     /// <inheritdoc/>

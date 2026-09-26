@@ -1,5 +1,6 @@
 using Gondwana.Rendering;
 using Gondwana.Scenes;
+using Gondwana.Widgets;
 
 namespace Gondwana.Demos.Spot;
 
@@ -13,6 +14,7 @@ internal interface ISpotHostContext
     Gondwana.Engine Engine { get; }
     Scene Scene { get; }
     RenderSurfaceHostBase SurfaceHost { get; }
+    WidgetInputRouter? WidgetInputRouter { get; }
     int SurfaceWidth { get; }
     int SurfaceHeight { get; }
 }

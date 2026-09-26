@@ -33,11 +33,9 @@ The game ends when no legal moves remain anywhere on the board or only one playe
 | Input | Action |
 | --- | --- |
 | **Left mouse button** | Select a spot or choose its destination. |
-| **Backtick / tilde key** | Show or hide the score display. |
+| **Tab** | Show or hide the score display. |
 | **Game > New Game** | Configure and start another game. |
-| **Options** | Toggle music, sound effects, spot jiggle, clouds, or GPU acceleration. |
-
-Changing **GPU Acceleration** requires restarting Spot! The bitmap renderer is used by default; the GPU-backed renderer can be enabled from the Options menu.
+| **Options** | Toggle music, sound effects, spot jiggle, or clouds. |
 
 ## Run the Windows version
 
@@ -63,18 +61,18 @@ The release configuration produces a self-contained, single-file `win-x64` execu
 
 At 10,000 feet, Spot! is a conventional turn-based game sitting on top of Gondwana's real-time engine loop:
 
-- [`GameWindow`](GameWindow.cs) is the native WinForms shell. It owns the menu, saved options, startup splash, and the choice between bitmap and GPU rendering.
-- [`SpotGameHost`](Hosts/SpotGameHost.cs) and [`SpotGpuGameHost`](Hosts/SpotGpuGameHost.cs) connect that window to Gondwana's Windows hosting and render-surface implementations.
-- [`SpotHostCore`](Hosts/SpotHostCore.cs) contains the presentation layer shared by both renderers: asset loading, mouse input, AI turns, animation, particles, audio, scores, and game-over presentation.
+- [`GameWindow`](GameWindow.cs) is the native WinForms shell. It owns saved options, startup splash, and the in-engine `MenuBarWidget`.
+- [`SpotGpuGameHost`](Hosts/SpotGpuGameHost.cs) connects that window to Gondwana's WinForms GPU hosting and render surface.
+- [`SpotHostCore`](Hosts/SpotHostCore.cs) contains the game's presentation layer: asset loading, mouse input, AI turns, animation, particles, audio, scores, and game-over presentation.
 - [`SpotGame`](Game/SpotGame.cs) owns the turn sequence, selection and move execution, scoring, capture events, and end-game rules.
 - [`SpotGameField`](Game/SpotGameField.cs) represents the board as a Gondwana `SceneLayer`. Each logical cell stores its game state while Gondwana sprites provide the visible spots.
 
-The rule layer raises events such as selection, movement, capture, turn changes, and game over. The host responds with presentation—sprite frames, easing animations, sound effects, score updates, and particle effects. Keeping those responsibilities separate lets the same game rules drive either Windows rendering backend without duplication.
+The rule layer raises events such as selection, movement, capture, turn changes, and game over. The host responds with presentation—sprite frames, easing animations, sound effects, score updates, and particle effects. Keeping those responsibilities separate keeps the game rules independent from the WinForms GPU presentation layer.
 
 Spot! exercises a broad slice of Gondwana in one compact project:
 
 - WinForms game hosting and native mouse/keyboard input
-- CPU bitmap and GPU-backed render surfaces
+- GPU-backed WinForms rendering
 - Scene layers, views, coordinates, sprites, and z-ordering
 - Movement easing, pulsing, resizing, and jiggle effects
 - Direct-drawn text and shapes for scores and messages
