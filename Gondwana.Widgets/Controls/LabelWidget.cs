@@ -24,6 +24,7 @@ public sealed class LabelWidget : WidgetBase
     private ScrollBarVisibility _verticalScrollBarVisibility = ScrollBarVisibility.Never;
     private int _mouseWheelScrollPixels = 48;
     private float _verticalScrollOffsetPx;
+    private float _maximumVerticalScrollOffsetPx;
     private bool _isDraggingScrollBarThumb;
     private float _scrollBarDragOffset;
     private int? _scrollBarPointerId;
@@ -174,7 +175,7 @@ public sealed class LabelWidget : WidgetBase
     }
 
     /// <summary>Gets the maximum vertical text-content scroll offset for the current layout.</summary>
-    public float MaximumVerticalScrollOffsetPx => MeasureMaximumScrollOffset();
+    public float MaximumVerticalScrollOffsetPx => _maximumVerticalScrollOffsetPx;
 
     /// <summary>
     /// Changes the displayed text.
@@ -331,7 +332,7 @@ public sealed class LabelWidget : WidgetBase
         Rectangle trackBounds = GetScrollBarTrackBounds();
         Rectangle thumbBounds = GetScrollBarThumbBounds();
         float travel = trackBounds.Height - thumbBounds.Height;
-        float maximumScroll = MeasureMaximumScrollOffset();
+        float maximumScroll = _maximumVerticalScrollOffsetPx;
 
         if (travel <= 0f || maximumScroll <= 0f)
             return;
@@ -360,7 +361,7 @@ public sealed class LabelWidget : WidgetBase
     {
         base.OnMouseWheel(args);
 
-        float maximumScroll = MeasureMaximumScrollOffset();
+        float maximumScroll = _maximumVerticalScrollOffsetPx;
         if (args.Delta == 0 || maximumScroll <= 0f)
             return;
 
@@ -372,7 +373,8 @@ public sealed class LabelWidget : WidgetBase
 
     private bool NeedsVerticalScrollBar =>
         VerticalScrollBarVisibility != ScrollBarVisibility.Never &&
-        (VerticalScrollBarVisibility == ScrollBarVisibility.Always || MeasureMaximumScrollOffset() > 0.5f);
+        (VerticalScrollBarVisibility == ScrollBarVisibility.Always ||
+         _maximumVerticalScrollOffsetPx > 0.5f);
 
     private void CompleteInitialization()
     {
@@ -395,9 +397,11 @@ public sealed class LabelWidget : WidgetBase
             TextBlock.VerticalScrollOffsetPx = 0f;
         }
 
+        _maximumVerticalScrollOffsetPx = TextBlock.MeasureMaximumVerticalScrollOffsetPx();
+
         bool showScrollBar = VerticalScrollBarVisibility == ScrollBarVisibility.Always ||
             (VerticalScrollBarVisibility == ScrollBarVisibility.Auto &&
-             TextBlock.MeasureMaximumVerticalScrollOffsetPx() > 0.5f);
+             _maximumVerticalScrollOffsetPx > 0.5f);
 
         if (showScrollBar)
         {
@@ -407,6 +411,7 @@ public sealed class LabelWidget : WidgetBase
                 Math.Max(1, bounds.Width - ScrollBarWidth - ScrollBarMargin * 2),
                 bounds.Height);
             SetTextBlockBounds(contentBounds);
+            _maximumVerticalScrollOffsetPx = TextBlock.MeasureMaximumVerticalScrollOffsetPx();
         }
 
         IsInputEnabled = showScrollBar;
@@ -426,14 +431,10 @@ public sealed class LabelWidget : WidgetBase
 
     private void SetVerticalScrollOffset(float value)
     {
-        float maximumScroll = MeasureMaximumScrollOffset();
-        _verticalScrollOffsetPx = Math.Clamp(value, 0f, maximumScroll);
+        _verticalScrollOffsetPx = Math.Clamp(value, 0f, _maximumVerticalScrollOffsetPx);
         TextBlock.VerticalScrollOffsetPx = _verticalScrollOffsetPx;
         RefreshScrollBarBounds();
     }
-
-    private float MeasureMaximumScrollOffset()
-        => TextBlock.MeasureMaximumVerticalScrollOffsetPx();
 
     private float GetViewportContentHeight()
     {
@@ -465,7 +466,7 @@ public sealed class LabelWidget : WidgetBase
     private Rectangle GetScrollBarThumbBounds()
     {
         Rectangle trackBounds = GetScrollBarTrackBounds();
-        float maximumScroll = MeasureMaximumScrollOffset();
+        float maximumScroll = _maximumVerticalScrollOffsetPx;
         float viewportHeight = GetViewportContentHeight();
 
         if (maximumScroll <= 0f || viewportHeight <= 0f)
