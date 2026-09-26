@@ -150,6 +150,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a25db5354cead1eaa38fbbcc9c20edb59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> that draws in world space on the specified scene layer.  <br /></td></tr>
 <tr class="memitem:a59677dd5fb6b8df76d438e878f0ef594" id="r_a59677dd5fb6b8df76d438e878f0ef594"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a59677dd5fb6b8df76d438e878f0ef594">TextBlock</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> view, Rectangle screenBounds, string? nickname=null)</td></tr>
 <tr class="memdesc:a59677dd5fb6b8df76d438e878f0ef594"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> that draws in screen space relative to a view.  <br /></td></tr>
+<tr class="memitem:aa461433b0bceb80747e9f43719c52723" id="r_aa461433b0bceb80747e9f43719c52723"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa461433b0bceb80747e9f43719c52723">MeasureMaximumVerticalScrollOffsetPx</a> ()</td></tr>
+<tr class="memdesc:aa461433b0bceb80747e9f43719c52723"><td class="mdescLeft">&#160;</td><td class="mdescRight">Measures the maximum vertical scroll offset required to expose all currently laid-out text.  <br /></td></tr>
 <tr class="memitem:a6acd6a46a60e609b7bc49f7f37b2ea65" id="r_a6acd6a46a60e609b7bc49f7f37b2ea65"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html">TextBlock</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6acd6a46a60e609b7bc49f7f37b2ea65">SetPadding</a> (float horizontal, float vertical)</td></tr>
 <tr class="memdesc:a6acd6a46a60e609b7bc49f7f37b2ea65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets symmetric horizontal and vertical padding and invalidates cached layout.  <br /></td></tr>
 <tr class="memitem:ae804a24101bd9a779277c42b162de0ab" id="r_ae804a24101bd9a779277c42b162de0ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html">TextBlock</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae804a24101bd9a779277c42b162de0ab">SetSize</a> (Size size)</td></tr>
@@ -250,6 +252,8 @@ Properties</h2></td></tr>
 <tr class="memdesc:a34b030cbc1c2cb02b7018546f027c662"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the horizontal padding (in pixels) on both left and right sides of the text.  <br /></td></tr>
 <tr class="memitem:ac4ebbeb2dd7544a956a051426cf922fc" id="r_ac4ebbeb2dd7544a956a051426cf922fc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac4ebbeb2dd7544a956a051426cf922fc">VerticalPadding</a> = 0f<code> [get, set]</code></td></tr>
 <tr class="memdesc:ac4ebbeb2dd7544a956a051426cf922fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the vertical padding (in pixels) on both top and bottom sides of the text.  <br /></td></tr>
+<tr class="memitem:acd1ad47d2d03292355863f5e56a6abbb" id="r_acd1ad47d2d03292355863f5e56a6abbb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acd1ad47d2d03292355863f5e56a6abbb">VerticalScrollOffsetPx</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:acd1ad47d2d03292355863f5e56a6abbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the vertical text-content scroll offset in native pixels.  <br /></td></tr>
 <tr class="memitem:ae187fd0edce91e848615ccd4c6ac8c72" id="r_ae187fd0edce91e848615ccd4c6ac8c72"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae187fd0edce91e848615ccd4c6ac8c72">Text</a><code> [get]</code></td></tr>
 <tr class="memdesc:ae187fd0edce91e848615ccd4c6ac8c72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current raw text content.  <br /></td></tr>
 <tr class="memitem:ac9830c61b758722087c406040cfc4eab" id="r_ac9830c61b758722087c406040cfc4eab"><td class="memItemLeft" align="right" valign="top">List&lt; string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac9830c61b758722087c406040cfc4eab">Lines</a><code> [get]</code></td></tr>
@@ -420,7 +424,7 @@ Additional Inherited Members</h2></td></tr>
 </td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01127">1127</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01210">1210</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -448,7 +452,7 @@ Additional Inherited Members</h2></td></tr>
 </td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01138">1138</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01221">1221</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -525,7 +529,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00153">153</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00154">154</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -569,7 +573,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00174">174</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00175">175</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -607,7 +611,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#ad239dc0e99d67621d35385086d91e98f">Gondwana.Drawing.Direct.DirectDrawingBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01156">1156</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01239">1239</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -635,7 +639,29 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00394">394</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00471">471</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+
+</div>
+</div>
+<a id="aa461433b0bceb80747e9f43719c52723" name="aa461433b0bceb80747e9f43719c52723"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa461433b0bceb80747e9f43719c52723">&#9670;&#160;</a></span>MeasureMaximumVerticalScrollOffsetPx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Gondwana.Drawing.Direct.TextBlock.MeasureMaximumVerticalScrollOffsetPx </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Measures the maximum vertical scroll offset required to expose all currently laid-out text. </p>
+<dl class="section return"><dt>Returns</dt><dd>The maximum scroll offset in the text block's native coordinate units, or zero when the laid-out text fits within the available content height. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00233">233</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -675,7 +701,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00717">717</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00794">794</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -726,7 +752,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00423">423</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00500">500</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -754,7 +780,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00538">538</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00615">615</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -776,7 +802,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Stops any active reveal animation and shows the full text immediately. </p>
 <dl class="section return"><dt>Returns</dt><dd>The current <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00551">551</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00628">628</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -809,7 +835,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00324">324</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00401">401</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -873,7 +899,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00301">301</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00378">378</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -912,7 +938,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00285">285</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00362">362</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -940,7 +966,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00407">407</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00484">484</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -973,7 +999,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00208">208</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00285">285</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1012,7 +1038,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00525">525</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00602">602</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1058,7 +1084,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Call this after <a class="el" href="#a84f54c79d304723a0c3e362aaae5998e" title="Enables or disables drawing a drop shadow behind the text (parameters are configured via SetShadow(fl...">UseShadow(bool)</a> to fine-tune the offset, opacity, and blur strength of the text shadow. This method sets the internal paint values and marks the text block as dirty so it will be redrawn on the next render pass. </p>
 <dl class="section return"><dt>Returns</dt><dd>The current <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> instance for method chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00367">367</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00444">444</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1086,7 +1112,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00227">227</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00304">304</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1114,7 +1140,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00249">249</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00326">326</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1165,7 +1191,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00458">458</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00535">535</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1210,7 +1236,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00490">490</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00567">567</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1232,7 +1258,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Stops text color pulsing and restores the base foreground color. </p>
 <dl class="section return"><dt>Returns</dt><dd>The current <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00441">441</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00518">518</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1269,7 +1295,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingMovableBase.html#a156e583528d8e747636d70e4972b81db">Gondwana.Drawing.Direct.DirectDrawingMovableBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00581">581</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00658">658</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1297,7 +1323,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00382">382</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00459">459</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1325,7 +1351,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html" title="A retained-mode text drawable with wrapping, multi-line ( ) support, horizontal/vertical alignment,...">TextBlock</a> for chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00337">337</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00414">414</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1352,7 +1378,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the horizontal alignment used when drawing lines. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01084">1084</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01167">1167</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1378,7 +1404,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the vertical alignment used when drawing lines. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01087">1087</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01170">1170</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1404,7 +1430,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the configured background color. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01048">1048</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01131">1131</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1430,7 +1456,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the requested font size (before any auto-shrink adjustments). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01051">1051</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01134">1134</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1456,7 +1482,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the configured foreground (text) color. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01045">1045</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01128">1128</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1482,7 +1508,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets or sets the horizontal padding (in pixels) on both left and right sides of the text. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00195">195</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00196">196</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1508,7 +1534,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the measured line height (in pixels) used for drawing. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01042">1042</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01125">1125</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1534,7 +1560,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the laid-out lines (after wrapping and paragraph processing). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01039">1039</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01122">1122</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1560,7 +1586,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets or sets a scale factor applied to the computed line height (1.0 = natural spacing). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00190">190</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00191">191</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1586,7 +1612,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the optional maximum number of lines to draw (or null for no limit). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01066">1066</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01149">1149</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1612,7 +1638,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the optional minimum font size used by auto-shrink (or null if disabled). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01054">1054</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01137">1137</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1638,7 +1664,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets a value indicating whether an outline stroke is enabled. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01060">1060</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01143">1143</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1664,7 +1690,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets a value indicating whether punctuation pauses are enabled. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01111">1111</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01194">1194</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1690,7 +1716,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the starting color for the pulse effect. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01093">1093</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01176">1176</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1716,7 +1742,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the pulse period in seconds. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01099">1099</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01182">1182</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1742,7 +1768,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets a value indicating whether color pulsing is enabled. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01090">1090</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01173">1173</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1768,7 +1794,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the ending color for the pulse effect. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01096">1096</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01179">1179</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1794,7 +1820,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the pulse waveform currently in use. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01102">1102</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01185">1185</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1820,7 +1846,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the long punctuation pause duration (seconds) used for '.', '!', '?'. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01114">1114</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01197">1197</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1846,7 +1872,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the short punctuation pause duration (seconds) used for ',', ';', ':'. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01117">1117</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01200">1200</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1872,7 +1898,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the currently resolved (effective) foreground color used for drawing. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01120">1120</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01203">1203</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1898,7 +1924,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the shadow opacity (0-255). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01078">1078</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01161">1161</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1924,7 +1950,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the blur radius for the shadow (sigma, in pixels). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01081">1081</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01164">1164</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1950,7 +1976,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the horizontal shadow offset (in pixels). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01072">1072</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01155">1155</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -1976,7 +2002,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the vertical shadow offset (in pixels). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01075">1075</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01158">1158</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -2002,7 +2028,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets a value indicating whether a drop shadow is enabled. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01069">1069</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01152">1152</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -2028,7 +2054,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the current raw text content. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01036">1036</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01119">1119</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -2054,7 +2080,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the active text reveal mode. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01105">1105</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01188">1188</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -2080,7 +2106,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the configured reveal rate (characters/sec or words/sec depending on mode). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01108">1108</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01191">1191</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -2106,7 +2132,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the configured typeface (or null to use SKTypeface.Default). </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01057">1057</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01140">1140</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -2132,7 +2158,34 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets or sets the vertical padding (in pixels) on both top and bottom sides of the text. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00200">200</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00201">201</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+
+</div>
+</div>
+<a id="acd1ad47d2d03292355863f5e56a6abbb" name="acd1ad47d2d03292355863f5e56a6abbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd1ad47d2d03292355863f5e56a6abbb">&#9670;&#160;</a></span>VerticalScrollOffsetPx</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Gondwana.Drawing.Direct.TextBlock.VerticalScrollOffsetPx</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the vertical text-content scroll offset in native pixels. </p>
+<p>The offset is applied after text layout and is clipped to this text block's bounds. Use <a class="el" href="#aa461433b0bceb80747e9f43719c52723" title="Measures the maximum vertical scroll offset required to expose all currently laid-out text.">MeasureMaximumVerticalScrollOffsetPx</a> to determine the valid upper bound. </p>
+
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l00210">210</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>
@@ -2158,7 +2211,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets a value indicating whether word wrapping is enabled. </p>
 
-<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01063">1063</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TextBlock_8cs_source.html#l01146">1146</a> of file <a class="el" href="TextBlock_8cs_source.html">TextBlock.cs</a>.</p>
 
 </div>
 </div>

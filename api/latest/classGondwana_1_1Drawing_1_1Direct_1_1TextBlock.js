@@ -19,6 +19,7 @@ var classGondwana_1_1Drawing_1_1Direct_1_1TextBlock =
     [ "TextBlock", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a59677dd5fb6b8df76d438e878f0ef594", null ],
     [ "Dispose", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a9bc93ce7def0dbbe0cd66287e31a5cd8", null ],
     [ "EnableWrapping", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a62f638ca17a897a139546d7e3efa1c1b", null ],
+    [ "MeasureMaximumVerticalScrollOffsetPx", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#aa461433b0bceb80747e9f43719c52723", null ],
     [ "OnDraw", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a90eecff7e661b60b3a7ae3a293b19580", null ],
     [ "PulseColor", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#adea146bff87658bfd3b3e383664ca1f6", null ],
     [ "RevealSetCount", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#aa13990987a3e6641cca331d69b1295f2", null ],
@@ -70,6 +71,7 @@ var classGondwana_1_1Drawing_1_1Direct_1_1TextBlock =
     [ "TextRevealRate", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#af5c289c26e2178bcff82a41629af0622", null ],
     [ "TypeFace", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a6ffd5a29f999a827f1d0e67d1a1aa9d4", null ],
     [ "VerticalPadding", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#ac4ebbeb2dd7544a956a051426cf922fc", null ],
+    [ "VerticalScrollOffsetPx", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#acd1ad47d2d03292355863f5e56a6abbb", null ],
     [ "WrapText", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a575e61c710ec7ed5fecad27a05afee27", null ],
     [ "TextRevealComplete", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a9789930c51fc4d4567f495dc74cac796", null ],
     [ "TextRevealed", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#ad628da1ed304368a92d6113567d5f561", null ]

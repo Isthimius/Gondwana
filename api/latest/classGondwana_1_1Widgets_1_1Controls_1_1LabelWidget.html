@@ -139,6 +139,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:abfcea578a13f1b6224439c7b463c39d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables or disables wrapping.  <br /></td></tr>
 <tr class="memitem:acc32967842fabc86905bd28c36d17bd7" id="r_acc32967842fabc86905bd28c36d17bd7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Widgets_1_1Controls_1_1LabelWidget.html">LabelWidget</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acc32967842fabc86905bd28c36d17bd7">SetPadding</a> (float horizontal, float vertical)</td></tr>
 <tr class="memdesc:acc32967842fabc86905bd28c36d17bd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets symmetric horizontal and vertical padding.  <br /></td></tr>
+<tr class="memitem:afef891dc244edeed31286ad4241152af" id="r_afef891dc244edeed31286ad4241152af"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Widgets_1_1Controls_1_1LabelWidget.html">LabelWidget</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afef891dc244edeed31286ad4241152af">SetLabelZOrder</a> (int zOrder)</td></tr>
+<tr class="memdesc:afef891dc244edeed31286ad4241152af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the base Z-order used by the label text and optional scrollbar.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classGondwana_1_1Widgets_1_1WidgetBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">Gondwana.Widgets.WidgetBase</a></td></tr>
 <tr class="memitem:afb806ddaae8d6fa99ba3598c9a3023d5 inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_afb806ddaae8d6fa99ba3598c9a3023d5"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#afb806ddaae8d6fa99ba3598c9a3023d5">HitTest</a> (<a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> view, Point screenPositionPx)</td></tr>
 <tr class="memdesc:afb806ddaae8d6fa99ba3598c9a3023d5 inherit pub_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the widget can be hit at the specified screen position within the specified view.  <br /></td></tr>
@@ -190,16 +192,113 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab4a9dddd84ec27a3a4701275077ef3e7 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_ab4a9dddd84ec27a3a4701275077ef3e7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ab4a9dddd84ec27a3a4701275077ef3e7">Dispose</a> ()</td></tr>
 <tr class="memdesc:ab4a9dddd84ec27a3a4701275077ef3e7 inherit pub_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disposes the composite and every child it owns.  <br /></td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a679410619dd973427e832017c02a5290" id="r_a679410619dd973427e832017c02a5290"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a679410619dd973427e832017c02a5290">ProcessShown</a> ()</td></tr>
+<tr class="memdesc:a679410619dd973427e832017c02a5290"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget is shown before notification callbacks are invoked.  <br /></td></tr>
+<tr class="memitem:a746e96b41c7540e3bb1db36b3cb11eb3" id="r_a746e96b41c7540e3bb1db36b3cb11eb3"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a746e96b41c7540e3bb1db36b3cb11eb3">ProcessHidden</a> ()</td></tr>
+<tr class="memdesc:a746e96b41c7540e3bb1db36b3cb11eb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget is hidden before notification callbacks are invoked.  <br /></td></tr>
+<tr class="memitem:a2ff1b573e42ae2bd9395601601ffb108" id="r_a2ff1b573e42ae2bd9395601601ffb108"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2ff1b573e42ae2bd9395601601ffb108">OnPointerDown</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
+<tr class="memdesc:a2ff1b573e42ae2bd9395601601ffb108"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer press begins on the widget.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+  <br /></td></tr>
+<tr class="memitem:a20d7d18a5ca6d7a96e5d813f114f105e" id="r_a20d7d18a5ca6d7a96e5d813f114f105e"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a20d7d18a5ca6d7a96e5d813f114f105e">OnPointerMove</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
+<tr class="memdesc:a20d7d18a5ca6d7a96e5d813f114f105e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when pointer movement is routed to the widget.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+  <br /></td></tr>
+<tr class="memitem:a37152d53585bb2dc0887fa812b7754ec" id="r_a37152d53585bb2dc0887fa812b7754ec"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37152d53585bb2dc0887fa812b7754ec">OnPointerUp</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
+<tr class="memdesc:a37152d53585bb2dc0887fa812b7754ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer press is released for the widget.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+  <br /></td></tr>
+<tr class="memitem:a8a71bb547eca0179fa2bf4202c0f654f" id="r_a8a71bb547eca0179fa2bf4202c0f654f"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8a71bb547eca0179fa2bf4202c0f654f">OnMouseWheel</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetMouseWheelEventArgs.html">WidgetMouseWheelEventArgs</a> args)</td></tr>
+<tr class="memdesc:a8a71bb547eca0179fa2bf4202c0f654f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when mouse-wheel input is routed to the widget.  <br /></td></tr>
+<tr class="inherit_header pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classGondwana_1_1Widgets_1_1WidgetBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">Gondwana.Widgets.WidgetBase</a></td></tr>
+<tr class="memitem:a32f2b40b9c48a2f855f3332d2c1b1013 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a32f2b40b9c48a2f855f3332d2c1b1013"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a32f2b40b9c48a2f855f3332d2c1b1013">WidgetBase</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a> mode, PointF anchor=default, string? nickname=null)</td></tr>
+<tr class="memdesc:a32f2b40b9c48a2f855f3332d2c1b1013 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html" title="Provides the base implementation for widgets that can be drawn and receive pointer,...">WidgetBase</a> class.  <br /></td></tr>
+<tr class="memitem:a9b1fa1340d2eb3c0649804abd89cba31 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a9b1fa1340d2eb3c0649804abd89cba31"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a9b1fa1340d2eb3c0649804abd89cba31">ProcessActivated</a> ()</td></tr>
+<tr class="memdesc:a9b1fa1340d2eb3c0649804abd89cba31 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget is activated before notification callbacks are invoked.  <br /></td></tr>
+<tr class="memitem:a0e399de16422cd79a00116b964ff5841 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a0e399de16422cd79a00116b964ff5841"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a0e399de16422cd79a00116b964ff5841">ProcessCancelled</a> ()</td></tr>
+<tr class="memdesc:a0e399de16422cd79a00116b964ff5841 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget is cancelled before notification callbacks are invoked.  <br /></td></tr>
+<tr class="memitem:a7c5fbb420d44df2cfc342f12ca2abb27 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a7c5fbb420d44df2cfc342f12ca2abb27"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a7c5fbb420d44df2cfc342f12ca2abb27">ProcessPointerEnter</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
+<tr class="memdesc:a7c5fbb420d44df2cfc342f12ca2abb27 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when a pointer enters the widget before notification callbacks are invoked.  <br /></td></tr>
+<tr class="memitem:ad3384ef257f87c68aaf3ce449a008aa1 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_ad3384ef257f87c68aaf3ce449a008aa1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#ad3384ef257f87c68aaf3ce449a008aa1">ProcessPointerLeave</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
+<tr class="memdesc:ad3384ef257f87c68aaf3ce449a008aa1 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when a pointer leaves the widget before notification callbacks are invoked.  <br /></td></tr>
+<tr class="memitem:a81064cf8dce5b82040dbab4dfb53a638 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a81064cf8dce5b82040dbab4dfb53a638"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a81064cf8dce5b82040dbab4dfb53a638">ProcessPointerDown</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
+<tr class="memdesc:a81064cf8dce5b82040dbab4dfb53a638 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when a pointer press begins on the widget before notification callbacks are invoked.  <br /></td></tr>
+<tr class="memitem:ae31c954d77c76c40a0798eb26883ae77 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_ae31c954d77c76c40a0798eb26883ae77"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#ae31c954d77c76c40a0798eb26883ae77">ProcessPointerMove</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
+<tr class="memdesc:ae31c954d77c76c40a0798eb26883ae77 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when pointer movement is routed to the widget before notification callbacks are invoked.  <br /></td></tr>
+<tr class="memitem:af2ead0de926c468fb4e5b67c63a9bc96 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_af2ead0de926c468fb4e5b67c63a9bc96"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af2ead0de926c468fb4e5b67c63a9bc96">ProcessPointerUp</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
+<tr class="memdesc:af2ead0de926c468fb4e5b67c63a9bc96 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when a pointer press is released for the widget before notification callbacks are invoked.  <br /></td></tr>
+<tr class="memitem:a6214433864ee925ba212afa5cdb3d03d inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a6214433864ee925ba212afa5cdb3d03d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a6214433864ee925ba212afa5cdb3d03d">ProcessFocusGained</a> ()</td></tr>
+<tr class="memdesc:a6214433864ee925ba212afa5cdb3d03d inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget gains focus before notification callbacks are invoked.  <br /></td></tr>
+<tr class="memitem:aec8b9a776133d342179382299ea87a1a inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_aec8b9a776133d342179382299ea87a1a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#aec8b9a776133d342179382299ea87a1a">ProcessFocusLost</a> ()</td></tr>
+<tr class="memdesc:aec8b9a776133d342179382299ea87a1a inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget loses focus before notification callbacks are invoked.  <br /></td></tr>
+<tr class="memitem:a649f2c096ba86866f495627f40cd4842 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a649f2c096ba86866f495627f40cd4842"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a649f2c096ba86866f495627f40cd4842">ProcessKeyboardInput</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html">WidgetKeyboardEventArgs</a> args)</td></tr>
+<tr class="memdesc:a649f2c096ba86866f495627f40cd4842 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when keyboard input is routed to the widget before notification callbacks are invoked.  <br /></td></tr>
+<tr class="memitem:adb7aba8fa538a81c3dbb8154fb70246f inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_adb7aba8fa538a81c3dbb8154fb70246f"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#adb7aba8fa538a81c3dbb8154fb70246f">ShouldDispatchPointerClick</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
+<tr class="memdesc:adb7aba8fa538a81c3dbb8154fb70246f inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether a pointer-click event should be dispatched for the specified pointer event data.  <br /></td></tr>
+<tr class="memitem:af19643f5b3046227fdc6017114ed4239 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_af19643f5b3046227fdc6017114ed4239"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af19643f5b3046227fdc6017114ed4239">OnShown</a> ()</td></tr>
+<tr class="memdesc:af19643f5b3046227fdc6017114ed4239 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the widget is shown.  <br /></td></tr>
+<tr class="memitem:a9a0ca4e4537727239bc717dd33f37129 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a9a0ca4e4537727239bc717dd33f37129"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a9a0ca4e4537727239bc717dd33f37129">OnHidden</a> ()</td></tr>
+<tr class="memdesc:a9a0ca4e4537727239bc717dd33f37129 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the widget is hidden.  <br /></td></tr>
+<tr class="memitem:aa62453a1c7e99629483a11be64e2506b inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_aa62453a1c7e99629483a11be64e2506b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#aa62453a1c7e99629483a11be64e2506b">OnActivated</a> ()</td></tr>
+<tr class="memdesc:aa62453a1c7e99629483a11be64e2506b inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the widget is activated.  <br /></td></tr>
+<tr class="memitem:a99ba373c22e1a376afe2ae706aac8d53 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a99ba373c22e1a376afe2ae706aac8d53"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a99ba373c22e1a376afe2ae706aac8d53">OnCancelled</a> ()</td></tr>
+<tr class="memdesc:a99ba373c22e1a376afe2ae706aac8d53 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the widget is cancelled.  <br /></td></tr>
+<tr class="memitem:a5c8337f088f6c156050feb1a73852124 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a5c8337f088f6c156050feb1a73852124"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a5c8337f088f6c156050feb1a73852124">OnPointerEnter</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
+<tr class="memdesc:a5c8337f088f6c156050feb1a73852124 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer enters the widget bounds.  <br /></td></tr>
+<tr class="memitem:ac4bd1b14299027724385332dd7ff53eb inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_ac4bd1b14299027724385332dd7ff53eb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#ac4bd1b14299027724385332dd7ff53eb">OnPointerLeave</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
+<tr class="memdesc:ac4bd1b14299027724385332dd7ff53eb inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer leaves the widget bounds.  <br /></td></tr>
+<tr class="memitem:a7d02dee6a2c67a4c1365aad41a19d4c0 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a7d02dee6a2c67a4c1365aad41a19d4c0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a7d02dee6a2c67a4c1365aad41a19d4c0">OnPointerClick</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
+<tr class="memdesc:a7d02dee6a2c67a4c1365aad41a19d4c0 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer click is dispatched to the widget.  <br /></td></tr>
+<tr class="memitem:af937571ce24b0d2a60522eef876b6218 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_af937571ce24b0d2a60522eef876b6218"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af937571ce24b0d2a60522eef876b6218">OnFocusGained</a> ()</td></tr>
+<tr class="memdesc:af937571ce24b0d2a60522eef876b6218 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the widget gains focus.  <br /></td></tr>
+<tr class="memitem:add8b8efa8e9e5511ad9863f7f0f7e578 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_add8b8efa8e9e5511ad9863f7f0f7e578"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#add8b8efa8e9e5511ad9863f7f0f7e578">OnFocusLost</a> ()</td></tr>
+<tr class="memdesc:add8b8efa8e9e5511ad9863f7f0f7e578 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the widget loses focus.  <br /></td></tr>
+<tr class="memitem:aaec953c2a7d8d8d45daa4886b95f779b inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_aaec953c2a7d8d8d45daa4886b95f779b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#aaec953c2a7d8d8d45daa4886b95f779b">OnKeyboardInput</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html">WidgetKeyboardEventArgs</a> args)</td></tr>
+<tr class="memdesc:aaec953c2a7d8d8d45daa4886b95f779b inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when keyboard input is routed to the widget.  <br /></td></tr>
+<tr class="inherit_header pro_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html">Gondwana.Drawing.Direct.DirectComposite</a></td></tr>
+<tr class="memitem:a247988c7659e3edfaf307e6247b455c0 inherit pro_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a247988c7659e3edfaf307e6247b455c0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a247988c7659e3edfaf307e6247b455c0">OnChildAdded</a> (<a class="el" href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeChild.html">IDirectCompositeChild</a> child)</td></tr>
+<tr class="memdesc:a247988c7659e3edfaf307e6247b455c0 inherit pro_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called after a child has been successfully added.  <br /></td></tr>
+<tr class="memitem:a3869e8da62376547c2c938f9d305114c inherit pro_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a3869e8da62376547c2c938f9d305114c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a3869e8da62376547c2c938f9d305114c">OnChildRemoved</a> (<a class="el" href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeChild.html">IDirectCompositeChild</a> child)</td></tr>
+<tr class="memdesc:a3869e8da62376547c2c938f9d305114c inherit pro_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called after a child has been removed from the composite.  <br /></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:ab1a98f0721ddec06ae27aaa71f4e2088" id="r_ab1a98f0721ddec06ae27aaa71f4e2088"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html">TextBlock</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1a98f0721ddec06ae27aaa71f4e2088">TextBlock</a><code> [get]</code></td></tr>
 <tr class="memdesc:ab1a98f0721ddec06ae27aaa71f4e2088"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the underlying text drawing.  <br /></td></tr>
+<tr class="memitem:a0e35ee651e6a0c7087864c57e124b284" id="r_a0e35ee651e6a0c7087864c57e124b284"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0e35ee651e6a0c7087864c57e124b284">VerticalScrollBarTrack</a><code> [get]</code></td></tr>
+<tr class="memdesc:a0e35ee651e6a0c7087864c57e124b284"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the vertical scrollbar track drawing.  <br /></td></tr>
+<tr class="memitem:a956d4c530eda55c0d9995b59462c04b3" id="r_a956d4c530eda55c0d9995b59462c04b3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html">DirectRectangle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a956d4c530eda55c0d9995b59462c04b3">VerticalScrollBarThumb</a><code> [get]</code></td></tr>
+<tr class="memdesc:a956d4c530eda55c0d9995b59462c04b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the vertical scrollbar thumb drawing.  <br /></td></tr>
 <tr class="memitem:a7b25e8184988cd3ba14846d71bc721b7" id="r_a7b25e8184988cd3ba14846d71bc721b7"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b25e8184988cd3ba14846d71bc721b7">Text</a><code> [get]</code></td></tr>
 <tr class="memdesc:a7b25e8184988cd3ba14846d71bc721b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current label text.  <br /></td></tr>
 <tr class="memitem:a6f795d889d8470689bc92aabac07d6fb" id="r_a6f795d889d8470689bc92aabac07d6fb"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6f795d889d8470689bc92aabac07d6fb">Bounds</a><code> [get]</code></td></tr>
 <tr class="memdesc:a6f795d889d8470689bc92aabac07d6fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the label bounds in its native coordinate space.  <br /></td></tr>
 <tr class="memitem:aaa480f345756cdf96074599835df7665" id="r_aaa480f345756cdf96074599835df7665"><td class="memItemLeft" align="right" valign="top">Size&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaa480f345756cdf96074599835df7665">Size</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:aaa480f345756cdf96074599835df7665"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the label size while preserving its current position.  <br /></td></tr>
+<tr class="memitem:a63315d9f5c907d87d00007e1e9e2de16" id="r_a63315d9f5c907d87d00007e1e9e2de16"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Widgets_1_1Controls.html#a5e584d4499255f2d04d820f96559a2cc">ScrollBarVisibility</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a63315d9f5c907d87d00007e1e9e2de16">VerticalScrollBarVisibility</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a63315d9f5c907d87d00007e1e9e2de16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets when the label displays its vertical scrollbar.  <br /></td></tr>
+<tr class="memitem:a0d0538ac0e5e9527955a15d8eebe30e9" id="r_a0d0538ac0e5e9527955a15d8eebe30e9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0d0538ac0e5e9527955a15d8eebe30e9">IsVerticalScrollBarVisible</a><code> [get]</code></td></tr>
+<tr class="memdesc:a0d0538ac0e5e9527955a15d8eebe30e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether the vertical scrollbar is currently visible.  <br /></td></tr>
+<tr class="memitem:ac8744ffc7b2f8e757b8447911b9f06e4" id="r_ac8744ffc7b2f8e757b8447911b9f06e4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8744ffc7b2f8e757b8447911b9f06e4">MouseWheelScrollPixels</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:ac8744ffc7b2f8e757b8447911b9f06e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the number of native pixels scrolled for one mouse-wheel notch.  <br /></td></tr>
+<tr class="memitem:a0a0fb2ee6c5e4d9a44be63b063cfac83" id="r_a0a0fb2ee6c5e4d9a44be63b063cfac83"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0a0fb2ee6c5e4d9a44be63b063cfac83">VerticalScrollOffsetPx</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a0a0fb2ee6c5e4d9a44be63b063cfac83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the current vertical text-content scroll offset.  <br /></td></tr>
+<tr class="memitem:a3256e5bb126f440532f582be7e1bd496" id="r_a3256e5bb126f440532f582be7e1bd496"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3256e5bb126f440532f582be7e1bd496">MaximumVerticalScrollOffsetPx</a><code> [get]</code></td></tr>
+<tr class="memdesc:a3256e5bb126f440532f582be7e1bd496"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the maximum vertical text-content scroll offset for the current layout.  <br /></td></tr>
 <tr class="inherit_header properties_classGondwana_1_1Widgets_1_1WidgetBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('properties_classGondwana_1_1Widgets_1_1WidgetBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Properties inherited from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">Gondwana.Widgets.WidgetBase</a></td></tr>
 <tr class="memitem:af43d800723f96fd801f8e41d854d1bee inherit properties_classGondwana_1_1Widgets_1_1WidgetBase" id="r_af43d800723f96fd801f8e41d854d1bee"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af43d800723f96fd801f8e41d854d1bee">IsInputEnabled</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:af43d800723f96fd801f8e41d854d1bee inherit properties_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether the widget can participate in input routing.  <br /></td></tr>
@@ -241,68 +340,6 @@ Properties</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classGondwana_1_1Widgets_1_1WidgetBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">Gondwana.Widgets.WidgetBase</a></td></tr>
-<tr class="memitem:a32f2b40b9c48a2f855f3332d2c1b1013 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a32f2b40b9c48a2f855f3332d2c1b1013"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a32f2b40b9c48a2f855f3332d2c1b1013">WidgetBase</a> (<a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">RenderSurfaceHostBase</a> renderSurfaceHost, <a class="el" href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31">DirectDrawingMode</a> mode, PointF anchor=default, string? nickname=null)</td></tr>
-<tr class="memdesc:a32f2b40b9c48a2f855f3332d2c1b1013 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html" title="Provides the base implementation for widgets that can be drawn and receive pointer,...">WidgetBase</a> class.  <br /></td></tr>
-<tr class="memitem:a3233fc47ac2be8fac9af4c35c0810ebd inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a3233fc47ac2be8fac9af4c35c0810ebd"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a3233fc47ac2be8fac9af4c35c0810ebd">ProcessShown</a> ()</td></tr>
-<tr class="memdesc:a3233fc47ac2be8fac9af4c35c0810ebd inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget is shown before notification callbacks are invoked.  <br /></td></tr>
-<tr class="memitem:af24739527ab6d68bbd1aa2bfb876b37a inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_af24739527ab6d68bbd1aa2bfb876b37a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af24739527ab6d68bbd1aa2bfb876b37a">ProcessHidden</a> ()</td></tr>
-<tr class="memdesc:af24739527ab6d68bbd1aa2bfb876b37a inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget is hidden before notification callbacks are invoked.  <br /></td></tr>
-<tr class="memitem:a9b1fa1340d2eb3c0649804abd89cba31 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a9b1fa1340d2eb3c0649804abd89cba31"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a9b1fa1340d2eb3c0649804abd89cba31">ProcessActivated</a> ()</td></tr>
-<tr class="memdesc:a9b1fa1340d2eb3c0649804abd89cba31 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget is activated before notification callbacks are invoked.  <br /></td></tr>
-<tr class="memitem:a0e399de16422cd79a00116b964ff5841 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a0e399de16422cd79a00116b964ff5841"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a0e399de16422cd79a00116b964ff5841">ProcessCancelled</a> ()</td></tr>
-<tr class="memdesc:a0e399de16422cd79a00116b964ff5841 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget is cancelled before notification callbacks are invoked.  <br /></td></tr>
-<tr class="memitem:a7c5fbb420d44df2cfc342f12ca2abb27 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a7c5fbb420d44df2cfc342f12ca2abb27"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a7c5fbb420d44df2cfc342f12ca2abb27">ProcessPointerEnter</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
-<tr class="memdesc:a7c5fbb420d44df2cfc342f12ca2abb27 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when a pointer enters the widget before notification callbacks are invoked.  <br /></td></tr>
-<tr class="memitem:ad3384ef257f87c68aaf3ce449a008aa1 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_ad3384ef257f87c68aaf3ce449a008aa1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#ad3384ef257f87c68aaf3ce449a008aa1">ProcessPointerLeave</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
-<tr class="memdesc:ad3384ef257f87c68aaf3ce449a008aa1 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when a pointer leaves the widget before notification callbacks are invoked.  <br /></td></tr>
-<tr class="memitem:a81064cf8dce5b82040dbab4dfb53a638 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a81064cf8dce5b82040dbab4dfb53a638"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a81064cf8dce5b82040dbab4dfb53a638">ProcessPointerDown</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
-<tr class="memdesc:a81064cf8dce5b82040dbab4dfb53a638 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when a pointer press begins on the widget before notification callbacks are invoked.  <br /></td></tr>
-<tr class="memitem:ae31c954d77c76c40a0798eb26883ae77 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_ae31c954d77c76c40a0798eb26883ae77"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#ae31c954d77c76c40a0798eb26883ae77">ProcessPointerMove</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
-<tr class="memdesc:ae31c954d77c76c40a0798eb26883ae77 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when pointer movement is routed to the widget before notification callbacks are invoked.  <br /></td></tr>
-<tr class="memitem:af2ead0de926c468fb4e5b67c63a9bc96 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_af2ead0de926c468fb4e5b67c63a9bc96"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af2ead0de926c468fb4e5b67c63a9bc96">ProcessPointerUp</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
-<tr class="memdesc:af2ead0de926c468fb4e5b67c63a9bc96 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when a pointer press is released for the widget before notification callbacks are invoked.  <br /></td></tr>
-<tr class="memitem:a6214433864ee925ba212afa5cdb3d03d inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a6214433864ee925ba212afa5cdb3d03d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a6214433864ee925ba212afa5cdb3d03d">ProcessFocusGained</a> ()</td></tr>
-<tr class="memdesc:a6214433864ee925ba212afa5cdb3d03d inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget gains focus before notification callbacks are invoked.  <br /></td></tr>
-<tr class="memitem:aec8b9a776133d342179382299ea87a1a inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_aec8b9a776133d342179382299ea87a1a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#aec8b9a776133d342179382299ea87a1a">ProcessFocusLost</a> ()</td></tr>
-<tr class="memdesc:aec8b9a776133d342179382299ea87a1a inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when the widget loses focus before notification callbacks are invoked.  <br /></td></tr>
-<tr class="memitem:a649f2c096ba86866f495627f40cd4842 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a649f2c096ba86866f495627f40cd4842"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a649f2c096ba86866f495627f40cd4842">ProcessKeyboardInput</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html">WidgetKeyboardEventArgs</a> args)</td></tr>
-<tr class="memdesc:a649f2c096ba86866f495627f40cd4842 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs processing when keyboard input is routed to the widget before notification callbacks are invoked.  <br /></td></tr>
-<tr class="memitem:adb7aba8fa538a81c3dbb8154fb70246f inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_adb7aba8fa538a81c3dbb8154fb70246f"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#adb7aba8fa538a81c3dbb8154fb70246f">ShouldDispatchPointerClick</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
-<tr class="memdesc:adb7aba8fa538a81c3dbb8154fb70246f inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether a pointer-click event should be dispatched for the specified pointer event data.  <br /></td></tr>
-<tr class="memitem:af19643f5b3046227fdc6017114ed4239 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_af19643f5b3046227fdc6017114ed4239"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af19643f5b3046227fdc6017114ed4239">OnShown</a> ()</td></tr>
-<tr class="memdesc:af19643f5b3046227fdc6017114ed4239 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the widget is shown.  <br /></td></tr>
-<tr class="memitem:a9a0ca4e4537727239bc717dd33f37129 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a9a0ca4e4537727239bc717dd33f37129"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a9a0ca4e4537727239bc717dd33f37129">OnHidden</a> ()</td></tr>
-<tr class="memdesc:a9a0ca4e4537727239bc717dd33f37129 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the widget is hidden.  <br /></td></tr>
-<tr class="memitem:aa62453a1c7e99629483a11be64e2506b inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_aa62453a1c7e99629483a11be64e2506b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#aa62453a1c7e99629483a11be64e2506b">OnActivated</a> ()</td></tr>
-<tr class="memdesc:aa62453a1c7e99629483a11be64e2506b inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the widget is activated.  <br /></td></tr>
-<tr class="memitem:a99ba373c22e1a376afe2ae706aac8d53 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a99ba373c22e1a376afe2ae706aac8d53"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a99ba373c22e1a376afe2ae706aac8d53">OnCancelled</a> ()</td></tr>
-<tr class="memdesc:a99ba373c22e1a376afe2ae706aac8d53 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the widget is cancelled.  <br /></td></tr>
-<tr class="memitem:a5c8337f088f6c156050feb1a73852124 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a5c8337f088f6c156050feb1a73852124"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a5c8337f088f6c156050feb1a73852124">OnPointerEnter</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
-<tr class="memdesc:a5c8337f088f6c156050feb1a73852124 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer enters the widget bounds.  <br /></td></tr>
-<tr class="memitem:ac4bd1b14299027724385332dd7ff53eb inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_ac4bd1b14299027724385332dd7ff53eb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#ac4bd1b14299027724385332dd7ff53eb">OnPointerLeave</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
-<tr class="memdesc:ac4bd1b14299027724385332dd7ff53eb inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer leaves the widget bounds.  <br /></td></tr>
-<tr class="memitem:a3e21456ad03a8de98262b46bd1547fd8 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a3e21456ad03a8de98262b46bd1547fd8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a3e21456ad03a8de98262b46bd1547fd8">OnPointerDown</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
-<tr class="memdesc:a3e21456ad03a8de98262b46bd1547fd8 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer press begins on the widget.  <br /></td></tr>
-<tr class="memitem:a725381d7ffb12a61d2d5cfd40b0a7ad4 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a725381d7ffb12a61d2d5cfd40b0a7ad4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a725381d7ffb12a61d2d5cfd40b0a7ad4">OnPointerMove</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
-<tr class="memdesc:a725381d7ffb12a61d2d5cfd40b0a7ad4 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when pointer movement is routed to the widget.  <br /></td></tr>
-<tr class="memitem:af68f779ee36ea91d59fe2d375c2c0eeb inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_af68f779ee36ea91d59fe2d375c2c0eeb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af68f779ee36ea91d59fe2d375c2c0eeb">OnPointerUp</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
-<tr class="memdesc:af68f779ee36ea91d59fe2d375c2c0eeb inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer press is released for the widget.  <br /></td></tr>
-<tr class="memitem:a25138e9b94f846e280f28513b18fb842 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a25138e9b94f846e280f28513b18fb842"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a25138e9b94f846e280f28513b18fb842">OnMouseWheel</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetMouseWheelEventArgs.html">WidgetMouseWheelEventArgs</a> args)</td></tr>
-<tr class="memdesc:a25138e9b94f846e280f28513b18fb842 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when mouse-wheel input is routed to the widget.  <br /></td></tr>
-<tr class="memitem:a7d02dee6a2c67a4c1365aad41a19d4c0 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a7d02dee6a2c67a4c1365aad41a19d4c0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a7d02dee6a2c67a4c1365aad41a19d4c0">OnPointerClick</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a> args)</td></tr>
-<tr class="memdesc:a7d02dee6a2c67a4c1365aad41a19d4c0 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a pointer click is dispatched to the widget.  <br /></td></tr>
-<tr class="memitem:af937571ce24b0d2a60522eef876b6218 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_af937571ce24b0d2a60522eef876b6218"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af937571ce24b0d2a60522eef876b6218">OnFocusGained</a> ()</td></tr>
-<tr class="memdesc:af937571ce24b0d2a60522eef876b6218 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the widget gains focus.  <br /></td></tr>
-<tr class="memitem:add8b8efa8e9e5511ad9863f7f0f7e578 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_add8b8efa8e9e5511ad9863f7f0f7e578"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#add8b8efa8e9e5511ad9863f7f0f7e578">OnFocusLost</a> ()</td></tr>
-<tr class="memdesc:add8b8efa8e9e5511ad9863f7f0f7e578 inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the widget loses focus.  <br /></td></tr>
-<tr class="memitem:aaec953c2a7d8d8d45daa4886b95f779b inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase" id="r_aaec953c2a7d8d8d45daa4886b95f779b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#aaec953c2a7d8d8d45daa4886b95f779b">OnKeyboardInput</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html">WidgetKeyboardEventArgs</a> args)</td></tr>
-<tr class="memdesc:aaec953c2a7d8d8d45daa4886b95f779b inherit pro_methods_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when keyboard input is routed to the widget.  <br /></td></tr>
-<tr class="inherit_header pro_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html">Gondwana.Drawing.Direct.DirectComposite</a></td></tr>
-<tr class="memitem:a247988c7659e3edfaf307e6247b455c0 inherit pro_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a247988c7659e3edfaf307e6247b455c0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a247988c7659e3edfaf307e6247b455c0">OnChildAdded</a> (<a class="el" href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeChild.html">IDirectCompositeChild</a> child)</td></tr>
-<tr class="memdesc:a247988c7659e3edfaf307e6247b455c0 inherit pro_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called after a child has been successfully added.  <br /></td></tr>
-<tr class="memitem:a3869e8da62376547c2c938f9d305114c inherit pro_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite" id="r_a3869e8da62376547c2c938f9d305114c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a3869e8da62376547c2c938f9d305114c">OnChildRemoved</a> (<a class="el" href="interfaceGondwana_1_1Drawing_1_1Direct_1_1IDirectCompositeChild.html">IDirectCompositeChild</a> child)</td></tr>
-<tr class="memdesc:a3869e8da62376547c2c938f9d305114c inherit pro_methods_classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called after a child has been removed from the composite.  <br /></td></tr>
 <tr class="inherit_header events_classGondwana_1_1Widgets_1_1WidgetBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('events_classGondwana_1_1Widgets_1_1WidgetBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Events inherited from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html">Gondwana.Widgets.WidgetBase</a></td></tr>
 <tr class="memitem:a6b3d12d94261fbae70c2e35c8cd578ec inherit events_classGondwana_1_1Widgets_1_1WidgetBase" id="r_a6b3d12d94261fbae70c2e35c8cd578ec"><td class="memItemLeft" align="right" valign="top">Action?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a6b3d12d94261fbae70c2e35c8cd578ec">Shown</a></td></tr>
 <tr class="memdesc:a6b3d12d94261fbae70c2e35c8cd578ec inherit events_classGondwana_1_1Widgets_1_1WidgetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occurs when the widget is shown.  <br /></td></tr>
@@ -380,7 +417,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Creates a view-level label. </p>
 
-<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00023">23</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00035">35</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -420,7 +457,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Creates a scene-layer label. </p>
 
-<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00044">44</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00061">61</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -442,7 +479,211 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Enables or disables wrapping. </p>
 
-<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00155">155</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00245">245</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a8a71bb547eca0179fa2bf4202c0f654f" name="a8a71bb547eca0179fa2bf4202c0f654f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a71bb547eca0179fa2bf4202c0f654f">&#9670;&#160;</a></span>OnMouseWheel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">override void Gondwana.Widgets.Controls.LabelWidget.OnMouseWheel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetMouseWheelEventArgs.html">WidgetMouseWheelEventArgs</a></td>          <td class="paramname"><span class="paramname"><em>args</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Called when mouse-wheel input is routed to the widget. </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a25138e9b94f846e280f28513b18fb842">Gondwana.Widgets.WidgetBase</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00360">360</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a2ff1b573e42ae2bd9395601601ffb108" name="a2ff1b573e42ae2bd9395601601ffb108"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ff1b573e42ae2bd9395601601ffb108">&#9670;&#160;</a></span>OnPointerDown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">override void Gondwana.Widgets.Controls.LabelWidget.OnPointerDown </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a></td>          <td class="paramname"><span class="paramname"><em>args</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Called when a pointer press begins on the widget.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+ </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a3e21456ad03a8de98262b46bd1547fd8">Gondwana.Widgets.WidgetBase</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00292">292</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a20d7d18a5ca6d7a96e5d813f114f105e" name="a20d7d18a5ca6d7a96e5d813f114f105e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20d7d18a5ca6d7a96e5d813f114f105e">&#9670;&#160;</a></span>OnPointerMove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">override void Gondwana.Widgets.Controls.LabelWidget.OnPointerMove </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a></td>          <td class="paramname"><span class="paramname"><em>args</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Called when pointer movement is routed to the widget.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+ </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a725381d7ffb12a61d2d5cfd40b0a7ad4">Gondwana.Widgets.WidgetBase</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00321">321</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a37152d53585bb2dc0887fa812b7754ec" name="a37152d53585bb2dc0887fa812b7754ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37152d53585bb2dc0887fa812b7754ec">&#9670;&#160;</a></span>OnPointerUp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">override void Gondwana.Widgets.Controls.LabelWidget.OnPointerUp </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Widgets_1_1WidgetPointerEventArgs.html">WidgetPointerEventArgs</a></td>          <td class="paramname"><span class="paramname"><em>args</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Called when a pointer press is released for the widget.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The pointer event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+ </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af68f779ee36ea91d59fe2d375c2c0eeb">Gondwana.Widgets.WidgetBase</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00347">347</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a746e96b41c7540e3bb1db36b3cb11eb3" name="a746e96b41c7540e3bb1db36b3cb11eb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a746e96b41c7540e3bb1db36b3cb11eb3">&#9670;&#160;</a></span>ProcessHidden()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">override void Gondwana.Widgets.Controls.LabelWidget.ProcessHidden </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Performs processing when the widget is hidden before notification callbacks are invoked. </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af24739527ab6d68bbd1aa2bfb876b37a">Gondwana.Widgets.WidgetBase</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00284">284</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a679410619dd973427e832017c02a5290" name="a679410619dd973427e832017c02a5290"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a679410619dd973427e832017c02a5290">&#9670;&#160;</a></span>ProcessShown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">override void Gondwana.Widgets.Controls.LabelWidget.ProcessShown </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Performs processing when the widget is shown before notification callbacks are invoked. </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a3233fc47ac2be8fac9af4c35c0810ebd">Gondwana.Widgets.WidgetBase</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00277">277</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -467,7 +708,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Configures horizontal and vertical text alignment. </p>
 
-<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00146">146</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00236">236</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -488,7 +729,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Sets the text-block background color while preserving the foreground color. </p>
 
-<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00136">136</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00226">226</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -513,7 +754,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Sets foreground and background colors. </p>
 
-<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00115">115</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00205">205</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -543,7 +784,28 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Configures the label typeface and size. </p>
 
-<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00105">105</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00194">194</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="afef891dc244edeed31286ad4241152af" name="afef891dc244edeed31286ad4241152af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afef891dc244edeed31286ad4241152af">&#9670;&#160;</a></span>SetLabelZOrder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Widgets_1_1Controls_1_1LabelWidget.html">LabelWidget</a> Gondwana.Widgets.Controls.LabelWidget.SetLabelZOrder </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>zOrder</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the base Z-order used by the label text and optional scrollbar. </p>
+
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00268">268</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -568,7 +830,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Sets symmetric horizontal and vertical padding. </p>
 
-<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00164">164</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00255">255</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -589,7 +851,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Changes the displayed text. </p>
 
-<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00095">95</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00183">183</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -610,7 +872,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Sets the foreground text color while preserving the background color. </p>
 
-<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00126">126</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00216">216</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -637,7 +899,85 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the label bounds in its native coordinate space. </p>
 
-<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00075">75</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00103">103</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a0d0538ac0e5e9527955a15d8eebe30e9" name="a0d0538ac0e5e9527955a15d8eebe30e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d0538ac0e5e9527955a15d8eebe30e9">&#9670;&#160;</a></span>IsVerticalScrollBarVisible</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Gondwana.Widgets.Controls.LabelWidget.IsVerticalScrollBarVisible</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets whether the vertical scrollbar is currently visible. </p>
+
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00153">153</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a3256e5bb126f440532f582be7e1bd496" name="a3256e5bb126f440532f582be7e1bd496"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3256e5bb126f440532f582be7e1bd496">&#9670;&#160;</a></span>MaximumVerticalScrollOffsetPx</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Gondwana.Widgets.Controls.LabelWidget.MaximumVerticalScrollOffsetPx</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the maximum vertical text-content scroll offset for the current layout. </p>
+
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00178">178</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="ac8744ffc7b2f8e757b8447911b9f06e4" name="ac8744ffc7b2f8e757b8447911b9f06e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8744ffc7b2f8e757b8447911b9f06e4">&#9670;&#160;</a></span>MouseWheelScrollPixels</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Gondwana.Widgets.Controls.LabelWidget.MouseWheelScrollPixels</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the number of native pixels scrolled for one mouse-wheel notch. </p>
+
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00156">156</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -663,7 +1003,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets or sets the label size while preserving its current position. </p>
 
-<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00082">82</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00119">119</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -689,7 +1029,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the current label text. </p>
 
-<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00070">70</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00098">98</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -715,7 +1055,112 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the underlying text drawing. </p>
 
-<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00065">65</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00087">87</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a956d4c530eda55c0d9995b59462c04b3" name="a956d4c530eda55c0d9995b59462c04b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a956d4c530eda55c0d9995b59462c04b3">&#9670;&#160;</a></span>VerticalScrollBarThumb</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html">DirectRectangle</a> Gondwana.Widgets.Controls.LabelWidget.VerticalScrollBarThumb</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the vertical scrollbar thumb drawing. </p>
+
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00093">93</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a0e35ee651e6a0c7087864c57e124b284" name="a0e35ee651e6a0c7087864c57e124b284"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e35ee651e6a0c7087864c57e124b284">&#9670;&#160;</a></span>VerticalScrollBarTrack</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectRectangle.html">DirectRectangle</a> Gondwana.Widgets.Controls.LabelWidget.VerticalScrollBarTrack</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the vertical scrollbar track drawing. </p>
+
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00090">90</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a63315d9f5c907d87d00007e1e9e2de16" name="a63315d9f5c907d87d00007e1e9e2de16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63315d9f5c907d87d00007e1e9e2de16">&#9670;&#160;</a></span>VerticalScrollBarVisibility</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceGondwana_1_1Widgets_1_1Controls.html#a5e584d4499255f2d04d820f96559a2cc">ScrollBarVisibility</a> Gondwana.Widgets.Controls.LabelWidget.VerticalScrollBarVisibility</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets when the label displays its vertical scrollbar. </p>
+<p>The default is <a class="el" href="namespaceGondwana_1_1Widgets_1_1Controls.html#a5e584d4499255f2d04d820f96559a2cca6e7b34fa59e1bd229b207892956dc41c" title="Never displays the scrollbar.">ScrollBarVisibility.Never</a>, preserving the traditional non-interactive label behavior. Set this to <a class="el" href="namespaceGondwana_1_1Widgets_1_1Controls.html#a5e584d4499255f2d04d820f96559a2cca06b9281e396db002010bde1de57262eb" title="Displays the scrollbar only when the content overflows the visible area.">ScrollBarVisibility.Auto</a> or <a class="el" href="namespaceGondwana_1_1Widgets_1_1Controls.html#a5e584d4499255f2d04d820f96559a2cca68eec46437c384d8dad18d5464ebc35c" title="Always displays the scrollbar while the widget is visible.">ScrollBarVisibility.Always</a> to enable pointer scrolling. </p>
+
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00136">136</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="a0a0fb2ee6c5e4d9a44be63b063cfac83" name="a0a0fb2ee6c5e4d9a44be63b063cfac83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a0fb2ee6c5e4d9a44be63b063cfac83">&#9670;&#160;</a></span>VerticalScrollOffsetPx</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Gondwana.Widgets.Controls.LabelWidget.VerticalScrollOffsetPx</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets the current vertical text-content scroll offset. </p>
+
+<p class="definition">Definition at line <a class="el" href="LabelWidget_8cs_source.html#l00165">165</a> of file <a class="el" href="LabelWidget_8cs_source.html">LabelWidget.cs</a>.</p>
 
 </div>
 </div>
