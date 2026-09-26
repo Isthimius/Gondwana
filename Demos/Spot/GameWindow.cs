@@ -23,6 +23,7 @@ internal partial class GameWindow : Form
     private WinFormGpuRenderSurfaceControl? _gpuRenderSurface;
     private EngineConfigurationFile? _configFile;
     private MenuBarWidget? _menuBar;
+    private HowToPlayDialog? _howToPlayDialog;
     private AboutBox? _aboutBox;
     private SKImage? _aboutSpotLogo;
     private SKImage? _aboutGondwanaLogo;
@@ -140,6 +141,9 @@ internal partial class GameWindow : Form
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
         // Clean shutdown
+        _howToPlayDialog?.Dispose();
+        _howToPlayDialog = null;
+
         _aboutBox?.Dispose();
         _aboutBox = null;
 
@@ -257,10 +261,16 @@ internal partial class GameWindow : Form
                 mnemonic: 'O')
             .AddMenu(
                 "Help",
-                help => help.AddItem(
-                    "About",
-                    OpenAboutBox,
-                    mnemonic: 'A'),
+                help => help
+                    .AddItem(
+                        "How to play",
+                        OpenHowToPlayDialog,
+                        mnemonic: 'P')
+                    .AddSeparator()
+                    .AddItem(
+                        "About",
+                        OpenAboutBox,
+                        mnemonic: 'A'),
                 mnemonic: 'H');
 
         _menuBar.Show();
@@ -316,6 +326,27 @@ internal partial class GameWindow : Form
     {
         PersistSetting(KeyClouds, enabled ? "true" : "false");
         _gameHost?.Engine.EngineDispatcher.Post(() => _gameHost.SetCloudsEnabled(enabled));
+    }
+
+    private void OpenHowToPlayDialog()
+    {
+        if (_howToPlayDialog is not null)
+        {
+            _howToPlayDialog.Activate();
+            return;
+        }
+
+        if (_gpuRenderSurface is null)
+            return;
+
+        var dialog = new HowToPlayDialog(
+            _gpuRenderSurface.Host,
+            _gpuRenderSurface.Host.ViewManager.Views[0]);
+
+        _howToPlayDialog = dialog;
+        dialog.Closed += _ => _howToPlayDialog = null;
+        dialog.Show();
+        dialog.Activate();
     }
 
     private void OpenAboutBox()
