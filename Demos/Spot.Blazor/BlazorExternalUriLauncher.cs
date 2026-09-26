@@ -1,21 +1,17 @@
+using Gondwana.Widgets.Controls;
 using Microsoft.JSInterop;
 
-namespace Gondwana.Blazor;
+namespace Gondwana.Demos.Spot;
 
-/// <summary>
-/// Opens external URIs in a new browser tab or window.
-/// </summary>
-public sealed class BlazorExternalUriLauncher : IExternalUriLauncher
+internal sealed class BlazorExternalUriLauncher : IExternalUriLauncher
 {
     private readonly IJSRuntime _jsRuntime;
 
-    /// <summary>Creates a browser URI launcher backed by the supplied JavaScript runtime.</summary>
-    public BlazorExternalUriLauncher(IJSRuntime jsRuntime)
+    internal BlazorExternalUriLauncher(IJSRuntime jsRuntime)
     {
         _jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));
     }
 
-    /// <inheritdoc />
     public async ValueTask OpenAsync(Uri uri, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(uri);

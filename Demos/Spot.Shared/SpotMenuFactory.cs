@@ -55,7 +55,6 @@ internal static class SpotMenuFactory
                             .AddItem("Exit", actions.Exit, mnemonic: 'X');
                     }
 
-                    return game;
                 },
                 mnemonic: 'G')
             .AddMenu(

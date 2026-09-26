@@ -48,25 +48,30 @@
             <OutputPath ParameterType="System.String" Required="true" />
         </ParameterGroup>
         <Task>
-            <Reference Include="System.IO.Compression" />
             <Using Namespace="System" />
+            <Using Namespace="System.Collections.Generic" />
             <Using Namespace="System.IO" />
-            <Using Namespace="System.IO.Compression" />
-            <Using Namespace="System.Linq" />
+            <Using Namespace="System.Text" />
             <Code Type="Fragment" Language="cs"><![CDATA[
-                Directory.CreateDirectory(Path.GetDirectoryName(OutputPath)!);
-
-                if (File.Exists(OutputPath))
-                    File.Delete(OutputPath);
-
-                using var output = File.Create(OutputPath);
-                using var archive = new ZipArchive(output, ZipArchiveMode.Create, leaveOpen: false);
-
-                foreach (var file in Directory.GetFiles(SourceRoot, "*", SearchOption.TopDirectoryOnly)
-                                              .OrderBy(path => path, StringComparer.OrdinalIgnoreCase))
+                uint CalculateCrc32(byte[] data)
                 {
-                    var extension = Path.GetExtension(file).ToLowerInvariant();
-                    var assetType = extension switch
+                    uint crc = 0xffffffffu;
+
+                    foreach (byte value in data)
+                    {
+                        crc ^= value;
+                        for (int bit = 0; bit < 8; bit++)
+                            crc = (crc & 1u) != 0
+                                ? 0xedb88320u ^ (crc >> 1)
+                                : crc >> 1;
+                    }
+
+                    return crc ^ 0xffffffffu;
+                }
+
+                string GetAssetType(string file)
+                {
+                    return Path.GetExtension(file).ToLowerInvariant() switch
                     {
                         ".png" or ".jpg" or ".jpeg" or ".bmp" or ".gif" or ".ico" => "Image",
                         ".mp3" or ".wav" or ".ogg" or ".flac" or ".m4a" or ".aac" or ".opus" or ".webm" => "Audio",
@@ -74,17 +79,78 @@
                         ".gts" => "TilesheetDefinition",
                         _ => "Misc"
                     };
-
-                    var assetName = Path.GetFileName(file).ToLowerInvariant();
-                    var entry = archive.CreateEntry(
-                        $"{assetType}_{assetName}",
-                        CompressionLevel.Optimal);
-                    entry.LastWriteTime = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero);
-
-                    using var source = File.OpenRead(file);
-                    using var destination = entry.Open();
-                    source.CopyTo(destination);
                 }
+
+                Directory.CreateDirectory(Path.GetDirectoryName(OutputPath)!);
+
+                var files = Directory.GetFiles(SourceRoot, "*", SearchOption.TopDirectoryOnly);
+                Array.Sort(files, StringComparer.OrdinalIgnoreCase);
+
+                using var output = File.Create(OutputPath);
+                using var writer = new BinaryWriter(output, Encoding.UTF8, leaveOpen: true);
+                var entries = new List<(byte[] Name, uint Crc, int Size, uint Offset)>();
+                const ushort dosTime = 0;
+                const ushort dosDate = 0x2821; // 2000-01-01
+
+                foreach (var file in files)
+                {
+                    var data = File.ReadAllBytes(file);
+                    var name = Encoding.UTF8.GetBytes(
+                        $"{GetAssetType(file)}_{Path.GetFileName(file).ToLowerInvariant()}");
+                    var crc = CalculateCrc32(data);
+                    var offset = checked((uint)output.Position);
+
+                    writer.Write(0x04034b50u);
+                    writer.Write((ushort)20);
+                    writer.Write((ushort)0);
+                    writer.Write((ushort)0);
+                    writer.Write(dosTime);
+                    writer.Write(dosDate);
+                    writer.Write(crc);
+                    writer.Write((uint)data.Length);
+                    writer.Write((uint)data.Length);
+                    writer.Write((ushort)name.Length);
+                    writer.Write((ushort)0);
+                    writer.Write(name);
+                    writer.Write(data);
+
+                    entries.Add((name, crc, data.Length, offset));
+                }
+
+                var centralOffset = checked((uint)output.Position);
+
+                foreach (var entry in entries)
+                {
+                    writer.Write(0x02014b50u);
+                    writer.Write((ushort)20);
+                    writer.Write((ushort)20);
+                    writer.Write((ushort)0);
+                    writer.Write((ushort)0);
+                    writer.Write(dosTime);
+                    writer.Write(dosDate);
+                    writer.Write(entry.Crc);
+                    writer.Write((uint)entry.Size);
+                    writer.Write((uint)entry.Size);
+                    writer.Write((ushort)entry.Name.Length);
+                    writer.Write((ushort)0);
+                    writer.Write((ushort)0);
+                    writer.Write((ushort)0);
+                    writer.Write((ushort)0);
+                    writer.Write(0u);
+                    writer.Write(entry.Offset);
+                    writer.Write(entry.Name);
+                }
+
+                var centralSize = checked((uint)output.Position - centralOffset);
+
+                writer.Write(0x06054b50u);
+                writer.Write((ushort)0);
+                writer.Write((ushort)0);
+                writer.Write((ushort)entries.Count);
+                writer.Write((ushort)entries.Count);
+                writer.Write(centralSize);
+                writer.Write(centralOffset);
+                writer.Write((ushort)0);
             ]]></Code>
         </Task>
     </UsingTask>
