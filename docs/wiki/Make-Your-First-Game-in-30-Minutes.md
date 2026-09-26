@@ -485,7 +485,7 @@ Spot (`Demos/Spot/`) is a direct extension of everything you just built:
 | Background music | `Engine.Managers.AudioResources.LoadFromFile()` + `audioResource.Play()` |
 | Sprite animations | `sprite.StartJiggle()`, `sprite.PulseBy()`, `sprite.ResizeTo()` |
 
-Read `Demos/Spot/Hosts/SpotGpuGameHost.cs` together with `SpotHostCore.cs` for a working example of these systems in the full Spot demo.
+Read `Demos/Spot/Hosts/SpotGameHost.cs` together with the focused `SpotGameHost.Content.cs`, `SpotGameHost.Input.cs`, `SpotGameHost.Gameplay.cs`, and presentation partials for a working example of these systems in the full Spot demo.
 
 ---
 
