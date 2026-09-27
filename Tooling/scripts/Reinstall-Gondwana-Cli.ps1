@@ -106,7 +106,7 @@ Write-Host ""
 Write-Host "Installing Gondwana.Cli $packedVersion from local package feed..." -ForegroundColor Cyan
 $nugetPackagesDir = if (-not [string]::IsNullOrWhiteSpace($env:NUGET_PACKAGES)) { $env:NUGET_PACKAGES } else { Join-Path (Join-Path $HOME '.nuget') 'packages' }
 Remove-Item (Join-Path $nugetPackagesDir 'gondwana.cli') -Recurse -Force -ErrorAction SilentlyContinue
-Invoke-Cmd dotnet @('tool', 'install', '--global', 'Gondwana.Cli', '--version', $packedVersion, '--add-source', $packageSource, '--prerelease', '--ignore-failed-sources')
+Invoke-Cmd dotnet @('tool', 'install', '--global', 'Gondwana.Cli', '--version', $packedVersion, '--add-source', $packageSource, '--ignore-failed-sources')
 
 $installedToolLine = dotnet tool list --global 2>&1 |
                      Where-Object { $_ -match '^\s*Gondwana\.Cli\s' } |
