@@ -55,7 +55,7 @@ internal sealed partial class SpotGameHost : BlazorGpuGameHost
 
     partial void ConfigureNewGameDialogForPlatform(NewGameDialog dialog)
     {
-        dialog.ConfigureTextInput(BlazorTextBoxInput.Configure);
+        dialog.ConfigureTextInput(textBox => BlazorTextBoxInput.Configure(textBox));
     }
 
     partial void ConfigurePlatformKeyboardInput(KeyboardEventPoller keyboard)
