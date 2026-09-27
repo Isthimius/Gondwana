@@ -166,7 +166,6 @@ function removeGestureRetryListeners() {
         return;
 
     globalThis.removeEventListener("pointerdown", retryPendingPlaybackFromGesture, true);
-    globalThis.removeEventListener("keydown", retryPendingPlaybackFromGesture, true);
     globalThis.removeEventListener("touchstart", retryPendingPlaybackFromGesture, true);
     _gestureRetryInstalled = false;
 }
@@ -177,7 +176,6 @@ function ensureGestureRetryListeners() {
 
     _gestureRetryInstalled = true;
     globalThis.addEventListener("pointerdown", retryPendingPlaybackFromGesture, { capture: true, passive: true });
-    globalThis.addEventListener("keydown", retryPendingPlaybackFromGesture, { capture: true });
     globalThis.addEventListener("touchstart", retryPendingPlaybackFromGesture, { capture: true, passive: true });
 }
 
