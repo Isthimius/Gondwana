@@ -40,9 +40,9 @@
     private MenuBarWidget? _menuBar;
     private HowToPlayDialog? _howToPlayDialog;
     private AboutBox? _aboutBox;
-    private SkiaSharp.SKImage? _aboutSpotLogo;
-    private SkiaSharp.SKImage? _aboutGondwanaLogo;
-    private SkiaSharp.SKTypeface? _aboutTypeface;
+    private global::SkiaSharp.SKImage? _aboutSpotLogo;
+    private global::SkiaSharp.SKImage? _aboutGondwanaLogo;
+    private global::SkiaSharp.SKTypeface? _aboutTypeface;
     private bool _loading = true;
     private string? _errorMessage;
 
@@ -308,21 +308,21 @@
         if (_aboutSpotLogo is null)
         {
             using var stream = _gameHost.OpenAsset(AssetTypes.Image, "spot.png");
-            _aboutSpotLogo = SkiaSharp.SKImage.FromEncodedData(stream)
+            _aboutSpotLogo = global::SkiaSharp.SKImage.FromEncodedData(stream)
                 ?? throw new InvalidOperationException("Failed to decode Spot About-box image.");
         }
 
         if (_aboutGondwanaLogo is null)
         {
             using var stream = _gameHost.OpenAsset(AssetTypes.Image, "gondwana-logo-text.png");
-            _aboutGondwanaLogo = SkiaSharp.SKImage.FromEncodedData(stream)
+            _aboutGondwanaLogo = global::SkiaSharp.SKImage.FromEncodedData(stream)
                 ?? throw new InvalidOperationException("Failed to decode Gondwana About-box image.");
         }
 
         if (_aboutTypeface is null)
         {
             using var stream = _gameHost.OpenAsset(AssetTypes.Font, "ArchitectsDaughter-Regular.ttf");
-            _aboutTypeface = SkiaSharp.SKTypeface.FromStream(stream)
+            _aboutTypeface = global::SkiaSharp.SKTypeface.FromStream(stream)
                 ?? throw new InvalidOperationException("Failed to decode Spot About-box font.");
         }
     }
