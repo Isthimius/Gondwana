@@ -18,6 +18,12 @@
 }
 
 .status-overlay.error {
+    position: absolute;
+    inset: 0;
+    z-index: 100001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 24px;
     box-sizing: border-box;
     text-align: center;
