@@ -222,7 +222,7 @@ Currently auto-fixable:
 - **Gondwana Templates** missing → runs `dotnet new install Gondwana.Templates`; if already installed, `--fix` runs `dotnet new update` instead so newer local template packages are retained rather than downgraded
 - **wasm-tools** missing while working in a Blazor/WASM project → runs `dotnet workload install wasm-tools`
 - **git-cliff** on Windows → runs `winget install/upgrade --id orhun.git-cliff`
-- **butler** not installed → downloads the latest binary from the [itch.io broth CDN](https://itch.io/docs/butler/installing.html), trying `broth.itch.ovh` first and `broth.itch.zone` as fallback, then installs it to `%LOCALAPPDATA%\itch\butler` (Windows) or `~/.itch/butler` (Linux/macOS). Run `butler login` after installation to authenticate with itch.io.
+- **butler** not installed → downloads the latest binary from the [itch.io broth CDN](https://itch.io/docs/butler/installing.html), trying `broth.itch.ovh` first and `broth.itch.zone` as fallback, then installs it to `%LOCALAPPDATA%\itch\butler` (Windows) or `~/.itch/butler` (Linux/macOS). On Windows, `doctor --fix` also adds Butler's install directory to the persistent user `PATH`; open a new terminal before invoking `butler` directly. Run `butler login` after installation to authenticate with itch.io.
 
 After applying fixes, the checks are re-run and the updated results are displayed.
 
