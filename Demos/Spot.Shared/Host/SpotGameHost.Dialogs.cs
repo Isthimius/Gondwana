@@ -30,6 +30,7 @@ internal sealed partial class SpotGameHost
 
         var view = SurfaceHost.ViewManager.Views[0];
         var dialog = new NewGameDialog(SurfaceHost, view, newGameOptions);
+        ConfigureNewGameDialogForPlatform(dialog);
         var previousFocus = WidgetInputRouter?.FocusedWidget;
         _newGameDialog = dialog;
 
@@ -49,4 +50,6 @@ internal sealed partial class SpotGameHost
         dialog.Activate();
         WidgetInputRouter?.Focus(dialog.InitialFocusTarget);
     }
+
+    partial void ConfigureNewGameDialogForPlatform(NewGameDialog dialog);
 }

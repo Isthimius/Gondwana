@@ -107,6 +107,16 @@ Widgets that open an external URI can use the browser implementation directly:
 var launcher = new BlazorExternalUriLauncher(JS);
 ```
 
+### Widget text input
+
+`TextBoxWidget` uses host keyboard codes. For Blazor-hosted text boxes, apply the built-in Blazor mapping:
+
+```csharp
+BlazorTextBoxInput.Configure(textBox);
+```
+
+This configures the text box's special-key codes and printable-character resolver for `BlazorKey` values without changing the public Blazor keyboard-code contract.
+
 ### Touch input
 
 Enable touch input by calling `InitializeBlazorTouchAdapter`:

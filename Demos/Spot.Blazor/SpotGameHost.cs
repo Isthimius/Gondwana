@@ -1,5 +1,6 @@
 using Gondwana.Assets;
 using Gondwana.Blazor.Hosting;
+using Gondwana.Blazor.Input;
 using Gondwana.Blazor.Rendering;
 using Gondwana.Rendering;
 using Gondwana.Scenes;
@@ -47,5 +48,10 @@ internal sealed partial class SpotGameHost : BlazorGpuGameHost
     protected override void OnBlazorDisposed()
     {
         _assets.Dispose();
+    }
+
+    partial void ConfigureNewGameDialogForPlatform(NewGameDialog dialog)
+    {
+        dialog.ConfigureTextInput(BlazorTextBoxInput.Configure);
     }
 }

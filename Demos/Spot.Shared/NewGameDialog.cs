@@ -47,6 +47,14 @@ internal sealed class NewGameDialog : DialogBox
     internal NewGameOptions Options { get; private set; }
     internal WidgetBase InitialFocusTarget => _playerNames[0];
 
+    internal void ConfigureTextInput(Action<TextBoxWidget> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        foreach (TextBoxWidget textBox in _playerNames)
+            configure(textBox);
+    }
+
     internal NewGameDialog(
         RenderSurfaceHostBase host,
         View view,
