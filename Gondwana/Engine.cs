@@ -283,8 +283,55 @@ public sealed class Engine : IDisposable
         IKeyboardAdapter? keyboardAdapter = null,
         IMouseAdapter? mouseAdapter = null,
         ITouchAdapter? touchAdapter = null,
-        IGamepadManager<IGamepadAdapter>? gamepadManager = null,
-        IEngineConfigurationStore? configurationStore = null)
+        IGamepadManager<IGamepadAdapter>? gamepadManager = null)
+        => InitializeCore(
+            configFileName,
+            autoSaveConfig,
+            keyboardAdapter,
+            mouseAdapter,
+            touchAdapter,
+            gamepadManager,
+            configurationStore: null);
+
+    /// <summary>
+    /// Initializes the engine using a caller-supplied configuration persistence store.
+    /// </summary>
+    /// <param name="configurationStore">Configuration store owned by the engine after successful initialization.</param>
+    /// <param name="autoSaveConfig">
+    /// Optional override for the store's <see cref="IEngineConfigurationStore.AutoSave"/> setting.
+    /// </param>
+    /// <param name="keyboardAdapter">Optional keyboard input adapter.</param>
+    /// <param name="mouseAdapter">Optional mouse input adapter.</param>
+    /// <param name="touchAdapter">Optional touch input adapter.</param>
+    /// <param name="gamepadManager">Optional gamepad manager.</param>
+    public void InitializeWithConfigurationStore(
+        IEngineConfigurationStore configurationStore,
+        bool? autoSaveConfig = null,
+        IKeyboardAdapter? keyboardAdapter = null,
+        IMouseAdapter? mouseAdapter = null,
+        ITouchAdapter? touchAdapter = null,
+        IGamepadManager<IGamepadAdapter>? gamepadManager = null)
+    {
+        ArgumentNullException.ThrowIfNull(configurationStore);
+
+        InitializeCore(
+            configFileName: null,
+            autoSaveConfig,
+            keyboardAdapter,
+            mouseAdapter,
+            touchAdapter,
+            gamepadManager,
+            configurationStore);
+    }
+
+    private void InitializeCore(
+        string? configFileName,
+        bool? autoSaveConfig,
+        IKeyboardAdapter? keyboardAdapter,
+        IMouseAdapter? mouseAdapter,
+        ITouchAdapter? touchAdapter,
+        IGamepadManager<IGamepadAdapter>? gamepadManager,
+        IEngineConfigurationStore? configurationStore)
     {
         if (_isInitialized || _isInitializing)
             return;

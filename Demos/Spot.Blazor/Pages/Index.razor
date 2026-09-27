@@ -70,9 +70,9 @@
                 ConfigurationKey,
                 autoSave: true);
 
-            _gameHost.Initialize(
-                logLevel: LogLevel.Warning,
-                configurationStore: configurationStore);
+            _gameHost.InitializeWithConfigurationStore(
+                configurationStore,
+                logLevel: LogLevel.Warning);
             configurationStore = null; // Engine owns the initialized store.
 
             _loading = false;

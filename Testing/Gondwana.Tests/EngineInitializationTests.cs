@@ -64,7 +64,7 @@ public sealed class EngineInitializationTests
 
         try
         {
-            engine.Initialize(configurationStore: store);
+            engine.InitializeWithConfigurationStore(store);
 
             Assert.Same(store.Configuration, engine.Configuration);
             Assert.Equal(37, engine.Configuration.TargetFPS);
@@ -82,6 +82,27 @@ public sealed class EngineInitializationTests
             Assert.Equal(2, store.SaveCount);
             GC.SuppressFinalize(engine);
         }
+    }
+
+    [Fact]
+    public void Initialize_LegacyMetadataSignature_RemainsAvailable()
+    {
+        var method = typeof(Engine).GetMethod(
+            nameof(Engine.Initialize),
+            BindingFlags.Instance | BindingFlags.Public,
+            binder: null,
+            types:
+            [
+                typeof(string),
+                typeof(bool?),
+                typeof(Gondwana.Input.Keyboard.IKeyboardAdapter),
+                typeof(Gondwana.Input.Mouse.IMouseAdapter),
+                typeof(Gondwana.Input.Touch.ITouchAdapter),
+                typeof(Gondwana.Input.Gamepad.IGamepadManager<Gondwana.Input.Gamepad.IGamepadAdapter>)
+            ],
+            modifiers: null);
+
+        Assert.NotNull(method);
     }
 
     [Fact]

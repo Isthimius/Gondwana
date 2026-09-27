@@ -98,7 +98,7 @@ var store = new BrowserLocalStorageEngineConfigurationStore(
     "my-game.configuration",
     autoSave: true);
 
-host.Initialize(configurationStore: store);
+host.InitializeWithConfigurationStore(store);
 ```
 
 Widgets that open an external URI can use the browser implementation directly:

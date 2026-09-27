@@ -575,9 +575,9 @@ Once those distinctions are clear, Gondwana configuration is straightforward: lo
 
 ## Platform-specific configuration stores
 
-`Engine.Initialize` and `GameHostBase.Initialize` accept an optional
-`IEngineConfigurationStore`. When omitted, Gondwana continues to use
-`EngineConfigurationFile` exactly as before.
+`Engine.InitializeWithConfigurationStore` and `GameHostBase.InitializeWithConfigurationStore`
+accept an `IEngineConfigurationStore`. The existing `Initialize` overloads remain unchanged
+for source and binary compatibility and continue to use `EngineConfigurationFile`.
 
 Blazor WebAssembly can use
 `BrowserLocalStorageEngineConfigurationStore` from `Gondwana.Blazor`:
@@ -588,7 +588,7 @@ var store = new BrowserLocalStorageEngineConfigurationStore(
     "my-game.configuration",
     autoSave: true);
 
-host.Initialize(configurationStore: store);
+host.InitializeWithConfigurationStore(store);
 
 // Persist immediately when a user-facing option changes.
 host.Engine.Configuration.SetConfigurationValue("audio", "music", "false");

@@ -54,8 +54,33 @@ public abstract class GameHostBase : IDisposable
     public void Initialize(
         string? configPath = null,
         bool? autoSaveConfig = null,
-        LogLevel logLevel = LogLevel.Warning,
-        IEngineConfigurationStore? configurationStore = null)
+        LogLevel logLevel = LogLevel.Warning)
+        => InitializeCore(configPath, autoSaveConfig, logLevel, configurationStore: null);
+
+    /// <summary>
+    /// Initializes the game host using a caller-supplied configuration persistence store.
+    /// </summary>
+    /// <param name="configurationStore">Configuration store owned by the engine after successful initialization.</param>
+    /// <param name="autoSaveConfig">
+    /// Optional override for the store's <see cref="IEngineConfigurationStore.AutoSave"/> setting.
+    /// </param>
+    /// <param name="logLevel">
+    /// The minimum log level used by Gondwana. The default is <see cref="LogLevel.Warning"/>.
+    /// </param>
+    public void InitializeWithConfigurationStore(
+        IEngineConfigurationStore configurationStore,
+        bool? autoSaveConfig = null,
+        LogLevel logLevel = LogLevel.Warning)
+    {
+        ArgumentNullException.ThrowIfNull(configurationStore);
+        InitializeCore(configPath: null, autoSaveConfig, logLevel, configurationStore);
+    }
+
+    private void InitializeCore(
+        string? configPath,
+        bool? autoSaveConfig,
+        LogLevel logLevel,
+        IEngineConfigurationStore? configurationStore)
     {
         EnsureNotDisposed();
         EnsureNotInitialized();
@@ -333,10 +358,18 @@ public abstract class GameHostBase : IDisposable
         bool? autoSaveConfig,
         IEngineConfigurationStore? configurationStore)
     {
-        Engine.Instance.Initialize(
-            configFileName: configPath,
-            autoSaveConfig: autoSaveConfig,
-            configurationStore: configurationStore);
+        if (configurationStore is null)
+        {
+            Engine.Instance.Initialize(
+                configFileName: configPath,
+                autoSaveConfig: autoSaveConfig);
+        }
+        else
+        {
+            Engine.Instance.InitializeWithConfigurationStore(
+                configurationStore,
+                autoSaveConfig: autoSaveConfig);
+        }
         _engineInitialized = true;
 
         OnEngineInitialized();
