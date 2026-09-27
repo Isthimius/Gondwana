@@ -53,6 +53,9 @@ var annotated_dup =
         ] ]
       ] ],
       [ "Blazor", "namespaceGondwana_1_1Blazor.html", [
+        [ "Configuration", "namespaceGondwana_1_1Blazor_1_1Configuration.html", [
+          [ "BrowserLocalStorageEngineConfigurationStore", "classGondwana_1_1Blazor_1_1Configuration_1_1BrowserLocalStorageEngineConfigurationStore.html", "classGondwana_1_1Blazor_1_1Configuration_1_1BrowserLocalStorageEngineConfigurationStore" ]
+        ] ],
         [ "Hosting", "namespaceGondwana_1_1Blazor_1_1Hosting.html", [
           [ "BlazorGameHost", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost.html", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHost" ],
           [ "BlazorGameHostBase", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase" ],
@@ -76,11 +79,13 @@ var annotated_dup =
           [ "BlazorGpuRenderSurfaceComponent", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceComponent.html", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceComponent" ],
           [ "BlazorRenderSurfaceComponentBase", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorRenderSurfaceComponentBase.html", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorRenderSurfaceComponentBase" ],
           [ "BlazorSkiaGlView", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorSkiaGlView.html", null ]
-        ] ]
+        ] ],
+        [ "BlazorExternalUriLauncher", "classGondwana_1_1Blazor_1_1BlazorExternalUriLauncher.html", "classGondwana_1_1Blazor_1_1BlazorExternalUriLauncher" ]
       ] ],
       [ "Configuration", "namespaceGondwana_1_1Configuration.html", [
         [ "EngineConfiguration", "classGondwana_1_1Configuration_1_1EngineConfiguration.html", "classGondwana_1_1Configuration_1_1EngineConfiguration" ],
-        [ "EngineConfigurationFile", "classGondwana_1_1Configuration_1_1EngineConfigurationFile.html", "classGondwana_1_1Configuration_1_1EngineConfigurationFile" ]
+        [ "EngineConfigurationFile", "classGondwana_1_1Configuration_1_1EngineConfigurationFile.html", "classGondwana_1_1Configuration_1_1EngineConfigurationFile" ],
+        [ "IEngineConfigurationStore", "interfaceGondwana_1_1Configuration_1_1IEngineConfigurationStore.html", "interfaceGondwana_1_1Configuration_1_1IEngineConfigurationStore" ]
       ] ],
       [ "Drawing", "namespaceGondwana_1_1Drawing.html", [
         [ "Animation", "namespaceGondwana_1_1Drawing_1_1Animation.html", [

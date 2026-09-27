@@ -105,8 +105,11 @@ $(function(){initNavTree('classGondwana_1_1Configuration_1_1EngineConfigurationF
 Inheritance diagram for Gondwana.Configuration.EngineConfigurationFile:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="classGondwana_1_1Configuration_1_1EngineConfigurationFile.png" alt=""/>
- </div></div>
+  <img src="classGondwana_1_1Configuration_1_1EngineConfigurationFile.png" usemap="#Gondwana_2EConfiguration_2EEngineConfigurationFile_map" alt=""/>
+  <map id="Gondwana_2EConfiguration_2EEngineConfigurationFile_map" name="Gondwana_2EConfiguration_2EEngineConfigurationFile_map">
+<area href="interfaceGondwana_1_1Configuration_1_1IEngineConfigurationStore.html" title="Provides a persistence boundary for EngineConfiguration." alt="Gondwana.Configuration.IEngineConfigurationStore" shape="rect" coords="0,56,304,80"/>
+  </map>
+</div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -134,6 +137,8 @@ Properties</h2></td></tr>
 <tr class="memdesc:a0d96dc52e971a15b27459c9681ff4591"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether the configuration should be automatically saved when the instance is disposed.  <br /></td></tr>
 <tr class="memitem:a617d6e239ab02a1a645fa237857fb751" id="r_a617d6e239ab02a1a645fa237857fb751"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html">EngineConfiguration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a617d6e239ab02a1a645fa237857fb751">EngineConfig</a> = new()<code> [get]</code></td></tr>
 <tr class="memdesc:a617d6e239ab02a1a645fa237857fb751"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the engine configuration settings.  <br /></td></tr>
+<tr class="memitem:a1dbc13af1d98042985755406b34ef9ba" id="r_a1dbc13af1d98042985755406b34ef9ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html">EngineConfiguration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1dbc13af1d98042985755406b34ef9ba">Configuration</a><code> [get]</code></td></tr>
+<tr class="memdesc:a1dbc13af1d98042985755406b34ef9ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the engine configuration represented by this file-backed store.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a configuration file for the engine, providing functionality to create, load, and save engine settings. </p>
@@ -200,7 +205,7 @@ Properties</h2></td></tr>
 <p>Releases all resources used by the <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfigurationFile.html" title="Represents a configuration file for the engine, providing functionality to create,...">EngineConfigurationFile</a>. </p>
 <p>If <a class="el" href="#a0d96dc52e971a15b27459c9681ff4591" title="Gets or sets a value indicating whether the configuration should be automatically saved when the inst...">AutoSave</a> is <code>true</code>, the configuration is automatically saved before disposal.</p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfigurationFile_8cs_source.html#l00117">117</a> of file <a class="el" href="EngineConfigurationFile_8cs_source.html">EngineConfigurationFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfigurationFile_8cs_source.html#l00123">123</a> of file <a class="el" href="EngineConfigurationFile_8cs_source.html">EngineConfigurationFile.cs</a>.</p>
 
 </div>
 </div>
@@ -264,7 +269,9 @@ Properties</h2></td></tr>
 <p>Saves the configuration to the file specified by <a class="el" href="#a061538d848859efc860a6a11ec567d68" title="Gets the full path to the configuration file.">FilePath</a>. </p>
 <p>The configuration is serialized to JSON with indented formatting for readability.</p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfigurationFile_8cs_source.html#l00095">95</a> of file <a class="el" href="EngineConfigurationFile_8cs_source.html">EngineConfigurationFile.cs</a>.</p>
+<p>Implements <a class="el" href="interfaceGondwana_1_1Configuration_1_1IEngineConfigurationStore.html#ab78db0a407c5c8e5cb213be4ce2fa749">Gondwana.Configuration.IEngineConfigurationStore</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="EngineConfigurationFile_8cs_source.html#l00101">101</a> of file <a class="el" href="EngineConfigurationFile_8cs_source.html">EngineConfigurationFile.cs</a>.</p>
 
 </div>
 </div>
@@ -292,7 +299,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfigurationFile_8cs_source.html#l00106">106</a> of file <a class="el" href="EngineConfigurationFile_8cs_source.html">EngineConfigurationFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfigurationFile_8cs_source.html#l00112">112</a> of file <a class="el" href="EngineConfigurationFile_8cs_source.html">EngineConfigurationFile.cs</a>.</p>
 
 </div>
 </div>
@@ -320,7 +327,37 @@ Properties</h2></td></tr>
 <p>Gets or sets a value indicating whether the configuration should be automatically saved when the instance is disposed. </p>
 <p>When set to <code>true</code>, the <a class="el" href="#ab7f1d52fdf79a4ac71c3a8398ba06882" title="Saves the configuration to the file specified by FilePath.">Save()</a> method is automatically called during disposal.</p>
 
+<p>Implements <a class="el" href="interfaceGondwana_1_1Configuration_1_1IEngineConfigurationStore.html#a9e9db0d7a43b1bab97e459a632a9c0b5">Gondwana.Configuration.IEngineConfigurationStore</a>.</p>
+
 <p class="definition">Definition at line <a class="el" href="EngineConfigurationFile_8cs_source.html#l00084">84</a> of file <a class="el" href="EngineConfigurationFile_8cs_source.html">EngineConfigurationFile.cs</a>.</p>
+
+</div>
+</div>
+<a id="a1dbc13af1d98042985755406b34ef9ba" name="a1dbc13af1d98042985755406b34ef9ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dbc13af1d98042985755406b34ef9ba">&#9670;&#160;</a></span>Configuration</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html">EngineConfiguration</a> Gondwana.Configuration.EngineConfigurationFile.Configuration</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the engine configuration represented by this file-backed store. </p>
+
+<p>Implements <a class="el" href="interfaceGondwana_1_1Configuration_1_1IEngineConfigurationStore.html#a8e12f4727d5a2ddd340b94714eefe3ab">Gondwana.Configuration.IEngineConfigurationStore</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="EngineConfigurationFile_8cs_source.html#l00095">95</a> of file <a class="el" href="EngineConfigurationFile_8cs_source.html">EngineConfigurationFile.cs</a>.</p>
 
 </div>
 </div>

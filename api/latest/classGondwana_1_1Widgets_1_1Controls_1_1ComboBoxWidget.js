@@ -9,6 +9,7 @@ var classGondwana_1_1Widgets_1_1Controls_1_1ComboBoxWidget =
     [ "ProcessHidden", "classGondwana_1_1Widgets_1_1Controls_1_1ComboBoxWidget.html#a481f47f195757daa0344f4f3598b3f09", null ],
     [ "ProcessShown", "classGondwana_1_1Widgets_1_1Controls_1_1ComboBoxWidget.html#abc875f9437f57427c648ff0d6e0e85cf", null ],
     [ "SetComboBoxZOrder", "classGondwana_1_1Widgets_1_1Controls_1_1ComboBoxWidget.html#aea71d801ef9786b3f1f7dff3bc5e912f", null ],
+    [ "SetHeaderTextColor", "classGondwana_1_1Widgets_1_1Controls_1_1ComboBoxWidget.html#a34829ce152ac4c8a53fad719d3ac728a", null ],
     [ "SetItems", "classGondwana_1_1Widgets_1_1Controls_1_1ComboBoxWidget.html#a7a5273f900fd9a0c372aa280db61cb4a", null ],
     [ "ToggleDropDown", "classGondwana_1_1Widgets_1_1Controls_1_1ComboBoxWidget.html#ac85337ffe47abcaadfa92bb11930b493", null ],
     [ "DropDown", "classGondwana_1_1Widgets_1_1Controls_1_1ComboBoxWidget.html#a9a953a3b3d6e5191a4ad5e5b16d1478b", null ],

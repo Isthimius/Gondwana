@@ -1,0 +1,4 @@
+var namespaceGondwana_1_1Blazor_1_1Configuration =
+[
+    [ "BrowserLocalStorageEngineConfigurationStore", "classGondwana_1_1Blazor_1_1Configuration_1_1BrowserLocalStorageEngineConfigurationStore.html", "classGondwana_1_1Blazor_1_1Configuration_1_1BrowserLocalStorageEngineConfigurationStore" ]
+];

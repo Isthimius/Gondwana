@@ -164,7 +164,10 @@ var hierarchy =
       [ "Gondwana.Blazor.Rendering.BlazorBitmapRenderSurfaceAdapter", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorBitmapRenderSurfaceAdapter.html", null ],
       [ "Gondwana.Blazor.Rendering.BlazorGpuRenderSurfaceAdapter", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceAdapter.html", null ],
       [ "Gondwana.Blazor.Rendering.BlazorRenderSurfaceComponentBase", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorRenderSurfaceComponentBase.html", null ],
-      [ "Gondwana.Configuration.EngineConfigurationFile", "classGondwana_1_1Configuration_1_1EngineConfigurationFile.html", null ],
+      [ "Gondwana.Configuration.IEngineConfigurationStore", "interfaceGondwana_1_1Configuration_1_1IEngineConfigurationStore.html", [
+        [ "Gondwana.Blazor.Configuration.BrowserLocalStorageEngineConfigurationStore", "classGondwana_1_1Blazor_1_1Configuration_1_1BrowserLocalStorageEngineConfigurationStore.html", null ],
+        [ "Gondwana.Configuration.EngineConfigurationFile", "classGondwana_1_1Configuration_1_1EngineConfigurationFile.html", null ]
+      ] ],
       [ "Gondwana.Drawing.Animation.Animator", "classGondwana_1_1Drawing_1_1Animation_1_1Animator.html", null ],
       [ "Gondwana.Drawing.Animation.Cycle", "classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html", null ],
       [ "Gondwana.Drawing.Direct.DirectDrawingManager", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingManager.html", null ],
@@ -241,7 +244,9 @@ var hierarchy =
       [ "Gondwana.Assets.AssetsFileEntry", "classGondwana_1_1Assets_1_1AssetsFileEntry.html", null ],
       [ "Gondwana.Physics.Collisions.CollisionAdjust", "structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html", null ]
     ] ],
-    [ "Gondwana.Widgets.Controls.IExternalUriLauncher", "interfaceGondwana_1_1Widgets_1_1Controls_1_1IExternalUriLauncher.html", null ],
+    [ "Gondwana.Widgets.Controls.IExternalUriLauncher", "interfaceGondwana_1_1Widgets_1_1Controls_1_1IExternalUriLauncher.html", [
+      [ "Gondwana.Blazor.BlazorExternalUriLauncher", "classGondwana_1_1Blazor_1_1BlazorExternalUriLauncher.html", null ]
+    ] ],
     [ "Gondwana.Input.Gamepad.IGamepadAdapter", "interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadAdapter.html", [
       [ "Gondwana.Input.Gamepad.SDL2.SdlGamepadAdapter", "classGondwana_1_1Input_1_1Gamepad_1_1SDL2_1_1SdlGamepadAdapter.html", null ],
       [ "Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadAdapter", "classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadAdapter.html", null ]
