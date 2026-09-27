@@ -17,18 +17,6 @@
     background: cornflowerblue;
 }
 
-.status-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 100000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: cornflowerblue;
-    color: white;
-    font: 18px sans-serif;
-}
-
 .status-overlay.error {
     padding: 24px;
     box-sizing: border-box;

@@ -20,7 +20,18 @@
 
         @if (_loading)
         {
-            <div class="status-overlay">Loading Spot!…</div>
+            <div class="startup-loader startup-loader-overlay">
+                <div class="startup-card">
+                    <img class="startup-logo" src="assets/spot_ico.png" alt="" />
+                    <h1 class="startup-title">SPOT!</h1>
+                    <div class="startup-message">Preparing the game...</div>
+                    <div class="startup-progress" aria-hidden="true">
+                        <div class="startup-progress-fill indeterminate"></div>
+                    </div>
+                    <div class="startup-percent">Loading game assets</div>
+                    <div class="startup-powered">Powered by Gondwana</div>
+                </div>
+            </div>
         }
 
         @if (!string.IsNullOrWhiteSpace(_errorMessage))
