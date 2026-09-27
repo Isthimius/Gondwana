@@ -7,7 +7,6 @@
 @using Gondwana.Widgets.Dialogs
 @using Gondwana.Widgets.Menus
 @using Microsoft.Extensions.Logging
-@using SkiaSharp
 @inject HttpClient Http
 @inject IJSRuntime JS
 @inject ILogger<Index> Logger
@@ -41,9 +40,9 @@
     private MenuBarWidget? _menuBar;
     private HowToPlayDialog? _howToPlayDialog;
     private AboutBox? _aboutBox;
-    private SKImage? _aboutSpotLogo;
-    private SKImage? _aboutGondwanaLogo;
-    private SKTypeface? _aboutTypeface;
+    private SkiaSharp.SKImage? _aboutSpotLogo;
+    private SkiaSharp.SKImage? _aboutGondwanaLogo;
+    private SkiaSharp.SKTypeface? _aboutTypeface;
     private bool _loading = true;
     private string? _errorMessage;
 
@@ -53,6 +52,7 @@
             return;
 
         AssetsFile? assets = null;
+        BrowserLocalStorageEngineConfigurationStore? configurationStore = null;
 
         try
         {
@@ -65,7 +65,7 @@
 
             _gameHost.Engine.InitializationComplete += ConfigureEngine;
 
-            var configurationStore = new BrowserLocalStorageEngineConfigurationStore(
+            configurationStore = new BrowserLocalStorageEngineConfigurationStore(
                 JS,
                 ConfigurationKey,
                 autoSave: true);
@@ -73,6 +73,7 @@
             _gameHost.Initialize(
                 logLevel: LogLevel.Warning,
                 configurationStore: configurationStore);
+            configurationStore = null; // Engine owns the initialized store.
 
             _loading = false;
             StateHasChanged();
@@ -88,6 +89,23 @@
         }
         catch (Exception ex)
         {
+            if (_gameHost is not null)
+            {
+                _gameHost.Engine.InitializationComplete -= ConfigureEngine;
+
+                try
+                {
+                    _gameHost.Dispose();
+                }
+                catch (Exception disposeException)
+                {
+                    Logger.LogWarning(disposeException, "Failed to clean up Spot.Blazor after initialization failure");
+                }
+
+                _gameHost = null;
+            }
+
+            configurationStore?.Dispose();
             assets?.Dispose();
             _loading = false;
             _errorMessage = $"Failed to initialize Spot!: {ex.Message}";
@@ -290,21 +308,21 @@
         if (_aboutSpotLogo is null)
         {
             using var stream = _gameHost.OpenAsset(AssetTypes.Image, "spot.png");
-            _aboutSpotLogo = SKImage.FromEncodedData(stream)
+            _aboutSpotLogo = SkiaSharp.SKImage.FromEncodedData(stream)
                 ?? throw new InvalidOperationException("Failed to decode Spot About-box image.");
         }
 
         if (_aboutGondwanaLogo is null)
         {
             using var stream = _gameHost.OpenAsset(AssetTypes.Image, "gondwana-logo-text.png");
-            _aboutGondwanaLogo = SKImage.FromEncodedData(stream)
+            _aboutGondwanaLogo = SkiaSharp.SKImage.FromEncodedData(stream)
                 ?? throw new InvalidOperationException("Failed to decode Gondwana About-box image.");
         }
 
         if (_aboutTypeface is null)
         {
             using var stream = _gameHost.OpenAsset(AssetTypes.Font, "ArchitectsDaughter-Regular.ttf");
-            _aboutTypeface = SKTypeface.FromStream(stream)
+            _aboutTypeface = SkiaSharp.SKTypeface.FromStream(stream)
                 ?? throw new InvalidOperationException("Failed to decode Spot About-box font.");
         }
     }

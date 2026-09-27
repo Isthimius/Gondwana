@@ -1,5 +1,6 @@
 #if !SPOT_BLAZOR
 using System;
+using System.Collections.Generic;
 #endif
 using System.Drawing;
 #if !SPOT_BLAZOR
