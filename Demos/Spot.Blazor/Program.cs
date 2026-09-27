@@ -9,6 +9,9 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-await JSHost.ImportAsync("gondwana-audio", "./gondwana-audio.js");
+var audioModuleUrl = new Uri(
+    new Uri(builder.HostEnvironment.BaseAddress),
+    "gondwana-audio.js").AbsoluteUri;
+await JSHost.ImportAsync("gondwana-audio", audioModuleUrl);
 
 await builder.Build().RunAsync();

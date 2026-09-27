@@ -10,8 +10,12 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-// Import the gondwana-audio JS module - use absolute path from root
-await JSHost.ImportAsync("gondwana-audio", "/gondwana-audio.js");
+// JSHost resolves relative module paths from _framework, not from the app base href.
+// Build an absolute same-origin URL so root and sub-path deployments both work.
+var audioModuleUrl = new Uri(
+    new Uri(builder.HostEnvironment.BaseAddress),
+    "gondwana-audio.js").AbsoluteUri;
+await JSHost.ImportAsync("gondwana-audio", audioModuleUrl);
 Engine.Instance.UseBrowserAudio();
 
 await builder.Build().RunAsync();

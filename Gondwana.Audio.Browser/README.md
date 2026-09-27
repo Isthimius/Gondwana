@@ -27,8 +27,14 @@ dotnet add package Gondwana.Audio.Browser
 Import the JavaScript module before using browser audio:
 
 ```csharp
-await JSHost.ImportAsync("gondwana-audio", "./gondwana-audio.js");
+var audioModuleUrl = new Uri(
+    new Uri(builder.HostEnvironment.BaseAddress),
+    "gondwana-audio.js").AbsoluteUri;
+
+await JSHost.ImportAsync("gondwana-audio", audioModuleUrl);
 ```
+
+Do not pass `"./gondwana-audio.js"` directly: `JSHost.ImportAsync` resolves that relative to Blazor's `_framework/` module location rather than the application's base href. Building the absolute URL from `HostEnvironment.BaseAddress` works for both root and sub-path deployments.
 
 Then configure the backend:
 

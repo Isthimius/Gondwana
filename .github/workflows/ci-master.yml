@@ -85,6 +85,7 @@ jobs:
         run: |
           rm -rf /tmp/spot-blazor-publish
           dotnet publish Demos/Spot.Blazor/Spot.Blazor.csproj --configuration Release --no-restore --nologo -o /tmp/spot-blazor-publish
+          test -f /tmp/spot-blazor-publish/wwwroot/gondwana-audio.js
           test -f /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf
           unzip -t /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf
           unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Image_spot.png"

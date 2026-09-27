@@ -2,7 +2,8 @@
  * Browser/WASM audio backend for Gondwana.
  * Import before using Gondwana.Audio.Browser:
  *
- *   await JSHost.ImportAsync("gondwana-audio", "./gondwana-audio.js");
+ *   var url = new Uri(new Uri(builder.HostEnvironment.BaseAddress), "gondwana-audio.js").AbsoluteUri;
+ *   await JSHost.ImportAsync("gondwana-audio", url);
  */
 
 /** @type {Map<string, {audio: HTMLAudioElement, context: AudioContext|null, source: MediaElementAudioSourceNode|null, panner: StereoPannerNode|null, state: number, objectUrl: string|null}>} */
