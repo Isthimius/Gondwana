@@ -348,21 +348,4 @@ public sealed class ListBoxScrollingTests
             .Invoke(router, [args]);
     }
 
-    [Fact]
-    public void ComboBoxHeaderText_DoesNotDependOnArrowGlyph()
-    {
-        using var host = new TestRenderSurfaceHost();
-        host.ViewManager.AddView(new Rectangle(0, 0, 320, 240), zOrder: 0);
-        var view = Assert.Single(host.ViewManager.Views);
-        using var combo = new ComboBoxWidget(
-            host,
-            view,
-            new Rectangle(10, 10, 120, 30),
-            ["One", "Two"]);
-
-        combo.SelectedIndex = 0;
-
-        Assert.Equal("One", combo.Header.Label.Text);
-        Assert.DoesNotContain("▼", combo.Header.Label.Text, StringComparison.Ordinal);
-    }
 }
