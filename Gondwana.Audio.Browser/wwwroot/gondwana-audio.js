@@ -142,9 +142,9 @@ export function loadBytes(key, base64Data, mimeType, loop, volume, pan, playback
         else
             URL.revokeObjectURL(objectUrl);
     }
-    catch {
+    catch (error) {
         URL.revokeObjectURL(objectUrl);
-        throw;
+        throw error;
     }
 }
 
