@@ -45,13 +45,13 @@ public static class BlazorTextBoxInput
 
         if (key is >= BlazorKey.KeyA and <= BlazorKey.KeyZ)
         {
-            char letter = (char)('a' + (key - BlazorKey.KeyA));
+            char letter = (char)('a' + ((int)key - (int)BlazorKey.KeyA));
             return shift ? char.ToUpperInvariant(letter) : letter;
         }
 
         if (key is >= BlazorKey.Digit1 and <= BlazorKey.Digit9)
         {
-            int offset = key - BlazorKey.Digit1;
+            int offset = (int)key - (int)BlazorKey.Digit1;
             if (!shift)
                 return (char)('1' + offset);
 
@@ -63,7 +63,7 @@ public static class BlazorTextBoxInput
             return shift ? ')' : '0';
 
         if (key is >= BlazorKey.Numpad0 and <= BlazorKey.Numpad9)
-            return (char)('0' + (key - BlazorKey.Numpad0));
+            return (char)('0' + ((int)key - (int)BlazorKey.Numpad0));
 
         return key switch
         {
