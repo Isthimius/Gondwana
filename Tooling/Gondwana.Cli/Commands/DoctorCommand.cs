@@ -217,7 +217,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     private static void FixButler()
     {
-        if (TryGetButlerFromKnownLocations(out var existingButlerPath))
+        if (ButlerHelper.TryGetFromKnownLocations(out var existingButlerPath))
         {
             var existingInstallDir = Path.GetDirectoryName(existingButlerPath)!;
             AddDirectoryToProcessPath(existingInstallDir);
@@ -506,20 +506,11 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     private static CheckResult CheckButler()
     {
-        var output = ProcessHelper.Run("butler", "--version", out int exitCode);
-        if (exitCode == 0 && !string.IsNullOrWhiteSpace(output))
+        if (ButlerHelper.TryResolve(out var butlerPath, out var version))
         {
-            var versionLine = output.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
-            return CheckResult.Ok(versionLine ?? "found");
-        }
-
-        if (TryGetButlerFromKnownLocations(out var butlerPath))
-        {
-            var fileOutput = ProcessHelper.Run(butlerPath, "--version", out int fileExitCode);
-            var versionLine = fileOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
-            return fileExitCode == 0 && !string.IsNullOrWhiteSpace(versionLine)
-                ? CheckResult.Ok($"{versionLine} ({butlerPath})")
-                : CheckResult.Ok($"installed at {butlerPath}");
+            return string.Equals(butlerPath, "butler", StringComparison.OrdinalIgnoreCase)
+                ? CheckResult.Ok(version ?? "found")
+                : CheckResult.Ok($"{version ?? "found"} ({butlerPath})");
         }
 
         return CheckResult.Fail("butler not found on PATH or standard install directories. Run: gondwana doctor --fix");
@@ -829,41 +820,6 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             if (handle != IntPtr.Zero)
                 NativeLibrary.Free(handle);
         }
-    }
-
-    private static bool TryGetButlerFromKnownLocations(out string butlerPath)
-    {
-        foreach (var candidate in EnumerateKnownButlerPaths())
-        {
-            if (File.Exists(candidate))
-            {
-                butlerPath = candidate;
-                return true;
-            }
-        }
-
-        butlerPath = string.Empty;
-        return false;
-    }
-
-    private static IEnumerable<string> EnumerateKnownButlerPaths()
-    {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            if (!string.IsNullOrWhiteSpace(localAppData))
-                yield return Path.Combine(localAppData, "itch", "butler", "butler.exe");
-
-            var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            if (!string.IsNullOrWhiteSpace(userProfile))
-                yield return Path.Combine(userProfile, ".itch", "butler", "butler.exe");
-
-            yield break;
-        }
-
-        var userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        if (!string.IsNullOrWhiteSpace(userHome))
-            yield return Path.Combine(userHome, ".itch", "butler", "butler");
     }
 
     private static void AddDirectoryToProcessPath(string directoryPath)
