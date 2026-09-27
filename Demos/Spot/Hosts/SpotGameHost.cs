@@ -13,6 +13,7 @@ namespace Gondwana.Demos.Spot;
 internal sealed partial class SpotGameHost : WinFormsGpuGameHost
 {
     private const int PersistentMenuHeight = 32;
+    private const int ScoreToggleKey = 9;
 
     private Scene ActiveScene => Scene
         ?? throw new InvalidOperationException("Spot scene has not been created.");
@@ -36,6 +37,30 @@ internal sealed partial class SpotGameHost : WinFormsGpuGameHost
     {
         // Deliberately empty: startup music begins in BeginPostSplashStartup()
         // after the Gondwana splash has fully faded out.
+    }
+
+    partial void ConfigurePlatformKeyboardInput(Gondwana.Input.Keyboard.KeyboardEventPoller keyboard)
+    {
+        RegisterRange(keyboard, 65, 90);  // A-Z
+        RegisterRange(keyboard, 48, 57);  // 0-9
+        RegisterRange(keyboard, 96, 105); // numpad 0-9
+
+        foreach (int key in new[]
+                 {
+                     8, 13, 32, 35, 36, 37, 39, 46,
+                     106, 107, 109, 110, 111,
+                     186, 187, 188, 189, 190, 191, 192,
+                     219, 220, 221, 222
+                 })
+        {
+            keyboard.StartMonitoringKey(key);
+        }
+
+        static void RegisterRange(Gondwana.Input.Keyboard.KeyboardEventPoller poller, int first, int last)
+        {
+            for (int key = first; key <= last; key++)
+                poller.StartMonitoringKey(key);
+        }
     }
 
     partial void PersistGameState()

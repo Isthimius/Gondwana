@@ -7,8 +7,6 @@ namespace Gondwana.Demos.Spot;
 
 internal sealed partial class SpotGameHost
 {
-    private const int ScoreToggleKey = 9; // Tab virtual-key code.
-
     private bool _handleHumanInput;
 
     protected override void OnMouseAdapterInitialized()
@@ -27,6 +25,7 @@ internal sealed partial class SpotGameHost
 
         Engine.Input.KeyboardEventPoller.KeyDown += KeyboardEventPoller_KeyDown;
         Engine.Input.KeyboardEventPoller.StartMonitoringKey(ScoreToggleKey);
+        ConfigurePlatformKeyboardInput(Engine.Input.KeyboardEventPoller);
     }
 
     protected override void UnhookEvents()
@@ -43,6 +42,8 @@ internal sealed partial class SpotGameHost
 
         UnhookSpotGameEvents();
     }
+
+    partial void ConfigurePlatformKeyboardInput(KeyboardEventPoller keyboard);
 
     private void KeyboardEventPoller_KeyDown(KeyDownEventArgs args)
     {

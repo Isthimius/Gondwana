@@ -31,6 +31,55 @@ public static class BlazorTextBoxInput
     }
 
     /// <summary>
+    /// Registers the Blazor key codes needed by editable text boxes with the supplied keyboard poller.
+    /// </summary>
+    public static void StartMonitoring(KeyboardEventPoller keyboard)
+    {
+        ArgumentNullException.ThrowIfNull(keyboard);
+
+        RegisterRange(BlazorKey.KeyA, BlazorKey.KeyZ);
+        RegisterRange(BlazorKey.Digit1, BlazorKey.Digit0);
+        RegisterRange(BlazorKey.Numpad0, BlazorKey.Numpad9);
+
+        foreach (BlazorKey key in new[]
+                 {
+                     BlazorKey.Space,
+                     BlazorKey.Enter,
+                     BlazorKey.Backspace,
+                     BlazorKey.Delete,
+                     BlazorKey.ArrowLeft,
+                     BlazorKey.ArrowRight,
+                     BlazorKey.Home,
+                     BlazorKey.End,
+                     BlazorKey.NumpadAdd,
+                     BlazorKey.NumpadSubtract,
+                     BlazorKey.NumpadMultiply,
+                     BlazorKey.NumpadDivide,
+                     BlazorKey.NumpadDecimal,
+                     BlazorKey.Minus,
+                     BlazorKey.Equal,
+                     BlazorKey.BracketLeft,
+                     BlazorKey.BracketRight,
+                     BlazorKey.Backslash,
+                     BlazorKey.Semicolon,
+                     BlazorKey.Quote,
+                     BlazorKey.Backquote,
+                     BlazorKey.Comma,
+                     BlazorKey.Period,
+                     BlazorKey.Slash
+                 })
+        {
+            keyboard.StartMonitoringKey((int)key);
+        }
+
+        void RegisterRange(BlazorKey first, BlazorKey last)
+        {
+            for (int key = (int)first; key <= (int)last; key++)
+                keyboard.StartMonitoringKey(key);
+        }
+    }
+
+    /// <summary>
     /// Resolves printable characters from a Blazor widget keyboard event.
     /// </summary>
     public static char? ResolveCharacter(WidgetKeyboardEventArgs args)

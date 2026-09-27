@@ -1,7 +1,9 @@
 using Gondwana.Assets;
 using Gondwana.Blazor.Hosting;
 using Gondwana.Blazor.Input;
+using Gondwana.Blazor.Input.Keyboard;
 using Gondwana.Blazor.Rendering;
+using Gondwana.Input.Keyboard;
 using Gondwana.Rendering;
 using Gondwana.Scenes;
 using Microsoft.JSInterop;
@@ -12,6 +14,7 @@ namespace Gondwana.Demos.Spot;
 internal sealed partial class SpotGameHost : BlazorGpuGameHost
 {
     private const int PersistentMenuHeight = 32;
+    private const int ScoreToggleKey = (int)BlazorKey.Tab;
     private readonly AssetsFile _assets;
 
     private Scene ActiveScene => Scene
@@ -53,5 +56,10 @@ internal sealed partial class SpotGameHost : BlazorGpuGameHost
     partial void ConfigureNewGameDialogForPlatform(NewGameDialog dialog)
     {
         dialog.ConfigureTextInput(BlazorTextBoxInput.Configure);
+    }
+
+    partial void ConfigurePlatformKeyboardInput(KeyboardEventPoller keyboard)
+    {
+        BlazorTextBoxInput.StartMonitoring(keyboard);
     }
 }
