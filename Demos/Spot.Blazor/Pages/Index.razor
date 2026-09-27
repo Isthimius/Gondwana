@@ -56,7 +56,8 @@
 
         try
         {
-            using var packageStream = await Http.GetStreamAsync("assets/spot.gaf");
+            var packageBytes = await Http.GetByteArrayAsync("assets/spot.gaf");
+            using var packageStream = new MemoryStream(packageBytes, writable: false);
             assets = AssetsFile.Load(packageStream);
 
             _gameHost = new SpotGameHost(_renderSurface, JS, assets);
