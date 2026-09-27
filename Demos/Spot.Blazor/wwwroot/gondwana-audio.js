@@ -130,6 +130,7 @@ export function load(key, src, loop, volume, pan, playbackSpeed, onEnded) {
 
     audio.addEventListener("ended", entry.onEnded);
     _players.set(key, entry);
+    updateGestureRetryListeners();
 }
 
 /**
@@ -190,13 +191,17 @@ function updateGestureRetryListeners() {
         removeGestureRetryListeners();
 }
 
-function markPlayRejected(entry) {
+function markPlayRejected(entry, error) {
     if (entry.disposed || entry.state !== 1 || !entry.audio.paused)
         return;
 
     entry.state = entry.audio.currentTime > 0 ? 2 : 0;
-    entry.pendingUserGesturePlay = true;
-    ensureGestureRetryListeners();
+    entry.pendingUserGesturePlay = error?.name === "NotAllowedError";
+
+    if (entry.pendingUserGesturePlay)
+        ensureGestureRetryListeners();
+    else
+        updateGestureRetryListeners();
 }
 
 function retryPendingPlaybackFromGesture() {
@@ -212,8 +217,8 @@ function retryPendingPlaybackFromGesture() {
             entry.context.resume().catch(() => { });
 
         entry.state = 1;
-        entry.audio.play().catch(() => {
-            markPlayRejected(entry);
+        entry.audio.play().catch(error => {
+            markPlayRejected(entry, error);
         });
     }
 }
@@ -233,8 +238,8 @@ export function play(key, fromStart) {
         entry.context.resume().catch(() => { });
 
     entry.state = 1;
-    entry.audio.play().catch(() => {
-        markPlayRejected(entry);
+    entry.audio.play().catch(error => {
+        markPlayRejected(entry, error);
     });
 }
 

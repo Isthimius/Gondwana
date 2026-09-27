@@ -22,7 +22,9 @@ class FakeAudio extends EventTarget {
         if (this.rejectPlayCount > 0) {
             this.rejectPlayCount--;
             this.paused = true;
-            return Promise.reject(new Error("NotAllowedError"));
+            const error = new Error("Autoplay blocked");
+            error.name = "NotAllowedError";
+            return Promise.reject(error);
         }
 
         this.paused = false;
@@ -96,6 +98,27 @@ test("autoplay rejection retries on the first user gesture", async () => {
     assert.equal(media.paused, false);
     assert.equal(audio.getState("autoplay"), 1);
     audio.unload("autoplay");
+});
+
+test("non-autoplay play failures are not retried on user gestures", async () => {
+    audio.load("unsupported", "broken.ogg", false, 1, 0, 1);
+    const media = elements.at(-1);
+    media.play = () => {
+        media.paused = true;
+        const error = new Error("Unsupported source");
+        error.name = "NotSupportedError";
+        return Promise.reject(error);
+    };
+
+    audio.play("unsupported", true);
+    await Promise.resolve();
+
+    gestures.dispatchEvent(new Event("pointerdown"));
+    await Promise.resolve();
+
+    assert.equal(media.paused, true);
+    assert.equal(audio.getState("unsupported"), 0);
+    audio.unload("unsupported");
 });
 
 test("stopping a blocked track cancels the user-gesture retry", async () => {
