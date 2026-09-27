@@ -1,34 +1,25 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Packs Gondwana.Cli and installs (or updates) it as a global .NET tool.
+    Packs Gondwana.Cli and reinstalls it as a global .NET tool.
 
 .DESCRIPTION
-    Run this script from a developer machine to build a local NuGet package and
-    immediately install it as the global 'gondwana' tool, replacing any
-    previously installed version.
+    Compatibility wrapper for the repository's canonical local CLI reinstall script.
+    Unlike 'dotnet tool update', the canonical script uninstalls the existing tool,
+    clears the cached Gondwana.Cli package, packs the current checkout, and installs
+    that exact local package. This is required for reliable iteration when the
+    semantic package version has not changed.
+
+.EXAMPLE
+    .\install-dev.ps1
 #>
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-Push-Location $PSScriptRoot
-try {
-    Write-Host 'Packing Gondwana.Cli...' -ForegroundColor Cyan
-    dotnet pack --configuration Release
-    if ($LASTEXITCODE -ne 0) { throw 'dotnet pack failed.' }
+$script = (Resolve-Path (Join-Path $PSScriptRoot '..\scripts\Reinstall-Gondwana-Cli.ps1')).Path
+& $script @args
 
-    $nupkg = Get-ChildItem -Path .\bin\Release -Filter 'Gondwana.Cli.*.nupkg' |
-             Sort-Object LastWriteTime -Descending |
-             Select-Object -First 1
-
-    if (-not $nupkg) { throw 'No Gondwana.Cli .nupkg found in .\bin\Release.' }
-
-    Write-Host "Installing $($nupkg.Name) as a global tool..." -ForegroundColor Cyan
-    dotnet tool update --global Gondwana.Cli --add-source $nupkg.DirectoryName
-    if ($LASTEXITCODE -ne 0) { throw 'dotnet tool update failed.' }
-
-    Write-Host "Done. Run 'gondwana --version' to verify." -ForegroundColor Green
-} finally {
-    Pop-Location
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
 }
