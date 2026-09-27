@@ -1,5 +1,5 @@
 using System.Runtime.InteropServices.JavaScript;
-using Gondwana.Demos.SpotBlazor;
+using Gondwana.Demos.Spot;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -9,7 +9,9 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-// Import the gondwana-audio JS module - use absolute path from root
-await JSHost.ImportAsync("gondwana-audio", "/gondwana-audio.js");
+var audioModuleUrl = new Uri(
+    new Uri(builder.HostEnvironment.BaseAddress),
+    "gondwana-audio.js").AbsoluteUri;
+await JSHost.ImportAsync("gondwana-audio", audioModuleUrl);
 
 await builder.Build().RunAsync();

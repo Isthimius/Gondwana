@@ -1,3 +1,4 @@
+using Gondwana.Configuration;
 using Gondwana.Logging;
 using Gondwana.Rendering;
 using Gondwana.Scenes;
@@ -54,6 +55,32 @@ public abstract class GameHostBase : IDisposable
         string? configPath = null,
         bool? autoSaveConfig = null,
         LogLevel logLevel = LogLevel.Warning)
+        => InitializeCore(configPath, autoSaveConfig, logLevel, configurationStore: null);
+
+    /// <summary>
+    /// Initializes the game host using a caller-supplied configuration persistence store.
+    /// </summary>
+    /// <param name="configurationStore">Configuration store owned by the engine after successful initialization.</param>
+    /// <param name="autoSaveConfig">
+    /// Optional override for the store's <see cref="IEngineConfigurationStore.AutoSave"/> setting.
+    /// </param>
+    /// <param name="logLevel">
+    /// The minimum log level used by Gondwana. The default is <see cref="LogLevel.Warning"/>.
+    /// </param>
+    public void InitializeWithConfigurationStore(
+        IEngineConfigurationStore configurationStore,
+        bool? autoSaveConfig = null,
+        LogLevel logLevel = LogLevel.Warning)
+    {
+        ArgumentNullException.ThrowIfNull(configurationStore);
+        InitializeCore(configPath: null, autoSaveConfig, logLevel, configurationStore);
+    }
+
+    private void InitializeCore(
+        string? configPath,
+        bool? autoSaveConfig,
+        LogLevel logLevel,
+        IEngineConfigurationStore? configurationStore)
     {
         EnsureNotDisposed();
         EnsureNotInitialized();
@@ -65,7 +92,7 @@ public abstract class GameHostBase : IDisposable
         ConfigureInput();
         InitializeGameContent();
 
-        InitializeEngine(configPath, autoSaveConfig);
+        InitializeEngine(configPath, autoSaveConfig, configurationStore);
         StartEngine();
 
         _initialized = true;
@@ -302,8 +329,11 @@ public abstract class GameHostBase : IDisposable
     }
 
     /// <summary>
-    /// Initializes the Gondwana engine.
+    /// Initializes the Gondwana engine using the default file-backed configuration store.
     /// </summary>
+    /// <remarks>
+    /// Retained for compatibility with derived hosts that call the pre-configuration-store overload.
+    /// </remarks>
     /// <param name="configPath">Optional path to the engine configuration file.</param>
     /// <param name="autoSaveConfig">
     /// Optional value indicating whether configuration changes should be saved automatically.
@@ -311,8 +341,35 @@ public abstract class GameHostBase : IDisposable
     protected void InitializeEngine(
         string? configPath,
         bool? autoSaveConfig)
+        => InitializeEngine(configPath, autoSaveConfig, configurationStore: null);
+
+    /// <summary>
+    /// Initializes the Gondwana engine.
+    /// </summary>
+    /// <param name="configPath">Optional path to the engine configuration file.</param>
+    /// <param name="autoSaveConfig">
+    /// Optional value indicating whether configuration changes should be saved automatically.
+    /// </param>
+    /// <param name="configurationStore">
+    /// Optional configuration persistence store. When null, the default file-backed store is used.
+    /// </param>
+    protected void InitializeEngine(
+        string? configPath,
+        bool? autoSaveConfig,
+        IEngineConfigurationStore? configurationStore)
     {
-        Engine.Instance.Initialize(configPath, autoSaveConfig);
+        if (configurationStore is null)
+        {
+            Engine.Instance.Initialize(
+                configFileName: configPath,
+                autoSaveConfig: autoSaveConfig);
+        }
+        else
+        {
+            Engine.Instance.InitializeWithConfigurationStore(
+                configurationStore,
+                autoSaveConfig: autoSaveConfig);
+        }
         _engineInitialized = true;
 
         OnEngineInitialized();

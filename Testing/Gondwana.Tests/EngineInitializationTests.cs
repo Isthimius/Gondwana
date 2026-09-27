@@ -1,4 +1,5 @@
 using System.Reflection;
+using Gondwana.Configuration;
 
 namespace Gondwana.Tests;
 
@@ -49,6 +50,59 @@ public sealed class EngineInitializationTests
             GC.SuppressFinalize(engine);
             File.Delete(invalidConfigPath);
         }
+    }
+
+    [Fact]
+    public void Initialize_WithConfigurationStore_UsesAndPersistsSuppliedConfiguration()
+    {
+        var engine = CreateEngineInstance();
+        var store = new TestConfigurationStore
+        {
+            AutoSave = true
+        };
+        store.Configuration.TargetFPS = 37;
+
+        try
+        {
+            engine.InitializeWithConfigurationStore(store);
+
+            Assert.Same(store.Configuration, engine.Configuration);
+            Assert.Equal(37, engine.Configuration.TargetFPS);
+
+            engine.Configuration.TargetFPS = 73;
+            engine.SaveConfiguration();
+
+            Assert.Equal(1, store.SaveCount);
+            Assert.Equal(73, store.LastSavedTargetFps);
+        }
+        finally
+        {
+            engine.Dispose();
+            Assert.True(store.IsDisposed);
+            Assert.Equal(2, store.SaveCount);
+            GC.SuppressFinalize(engine);
+        }
+    }
+
+    [Fact]
+    public void Initialize_LegacyMetadataSignature_RemainsAvailable()
+    {
+        var method = typeof(Engine).GetMethod(
+            nameof(Engine.Initialize),
+            BindingFlags.Instance | BindingFlags.Public,
+            binder: null,
+            types:
+            [
+                typeof(string),
+                typeof(bool?),
+                typeof(Gondwana.Input.Keyboard.IKeyboardAdapter),
+                typeof(Gondwana.Input.Mouse.IMouseAdapter),
+                typeof(Gondwana.Input.Touch.ITouchAdapter),
+                typeof(Gondwana.Input.Gamepad.IGamepadManager<Gondwana.Input.Gamepad.IGamepadAdapter>)
+            ],
+            modifiers: null);
+
+        Assert.NotNull(method);
     }
 
     [Fact]
@@ -231,6 +285,36 @@ public sealed class EngineInitializationTests
             ?? throw new InvalidOperationException("Could not find Engine.IsRunning via reflection.");
 
         property.SetValue(engine, isRunning);
+    }
+
+    private sealed class TestConfigurationStore : IEngineConfigurationStore
+    {
+        public EngineConfiguration Configuration { get; } = new();
+
+        public bool AutoSave { get; set; }
+
+        public int SaveCount { get; private set; }
+
+        public int LastSavedTargetFps { get; private set; }
+
+        public bool IsDisposed { get; private set; }
+
+        public void Save()
+        {
+            SaveCount++;
+            LastSavedTargetFps = Configuration.TargetFPS;
+        }
+
+        public void Dispose()
+        {
+            if (IsDisposed)
+                return;
+
+            if (AutoSave)
+                Save();
+
+            IsDisposed = true;
+        }
     }
 
     private static void InvokeCycle(Engine engine)

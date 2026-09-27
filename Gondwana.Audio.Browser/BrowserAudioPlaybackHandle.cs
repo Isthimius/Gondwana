@@ -22,6 +22,27 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
         BrowserAudioInterop.Load(_key, uri, loop: false, _volume, _pan, _playbackSpeed, OnEnded);
     }
 
+    public BrowserAudioPlaybackHandle(string key, byte[] data, string mimeType, float volume, float pan, float playbackSpeed)
+    {
+        ArgumentNullException.ThrowIfNull(data);
+
+        // Packed/stream-backed browser audio is exposed to HTMLAudioElement through a
+        // short-lived Blob URL owned by the JavaScript entry.
+        _key = Guid.NewGuid().ToString("N");
+        _volume = Math.Clamp(volume, 0f, 1f);
+        _pan = Math.Clamp(pan, -1f, 1f);
+        _playbackSpeed = Math.Clamp(playbackSpeed, AudioResource.MinimumPlaybackSpeed, AudioResource.MaximumPlaybackSpeed);
+        BrowserAudioInterop.LoadBytes(
+            _key,
+            Convert.ToBase64String(data),
+            mimeType,
+            loop: false,
+            _volume,
+            _pan,
+            _playbackSpeed,
+            OnEnded);
+    }
+
     public event EventHandler? PlaybackCompleted;
 
     private void OnEnded()

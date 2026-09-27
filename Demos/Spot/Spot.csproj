@@ -94,11 +94,15 @@
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="..\Spot.Shared\Spot.Shared.csproj" />
         <ProjectReference Include="..\..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
         <ProjectReference Include="..\..\Gondwana.Widgets\Gondwana.Widgets.csproj" />
         <ProjectReference Include="..\..\Gondwana.WinForms.Hosting\Gondwana.WinForms.Hosting.csproj" />
         <ProjectReference Include="..\..\Gondwana.WinForms\Gondwana.WinForms.csproj" />
         <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="..\Spot.Shared\Host\*.cs" Link="Hosts\%(Filename)%(Extension)" />
     </ItemGroup>
     <ItemGroup>
         <Compile Update="GameWindow.cs">

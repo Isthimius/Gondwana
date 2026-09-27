@@ -27,8 +27,14 @@ dotnet add package Gondwana.Audio.Browser
 Import the JavaScript module before using browser audio:
 
 ```csharp
-await JSHost.ImportAsync("gondwana-audio", "./gondwana-audio.js");
+var audioModuleUrl = new Uri(
+    new Uri(builder.HostEnvironment.BaseAddress),
+    "gondwana-audio.js").AbsoluteUri;
+
+await JSHost.ImportAsync("gondwana-audio", audioModuleUrl);
 ```
+
+Do not pass `"./gondwana-audio.js"` directly: `JSHost.ImportAsync` resolves that relative to Blazor's `_framework/` module location rather than the application's base href. Building the absolute URL from `HostEnvironment.BaseAddress` works for both root and sub-path deployments.
 
 Then configure the backend:
 
@@ -65,9 +71,9 @@ var music = audio.Load("music", "assets/theme.mp3", volume: 0.5f, loop: true);
 
 ## Browser-specific behavior
 
-Browser assets are loaded by URI. The current backend does not implement the byte/stream loading path used by `LoadFromFile`, `LoadFromStream`, or packed `AssetsFile` audio.
+Browser audio supports both URI-addressable assets and raw byte/stream sources. Byte-backed resources, including audio entries from a streamed or file-backed `AssetsFile`, are exposed to the browser through temporary Blob URLs that are revoked when the resource is unloaded.
 
-Autoplay remains subject to browser policy; games should normally begin playback in response to user interaction when the browser blocks autoplay.
+Autoplay remains subject to browser policy. When a requested play is rejected because the page has not received a user gesture yet, the browser backend keeps that request pending and retries it from the first subsequent pointer or touch gesture. Calling pause, stop, or unload before that gesture cancels the pending retry.
 
 The JavaScript bridge forwards the HTML media `ended` event into .NET, changes playback state to `Stopped`, and raises `AudioResource.PlaybackCompleted` and `PlaybackCompletedAsync` for non-looping playback. Explicit stop and unload do not raise completion.
 

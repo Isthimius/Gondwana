@@ -7,11 +7,28 @@
 
 <div class="render-surface-container">
     <BlazorGpuRenderSurfaceComponent @ref="_renderSurface" />
+
+    @if (_loading)
+    {
+        <div class="startup-loader startup-loader-overlay">
+            <div class="startup-card">
+                <div class="startup-mark">G</div>
+                <h1 class="startup-title">MyGame</h1>
+                <div class="startup-message">Preparing the game...</div>
+                <div class="startup-progress" aria-hidden="true">
+                    <div class="startup-progress-fill indeterminate"></div>
+                </div>
+                <div class="startup-percent manual">Initializing engine</div>
+                <div class="startup-powered">Powered by Gondwana</div>
+            </div>
+        </div>
+    }
 </div>
 
 @code {
     private BlazorGpuRenderSurfaceComponent? _renderSurface;
     private MyGameHost? _host;
+    private bool _loading = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -19,6 +36,8 @@
         {
             _host = new MyGameHost(_renderSurface, JsRuntime);
             _host.Initialize(logLevel: LogLevel.Warning);
+            _loading = false;
+            StateHasChanged();
             await Task.CompletedTask;
         }
     }

@@ -65,6 +65,12 @@ if (-not (Test-Path $cliProject -PathType Leaf)) {
 
 New-Item -ItemType Directory -Path $packageSource -Force | Out-Null
 
+# Branch builds use hash-based prerelease versions. Leaving older Gondwana.Cli
+# packages in the local feed can cause NuGet to select a stale package whose
+# prerelease suffix sorts higher than the package just built.
+Get-ChildItem -Path $packageSource -Filter 'Gondwana.Cli.*.nupkg' -File -ErrorAction SilentlyContinue |
+    Remove-Item -Force
+
 Write-Host "CLI project : $cliProject" -ForegroundColor Cyan
 Write-Host "Package feed: $packageSource" -ForegroundColor Cyan
 
@@ -78,11 +84,42 @@ if (Test-GlobalToolInstalled 'Gondwana.Cli') {
     Invoke-Cmd dotnet @('tool', 'uninstall', '--global', 'Gondwana.Cli')
 }
 
+$packedPackage = Get-ChildItem -Path $packageSource -Filter 'Gondwana.Cli.*.nupkg' -File |
+                 Sort-Object LastWriteTime -Descending |
+                 Select-Object -First 1
+
+if (-not $packedPackage) {
+    throw "No Gondwana.Cli package was produced in '$packageSource'."
+}
+
+$prefix = 'Gondwana.Cli.'
+$suffix = '.nupkg'
+if (-not $packedPackage.Name.StartsWith($prefix, [System.StringComparison]::OrdinalIgnoreCase) -or
+    -not $packedPackage.Name.EndsWith($suffix, [System.StringComparison]::OrdinalIgnoreCase)) {
+    throw "Could not determine the packed Gondwana.Cli version from '$($packedPackage.Name)'."
+}
+
+$packedVersionLength = $packedPackage.Name.Length - $prefix.Length - $suffix.Length
+$packedVersion = $packedPackage.Name.Substring($prefix.Length, $packedVersionLength)
+
 Write-Host ""
-Write-Host "Installing Gondwana.Cli from local package feed..." -ForegroundColor Cyan
+Write-Host "Installing Gondwana.Cli $packedVersion from local package feed..." -ForegroundColor Cyan
 $nugetPackagesDir = if (-not [string]::IsNullOrWhiteSpace($env:NUGET_PACKAGES)) { $env:NUGET_PACKAGES } else { Join-Path (Join-Path $HOME '.nuget') 'packages' }
 Remove-Item (Join-Path $nugetPackagesDir 'gondwana.cli') -Recurse -Force -ErrorAction SilentlyContinue
-Invoke-Cmd dotnet @('tool', 'install', '--global', 'Gondwana.Cli', '--add-source', $packageSource, '--prerelease', '--ignore-failed-sources')
+Invoke-Cmd dotnet @('tool', 'install', '--global', 'Gondwana.Cli', '--version', $packedVersion, '--add-source', $packageSource, '--ignore-failed-sources')
+
+$installedToolLine = dotnet tool list --global 2>&1 |
+                     Where-Object { $_ -match '^\s*Gondwana\.Cli\s' } |
+                     Select-Object -First 1
+$installedVersion = if ($installedToolLine) {
+    ($installedToolLine -split '\s+')[1]
+} else {
+    $null
+}
+
+if ($installedVersion -ne $packedVersion) {
+    throw "Installed Gondwana.Cli version '$installedVersion' does not match freshly packed version '$packedVersion'."
+}
 
 $gondwanaCommand = Get-Command gondwana -ErrorAction SilentlyContinue
 if ($null -ne $gondwanaCommand) {

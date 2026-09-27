@@ -79,7 +79,7 @@ public sealed class Engine : IDisposable
     private double _netFPS = 0;
 
     private Task? _cycleTask;
-    private EngineConfigurationFile? _configurationFile;
+    private IEngineConfigurationStore? _configurationStore;
     private bool _deferredDisposeScheduled;
 
     #endregion private fields
@@ -284,6 +284,54 @@ public sealed class Engine : IDisposable
         IMouseAdapter? mouseAdapter = null,
         ITouchAdapter? touchAdapter = null,
         IGamepadManager<IGamepadAdapter>? gamepadManager = null)
+        => InitializeCore(
+            configFileName,
+            autoSaveConfig,
+            keyboardAdapter,
+            mouseAdapter,
+            touchAdapter,
+            gamepadManager,
+            configurationStore: null);
+
+    /// <summary>
+    /// Initializes the engine using a caller-supplied configuration persistence store.
+    /// </summary>
+    /// <param name="configurationStore">Configuration store owned by the engine after successful initialization.</param>
+    /// <param name="autoSaveConfig">
+    /// Optional override for the store's <see cref="IEngineConfigurationStore.AutoSave"/> setting.
+    /// </param>
+    /// <param name="keyboardAdapter">Optional keyboard input adapter.</param>
+    /// <param name="mouseAdapter">Optional mouse input adapter.</param>
+    /// <param name="touchAdapter">Optional touch input adapter.</param>
+    /// <param name="gamepadManager">Optional gamepad manager.</param>
+    public void InitializeWithConfigurationStore(
+        IEngineConfigurationStore configurationStore,
+        bool? autoSaveConfig = null,
+        IKeyboardAdapter? keyboardAdapter = null,
+        IMouseAdapter? mouseAdapter = null,
+        ITouchAdapter? touchAdapter = null,
+        IGamepadManager<IGamepadAdapter>? gamepadManager = null)
+    {
+        ArgumentNullException.ThrowIfNull(configurationStore);
+
+        InitializeCore(
+            configFileName: null,
+            autoSaveConfig,
+            keyboardAdapter,
+            mouseAdapter,
+            touchAdapter,
+            gamepadManager,
+            configurationStore);
+    }
+
+    private void InitializeCore(
+        string? configFileName,
+        bool? autoSaveConfig,
+        IKeyboardAdapter? keyboardAdapter,
+        IMouseAdapter? mouseAdapter,
+        ITouchAdapter? touchAdapter,
+        IGamepadManager<IGamepadAdapter>? gamepadManager,
+        IEngineConfigurationStore? configurationStore)
     {
         if (_isInitialized || _isInitializing)
             return;
@@ -301,15 +349,18 @@ public sealed class Engine : IDisposable
 
             try
             {
-                _configurationFile?.Dispose();
+                _configurationStore?.Dispose();
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error saving the engine configuration during initialization.");
             }
 
-            _configurationFile = EngineConfigurationFile.Load(configFileName, autoSaveConfig);
-            Configuration = _configurationFile.EngineConfig;
+            _configurationStore = configurationStore ?? EngineConfigurationFile.Load(configFileName, autoSaveConfig);
+            if (configurationStore is not null && autoSaveConfig.HasValue)
+                _configurationStore.AutoSave = autoSaveConfig.Value;
+
+            Configuration = _configurationStore.Configuration;
 
             ConfigureLogging(Configuration);
 
@@ -351,6 +402,20 @@ public sealed class Engine : IDisposable
             _isInitializing = false;
             _initDone.Set();
         }
+    }
+
+    /// <summary>
+    /// Persists the current engine configuration through the store supplied during initialization.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the engine has not yet been initialized with a configuration store.
+    /// </exception>
+    public void SaveConfiguration()
+    {
+        var store = _configurationStore
+            ?? throw new InvalidOperationException("The engine has no initialized configuration store.");
+
+        store.Save();
     }
 
     /// <summary>
@@ -1225,7 +1290,7 @@ public sealed class Engine : IDisposable
 
         try
         {
-            _configurationFile?.Dispose();
+            _configurationStore?.Dispose();
         }
         catch (Exception ex)
         {
@@ -1233,7 +1298,7 @@ public sealed class Engine : IDisposable
         }
         finally
         {
-            _configurationFile = null;
+            _configurationStore = null;
         }
 
         if (EngineLogger.Mode == EngineLoggingMode.Asynchronous)

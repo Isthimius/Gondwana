@@ -65,6 +65,7 @@ public sealed class SplashScreen : WidgetBase
     /// </summary>
     public static readonly string SplashImageNickname = "__gondwana_splash__";
 
+    private readonly View _view;
     private Timer? _holdTimer;
     private TaskCompletionSource? _holdDurationCompletionSource;
     private bool _disposed;
@@ -114,6 +115,9 @@ public sealed class SplashScreen : WidgetBase
                SplashImageNickname + Guid.NewGuid())
     {
         Image = image;
+        _view = image.View
+            ?? throw new InvalidOperationException("Splash image must be attached to a view.");
+        _view.Viewport.TargetRectChanged += OnViewportTargetRectChanged;
         CurrentState = State.Hidden;
 
         FadeInSec = fadeInSec;
@@ -213,11 +217,7 @@ public sealed class SplashScreen : WidgetBase
 
         var viewport = view.Viewport.TargetRectPx;
 
-        var screenBounds = new Rectangle(
-            0,
-            0,
-            viewport.Width,
-            viewport.Height);
+        var screenBounds = viewport;
 
         var image = new DirectImage(
                 sourceImage,
@@ -255,6 +255,8 @@ public sealed class SplashScreen : WidgetBase
 
         _disposed = true;
 
+        _view.Viewport.TargetRectChanged -= OnViewportTargetRectChanged;
+
         _holdTimer?.Dispose();
         _holdTimer = null;
 
@@ -262,6 +264,14 @@ public sealed class SplashScreen : WidgetBase
         _holdDurationCompletionSource = null;
 
         base.Dispose();
+    }
+
+    private void OnViewportTargetRectChanged(ViewportResizedEventArgs args)
+    {
+        if (_disposed)
+            return;
+
+        Image.ScreenBounds = args.NewRect;
     }
 
     #region splash control

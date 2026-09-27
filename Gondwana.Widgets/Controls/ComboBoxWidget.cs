@@ -2,8 +2,10 @@ using System.Drawing;
 using System.Numerics;
 using Gondwana.Drawing.Direct;
 using Gondwana.Rendering;
+using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
+using SkiaSharp;
 
 namespace Gondwana.Widgets.Controls;
 
@@ -14,6 +16,7 @@ public sealed class ComboBoxWidget : ContainerWidget
 {
     private const int DefaultDropDownHeight = 144;
 
+    private readonly DropDownChevronDrawing _chevron;
     private bool _isDropDownOpen;
     private bool _disposed;
     private string _placeholder = "Select...";
@@ -43,6 +46,11 @@ public sealed class ComboBoxWidget : ContainerWidget
                                      new Rectangle(bounds.X, bounds.Bottom, bounds.Width, dropDownHeight),
                                      items,
                                      $"{Nickname}.list");
+        _chevron = new DropDownChevronDrawing(
+            renderSurfaceHost,
+            view,
+            ResolveChevronBounds(bounds),
+            $"{Nickname}.chevron");
 
         CompleteInitialization(bounds);
     }
@@ -67,6 +75,11 @@ public sealed class ComboBoxWidget : ContainerWidget
                                      new Rectangle(bounds.X, bounds.Bottom, bounds.Width, dropDownHeight),
                                      items,
                                      $"{Nickname}.list");
+        _chevron = new DropDownChevronDrawing(
+            renderSurfaceHost,
+            sceneLayer,
+            ResolveChevronBounds(bounds),
+            $"{Nickname}.chevron");
 
         CompleteInitialization(bounds);
     }
@@ -175,7 +188,18 @@ public sealed class ComboBoxWidget : ContainerWidget
     public ComboBoxWidget SetComboBoxZOrder(int zOrder)
     {
         Header.SetButtonZOrder(zOrder);
+        _chevron.ZOrder = zOrder + 2;
         DropDown.SetListBoxZOrder(zOrder + 10);
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the collapsed header text and chevron color.
+    /// </summary>
+    public ComboBoxWidget SetHeaderTextColor(Color color)
+    {
+        Header.SetTextColor(color);
+        _chevron.SetColor(color);
         return this;
     }
 
@@ -211,7 +235,10 @@ public sealed class ComboBoxWidget : ContainerWidget
 
     private void CompleteInitialization(Rectangle bounds)
     {
+        ConfigureHeaderContentBounds(bounds);
+
         Add(Header, Vector2.Zero);
+        Add(_chevron);
         Add(DropDown, new Vector2(0f, bounds.Height));
         Header.Clicked += OnHeaderClicked;
         DropDown.SelectedIndexChanged += OnSelectedIndexChanged;
@@ -278,8 +305,31 @@ public sealed class ComboBoxWidget : ContainerWidget
 
     private void RefreshHeaderText()
     {
-        string text = SelectedItem ?? Placeholder;
-        Header.SetText($"{text}  ▼");
+        Header.SetText(SelectedItem ?? Placeholder);
+    }
+
+    private void ConfigureHeaderContentBounds(Rectangle bounds)
+    {
+        Rectangle labelBounds = new(
+            bounds.Left + 4,
+            bounds.Top,
+            Math.Max(1, bounds.Width - 28),
+            bounds.Height);
+
+        if (Mode == DirectDrawingMode.View)
+            Header.Label.ScreenBounds = labelBounds;
+        else
+            Header.Label.WorldBounds = labelBounds;
+    }
+
+    private static Rectangle ResolveChevronBounds(Rectangle bounds)
+    {
+        const int width = 18;
+        return new Rectangle(
+            Math.Max(bounds.Left, bounds.Right - width - 4),
+            bounds.Top,
+            Math.Min(width, bounds.Width),
+            bounds.Height);
     }
 
     private static Rectangle ValidateBounds(Rectangle bounds)
@@ -294,5 +344,58 @@ public sealed class ComboBoxWidget : ContainerWidget
     {
         if (height < 28)
             throw new ArgumentOutOfRangeException(nameof(height), "Drop-down height must be at least 28 pixels.");
+    }
+
+    private sealed class DropDownChevronDrawing : DirectDrawingMovableBase
+    {
+        private SKColor _color = SKColors.White;
+
+        internal DropDownChevronDrawing(
+            RenderSurfaceHostBase host,
+            View view,
+            Rectangle bounds,
+            string nickname)
+            : base(host, DirectDrawingMode.View, null, view, bounds, null, nickname)
+        {
+        }
+
+        internal DropDownChevronDrawing(
+            RenderSurfaceHostBase host,
+            SceneLayer sceneLayer,
+            Rectangle bounds,
+            string nickname)
+            : base(host, DirectDrawingMode.SceneLayer, sceneLayer, null, null, bounds, nickname)
+        {
+        }
+
+        internal void SetColor(Color color)
+        {
+            _color = new SKColor(color.R, color.G, color.B, color.A);
+            ForceRefresh();
+        }
+
+        protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
+        {
+            float width = Math.Min(8f, destRectScreen.Width - 4f);
+            float centerX = destRectScreen.Left + destRectScreen.Width / 2f;
+            float centerY = destRectScreen.Top + destRectScreen.Height / 2f;
+
+            using var paint = new SKPaint
+            {
+                Color = _color,
+                IsAntialias = true,
+                Style = SKPaintStyle.Stroke,
+                StrokeWidth = 1.75f,
+                StrokeCap = SKStrokeCap.Round,
+                StrokeJoin = SKStrokeJoin.Round
+            };
+            using var path = new SKPath();
+
+            path.MoveTo(centerX - width / 2f, centerY - 2f);
+            path.LineTo(centerX, centerY + 2f);
+            path.LineTo(centerX + width / 2f, centerY - 2f);
+
+            backbuffer.Canvas.DrawPath(path, paint);
+        }
     }
 }

@@ -17,8 +17,14 @@ The package targets `net8.0-browser` and includes `gondwana-audio.js` as NuGet c
 Before using browser audio, import that module during browser startup:
 
 ```csharp
-await JSHost.ImportAsync("gondwana-audio", "./gondwana-audio.js");
+var audioModuleUrl = new Uri(
+    new Uri(builder.HostEnvironment.BaseAddress),
+    "gondwana-audio.js").AbsoluteUri;
+
+await JSHost.ImportAsync("gondwana-audio", audioModuleUrl);
 ```
+
+A `"./gondwana-audio.js"` module URL is not sufficient here because `JSHost.ImportAsync` resolves it relative to Blazor's `_framework/` module location. Building an absolute URL from `HostEnvironment.BaseAddress` preserves both local-root and sub-path deployments.
 
 Then configure the backend:
 
@@ -46,7 +52,7 @@ Pan uses Web Audio and cross-origin media must allow anonymous CORS requests.
 Duration is zero until browser metadata is available. URI loading, autoplay,
 codec support, and seekability remain browser/platform constraints.
 
-The current browser backend does not implement the byte/stream loading path used by `LoadFromFile`, `LoadFromStream`, and packed `AssetsFile` audio. Browser assets should therefore be addressable through the application's web root.
+The browser backend supports both URI and byte/stream loading. Byte-backed audio, including entries read from a streamed or file-backed `AssetsFile`, is exposed to `HTMLAudioElement` through a temporary Blob URL and can therefore use the same `AudioResourceManager.LoadFromStream` and packed-asset paths as desktop backends.
 
 ---
 
@@ -131,7 +137,7 @@ As with the NAudio backend, Gondwana does not promise pitch preservation as part
 
 Modern browsers may reject `play()` until the user has interacted with the page.
 
-Gondwana catches the rejected JavaScript play promise so the browser does not surface it as an unhandled error, but it cannot bypass browser autoplay policy. Games should normally begin music or effects in response to the first user input when autoplay is restricted.
+Gondwana catches the rejected JavaScript play promise so the browser does not surface it as an unhandled error. If playback was requested before browser autoplay policy allows it, the browser backend keeps that request pending and retries it directly from the first subsequent pointer or touch gesture. Calling pause, stop, or unload cancels the pending retry. This does not bypass browser policy; it resumes the requested playback at the first point the browser permits it.
 
 ---
 

@@ -4,9 +4,32 @@ import { readFile } from "node:fs/promises";
 
 const elements = [];
 const contexts = [];
+const gestures = new EventTarget();
+globalThis.addEventListener = (...args) => gestures.addEventListener(...args);
+globalThis.removeEventListener = (...args) => gestures.removeEventListener(...args);
+
 class FakeAudio extends EventTarget {
-    constructor(src) { super(); this.src = src; this.currentTime = 0; this.duration = 10; this.paused = true; elements.push(this); }
-    play() { this.paused = false; return Promise.resolve(); }
+    constructor(src) {
+        super();
+        this.src = src;
+        this.currentTime = 0;
+        this.duration = 10;
+        this.paused = true;
+        this.rejectPlayCount = 0;
+        elements.push(this);
+    }
+    play() {
+        if (this.rejectPlayCount > 0) {
+            this.rejectPlayCount--;
+            this.paused = true;
+            const error = new Error("Autoplay blocked");
+            error.name = "NotAllowedError";
+            return Promise.reject(error);
+        }
+
+        this.paused = false;
+        return Promise.resolve();
+    }
     pause() { this.paused = true; }
     removeAttribute() { this.src = ""; }
     load() { }
@@ -56,6 +79,89 @@ test("portable browser controls, natural completion and callback disposal", () =
     media.dispatchEvent(new Event("ended"));
     assert.equal(completed, 1);
     assert.equal(media.src, "");
+});
+
+test("autoplay rejection retries on the first user gesture", async () => {
+    audio.load("autoplay", "music.ogg", true, 1, 0, 1);
+    const media = elements.at(-1);
+    media.rejectPlayCount = 1;
+
+    audio.play("autoplay", true);
+    await Promise.resolve();
+
+    assert.equal(media.paused, true);
+    assert.equal(audio.getState("autoplay"), 0);
+
+    gestures.dispatchEvent(new Event("pointerdown"));
+    await Promise.resolve();
+
+    assert.equal(media.paused, false);
+    assert.equal(audio.getState("autoplay"), 1);
+    audio.unload("autoplay");
+});
+
+test("non-autoplay play failures are not retried on user gestures", async () => {
+    audio.load("unsupported", "broken.ogg", false, 1, 0, 1);
+    const media = elements.at(-1);
+    media.play = () => {
+        media.paused = true;
+        const error = new Error("Unsupported source");
+        error.name = "NotSupportedError";
+        return Promise.reject(error);
+    };
+
+    audio.play("unsupported", true);
+    await Promise.resolve();
+
+    gestures.dispatchEvent(new Event("pointerdown"));
+    await Promise.resolve();
+
+    assert.equal(media.paused, true);
+    assert.equal(audio.getState("unsupported"), 0);
+    audio.unload("unsupported");
+});
+
+test("stopping a blocked track cancels the user-gesture retry", async () => {
+    audio.load("cancel-autoplay", "music.ogg", true, 1, 0, 1);
+    const media = elements.at(-1);
+    media.rejectPlayCount = 1;
+
+    audio.play("cancel-autoplay", true);
+    await Promise.resolve();
+    audio.stop("cancel-autoplay");
+
+    gestures.dispatchEvent(new Event("pointerdown"));
+    await Promise.resolve();
+
+    assert.equal(media.paused, true);
+    assert.equal(audio.getState("cancel-autoplay"), 0);
+    audio.unload("cancel-autoplay");
+});
+
+test("packed byte audio uses and revokes a Blob URL", () => {
+    const created = [];
+    const revoked = [];
+    const originalCreate = URL.createObjectURL;
+    const originalRevoke = URL.revokeObjectURL;
+
+    URL.createObjectURL = blob => {
+        assert.equal(blob.type, "audio/mpeg");
+        const url = `blob:gondwana-${created.length}`;
+        created.push(url);
+        return url;
+    };
+    URL.revokeObjectURL = url => revoked.push(url);
+
+    try {
+        audio.loadBytes("packed", "AQIDBA==", "audio/mpeg", false, 1, 0, 1);
+        assert.equal(elements.at(-1).src, created[0]);
+        audio.unload("packed");
+        assert.deepEqual(revoked, created);
+    }
+    finally {
+        URL.createObjectURL = originalCreate;
+        URL.revokeObjectURL = originalRevoke;
+    }
 });
 
 test("replacement removes old callbacks and unavailable metadata is safe", () => {

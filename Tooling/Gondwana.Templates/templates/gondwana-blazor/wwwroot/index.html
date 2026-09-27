@@ -4,65 +4,184 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>MyGame</title>
-    <base href="/" />
+    <base href="./" />
     <style>
-        html, body {
+        html, body, #app,
+        .game-container,
+        .render-surface-container {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
-            background: #1a1a2e;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
 
-        #app {
+        html, body {
+            overflow: hidden;
+            background: #15161c;
+        }
+
+        .game-container,
+        .render-surface-container {
+            position: relative;
+        }
+
+        .startup-loader {
             width: 100%;
             height: 100%;
+            display: grid;
+            place-items: center;
+            background:
+                radial-gradient(circle at 50% 38%, rgba(94, 145, 225, 0.22), transparent 34%),
+                linear-gradient(180deg, #20212a 0%, #15161c 100%);
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
 
-        .loading-progress {
-            position: relative;
-            display: block;
-            width: 8rem;
-            height: 8rem;
-            margin: 20vh auto 1rem;
-        }
-
-        .loading-progress circle {
-            fill: none;
-            stroke: #e0e0e0;
-            stroke-width: 0.6rem;
-            transform-origin: 50% 50%;
-            transform: rotate(-90deg);
-        }
-
-        .loading-progress circle:last-child {
-            stroke: #1b6ec2;
-            stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
-            transition: stroke-dasharray 0.05s ease-in-out;
-        }
-
-        .loading-progress-text {
+        .startup-loader-overlay {
             position: absolute;
-            text-align: center;
-            font-weight: bold;
-            inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
+            inset: 0;
+            z-index: 100000;
         }
 
-        .loading-progress-text:after {
-            content: var(--blazor-load-percentage-text, "Loading");
-            color: #e0e0e0;
+        .startup-card {
+            width: min(78vw, 340px);
+            padding: 32px 30px 26px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 22px;
+            background: rgba(20, 21, 28, 0.78);
+            box-shadow: 0 22px 70px rgba(0, 0, 0, 0.42);
+            backdrop-filter: blur(8px);
         }
+
+        .startup-logo {
+            width: 112px;
+            height: 112px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.35));
+            animation: startup-float 2.4s ease-in-out infinite;
+        }
+
+        .startup-mark {
+            width: 86px;
+            height: 86px;
+            margin: 0 auto 18px;
+            display: grid;
+            place-items: center;
+            border-radius: 22px;
+            background: linear-gradient(145deg, #6d9ef0, #3d67ad);
+            box-shadow: 0 12px 30px rgba(50, 90, 160, 0.38);
+            font-size: 46px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .startup-title {
+            margin: 0;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+        }
+
+        .startup-message {
+            margin: 8px 0 18px;
+            color: #c8cbd5;
+            font-size: 14px;
+        }
+
+        .startup-progress {
+            height: 8px;
+            overflow: hidden;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.10);
+        }
+
+        .startup-progress-fill {
+            position: relative;
+            width: var(--blazor-load-percentage, 8%);
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #6d9ef0, #9dbfff);
+            transition: width 120ms ease-out;
+        }
+
+        .startup-progress-fill::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+            transform: translateX(-100%);
+            animation: startup-shimmer 1.2s linear infinite;
+        }
+
+        .startup-progress-fill.indeterminate {
+            width: 38%;
+            animation: startup-indeterminate 1.25s ease-in-out infinite;
+        }
+
+        .startup-percent {
+            min-height: 1.2em;
+            margin-top: 10px;
+            color: #9ea4b3;
+            font-size: 12px;
+        }
+
+        .startup-percent::after {
+            content: var(--blazor-load-percentage-text, "Starting...");
+        }
+
+        .startup-percent.manual::after {
+            content: none;
+        }
+
+        .startup-powered {
+            margin-top: 14px;
+            color: #777e8e;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        @keyframes startup-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @keyframes startup-shimmer {
+            to { transform: translateX(100%); }
+        }
+
+        @keyframes startup-indeterminate {
+            0% { transform: translateX(-115%); }
+            50% { transform: translateX(80%); }
+            100% { transform: translateX(285%); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .startup-logo,
+            .startup-progress-fill,
+            .startup-progress-fill::after {
+                animation: none;
+            }
+        }
+
     </style>
 </head>
 <body>
     <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
+        <div class="startup-loader">
+            <div class="startup-card">
+                <div class="startup-mark">G</div>
+                <h1 class="startup-title">MyGame</h1>
+                <div class="startup-message">Starting your game...</div>
+                <div class="startup-progress" aria-hidden="true">
+                    <div class="startup-progress-fill"></div>
+                </div>
+                <div class="startup-percent"></div>
+                <div class="startup-powered">Powered by Gondwana</div>
+            </div>
+        </div>
     </div>
 
     <script src="_framework/blazor.webassembly.js"></script>

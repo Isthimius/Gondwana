@@ -58,6 +58,7 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         var windowsOnlyAlwaysFixLabels = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "git-cliff",
+            "butler",
         };
         bool ShouldAlwaysFix(string label) =>
             alwaysFixLabels.Contains(label) ||
@@ -217,10 +218,19 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     private static void FixButler()
     {
-        if (TryGetButlerFromKnownLocations(out var existingButlerPath))
+        var pathOutput = ProcessHelper.Run("butler", "--version", out var pathExitCode);
+        if (pathExitCode == 0 && !string.IsNullOrWhiteSpace(pathOutput))
+        {
+            var pathVersion = pathOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
+            AnsiConsole.MarkupLine($"[green]butler is already available on PATH: {Markup.Escape(pathVersion ?? "found")}[/]");
+            return;
+        }
+
+        if (ButlerHelper.TryGetFromKnownLocations(out var existingButlerPath))
         {
             var existingInstallDir = Path.GetDirectoryName(existingButlerPath)!;
             AddDirectoryToProcessPath(existingInstallDir);
+            AddDirectoryToPersistentUserPath(existingInstallDir);
 
             var existingOutput = ProcessHelper.Run(existingButlerPath, "--version", out var existingExitCode);
             var existingVersion = existingOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
@@ -229,7 +239,8 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             else
                 AnsiConsole.MarkupLine($"[green]butler already installed at {Markup.Escape(existingButlerPath)}[/]");
 
-            AnsiConsole.MarkupLine($"[yellow]Add '{Markup.Escape(existingInstallDir)}' to your PATH to use butler in future terminal sessions.[/]");
+            AnsiConsole.MarkupLine($"[green]Added '{Markup.Escape(existingInstallDir)}' to the user PATH.[/]");
+            AnsiConsole.MarkupLine("[dim]Open a new terminal before running 'butler' directly.[/]");
             return;
         }
 
@@ -330,10 +341,11 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
             }
 
             AddDirectoryToProcessPath(installDir);
+            AddDirectoryToPersistentUserPath(installDir);
 
             AnsiConsole.MarkupLine($"[green]butler installed to {Markup.Escape(installDir)}.[/]");
-            AnsiConsole.MarkupLine($"[yellow]Add '{Markup.Escape(installDir)}' to your PATH to use butler in future terminal sessions.[/]");
-            AnsiConsole.MarkupLine("[dim]Run 'butler login' to authenticate with itch.io.[/]");
+            AnsiConsole.MarkupLine($"[green]Added '{Markup.Escape(installDir)}' to the user PATH.[/]");
+            AnsiConsole.MarkupLine("[dim]Open a new terminal, then run 'butler login' to authenticate with itch.io.[/]");
         }
         catch (Exception ex)
         {
@@ -506,20 +518,11 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 
     private static CheckResult CheckButler()
     {
-        var output = ProcessHelper.Run("butler", "--version", out int exitCode);
-        if (exitCode == 0 && !string.IsNullOrWhiteSpace(output))
+        if (ButlerHelper.TryResolve(out var butlerPath, out var version))
         {
-            var versionLine = output.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
-            return CheckResult.Ok(versionLine ?? "found");
-        }
-
-        if (TryGetButlerFromKnownLocations(out var butlerPath))
-        {
-            var fileOutput = ProcessHelper.Run(butlerPath, "--version", out int fileExitCode);
-            var versionLine = fileOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
-            return fileExitCode == 0 && !string.IsNullOrWhiteSpace(versionLine)
-                ? CheckResult.Ok($"{versionLine} ({butlerPath})")
-                : CheckResult.Ok($"installed at {butlerPath}");
+            return string.Equals(butlerPath, "butler", StringComparison.OrdinalIgnoreCase)
+                ? CheckResult.Ok(version ?? "found")
+                : CheckResult.Ok($"{version ?? "found"} ({butlerPath})");
         }
 
         return CheckResult.Fail("butler not found on PATH or standard install directories. Run: gondwana doctor --fix");
@@ -831,39 +834,43 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
         }
     }
 
-    private static bool TryGetButlerFromKnownLocations(out string butlerPath)
+    private static void AddDirectoryToPersistentUserPath(string directoryPath)
     {
-        foreach (var candidate in EnumerateKnownButlerPaths())
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            return;
+
+        var userPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.User) ?? string.Empty;
+
+        static string NormalizePathEntry(string path)
         {
-            if (File.Exists(candidate))
+            var trimmed = path.Trim().Trim('"');
+            if (trimmed.Length == 0)
+                return string.Empty;
+
+            try
             {
-                butlerPath = candidate;
-                return true;
+                return Path.TrimEndingDirectorySeparator(Path.GetFullPath(trimmed));
+            }
+            catch
+            {
+                return Path.TrimEndingDirectorySeparator(trimmed);
             }
         }
 
-        butlerPath = string.Empty;
-        return false;
-    }
+        var normalizedDirectoryPath = NormalizePathEntry(directoryPath);
+        bool alreadyInPath = userPath
+            .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries)
+            .Select(NormalizePathEntry)
+            .Any(p => p.Equals(normalizedDirectoryPath, StringComparison.OrdinalIgnoreCase));
 
-    private static IEnumerable<string> EnumerateKnownButlerPaths()
-    {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            if (!string.IsNullOrWhiteSpace(localAppData))
-                yield return Path.Combine(localAppData, "itch", "butler", "butler.exe");
+        if (alreadyInPath)
+            return;
 
-            var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            if (!string.IsNullOrWhiteSpace(userProfile))
-                yield return Path.Combine(userProfile, ".itch", "butler", "butler.exe");
+        var updatedPath = string.IsNullOrWhiteSpace(userPath)
+            ? directoryPath
+            : userPath + Path.PathSeparator + directoryPath;
 
-            yield break;
-        }
-
-        var userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        if (!string.IsNullOrWhiteSpace(userHome))
-            yield return Path.Combine(userHome, ".itch", "butler", "butler");
+        Environment.SetEnvironmentVariable("PATH", updatedPath, EnvironmentVariableTarget.User);
     }
 
     private static void AddDirectoryToProcessPath(string directoryPath)

@@ -19,8 +19,17 @@ public sealed class BrowserAudioBackend : IAudioBackend
         float volume,
         float pan,
         float playbackSpeed)
-        => throw new NotSupportedException(
-            "Gondwana.Audio.Browser currently loads URI-addressable browser assets. Use AudioResourceManager.LoadFromUri().");
+    {
+        ArgumentNullException.ThrowIfNull(data);
+
+        return new BrowserAudioPlaybackHandle(
+            key,
+            data,
+            ResolveMimeType(fileNameOrExtension),
+            volume,
+            pan,
+            playbackSpeed);
+    }
 
     public IAudioPlaybackHandle CreateFromUri(
         string key,
@@ -29,4 +38,24 @@ public sealed class BrowserAudioBackend : IAudioBackend
         float pan,
         float playbackSpeed)
         => new BrowserAudioPlaybackHandle(key, uri, volume, pan, playbackSpeed);
+
+    private static string ResolveMimeType(string fileNameOrExtension)
+    {
+        var extension = Path.GetExtension(fileNameOrExtension);
+        if (string.IsNullOrWhiteSpace(extension) && fileNameOrExtension.StartsWith('.'))
+            extension = fileNameOrExtension;
+
+        return extension.ToLowerInvariant() switch
+        {
+            ".aac" => "audio/aac",
+            ".flac" => "audio/flac",
+            ".m4a" => "audio/mp4",
+            ".mp3" => "audio/mpeg",
+            ".ogg" => "audio/ogg",
+            ".opus" => "audio/ogg",
+            ".wav" => "audio/wav",
+            ".webm" => "audio/webm",
+            _ => "application/octet-stream"
+        };
+    }
 }

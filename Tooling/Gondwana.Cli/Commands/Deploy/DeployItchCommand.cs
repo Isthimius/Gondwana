@@ -76,11 +76,10 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
             return 1;
         }
 
-        ProcessHelper.Run("butler", "--version", out var butlerExit);
-        if (butlerExit != 0)
+        if (!ButlerHelper.TryResolve(out var butlerPath, out _))
         {
-            AnsiConsole.MarkupLine("[red]butler not found on PATH.[/]");
-            AnsiConsole.MarkupLine("[dim]Install it from https://itch.io/docs/butler/ and run 'butler login'.[/]");
+            AnsiConsole.MarkupLine("[red]butler not found on PATH or in the standard itch install location.[/]");
+            AnsiConsole.MarkupLine("[dim]Run 'gondwana doctor --fix' or install it from https://itch.io/docs/butler/.[/]");
             return 1;
         }
 
@@ -108,7 +107,7 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
         {
             AnsiConsole.MarkupLine($"Uploading [bold]{Markup.Escape(settings.ItchGame!)}[/] to channel [bold]{Markup.Escape(settings.ItchChannel)}[/]...");
 
-            var pushExit = ProcessHelper.RunLive("butler", new[]
+            var pushExit = ProcessHelper.RunLive(butlerPath, new[]
             {
                 "push",
                 createdZipPath,

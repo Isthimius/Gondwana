@@ -77,6 +77,14 @@ playerName.SubmitKey = mySubmitKey;
 playerName.BackspaceKey = myBackspaceKey;
 ```
 
+For Blazor hosts, use the built-in helper rather than maintaining that mapping manually:
+
+```csharp
+BlazorTextBoxInput.Configure(playerName);
+```
+
+This applies the `BlazorKey` special-key values and printable-character resolver while leaving `TextBoxWidget` itself platform-neutral.
+
 Setting `CharacterResolver` to `null` suppresses printable character conversion.
 
 ## Useful members

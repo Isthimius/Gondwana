@@ -14,6 +14,8 @@ Avalonia UI.
 - Keyboard input integration via Blazor keyboard events on the canvas element
 - Mouse / pointer input integration
 - Touch input integration
+- Browser `localStorage` persistence through `BrowserLocalStorageEngineConfigurationStore`
+- External-link launching through `BlazorExternalUriLauncher` for Widgets such as `HyperlinkWidget` and `AboutBox`
 - `BlazorKey` enum mapping browser `KeyboardEvent.code` values to integer key codes
 
 ## Installation
@@ -84,6 +86,36 @@ or use the `BlazorKey` enum directly:
 Engine.Instance.Input.KeyboardEventPoller!.StartMonitoringKey(
     (int)BlazorKey.Space, "Jump");
 ```
+
+### Browser configuration and external links
+
+Use `BrowserLocalStorageEngineConfigurationStore` when the same
+`EngineConfiguration` should persist in browser `localStorage` instead of a desktop file:
+
+```csharp
+var store = new BrowserLocalStorageEngineConfigurationStore(
+    JS,
+    "my-game.configuration",
+    autoSave: true);
+
+host.InitializeWithConfigurationStore(store);
+```
+
+Widgets that open an external URI can use the browser implementation directly:
+
+```csharp
+var launcher = new BlazorExternalUriLauncher(JS);
+```
+
+### Widget text input
+
+`TextBoxWidget` uses host keyboard codes. For Blazor-hosted text boxes, apply the built-in Blazor mapping:
+
+```csharp
+BlazorTextBoxInput.Configure(textBox);
+```
+
+This configures the text box's special-key codes and printable-character resolver for `BlazorKey` values without changing the public Blazor keyboard-code contract.
 
 ### Touch input
 

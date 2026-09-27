@@ -347,4 +347,5 @@ public sealed class ListBoxScrollingTests
         typeof(WidgetInputRouter).GetMethod("OnMouseEvent", BindingFlags.Instance | BindingFlags.NonPublic)!
             .Invoke(router, [args]);
     }
+
 }
