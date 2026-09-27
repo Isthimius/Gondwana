@@ -65,6 +65,12 @@ if (-not (Test-Path $cliProject -PathType Leaf)) {
 
 New-Item -ItemType Directory -Path $packageSource -Force | Out-Null
 
+# Branch builds use hash-based prerelease versions. Leaving older Gondwana.Cli
+# packages in the local feed can cause NuGet to select a stale package whose
+# prerelease suffix sorts higher than the package just built.
+Get-ChildItem -Path $packageSource -Filter 'Gondwana.Cli.*.nupkg' -File -ErrorAction SilentlyContinue |
+    Remove-Item -Force
+
 Write-Host "CLI project : $cliProject" -ForegroundColor Cyan
 Write-Host "Package feed: $packageSource" -ForegroundColor Cyan
 
@@ -78,11 +84,41 @@ if (Test-GlobalToolInstalled 'Gondwana.Cli') {
     Invoke-Cmd dotnet @('tool', 'uninstall', '--global', 'Gondwana.Cli')
 }
 
+$packedPackage = Get-ChildItem -Path $packageSource -Filter 'Gondwana.Cli.*.nupkg' -File |
+                 Sort-Object LastWriteTime -Descending |
+                 Select-Object -First 1
+
+if (-not $packedPackage) {
+    throw "No Gondwana.Cli package was produced in '$packageSource'."
+}
+
+$match = [regex]::Match($packedPackage.Name, '^Gondwana\.Cli\.(.+)\.nupkg
+
+$gondwanaCommand = Get-Command gondwana -ErrorAction SilentlyContinue
+if ($null -ne $gondwanaCommand) {
+    $versionLine = ((& $gondwanaCommand.Source --version 2>&1) | Select-Object -First 1).ToString().Trim()
+
+    Write-Host ""
+    Write-Host "Reinstall succeeded!" -ForegroundColor Green
+    if (-not [string]::IsNullOrWhiteSpace($versionLine)) {
+        Write-Host "Version   : $versionLine" -ForegroundColor Green
+    }
+} else {
+    Write-Host ""
+    Write-Host "Reinstall succeeded!" -ForegroundColor Green
+    Write-Warning "The 'gondwana' command is not available in this session yet. Open a new shell and run 'gondwana --version'."
+}
+, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+if (-not $match.Success) {
+    throw "Could not determine the packed Gondwana.Cli version from '$($packedPackage.Name)'."
+}
+$packedVersion = $match.Groups[1].Value
+
 Write-Host ""
-Write-Host "Installing Gondwana.Cli from local package feed..." -ForegroundColor Cyan
+Write-Host "Installing Gondwana.Cli $packedVersion from local package feed..." -ForegroundColor Cyan
 $nugetPackagesDir = if (-not [string]::IsNullOrWhiteSpace($env:NUGET_PACKAGES)) { $env:NUGET_PACKAGES } else { Join-Path (Join-Path $HOME '.nuget') 'packages' }
 Remove-Item (Join-Path $nugetPackagesDir 'gondwana.cli') -Recurse -Force -ErrorAction SilentlyContinue
-Invoke-Cmd dotnet @('tool', 'install', '--global', 'Gondwana.Cli', '--add-source', $packageSource, '--prerelease', '--ignore-failed-sources')
+Invoke-Cmd dotnet @('tool', 'install', '--global', 'Gondwana.Cli', '--version', $packedVersion, '--add-source', $packageSource, '--prerelease', '--ignore-failed-sources')
 
 $gondwanaCommand = Get-Command gondwana -ErrorAction SilentlyContinue
 if ($null -ne $gondwanaCommand) {
