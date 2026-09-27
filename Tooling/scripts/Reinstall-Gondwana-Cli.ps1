@@ -92,27 +92,15 @@ if (-not $packedPackage) {
     throw "No Gondwana.Cli package was produced in '$packageSource'."
 }
 
-$match = [regex]::Match($packedPackage.Name, '^Gondwana\.Cli\.(.+)\.nupkg
-
-$gondwanaCommand = Get-Command gondwana -ErrorAction SilentlyContinue
-if ($null -ne $gondwanaCommand) {
-    $versionLine = ((& $gondwanaCommand.Source --version 2>&1) | Select-Object -First 1).ToString().Trim()
-
-    Write-Host ""
-    Write-Host "Reinstall succeeded!" -ForegroundColor Green
-    if (-not [string]::IsNullOrWhiteSpace($versionLine)) {
-        Write-Host "Version   : $versionLine" -ForegroundColor Green
-    }
-} else {
-    Write-Host ""
-    Write-Host "Reinstall succeeded!" -ForegroundColor Green
-    Write-Warning "The 'gondwana' command is not available in this session yet. Open a new shell and run 'gondwana --version'."
-}
-, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
-if (-not $match.Success) {
+$prefix = 'Gondwana.Cli.'
+$suffix = '.nupkg'
+if (-not $packedPackage.Name.StartsWith($prefix, [System.StringComparison]::OrdinalIgnoreCase) -or
+    -not $packedPackage.Name.EndsWith($suffix, [System.StringComparison]::OrdinalIgnoreCase)) {
     throw "Could not determine the packed Gondwana.Cli version from '$($packedPackage.Name)'."
 }
-$packedVersion = $match.Groups[1].Value
+
+$packedVersionLength = $packedPackage.Name.Length - $prefix.Length - $suffix.Length
+$packedVersion = $packedPackage.Name.Substring($prefix.Length, $packedVersionLength)
 
 Write-Host ""
 Write-Host "Installing Gondwana.Cli $packedVersion from local package feed..." -ForegroundColor Cyan
