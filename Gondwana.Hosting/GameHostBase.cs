@@ -304,11 +304,29 @@ public abstract class GameHostBase : IDisposable
     }
 
     /// <summary>
+    /// Initializes the Gondwana engine using the default file-backed configuration store.
+    /// </summary>
+    /// <remarks>
+    /// Retained for compatibility with derived hosts that call the pre-configuration-store overload.
+    /// </remarks>
+    /// <param name="configPath">Optional path to the engine configuration file.</param>
+    /// <param name="autoSaveConfig">
+    /// Optional value indicating whether configuration changes should be saved automatically.
+    /// </param>
+    protected void InitializeEngine(
+        string? configPath,
+        bool? autoSaveConfig)
+        => InitializeEngine(configPath, autoSaveConfig, configurationStore: null);
+
+    /// <summary>
     /// Initializes the Gondwana engine.
     /// </summary>
     /// <param name="configPath">Optional path to the engine configuration file.</param>
     /// <param name="autoSaveConfig">
     /// Optional value indicating whether configuration changes should be saved automatically.
+    /// </param>
+    /// <param name="configurationStore">
+    /// Optional configuration persistence store. When null, the default file-backed store is used.
     /// </param>
     protected void InitializeEngine(
         string? configPath,
