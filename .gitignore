@@ -424,3 +424,4 @@ FodyWeavers.xsd
 
 # Avalonia build-service caches created during desktop builds
 **/AvaloniaUI/BuildServices/
+/spot-publish
