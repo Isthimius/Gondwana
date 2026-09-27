@@ -41,9 +41,13 @@
         <Content Include="..\Spot\assets\spot_ico.png" Link="wwwroot\assets\spot_ico.png" />
     </ItemGroup>
 
-    <UsingTask TaskName="PackSpotGaf"
-               TaskFactory="RoslynCodeTaskFactory"
-               AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
+    <ItemGroup>
+      <Content Update="wwwroot\gondwana-audio.js">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <UsingTask TaskName="PackSpotGaf" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
         <ParameterGroup>
             <SourceRoot ParameterType="System.String" Required="true" />
             <OutputPath ParameterType="System.String" Required="true" />
@@ -156,10 +160,7 @@
         </Task>
     </UsingTask>
 
-    <Target Name="GenerateSpotGaf"
-            BeforeTargets="PrepareForBuild"
-            Inputs="@(SpotAssetSource)"
-            Outputs="$(SpotGafPath)">
+    <Target Name="GenerateSpotGaf" BeforeTargets="PrepareForBuild" Inputs="@(SpotAssetSource)" Outputs="$(SpotGafPath)">
         <PackSpotGaf SourceRoot="$(SpotAssetSourceRoot)" OutputPath="$(SpotGafPath)" />
     </Target>
 
