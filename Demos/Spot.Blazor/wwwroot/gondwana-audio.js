@@ -6,8 +6,9 @@
  *   await JSHost.ImportAsync("gondwana-audio", url);
  */
 
-/** @type {Map<string, {audio: HTMLAudioElement, context: AudioContext|null, source: MediaElementAudioSourceNode|null, panner: StereoPannerNode|null, state: number, objectUrl: string|null}>} */
+/** @type {Map<string, {audio: HTMLAudioElement, context: AudioContext|null, source: MediaElementAudioSourceNode|null, panner: StereoPannerNode|null, state: number, objectUrl: string|null, pendingUserGesturePlay: boolean}>} */
 const _players = new Map();
+let _gestureRetryInstalled = false;
 
 // One context per module, retained until page teardown. Tracks own only their
 // nodes; unloading one track must not close the context used by the others.
@@ -31,6 +32,7 @@ function clamp(value, min, max) {
 
 function disposeEntry(entry) {
     entry.disposed = true;
+    entry.pendingUserGesturePlay = false;
     entry.audio.removeEventListener("ended", entry.onEnded);
     entry.audio.pause();
     entry.state = 0;
@@ -107,7 +109,16 @@ export function load(key, src, loop, volume, pan, playbackSpeed, onEnded) {
     audio.volume = clamp(volume, 0, 1);
     audio.playbackRate = clamp(playbackSpeed, 0.25, 4);
 
-    const entry = { audio, context, source, panner, state: 0, disposed: false, objectUrl: null };
+    const entry = {
+        audio,
+        context,
+        source,
+        panner,
+        state: 0,
+        disposed: false,
+        objectUrl: null,
+        pendingUserGesturePlay: false
+    };
 
     entry.onEnded = () => {
         if (entry.disposed || audio.loop)
@@ -149,10 +160,71 @@ export function loadBytes(key, base64Data, mimeType, loop, volume, pan, playback
     }
 }
 
+function removeGestureRetryListeners() {
+    if (!_gestureRetryInstalled || typeof globalThis.removeEventListener !== "function")
+        return;
+
+    globalThis.removeEventListener("pointerdown", retryPendingPlaybackFromGesture, true);
+    globalThis.removeEventListener("keydown", retryPendingPlaybackFromGesture, true);
+    globalThis.removeEventListener("touchstart", retryPendingPlaybackFromGesture, true);
+    _gestureRetryInstalled = false;
+}
+
+function ensureGestureRetryListeners() {
+    if (_gestureRetryInstalled || typeof globalThis.addEventListener !== "function")
+        return;
+
+    _gestureRetryInstalled = true;
+    globalThis.addEventListener("pointerdown", retryPendingPlaybackFromGesture, { capture: true, passive: true });
+    globalThis.addEventListener("keydown", retryPendingPlaybackFromGesture, { capture: true });
+    globalThis.addEventListener("touchstart", retryPendingPlaybackFromGesture, { capture: true, passive: true });
+}
+
+function updateGestureRetryListeners() {
+    const hasPendingPlayback = [..._players.values()]
+        .some(entry => !entry.disposed && entry.pendingUserGesturePlay);
+
+    if (hasPendingPlayback)
+        ensureGestureRetryListeners();
+    else
+        removeGestureRetryListeners();
+}
+
+function markPlayRejected(entry) {
+    if (entry.disposed || entry.state !== 1 || !entry.audio.paused)
+        return;
+
+    entry.state = entry.audio.currentTime > 0 ? 2 : 0;
+    entry.pendingUserGesturePlay = true;
+    ensureGestureRetryListeners();
+}
+
+function retryPendingPlaybackFromGesture() {
+    removeGestureRetryListeners();
+
+    for (const entry of _players.values()) {
+        if (entry.disposed || !entry.pendingUserGesturePlay)
+            continue;
+
+        entry.pendingUserGesturePlay = false;
+
+        if (entry.context?.state === "suspended")
+            entry.context.resume().catch(() => { });
+
+        entry.state = 1;
+        entry.audio.play().catch(() => {
+            markPlayRejected(entry);
+        });
+    }
+}
+
 export function play(key, fromStart) {
     const entry = _players.get(key);
     if (!entry)
         return;
+
+    entry.pendingUserGesturePlay = false;
+    updateGestureRetryListeners();
 
     if (fromStart)
         entry.audio.currentTime = 0;
@@ -162,8 +234,7 @@ export function play(key, fromStart) {
 
     entry.state = 1;
     entry.audio.play().catch(() => {
-        if (!entry.disposed && entry.state === 1 && entry.audio.paused)
-            entry.state = entry.audio.currentTime > 0 ? 2 : 0;
+        markPlayRejected(entry);
     });
 }
 
@@ -172,6 +243,8 @@ export function pause(key) {
     if (!entry)
         return;
 
+    entry.pendingUserGesturePlay = false;
+    updateGestureRetryListeners();
     entry.audio.pause();
     if (entry.state === 1)
         entry.state = 2;
@@ -182,6 +255,8 @@ export function stop(key) {
     if (!entry)
         return;
 
+    entry.pendingUserGesturePlay = false;
+    updateGestureRetryListeners();
     entry.audio.pause();
     entry.audio.currentTime = 0;
     entry.state = 0;
@@ -241,4 +316,5 @@ export function unload(key) {
 
     disposeEntry(entry);
     _players.delete(key);
+    updateGestureRetryListeners();
 }

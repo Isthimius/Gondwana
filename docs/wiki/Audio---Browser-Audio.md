@@ -137,7 +137,7 @@ As with the NAudio backend, Gondwana does not promise pitch preservation as part
 
 Modern browsers may reject `play()` until the user has interacted with the page.
 
-Gondwana catches the rejected JavaScript play promise so the browser does not surface it as an unhandled error, but it cannot bypass browser autoplay policy. Games should normally begin music or effects in response to the first user input when autoplay is restricted.
+Gondwana catches the rejected JavaScript play promise so the browser does not surface it as an unhandled error. If playback was requested before browser autoplay policy allows it, the browser backend keeps that request pending and retries it directly from the first subsequent pointer, touch, or keyboard gesture. Calling pause, stop, or unload cancels the pending retry. This does not bypass browser policy; it resumes the requested playback at the first point the browser permits it.
 
 ---
 

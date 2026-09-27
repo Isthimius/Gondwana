@@ -73,7 +73,7 @@ var music = audio.Load("music", "assets/theme.mp3", volume: 0.5f, loop: true);
 
 Browser audio supports both URI-addressable assets and raw byte/stream sources. Byte-backed resources, including audio entries from a streamed or file-backed `AssetsFile`, are exposed to the browser through temporary Blob URLs that are revoked when the resource is unloaded.
 
-Autoplay remains subject to browser policy; games should normally begin playback in response to user interaction when the browser blocks autoplay.
+Autoplay remains subject to browser policy. When a requested play is rejected because the page has not received a user gesture yet, the browser backend keeps that request pending and retries it from the first subsequent pointer, touch, or keyboard gesture. Calling pause, stop, or unload before that gesture cancels the pending retry.
 
 The JavaScript bridge forwards the HTML media `ended` event into .NET, changes playback state to `Stopped`, and raises `AudioResource.PlaybackCompleted` and `PlaybackCompletedAsync` for non-looping playback. Explicit stop and unload do not raise completion.
 

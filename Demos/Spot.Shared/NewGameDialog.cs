@@ -360,6 +360,7 @@ internal sealed class NewGameDialog : DialogBox
                     Brighten(ToDrawingColor(item.Color), 22),
                     Darken(ToDrawingColor(item.Color), 22))
                 .SetTextColor(ToDrawingColor(item.TextColor));
+            _playerColors[i].SetHeaderTextColor(ToDrawingColor(item.TextColor));
         }
     }
 
