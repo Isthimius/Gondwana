@@ -108,6 +108,19 @@ $nugetPackagesDir = if (-not [string]::IsNullOrWhiteSpace($env:NUGET_PACKAGES)) 
 Remove-Item (Join-Path $nugetPackagesDir 'gondwana.cli') -Recurse -Force -ErrorAction SilentlyContinue
 Invoke-Cmd dotnet @('tool', 'install', '--global', 'Gondwana.Cli', '--version', $packedVersion, '--add-source', $packageSource, '--prerelease', '--ignore-failed-sources')
 
+$installedToolLine = dotnet tool list --global 2>&1 |
+                     Where-Object { $_ -match '^\s*Gondwana\.Cli\s' } |
+                     Select-Object -First 1
+$installedVersion = if ($installedToolLine) {
+    ($installedToolLine -split '\s+')[1]
+} else {
+    $null
+}
+
+if ($installedVersion -ne $packedVersion) {
+    throw "Installed Gondwana.Cli version '$installedVersion' does not match freshly packed version '$packedVersion'."
+}
+
 $gondwanaCommand = Get-Command gondwana -ErrorAction SilentlyContinue
 if ($null -ne $gondwanaCommand) {
     $versionLine = ((& $gondwanaCommand.Source --version 2>&1) | Select-Object -First 1).ToString().Trim()
