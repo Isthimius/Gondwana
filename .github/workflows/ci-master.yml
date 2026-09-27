@@ -80,6 +80,17 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore --nologo /p:EnableWindowsTargeting=true
 
+      - name: Spot.Blazor publish smoke test
+        shell: bash
+        run: |
+          rm -rf /tmp/spot-blazor-publish
+          dotnet publish Demos/Spot.Blazor/Spot.Blazor.csproj --configuration Release --no-restore --nologo -o /tmp/spot-blazor-publish
+          test -f /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf
+          unzip -t /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf
+          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Image_spot.png"
+          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Font_architectsdaughter-regular.ttf"
+          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Audio_sounovamusic-puzzle-amp-casual-game-music-460543.mp3"
+
       - name: Gondwana.Tests unit tests
         run: dotnet test --configuration Release --no-build --no-restore --nologo /p:EnableWindowsTargeting=true Testing/Gondwana.Tests/Gondwana.Tests.csproj
 
