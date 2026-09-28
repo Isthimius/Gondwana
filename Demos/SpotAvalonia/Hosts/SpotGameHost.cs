@@ -1,38 +1,66 @@
-using System;
 using Avalonia.Input;
 using Gondwana.Avalonia.Hosting;
 using Gondwana.Avalonia.Rendering;
 using Gondwana.Input.Keyboard;
-using Gondwana.Rendering;
 using Gondwana.Scenes;
 using Gondwana.Widgets;
 using Gondwana.Widgets.Controls;
+using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Demos.Spot;
 
 /// <summary>
-/// Hosts the Spot demo on Gondwana's Avalonia GPU runtime.
-/// Game-specific responsibilities are supplied by the shared Spot host partials.
+/// Hosts the Spot demo on Gondwana's Avalonia GPU runtime and delegates game behavior
+/// to the platform-neutral runtime in Spot.Shared.
 /// </summary>
 internal sealed partial class SpotGameHost : AvaloniaGpuGameHost
 {
-    private const int PersistentMenuHeight = 32;
-
     private static readonly int ScoreToggleKey = GetAvaloniaKeyCode("Tab");
 
-    private Scene ActiveScene => Scene
-        ?? throw new InvalidOperationException("Spot scene has not been created.");
-
-    private RenderSurfaceHostBase SurfaceHost => RenderSurface.Host;
-    private int SurfaceWidth => SurfaceHost.Backbuffer.Width;
-    private int SurfaceHeight => SurfaceHost.Backbuffer.Height;
+    private readonly SpotGameRuntime _runtime;
 
     internal SpotGameHost(AvaloniaGpuRenderSurfaceControl renderSurface)
         : base(renderSurface)
     {
+        _runtime = new SpotGameRuntime(
+            renderSurface.Host,
+            scoreToggleKey: ScoreToggleKey,
+            widgetInputRouterAccessor: () => WidgetInputRouter,
+            configurePlatformKeyboardInput: ConfigurePlatformKeyboardInput,
+            configureNewGameDialogForPlatform: ConfigureNewGameDialogForPlatform,
+            persistGameState: PersistGameState);
     }
 
-    internal bool AudioAvailable => _music is not null;
+    internal bool AudioAvailable => _runtime.AudioAvailable;
+
+    internal NewGameOptions? LastNewGameOptions => _runtime.LastNewGameOptions;
+
+    internal void BeginPostSplashStartup() => _runtime.BeginPostSplashStartup();
+
+    internal void OpenNewGameDialog(NewGameOptions? options = null)
+        => _runtime.OpenNewGameDialog(options);
+
+    internal void SetMusicEnabled(bool enabled) => _runtime.SetMusicEnabled(enabled);
+
+    internal void SetSoundEffectsEnabled(bool enabled) => _runtime.SetSoundEffectsEnabled(enabled);
+
+    internal void SetJiggleEnabled(bool enabled) => _runtime.SetJiggleEnabled(enabled);
+
+    internal void SetCloudsEnabled(bool enabled) => _runtime.SetCloudsEnabled(enabled);
+
+    protected override Scene CreateInitialScene()
+    {
+        Logging.EngineLogger.SetLogLevel(LogLevel.Information);
+        return _runtime.CreateInitialScene();
+    }
+
+    protected override void OnSceneGraphCreated() => _runtime.OnSceneGraphCreated();
+
+    protected override void OnMouseAdapterInitialized() => _runtime.OnMouseAdapterInitialized();
+
+    protected override void OnKeyboardAdapterInitialized() => _runtime.OnKeyboardAdapterInitialized();
+
+    protected override void UnhookEvents() => _runtime.UnhookEvents();
 
     protected override void CreateDirectDrawings()
     {
@@ -46,12 +74,12 @@ internal sealed partial class SpotGameHost : AvaloniaGpuGameHost
         // after the Gondwana splash has fully faded out.
     }
 
-    partial void ConfigureNewGameDialogForPlatform(NewGameDialog dialog)
+    private static void ConfigureNewGameDialogForPlatform(NewGameDialog dialog)
     {
         dialog.ConfigureTextInput(ConfigureTextBoxForAvalonia);
     }
 
-    partial void ConfigurePlatformKeyboardInput(KeyboardEventPoller keyboard)
+    private static void ConfigurePlatformKeyboardInput(KeyboardEventPoller keyboard)
     {
         foreach (Key key in Enum.GetValues<Key>())
         {
@@ -63,9 +91,9 @@ internal sealed partial class SpotGameHost : AvaloniaGpuGameHost
         }
     }
 
-    partial void PersistGameState()
+    private static void PersistGameState()
     {
-        Engine.Instance.State.SaveToFile("savegame.json", false, true);
+        Gondwana.Engine.Instance.State.SaveToFile("savegame.json", false, true);
     }
 
     private static void ConfigureTextBoxForAvalonia(TextBoxWidget textBox)
