@@ -355,9 +355,10 @@ This event is a logging-health hook, not a dropped-message counter. It also shou
 With Gondwana's built-in logger factory:
 
 - desktop platforms use the Debug and Console providers
-- browser/WASM platforms use the Debug provider without the Console provider
+- core browser/WASM logging uses the Debug provider rather than the desktop Console provider
+- `Gondwana.Blazor.Hosting` automatically adds `BrowserConsoleLoggerProvider` before the browser engine starts
 
-The browser avoids the console logger because its background-thread behavior is unsuitable for the WASM runtime. As a result, do not assume that logs will appear through identical channels on WinForms, Avalonia, and Blazor.
+The browser provider writes through .NET's WebAssembly console bridge instead of `Microsoft.Extensions.Logging.Console`. With the default asynchronous engine logging mode, records are first queued by `EngineLogger` and are later written to the browser developer console. Warning and higher levels use standard error; lower levels use standard output.
 
 Use the same `ILogger` calls in game code and let the active platform determine where the built-in provider writes them.
 

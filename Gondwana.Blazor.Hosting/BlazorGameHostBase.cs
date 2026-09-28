@@ -58,9 +58,6 @@ public abstract class BlazorGameHostBase : GameHostBase
     /// <inheritdoc/>
     protected sealed override void ConfigurePlatform()
     {
-        if (OperatingSystem.IsBrowser())
-            BrowserConsoleLogging.AttachToEngineLogger();
-
         OnConfigurePlatform();
     }
 
@@ -123,6 +120,7 @@ public abstract class BlazorGameHostBase : GameHostBase
     {
         if (OperatingSystem.IsBrowser())
         {
+            BrowserConsoleLogging.AttachToEngineLogger();
             Engine.StartTimerDriven(syncContext);
 
             if (!RenderSurfaceDrivesBrowserFrames)

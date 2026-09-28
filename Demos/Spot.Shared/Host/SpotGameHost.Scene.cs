@@ -15,6 +15,25 @@ internal sealed partial class SpotGameHost
     protected override Scene CreateInitialScene()
     {
         Logging.EngineLogger.SetLogLevel(LogLevel.Information);
+#if SPOT_BLAZOR
+        bool msaaLogged = false;
+        Gondwana.Engine.Instance.CPSCalculated += args =>
+        {
+            if (msaaLogged ||
+                args.GpuFps is not > 0 ||
+                SurfaceHost.Backbuffer is not GpuBackbuffer gpuBackbuffer)
+            {
+                return;
+            }
+
+            msaaLogged = true;
+            Engine.Logger.LogInformation(
+                "Spot.Blazor MSAA requested {MsaaSampleCount} | actual {ActualMsaaSampleCount} | max {MaxSupportedMsaaSampleCount}",
+                gpuBackbuffer.MsaaSampleCount,
+                gpuBackbuffer.ActualMsaaSampleCount,
+                gpuBackbuffer.MaxSupportedMsaaSampleCount);
+        };
+#else
         Gondwana.Engine.Instance.CPSCalculated += args =>
         {
             if (SurfaceHost.Backbuffer is GpuBackbuffer gpuBackbuffer)
@@ -39,6 +58,7 @@ internal sealed partial class SpotGameHost
 
             Engine.Logger.LogInformation("{CyclesPerSecond}", args);
         };
+#endif
 
         var scene = new Scene();
 
