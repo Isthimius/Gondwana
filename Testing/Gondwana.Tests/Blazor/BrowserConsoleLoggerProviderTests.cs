@@ -1,4 +1,6 @@
+using System.Reflection;
 using Gondwana.Blazor.Logging;
+using Gondwana.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Tests.Blazor;
@@ -53,6 +55,123 @@ public sealed class BrowserConsoleLoggerProviderTests
         finally
         {
             Console.SetError(originalError);
+        }
+    }
+
+    [Fact]
+    public void AttachToEngineLogger_PersistsAcrossSetLogLevel_AndIgnoresRepeatedAttach()
+    {
+        using var state = new EngineLoggerStateScope();
+        var originalOut = Console.Out;
+        using var output = new StringWriter();
+
+        try
+        {
+            Console.SetOut(output);
+
+            BrowserConsoleLogging.AttachToEngineLogger();
+            BrowserConsoleLogging.AttachToEngineLogger();
+            EngineLogger.SetLogLevel(LogLevel.Information);
+            EngineLogger.Mode = EngineLoggingMode.Asynchronous;
+
+            var logger = EngineLogger.GetLogger<BrowserConsoleLoggerProviderTests>();
+            logger.LogInformation("Queued browser log {Value}", 7);
+            EngineLogger.SwitchToSyncAndFlush(TimeSpan.FromSeconds(1));
+
+            const string expectedLine =
+                "[info] Gondwana.Tests.Blazor.BrowserConsoleLoggerProviderTests: Queued browser log 7";
+            string console = output.ToString();
+            Assert.Contains(expectedLine, console, StringComparison.Ordinal);
+            Assert.Equal(1, CountOccurrences(console, expectedLine));
+        }
+        finally
+        {
+            Console.SetOut(originalOut);
+        }
+    }
+
+    private static int CountOccurrences(string content, string value)
+    {
+        int count = 0;
+        int index = 0;
+
+        while ((index = content.IndexOf(value, index, StringComparison.Ordinal)) >= 0)
+        {
+            count++;
+            index += value.Length;
+        }
+
+        return count;
+    }
+
+    private sealed class EngineLoggerStateScope : IDisposable
+    {
+        private static readonly FieldInfo LoggerFactoryField =
+            typeof(EngineLogger).GetField(
+                "_loggerFactory",
+                BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        private static readonly FieldInfo ExternalFactoryField =
+            typeof(EngineLogger).GetField(
+                "_usingExternalLoggerFactory",
+                BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        private static readonly FieldInfo LoggerCacheField =
+            typeof(EngineLogger).GetField(
+                "_loggerCache",
+                BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        private static readonly FieldInfo PersistentProvidersField =
+            typeof(EngineLogger).GetField(
+                "_persistentProviderFactories",
+                BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        private static readonly FieldInfo ModeField =
+            typeof(EngineLogger).GetField(
+                "_mode",
+                BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        private static readonly FieldInfo CapacityField =
+            typeof(EngineLogger).GetField(
+                "_capacity",
+                BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        private readonly ILoggerFactory? _originalFactory =
+            (ILoggerFactory?)LoggerFactoryField.GetValue(null);
+
+        private readonly bool _originalExternalFactory =
+            (bool)ExternalFactoryField.GetValue(null)!;
+
+        private readonly EngineLoggingMode _originalMode =
+            (EngineLoggingMode)ModeField.GetValue(null)!;
+
+        private readonly int _originalCapacity =
+            (int)CapacityField.GetValue(null)!;
+
+        private readonly Dictionary<string, Func<ILoggerProvider>> _originalProviders =
+            new(
+                (Dictionary<string, Func<ILoggerProvider>>)PersistentProvidersField.GetValue(null)!,
+                StringComparer.Ordinal);
+
+        public void Dispose()
+        {
+            EngineLogger.StopAsyncLogging(flush: true, flushTimeout: TimeSpan.FromSeconds(1));
+
+            LoggerFactoryField.SetValue(null, _originalFactory);
+            ExternalFactoryField.SetValue(null, _originalExternalFactory);
+            ModeField.SetValue(null, _originalMode);
+            CapacityField.SetValue(null, _originalCapacity);
+
+            var providers =
+                (Dictionary<string, Func<ILoggerProvider>>)PersistentProvidersField.GetValue(null)!;
+            providers.Clear();
+            foreach (KeyValuePair<string, Func<ILoggerProvider>> provider in _originalProviders)
+                providers.Add(provider.Key, provider.Value);
+
+            var cache = LoggerCacheField.GetValue(null)!;
+            cache.GetType()
+                .GetMethod(nameof(System.Collections.IDictionary.Clear))!
+                .Invoke(cache, null);
         }
     }
 }
