@@ -27,6 +27,7 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
     private readonly List<DockContent> _tools = [];
     private readonly ToolStripMenuItem _view = new("&View");
     private readonly DockLayoutPersistence _layout;
+    private readonly ProjectFolderStore _projectFolder = new();
     private bool _disposed;
     internal DockPanel Workspace { get; }
     internal DirectoryPanel Browser { get; }
@@ -82,7 +83,7 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
             AttachPlugins();
         }
         _layout.Start();
-        SetWorkingDirectory(Environment.CurrentDirectory);
+        SetWorkingDirectory(_projectFolder.Read() ?? Environment.CurrentDirectory);
         _output.Log("Gondwana Studio ready.");
     }
 
@@ -136,6 +137,7 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         _workingDirectory = path;
         _plugins.NotifyProjectOpened(path);
         _output.Log($"Working directory: {path}");
+        if (Directory.Exists(path)) _projectFolder.Write(path);
     }
     private string? _workingDirectory;
 
