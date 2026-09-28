@@ -30,8 +30,6 @@ internal sealed partial class SpotGameHost : AvaloniaGpuGameHost
     {
     }
 
-    internal bool AudioAvailable => Engine.Managers.AudioResources.IsBackendConfigured;
-
     protected override void CreateDirectDrawings()
     {
         // Deliberately empty: startup presentation is created in BeginPostSplashStartup()
