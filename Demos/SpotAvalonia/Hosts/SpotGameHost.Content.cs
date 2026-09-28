@@ -1,6 +1,4 @@
-using System;
 using System.Drawing;
-using System.IO;
 using Gondwana.Audio;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Tilesheets;
@@ -73,6 +71,18 @@ internal sealed partial class SpotGameHost
         _font = Engine.Managers.Fonts.LoadFromFile(
             "main",
             GetAssetPath("ArchitectsDaughter-Regular.ttf"));
+
+        _runtime.SetAudioResources(
+            _music,
+            _spotSelected,
+            _spotDeselected,
+            _velcro,
+            _drop,
+            _gameWin,
+            _gameLose,
+            _bump,
+            _knock,
+            _font);
     }
 
     protected override void LoadTilesheets()
@@ -95,6 +105,11 @@ internal sealed partial class SpotGameHost
         _clouds = Engine.Managers.Tilesheets.LoadFromImageFile(
             "clouds",
             GetAssetPath("clouds.png"));
+
+        _runtime.SetTilesheets(
+            _spotSheetDefault,
+            _spotSheetSelected,
+            _clouds);
     }
 
     private AudioResource LoadAudio(string key, string fileName)
