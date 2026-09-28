@@ -1,20 +1,11 @@
-#if !SPOT_BLAZOR
-using System;
-using System.Collections.Generic;
-#endif
 using System.Drawing;
-#if !SPOT_BLAZOR
-using System.Linq;
-#endif
 using Gondwana.Demos.Spot.Game;
 using Gondwana.Timers;
-#if !SPOT_BLAZOR
 using Microsoft.Extensions.Logging;
-#endif
 
 namespace Gondwana.Demos.Spot;
 
-internal sealed partial class SpotGameHost
+internal sealed partial class SpotGameRuntime
 {
     private Gondwana.Timers.Timer? _pendingComputerSelectTimer;
     private Gondwana.Timers.Timer? _pendingComputerMoveTimer;
@@ -325,8 +316,7 @@ internal sealed partial class SpotGameHost
                 _gameLose?.Play();
         }
 
-        PersistGameState();
+        _persistGameState?.Invoke();
     }
 
-    partial void PersistGameState();
 }

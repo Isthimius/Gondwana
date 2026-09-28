@@ -15,6 +15,7 @@ Avalonia UI.
 - Mouse / pointer input integration
 - Touch input integration
 - Browser `localStorage` persistence through `BrowserLocalStorageEngineConfigurationStore`
+- Browser developer-console logging through `BrowserConsoleLoggerProvider`
 - External-link launching through `BlazorExternalUriLauncher` for Widgets such as `HyperlinkWidget` and `AboutBox`
 - `BlazorKey` enum mapping browser `KeyboardEvent.code` values to integer key codes
 
@@ -86,6 +87,23 @@ or use the `BlazorKey` enum directly:
 Engine.Instance.Input.KeyboardEventPoller!.StartMonitoringKey(
     (int)BlazorKey.Space, "Jump");
 ```
+
+### Browser console logging
+
+Blazor game hosts automatically attach `BrowserConsoleLoggerProvider` after Gondwana configures the requested log level. Normal `ILogger` calls therefore appear in the browser developer console while continuing to use Gondwana's logging mode and queue.
+
+For example:
+
+```csharp
+Engine.Logger.LogInformation(
+    "Renderer initialized at {Width}x{Height}",
+    width,
+    height);
+```
+
+With the default `EngineLoggingMode.Asynchronous`, the game or engine call enqueues the record and returns; the logging worker later invokes the browser-console provider. The provider uses the .NET WebAssembly console bridge rather than the desktop `Microsoft.Extensions.Logging.Console` provider.
+
+Warning, error, and critical records use `Console.Error`; lower levels use `Console.Out`.
 
 ### Browser configuration and external links
 

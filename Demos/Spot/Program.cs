@@ -1,6 +1,3 @@
-using System;
-using System.Windows.Forms;
-
 namespace Gondwana.Demos.Spot;
 
 internal static class Program

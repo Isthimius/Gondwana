@@ -63,6 +63,18 @@ internal sealed partial class SpotGameHost
         using var fontStream = RequireAsset(AssetTypes.Font, "ArchitectsDaughter-Regular.ttf");
         _font = SKTypeface.FromStream(fontStream)
             ?? throw new InvalidOperationException("Failed to decode Spot font from the asset package.");
+
+        _runtime.SetAudioResources(
+            _music,
+            _spotSelected,
+            _spotDeselected,
+            _velcro,
+            _drop,
+            _gameWin,
+            _gameLose,
+            _bump,
+            _knock,
+            _font);
     }
 
     protected override void LoadTilesheets()
@@ -87,6 +99,11 @@ internal sealed partial class SpotGameHost
 
         using var cloudStream = RequireAsset(AssetTypes.Image, "clouds.png");
         _clouds = Engine.Managers.Tilesheets.LoadFromStream("clouds", cloudStream);
+
+        _runtime.SetTilesheets(
+            _spotSheetDefault,
+            _spotSheetSelected,
+            _clouds);
     }
 
     internal Stream OpenAsset(AssetTypes type, string name) => RequireAsset(type, name);

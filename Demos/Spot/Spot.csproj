@@ -10,6 +10,7 @@
         <RootNamespace>Gondwana.Demos.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
         <ApplicationIcon>assets\spot_ico.ico</ApplicationIcon>
     </PropertyGroup>
 
@@ -100,9 +101,6 @@
         <ProjectReference Include="..\..\Gondwana.WinForms.Hosting\Gondwana.WinForms.Hosting.csproj" />
         <ProjectReference Include="..\..\Gondwana.WinForms\Gondwana.WinForms.csproj" />
         <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Include="..\Spot.Shared\Host\*.cs" Link="Hosts\%(Filename)%(Extension)" />
     </ItemGroup>
     <ItemGroup>
         <Compile Update="GameWindow.cs">
