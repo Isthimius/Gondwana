@@ -12,7 +12,7 @@ internal sealed partial class SpotGameHost
 {
     protected override Scene CreateInitialScene()
     {
-        Logging.EngineLogger.SetLogLevel(LogLevel.Information);
+        Logging.EngineLogger.SetLogLevel(Microsoft.Extensions.Logging.LogLevel.Information);
 #if SPOT_BLAZOR
         bool msaaLogged = false;
         Gondwana.Engine.Instance.CPSCalculated += args =>
