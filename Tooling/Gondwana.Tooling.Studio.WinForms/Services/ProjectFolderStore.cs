@@ -19,7 +19,7 @@ internal sealed class ProjectFolderStore
         try
         {
             if (!File.Exists(FilePath)) return null;
-            string path = File.ReadAllText(FilePath).Trim();
+            string path = File.ReadAllText(FilePath);
             return path.Length > 0 && Directory.Exists(path) ? Path.GetFullPath(path) : null;
         }
         catch (Exception ex)
