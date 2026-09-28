@@ -1,5 +1,11 @@
 var NAVTREEINDEX13 =
 {
+"classGondwana_1_1Rendering_1_1Text_1_1FontManager.html#a345888e607131fd9781215d0c269a090":[1,0,0,12,1,0,8],
+"classGondwana_1_1Rendering_1_1Text_1_1FontManager.html#a4e1c1f25cd0f8a41b38facffeeec7061":[0,0,0,12,1,0,6],
+"classGondwana_1_1Rendering_1_1Text_1_1FontManager.html#a4e1c1f25cd0f8a41b38facffeeec7061":[1,0,0,12,1,0,6],
+"classGondwana_1_1Rendering_1_1Text_1_1FontManager.html#a68037b892077ac01e574a49147dbc5c0":[0,0,0,12,1,0,2],
+"classGondwana_1_1Rendering_1_1Text_1_1FontManager.html#a68037b892077ac01e574a49147dbc5c0":[1,0,0,12,1,0,2],
+"classGondwana_1_1Rendering_1_1Text_1_1FontManager.html#a6ca64d0497d20a15bff90929347b0ad8":[0,0,0,12,1,0,1],
 "classGondwana_1_1Rendering_1_1Text_1_1FontManager.html#a6ca64d0497d20a15bff90929347b0ad8":[1,0,0,12,1,0,1],
 "classGondwana_1_1Rendering_1_1Text_1_1FontManager.html#a8a2513093e826c61fdb7fe8aa2f008e7":[0,0,0,12,1,0,5],
 "classGondwana_1_1Rendering_1_1Text_1_1FontManager.html#a8a2513093e826c61fdb7fe8aa2f008e7":[1,0,0,12,1,0,5],
@@ -243,11 +249,5 @@ var NAVTREEINDEX13 =
 "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerDefinition.html#af92d5c32642e82c8cd8951e8d041be63":[1,0,0,13,0,5,13],
 "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition.html":[0,0,0,13,0,6],
 "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition.html":[1,0,0,13,0,6],
-"classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition.html#a0062524686ff204411ef7cd3b3f4586e":[0,0,0,13,0,6,5],
-"classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition.html#a0062524686ff204411ef7cd3b3f4586e":[1,0,0,13,0,6,5],
-"classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition.html#a0285a841c205bc0e66e54aa1af828e0d":[0,0,0,13,0,6,9],
-"classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition.html#a0285a841c205bc0e66e54aa1af828e0d":[1,0,0,13,0,6,9],
-"classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition.html#a4027825d7b447fd069bf8c7dec84211b":[0,0,0,13,0,6,14],
-"classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition.html#a4027825d7b447fd069bf8c7dec84211b":[1,0,0,13,0,6,14],
-"classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition.html#a5e673de6174f616fdc54c1e3532d7652":[0,0,0,13,0,6,6]
+"classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerTileDefinition.html#a0062524686ff204411ef7cd3b3f4586e":[0,0,0,13,0,6,5]
 };

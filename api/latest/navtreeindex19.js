@@ -1,5 +1,11 @@
 var NAVTREEINDEX19 =
 {
+"classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget.html#a91e1c64bd2a1cb7c19158a632d6199f1":[1,0,0,16,4,4,5],
+"classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget.html#abce6bb9f177fd48060e7c24fc6d975f2":[0,0,0,17,4,4,1],
+"classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget.html#abce6bb9f177fd48060e7c24fc6d975f2":[1,0,0,16,4,4,1],
+"classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget.html#ad438592f10119302b80b417ffbf5fba3":[0,0,0,17,4,4,0],
+"classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget.html#ad438592f10119302b80b417ffbf5fba3":[1,0,0,16,4,4,0],
+"classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget.html#aed198632b256917b048aac3d796d72cf":[0,0,0,17,4,4,4],
 "classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget.html#aed198632b256917b048aac3d796d72cf":[1,0,0,16,4,4,4],
 "classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget.html#af76e08898f36d4ffff48698f81e1ccb5":[0,0,0,17,4,4,2],
 "classGondwana_1_1Widgets_1_1Menus_1_1MenuHeaderWidget.html#af76e08898f36d4ffff48698f81e1ccb5":[1,0,0,16,4,4,2],
@@ -243,11 +249,5 @@ var NAVTREEINDEX19 =
 "classGondwana_1_1Widgets_1_1WidgetBase.html#a6214433864ee925ba212afa5cdb3d03d":[1,0,0,16,9,22],
 "classGondwana_1_1Widgets_1_1WidgetBase.html#a649f2c096ba86866f495627f40cd4842":[0,0,0,17,9,25],
 "classGondwana_1_1Widgets_1_1WidgetBase.html#a649f2c096ba86866f495627f40cd4842":[1,0,0,16,9,25],
-"classGondwana_1_1Widgets_1_1WidgetBase.html#a671bb30c17ebfe6771c29231201ef079":[0,0,0,17,9,40],
-"classGondwana_1_1Widgets_1_1WidgetBase.html#a671bb30c17ebfe6771c29231201ef079":[1,0,0,16,9,40],
-"classGondwana_1_1Widgets_1_1WidgetBase.html#a6b3d12d94261fbae70c2e35c8cd578ec":[0,0,0,17,9,52],
-"classGondwana_1_1Widgets_1_1WidgetBase.html#a6b3d12d94261fbae70c2e35c8cd578ec":[1,0,0,16,9,52],
-"classGondwana_1_1Widgets_1_1WidgetBase.html#a725381d7ffb12a61d2d5cfd40b0a7ad4":[0,0,0,17,9,17],
-"classGondwana_1_1Widgets_1_1WidgetBase.html#a725381d7ffb12a61d2d5cfd40b0a7ad4":[1,0,0,16,9,17],
-"classGondwana_1_1Widgets_1_1WidgetBase.html#a7c5fbb420d44df2cfc342f12ca2abb27":[0,0,0,17,9,27]
+"classGondwana_1_1Widgets_1_1WidgetBase.html#a671bb30c17ebfe6771c29231201ef079":[0,0,0,17,9,40]
 };

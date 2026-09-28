@@ -72,12 +72,13 @@ var searchData=
   ['createfromuri_69',['CreateFromUri',['../classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioBackend.html#a3641158621570a76e6c0d39b60222025',1,'Gondwana.Audio.Browser.BrowserAudioBackend.CreateFromUri()'],['../classGondwana_1_1Audio_1_1NAudio_1_1NAudioAudioBackend.html#ae200d449346f1c740ef529ba649fd333',1,'Gondwana.Audio.NAudio.NAudioAudioBackend.CreateFromUri()'],['../interfaceGondwana_1_1Audio_1_1IAudioBackend.html#aca661b84eec5393b59da2b6fbbccfafa',1,'Gondwana.Audio.IAudioBackend.CreateFromUri()']]],
   ['createinitialscene_70',['CreateInitialScene',['../classGondwana_1_1Hosting_1_1GameHostBase.html#ab4fd1229c0ea23e4bc5f288444f92c04',1,'Gondwana::Hosting::GameHostBase']]],
   ['createinitialviews_71',['CreateInitialViews',['../classGondwana_1_1Hosting_1_1GameHostBase.html#a1f97aa37a688df58dba272b5a222a6d8',1,'Gondwana::Hosting::GameHostBase']]],
-  ['createnew_72',['CreateNew',['../classGondwana_1_1Configuration_1_1EngineConfigurationFile.html#ac665c371c4427463ecdbddcbc6e6f50d',1,'Gondwana::Configuration::EngineConfigurationFile']]],
-  ['createscenegraph_73',['CreateSceneGraph',['../classGondwana_1_1Hosting_1_1GameHostBase.html#ab10ef2942f5ff8d0b02f62ebbd6e17cc',1,'Gondwana::Hosting::GameHostBase']]],
-  ['createsprite_74',['CreateSprite',['../classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a28ab20666be580e7ec8b6ba7ac18690c',1,'Gondwana::Drawing::Sprites::SpriteManager']]],
-  ['createsprites_75',['CreateSprites',['../classGondwana_1_1Hosting_1_1GameHostBase.html#a84e8edeb29fcd47ffa61f57e9de357ba',1,'Gondwana::Hosting::GameHostBase']]],
-  ['ctrl_76',['Ctrl',['../structGondwana_1_1Widgets_1_1Menus_1_1KeyGesture.html#a28df61fd319840a908a82fb7d020bdeb',1,'Gondwana::Widgets::Menus::KeyGesture']]],
-  ['ctrlshift_77',['CtrlShift',['../structGondwana_1_1Widgets_1_1Menus_1_1KeyGesture.html#afcfbe9e3233734b283699653dc7d8053',1,'Gondwana::Widgets::Menus::KeyGesture']]],
-  ['cycle_78',['Cycle',['../classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html#a88e5e9be604a637d58c6bf813e38bb3f',1,'Gondwana::Drawing::Animation::Cycle']]],
-  ['cyclespersecondcalculatedeventargs_79',['CyclesPerSecondCalculatedEventArgs',['../classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#ae3def773ec340fb7c56adb4d3ba6bc68',1,'Gondwana::CyclesPerSecondCalculatedEventArgs']]]
+  ['createlogger_72',['CreateLogger',['../classGondwana_1_1Blazor_1_1Logging_1_1BrowserConsoleLoggerProvider.html#a441a96823c76729c477fefee7925e1e1',1,'Gondwana::Blazor::Logging::BrowserConsoleLoggerProvider']]],
+  ['createnew_73',['CreateNew',['../classGondwana_1_1Configuration_1_1EngineConfigurationFile.html#ac665c371c4427463ecdbddcbc6e6f50d',1,'Gondwana::Configuration::EngineConfigurationFile']]],
+  ['createscenegraph_74',['CreateSceneGraph',['../classGondwana_1_1Hosting_1_1GameHostBase.html#ab10ef2942f5ff8d0b02f62ebbd6e17cc',1,'Gondwana::Hosting::GameHostBase']]],
+  ['createsprite_75',['CreateSprite',['../classGondwana_1_1Drawing_1_1Sprites_1_1SpriteManager.html#a28ab20666be580e7ec8b6ba7ac18690c',1,'Gondwana::Drawing::Sprites::SpriteManager']]],
+  ['createsprites_76',['CreateSprites',['../classGondwana_1_1Hosting_1_1GameHostBase.html#a84e8edeb29fcd47ffa61f57e9de357ba',1,'Gondwana::Hosting::GameHostBase']]],
+  ['ctrl_77',['Ctrl',['../structGondwana_1_1Widgets_1_1Menus_1_1KeyGesture.html#a28df61fd319840a908a82fb7d020bdeb',1,'Gondwana::Widgets::Menus::KeyGesture']]],
+  ['ctrlshift_78',['CtrlShift',['../structGondwana_1_1Widgets_1_1Menus_1_1KeyGesture.html#afcfbe9e3233734b283699653dc7d8053',1,'Gondwana::Widgets::Menus::KeyGesture']]],
+  ['cycle_79',['Cycle',['../classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html#a88e5e9be604a637d58c6bf813e38bb3f',1,'Gondwana::Drawing::Animation::Cycle']]],
+  ['cyclespersecondcalculatedeventargs_80',['CyclesPerSecondCalculatedEventArgs',['../classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#ae3def773ec340fb7c56adb4d3ba6bc68',1,'Gondwana::CyclesPerSecondCalculatedEventArgs']]]
 ];

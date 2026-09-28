@@ -1,5 +1,11 @@
 var NAVTREEINDEX7 =
 {
+"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a12c496fe91f29c14cdd5e32b06c08409":[1,0,0,5,3,0,3,17],
+"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a17e8a14f928d8938d742592bc402dc41":[0,0,0,5,4,0,3,1],
+"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a17e8a14f928d8938d742592bc402dc41":[1,0,0,5,3,0,3,1],
+"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a1be202a878db140b911195bf87108ebd":[0,0,0,5,4,0,3,3],
+"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a1be202a878db140b911195bf87108ebd":[1,0,0,5,3,0,3,3],
+"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a2f265cd91523791753978c7116abd268":[0,0,0,5,4,0,3,18],
 "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a2f265cd91523791753978c7116abd268":[1,0,0,5,3,0,3,18],
 "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a3252dcfff4132cead215ac7d600bf1e0":[0,0,0,5,4,0,3,8],
 "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a3252dcfff4132cead215ac7d600bf1e0":[1,0,0,5,3,0,3,8],
@@ -243,11 +249,5 @@ var NAVTREEINDEX7 =
 "classGondwana_1_1Drawing_1_1Tile.html#a6ca4859d010ae75a57af442c51e83022":[1,0,0,5,9,4],
 "classGondwana_1_1Drawing_1_1Tile.html#a6d0cea14ef259899fc970c5faac4360f":[0,0,0,5,10,12],
 "classGondwana_1_1Drawing_1_1Tile.html#a6d0cea14ef259899fc970c5faac4360f":[1,0,0,5,9,12],
-"classGondwana_1_1Drawing_1_1Tile.html#a6d1b82d253d8c1f4b21f43ac41487884":[0,0,0,5,10,27],
-"classGondwana_1_1Drawing_1_1Tile.html#a6d1b82d253d8c1f4b21f43ac41487884":[1,0,0,5,9,27],
-"classGondwana_1_1Drawing_1_1Tile.html#a6ea4696cfc6f3998c2cb0dc891a1987b":[0,0,0,5,10,33],
-"classGondwana_1_1Drawing_1_1Tile.html#a6ea4696cfc6f3998c2cb0dc891a1987b":[1,0,0,5,9,33],
-"classGondwana_1_1Drawing_1_1Tile.html#a7e7657d4ab7cc877fb6b42a5b9f1e0ba":[0,0,0,5,10,8],
-"classGondwana_1_1Drawing_1_1Tile.html#a7e7657d4ab7cc877fb6b42a5b9f1e0ba":[1,0,0,5,9,8],
-"classGondwana_1_1Drawing_1_1Tile.html#a809ee69a8d25e7cf843f042c9b6298b6":[0,0,0,5,10,31]
+"classGondwana_1_1Drawing_1_1Tile.html#a6d1b82d253d8c1f4b21f43ac41487884":[0,0,0,5,10,27]
 };

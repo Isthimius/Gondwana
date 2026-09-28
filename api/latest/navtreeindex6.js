@@ -1,5 +1,11 @@
 var NAVTREEINDEX6 =
 {
+"classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#acf35ad3a5338e3dc8b65eb28553da6d8":[1,0,0,5,2,1,1,12],
+"classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#ad1849d5bd88701feb06bbad9c7adafcb":[0,0,0,5,3,1,1,19],
+"classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#ad1849d5bd88701feb06bbad9c7adafcb":[1,0,0,5,2,1,1,19],
+"classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#ae2855cb3bf53237456a7571d3ee8ea93":[0,0,0,5,3,1,1,8],
+"classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#ae2855cb3bf53237456a7571d3ee8ea93":[1,0,0,5,2,1,1,8],
+"classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html":[0,0,0,5,3,1,2],
 "classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html":[1,0,0,5,2,1,2],
 "classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html#a00256efd1a1f3ba03842fe5fff21ca19":[0,0,0,5,3,1,2,5],
 "classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleSurface.html#a00256efd1a1f3ba03842fe5fff21ca19":[1,0,0,5,2,1,2,5],
@@ -243,11 +249,5 @@ var NAVTREEINDEX6 =
 "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a0ae1648dd18ac8affcf0cd145735db71":[1,0,0,5,3,0,3,4],
 "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a0d071ccaa32b1d6842af148679e5e7e8":[0,0,0,5,4,0,3,0],
 "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a0d071ccaa32b1d6842af148679e5e7e8":[1,0,0,5,3,0,3,0],
-"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a12c496fe91f29c14cdd5e32b06c08409":[0,0,0,5,4,0,3,17],
-"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a12c496fe91f29c14cdd5e32b06c08409":[1,0,0,5,3,0,3,17],
-"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a17e8a14f928d8938d742592bc402dc41":[0,0,0,5,4,0,3,1],
-"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a17e8a14f928d8938d742592bc402dc41":[1,0,0,5,3,0,3,1],
-"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a1be202a878db140b911195bf87108ebd":[0,0,0,5,4,0,3,3],
-"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a1be202a878db140b911195bf87108ebd":[1,0,0,5,3,0,3,3],
-"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a2f265cd91523791753978c7116abd268":[0,0,0,5,4,0,3,18]
+"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a12c496fe91f29c14cdd5e32b06c08409":[0,0,0,5,4,0,3,17]
 };

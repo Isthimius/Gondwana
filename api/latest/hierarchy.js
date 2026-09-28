@@ -260,6 +260,9 @@ var hierarchy =
       [ "Gondwana.Blazor.Input.Keyboard.BlazorKeyboardAdapter", "classGondwana_1_1Blazor_1_1Input_1_1Keyboard_1_1BlazorKeyboardAdapter.html", null ],
       [ "Gondwana.WinForms.Input.Keyboard.WinFormsKeyboardAdapter", "classGondwana_1_1WinForms_1_1Input_1_1Keyboard_1_1WinFormsKeyboardAdapter.html", null ]
     ] ],
+    [ "ILoggerProvider", null, [
+      [ "Gondwana.Blazor.Logging.BrowserConsoleLoggerProvider", "classGondwana_1_1Blazor_1_1Logging_1_1BrowserConsoleLoggerProvider.html", null ]
+    ] ],
     [ "Gondwana.Drawing.Direct.ImageLayer.ImageInstance", "classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstance.html", null ],
     [ "IMessageFilter", null, [
       [ "Gondwana.WinForms.Input.Keyboard.WinFormsKeyboardAdapter", "classGondwana_1_1WinForms_1_1Input_1_1Keyboard_1_1WinFormsKeyboardAdapter.html", null ]

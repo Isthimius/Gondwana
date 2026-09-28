@@ -1,5 +1,11 @@
 var NAVTREEINDEX20 =
 {
+"classGondwana_1_1Widgets_1_1WidgetBase.html#a671bb30c17ebfe6771c29231201ef079":[1,0,0,16,9,40],
+"classGondwana_1_1Widgets_1_1WidgetBase.html#a6b3d12d94261fbae70c2e35c8cd578ec":[0,0,0,17,9,52],
+"classGondwana_1_1Widgets_1_1WidgetBase.html#a6b3d12d94261fbae70c2e35c8cd578ec":[1,0,0,16,9,52],
+"classGondwana_1_1Widgets_1_1WidgetBase.html#a725381d7ffb12a61d2d5cfd40b0a7ad4":[0,0,0,17,9,17],
+"classGondwana_1_1Widgets_1_1WidgetBase.html#a725381d7ffb12a61d2d5cfd40b0a7ad4":[1,0,0,16,9,17],
+"classGondwana_1_1Widgets_1_1WidgetBase.html#a7c5fbb420d44df2cfc342f12ca2abb27":[0,0,0,17,9,27],
 "classGondwana_1_1Widgets_1_1WidgetBase.html#a7c5fbb420d44df2cfc342f12ca2abb27":[1,0,0,16,9,27],
 "classGondwana_1_1Widgets_1_1WidgetBase.html#a7d02dee6a2c67a4c1365aad41a19d4c0":[0,0,0,17,9,13],
 "classGondwana_1_1Widgets_1_1WidgetBase.html#a7d02dee6a2c67a4c1365aad41a19d4c0":[1,0,0,16,9,13],
@@ -243,11 +249,5 @@ var NAVTREEINDEX20 =
 "classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html#ac9358f4a6b7de2be6cf9b3c844b6219e":[1,0,0,17,1,2,0,4],
 "classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html#ad07e64d4425919574f2acedfd76d881c":[0,0,0,18,1,2,0,2],
 "classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html#ad07e64d4425919574f2acedfd76d881c":[1,0,0,17,1,2,0,2],
-"classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html#afb8294972bb334f2068dd74fe5bd2c4b":[0,0,0,18,1,2,0,3],
-"classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html#afb8294972bb334f2068dd74fe5bd2c4b":[1,0,0,17,1,2,0,3],
-"classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceAdapter.html":[0,0,0,18,2,0],
-"classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceAdapter.html":[1,0,0,17,2,0],
-"classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceAdapter.html#a0749730497114ef32abbba4b289af58a":[0,0,0,18,2,0,3],
-"classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceAdapter.html#a0749730497114ef32abbba4b289af58a":[1,0,0,17,2,0,3],
-"classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceAdapter.html#a411d5e802410cc48f8b197ffe25d9a57":[0,0,0,18,2,0,2]
+"classGondwana_1_1WinForms_1_1Input_1_1Mouse_1_1WinFormsMouseAdapter.html#afb8294972bb334f2068dd74fe5bd2c4b":[0,0,0,18,1,2,0,3]
 };

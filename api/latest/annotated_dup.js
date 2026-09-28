@@ -72,6 +72,9 @@ var annotated_dup =
             [ "BlazorTouchAdapter", "classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html", "classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter" ]
           ] ]
         ] ],
+        [ "Logging", "namespaceGondwana_1_1Blazor_1_1Logging.html", [
+          [ "BrowserConsoleLoggerProvider", "classGondwana_1_1Blazor_1_1Logging_1_1BrowserConsoleLoggerProvider.html", "classGondwana_1_1Blazor_1_1Logging_1_1BrowserConsoleLoggerProvider" ]
+        ] ],
         [ "Rendering", "namespaceGondwana_1_1Blazor_1_1Rendering.html", [
           [ "BlazorBitmapRenderSurfaceAdapter", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorBitmapRenderSurfaceAdapter.html", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorBitmapRenderSurfaceAdapter" ],
           [ "BlazorBitmapRenderSurfaceComponent", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorBitmapRenderSurfaceComponent.html", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorBitmapRenderSurfaceComponent" ],

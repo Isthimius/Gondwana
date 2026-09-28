@@ -1,5 +1,11 @@
 var NAVTREEINDEX23 =
 {
+"namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a4787509ad9f9d747a81a30e9dde3d4a7":[0,0,0,3,2,0,1,70],
+"namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a47c04ca3c0a603c91e15a6b343dac601":[0,0,0,3,2,0,1,16],
+"namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a49c46f6d84c8d55a8ab230f676c2454c":[0,0,0,3,2,0,1,40],
+"namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a49d8361832bab5aa5c7a56623862e95e":[0,0,0,3,2,0,1,90],
+"namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a4b6bf4b531770872d4328ce69bef5627":[0,0,0,3,2,0,1,65],
+"namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a4d9afa3da3cc40661d50a925dd3010ad":[0,0,0,3,2,0,1,81],
 "namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a50b622a0442de23f15effc7fc46f3892":[0,0,0,3,2,0,1,79],
 "namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a50d816f0a3c904b740cad28821fbc776":[0,0,0,3,2,0,1,19],
 "namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a5388719ebb71fe83315e3647d252a566":[0,0,0,3,2,0,1,10],
@@ -73,7 +79,8 @@ var NAVTREEINDEX23 =
 "namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864afe5c3684dce76cdd9f7f42430868aa74":[0,0,0,3,2,0,1,64],
 "namespaceGondwana_1_1Blazor_1_1Input_1_1Mouse.html":[0,0,0,3,2,1],
 "namespaceGondwana_1_1Blazor_1_1Input_1_1Touch.html":[0,0,0,3,2,2],
-"namespaceGondwana_1_1Blazor_1_1Rendering.html":[0,0,0,3,3],
+"namespaceGondwana_1_1Blazor_1_1Logging.html":[0,0,0,3,3],
+"namespaceGondwana_1_1Blazor_1_1Rendering.html":[0,0,0,3,4],
 "namespaceGondwana_1_1Configuration.html":[0,0,0,4],
 "namespaceGondwana_1_1Drawing.html":[0,0,0,5],
 "namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068":[0,0,0,5,11],
@@ -242,12 +249,5 @@ var NAVTREEINDEX23 =
 "namespaceGondwana_1_1Physics_1_1Movement.html#aa42d600d851164fae8a0aae23536186c":[0,0,0,11,1,6],
 "namespaceGondwana_1_1Physics_1_1Movement.html#aa42d600d851164fae8a0aae23536186ca08822b3ae4e2aede0afe08abe600e9c0":[0,0,0,11,1,6,1],
 "namespaceGondwana_1_1Physics_1_1Movement.html#aa42d600d851164fae8a0aae23536186ca5174d1309f275ba6f275db3af9eb3e18":[0,0,0,11,1,6,0],
-"namespaceGondwana_1_1Physics_1_1Movement_1_1Easing.html":[0,0,0,11,1,0],
-"namespaceGondwana_1_1Physics_1_1Movement_1_1Easing.html#afc5970aaefa30a4c61cc1f800f15e5bc":[0,0,0,11,1,0,0],
-"namespaceGondwana_1_1Physics_1_1Movement_1_1Easing.html#afc5970aaefa30a4c61cc1f800f15e5bca13f3932381b4de8932a9a30d7aeaa289":[0,0,0,11,1,0,0,4],
-"namespaceGondwana_1_1Physics_1_1Movement_1_1Easing.html#afc5970aaefa30a4c61cc1f800f15e5bca32a843da6ea40ab3b17a3421ccdf671b":[0,0,0,11,1,0,0,0],
-"namespaceGondwana_1_1Physics_1_1Movement_1_1Easing.html#afc5970aaefa30a4c61cc1f800f15e5bca3da6cf8d49f36b2496cf8af494f4f9f7":[0,0,0,11,1,0,0,10],
-"namespaceGondwana_1_1Physics_1_1Movement_1_1Easing.html#afc5970aaefa30a4c61cc1f800f15e5bca42fc7065092dad93fc6ff98a0c7712ab":[0,0,0,11,1,0,0,9],
-"namespaceGondwana_1_1Physics_1_1Movement_1_1Easing.html#afc5970aaefa30a4c61cc1f800f15e5bca45532e9b1e49b79e591cb796ddccb26a":[0,0,0,11,1,0,0,14],
-"namespaceGondwana_1_1Physics_1_1Movement_1_1Easing.html#afc5970aaefa30a4c61cc1f800f15e5bca46062163182303cb41decc9c7f56ef86":[0,0,0,11,1,0,0,5]
+"namespaceGondwana_1_1Physics_1_1Movement_1_1Easing.html":[0,0,0,11,1,0]
 };

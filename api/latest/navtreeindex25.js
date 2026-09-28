@@ -1,5 +1,12 @@
 var NAVTREEINDEX25 =
 {
+"structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html#ac2ff3dcc26713beaa1f06d64668ce81f":[0,0,0,9,0,4,10],
+"structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html#ac2ff3dcc26713beaa1f06d64668ce81f":[1,0,0,9,0,4,10],
+"structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html#ad07db2c89f236e32eb9f4d84292b6bb6":[0,0,0,9,0,4,0],
+"structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html#ad07db2c89f236e32eb9f4d84292b6bb6":[1,0,0,9,0,4,0],
+"structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html#adb42fd74f6ab23ba4b17e8d3a5ff8219":[0,0,0,9,0,4,3],
+"structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html#adb42fd74f6ab23ba4b17e8d3a5ff8219":[1,0,0,9,0,4,3],
+"structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html#af2bbee868a664b23cbc867eb638aa49b":[0,0,0,9,0,4,1],
 "structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html#af2bbee868a664b23cbc867eb638aa49b":[1,0,0,9,0,4,1],
 "structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html#afb2576c804a383349c1d751d68ea1958":[0,0,0,9,0,4,7],
 "structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html#afb2576c804a383349c1d751d68ea1958":[1,0,0,9,0,4,7],

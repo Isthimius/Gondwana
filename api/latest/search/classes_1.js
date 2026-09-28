@@ -18,6 +18,7 @@ var searchData=
   ['browseraudiobackend_15',['BrowserAudioBackend',['../classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioBackend.html',1,'Gondwana::Audio::Browser']]],
   ['browseraudiomanager_16',['BrowserAudioManager',['../classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html',1,'Gondwana::Audio::Browser']]],
   ['browseraudioplayer_17',['BrowserAudioPlayer',['../classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html',1,'Gondwana::Audio::Browser']]],
-  ['browserlocalstorageengineconfigurationstore_18',['BrowserLocalStorageEngineConfigurationStore',['../classGondwana_1_1Blazor_1_1Configuration_1_1BrowserLocalStorageEngineConfigurationStore.html',1,'Gondwana::Blazor::Configuration']]],
-  ['buttonwidget_19',['ButtonWidget',['../classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget.html',1,'Gondwana::Widgets::Controls']]]
+  ['browserconsoleloggerprovider_18',['BrowserConsoleLoggerProvider',['../classGondwana_1_1Blazor_1_1Logging_1_1BrowserConsoleLoggerProvider.html',1,'Gondwana::Blazor::Logging']]],
+  ['browserlocalstorageengineconfigurationstore_19',['BrowserLocalStorageEngineConfigurationStore',['../classGondwana_1_1Blazor_1_1Configuration_1_1BrowserLocalStorageEngineConfigurationStore.html',1,'Gondwana::Blazor::Configuration']]],
+  ['buttonwidget_20',['ButtonWidget',['../classGondwana_1_1Widgets_1_1Controls_1_1ButtonWidget.html',1,'Gondwana::Widgets::Controls']]]
 ];
