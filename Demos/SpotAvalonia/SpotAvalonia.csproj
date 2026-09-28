@@ -1,117 +1,50 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net8.0</TargetFrameworks>
+        <TargetFramework>net8.0</TargetFramework>
         <OutputType>WinExe</OutputType>
-        <RootNamespace>Gondwana.Demos.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+        <RootNamespace>Gondwana.Demos.SpotAvalonia</RootNamespace>
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <ApplicationIcon>assets\spot_ico.ico</ApplicationIcon>
     </PropertyGroup>
 
-    <!-- Desktop-only packages -->
+    <ItemGroup>
+        <Compile Remove="AboutDialog.cs" />
+        <Compile Remove="ColorItem.cs" />
+        <Compile Remove="Game\**\*.cs" />
+        <Compile Remove="GameConfig.cs" />
+        <Compile Remove="GameView.cs" />
+        <Compile Remove="NewGameDialog.cs" />
+        <Compile Remove="NewGameOptions.cs" />
+        <Compile Remove="SpotAvaloniaGameHost.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="assets\**\*" />
+        <Content Include="assets\**\*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
     <ItemGroup>
         <PackageReference Include="Avalonia.Desktop" Version="11.3.13" />
-		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.13" />
-		<PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.13" />
+        <PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="assets\ArchitectsDaughter-Regular.ttf" />
-      <None Remove="assets\clouds.png" />
-      <None Remove="assets\freesound_community-080047_lose_funny_retro_video-game-80925.mp3" />
-      <None Remove="assets\freesound_community-bump-7-92964.mp3" />
-      <None Remove="assets\freesound_community-velcro_fast-91558.mp3" />
-      <None Remove="assets\freesound_community-water-drip-45622.mp3" />
-      <None Remove="assets\gondwana-logo-text.png" />
-      <None Remove="assets\OFL.txt" />
-      <None Remove="assets\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3" />
-      <None Remove="assets\rohhsadotcom-knock-on-wood-02-421991.mp3" />
-      <None Remove="assets\sounovamusic-puzzle-amp-casual-game-music-460543.mp3" />
-      <None Remove="assets\sources.txt" />
-      <None Remove="assets\spot.png" />
-      <None Remove="assets\spot_default.tps" />
-      <None Remove="assets\spot_defaults.png" />
-      <None Remove="assets\spot_ico.ico" />
-      <None Remove="assets\spot_ico.png" />
-      <None Remove="assets\spot_selected.png" />
-      <None Remove="assets\spot_selected.tps" />
-      <None Remove="assets\spot_sheet.png" />
-      <None Remove="assets\universfield-bubble-pop-293342.mp3" />
-    </ItemGroup>
-    <ItemGroup>
-      <AvaloniaResource Include="assets\ArchitectsDaughter-Regular.ttf" />
-      <Content Include="assets\ArchitectsDaughter-Regular.ttf">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\clouds.png">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\freesound_community-080047_lose_funny_retro_video-game-80925.mp3">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\freesound_community-bump-7-92964.mp3">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\freesound_community-velcro_fast-91558.mp3">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\freesound_community-water-drip-45622.mp3">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\gondwana-logo-text.png">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\OFL.txt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\peekaboolabcreative-11l-victory_sound_with_t-1749487402950-357606.mp3">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\rohhsadotcom-knock-on-wood-02-421991.mp3">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\sounovamusic-puzzle-amp-casual-game-music-460543.mp3">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\sources.txt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\spot.png">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\spot_default.tps">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\spot_defaults.png">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\spot_ico.ico">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\spot_ico.png">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\spot_selected.png">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\spot_selected.tps">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\spot_sheet.png">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="assets\universfield-bubble-pop-293342.mp3">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
-        <ProjectReference Include="..\..\Gondwana.Avalonia\Gondwana.Avalonia.csproj" />
+        <ProjectReference Include="..\Spot.Shared\Spot.Shared.csproj" />
         <ProjectReference Include="..\..\Gondwana.Avalonia.Hosting\Gondwana.Avalonia.Hosting.csproj" />
+        <ProjectReference Include="..\..\Gondwana.Avalonia\Gondwana.Avalonia.csproj" />
+        <ProjectReference Include="..\..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
         <ProjectReference Include="..\..\Gondwana.Widgets\Gondwana.Widgets.csproj" />
         <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="..\Spot.Shared\Host\*.cs" Link="Hosts\%(Filename)%(Extension)" />
     </ItemGroup>
 
 </Project>
