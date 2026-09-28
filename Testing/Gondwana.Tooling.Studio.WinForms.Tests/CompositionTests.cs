@@ -219,6 +219,21 @@ public sealed class CompositionTests
         Assert.False(output.IsHidden);
     });
 
+    [Fact]
+    public void SelectedProjectFolderPersistsAndMissingFolderFallsBack() => RunSta(directory =>
+    {
+        string project = Directory.CreateDirectory(Path.Combine(directory, "project")).FullName;
+        using (var studio = new MainForm(loadPlugins: false))
+            studio.SetWorkingDirectory(project);
+
+        using (var reopened = new MainForm(loadPlugins: false))
+            Assert.Equal(project, reopened.Browser.WorkingDirectory);
+
+        Directory.Delete(project);
+        using var fallback = new MainForm(loadPlugins: false);
+        Assert.Equal(Path.GetFullPath(Environment.CurrentDirectory), fallback.Browser.WorkingDirectory);
+    });
+
     [Theory]
     [InlineData(".gaf", "gaf")]
     [InlineData(".zip", "gaf")]
