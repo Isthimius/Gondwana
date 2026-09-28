@@ -2,15 +2,16 @@
 
 SpotAvalonia is the Avalonia desktop host for the canonical **Spot!** demo.
 
-The game itself is not a separate Avalonia fork. It shares the current
-[`Spot.Shared`](../Spot.Shared/) game model, Widget dialogs, menu/About construction,
-settings helpers, and host partials with the WinForms and Blazor versions.
+The game itself is not a separate Avalonia fork. It references
+[`Spot.Shared`](../Spot.Shared/) as a normal project dependency. That assembly contains
+the platform-neutral Spot game model, Widget dialogs, menu/About construction, settings
+helpers, and `SpotGameRuntime` used by the WinForms, Blazor, and Avalonia hosts.
 
 Platform-specific code is intentionally limited to:
 
 - `GameWindow`, the thin Avalonia desktop shell.
-- `SpotGameHost`, which derives from `AvaloniaGpuGameHost` and supplies Avalonia
-  keyboard/text-input translation.
+- `SpotGameHost`, a thin adapter over `SpotGameRuntime` that derives from
+  `AvaloniaGpuGameHost` and supplies Avalonia keyboard/text-input translation.
 - `SpotGameHost.Content`, which loads the desktop asset files and treats audio as
   optional when no compatible `IAudioBackend` is configured.
 
