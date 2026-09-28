@@ -1,4 +1,5 @@
 using Avalonia.Input;
+using Gondwana.Assets;
 using Gondwana.Avalonia.Hosting;
 using Gondwana.Avalonia.Rendering;
 using Gondwana.Input.Keyboard;
@@ -18,6 +19,20 @@ internal sealed partial class SpotGameHost : AvaloniaGpuGameHost
     private static readonly int ScoreToggleKey = GetAvaloniaKeyCode("Tab");
 
     private readonly SpotGameRuntime _runtime;
+    private readonly AssetsFile _assets = LoadAssetPackage();
+
+    private static AssetsFile LoadAssetPackage()
+    {
+        using var stream = File.OpenRead(Path.Combine(AppContext.BaseDirectory, "assets", "spot.gaf"));
+        return AssetsFile.Load(stream, register: false);
+    }
+
+    protected override void OnDisposed()
+    {
+        _assets.Dispose();
+        _font?.Dispose();
+        base.OnDisposed();
+    }
 
     internal SpotGameHost(AvaloniaGpuRenderSurfaceControl renderSurface)
         : base(renderSurface)

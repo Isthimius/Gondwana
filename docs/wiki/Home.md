@@ -350,8 +350,8 @@ Gondwana Studio is supplemental tooling. Gondwana projects remain ordinary .NET 
 ### Demos
 
 - `Demos/Slider`
-- `Demos/Spot`
-- `Demos/SpotAvalonia`
+- `Demos/Spot.WinForms`
+- `Demos/Spot.Avalonia`
 - `Demos/Spot.Blazor`
 - `Demos/Gondwana.CoordinateTest`
 - `Demos/Gondwana.ParticleTest`

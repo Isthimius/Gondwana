@@ -66,8 +66,8 @@ Inspect package boundaries before introducing dependencies from core runtime cod
 
 Notable examples include:
 
-- `Demos/Spot/` — primary Windows showcase and substantial game example.
-- `Demos/SpotAvalonia/` — Avalonia variant.
+- `Demos/Spot.WinForms/` — primary Windows showcase and substantial game example.
+- `Demos/Spot.Avalonia/` — Avalonia variant.
 - `Demos/Spot.Blazor/` — browser/WebAssembly variant.
 - `Demos/Gondwana.Platformer/` — platformer-oriented movement/collision example.
 - `Demos/Gondwana.SpaceDuel/` — movement, rotation, combat, HUD, and space-game mechanics.

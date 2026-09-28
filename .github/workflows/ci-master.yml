@@ -88,9 +88,23 @@ jobs:
           test -f /tmp/spot-blazor-publish/wwwroot/gondwana-audio.js
           test -f /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf
           unzip -t /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf
+          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "TilesheetDefinition_spot_defaults.gts"
+          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "TilesheetDefinition_spot_selected.gts"
+          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Image_spot_defaults.png"
+          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Image_spot_selected.png"
           unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Image_spot.png"
           unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Font_architectsdaughter-regular.ttf"
           unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Audio_sounovamusic-puzzle-amp-casual-game-music-460543.mp3"
+
+      - name: Spot desktop package parity
+        shell: bash
+        run: |
+          for project in Spot.WinForms Spot.Avalonia; do
+            package=$(find "Demos/$project/bin" -path '*/assets/spot.gaf' -print -quit)
+            test -n "$package"
+            unzip -t "$package"
+            cmp "$package" /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf
+          done
 
       - name: Gondwana.Tests unit tests
         run: dotnet test --configuration Release --no-build --no-restore --nologo /p:EnableWindowsTargeting=true Testing/Gondwana.Tests/Gondwana.Tests.csproj
@@ -126,7 +140,7 @@ jobs:
           mkdir -p publish/Tooling/Gondwana.Tooling.Sprites.WinForms
           mkdir -p publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms
           mkdir -p publish/Demos/Slider
-          mkdir -p publish/Demos/Spot
+          mkdir -p publish/Demos/Spot.WinForms
 
           dotnet publish Gondwana/Gondwana.csproj -c Release -o publish/Gondwana --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.Audio.Midi/Gondwana.Audio.Midi.csproj -c Release -o publish/Gondwana.Audio.Midi --nologo /p:EnableWindowsTargeting=true
@@ -147,7 +161,7 @@ jobs:
           dotnet publish Tooling/Gondwana.Tooling.Sprites.WinForms/Gondwana.Tooling.Sprites.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Sprites.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Tooling/Gondwana.Tooling.Tilesheets.WinForms/Gondwana.Tooling.Tilesheets.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Demos/Slider/Slider.csproj -c Release -o publish/Demos/Slider -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Demos/Spot/Spot.csproj -c Release -o publish/Demos/Spot -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Demos/Spot.WinForms/Spot.WinForms.csproj -c Release -o publish/Demos/Spot.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
 
       - name: Stage exact downloadable binaries
         shell: bash
@@ -175,7 +189,7 @@ jobs:
           cp -r publish/Tooling/Gondwana.Tooling.Sprites.WinForms artifacts/Tooling/
           cp -r publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms artifacts/Tooling/
           cp publish/Demos/Slider/Slider.exe artifacts/Demos/
-          cp publish/Demos/Spot/Spot.exe artifacts/Demos/
+          cp -r publish/Demos/Spot.WinForms artifacts/Demos/
 
       - name: Zip artifacts
         run: |

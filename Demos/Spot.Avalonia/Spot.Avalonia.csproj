@@ -15,13 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="assets\**\*" />
-        <Content Include="assets\**\*">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\Spot.Shared\Spot.Shared.csproj" />
         <ProjectReference Include="..\..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
         <ProjectReference Include="..\..\Gondwana.Avalonia\Gondwana.Avalonia.csproj" />
@@ -29,4 +22,5 @@
         <ProjectReference Include="..\..\Gondwana.Widgets\Gondwana.Widgets.csproj" />
         <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
     </ItemGroup>
+    <Import Project="..\Spot.Shared\Spot.Assets.targets" />
 </Project>
