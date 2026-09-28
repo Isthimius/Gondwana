@@ -1,6 +1,6 @@
-# SpotAvalonia
+# Spot.Avalonia
 
-SpotAvalonia is the Avalonia desktop host for the canonical **Spot!** demo.
+Spot.Avalonia is the Avalonia desktop host for the canonical **Spot!** demo.
 
 The game itself is not a separate Avalonia fork. It references
 [`Spot.Shared`](../Spot.Shared/) as a normal project dependency. That assembly contains

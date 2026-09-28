@@ -1,3 +1,4 @@
+using Gondwana.Assets;
 using System.Diagnostics;
 using Gondwana.Widgets.Controls;
 using Gondwana.Widgets.Dialogs;
@@ -307,17 +308,18 @@ internal partial class GameWindow : Form
 
     private void EnsureAboutResources()
     {
-        string assetsPath = Path.Combine(AppContext.BaseDirectory, "assets");
+        using var fontStream = _gameHost!.OpenAsset(AssetTypes.Font, "ArchitectsDaughter-Regular.ttf");
 
-        _aboutSpotLogo ??= LoadImage(Path.Combine(assetsPath, "spot.png"));
-        _aboutGondwanaLogo ??= LoadImage(Path.Combine(assetsPath, "gondwana-logo-text.png"));
-        _aboutTypeface ??= SKTypeface.FromFile(Path.Combine(assetsPath, "ArchitectsDaughter-Regular.ttf"))
+        _aboutSpotLogo ??= LoadImage("spot.png");
+        _aboutGondwanaLogo ??= LoadImage("gondwana-logo-text.png");
+        _aboutTypeface ??= SKTypeface.FromStream(fontStream)
             ?? throw new InvalidOperationException("Failed to load the Spot About-box font.");
     }
 
-    private static SKImage LoadImage(string path)
+    private SKImage LoadImage(string path)
     {
-        return SKImage.FromEncodedData(path)
+        using var stream = _gameHost!.OpenAsset(AssetTypes.Image, path);
+        return SKImage.FromEncodedData(stream)
             ?? throw new InvalidOperationException($"Failed to decode About-box image: {path}");
     }
 

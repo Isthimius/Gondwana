@@ -126,7 +126,7 @@ jobs:
           mkdir -p publish/Tooling/Gondwana.Tooling.Sprites.WinForms
           mkdir -p publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms
           mkdir -p publish/Demos/Slider
-          mkdir -p publish/Demos/Spot
+          mkdir -p publish/Demos/Spot.WinForms
 
           dotnet publish Gondwana/Gondwana.csproj -c Release -o publish/Gondwana --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.Audio.Midi/Gondwana.Audio.Midi.csproj -c Release -o publish/Gondwana.Audio.Midi --nologo /p:EnableWindowsTargeting=true
@@ -147,7 +147,7 @@ jobs:
           dotnet publish Tooling/Gondwana.Tooling.Sprites.WinForms/Gondwana.Tooling.Sprites.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Sprites.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Tooling/Gondwana.Tooling.Tilesheets.WinForms/Gondwana.Tooling.Tilesheets.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
           dotnet publish Demos/Slider/Slider.csproj -c Release -o publish/Demos/Slider -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Demos/Spot/Spot.csproj -c Release -o publish/Demos/Spot -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Demos/Spot.WinForms/Spot.WinForms.csproj -c Release -o publish/Demos/Spot.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
 
       - name: Stage exact downloadable binaries
         shell: bash
@@ -175,7 +175,7 @@ jobs:
           cp -r publish/Tooling/Gondwana.Tooling.Sprites.WinForms artifacts/Tooling/
           cp -r publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms artifacts/Tooling/
           cp publish/Demos/Slider/Slider.exe artifacts/Demos/
-          cp publish/Demos/Spot/Spot.exe artifacts/Demos/
+          cp publish/Demos/Spot.WinForms/Spot.WinForms.exe artifacts/Demos/
 
       - name: Zip artifacts
         run: |

@@ -1,3 +1,4 @@
+using Gondwana.Assets;
 using Gondwana.Input.Keyboard;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
@@ -14,6 +15,20 @@ namespace Gondwana.Demos.Spot;
 internal sealed partial class SpotGameHost : WinFormsGpuGameHost
 {
     private readonly SpotGameRuntime _runtime;
+    private readonly AssetsFile _assets = LoadAssetPackage();
+
+    private static AssetsFile LoadAssetPackage()
+    {
+        using var stream = File.OpenRead(Path.Combine(AppContext.BaseDirectory, "assets", "spot.gaf"));
+        return AssetsFile.Load(stream, register: false);
+    }
+
+    protected override void OnDisposed()
+    {
+        _assets.Dispose();
+        _font?.Dispose();
+        base.OnDisposed();
+    }
 
     internal SpotGameHost(WinFormGpuRenderSurfaceControl renderSurface)
         : base(renderSurface)

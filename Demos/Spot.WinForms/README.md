@@ -1,4 +1,4 @@
-﻿# Spot!
+# Spot!
 
 **Spot!** is a small, turn-based territory game and a primary playable showcase for the [Gondwana Game Engine](https://github.com/Isthimius/Gondwana/). The same game now runs through Gondwana's WinForms GPU host on Windows and its Blazor/WebGL host in the browser, with the game rules, Widgets UI, gameplay presentation, and effects shared between them.
 
@@ -46,7 +46,7 @@ The Blazor version uses the same Gondwana Widgets for the menu, new-game dialog,
 dotnet run --project Demos/Spot.Blazor/Spot.Blazor.csproj
 ```
 
-During the build, the canonical files from `Demos/Spot/assets` are packed into a Gondwana `.gaf`. The browser downloads that single package, opens it through `AssetsFile.Load(Stream)`, and loads images, fonts, music, and sound effects from the package.
+During the build, the canonical files from `Demos/Spot.WinForms/assets` are packed into a Gondwana `.gaf`. The browser downloads that single package, opens it through `AssetsFile.Load(Stream)`, and loads images, fonts, music, and sound effects from the package.
 
 ## Run the Windows version
 
@@ -55,7 +55,7 @@ Spot! targets 64-bit Windows and is developed as part of the Gondwana repository
 ```console
 git clone https://github.com/Isthimius/Gondwana.git
 cd Gondwana
-dotnet run --project Demos/Spot/Spot.csproj
+dotnet run --project Demos/Spot.WinForms/Spot.WinForms.csproj
 ```
 
 You can also open `Gondwana.sln`, set **Spot** as the startup project, and run it from Visual Studio with the .NET desktop development workload installed.
@@ -63,7 +63,7 @@ You can also open `Gondwana.sln`, set **Spot** as the startup project, and run i
 To create a self-contained Windows x64 release build:
 
 ```console
-dotnet publish Demos/Spot/Spot.csproj -c Release
+dotnet publish Demos/Spot.WinForms/Spot.WinForms.csproj -c Release
 ```
 
 The release configuration produces a self-contained, single-file `win-x64` executable, with the game's content assets copied alongside it.

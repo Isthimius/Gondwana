@@ -94,7 +94,7 @@ changelog:
         - demo
         - demos
         - Spot
-        - SpotAvalonia
+        - Spot.Avalonia
         - Slider
 
     - title: Other Changes
