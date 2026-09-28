@@ -1,6 +1,6 @@
 using Avalonia;
 
-namespace Gondwana.Demos.SpotAvalonia;
+namespace Gondwana.Demos.Spot;
 
 internal static class Program
 {
