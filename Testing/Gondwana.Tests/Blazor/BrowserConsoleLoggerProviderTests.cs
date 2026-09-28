@@ -58,4 +58,6 @@ public sealed class BrowserConsoleLoggerProviderTests
 }
 
 [CollectionDefinition("BrowserConsoleLogging", DisableParallelization = true)]
-public sealed class BrowserConsoleLoggingCollection;
+public sealed class BrowserConsoleLoggingCollection
+{
+}

@@ -58,6 +58,9 @@ public abstract class BlazorGameHostBase : GameHostBase
     /// <inheritdoc/>
     protected sealed override void ConfigurePlatform()
     {
+        if (OperatingSystem.IsBrowser())
+            BrowserConsoleLogging.AttachToEngineLogger();
+
         OnConfigurePlatform();
     }
 
