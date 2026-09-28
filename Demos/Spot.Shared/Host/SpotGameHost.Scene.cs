@@ -4,6 +4,7 @@ using Gondwana.Drawing.Coordinates;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
+using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Demos.Spot;
 
