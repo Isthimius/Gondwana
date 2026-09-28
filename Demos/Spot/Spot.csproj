@@ -102,7 +102,7 @@
         <ProjectReference Include="..\..\Gondwana.WinForms\Gondwana.WinForms.csproj" />
         <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
     </ItemGroup>
-<ItemGroup>
+    <ItemGroup>
         <Compile Update="GameWindow.cs">
             <SubType>Form</SubType>
         </Compile>
