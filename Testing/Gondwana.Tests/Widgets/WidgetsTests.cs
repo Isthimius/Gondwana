@@ -185,7 +185,7 @@ public sealed class WidgetsTests : IDisposable
     }
 
     [Fact]
-    public void TextBoxWidget_RepeatedKeyActionsUseWidgetRepeatInterval()
+    public void TextBoxWidget_RepeatedKeyActionsHonorInitialDelayAndRepeatInterval()
     {
         using var host = new TestRenderSurfaceHost();
         View view = AddView(host);
@@ -193,6 +193,12 @@ public sealed class WidgetsTests : IDisposable
             host,
             view,
             new Rectangle(10, 20, 220, 32));
+
+        Assert.Equal(1.25, textBox.InitialKeyRepeatDelaySeconds);
+        Assert.Equal(0.05, textBox.RepeatedKeyIntervalSeconds);
+
+        textBox.InitialKeyRepeatDelaySeconds = 0.05;
+        textBox.RepeatedKeyIntervalSeconds = 0.05;
 
         DispatchKeyboard(textBox, 65, KeyAction.Pressed);
         Assert.Equal("a", textBox.Text);
@@ -204,6 +210,14 @@ public sealed class WidgetsTests : IDisposable
 
         DispatchKeyboard(textBox, 65, KeyAction.Repeated);
         Assert.Equal("aa", textBox.Text);
+
+        DispatchKeyboard(textBox, 65, KeyAction.Repeated);
+        Assert.Equal("aa", textBox.Text);
+
+        Thread.Sleep(TimeSpan.FromMilliseconds(70));
+
+        DispatchKeyboard(textBox, 65, KeyAction.Repeated);
+        Assert.Equal("aaa", textBox.Text);
     }
 
     [Fact]
