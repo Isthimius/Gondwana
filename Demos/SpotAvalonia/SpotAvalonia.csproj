@@ -5,7 +5,7 @@
         <RootNamespace>Gondwana.Demos.Spot</RootNamespace>
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>
