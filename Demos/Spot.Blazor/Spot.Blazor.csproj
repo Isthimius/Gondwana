@@ -7,7 +7,6 @@
         <IsPackable>false</IsPackable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <RootNamespace>Gondwana.Demos.Spot</RootNamespace>
-        <DefineConstants>$(DefineConstants);SPOT_BLAZOR</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
