@@ -1,5 +1,7 @@
 var NAVTREEINDEX25 =
 {
+"structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html#af2bbee868a664b23cbc867eb638aa49b":[1,0,0,9,0,4,1],
+"structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html#afb2576c804a383349c1d751d68ea1958":[0,0,0,9,0,4,7],
 "structGondwana_1_1Input_1_1Gamepad_1_1GamepadStickState.html#afb2576c804a383349c1d751d68ea1958":[1,0,0,9,0,4,7],
 "structGondwana_1_1Input_1_1Mouse_1_1MouseButtonState.html":[0,0,0,9,2,1],
 "structGondwana_1_1Input_1_1Mouse_1_1MouseButtonState.html":[1,0,0,9,2,1],

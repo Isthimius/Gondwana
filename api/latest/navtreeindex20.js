@@ -1,5 +1,7 @@
 var NAVTREEINDEX20 =
 {
+"classGondwana_1_1Widgets_1_1WidgetBase.html#a7c5fbb420d44df2cfc342f12ca2abb27":[1,0,0,16,9,27],
+"classGondwana_1_1Widgets_1_1WidgetBase.html#a7d02dee6a2c67a4c1365aad41a19d4c0":[0,0,0,17,9,13],
 "classGondwana_1_1Widgets_1_1WidgetBase.html#a7d02dee6a2c67a4c1365aad41a19d4c0":[1,0,0,16,9,13],
 "classGondwana_1_1Widgets_1_1WidgetBase.html#a81064cf8dce5b82040dbab4dfb53a638":[0,0,0,17,9,26],
 "classGondwana_1_1Widgets_1_1WidgetBase.html#a81064cf8dce5b82040dbab4dfb53a638":[1,0,0,16,9,26],
@@ -247,7 +249,5 @@ var NAVTREEINDEX20 =
 "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceAdapter.html":[1,0,0,17,2,0],
 "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceAdapter.html#a0749730497114ef32abbba4b289af58a":[0,0,0,18,2,0,3],
 "classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceAdapter.html#a0749730497114ef32abbba4b289af58a":[1,0,0,17,2,0,3],
-"classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceAdapter.html#a411d5e802410cc48f8b197ffe25d9a57":[0,0,0,18,2,0,2],
-"classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceAdapter.html#a411d5e802410cc48f8b197ffe25d9a57":[1,0,0,17,2,0,2],
-"classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceAdapter.html#ae78b358f2ed4be83ff8694bf34b915c1":[0,0,0,18,2,0,1]
+"classGondwana_1_1WinForms_1_1Rendering_1_1WinFormBitmapRenderSurfaceAdapter.html#a411d5e802410cc48f8b197ffe25d9a57":[0,0,0,18,2,0,2]
 };

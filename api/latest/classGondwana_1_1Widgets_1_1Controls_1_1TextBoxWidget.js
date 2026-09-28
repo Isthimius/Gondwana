@@ -22,6 +22,7 @@ var classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget =
     [ "DeleteKey", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html#ade3cfe8c7cdd3a0eae6c5368a01ae27b", null ],
     [ "EndKey", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html#aa3f87041f7d22359067d3756eec250eb", null ],
     [ "HomeKey", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html#af941517ec369b0531d16d997d04c1e84", null ],
+    [ "InitialKeyRepeatDelaySeconds", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html#a37402a2f34e34e828f902b0a97dc254d", null ],
     [ "IsReadOnly", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html#a909855ab20a78e91aacf127d09381d36", null ],
     [ "LeftKey", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html#a67a9d5791c23366dda0a148831959acd", null ],
     [ "MaxLength", "classGondwana_1_1Widgets_1_1Controls_1_1TextBoxWidget.html#adbc2c4412c084447ee981385d763c3a8", null ],
