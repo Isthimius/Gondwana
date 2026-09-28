@@ -8,10 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Remove="Host\**\*.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\..\Gondwana.Widgets\Gondwana.Widgets.csproj" />
         <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
     </ItemGroup>

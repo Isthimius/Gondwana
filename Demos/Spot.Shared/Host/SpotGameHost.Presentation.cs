@@ -1,10 +1,4 @@
-#if !SPOT_BLAZOR
-using System.Collections.Generic;
-#endif
 using System.Drawing;
-#if !SPOT_BLAZOR
-using System.Linq;
-#endif
 using Gondwana.Demos.Spot.Game;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Direct;
@@ -13,7 +7,7 @@ using Gondwana.Drawing.Tilesheets;
 
 namespace Gondwana.Demos.Spot;
 
-internal sealed partial class SpotGameHost
+internal sealed partial class SpotGameRuntime
 {
     private bool _startupPresentationShown;
 

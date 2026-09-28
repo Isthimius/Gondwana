@@ -1,13 +1,10 @@
-#if !SPOT_BLAZOR
-using System;
-#endif
 using System.Drawing;
 using Gondwana.Drawing.Direct.Particles;
 using SkiaSharp;
 
 namespace Gondwana.Demos.Spot;
 
-internal sealed partial class SpotGameHost
+internal sealed partial class SpotGameRuntime
 {
     private static readonly Random _rng = new();
     private ParticleSurface? _particleSurface;

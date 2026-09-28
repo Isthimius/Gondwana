@@ -1,31 +1,85 @@
-using System;
-using Gondwana.Rendering;
+using Gondwana.Input.Keyboard;
+using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
+using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Demos.Spot;
 
 /// <summary>
-/// Hosts the Spot demo on Gondwana's WinForms GPU runtime.
-/// Game-specific responsibilities are split across focused partial-class files.
+/// Hosts the Spot demo on Gondwana's WinForms GPU runtime and delegates game behavior
+/// to the platform-neutral runtime in Spot.Shared.
 /// </summary>
 internal sealed partial class SpotGameHost : WinFormsGpuGameHost
 {
-    private const int PersistentMenuHeight = 32;
-    private const int ScoreToggleKey = 9;
-
-    private Scene ActiveScene => Scene
-        ?? throw new InvalidOperationException("Spot scene has not been created.");
-
-    private RenderSurfaceHostBase SurfaceHost => RenderSurface.Host;
-    private int SurfaceWidth => RenderSurface.Width;
-    private int SurfaceHeight => RenderSurface.Height;
+    private readonly SpotGameRuntime _runtime;
 
     internal SpotGameHost(WinFormGpuRenderSurfaceControl renderSurface)
         : base(renderSurface)
     {
+        _runtime = new SpotGameRuntime(
+            renderSurface.Host,
+            scoreToggleKey: 9,
+            widgetInputRouterAccessor: () => WidgetInputRouter,
+            configurePlatformKeyboardInput: ConfigurePlatformKeyboardInput,
+            persistGameState: PersistGameState);
     }
+
+    internal NewGameOptions? LastNewGameOptions => _runtime.LastNewGameOptions;
+
+    internal void BeginPostSplashStartup() => _runtime.BeginPostSplashStartup();
+
+    internal void OpenNewGameDialog(NewGameOptions? options = null)
+        => _runtime.OpenNewGameDialog(options);
+
+    internal void SetMusicEnabled(bool enabled) => _runtime.SetMusicEnabled(enabled);
+
+    internal void SetSoundEffectsEnabled(bool enabled) => _runtime.SetSoundEffectsEnabled(enabled);
+
+    internal void SetJiggleEnabled(bool enabled) => _runtime.SetJiggleEnabled(enabled);
+
+    internal void SetCloudsEnabled(bool enabled) => _runtime.SetCloudsEnabled(enabled);
+
+    protected override Scene CreateInitialScene()
+    {
+        Logging.EngineLogger.SetLogLevel(LogLevel.Information);
+
+        Gondwana.Engine.Instance.CPSCalculated += args =>
+        {
+            if (RenderSurface.Host.Backbuffer is GpuBackbuffer gpuBackbuffer)
+            {
+                string gpuFps = args.GpuFps.HasValue
+                    ? args.GpuFps.Value.ToString("0.0")
+                    : "n/a";
+
+                Engine.Logger.LogInformation(
+                    "CPS {Cps:0.0} | engine FPS {EngineFps:0.0} | GPU FPS {GpuFps} | " +
+                    "MSAA requested {MsaaSampleCount} | MSAA actual {ActualMsaaSampleCount} | " +
+                    "MSAA max {MaxSupportedMsaaSampleCount}",
+                    args.GrossCPS,
+                    args.NetCPS,
+                    gpuFps,
+                    gpuBackbuffer.MsaaSampleCount,
+                    gpuBackbuffer.ActualMsaaSampleCount,
+                    gpuBackbuffer.MaxSupportedMsaaSampleCount);
+
+                return;
+            }
+
+            Engine.Logger.LogInformation("{CyclesPerSecond}", args);
+        };
+
+        return _runtime.CreateInitialScene();
+    }
+
+    protected override void OnSceneGraphCreated() => _runtime.OnSceneGraphCreated();
+
+    protected override void OnMouseAdapterInitialized() => _runtime.OnMouseAdapterInitialized();
+
+    protected override void OnKeyboardAdapterInitialized() => _runtime.OnKeyboardAdapterInitialized();
+
+    protected override void UnhookEvents() => _runtime.UnhookEvents();
 
     protected override void CreateDirectDrawings()
     {
@@ -39,7 +93,7 @@ internal sealed partial class SpotGameHost : WinFormsGpuGameHost
         // after the Gondwana splash has fully faded out.
     }
 
-    partial void ConfigurePlatformKeyboardInput(Gondwana.Input.Keyboard.KeyboardEventPoller keyboard)
+    private static void ConfigurePlatformKeyboardInput(KeyboardEventPoller keyboard)
     {
         RegisterRange(keyboard, 65, 90);  // A-Z
         RegisterRange(keyboard, 48, 57);  // 0-9
@@ -56,15 +110,15 @@ internal sealed partial class SpotGameHost : WinFormsGpuGameHost
             keyboard.StartMonitoringKey(key);
         }
 
-        static void RegisterRange(Gondwana.Input.Keyboard.KeyboardEventPoller poller, int first, int last)
+        static void RegisterRange(KeyboardEventPoller poller, int first, int last)
         {
             for (int key = first; key <= last; key++)
                 poller.StartMonitoringKey(key);
         }
     }
 
-    partial void PersistGameState()
+    private static void PersistGameState()
     {
-        Engine.Instance.State.SaveToFile("savegame.json", false, true);
+        Gondwana.Engine.Instance.State.SaveToFile("savegame.json", false, true);
     }
 }

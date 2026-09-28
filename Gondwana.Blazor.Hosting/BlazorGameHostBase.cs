@@ -1,3 +1,4 @@
+using Gondwana.Blazor.Logging;
 using Gondwana.Blazor.Rendering;
 using Gondwana.Hosting;
 using Gondwana.Rendering;
@@ -57,6 +58,9 @@ public abstract class BlazorGameHostBase : GameHostBase
     /// <inheritdoc/>
     protected sealed override void ConfigurePlatform()
     {
+        if (OperatingSystem.IsBrowser())
+            BrowserConsoleLogging.AttachToEngineLogger();
+
         OnConfigurePlatform();
     }
 
