@@ -22,8 +22,8 @@ internal sealed partial class SpotGameHost : AvaloniaGpuGameHost
         ?? throw new InvalidOperationException("Spot scene has not been created.");
 
     private RenderSurfaceHostBase SurfaceHost => RenderSurface.Host;
-    private int SurfaceWidth => RenderSurface.Width;
-    private int SurfaceHeight => RenderSurface.Height;
+    private int SurfaceWidth => RenderSurface.Adapter.Width;
+    private int SurfaceHeight => RenderSurface.Adapter.Height;
 
     internal SpotGameHost(AvaloniaGpuRenderSurfaceControl renderSurface)
         : base(renderSurface)
