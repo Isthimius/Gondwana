@@ -1,10 +1,7 @@
-#if !SPOT_BLAZOR
-using System.Threading;
-#endif
 
 namespace Gondwana.Demos.Spot;
 
-internal sealed partial class SpotGameHost
+internal sealed partial class SpotGameRuntime
 {
     private int _dialogOpen; // 0 = not open; 1 = open/pending.
     private NewGameOptions? _lastNewGameOptions;
@@ -30,7 +27,7 @@ internal sealed partial class SpotGameHost
 
         var view = SurfaceHost.ViewManager.Views[0];
         var dialog = new NewGameDialog(SurfaceHost, view, newGameOptions);
-        ConfigureNewGameDialogForPlatform(dialog);
+        _configureNewGameDialogForPlatform?.Invoke(dialog);
         var previousFocus = WidgetInputRouter?.FocusedWidget;
         _newGameDialog = dialog;
 
@@ -51,5 +48,4 @@ internal sealed partial class SpotGameHost
         WidgetInputRouter?.Focus(dialog.InitialFocusTarget);
     }
 
-    partial void ConfigureNewGameDialogForPlatform(NewGameDialog dialog);
 }
