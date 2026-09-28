@@ -31,8 +31,10 @@ public sealed class TextBoxWidget : WidgetBase
     private string _placeholder = string.Empty;
     private int _caretIndex;
     private int? _maxLength;
+    private double _initialKeyRepeatDelaySeconds = 1.25;
     private double _repeatedKeyIntervalSeconds = 0.05;
-    private int? _lastRepeatedKey;
+    private int? _repeatingKey;
+    private long _keyPressedTick;
     private long _lastRepeatTick;
     private Func<WidgetKeyboardEventArgs, char?> _characterResolver = ResolveWindowsVirtualKeyCharacter;
 
@@ -162,8 +164,25 @@ public sealed class TextBoxWidget : WidgetBase
     }
 
     /// <summary>
+    /// Gets or sets the delay, in seconds, before a held key begins repeating.
+    /// Pressed events remain immediate.
+    /// </summary>
+    public double InitialKeyRepeatDelaySeconds
+    {
+        get => _initialKeyRepeatDelaySeconds;
+        set
+        {
+            if (!double.IsFinite(value) || value < 0d)
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            _initialKeyRepeatDelaySeconds = value;
+        }
+    }
+
+    /// <summary>
     /// Gets or sets the minimum interval, in seconds, between repeated held-key
-    /// actions processed by this text box. Pressed events remain immediate.
+    /// actions after <see cref="InitialKeyRepeatDelaySeconds"/> has elapsed.
+    /// Pressed events remain immediate.
     /// </summary>
     public double RepeatedKeyIntervalSeconds
     {
@@ -388,6 +407,7 @@ public sealed class TextBoxWidget : WidgetBase
     protected override void OnFocusLost()
     {
         base.OnFocusLost();
+        ResetKeyRepeatState();
         Background.SetBorderColor(_borderColor);
         Refresh(Background);
         RefreshDisplayedText();
@@ -400,11 +420,8 @@ public sealed class TextBoxWidget : WidgetBase
 
         if (args.KeyAction == KeyAction.Released)
         {
-            if (_lastRepeatedKey == args.Key)
-            {
-                _lastRepeatedKey = null;
-                _lastRepeatTick = 0;
-            }
+            if (_repeatingKey == args.Key)
+                ResetKeyRepeatState();
 
             return;
         }
@@ -416,19 +433,22 @@ public sealed class TextBoxWidget : WidgetBase
 
         if (args.KeyAction == KeyAction.Pressed)
         {
-            _lastRepeatedKey = args.Key;
+            _repeatingKey = args.Key;
+            _keyPressedTick = currentTick;
             _lastRepeatTick = currentTick;
-        }
-        else if (_lastRepeatedKey == args.Key &&
-                 _lastRepeatTick != 0 &&
-                 HighResTimer.GetDuration(_lastRepeatTick, currentTick) < _repeatedKeyIntervalSeconds)
-        {
-            args.Handled = true;
-            return;
         }
         else
         {
-            _lastRepeatedKey = args.Key;
+            if (_repeatingKey != args.Key ||
+                _keyPressedTick == 0 ||
+                HighResTimer.GetDuration(_keyPressedTick, currentTick) < _initialKeyRepeatDelaySeconds ||
+                (_lastRepeatTick != 0 &&
+                 HighResTimer.GetDuration(_lastRepeatTick, currentTick) < _repeatedKeyIntervalSeconds))
+            {
+                args.Handled = true;
+                return;
+            }
+
             _lastRepeatTick = currentTick;
         }
 
@@ -493,6 +513,13 @@ public sealed class TextBoxWidget : WidgetBase
 
         args.Handled = true;
         InsertText(character.Value.ToString());
+    }
+
+    private void ResetKeyRepeatState()
+    {
+        _repeatingKey = null;
+        _keyPressedTick = 0;
+        _lastRepeatTick = 0;
     }
 
     private void CompleteInitialization()
