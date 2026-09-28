@@ -19,6 +19,7 @@
 
 ## Added
 - Add editor-local docking to GTS, GAF, and GANI ([#378](https://github.com/Isthimius/Gondwana/pull/378))
+- Add external asset import pipeline for tmx/tsx, Godot assets, Aesprite ([#390](https://github.com/Isthimius/Gondwana/pull/390))
 
 
 
@@ -29,3 +30,8 @@
 
 ## Tests
 - Cover repeated GTS source selection ([#377](https://github.com/Isthimius/Gondwana/pull/377))
+
+
+
+## Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))

@@ -8,6 +8,14 @@ All notable changes to this project will be documented in this file.
 
 - Retain plugin infrastructure and shell Output state while removing obsolete duplicate editor models and services with the deprecated Avalonia Studio prototype.
 
+# [Unreleased]
+
+
+
+## Added
+- Compose the standalone WinForms authoring editors ([#383](https://github.com/Isthimius/Gondwana/pull/383))
+- Add external asset import pipeline for tmx/tsx, Godot assets, Aesprite ([#390](https://github.com/Isthimius/Gondwana/pull/390))
+
 # v2.6.0 - September 17, 2026
 
 

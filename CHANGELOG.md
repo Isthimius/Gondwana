@@ -4,47 +4,173 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
-## Tooling / Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics
-
-### Added
-- Add the optional Project Diagnostics Studio plugin and canonical plugin example, with background scanning, definition/reference problems, a dockable panel, Rescan, and automatic development deployment.
-
-## Tooling / Gondwana.Tooling.Studio.Core
-
-### Fixed
-- Preserve shared plugin contract identity across assembly load contexts.
-
-## Tooling / Gondwana.Tooling.Studio.WinForms
-
-### Added
-- Exercise external plugin discovery, docking and working-directory lifecycle with Project Diagnostics.
-
 ## Gondwana
 
 ### Added
 - Add GSCN format and EngineState integration ([#372](https://github.com/Isthimius/Gondwana/pull/372))
 - Add GANI format and EngineState integration ([#373](https://github.com/Isthimius/Gondwana/pull/373))
+- Compose the standalone WinForms authoring editors ([#383](https://github.com/Isthimius/Gondwana/pull/383))
+- Add external asset import pipeline for tmx/tsx, Godot assets, Aesprite ([#390](https://github.com/Isthimius/Gondwana/pull/390))
+- Load GAF asset files from streams ([#392](https://github.com/Isthimius/Gondwana/pull/392))
+- Add scrollable list boxes with mouse wheel support ([#403](https://github.com/Isthimius/Gondwana/pull/403))
+- Add scrollable labels and Spot help ([#405](https://github.com/Isthimius/Gondwana/pull/405))
+
+
+
+### Fixed
+- Recreate GPU surface when MSAA changes ([#402](https://github.com/Isthimius/Gondwana/pull/402))
+
+
+
+### Refactoring
+- Use MenuBarWidget and GPU-only rendering ([#401](https://github.com/Isthimius/Gondwana/pull/401))
+- Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))
 
 
 
 ### Tests
 - Cover repeated GTS source selection ([#377](https://github.com/Isthimius/Gondwana/pull/377))
+
+
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+- Expose MSAA in frame diagnostics ([#404](https://github.com/Isthimius/Gondwana/pull/404))
+
+## Gondwana.Audio.Browser
+
+### Refactoring
+- Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))
+
+
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Gondwana.Audio.Midi
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Gondwana.Audio.NAudio
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Gondwana.Avalonia
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Gondwana.Avalonia.Hosting
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Gondwana.Blazor
+
+### Refactoring
+- Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))
+
+
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Gondwana.Blazor.Hosting
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Gondwana.Hosting
+
+### Refactoring
+- Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))
+
+
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Gondwana.Input.SDL2
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Gondwana.Video
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Gondwana.Widgets
+
+### Added
+- Add scrollable list boxes with mouse wheel support ([#403](https://github.com/Isthimius/Gondwana/pull/403))
+- Add scrollable labels and Spot help ([#405](https://github.com/Isthimius/Gondwana/pull/405))
+
+
+
+### Refactoring
+- Use MenuBarWidget and GPU-only rendering ([#401](https://github.com/Isthimius/Gondwana/pull/401))
+- Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))
+
+
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Gondwana.WinForms
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Gondwana.WinForms.Hosting
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Tooling / Gondwana.Cli
+
+### Refactoring
+- Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))
+
+
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Tooling / Gondwana.Mcp
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Tooling / Gondwana.Templates
+
+### Refactoring
+- Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))
 
 ## Tooling / Gondwana.Tooling.Assets.WinForms
 
 ### Added
 - Modernize Assets editor workspace ([#370](https://github.com/Isthimius/Gondwana/pull/370))
 - Add editor-local docking to GTS, GAF, and GANI ([#378](https://github.com/Isthimius/Gondwana/pull/378))
+- Compose the standalone WinForms authoring editors ([#383](https://github.com/Isthimius/Gondwana/pull/383))
 
 
 
 ### Fixed
 - Restore closed panes in standalone editors ([#382](https://github.com/Isthimius/Gondwana/pull/382))
 
+
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
 ## Tooling / Gondwana.Tooling.Animations.WinForms
 
 ### Added
 - Add editor-local docking to GTS, GAF, and GANI ([#378](https://github.com/Isthimius/Gondwana/pull/378))
+- Add external asset import pipeline for tmx/tsx, Godot assets, Aesprite ([#390](https://github.com/Isthimius/Gondwana/pull/390))
 
 
 
@@ -56,25 +182,92 @@ All notable changes to this project will be documented in this file.
 ### Tests
 - Cover repeated GTS source selection ([#377](https://github.com/Isthimius/Gondwana/pull/377))
 
+
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
 ## Tooling / Gondwana.Tooling.Audio.WinForms
 
 ### Fixed
 - Restore closed panes in standalone editors ([#382](https://github.com/Isthimius/Gondwana/pull/382))
 
+
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Tooling / Gondwana.Tooling.Studio.Core
+
+### Added
+- Compose the standalone WinForms authoring editors ([#383](https://github.com/Isthimius/Gondwana/pull/383))
+- Add external asset import pipeline for tmx/tsx, Godot assets, Aesprite ([#390](https://github.com/Isthimius/Gondwana/pull/390))
+
+## Tooling / Gondwana.Tooling.Studio.WinForms
+
+### Added
+- Compose the standalone WinForms authoring editors ([#383](https://github.com/Isthimius/Gondwana/pull/383))
+- Add external asset import pipeline for tmx/tsx, Godot assets, Aesprite ([#390](https://github.com/Isthimius/Gondwana/pull/390))
+
+
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Tooling / Gondwana.Tooling.Scenes.WinForms
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Tooling / Gondwana.Tooling.Sprites.WinForms
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
 ## Tooling / Gondwana.Tooling.Tilesheets.WinForms
 
 ### Added
 - Add editor-local docking to GTS, GAF, and GANI ([#378](https://github.com/Isthimius/Gondwana/pull/378))
+- Compose the standalone WinForms authoring editors ([#383](https://github.com/Isthimius/Gondwana/pull/383))
 
 
 
 ### Fixed
 - Restore closed panes in standalone editors ([#382](https://github.com/Isthimius/Gondwana/pull/382))
 
+
+
+### Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
 ## Build / Repository
+
+### Added
+- Compose the standalone WinForms authoring editors ([#383](https://github.com/Isthimius/Gondwana/pull/383))
+- Add external asset import pipeline for tmx/tsx, Godot assets, Aesprite ([#390](https://github.com/Isthimius/Gondwana/pull/390))
+
+
+
+### Refactoring
+- Use MenuBarWidget and GPU-only rendering ([#401](https://github.com/Isthimius/Gondwana/pull/401))
+- Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))
+
+
+
+### Documentation
+- Document gondwana and studio overview ([#387](https://github.com/Isthimius/Gondwana/pull/387))
+
+
 
 ### Maintenance
 - Rename WinForms editor test job ([#384](https://github.com/Isthimius/Gondwana/pull/384))
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+
+
+### Other Changes
+- Fix note formatting in README.md ([#400](https://github.com/Isthimius/Gondwana/pull/400))
+- Update README with new discussion link ([#399](https://github.com/Isthimius/Gondwana/pull/399))
 
 # [v2.6.0] - 2026-09-17
 

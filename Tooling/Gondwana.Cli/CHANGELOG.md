@@ -4,12 +4,15 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
-## Added
-- Desktop-only `gondwana add video-widgets`, with bridge-aware native deployment and browser compatibility diagnostics.
 
-## Fixed
-- Explain app-local native LibVLC deployment for Video projects in `doctor`; do not treat a system probe as proof of application deployment.
-- Development setup documents official desktop runtime dependencies instead of installing global VLC for optional Video support.
+
+## Refactoring
+- Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))
+
+
+
+## Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
 
 # v2.6.0 - September 17, 2026
 

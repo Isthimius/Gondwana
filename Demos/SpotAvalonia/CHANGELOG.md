@@ -11,5 +11,7 @@ All notable changes to this project will be documented in this file.
 - Removed the duplicated Avalonia-specific game model and native dialog/menu implementation.
 - Added Avalonia keyboard translation for shared Widget text input.
 - Kept desktop audio optional when no compatible cross-platform backend is configured.
+## Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
 
 # v2.6.0 - September 17, 2026

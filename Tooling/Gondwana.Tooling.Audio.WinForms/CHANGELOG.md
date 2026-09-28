@@ -14,3 +14,8 @@ All notable changes to Gondwana.Tooling.Audio.WinForms are documented here.
 
 ## Fixed
 - Restore closed panes in standalone editors ([#382](https://github.com/Isthimius/Gondwana/pull/382))
+
+
+
+## Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))

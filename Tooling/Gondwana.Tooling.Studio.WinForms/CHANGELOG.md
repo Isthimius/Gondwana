@@ -11,6 +11,19 @@ All notable changes to this project will be documented in this file.
 - Remove duplicate Studio editors and the deprecated Avalonia Studio prototype; retain shell/plugin infrastructure.
 - Add Windows composition tests covering nested ownership, saving, cancellation, encrypted assets, and disposal.
 
+# [Unreleased]
+
+
+
+## Added
+- Compose the standalone WinForms authoring editors ([#383](https://github.com/Isthimius/Gondwana/pull/383))
+- Add external asset import pipeline for tmx/tsx, Godot assets, Aesprite ([#390](https://github.com/Isthimius/Gondwana/pull/390))
+
+
+
+## Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
 # v2.6.0 - September 17, 2026
 
 
