@@ -1,65 +1,15 @@
 using System.Drawing;
 using Gondwana.Demos.Spot.Game;
 using Gondwana.Drawing.Coordinates;
-using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
-#if !SPOT_BLAZOR
-using Microsoft.Extensions.Logging;
-#endif
 
 namespace Gondwana.Demos.Spot;
 
-internal sealed partial class SpotGameHost
+internal sealed partial class SpotGameRuntime
 {
-    protected override Scene CreateInitialScene()
+    internal Scene CreateInitialScene()
     {
-        Logging.EngineLogger.SetLogLevel(LogLevel.Information);
-#if SPOT_BLAZOR
-        bool msaaLogged = false;
-        Gondwana.Engine.Instance.CPSCalculated += args =>
-        {
-            if (msaaLogged ||
-                args.GpuFps is not > 0 ||
-                SurfaceHost.Backbuffer is not GpuBackbuffer gpuBackbuffer)
-            {
-                return;
-            }
-
-            msaaLogged = true;
-            Engine.Logger.LogInformation(
-                "Spot.Blazor MSAA requested {MsaaSampleCount} | actual {ActualMsaaSampleCount} | max {MaxSupportedMsaaSampleCount}",
-                gpuBackbuffer.MsaaSampleCount,
-                gpuBackbuffer.ActualMsaaSampleCount,
-                gpuBackbuffer.MaxSupportedMsaaSampleCount);
-        };
-#else
-        Gondwana.Engine.Instance.CPSCalculated += args =>
-        {
-            if (SurfaceHost.Backbuffer is GpuBackbuffer gpuBackbuffer)
-            {
-                string gpuFps = args.GpuFps.HasValue
-                    ? args.GpuFps.Value.ToString("0.0")
-                    : "n/a";
-
-                Engine.Logger.LogInformation(
-                    "CPS {Cps:0.0} | engine FPS {EngineFps:0.0} | GPU FPS {GpuFps} | " +
-                    "MSAA requested {MsaaSampleCount} | MSAA actual {ActualMsaaSampleCount} | " +
-                    "MSAA max {MaxSupportedMsaaSampleCount}",
-                    args.GrossCPS,
-                    args.NetCPS,
-                    gpuFps,
-                    gpuBackbuffer.MsaaSampleCount,
-                    gpuBackbuffer.ActualMsaaSampleCount,
-                    gpuBackbuffer.MaxSupportedMsaaSampleCount);
-
-                return;
-            }
-
-            Engine.Logger.LogInformation("{CyclesPerSecond}", args);
-        };
-#endif
-
         var scene = new Scene();
 
         var sceneLayer = scene.AddLayer(
@@ -74,10 +24,11 @@ internal sealed partial class SpotGameHost
         sceneLayer.ShowGridLines = false;
         sceneLayer.OriginPx = new Point(0, -PersistentMenuHeight);
 
+        _scene = scene;
         return scene;
     }
 
-    protected override void OnSceneGraphCreated()
+    internal void OnSceneGraphCreated()
     {
         SurfaceHost.Backbuffer.ClearColor = Color.CornflowerBlue.ToSKColor();
 
