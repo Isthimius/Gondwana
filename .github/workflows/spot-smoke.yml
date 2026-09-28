@@ -1,0 +1,72 @@
+name: Spot smoke tests
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
+      - '.github/workflows/release.yml'
+      - 'CHANGELOG.md'
+      - '**/CHANGELOG.md'
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
+      - '.github/workflows/release.yml'
+      - 'CHANGELOG.md'
+      - '**/CHANGELOG.md'
+
+permissions:
+  contents: read
+
+jobs:
+  packaging:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore Spot projects
+        run: |
+          dotnet restore Demos/Spot.Blazor/Spot.Blazor.csproj --nologo /p:Configuration=Release
+          dotnet restore Demos/Spot.WinForms/Spot.WinForms.csproj --nologo /p:Configuration=Release /p:EnableWindowsTargeting=true
+          dotnet restore Demos/Spot.Avalonia/Spot.Avalonia.csproj --nologo /p:Configuration=Release
+
+      - name: Build Spot desktop hosts
+        run: |
+          dotnet build Demos/Spot.WinForms/Spot.WinForms.csproj --configuration Release --no-restore --nologo /p:EnableWindowsTargeting=true
+          dotnet build Demos/Spot.Avalonia/Spot.Avalonia.csproj --configuration Release --no-restore --nologo
+
+      - name: Spot.Blazor publish smoke test
+        shell: bash
+        run: |
+          rm -rf /tmp/spot-blazor-publish
+          dotnet publish Demos/Spot.Blazor/Spot.Blazor.csproj --configuration Release --no-restore --nologo -o /tmp/spot-blazor-publish
+          test -f /tmp/spot-blazor-publish/wwwroot/gondwana-audio.js
+          test -f /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf
+          unzip -t /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf
+          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "TilesheetDefinition_spot_defaults.gts"
+          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "TilesheetDefinition_spot_selected.gts"
+          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Image_spot_defaults.png"
+          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Image_spot_selected.png"
+          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Image_spot.png"
+          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Font_architectsdaughter-regular.ttf"
+          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Audio_sounovamusic-puzzle-amp-casual-game-music-460543.mp3"
+
+      - name: Spot desktop package parity
+        shell: bash
+        run: |
+          for project in Spot.WinForms Spot.Avalonia; do
+            package=$(find "Demos/$project/bin" -path '*/assets/spot.gaf' -print -quit)
+            test -n "$package"
+            unzip -t "$package"
+            cmp "$package" /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf
+          done
