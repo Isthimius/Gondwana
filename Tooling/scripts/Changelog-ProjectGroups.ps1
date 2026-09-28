@@ -29,7 +29,7 @@ $ChangelogProjects = @(
     [pscustomobject]@{ Path = "Demos/Gondwana.TheGreatPlop"; RootName = "Demos / Gondwana.TheGreatPlop"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
     [pscustomobject]@{ Path = "Demos/Gondwana.ZeldaPrototype"; RootName = "Demos / Gondwana.ZeldaPrototype"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
     [pscustomobject]@{ Path = "Demos/Slider"; RootName = "Demos / Slider"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
-    [pscustomobject]@{ Path = "Demos/Spot.WinForms"; RootName = "Demos / Spot"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
+    [pscustomobject]@{ Path = "Demos/Spot.WinForms"; RootName = "Demos / Spot.WinForms"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
     [pscustomobject]@{ Path = "Demos/Spot.Blazor"; RootName = "Demos / Spot.Blazor"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
     [pscustomobject]@{ Path = "Demos/Spot.Avalonia"; RootName = "Demos / Spot.Avalonia"; GenerateChangelog = $true; IncludeInRootChangelog = $false },
 

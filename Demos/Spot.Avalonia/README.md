@@ -12,7 +12,7 @@ Platform-specific code is intentionally limited to:
 - `GameWindow`, the thin Avalonia desktop shell.
 - `SpotGameHost`, a thin adapter over `SpotGameRuntime` that derives from
   `AvaloniaGpuGameHost` and supplies Avalonia keyboard/text-input translation.
-- `SpotGameHost.Content`, which loads the desktop asset files and treats audio as
+- `SpotGameHost.Content`, which loads the shared GAF package and treats audio as
   optional when no compatible `IAudioBackend` is configured.
 
 Rendering uses `AvaloniaGpuRenderSurfaceControl`, matching the GPU-only direction of
@@ -29,3 +29,13 @@ Effects menu items are disabled.
 
 An explicitly Windows-targeted adaptation can reference `Gondwana.Audio.NAudio` and
 configure it before host initialization.
+
+## Shared assets
+
+All three Spot hosts package `../Spot.Shared/assets` with `Spot.Assets.targets`.
+The generated `assets/spot.gaf` contains runtime images, audio, fonts, and the
+`spot_defaults.gts` / `spot_selected.gts` tilesheet definitions. The definitions
+reference their PNG entries in the same package and preserve the five vertical
+93x96 default frames and five horizontal 64x64 selected frames. Archived assets
+are excluded. Desktop output needs only the GAF; the WinForms application icon
+is a build input and Blazor's loading icon remains a loose bootstrap resource.

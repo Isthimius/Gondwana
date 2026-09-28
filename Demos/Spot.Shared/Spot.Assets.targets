@@ -1,7 +1,7 @@
 <Project>
     <PropertyGroup>
         <SpotAssetSourceRoot>$(MSBuildThisFileDirectory)assets</SpotAssetSourceRoot>
-        <SpotGafPath Condition="'$(SpotGafPath)' == ''">$(MSBuildProjectDirectory)\$(IntermediateOutputPath)spot.gaf</SpotGafPath>
+        <SpotGafPath Condition="'$(SpotGafPath)' == ''">$(MSBuildProjectDirectory)\obj\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\spot.gaf</SpotGafPath>
     </PropertyGroup>
     <ItemGroup Condition="'$(SpotBrowserAssets)' != 'true'">
         <Content Include="$(SpotGafPath)" Link="assets\spot.gaf" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
