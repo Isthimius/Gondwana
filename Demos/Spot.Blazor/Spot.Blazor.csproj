@@ -14,7 +14,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.*" PrivateAssets="all" />
     </ItemGroup>
 
-<ItemGroup>
+    <ItemGroup>
         <ProjectReference Include="..\Spot.Shared\Spot.Shared.csproj" />
         <ProjectReference Include="..\..\Gondwana.Widgets\Gondwana.Widgets.csproj" />
         <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
