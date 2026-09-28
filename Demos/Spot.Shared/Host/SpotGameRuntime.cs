@@ -21,14 +21,14 @@ internal sealed partial class SpotGameRuntime
 
     private Scene? _scene;
 
-    private AudioResource _music = null!;
+    private AudioResource? _music;
     private AudioResource? _spotSelected;
     private AudioResource? _spotDeselected;
-    private AudioResource _velcro = null!;
-    private AudioResource _drop = null!;
-    private AudioResource _gameWin = null!;
-    private AudioResource _gameLose = null!;
-    private AudioResource _bump = null!;
+    private AudioResource? _velcro;
+    private AudioResource? _drop;
+    private AudioResource? _gameWin;
+    private AudioResource? _gameLose;
+    private AudioResource? _bump;
     private AudioResource? _knock;
 
     private Tilesheet _spotSheetDefault = null!;
@@ -66,15 +66,17 @@ internal sealed partial class SpotGameRuntime
         _persistGameState = persistGameState;
     }
 
+    internal bool AudioAvailable => _music is not null;
+
     internal void SetAudioResources(
-        AudioResource music,
+        AudioResource? music,
         AudioResource? spotSelected,
         AudioResource? spotDeselected,
-        AudioResource velcro,
-        AudioResource drop,
-        AudioResource gameWin,
-        AudioResource gameLose,
-        AudioResource bump,
+        AudioResource? velcro,
+        AudioResource? drop,
+        AudioResource? gameWin,
+        AudioResource? gameLose,
+        AudioResource? bump,
         AudioResource? knock,
         SKTypeface font)
     {
