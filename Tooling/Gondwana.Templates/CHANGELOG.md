@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
+
+
+## Refactoring
+- Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))
+
 # v2.6.0 - September 17, 2026
 
 

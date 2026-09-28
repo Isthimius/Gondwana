@@ -14,11 +14,33 @@ All notable changes to this project will be documented in this file.
 ## Added
 - Add GSCN format and EngineState integration ([#372](https://github.com/Isthimius/Gondwana/pull/372))
 - Add GANI format and EngineState integration ([#373](https://github.com/Isthimius/Gondwana/pull/373))
+- Compose the standalone WinForms authoring editors ([#383](https://github.com/Isthimius/Gondwana/pull/383))
+- Add external asset import pipeline for tmx/tsx, Godot assets, Aesprite ([#390](https://github.com/Isthimius/Gondwana/pull/390))
+- Load GAF asset files from streams ([#392](https://github.com/Isthimius/Gondwana/pull/392))
+- Add scrollable list boxes with mouse wheel support ([#403](https://github.com/Isthimius/Gondwana/pull/403))
+- Add scrollable labels and Spot help ([#405](https://github.com/Isthimius/Gondwana/pull/405))
+
+
+
+## Fixed
+- Recreate GPU surface when MSAA changes ([#402](https://github.com/Isthimius/Gondwana/pull/402))
+
+
+
+## Refactoring
+- Use MenuBarWidget and GPU-only rendering ([#401](https://github.com/Isthimius/Gondwana/pull/401))
+- Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))
 
 
 
 ## Tests
 - Cover repeated GTS source selection ([#377](https://github.com/Isthimius/Gondwana/pull/377))
+
+
+
+## Maintenance
+- Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+- Expose MSAA in frame diagnostics ([#404](https://github.com/Isthimius/Gondwana/pull/404))
 
 # v2.6.0 - September 17, 2026
 
