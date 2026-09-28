@@ -11,17 +11,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Remove="AboutDialog.cs" />
-        <Compile Remove="ColorItem.cs" />
-        <Compile Remove="Game\**\*.cs" />
-        <Compile Remove="GameConfig.cs" />
-        <Compile Remove="GameView.cs" />
-        <Compile Remove="NewGameDialog.cs" />
-        <Compile Remove="NewGameOptions.cs" />
-        <Compile Remove="SpotAvaloniaGameHost.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
         <None Remove="assets\**\*" />
         <Content Include="assets\**\*">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
