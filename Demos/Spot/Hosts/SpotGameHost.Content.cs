@@ -1,4 +1,3 @@
-using System;
 using System.Drawing;
 using System.IO;
 using Gondwana.Audio;
@@ -68,6 +67,18 @@ internal sealed partial class SpotGameHost
         // load standalone font files
         _font = Engine.Managers.Fonts.LoadFromFile("main", "assets\\ArchitectsDaughter-Regular.ttf");
 
+        _runtime.SetAudioResources(
+            _music,
+            _spotSelected,
+            _spotDeselected,
+            _velcro,
+            _drop,
+            _gameWin,
+            _gameLose,
+            _bump,
+            _knock,
+            _font);
+
         // load standalone cursor files
     }
 
@@ -84,6 +95,11 @@ internal sealed partial class SpotGameHost
         _spotSheetSelected.DefaultRegion.TileSize = new Size(64, 64);
 
         _clouds = Engine.Managers.Tilesheets.LoadFromImageFile("clouds", "assets\\clouds.png");
+
+        _runtime.SetTilesheets(
+            _spotSheetDefault,
+            _spotSheetSelected,
+            _clouds);
     }
 
 }
