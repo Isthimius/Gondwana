@@ -100,7 +100,7 @@ jobs:
         shell: bash
         run: |
           for project in Spot.WinForms Spot.Avalonia; do
-            package=$(find "Demos/$project/bin/Release" -path '*/assets/spot.gaf' -print -quit)
+            package=$(find "Demos/$project/bin" -path '*/assets/spot.gaf' -print -quit)
             test -n "$package"
             unzip -t "$package"
             cmp "$package" /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf
