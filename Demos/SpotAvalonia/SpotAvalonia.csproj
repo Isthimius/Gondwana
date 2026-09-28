@@ -7,7 +7,6 @@
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <ApplicationIcon>assets\spot_ico.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
