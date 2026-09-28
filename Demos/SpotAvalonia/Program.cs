@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 
 namespace Gondwana.Demos.Spot;
