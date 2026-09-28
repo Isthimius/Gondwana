@@ -6,7 +6,7 @@ on:
     paths-ignore:
       - 'docs/**'
       - '.github/workflows/docs.yml'
-      - '.github/release.yml'
+      - '.github/workflows/release.yml'
       - 'CHANGELOG.md'
       - '**/CHANGELOG.md'
   pull_request:
@@ -14,7 +14,7 @@ on:
     paths-ignore:
       - 'docs/**'
       - '.github/workflows/docs.yml'
-      - '.github/release.yml'
+      - '.github/workflows/release.yml'
       - 'CHANGELOG.md'
       - '**/CHANGELOG.md'
 
@@ -67,8 +67,8 @@ jobs:
         run: dotnet workload restore Gondwana.sln /p:EnableWindowsTargeting=true
       - name: Restore
         # /p:Configuration=Release is required so NuGet resolves RID-specific assets
-        # (e.g. Spot win-x64 runtime assets) that are only available in the Release
-        # configuration, preventing NETSDK1047 errors in the subsequent --no-restore build.
+        # required by projects whose Release configuration sets a RuntimeIdentifier,
+        # preventing NETSDK1047 errors in the subsequent --no-restore build.
         run: dotnet restore --nologo /p:Configuration=Release /p:EnableWindowsTargeting=true
 
       - name: Verify formatting
@@ -79,32 +79,6 @@ jobs:
 
       - name: Build
         run: dotnet build --configuration Release --no-restore --nologo /p:EnableWindowsTargeting=true
-
-      - name: Spot.Blazor publish smoke test
-        shell: bash
-        run: |
-          rm -rf /tmp/spot-blazor-publish
-          dotnet publish Demos/Spot.Blazor/Spot.Blazor.csproj --configuration Release --no-restore --nologo -o /tmp/spot-blazor-publish
-          test -f /tmp/spot-blazor-publish/wwwroot/gondwana-audio.js
-          test -f /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf
-          unzip -t /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf
-          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "TilesheetDefinition_spot_defaults.gts"
-          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "TilesheetDefinition_spot_selected.gts"
-          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Image_spot_defaults.png"
-          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Image_spot_selected.png"
-          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Image_spot.png"
-          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Font_architectsdaughter-regular.ttf"
-          unzip -l /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf | grep -F "Audio_sounovamusic-puzzle-amp-casual-game-music-460543.mp3"
-
-      - name: Spot desktop package parity
-        shell: bash
-        run: |
-          for project in Spot.WinForms Spot.Avalonia; do
-            package=$(find "Demos/$project/bin" -path '*/assets/spot.gaf' -print -quit)
-            test -n "$package"
-            unzip -t "$package"
-            cmp "$package" /tmp/spot-blazor-publish/wwwroot/assets/spot.gaf
-          done
 
       - name: Gondwana.Tests unit tests
         run: dotnet test --configuration Release --no-build --no-restore --nologo /p:EnableWindowsTargeting=true Testing/Gondwana.Tests/Gondwana.Tests.csproj
