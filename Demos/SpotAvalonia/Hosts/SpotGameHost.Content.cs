@@ -1,4 +1,6 @@
+using System;
 using System.Drawing;
+using System.IO;
 using Gondwana.Audio;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Tilesheets;
