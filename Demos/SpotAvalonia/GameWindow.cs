@@ -1,191 +1,280 @@
+using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Threading;
 using Gondwana.Avalonia.Rendering;
+using Gondwana.Widgets.Controls;
+using Gondwana.Widgets.Dialogs;
+using Gondwana.Widgets.Menus;
+using SkiaSharp;
 
-namespace Gondwana.Demos.SpotAvalonia;
+namespace Gondwana.Demos.Spot;
 
 /// <summary>
-/// The main game window for SpotAvalonia on desktop targets.
+/// Avalonia desktop window for the shared Spot showcase.
 /// </summary>
 internal sealed class GameWindow : Window
 {
-    private readonly AvaloniaBitmapRenderSurfaceControl _renderSurface = new();
-    private SpotAvaloniaGameHost? _host;
-    private NewGameOptions? _lastNewGameOptions;
+    private const int MenuBarHeight = SpotMenuFactory.Height;
+    private const int GpuTargetFps = 0;
+    private const int GpuMsaaSampleCount = 4;
 
-    private MenuItem? _newGameMenuItem;
-    private MenuItem? _musicMenuItem;
-    private MenuItem? _soundEffectsMenuItem;
-    private MenuItem? _jiggleMenuItem;
-    private MenuItem? _cloudsMenuItem;
+    private readonly AvaloniaGpuRenderSurfaceControl _renderSurface;
+
+    private SpotGameHost? _gameHost;
+    private MenuBarWidget? _menuBar;
+    private HowToPlayDialog? _howToPlayDialog;
+    private AboutBox? _aboutBox;
+    private SKImage? _aboutSpotLogo;
+    private SKImage? _aboutGondwanaLogo;
+    private SKTypeface? _aboutTypeface;
 
     internal GameWindow()
     {
-        Title = "Spot (Avalonia)";
+        Title = "Spot!";
         Width = 769;
-        Height = 800;   // render area (769) + menu bar
+        Height = 769 + MenuBarHeight;
         CanResize = false;
+        WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-        _renderSurface.HorizontalAlignment = HorizontalAlignment.Stretch;
-        _renderSurface.VerticalAlignment = VerticalAlignment.Stretch;
+        _renderSurface = new AvaloniaGpuRenderSurfaceControl
+        {
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch
+        };
 
-        var grid = new Grid();
-        grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
-        grid.RowDefinitions.Add(new RowDefinition(GridLength.Star));
-
-        var menu = BuildMenu();
-        Grid.SetRow(menu, 0);
-        grid.Children.Add(menu);
-
-        Grid.SetRow(_renderSurface, 1);
-        grid.Children.Add(_renderSurface);
-
-        Content = grid;
+        Content = _renderSurface;
     }
 
-    private Menu BuildMenu()
-    {
-        var menu = new Menu();
-
-        // ── Game menu ───────────────────────────────────────────────────────
-        var gameMenu = new MenuItem { Header = "_Game" };
-
-        _newGameMenuItem = new MenuItem { Header = "_New Game", IsEnabled = false };
-        _newGameMenuItem.Click += async (_, _) => await OpenNewGameDialogAsync();
-
-        var exitMenuItem = new MenuItem { Header = "E_xit" };
-        exitMenuItem.Click += (_, _) => Close();
-
-        gameMenu.Items.Add(_newGameMenuItem);
-        gameMenu.Items.Add(new Separator());
-        gameMenu.Items.Add(exitMenuItem);
-
-        // ── Options menu ────────────────────────────────────────────────────
-        var optionsMenu = new MenuItem { Header = "_Options" };
-
-        _musicMenuItem = new MenuItem
-        {
-            Header = "Music",
-            ToggleType = MenuItemToggleType.CheckBox,
-            IsChecked = true,
-        };
-        _musicMenuItem.Click += (_, _) =>
-        {
-            var isChecked = _musicMenuItem.IsChecked;
-            _host?.Engine.EngineDispatcher.Post(() => _host.SetMusicEnabled(isChecked));
-        };
-
-        _soundEffectsMenuItem = new MenuItem
-        {
-            Header = "Sound Effects",
-            ToggleType = MenuItemToggleType.CheckBox,
-            IsChecked = true,
-        };
-        _soundEffectsMenuItem.Click += (_, _) =>
-        {
-            var isChecked = _soundEffectsMenuItem.IsChecked;
-            _host?.Engine.EngineDispatcher.Post(() => _host.SetSoundEffectsEnabled(isChecked));
-        };
-
-        _jiggleMenuItem = new MenuItem
-        {
-            Header = "Jiggle",
-            ToggleType = MenuItemToggleType.CheckBox,
-            IsChecked = true,
-        };
-        _jiggleMenuItem.Click += (_, _) =>
-        {
-            var isChecked = _jiggleMenuItem.IsChecked;
-            _host?.Engine.EngineDispatcher.Post(() => _host.SetJiggleEnabled(isChecked));
-        };
-
-        _cloudsMenuItem = new MenuItem
-        {
-            Header = "Clouds",
-            ToggleType = MenuItemToggleType.CheckBox,
-            IsChecked = true,
-        };
-        _cloudsMenuItem.Click += (_, _) =>
-        {
-            var isChecked = _cloudsMenuItem.IsChecked;
-            _host?.Engine.EngineDispatcher.Post(() => _host.SetCloudsEnabled(isChecked));
-        };
-
-        optionsMenu.Items.Add(_musicMenuItem);
-        optionsMenu.Items.Add(_soundEffectsMenuItem);
-        optionsMenu.Items.Add(_jiggleMenuItem);
-        optionsMenu.Items.Add(_cloudsMenuItem);
-
-        // ── Help menu ───────────────────────────────────────────────────────
-        var helpMenu = new MenuItem { Header = "_Help" };
-
-        var aboutMenuItem = new MenuItem { Header = "_About" };
-        aboutMenuItem.Click += async (_, _) => await OpenAboutDialogAsync();
-
-        helpMenu.Items.Add(aboutMenuItem);
-
-        menu.Items.Add(gameMenu);
-        menu.Items.Add(optionsMenu);
-        menu.Items.Add(helpMenu);
-
-        return menu;
-    }
-
-    protected override async void OnOpened(EventArgs e)
+    protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
-        _host = new SpotAvaloniaGameHost(_renderSurface);
 
-        // Subscribe before Initialize() so the handler fires during initialization.
-        _host.Engine.InitializationComplete += () =>
+        try
         {
-            _host.Engine.Configuration.TargetFPS = 0;
+            _gameHost = new SpotGameHost(_renderSurface);
 
-            // Enable "New Game" now that the engine is ready.
-            Dispatcher.UIThread.Post(() =>
+            _gameHost.Engine.InitializationComplete += () =>
             {
-                if (_newGameMenuItem is not null)
-                    _newGameMenuItem.IsEnabled = true;
-            });
-        };
+                _gameHost.Engine.Configuration.TargetFPS = GpuTargetFps;
+                _gameHost.Engine.Configuration.VSync = false;
+                _gameHost.Engine.Configuration.MsaaSampleCount = GpuMsaaSampleCount;
+            };
 
-        _host.Initialize();
-        _musicMenuItem!.IsEnabled = _host.AudioAvailable;
-        _musicMenuItem.IsChecked = _host.AudioAvailable;
-        _soundEffectsMenuItem!.IsEnabled = _host.AudioAvailable;
-        _soundEffectsMenuItem.IsChecked = _host.AudioAvailable;
+            ShowStartupSplashAndInitialize();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Failed to initialize Spot: {ex}");
+            Close();
+        }
     }
 
     protected override void OnClosed(EventArgs e)
     {
-        _host?.Dispose();
-        _host = null;
+        _howToPlayDialog?.Dispose();
+        _howToPlayDialog = null;
+
+        _aboutBox?.Dispose();
+        _aboutBox = null;
+
+        _aboutSpotLogo?.Dispose();
+        _aboutSpotLogo = null;
+
+        _aboutGondwanaLogo?.Dispose();
+        _aboutGondwanaLogo = null;
+
+        _aboutTypeface?.Dispose();
+        _aboutTypeface = null;
+
+        _menuBar?.Dispose();
+        _menuBar = null;
+
+        _gameHost?.Dispose();
+        _gameHost = null;
+
         base.OnClosed(e);
     }
 
-    private async System.Threading.Tasks.Task OpenNewGameDialogAsync()
+    private void ShowStartupSplashAndInitialize()
     {
-#if !BROWSER
-        var dialog = new NewGameDialog(_lastNewGameOptions);
-        var options = await dialog.ShowDialog<NewGameOptions?>(this);
-        if (options is not null)
+        if (_gameHost is null)
+            throw new InvalidOperationException("Game host was not created before initialization.");
+
+        _gameHost.Initialize();
+
+        var host = _renderSurface.Host;
+        var splash = _gameHost.CreateSplash(host, () =>
         {
-            _lastNewGameOptions = options;
-            _host?.Engine.EngineDispatcher.Post(() => _host.StartNewGame(options));
+            _gameHost.BeginPostSplashStartup();
+            ApplyLoadedSettings();
+            CreateMenu();
+        });
+
+        if (splash is null)
+        {
+            _gameHost.BeginPostSplashStartup();
+            ApplyLoadedSettings();
+            CreateMenu();
         }
-#else
-        await System.Threading.Tasks.Task.CompletedTask;
-#endif
     }
 
-    private async System.Threading.Tasks.Task OpenAboutDialogAsync()
+    private void ApplyLoadedSettings()
     {
-#if !BROWSER
-        var dialog = new AboutDialog();
-        await dialog.ShowDialog(this);
-#else
-        await System.Threading.Tasks.Task.CompletedTask;
-#endif
+        bool music = ReadBoolSetting(SpotSettings.Music, defaultValue: true);
+        bool soundEffects = ReadBoolSetting(SpotSettings.SoundEffects, defaultValue: true);
+        bool jiggle = ReadBoolSetting(SpotSettings.Jiggle, defaultValue: true);
+        bool clouds = ReadBoolSetting(SpotSettings.Clouds, defaultValue: true);
+
+        _gameHost!.Engine.EngineDispatcher.Post(() =>
+        {
+            _gameHost.SetMusicEnabled(music);
+            _gameHost.SetSoundEffectsEnabled(soundEffects);
+            _gameHost.SetJiggleEnabled(jiggle);
+            _gameHost.SetCloudsEnabled(clouds);
+        });
+    }
+
+    private bool ReadBoolSetting(string key, bool defaultValue)
+    {
+        if (_gameHost is null || !_gameHost.Engine.IsInitialized)
+            return defaultValue;
+
+        return SpotSettings.ReadBool(_gameHost.Engine.Configuration, key, defaultValue);
+    }
+
+    private void PersistSetting(string key, bool value)
+    {
+        if (_gameHost is null || !_gameHost.Engine.IsInitialized)
+            return;
+
+        SpotSettings.WriteBool(_gameHost.Engine, key, value);
+    }
+
+    private void CreateMenu()
+    {
+        if (_menuBar is not null || _gameHost is null)
+            return;
+
+        var view = _renderSurface.Host.ViewManager.Views[0];
+        var state = new SpotMenuState(
+            ReadBoolSetting(SpotSettings.Music, defaultValue: true),
+            ReadBoolSetting(SpotSettings.SoundEffects, defaultValue: true),
+            ReadBoolSetting(SpotSettings.Jiggle, defaultValue: true),
+            ReadBoolSetting(SpotSettings.Clouds, defaultValue: true));
+
+        _menuBar = SpotMenuFactory.Create(
+            _renderSurface.Host,
+            view,
+            state,
+            new SpotMenuActions
+            {
+                NewGame = () => _gameHost.OpenNewGameDialog(_gameHost.LastNewGameOptions),
+                Exit = () => Dispatcher.UIThread.Post(Close),
+                MusicChanged = SetMusicEnabled,
+                SoundEffectsChanged = SetSoundEffectsEnabled,
+                JiggleChanged = SetJiggleEnabled,
+                CloudsChanged = SetCloudsEnabled,
+                HowToPlay = OpenHowToPlayDialog,
+                About = OpenAboutBox
+            });
+    }
+
+    private void SetMusicEnabled(bool enabled)
+    {
+        PersistSetting(SpotSettings.Music, enabled);
+        _gameHost?.Engine.EngineDispatcher.Post(() => _gameHost.SetMusicEnabled(enabled));
+    }
+
+    private void SetSoundEffectsEnabled(bool enabled)
+    {
+        PersistSetting(SpotSettings.SoundEffects, enabled);
+        _gameHost?.Engine.EngineDispatcher.Post(() => _gameHost.SetSoundEffectsEnabled(enabled));
+    }
+
+    private void SetJiggleEnabled(bool enabled)
+    {
+        PersistSetting(SpotSettings.Jiggle, enabled);
+        _gameHost?.Engine.EngineDispatcher.Post(() => _gameHost.SetJiggleEnabled(enabled));
+    }
+
+    private void SetCloudsEnabled(bool enabled)
+    {
+        PersistSetting(SpotSettings.Clouds, enabled);
+        _gameHost?.Engine.EngineDispatcher.Post(() => _gameHost.SetCloudsEnabled(enabled));
+    }
+
+    private void OpenHowToPlayDialog()
+    {
+        if (_howToPlayDialog is not null)
+        {
+            _howToPlayDialog.Activate();
+            return;
+        }
+
+        var dialog = new HowToPlayDialog(
+            _renderSurface.Host,
+            _renderSurface.Host.ViewManager.Views[0]);
+
+        _howToPlayDialog = dialog;
+        dialog.Closed += _ => _howToPlayDialog = null;
+        dialog.Show();
+        dialog.Activate();
+    }
+
+    private void OpenAboutBox()
+    {
+        if (_aboutBox is not null)
+        {
+            _aboutBox.Activate();
+            return;
+        }
+
+        EnsureAboutResources();
+
+        var about = SpotAboutBoxFactory.Create(
+            _renderSurface.Host,
+            _renderSurface.Host.ViewManager.Views[0],
+            _aboutSpotLogo!,
+            _aboutGondwanaLogo!,
+            _aboutTypeface!,
+            new DesktopExternalUriLauncher());
+
+        _aboutBox = about;
+        about.Closed += _ => _aboutBox = null;
+        about.Show();
+        about.Activate();
+    }
+
+    private void EnsureAboutResources()
+    {
+        string assetsPath = Path.Combine(AppContext.BaseDirectory, "assets");
+
+        _aboutSpotLogo ??= LoadImage(Path.Combine(assetsPath, "spot.png"));
+        _aboutGondwanaLogo ??= LoadImage(Path.Combine(assetsPath, "gondwana-logo-text.png"));
+        _aboutTypeface ??= SKTypeface.FromFile(Path.Combine(assetsPath, "ArchitectsDaughter-Regular.ttf"))
+            ?? throw new InvalidOperationException("Failed to load the Spot About-box font.");
+    }
+
+    private static SKImage LoadImage(string path)
+    {
+        return SKImage.FromEncodedData(path)
+            ?? throw new InvalidOperationException($"Failed to decode About-box image: {path}");
+    }
+
+    private sealed class DesktopExternalUriLauncher : IExternalUriLauncher
+    {
+        public ValueTask OpenAsync(Uri uri, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = uri.AbsoluteUri,
+                UseShellExecute = true
+            });
+
+            return ValueTask.CompletedTask;
+        }
     }
 }
