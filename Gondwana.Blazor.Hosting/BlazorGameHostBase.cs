@@ -123,7 +123,6 @@ public abstract class BlazorGameHostBase : GameHostBase
     {
         if (OperatingSystem.IsBrowser())
         {
-            BrowserConsoleLogging.AttachToEngineLogger();
             Engine.StartTimerDriven(syncContext);
 
             if (!RenderSurfaceDrivesBrowserFrames)

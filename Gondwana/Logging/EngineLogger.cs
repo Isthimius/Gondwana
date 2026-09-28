@@ -40,6 +40,8 @@ public static partial class EngineLogger
     private static ILoggerFactory? _loggerFactory;
     private static bool _usingExternalLoggerFactory;
     private static readonly object _factoryLock = new();
+    private static readonly Dictionary<string, Func<ILoggerProvider>> _persistentProviderFactories =
+        new(StringComparer.Ordinal);
 
     // Cache wrappers (not raw loggers)
     private static readonly ConcurrentDictionary<Type, ILogger> _loggerCache = new();
@@ -111,9 +113,9 @@ public static partial class EngineLogger
                 // Only add Console logger on non-browser platforms
                 // Console logging creates background threads which are not supported in WASM
                 if (!isBrowser)
-                {
                     builder.AddConsole();
-                }
+
+                AddPersistentProviders(builder);
             });
 
             return _loggerFactory;
@@ -210,8 +212,33 @@ public static partial class EngineLogger
         lock (_factoryLock)
         {
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+
+            foreach (Func<ILoggerProvider> providerFactory in _persistentProviderFactories.Values)
+                _loggerFactory.AddProvider(providerFactory());
+
             _usingExternalLoggerFactory = true;
             _loggerCache.Clear(); // refresh wrappers
+        }
+    }
+
+    /// <summary>
+    /// Registers a provider factory that is reapplied whenever Gondwana rebuilds its logger factory.
+    /// Intended for platform packages whose logging sink must survive runtime log-level changes.
+    /// </summary>
+    internal static void RegisterPersistentProvider(
+        string key,
+        Func<ILoggerProvider> providerFactory)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+        ArgumentNullException.ThrowIfNull(providerFactory);
+
+        lock (_factoryLock)
+        {
+            if (_persistentProviderFactories.ContainsKey(key))
+                return;
+
+            _persistentProviderFactories.Add(key, providerFactory);
+            _loggerFactory?.AddProvider(providerFactory());
         }
     }
 
@@ -270,13 +297,19 @@ public static partial class EngineLogger
 
                 // Only add Console logger on non-browser platforms
                 if (!isBrowser)
-                {
                     builder.AddConsole();
-                }
+
+                AddPersistentProviders(builder);
             });
 
             _loggerCache.Clear(); // refresh wrappers
         }
+    }
+
+    private static void AddPersistentProviders(ILoggingBuilder builder)
+    {
+        foreach (Func<ILoggerProvider> providerFactory in _persistentProviderFactories.Values)
+            builder.AddProvider(providerFactory());
     }
 
     private static void EnsureAsyncStarted(bool forceRestart)

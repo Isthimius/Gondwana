@@ -18,3 +18,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("d4ff0063-7987-4026-af60-b44aff9f8850")]
 
 [assembly: InternalsVisibleTo("Gondwana.Tests")]
+[assembly: InternalsVisibleTo("Gondwana.Blazor")]

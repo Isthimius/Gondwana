@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using Gondwana.Logging;
 using Microsoft.Extensions.Logging;
 
@@ -87,24 +86,16 @@ public sealed class BrowserConsoleLoggerProvider : ILoggerProvider
 /// </summary>
 public static class BrowserConsoleLogging
 {
-    private static readonly ConditionalWeakTable<ILoggerFactory, object> AttachedFactories = new();
-    private static readonly object SyncRoot = new();
+    private const string ProviderKey = "Gondwana.Blazor.BrowserConsole";
 
     /// <summary>
-    /// Adds a <see cref="BrowserConsoleLoggerProvider"/> to the active Gondwana logger factory.
-    /// Repeated calls for the same factory are ignored.
+    /// Adds a <see cref="BrowserConsoleLoggerProvider"/> to Gondwana's logging pipeline.
+    /// Repeated calls are ignored, and the provider is retained across logger-factory rebuilds.
     /// </summary>
     public static void AttachToEngineLogger()
     {
-        ILoggerFactory factory = EngineLogger.EngineLoggerFactory;
-
-        lock (SyncRoot)
-        {
-            if (AttachedFactories.TryGetValue(factory, out _))
-                return;
-
-            factory.AddProvider(new BrowserConsoleLoggerProvider());
-            AttachedFactories.Add(factory, new object());
-        }
+        EngineLogger.RegisterPersistentProvider(
+            ProviderKey,
+            static () => new BrowserConsoleLoggerProvider());
     }
 }
