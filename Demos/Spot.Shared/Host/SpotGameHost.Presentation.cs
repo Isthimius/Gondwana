@@ -40,7 +40,7 @@ internal sealed partial class SpotGameRuntime
         particleSurface.ZOrder = 50;
         particleSurface.Emitters.Add(GetSpots(769, 769));
 
-        if (MusicEnabled)
+        if (MusicEnabled && _music is not null)
         {
             _music.Volume = 0.2f;
             if (!_music.IsPlaying)

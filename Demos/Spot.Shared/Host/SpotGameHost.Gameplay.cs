@@ -21,6 +21,9 @@ internal sealed partial class SpotGameRuntime
     {
         MusicEnabled = enabled;
 
+        if (_music is null)
+            return;
+
         if (enabled)
         {
             if (!_music.IsPlaying)
@@ -88,7 +91,8 @@ internal sealed partial class SpotGameRuntime
 
         ActiveScene.AddLayer(newGameResult.Field);
         ActiveScene.AddLayer(newGameResult.BackgroundField);
-        _music.Volume = 0.1f;
+        if (_music is not null)
+            _music.Volume = 0.1f;
 
         CreateTextBlockFields();
     }
@@ -135,7 +139,7 @@ internal sealed partial class SpotGameRuntime
     {
         Engine.Logger.LogDebug("Game started with players: {0}", string.Join(", ", game.Players.Select(p => p.Name)));
 
-        if (MusicEnabled && !_music.IsPlaying)
+        if (MusicEnabled && _music is not null && !_music.IsPlaying)
             _music.Play();
 
         if (CloudsEnabled)
@@ -301,7 +305,7 @@ internal sealed partial class SpotGameRuntime
 
         CreateGameOverText(winnersWithScores);
 
-        if (MusicEnabled)
+        if (MusicEnabled && _music is not null)
         {
             _music.Volume = 0.05f;
 
