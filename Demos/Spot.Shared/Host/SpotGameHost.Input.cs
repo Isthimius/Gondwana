@@ -1,15 +1,12 @@
-#if !SPOT_BLAZOR
-using System.Threading;
-#endif
 using Gondwana.Input.Keyboard;
 
 namespace Gondwana.Demos.Spot;
 
-internal sealed partial class SpotGameHost
+internal sealed partial class SpotGameRuntime
 {
     private bool _handleHumanInput;
 
-    protected override void OnMouseAdapterInitialized()
+    internal void OnMouseAdapterInitialized()
     {
         if (Engine.Input.MouseEventPoller is null)
             return;
@@ -18,17 +15,17 @@ internal sealed partial class SpotGameHost
         Engine.Input.MouseEventPoller.StartMonitoringMouse();
     }
 
-    protected override void OnKeyboardAdapterInitialized()
+    internal void OnKeyboardAdapterInitialized()
     {
         if (Engine.Input.KeyboardEventPoller is null)
             return;
 
         Engine.Input.KeyboardEventPoller.KeyDown += KeyboardEventPoller_KeyDown;
         Engine.Input.KeyboardEventPoller.StartMonitoringKey(ScoreToggleKey);
-        ConfigurePlatformKeyboardInput(Engine.Input.KeyboardEventPoller);
+        _configurePlatformKeyboardInput?.Invoke(Engine.Input.KeyboardEventPoller);
     }
 
-    protected override void UnhookEvents()
+    internal void UnhookEvents()
     {
         _newGameDialog?.Dispose();
         _newGameDialog = null;
@@ -43,7 +40,6 @@ internal sealed partial class SpotGameHost
         UnhookSpotGameEvents();
     }
 
-    partial void ConfigurePlatformKeyboardInput(KeyboardEventPoller keyboard);
 
     private void KeyboardEventPoller_KeyDown(KeyDownEventArgs args)
     {
