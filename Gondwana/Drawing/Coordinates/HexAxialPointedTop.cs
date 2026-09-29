@@ -92,15 +92,16 @@ internal sealed class HexAxialPointedTop : ISceneLayerCoordinates
     {
         var result = new List<SceneLayerTile>();
         int W = sceneLayer.TileWidth; int H = sceneLayer.TileHeight;
+        var candidateRange = TileBounds.GetTransformedTileCandidateRange(sceneLayer, worldPixelRange, includeOverhang);
 
-        int minRow = (int)Math.Floor((worldPixelRange.Top + sceneLayer.OriginPx.Y) / (H * 0.75f)) - 2;
-        int maxRow = (int)Math.Ceiling((worldPixelRange.Bottom + sceneLayer.OriginPx.Y) / (H * 0.75f)) + 2;
+        int minRow = (int)Math.Floor((candidateRange.Top + sceneLayer.OriginPx.Y) / (H * 0.75f)) - 2;
+        int maxRow = (int)Math.Ceiling((candidateRange.Bottom + sceneLayer.OriginPx.Y) / (H * 0.75f)) + 2;
 
         for (int row = minRow; row <= maxRow; row++)
         {
             int xOffset = ((row & 1) == 0 ? 0 : W / 2);
-            int minCol = (int)Math.Floor((worldPixelRange.Left + sceneLayer.OriginPx.X - xOffset) / (float)W) - 2;
-            int maxCol = (int)Math.Ceiling((worldPixelRange.Right + sceneLayer.OriginPx.X - xOffset) / (float)W) + 2;
+            int minCol = (int)Math.Floor((candidateRange.Left + sceneLayer.OriginPx.X - xOffset) / (float)W) - 2;
+            int maxCol = (int)Math.Ceiling((candidateRange.Right + sceneLayer.OriginPx.X - xOffset) / (float)W) + 2;
 
             for (int col = minCol; col <= maxCol; col++)
             {
@@ -109,7 +110,6 @@ internal sealed class HexAxialPointedTop : ISceneLayerCoordinates
                 if (r.IntersectsWith(worldPixelRange)) result.Add(gp);
             }
         }
-        TileBounds.IncludeTransformedTiles(sceneLayer, worldPixelRange, includeOverhang, result);
         return result;
     }
 
