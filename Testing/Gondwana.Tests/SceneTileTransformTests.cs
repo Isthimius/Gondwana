@@ -181,4 +181,5 @@ public sealed class SceneTileTransformTests
             Assert.Equal(TileCollisionType.Trigger, tile.CollisionType);
         }
         finally { Gondwana.Timers.EngineSimulationClock.UseWallClock(); }
-    }}
+    }
+}

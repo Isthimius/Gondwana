@@ -188,4 +188,5 @@ public sealed class TiledImportTests : IDisposable
             Assert.Equal(1, tiles[i].Frame!.XTile);
             Assert.Equal(0, tiles[i].Frame!.YTile);
         }
-    }}
+    }
+}

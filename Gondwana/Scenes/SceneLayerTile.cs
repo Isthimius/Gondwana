@@ -135,8 +135,12 @@ public class SceneLayerTile : Tile
         var y = TileTransformGeometry.MapToDestination(new(0, 1), destRectScreen, Transform);
         var matrix = new global::SkiaSharp.SKMatrix
         {
-            ScaleX = x.X - origin.X, SkewX = y.X - origin.X, TransX = origin.X,
-            SkewY = x.Y - origin.Y, ScaleY = y.Y - origin.Y, TransY = origin.Y,
+            ScaleX = x.X - origin.X,
+            SkewX = y.X - origin.X,
+            TransX = origin.X,
+            SkewY = x.Y - origin.Y,
+            ScaleY = y.Y - origin.Y,
+            TransY = origin.Y,
             Persp2 = 1
         };
         var canvas = backbuffer.Canvas;

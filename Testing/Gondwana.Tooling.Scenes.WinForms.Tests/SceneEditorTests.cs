@@ -45,7 +45,9 @@ public sealed class SceneEditorTests
         var layer = document.AddLayer();
         var region = new TilesheetRegionDefinition
         {
-            TileSize = new(40, 20), TilePadding = new(1, 2, 3, 4), Overhang = new(5, 6, 7, 8),
+            TileSize = new(40, 20),
+            TilePadding = new(1, 2, 3, 4),
+            Overhang = new(5, 6, 7, 8),
             CollisionAdjust = new(1, 2, 3, 4),
             Frames = [new() { XTile = 1, YTile = 0, CollisionAdjust = new(2, 4, 6, 8) }]
         };
@@ -82,7 +84,8 @@ public sealed class SceneEditorTests
             }
             var gts = new TilesheetDefinition
             {
-                Name = "preview", Image = new() { FilePath = "atlas.png" },
+                Name = "preview",
+                Image = new() { FilePath = "atlas.png" },
                 Regions = [new() { Name = "default", Area = new(0, 0, 40, 20), TileSize = new(40, 20) }]
             };
             string path = Path.Combine(root, "atlas.gts");
