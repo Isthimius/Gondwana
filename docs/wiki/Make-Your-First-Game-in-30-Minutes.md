@@ -2,7 +2,7 @@ This guide walks you through building a small desktop game using the Gondwana en
 
 This version uses the **Gondwana CLI** and the **WinForms GPU backbuffer path**.
 
-The completed example mirrors the structure of the **Spot** demo included in this repository (`Demos/Spot/`). Spot is a good next read once you finish this guide.
+The completed example mirrors the structure of the **Spot** demo included in this repository (`Demos/Spot.WinForms/`). Spot is a good next read once you finish this guide.
 
 ---
 
@@ -472,7 +472,7 @@ You should see an 8×8 grid with a bubble in the top-left corner. Arrow keys gli
 
 ## What the Spot Demo adds
 
-Spot (`Demos/Spot/`) is a direct extension of everything you just built:
+Spot (`Demos/Spot.WinForms/`) is a direct extension of everything you just built:
 
 | Spot feature | The extra pieces it uses |
 |---|---|
@@ -485,7 +485,7 @@ Spot (`Demos/Spot/`) is a direct extension of everything you just built:
 | Background music | `Engine.Managers.AudioResources.LoadFromFile()` + `audioResource.Play()` |
 | Sprite animations | `sprite.StartJiggle()`, `sprite.PulseBy()`, `sprite.ResizeTo()` |
 
-Read `Demos/Spot/Hosts/SpotGameHost.cs` together with the focused `SpotGameHost.Content.cs`, `SpotGameHost.Input.cs`, `SpotGameHost.Gameplay.cs`, and presentation partials for a working example of these systems in the full Spot demo.
+Read `Demos/Spot.WinForms/Hosts/SpotGameHost.cs` together with the focused `SpotGameHost.Content.cs`, `SpotGameHost.Input.cs`, `SpotGameHost.Gameplay.cs`, and presentation partials for a working example of these systems in the full Spot demo.
 
 ---
 

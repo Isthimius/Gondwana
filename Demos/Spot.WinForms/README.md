@@ -1,4 +1,4 @@
-﻿# Spot!
+# Spot.WinForms
 
 **Spot!** is a small, turn-based territory game and a primary playable showcase for the [Gondwana Game Engine](https://github.com/Isthimius/Gondwana/). The same game now runs through Gondwana's WinForms GPU host on Windows and its Blazor/WebGL host in the browser, with the game rules, Widgets UI, gameplay presentation, and effects shared between them.
 
@@ -46,7 +46,7 @@ The Blazor version uses the same Gondwana Widgets for the menu, new-game dialog,
 dotnet run --project Demos/Spot.Blazor/Spot.Blazor.csproj
 ```
 
-During the build, the canonical files from `Demos/Spot/assets` are packed into a Gondwana `.gaf`. The browser downloads that single package, opens it through `AssetsFile.Load(Stream)`, and loads images, fonts, music, and sound effects from the package.
+During the build, the canonical files from `Demos/Spot.Shared/assets` are packed into a Gondwana `.gaf`. The browser downloads that single package, opens it through `AssetsFile.Load(Stream)`, and loads images, fonts, music, and sound effects from the package.
 
 ## Run the Windows version
 
@@ -55,18 +55,18 @@ Spot! targets 64-bit Windows and is developed as part of the Gondwana repository
 ```console
 git clone https://github.com/Isthimius/Gondwana.git
 cd Gondwana
-dotnet run --project Demos/Spot/Spot.csproj
+dotnet run --project Demos/Spot.WinForms/Spot.WinForms.csproj
 ```
 
-You can also open `Gondwana.sln`, set **Spot** as the startup project, and run it from Visual Studio with the .NET desktop development workload installed.
+You can also open `Gondwana.sln`, set **Spot.WinForms** as the startup project, and run it from Visual Studio with the .NET desktop development workload installed.
 
 To create a self-contained Windows x64 release build:
 
 ```console
-dotnet publish Demos/Spot/Spot.csproj -c Release
+dotnet publish Demos/Spot.WinForms/Spot.WinForms.csproj -c Release
 ```
 
-The release configuration produces a self-contained, single-file `win-x64` executable, with the game's content assets copied alongside it.
+The release configuration produces a self-contained, single-file `win-x64` executable, with `assets/spot.gaf` copied alongside it.
 
 ## How it is made
 
@@ -102,3 +102,13 @@ The computer player is intentionally straightforward: it evaluates legal moves b
 [Gondwana](https://github.com/Isthimius/Gondwana) is a code-first, cross-platform 2D and 2.5D game and rendering engine for C# and .NET 8. Spot! serves both as a playable game and as a dogfooding project for Gondwana's Windows and browser stacks.
 
 The Gondwana source is released under the [MIT License](../../LICENSE). Third-party font, music, sound, and art attribution for Spot! is recorded in [`assets/sources.txt`](assets/sources.txt) and [`assets/OFL.txt`](assets/OFL.txt).
+
+## Shared assets
+
+All three Spot hosts package `../Spot.Shared/assets` with `Spot.Assets.targets`.
+The generated `assets/spot.gaf` contains runtime images, audio, fonts, and the
+`spot_defaults.gts` / `spot_selected.gts` tilesheet definitions. The definitions
+reference their PNG entries in the same package and preserve the five vertical
+93x96 default frames and five horizontal 64x64 selected frames. Archived assets
+are excluded. Desktop output needs only the GAF; the WinForms application icon
+is a build input and Blazor's loading icon remains a loose bootstrap resource.

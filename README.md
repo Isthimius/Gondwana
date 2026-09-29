@@ -24,7 +24,7 @@ The engine carries forward the predictability of classic Win32/GDI-era rendering
 
 ## 🎮 Gondwana in Action
 
-### [Spot!](Demos/Spot)
+### [Spot!](Demos/Spot.WinForms)
 
 Spot! is Gondwana's primary playable showcase.
 

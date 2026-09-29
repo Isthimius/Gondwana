@@ -25,15 +25,14 @@
     </ItemGroup>
 
     <PropertyGroup>
-        <SpotAssetSourceRoot>$(MSBuildProjectDirectory)\..\Spot\assets</SpotAssetSourceRoot>
+        <SpotBrowserAssets>true</SpotBrowserAssets>
         <SpotGafPath>$(MSBuildProjectDirectory)\wwwroot\assets\spot.gaf</SpotGafPath>
     </PropertyGroup>
 
     <ItemGroup>
-        <SpotAssetSource Include="$(SpotAssetSourceRoot)\*.*" />
         <Content Remove="wwwroot\assets\spot.gaf" />
         <Content Include="wwwroot\assets\spot.gaf" />
-        <Content Include="..\Spot\assets\spot_ico.png" Link="wwwroot\assets\spot_ico.png" />
+        <Content Include="..\Spot.Shared\assets\spot_ico.png" Link="wwwroot\assets\spot_ico.png" />
     </ItemGroup>
 
     <ItemGroup>
@@ -42,122 +41,7 @@
       </Content>
     </ItemGroup>
 
-    <UsingTask TaskName="PackSpotGaf" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
-        <ParameterGroup>
-            <SourceRoot ParameterType="System.String" Required="true" />
-            <OutputPath ParameterType="System.String" Required="true" />
-        </ParameterGroup>
-        <Task>
-            <Using Namespace="System" />
-            <Using Namespace="System.Collections.Generic" />
-            <Using Namespace="System.IO" />
-            <Using Namespace="System.Text" />
-            <Code Type="Fragment" Language="cs"><![CDATA[
-                uint CalculateCrc32(byte[] data)
-                {
-                    uint crc = 0xffffffffu;
-
-                    foreach (byte value in data)
-                    {
-                        crc ^= value;
-                        for (int bit = 0; bit < 8; bit++)
-                            crc = (crc & 1u) != 0
-                                ? 0xedb88320u ^ (crc >> 1)
-                                : crc >> 1;
-                    }
-
-                    return crc ^ 0xffffffffu;
-                }
-
-                string GetAssetType(string file)
-                {
-                    return Path.GetExtension(file).ToLowerInvariant() switch
-                    {
-                        ".png" or ".jpg" or ".jpeg" or ".bmp" or ".gif" or ".ico" => "Image",
-                        ".mp3" or ".wav" or ".ogg" or ".flac" or ".m4a" or ".aac" or ".opus" or ".webm" => "Audio",
-                        ".ttf" or ".otf" => "Font",
-                        ".gts" => "TilesheetDefinition",
-                        _ => "Misc"
-                    };
-                }
-
-                Directory.CreateDirectory(Path.GetDirectoryName(OutputPath)!);
-
-                var files = Directory.GetFiles(SourceRoot, "*", SearchOption.TopDirectoryOnly);
-                Array.Sort(files, StringComparer.OrdinalIgnoreCase);
-
-                using var output = File.Create(OutputPath);
-                using var writer = new BinaryWriter(output, Encoding.UTF8, leaveOpen: true);
-                var entries = new List<(byte[] Name, uint Crc, int Size, uint Offset)>();
-                const ushort dosTime = 0;
-                const ushort dosDate = 0x2821; // 2000-01-01
-
-                foreach (var file in files)
-                {
-                    var data = File.ReadAllBytes(file);
-                    var name = Encoding.UTF8.GetBytes(
-                        $"{GetAssetType(file)}_{Path.GetFileName(file).ToLowerInvariant()}");
-                    var crc = CalculateCrc32(data);
-                    var offset = checked((uint)output.Position);
-
-                    writer.Write(0x04034b50u);
-                    writer.Write((ushort)20);
-                    writer.Write((ushort)0);
-                    writer.Write((ushort)0);
-                    writer.Write(dosTime);
-                    writer.Write(dosDate);
-                    writer.Write(crc);
-                    writer.Write((uint)data.Length);
-                    writer.Write((uint)data.Length);
-                    writer.Write((ushort)name.Length);
-                    writer.Write((ushort)0);
-                    writer.Write(name);
-                    writer.Write(data);
-
-                    entries.Add((name, crc, data.Length, offset));
-                }
-
-                var centralOffset = checked((uint)output.Position);
-
-                foreach (var entry in entries)
-                {
-                    writer.Write(0x02014b50u);
-                    writer.Write((ushort)20);
-                    writer.Write((ushort)20);
-                    writer.Write((ushort)0);
-                    writer.Write((ushort)0);
-                    writer.Write(dosTime);
-                    writer.Write(dosDate);
-                    writer.Write(entry.Crc);
-                    writer.Write((uint)entry.Size);
-                    writer.Write((uint)entry.Size);
-                    writer.Write((ushort)entry.Name.Length);
-                    writer.Write((ushort)0);
-                    writer.Write((ushort)0);
-                    writer.Write((ushort)0);
-                    writer.Write((ushort)0);
-                    writer.Write(0u);
-                    writer.Write(entry.Offset);
-                    writer.Write(entry.Name);
-                }
-
-                var centralSize = checked((uint)output.Position - centralOffset);
-
-                writer.Write(0x06054b50u);
-                writer.Write((ushort)0);
-                writer.Write((ushort)0);
-                writer.Write((ushort)entries.Count);
-                writer.Write((ushort)entries.Count);
-                writer.Write(centralSize);
-                writer.Write(centralOffset);
-                writer.Write((ushort)0);
-            ]]></Code>
-        </Task>
-    </UsingTask>
-
-    <Target Name="GenerateSpotGaf" BeforeTargets="PrepareForBuild" Inputs="@(SpotAssetSource)" Outputs="$(SpotGafPath)">
-        <PackSpotGaf SourceRoot="$(SpotAssetSourceRoot)" OutputPath="$(SpotGafPath)" />
-    </Target>
+    <Import Project="..\Spot.Shared\Spot.Assets.targets" />
 
     <Target Name="CopyAudioJS" BeforeTargets="Build">
         <Copy SourceFiles="..\..\Gondwana.Audio.Browser\wwwroot\gondwana-audio.js" DestinationFolder="$(MSBuildProjectDirectory)\wwwroot\" SkipUnchangedFiles="true" />

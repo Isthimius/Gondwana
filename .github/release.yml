@@ -93,8 +93,9 @@ changelog:
       labels:
         - demo
         - demos
-        - Spot
-        - SpotAvalonia
+        - Spot.WinForms
+        - Spot.Blazor
+        - Spot.Avalonia
         - Slider
 
     - title: Other Changes

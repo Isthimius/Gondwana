@@ -1,4 +1,5 @@
 using System.Drawing;
+using Gondwana.Assets;
 using Gondwana.Audio;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Tilesheets;
@@ -29,7 +30,7 @@ internal sealed partial class SpotGameHost
 
     internal SplashScreen? CreateSplash(RenderSurfaceHostBase host, Action onSplashCompleted)
     {
-        using var imageStream = File.OpenRead(GetAssetPath("gondwana-logo-text.png"));
+        using var imageStream = RequireAsset(AssetTypes.Image, "gondwana-logo-text.png");
         var view = host.ViewManager.Views[0];
 
         var splash = SplashScreen.TryCreate(
@@ -68,9 +69,9 @@ internal sealed partial class SpotGameHost
                 "Spot Avalonia audio is disabled because no compatible audio backend is configured.");
         }
 
-        _font = Engine.Managers.Fonts.LoadFromFile(
-            "main",
-            GetAssetPath("ArchitectsDaughter-Regular.ttf"));
+        using var fontStream = RequireAsset(AssetTypes.Font, "ArchitectsDaughter-Regular.ttf");
+        _font = SKTypeface.FromStream(fontStream)
+            ?? throw new InvalidOperationException("Failed to decode Spot font from the asset package.");
 
         _runtime.SetAudioResources(
             _music,
@@ -87,24 +88,17 @@ internal sealed partial class SpotGameHost
 
     protected override void LoadTilesheets()
     {
-        var splash = Engine.Managers.Tilesheets.LoadFromImageFile(
-            "splash",
-            GetAssetPath("spot.png"));
-        splash.ApplyMask(Color.Black.ToSKColor());
+        using (var stream = RequireAsset(AssetTypes.Image, "spot.png"))
+        {
+            var splash = Engine.Managers.Tilesheets.LoadFromStream("splash", stream);
+            splash.ApplyMask(Color.Black.ToSKColor());
+        }
 
-        _spotSheetDefault = Engine.Managers.Tilesheets.LoadFromImageFile(
-            "spots",
-            GetAssetPath("spot_defaults.png"));
-        _spotSheetDefault.DefaultRegion.TileSize = new Size(93, 96);
+        _spotSheetDefault = Engine.Managers.Tilesheets.LoadFromDefinitionAsset(_assets, "spot_defaults.gts");
+        _spotSheetSelected = Engine.Managers.Tilesheets.LoadFromDefinitionAsset(_assets, "spot_selected.gts");
 
-        _spotSheetSelected = Engine.Managers.Tilesheets.LoadFromImageFile(
-            "selected",
-            GetAssetPath("spot_selected.png"));
-        _spotSheetSelected.DefaultRegion.TileSize = new Size(64, 64);
-
-        _clouds = Engine.Managers.Tilesheets.LoadFromImageFile(
-            "clouds",
-            GetAssetPath("clouds.png"));
+        using var cloudStream = RequireAsset(AssetTypes.Image, "clouds.png");
+        _clouds = Engine.Managers.Tilesheets.LoadFromStream("clouds", cloudStream);
 
         _runtime.SetTilesheets(
             _spotSheetDefault,
@@ -112,13 +106,20 @@ internal sealed partial class SpotGameHost
             _clouds);
     }
 
-    private AudioResource LoadAudio(string key, string fileName)
+    internal Stream OpenAsset(AssetTypes type, string name) => RequireAsset(type, name);
+
+    private AudioResource LoadAudio(string key, string assetName)
     {
-        return Engine.Managers.AudioResources.LoadFromFile(key, GetAssetPath(fileName));
+        using var stream = RequireAsset(AssetTypes.Audio, assetName);
+        return Engine.Managers.AudioResources.LoadFromStream(
+            key,
+            stream,
+            Path.GetExtension(assetName));
     }
 
-    private static string GetAssetPath(string fileName)
+    private Stream RequireAsset(AssetTypes type, string name)
     {
-        return Path.Combine(AppContext.BaseDirectory, "assets", fileName);
+        return _assets.Get(type, name)
+            ?? throw new InvalidOperationException($"Spot asset '{type}:{name}' was not found in the package.");
     }
 }

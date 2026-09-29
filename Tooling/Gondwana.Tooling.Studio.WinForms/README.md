@@ -115,3 +115,11 @@ no source-document paths or unsaved content are stored, and documents are never 
 on startup. Missing or corrupt preferences fall back to defaults without a dialog.
 Available plugin tools in Studio use stable plugin identities; missing plugins are ignored.
 Changes are saved after a short settling interval and flushed on disposal.
+
+## Acknowledgments
+
+Gondwana Studio uses [DockPanel Suite](https://github.com/dockpanelsuite/dockpanelsuite),
+the Visual Studio-inspired docking library for .NET WinForms originally created by
+**Weifen Luo** and developed further by its open-source contributors. Many thanks
+to Weifen Luo and the DockPanel Suite contributors for making the library
+available to the .NET community.

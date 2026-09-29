@@ -13,12 +13,17 @@ internal sealed class DockLayoutStore
 
     internal DockLayoutStore(string profile, string? applicationId = null, string? settingsRoot = null)
     {
+        FilePath = Path.Combine(ApplicationDirectory(applicationId, settingsRoot), "Docking", SafeKey(profile) + ".xml");
+    }
+
+    internal static string ApplicationDirectory(string? applicationId = null, string? settingsRoot = null)
+    {
         applicationId ??= AppContext.GetData(ApplicationSetting) as string
             ?? Assembly.GetEntryAssembly()?.GetName().Name ?? "Gondwana.Tooling.Host";
         settingsRoot ??= AppContext.GetData(RootSetting) as string
             ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "Hidden Worlds Games", "Gondwana", "Tooling");
-        FilePath = Path.Combine(settingsRoot, SafeKey(applicationId), "Docking", SafeKey(profile) + ".xml");
+        return Path.Combine(settingsRoot, SafeKey(applicationId));
     }
 
     private static string SafeKey(string key)

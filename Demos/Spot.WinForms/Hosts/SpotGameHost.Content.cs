@@ -1,4 +1,3 @@
-using System.Drawing;
 using Gondwana.Assets;
 using Gondwana.Audio;
 using Gondwana.Drawing.Direct;
