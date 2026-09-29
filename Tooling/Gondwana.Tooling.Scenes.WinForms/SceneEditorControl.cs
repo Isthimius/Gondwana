@@ -1,10 +1,8 @@
 using Gondwana.Drawing;
-using System.Drawing.Drawing2D;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Scenes.Editing;
 using Gondwana.Tooling.WinForms;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Scenes.WinForms;
 

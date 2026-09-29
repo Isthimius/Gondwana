@@ -1,6 +1,5 @@
-using Gondwana.Drawing;
-using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
+using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Scenes;
 using Gondwana.Scenes.GSCN;
