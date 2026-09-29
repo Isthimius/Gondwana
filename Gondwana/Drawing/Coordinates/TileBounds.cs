@@ -34,6 +34,7 @@ public static class TileBounds
 
         return query;
     }
+
     /// <summary>Applies placement geometry while preserving untransformed grid-cell bounds.</summary>
     public static Rectangle ApplyTileGeometry(Rectangle cell, Tile tile, bool include)
     {
