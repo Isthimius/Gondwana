@@ -90,6 +90,8 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
         int xEnd = System.Math.Min(maxX, cols - 1);
         int yStart = System.Math.Max(minY, 0);
         int yEnd = System.Math.Min(maxY, rows - 1);
+        if (xStart > xEnd || yStart > yEnd) return result;
+
         for (int y = yStart; y <= yEnd; y++)
         {
             for (int x = xStart; x <= xEnd; x++)
