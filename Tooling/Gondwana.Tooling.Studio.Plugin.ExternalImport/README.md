@@ -1,6 +1,6 @@
 # External Asset Importer — Studio plugin
 
-One Studio panel converts supported Godot 4 atlas TileSets (`.tres`), Tiled
+One Studio panel converts supported Godot 3.x and 4.x TileSets (`.tres`), Tiled
 tilesets/maps (`.tsx`/`.tmx`) and Aseprite sprites (`.ase`/`.aseprite`) to native
 GTS/GANI/GSCN definitions and generated PNG atlases. Conversion requires no
 installed copy of the originating applications.
