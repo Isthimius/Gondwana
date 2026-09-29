@@ -143,6 +143,7 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
         }
         if (tiles.Count == 0) throw new InvalidDataException("No Godot 3 tiles found.");
         string basename = ImportNaming.Sanitize(Path.GetFileNameWithoutExtension(plan.Request.SourcePath));
+        var imageDimensions = new Dictionary<string, Size>(StringComparer.Ordinal);
         foreach (var (id, p) in tiles)
         {
             token.ThrowIfCancellationRequested();
@@ -154,11 +155,16 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
             string path = ResolvePath(plan.Request.SourcePath, GodotTextResource.String(Get(texture.Attributes, "path")));
             plan.Dependencies.Add(path);
             if (!File.Exists(path)) throw new InvalidDataException($"Missing Godot texture: {path}");
-            using var image = SKBitmap.Decode(path) ?? throw new InvalidDataException($"Cannot decode Godot texture: {path}");
+            if (!imageDimensions.TryGetValue(path, out var imageSize))
+            {
+                using var image = SKBitmap.Decode(path) ?? throw new InvalidDataException($"Cannot decode Godot texture: {path}");
+                imageSize = new Size(image.Width, image.Height);
+                imageDimensions.Add(path, imageSize);
+            }
             var rect = Geometry(Get(p, "region"), "Rect2", 4);
             var area = new Rectangle(rect[0], rect[1], rect[2], rect[3]);
             if (area.X < 0 || area.Y < 0 || area.Width <= 0 || area.Height <= 0 ||
-                (long)area.X + area.Width > image.Width || (long)area.Y + area.Height > image.Height)
+                (long)area.X + area.Width > imageSize.Width || (long)area.Y + area.Height > imageSize.Height)
                 throw new InvalidDataException($"Godot tile {id} region must have positive dimensions and lie within the source texture.");
             var size = mode == 0 ? new Point(area.Width, area.Height) : Godot3Vector(Get(p, "autotile/tile_size"));
             int spacing = mode == 0 ? 0 : Pixel(Get(p, "autotile/spacing", "0"));
