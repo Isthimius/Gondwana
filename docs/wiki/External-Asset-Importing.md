@@ -1,6 +1,6 @@
 # External Asset Importing
 
-Gondwana Studio can import supported Godot 4 atlas TileSets, Tiled TMX/TSX
+Gondwana Studio can import supported Godot 3.x and Godot 4.x TileSets, Tiled TMX/TSX
 content, and Aseprite sprites into native Gondwana authoring formats.
 Import is a one-time conversion, not live foreign-format runtime support.
 Games load ordinary GTS, GANI and GSCN files through existing serializers.
@@ -32,6 +32,7 @@ normal activation behavior; import does not discard unsaved editor changes.
 
 | Source | Supported conversion | Explicit limitations |
 | --- | --- | --- |
+| Godot 3.x TileSet (`format=2`) | Text .tres resources, single tiles, atlas tiles, underlying autotile atlas geometry, multiple tile IDs/textures, region offsets, tile sizes and spacing → GTS | No binary .res or .tscn scenes. Autotile bitmask/priority/fallback/icon-selection semantics are not preserved. Collision, navigation, occlusion, materials, normal maps, modulation, offsets, z-index and unfamiliar metadata are diagnosed and omitted. No GANI is generated; AnimatedTexture traversal is unsupported. |
 | Godot 4 `.tres` TileSet | Text atlas sources, multiple images, margins/separation, 1×1 grid tiles, sparse atlas diagnostics, animation layout/speed/per-frame durations → GTS/GANI | No `.res`, scenes, scene collections or multi-cell tiles. Alternatives, TileData, terrain, polygons, navigation, proxies and custom metadata are diagnosed and omitted. Random animation starts warn. |
 | Tiled `.tsx` | Single image atlas, margin/spacing, exact RGB mask, looping tile animations with millisecond timing → GTS/GANI | No image collections, embedded image bytes, nonzero tile offsets or per-tile subrectangles. Wang/terrain, properties, collision objects and transformation metadata warn and are omitted. |
 | Tiled `.tmx` | Finite orthogonal/isometric maps, external/embedded atlas tilesets, multiple tilesets in one layer, sparse empty cells, visibility/order, integer pixel offsets, equal-axis parallax, animation references → GSCN plus GTS/GANI | No infinite, staggered, hexagonal or oblique maps. Flip/rotation flags are errors. Frame dimensions must match map cells. Object/image layers are omitted with warnings; opacity/tint/blend modes are omitted with warnings. Unequal-axis parallax warns and defaults to 1. |
@@ -54,9 +55,14 @@ Analysis also checks logical keys in other native files directly in the output
 directory. Files that cannot be inspected produce a warning; it does not search
 unrelated directories or asset archives for global name collisions.
 
-Single-source `terrain.tres` produces `terrain.gts`; multiple sources produce
+For Godot 4, single-source `terrain.tres` produces `terrain.gts`; multiple sources produce
 `terrain-source-0.gts`, `terrain-source-2.gts`, with logical names
 `terrain.source.0`, `terrain.source.2`. Godot animation keys append `.tile.X.Y`.
+For Godot 3, one tile ID produces `terrain.gts` with logical name `terrain`.
+Multiple IDs produce `terrain-tile-0.gts`, `terrain-tile-3.gts`, with logical names
+`terrain.tile.0`, `terrain.tile.3`. The serialized tile display name does not
+override these deterministic names.
+
 TSX uses its sanitized tileset name as the logical name and source basename for
 files; animated tile 17 produces `terrain-tile-17.gani` and `terrain.tile.17`.
 Embedded TMX tilesets use map basename plus firstgid for filenames.

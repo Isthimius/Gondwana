@@ -54,6 +54,53 @@ public sealed class ExternalImportTests
         finally { Directory.Delete(directory, true); }
     });
 
+
+    [Theory]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void AutoDetectImportsBothGodotGenerations(int format) => RunSta(() =>
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "StudioGodotImport-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        try
+        {
+            using var image = new SKBitmap(2, 2);
+            image.Erase(SKColors.Blue);
+            using var png = image.Encode(SKEncodedImageFormat.Png, 100);
+            File.WriteAllBytes(Path.Combine(directory, "atlas.png"), png.ToArray());
+            string source = Path.Combine(directory, "tiles.tres");
+            string resource = format == 2 ? """
+                [ext_resource path="atlas.png" type="Texture" id=1]
+                [resource]
+                0/texture = ExtResource( 1 )
+                0/region = Rect2(0, 0, 2, 2)
+                0/tile_mode = 0
+                """ : """
+                [ext_resource path="atlas.png" type="Texture2D" id="1"]
+                [sub_resource type="TileSetAtlasSource" id="atlas"]
+                texture = ExtResource("1")
+                texture_region_size = Vector2i(2, 2)
+                0:0/0 = 0
+                [resource]
+                tile_size = Vector2i(2, 2)
+                sources/0 = SubResource("atlas")
+                """;
+            File.WriteAllText(source, $"[gd_resource type=\"TileSet\" format={format}]\n" + resource);
+            var providers = ExternalImporterRegistry.CreateProviders();
+            Assert.IsType<GodotTilesetImporter>(Assert.Single(providers, p => p.CanImport(source)));
+            using var panel = new ExternalImportPanel(providers) { SourcePath = source, OutputDirectory = Path.Combine(directory, "output") };
+            Assert.Equal("Auto-detect", panel.Formats[0]);
+            Assert.Single(panel.Formats, f => f.StartsWith("Godot", StringComparison.Ordinal));
+            Assert.Contains("Godot 3 / 4 TileSet (.tres)", panel.Formats);
+            panel.Analyze(); Wait(panel);
+            Assert.True(panel.CanImport, string.Join(";", panel.Analysis!.Diagnostics));
+            Assert.Single(panel.Analysis.Artifacts);
+            panel.Import(); Wait(panel);
+            Assert.True(File.Exists(Path.Combine(panel.OutputDirectory, "tiles.gts")));
+        }
+        finally { Directory.Delete(directory, true); }
+    });
+
     private static void Wait(ExternalImportPanel panel)
     {
         var clock = System.Diagnostics.Stopwatch.StartNew();

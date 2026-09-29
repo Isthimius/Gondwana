@@ -300,7 +300,7 @@ _Gondwana is actively evolving, with an emphasis on strengthening the engine, au
 * [x] First-class visual authoring
 * [x] Full platformer sample
 * [x] WebGL-backed Blazor rendering adapter
-* [x] External content import tooling for TMX/TSX tile maps, Godot 4 resources, and Aseprite assets
+* [x] External content import tooling for TMX/TSX tile maps, Godot 3/4 TileSets, and Aseprite assets
 * [ ] Expanded 2D physics, including momentum, elasticity, and additional collision shapes
 * [ ] Native, first-class pathfinding
 * [ ] Initial client/server networking support

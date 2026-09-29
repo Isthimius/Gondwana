@@ -12,7 +12,7 @@ namespace Gondwana.Tooling.Importers;
 public sealed class GodotTilesetImporter : ExternalAssetImporter
 {
     public override string Id => "godot.tileset";
-    public override string DisplayName => "Godot 4 TileSet (.tres)";
+    public override string DisplayName => "Godot 3 / 4 TileSet (.tres)";
     public override IReadOnlyList<string> SupportedExtensions => [".tres"];
 
     protected override void BuildPlan(ImportPlan plan, CancellationToken token)
@@ -21,13 +21,23 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
         if (sections.Count == 0 || sections[0].Kind != "gd_resource" ||
             !sections[0].Attributes.TryGetValue("type", out var type) || GodotTextResource.String(type) != "TileSet")
             throw new InvalidDataException("Expected a Godot text TileSet resource.");
-        if (!sections[0].Attributes.TryGetValue("format", out var format) || format != "3")
-            throw new InvalidDataException("Only Godot 4 text resource format 3 is supported.");
+        if (!sections[0].Attributes.TryGetValue("format", out var format) || format is not ("2" or "3"))
+        {
+            plan.Report(ExternalImportSeverity.Error, "godot.format",
+                $"Unsupported Godot text resource format '{format ?? "missing"}'. Use a Godot 3.x format=2 or Godot 4.x format=3 text TileSet (.tres).");
+            return;
+        }
         if (sections.Count(s => s.Kind == "resource") != 1 ||
             sections.Where(s => s.Kind is "sub_resource" or "ext_resource")
-                .GroupBy(s => (s.Kind, Id: Get(s.Attributes, "id"))).Any(g => g.Count() != 1))
+                .GroupBy(s => (s.Kind, Id: ResourceId(Get(s.Attributes, "id")))).Any(g => g.Count() != 1))
             throw new InvalidDataException("Duplicate or missing Godot resource sections/IDs.");
         var root = sections.SingleOrDefault(s => s.Kind == "resource") ?? throw new InvalidDataException("Missing resource section.");
+        if (format == "2") BuildGodot3Plan(plan, sections, root, token);
+        else BuildGodot4Plan(plan, sections, root, token);
+    }
+
+    private static void BuildGodot4Plan(ImportPlan plan, IReadOnlyList<GodotResourceSection> sections, GodotResourceSection root, CancellationToken token)
+    {
         var sources = root.Properties.Where(p => Regex.IsMatch(p.Key, @"^sources/\d+$")).OrderBy(p => int.Parse(p.Key[8..], CultureInfo.InvariantCulture)).ToArray();
         if (sources.Length == 0) throw new InvalidDataException("No atlas sources found.");
         string basename = ImportNaming.Sanitize(Path.GetFileNameWithoutExtension(plan.Request.SourcePath));
@@ -38,13 +48,13 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
             token.ThrowIfCancellationRequested();
             string id = source.Key[8..];
             string resourceId = Reference(source.Value, "SubResource");
-            var atlas = sections.SingleOrDefault(s => s.Kind == "sub_resource" && s.Attributes.TryGetValue("id", out var v) && GodotTextResource.String(v) == resourceId)
+            var atlas = sections.SingleOrDefault(s => s.Kind == "sub_resource" && s.Attributes.TryGetValue("id", out var v) && ResourceId(v) == resourceId)
                 ?? throw new InvalidDataException($"Unresolved atlas subresource {resourceId}.");
             if (!atlas.Attributes.TryGetValue("type", out var atlasType) || GodotTextResource.String(atlasType) != "TileSetAtlasSource")
                 throw new InvalidDataException("Only TileSetAtlasSource is supported; scene collection sources are unsupported.");
             var p = atlas.Properties;
             string textureId = Reference(Get(p, "texture"), "ExtResource");
-            var texture = sections.SingleOrDefault(s => s.Kind == "ext_resource" && s.Attributes.TryGetValue("id", out var v) && GodotTextResource.String(v) == textureId)
+            var texture = sections.SingleOrDefault(s => s.Kind == "ext_resource" && s.Attributes.TryGetValue("id", out var v) && ResourceId(v) == textureId)
                 ?? throw new InvalidDataException($"Unresolved texture {textureId}.");
             string path = ResolvePath(plan.Request.SourcePath, GodotTextResource.String(texture.Attributes["path"]));
             plan.Dependencies.Add(path);
@@ -115,6 +125,131 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
         }
     }
 
+    private static void BuildGodot3Plan(ImportPlan plan, IReadOnlyList<GodotResourceSection> sections, GodotResourceSection root, CancellationToken token)
+    {
+        var tiles = new SortedDictionary<int, Dictionary<string, string>>();
+        foreach (var property in root.Properties)
+        {
+            var match = Regex.Match(property.Key, @"^(-?\d+)/(.+)$");
+            if (!match.Success)
+            {
+                plan.Report(ExternalImportSeverity.Info, "godot.metadata", $"TileSet metadata '{property.Key}' is omitted.");
+                continue;
+            }
+            int id = int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
+            if (id < 0) throw new InvalidDataException($"Invalid Godot tile ID {id}.");
+            if (!tiles.TryGetValue(id, out var properties)) tiles.Add(id, properties = new(StringComparer.Ordinal));
+            properties.Add(match.Groups[2].Value, property.Value);
+        }
+        if (tiles.Count == 0) throw new InvalidDataException("No Godot 3 tiles found.");
+        string basename = ImportNaming.Sanitize(Path.GetFileNameWithoutExtension(plan.Request.SourcePath));
+        foreach (var (id, p) in tiles)
+        {
+            token.ThrowIfCancellationRequested();
+            int mode = Pixel(Get(p, "tile_mode", "0"));
+            if (mode is not (0 or 1 or 2)) throw new InvalidDataException($"Unsupported Godot 3 tile mode {mode} for tile {id}; expected SINGLE_TILE (0), AUTO_TILE (1), or ATLAS_TILE (2).");
+            string textureId = Reference(Get(p, "texture"), "ExtResource");
+            var texture = sections.SingleOrDefault(s => s.Kind == "ext_resource" && ResourceId(Get(s.Attributes, "id")) == textureId)
+                ?? throw new InvalidDataException($"Unresolved texture ExtResource {textureId} for tile {id}.");
+            string path = ResolvePath(plan.Request.SourcePath, GodotTextResource.String(Get(texture.Attributes, "path")));
+            plan.Dependencies.Add(path);
+            if (!File.Exists(path)) throw new InvalidDataException($"Missing Godot texture: {path}");
+            using var image = SKBitmap.Decode(path) ?? throw new InvalidDataException($"Cannot decode Godot texture: {path}");
+            var rect = Geometry(Get(p, "region"), "Rect2", 4);
+            var area = new Rectangle(rect[0], rect[1], rect[2], rect[3]);
+            if (area.X < 0 || area.Y < 0 || area.Width <= 0 || area.Height <= 0 ||
+                (long)area.X + area.Width > image.Width || (long)area.Y + area.Height > image.Height)
+                throw new InvalidDataException($"Godot tile {id} region must have positive dimensions and lie within the source texture.");
+            var size = mode == 0 ? new Point(area.Width, area.Height) : Godot3Vector(Get(p, "autotile/tile_size"));
+            int spacing = mode == 0 ? 0 : Pixel(Get(p, "autotile/spacing", "0"));
+            if (size.X <= 0 || size.Y <= 0 || spacing < 0)
+                throw new InvalidDataException($"Godot tile {id} requires positive tile dimensions and nonnegative spacing.");
+            if (area.Width < size.X || area.Height < size.Y ||
+                ((long)area.Width + spacing) % ((long)size.X + spacing) != 0 ||
+                ((long)area.Height + spacing) % ((long)size.Y + spacing) != 0)
+                throw new InvalidDataException($"Godot tile {id} region cannot form an integral atlas grid with its tile size and spacing.");
+            var region = new TilesheetRegionDefinition
+            {
+                Area = area,
+                TileSize = new Size(size.X, size.Y),
+                TilePadding = new Spacing { Right = spacing, Bottom = spacing },
+                // Godot has gaps between cells, but none after the final cell.
+                RegionMargin = new Spacing { Right = -spacing, Bottom = -spacing }
+            };
+            string suffix = id.ToString(CultureInfo.InvariantCulture);
+            string file = tiles.Count == 1 ? basename : $"{basename}-tile-{suffix}";
+            string name = tiles.Count == 1 ? basename : $"{basename}.tile.{suffix}";
+            plan.Add(file + ".gts", new TilesheetDefinition
+            {
+                Name = name,
+                Image = new() { FilePath = ImportNaming.RelativePath(plan.Request.OutputDirectory, path) },
+                Regions = [region]
+            });
+            ReportGodot3Metadata(plan, id, mode, p);
+        }
+    }
+
+    private static void ReportGodot3Metadata(ImportPlan plan, int id, int mode, IReadOnlyDictionary<string, string> properties)
+    {
+        if (mode == 1)
+            plan.Report(ExternalImportSeverity.Warning, "godot.autotile",
+                $"Godot 3 tile {id}: only atlas frames are imported; automatic autotile/bitmask selection behavior is not preserved.");
+        var categories = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+        foreach (string property in properties.Keys)
+        {
+            if (property is "texture" or "region" or "tile_mode" ||
+                (mode != 0 && property is "autotile/tile_size" or "autotile/spacing")) continue;
+            string category = property switch
+            {
+                "name" => "name",
+                _ when property.Contains("shape", StringComparison.Ordinal) || property.Contains("one_way", StringComparison.Ordinal) => "collision",
+                _ when property.Contains("navpoly", StringComparison.Ordinal) || property.Contains("navigation", StringComparison.Ordinal) => "navigation",
+                _ when property.Contains("occluder", StringComparison.Ordinal) => "occlusion",
+                _ when property.Contains("bitmask", StringComparison.Ordinal) || property.Contains("priority", StringComparison.Ordinal) ||
+                    property.Contains("fallback", StringComparison.Ordinal) || property.Contains("icon", StringComparison.Ordinal) => "selection",
+                "normal_map" or "material" or "modulate" or "tex_offset" or "z_index" or "autotile/z_index_map" => "rendering",
+                _ => "metadata"
+            };
+            if (!categories.TryGetValue(category, out var keys)) categories.Add(category, keys = []);
+            keys.Add(property);
+        }
+        foreach (var (category, keys) in categories)
+            plan.Report(category == "name" ? ExternalImportSeverity.Info : ExternalImportSeverity.Warning, "godot." + category,
+                $"Godot 3 tile {id}: {category} properties ({string.Join(", ", keys)}) are omitted." +
+                (category == "name" ? " Logical names use the source basename and tile ID." : ""));
+    }
+
+    private static int Pixel(string value)
+    {
+        if (!double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double number) || !double.IsFinite(number))
+            throw new InvalidDataException($"Expected a finite pixel value, found {value}.");
+        if (number != Math.Truncate(number) || number < int.MinValue || number > int.MaxValue)
+            throw new InvalidDataException($"Expected an integral pixel value, found {value}.");
+        return checked((int)number);
+    }
+
+    private static int[] Geometry(string value, string kind, int count)
+    {
+        var match = Regex.Match(value, "^" + kind + @"\(\s*([^()]*)\s*\)$");
+        if (!match.Success) throw new InvalidDataException($"Expected {kind}, found {value}.");
+        var parts = match.Groups[1].Value.Split(',');
+        if (parts.Length != count) throw new InvalidDataException($"Expected {count} components in {kind}.");
+        return parts.Select(Pixel).ToArray();
+    }
+
+    private static Point Godot3Vector(string value)
+    {
+        var parts = Geometry(value, "Vector2", 2);
+        return new(parts[0], parts[1]);
+    }
+
+    private static string ResourceId(string value)
+    {
+        if (value.StartsWith('"')) return GodotTextResource.String(value);
+        if (!Regex.IsMatch(value, @"^\d+$")) throw new InvalidDataException($"Invalid Godot resource ID '{value}'.");
+        return int.Parse(value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture);
+    }
+
     private static string Get(IReadOnlyDictionary<string, string> values, string key, string? fallback = null) =>
         values.TryGetValue(key, out var value) ? value : fallback ?? throw new InvalidDataException($"Missing Godot property {key}.");
     private static double Number(string value)
@@ -130,8 +265,8 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
     }
     private static string Reference(string value, string kind)
     {
-        var match = Regex.Match(value, "^" + kind + @"\(\s*(""(?:\\.|[^""])*"")\s*\)$");
-        return match.Success ? GodotTextResource.String(match.Groups[1].Value) : throw new InvalidDataException($"Expected {kind} reference.");
+        var match = Regex.Match(value, "^" + kind + @"\(\s*(""(?:\\.|[^""])*""|\d+)\s*\)$");
+        return match.Success ? ResourceId(match.Groups[1].Value) : throw new InvalidDataException($"Expected {kind} reference.");
     }
     private static string ResolvePath(string source, string dependency)
     {
