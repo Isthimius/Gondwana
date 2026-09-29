@@ -69,12 +69,13 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
     {
         var result = new List<SceneLayerTile>();
         WH(sceneLayer, out _, out _, out _, out _);
+        var candidateRange = TileBounds.GetTransformedTileCandidateRange(sceneLayer, worldPixelRange, includeOverhang);
 
         // Corner → coarse grid bounds (continuous)
-        var ul = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Left, worldPixelRange.Top));
-        var ur = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Right, worldPixelRange.Top));
-        var ll = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Left, worldPixelRange.Bottom));
-        var lr = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Right, worldPixelRange.Bottom));
+        var ul = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(candidateRange.Left, candidateRange.Top));
+        var ur = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(candidateRange.Right, candidateRange.Top));
+        var ll = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(candidateRange.Left, candidateRange.Bottom));
+        var lr = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(candidateRange.Right, candidateRange.Bottom));
 
         int minX = (int)System.Math.Floor(System.Math.Min(System.Math.Min(ul.X, ur.X), System.Math.Min(ll.X, lr.X))) - 2;
         int maxX = (int)System.Math.Ceiling(System.Math.Max(System.Math.Max(ul.X, ur.X), System.Math.Max(ll.X, lr.X))) + 2;
@@ -120,7 +121,7 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
 
         // Diamond fits exactly in W×H box whose top-left is (top.X - W/2, top.Y)
         var rect = new Rectangle(top.X - (int)halfW, top.Y, W, H);
-        return TileBounds.ApplyOverhang(rect, tile.Overhang, includeOverhang);
+        return TileBounds.ApplyTileGeometry(rect, tile, includeOverhang);
     }
 
     /// <summary>

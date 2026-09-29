@@ -122,15 +122,16 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
 
         int originX = sceneLayer.OriginPx.X;
         int originY = sceneLayer.OriginPx.Y;
+        var candidateRange = TileBounds.GetTransformedTileCandidateRange(sceneLayer, worldPixelRange, includeOverhang);
 
-        int minCol = (int)Math.Floor((worldPixelRange.Left + originX) / (W * 0.75f)) - 2;
-        int maxCol = (int)Math.Ceiling((worldPixelRange.Right + originX) / (W * 0.75f)) + 2;
+        int minCol = (int)Math.Floor((candidateRange.Left + originX) / (W * 0.75f)) - 2;
+        int maxCol = (int)Math.Ceiling((candidateRange.Right + originX) / (W * 0.75f)) + 2;
 
         for (int col = minCol; col <= maxCol; col++)
         {
             int yOffset = ((col & 1) == 0 ? 0 : H / 2);
-            int minRow = (int)Math.Floor((worldPixelRange.Top + originY - yOffset) / (float)H) - 2;
-            int maxRow = (int)Math.Ceiling((worldPixelRange.Bottom + originY - yOffset) / (float)H) + 2;
+            int minRow = (int)Math.Floor((candidateRange.Top + originY - yOffset) / (float)H) - 2;
+            int maxRow = (int)Math.Ceiling((candidateRange.Bottom + originY - yOffset) / (float)H) + 2;
 
             for (int row = minRow; row <= maxRow; row++)
             {
@@ -156,7 +157,7 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         var p = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
         int W = tile.SceneLayer.TileWidth; int H = tile.SceneLayer.TileHeight;
         var rect = new Rectangle(p.X, p.Y, W, H); // hex image fits W x H box
-        return TileBounds.ApplyOverhang(rect, tile.Overhang, includeOverhang);
+        return TileBounds.ApplyTileGeometry(rect, tile, includeOverhang);
     }
 
     /// <summary>

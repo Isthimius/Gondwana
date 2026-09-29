@@ -74,22 +74,23 @@ internal sealed class ObliqueLeftCoordinates : ISceneLayerCoordinates
         bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
+        var candidateRange = TileBounds.GetTransformedTileCandidateRange(sceneLayer, worldPixelRange, includeOverhang);
 
         var upperLeft = GetSceneLayerCoordinatesAtPixel(
             sceneLayer,
-            new PointF(worldPixelRange.Left, worldPixelRange.Top));
+            new PointF(candidateRange.Left, candidateRange.Top));
 
         var upperRight = GetSceneLayerCoordinatesAtPixel(
             sceneLayer,
-            new PointF(worldPixelRange.Right, worldPixelRange.Top));
+            new PointF(candidateRange.Right, candidateRange.Top));
 
         var lowerLeft = GetSceneLayerCoordinatesAtPixel(
             sceneLayer,
-            new PointF(worldPixelRange.Left, worldPixelRange.Bottom));
+            new PointF(candidateRange.Left, candidateRange.Bottom));
 
         var lowerRight = GetSceneLayerCoordinatesAtPixel(
             sceneLayer,
-            new PointF(worldPixelRange.Right, worldPixelRange.Bottom));
+            new PointF(candidateRange.Right, candidateRange.Bottom));
 
         int minX = (int)Math.Floor(new[]
         {
@@ -158,7 +159,7 @@ internal sealed class ObliqueLeftCoordinates : ISceneLayerCoordinates
             tile.SceneLayer.TileWidth,
             tile.SceneLayer.TileHeight);
 
-        return TileBounds.ApplyOverhang(baseRect, tile.Overhang, includeOverhang);
+        return TileBounds.ApplyTileGeometry(baseRect, tile, includeOverhang);
     }
 
     /// <summary>

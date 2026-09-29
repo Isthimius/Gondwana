@@ -1,4 +1,5 @@
 using System.Drawing.Drawing2D;
+using Gondwana.Drawing;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Scenes.Editing;
@@ -476,6 +477,20 @@ public sealed class SceneEditorControl : UserControl
         bar.Items.Add(new ToolStripLabel("Y"));
         bar.Items.Add(new ToolStripControlHost(_tileY));
         bar.Items.Add(new ToolStripSeparator());
+        foreach (var (label, operation) in new[]
+        {
+            ("Rotate left 90°", TileTransform.Rotate270),
+            ("Rotate right 90°", TileTransform.Rotate90),
+            ("Flip horizontal", TileTransform.FlipHorizontal),
+            ("Flip vertical", TileTransform.FlipVertical)
+        })
+        {
+            var button = bar.Items.Add(label, null, (_, _) =>
+            {
+                if (_tileProperties.SelectedObject is TilePropertyAdapter adapter) adapter.ApplyTransform(operation);
+            });
+            button.ToolTipText = label;
+        }
         bar.Items.Add("Clear tile", null, (_, _) => ClearSelectedTile());
         return bar;
     }
@@ -954,6 +969,15 @@ public sealed class SceneEditorControl : UserControl
                 _tileProperties.Refresh();
                 RefreshPreview();
                 UpdateValidation();
+            },
+            () =>
+            {
+                var tile = Document.FindTile(_selectedLayer, (int)_tileX.Value, (int)_tileY.Value);
+                var animation = tile?.AnimationKey is { } key ? FindAnimation(key) : null;
+                var frame = animation?.FirstPreviewFrame() ?? tile?.Frame;
+                if (frame is null) return (null, null);
+                var source = FindTilesheet(frame.Tilesheet) ?? animation?.FindTilesheet(frame.Tilesheet);
+                return (source?.TryResolve(frame, out var region, out _) == true ? region : null, frame);
             });
     }
 

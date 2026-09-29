@@ -449,3 +449,39 @@ Use multiple layers when content needs distinct depth, parallax, visibility, or 
 - [[Coordinate Spaces]] — grid, world, and screen spaces
 - [[Rendering Order and Z-Order]] — how overlapping layer content is sorted
 - [[Collision Detection]] — tile and sprite collision behavior
+
+## Native tile placement transforms
+
+`SceneLayerTile.Transform` and the GSCN tile definition store one of eight
+`Gondwana.Drawing.TileTransform` orientations: Identity, Rotate90, Rotate180,
+Rotate270, FlipHorizontal, FlipVertical, FlipDiagonal, or FlipAntiDiagonal.
+Rotations are clockwise in screen coordinates; FlipDiagonal swaps X/Y and
+FlipAntiDiagonal reflects across the opposite diagonal. Old GSCN files that omit
+Transform retain Identity.
+
+Transforms belong to scene placements. GTS frames, source rectangles, tile size,
+overhang, padding, and collision metadata remain unchanged. Runtime rendering
+uses a canvas transform in the shared tile draw path for both bitmap and GPU
+backbuffers, without allocating transformed images. Sprite.Rotation is unchanged.
+
+A placement rotates around its fixed cell center. Quarter turns and diagonal
+reflections swap the visual footprint's width/height; the grid cell and selection
+outline retain their original dimensions. Integer world bounds round half-pixel
+anchors down. Directional overhang moves with the artwork. Dirty regions include
+both old and new bounds, and culling and wrapped instances use the resulting
+visual bounds.
+
+`EffectiveTileSize`, `Overhang`, `EffectiveTilePadding`, and
+`EffectiveCollisionAdjust` expose oriented placement metadata.
+`CurrentFrame.Overhang` and `CurrentFrame.TilePadding` expose the source values.
+Effective padding is for inspection only: atlas slicing always uses source
+padding. Collision insets move with the artwork and apply to the visual bounds.
+Explicit adjustments remain stored in source orientation; frame-following
+adjustments are transformed again whenever animation changes the frame.
+
+The GSCN editor offers an Appearance > Transform dropdown and toolbar actions to
+rotate left/right or flip horizontally/vertically. Geometry and Collision show
+read-only effective values. Preview artwork uses the same transform geometry as
+runtime; source thumbnails and the gold grid-cell outline remain unchanged.
+`TileTransformGeometry.Compose(current, operation)` applies the new operation in
+placement space and collapses it to a canonical orientation.

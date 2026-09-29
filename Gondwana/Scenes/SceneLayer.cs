@@ -193,6 +193,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             {
                 var tile = _sceneLayerTileArray[x, y] ??= new SceneLayerTile(this);
                 tile.parentSceneLayer = this;
+                if (tile.Transform != TileTransform.Identity) TransformedTiles.Add(tile);
                 tile.sceneLayerCoordinates = new Point(x, y);
             }
         BuildTileColliders();
@@ -454,6 +455,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             VisibleChanged?.Invoke(this);
         }
     }
+
+    [JsonIgnore]
+    internal HashSet<SceneLayerTile> TransformedTiles { get; } = new();
 
     [JsonProperty("SceneLayerTileArray")]
     [JsonConverter(typeof(SceneLayerTileArrayConverter))]
@@ -853,6 +857,10 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 result = RectangleF.Union(result, rf);
             }
         }
+
+        // Interior placements can extend beyond the corner cells after rotation.
+        foreach (var tile in TransformedTiles)
+            result = RectangleF.Union(result, tile.DrawLocationWorld);
 
         return result;
     }

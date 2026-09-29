@@ -67,10 +67,11 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
     public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
     {
         var result = new List<SceneLayerTile>();
-        var ul = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Left, worldPixelRange.Top));
-        var ur = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Right, worldPixelRange.Top));
-        var ll = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Left, worldPixelRange.Bottom));
-        var lr = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Right, worldPixelRange.Bottom));
+        var candidateRange = TileBounds.GetTransformedTileCandidateRange(sceneLayer, worldPixelRange, includeOverhang);
+        var ul = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(candidateRange.Left, candidateRange.Top));
+        var ur = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(candidateRange.Right, candidateRange.Top));
+        var ll = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(candidateRange.Left, candidateRange.Bottom));
+        var lr = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(candidateRange.Right, candidateRange.Bottom));
 
         int minX = (int)Math.Floor(new[] { ul.X, ur.X, ll.X, lr.X }.Min()) - 1;
         int maxX = (int)Math.Ceiling(new[] { ul.X, ur.X, ll.X, lr.X }.Max()) + 1;
@@ -101,7 +102,7 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
         var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
         int W = tile.SceneLayer.TileWidth; int H = tile.SceneLayer.TileHeight;
         var rect = new Rectangle(top.X - W / 2, top.Y, W, H);
-        return TileBounds.ApplyOverhang(rect, tile.Overhang, includeOverhang);
+        return TileBounds.ApplyTileGeometry(rect, tile, includeOverhang);
     }
 
     /// <summary>

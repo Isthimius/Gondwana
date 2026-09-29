@@ -123,6 +123,9 @@ public static class SceneDefinitionValidator
                 if (tile.X < 0 || tile.Y < 0 || tile.X >= layer.Columns || tile.Y >= layer.Rows)
                     errors.Add($"{tileLabel}: coordinates are outside the layer grid.");
 
+                if (!Enum.IsDefined(tile.Transform))
+                    errors.Add($"{tileLabel}: unknown tile transform '{tile.Transform}'.");
+
                 if (!Enum.IsDefined(tile.CollisionType))
                     errors.Add($"{tileLabel}: unknown collision type '{tile.CollisionType}'.");
 

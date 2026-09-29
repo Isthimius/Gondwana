@@ -340,6 +340,7 @@ public static class SceneDefinitionSerializer
             Id = tile.Id,
             Nickname = tile.Nickname,
             Visible = tile.Visible,
+            Transform = tile.Transform,
             Frame = frame,
             EnableAnimator = tile.EnableAnimator,
             AnimationKey = tile.EnableAnimator
@@ -400,6 +401,7 @@ public static class SceneDefinitionSerializer
             tile.CurrentFrame = ResolveFrame(frame);
 
         tile.Visible = definition.Visible;
+        tile.Transform = definition.Transform;
         tile.EnableFog = definition.EnableFog;
 
         // Apply explicit values first. Enabling a *ByFrame flag immediately

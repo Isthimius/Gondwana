@@ -1,4 +1,7 @@
 using System.Runtime.ExceptionServices;
+using Gondwana.Drawing;
+using Gondwana.Drawing.Tilesheets.GTS;
+using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Scenes.Editing;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -6,6 +9,114 @@ namespace Gondwana.Tooling.Scenes.WinForms.Tests;
 
 public sealed class SceneEditorTests
 {
+    [Fact]
+    public void TransformPropertiesAndToolbarComposeAndClearSparseTile() => RunSta(() =>
+    {
+        var document = SceneDocument.Create(Path.GetTempPath());
+        var layer = document.AddLayer();
+        using var editor = new SceneEditorControl(document);
+        using var host = new Form { Size = new(1500, 950), Opacity = 0, ShowInTaskbar = false };
+        host.Controls.Add(editor);
+        host.Show();
+        Application.DoEvents();
+        var adapter = Descendants(editor).OfType<PropertyGrid>().Select(grid => grid.SelectedObject).OfType<TilePropertyAdapter>().Single();
+        Assert.Equal(TileTransform.Identity, adapter.Transform);
+        Assert.Empty(layer.Tiles);
+        var buttons = Descendants(editor).OfType<ToolStrip>().SelectMany(bar => bar.Items.Cast<ToolStripItem>()).ToArray();
+        var right = buttons.Single(item => item.Text == "Rotate right 90°");
+        right.PerformClick();
+        Assert.Equal(TileTransform.Rotate90, layer.Tiles.Single().Transform);
+        right.PerformClick();
+        Assert.Equal(TileTransform.Rotate180, layer.Tiles.Single().Transform);
+        buttons.Single(item => item.Text == "Flip horizontal").PerformClick();
+        Assert.Equal(TileTransform.FlipVertical, layer.Tiles.Single().Transform);
+        var property = System.ComponentModel.TypeDescriptor.GetProperties(adapter)["Transform"]!;
+        Assert.Equal("Appearance", property.Category);
+        Assert.Equal("Rotate 90°", property.Converter.ConvertToString(TileTransform.Rotate90));
+        Assert.Equal(TileTransform.Rotate90, property.Converter.ConvertFromString("Rotate 90°"));
+        buttons.Single(item => item.Text == "Clear tile").PerformClick();
+        Assert.Empty(layer.Tiles);
+    });
+
+    [Fact]
+    public void EffectivePropertiesFollowFrameOverridesWithoutChangingSource()
+    {
+        var document = SceneDocument.Create(Path.GetTempPath());
+        var layer = document.AddLayer();
+        var region = new TilesheetRegionDefinition
+        {
+            TileSize = new(40, 20),
+            TilePadding = new(1, 2, 3, 4),
+            Overhang = new(5, 6, 7, 8),
+            CollisionAdjust = new(1, 2, 3, 4),
+            Frames = [new() { XTile = 1, YTile = 0, CollisionAdjust = new(2, 4, 6, 8) }]
+        };
+        var frame = new SceneFrameDefinition { XTile = 1 };
+        var adapter = new TilePropertyAdapter(document, layer, 0, 0, () => { }, () => (region, frame));
+        adapter.Transform = TileTransform.Rotate90;
+        adapter.AdjustCollisionAreaByFrame = true;
+        Assert.Equal(new Size(20, 40), adapter.EffectiveTileSize);
+        Assert.Equal(new Spacing(4, 1, 2, 3), adapter.EffectiveTilePadding);
+        Assert.Equal(new Spacing(8, 5, 6, 7), adapter.EffectiveOverhang);
+        Assert.Equal(new Gondwana.Physics.Collisions.CollisionAdjust(6, 8, 4, 2), adapter.EffectiveCollisionAdjust);
+        Assert.Equal(new Spacing(1, 2, 3, 4), region.TilePadding);
+    }
+    [Theory]
+    [InlineData(TileTransform.Identity, 0, 1, 2, 3)]
+    [InlineData(TileTransform.Rotate90, 2, 0, 3, 1)]
+    [InlineData(TileTransform.Rotate180, 3, 2, 1, 0)]
+    [InlineData(TileTransform.Rotate270, 1, 3, 0, 2)]
+    [InlineData(TileTransform.FlipHorizontal, 1, 0, 3, 2)]
+    [InlineData(TileTransform.FlipVertical, 2, 3, 0, 1)]
+    [InlineData(TileTransform.FlipDiagonal, 0, 2, 1, 3)]
+    [InlineData(TileTransform.FlipAntiDiagonal, 3, 1, 2, 0)]
+    public void PreviewOrientsArtworkWithoutChangingSource(TileTransform transform, int tl, int tr, int bl, int br) => RunSta(() =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "TilePreview-" + Guid.NewGuid());
+        Directory.CreateDirectory(root);
+        try
+        {
+            Color[] colors = [Color.Red, Color.Lime, Color.Blue, Color.Yellow];
+            using (var bitmap = new Bitmap(40, 20))
+            {
+                for (int y = 0; y < 20; y++) for (int x = 0; x < 40; x++) bitmap.SetPixel(x, y, colors[(x >= 20 ? 1 : 0) + (y >= 10 ? 2 : 0)]);
+                bitmap.Save(Path.Combine(root, "atlas.png"));
+            }
+            var gts = new TilesheetDefinition
+            {
+                Name = "preview",
+                Image = new() { FilePath = "atlas.png" },
+                Regions = [new() { Name = "default", Area = new(0, 0, 40, 20), TileSize = new(40, 20) }]
+            };
+            string path = Path.Combine(root, "atlas.gts");
+            TilesheetDefinitionSerializer.Save(path, gts);
+            using var source = SceneTilesheetSource.Load(path);
+            var definition = new SceneDefinition
+            {
+                Layers = [new() { Columns = 1, Rows = 1, TileWidth = 40, TileHeight = 20,
+                    Tiles = [new() { Transform = transform, Frame = new() { Tilesheet = "preview", RegionName = "default" } }] }]
+            };
+            using var preview = new ScenePreviewControl { Size = new(240, 240), ShowGridLines = false };
+            preview.Configure(definition, _ => source, _ => null);
+            preview.SetZoom(2);
+            using var output = new Bitmap(240, 240);
+            preview.DrawToBitmap(output, new(0, 0, 240, 240));
+            var hits = new List<Point>();
+            var argb = colors.Select(color => color.ToArgb()).ToHashSet();
+            for (int y = 0; y < 240; y++) for (int x = 0; x < 240; x++) if (argb.Contains(output.GetPixel(x, y).ToArgb())) hits.Add(new(x, y));
+            Assert.NotEmpty(hits);
+            int minX = hits.Min(p => p.X), maxX = hits.Max(p => p.X), minY = hits.Min(p => p.Y), maxY = hits.Max(p => p.Y);
+            int x1 = minX + (maxX - minX) / 4, x2 = minX + 3 * (maxX - minX) / 4;
+            int y1 = minY + (maxY - minY) / 4, y2 = minY + 3 * (maxY - minY) / 4;
+            Assert.Equal(colors[tl].ToArgb(), output.GetPixel(x1, y1).ToArgb());
+            Assert.Equal(colors[tr].ToArgb(), output.GetPixel(x2, y1).ToArgb());
+            Assert.Equal(colors[bl].ToArgb(), output.GetPixel(x1, y2).ToArgb());
+            Assert.Equal(colors[br].ToArgb(), output.GetPixel(x2, y2).ToArgb());
+            Assert.Equal(Color.Red.ToArgb(), source.Image!.GetPixel(5, 5).ToArgb());
+            Assert.Equal(Color.Yellow.ToArgb(), source.Image.GetPixel(35, 15).ToArgb());
+        }
+        finally { Directory.Delete(root, true); }
+    });
     [Fact]
     public void DocumentSaveAsRebasesLooseGtsAndGaniReferences()
     {

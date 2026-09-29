@@ -8,6 +8,42 @@ namespace Gondwana.Drawing.Coordinates;
 public static class TileBounds
 {
     /// <summary>
+    /// Expands a culling query just enough to reach grid cells whose transformed visuals can
+    /// extend beyond their fixed cell bounds. The normal coordinate-system lookup then remains
+    /// bounded to nearby cells instead of scanning every transformed placement in the layer.
+    /// </summary>
+    internal static Rectangle GetTransformedTileCandidateRange(
+        Gondwana.Scenes.SceneLayer layer,
+        Rectangle query,
+        bool include)
+    {
+        if (!include || layer.TransformedTiles.Count == 0)
+            return query;
+
+        int width = layer.TileWidth;
+        int height = layer.TileHeight;
+        int spill = (Math.Abs(width - height) + 1) / 2;
+
+        if (spill == 0)
+            return query;
+
+        if (width > height)
+            query.Inflate(0, spill);
+        else
+            query.Inflate(spill, 0);
+
+        return query;
+    }
+
+    /// <summary>Applies placement geometry while preserving untransformed grid-cell bounds.</summary>
+    public static Rectangle ApplyTileGeometry(Rectangle cell, Tile tile, bool include)
+    {
+        if (!include) return cell;
+        return tile is Gondwana.Scenes.SceneLayerTile fixedTile
+            ? ApplyOverhang(TileTransformGeometry.GetVisualBounds(cell, Spacing.None, fixedTile.Transform), tile.Overhang, true)
+            : ApplyOverhang(cell, tile.Overhang, true);
+    }
+    /// <summary>
     /// Applies an overhang adjustment to a rectangle, expanding its bounds in all directions.
     /// </summary>
     /// <param name="baseRect">The base rectangle to adjust.</param>

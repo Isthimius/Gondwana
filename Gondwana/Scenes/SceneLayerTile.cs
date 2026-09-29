@@ -79,6 +79,88 @@ public class SceneLayerTile : Tile
 
     #endregion constructors / finalizer
 
+    private TileTransform _transform;
+
+    /// <summary>Gets or sets this placement's orthogonal orientation without changing its source frame.</summary>
+    [JsonProperty]
+    public TileTransform Transform
+    {
+        get => _transform;
+        set
+        {
+            if (!Enum.IsDefined(value)) throw new ArgumentOutOfRangeException(nameof(value));
+            if (_transform == value) return;
+            SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
+            _transform = value;
+            if (!ReferenceEquals(SceneLayer, SceneLayer.Empty))
+            {
+                if (value == TileTransform.Identity) SceneLayer.TransformedTiles.Remove(this);
+                else SceneLayer.TransformedTiles.Add(this);
+            }
+            SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
+        }
+    }
+
+    /// <summary>Gets source frame dimensions after placement orientation.</summary>
+    [JsonIgnore]
+    public Size EffectiveTileSize => TileTransformGeometry.TransformSize(CurrentFrame.TileSize, Transform);
+
+    /// <summary>Gets oriented overhang. The source value remains on CurrentFrame.</summary>
+    [JsonIgnore]
+    public override Spacing Overhang => TileTransformGeometry.TransformSpacing(CurrentFrame.Overhang, Transform);
+
+    /// <summary>Gets oriented atlas padding for inspection, never for source slicing.</summary>
+    [JsonIgnore]
+    public Spacing EffectiveTilePadding => TileTransformGeometry.TransformSpacing(CurrentFrame.TilePadding, Transform);
+
+    /// <summary>Gets the oriented collision insets, including the current frame-derived adjustment.</summary>
+    [JsonIgnore]
+    public CollisionAdjust EffectiveCollisionAdjust => TileTransformGeometry.TransformCollisionAdjust(AdjustCollisionArea, Transform);
+
+    /// <inheritdoc/>
+    [JsonIgnore]
+    public override Rectangle CollisionArea => EffectiveCollisionAdjust.ApplyTo(DrawLocationWorld);
+
+    /// <inheritdoc/>
+    public override void Draw(Gondwana.Rendering.Backbuffers.BackbufferBase backbuffer, RectangleF destRectScreen)
+    {
+        if (Transform == TileTransform.Identity)
+        {
+            base.Draw(backbuffer, destRectScreen);
+            return;
+        }
+
+        var origin = TileTransformGeometry.MapToDestination(new(0, 0), destRectScreen, Transform);
+        var x = TileTransformGeometry.MapToDestination(new(1, 0), destRectScreen, Transform);
+        var y = TileTransformGeometry.MapToDestination(new(0, 1), destRectScreen, Transform);
+        var matrix = new global::SkiaSharp.SKMatrix
+        {
+            ScaleX = x.X - origin.X,
+            SkewX = y.X - origin.X,
+            TransX = origin.X,
+            SkewY = x.Y - origin.Y,
+            ScaleY = y.Y - origin.Y,
+            TransY = origin.Y,
+            Persp2 = 1
+        };
+        var canvas = backbuffer.Canvas;
+        canvas.Save();
+        try
+        {
+            canvas.Concat(ref matrix);
+            base.Draw(backbuffer, new RectangleF(0, 0, 1, 1));
+        }
+        finally { canvas.Restore(); }
+    }
+
+    /// <inheritdoc/>
+    public override void Dispose()
+    {
+        parentSceneLayer?.TransformedTiles.Remove(this);
+        base.Dispose();
+        GC.SuppressFinalize(this);
+    }
+
     #region public properties
 
     /// <summary>

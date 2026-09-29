@@ -102,14 +102,15 @@ public sealed class TiledMapImporter : ExternalAssetImporter
                 for (int i = 0; i < gids.Length; i++)
                 {
                     token.ThrowIfCancellationRequested();
-                    uint raw = gids[i], gid = raw & 0x0fffffff;
-                    if (raw != gid) { plan.Report(ExternalImportSeverity.Error, "tiled.transform", $"Layer {layer.ID}, cell {i}: flipped/rotated GID cannot be represented."); continue; }
+                    var (gid, transform, hasHexRotation) = TiledTileTransform.Decode(gids[i]);
+                    if (hasHexRotation) plan.Report(ExternalImportSeverity.Warning, "tiled.transform.hex", $"Layer {layer.ID}, cell {i}: hexagonal 120-degree flag is cleared and ignored for this orthogonal/isometric map.");
                     if (gid == 0) continue;
                     var match = tilesets.LastOrDefault(t => t.First <= gid);
                     if (match.Set is null || gid - match.First >= match.Set.Count) throw new InvalidDataException($"Unresolved tile GID {gid}.");
                     int local = (int)(gid - match.First);
                     var tile = new SceneLayerTileDefinition
                     {
+                        Transform = transform,
                         X = i % layer.Columns,
                         Y = i / layer.Columns,
                         Frame = new() { Tilesheet = match.Set.Name, XTile = local % match.Set.Columns, YTile = local / match.Set.Columns }

@@ -193,3 +193,17 @@ no source-document paths or unsaved content are stored, and documents are never 
 on startup. Missing or corrupt preferences fall back to defaults without a dialog.
 Available plugin tools in Studio use stable plugin identities; missing plugins are ignored.
 Changes are saved after a short settling interval and flushed on disposal.
+
+## Tile orientation
+
+Use **Appearance > Transform** to choose one of the eight native orthogonal
+orientations. The tile toolbar also offers **Rotate left 90 degrees**, **Rotate right
+90 degrees**, **Flip horizontal**, and **Flip vertical**. Operations compose in placement
+space; Clear tile still removes the entire sparse placement.
+
+Geometry shows source and effective size, overhang, and padding; Collision shows
+the effective oriented adjustment, including frame overrides when following a
+frame. Preview orients artwork and accounts for its overhang, while the gold
+outline continues to mark the fixed grid cell. Source GTS thumbnails and source
+atlas slicing are unchanged. GSCN stores the orientation per tile, with Identity
+as the default for older documents.

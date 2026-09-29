@@ -59,10 +59,11 @@ internal sealed class OrthogonalCoordinates : ISceneLayerCoordinates
     public List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang)
     {
         var retVal = new List<SceneLayerTile>();
+        var candidateRange = TileBounds.GetTransformedTileCandidateRange(sceneLayer, worldPixelRange, includeOverhang);
 
         // 1) Find coarse grid bounds via inverse transform (unchanged)
-        PointF ptUL = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Left, worldPixelRange.Top));
-        PointF ptBR = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(worldPixelRange.Right - 1, worldPixelRange.Bottom - 1));
+        PointF ptUL = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(candidateRange.Left, candidateRange.Top));
+        PointF ptBR = GetSceneLayerCoordinatesAtPixel(sceneLayer, new PointF(candidateRange.Right - 1, candidateRange.Bottom - 1));
 
         int minY = (int)Math.Floor(ptUL.Y) - 1;
         int maxY = (int)Math.Ceiling(ptBR.Y) + 1;
@@ -111,7 +112,7 @@ internal sealed class OrthogonalCoordinates : ISceneLayerCoordinates
         };
 
         // Apply full overhang (Left/Top/Right/Bottom)
-        return TileBounds.ApplyOverhang(baseRect, tile.Overhang, includeOverhang);
+        return TileBounds.ApplyTileGeometry(baseRect, tile, includeOverhang);
     }
 
     /// <summary>

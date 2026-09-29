@@ -72,6 +72,9 @@ public struct Frame
     /// </summary>
     public readonly Spacing Overhang => Tilesheet?.GetRegion(RegionName)?.Overhang ?? Spacing.None;
 
+    /// <summary>Gets untransformed source atlas padding; placement transforms never alter slicing.</summary>
+    public readonly Spacing TilePadding => Tilesheet?.GetRegion(RegionName)?.TilePadding ?? Spacing.None;
+
     /// <summary>
     /// Gets or sets the collision adjustment associated with this frame's region coordinates.
     /// </summary>
