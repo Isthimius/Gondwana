@@ -7,12 +7,32 @@ namespace Gondwana.Drawing.Coordinates;
 /// </summary>
 public static class TileBounds
 {
-    internal static void IncludeTransformedTiles(Gondwana.Scenes.SceneLayer layer, Rectangle query, bool include, List<Gondwana.Scenes.SceneLayerTile> result)
+    /// <summary>
+    /// Expands a culling query just enough to reach grid cells whose transformed visuals can
+    /// extend beyond their fixed cell bounds. The normal coordinate-system lookup then remains
+    /// bounded to nearby cells instead of scanning every transformed placement in the layer.
+    /// </summary>
+    internal static Rectangle GetTransformedTileCandidateRange(
+        Gondwana.Scenes.SceneLayer layer,
+        Rectangle query,
+        bool include)
     {
-        if (!include || layer.TransformedTiles.Count == 0) return;
-        var present = new HashSet<Gondwana.Scenes.SceneLayerTile>(result);
-        foreach (var tile in layer.TransformedTiles)
-            if (tile.DrawLocationWorld.IntersectsWith(query) && present.Add(tile)) result.Add(tile);
+        if (!include || layer.TransformedTiles.Count == 0)
+            return query;
+
+        int width = layer.TileWidth;
+        int height = layer.TileHeight;
+        int spill = (Math.Abs(width - height) + 1) / 2;
+
+        if (spill == 0)
+            return query;
+
+        if (width > height)
+            query.Inflate(0, spill);
+        else
+            query.Inflate(spill, 0);
+
+        return query;
     }
     /// <summary>Applies placement geometry while preserving untransformed grid-cell bounds.</summary>
     public static Rectangle ApplyTileGeometry(Rectangle cell, Tile tile, bool include)
