@@ -1,3 +1,9 @@
+using Gondwana.Drawing;
+using Gondwana.Drawing.Animation.GANI;
+using Gondwana.Drawing.Tilesheets.GTS;
+using Gondwana.Scenes.GSCN;
+using SkiaSharp;
+
 namespace Gondwana.Tooling.Importers.Tests;
 
 // All fixture XML and pixels are purpose-built here; no external tools or artwork.
