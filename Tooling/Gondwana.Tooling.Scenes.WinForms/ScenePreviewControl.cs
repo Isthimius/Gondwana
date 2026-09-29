@@ -310,7 +310,12 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         {
             var projection = GetProjection(layer);
             var rect = projection.GetLayerBoundsPx();
-            foreach (var tile in layer.Tiles.Where(tile => tile.Visible))
+            foreach (var tile in layer.Tiles.Where(tile =>
+                tile.Visible &&
+                tile.X >= 0 &&
+                tile.Y >= 0 &&
+                tile.X < layer.Columns &&
+                tile.Y < layer.Rows))
             {
                 var frame = ResolvePreviewFrame(tile);
                 var source = frame is null ? null : ResolveTilesheetSource(frame, tile.AnimationKey);
