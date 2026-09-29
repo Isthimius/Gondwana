@@ -7,6 +7,21 @@ namespace Gondwana.Drawing.Coordinates;
 /// </summary>
 public static class TileBounds
 {
+    internal static void IncludeTransformedTiles(Gondwana.Scenes.SceneLayer layer, Rectangle query, bool include, List<Gondwana.Scenes.SceneLayerTile> result)
+    {
+        if (!include || layer.TransformedTiles.Count == 0) return;
+        var present = new HashSet<Gondwana.Scenes.SceneLayerTile>(result);
+        foreach (var tile in layer.TransformedTiles)
+            if (tile.DrawLocationWorld.IntersectsWith(query) && present.Add(tile)) result.Add(tile);
+    }
+    /// <summary>Applies placement geometry while preserving untransformed grid-cell bounds.</summary>
+    public static Rectangle ApplyTileGeometry(Rectangle cell, Tile tile, bool include)
+    {
+        if (!include) return cell;
+        return tile is Gondwana.Scenes.SceneLayerTile fixedTile
+            ? ApplyOverhang(TileTransformGeometry.GetVisualBounds(cell, Spacing.None, fixedTile.Transform), tile.Overhang, true)
+            : ApplyOverhang(cell, tile.Overhang, true);
+    }
     /// <summary>
     /// Applies an overhang adjustment to a rectangle, expanding its bounds in all directions.
     /// </summary>

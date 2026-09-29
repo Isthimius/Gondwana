@@ -87,6 +87,7 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
                 if (r.IntersectsWith(worldPixelRange)) result.Add(gp);
             }
         }
+        TileBounds.IncludeTransformedTiles(sceneLayer, worldPixelRange, includeOverhang, result);
         return result;
     }
 
@@ -101,7 +102,7 @@ internal sealed class IsometricRhombicCoordinates : ISceneLayerCoordinates
         var top = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
         int W = tile.SceneLayer.TileWidth; int H = tile.SceneLayer.TileHeight;
         var rect = new Rectangle(top.X - W / 2, top.Y, W, H);
-        return TileBounds.ApplyOverhang(rect, tile.Overhang, includeOverhang);
+        return TileBounds.ApplyTileGeometry(rect, tile, includeOverhang);
     }
 
     /// <summary>

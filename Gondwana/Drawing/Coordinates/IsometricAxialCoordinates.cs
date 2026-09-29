@@ -89,7 +89,7 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
         int xEnd = System.Math.Min(maxX, cols - 1);
         int yStart = System.Math.Max(minY, 0);
         int yEnd = System.Math.Min(maxY, rows - 1);
-        if (xStart > xEnd || yStart > yEnd) return result;
+        // Empty coarse ranges still need the transformed-placement check below.
 
         for (int y = yStart; y <= yEnd; y++)
         {
@@ -102,6 +102,7 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
                 if (r.IntersectsWith(worldPixelRange)) result.Add(gp);
             }
         }
+        TileBounds.IncludeTransformedTiles(sceneLayer, worldPixelRange, includeOverhang, result);
         return result;
     }
 
@@ -120,7 +121,7 @@ internal sealed class IsometricAxialCoordinates : ISceneLayerCoordinates
 
         // Diamond fits exactly in W×H box whose top-left is (top.X - W/2, top.Y)
         var rect = new Rectangle(top.X - (int)halfW, top.Y, W, H);
-        return TileBounds.ApplyOverhang(rect, tile.Overhang, includeOverhang);
+        return TileBounds.ApplyTileGeometry(rect, tile, includeOverhang);
     }
 
     /// <summary>

@@ -1,3 +1,4 @@
+using Gondwana.Drawing;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using Gondwana.Drawing.Coordinates;
@@ -309,6 +310,14 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         {
             var projection = GetProjection(layer);
             var rect = projection.GetLayerBoundsPx();
+            foreach (var tile in layer.Tiles.Where(tile => tile.Visible))
+            {
+                var frame = ResolvePreviewFrame(tile);
+                var source = frame is null ? null : ResolveTilesheetSource(frame, tile.AnimationKey);
+                if (frame is not null && source?.TryResolve(frame, out var region, out _) == true)
+                    rect = RectangleF.Union(rect, TileTransformGeometry.GetVisualBounds(
+                        Rectangle.Round(TileBounds(projection, layer, tile.X, tile.Y)), region!.Overhang, tile.Transform));
+            }
             if (rect.IsEmpty)
                 continue;
 
@@ -449,18 +458,24 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
 
             var source = ResolveTilesheetSource(frame, tile.AnimationKey);
             if (source?.Image is null ||
-                !source.TryResolve(frame, out _, out var sourceBounds))
+                !source.TryResolve(frame, out var region, out var sourceBounds))
             {
                 DrawMissingFrame(graphics, projection, layer, tile.X, tile.Y);
                 continue;
             }
 
-            var world = TileBounds(projection, layer, tile.X, tile.Y);
+            var cell = Rectangle.Round(TileBounds(projection, layer, tile.X, tile.Y));
+            var world = TileTransformGeometry.GetVisualBounds(cell, region!.Overhang, tile.Transform);
             var screen = ToScreen(world);
 
             graphics.DrawImage(
                 source.Image,
-                Rectangle.Round(screen),
+                new[]
+                {
+                    TileTransformGeometry.MapToDestination(new(0, 0), screen, tile.Transform),
+                    TileTransformGeometry.MapToDestination(new(1, 0), screen, tile.Transform),
+                    TileTransformGeometry.MapToDestination(new(0, 1), screen, tile.Transform)
+                },
                 sourceBounds,
                 GraphicsUnit.Pixel);
         }

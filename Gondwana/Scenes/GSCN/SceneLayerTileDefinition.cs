@@ -32,6 +32,9 @@ public sealed class SceneLayerTileDefinition
     /// </summary>
     public bool Visible { get; set; } = true;
 
+    /// <summary>Gets or sets the placement orientation; omitted values preserve original artwork.</summary>
+    public Gondwana.Drawing.TileTransform Transform { get; set; } = Gondwana.Drawing.TileTransform.Identity;
+
     /// <summary>
     /// Gets or sets the lightweight tilesheet frame reference, or null for an unassigned frame.
     /// </summary>

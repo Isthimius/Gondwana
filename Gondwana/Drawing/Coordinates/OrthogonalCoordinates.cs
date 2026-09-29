@@ -84,6 +84,8 @@ internal sealed class OrthogonalCoordinates : ISceneLayerCoordinates
             }
         }
 
+        TileBounds.IncludeTransformedTiles(sceneLayer, worldPixelRange, includeOverhang, retVal);
+
         return retVal;
     }
 
@@ -111,7 +113,7 @@ internal sealed class OrthogonalCoordinates : ISceneLayerCoordinates
         };
 
         // Apply full overhang (Left/Top/Right/Bottom)
-        return TileBounds.ApplyOverhang(baseRect, tile.Overhang, includeOverhang);
+        return TileBounds.ApplyTileGeometry(baseRect, tile, includeOverhang);
     }
 
     /// <summary>

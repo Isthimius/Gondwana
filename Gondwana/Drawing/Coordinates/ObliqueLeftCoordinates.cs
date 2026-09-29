@@ -137,6 +137,8 @@ internal sealed class ObliqueLeftCoordinates : ISceneLayerCoordinates
             }
         }
 
+        TileBounds.IncludeTransformedTiles(sceneLayer, worldPixelRange, includeOverhang, result);
+
         return result;
     }
 
@@ -158,7 +160,7 @@ internal sealed class ObliqueLeftCoordinates : ISceneLayerCoordinates
             tile.SceneLayer.TileWidth,
             tile.SceneLayer.TileHeight);
 
-        return TileBounds.ApplyOverhang(baseRect, tile.Overhang, includeOverhang);
+        return TileBounds.ApplyTileGeometry(baseRect, tile, includeOverhang);
     }
 
     /// <summary>

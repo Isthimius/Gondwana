@@ -142,6 +142,8 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
             }
         }
 
+        TileBounds.IncludeTransformedTiles(sceneLayer, worldPixelRange, includeOverhang, result);
+
         return result;
     }
 
@@ -156,7 +158,7 @@ internal sealed class HexAxialFlatTopCoordinates : ISceneLayerCoordinates
         var p = GetAnchorPixelAtSceneLayerCoordinates(tile.SceneLayer, tile.SceneLayerCoordinates);
         int W = tile.SceneLayer.TileWidth; int H = tile.SceneLayer.TileHeight;
         var rect = new Rectangle(p.X, p.Y, W, H); // hex image fits W x H box
-        return TileBounds.ApplyOverhang(rect, tile.Overhang, includeOverhang);
+        return TileBounds.ApplyTileGeometry(rect, tile, includeOverhang);
     }
 
     /// <summary>

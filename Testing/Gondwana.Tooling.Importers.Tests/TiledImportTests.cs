@@ -1,3 +1,5 @@
+using Gondwana.Drawing;
+using Gondwana.Scenes.GSCN;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
 using SkiaSharp;
@@ -141,10 +143,49 @@ public sealed class TiledImportTests : IDisposable
         Assert.Equal(new uint[] { 1, 0 }, TiledMapImporter.DecodeLayer(System.Xml.Linq.XElement.Parse("<data><tile gid='1'/><tile gid='0'/></data>"), 2));
         Tileset();
         string source = Path.Combine(directory, "flipped.tmx");
-        File.WriteAllText(source, "<map orientation='orthogonal' width='1' height='1' tilewidth='2' tileheight='2'><tileset firstgid='1' source='terrain.tsx'/><layer><data encoding='csv'>2147483649</data></layer></map>");
+        File.WriteAllText(source, "<map orientation='orthogonal' width='1' height='1' tilewidth='2' tileheight='2'><tileset firstgid='1' source='terrain.tsx'/><layer><data encoding='csv'>268435457</data></layer></map>");
         var result = new TiledMapImporter().Import(new(source, Path.Combine(directory, "output")));
-        Assert.False(result.Analysis.CanImport);
-        Assert.Contains(result.Analysis.Diagnostics, d => d.Code == "tiled.transform");
-        Assert.Empty(result.WrittenFiles);
+        Assert.True(result.Analysis.CanImport);
+        Assert.Contains(result.Analysis.Diagnostics, d => d.Code == "tiled.transform.hex" && d.Severity == ExternalImportSeverity.Warning);
     }
-}
+    [Theory]
+    [InlineData("orthogonal")]
+    [InlineData("isometric")]
+    public void AllEightGidCombinationsImportAndRoundTrip(string orientation)
+    {
+        Tileset();
+        uint[] flags = [0, 0x80000000, 0x40000000, 0xc0000000, 0x20000000, 0xa0000000, 0x60000000, 0xe0000000];
+        TileTransform[] expected = [TileTransform.Identity, TileTransform.FlipHorizontal, TileTransform.FlipVertical, TileTransform.Rotate180,
+            TileTransform.FlipDiagonal, TileTransform.Rotate90, TileTransform.Rotate270, TileTransform.FlipAntiDiagonal];
+        string source = Path.Combine(directory, "transforms.tmx");
+        File.WriteAllText(source, $"""
+            <map orientation="{orientation}" width="8" height="1" tilewidth="2" tileheight="2">
+              <tileset firstgid="1" source="terrain.tsx"/>
+              <layer><data encoding="csv">{string.Join(",", flags.Select(flag => flag | 2u))}</data></layer>
+            </map>
+            """);
+        var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        Assert.DoesNotContain(result.Analysis.Diagnostics, d => d.Code.StartsWith("tiled.transform"));
+        var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "transforms.gscn"));
+        Assert.Empty(SceneDefinitionValidator.Validate(scene));
+        scene = SceneDefinitionSerializer.FromJson(SceneDefinitionSerializer.ToJson(scene));
+        var tiles = scene.Layers.Single().Tiles;
+        Assert.Equal(expected, tiles.Select(tile => tile.Transform));
+        using var sheet = Gondwana.Drawing.Tilesheets.TilesheetRegistry.Instance.LoadFromDefinitionFile(
+            Path.Combine(request.OutputDirectory, "terrain.gts"));
+        using var runtime = SceneDefinitionSerializer.ToScene(scene);
+        Assert.Equal(expected, Enumerable.Range(0, 8).Select(x => runtime.SceneLayers.Single()[x, 0]!.Transform));
+        Assert.Equal(expected, SceneDefinitionSerializer.FromScene(runtime).Layers[0].Tiles.Select(tile => tile.Transform));
+        for (int i = 0; i < flags.Length; i++)
+        {
+            var decoded = TiledTileTransform.Decode(flags[i] | 2u);
+            Assert.Equal(2u, decoded.Gid);
+            Assert.Equal(expected[i], decoded.Transform);
+            Assert.False(decoded.HasHexRotation);
+            Assert.Equal("terrain", tiles[i].Frame!.Tilesheet);
+            Assert.Equal(1, tiles[i].Frame!.XTile);
+            Assert.Equal(0, tiles[i].Frame!.YTile);
+        }
+    }}
