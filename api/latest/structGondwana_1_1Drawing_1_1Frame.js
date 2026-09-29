@@ -16,5 +16,6 @@ var structGondwana_1_1Drawing_1_1Frame =
     [ "Overhang", "structGondwana_1_1Drawing_1_1Frame.html#af7a875f002c2a5cb7a984acba8e8074a", null ],
     [ "SkBitmap", "structGondwana_1_1Drawing_1_1Frame.html#a081ebf55d354a981277f0927a15fc883", null ],
     [ "SkImage", "structGondwana_1_1Drawing_1_1Frame.html#ab53f41f950e96e17b2c06986fff37739", null ],
+    [ "TilePadding", "structGondwana_1_1Drawing_1_1Frame.html#a317a51a9507f49d5589dc999fb7ee447", null ],
     [ "TileSize", "structGondwana_1_1Drawing_1_1Frame.html#ae2a542e86b7014e183cda9b15fa4867f", null ]
 ];

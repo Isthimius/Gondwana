@@ -122,12 +122,67 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manages loaded <a class="el" href="classGondwana_1_1Drawing_1_1SvgResource.html" title="Represents a loaded SVG asset that can be rasterized into cached bitmaps at requested sizes.">SvgResource</a> instances keyed by asset name.  <a href="classGondwana_1_1Drawing_1_1SvgResourceManager.html#details">More...</a><br /></td></tr>
 <tr class="memitem:Tile" id="r_Tile"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Drawing_1_1Tile.html">Tile</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an abstract base class for drawable tiles in the <a class="el" href="namespaceGondwana.html">Gondwana</a> engine. Provides core functionality for rendering, animation, collision detection, and scene layer integration.  <a href="classGondwana_1_1Drawing_1_1Tile.html#details">More...</a><br /></td></tr>
+<tr class="memitem:TileTransformGeometry" id="r_TileTransformGeometry"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>TileTransformGeometry</b></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shared placement geometry; source atlas metadata is never modified. <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a4c6a827afdd472b12f7919074c621447" id="r_a4c6a827afdd472b12f7919074c621447"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c6a827afdd472b12f7919074c621447">TileTransform</a> { <br />
+&#160;&#160;<a class="el" href="#a4c6a827afdd472b12f7919074c621447ac9c5c65fb4af9cf90eb99b3b84424189">Identity</a>
+, <a class="el" href="#a4c6a827afdd472b12f7919074c621447a1d20b3969ea74725dd1a5b7669d60a98">Rotate90</a>
+, <a class="el" href="#a4c6a827afdd472b12f7919074c621447a371980c5d153a94cf022d6b4daa4d34c">Rotate180</a>
+, <a class="el" href="#a4c6a827afdd472b12f7919074c621447a59c609399b2fb3956ecac7df34a76c2f">Rotate270</a>
+, <br />
+&#160;&#160;<a class="el" href="#a4c6a827afdd472b12f7919074c621447aef2eb5709a994eb86f7daa5c72975176">FlipHorizontal</a>
+, <a class="el" href="#a4c6a827afdd472b12f7919074c621447a17a90cd11c563123de1b1a3db779bee6">FlipVertical</a>
+, <a class="el" href="#a4c6a827afdd472b12f7919074c621447a1650f6d7413938abaa2c65c67ec475a0">FlipDiagonal</a>
+, <a class="el" href="#a4c6a827afdd472b12f7919074c621447a7d3f1e40119f1132cb84df4f8fd17eb8">FlipAntiDiagonal</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a4c6a827afdd472b12f7919074c621447"><td class="mdescLeft">&#160;</td><td class="mdescRight">The eight orthogonal orientations of artwork placed in a fixed scene cell.  <a href="#a4c6a827afdd472b12f7919074c621447">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a6b8743455b186d888a346c497e7f1068" id="r_a6b8743455b186d888a346c497e7f1068"><td class="memItemLeft" align="right" valign="top">record struct&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6b8743455b186d888a346c497e7f1068">Spacing</a> ([property:JsonProperty(&quot;left&quot;)] int Left, [property:JsonProperty(&quot;top&quot;)] int Top, [property:JsonProperty(&quot;right&quot;)] int Right, [property:JsonProperty(&quot;bottom&quot;)] int Bottom)</td></tr>
 <tr class="memdesc:a6b8743455b186d888a346c497e7f1068"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents dimensions in pixels when spacing <a class="el" href="namespaceGondwana_1_1Drawing_1_1Tilesheets.html">Tilesheets</a>.  <br /></td></tr>
 </table>
+<a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
+<a id="a4c6a827afdd472b12f7919074c621447" name="a4c6a827afdd472b12f7919074c621447"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c6a827afdd472b12f7919074c621447">&#9670;&#160;</a></span>TileTransform</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#a4c6a827afdd472b12f7919074c621447">Gondwana.Drawing.TileTransform</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The eight orthogonal orientations of artwork placed in a fixed scene cell. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a4c6a827afdd472b12f7919074c621447ac9c5c65fb4af9cf90eb99b3b84424189" name="a4c6a827afdd472b12f7919074c621447ac9c5c65fb4af9cf90eb99b3b84424189"></a>Identity&#160;</td><td class="fielddoc"><p>Original orientation. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4c6a827afdd472b12f7919074c621447a1d20b3969ea74725dd1a5b7669d60a98" name="a4c6a827afdd472b12f7919074c621447a1d20b3969ea74725dd1a5b7669d60a98"></a>Rotate90&#160;</td><td class="fielddoc"><p>Clockwise quarter turn. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4c6a827afdd472b12f7919074c621447a371980c5d153a94cf022d6b4daa4d34c" name="a4c6a827afdd472b12f7919074c621447a371980c5d153a94cf022d6b4daa4d34c"></a>Rotate180&#160;</td><td class="fielddoc"><p>Half turn. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4c6a827afdd472b12f7919074c621447a59c609399b2fb3956ecac7df34a76c2f" name="a4c6a827afdd472b12f7919074c621447a59c609399b2fb3956ecac7df34a76c2f"></a>Rotate270&#160;</td><td class="fielddoc"><p>Counterclockwise quarter turn. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4c6a827afdd472b12f7919074c621447aef2eb5709a994eb86f7daa5c72975176" name="a4c6a827afdd472b12f7919074c621447aef2eb5709a994eb86f7daa5c72975176"></a>FlipHorizontal&#160;</td><td class="fielddoc"><p>Reflection across the vertical axis. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4c6a827afdd472b12f7919074c621447a17a90cd11c563123de1b1a3db779bee6" name="a4c6a827afdd472b12f7919074c621447a17a90cd11c563123de1b1a3db779bee6"></a>FlipVertical&#160;</td><td class="fielddoc"><p>Reflection across the horizontal axis. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4c6a827afdd472b12f7919074c621447a1650f6d7413938abaa2c65c67ec475a0" name="a4c6a827afdd472b12f7919074c621447a1650f6d7413938abaa2c65c67ec475a0"></a>FlipDiagonal&#160;</td><td class="fielddoc"><p>Reflection across the top-left to bottom-right diagonal (axis swap). </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4c6a827afdd472b12f7919074c621447a7d3f1e40119f1132cb84df4f8fd17eb8" name="a4c6a827afdd472b12f7919074c621447a7d3f1e40119f1132cb84df4f8fd17eb8"></a>FlipAntiDiagonal&#160;</td><td class="fielddoc"><p>Reflection across the top-right to bottom-left diagonal. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="TileTransform_8cs_source.html#l00007">7</a> of file <a class="el" href="TileTransform_8cs_source.html">TileTransform.cs</a>.</p>
+
+</div>
+</div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
 <a id="a6b8743455b186d888a346c497e7f1068" name="a6b8743455b186d888a346c497e7f1068"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6b8743455b186d888a346c497e7f1068">&#9670;&#160;</a></span>Spacing()</h2>

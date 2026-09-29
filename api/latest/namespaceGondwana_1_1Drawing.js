@@ -31,5 +31,15 @@ var namespaceGondwana_1_1Drawing =
     [ "SvgResource", "classGondwana_1_1Drawing_1_1SvgResource.html", "classGondwana_1_1Drawing_1_1SvgResource" ],
     [ "SvgResourceManager", "classGondwana_1_1Drawing_1_1SvgResourceManager.html", "classGondwana_1_1Drawing_1_1SvgResourceManager" ],
     [ "Tile", "classGondwana_1_1Drawing_1_1Tile.html", "classGondwana_1_1Drawing_1_1Tile" ],
+    [ "TileTransform", "namespaceGondwana_1_1Drawing.html#a4c6a827afdd472b12f7919074c621447", [
+      [ "Identity", "namespaceGondwana_1_1Drawing.html#a4c6a827afdd472b12f7919074c621447ac9c5c65fb4af9cf90eb99b3b84424189", null ],
+      [ "Rotate90", "namespaceGondwana_1_1Drawing.html#a4c6a827afdd472b12f7919074c621447a1d20b3969ea74725dd1a5b7669d60a98", null ],
+      [ "Rotate180", "namespaceGondwana_1_1Drawing.html#a4c6a827afdd472b12f7919074c621447a371980c5d153a94cf022d6b4daa4d34c", null ],
+      [ "Rotate270", "namespaceGondwana_1_1Drawing.html#a4c6a827afdd472b12f7919074c621447a59c609399b2fb3956ecac7df34a76c2f", null ],
+      [ "FlipHorizontal", "namespaceGondwana_1_1Drawing.html#a4c6a827afdd472b12f7919074c621447aef2eb5709a994eb86f7daa5c72975176", null ],
+      [ "FlipVertical", "namespaceGondwana_1_1Drawing.html#a4c6a827afdd472b12f7919074c621447a17a90cd11c563123de1b1a3db779bee6", null ],
+      [ "FlipDiagonal", "namespaceGondwana_1_1Drawing.html#a4c6a827afdd472b12f7919074c621447a1650f6d7413938abaa2c65c67ec475a0", null ],
+      [ "FlipAntiDiagonal", "namespaceGondwana_1_1Drawing.html#a4c6a827afdd472b12f7919074c621447a7d3f1e40119f1132cb84df4f8fd17eb8", null ]
+    ] ],
     [ "Spacing", "namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068", null ]
 ];
