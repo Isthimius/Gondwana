@@ -1,4 +1,4 @@
-> **Audience:** Gondwana engine maintainers, including “me six months from now.”
+> **Audience:** Gondwana engine maintainers
 >
 > **Purpose:** Record how the public Gondwana Model Context Protocol (MCP) service is structured, hosted, connected to the repository/plugin, deployed, and verified so it can be maintained or recreated without reconstructing the setup from memory.
 >
