@@ -728,7 +728,7 @@ If branch protection already guarantees that only passing PRs can merge, `On Com
 
 ---
 
-## 12. Custom Domain Setup
+## 12. Custom Domain and Cloudflare DNS Setup
 
 The production MCP service uses:
 
@@ -736,30 +736,84 @@ The production MCP service uses:
 mcp.hiddenworldsgames.com
 ```
 
-The general Render setup process is:
+DNS for `hiddenworldsgames.com` is managed through **Cloudflare**. The custom hostname therefore depends on configuration in both Render and Cloudflare:
 
-1. Create/deploy the Render web service.
-2. In the service's **Custom Domains** settings, add:
+```text
+Gondwana plugin / MCP client
+        ↓
+https://mcp.hiddenworldsgames.com/mcp
+        ↓
+Cloudflare DNS
+        ↓
+Render custom domain
+        ↓
+gondwana-mcp container :8080
+```
+
+### Render side
+
+1. Create and deploy the `gondwana-mcp` Render web service.
+2. In **Settings → Custom Domains**, add:
    ```text
    mcp.hiddenworldsgames.com
    ```
-3. In the DNS provider for `hiddenworldsgames.com`, create the DNS record Render requests.
-4. For a normal subdomain such as `mcp`, this is typically a `CNAME` pointing to the service's Render hostname.
-5. Return to Render and verify the custom domain.
-6. Render provisions and renews TLS automatically.
-7. Verify:
-   ```text
-   https://mcp.hiddenworldsgames.com/
-   https://mcp.hiddenworldsgames.com/health
-   https://mcp.hiddenworldsgames.com/mcp
-   ```
+3. Render displays the `.onrender.com` hostname that the DNS record must target. Copy the **exact hostname shown in Render** rather than guessing it.
+4. Leave the domain pending while the Cloudflare record is created or updated.
 
-Render automatically manages HTTPS/TLS for verified custom domains.
+### Cloudflare side
+
+Open the `hiddenworldsgames.com` zone in Cloudflare.
+
+1. Under **SSL/TLS → Overview**, use **Full** encryption mode for the Render-backed hostname.
+2. Under **DNS → Records**, create or update the production record:
+   ```text
+   Type:         CNAME
+   Name:         mcp
+   Target:       <exact Render .onrender.com hostname shown in the Render dashboard>
+   Proxy status: DNS only during initial Render verification
+   TTL:          Auto
+   ```
+3. Remove any conflicting `A` or `AAAA` records for the `mcp` hostname. In particular, Render's Cloudflare guidance warns that `AAAA` records can interfere because Render does not currently serve custom domains over IPv6.
+4. Wait for DNS propagation, then return to **Render → Custom Domains** and request/confirm verification.
+5. Render provisions and renews TLS for the verified custom domain.
+6. After Render reports the certificate as issued and valid, Cloudflare proxying may be enabled if desired. Keeping the record **DNS only** is the simplest direct-to-Render configuration. When troubleshooting later, check the current Cloudflare proxy status rather than assuming which mode is active.
+
+The important relationship to preserve is:
+
+```text
+mcp.hiddenworldsgames.com
+        CNAME
+          ↓
+<Render service .onrender.com hostname>
+```
+
+The Render-generated hostname is infrastructure state. If the Render service is ever recreated, confirm whether that target changed and update the Cloudflare CNAME accordingly.
+
+### Verify the public route
+
+After Render and Cloudflare both show the expected configuration, verify:
+
+```text
+https://mcp.hiddenworldsgames.com/
+https://mcp.hiddenworldsgames.com/health
+https://mcp.hiddenworldsgames.com/mcp
+```
+
+Also confirm that Render still lists `mcp.hiddenworldsgames.com` as a verified custom domain with a valid certificate.
+
+Changing the Cloudflare CNAME target does **not** require changing the Gondwana plugin configuration as long as the public hostname remains `mcp.hiddenworldsgames.com`. The plugin continues to use:
+
+```json
+"url": "https://mcp.hiddenworldsgames.com/mcp"
+```
+
+Do not place Cloudflare API tokens, Render deploy hooks, or other DNS/provider credentials in the repository or public wiki.
 
 Current Render documentation:
 
 - Custom domains: https://render.com/docs/custom-domains
-- DNS configuration: https://render.com/docs/configure-other-dns
+- Cloudflare DNS: https://render.com/docs/configure-cloudflare-dns
+- Other DNS providers: https://render.com/docs/configure-other-dns
 - TLS: https://render.com/docs/tls
 
 ---
@@ -1215,7 +1269,7 @@ Test:
  /mcp
 ```
 
-### Step 9 — Add custom domain
+### Step 9 — Add the custom domain and Cloudflare DNS record
 
 Add:
 
@@ -1225,7 +1279,17 @@ mcp.hiddenworldsgames.com
 
 to the service's Render Custom Domains configuration.
 
-Update DNS with the provider for `hiddenworldsgames.com`, verify the domain in Render, and confirm TLS is active.
+Then open the `hiddenworldsgames.com` zone in Cloudflare and create/update:
+
+```text
+Type:         CNAME
+Name:         mcp
+Target:       <exact Render .onrender.com hostname shown for the service>
+Proxy status: DNS only during verification
+TTL:          Auto
+```
+
+Use **Full** Cloudflare SSL/TLS mode, remove conflicting `A`/`AAAA` records for `mcp`, wait for propagation, and complete custom-domain verification in Render. Once Render reports a valid certificate, re-test the public hostname. See [Custom Domain and Cloudflare DNS Setup](#12-custom-domain-and-cloudflare-dns-setup) for the full procedure.
 
 ### Step 10 — Verify public endpoints
 
@@ -1336,6 +1400,18 @@ Root Directory  = blank
 ```
 
 The Dockerfile needs access to root-level build files.
+
+
+### “`mcp.hiddenworldsgames.com` stopped resolving or Render cannot verify it.”
+
+Check both sides of the custom-domain chain:
+
+- Cloudflare still has a `CNAME` named `mcp`.
+- The CNAME target matches the exact current `.onrender.com` hostname shown by Render.
+- There are no conflicting `A` or `AAAA` records for `mcp`.
+- Cloudflare SSL/TLS mode is **Full**.
+- If Render is trying to issue or renew the certificate, temporarily use **DNS only** for the CNAME while verifying.
+- Render still lists `mcp.hiddenworldsgames.com` under **Custom Domains** and reports it as verified.
 
 ---
 
