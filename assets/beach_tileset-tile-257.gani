@@ -1,0 +1,46 @@
+{
+  "Key": "beach_tileset.tile.257",
+  "ThrottleTime": 0.0,
+  "CycleType": "Repeating",
+  "HideTileOnCycleEnd": false,
+  "TilesheetSources": [
+    {
+      "Tilesheet": "beach_tileset",
+      "Kind": "LooseDefinitionFile",
+      "GtsPath": "beach_tileset.gts"
+    }
+  ],
+  "Frames": [
+    {
+      "DurationSeconds": 0.25,
+      "Tilesheet": "beach_tileset",
+      "RegionName": "default",
+      "XTile": 5,
+      "YTile": 7
+    },
+    {
+      "DurationSeconds": 0.25,
+      "Tilesheet": "beach_tileset",
+      "RegionName": "default",
+      "XTile": 14,
+      "YTile": 7
+    },
+    {
+      "DurationSeconds": 0.25,
+      "Tilesheet": "beach_tileset",
+      "RegionName": "default",
+      "XTile": 23,
+      "YTile": 7
+    },
+    {
+      "DurationSeconds": 0.25,
+      "Tilesheet": "beach_tileset",
+      "RegionName": "default",
+      "XTile": 32,
+      "YTile": 7
+    }
+  ],
+  "Source": {
+    "Kind": 3
+  }
+}
