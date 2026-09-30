@@ -7,6 +7,7 @@
 - [[Game Hosts and Application Startup]]
 - [[Gondwana Engine Lifecycle]]
 - [[Gondwana CLI Cheatsheet]]
+- [[Using Gondwana with ChatGPT and Codex]]
 
 <details open>
 <summary><strong>Core Concepts</strong></summary>
@@ -149,7 +150,7 @@
 - [[GitHub Automation and Workflows]]
 - [[Tooling Scripts]]
 - [[External Asset Importing]]
-- [[Using Gondwana with ChatGPT and Codex]]
+- [[Gondwana MCP Service]]
 
 </details>
 
