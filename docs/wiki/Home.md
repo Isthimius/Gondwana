@@ -87,7 +87,7 @@ The platform adapter projects handle render-surface creation, presentation, nati
 | SkiaSharp | Cross-platform bitmap and GPU-backed 2D rendering |
 | NAudio | Optional Windows audio backend in `Gondwana.Audio.NAudio` |
 | HTML5 Audio / Web Audio / JavaScript interop | Browser backend in `Gondwana.Audio.Browser`, using the common core audio API |
-| LibVLCSharp | Experimental video playback |
+| LibVLCSharp | Video playback |
 | SDL2 | Optional cross-platform gamepad input |
 | WinForms | Windows desktop rendering and hosting |
 | Avalonia | Cross-platform desktop rendering and hosting |
@@ -173,7 +173,7 @@ Widgets can be placed in a `View` or `SceneLayer` and can participate in the sam
 - Stereo panning
 - Browser audio through HTML5 Audio and JavaScript interop
 - MIDI playback and SoundFont synthesis through `Gondwana.Audio.Midi`
-- Experimental video playback through `Gondwana.Video`
+- Video playback through `Gondwana.Video`
 
 ## Timing, Dispatch, and Extensibility
 
@@ -314,7 +314,7 @@ Reusable, engine-rendered UI and gameplay widgets. This package depends on the c
   - Optional SDL2 gamepad provider
 
 - `Gondwana.Video/`
-  - Experimental video playback through LibVLCSharp
+  - Video playback through LibVLCSharp
 
 ---
 
@@ -481,7 +481,7 @@ Install only the packages required by the target application.
 | `Gondwana.Audio.Browser` | Browser backend for the common audio API |
 | `Gondwana.Audio.Midi` | Windows MIDI and SoundFont support layered on NAudio |
 | `Gondwana.Input.SDL2` | SDL2 gamepad provider |
-| `Gondwana.Video` | Experimental video playback |
+| `Gondwana.Video` | Video playback |
 
 ## Developer Tools
 
