@@ -150,7 +150,7 @@
 - [[GitHub Automation and Workflows]]
 - [[Tooling Scripts]]
 - [[External Asset Importing]]
-- [[Gondwana MCP Service]]
+- [[Gondwana MCP Service|Gondwana MCP Service — Setup, Deployment, and Maintenance Guide]]
 
 </details>
 
