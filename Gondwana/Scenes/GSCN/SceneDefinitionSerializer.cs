@@ -205,7 +205,7 @@ public static class SceneDefinitionSerializer
                 MaterializeLayer(scene, layerDefinition);
 
             // Generated scene/layer IDs would change on replay and break external bindings.
-            if (definition.ID == scene.ID && definition.Layers.All(layer => !string.IsNullOrWhiteSpace(layer.ID)))
+if (definition.ID == scene.ID && (definition.Layers ?? []).All(layer => !string.IsNullOrWhiteSpace(layer.ID)))
                 scene.DefinitionProvenance = definition.LoadStamp?.Materialized(definition, () => FromScene(scene));
             return scene;
         }
