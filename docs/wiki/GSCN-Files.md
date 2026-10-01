@@ -445,3 +445,14 @@ non-recursive and never chooses among multiple matches.
 8. `*ByFrame` flags allow a scene tile to follow GTS frame collision metadata.
 9. EngineState can embed GSCN definitions or reference separate `.gscn` files.
 10. The same definition model is intended to support runtime loading and scene UI tooling.
+
+## Preserving definition origins in EngineState
+
+`EngineStateSaveOptions` supports `DefinitionPersistence.PreserveSource` for this
+format. A definition loaded from a named GAF can retain `AssetsFilePath` and
+`AssetEntryName`; a loose definition can retain its path. EngineState compares current
+serializable state with its loaded baseline and falls back when it changed. Packed
+loads use `AssetsFile.SourcePath`, including an explicitly supplied stream origin;
+anonymous archives cannot produce path-based provenance. See
+[Definition persistence options](Serialization-and-EngineState#definition-persistence-options)
+for collection ownership, generated identities, relative paths, and safe fallback.

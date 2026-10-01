@@ -12,6 +12,9 @@ namespace Gondwana.Drawing.Tilesheets;
 /// </summary>
 public sealed class Tilesheet : IDisposable
 {
+    [Newtonsoft.Json.JsonIgnore]
+    internal DefinitionProvenance? DefinitionProvenance { get; set; }
+
     public event Action<Tilesheet>? Disposed;
 
     private Tilesheet() { }

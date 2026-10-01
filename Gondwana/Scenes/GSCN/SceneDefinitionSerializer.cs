@@ -35,6 +35,7 @@ public static class SceneDefinitionSerializer
         {
             var definition = FromJson(File.ReadAllText(fullPath), fullPath);
             ApplyDefaultSource(definition, SceneDefinitionSource.LooseDefinitionFile(fullPath));
+            definition.LoadStamp = new(definition, filePath: fullPath);
             return definition;
         }
         catch (JsonException ex)
@@ -71,14 +72,15 @@ public static class SceneDefinitionSerializer
             ?? throw new FileNotFoundException($"GSCN asset entry not found: {entryName}", entryName);
 
         var definition = Load(stream);
-        if (definition.Source.Kind == SceneDefinitionSourceKind.None &&
-            !string.IsNullOrWhiteSpace(assetsFile.FilePath))
+        definition.Source = SceneDefinitionSource.None();
+        if (!string.IsNullOrWhiteSpace(assetsFile.SourcePath))
         {
             definition.Source = SceneDefinitionSource.PackedDefinitionFile(
-                assetsFile.FilePath,
+                assetsFile.SourcePath,
                 entryName);
         }
 
+        definition.LoadStamp = new(definition, assetsFilePath: assetsFile.SourcePath, entryName: entryName);
         return definition;
     }
 
@@ -202,6 +204,9 @@ public static class SceneDefinitionSerializer
             foreach (var layerDefinition in definition.Layers ?? [])
                 MaterializeLayer(scene, layerDefinition);
 
+            // Generated scene/layer IDs would change on replay and break external bindings.
+            if (definition.ID == scene.ID && (definition.Layers ?? []).All(layer => !string.IsNullOrWhiteSpace(layer.ID)))
+                scene.DefinitionProvenance = definition.LoadStamp?.Materialized(definition, () => FromScene(scene));
             return scene;
         }
         catch

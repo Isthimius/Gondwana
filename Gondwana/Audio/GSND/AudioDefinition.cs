@@ -7,6 +7,9 @@ namespace Gondwana.Audio.GSND;
 /// </summary>
 public sealed class AudioDefinition
 {
+    [Newtonsoft.Json.JsonIgnore]
+    internal DefinitionLoadStamp? LoadStamp { get; set; }
+
     private AudioDefinitionSource _source = AudioDefinitionSource.None();
 
     /// <summary>Gets or sets the audio resources declared by this definition.</summary>

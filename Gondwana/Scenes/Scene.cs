@@ -32,6 +32,9 @@ namespace Gondwana.Scenes;
 [JsonObject(IsReference = true)]
 public class Scene : IEnumerable<SceneLayer>, IDisposable
 {
+    [Newtonsoft.Json.JsonIgnore]
+    internal DefinitionProvenance? DefinitionProvenance { get; set; }
+
     [JsonProperty("SceneLayers")]
     private readonly List<SceneLayer> _sceneLayers = [];
 

@@ -5,6 +5,9 @@ namespace Gondwana.Drawing.Sprites.GSPR;
 /// <summary>A collection of authored sprites. Empty collections are valid.</summary>
 public sealed class SpriteDefinition
 {
+    [Newtonsoft.Json.JsonIgnore]
+    internal DefinitionLoadStamp? LoadStamp { get; set; }
+
     public List<SpriteInstanceDefinition> Sprites { get; set; } = [];
     public List<SpriteTilesheetSourceDefinition> TilesheetSources { get; set; } = [];
     public List<SpriteSceneSourceDefinition> SceneSources { get; set; } = [];

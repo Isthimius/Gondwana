@@ -5,6 +5,9 @@ namespace Gondwana.Scenes.GSCN;
 /// </summary>
 public sealed class SceneDefinition
 {
+    [Newtonsoft.Json.JsonIgnore]
+    internal DefinitionLoadStamp? LoadStamp { get; set; }
+
     private SceneDefinitionSource _source = SceneDefinitionSource.None();
 
     /// <summary>

@@ -5,6 +5,9 @@ namespace Gondwana.Drawing.Animation.GANI;
 /// </summary>
 public sealed class AnimationDefinition
 {
+    [Newtonsoft.Json.JsonIgnore]
+    internal DefinitionLoadStamp? LoadStamp { get; set; }
+
     private AnimationDefinitionSource _source = AnimationDefinitionSource.None();
 
     /// <summary>

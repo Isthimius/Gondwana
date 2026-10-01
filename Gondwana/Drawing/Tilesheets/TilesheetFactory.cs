@@ -93,6 +93,8 @@ internal static class TilesheetFactory
             tilesheet.ApplyPremultiplyAlpha();
         }
 
+        tilesheet.DefinitionProvenance = definition.LoadStamp?.Materialized(definition,
+            () => TilesheetDefinitionSerializer.FromTilesheet(tilesheet));
         return tilesheet;
     }
 
@@ -112,21 +114,24 @@ internal static class TilesheetFactory
         if (stream is null)
         {
             throw new InvalidOperationException(
-                $"Tilesheet definition asset '{gtsEntryName}' could not be found in AssetsFile '{assetsFile.FilePath}'.");
+                $"Tilesheet definition asset '{gtsEntryName}' could not be found in AssetsFile '{assetsFile.SourcePath}'.");
         }
 
         var definition = TilesheetDefinitionSerializer.Load(stream);
 
-        if (!string.IsNullOrWhiteSpace(assetsFile.FilePath))
+        definition.Source = TilesheetDefinitionSource.None();
+        if (!string.IsNullOrWhiteSpace(assetsFile.SourcePath))
         {
             definition.Source = TilesheetDefinitionSource.PackedDefinitionFile(
-                assetsFile.FilePath,
+                assetsFile.SourcePath,
                 gtsEntryName);
         }
 
-        var baseDirectory = string.IsNullOrWhiteSpace(assetsFile.FilePath)
+        definition.LoadStamp = new(definition, assetsFilePath: assetsFile.SourcePath, entryName: gtsEntryName);
+
+        var baseDirectory = string.IsNullOrWhiteSpace(assetsFile.SourcePath)
             ? null
-            : Path.GetDirectoryName(Path.GetFullPath(assetsFile.FilePath));
+            : Path.GetDirectoryName(Path.GetFullPath(assetsFile.SourcePath));
 
         return FromDefinition(
             definition,
@@ -222,6 +227,10 @@ internal static class TilesheetFactory
             throw new ArgumentException("Assets file path must be a non-empty string.", nameof(path));
 
         var fullPath = Path.GetFullPath(path);
+        var loaded = AssetsFile.AllAssetsFiles.FirstOrDefault(file =>
+            !string.IsNullOrWhiteSpace(file.SourcePath) && string.Equals(Path.GetFullPath(file.SourcePath), fullPath,
+                OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal));
+        if (loaded is not null) return loaded;
         if (!File.Exists(fullPath))
             throw new FileNotFoundException($"Assets file not found: {fullPath}", fullPath);
 

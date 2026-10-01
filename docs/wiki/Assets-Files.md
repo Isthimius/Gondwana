@@ -455,6 +455,30 @@ The asset system does not attempt to replace those higher-level systems.
 
 ---
 
+## Definition origins and EngineState
+
+A GAF can contain definition entries as well as their media. EngineState can retain
+an existing definition as `AssetsFilePath` + `AssetEntryName` using
+`DefinitionPersistence.PreserveSource`. The entry name is exact and its category must
+match the definition format. The definition origin is distinct from its image/audio
+origin. EngineState never packages generated definitions into a GAF.
+
+`AssetsFile.SourcePath` returns `FilePath` for file-backed archives. For streams, use
+`AssetsFile.Load(stream, password: null, register: true, sourcePath: "assets/game.gaf")`
+to supply a reconstructible origin. The stream is still buffered immediately; its
+identity neither opens that path nor enables saving the stream archive there.
+`Load(stream)` without an identity remains valid and cannot yield a durable packed
+reference. All five definition loaders follow that rule.
+
+EngineState stores inert archive records (`FilePath`, `Password`, `UseEncryption`),
+not live archives or entry bytes. It makes GAF paths relative to the state directory
+where possible and resolves them from there during application. Registered stream
+archives with matching identities can be reused during merge; replacement loads
+reopen filesystem paths. See [Serialization and EngineState](Serialization-and-EngineState#stream-archives)
+for stream fallback and host responsibilities.
+
+---
+
 ## Multiple asset files
 
 Gondwana does not require an application to use one enormous asset bundle.
@@ -502,7 +526,7 @@ EngineState
     +-- Audio ---------+--> may depend on AssetsFiles
 ```
 
-When loading selected engine-state components, Gondwana automatically includes asset files when required by tilesheets or audio.
+When loading selected engine-state components, Gondwana automatically includes asset files for definition categories, including packed GTS, GANI, GSCN, GSND, and GSPR references.
 
 The serialized engine state describes the registered asset files and allows Gondwana to reopen those bundles during restoration.
 

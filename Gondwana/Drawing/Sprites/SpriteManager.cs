@@ -13,6 +13,9 @@ namespace Gondwana.Drawing.Sprites;
 /// </summary>
 public sealed class SpriteManager : IDisposable
 {
+    [Newtonsoft.Json.JsonIgnore]
+    internal DefinitionProvenance? DefinitionProvenance { get; set; }
+
     private static readonly Lazy<SpriteManager> _instance = new(() => new SpriteManager());
 
     /// <summary>
@@ -157,6 +160,7 @@ public sealed class SpriteManager : IDisposable
     /// </summary>
     public void Clear()
     {
+        DefinitionProvenance = null;
         List<Sprite> tempSprites;
         lock (_spriteListLock)
             tempSprites = new List<Sprite>(_spriteList);
