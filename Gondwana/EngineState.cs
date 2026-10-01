@@ -385,8 +385,8 @@ public sealed partial class EngineState
         foreach (var mode in new[] { options.Tilesheets, options.Cycles, options.Scenes, options.Audio, options.Sprites })
             if (!Enum.IsDefined(mode)) throw new ArgumentOutOfRangeException(nameof(options));
         var parts = options.Parts;
-if (parts.HasFlag(EngineStateParts.Sprites) && options.Sprites == DefinitionPersistence.PreserveSource)
-    parts |= EngineStateParts.Scenes | EngineStateParts.Cycles | EngineStateParts.Tilesheets;
+        if (parts.HasFlag(EngineStateParts.Sprites) && options.Sprites == DefinitionPersistence.PreserveSource)
+            parts |= EngineStateParts.Scenes | EngineStateParts.Cycles | EngineStateParts.Tilesheets;
         if (parts.HasFlag(EngineStateParts.Scenes) && options.Scenes == DefinitionPersistence.PreserveSource)
             parts |= EngineStateParts.Cycles | EngineStateParts.Tilesheets;
         var snapshot = BuildSnapshot(NormalizeParts(parts), baseDirectory, fullPath, options);
@@ -509,12 +509,12 @@ if (parts.HasFlag(EngineStateParts.Sprites) && options.Sprites == DefinitionPers
     {
         // Expand content dependencies for packed definitions without changing legacy
         // sprite-only and scene-only merges that deliberately use existing registries.
-if (parts.HasFlag(EngineStateParts.Sprites) && snapshot?.Sprites?.AssetsFilePath is not null)
-{
-    if (snapshot.Scenes is not null) parts |= EngineStateParts.Scenes;
-    if (snapshot.Cycles is not null) parts |= EngineStateParts.Cycles;
-    if (snapshot.Tilesheets is not null) parts |= EngineStateParts.Tilesheets;
-}
+        if (parts.HasFlag(EngineStateParts.Sprites) && snapshot?.Sprites?.AssetsFilePath is not null)
+        {
+            if (snapshot.Scenes is not null) parts |= EngineStateParts.Scenes;
+            if (snapshot.Cycles is not null) parts |= EngineStateParts.Cycles;
+            if (snapshot.Tilesheets is not null) parts |= EngineStateParts.Tilesheets;
+        }
         if (parts.HasFlag(EngineStateParts.Scenes) && snapshot?.Scenes?.Any(entry => entry?.AssetsFilePath is not null) == true)
         {
             if (snapshot.Cycles is not null) parts |= EngineStateParts.Cycles;
