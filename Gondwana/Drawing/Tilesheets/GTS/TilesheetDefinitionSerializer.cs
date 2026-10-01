@@ -32,6 +32,7 @@ public static class TilesheetDefinitionSerializer
             ApplyDefaultSource(
                 definition,
                 TilesheetDefinitionSource.LooseDefinitionFile(fullPath));
+            definition.LoadStamp = new(definition, filePath: fullPath);
             return definition;
         }
         catch (JsonException ex)
@@ -124,7 +125,7 @@ public static class TilesheetDefinitionSerializer
 
         var fullPath = Path.GetFullPath(filePath);
         if (string.IsNullOrWhiteSpace(tilesheet.ImageFilePath) &&
-            tilesheet.AssetIdentifier is null)
+            string.IsNullOrWhiteSpace(tilesheet.AssetIdentifier?.AssetsFile.SourcePath))
         {
             tilesheet.PersistImageToFile(
                 Path.ChangeExtension(fullPath, ".png"));
@@ -218,7 +219,7 @@ public static class TilesheetDefinitionSerializer
             }
 
             if (assetIdentifier.AssetsFile is null ||
-                string.IsNullOrWhiteSpace(assetIdentifier.AssetsFile.FilePath))
+                string.IsNullOrWhiteSpace(assetIdentifier.AssetsFile.SourcePath))
             {
                 throw new InvalidOperationException(
                     $"Tilesheet '{tilesheet.Name}' has an asset identifier, but the assets file path is missing.");
@@ -227,7 +228,7 @@ public static class TilesheetDefinitionSerializer
             return new TilesheetImageDefinition
             {
                 AssetsFilePath = NormalizePath(
-                    assetIdentifier.AssetsFile.FilePath,
+                    assetIdentifier.AssetsFile.SourcePath,
                     baseDirectory,
                     makePathsRelative),
                 AssetEntryName = assetIdentifier.AssetName

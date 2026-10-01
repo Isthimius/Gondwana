@@ -21,6 +21,7 @@ public static class SpriteDefinitionSerializer
         var path = Path.GetFullPath(filePath);
         var definition = FromJson(File.ReadAllText(path));
         definition.Source = SpriteDefinitionSource.LooseDefinitionFile(path);
+        definition.LoadStamp = new(definition, filePath: Path.GetFullPath(path));
         return definition;
     }
 
@@ -37,7 +38,10 @@ public static class SpriteDefinitionSerializer
         using var stream = assetsFile.Get(AssetTypes.SpriteDefinition, entryName)
             ?? throw new FileNotFoundException($"GSPR asset entry not found: {entryName}");
         var definition = Load(stream);
-        definition.Source = SpriteDefinitionSource.PackedDefinitionFile(assetsFile.FilePath, entryName);
+        definition.Source = string.IsNullOrWhiteSpace(assetsFile.SourcePath)
+            ? SpriteDefinitionSource.None()
+            : SpriteDefinitionSource.PackedDefinitionFile(assetsFile.SourcePath, entryName);
+        definition.LoadStamp = new(definition, assetsFilePath: assetsFile.SourcePath, entryName: entryName);
         return definition;
     }
 
@@ -184,6 +188,10 @@ public static class SpriteDefinitionSerializer
                 sprite.CollisionTypeByFrame = entry.CollisionTypeByFrame;
                 sprite.CollisionsEnabled = entry.CollisionsEnabled;
             }
+            SpriteManager.Instance.DefinitionProvenance = definition.Sprites.All(sprite => sprite.Id != Guid.Empty &&
+                !string.IsNullOrWhiteSpace(sprite.Nickname))
+                ? definition.LoadStamp?.Materialized(definition, () => FromSprites(created))
+                : null;
             return created;
         }
         catch
