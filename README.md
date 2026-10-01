@@ -103,7 +103,7 @@ The plugin is designed to ground AI assistance in the current engine instead of 
 
 See **[Using Gondwana with ChatGPT and Codex](https://github.com/Isthimius/Gondwana/wiki/Using-Gondwana-with-ChatGPT-and-Codex)**.
 
-<img width="725px" alt="image" src="https://github.com/user-attachments/assets/6464afec-eb3f-4402-932c-a3179ab229b8" />
+<img width="725px" alt="Gondwana ChatGPT plugin" src="https://github.com/user-attachments/assets/6464afec-eb3f-4402-932c-a3179ab229b8" />
 
 ---
 
@@ -146,7 +146,7 @@ Gondwana is deliberately an engine and framework, not an all-encompassing visual
 - **View-centric layered scenes** with multiple cameras, viewports, parallax, stable z-ordering, and world-space dirty-region tracking
 - **Host-owned display effects** for view- and layer-level effects, including fades, slides, directional fills and erases, view shake, and zoom
 - **Modular lighting and fog-of-war primitives**, including radial lights, flicker, darkness overlays, and tracked world-space reveal areas
-- **Multiple coordinate systems**: orthogonal, rhombic isometric, axial isometric, flat-top hex, pointy-top hex, and oblique
+- **Multiple coordinate systems**: orthogonal, rhombic isometric, axial isometric, flat-top hex, pointy-top hex, left oblique, and right oblique
 - **Sprites and DirectDrawing** for reusable images, shapes, text, particles, overlays, effects, composites, and high-volume bitmap instances
 - **Reusable game UI widgets** with lifecycle events, automatic input registration, focus, keyboard and pointer routing, dragging, hit testing, and components such as `SplashScreen`
 - **Sprite and camera movement** with easing, target following, interpolation, scripted paths, and reusable visual effects
