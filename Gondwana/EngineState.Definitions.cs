@@ -93,6 +93,19 @@ public sealed partial class EngineState
             Path.GetFullPath(file.SourcePath), Path.GetFullPath(path),
             OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal));
 
+    private static Exception DefinitionError(DefinitionStateEntry entry, string? baseDirectory, Exception error) =>
+        entry.AssetsFilePath is null ? error : new InvalidDataException(
+            $"Cannot load packed definition '{entry.AssetEntryName}' from GAF '{ResolvePath(entry.AssetsFilePath, baseDirectory)}'.", error);
+
+    private static T WithDefinitionContext<T>(DefinitionStateEntry entry, string? baseDirectory, Func<T> materialize)
+    {
+        try { return materialize(); }
+        catch (Exception ex) when (entry.AssetsFilePath is not null && ex is not OutOfMemoryException)
+        {
+            throw DefinitionError(entry, baseDirectory, ex);
+        }
+    }
+
     private static T LoadPacked<T>(DefinitionStateEntry entry, string? baseDirectory, AssetTypes expectedType, Func<AssetsFile, string, T> load)
     {
         var path = ResolvePath(entry.AssetsFilePath!, baseDirectory);

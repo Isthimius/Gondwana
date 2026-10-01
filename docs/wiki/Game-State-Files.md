@@ -20,6 +20,7 @@ A game state file should not, however, be confused with a complete application-s
 - [Game state versus game save data](#game-state-versus-game-save-data)
 - [What a state file can contain](#what-a-state-file-can-contain)
 - [Saving a state file](#saving-a-state-file)
+- [Preserve existing definition sources](#preserve-existing-definition-sources)
 - [Saving selected state](#saving-selected-state)
 - [Loading a state file](#loading-a-state-file)
 - [Loading versus merging](#loading-versus-merging)
@@ -156,6 +157,25 @@ Directory.CreateDirectory("Saves");
 Engine.Instance.State.SaveToFile(
     Path.Combine("Saves", "slot1.json"));
 ```
+
+---
+
+## Preserve existing definition sources
+
+Use `SaveToFile(path, new EngineStateSaveOptions { ... })` to choose `Inline`, `Loose`,
+or `PreserveSource` independently for `Tilesheets`, `Cycles`, `Scenes`, `Audio`, and
+`Sprites`. Existing boolean save arguments keep their inline/loose behavior.
+
+`PreserveSource` can retain a loose definition path or a packed `AssetsFilePath` plus
+`AssetEntryName` for GTS, GANI, GSCN, GSND, and GSPR. Changed or generated definitions
+fall back to current-state serialization. GAF paths in both the asset list and packed
+entries are relative to the saved state when possible, so an assets/saves directory
+tree can be moved together. GAF contents remain external.
+
+EngineState loads archives before definitions and resolves required registered content
+in dependency order. It preserves existing packed sources; it does not pack generated
+content into a GAF. See [Definition persistence options](Serialization-and-EngineState#definition-persistence-options)
+for the options example, mutation checks, stream identities, and anonymous-media fallback.
 
 ---
 

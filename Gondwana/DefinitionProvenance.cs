@@ -43,8 +43,8 @@ internal sealed class DefinitionLoadStamp
     internal DefinitionLoadStamp(object definition, string? filePath = null, string? assetsFilePath = null, string? entryName = null)
     {
         _definition = JToken.FromObject(definition);
-        _filePath = filePath;
-        _assetsFilePath = assetsFilePath;
+        _filePath = string.IsNullOrWhiteSpace(filePath) ? null : Path.GetFullPath(filePath);
+        _assetsFilePath = string.IsNullOrWhiteSpace(assetsFilePath) ? null : Path.GetFullPath(assetsFilePath);
         _entryName = entryName;
     }
 

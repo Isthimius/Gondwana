@@ -527,7 +527,8 @@ public sealed partial class EngineState
         // Tilesheets and Audio may depend on AssetsFiles for AssetIdentifier.Data.
         if (parts.HasFlag(EngineStateParts.Tilesheets) ||
             parts.HasFlag(EngineStateParts.Audio) ||
-            parts.HasFlag(EngineStateParts.Scenes) || parts.HasFlag(EngineStateParts.Sprites))
+            (parts.HasFlag(EngineStateParts.Scenes) && snapshot?.Scenes?.Any(entry => entry?.AssetsFilePath is not null) == true) ||
+            (parts.HasFlag(EngineStateParts.Sprites) && snapshot?.Sprites?.AssetsFilePath is not null))
         {
             parts |= EngineStateParts.AssetsFiles;
         }
@@ -612,15 +613,15 @@ public sealed partial class EngineState
         DefinitionPersistence persistence)
     {
         var entry = new AudioStateEntry();
+        var currentAudio = AudioDefinitionSerializer.FromManager(AudioResourceManager.Instance);
         if (TryPreserve(entry, AudioResourceManager.Instance.DefinitionProvenance,
-            AudioDefinitionSerializer.FromManager(AudioResourceManager.Instance), persistence, baseDirectory, out var loosePath))
+            currentAudio, persistence, baseDirectory, out var loosePath))
         {
             entry.GsndPath = loosePath;
             return entry;
         }
         // Anonymous stream packages cannot be named in a reloadable GSND. Export their
         // audio payloads to loose files; do not invent or mutate an archive.
-        var currentAudio = AudioDefinitionSerializer.FromManager(AudioResourceManager.Instance);
         var anonymousAudio = currentAudio.Resources.Where(resource =>
             resource.SourceKind == AudioResourceSourceKind.PackedAsset &&
             string.IsNullOrWhiteSpace(resource.AssetsFilePath)).ToList();
@@ -865,7 +866,8 @@ public sealed partial class EngineState
                         : !string.IsNullOrWhiteSpace(entry.GsprPath)
                         ? SpriteDefinitionSerializer.Load(ResolvePath(entry.GsprPath, baseDirectory))
                         : entry.Definition ?? throw new InvalidDataException("Sprite state entry requires GsprPath or Definition.");
-                    incoming = SpriteDefinitionSerializer.ToSprites(definition, allowDuplicateNicknames: true);
+                    incoming = WithDefinitionContext(entry, baseDirectory,
+                        () => SpriteDefinitionSerializer.ToSprites(definition, allowDuplicateNicknames: true));
                     DetachSnapshotSprites(incoming);
                 }
                 MergeSprites(incoming, overwriteExisting);
@@ -974,11 +976,11 @@ public sealed partial class EngineState
                     "Audio state entry does not contain a GSND path or inline definition.");
             }
 
-            AudioDefinitionSerializer.LoadIntoManager(
+            WithDefinitionContext(audio, baseDirectory, () => AudioDefinitionSerializer.LoadIntoManager(
                 definition,
                 overwriteExisting,
                 audio.Definition is not null ? baseDirectory :
-                    audio.GsndPath is not null ? Path.GetDirectoryName(ResolvePath(audio.GsndPath, baseDirectory)) : null);
+                    audio.GsndPath is not null ? Path.GetDirectoryName(ResolvePath(audio.GsndPath, baseDirectory)) : null));
             return;
         }
 
@@ -1235,6 +1237,7 @@ public sealed partial class EngineState
             return;
 
         var definitions = new List<AnimationDefinition>();
+        var sourceEntries = new Dictionary<AnimationDefinition, AnimationStateEntry>();
 
         foreach (var (key, entry) in animations)
         {
@@ -1271,11 +1274,12 @@ public sealed partial class EngineState
             }
             else if (!string.Equals(definition.Key, key, StringComparison.Ordinal))
             {
-                throw new InvalidDataException(
-                    $"Animation state entry '{key}' contains definition key '{definition.Key}'.");
+                throw DefinitionError(entry, baseDirectory, new InvalidDataException(
+                    $"Animation state entry '{key}' contains definition key '{definition.Key}'."));
             }
 
             definitions.Add(definition);
+            sourceEntries.Add(definition, entry);
         }
 
         // Validate next-cycle identities before mutating the registry. Two-phase
@@ -1296,8 +1300,8 @@ public sealed partial class EngineState
                     StringComparison.Ordinal) &&
                 !availableKeys.Contains(definition.NextCycleKey))
             {
-                throw new InvalidDataException(
-                    $"GANI animation '{definition.Key}' references next cycle '{definition.NextCycleKey}', but no matching animation is available.");
+                throw DefinitionError(sourceEntries[definition], baseDirectory, new InvalidDataException(
+                    $"GANI animation '{definition.Key}' references next cycle '{definition.NextCycleKey}', but no matching animation is available."));
             }
         }
 
@@ -1305,12 +1309,17 @@ public sealed partial class EngineState
 
         foreach (var definition in definitions)
         {
-            var cycle = AnimationDefinitionSerializer.MaterializeCycle(definition);
+            var cycle = WithDefinitionContext(sourceEntries[definition], baseDirectory,
+                () => AnimationDefinitionSerializer.MaterializeCycle(definition));
             materialized.Add((cycle, definition));
         }
 
         foreach (var (cycle, definition) in materialized)
-            AnimationDefinitionSerializer.ApplyNextCycle(cycle, definition);
+            WithDefinitionContext(sourceEntries[definition], baseDirectory, () =>
+            {
+                AnimationDefinitionSerializer.ApplyNextCycle(cycle, definition);
+                return cycle;
+            });
     }
 
     private static void DetachLegacySnapshotScenes(List<SceneStateEntry>? scenes)
@@ -1518,4 +1527,3 @@ public sealed partial class EngineState
 
     #endregion deserialization helpers
 }
-

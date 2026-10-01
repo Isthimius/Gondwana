@@ -520,3 +520,14 @@ That same separation makes GANI suitable for both a standalone WinForms animatio
 - [[Tilesheets]] — runtime tilesheet model
 - [[Game State Files]] — saving animation definitions with EngineState
 - [[Serialization and EngineState]] — inline/external definition handling
+
+## Preserving definition origins in EngineState
+
+`EngineStateSaveOptions` supports `DefinitionPersistence.PreserveSource` for this
+format. A definition loaded from a named GAF can retain `AssetsFilePath` and
+`AssetEntryName`; a loose definition can retain its path. EngineState compares current
+serializable state with its loaded baseline and falls back when it changed. Packed
+loads use `AssetsFile.SourcePath`, including an explicitly supplied stream origin;
+anonymous archives cannot produce path-based provenance. See
+[Definition persistence options](Serialization-and-EngineState#definition-persistence-options)
+for collection ownership, generated identities, relative paths, and safe fallback.

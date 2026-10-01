@@ -15,6 +15,7 @@ using Gondwana.Scenes.GSCN;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SkiaSharp;
+using Xunit.Abstractions;
 
 namespace Gondwana.Tests;
 
@@ -24,9 +25,11 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
     private readonly string _root = Path.Combine(Path.GetTempPath(), "PackedState-" + Guid.NewGuid());
     private string ArchivePath => Path.Combine(_root, "assets", "game.gaf");
     private string StatePath => Path.Combine(_root, "saves", "state.json");
+    private readonly ITestOutputHelper _output;
 
-    public EngineStatePackedDefinitionTests()
+    public EngineStatePackedDefinitionTests(ITestOutputHelper output)
     {
+        _output = output;
         Clear();
         Directory.CreateDirectory(Path.Combine(_root, "assets"));
         Directory.CreateDirectory(Path.Combine(_root, "saves"));
@@ -55,7 +58,8 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
 
     private static EngineStateSaveOptions Preserve(bool compress = false, EngineStateParts parts = EngineStateParts.All) => new()
     {
-        Compress = compress, Parts = parts,
+        Compress = compress,
+        Parts = parts,
         Tilesheets = DefinitionPersistence.PreserveSource,
         Cycles = DefinitionPersistence.PreserveSource,
         Scenes = DefinitionPersistence.PreserveSource,
@@ -397,6 +401,71 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         var entry = Read(StatePath)["Scenes"]!["$values"]![0]!;
         Assert.Null(entry["AssetsFilePath"]);
         Assert.Equal(scene.ID, entry["Definition"]!["ID"]!.Value<string>());
+    }
+
+    [Theory]
+    [InlineData(DefinitionPersistence.Inline)]
+    [InlineData(DefinitionPersistence.Loose)]
+    [InlineData(DefinitionPersistence.PreserveSource)]
+    public void SaveModesProduceCanonicalShapes(DefinitionPersistence mode)
+    {
+        CreatePackage();
+        new EngineState().SaveToFile(StatePath, new EngineStateSaveOptions
+        {
+            Tilesheets = mode,
+            Cycles = mode,
+            Scenes = mode,
+            Audio = mode,
+            Sprites = mode
+        });
+        var root = Read(StatePath);
+        _output.WriteLine(root.ToString());
+        foreach (var entry in Entries(root))
+        {
+            Assert.Equal(mode == DefinitionPersistence.Inline, entry["Definition"]?.Type == JTokenType.Object);
+            Assert.Equal(mode == DefinitionPersistence.PreserveSource, entry["AssetEntryName"] is not null);
+        }
+        Clear();
+        EngineState.LoadFromFile(StatePath);
+        Assert.Single(SpriteManager.Instance.AllSprites);
+    }
+
+    [Fact]
+    public void LegacySpriteOnlyLoadDoesNotClearExistingArchives()
+    {
+        CreatePackage();
+        var archive = Assert.Single(AssetsFile.AllAssetsFiles);
+        new EngineState().SaveToFile(StatePath, parts: EngineStateParts.Sprites);
+        EngineState.LoadFromFile(StatePath, parts: EngineStateParts.Sprites);
+        Assert.Same(archive, Assert.Single(AssetsFile.AllAssetsFiles));
+    }
+
+    [Fact]
+    public void EncryptedPackageCredentialsSurviveTheInertArchiveRecord()
+    {
+        var archive = AssetsFile.LoadOrCreate(ArchivePath, "test-password", encrypt: true);
+        Add(archive, AssetTypes.SceneDefinition, "level.gscn", SceneDefinitionSerializer.ToJson(new SceneDefinition { ID = "encrypted" }));
+        archive.Save();
+        SceneDefinitionSerializer.LoadScene(archive, "level.gscn");
+        new EngineState().SaveToFile(StatePath, Preserve(parts: EngineStateParts.Scenes));
+        Clear();
+        EngineState.LoadFromFile(StatePath);
+        Assert.Equal("encrypted", Assert.Single(Scene.GetAllScenes()).ID);
+    }
+
+    [Fact]
+    public void InvalidPackedAnimationReportsOriginDuringMaterialization()
+    {
+        CreatePackage();
+        new EngineState().SaveToFile(StatePath, Preserve());
+        var archive = Assert.Single(AssetsFile.AllAssetsFiles);
+        Add(archive, AssetTypes.AnimationDefinition, "walk.gani", "{ 'Key': 'walk', 'Frames': [] }");
+        archive.Save();
+        Clear();
+        var ex = Assert.Throws<InvalidDataException>(() => EngineState.LoadFromFile(StatePath));
+        Assert.Contains(ArchivePath, ex.Message);
+        Assert.Contains("walk.gani", ex.Message);
+        Assert.NotNull(ex.InnerException);
     }
 
     private sealed class Backend : IAudioBackend
