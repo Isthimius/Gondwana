@@ -106,6 +106,8 @@ $(function(){initNavTree('classGondwana_1_1EngineState.html','','classGondwana_1
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a6e34de6466feb6924f24734e242feb9b" id="r_a6e34de6466feb6924f24734e242feb9b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6e34de6466feb6924f24734e242feb9b">SaveToFile</a> (string path, bool compress=false, bool separateGtsFiles=false, <a class="el" href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575">EngineStateParts</a> parts=<a class="el" href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575ab1c94ca2fbc3e78fc30069c8d0f01680">EngineStateParts.All</a>, bool separateGscnFiles=false, bool separateGaniFiles=false, bool separateGsndFile=false, bool separateGsprFile=false)</td></tr>
 <tr class="memdesc:a6e34de6466feb6924f24734e242feb9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves the current engine state to a file in JSON format with optional compression and selective state component inclusion. The saved state can later be loaded using <a class="el" href="#a3b13b5b6ba86200ef09ecfd9e56df659" title="Loads engine state from a file, replacing the current engine state with the saved state....">LoadFromFile</a> or merged using <a class="el" href="#a10b8dbf4d208330855461a3414b7eca8" title="Loads engine state from a file and merges it with the current engine state, optionally overwriting ex...">MergeFromFile</a>.  <br /></td></tr>
+<tr class="memitem:ad0ea93ce2ece2bf3812e71c9340647f1" id="r_ad0ea93ce2ece2bf3812e71c9340647f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad0ea93ce2ece2bf3812e71c9340647f1">SaveToFile</a> (string path, <a class="el" href="classGondwana_1_1EngineStateSaveOptions.html">EngineStateSaveOptions</a> options)</td></tr>
+<tr class="memdesc:ad0ea93ce2ece2bf3812e71c9340647f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves selected state using per-format definition persistence choices.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -180,7 +182,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00408">408</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00429">429</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -232,12 +234,12 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00452">452</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00473">473</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
 <a id="a6e34de6466feb6924f24734e242feb9b" name="a6e34de6466feb6924f24734e242feb9b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e34de6466feb6924f24734e242feb9b">&#9670;&#160;</a></span>SaveToFile()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e34de6466feb6924f24734e242feb9b">&#9670;&#160;</a></span>SaveToFile() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -260,7 +262,7 @@ Properties</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575">EngineStateParts</a></td>          <td class="paramname"><span class="paramname"><em>parts</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575ab1c94ca2fbc3e78fc30069c8d0f01680">EngineStateParts::All</a></span>, </td>
+          <td class="paramtype"><a class="el" href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575">EngineStateParts</a></td>          <td class="paramname"><span class="paramname"><em>parts</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575ab1c94ca2fbc3e78fc30069c8d0f01680">EngineStateParts.All</a></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -300,7 +302,37 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00348">348</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+</div>
+</div>
+<a id="ad0ea93ce2ece2bf3812e71c9340647f1" name="ad0ea93ce2ece2bf3812e71c9340647f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0ea93ce2ece2bf3812e71c9340647f1">&#9670;&#160;</a></span>SaveToFile() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.EngineState.SaveToFile </td>
+          <td>(</td>
+          <td class="paramtype">string</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1EngineStateSaveOptions.html">EngineStateSaveOptions</a></td>          <td class="paramname"><span class="paramname"><em>options</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Saves selected state using per-format definition persistence choices. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td>Destination state file.</td></tr>
+    <tr><td class="paramname">options</td><td>Compression, selection, and persistence choices.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00376">376</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -327,7 +359,7 @@ Properties</h2></td></tr>
 
 <p>Gets the collection of all loaded asset files (resource archives) currently registered with the engine. Asset files contain packed game resources such as images, audio, and data files that have been loaded into memory. This property provides a snapshot of the current asset files for serialization purposes. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00215">215</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00221">221</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -353,7 +385,7 @@ Properties</h2></td></tr>
 
 <p>Gets the dictionary of all registered animation cycles, keyed by their unique identifiers. <a class="el" href="namespaceGondwana_1_1Drawing_1_1Animation.html">Animation</a> cycles define sprite animation sequences including frame data, timing, and playback behavior. This property provides direct access to the cycle registry for serialization purposes. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00231">231</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00237">237</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -379,7 +411,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the JSON serializer settings used for serializing and deserializing engine state. These settings are configured to handle type information, preserve object references, and produce indented (human-readable) JSON output. The default configuration uses automatic type name handling and preserves all object references to maintain complex object graphs. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00197">197</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00203">203</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -405,7 +437,7 @@ Properties</h2></td></tr>
 
 <p>Gets the list of all scenes currently registered with the engine. <a class="el" href="namespaceGondwana_1_1Scenes.html">Scenes</a> represent distinct game locations or levels, containing layers, entities, and scene-specific data. This property provides direct access to the scene collection for serialization and state management. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00239">239</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00245">245</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -431,7 +463,7 @@ Properties</h2></td></tr>
 
 <p>Gets the dictionary of all registered audio resources, keyed by their unique identifiers. <a class="el" href="namespaceGondwana_1_1Audio.html">Audio</a> resources include sound effects, music tracks, and their associated playback settings such as volume, pan, and looping behavior. This property provides access to the audio resource registry for serialization and state management. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00256">256</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00262">262</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -457,7 +489,7 @@ Properties</h2></td></tr>
 
 <p>Gets the list of all active sprites currently managed by the sprite manager. Sprites are visual game entities that can be positioned, animated, and rendered on screen. This property provides direct access to the sprite collection for serialization purposes. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00247">247</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00253">253</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -483,7 +515,7 @@ Properties</h2></td></tr>
 
 <p>Gets a dictionary of all registered tilesheets, keyed by their unique identifiers. Tilesheets contain tile graphics and metadata used for rendering tile-based game worlds. This property provides access to the current tilesheet registry for serialization and state management. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00223">223</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00229">229</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>
@@ -525,7 +557,7 @@ Properties</h2></td></tr>
 <div class="line"><span class="comment">// Retrieve values</span></div>
 <div class="line">var hp = engineState.ValueBag.Get(NpcHitPoints, <span class="keyword">new</span> Dictionary&lt;string, int&gt;());</div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00290">290</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineState_8cs_source.html#l00296">296</a> of file <a class="el" href="EngineState_8cs_source.html">EngineState.cs</a>.</p>
 
 </div>
 </div>

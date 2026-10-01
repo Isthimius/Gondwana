@@ -48,6 +48,7 @@ var hierarchy =
     [ "Gondwana.EngineInputSystems", "classGondwana_1_1EngineInputSystems.html", null ],
     [ "Gondwana.EngineManagers", "classGondwana_1_1EngineManagers.html", null ],
     [ "Gondwana.EngineState", "classGondwana_1_1EngineState.html", null ],
+    [ "Gondwana.EngineStateSaveOptions", "classGondwana_1_1EngineStateSaveOptions.html", null ],
     [ "EventArgs", null, [
       [ "Gondwana.CyclesPerSecondCalculatedEventArgs", "classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html", null ],
       [ "Gondwana.Drawing.Animation.AnimatorEventArgs", "classGondwana_1_1Drawing_1_1Animation_1_1AnimatorEventArgs.html", null ],

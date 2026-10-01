@@ -9,5 +9,6 @@ var searchData=
   ['engineinputsystems_6',['EngineInputSystems',['../classGondwana_1_1EngineInputSystems.html',1,'Gondwana']]],
   ['enginemanagers_7',['EngineManagers',['../classGondwana_1_1EngineManagers.html',1,'Gondwana']]],
   ['enginestate_8',['EngineState',['../classGondwana_1_1EngineState.html',1,'Gondwana']]],
-  ['eraseeffect_9',['EraseEffect',['../classGondwana_1_1Effects_1_1EraseEffect.html',1,'Gondwana::Effects']]]
+  ['enginestatesaveoptions_9',['EngineStateSaveOptions',['../classGondwana_1_1EngineStateSaveOptions.html',1,'Gondwana']]],
+  ['eraseeffect_10',['EraseEffect',['../classGondwana_1_1Effects_1_1EraseEffect.html',1,'Gondwana::Effects']]]
 ];

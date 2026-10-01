@@ -10,6 +10,7 @@ var classGondwana_1_1Assets_1_1AssetsFile =
     [ "Save", "classGondwana_1_1Assets_1_1AssetsFile.html#a04993d63e330991b3fc75f205156c08d", null ],
     [ "FilePath", "classGondwana_1_1Assets_1_1AssetsFile.html#a213f251f4ca110270f0433a2ffb209bf", null ],
     [ "Password", "classGondwana_1_1Assets_1_1AssetsFile.html#a3efb1643fabaa10f3c97325a2cab57f3", null ],
+    [ "SourcePath", "classGondwana_1_1Assets_1_1AssetsFile.html#a363097814af65fff0fc22bb98bd77a1d", null ],
     [ "this[AssetTypes type, string name]", "classGondwana_1_1Assets_1_1AssetsFile.html#a405d8468aaf02bcb0603800ceaeccd95", null ],
     [ "UseEncryption", "classGondwana_1_1Assets_1_1AssetsFile.html#ad30ad0393a0e95c6def5e3d50d5ac08e", null ]
 ];

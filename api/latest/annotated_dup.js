@@ -393,6 +393,7 @@ var annotated_dup =
       [ "EngineInputSystems", "classGondwana_1_1EngineInputSystems.html", "classGondwana_1_1EngineInputSystems" ],
       [ "EngineManagers", "classGondwana_1_1EngineManagers.html", "classGondwana_1_1EngineManagers" ],
       [ "EngineState", "classGondwana_1_1EngineState.html", "classGondwana_1_1EngineState" ],
+      [ "EngineStateSaveOptions", "classGondwana_1_1EngineStateSaveOptions.html", "classGondwana_1_1EngineStateSaveOptions" ],
       [ "IEngineDispatcher", "interfaceGondwana_1_1IEngineDispatcher.html", "interfaceGondwana_1_1IEngineDispatcher" ],
       [ "IUiDispatcher", "interfaceGondwana_1_1IUiDispatcher.html", "interfaceGondwana_1_1IUiDispatcher" ],
       [ "TypedValueBag", "classGondwana_1_1TypedValueBag.html", "classGondwana_1_1TypedValueBag" ],

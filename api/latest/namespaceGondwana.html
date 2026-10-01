@@ -127,6 +127,8 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classGondwana_1_1Engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a> registration helpers for browser/WASM audio. <br /></td></tr>
 <tr class="memitem:CyclesPerSecondCalculatedEventArgs" id="r_CyclesPerSecondCalculatedEventArgs"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html">CyclesPerSecondCalculatedEventArgs</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides data for events that report calculated cycles per second (CPS) performance metrics. This event args class contains both gross and net cycle counts, their corresponding rates per second, and the sampling time period. Net CPS typically represents the effective frame rate (FPS) of the engine, while gross CPS includes all cycles regardless of whether they resulted in rendered frames.  <a href="classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#details">More...</a><br /></td></tr>
+<tr class="memitem:DefinitionLoadStamp" id="r_DefinitionLoadStamp"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>DefinitionLoadStamp</b></td></tr>
+<tr class="memitem:DefinitionProvenance" id="r_DefinitionProvenance"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>DefinitionProvenance</b></td></tr>
 <tr class="memitem:Engine" id="r_Engine"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Engine.html">Engine</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the core game engine singleton responsible for managing the main update loop, input systems, rendering, timing, and subsystem coordination.  <a href="classGondwana_1_1Engine.html#details">More...</a><br /></td></tr>
 <tr class="memitem:EngineDispatcher" id="r_EngineDispatcher"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1EngineDispatcher.html">EngineDispatcher</a></td></tr>
@@ -139,6 +141,8 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides centralized access to all engine resource managers.  <a href="classGondwana_1_1EngineManagers.html#details">More...</a><br /></td></tr>
 <tr class="memitem:EngineState" id="r_EngineState"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1EngineState.html">EngineState</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the complete serializable state of the game engine, including assets, scenes, sprites, audio resources, and custom data. This class provides functionality to save and load engine state to/from files with support for selective state management, compression, and merge operations. The state can be persisted as JSON and optionally compressed using GZip compression.  <a href="classGondwana_1_1EngineState.html#details">More...</a><br /></td></tr>
+<tr class="memitem:EngineStateSaveOptions" id="r_EngineStateSaveOptions"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1EngineStateSaveOptions.html">EngineStateSaveOptions</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Persistence choices for an <a class="el" href="classGondwana_1_1EngineState.html" title="Represents the complete serializable state of the game engine, including assets, scenes,...">EngineState</a> save.  <a href="classGondwana_1_1EngineStateSaveOptions.html#details">More...</a><br /></td></tr>
 <tr class="memitem:IEngineDispatcher" id="r_IEngineDispatcher"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceGondwana_1_1IEngineDispatcher.html">IEngineDispatcher</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines a contract for dispatching actions to the engine's background thread in a thread-safe manner. Implementations of this interface provide mechanisms for posting work items from any thread to be executed on the engine's dedicated update loop thread, ensuring thread-safe access to engine state.  <a href="interfaceGondwana_1_1IEngineDispatcher.html#details">More...</a><br /></td></tr>
 <tr class="memitem:IUiDispatcher" id="r_IUiDispatcher"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceGondwana_1_1IUiDispatcher.html">IUiDispatcher</a></td></tr>
@@ -165,6 +169,11 @@ Enumerations</h2></td></tr>
 <br />
  }</td></tr>
 <tr class="memdesc:a41a5393997f1467717cf9a6ca9281575"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents different parts of the engine state that can be managed, saved, or loaded independently. This is a flags enumeration, allowing multiple state parts to be combined using bitwise operations to represent complex state management scenarios. For example, use <code>AssetsFiles | Tilesheets</code> to represent both asset files and tilesheet state, or use All to represent all engine state components.  <a href="#a41a5393997f1467717cf9a6ca9281575">More...</a><br /></td></tr>
+<tr class="memitem:a50de37e572466e0f64290e0cf591b42a" id="r_a50de37e572466e0f64290e0cf591b42a"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a50de37e572466e0f64290e0cf591b42a">DefinitionPersistence</a> { <a class="el" href="#a50de37e572466e0f64290e0cf591b42aa0125cf5f3ca38b312ca5d3b511c45a13">Inline</a>
+, <a class="el" href="#a50de37e572466e0f64290e0cf591b42aa08d78f099561104c2015d19ea7d9d41e">Loose</a>
+, <a class="el" href="#a50de37e572466e0f64290e0cf591b42aaa2155b6f92e7b5afb3bf7930757ae0c8">PreserveSource</a>
+ }</td></tr>
+<tr class="memdesc:a50de37e572466e0f64290e0cf591b42a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Controls how EngineState persists a definition.  <a href="#a50de37e572466e0f64290e0cf591b42a">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -172,6 +181,32 @@ Functions</h2></td></tr>
 <tr class="memdesc:aaea774e0d5709f3c95b3bb8e843c97e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a strongly-typed key used to access values in a <a class="el" href="classGondwana_1_1TypedValueBag.html" title="A flexible, strongly-typed value container intended for runtime-attached metadata and ephemeral engin...">TypedValueBag</a>.  <br /></td></tr>
 </table>
 <a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
+<a id="a50de37e572466e0f64290e0cf591b42a" name="a50de37e572466e0f64290e0cf591b42a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50de37e572466e0f64290e0cf591b42a">&#9670;&#160;</a></span>DefinitionPersistence</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#a50de37e572466e0f64290e0cf591b42a">Gondwana.DefinitionPersistence</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Controls how <a class="el" href="classGondwana_1_1EngineState.html" title="Represents the complete serializable state of the game engine, including assets, scenes,...">EngineState</a> persists a definition. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a50de37e572466e0f64290e0cf591b42aa0125cf5f3ca38b312ca5d3b511c45a13" name="a50de37e572466e0f64290e0cf591b42aa0125cf5f3ca38b312ca5d3b511c45a13"></a>Inline&#160;</td><td class="fielddoc"><p>Embed the current definition in the state file. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a50de37e572466e0f64290e0cf591b42aa08d78f099561104c2015d19ea7d9d41e" name="a50de37e572466e0f64290e0cf591b42aa08d78f099561104c2015d19ea7d9d41e"></a>Loose&#160;</td><td class="fielddoc"><p>Write the current definition to a loose file beside the state. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a50de37e572466e0f64290e0cf591b42aaa2155b6f92e7b5afb3bf7930757ae0c8" name="a50de37e572466e0f64290e0cf591b42aaa2155b6f92e7b5afb3bf7930757ae0c8"></a>PreserveSource&#160;</td><td class="fielddoc"><p>Retain an unchanged durable source; otherwise embed the current definition. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="EngineStateSaveOptions_8cs_source.html#l00004">4</a> of file <a class="el" href="EngineStateSaveOptions_8cs_source.html">EngineStateSaveOptions.cs</a>.</p>
+
+</div>
+</div>
 <a id="a41a5393997f1467717cf9a6ca9281575" name="a41a5393997f1467717cf9a6ca9281575"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a41a5393997f1467717cf9a6ca9281575">&#9670;&#160;</a></span>EngineStateParts</h2>
 

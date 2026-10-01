@@ -139,6 +139,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memdesc:ae728e2dcbe1812183246027c24896cf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads or creates an asset file, optionally without adding it to the runtime collection. Authoring hosts can own detached packages without changing runtime state.  <br /></td></tr>
 <tr class="memitem:ad656184c34a70044369f1a0b51580183" id="r_ad656184c34a70044369f1a0b51580183"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html">AssetsFile</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad656184c34a70044369f1a0b51580183">Load</a> (Stream stream, string? password=null, bool register=true)</td></tr>
 <tr class="memdesc:ad656184c34a70044369f1a0b51580183"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads an existing asset file from a readable stream.  <br /></td></tr>
+<tr class="memitem:a2cc7bdd8472197d6f230b94d5ae3c4ca" id="r_a2cc7bdd8472197d6f230b94d5ae3c4ca"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html">AssetsFile</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2cc7bdd8472197d6f230b94d5ae3c4ca">Load</a> (Stream stream, string? password, bool register, string? sourcePath)</td></tr>
+<tr class="memdesc:a2cc7bdd8472197d6f230b94d5ae3c4ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads a buffered archive with an optional reconstructible source path.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
@@ -150,6 +152,8 @@ Properties</h2></td></tr>
 <tr class="memdesc:a3efb1643fabaa10f3c97325a2cab57f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the password associated with the current instance.  <br /></td></tr>
 <tr class="memitem:ad30ad0393a0e95c6def5e3d50d5ac08e" id="r_ad30ad0393a0e95c6def5e3d50d5ac08e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad30ad0393a0e95c6def5e3d50d5ac08e">UseEncryption</a><code> [get]</code></td></tr>
 <tr class="memdesc:ad30ad0393a0e95c6def5e3d50d5ac08e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether encryption is enabled for the current operation.  <br /></td></tr>
+<tr class="memitem:a363097814af65fff0fc22bb98bd77a1d" id="r_a363097814af65fff0fc22bb98bd77a1d"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a363097814af65fff0fc22bb98bd77a1d">SourcePath</a><code> [get]</code></td></tr>
+<tr class="memdesc:a363097814af65fff0fc22bb98bd77a1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the archive's reconstructible origin, including an optional stream origin.  <br /></td></tr>
 <tr class="memitem:a405d8468aaf02bcb0603800ceaeccd95" id="r_a405d8468aaf02bcb0603800ceaeccd95"><td class="memItemLeft" align="right" valign="top">Stream?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a405d8468aaf02bcb0603800ceaeccd95">this[AssetTypes type, string name]</a><code> [get]</code></td></tr>
 <tr class="memdesc:a405d8468aaf02bcb0603800ceaeccd95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the stream associated with the specified asset type and name.  <br /></td></tr>
 </table>
@@ -194,7 +198,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00304">304</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00320">320</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -233,7 +237,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00284">284</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00300">300</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -279,7 +283,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00326">326</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00342">342</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -329,7 +333,7 @@ Properties</h2></td></tr>
 
 <p>Releases all resources used by the <a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html" title="Represents an asset file used by the engine, providing functionality to load, manage,...">AssetsFile</a> instance. </p>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00478">478</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00494">494</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -363,7 +367,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A Stream containing the asset data if a match is found; otherwise, <code>null</code>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00390">390</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00406">406</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -385,12 +389,65 @@ Properties</h2></td></tr>
 <p>Retrieves all entries from the asset file. </p>
 <dl class="section return"><dt>Returns</dt><dd>An IEnumerable&lt;T&gt; containing all entries in the asset file.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00424">424</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00440">440</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+
+</div>
+</div>
+<a id="a2cc7bdd8472197d6f230b94d5ae3c4ca" name="a2cc7bdd8472197d6f230b94d5ae3c4ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cc7bdd8472197d6f230b94d5ae3c4ca">&#9670;&#160;</a></span>Load() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html">AssetsFile</a> Gondwana.Assets.AssetsFile.Load </td>
+          <td>(</td>
+          <td class="paramtype">Stream</td>          <td class="paramname"><span class="paramname"><em>stream</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string?</td>          <td class="paramname"><span class="paramname"><em>password</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>register</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string?</td>          <td class="paramname"><span class="paramname"><em>sourcePath</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Loads a buffered archive with an optional reconstructible source path. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream</td><td>The readable archive stream.</td></tr>
+    <tr><td class="paramname">password</td><td>The optional archive password.</td></tr>
+    <tr><td class="paramname">register</td><td>Whether to register the archive.</td></tr>
+    <tr><td class="paramname">sourcePath</td><td>A path identifying the stream origin. Does not open or write that path.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The buffered archive.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00144">144</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
 <a id="ad656184c34a70044369f1a0b51580183" name="ad656184c34a70044369f1a0b51580183"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad656184c34a70044369f1a0b51580183">&#9670;&#160;</a></span>Load()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ad656184c34a70044369f1a0b51580183">&#9670;&#160;</a></span>Load() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -432,8 +489,6 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The loaded package, owned by the caller.</dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00135">135</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -569,7 +624,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00355">355</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00371">371</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -590,7 +645,7 @@ Properties</h2></td></tr>
 
 <p>Saves the current set of entries to a zip file at the specified file path. </p>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00433">433</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00449">449</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -689,7 +744,7 @@ Properties</h2></td></tr>
 
 <p>Gets the file path associated with the current instance. </p>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00162">162</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00172">172</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -715,7 +770,34 @@ Properties</h2></td></tr>
 
 <p>Gets the password associated with the current instance. </p>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00168">168</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00178">178</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+
+</div>
+</div>
+<a id="a363097814af65fff0fc22bb98bd77a1d" name="a363097814af65fff0fc22bb98bd77a1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a363097814af65fff0fc22bb98bd77a1d">&#9670;&#160;</a></span>SourcePath</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">string? Gondwana.Assets.AssetsFile.SourcePath</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the archive's reconstructible origin, including an optional stream origin. </p>
+<p>File-backed archives use FilePath. Anonymous streams have no source path.</p>
+
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00189">189</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -749,7 +831,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A readable stream if found; otherwise, <code>null</code>.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00377">377</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00393">393</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>
@@ -775,7 +857,7 @@ Properties</h2></td></tr>
 
 <p>Gets a value indicating whether encryption is enabled for the current operation. </p>
 
-<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00174">174</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AssetsFile_8cs_source.html#l00184">184</a> of file <a class="el" href="AssetsFile_8cs_source.html">AssetsFile.cs</a>.</p>
 
 </div>
 </div>

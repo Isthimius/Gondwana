@@ -25,10 +25,16 @@ var namespaceGondwana =
     [ "EngineInputSystems", "classGondwana_1_1EngineInputSystems.html", "classGondwana_1_1EngineInputSystems" ],
     [ "EngineManagers", "classGondwana_1_1EngineManagers.html", "classGondwana_1_1EngineManagers" ],
     [ "EngineState", "classGondwana_1_1EngineState.html", "classGondwana_1_1EngineState" ],
+    [ "EngineStateSaveOptions", "classGondwana_1_1EngineStateSaveOptions.html", "classGondwana_1_1EngineStateSaveOptions" ],
     [ "IEngineDispatcher", "interfaceGondwana_1_1IEngineDispatcher.html", "interfaceGondwana_1_1IEngineDispatcher" ],
     [ "IUiDispatcher", "interfaceGondwana_1_1IUiDispatcher.html", "interfaceGondwana_1_1IUiDispatcher" ],
     [ "TypedValueBag", "classGondwana_1_1TypedValueBag.html", "classGondwana_1_1TypedValueBag" ],
     [ "UiDispatcher", "classGondwana_1_1UiDispatcher.html", "classGondwana_1_1UiDispatcher" ],
+    [ "DefinitionPersistence", "namespaceGondwana.html#a50de37e572466e0f64290e0cf591b42a", [
+      [ "Inline", "namespaceGondwana.html#a50de37e572466e0f64290e0cf591b42aa0125cf5f3ca38b312ca5d3b511c45a13", null ],
+      [ "Loose", "namespaceGondwana.html#a50de37e572466e0f64290e0cf591b42aa08d78f099561104c2015d19ea7d9d41e", null ],
+      [ "PreserveSource", "namespaceGondwana.html#a50de37e572466e0f64290e0cf591b42aaa2155b6f92e7b5afb3bf7930757ae0c8", null ]
+    ] ],
     [ "EngineStateParts", "namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575", [
       [ "None", "namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575a6adf97f83acf6453d4a6a4b1070f3754", null ],
       [ "AssetsFiles", "namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575a2578806b448ef3b8bd75bdfedcd01ae3", null ],

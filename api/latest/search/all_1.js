@@ -90,7 +90,7 @@ var searchData=
   ['assettypes_87',['AssetTypes',['../namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1',1,'Gondwana::Assets']]],
   ['asynchronous_88',['Asynchronous',['../namespaceGondwana_1_1Logging.html#a13d81980428de8344a144441d03b249da288aae25bc408055f50c21c991903a44',1,'Gondwana::Logging']]],
   ['attachcollider_89',['AttachCollider',['../classGondwana_1_1Drawing_1_1Tile.html#a2ecd2b0efa88c81ae5a4f14fc5134f9a',1,'Gondwana::Drawing::Tile']]],
-  ['audio_90',['Audio',['../namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1ab22f0418e8ac915eb66f829d262d14a2',1,'Gondwana.Assets.Audio'],['../namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575ab22f0418e8ac915eb66f829d262d14a2',1,'Gondwana.Audio']]],
+  ['audio_90',['Audio',['../classGondwana_1_1EngineStateSaveOptions.html#a0d8ef42cc01d8b1acad52d4ec5613be0',1,'Gondwana.EngineStateSaveOptions.Audio'],['../namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1ab22f0418e8ac915eb66f829d262d14a2',1,'Gondwana.Assets.Audio'],['../namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575ab22f0418e8ac915eb66f829d262d14a2',1,'Gondwana.Audio']]],
   ['audiodefinition_91',['AudioDefinition',['../classGondwana_1_1Audio_1_1GSND_1_1AudioDefinition.html',1,'Gondwana.Audio.GSND.AudioDefinition'],['../namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1af70d3c1295240449f0db0efcc4ee7482',1,'Gondwana.Assets.AudioDefinition']]],
   ['audiodefinitionsource_92',['AudioDefinitionSource',['../classGondwana_1_1Audio_1_1GSND_1_1AudioDefinitionSource.html',1,'Gondwana::Audio::GSND']]],
   ['audiodefinitionsourcekind_93',['AudioDefinitionSourceKind',['../namespaceGondwana_1_1Audio_1_1GSND.html#ac6269f8c685110e0e184a7e67ceed6ed',1,'Gondwana::Audio::GSND']]],
