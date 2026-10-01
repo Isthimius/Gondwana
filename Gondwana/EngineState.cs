@@ -385,8 +385,8 @@ public sealed partial class EngineState
         foreach (var mode in new[] { options.Tilesheets, options.Cycles, options.Scenes, options.Audio, options.Sprites })
             if (!Enum.IsDefined(mode)) throw new ArgumentOutOfRangeException(nameof(options));
         var parts = options.Parts;
-        if (parts.HasFlag(EngineStateParts.Sprites) && options.Sprites == DefinitionPersistence.PreserveSource)
-            parts |= EngineStateParts.Scenes | EngineStateParts.Tilesheets;
+if (parts.HasFlag(EngineStateParts.Sprites) && options.Sprites == DefinitionPersistence.PreserveSource)
+    parts |= EngineStateParts.Scenes | EngineStateParts.Cycles | EngineStateParts.Tilesheets;
         if (parts.HasFlag(EngineStateParts.Scenes) && options.Scenes == DefinitionPersistence.PreserveSource)
             parts |= EngineStateParts.Cycles | EngineStateParts.Tilesheets;
         var snapshot = BuildSnapshot(NormalizeParts(parts), baseDirectory, fullPath, options);
