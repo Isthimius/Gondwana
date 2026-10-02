@@ -51,6 +51,12 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
     private double _blitTotalMs;
     private double _flushTotalMs;
 
+    private long _gpuSynchronizationSamples;
+    private double _gpuLockWaitTotalMs;
+    private double _gpuLockWaitMaxMs;
+    private double _gpuLockHeldTotalMs;
+    private double _gpuLockHeldMaxMs;
+
     private bool _animationsPaused;
     private GondwanaView? _view;
     private TextBlock? _diagnosticsText;
@@ -128,6 +134,7 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         Engine.AfterBackgroundTasksExecute += AfterBackgroundTasksExecute;
         Engine.CPSCalculated += OnCpsCalculated;
         RenderSurface.Host.GpuRenderFrameDiagnosticsCalculated += OnGpuRenderFrameDiagnostics;
+        RenderSurface.Host.GpuRenderSynchronizationDiagnosticsCalculated += OnGpuRenderSynchronizationDiagnostics;
         RenderSurface.Adapter.FrameDiagnosticsCalculated += OnGpuFrameDiagnostics;
     }
 
@@ -145,6 +152,7 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         Engine.AfterBackgroundTasksExecute -= AfterBackgroundTasksExecute;
         Engine.CPSCalculated -= OnCpsCalculated;
         RenderSurface.Host.GpuRenderFrameDiagnosticsCalculated -= OnGpuRenderFrameDiagnostics;
+        RenderSurface.Host.GpuRenderSynchronizationDiagnosticsCalculated -= OnGpuRenderSynchronizationDiagnostics;
         RenderSurface.Adapter.FrameDiagnosticsCalculated -= OnGpuFrameDiagnostics;
 
         if (_view is not null)
@@ -278,6 +286,23 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         }
     }
 
+    private void OnGpuRenderSynchronizationDiagnostics(
+        GpuRenderSynchronizationDiagnostics diagnostics)
+    {
+        lock (_renderDiagnosticsLock)
+        {
+            _gpuSynchronizationSamples++;
+            _gpuLockWaitTotalMs += diagnostics.LockWaitMilliseconds;
+            _gpuLockWaitMaxMs = Math.Max(
+                _gpuLockWaitMaxMs,
+                diagnostics.LockWaitMilliseconds);
+            _gpuLockHeldTotalMs += diagnostics.LockHeldMilliseconds;
+            _gpuLockHeldMaxMs = Math.Max(
+                _gpuLockHeldMaxMs,
+                diagnostics.LockHeldMilliseconds);
+        }
+    }
+
     private void OnGpuFrameDiagnostics(WinFormGpuFrameDiagnostics diagnostics)
     {
         lock (_renderDiagnosticsLock)
@@ -346,7 +371,15 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
 
         double sceneRenderAverageMs = Average(render.SceneRenderTotalMs, render.SceneRenderSamples);
         double renderAndSnapshotAverageMs = Average(render.RenderAndSnapshotTotalMs, render.GpuCallbackSamples);
-        double snapshotAndFinalizeEstimateMs = Math.Max(0d, renderAndSnapshotAverageMs - sceneRenderAverageMs);
+        double lockWaitAverageMs = Average(
+            render.GpuLockWaitTotalMs,
+            render.GpuSynchronizationSamples);
+        double lockHeldAverageMs = Average(
+            render.GpuLockHeldTotalMs,
+            render.GpuSynchronizationSamples);
+        double snapshotAndFinalizeEstimateMs = Math.Max(
+            0d,
+            lockHeldAverageMs - sceneRenderAverageMs);
 
         var text = new StringBuilder()
             .AppendLine("Gondwana Scene Viewer Diagnostics  [F3]")
@@ -358,11 +391,13 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             .AppendLine($"Background avg/max: {averageBackgroundMs:0.000} / {maxBackgroundMs:0.000} ms  ({backgroundSamples:N0} samples)")
             .AppendLine($"GL callback avg/max: {Average(render.GpuCallbackTotalMs, render.GpuCallbackSamples):0.000} / {render.GpuCallbackMaxMs:0.000} ms")
             .AppendLine($"Render+snapshot avg: {renderAndSnapshotAverageMs:0.000} ms")
+            .AppendLine($"GL lock wait avg/max: {lockWaitAverageMs:0.000} / {render.GpuLockWaitMaxMs:0.000} ms")
+            .AppendLine($"GL lock held avg/max: {lockHeldAverageMs:0.000} / {render.GpuLockHeldMaxMs:0.000} ms")
             .AppendLine($"Scene render avg/max: {sceneRenderAverageMs:0.000} / {render.SceneRenderMaxMs:0.000} ms")
             .AppendLine($"Query/sort avg: {Average(render.QueryAndSortTotalMs, render.SceneRenderSamples):0.000} ms")
             .AppendLine($"Draw avg: {Average(render.DrawTotalMs, render.SceneRenderSamples):0.000} ms")
             .AppendLine($"Overlay avg: {Average(render.OverlayTotalMs, render.SceneRenderSamples):0.000} ms")
-            .AppendLine($"Snapshot/finalize est avg: {snapshotAndFinalizeEstimateMs:0.000} ms")
+            .AppendLine($"Snapshot/finalize in-lock est avg: {snapshotAndFinalizeEstimateMs:0.000} ms")
             .AppendLine($"Blit avg: {Average(render.BlitTotalMs, render.GpuCallbackSamples):0.000} ms")
             .AppendLine($"Flush avg: {Average(render.FlushTotalMs, render.GpuCallbackSamples):0.000} ms")
             .AppendLine($"Visible drawables/tiles avg: {Average(render.VisibleDrawableTotal, render.SceneRenderSamples):0.0} / {Average(render.VisibleTileTotal, render.SceneRenderSamples):0.0}")
@@ -435,6 +470,11 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
                 _renderAndSnapshotTotalMs,
                 _blitTotalMs,
                 _flushTotalMs,
+                _gpuSynchronizationSamples,
+                _gpuLockWaitTotalMs,
+                _gpuLockWaitMaxMs,
+                _gpuLockHeldTotalMs,
+                _gpuLockHeldMaxMs,
                 layers);
 
             _sceneRenderSamples = 0;
@@ -451,6 +491,11 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             _renderAndSnapshotTotalMs = 0;
             _blitTotalMs = 0;
             _flushTotalMs = 0;
+            _gpuSynchronizationSamples = 0;
+            _gpuLockWaitTotalMs = 0;
+            _gpuLockWaitMaxMs = 0;
+            _gpuLockHeldTotalMs = 0;
+            _gpuLockHeldMaxMs = 0;
             _layerDiagnostics.Clear();
 
             return snapshot;
@@ -582,6 +627,11 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         double RenderAndSnapshotTotalMs,
         double BlitTotalMs,
         double FlushTotalMs,
+        long GpuSynchronizationSamples,
+        double GpuLockWaitTotalMs,
+        double GpuLockWaitMaxMs,
+        double GpuLockHeldTotalMs,
+        double GpuLockHeldMaxMs,
         IReadOnlyList<LayerDiagnosticsSnapshot> Layers);
 
     // Viewer startup must not load an unrelated game config/state from the cwd.
