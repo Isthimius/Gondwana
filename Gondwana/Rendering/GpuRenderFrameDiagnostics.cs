@@ -9,6 +9,9 @@ public sealed record GpuLayerRenderDiagnostics(
     int ZOrder,
     int DrawableCount,
     int TileCount,
+    int TransformedTileCount,
+    int TileWidth,
+    int TileHeight,
     double QueryAndSortMilliseconds,
     double DrawMilliseconds);
 
