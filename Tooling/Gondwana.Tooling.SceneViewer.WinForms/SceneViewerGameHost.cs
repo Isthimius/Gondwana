@@ -5,6 +5,7 @@ using Gondwana.Drawing.Direct;
 using Gondwana.Input.Keyboard;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
+using GondwanaView = Gondwana.Rendering.Views.View;
 using Gondwana.Scenes;
 using Gondwana.Timers;
 using Gondwana.WinForms.Hosting;
@@ -28,7 +29,7 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
     private long _backgroundMaxTicks;
     private long _backgroundSampleCount;
     private int _animatingTileCount;
-    private View? _view;
+    private GondwanaView? _view;
     private TextBlock? _diagnosticsText;
     private Gondwana.CyclesPerSecondCalculatedEventArgs? _lastCpsSample;
 
