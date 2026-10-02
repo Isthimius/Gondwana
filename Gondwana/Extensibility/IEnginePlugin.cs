@@ -96,8 +96,9 @@ public interface IEnginePlugin
     ///   <see cref="Engine.Tick"/>.
     /// </description></item>
     /// <item><description>
-    ///   <strong>GPU/GL surfaces</strong> — called from the GL paint callback while the
-    ///   <c>GRContext</c> is current. Do not marshal GPU operations to a different thread.
+    ///   <strong>Desktop GPU surfaces</strong> — called on the Engine thread with a
+    ///   recording canvas. Use the supplied canvas and CPU resources; GRContext and
+    ///   canvas.Surface are unavailable. Browser WebGL retains synchronous GL execution.
     /// </description></item>
     /// </list>
     /// </para>

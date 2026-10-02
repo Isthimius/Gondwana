@@ -225,12 +225,16 @@ public class GpuBackbuffer : BackbufferBase
         DisposeSurface();
         int actualSampleCount = CreateGpuSurface(grContext, width, height, requestedSampleCount);
         _context = grContext;
-        UpdateSize(width, height);
+        // SizeChanged updates live viewports. Only this handoff needs the simulation
+        // gate; GPU creation and ordinary command replay never hold it.
+        lock (RenderStateSynchronization.SyncRoot)
+            UpdateSize(width, height);
 
         MarkMsaaConfigurationApplied(configurationRevision, actualSampleCount);
 
         // Set canvas into a known state for the first frame on the new surface.
         BeginFrame();
+        Canvas.Clear(ClearColor);
     }
 
     /// <summary>

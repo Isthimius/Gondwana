@@ -36,6 +36,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     private int _presentationInvalidated = 1;
     private float _deferredRenderScale = float.NaN;
     private Scene _scene = Scene.Empty;
+    private RecordingBackbuffer? _recordingBackbuffer;
+    private long _snapshotSequence;
 
     private readonly RenderSurfaceAdapterBase _renderSurfaceAdapter;
     private readonly ViewManager _viewManager;
@@ -94,9 +96,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     ///   <strong>CPU/bitmap surfaces</strong> — raised on the engine background thread.
     /// </description></item>
     /// <item><description>
-    ///   <strong>GPU/GL surfaces</strong> — raised on the GL thread from within
-    ///   <c>PaintSurface</c>, while the <c>GRContext</c> is current.
-    ///   Do not marshal GPU canvas operations to a different thread.
+    ///   <strong>Desktop GPU surfaces</strong> — raised on the Engine thread with a
+    ///   recording canvas. Use the supplied canvas and CPU resources; no GRContext
+    ///   is current and canvas.Surface is unavailable. Browser WebGL retains its
+    ///   synchronous GL callback behavior.
     /// </description></item>
     /// </list>
     /// </para>
@@ -319,6 +322,32 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         RenderBackbufferEnd?.Invoke();
     }
 
+    internal override void ProduceRenderFrameSnapshot(long tick)
+    {
+        if (!UsesRenderFrameSnapshots || _disposed) return;
+        var slot = FrameMailbox.TryBeginBuild();
+        if (slot is null) return;
+        var recorder = _recordingBackbuffer ??= new RecordingBackbuffer();
+        bool transferred = false;
+        try
+        {
+            recorder.Start(Backbuffer);
+            RenderBackbufferBegin?.Invoke();
+            RenderToBackbufferGpuFull(tick, recorder);
+            RenderBackbufferEnd?.Invoke();
+            var frame = new RenderFrameSnapshot(recorder.Complete(), ++_snapshotSequence,
+                HighResTimer.GetCurrentTick(), recorder.Width, recorder.Height);
+            transferred = true;
+            FrameMailbox.Publish(slot, frame);
+        }
+        catch
+        {
+            recorder.Cancel();
+            if (!transferred) FrameMailbox.AbortBuild(slot);
+            throw;
+        }
+    }
+
     /// <summary>
     /// Full-surface rendering path used exclusively for GL-thread-rendered backbuffers
     /// (i.e. <see cref="GpuBackbuffer"/>).
@@ -349,8 +378,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// per vsync and there is no partial-blit optimisation to preserve.
     /// </para>
     /// </remarks>
-    private void RenderToBackbufferGpuFull(long tick)
+    private void RenderToBackbufferGpuFull(long tick, BackbufferBase? destination = null)
     {
+        var target = destination ?? Backbuffer;
         bool collectDiagnostics = GpuRenderFrameDiagnosticsCalculated is not null;
         long diagnosticsStartTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
         long queryAndSortTicks = 0;
@@ -367,7 +397,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // DirectDrawings (e.g. a splash screen overlay) are still rendered.
         if (ViewManager.Views.Count == 0)
         {
-            Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
+            target.ClearRect(new Rectangle(0, 0, target.Width, target.Height));
             Scene.FullRefreshNeeded = false;
             return;
         }
@@ -375,7 +405,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         // A single clear lets translucent, wiped, or translated views reveal the
         // views beneath them. Each view paints its own background as part of its
         // presentation group below.
-        Backbuffer.ClearRect(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
+        target.ClearRect(new Rectangle(0, 0, target.Width, target.Height));
 
         foreach (var view in ViewManager.Views)
         {
@@ -390,9 +420,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 var vp = view.GetRenderViewportTargetRectPx();
 
                 // 2) Clip to this view's viewport, excluding areas covered by higher Z-order views.
-                Backbuffer.Canvas.Save();
-                Backbuffer.Canvas.ResetMatrix();
-                Backbuffer.Canvas.ClipRect(vp.ToSKRect(), SKClipOperation.Intersect, antialias: false);
+                target.Canvas.Save();
+                target.Canvas.ResetMatrix();
+                target.Canvas.ClipRect(vp.ToSKRect(), SKClipOperation.Intersect, antialias: false);
 
                 foreach (var blocker in ViewManager.GetViewsAbove(view))
                 {
@@ -401,20 +431,20 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
                     var overlap = Rectangle.Intersect(vp, blocker.GetRenderViewportTargetRectPx());
                     if (!overlap.IsEmpty)
-                        Backbuffer.Canvas.ClipRect(overlap.ToSKRect(), SKClipOperation.Difference, antialias: false);
+                        target.Canvas.ClipRect(overlap.ToSKRect(), SKClipOperation.Difference, antialias: false);
                 }
 
                 int viewPresentation = BeginPresentation(
                     view.GetPresentationBoundsPx(),
                     view.EffectOpacity,
                     view.EffectReveal,
-                    view.EffectRevealDirection);
+                    view.EffectRevealDirection, target);
 
                 if (viewPresentation > 0)
                 {
                     // The view background belongs inside the group so it fades,
                     // wipes, and slides with the rest of the view.
-                    Backbuffer.ClearRect(view.GetPresentationBoundsPx().ToPixelAlignedRect());
+                    target.ClearRect(view.GetPresentationBoundsPx().ToPixelAlignedRect());
 
                     // 4) Render every visible layer for the full viewport extent (layers are drawn
                     //    back-to-front by ascending Z-order, which VisibleSceneLayers already provides).
@@ -428,7 +458,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                             GetLayerPresentationBounds(view, layer),
                             layer.EffectOpacity,
                             layer.EffectReveal,
-                            layer.EffectRevealDirection);
+                            layer.EffectRevealDirection, target);
 
                         if (layerPresentation == 0)
                             continue;
@@ -458,7 +488,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                         }
 
                         long drawStartTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
-                        Backbuffer.DrawDrawables(view, drawables, vp);
+                        target.DrawDrawables(view, drawables, vp);
                         long drawEndTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
 
                         if (collectDiagnostics)
@@ -483,22 +513,22 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                                 HighResTimer.GetDuration(0, layerDrawTicks) * 1000d));
                         }
 
-                        EndPresentation(layerPresentation);
+                        EndPresentation(layerPresentation, target);
                     }
 
                     // 5) Render view-based DirectDrawings on top.
                     long overlayStartTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
                     for (int i = 0; i < overlays.Count; i++)
-                        overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));
+                        overlays[i].Draw(target, overlays[i].GetDrawLocationScreen(view));
                     long overlayEndTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
 
                     if (collectDiagnostics)
                         overlayTicks += overlayEndTick - overlayStartTick;
 
-                    EndPresentation(viewPresentation);
+                    EndPresentation(viewPresentation, target);
                 }
 
-                Backbuffer.Canvas.Restore();
+                target.Canvas.Restore();
             }
             finally
             {
@@ -508,10 +538,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
         Scene.FullRefreshNeeded = false;
 
-        // Notify subscribers that all scene content has been drawn and the canvas is ready for
-        // post-scene effects. For GPU surfaces this runs on the GL thread while GRContext is
-        // current, so subscribers may safely issue Skia GPU draw calls.
-        InvokePostSceneCanvasHooks();
+        // Desktop snapshots record these hooks on the Engine thread; WebGL invokes
+        // them synchronously against its GPU canvas.
+        InvokePostSceneCanvasHooks(target);
 
         if (collectDiagnostics)
         {
@@ -825,8 +854,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         RectangleF bounds,
         float opacity,
         float reveal,
-        EffectDirection direction)
+        EffectDirection direction,
+        BackbufferBase? destination = null)
     {
+        var target = destination ?? Backbuffer;
         opacity = Math.Clamp(opacity, 0f, 1f);
         reveal = Math.Clamp(reveal, 0f, 1f);
 
@@ -834,12 +865,12 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             return 0;
 
         int saveCount = 1;
-        Backbuffer.Canvas.Save();
+        target.Canvas.Save();
 
         if (reveal < 0.9999f)
         {
             RectangleF revealRect = EffectGeometry.GetRevealRect(bounds, direction, reveal);
-            Backbuffer.Canvas.ClipRect(
+            target.Canvas.ClipRect(
                 revealRect.ToSKRect(),
                 SKClipOperation.Intersect,
                 antialias: false);
@@ -852,17 +883,18 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 Color = new SKColor(255, 255, 255, (byte)Math.Round(opacity * 255f))
             };
 
-            Backbuffer.Canvas.SaveLayer(bounds.ToSKRect(), paint);
+            target.Canvas.SaveLayer(bounds.ToSKRect(), paint);
             saveCount++;
         }
 
         return saveCount;
     }
 
-    private void EndPresentation(int saveCount)
+    private void EndPresentation(int saveCount, BackbufferBase? destination = null)
     {
+        var target = destination ?? Backbuffer;
         while (saveCount-- > 0)
-            Backbuffer.Canvas.Restore();
+            target.Canvas.Restore();
     }
 
     private static RectangleF GetLayerPresentationBounds(View view, SceneLayer layer)
@@ -924,7 +956,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
             RenderSurfaceAdapter.Resized -= OnRenderSurfaceAdapterResized;
             Backbuffer.SizeChanged -= OnBackbufferSizeChanged;
-            _backbuffer = null;
+            _recordingBackbuffer?.Dispose();
+            // The adapter owns GPU teardown on its context thread; keep the reference
+            // valid for an already acquired replay until that callback returns.
         }
 
         _disposed = true;
@@ -1026,22 +1060,23 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                     .ScreenRectToAdapterRect(clamped).ToSKRect()));
     }
 
-    private void InvokePostSceneCanvasHooks()
+    private void InvokePostSceneCanvasHooks(BackbufferBase? destination = null)
     {
+        var target = destination ?? Backbuffer;
         var hasSurfaceHandlers = RenderBackbufferPostScene is not null;
         var hasPlugins = EnginePluginRegistry.All.Count > 0;
 
         if (!hasSurfaceHandlers && !hasPlugins)
             return;
 
-        if (!Backbuffer.IsGlThreadRendered)
-            Backbuffer.AddToBackbufferDirtyRectangle(new Rectangle(0, 0, Backbuffer.Width, Backbuffer.Height));
+        if (!target.IsGlThreadRendered)
+            target.AddToBackbufferDirtyRectangle(new Rectangle(0, 0, target.Width, target.Height));
 
         if (hasSurfaceHandlers)
-            RenderBackbufferPostScene?.Invoke(Backbuffer.Canvas);
+            RenderBackbufferPostScene?.Invoke(target.Canvas);
 
         if (hasPlugins)
-            EnginePluginRegistry.InvokePostRenderCanvas(Engine.Instance, this, Backbuffer.Canvas);
+            EnginePluginRegistry.InvokePostRenderCanvas(Engine.Instance, this, target.Canvas);
     }
 
     #endregion private methods

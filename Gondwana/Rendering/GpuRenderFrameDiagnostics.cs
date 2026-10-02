@@ -33,4 +33,16 @@ public sealed record GpuRenderFrameDiagnostics(
 /// </summary>
 public sealed record GpuRenderSynchronizationDiagnostics(
     double LockWaitMilliseconds,
-    double LockHeldMilliseconds);
+    double LockHeldMilliseconds)
+{
+    /// <summary>CPU time replaying completed commands and flushing the backbuffer.</summary>
+    public double ReplayMilliseconds { get; init; }
+    /// <summary>Age of the completed snapshot when acquired by GL.</summary>
+    public double SnapshotAgeMilliseconds { get; init; }
+    /// <summary>Total snapshots published by this surface.</summary>
+    public long PublishedSnapshots { get; init; }
+    /// <summary>Total published snapshots replaced before acquisition.</summary>
+    public long DroppedSnapshots { get; init; }
+    /// <summary>Occupied slots at acquisition, including the rendering slot (maximum three).</summary>
+    public int SnapshotSlotsInUse { get; init; }
+}
