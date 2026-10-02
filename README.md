@@ -10,15 +10,13 @@
 
 <img alt="Gondwana logo" src="https://github.com/user-attachments/assets/cefd03d0-de2b-474e-8f72-e4ab672cede3" align="left" width="40%" />
 
-**Gondwana** is a code-first, cross-platform 2D and 2.5D game and rendering engine for C# and .NET 8. It gives developers fine-grained control over rendering, timing, movement, input, collision detection, scene composition, and game architecture without requiring the editor to own the project.
+**Gondwana** is a code-first, cross-platform 2D and 2.5D game and rendering engine for C# and .NET 8. It gives developers fine-grained control over rendering, timing, movement, input, collision detection, scene composition, and game architecture without requiring an editor to own the project.
 
-Gondwana targets Windows, Linux, macOS, and WebAssembly through SkiaSharp-based rendering, with dedicated integrations for WinForms, Avalonia, and Blazor. Its layered worlds support multiple views, parallax, stable z-ordering, particles, pixel overhang, and several grid projections. Optional packages add desktop and browser audio, MIDI playback, SDL2 gamepad input, video playback, hosting, and reusable game UI widgets.
+Gondwana targets Windows, Linux, macOS, and WebAssembly through SkiaSharp-based rendering, with integrations for WinForms, Avalonia, and Blazor. Its layered worlds support multiple views, parallax, stable z-ordering, particles, pixel overhang, multiple grid projections, game UI widgets, audio, video, gamepad input, and reusable content definitions.
 
-Gondwana remains fundamentally **code-first**: game behavior is ordinary C#, and developers can reach the rendering and update pipeline directly when needed. Visual tooling is additive rather than mandatory. **Gondwana Studio** provides integrated authoring for assets, tilesheets, animations, audio, scenes, and sprites without turning those files into opaque editor-owned project data.
+Game behavior remains ordinary C#. **Gondwana Studio** and the standalone authoring tools provide optional visual workflows for assets, tilesheets, animations, sounds, scenes, and sprites, while the official **Gondwana Game Engine** plugin provides ChatGPT and Codex with engine-aware access to current public source, tests, and documentation.
 
-Developers can work directly in code, use Gondwana Studio for content that benefits from visual authoring, or use the official **Gondwana Game Engine** plugin with ChatGPT and Codex for engine-aware assistance grounded in the current public source, tests, and documentation.
-
-The engine carries forward the predictability of classic Win32/GDI-era rendering—explicit draw order, dirty-region updates where appropriate, scene composition, and timing—inside a modern, modular architecture. The result is an engine intended to remain understandable and debuggable without demanding that a project surrender control as it grows.
+The engine carries forward the predictability of classic rendering systems—explicit composition, stable ordering, understandable timing, and direct access to the pipeline—inside a modern, modular .NET architecture.
 
 <br clear="left" />
 
@@ -51,22 +49,19 @@ For a guided introduction, see **[Make Your First Game in 30 Minutes with Gondwa
 
 ## Choose Your Workflow
 
-Gondwana does not require one development style. The engine, Studio, standalone tools, CLI, and AI integration are intended to work together rather than replace one another.
+Gondwana supports code-first development, optional visual authoring, and engine-aware AI assistance. These workflows can be used independently or together.
 
 ### 💻 Code First
 
-Build directly in ordinary C# using Gondwana's NuGet packages, project templates, and `gondwana` CLI.
+Build directly in C# using Gondwana's NuGet packages, project templates, and `gondwana` CLI.
 
-Game behavior remains normal C# code, with direct access to Gondwana's rendering, scene, input, movement, collision, audio, widgets, video, and hosting APIs.
+Game code has direct access to Gondwana's rendering, scene, input, movement, collision, audio, widgets, video, and hosting APIs.
 
 ### 🛠️ Visual Authoring with Gondwana Studio
 
-Use **Gondwana Studio** when structured game content benefits from visual authoring.
-
-Studio is the integrated Windows authoring environment for Gondwana's persistent content-definition model. It hosts the same reusable editor controls as the standalone utilities, with multi-document editing, visual previews, validation, dependency-aware authoring, nested docking, and persisted workspace layouts.
+**Gondwana Studio** is the Windows authoring environment for Gondwana's persistent content-definition formats. It provides multi-document editing, visual previews, validation, dependency-aware authoring, docking, and persisted workspace layouts.
 
 <img width="100%" alt="image" src="https://github.com/user-attachments/assets/15dbcd65-2c6a-44e8-9038-b7db816dd736" />
-
 
 Studio currently authors:
 
@@ -79,27 +74,17 @@ Studio currently authors:
 | **GSCN** | Scenes and SceneLayers                              |
 | **GSPR** | Sprite definitions                                  |
 
-These are first-class Gondwana definition formats, not Studio-specific project data. Applications can use them where persistent, reusable content definitions are useful while continuing to keep game behavior and application structure in ordinary C#.
+These are Gondwana content formats rather than Studio-specific project files. Applications can load them at runtime or construct the equivalent engine objects directly in C#.
 
-Studio does not maintain simplified copies of the standalone editors. It hosts the same reusable WinForms authoring controls, so improvements to the standalone tools are designed to carry into Studio as well.
-
-Studio is currently an authoring environment, not an embedded game runtime. Game behavior, application structure, and runtime control remain in C#.
+Studio and the standalone editors share the same underlying authoring controls and definition models.
 
 See **[Gondwana Studio](Tooling/Gondwana.Tooling.Studio.WinForms)** for details.
 
 ### 🤖 ChatGPT and Codex
 
-The official **Gondwana Game Engine** plugin gives ChatGPT and Codex access to the current public Gondwana source, tests, and documentation.
+The official **Gondwana Game Engine** plugin gives ChatGPT and Codex access to current public Gondwana source, tests, and documentation.
 
-You can ask questions such as:
-
-> Explain how SceneLayer, View, Camera, and Viewport differ.
-
-or give Codex implementation tasks such as:
-
-> Make a simple Pong game using Gondwana and WinForms.
-
-The plugin is designed to ground AI assistance in the current engine instead of relying only on model training data, stale examples, or assumptions from other game engines.
+You can use it to ask engine-specific questions or give Codex implementation tasks grounded in the current engine rather than relying solely on model training data or examples from unrelated game engines.
 
 See **[Using Gondwana with ChatGPT and Codex](https://github.com/Isthimius/Gondwana/wiki/Using-Gondwana-with-ChatGPT-and-Codex)**.
 
@@ -124,17 +109,20 @@ See **[Using Gondwana with ChatGPT and Codex](https://github.com/Isthimius/Gondw
 
 ## 🎯 Who Gondwana Is For
 
-Gondwana is for .NET developers who want to build games in C# rather than surrender the project structure to an editor. It is a good fit when you value:
+Gondwana is designed for .NET developers who want the convenience of an engine without giving up control of their application's code and architecture.
+
+It is a good fit when you value:
 
 - Fine-grained control over rendering, timing, input, and movement
-- Predictable, debuggable draw and update pipelines
-- A code-first workflow without editor lock-in
-- Visual content authoring without making the editor the owner of your game architecture
+- Predictable and debuggable draw and update pipelines
+- A code-first C# workflow
+- Optional visual content authoring
+- Cross-platform desktop and WebAssembly targets
 - A reusable foundation for custom 2D and 2.5D games
-- Modern .NET architecture grounded in proven rendering principles
-- The ability to use AI coding assistants against current engine-specific source and documentation
+- Modular packages that can be adopted independently
+- Engine-aware AI assistance grounded in current project material
 
-Gondwana is deliberately an engine and framework, not an all-encompassing visual game-making suite. Gondwana Studio provides first-class visual authoring where it is useful, while game behavior, architecture, and runtime control remain in the developer's C# code.
+Gondwana is an engine and framework rather than an all-encompassing visual game-making suite. Runtime behavior and application structure remain under the developer's control.
 
 ---
 
@@ -206,7 +194,7 @@ See the **[Engine Wiki](https://github.com/Isthimius/Gondwana/wiki)** for detail
 
 ### Authoring architecture
 
-Gondwana's development tools sit above the same public engine APIs and definition models used by applications. Applications may use those definition formats for persistent content, or construct and configure the same engine objects directly in C#.
+Applications can configure Gondwana directly in C# or load persistent content definitions created by Studio and the standalone authoring tools.
 
 ```text
                     Authoring / Development
@@ -233,9 +221,7 @@ Gondwana's development tools sit above the same public engine APIs and definitio
                ChatGPT / Codex can assist either workflow
 ```
 
-Studio and the standalone tools use the same definition models, serializers, and reusable editor controls. They do not maintain a second Studio-specific representation of Gondwana content.
-
-The AI plugin is similarly additive: it provides current Gondwana-specific context and workflows without changing the runtime architecture or making AI a dependency of a Gondwana game.
+Studio, standalone tools, and applications use the same public definition models and serializers. The ChatGPT/Codex integration provides development-time assistance and is not part of the game runtime.
 
 ## 📦 Packages
 
@@ -263,7 +249,7 @@ Runtime packages are available on NuGet. Install only the pieces your project ne
 
 ## 🧰 Tooling
 
-Gondwana's tooling is optional. The engine does not require Studio, the standalone authoring tools, the CLI, or the AI plugin at runtime.
+Gondwana's development tooling is optional and is not required by the engine at runtime.
 
 | Tool | Install / location | Description |
 | --- | --- | --- |
@@ -274,21 +260,22 @@ Gondwana's tooling is optional. The engine does not require Studio, the standalo
 | **Gondwana Game Engine plugin** | ChatGPT / Codex Plugin Directory | Engine-aware AI assistance using the current public Gondwana source, tests, and wiki |
 | **Gondwana.Mcp** | [`Tooling/Gondwana.Mcp`](Tooling/Gondwana.Mcp) | Read-only MCP service that powers the official Gondwana AI integration |
 
+> **Platform note:** Gondwana Studio and the standalone authoring editors currently use WinForms and therefore run on Windows. Gondwana games themselves can target Windows, Linux, macOS, and WebAssembly through the appropriate platform adapters.
+
 ---
 
 ## 🧭 Key Design Principles
 
-- **Code first**: Game code owns behavior and can reach the rendering and update pipeline directly.
-- **Tooling is additive**: Studio and the standalone editors author structured content without taking ownership of application architecture.
-- **World space first**: Gameplay and scene logic operate in world pixels; views and cameras convert world coordinates to screen coordinates at render time.
-- **Dirty-region rendering where it pays**: CPU bitmap backbuffers redraw changed world-space regions rather than repainting the entire frame.
-- **Layered, view-centric scenes**: Scenes contain independently rendered `SceneLayer` instances, while `View` and `ViewRenderer` make multiple cameras, viewports, and split views natural.
-- **Adapters at the edges**: Platform projects host render surfaces and wire native input while the core remains platform-agnostic.
+- **Code first**: Game behavior and application architecture remain ordinary C#.
+- **Optional tooling**: Visual editors author reusable content without owning the application.
+- **World space first**: Gameplay and scene logic operate in world coordinates; views and cameras handle projection.
+- **Dirty-region rendering where it pays**: CPU bitmap backbuffers can redraw changed world-space regions rather than repainting the entire frame.
+- **Layered, view-centric scenes**: Scenes contain independently rendered `SceneLayer` instances, while views support multiple cameras and viewports.
+- **Adapters at the edges**: Platform projects host rendering surfaces and native input while the core remains platform-agnostic.
 - **Explicit composition**: Sprites, direct drawings, composites, widgets, and scene layers have clear ownership and ordering rules.
-- **Predictable behavior**: Stable ordering and explicit timing make rendering and movement easier to debug.
-- **Open formats**: GAF, GTS, GANI, GSND, GSCN, and GSPR are explicit engine content formats rather than opaque Studio-owned project blobs.
-- **AI is optional and grounded**: The official ChatGPT/Codex plugin can inspect current public Gondwana material without becoming a runtime dependency.
-- **Modularity without ceremony**: Hosting, widgets, platform adapters, audio, input, video, tooling, and AI integration remain separate so applications take only what they need.
+- **Predictable behavior**: Stable ordering and explicit timing keep rendering and movement understandable and debuggable.
+- **Reusable content definitions**: GAF, GTS, GANI, GSND, GSCN, and GSPR provide persistent engine content where useful.
+- **Modular architecture**: Hosting, widgets, platform adapters, audio, input, video, tooling, and AI integration remain separate packages and systems.
 
 ---
 
@@ -313,8 +300,13 @@ _Gondwana is actively evolving, with an emphasis on strengthening the engine, au
 
 Contributions are welcome.
 
-- Open an issue for a bug report or feature request.
-- Fork the repository, create a focused branch, and submit a pull request.
+- Open an issue for bug reports, feature requests, or proposed changes.
+- Fork the repository and create a focused branch for your work.
+- Keep changes scoped and include or update tests where appropriate.
+- Follow the repository's existing formatting and analyzer conventions.
+- Submit a pull request describing the problem being addressed and the approach taken.
+
+For larger changes, opening an issue or discussion first is recommended so the intended direction can be agreed upon before significant implementation work begins.
 
 ---
 
