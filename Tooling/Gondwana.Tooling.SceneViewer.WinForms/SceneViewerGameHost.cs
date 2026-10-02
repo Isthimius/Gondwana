@@ -4,6 +4,7 @@ using Gondwana.Scenes;
 using Gondwana.Timers;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
+using GondwanaMouseEventArgs = Gondwana.Input.Mouse.MouseEventArgs;
 
 namespace Gondwana.Tooling.SceneViewer.WinForms;
 
@@ -25,7 +26,15 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         var view = RenderSurface.Host.ViewManager.Views[0];
         view.Camera.WorldBoundsPx = RectangleF.Empty;
         view.Camera.SnapTo(PointF.Empty);
-        Camera = new ViewerCameraController(view);
+
+        var zoomLayer = Scene!.SceneLayers
+            .Where(layer => layer.Visible && Math.Abs(layer.Parallax) > 1e-6f)
+            .OrderBy(layer => Math.Abs(layer.Parallax - 1f))
+            .ThenByDescending(layer => layer.ZOrder)
+            .FirstOrDefault()
+            ?? Scene.SceneLayers.FirstOrDefault();
+
+        Camera = new ViewerCameraController(view, zoomLayer);
     }
 
     protected override void OnKeyboardAdapterInitialized()
@@ -35,6 +44,15 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
 
         foreach (var key in MonitoredKeys)
             keyboard.StartMonitoringKey((int)key, key.ToString());
+    }
+
+    protected override void OnMouseAdapterInitialized()
+    {
+        var mouse = Engine.Input.MouseEventPoller!;
+        mouse.MouseEvent += OnMouse;
+        mouse.StartMonitoringMouse(
+            trackMouseMovement: false,
+            timeBetweenEvents: 0);
     }
 
     protected override void OnEngineInitialized()
@@ -49,6 +67,9 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
     {
         if (Engine.Input.KeyboardEventPoller is not null)
             Engine.Input.KeyboardEventPoller.KeyDown -= OnKeyDown;
+
+        if (Engine.Input.MouseEventPoller is not null)
+            Engine.Input.MouseEventPoller.MouseEvent -= OnMouse;
 
         Engine.BeforeBackgroundTasksExecute -= UpdateCamera;
     }
@@ -85,6 +106,12 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         {
             _keysDown.Remove(key);
         }
+    }
+
+    private void OnMouse(GondwanaMouseEventArgs args)
+    {
+        if (args.ScrollDelta != 0)
+            Camera?.Zoom(args.CurrentPosition, args.ScrollDelta);
     }
 
     private void UpdateCamera()
