@@ -205,6 +205,8 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
     private StudioDockDocument ShowDocument(StudioDocument model)
     {
         var document = new StudioDockDocument(model, ConfirmClose);
+        if (model.Editor is Gondwana.Tooling.Scenes.WinForms.SceneEditorControl sceneEditor)
+            sceneEditor.SaveRequested = () => SaveDocument(document);
         _documents.Add(document);
         if (model.Path() is { } path) _paths.Add(Path.GetFullPath(path), document);
         if (model.Editor is AssetEditorControl assets)
