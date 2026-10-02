@@ -475,6 +475,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                                 layer.ZOrder,
                                 drawables.Count,
                                 layerTileCount,
+                                layer.TransformedTiles.Count,
+                                layer.TileWidth,
+                                layer.TileHeight,
                                 HighResTimer.GetDuration(0, layerQueryTicks) * 1000d,
                                 HighResTimer.GetDuration(0, layerDrawTicks) * 1000d));
                         }
