@@ -6,6 +6,7 @@ using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
+using Gondwana.Timers;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
@@ -62,6 +63,11 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// Occurs when a backbuffer render operation is skipped because the scene is not dirty.
     /// </summary>
     public event Action? RenderBackbufferNoOp;
+
+    /// <summary>
+    /// Occurs after a full-frame GPU render when at least one subscriber has requested diagnostics.
+    /// </summary>
+    public event Action<GpuRenderFrameDiagnostics>? GpuRenderFrameDiagnosticsCalculated;
 
     /// <summary>
     /// Occurs after all scene content (layers, sprites, and direct drawings) has been drawn to the
@@ -344,6 +350,17 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// </remarks>
     private void RenderToBackbufferGpuFull(long tick)
     {
+        bool collectDiagnostics = GpuRenderFrameDiagnosticsCalculated is not null;
+        long diagnosticsStartTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+        long queryAndSortTicks = 0;
+        long drawTicks = 0;
+        long overlayTicks = 0;
+        int drawableCount = 0;
+        int tileCount = 0;
+        List<GpuLayerRenderDiagnostics>? layerDiagnostics = collectDiagnostics
+            ? new List<GpuLayerRenderDiagnostics>(Scene.VisibleSceneLayers.Count)
+            : null;
+
         // When there are no views at all, clear the whole surface and bail.
         // If there ARE views but no scene layers, we fall through so view-mode
         // DirectDrawings (e.g. a splash screen overlay) are still rendered.
@@ -421,15 +438,58 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                         layerWorldRectF.Inflate(layer.TileWidth, layer.TileHeight);
                         var layerWorldRect = layerWorldRectF.ToPixelAlignedRect();
 
+                        long queryStartTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
                         var drawables = layer.GetDrawablesInWorldRect(layerWorldRect);
+                        long queryEndTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+
+                        int layerTileCount = 0;
+                        if (collectDiagnostics)
+                        {
+                            for (int d = 0; d < drawables.Count; d++)
+                            {
+                                IDrawable drawable = drawables[d] is WrappedDrawable wrapped
+                                    ? wrapped.Owner
+                                    : drawables[d];
+
+                                if (drawable is Tile)
+                                    layerTileCount++;
+                            }
+                        }
+
+                        long drawStartTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
                         Backbuffer.DrawDrawables(view, drawables, vp);
+                        long drawEndTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+
+                        if (collectDiagnostics)
+                        {
+                            long layerQueryTicks = queryEndTick - queryStartTick;
+                            long layerDrawTicks = drawEndTick - drawStartTick;
+                            queryAndSortTicks += layerQueryTicks;
+                            drawTicks += layerDrawTicks;
+                            drawableCount += drawables.Count;
+                            tileCount += layerTileCount;
+
+                            layerDiagnostics!.Add(new GpuLayerRenderDiagnostics(
+                                i,
+                                layer.ID,
+                                layer.ZOrder,
+                                drawables.Count,
+                                layerTileCount,
+                                HighResTimer.GetDuration(0, layerQueryTicks) * 1000d,
+                                HighResTimer.GetDuration(0, layerDrawTicks) * 1000d));
+                        }
 
                         EndPresentation(layerPresentation);
                     }
 
                     // 5) Render view-based DirectDrawings on top.
+                    long overlayStartTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
                     for (int i = 0; i < overlays.Count; i++)
                         overlays[i].Draw(Backbuffer, overlays[i].GetDrawLocationScreen(view));
+                    long overlayEndTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+
+                    if (collectDiagnostics)
+                        overlayTicks += overlayEndTick - overlayStartTick;
 
                     EndPresentation(viewPresentation);
                 }
@@ -445,9 +505,22 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         Scene.FullRefreshNeeded = false;
 
         // Notify subscribers that all scene content has been drawn and the canvas is ready for
-        // post-scene effects.  For GPU surfaces this runs on the GL thread while GRContext is
+        // post-scene effects. For GPU surfaces this runs on the GL thread while GRContext is
         // current, so subscribers may safely issue Skia GPU draw calls.
         InvokePostSceneCanvasHooks();
+
+        if (collectDiagnostics)
+        {
+            long diagnosticsEndTick = HighResTimer.GetCurrentTick();
+            GpuRenderFrameDiagnosticsCalculated?.Invoke(new GpuRenderFrameDiagnostics(
+                HighResTimer.GetDuration(diagnosticsStartTick, diagnosticsEndTick) * 1000d,
+                HighResTimer.GetDuration(0, queryAndSortTicks) * 1000d,
+                HighResTimer.GetDuration(0, drawTicks) * 1000d,
+                HighResTimer.GetDuration(0, overlayTicks) * 1000d,
+                drawableCount,
+                tileCount,
+                layerDiagnostics!));
+        }
     }
 
     /// <summary>
