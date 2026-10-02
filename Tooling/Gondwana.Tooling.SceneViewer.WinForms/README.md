@@ -28,11 +28,28 @@ dotnet run --project Tooling/Gondwana.Tooling.SceneViewer.WinForms -c Release --
 | Shift | Faster camera |
 | Mouse wheel | Zoom |
 | Home | Restore initial camera position and zoom |
+| F3 | Toggle runtime diagnostics |
 | Esc | Close viewer |
 
 Movement is continuous, in world pixels, with elapsed-time integration and normalized diagonal speed. Normal/fast speeds are 320/960 pixels per second. Zoom uses a 1.2 multiplier per wheel notch, bounded to 0.125–8. The camera starts at world origin with zoom 1, without scene-bound clamping. Losing focus clears held keys.
 
 The window is resizable. Gondwana's current GPU host preserves the initial logical backbuffer and fits its presentation to the window, retaining aspect ratio. The viewer uses that normal runtime policy. Wheel zoom changes the runtime viewport zoom, independently of window presentation scaling.
+
+### Diagnostics
+
+Press **F3** to toggle a black, white-text diagnostics overlay in the upper-right of the View. The overlay is hidden by default and reports sampled runtime information without replacing the normal Gondwana rendering path:
+
+- gross engine CPS, engine FPS, and actual GPU FPS
+- average and maximum background-work time across the sample window
+- number of background samples
+- active animating tile count
+- scene layer count and total grid-cell count
+- camera world position and viewport zoom
+- viewport and logical backbuffer dimensions
+- target FPS and VSync state
+- requested, actual, and maximum supported MSAA sample counts
+
+The background timing spans Gondwana's normal background phase from `BeforeBackgroundTasksExecute` through `AfterBackgroundTasksExecute`, so it includes input polling, tile animation, sprite movement, collision resolution, and camera updates. It is intended as a lightweight stress-test diagnostic rather than a subsystem profiler.
 
 ## Runtime loading
 
