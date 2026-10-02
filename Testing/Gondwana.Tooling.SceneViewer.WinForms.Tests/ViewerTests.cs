@@ -159,7 +159,8 @@ public sealed class ViewerTests : IDisposable
         });
         AnimationDefinitionSerializer.Save(Path.Combine(_directory, "animation.gani"), new AnimationDefinition
         {
-            Key = "walk", ThrottleTime = .1,
+            Key = "walk",
+            ThrottleTime = .1,
             TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("sheet", "sheet.gts")],
             Frames = [new AnimationFrameDefinition { Tilesheet = "sheet" }, new AnimationFrameDefinition { Tilesheet = "sheet", XTile = 1 }]
         });
