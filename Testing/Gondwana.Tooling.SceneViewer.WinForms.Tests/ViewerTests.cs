@@ -128,7 +128,7 @@ public sealed class ViewerTests : IDisposable
         definition.AnimationSources.Add(SceneAnimationSourceDefinition.Loose("return", "return.gani"));
         SceneDefinitionSerializer.Save(ScenePath, definition);
         using var scene = new ViewerSceneLoader().Load(ScenePath);
-        var cycle = scene[0]![0, 0]!.TileAnimator.CurrentCycle;
+        var cycle = Assert.Single(Cycle.GetAnimationCycles(), candidate => candidate.CycleKey == "walk");
         Assert.Equal("return", cycle.NextCycle.CycleKey);
         Assert.Same(cycle, cycle.NextCycle.NextCycle);
     }
