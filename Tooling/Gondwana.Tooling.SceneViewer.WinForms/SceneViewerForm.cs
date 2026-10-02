@@ -16,7 +16,6 @@ internal sealed class SceneViewerForm : Form
         MinimumSize = new Size(320, 240);
         StartPosition = FormStartPosition.CenterScreen;
         Controls.Add(_surface);
-        _surface.MouseWheel += (_, e) => Dispatch(camera => camera.Zoom(e.Delta));
     }
 
     protected override void OnShown(EventArgs e)
@@ -42,12 +41,6 @@ internal sealed class SceneViewerForm : Form
             return;
 
         BeginInvoke(Close);
-    }
-
-    private void Dispatch(Action<ViewerCameraController> action)
-    {
-        if (_host?.Camera is { } camera)
-            _host.Engine.EngineDispatcher.Post(() => action(camera));
     }
 
     protected override void Dispose(bool disposing)
