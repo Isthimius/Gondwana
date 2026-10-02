@@ -9,6 +9,7 @@ var classGondwana_1_1Rendering_1_1RenderSurfaceHost_1_g =
     [ "Scene", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a5443506468c1f60d06d90d65d49ebee7", null ],
     [ "ViewManager", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a476c1ed70c6bd1d0683feac077a4fa73", null ],
     [ "BindToScene", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#af8bbb7657b2a182575fabb206ea4d974", null ],
+    [ "GpuRenderFrameDiagnosticsCalculated", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#ab3ea42e39369219f25c70843e8147f43", null ],
     [ "RenderBackbufferBegin", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#adbd585d2a9ebe5f4224fd621ad2c72eb", null ],
     [ "RenderBackbufferEnd", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a67f94f0c04700627f1f85fa5b7927eee", null ],
     [ "RenderBackbufferNoOp", "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#acfa3a199fe952ad768ce944219d40ac2", null ],

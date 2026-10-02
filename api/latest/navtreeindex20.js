@@ -1,5 +1,9 @@
 var NAVTREEINDEX20 =
 {
+"classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html#ad408f2b2209c7834d0fe091c53eb83c7":[1,0,0,16,5,2,5],
+"classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html#ad830ae947b040a70cc2d3951051b4a62":[0,0,0,17,5,2,8],
+"classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html#ad830ae947b040a70cc2d3951051b4a62":[1,0,0,16,5,2,8],
+"classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html#add9a9e6a6ab4c1e27e42b6b8384e0a82":[0,0,0,17,5,2,25],
 "classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html#add9a9e6a6ab4c1e27e42b6b8384e0a82":[1,0,0,16,5,2,25],
 "classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html#af410ce6327b98ba6f49d426899d3079e":[0,0,0,17,5,2,23],
 "classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html#af410ce6327b98ba6f49d426899d3079e":[1,0,0,16,5,2,23],
@@ -245,9 +249,5 @@ var NAVTREEINDEX20 =
 "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html#a4fc985c76ece2a9ec3a6e3eb3bdccbe8":[1,0,0,17,0,2,1],
 "classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadAdapter.html":[0,0,0,18,1,0,0,0],
 "classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadAdapter.html":[1,0,0,17,1,0,0,0],
-"classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadAdapter.html#a146f581f289ea39a6b0cbfc20d8c1bb2":[0,0,0,18,1,0,0,0,2],
-"classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadAdapter.html#a146f581f289ea39a6b0cbfc20d8c1bb2":[1,0,0,17,1,0,0,0,2],
-"classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadAdapter.html#a6657acaacc48da5a696a4b105c375e17":[0,0,0,18,1,0,0,0,6],
-"classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadAdapter.html#a6657acaacc48da5a696a4b105c375e17":[1,0,0,17,1,0,0,0,6],
-"classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadAdapter.html#a665beec20834cdc0c4db68619e214e7b":[0,0,0,18,1,0,0,0,0]
+"classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadAdapter.html#a146f581f289ea39a6b0cbfc20d8c1bb2":[0,0,0,18,1,0,0,0,2]
 };
