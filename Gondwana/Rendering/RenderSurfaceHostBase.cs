@@ -119,7 +119,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
         long lockReleased = 0;
         SKImage? image;
 
-        Monitor.Enter(RenderStateSynchronization.SyncRoot);
+        RenderStateSynchronization.EnterGpuRender();
         try
         {
             if (collectSynchronizationDiagnostics)
@@ -139,7 +139,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
         }
         finally
         {
-            Monitor.Exit(RenderStateSynchronization.SyncRoot);
+            RenderStateSynchronization.ExitGpuRender();
         }
 
         if (collectSynchronizationDiagnostics)
@@ -172,7 +172,8 @@ public abstract class RenderSurfaceHostBase : IDisposable
         if (!Backbuffer.IsGlThreadRendered)
             return false;
 
-        lock (RenderStateSynchronization.SyncRoot)
+        RenderStateSynchronization.EnterGpuRender();
+        try
         {
             var tick = HighResTimer.GetCurrentTick();
 
@@ -188,6 +189,10 @@ public abstract class RenderSurfaceHostBase : IDisposable
             {
                 Backbuffer.BeginFrame();
             }
+        }
+        finally
+        {
+            RenderStateSynchronization.ExitGpuRender();
         }
     }
 
