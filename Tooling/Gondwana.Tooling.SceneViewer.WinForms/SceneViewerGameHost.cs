@@ -3,15 +3,16 @@ using Gondwana.Configuration;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Direct;
 using Gondwana.Input.Keyboard;
+using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
-using GondwanaView = Gondwana.Rendering.Views.View;
 using Gondwana.Scenes;
 using Gondwana.Timers;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
 using SkiaSharp;
 using GondwanaMouseEventArgs = Gondwana.Input.Mouse.MouseEventArgs;
+using GondwanaView = Gondwana.Rendering.Views.View;
 
 namespace Gondwana.Tooling.SceneViewer.WinForms;
 
@@ -19,16 +20,38 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
     : WinFormsGpuGameHost(surface)
 {
     private const int DiagnosticsMargin = 12;
-    private const int DiagnosticsWidth = 520;
-    private const int DiagnosticsHeight = 320;
+    private const int DiagnosticsWidth = 700;
+    private const int DiagnosticsHeight = 560;
+    private const int MaxDiagnosticLayers = 8;
 
     private readonly HashSet<Keys> _keysDown = [];
+    private readonly object _renderDiagnosticsLock = new();
+    private readonly Dictionary<int, LayerDiagnosticsWindow> _layerDiagnostics = [];
+
     private long _lastTick;
     private long _backgroundStartTick;
     private long _backgroundTotalTicks;
     private long _backgroundMaxTicks;
     private long _backgroundSampleCount;
     private int _animatingTileCount;
+
+    private long _sceneRenderSamples;
+    private double _sceneRenderTotalMs;
+    private double _sceneRenderMaxMs;
+    private double _queryAndSortTotalMs;
+    private double _drawTotalMs;
+    private double _overlayTotalMs;
+    private long _visibleDrawableTotal;
+    private long _visibleTileTotal;
+
+    private long _gpuCallbackSamples;
+    private double _gpuCallbackTotalMs;
+    private double _gpuCallbackMaxMs;
+    private double _renderAndSnapshotTotalMs;
+    private double _blitTotalMs;
+    private double _flushTotalMs;
+
+    private bool _animationsPaused;
     private GondwanaView? _view;
     private TextBlock? _diagnosticsText;
     private Gondwana.CyclesPerSecondCalculatedEventArgs? _lastCpsSample;
@@ -104,6 +127,8 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         Engine.BeforeBackgroundTasksExecute += BeforeBackgroundTasksExecute;
         Engine.AfterBackgroundTasksExecute += AfterBackgroundTasksExecute;
         Engine.CPSCalculated += OnCpsCalculated;
+        RenderSurface.Host.GpuRenderFrameDiagnosticsCalculated += OnGpuRenderFrameDiagnostics;
+        RenderSurface.Adapter.FrameDiagnosticsCalculated += OnGpuFrameDiagnostics;
     }
 
     protected override void ConfigureGamepads() { }
@@ -119,6 +144,8 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         Engine.BeforeBackgroundTasksExecute -= BeforeBackgroundTasksExecute;
         Engine.AfterBackgroundTasksExecute -= AfterBackgroundTasksExecute;
         Engine.CPSCalculated -= OnCpsCalculated;
+        RenderSurface.Host.GpuRenderFrameDiagnosticsCalculated -= OnGpuRenderFrameDiagnostics;
+        RenderSurface.Adapter.FrameDiagnosticsCalculated -= OnGpuFrameDiagnostics;
 
         if (_view is not null)
             _view.Viewport.TargetRectChanged -= OnViewportTargetRectChanged;
@@ -136,7 +163,8 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         Keys.Right,
         Keys.Home,
         Keys.Escape,
-        Keys.F3
+        Keys.F3,
+        Keys.F4
     ];
 
     private void OnKeyDown(KeyDownEventArgs args)
@@ -149,6 +177,12 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             if (key == Keys.F3)
             {
                 ToggleDiagnostics();
+                return;
+            }
+
+            if (key == Keys.F4)
+            {
+                ToggleAnimations();
                 return;
             }
 
@@ -207,6 +241,56 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         camera.Move(north, south, west, east, fast, elapsed);
     }
 
+    private void ToggleAnimations()
+    {
+        _animationsPaused = !_animationsPaused;
+
+        foreach (Tile tile in Tile.TilesAnimating.ToArray())
+            tile.PauseAnimation = _animationsPaused;
+
+        if (_diagnosticsText?.Visible == true)
+            UpdateDiagnosticsText(_lastCpsSample);
+    }
+
+    private void OnGpuRenderFrameDiagnostics(GpuRenderFrameDiagnostics diagnostics)
+    {
+        lock (_renderDiagnosticsLock)
+        {
+            _sceneRenderSamples++;
+            _sceneRenderTotalMs += diagnostics.TotalRenderMilliseconds;
+            _sceneRenderMaxMs = Math.Max(_sceneRenderMaxMs, diagnostics.TotalRenderMilliseconds);
+            _queryAndSortTotalMs += diagnostics.QueryAndSortMilliseconds;
+            _drawTotalMs += diagnostics.DrawMilliseconds;
+            _overlayTotalMs += diagnostics.OverlayMilliseconds;
+            _visibleDrawableTotal += diagnostics.DrawableCount;
+            _visibleTileTotal += diagnostics.TileCount;
+
+            foreach (var layer in diagnostics.Layers)
+            {
+                if (!_layerDiagnostics.TryGetValue(layer.LayerIndex, out var window))
+                {
+                    window = new LayerDiagnosticsWindow(layer.LayerIndex, layer.LayerId, layer.ZOrder);
+                    _layerDiagnostics.Add(layer.LayerIndex, window);
+                }
+
+                window.Add(layer);
+            }
+        }
+    }
+
+    private void OnGpuFrameDiagnostics(WinFormGpuFrameDiagnostics diagnostics)
+    {
+        lock (_renderDiagnosticsLock)
+        {
+            _gpuCallbackSamples++;
+            _gpuCallbackTotalMs += diagnostics.TotalCallbackMilliseconds;
+            _gpuCallbackMaxMs = Math.Max(_gpuCallbackMaxMs, diagnostics.TotalCallbackMilliseconds);
+            _renderAndSnapshotTotalMs += diagnostics.RenderAndSnapshotMilliseconds;
+            _blitTotalMs += diagnostics.BlitMilliseconds;
+            _flushTotalMs += diagnostics.FlushMilliseconds;
+        }
+    }
+
     private void OnCpsCalculated(Gondwana.CyclesPerSecondCalculatedEventArgs sample)
     {
         if (Engine.IsDisposed)
@@ -218,7 +302,10 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             if (_diagnosticsText?.Visible == true)
                 UpdateDiagnosticsText(sample);
             else
+            {
                 ResetBackgroundDiagnosticsWindow();
+                ResetRenderDiagnosticsWindow();
+            }
         });
     }
 
@@ -240,6 +327,7 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
 
         (double averageBackgroundMs, double maxBackgroundMs, long backgroundSamples) =
             ResetBackgroundDiagnosticsWindow();
+        var render = ResetRenderDiagnosticsWindow();
 
         var viewport = _view.Viewport.TargetRectPx;
         var cameraPosition = _view.Camera.PositionPx;
@@ -256,25 +344,54 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             ? $"{gpuBackbuffer.MsaaSampleCount} / {gpuBackbuffer.ActualMsaaSampleCount} / {gpuBackbuffer.MaxSupportedMsaaSampleCount}"
             : "n/a";
 
+        double sceneRenderAverageMs = Average(render.SceneRenderTotalMs, render.SceneRenderSamples);
+        double renderAndSnapshotAverageMs = Average(render.RenderAndSnapshotTotalMs, render.GpuCallbackSamples);
+        double snapshotAndFinalizeEstimateMs = Math.Max(0d, renderAndSnapshotAverageMs - sceneRenderAverageMs);
+
         var text = new StringBuilder()
             .AppendLine("Gondwana Scene Viewer Diagnostics  [F3]")
             .AppendLine($"Scene: {Path.GetFileName(scenePath)}")
+            .AppendLine($"Animations: {(_animationsPaused ? "PAUSED" : "running")}  [F4]")
             .AppendLine($"CPS: {(sample?.GrossCPS ?? 0):0.0}")
             .AppendLine($"Engine FPS: {(sample?.NetCPS ?? 0):0.0}")
             .AppendLine($"GPU FPS: {gpuFps}")
-            .AppendLine($"Background work avg/max: {averageBackgroundMs:0.000} / {maxBackgroundMs:0.000} ms")
-            .AppendLine($"Background samples: {backgroundSamples:N0}")
+            .AppendLine($"Background avg/max: {averageBackgroundMs:0.000} / {maxBackgroundMs:0.000} ms  ({backgroundSamples:N0} samples)")
+            .AppendLine($"GL callback avg/max: {Average(render.GpuCallbackTotalMs, render.GpuCallbackSamples):0.000} / {render.GpuCallbackMaxMs:0.000} ms")
+            .AppendLine($"Render+snapshot avg: {renderAndSnapshotAverageMs:0.000} ms")
+            .AppendLine($"Scene render avg/max: {sceneRenderAverageMs:0.000} / {render.SceneRenderMaxMs:0.000} ms")
+            .AppendLine($"Query/sort avg: {Average(render.QueryAndSortTotalMs, render.SceneRenderSamples):0.000} ms")
+            .AppendLine($"Draw avg: {Average(render.DrawTotalMs, render.SceneRenderSamples):0.000} ms")
+            .AppendLine($"Overlay avg: {Average(render.OverlayTotalMs, render.SceneRenderSamples):0.000} ms")
+            .AppendLine($"Snapshot/finalize est avg: {snapshotAndFinalizeEstimateMs:0.000} ms")
+            .AppendLine($"Blit avg: {Average(render.BlitTotalMs, render.GpuCallbackSamples):0.000} ms")
+            .AppendLine($"Flush avg: {Average(render.FlushTotalMs, render.GpuCallbackSamples):0.000} ms")
+            .AppendLine($"Visible drawables/tiles avg: {Average(render.VisibleDrawableTotal, render.SceneRenderSamples):0.0} / {Average(render.VisibleTileTotal, render.SceneRenderSamples):0.0}")
             .AppendLine($"Animating tiles: {Volatile.Read(ref _animatingTileCount):N0}")
             .AppendLine($"Layers / grid cells: {layerCount:N0} / {gridTileCount:N0}")
             .AppendLine($"Camera: {cameraPosition.X:0.0}, {cameraPosition.Y:0.0} px")
             .AppendLine($"Zoom: {_view.Viewport.Zoom:0.000}x")
-            .AppendLine($"Viewport: {viewport.Width} x {viewport.Height}")
-            .AppendLine($"Backbuffer: {backbuffer.Width} x {backbuffer.Height}")
+            .AppendLine($"Viewport / backbuffer: {viewport.Width}x{viewport.Height} / {backbuffer.Width}x{backbuffer.Height}")
             .AppendLine($"Target FPS / VSync: {Engine.Configuration.TargetFPS} / {(Engine.Configuration.VSync ? "on" : "off")}")
-            .Append($"MSAA requested / actual / max: {msaa}")
-            .ToString();
+            .AppendLine($"MSAA requested / actual / max: {msaa}");
 
-        _diagnosticsText.SetText(text);
+        if (render.Layers.Count > 0)
+        {
+            text.AppendLine("Layers (avg query / draw ms; drawables / tiles):");
+            foreach (var layer in render.Layers.Take(MaxDiagnosticLayers))
+            {
+                text.AppendLine(
+                    $"  L{layer.LayerIndex} z{layer.ZOrder}: " +
+                    $"{Average(layer.QueryTotalMs, layer.Samples):0.000} / " +
+                    $"{Average(layer.DrawTotalMs, layer.Samples):0.000}; " +
+                    $"{Average(layer.DrawableTotal, layer.Samples):0.0} / " +
+                    $"{Average(layer.TileTotal, layer.Samples):0.0}");
+            }
+
+            if (render.Layers.Count > MaxDiagnosticLayers)
+                text.AppendLine($"  ... {render.Layers.Count - MaxDiagnosticLayers} more layer(s)");
+        }
+
+        _diagnosticsText.SetText(text.ToString().TrimEnd());
     }
 
     private (double AverageMs, double MaxMs, long Samples) ResetBackgroundDiagnosticsWindow()
@@ -291,6 +408,52 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             totalTicks * millisecondsPerTick / samples,
             maxTicks * millisecondsPerTick,
             samples);
+    }
+
+    private RenderDiagnosticsSnapshot ResetRenderDiagnosticsWindow()
+    {
+        lock (_renderDiagnosticsLock)
+        {
+            var layers = _layerDiagnostics.Values
+                .OrderBy(layer => layer.LayerIndex)
+                .Select(layer => layer.ToSnapshot())
+                .ToArray();
+
+            var snapshot = new RenderDiagnosticsSnapshot(
+                _sceneRenderSamples,
+                _sceneRenderTotalMs,
+                _sceneRenderMaxMs,
+                _queryAndSortTotalMs,
+                _drawTotalMs,
+                _overlayTotalMs,
+                _visibleDrawableTotal,
+                _visibleTileTotal,
+                _gpuCallbackSamples,
+                _gpuCallbackTotalMs,
+                _gpuCallbackMaxMs,
+                _renderAndSnapshotTotalMs,
+                _blitTotalMs,
+                _flushTotalMs,
+                layers);
+
+            _sceneRenderSamples = 0;
+            _sceneRenderTotalMs = 0;
+            _sceneRenderMaxMs = 0;
+            _queryAndSortTotalMs = 0;
+            _drawTotalMs = 0;
+            _overlayTotalMs = 0;
+            _visibleDrawableTotal = 0;
+            _visibleTileTotal = 0;
+            _gpuCallbackSamples = 0;
+            _gpuCallbackTotalMs = 0;
+            _gpuCallbackMaxMs = 0;
+            _renderAndSnapshotTotalMs = 0;
+            _blitTotalMs = 0;
+            _flushTotalMs = 0;
+            _layerDiagnostics.Clear();
+
+            return snapshot;
+        }
     }
 
     private void OnViewportTargetRectChanged(ViewportResizedEventArgs args)
@@ -315,11 +478,17 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             Math.Max(1, viewport.Height - DiagnosticsMargin * 2));
 
         return new Rectangle(
-            viewport.Right - width - DiagnosticsMargin,
+            viewport.Left + DiagnosticsMargin,
             viewport.Top + DiagnosticsMargin,
             width,
             height);
     }
+
+    private static double Average(double total, long count) =>
+        count > 0 ? total / count : 0d;
+
+    private static double Average(long total, long count) =>
+        count > 0 ? (double)total / count : 0d;
 
     private static void RecordMaximum(ref long target, long value)
     {
@@ -342,6 +511,65 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             Engine.Dispose();
         (Engine.Input.KeyboardEventPoller?.Adapter as IDisposable)?.Dispose();
     }
+
+    private sealed class LayerDiagnosticsWindow(int layerIndex, string layerId, int zOrder)
+    {
+        internal int LayerIndex { get; } = layerIndex;
+        internal string LayerId { get; } = layerId;
+        internal int ZOrder { get; } = zOrder;
+        internal long Samples { get; private set; }
+        internal double QueryTotalMs { get; private set; }
+        internal double DrawTotalMs { get; private set; }
+        internal long DrawableTotal { get; private set; }
+        internal long TileTotal { get; private set; }
+
+        internal void Add(GpuLayerRenderDiagnostics diagnostics)
+        {
+            Samples++;
+            QueryTotalMs += diagnostics.QueryAndSortMilliseconds;
+            DrawTotalMs += diagnostics.DrawMilliseconds;
+            DrawableTotal += diagnostics.DrawableCount;
+            TileTotal += diagnostics.TileCount;
+        }
+
+        internal LayerDiagnosticsSnapshot ToSnapshot() =>
+            new(
+                LayerIndex,
+                LayerId,
+                ZOrder,
+                Samples,
+                QueryTotalMs,
+                DrawTotalMs,
+                DrawableTotal,
+                TileTotal);
+    }
+
+    private sealed record LayerDiagnosticsSnapshot(
+        int LayerIndex,
+        string LayerId,
+        int ZOrder,
+        long Samples,
+        double QueryTotalMs,
+        double DrawTotalMs,
+        long DrawableTotal,
+        long TileTotal);
+
+    private sealed record RenderDiagnosticsSnapshot(
+        long SceneRenderSamples,
+        double SceneRenderTotalMs,
+        double SceneRenderMaxMs,
+        double QueryAndSortTotalMs,
+        double DrawTotalMs,
+        double OverlayTotalMs,
+        long VisibleDrawableTotal,
+        long VisibleTileTotal,
+        long GpuCallbackSamples,
+        double GpuCallbackTotalMs,
+        double GpuCallbackMaxMs,
+        double RenderAndSnapshotTotalMs,
+        double BlitTotalMs,
+        double FlushTotalMs,
+        IReadOnlyList<LayerDiagnosticsSnapshot> Layers);
 
     // Viewer startup must not load an unrelated game config/state from the cwd.
     internal sealed class ViewerConfiguration : IEngineConfigurationStore
