@@ -74,6 +74,12 @@ public abstract class RenderSurfaceHostBase : IDisposable
     public EffectsManager Effects { get; }
 
     /// <summary>
+    /// Occurs after a GPU render/snapshot call when a subscriber requests timing for the shared
+    /// render-state synchronization gate.
+    /// </summary>
+    public event Action<GpuRenderSynchronizationDiagnostics>? GpuRenderSynchronizationDiagnosticsCalculated;
+
+    /// <summary>
     /// Renders the current scene frame on the active GL/WebGL thread and returns a snapshot of the
     /// GPU backbuffer ready to be drawn to the platform surface.
     /// </summary>
@@ -104,19 +110,47 @@ public abstract class RenderSurfaceHostBase : IDisposable
         if (!Backbuffer.IsGlThreadRendered)
             return null;
 
-        lock (RenderStateSynchronization.SyncRoot)
+        bool collectSynchronizationDiagnostics =
+            GpuRenderSynchronizationDiagnosticsCalculated is not null;
+        long waitStarted = collectSynchronizationDiagnostics
+            ? HighResTimer.GetCurrentTick()
+            : 0;
+        long lockAcquired = 0;
+        long lockReleased = 0;
+        SKImage? image;
+
+        Monitor.Enter(RenderStateSynchronization.SyncRoot);
+        try
         {
+            if (collectSynchronizationDiagnostics)
+                lockAcquired = HighResTimer.GetCurrentTick();
+
             var tick = HighResTimer.GetCurrentTick();
 
             RenderToBackbuffer(tick);
             Backbuffer.EndFrame();
 
-            var img = Backbuffer.Snapshot();
+            image = Backbuffer.Snapshot();
 
             Backbuffer.BeginFrame();
 
-            return img;
+            if (collectSynchronizationDiagnostics)
+                lockReleased = HighResTimer.GetCurrentTick();
         }
+        finally
+        {
+            Monitor.Exit(RenderStateSynchronization.SyncRoot);
+        }
+
+        if (collectSynchronizationDiagnostics)
+        {
+            GpuRenderSynchronizationDiagnosticsCalculated?.Invoke(
+                new GpuRenderSynchronizationDiagnostics(
+                    HighResTimer.GetDuration(waitStarted, lockAcquired) * 1000d,
+                    HighResTimer.GetDuration(lockAcquired, lockReleased) * 1000d));
+        }
+
+        return image;
     }
 
     /// <summary>
