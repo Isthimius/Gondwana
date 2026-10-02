@@ -380,7 +380,8 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             foreach (var layer in render.Layers.Take(MaxDiagnosticLayers))
             {
                 text.AppendLine(
-                    $"  L{layer.LayerIndex} z{layer.ZOrder}: " +
+                    $"  L{layer.LayerIndex} z{layer.ZOrder} {layer.TileWidth}x{layer.TileHeight} " +
+                    $"xform={layer.TransformedTileCount}: " +
                     $"{Average(layer.QueryTotalMs, layer.Samples):0.000} / " +
                     $"{Average(layer.DrawTotalMs, layer.Samples):0.000}; " +
                     $"{Average(layer.DrawableTotal, layer.Samples):0.0} / " +
@@ -517,6 +518,9 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         internal int LayerIndex { get; } = layerIndex;
         internal string LayerId { get; } = layerId;
         internal int ZOrder { get; } = zOrder;
+        internal int TransformedTileCount { get; private set; }
+        internal int TileWidth { get; private set; }
+        internal int TileHeight { get; private set; }
         internal long Samples { get; private set; }
         internal double QueryTotalMs { get; private set; }
         internal double DrawTotalMs { get; private set; }
@@ -530,6 +534,9 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             DrawTotalMs += diagnostics.DrawMilliseconds;
             DrawableTotal += diagnostics.DrawableCount;
             TileTotal += diagnostics.TileCount;
+            TransformedTileCount = diagnostics.TransformedTileCount;
+            TileWidth = diagnostics.TileWidth;
+            TileHeight = diagnostics.TileHeight;
         }
 
         internal LayerDiagnosticsSnapshot ToSnapshot() =>
@@ -541,7 +548,10 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
                 QueryTotalMs,
                 DrawTotalMs,
                 DrawableTotal,
-                TileTotal);
+                TileTotal,
+                TransformedTileCount,
+                TileWidth,
+                TileHeight);
     }
 
     private sealed record LayerDiagnosticsSnapshot(
@@ -552,7 +562,10 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         double QueryTotalMs,
         double DrawTotalMs,
         long DrawableTotal,
-        long TileTotal);
+        long TileTotal,
+        int TransformedTileCount,
+        int TileWidth,
+        int TileHeight);
 
     private sealed record RenderDiagnosticsSnapshot(
         long SceneRenderSamples,
