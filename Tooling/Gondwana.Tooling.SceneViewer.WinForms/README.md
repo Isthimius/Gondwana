@@ -29,6 +29,7 @@ dotnet run --project Tooling/Gondwana.Tooling.SceneViewer.WinForms -c Release --
 | Mouse wheel | Zoom |
 | Home | Restore initial camera position and zoom |
 | F3 | Toggle runtime diagnostics |
+| F4 | Pause/resume all active tile animations |
 | Esc | Close viewer |
 
 Movement is continuous, in world pixels, with elapsed-time integration and normalized diagonal speed. Normal/fast speeds are 320/960 pixels per second. Zoom uses a 1.2 multiplier per wheel notch, bounded to 0.125–8. The camera starts at world origin with zoom 1, without scene-bound clamping. Losing focus clears held keys.
@@ -37,19 +38,22 @@ The window is resizable. Gondwana's current GPU host preserves the initial logic
 
 ### Diagnostics
 
-Press **F3** to toggle a black, white-text diagnostics overlay in the upper-right of the View. The overlay is hidden by default and reports sampled runtime information without replacing the normal Gondwana rendering path:
+Press **F3** to toggle a black, white-text diagnostics overlay in the upper-left of the View. The overlay is hidden by default and reports sampled runtime information without replacing the normal Gondwana rendering path:
 
 - gross engine CPS, engine FPS, and actual GPU FPS
 - average and maximum background-work time across the sample window
-- number of background samples
-- active animating tile count
+- average and maximum WinForms GL callback time
+- render+snapshot, scene-render, drawable query/sort, draw, overlay, blit, and flush timings
+- average visible drawable/tile counts
+- per-layer query/draw timings, drawable/tile counts, tile size, and transformed-tile count
+- active animating tile count and pause state
 - scene layer count and total grid-cell count
 - camera world position and viewport zoom
 - viewport and logical backbuffer dimensions
 - target FPS and VSync state
 - requested, actual, and maximum supported MSAA sample counts
 
-The background timing spans Gondwana's normal background phase from `BeforeBackgroundTasksExecute` through `AfterBackgroundTasksExecute`, so it includes input polling, tile animation, sprite movement, collision resolution, and camera updates. It is intended as a lightweight stress-test diagnostic rather than a subsystem profiler.
+The background timing spans Gondwana's normal background phase from `BeforeBackgroundTasksExecute` through `AfterBackgroundTasksExecute`, so it includes input polling, tile animation, sprite movement, collision resolution, and camera updates. GPU diagnostics are collected only while a subscriber is attached and break the GL frame into query/sort, draw, overlay, snapshot/finalize, blit, and flush work. Press **F4** to pause or resume all currently active tile animations without editing GANI files; paused tiles stay in the active animation list, making this useful for isolating frame-change/render cost from the cost of polling animators.
 
 ## Runtime loading
 
