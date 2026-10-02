@@ -969,6 +969,11 @@ public sealed class Engine : IDisposable
 
     private void Cycle()
     {
+        // Give a GPU paint callback that is already waiting for live render state
+        // a chance to acquire the shared gate before this unconstrained loop takes
+        // another simulation cycle.
+        RenderStateSynchronization.WaitForPendingGpuRenderers();
+
         lock (RenderStateSynchronization.SyncRoot)
         {
             EngineDispatcher.Drain();
