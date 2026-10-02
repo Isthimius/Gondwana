@@ -133,6 +133,15 @@ public sealed class AssetsFile : IDisposable
     /// <param name="register">Whether to add this instance to <see cref="AllAssetsFiles"/>.</param>
     /// <returns>The loaded package, owned by the caller.</returns>
     public static AssetsFile Load(Stream stream, string? password = null, bool register = true)
+        => Load(stream, password, register, sourcePath: null);
+
+    /// <summary>Loads a buffered archive with an optional reconstructible source path.</summary>
+    /// <param name="stream">The readable archive stream.</param>
+    /// <param name="password">The optional archive password.</param>
+    /// <param name="register">Whether to register the archive.</param>
+    /// <param name="sourcePath">A path identifying the stream origin. Does not open or write that path.</param>
+    /// <returns>The buffered archive.</returns>
+    public static AssetsFile Load(Stream stream, string? password, bool register, string? sourcePath)
     {
         ArgumentNullException.ThrowIfNull(stream);
         if (!stream.CanRead)
@@ -140,7 +149,8 @@ public sealed class AssetsFile : IDisposable
 
         var assetFile = new AssetsFile(register)
         {
-            Password = password
+            Password = password,
+            SourcePath = string.IsNullOrWhiteSpace(sourcePath) ? null : sourcePath
         };
 
         try
@@ -172,6 +182,12 @@ public sealed class AssetsFile : IDisposable
     /// </summary>
     [JsonProperty]
     public bool UseEncryption { get; private set; }
+
+    /// <summary>Gets the archive's reconstructible origin, including an optional stream origin.</summary>
+    /// <remarks>File-backed archives use FilePath. Anonymous streams have no source path.</remarks>
+    [JsonIgnore]
+    public string? SourcePath { get => string.IsNullOrWhiteSpace(FilePath) ? _sourcePath : FilePath; private set => _sourcePath = value; }
+    private string? _sourcePath;
 
     private void EnsureLoaded()
     {

@@ -9,6 +9,9 @@ namespace Gondwana.Audio;
 /// </summary>
 public sealed class AudioResourceManager : IDisposable
 {
+    [Newtonsoft.Json.JsonIgnore]
+    internal DefinitionProvenance? DefinitionProvenance { get; set; }
+
     private static readonly Lazy<AudioResourceManager> _instance = new(() => new AudioResourceManager());
     private readonly ConcurrentDictionary<string, AudioResource> _soundResources = new(StringComparer.Ordinal);
     private readonly object _backendLock = new();
@@ -432,6 +435,7 @@ public sealed class AudioResourceManager : IDisposable
     /// </summary>
     public void Clear()
     {
+        DefinitionProvenance = null;
         lock (_backendLock)
         {
             foreach (var resource in _soundResources.Values.ToArray())

@@ -49,4 +49,61 @@ public sealed class RenderStateSynchronizationTests
         Assert.True(disposer.Wait(TimeSpan.FromSeconds(5)));
         Assert.True(holder.Wait(TimeSpan.FromSeconds(5)));
     }
+    [Fact]
+    public void WaitingGpuRenderer_GetsAdmissionBeforeNextEngineStyleAcquisition()
+    {
+        using var initialHolderEntered = new ManualResetEventSlim();
+        using var releaseInitialHolder = new ManualResetEventSlim();
+        using var gpuAcquired = new ManualResetEventSlim();
+        using var releaseGpu = new ManualResetEventSlim();
+        using var engineAcquired = new ManualResetEventSlim();
+
+        Task initialHolder = Task.Run(() =>
+        {
+            lock (RenderStateSynchronization.SyncRoot)
+            {
+                initialHolderEntered.Set();
+                releaseInitialHolder.Wait();
+            }
+        });
+
+        Assert.True(initialHolderEntered.Wait(TimeSpan.FromSeconds(5)));
+
+        Task gpu = Task.Run(() =>
+        {
+            RenderStateSynchronization.EnterGpuRender();
+            try
+            {
+                gpuAcquired.Set();
+                releaseGpu.Wait();
+            }
+            finally
+            {
+                RenderStateSynchronization.ExitGpuRender();
+            }
+        });
+
+        Assert.True(
+            SpinWait.SpinUntil(
+                () => RenderStateSynchronization.HasPendingGpuRenderers,
+                TimeSpan.FromSeconds(5)));
+
+        Task engine = Task.Run(() =>
+        {
+            RenderStateSynchronization.WaitForPendingGpuRenderers();
+            lock (RenderStateSynchronization.SyncRoot)
+                engineAcquired.Set();
+        });
+
+        releaseInitialHolder.Set();
+
+        Assert.True(gpuAcquired.Wait(TimeSpan.FromSeconds(5)));
+        Assert.False(engineAcquired.IsSet);
+
+        releaseGpu.Set();
+
+        Assert.True(engineAcquired.Wait(TimeSpan.FromSeconds(5)));
+        Assert.True(Task.WaitAll([initialHolder, gpu, engine], TimeSpan.FromSeconds(5)));
+    }
+
 }

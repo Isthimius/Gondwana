@@ -32,6 +32,7 @@ public static class AnimationDefinitionSerializer
             ApplyDefaultSource(
                 definition,
                 AnimationDefinitionSource.LooseDefinitionFile(fullPath));
+            definition.LoadStamp = new(definition, filePath: fullPath);
             return definition;
         }
         catch (JsonException ex)
@@ -62,14 +63,15 @@ public static class AnimationDefinitionSerializer
             ?? throw new FileNotFoundException($"GANI asset entry not found: {entryName}", entryName);
 
         var definition = Load(stream);
-        if (definition.Source.Kind == AnimationDefinitionSourceKind.None &&
-            !string.IsNullOrWhiteSpace(assetsFile.FilePath))
+        definition.Source = AnimationDefinitionSource.None();
+        if (!string.IsNullOrWhiteSpace(assetsFile.SourcePath))
         {
             definition.Source = AnimationDefinitionSource.PackedDefinitionFile(
-                assetsFile.FilePath,
+                assetsFile.SourcePath,
                 entryName);
         }
 
+        definition.LoadStamp = new(definition, assetsFilePath: assetsFile.SourcePath, entryName: entryName);
         return definition;
     }
 
@@ -210,6 +212,7 @@ public static class AnimationDefinitionSerializer
                 StringComparison.Ordinal))
         {
             cycle.NextCycle = cycle;
+            CaptureProvenance(cycle, definition);
             return;
         }
 
@@ -220,7 +223,12 @@ public static class AnimationDefinitionSerializer
         }
 
         cycle.NextCycle = nextCycle;
+        CaptureProvenance(cycle, definition);
     }
+
+    private static void CaptureProvenance(Cycle cycle, AnimationDefinition definition) =>
+        cycle.DefinitionProvenance = definition.LoadStamp?.Materialized(definition,
+            () => FromCycle(cycle));
 
     private static AnimationDefinition FromJson(
         string json,

@@ -29,6 +29,7 @@ public static class AudioDefinitionSerializer
         {
             var definition = FromJson(File.ReadAllText(fullPath), fullPath);
             ApplyDefaultSource(definition, AudioDefinitionSource.LooseDefinitionFile(fullPath));
+            definition.LoadStamp = new(definition, filePath: fullPath);
             return definition;
         }
         catch (JsonException ex)
@@ -56,14 +57,15 @@ public static class AudioDefinitionSerializer
             ?? throw new FileNotFoundException($"GSND asset entry not found: {entryName}", entryName);
 
         var definition = Load(stream);
-        if (definition.Source.Kind == AudioDefinitionSourceKind.None &&
-            !string.IsNullOrWhiteSpace(assetsFile.FilePath))
+        definition.Source = AudioDefinitionSource.None();
+        if (!string.IsNullOrWhiteSpace(assetsFile.SourcePath))
         {
             definition.Source = AudioDefinitionSource.PackedDefinitionFile(
-                assetsFile.FilePath,
+                assetsFile.SourcePath,
                 entryName);
         }
 
+        definition.LoadStamp = new(definition, assetsFilePath: assetsFile.SourcePath, entryName: entryName);
         return definition;
     }
 
@@ -140,7 +142,7 @@ public static class AudioDefinitionSerializer
         if (resource.AssetIdentifier is { } asset)
         {
             definition.SourceKind = AudioResourceSourceKind.PackedAsset;
-            definition.AssetsFilePath = asset.AssetsFile.FilePath;
+            definition.AssetsFilePath = asset.AssetsFile.SourcePath;
             definition.AssetEntryName = asset.AssetName;
         }
         else if (!string.IsNullOrWhiteSpace(resource.SourceFilePath))
@@ -180,6 +182,7 @@ public static class AudioDefinitionSerializer
         baseDirectory ??= GetReferenceBaseDirectory(definition.Source);
         var manager = AudioResourceManager.Instance;
         var loaded = new List<AudioResource>();
+        bool skippedExisting = false;
 
         foreach (var resourceDefinition in definition.Resources)
         {
@@ -187,6 +190,7 @@ public static class AudioDefinitionSerializer
             {
                 if (!overwriteExisting)
                 {
+                    skippedExisting = true;
                     ApplySettings(existing, resourceDefinition);
                     loaded.Add(existing);
                     continue;
@@ -224,6 +228,10 @@ public static class AudioDefinitionSerializer
             loaded.Add(resource);
         }
 
+        manager.DefinitionProvenance = !skippedExisting && manager.GetAll().Count == loaded.Count
+            ? definition.LoadStamp?.Materialized(definition,
+                () => FromManager(manager))
+            : null;
         return loaded;
     }
 
@@ -242,8 +250,8 @@ public static class AudioDefinitionSerializer
     {
         var assetsPath = ResolveReferencePath(definition.AssetsFilePath!, baseDirectory);
         var assetsFile = AssetsFile.AllAssetsFiles.FirstOrDefault(
-            file => string.Equals(
-                Path.GetFullPath(file.FilePath),
+            file => !string.IsNullOrWhiteSpace(file.SourcePath) && string.Equals(
+                Path.GetFullPath(file.SourcePath),
                 Path.GetFullPath(assetsPath),
                 StringComparison.OrdinalIgnoreCase))
             ?? throw new InvalidDataException(

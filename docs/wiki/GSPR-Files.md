@@ -43,7 +43,7 @@ Load accepts a path, a readable stream, or an AssetsFile plus entry name. Stream
 
 ## EngineState
 
-New EngineState saves contain one sprite-category entry with one inline SpriteDefinition, or a relative GsprPath pointing to one collection file. Append `separateGsprFile: true` to SaveToFile to produce `<state-name>.sprites.gspr`:
+New EngineState saves contain one sprite-category entry with an inline SpriteDefinition, a relative GsprPath, or a packed GAF/entry reference when PreserveSource is selected. Append `separateGsprFile: true` to SaveToFile to produce `<state-name>.sprites.gspr`:
 
 ```csharp
 state.SaveToFile("world.state",
@@ -53,10 +53,21 @@ state.SaveToFile("world.state",
     separateGsprFile: true);
 ```
 
-The new option is appended to the existing signature. Compression and partial selection remain available. Loading only Sprites resolves against already loaded dependencies; it does not force replacement of scenes or tilesheets. Nickname remains the merge key, and overwriteExisting controls replacement. Legacy raw Sprite arrays and previous SceneLayer-reference data remain readable through the compatibility path.
+The new option is appended to the existing signature. Compression and partial selection remain available. Loading inline/loose Sprites alone resolves against already loaded dependencies. Packed sprite entries additionally include available scene/tilesheet dependencies. Nickname remains the merge key, and overwriteExisting controls replacement. Legacy raw Sprite arrays and previous SceneLayer-reference data remain readable through the compatibility path.
 
 ## Authoring
 
 The standalone `Gondwana.Tooling.Sprites.WinForms` application edits multiple GSPR documents. Its SpriteEditorControl is also hosted directly by Gondwana Studio. Add, duplicate, remove and select entries, load GSCN/GTS sources, double-click a layer or frame to assign it, edit properties, and inspect the preview and validation panes.
 
 Preview uses engine projection math without a game host, live loop, or registered preview sprites/scenes/tilesheets. Structural errors are distinct from missing-source warnings. The shared docking infrastructure restores pane arrangement and visibility per application; standalone and Studio preferences are independent. View restores hidden panes and resets the active editor layout. No document session or zoom state is stored in GSPR or dock preferences.
+
+## Preserving definition origins in EngineState
+
+`EngineStateSaveOptions` supports `DefinitionPersistence.PreserveSource` for this
+format. A definition loaded from a named GAF can retain `AssetsFilePath` and
+`AssetEntryName`; a loose definition can retain its path. EngineState compares current
+serializable state with its loaded baseline and falls back when it changed. Packed
+loads use `AssetsFile.SourcePath`, including an explicitly supplied stream origin;
+anonymous archives cannot produce path-based provenance. See
+[Definition persistence options](Serialization-and-EngineState#definition-persistence-options)
+for collection ownership, generated identities, relative paths, and safe fallback.

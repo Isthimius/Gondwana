@@ -19,6 +19,7 @@ Most of its public collections are facades over the engine's live registries.
 - [What EngineState can contain](#what-enginestate-can-contain)
 - [EngineState is a facade over live state](#enginestate-is-a-facade-over-live-state)
 - [The internal snapshot DTO](#the-internal-snapshot-dto)
+- [Definition persistence options](#definition-persistence-options)
 - [Saving state](#saving-state)
   - [Selective saves](#selective-saves)
   - [Dependency normalization](#dependency-normalization)
@@ -196,6 +197,103 @@ live Gondwana registries
 ```
 
 That separation is a central part of the design.
+
+---
+
+## Definition persistence options
+
+All five definition categories (GTS, GANI, GSCN, GSND, and GSPR) support three sources:
+inline definitions, loose definition files, and existing definition entries inside GAF packages.
+
+```csharp
+state.SaveToFile("saves/quicksave.json", new EngineStateSaveOptions
+{
+    Compress = false,
+    Parts = EngineStateParts.All,
+    Tilesheets = DefinitionPersistence.PreserveSource,
+    Cycles = DefinitionPersistence.PreserveSource,
+    Scenes = DefinitionPersistence.PreserveSource,
+    Audio = DefinitionPersistence.PreserveSource,
+    Sprites = DefinitionPersistence.PreserveSource
+});
+```
+
+Each category accepts `Inline` (the default), `Loose`, or `PreserveSource`.
+The existing boolean `SaveToFile` overload remains supported and maps its flags to
+`Inline`/`Loose`. `Loose` writes new definition files beside the state file.
+`PreserveSource` retains an unchanged packed or loose source; generated or changed
+content falls back to its current inline definition.
+
+A packed state entry uses this shape (the enclosing category determines the format):
+
+```json
+{
+  "AssetsFilePath": "../assets/game.gaf",
+  "AssetEntryName": "tilesheets/terrain.gts"
+}
+```
+
+Exactly one source is allowed per entry. A definition combined with a loose or packed
+reference, or a packed reference missing either field, fails validation. Packed entry
+names are exact and must use the expected `AssetTypes` category. Failures identify both
+the archive path and entry name. Existing inline, loose, legacy scene/sprite, and
+`SoundResources` snapshots remain readable.
+
+### Provenance and changes
+
+Loaders retain the actual input location separately from editable authoring `Source`
+metadata. Materialized tilesheets, cycles, and scenes own their provenance. Audio and
+sprite managers retain provenance for their complete collections. EngineState compares
+the current serializable definition with an immutable baseline captured after loading.
+Changes to nested definition state, collection membership, or settings cause fallback;
+editing a loaded definition before materialization also prevents source preservation.
+Scenes/layers and sprites whose identities were generated during materialization fall
+back so their new IDs survive restoration. Collection sources are retained only when
+they describe the complete current collection.
+
+This comparison covers the state represented by the existing definition serializers.
+It does not expand EngineState into a memory dump: playback position, callbacks,
+external media edits, and arbitrary runtime bitmap pixel edits remain outside that
+persistence contract. Keep referenced definition files and media available and stable.
+
+### Packages and relative paths
+
+The asset list contains inert `FilePath`, `Password`, and `UseEncryption` records.
+Deserializing those records does not construct or register live archives. GAF bytes
+are never embedded. Old archive-record shapes (including type metadata) remain readable.
+Both asset-list paths and packed-definition paths are written relative to the state
+file directory where possible and resolved from that directory on load. Absolute paths
+are supported. Archive loading requires an existing package; a missing dependency does
+not create an empty GAF.
+
+Asset dependencies are included automatically. Packed scenes also restore available
+cycle/tilesheet dependencies, and packed sprites restore available scene/tilesheet
+dependencies. Restore order is archives, audio, tilesheets, cycles, scenes, then sprites.
+Legacy inline/loose sprite-only merges continue to use existing scenes. Selecting a
+category does not load unrelated audio or sprite state.
+
+### Stream archives
+
+`AssetsFile.SourcePath` exposes the file origin or an optional stream origin:
+
+```csharp
+var archive = AssetsFile.Load(stream, password: null, register: true,
+    sourcePath: "assets/game.gaf");
+```
+
+The identity does not open a file or change `FilePath`. Supply a reconstructible path,
+not a display label or an HTTP URL. Core EngineState performs filesystem loading; a
+host that fetches archives itself can register them under matching identities and use
+`MergeFromFile` to reuse them. `LoadFromFile` replaces selected archives and reopens
+paths from disk. Core contains no HTTP/browser fetch policy.
+
+Anonymous streams remain valid. They cannot produce packed definition references.
+Definitions normally fall back inline; with `PreserveSource`, tilesheets lacking a
+durable bitmap source use a loose GTS/PNG export. Anonymous packed audio is exported
+to loose media and GSND files. These files must travel with the saved state.
+
+EngineState preserves existing packages. **It does not create or mutate GAF packages
+to store generated definitions.**
 
 ---
 
@@ -975,7 +1073,7 @@ For the standalone format, see [[GSND Files]].
 
 ## Asset files are references, not embedded archives
 
-An `AssetsFile` entry in EngineState stores metadata including:
+An inert archive DTO in EngineState stores metadata including:
 
 ```text
 FilePath
@@ -983,14 +1081,10 @@ Password
 UseEncryption
 ```
 
-When state is restored, Gondwana calls:
-
-```csharp
-AssetsFile.LoadOrCreate(
-    raw.FilePath,
-    raw.Password,
-    raw.UseEncryption);
-```
+During application, Gondwana resolves `FilePath` relative to the state directory,
+reuses a registered archive with that identity when merging, or verifies the archive
+exists and opens it with the saved password/encryption settings. Deserializing the
+DTO alone never constructs or registers an `AssetsFile`.
 
 The asset archive itself is therefore not copied into the EngineState JSON.
 

@@ -445,3 +445,30 @@ non-recursive and never chooses among multiple matches.
 8. `*ByFrame` flags allow a scene tile to follow GTS frame collision metadata.
 9. EngineState can embed GSCN definitions or reference separate `.gscn` files.
 10. The same definition model is intended to support runtime loading and scene UI tooling.
+
+## Preserving definition origins in EngineState
+
+`EngineStateSaveOptions` supports `DefinitionPersistence.PreserveSource` for this
+format. A definition loaded from a named GAF can retain `AssetsFilePath` and
+`AssetEntryName`; a loose definition can retain its path. EngineState compares current
+serializable state with its loaded baseline and falls back when it changed. Packed
+loads use `AssetsFile.SourcePath`, including an explicitly supplied stream origin;
+anonymous archives cannot produce path-based provenance. See
+[Definition persistence options](Serialization-and-EngineState#definition-persistence-options)
+for collection ownership, generated identities, relative paths, and safe fallback.
+
+## Runtime Scene Viewer
+
+The reusable GSCN editor provides **View Scene** on its preview toolbar, both in standalone Scene tooling and in Gondwana Studio. It launches `Gondwana.Tooling.SceneViewer.WinForms` in a separate process, isolating Engine singleton state from the authoring application.
+
+```powershell
+Gondwana.Tooling.SceneViewer.WinForms.exe --scene "Content\Scenes\level1.gscn"
+```
+
+The viewer loads the saved GSCN's explicit loose/packed GTS and GANI dependencies (including GANI tilesheet sources), registers runtime content, and calls `SceneDefinitionSerializer.ToScene`. Gondwana owns animation playback, frame transforms and associated geometry, layer projection, wrapping, parallax, and rendering. The viewer uses the current WinForms GPU host lifecycle.
+
+WASD or arrows move the camera continuously; Shift accelerates; the mouse wheel changes runtime viewport zoom; Home resets position/zoom; Esc closes. The resizable window uses normal runtime presentation scaling.
+
+Only saved files are viewed. New/dirty documents require confirmation and a successful save before launch. **Scene Preview** remains lightweight, editable, definition-driven, and Engine-free, with representative/static animation frames. It is not replaced by the viewer.
+
+Automatic GSPR discovery is unavailable: current GSCN metadata has no explicit relationship to associated GSPR files. No directory scanning or heuristic matching is performed. Packed dependencies that require passwords are unsupported because source metadata does not carry them.

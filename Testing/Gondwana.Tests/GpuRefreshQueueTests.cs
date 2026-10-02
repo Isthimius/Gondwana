@@ -1,4 +1,5 @@
 using System.Drawing;
+using Gondwana.Drawing;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
@@ -97,11 +98,59 @@ public sealed class GpuRefreshQueueTests
         Assert.True(layer.RefreshQueue.IsDirty);
     }
 
+    [Fact]
+    public void CurrentFrame_OnGpuHost_SkipsDirtyBoundsCalculation()
+    {
+        using var scene = new Scene();
+        var layer = scene.AddLayer(4, 4);
+        using var host = CreateGpuHost();
+        host.Bind(scene);
+        using var tile = new CountingTile(layer);
+
+        tile.CurrentFrame = default;
+
+        Assert.Equal(0, tile.DrawLocationWorldReadCount);
+    }
+
+    [Fact]
+    public void CurrentFrame_OnBitmapHost_PreservesDirtyBoundsCalculation()
+    {
+        using var scene = new Scene();
+        var layer = scene.AddLayer(4, 4);
+        using var host = CreateBitmapHost();
+        host.Bind(scene);
+        using var tile = new CountingTile(layer);
+
+        tile.CurrentFrame = default;
+
+        Assert.Equal(2, tile.DrawLocationWorldReadCount);
+    }
+
     private static RenderSurfaceHost<GpuBackbuffer> CreateGpuHost() =>
         new(new TestAdapter(320, 200));
 
     private static RenderSurfaceHost<BitmapBackbuffer> CreateBitmapHost() =>
         new(new TestAdapter(320, 200));
+
+    private sealed class CountingTile(SceneLayer sceneLayer) : Tile
+    {
+        public int DrawLocationWorldReadCount { get; private set; }
+
+        public override bool IsPositionFixed => true;
+
+        public override Rectangle DrawLocationWorld
+        {
+            get
+            {
+                DrawLocationWorldReadCount++;
+                return new Rectangle(0, 0, 16, 16);
+            }
+        }
+
+        public override PointF SceneLayerCoordinates => PointF.Empty;
+
+        public override SceneLayer SceneLayer { get; } = sceneLayer;
+    }
 
     private sealed class TestAdapter(int width, int height)
         : RenderSurfaceAdapterBase(width, height)

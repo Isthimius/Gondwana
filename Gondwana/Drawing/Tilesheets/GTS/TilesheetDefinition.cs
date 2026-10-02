@@ -5,6 +5,9 @@ namespace Gondwana.Drawing.Tilesheets.GTS;
 /// </summary>
 public sealed class TilesheetDefinition
 {
+    [Newtonsoft.Json.JsonIgnore]
+    internal DefinitionLoadStamp? LoadStamp { get; set; }
+
     private TilesheetDefinitionSource _source = TilesheetDefinitionSource.None();
 
     /// <summary>

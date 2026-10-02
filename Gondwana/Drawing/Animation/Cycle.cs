@@ -12,6 +12,9 @@ namespace Gondwana.Drawing.Animation;
 [JsonObject(IsReference = true)]
 public class Cycle : ICloneable, IDisposable
 {
+    [Newtonsoft.Json.JsonIgnore]
+    internal DefinitionProvenance? DefinitionProvenance { get; set; }
+
     #region fields
 
     /// <summary>
