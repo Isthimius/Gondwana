@@ -114,8 +114,14 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
         get => frame;
         set
         {
-            // Animation may change tile size, so invalidate before and after.
-            SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
+            // Animation may change tile size, so bitmap rendering must invalidate
+            // the old and new bounds. GPU rendering redraws the full frame and does
+            // not consume RefreshQueue, so avoid calculating those bounds entirely.
+            bool usesDirtyRegionRendering =
+                SceneLayer.Scene?.UsesDirtyRegionRendering ?? true;
+
+            if (usesDirtyRegionRendering)
+                SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
 
             frame = value;
 
@@ -136,7 +142,8 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
 
             _hasAssignedFrame = hasFrame;
 
-            SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
+            if (usesDirtyRegionRendering)
+                SceneLayer.RefreshQueue.AddWorldRect(DrawLocationWorld);
         }
     }
 

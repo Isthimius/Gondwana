@@ -233,6 +233,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Video.Widgets", "G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoTest", "Demos\VideoTest\VideoTest.csproj", "{EE44AAEE-ABE9-C49D-9D44-C1077F0C97AD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.SceneViewer.WinForms", "Tooling\Gondwana.Tooling.SceneViewer.WinForms\Gondwana.Tooling.SceneViewer.WinForms.csproj", "{36B2142B-22F9-481E-AA97-D4D4A9AB4194}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gondwana.Tooling.SceneViewer.WinForms.Tests", "Testing\Gondwana.Tooling.SceneViewer.WinForms.Tests\Gondwana.Tooling.SceneViewer.WinForms.Tests.csproj", "{23342145-F0A4-495D-BEF4-158033221135}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -245,6 +249,38 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{23342145-F0A4-495D-BEF4-158033221135}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23342145-F0A4-495D-BEF4-158033221135}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23342145-F0A4-495D-BEF4-158033221135}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{23342145-F0A4-495D-BEF4-158033221135}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{23342145-F0A4-495D-BEF4-158033221135}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{23342145-F0A4-495D-BEF4-158033221135}.Debug|x64.Build.0 = Debug|Any CPU
+		{23342145-F0A4-495D-BEF4-158033221135}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{23342145-F0A4-495D-BEF4-158033221135}.Debug|x86.Build.0 = Debug|Any CPU
+		{23342145-F0A4-495D-BEF4-158033221135}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23342145-F0A4-495D-BEF4-158033221135}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23342145-F0A4-495D-BEF4-158033221135}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{23342145-F0A4-495D-BEF4-158033221135}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{23342145-F0A4-495D-BEF4-158033221135}.Release|x64.ActiveCfg = Release|Any CPU
+		{23342145-F0A4-495D-BEF4-158033221135}.Release|x64.Build.0 = Release|Any CPU
+		{23342145-F0A4-495D-BEF4-158033221135}.Release|x86.ActiveCfg = Release|Any CPU
+		{23342145-F0A4-495D-BEF4-158033221135}.Release|x86.Build.0 = Release|Any CPU
+		{36B2142B-22F9-481E-AA97-D4D4A9AB4194}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36B2142B-22F9-481E-AA97-D4D4A9AB4194}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36B2142B-22F9-481E-AA97-D4D4A9AB4194}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{36B2142B-22F9-481E-AA97-D4D4A9AB4194}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{36B2142B-22F9-481E-AA97-D4D4A9AB4194}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{36B2142B-22F9-481E-AA97-D4D4A9AB4194}.Debug|x64.Build.0 = Debug|Any CPU
+		{36B2142B-22F9-481E-AA97-D4D4A9AB4194}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{36B2142B-22F9-481E-AA97-D4D4A9AB4194}.Debug|x86.Build.0 = Debug|Any CPU
+		{36B2142B-22F9-481E-AA97-D4D4A9AB4194}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36B2142B-22F9-481E-AA97-D4D4A9AB4194}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36B2142B-22F9-481E-AA97-D4D4A9AB4194}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{36B2142B-22F9-481E-AA97-D4D4A9AB4194}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{36B2142B-22F9-481E-AA97-D4D4A9AB4194}.Release|x64.ActiveCfg = Release|Any CPU
+		{36B2142B-22F9-481E-AA97-D4D4A9AB4194}.Release|x64.Build.0 = Release|Any CPU
+		{36B2142B-22F9-481E-AA97-D4D4A9AB4194}.Release|x86.ActiveCfg = Release|Any CPU
+		{36B2142B-22F9-481E-AA97-D4D4A9AB4194}.Release|x86.Build.0 = Release|Any CPU
 		{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -1110,6 +1146,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{23342145-F0A4-495D-BEF4-158033221135} = {9E16DEC8-4A17-4DE9-B359-132983D65993}
+		{36B2142B-22F9-481E-AA97-D4D4A9AB4194} = {AD16FE1C-14B5-4F89-83DD-933D044DC211}
 		{7D2ED868-CA1D-4F55-85B1-2BA428FF3E0C} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
 		{D7E088FB-FD26-4CE8-AE7E-E809F1F2D8AA} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}
 		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890} = {AFC28C9E-17FD-4DEC-9870-8B98C661764A}

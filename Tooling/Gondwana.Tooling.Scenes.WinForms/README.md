@@ -15,8 +15,7 @@ not boot a `GameHost`, register an editor scene in the global runtime scene
 collection, or require rendering/input hosts simply to author GSCN.
 
 `SceneEditorControl` is a public, hostable WinForms `UserControl`. The
-standalone application hosts the same control that Gondwana Studio can embed
-later.
+standalone application and Gondwana Studio host the same control.
 
 The preview uses Gondwana's existing `SceneLayer` coordinate conversion math
 through a tiny editor-owned projection layer. It therefore follows the engine's
@@ -207,3 +206,11 @@ frame. Preview orients artwork and accounts for its overhang, while the gold
 outline continues to mark the fixed grid cell. Source GTS thumbnails and source
 atlas slicing are unchanged. GSCN stores the orientation per tile, with Identity
 as the default for older documents.
+
+## Scene Preview and View Scene
+
+**Scene Preview** remains lightweight, editable, and definition-driven. It does not run an Engine and uses a representative/static GANI frame where applicable.
+
+**View Scene**, on the preview toolbar, launches the separate [Scene Viewer](../Gondwana.Tooling.SceneViewer.WinForms/README.md). It loads saved GSCN content and its explicit dependencies into a real Gondwana Scene, with actual Engine rendering, runtime frame transformations, real GANI playback, and camera navigation. New or dirty scenes must be saved first; canceling the save prevents launch.
+
+The command is part of `SceneEditorControl`, so it also works when hosted in Studio. Hosts supply `SaveRequested` to reuse their normal save path. Build the viewer in the same configuration as the editor, or deploy its complete output under `SceneViewer/` beside the editor executable. See the viewer README for all supported layouts, controls, and current GSPR association limitations.

@@ -18,6 +18,7 @@ internal sealed class SceneEditorDocument : DockContent
         Document = document ?? throw new ArgumentNullException(nameof(document));
         _save = save ?? throw new ArgumentNullException(nameof(save));
         Editor = new SceneEditorControl(document);
+        Editor.SaveRequested = () => _save(this, false);
 
         DockAreas = DockAreas.Document | DockAreas.Float;
         Controls.Add(Editor);

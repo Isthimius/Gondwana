@@ -1,5 +1,6 @@
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
+using Gondwana.Timers;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 
@@ -66,6 +67,11 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     /// it must not be used to resize the logical Backbuffer.
     /// </summary>
     public event Action<GRContext, int, int>? ResizeRequested;
+
+    /// <summary>
+    /// Occurs after a completed GPU paint callback when a subscriber requests timing diagnostics.
+    /// </summary>
+    public event Action<WinFormGpuFrameDiagnostics>? FrameDiagnosticsCalculated;
 
     /// <summary>
     /// Refreshes the destination size based on the current client size of the presentation control.
@@ -183,6 +189,12 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
 
     private void OnPaintSurface(object? sender, SKPaintGLSurfaceEventArgs e)
     {
+        bool collectDiagnostics = FrameDiagnosticsCalculated is not null;
+        long callbackStartTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+        long renderAndSnapshotTicks = 0;
+        long blitTicks = 0;
+        long flushTicks = 0;
+
         // Lazily sync VSync → GLControl.VSync whenever the backbuffer value changes.
         if (_gpuBackbuffer != null)
         {
@@ -220,7 +232,8 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
             }
         }
 
-        if (GrContext != null) _gpuBackbuffer?.EnsureInitialized(GrContext);
+        if (GrContext != null)
+            _gpuBackbuffer?.EnsureInitialized(GrContext);
 
         var canvas = e.Surface.Canvas;
 
@@ -234,14 +247,25 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
 
         // Render + blit entirely on the GL thread.
         // GlRenderAndSnapshot drives RenderToBackbuffer on the GPU surface then returns a
-        // lightweight GPU-backed snapshot.  Both the snapshot texture and e.Surface share the
+        // lightweight GPU-backed snapshot. Both the snapshot texture and e.Surface share the
         // same GRContext, so DrawImage is a zero-copy GPU blit.
         if (_host != null)
         {
+            long renderStartTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
             using var img = _host.GlRenderAndSnapshot();
+            long renderEndTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+
+            if (collectDiagnostics)
+                renderAndSnapshotTicks = renderEndTick - renderStartTick;
+
             if (img != null)
             {
+                long blitStartTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
                 DrawImage(canvas, img, ClearColor);
+                long blitEndTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+
+                if (collectDiagnostics)
+                    blitTicks = blitEndTick - blitStartTick;
             }
             else
             {
@@ -253,11 +277,26 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
             canvas.Clear(ClearColor);
         }
 
-        // Optional: flush to ensure work is queued to GPU before we hand new images next frame
+        // Optional: flush to ensure work is queued to GPU before we hand new images next frame.
+        long flushStartTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
         _glControl.GRContext?.Flush();
+        long flushEndTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
 
-        // Record the completed frame so the engine's CPS sampler can compute actual GPU FPS.
+        if (collectDiagnostics)
+            flushTicks = flushEndTick - flushStartTick;
+
+        // Record the completed frame so the engine's CPS sampler can compute actual rendered FPS.
         _gpuBackbuffer?.RecordFrame();
+
+        if (collectDiagnostics)
+        {
+            long callbackEndTick = HighResTimer.GetCurrentTick();
+            FrameDiagnosticsCalculated?.Invoke(new WinFormGpuFrameDiagnostics(
+                HighResTimer.GetDuration(callbackStartTick, callbackEndTick) * 1000d,
+                HighResTimer.GetDuration(0, renderAndSnapshotTicks) * 1000d,
+                HighResTimer.GetDuration(0, blitTicks) * 1000d,
+                HighResTimer.GetDuration(0, flushTicks) * 1000d));
+        }
     }
 
     /// <summary>

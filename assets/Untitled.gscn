@@ -9,7 +9,13 @@
       "GtsPath": "rooster.gts"
     }
   ],
-  "AnimationSources": [],
+  "AnimationSources": [
+    {
+      "AnimationKey": "beach_tileset.tile.43",
+      "Kind": "LooseDefinitionFile",
+      "GaniPath": "beach_tileset-tile-43.gani"
+    }
+  ],
   "Layers": [
     {
       "ID": "layer-1",
@@ -27,7 +33,154 @@
       "ShowCollisionBoxes": false,
       "OriginPx": "0, 0",
       "DefaultTileCollisionProfile": "World",
-      "Tiles": []
+      "Tiles": [
+        {
+          "X": 0,
+          "Y": 0,
+          "Id": "00000000-0000-0000-0000-000000000000",
+          "Visible": true,
+          "Transform": 0,
+          "Frame": {
+            "Tilesheet": "rooster",
+            "RegionName": "default",
+            "XTile": 0,
+            "YTile": 0
+          },
+          "EnableAnimator": true,
+          "AnimationKey": "beach_tileset.tile.43",
+          "StartAnimation": true,
+          "EnableFog": false,
+          "AdjustCollisionAreaByFrame": false,
+          "AdjustCollisionArea": {
+            "Top": 0,
+            "Bottom": 0,
+            "Left": 0,
+            "Right": 0
+          },
+          "CollisionType": "None",
+          "CollisionTypeByFrame": false
+        },
+        {
+          "X": 0,
+          "Y": 1,
+          "Id": "00000000-0000-0000-0000-000000000000",
+          "Visible": true,
+          "Transform": 0,
+          "Frame": {
+            "Tilesheet": "rooster",
+            "RegionName": "default",
+            "XTile": 1,
+            "YTile": 0
+          },
+          "EnableAnimator": false,
+          "StartAnimation": false,
+          "EnableFog": false,
+          "AdjustCollisionAreaByFrame": false,
+          "AdjustCollisionArea": {
+            "Top": 0,
+            "Bottom": 0,
+            "Left": 0,
+            "Right": 0
+          },
+          "CollisionType": "None",
+          "CollisionTypeByFrame": false
+        },
+        {
+          "X": 0,
+          "Y": 2,
+          "Id": "00000000-0000-0000-0000-000000000000",
+          "Visible": true,
+          "Transform": 0,
+          "Frame": {
+            "Tilesheet": "rooster",
+            "RegionName": "default",
+            "XTile": 2,
+            "YTile": 0
+          },
+          "EnableAnimator": false,
+          "StartAnimation": false,
+          "EnableFog": false,
+          "AdjustCollisionAreaByFrame": false,
+          "AdjustCollisionArea": {
+            "Top": 0,
+            "Bottom": 0,
+            "Left": 0,
+            "Right": 0
+          },
+          "CollisionType": "None",
+          "CollisionTypeByFrame": false
+        },
+        {
+          "X": 0,
+          "Y": 3,
+          "Id": "00000000-0000-0000-0000-000000000000",
+          "Visible": true,
+          "Transform": 0,
+          "Frame": {
+            "Tilesheet": "rooster",
+            "RegionName": "default",
+            "XTile": 3,
+            "YTile": 0
+          },
+          "EnableAnimator": false,
+          "StartAnimation": false,
+          "EnableFog": false,
+          "AdjustCollisionAreaByFrame": false,
+          "AdjustCollisionArea": {
+            "Top": 0,
+            "Bottom": 0,
+            "Left": 0,
+            "Right": 0
+          },
+          "CollisionType": "None",
+          "CollisionTypeByFrame": false
+        },
+        {
+          "X": 3,
+          "Y": 2,
+          "Id": "00000000-0000-0000-0000-000000000000",
+          "Visible": true,
+          "Transform": 0,
+          "Frame": {
+            "Tilesheet": "rooster",
+            "RegionName": "default",
+            "XTile": 0,
+            "YTile": 0
+          },
+          "EnableAnimator": false,
+          "StartAnimation": false,
+          "EnableFog": false,
+          "AdjustCollisionAreaByFrame": false,
+          "AdjustCollisionArea": {
+            "Top": 0,
+            "Bottom": 0,
+            "Left": 0,
+            "Right": 0
+          },
+          "CollisionType": "None",
+          "CollisionTypeByFrame": false
+        },
+        {
+          "X": 6,
+          "Y": 8,
+          "Id": "00000000-0000-0000-0000-000000000000",
+          "Visible": true,
+          "Transform": 0,
+          "EnableAnimator": true,
+          "AnimationKey": "beach_tileset.tile.43",
+          "StartAnimation": false,
+          "EnableFog": false,
+          "AdjustCollisionAreaByFrame": false,
+          "AdjustCollisionArea": {
+            "Top": 0,
+            "Bottom": 0,
+            "Left": 0,
+            "Right": 0
+          },
+          "CollisionType": "None",
+          "CollisionTypeByFrame": false
+        }
+      ]
     },
     {
       "ID": "layer-2",

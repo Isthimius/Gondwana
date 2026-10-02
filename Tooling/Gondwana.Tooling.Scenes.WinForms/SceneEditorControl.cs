@@ -96,6 +96,9 @@ public sealed class SceneEditorControl : UserControl
     public SceneDocument Document { get; }
     public SceneDefinition Definition => Document.Definition;
 
+    /// <summary>Uses the containing application's normal save workflow.</summary>
+    public Func<bool>? SaveRequested { get; set; }
+
     public SceneEditorControl(SceneDocument document)
     {
         Document = document ?? throw new ArgumentNullException(nameof(document));
@@ -412,7 +415,30 @@ public sealed class SceneEditorControl : UserControl
         };
 
         bar.Items.Add(grid);
+        bar.Items.Add(new ToolStripSeparator());
+        bar.Items.Add("View Scene", null, (_, _) => ViewScene());
         return bar;
+    }
+
+    private void ViewScene()
+    {
+        if (!CommitEdits())
+            return;
+        try
+        {
+            SceneViewerLauncher.ViewSavedScene(Document, () =>
+                MessageBox.Show(this,
+                    "This scene must be saved before viewing. Save and view the scene?",
+                    "View Scene — saved content", MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Question) == DialogResult.OK,
+                () => SaveRequested?.Invoke() ?? false,
+                SceneViewerLauncher.Launch);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Unable to view scene",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 
     private ToolStrip BuildStructureToolbar()
