@@ -26,3 +26,11 @@ public sealed record GpuRenderFrameDiagnostics(
     int DrawableCount,
     int TileCount,
     IReadOnlyList<GpuLayerRenderDiagnostics> Layers);
+
+
+/// <summary>
+/// Captures time spent waiting for and holding the shared live render-state synchronization gate.
+/// </summary>
+public sealed record GpuRenderSynchronizationDiagnostics(
+    double LockWaitMilliseconds,
+    double LockHeldMilliseconds);
