@@ -667,9 +667,15 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         long PublishedSnapshots, long DroppedSnapshots, int SnapshotSlotsInUse, int SnapshotCommandCount);
 
     // Viewer startup must not load an unrelated game config/state from the cwd.
+    // Run uncapped and without VSync so diagnostics expose actual Engine/GPU throughput.
     internal sealed class ViewerConfiguration : IEngineConfigurationStore
     {
-        public EngineConfiguration Configuration { get; } = new();
+        public EngineConfiguration Configuration { get; } = new()
+        {
+            TargetFPS = 0,
+            VSync = false
+        };
+
         public bool AutoSave { get; set; }
         public void Save() { }
         public void Dispose() { }
