@@ -954,18 +954,13 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         queryRect.Inflate(TileWidth, TileHeight);
         queryRect.Inflate(1, 1);
 
-        // 1) Grid tiles. Orthogonal rendering can use a conservative row-major
-        // candidate scan because the viewport clips the small over-selected fringe.
-        // Other projections retain their exact intersection query.
-        var sceneLayerTiles = CoordinateSystem is OrthogonalCoordinates orthogonal
-            ? orthogonal.GetSceneLayerTilesForRendering(
-                this,
-                worldRect,
-                includeOverhang)
-            : CoordinateSystem.GetSceneLayerTilesInPixelRange(
-                this,
-                worldRect,
-                includeOverhang: includeOverhang);
+        // 1) Grid tiles. Every projection supplies a conservative render query whose
+        // traversal follows fixed-tile depth order for that coordinate system.
+        var renderTiles = CoordinateSystem.GetSceneLayerTilesForRendering(
+            this,
+            worldRect,
+            includeOverhang);
+        var sceneLayerTiles = renderTiles.Tiles;
 
         var list = new List<IDrawable>(sceneLayerTiles.Count);
         bool uniformGridZOrder = true;
@@ -1029,13 +1024,12 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             hasNonGridDrawables = true;
         }
 
-        // Orthogonal row-major output is already Tile.CompareTo order when fixed
-        // tiles share Z and transforms cannot change cell height. Avoid even the
-        // O(n) comparison pass in that common tilemap case.
+        // Projection-specific render queries are emitted in fixed-tile depth order.
+        // Per-tile Z differences or geometry-changing transforms still fall back to
+        // verification/sort so the optimization cannot change rendering semantics.
         bool gridOrderGuaranteed =
-            CoordinateSystemType == CoordinateSystemTypes.Orthogonal &&
-            uniformGridZOrder &&
-            (TransformedTiles.Count == 0 || TileWidth == TileHeight);
+            renderTiles.IsRenderOrdered &&
+            uniformGridZOrder;
 
         long sortStartTick = collectSortDiagnostics ? HighResTimer.GetCurrentTick() : 0;
         if (hasNonGridDrawables)
