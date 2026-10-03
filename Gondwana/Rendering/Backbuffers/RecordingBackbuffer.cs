@@ -13,6 +13,7 @@ namespace Gondwana.Rendering.Backbuffers;
 internal sealed class RecordingBackbuffer : BackbufferBase
 {
     private const int MaxAtlasBatchSize = 64;
+    private static readonly int[] PartialBatchSizes = [32, 16, 8, 4, 2];
 
     private sealed class AtlasBatchBuffer(int size)
     {
@@ -149,7 +150,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         int offset = 0;
         int remaining = _pendingCount;
 
-        foreach (int size in new[] { 32, 16, 8, 4, 2 })
+        foreach (int size in PartialBatchSizes)
         {
             while (remaining >= size)
             {
