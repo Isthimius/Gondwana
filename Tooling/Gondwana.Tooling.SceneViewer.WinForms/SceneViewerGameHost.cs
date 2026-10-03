@@ -2,6 +2,7 @@ using System.Text;
 using Gondwana.Configuration;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Direct;
+using Gondwana.Drawing.Tilesheets;
 using Gondwana.Input.Keyboard;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
@@ -16,9 +17,13 @@ using GondwanaView = Gondwana.Rendering.Views.View;
 
 namespace Gondwana.Tooling.SceneViewer.WinForms;
 
-internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface, string scenePath)
+internal sealed class SceneViewerGameHost(
+    WinFormGpuRenderSurfaceControl surface,
+    string? scenePath,
+    SceneViewerStressOptions? stress = null)
     : WinFormsGpuGameHost(surface)
 {
+    private const int StressTileSize = 16;
     private const int DiagnosticsMargin = 12;
     private const int DiagnosticsWidth = 700;
     private const int DiagnosticsHeight = 760;
@@ -68,6 +73,8 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
     private double _gpuLockHeldMaxMs;
 
     private bool _animationsPaused;
+    private Tilesheet? _stressTilesheet;
+    private SceneLayer? _stressLayer;
     private GondwanaView? _view;
     private TextBlock? _diagnosticsText;
     private Gondwana.CyclesPerSecondCalculatedEventArgs? _lastCpsSample;
@@ -76,14 +83,94 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
 
     internal event Action? CloseRequested;
 
-    protected override Scene CreateInitialScene() => new ViewerSceneLoader().Load(scenePath);
+    protected override void LoadTilesheets()
+    {
+        if (stress is null)
+            return;
+
+        var bitmap = new SKBitmap(StressTileSize * 2, StressTileSize * 2);
+        using (var canvas = new SKCanvas(bitmap))
+        using (var paint = new SKPaint())
+        {
+            SKColor[] colors =
+            [
+                new(54, 123, 245),
+                new(245, 183, 54),
+                new(66, 176, 96),
+                new(198, 76, 130)
+            ];
+
+            for (int y = 0; y < 2; y++)
+            {
+                for (int x = 0; x < 2; x++)
+                {
+                    paint.Color = colors[y * 2 + x];
+                    canvas.DrawRect(
+                        x * StressTileSize,
+                        y * StressTileSize,
+                        StressTileSize,
+                        StressTileSize,
+                        paint);
+                }
+            }
+        }
+
+        _stressTilesheet = Engine.Managers.Tilesheets.LoadFromBitmap(
+            $"scene-viewer-stress-{Guid.NewGuid():N}",
+            bitmap);
+        _stressTilesheet.DefaultRegion.TileSize = new Size(StressTileSize, StressTileSize);
+    }
+
+    protected override Scene CreateInitialScene()
+    {
+        if (stress is null)
+            return new ViewerSceneLoader().Load(scenePath!);
+
+        if (_stressTilesheet is null)
+            throw new InvalidOperationException("Stress tilesheet was not initialized.");
+
+        // Shape the grid near the viewport's 4:3 aspect ratio so fitting it does
+        // not waste large areas of the screen. The final row may contain a few blanks.
+        int columns = Math.Max(1, (int)Math.Ceiling(Math.Sqrt(stress.TileCount * 4d / 3d)));
+        int rows = (int)Math.Ceiling(stress.TileCount / (double)columns);
+
+        var scene = new Scene();
+        _stressLayer = scene.AddLayer(
+            columns,
+            rows,
+            StressTileSize,
+            StressTileSize,
+            coordinateSystem: stress.Projection);
+        _stressLayer.ID = $"stress-{stress.Projection}-{stress.TileCount}";
+
+        Frame[] frames =
+        [
+            _stressTilesheet.GetFrame(0, 0),
+            _stressTilesheet.GetFrame(1, 0),
+            _stressTilesheet.GetFrame(0, 1),
+            _stressTilesheet.GetFrame(1, 1)
+        ];
+
+        for (int i = 0; i < stress.TileCount; i++)
+        {
+            int x = i % columns;
+            int y = i / columns;
+            _stressLayer[x, y]!.CurrentFrame = frames[(x + y) & 3];
+        }
+
+        return scene;
+    }
 
     protected override void OnSceneBound()
     {
         RenderSurface.Host.ViewManager.ConfigureSingleFullView();
         _view = RenderSurface.Host.ViewManager.Views[0];
         _view.Camera.WorldBoundsPx = RectangleF.Empty;
-        _view.Camera.SnapTo(PointF.Empty);
+
+        if (stress is not null && _stressLayer is not null)
+            FitStressLayer(_view, _stressLayer);
+        else
+            _view.Camera.SnapTo(PointF.Empty);
 
         var zoomLayer = Scene!.SceneLayers
             .Where(layer => layer.Visible && Math.Abs(layer.Parallax) > 1e-6f)
@@ -93,6 +180,28 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             ?? Scene.SceneLayers.FirstOrDefault();
 
         Camera = new ViewerCameraController(_view, zoomLayer);
+    }
+
+    private static void FitStressLayer(GondwanaView view, SceneLayer layer)
+    {
+        var bounds = layer.GetLayerBoundsPx();
+        var viewport = view.Viewport.TargetRectPx;
+        if (bounds.IsEmpty || viewport.Width <= 0 || viewport.Height <= 0)
+            return;
+
+        float zoom = Math.Min(
+            viewport.Width / bounds.Width,
+            viewport.Height / bounds.Height) * .95f;
+        zoom = Math.Clamp(
+            zoom,
+            ViewerCameraController.MinimumZoom,
+            ViewerCameraController.MaximumZoom);
+
+        view.Viewport.SnapZoom(zoom);
+        var visible = view.Viewport.VisibleWorldSizePx;
+        view.Camera.SnapTo(new PointF(
+            bounds.Left + (bounds.Width - visible.Width) / 2f,
+            bounds.Top + (bounds.Height - visible.Height) / 2f));
     }
 
     protected override void CreateDirectDrawings()
@@ -413,7 +522,9 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             render.GpuSynchronizationSamples);
         var text = new StringBuilder()
             .AppendLine("Gondwana Scene Viewer Diagnostics  [F3]")
-            .AppendLine($"Scene: {Path.GetFileName(scenePath)}")
+            .AppendLine(stress is null
+                ? $"Scene: {Path.GetFileName(scenePath)}"
+                : $"Stress: {stress.TileCount:N0} tiles / {stress.Projection}")
             .AppendLine($"Animations: {(_animationsPaused ? "PAUSED" : "running")}  [F4]")
             .AppendLine($"CPS: {(sample?.GrossCPS ?? 0):0.0}")
             .AppendLine($"Engine FPS: {(sample?.NetCPS ?? 0):0.0}")
@@ -609,6 +720,9 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
 
     protected override void OnDisposed()
     {
+        _stressTilesheet?.Dispose();
+        _stressTilesheet = null;
+
         // GameHostBase disposes only an initialized Engine. Also cover failure
         // during content loading, before its engine-initialized flag was set.
         if (!Engine.IsDisposed)
