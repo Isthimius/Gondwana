@@ -141,8 +141,6 @@ internal sealed class SceneViewerGameHost(
             StressTileSize,
             StressTileSize,
             coordinateSystem: stress.Projection);
-        _stressLayer.ID = $"stress-{stress.Projection}-{stress.TileCount}";
-
         Frame[] frames =
         [
             _stressTilesheet.GetFrame(0, 0),
