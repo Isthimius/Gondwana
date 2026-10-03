@@ -768,9 +768,7 @@ gpuBackbuffer.Initialize(
 
 A production adapter normally performs that initialization automatically the first time its native GL paint callback receives a valid context.
 
-On explicit logical resolution changes, call `EnsureInitialized(...)` on the GL thread. Ordinary adapter resize changes presentation only. The helper also applies MSAA and context changes.
-
-For `GpuBackbuffer`, `RequestResize()` is intentionally a no-op. GPU resource recreation must happen where the GL context is valid.
+`GpuBackbuffer.RequestResize(...)` queues an explicit logical-resolution change; the next GL-thread call to `EnsureInitialized(...)` applies it. Ordinary adapter resize changes presentation only. `EnsureInitialized(...)` also applies MSAA and context changes.
 
 ---
 
