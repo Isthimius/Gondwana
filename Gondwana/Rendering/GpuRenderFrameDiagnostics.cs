@@ -32,6 +32,12 @@ public sealed record GpuRenderFrameDiagnostics(
 
     /// <summary>Time validating existing order or sorting the gathered drawable lists.</summary>
     public double SortMilliseconds { get; init; }
+
+    /// <summary>Number of DrawAtlas operations recorded for fixed-grid tiles.</summary>
+    public int AtlasBatchCount { get; init; }
+
+    /// <summary>Number of fixed-grid tiles represented by DrawAtlas operations.</summary>
+    public int AtlasBatchedTileCount { get; init; }
 }
 
 

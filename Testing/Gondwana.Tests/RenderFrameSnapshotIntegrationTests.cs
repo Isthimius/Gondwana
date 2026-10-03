@@ -1,5 +1,6 @@
 using System.Drawing;
 using Gondwana.Drawing.Direct;
+using Gondwana.Drawing.Tilesheets;
 using Gondwana.Effects;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
@@ -50,6 +51,49 @@ public sealed class RenderFrameSnapshotIntegrationTests
     }
 
     [Fact]
+    public void AtlasBatchedGridTiles_MatchLegacyDrawing_AndReportBatching()
+    {
+        var bitmap = new SKBitmap(32, 16);
+        using (var canvas = new SKCanvas(bitmap))
+        using (var paint = new SKPaint { Color = SKColors.Red })
+        {
+            canvas.DrawRect(new SKRect(0, 0, 16, 16), paint);
+            paint.Color = SKColors.Blue;
+            canvas.DrawRect(new SKRect(16, 0, 32, 16), paint);
+        }
+
+        using var sheet = new Tilesheet("atlas-batch-test", bitmap);
+        sheet.DefaultRegion.TileSize = new Size(16, 16);
+
+        using var scene = new Scene();
+        var layer = scene.AddLayer(8, 1, 16, 16);
+        for (int x = 0; x < 8; x++)
+            layer[x, 0]!.CurrentFrame = sheet.GetFrame(x % 2, 0);
+
+        using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
+        using var backbuffer = host.Backbuffer;
+        host.Bind(scene, false);
+
+        host.RenderToBackbuffer(1);
+        using var expectedImage = backbuffer.Snapshot();
+        using var expected = SKBitmap.FromImage(expectedImage);
+
+        GpuRenderFrameDiagnostics? diagnostics = null;
+        host.GpuRenderFrameDiagnosticsCalculated += value => diagnostics = value;
+
+        backbuffer.Canvas.Clear(SKColors.Transparent);
+        host.ProduceRenderFrameSnapshot(2);
+
+        using var actualImage = host.GlRenderAndSnapshot();
+        using var actual = SKBitmap.FromImage(actualImage!);
+
+        Assert.Equal(expected.Pixels, actual.Pixels);
+        Assert.NotNull(diagnostics);
+        Assert.True(diagnostics.AtlasBatchCount > 0);
+        Assert.Equal(8, diagnostics.AtlasBatchedTileCount);
+    }
+
+    [Fact]
     public async Task ReplayDoesNotAcquireSimulationGate_OrInvokeLiveCallbacks()
     {
         using var scene = new Scene();
@@ -85,28 +129,6 @@ public sealed class RenderFrameSnapshotIntegrationTests
             Assert.Equal(1, calls);
         }
         finally { release.Set(); await blocker; }
-    }
-
-    [Fact]
-    public void DiagnosticLiveMode_SkipsSnapshotProduction_AndRendersLiveScene()
-    {
-        using var scene = new Scene();
-        using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
-        using var backbuffer = host.Backbuffer;
-        host.Bind(scene, false);
-
-        int calls = 0;
-        host.RenderBackbufferPostScene += _ => calls++;
-        host.RenderFrameSnapshotsEnabled = false;
-
-        host.ProduceRenderFrameSnapshot(1);
-        Assert.Equal(0, host.FrameMailbox.Counters.Published);
-
-        using var image = host.GlRenderAndSnapshot();
-
-        Assert.NotNull(image);
-        Assert.Equal(1, calls);
-        Assert.Equal(0, host.FrameMailbox.Counters.InUse);
     }
 
     [Fact]

@@ -62,6 +62,12 @@ public struct Frame
     /// </summary>
     public readonly SKImage? SkImage => Tilesheet?.GetImage(RegionName, XTile, YTile);
 
+    internal readonly SKImage? AtlasImage => Tilesheet?.AtlasImage;
+
+    internal readonly Rectangle AtlasSourceBounds =>
+        Tilesheet?.GetRegion(RegionName)?.GetFrameSourceBounds(XTile, YTile)
+        ?? Rectangle.Empty;
+
     /// <summary>
     /// Gets the base tile size, without overhang.
     /// </summary>

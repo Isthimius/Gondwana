@@ -2,6 +2,7 @@ using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Rendering.Views;
+using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using SkiaSharp;
 
@@ -330,7 +331,16 @@ public abstract class BackbufferBase : IDisposable
                 destRectScreen = sprite.ApplyJiggleToDestRect(destRectScreen);
             }
 
-            drawable.Draw(this, destRectScreen);
+            bool batched = this is RecordingBackbuffer recording &&
+                instance is null &&
+                drawable is SceneLayerTile layerTile &&
+                recording.TryQueueTile(layerTile, destRectScreen);
+
+            if (!batched)
+            {
+                (this as RecordingBackbuffer)?.FlushTileBatch();
+                drawable.Draw(this, destRectScreen);
+            }
 
             // GPU/GL surfaces always present the complete backbuffer. Avoid calculating visual
             // bounds just to pass them to dirty-region tracking that the GPU path never consumes.
@@ -346,6 +356,8 @@ public abstract class BackbufferBase : IDisposable
             if (drawable is Tile tile)
                 tiles.Add((tile, instance));
         }
+
+        (this as RecordingBackbuffer)?.FlushTileBatch();
 
         PostDrawTiles(view, tiles);
 

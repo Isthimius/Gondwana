@@ -45,6 +45,8 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
     private double _overlayTotalMs;
     private long _visibleDrawableTotal;
     private long _visibleTileTotal;
+    private long _atlasBatchTotal;
+    private long _atlasBatchedTileTotal;
 
     private long _gpuCallbackSamples;
     private double _gpuCallbackTotalMs;
@@ -177,8 +179,7 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         Keys.Home,
         Keys.Escape,
         Keys.F3,
-        Keys.F4,
-        Keys.F5
+        Keys.F4
     ];
 
     private void OnKeyDown(KeyDownEventArgs args)
@@ -197,12 +198,6 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             if (key == Keys.F4)
             {
                 ToggleAnimations();
-                return;
-            }
-
-            if (key == Keys.F5)
-            {
-                ToggleGpuRenderPath();
                 return;
             }
 
@@ -272,18 +267,6 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             UpdateDiagnosticsText(_lastCpsSample);
     }
 
-    private void ToggleGpuRenderPath()
-    {
-        RenderSurface.Host.RenderFrameSnapshotsEnabled =
-            !RenderSurface.Host.RenderFrameSnapshotsEnabled;
-
-        // Avoid blending measurements from the two fundamentally different paths.
-        ResetRenderDiagnosticsWindow();
-
-        if (_diagnosticsText?.Visible == true)
-            UpdateDiagnosticsText(_lastCpsSample);
-    }
-
     private void OnGpuRenderFrameDiagnostics(GpuRenderFrameDiagnostics diagnostics)
     {
         lock (_renderDiagnosticsLock)
@@ -298,6 +281,8 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             _overlayTotalMs += diagnostics.OverlayMilliseconds;
             _visibleDrawableTotal += diagnostics.DrawableCount;
             _visibleTileTotal += diagnostics.TileCount;
+            _atlasBatchTotal += diagnostics.AtlasBatchCount;
+            _atlasBatchedTileTotal += diagnostics.AtlasBatchedTileCount;
 
             foreach (var layer in diagnostics.Layers)
             {
@@ -426,25 +411,10 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         double lockHeldAverageMs = Average(
             render.GpuLockHeldTotalMs,
             render.GpuSynchronizationSamples);
-        bool snapshotReplay = RenderSurface.Host.RenderFrameSnapshotsEnabled;
-        string renderPath = snapshotReplay
-            ? "snapshot replay"
-            : "direct live GL";
-        string sceneWorkLabel = snapshotReplay
-            ? "Snapshot build"
-            : "Direct scene render";
-        string drawWorkLabel = snapshotReplay
-            ? "Command record"
-            : "Direct draw";
-        string overlayWorkLabel = snapshotReplay
-            ? "Overlay record"
-            : "Overlay draw";
-
         var text = new StringBuilder()
             .AppendLine("Gondwana Scene Viewer Diagnostics  [F3]")
             .AppendLine($"Scene: {Path.GetFileName(scenePath)}")
             .AppendLine($"Animations: {(_animationsPaused ? "PAUSED" : "running")}  [F4]")
-            .AppendLine($"Render path: {renderPath}  [F5]")
             .AppendLine($"CPS: {(sample?.GrossCPS ?? 0):0.0}")
             .AppendLine($"Engine FPS: {(sample?.NetCPS ?? 0):0.0}")
             .AppendLine($"GPU FPS: {gpuFps}")
@@ -453,10 +423,10 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             .AppendLine($"Render+snapshot avg: {renderAndSnapshotAverageMs:0.000} ms")
             .AppendLine($"GL lock wait avg/max: {lockWaitAverageMs:0.000} / {render.GpuLockWaitMaxMs:0.000} ms")
             .AppendLine($"GL lock held avg/max: {lockHeldAverageMs:0.000} / {render.GpuLockHeldMaxMs:0.000} ms")
-            .AppendLine($"{sceneWorkLabel} avg/max: {sceneRenderAverageMs:0.000} / {render.SceneRenderMaxMs:0.000} ms")
+            .AppendLine($"Snapshot build avg/max: {sceneRenderAverageMs:0.000} / {render.SceneRenderMaxMs:0.000} ms")
             .AppendLine($"Build query / sort avg: {Average(render.QueryTotalMs, render.SceneRenderSamples):0.000} / {Average(render.SortTotalMs, render.SceneRenderSamples):0.000} ms")
-            .AppendLine($"{drawWorkLabel} avg: {Average(render.DrawTotalMs, render.SceneRenderSamples):0.000} ms")
-            .AppendLine($"{overlayWorkLabel} avg: {Average(render.OverlayTotalMs, render.SceneRenderSamples):0.000} ms")
+            .AppendLine($"Command record avg: {Average(render.DrawTotalMs, render.SceneRenderSamples):0.000} ms")
+            .AppendLine($"Overlay record avg: {Average(render.OverlayTotalMs, render.SceneRenderSamples):0.000} ms")
             .AppendLine($"GL replay total avg/max: {Average(render.ReplayTotalMs, render.GpuSynchronizationSamples):0.000} / {render.ReplayMaxMs:0.000} ms")
             .AppendLine($"  Picture replay avg: {Average(render.PictureReplayTotalMs, render.GpuSynchronizationSamples):0.000} ms")
             .AppendLine($"  Backbuffer flush avg: {Average(render.BackbufferFlushTotalMs, render.GpuSynchronizationSamples):0.000} ms")
@@ -466,6 +436,7 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             .AppendLine($"Blit avg: {Average(render.BlitTotalMs, render.GpuCallbackSamples):0.000} ms")
             .AppendLine($"Final GL flush avg: {Average(render.FlushTotalMs, render.GpuCallbackSamples):0.000} ms")
             .AppendLine($"Visible drawables/tiles avg: {Average(render.VisibleDrawableTotal, render.SceneRenderSamples):0.0} / {Average(render.VisibleTileTotal, render.SceneRenderSamples):0.0}")
+            .AppendLine($"Atlas batches / tiles avg: {Average(render.AtlasBatchTotal, render.SceneRenderSamples):0.0} / {Average(render.AtlasBatchedTileTotal, render.SceneRenderSamples):0.0}")
             .AppendLine($"Animating tiles: {Volatile.Read(ref _animatingTileCount):N0}")
             .AppendLine($"Layers / grid cells: {layerCount:N0} / {gridTileCount:N0}")
             .AppendLine($"Camera: {cameraPosition.X:0.0}, {cameraPosition.Y:0.0} px")
@@ -531,6 +502,8 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
                 _overlayTotalMs,
                 _visibleDrawableTotal,
                 _visibleTileTotal,
+                _atlasBatchTotal,
+                _atlasBatchedTileTotal,
                 _gpuCallbackSamples,
                 _gpuCallbackTotalMs,
                 _gpuCallbackMaxMs,
@@ -564,6 +537,8 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             _overlayTotalMs = 0;
             _visibleDrawableTotal = 0;
             _visibleTileTotal = 0;
+            _atlasBatchTotal = 0;
+            _atlasBatchedTileTotal = 0;
             _gpuCallbackSamples = 0;
             _gpuCallbackTotalMs = 0;
             _gpuCallbackMaxMs = 0;
@@ -706,6 +681,8 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         double OverlayTotalMs,
         long VisibleDrawableTotal,
         long VisibleTileTotal,
+        long AtlasBatchTotal,
+        long AtlasBatchedTileTotal,
         long GpuCallbackSamples,
         double GpuCallbackTotalMs,
         double GpuCallbackMaxMs,

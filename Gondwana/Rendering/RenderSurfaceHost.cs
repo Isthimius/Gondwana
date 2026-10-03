@@ -325,7 +325,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     internal override void ProduceRenderFrameSnapshot(long tick)
     {
-        if (!ShouldUseRenderFrameSnapshots || _disposed) return;
+        if (!UsesRenderFrameSnapshots || _disposed) return;
         var slot = FrameMailbox.TryBeginBuild();
         if (slot is null) return;
         var recorder = _recordingBackbuffer ??= new RecordingBackbuffer();
@@ -345,7 +345,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
             if (_recordingDiagnostics is { } diagnostics)
                 GpuRenderFrameDiagnosticsCalculated?.Invoke(diagnostics with
                 {
-                    TotalRenderMilliseconds = HighResTimer.GetDuration(started, HighResTimer.GetCurrentTick()) * 1000d
+                    TotalRenderMilliseconds =
+                        HighResTimer.GetDuration(started, HighResTimer.GetCurrentTick()) * 1000d,
+                    AtlasBatchCount = recorder.AtlasBatchCount,
+                    AtlasBatchedTileCount = recorder.AtlasBatchedTileCount
                 });
         }
         catch
