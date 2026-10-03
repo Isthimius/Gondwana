@@ -333,6 +333,7 @@ public abstract class BackbufferBase : IDisposable
 
             bool batched = this is RecordingBackbuffer recording &&
                 instance is null &&
+                drawable.GetType() == typeof(SceneLayerTile) &&
                 drawable is SceneLayerTile layerTile &&
                 recording.TryQueueTile(layerTile, destRectScreen);
 

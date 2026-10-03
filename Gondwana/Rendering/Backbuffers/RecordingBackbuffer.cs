@@ -12,8 +12,8 @@ namespace Gondwana.Rendering.Backbuffers;
 /// </summary>
 internal sealed class RecordingBackbuffer : BackbufferBase
 {
-    private const int MaxAtlasBatchSize = 64;
-    private static readonly int[] PartialBatchSizes = [32, 16, 8, 4, 2];
+    private const int MaxAtlasBatchSize = 256;
+    private static readonly int[] PartialBatchSizes = [128, 64, 32, 16, 8, 4, 2, 1];
 
     private sealed class AtlasBatchBuffer(int size)
     {
@@ -25,15 +25,16 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     private readonly SKRect[] _pendingSprites = new SKRect[MaxAtlasBatchSize];
     private readonly SKRotationScaleMatrix[] _pendingTransforms =
         new SKRotationScaleMatrix[MaxAtlasBatchSize];
-    private readonly SKImage?[] _pendingFrameImages = new SKImage?[MaxAtlasBatchSize];
-    private readonly SKRect[] _pendingDestinations = new SKRect[MaxAtlasBatchSize];
     private readonly Dictionary<int, AtlasBatchBuffer> _partialBatchBuffers = new()
     {
+        [1] = new(1),
         [2] = new(2),
         [4] = new(4),
         [8] = new(8),
         [16] = new(16),
-        [32] = new(32)
+        [32] = new(32),
+        [64] = new(64),
+        [128] = new(128)
     };
 
     private SKCanvas? _canvas;
@@ -92,12 +93,10 @@ internal sealed class RecordingBackbuffer : BackbufferBase
             return false;
 
         var frame = tile.CurrentFrame;
-        var frameImage = frame.SkImage;
         var atlas = frame.AtlasImage;
         var source = frame.AtlasSourceBounds;
 
-        if (frameImage is null ||
-            atlas is null ||
+        if (atlas is null ||
             source.IsEmpty ||
             destination.Width <= 0 ||
             destination.Height <= 0)
@@ -127,9 +126,6 @@ internal sealed class RecordingBackbuffer : BackbufferBase
             0f,
             destination.Left,
             destination.Top);
-        _pendingFrameImages[index] = frameImage;
-        _pendingDestinations[index] = destination.ToSKRect();
-
         if (_pendingCount == MaxAtlasBatchSize)
             FlushFullTileBatch();
 
@@ -171,13 +167,6 @@ internal sealed class RecordingBackbuffer : BackbufferBase
             }
         }
 
-        if (remaining == 1)
-        {
-            var image = _pendingFrameImages[offset];
-            if (image is not null)
-                Canvas.DrawImage(image, _pendingDestinations[offset]);
-        }
-
         ResetPendingBatch();
     }
 
@@ -195,14 +184,12 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         AtlasBatchCount++;
         AtlasBatchedTileCount += MaxAtlasBatchSize;
         _pendingCount = 0;
-        Array.Clear(_pendingFrameImages);
     }
 
     private void ResetPendingBatch()
     {
         _pendingAtlas = null;
         _pendingCount = 0;
-        Array.Clear(_pendingFrameImages);
     }
 
     protected internal override void BeginFrame() { }

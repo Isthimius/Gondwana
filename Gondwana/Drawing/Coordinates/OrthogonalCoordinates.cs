@@ -89,6 +89,52 @@ internal sealed class OrthogonalCoordinates : ISceneLayerCoordinates
     }
 
     /// <summary>
+    /// Gets a conservative row-major tile candidate list for full-frame rendering.
+    /// Unlike the public intersection query, this deliberately over-selects the small
+    /// coarse fringe because the render viewport clips it later. Avoiding a per-tile
+    /// visual-bounds calculation is substantially cheaper for large orthogonal grids.
+    /// </summary>
+    internal List<SceneLayerTile> GetSceneLayerTilesForRendering(
+        SceneLayer sceneLayer,
+        Rectangle worldPixelRange,
+        bool includeOverhang)
+    {
+        var candidateRange = TileBounds.GetTransformedTileCandidateRange(
+            sceneLayer,
+            worldPixelRange,
+            includeOverhang);
+
+        PointF ptUL = GetSceneLayerCoordinatesAtPixel(
+            sceneLayer,
+            new PointF(candidateRange.Left, candidateRange.Top));
+        PointF ptBR = GetSceneLayerCoordinatesAtPixel(
+            sceneLayer,
+            new PointF(candidateRange.Right - 1, candidateRange.Bottom - 1));
+
+        int minY = Math.Max(0, (int)Math.Floor(ptUL.Y) - 1);
+        int maxY = Math.Min(sceneLayer.GridRowCount - 1, (int)Math.Ceiling(ptBR.Y) + 1);
+        int minX = Math.Max(0, (int)Math.Floor(ptUL.X) - 1);
+        int maxX = Math.Min(sceneLayer.GridColumnCount - 1, (int)Math.Ceiling(ptBR.X) + 1);
+
+        if (minX > maxX || minY > maxY)
+            return [];
+
+        int capacity = checked((maxX - minX + 1) * (maxY - minY + 1));
+        var result = new List<SceneLayerTile>(capacity);
+
+        for (int y = minY; y <= maxY; y++)
+        {
+            for (int x = minX; x <= maxX; x++)
+            {
+                if (sceneLayer[x, y] is { } tile)
+                    result.Add(tile);
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
     /// Gets the pixel range (bounding rectangle) for a tile.
     /// </summary>
     /// <param name="tile">The tile to get the pixel range for.</param>

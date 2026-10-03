@@ -954,29 +954,37 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         queryRect.Inflate(TileWidth, TileHeight);
         queryRect.Inflate(1, 1);
 
-        // 1) Grid tiles. Coordinate-system queries already return only tiles whose
-        // rendered bounds intersect worldRect, so repeating DrawLocationWorld
-        // intersection tests here only recalculates geometry for every visible tile.
-        var sceneLayerTiles = CoordinateSystem.GetSceneLayerTilesInPixelRange(
-            this,
-            worldRect,
-            includeOverhang: includeOverhang);
+        // 1) Grid tiles. Orthogonal rendering can use a conservative row-major
+        // candidate scan because the viewport clips the small over-selected fringe.
+        // Other projections retain their exact intersection query.
+        var sceneLayerTiles = CoordinateSystem is OrthogonalCoordinates orthogonal
+            ? orthogonal.GetSceneLayerTilesForRendering(
+                this,
+                worldRect,
+                includeOverhang)
+            : CoordinateSystem.GetSceneLayerTilesInPixelRange(
+                this,
+                worldRect,
+                includeOverhang: includeOverhang);
 
-        // A full-view GPU frame commonly contains thousands of tiles. Starting at
-        // the candidate count avoids repeated List<T> growth/copies every frame.
-        var list = new List<IDrawable>(sceneLayerTiles?.Count ?? 64);
+        var list = new List<IDrawable>(sceneLayerTiles.Count);
+        bool uniformGridZOrder = true;
+        int? gridZOrder = null;
 
-        if (sceneLayerTiles != null)
+        for (int i = 0; i < sceneLayerTiles.Count; i++)
         {
-            for (int i = 0; i < sceneLayerTiles.Count; i++)
-            {
-                var tile = sceneLayerTiles[i];
+            var tile = sceneLayerTiles[i];
 
-                if (tile is null || !tile.Visible)
-                    continue;
+            if (!tile.Visible || !HasRenderableTileContent(tile))
+                continue;
 
-                list.Add(tile);
-            }
+            int tileZ = tile.ZOrder;
+            if (gridZOrder.HasValue && gridZOrder.Value != tileZ)
+                uniformGridZOrder = false;
+            else
+                gridZOrder ??= tileZ;
+
+            list.Add(tile);
         }
 
         bool hasNonGridDrawables = false;
@@ -1021,12 +1029,23 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             hasNonGridDrawables = true;
         }
 
-        // Coordinate-system tile queries normally emit fixed grid tiles in render
-        // order already. Verify that cheaply before paying O(n log n) every frame.
-        // Mixed lists retain the historical unconditional sort.
+        // Orthogonal row-major output is already Tile.CompareTo order when fixed
+        // tiles share Z and transforms cannot change cell height. Avoid even the
+        // O(n) comparison pass in that common tilemap case.
+        bool gridOrderGuaranteed =
+            CoordinateSystemType == CoordinateSystemTypes.Orthogonal &&
+            uniformGridZOrder &&
+            (TransformedTiles.Count == 0 || TileWidth == TileHeight);
+
         long sortStartTick = collectSortDiagnostics ? HighResTimer.GetCurrentTick() : 0;
-        if (hasNonGridDrawables || !IsSorted(list, CompareDrawables))
+        if (hasNonGridDrawables)
+        {
             list.Sort(CompareDrawables);
+        }
+        else if (!gridOrderGuaranteed && !IsSorted(list, CompareDrawables))
+        {
+            list.Sort(CompareDrawables);
+        }
 
         sortTicks = collectSortDiagnostics
             ? Math.Max(0, HighResTimer.GetCurrentTick() - sortStartTick)
@@ -1069,6 +1088,22 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             : 0;
 
         return instances;
+    }
+
+    private bool HasRenderableTileContent(SceneLayerTile tile)
+    {
+        // Derived tiles may provide custom Draw behavior even without a frame.
+        if (tile.GetType() != typeof(SceneLayerTile))
+            return true;
+
+        if (tile.CurrentFrame.Tilesheet is not null)
+            return true;
+
+        // Empty cells still participate when a diagnostic/post-draw overlay needs
+        // their geometry.
+        return tile.EnableFog ||
+            ShowGridLines ||
+            (ShowCollisionBoxes && tile.CollisionsEnabled);
     }
 
     private static bool IsSorted(

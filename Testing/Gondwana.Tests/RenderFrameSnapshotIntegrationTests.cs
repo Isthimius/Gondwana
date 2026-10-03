@@ -94,6 +94,51 @@ public sealed class RenderFrameSnapshotIntegrationTests
     }
 
     [Fact]
+    public void EmptyGridCells_AreCulledUnlessPostDrawGeometryIsNeeded()
+    {
+        using var scene = new Scene();
+        var layer = scene.AddLayer(8, 1, 16, 16);
+        using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
+        using var backbuffer = host.Backbuffer;
+        host.Bind(scene, false);
+
+        GpuRenderFrameDiagnostics? diagnostics = null;
+        host.GpuRenderFrameDiagnosticsCalculated += value => diagnostics = value;
+
+        host.ProduceRenderFrameSnapshot(1);
+        Assert.NotNull(diagnostics);
+        Assert.Equal(0, diagnostics.TileCount);
+
+        layer.ShowGridLines = true;
+        host.ProduceRenderFrameSnapshot(2);
+        Assert.Equal(8, diagnostics.TileCount);
+    }
+
+    [Fact]
+    public void OrthogonalFastOrder_FallsBackWhenFixedTileZOrdersDiffer()
+    {
+        var bitmap = new SKBitmap(16, 16);
+        using var sheet = new Tilesheet("sort-order-test", bitmap);
+        sheet.DefaultRegion.TileSize = new Size(16, 16);
+
+        using var scene = new Scene();
+        var layer = scene.AddLayer(2, 1, 16, 16);
+        var first = layer[0, 0]!;
+        var second = layer[1, 0]!;
+        first.CurrentFrame = sheet.GetFrame(0, 0);
+        second.CurrentFrame = sheet.GetFrame(0, 0);
+
+        ((Tile)first).ZOrder = 10;
+        ((Tile)second).ZOrder = 0;
+
+        var drawables = layer.GetDrawablesInWorldRect(new Rectangle(0, 0, 32, 16));
+
+        Assert.Equal(2, drawables.Count);
+        Assert.Same(second, drawables[0]);
+        Assert.Same(first, drawables[1]);
+    }
+
+    [Fact]
     public async Task ReplayDoesNotAcquireSimulationGate_OrInvokeLiveCallbacks()
     {
         using var scene = new Scene();
