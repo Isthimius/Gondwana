@@ -2,12 +2,12 @@
 
 Baseline: master f8e4c0c87857d2bae98aeecbd6516cbd03bbaf73.
 
-The engine currently skips GPU hosts at foreground cadence; desktop callbacks
+Before this change the engine skipped GPU hosts at foreground cadence; desktop callbacks
 enter RenderStateSynchronization and call RenderToBackbufferGpuFull. That method
 resolves views, effects, visible ordered drawables, animation frames, overlays,
 and post-scene hooks while GL holds the simulation gate.
 
-## Proposed representation and ownership
+## Implemented representation and ownership
 
 Use an internal RenderFrameSnapshot containing a completed Skia picture: an
 immutable native command stream rather than thousands of managed command objects.
@@ -27,11 +27,11 @@ Tile images are CPU SKImage instances produced from region slice bitmaps;
 DirectSvg uses CPU rasterization; DirectImage and widgets draw through SKCanvas.
 DirectDrawingBase.Dispose currently takes the simulation gate. Keep that gate
 for recording versus mutation/disposal, but remove it from desktop replay.
-Native retention and mutable-bitmap capture must be tested before switching.
+Native retention and mutable-bitmap capture are covered by regression tests.
 Context-backed images supplied by applications require an explicit supported
 contract; they cannot simply be recorded on the engine thread.
 
-## Compatibility and remaining design checks
+## Compatibility and lifecycle
 
 - RenderBackbufferPostScene and plugin canvas callbacks currently promise a
   current GL context. Recording these callbacks changes their threading contract;
@@ -49,4 +49,10 @@ contract; they cannot simply be recorded on the engine thread.
   desktop, browser, bitmap, and Scene Viewer regressions. Hardware performance
   conclusions require actual Scene Viewer dogfood measurements.
 
-This note records the design under investigation, not completed acceptance.
+Avalonia separates temporary GL deinitialization from permanent control disposal.
+The former releases GPU surfaces before the owning context; the latter unregisters
+the host and closes the mailbox. Standard hosting disposes the control; custom hosts
+must call Dispose when permanently removing it. CPU recordings survive context loss.
+
+See [validation results](render-frame-snapshot-validation.md) for measured behavior
+and the scope of automated hardware validation.

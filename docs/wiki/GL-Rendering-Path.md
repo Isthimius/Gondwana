@@ -47,6 +47,12 @@ Ordinary window resize changes presentation only. Logical resize and MSAA/contex
 
 WinForms VSync and Avalonia compositor scheduling retain their existing behavior. Input uses the inverse presentation transform as before.
 
+Avalonia GL deinitialization releases native surfaces before their context while
+preserving the logical host and mailbox for recreation. `AvaloniaGpuGameHost`
+calls the control's `Dispose()` at permanent shutdown. Custom Avalonia hosts must
+also call `Dispose()` when permanently removing the control; temporary detach or
+context loss is not permanent disposal.
+
 ## Diagnostics
 
 Scene Viewer F3 subscribes to render diagnostics only while visible. Its measurements distinguish:

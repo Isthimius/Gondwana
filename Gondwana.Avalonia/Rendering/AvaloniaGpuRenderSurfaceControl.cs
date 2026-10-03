@@ -28,7 +28,7 @@ namespace Gondwana.Avalonia.Rendering;
 /// scenarios instead.
 /// </para>
 /// </remarks>
-public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase
+public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
 {
     // GL_RGBA8 pixel format for the SkiaSharp framebuffer wrapper.
     private const uint GlRgba8 = 0x8058;
@@ -36,6 +36,8 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase
     private GRGlInterface? _glInterface;
     private GRContext? _grContext;
     private GpuBackbuffer? _gpuBackbuffer;
+    private readonly object _lifecycleGate = new();
+    private int _disposeRequested;
 
     // Last physical dimensions used to detect resize inside OnOpenGlRender.
     private int _lastPhysW;
@@ -77,11 +79,19 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase
         // GRGlInterface.Create() auto-detects the current platform GL/EGL/WGL context
         // (which Avalonia has made current before this callback) and loads function
         // pointers from it without requiring any explicit proc-address lookup delegate.
-        _glInterface = GRGlInterface.Create();
-        if (_glInterface == null) return;
-        _grContext = GRContext.CreateGl(_glInterface);
-
-        if (_grContext == null) return;
+        lock (_lifecycleGate)
+        {
+            if (_disposeRequested != 0) return;
+            _glInterface = GRGlInterface.Create();
+            if (_glInterface == null) return;
+            _grContext = GRContext.CreateGl(_glInterface);
+            if (_grContext == null)
+            {
+                _glInterface.Dispose();
+                _glInterface = null;
+                return;
+            }
+        }
 
         var scaling = VisualRoot?.RenderScaling ?? 1.0;
         var physW = (int)Math.Round(Bounds.Width * scaling);
@@ -99,7 +109,7 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase
     /// <inheritdoc/>
     protected override void OnOpenGlRender(GlInterface gl, int fb)
     {
-        if (_grContext == null || _gpuBackbuffer == null) return;
+        if (Volatile.Read(ref _disposeRequested) != 0 || _grContext == null || _gpuBackbuffer == null) return;
 
         // Notify SkiaSharp that external GL code (Avalonia's compositor) may have
         // modified the GL state since the last Skia draw call.
@@ -155,15 +165,34 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase
     /// <inheritdoc/>
     protected override void OnOpenGlDeinit(GlInterface gl)
     {
+        lock (_lifecycleGate)
+        {
+            // Avalonia may deinitialize and recreate GL without ending the game's
+            // logical lifecycle. Release surfaces before their owning context.
+            _gpuBackbuffer?.ReleaseContext();
+            _grContext?.Dispose();
+            _grContext = null;
+            _glInterface?.Dispose();
+            _glInterface = null;
+            if (_disposeRequested != 0) _gpuBackbuffer?.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// Ends the logical surface lifecycle. The hosting class calls this on shutdown;
+    /// custom hosts should call it when permanently removing the control. Native GPU
+    /// teardown remains in Avalonia's current-context deinitialization callback.
+    /// </summary>
+    public void Dispose()
+    {
+        if (Interlocked.Exchange(ref _disposeRequested, 1) != 0) return;
         Host.Dispose();
         Adapter.Dispose();
-
-        _gpuBackbuffer = null;
-
-        _grContext?.Dispose();
-        _grContext = null;
-
-        _glInterface?.Dispose();
-        _glInterface = null;
+        lock (_lifecycleGate)
+        {
+            // If GL is already gone (or never existed), only CPU resources remain.
+            if (_grContext is null) _gpuBackbuffer?.Dispose();
+        }
+        GC.SuppressFinalize(this);
     }
 }

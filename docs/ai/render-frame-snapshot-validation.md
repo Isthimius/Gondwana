@@ -58,10 +58,19 @@ dotnet test Testing/Gondwana.Tooling.SceneViewer.WinForms.Tests -c Release --fil
 
 Optional `GONDWANA_GPU_CAPTURE` names a PNG output path for the native F3 image.
 
-## Remaining validation at this checkpoint
+## October 3 follow-up
 
-Avalonia lifecycle inspection and platform validation, browser JavaScript tests,
-remaining Windows tooling suites, final formatting/analyzer review, and the final
-post-cleanup build/test pass remain to be completed. Callback threading migration
-and CPU-resource requirements are intentional compatibility changes and must be
-called out in the final PR description.
+- Core suite: 774 passed, including two Avalonia lifecycle regressions.
+- Seven Windows tooling suites: 123 passed; opt-in hardware checks skipped normally.
+- Native GL checks: two passed, including actual Avalonia init/render/deinit callbacks
+  with a current OpenTK-provided context and replay after Skia context recreation.
+  This covers callback behavior, not Avalonia window/compositor scheduling or other OS drivers.
+- Browser presentation/audio JavaScript suites: 11 passed.
+- Importer suite: 88 passed. Final Release solution restore/build passed with zero errors.
+- Changed-file whitespace verification and solution style checks for IDE0005,
+  IDE0059 and IDE0051 passed.
+- Solution whitespace verification reports a pre-existing encoding issue in unchanged
+  `Demos/Gondwana.CoordinateTest/GameWindow.cs`; no unrelated encoding rewrite is included.
+
+Callback threading migration and CPU-resource requirements are intentional
+compatibility changes, documented in the rendering wiki and PR description.

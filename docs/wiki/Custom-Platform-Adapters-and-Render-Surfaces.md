@@ -1,4 +1,4 @@
-> Desktop GPU contract: the Engine records immutable `RenderFrameSnapshot` commands at foreground cadence. GL adapters consume the latest completed recording through `GlRenderAndSnapshot`. Post-scene hooks execute on the Engine recording canvas with CPU resources, without GRContext or canvas.Surface. See [[GL Rendering Path]] for mailbox ownership, resize handling, and callback migration. Older GPU illustrations on this page describe the platform presentation stage only.
+> Desktop GPU contract: the Engine records immutable `RenderFrameSnapshot` commands at foreground cadence. GL adapters consume the latest completed recording through `GlRenderAndSnapshot`. Post-scene hooks execute on the Engine recording canvas with CPU resources, without GRContext or canvas.Surface. See [[GL Rendering Path]] for mailbox ownership, resize handling, and callback migration.
 
 Gondwana deliberately separates **scene rendering** from **platform presentation**.
 
@@ -784,8 +784,9 @@ The GPU path:
 
 - does not consume the normal refresh queue
 - does not accumulate a backbuffer dirty rectangle
-- redraws the full viewport for each GL paint
-- renders and presents synchronously on the GL thread
+- records the full viewport on the Engine at foreground cadence for desktop GPU hosts
+- replays the newest completed snapshot and presents on GL; intermediate frames may be dropped
+- retains synchronous live rendering for browser WebGL
 
 This is deliberate.
 
@@ -810,9 +811,9 @@ capture current GRContext
         ↓
 GpuBackbuffer.Initialize(GRContext, width, height)
         ↓
-Gondwana renders into off-screen GPU surface
+GlRenderAndSnapshot(): acquire newest Engine recording
         ↓
-GlRenderAndSnapshot()
+replay immutable commands into off-screen GPU surface
         ↓
 draw GPU-backed SKImage to the window surface
 ```
@@ -1133,8 +1134,9 @@ When it remains `false`, Gondwana uses the normal CPU/bitmap-style engine path.
 
 When it returns `true`, the host treats the backbuffer as a GL-thread-driven surface:
 
-- the normal engine render loop skips it
-- the adapter is expected to drive rendering
+- the bitmap dirty-region loop skips it
+- desktop `GpuBackbuffer` hosts produce snapshots on the Engine
+- the adapter drives GL replay/presentation; other custom GL backbuffers retain their live path
 - full-frame GPU rendering is used
 - dirty-rectangle presentation is bypassed
 - `GlRenderAndSnapshot()` becomes the expected presentation path

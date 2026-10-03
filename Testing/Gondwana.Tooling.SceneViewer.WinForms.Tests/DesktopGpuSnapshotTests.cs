@@ -77,6 +77,59 @@ public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
         buffer.Dispose();
     }
 
+    [HardwareFact]
+    public async Task AvaloniaCallbacksReplayAfterContextDeinitialization()
+    {
+        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                // Exercise Avalonia's actual callbacks with a current native GL context.
+                // Window/compositor scheduling is not part of this focused lifecycle test.
+                using var native = new OpenTK.GLControl { Width = 128, Height = 128 };
+                _ = native.Handle;
+                native.MakeCurrent();
+                using var control = new AvaloniaControl();
+                control.Arrange(new global::Avalonia.Rect(0, 0, 128, 128));
+                using var scene = new Scene();
+                control.Host.Bind(scene, false);
+                control.Host.RenderBackbufferPostScene += canvas => canvas.Clear(SKColors.Red);
+                control.Initialize();
+                Produce(control.Host);
+                control.Render();
+                AssertBackbufferRed(control.Host);
+                control.Deinitialize();
+                Produce(control.Host); // CPU recording while no Skia GL context exists
+                control.Initialize();
+                control.Render();
+                AssertBackbufferRed(control.Host);
+                control.Dispose();
+                control.Deinitialize();
+                completion.SetResult();
+            }
+            catch (Exception exception) { completion.SetException(exception); }
+        });
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.IsBackground = true;
+        thread.Start();
+        await completion.Task.WaitAsync(TimeSpan.FromSeconds(60));
+    }
+
+    private static void AssertBackbufferRed(RenderSurfaceHost<GpuBackbuffer> host)
+    {
+        using var image = host.GlRenderAndSnapshot();
+        using var pixels = SKBitmap.FromImage(image!);
+        Assert.Equal(SKColors.Red, pixels.GetPixel(1, 1));
+    }
+
+    private sealed class AvaloniaControl : Gondwana.Avalonia.Rendering.AvaloniaGpuRenderSurfaceControl
+    {
+        internal void Initialize() => OnOpenGlInit(null!);
+        internal void Render() => OnOpenGlRender(null!, 0);
+        internal void Deinitialize() => OnOpenGlDeinit(null!);
+    }
+
     private static void Produce(RenderSurfaceHost<GpuBackbuffer> host) =>
         typeof(RenderSurfaceHost<GpuBackbuffer>)
             .GetMethod("ProduceRenderFrameSnapshot", BindingFlags.Instance | BindingFlags.NonPublic)!

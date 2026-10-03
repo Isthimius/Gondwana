@@ -187,8 +187,8 @@ public abstract class RenderSurfaceHostBase : IDisposable
         }
         finally
         {
-            Backbuffer.BeginFrame();
-            FrameMailbox.Release(slot);
+            try { Backbuffer.BeginFrame(); }
+            finally { FrameMailbox.Release(slot); }
             diagnostics?.Invoke(new(0, 0)
             {
                 ReplayMilliseconds = HighResTimer.GetDuration(acquired, replayEnd) * 1000d,

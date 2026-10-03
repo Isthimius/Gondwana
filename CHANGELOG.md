@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file.
 
 
 ### Fixed
+- Preserve the Avalonia GPU host across GL context recreation; custom hosts should dispose the GPU control when permanently removing it.
 - Recreate GPU surface when MSAA changes ([#402](https://github.com/Isthimius/Gondwana/pull/402))
 
 

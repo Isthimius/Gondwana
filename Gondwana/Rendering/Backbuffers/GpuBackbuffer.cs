@@ -399,6 +399,15 @@ public class GpuBackbuffer : BackbufferBase
         _cpuBitmap = null;
     }
 
+    // Called by a platform's GL deinitialization callback, while its old context
+    // is still current. Logical state and Engine-owned recordings survive a
+    // temporary context loss; EnsureInitialized will attach the next context.
+    internal void ReleaseContext()
+    {
+        DisposeSurface();
+        _context = null;
+    }
+
     /// <summary>
     /// Releases all resources used by this <see cref="GpuBackbuffer"/>.
     /// </summary>

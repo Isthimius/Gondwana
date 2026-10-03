@@ -484,9 +484,10 @@ public abstract class BackbufferBase : IDisposable
     /// the engine's background render thread.
     /// </summary>
     /// <remarks>
-    /// When <see langword="true"/>, the engine's <c>DoForegroundTasks</c> loop skips this surface.
-    /// Rendering and presentation are instead driven by the platform adapter from within
-    /// <c>SKGLControl.PaintSurface</c> via <see cref="RenderSurfaceHostBase.GlRenderAndSnapshot"/>.
+    /// When <see langword="true"/>, bitmap dirty-region rendering is skipped. Desktop GPU
+    /// hosts record immutable snapshots during foreground work; the platform GL callback
+    /// replays and presents them via <see cref="RenderSurfaceHostBase.GlRenderAndSnapshot"/>.
+    /// Browser GPU hosts retain synchronous full-viewport rendering.
     /// </remarks>
     public virtual bool IsGlThreadRendered => false;
 

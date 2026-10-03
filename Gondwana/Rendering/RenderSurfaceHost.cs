@@ -382,8 +382,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// </list>
     /// <para>
     /// This method bypasses the <see cref="RefreshQueue"/> entirely: it clears and re-draws the
-    /// full viewport on every GL paint callback, which is correct because the GL paint fires once
-    /// per vsync and there is no partial-blit optimisation to preserve.
+    /// full viewport for each produced desktop snapshot (or synchronous browser frame).
+    /// Desktop GL callbacks replay that completed composition without consulting this queue.
     /// </para>
     /// </remarks>
     private void RenderToBackbufferGpuFull(long tick, BackbufferBase? destination = null)

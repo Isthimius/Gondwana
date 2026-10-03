@@ -206,7 +206,7 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
         }
 
         // Capture/refresh the GRContext so callers can wire the backbuffer to the same one.
-        GrContext ??= _glControl.GRContext;
+        GrContext = _glControl.GRContext;
 
         if (GrContext != null)
         {
