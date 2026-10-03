@@ -44,6 +44,16 @@ public sealed record GpuRenderSynchronizationDiagnostics(
 {
     /// <summary>CPU time replaying completed commands and flushing the backbuffer.</summary>
     public double ReplayMilliseconds { get; init; }
+
+    /// <summary>CPU time spent replaying the recorded SKPicture onto the GPU backbuffer canvas.</summary>
+    public double PictureReplayMilliseconds { get; init; }
+
+    /// <summary>CPU time spent flushing the GPU backbuffer after picture replay.</summary>
+    public double BackbufferFlushMilliseconds { get; init; }
+
+    /// <summary>CPU time spent creating the lightweight GPU-backed snapshot used for presentation.</summary>
+    public double SnapshotMilliseconds { get; init; }
+
     /// <summary>Age of the completed snapshot when acquired by GL.</summary>
     public double SnapshotAgeMilliseconds { get; init; }
     /// <summary>Total snapshots published by this surface.</summary>
