@@ -1,4 +1,5 @@
 using System.Drawing;
+using Gondwana.Drawing;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Effects;
