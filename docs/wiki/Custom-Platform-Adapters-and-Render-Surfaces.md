@@ -1,3 +1,5 @@
+> Desktop GPU contract: the Engine records immutable `RenderFrameSnapshot` commands at foreground cadence. GL adapters consume the latest completed recording through `GlRenderAndSnapshot`. Post-scene hooks execute on the Engine recording canvas with CPU resources, without GRContext or canvas.Surface. See [[GL Rendering Path]] for mailbox ownership, resize handling, and callback migration. Older GPU illustrations on this page describe the platform presentation stage only.
+
 Gondwana deliberately separates **scene rendering** from **platform presentation**.
 
 That separation is what allows the same scene, views, sprites, direct drawings, widgets, and rendering rules to target very different environments:
@@ -575,7 +577,7 @@ using var image =
 
 `GlRenderAndSnapshot()`:
 
-1. renders the Gondwana scene
+1. acquires and replays the newest desktop RenderFrameSnapshot without live Scene traversal
 2. ends the GPU backbuffer frame
 3. snapshots the GPU surface
 4. begins the next backbuffer frame
@@ -766,7 +768,7 @@ gpuBackbuffer.Initialize(
 
 A production adapter normally performs that initialization automatically the first time its native GL paint callback receives a valid context.
 
-On later resizes, call `Initialize(...)` again on the GL thread with the new dimensions.
+On explicit logical resolution changes, call `EnsureInitialized(...)` on the GL thread. Ordinary adapter resize changes presentation only. The helper also applies MSAA and context changes.
 
 For `GpuBackbuffer`, `RequestResize()` is intentionally a no-op. GPU resource recreation must happen where the GL context is valid.
 
@@ -926,7 +928,8 @@ The threading rule follows the backbuffer:
 | Surface | Post-render hook thread |
 |---|---|
 | bitmap/CPU | engine render/background thread |
-| GPU/GL | native GL thread while the `GRContext` is current |
+| Desktop GPU | Engine thread with a recording canvas and CPU resources |
+| WebGL | native browser callback while GRContext is current |
 
 Do not marshal a GPU canvas operation to another thread.
 

@@ -45,4 +45,6 @@ public sealed record GpuRenderSynchronizationDiagnostics(
     public long DroppedSnapshots { get; init; }
     /// <summary>Occupied slots at acquisition, including the rendering slot (maximum three).</summary>
     public int SnapshotSlotsInUse { get; init; }
+    /// <summary>Approximate number of native Skia operations in the acquired recording.</summary>
+    public int SnapshotCommandCount { get; init; }
 }

@@ -287,12 +287,13 @@ During this phase Gondwana:
 
 - raises `BeforeFrameRender`
 - updates retained direct drawings
+- records and publishes immutable desktop GPU snapshots (latest completed frame wins)
 - renders/presents non-GL backbuffers
 - updates gamepad state snapshots
 - raises `AfterFrameRender`
 - fires post-cycle timers
 
-If you need work that tracks the actual rendered frame cadence, use:
+These hooks track foreground production cadence, not completed GPU presentation:
 
 - `BeforeFrameRender`
 - `AfterFrameRender`
@@ -304,7 +305,7 @@ If you need work that tracks the actual rendered frame cadence, use:
 `CPSCalculated` is raised only when `Configuration.SamplingTimeForCPS > 0` and the configured sampling interval has elapsed. The payload includes:
 
 - gross cycle count / CPS
-- net rendered frame count / FPS
+- net foreground production count / Engine FPS
 - elapsed sample duration
 - GPU FPS, when GPU backbuffers are present
 
@@ -314,7 +315,9 @@ If you need work that tracks the actual rendered frame cadence, use:
 
 A `RenderSurfaceHost<TBackbuffer>` sits between a scene, a `ViewManager`, a backbuffer, and a platform adapter.
 
-Typical render-surface flow:
+Desktop GPU render events now run during Engine snapshot recording, using CPU resources and a recording canvas. GL consumes immutable commands independently; intermediate frames may be dropped. Bitmap dirty-region behavior and synchronous WebGL are unchanged. See [[GL Rendering Path]] for callback migration.
+
+Typical bitmap render-surface flow:
 
 1. A platform host creates or receives the render surface adapter/control/component.
 2. `GameHostBase.CreateSceneGraph()` creates the initial `Scene` and views.

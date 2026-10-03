@@ -26,6 +26,7 @@ internal sealed class RenderFrameSnapshot : IDisposable
     internal long ProducedTick { get; }
     internal int Width { get; }
     internal int Height { get; }
+    internal int CommandCount => _commands.ApproximateOperationCount;
 
     internal void Replay(SKCanvas canvas) => canvas.DrawPicture(_commands);
 

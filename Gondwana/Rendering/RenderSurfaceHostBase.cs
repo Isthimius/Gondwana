@@ -168,6 +168,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
         long acquired = diagnostics is null ? 0 : HighResTimer.GetCurrentTick();
         var counters = diagnostics is null ? default : FrameMailbox.Counters;
         long replayEnd = acquired;
+        int commands = diagnostics is null ? 0 : slot.Frame!.CommandCount;
         double age = diagnostics is null ? 0 :
             HighResTimer.GetDuration(slot.Frame!.ProducedTick, acquired) * 1000d;
         try
@@ -194,7 +195,8 @@ public abstract class RenderSurfaceHostBase : IDisposable
                 SnapshotAgeMilliseconds = age,
                 PublishedSnapshots = counters.Published,
                 DroppedSnapshots = counters.Dropped,
-                SnapshotSlotsInUse = counters.InUse
+                SnapshotSlotsInUse = counters.InUse,
+                SnapshotCommandCount = commands
             });
         }
     }

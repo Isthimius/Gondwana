@@ -38,6 +38,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     private Scene _scene = Scene.Empty;
     private RecordingBackbuffer? _recordingBackbuffer;
     private long _snapshotSequence;
+    private GpuRenderFrameDiagnostics? _recordingDiagnostics;
 
     private readonly RenderSurfaceAdapterBase _renderSurfaceAdapter;
     private readonly ViewManager _viewManager;
@@ -329,6 +330,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (slot is null) return;
         var recorder = _recordingBackbuffer ??= new RecordingBackbuffer();
         bool transferred = false;
+        long started = GpuRenderFrameDiagnosticsCalculated is null ? 0 : HighResTimer.GetCurrentTick();
+        _recordingDiagnostics = null;
         try
         {
             recorder.Start(Backbuffer);
@@ -339,6 +342,11 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 HighResTimer.GetCurrentTick(), recorder.Width, recorder.Height);
             transferred = true;
             FrameMailbox.Publish(slot, frame);
+            if (_recordingDiagnostics is { } diagnostics)
+                GpuRenderFrameDiagnosticsCalculated?.Invoke(diagnostics with
+                {
+                    TotalRenderMilliseconds = HighResTimer.GetDuration(started, HighResTimer.GetCurrentTick()) * 1000d
+                });
         }
         catch
         {
@@ -545,14 +553,16 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (collectDiagnostics)
         {
             long diagnosticsEndTick = HighResTimer.GetCurrentTick();
-            GpuRenderFrameDiagnosticsCalculated?.Invoke(new GpuRenderFrameDiagnostics(
+            var diagnostics = new GpuRenderFrameDiagnostics(
                 HighResTimer.GetDuration(diagnosticsStartTick, diagnosticsEndTick) * 1000d,
                 HighResTimer.GetDuration(0, queryAndSortTicks) * 1000d,
                 HighResTimer.GetDuration(0, drawTicks) * 1000d,
                 HighResTimer.GetDuration(0, overlayTicks) * 1000d,
                 drawableCount,
                 tileCount,
-                layerDiagnostics!));
+                layerDiagnostics!);
+            if (destination is RecordingBackbuffer) _recordingDiagnostics = diagnostics;
+            else GpuRenderFrameDiagnosticsCalculated?.Invoke(diagnostics);
         }
     }
 

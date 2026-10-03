@@ -137,7 +137,7 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase
 
         var canvas = fbSurface.Canvas;
 
-        // Render the scene entirely on the GL thread and blit the result.
+        // Replay the newest immutable Engine snapshot on GL and blit the result.
         using var img = Host.GlRenderAndSnapshot();
         if (img != null)
         {

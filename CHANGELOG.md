@@ -24,6 +24,7 @@ All notable changes to this project will be documented in this file.
 
 
 ### Refactoring
+- Decouple desktop GPU replay from simulation with immutable RenderFrameSnapshot recordings and a bounded three-slot latest-frame mailbox. Desktop drawing/post-scene hooks now execute on the Engine recording canvas with CPU resources; context-bound drawing must remain in platform GL lifecycle code. Add snapshot/replay diagnostics and native GL regression coverage.
 - Use MenuBarWidget and GPU-only rendering ([#401](https://github.com/Isthimius/Gondwana/pull/401))
 - Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))
 
