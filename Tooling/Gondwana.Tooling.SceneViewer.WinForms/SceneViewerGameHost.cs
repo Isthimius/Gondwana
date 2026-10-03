@@ -177,7 +177,8 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         Keys.Home,
         Keys.Escape,
         Keys.F3,
-        Keys.F4
+        Keys.F4,
+        Keys.F5
     ];
 
     private void OnKeyDown(KeyDownEventArgs args)
@@ -196,6 +197,12 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             if (key == Keys.F4)
             {
                 ToggleAnimations();
+                return;
+            }
+
+            if (key == Keys.F5)
+            {
+                ToggleGpuRenderPath();
                 return;
             }
 
@@ -260,6 +267,18 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
 
         foreach (Tile tile in Tile.TilesAnimating.ToArray())
             tile.PauseAnimation = _animationsPaused;
+
+        if (_diagnosticsText?.Visible == true)
+            UpdateDiagnosticsText(_lastCpsSample);
+    }
+
+    private void ToggleGpuRenderPath()
+    {
+        RenderSurface.Host.RenderFrameSnapshotsEnabled =
+            !RenderSurface.Host.RenderFrameSnapshotsEnabled;
+
+        // Avoid blending measurements from the two fundamentally different paths.
+        ResetRenderDiagnosticsWindow();
 
         if (_diagnosticsText?.Visible == true)
             UpdateDiagnosticsText(_lastCpsSample);
@@ -407,10 +426,25 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         double lockHeldAverageMs = Average(
             render.GpuLockHeldTotalMs,
             render.GpuSynchronizationSamples);
+        bool snapshotReplay = RenderSurface.Host.RenderFrameSnapshotsEnabled;
+        string renderPath = snapshotReplay
+            ? "snapshot replay"
+            : "direct live GL";
+        string sceneWorkLabel = snapshotReplay
+            ? "Snapshot build"
+            : "Direct scene render";
+        string drawWorkLabel = snapshotReplay
+            ? "Command record"
+            : "Direct draw";
+        string overlayWorkLabel = snapshotReplay
+            ? "Overlay record"
+            : "Overlay draw";
+
         var text = new StringBuilder()
             .AppendLine("Gondwana Scene Viewer Diagnostics  [F3]")
             .AppendLine($"Scene: {Path.GetFileName(scenePath)}")
             .AppendLine($"Animations: {(_animationsPaused ? "PAUSED" : "running")}  [F4]")
+            .AppendLine($"Render path: {renderPath}  [F5]")
             .AppendLine($"CPS: {(sample?.GrossCPS ?? 0):0.0}")
             .AppendLine($"Engine FPS: {(sample?.NetCPS ?? 0):0.0}")
             .AppendLine($"GPU FPS: {gpuFps}")
@@ -419,10 +453,10 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             .AppendLine($"Render+snapshot avg: {renderAndSnapshotAverageMs:0.000} ms")
             .AppendLine($"GL lock wait avg/max: {lockWaitAverageMs:0.000} / {render.GpuLockWaitMaxMs:0.000} ms")
             .AppendLine($"GL lock held avg/max: {lockHeldAverageMs:0.000} / {render.GpuLockHeldMaxMs:0.000} ms")
-            .AppendLine($"Snapshot build avg/max: {sceneRenderAverageMs:0.000} / {render.SceneRenderMaxMs:0.000} ms")
+            .AppendLine($"{sceneWorkLabel} avg/max: {sceneRenderAverageMs:0.000} / {render.SceneRenderMaxMs:0.000} ms")
             .AppendLine($"Build query / sort avg: {Average(render.QueryTotalMs, render.SceneRenderSamples):0.000} / {Average(render.SortTotalMs, render.SceneRenderSamples):0.000} ms")
-            .AppendLine($"Command record avg: {Average(render.DrawTotalMs, render.SceneRenderSamples):0.000} ms")
-            .AppendLine($"Overlay record avg: {Average(render.OverlayTotalMs, render.SceneRenderSamples):0.000} ms")
+            .AppendLine($"{drawWorkLabel} avg: {Average(render.DrawTotalMs, render.SceneRenderSamples):0.000} ms")
+            .AppendLine($"{overlayWorkLabel} avg: {Average(render.OverlayTotalMs, render.SceneRenderSamples):0.000} ms")
             .AppendLine($"GL replay total avg/max: {Average(render.ReplayTotalMs, render.GpuSynchronizationSamples):0.000} / {render.ReplayMaxMs:0.000} ms")
             .AppendLine($"  Picture replay avg: {Average(render.PictureReplayTotalMs, render.GpuSynchronizationSamples):0.000} ms")
             .AppendLine($"  Backbuffer flush avg: {Average(render.BackbufferFlushTotalMs, render.GpuSynchronizationSamples):0.000} ms")

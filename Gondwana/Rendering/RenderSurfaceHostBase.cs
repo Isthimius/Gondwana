@@ -13,8 +13,23 @@ namespace Gondwana.Rendering;
 /// </summary>
 public abstract class RenderSurfaceHostBase : IDisposable
 {
+    private int _renderFrameSnapshotsEnabled = 1;
+
     internal RenderFrameMailbox FrameMailbox { get; } = new();
     internal bool UsesRenderFrameSnapshots => !OperatingSystem.IsBrowser() && Backbuffer is GpuBackbuffer;
+    internal bool ShouldUseRenderFrameSnapshots =>
+        UsesRenderFrameSnapshots && Volatile.Read(ref _renderFrameSnapshotsEnabled) != 0;
+
+    /// <summary>
+    /// Diagnostic switch used by Scene Viewer to compare immutable snapshot replay with the
+    /// legacy live-scene GL render path. Production hosts leave this enabled.
+    /// </summary>
+    internal bool RenderFrameSnapshotsEnabled
+    {
+        get => Volatile.Read(ref _renderFrameSnapshotsEnabled) != 0;
+        set => Volatile.Write(ref _renderFrameSnapshotsEnabled, value ? 1 : 0);
+    }
+
     internal virtual void ProduceRenderFrameSnapshot(long tick) { }
 
     /// <summary>
@@ -114,7 +129,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
         if (!Backbuffer.IsGlThreadRendered)
             return null;
 
-        if (UsesRenderFrameSnapshots)
+        if (ShouldUseRenderFrameSnapshots)
             return ReplayRenderFrameSnapshot();
 
         bool collectSynchronizationDiagnostics =
@@ -256,7 +271,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
         if (!Backbuffer.IsGlThreadRendered)
             return false;
 
-        if (UsesRenderFrameSnapshots)
+        if (ShouldUseRenderFrameSnapshots)
         {
             using var image = ReplayRenderFrameSnapshot();
             DrawCurrentSurface(destinationCanvas);

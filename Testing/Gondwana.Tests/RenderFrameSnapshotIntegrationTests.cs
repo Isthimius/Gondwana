@@ -88,6 +88,28 @@ public sealed class RenderFrameSnapshotIntegrationTests
     }
 
     [Fact]
+    public void DiagnosticLiveMode_SkipsSnapshotProduction_AndRendersLiveScene()
+    {
+        using var scene = new Scene();
+        using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
+        using var backbuffer = host.Backbuffer;
+        host.Bind(scene, false);
+
+        int calls = 0;
+        host.RenderBackbufferPostScene += _ => calls++;
+        host.RenderFrameSnapshotsEnabled = false;
+
+        host.ProduceRenderFrameSnapshot(1);
+        Assert.Equal(0, host.FrameMailbox.Counters.Published);
+
+        using var image = host.GlRenderAndSnapshot();
+
+        Assert.NotNull(image);
+        Assert.Equal(1, calls);
+        Assert.Equal(0, host.FrameMailbox.Counters.InUse);
+    }
+
+    [Fact]
     public void FailedRecordingReleasesBuildingSlot()
     {
         using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());

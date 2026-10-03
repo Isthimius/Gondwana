@@ -325,7 +325,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
     internal override void ProduceRenderFrameSnapshot(long tick)
     {
-        if (!UsesRenderFrameSnapshots || _disposed) return;
+        if (!ShouldUseRenderFrameSnapshots || _disposed) return;
         var slot = FrameMailbox.TryBeginBuild();
         if (slot is null) return;
         var recorder = _recordingBackbuffer ??= new RecordingBackbuffer();
