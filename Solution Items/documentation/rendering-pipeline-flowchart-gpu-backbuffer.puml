@@ -19,13 +19,17 @@ stop
 start
 :EnsureInitialized with current GRContext;
 note right: Only size notification briefly synchronizes live viewports.
-:Acquire latest completed snapshot;
-if (Matching logical dimensions?) then (yes)
-:Replay immutable commands to GpuBackbuffer;
-:EndFrame / GPU snapshot;
-:Release snapshot slot;
-else (no new frame)
-:Reuse current GPU backbuffer;
+:Try acquire newest completed snapshot;
+if (Snapshot acquired?) then (yes)
+  if (Matching logical dimensions?) then (yes)
+    :Replay immutable commands to GpuBackbuffer;
+    :EndFrame / GPU snapshot;
+  else (no — stale size)
+    :Reuse current GPU backbuffer;
+  endif
+  :Release snapshot slot;
+else (no)
+  :Reuse current GPU backbuffer;
 endif
 :Present with existing transform and sampling;
 :Flush / RecordFrame;
