@@ -25,7 +25,14 @@ public sealed record GpuRenderFrameDiagnostics(
     double OverlayMilliseconds,
     int DrawableCount,
     int TileCount,
-    IReadOnlyList<GpuLayerRenderDiagnostics> Layers);
+    IReadOnlyList<GpuLayerRenderDiagnostics> Layers)
+{
+    /// <summary>Time gathering visible drawable candidates before sorting.</summary>
+    public double QueryMilliseconds { get; init; }
+
+    /// <summary>Time validating existing order or sorting the gathered drawable lists.</summary>
+    public double SortMilliseconds { get; init; }
+}
 
 
 /// <summary>

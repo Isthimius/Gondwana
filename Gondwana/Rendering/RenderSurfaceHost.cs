@@ -392,6 +392,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         bool collectDiagnostics = GpuRenderFrameDiagnosticsCalculated is not null;
         long diagnosticsStartTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
         long queryAndSortTicks = 0;
+        long queryTicks = 0;
+        long sortTicks = 0;
         long drawTicks = 0;
         long overlayTicks = 0;
         int drawableCount = 0;
@@ -478,7 +480,18 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                         var layerWorldRect = layerWorldRectF.ToPixelAlignedRect();
 
                         long queryStartTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
-                        var drawables = layer.GetDrawablesInWorldRect(layerWorldRect);
+                        long layerSortTicks = 0;
+                        List<IDrawable> drawables;
+                        if (collectDiagnostics)
+                        {
+                            drawables = layer.GetDrawablesInWorldRectWithDiagnostics(
+                                layerWorldRect,
+                                out layerSortTicks);
+                        }
+                        else
+                        {
+                            drawables = layer.GetDrawablesInWorldRect(layerWorldRect);
+                        }
                         long queryEndTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
 
                         int layerTileCount = 0;
@@ -501,9 +514,14 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
 
                         if (collectDiagnostics)
                         {
-                            long layerQueryTicks = queryEndTick - queryStartTick;
+                            long layerQueryAndSortTicks = queryEndTick - queryStartTick;
+                            long layerQueryTicks = Math.Max(
+                                0L,
+                                layerQueryAndSortTicks - layerSortTicks);
                             long layerDrawTicks = drawEndTick - drawStartTick;
-                            queryAndSortTicks += layerQueryTicks;
+                            queryAndSortTicks += layerQueryAndSortTicks;
+                            queryTicks += layerQueryTicks;
+                            sortTicks += layerSortTicks;
                             drawTicks += layerDrawTicks;
                             drawableCount += drawables.Count;
                             tileCount += layerTileCount;
@@ -517,7 +535,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                                 layer.TransformedTiles.Count,
                                 layer.TileWidth,
                                 layer.TileHeight,
-                                HighResTimer.GetDuration(0, layerQueryTicks) * 1000d,
+                                HighResTimer.GetDuration(0, layerQueryAndSortTicks) * 1000d,
                                 HighResTimer.GetDuration(0, layerDrawTicks) * 1000d));
                         }
 
@@ -560,7 +578,11 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 HighResTimer.GetDuration(0, overlayTicks) * 1000d,
                 drawableCount,
                 tileCount,
-                layerDiagnostics!);
+                layerDiagnostics!)
+            {
+                QueryMilliseconds = HighResTimer.GetDuration(0, queryTicks) * 1000d,
+                SortMilliseconds = HighResTimer.GetDuration(0, sortTicks) * 1000d
+            };
             if (destination is RecordingBackbuffer) _recordingDiagnostics = diagnostics;
             else GpuRenderFrameDiagnosticsCalculated?.Invoke(diagnostics);
         }

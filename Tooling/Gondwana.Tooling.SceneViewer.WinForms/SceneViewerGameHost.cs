@@ -39,6 +39,8 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
     private double _sceneRenderTotalMs;
     private double _sceneRenderMaxMs;
     private double _queryAndSortTotalMs;
+    private double _queryTotalMs;
+    private double _sortTotalMs;
     private double _drawTotalMs;
     private double _overlayTotalMs;
     private long _visibleDrawableTotal;
@@ -268,6 +270,8 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             _sceneRenderTotalMs += diagnostics.TotalRenderMilliseconds;
             _sceneRenderMaxMs = Math.Max(_sceneRenderMaxMs, diagnostics.TotalRenderMilliseconds);
             _queryAndSortTotalMs += diagnostics.QueryAndSortMilliseconds;
+            _queryTotalMs += diagnostics.QueryMilliseconds;
+            _sortTotalMs += diagnostics.SortMilliseconds;
             _drawTotalMs += diagnostics.DrawMilliseconds;
             _overlayTotalMs += diagnostics.OverlayMilliseconds;
             _visibleDrawableTotal += diagnostics.DrawableCount;
@@ -410,7 +414,7 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             .AppendLine($"GL lock wait avg/max: {lockWaitAverageMs:0.000} / {render.GpuLockWaitMaxMs:0.000} ms")
             .AppendLine($"GL lock held avg/max: {lockHeldAverageMs:0.000} / {render.GpuLockHeldMaxMs:0.000} ms")
             .AppendLine($"Snapshot build avg/max: {sceneRenderAverageMs:0.000} / {render.SceneRenderMaxMs:0.000} ms")
-            .AppendLine($"Build query/sort avg: {Average(render.QueryAndSortTotalMs, render.SceneRenderSamples):0.000} ms")
+            .AppendLine($"Build query / sort avg: {Average(render.QueryTotalMs, render.SceneRenderSamples):0.000} / {Average(render.SortTotalMs, render.SceneRenderSamples):0.000} ms")
             .AppendLine($"Command record avg: {Average(render.DrawTotalMs, render.SceneRenderSamples):0.000} ms")
             .AppendLine($"Overlay record avg: {Average(render.OverlayTotalMs, render.SceneRenderSamples):0.000} ms")
             .AppendLine($"GL replay avg/max: {Average(render.ReplayTotalMs, render.GpuSynchronizationSamples):0.000} / {render.ReplayMaxMs:0.000} ms")
@@ -478,6 +482,8 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
                 _sceneRenderTotalMs,
                 _sceneRenderMaxMs,
                 _queryAndSortTotalMs,
+                _queryTotalMs,
+                _sortTotalMs,
                 _drawTotalMs,
                 _overlayTotalMs,
                 _visibleDrawableTotal,
@@ -500,6 +506,8 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
             _sceneRenderTotalMs = 0;
             _sceneRenderMaxMs = 0;
             _queryAndSortTotalMs = 0;
+            _queryTotalMs = 0;
+            _sortTotalMs = 0;
             _drawTotalMs = 0;
             _overlayTotalMs = 0;
             _visibleDrawableTotal = 0;
@@ -637,6 +645,8 @@ internal sealed class SceneViewerGameHost(WinFormGpuRenderSurfaceControl surface
         double SceneRenderTotalMs,
         double SceneRenderMaxMs,
         double QueryAndSortTotalMs,
+        double QueryTotalMs,
+        double SortTotalMs,
         double DrawTotalMs,
         double OverlayTotalMs,
         long VisibleDrawableTotal,
