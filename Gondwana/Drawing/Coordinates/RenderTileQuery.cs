@@ -8,6 +8,8 @@ namespace Gondwana.Drawing.Coordinates;
 /// fringe that is clipped by the renderer. <see cref="IsRenderOrdered"/> means the fixed-grid
 /// stream already matches Gondwana's depth ordering when all returned tiles share Z-order.
 /// </summary>
+/// <param name="Tiles">The tiles.</param>
+/// <param name="IsRenderOrdered">The is Render Ordered.</param>
 internal readonly record struct RenderTileCandidates(
     List<SceneLayerTile> Tiles,
     bool IsRenderOrdered);
@@ -18,6 +20,14 @@ internal readonly record struct RenderTileCandidates(
 /// </summary>
 internal static class RenderTileQuery
 {
+    /// <summary>
+    /// Gets candidates.
+    /// </summary>
+    /// <param name="coordinates">The coordinates.</param>
+    /// <param name="layer">The scene layer used for the operation.</param>
+    /// <param name="worldPixelRange">The world-space pixel range.</param>
+    /// <param name="includeOverhang">Whether tile overhang should be included.</param>
+    /// <returns>The result of the operation.</returns>
     internal static RenderTileCandidates GetCandidates(
         ISceneLayerCoordinates coordinates,
         SceneLayer layer,
@@ -44,6 +54,12 @@ internal static class RenderTileQuery
     /// Visits conservative render candidates in projection depth order without materializing
     /// an intermediate tile list. Returning false from <paramref name="visitor"/> stops traversal.
     /// </summary>
+    /// <param name="coordinates">The coordinates.</param>
+    /// <param name="layer">The scene layer used for the operation.</param>
+    /// <param name="worldPixelRange">The world-space pixel range.</param>
+    /// <param name="includeOverhang">Whether tile overhang should be included.</param>
+    /// <param name="visitor">The callback invoked for each candidate tile.</param>
+    /// <returns>The result of the operation.</returns>
     internal static bool VisitCandidates(
         ISceneLayerCoordinates coordinates,
         SceneLayer layer,
@@ -71,10 +87,21 @@ internal static class RenderTileQuery
         };
     }
 
+    /// <summary>
+    /// Determines whether render Ordered.
+    /// </summary>
+    /// <param name="layer">The scene layer used for the operation.</param>
+    /// <returns><see langword="true"/> when the condition is satisfied; otherwise, <see langword="false"/>.</returns>
     internal static bool IsRenderOrdered(SceneLayer layer) =>
         layer.TransformedTiles.Count == 0 ||
         layer.TileWidth == layer.TileHeight;
 
+    /// <summary>
+    /// Gets fixed Tile Cell Bounds.
+    /// </summary>
+    /// <param name="layer">The scene layer used for the operation.</param>
+    /// <param name="tile">The tile to process.</param>
+    /// <returns>The result of the operation.</returns>
     internal static Rectangle GetFixedTileCellBounds(
         SceneLayer layer,
         SceneLayerTile tile)

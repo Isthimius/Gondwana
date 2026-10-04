@@ -33,6 +33,9 @@ public struct Frame
     /// <summary>
     /// Initializes a new instance of the <see cref="Frame"/> struct with the specified tilesheet and tile coordinates.
     /// </summary>
+    /// <param name="tilesheet">The tilesheet.</param>
+    /// <param name="xTile">The x Tile.</param>
+    /// <param name="yTile">The y Tile.</param>
     public Frame(Tilesheet tilesheet, int xTile, int yTile)
     {
         Tilesheet = tilesheet;
@@ -44,6 +47,10 @@ public struct Frame
     /// <summary>
     /// Initializes a new instance of the <see cref="Frame"/> struct with the specified tilesheet and tile coordinates.
     /// </summary>
+    /// <param name="tilesheet">The tilesheet.</param>
+    /// <param name="regionName">The region Name.</param>
+    /// <param name="xTile">The x Tile.</param>
+    /// <param name="yTile">The y Tile.</param>
     public Frame(Tilesheet tilesheet, string regionName, int xTile, int yTile)
     {
         Tilesheet = tilesheet;
@@ -62,8 +69,14 @@ public struct Frame
     /// </summary>
     public readonly SKImage? SkImage => Tilesheet?.GetImage(RegionName, XTile, YTile);
 
+    /// <summary>
+    /// Provides access to the atlas Image.
+    /// </summary>
     internal readonly SKImage? AtlasImage => Tilesheet?.AtlasImage;
 
+    /// <summary>
+    /// Provides access to the atlas Source Bounds.
+    /// </summary>
     internal readonly Rectangle AtlasSourceBounds =>
         Tilesheet?.GetRegion(RegionName)?.GetFrameSourceBounds(XTile, YTile)
         ?? Rectangle.Empty;
@@ -116,6 +129,7 @@ public struct Frame
     /// Removes this frame's explicit collision adjustment so it once again inherits
     /// its region's <see cref="TilesheetRegion.CollisionAdjust"/>.
     /// </summary>
+    /// <returns>The result of the operation.</returns>
     public readonly bool ClearCollisionAdjustOverride()
     {
         var region = Tilesheet?.GetRegion(RegionName)
@@ -163,6 +177,7 @@ public struct Frame
     /// Removes this frame's explicit collision type so it once again inherits
     /// its region's <see cref="TilesheetRegion.CollisionType"/>.
     /// </summary>
+    /// <returns>The result of the operation.</returns>
     public readonly bool ClearCollisionTypeOverride()
     {
         var region = Tilesheet?.GetRegion(RegionName)
