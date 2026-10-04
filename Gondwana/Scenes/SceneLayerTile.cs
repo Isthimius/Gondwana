@@ -80,20 +80,6 @@ public class SceneLayerTile : Tile
     #endregion constructors / finalizer
 
     /// <inheritdoc/>
-    public override int ZOrder
-    {
-        get => base.ZOrder;
-        set
-        {
-            bool changed = zOrder != value;
-            base.ZOrder = value;
-
-            if (changed && !ReferenceEquals(parentSceneLayer, SceneLayer.Empty))
-                parentSceneLayer.InvalidateFixedGridRenderEligibility();
-        }
-    }
-
-    /// <inheritdoc/>
     public override bool EnableFog
     {
         get => base.EnableFog;
@@ -204,7 +190,18 @@ public class SceneLayerTile : Tile
     /// rendering order when multiple drawable objects occupy overlapping positions.
     /// </remarks>
     [JsonIgnore]
-    public virtual new int ZOrder => zOrder;
+    public override int ZOrder
+    {
+        get => base.ZOrder;
+        set
+        {
+            bool changed = zOrder != value;
+            base.ZOrder = value;
+
+            if (changed && !ReferenceEquals(parentSceneLayer, SceneLayer.Empty))
+                parentSceneLayer.InvalidateFixedGridRenderEligibility();
+        }
+    }
 
     /// <summary>
     /// Gets the world-space pixel rectangle where this tile should be drawn.
