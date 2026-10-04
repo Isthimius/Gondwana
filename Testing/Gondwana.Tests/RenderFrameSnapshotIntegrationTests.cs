@@ -152,6 +152,41 @@ public sealed class RenderFrameSnapshotIntegrationTests
     }
 
     [Fact]
+    public void FixedGridSnapshotEligibility_InvalidatesOnZOrderAndFogChanges()
+    {
+        using var scene = new Scene();
+        var layer = scene.AddLayer(4, 1, 16, 16);
+        var tile = layer[0, 0]!;
+
+        Assert.True(layer.IsFixedGridSnapshotFastPathEligible);
+
+        tile.ZOrder = 1;
+        Assert.False(layer.IsFixedGridSnapshotFastPathEligible);
+
+        tile.ZOrder = 0;
+        Assert.True(layer.IsFixedGridSnapshotFastPathEligible);
+
+        tile.EnableFog = true;
+        Assert.False(layer.IsFixedGridSnapshotFastPathEligible);
+
+        tile.EnableFog = false;
+        Assert.True(layer.IsFixedGridSnapshotFastPathEligible);
+    }
+
+    [Fact]
+    public void DirectTileArrayExposure_DisablesPersistentFixedGridFastPath()
+    {
+        using var scene = new Scene();
+        var layer = scene.AddLayer(2, 2, 16, 16);
+
+        Assert.True(layer.IsFixedGridSnapshotFastPathEligible);
+
+        _ = layer.SceneLayerTileArray;
+
+        Assert.False(layer.IsFixedGridSnapshotFastPathEligible);
+    }
+
+    [Fact]
     public void OrthogonalFastOrder_FallsBackWhenFixedTileZOrdersDiffer()
     {
         var bitmap = new SKBitmap(16, 16);
