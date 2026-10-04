@@ -246,6 +246,8 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         }
 
         LayerScreenMap screen = LayerScreenMap.Create(view, layer);
+        var worldToScreen = screen.CreateWorldToScreenMatrix();
+        bool worldSpaceActive = false;
 
         Canvas.Save();
         Canvas.ClipRect(clipRect.ToSKRect());
@@ -253,13 +255,50 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         try
         {
             for (int i = 0; i < drawables.Count; i++)
-                DrawFixedGridTile(view, layer, screen, (SceneLayerTile)drawables[i]);
+            {
+                var tile = (SceneLayerTile)drawables[i];
 
-            FlushTileBatch();
+                if (tile.Transform == TileTransform.Identity &&
+                    TryGetFrameAtlasInfo(tile.CurrentFrame, out _))
+                {
+                    if (!worldSpaceActive)
+                    {
+                        Canvas.Save();
+                        Canvas.Concat(ref worldToScreen);
+                        worldSpaceActive = true;
+                    }
+
+                    DrawFixedGridTileInWorldSpace(layer, tile);
+                    continue;
+                }
+
+                if (worldSpaceActive)
+                {
+                    FlushTileBatch();
+                    Canvas.Restore();
+                    worldSpaceActive = false;
+                }
+
+                DrawFixedGridTile(view, layer, screen, tile);
+            }
+
+            if (worldSpaceActive)
+            {
+                FlushTileBatch();
+                Canvas.Restore();
+                worldSpaceActive = false;
+            }
+
             return true;
         }
         finally
         {
+            if (worldSpaceActive)
+            {
+                FlushTileBatch();
+                Canvas.Restore();
+            }
+
             Canvas.Restore();
         }
     }

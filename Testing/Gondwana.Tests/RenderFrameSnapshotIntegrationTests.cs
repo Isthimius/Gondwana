@@ -173,6 +173,52 @@ public sealed class RenderFrameSnapshotIntegrationTests
     }
 
     [Fact]
+    public void FractionalZoomAtlasTiles_WithTransformedException_DoNotExposeBackgroundSeams()
+    {
+        var bitmap = new SKBitmap(16, 16);
+        bitmap.Erase(SKColors.Red);
+
+        using var sheet = new Tilesheet("fractional-zoom-seam-mixed-test", bitmap);
+        sheet.DefaultRegion.TileSize = new Size(16, 16);
+
+        using var scene = new Scene();
+        var layer = scene.AddLayer(12, 12, 16, 16);
+        for (int y = 0; y < 12; y++)
+            for (int x = 0; x < 12; x++)
+                layer[x, y]!.CurrentFrame = sheet.GetFrame(0, 0);
+
+        // Force the materialized fixed-grid path used by real scenes that contain
+        // a handful of transformed tiles, while keeping the visual result identical.
+        layer[11, 11]!.Transform = TileTransform.Rotate90;
+
+        using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
+        using var backbuffer = host.Backbuffer;
+        host.Bind(scene, false);
+
+        var view = Assert.Single(host.ViewManager.Views);
+        view.Viewport.SnapZoom(0.335f);
+        view.Camera.SnapTo(PointF.Empty);
+
+        backbuffer.ClearColor = SKColors.Black;
+        host.ProduceRenderFrameSnapshot(1);
+
+        using var image = host.GlRenderAndSnapshot();
+        using var actual = SKBitmap.FromImage(image!);
+
+        RectangleF first = layer[0, 0]!.GetDrawLocationScreen(view);
+        RectangleF last = layer[11, 11]!.GetDrawLocationScreen(view);
+
+        int left = Math.Max(0, (int)MathF.Ceiling(first.Left) + 1);
+        int top = Math.Max(0, (int)MathF.Ceiling(first.Top) + 1);
+        int right = Math.Min(actual.Width - 1, (int)MathF.Floor(last.Right) - 1);
+        int bottom = Math.Min(actual.Height - 1, (int)MathF.Floor(last.Bottom) - 1);
+
+        for (int y = top; y <= bottom; y++)
+            for (int x = left; x <= right; x++)
+                Assert.NotEqual(SKColors.Black, actual.GetPixel(x, y));
+    }
+
+    [Fact]
     public void EmptyGridCells_AreCulledUnlessPostDrawGeometryIsNeeded()
     {
         using var scene = new Scene();
