@@ -18,12 +18,22 @@ namespace Gondwana.Rendering.Backbuffers;
 internal sealed class RecordingBackbuffer : BackbufferBase
 {
     private const int MaxAtlasBatchSize = 256;
+    private const int MaxSnappedVertexBatchSize = 4096;
     private static readonly int[] PartialBatchSizes = [128, 64, 32, 16, 8, 4, 2, 1];
+    private static readonly int[] PartialSnappedVertexBatchSizes =
+        [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1];
 
     private sealed class AtlasBatchBuffer(int size)
     {
         internal SKRect[] Sprites { get; } = new SKRect[size];
         internal SKRotationScaleMatrix[] Transforms { get; } = new SKRotationScaleMatrix[size];
+    }
+
+    private sealed class SnappedVertexBatchBuffer(int tileCount)
+    {
+        internal SKPoint[] Positions { get; } = new SKPoint[tileCount * 4];
+        internal SKPoint[] TextureCoordinates { get; } = new SKPoint[tileCount * 4];
+        internal ushort[] Indices { get; } = CreateQuadIndices(tileCount);
     }
 
     private readonly record struct FrameAtlasKey(
@@ -63,6 +73,19 @@ internal sealed class RecordingBackbuffer : BackbufferBase
                 world.Width * ScaleX,
                 world.Height * ScaleY);
 
+        internal RectangleF MapPixelSnapped(Rectangle world)
+        {
+            float left = Snap(OffsetX + world.Left * ScaleX);
+            float top = Snap(OffsetY + world.Top * ScaleY);
+            float right = Snap(OffsetX + world.Right * ScaleX);
+            float bottom = Snap(OffsetY + world.Bottom * ScaleY);
+
+            return RectangleF.FromLTRB(left, top, right, bottom);
+        }
+
+        private static float Snap(float value) =>
+            MathF.Round(value, MidpointRounding.AwayFromZero);
+
         internal SKMatrix CreateWorldToScreenMatrix() =>
             SKMatrix.CreateScaleTranslation(
                 ScaleX,
@@ -75,7 +98,14 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     private readonly SKRect[] _pendingSprites = new SKRect[MaxAtlasBatchSize];
     private readonly SKRotationScaleMatrix[] _pendingTransforms =
         new SKRotationScaleMatrix[MaxAtlasBatchSize];
+    private readonly SKPoint[] _pendingSnappedPositions =
+        new SKPoint[MaxSnappedVertexBatchSize * 4];
+    private readonly SKPoint[] _pendingSnappedTextureCoordinates =
+        new SKPoint[MaxSnappedVertexBatchSize * 4];
+    private readonly ushort[] _fullSnappedVertexIndices =
+        CreateQuadIndices(MaxSnappedVertexBatchSize);
     private readonly Dictionary<FrameAtlasKey, FrameAtlasInfo> _frameAtlasCache = [];
+    private readonly Dictionary<SKImage, SKShader> _atlasShaderCache = [];
     private readonly Dictionary<int, AtlasBatchBuffer> _partialBatchBuffers = new()
     {
         [1] = new(1),
@@ -87,10 +117,21 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         [64] = new(64),
         [128] = new(128)
     };
+    private readonly Dictionary<int, SnappedVertexBatchBuffer> _partialSnappedVertexBuffers =
+        PartialSnappedVertexBatchSizes.ToDictionary(
+            size => size,
+            size => new SnappedVertexBatchBuffer(size));
+    private readonly SKPaint _snappedVertexPaint = new()
+    {
+        IsAntialias = false,
+        BlendMode = SKBlendMode.SrcOver
+    };
 
     private SKCanvas? _canvas;
     private SKImage? _pendingAtlas;
+    private SKImage? _pendingSnappedVertexAtlas;
     private int _pendingCount;
+    private int _pendingSnappedVertexCount;
 
     internal int AtlasBatchCount { get; private set; }
     internal int AtlasBatchedTileCount { get; private set; }
@@ -103,6 +144,8 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     internal void Start(BackbufferBase source)
     {
         ResetPendingBatch();
+        ResetSnappedVertexBatch();
+        DisposeAtlasShaders();
         _frameAtlasCache.Clear();
         AtlasBatchCount = 0;
         AtlasBatchedTileCount = 0;
@@ -121,22 +164,30 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     internal SKPicture Complete()
     {
         FlushTileBatch();
+        FlushSnappedVertexBatch();
         var picture = _recorder.EndRecording();
         _canvas = null;
         ResetPendingBatch();
+        ResetSnappedVertexBatch();
+        DisposeAtlasShaders();
         return picture;
     }
 
     internal void Cancel()
     {
         ResetPendingBatch();
+        ResetSnappedVertexBatch();
 
         if (_canvas is null)
+        {
+            DisposeAtlasShaders();
             return;
+        }
 
         var picture = _recorder.EndRecording();
         _canvas = null;
         picture.Dispose();
+        DisposeAtlasShaders();
     }
 
     internal bool TryPrepareFixedGridLayer(
@@ -178,13 +229,17 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     {
         var layer = plan.Layer;
         LayerScreenMap screen = LayerScreenMap.Create(view, layer);
+        bool snapOrthogonalEdges = layer.CoordinateSystem is OrthogonalCoordinates;
         int tileCount = 0;
 
         Canvas.Save();
         Canvas.ClipRect(clipRect.ToSKRect());
 
-        var worldToScreen = screen.CreateWorldToScreenMatrix();
-        Canvas.Concat(ref worldToScreen);
+        if (!snapOrthogonalEdges)
+        {
+            var worldToScreen = screen.CreateWorldToScreenMatrix();
+            Canvas.Concat(ref worldToScreen);
+        }
 
         try
         {
@@ -199,11 +254,20 @@ internal sealed class RecordingBackbuffer : BackbufferBase
                         return true;
 
                     tileCount++;
-                    DrawFixedGridTileInWorldSpace(layer, tile);
+
+                    if (snapOrthogonalEdges)
+                        DrawOrthogonalFixedGridTileSnapped(layer, screen, tile);
+                    else
+                        DrawFixedGridTileInWorldSpace(layer, tile);
+
                     return true;
                 });
 
-            FlushTileBatch();
+            if (snapOrthogonalEdges)
+                FlushSnappedVertexBatch();
+            else
+                FlushTileBatch();
+
             return tileCount;
         }
         finally
@@ -246,11 +310,31 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         }
 
         LayerScreenMap screen = LayerScreenMap.Create(view, layer);
-        var worldToScreen = screen.CreateWorldToScreenMatrix();
-        bool worldSpaceActive = false;
 
         Canvas.Save();
         Canvas.ClipRect(clipRect.ToSKRect());
+
+        if (layer.CoordinateSystem is OrthogonalCoordinates)
+        {
+            try
+            {
+                for (int i = 0; i < drawables.Count; i++)
+                    DrawOrthogonalFixedGridTileSnapped(
+                        layer,
+                        screen,
+                        (SceneLayerTile)drawables[i]);
+
+                FlushSnappedVertexBatch();
+                return true;
+            }
+            finally
+            {
+                Canvas.Restore();
+            }
+        }
+
+        var worldToScreen = screen.CreateWorldToScreenMatrix();
+        bool worldSpaceActive = false;
 
         try
         {
@@ -300,6 +384,46 @@ internal sealed class RecordingBackbuffer : BackbufferBase
             }
 
             Canvas.Restore();
+        }
+    }
+
+    private void DrawOrthogonalFixedGridTileSnapped(
+        SceneLayer layer,
+        LayerScreenMap screen,
+        SceneLayerTile tile)
+    {
+        if (tile.Transform == TileTransform.Identity &&
+            TryGetFrameAtlasInfo(tile.CurrentFrame, out var frame))
+        {
+            Rectangle world = RenderTileQuery.GetFixedTileCellBounds(layer, tile);
+            if (!frame.Overhang.IsEmpty)
+            {
+                world = Rectangle.FromLTRB(
+                    world.Left - frame.Overhang.Left,
+                    world.Top - frame.Overhang.Top,
+                    world.Right + frame.Overhang.Right,
+                    world.Bottom + frame.Overhang.Bottom);
+            }
+
+            RectangleF destination = screen.MapPixelSnapped(world);
+            if (destination.Width <= 0f || destination.Height <= 0f)
+                return;
+
+            QueueSnappedVertexAtlas(
+                frame.Atlas,
+                frame.Source,
+                destination);
+            return;
+        }
+
+        FlushSnappedVertexBatch();
+
+        RectangleF transformedDestination =
+            screen.MapPixelSnapped(tile.DrawLocationWorld);
+        if (transformedDestination.Width > 0f &&
+            transformedDestination.Height > 0f)
+        {
+            tile.Draw(this, transformedDestination);
         }
     }
 
@@ -372,6 +496,184 @@ internal sealed class RecordingBackbuffer : BackbufferBase
             FlushTileBatch();
             tile.Draw(this, destination);
         }
+    }
+
+    private void QueueSnappedVertexAtlas(
+        SKImage atlas,
+        SKRect source,
+        RectangleF destination)
+    {
+        if (_pendingSnappedVertexAtlas is not null &&
+            !ReferenceEquals(_pendingSnappedVertexAtlas, atlas))
+        {
+            FlushSnappedVertexBatch();
+        }
+
+        _pendingSnappedVertexAtlas = atlas;
+
+        int tileIndex = _pendingSnappedVertexCount++;
+        int vertexIndex = tileIndex * 4;
+
+        float left = destination.Left;
+        float top = destination.Top;
+        float right = destination.Right;
+        float bottom = destination.Bottom;
+
+        _pendingSnappedPositions[vertexIndex] = new(left, top);
+        _pendingSnappedPositions[vertexIndex + 1] = new(right, top);
+        _pendingSnappedPositions[vertexIndex + 2] = new(right, bottom);
+        _pendingSnappedPositions[vertexIndex + 3] = new(left, bottom);
+
+        _pendingSnappedTextureCoordinates[vertexIndex] =
+            new(source.Left, source.Top);
+        _pendingSnappedTextureCoordinates[vertexIndex + 1] =
+            new(source.Right, source.Top);
+        _pendingSnappedTextureCoordinates[vertexIndex + 2] =
+            new(source.Right, source.Bottom);
+        _pendingSnappedTextureCoordinates[vertexIndex + 3] =
+            new(source.Left, source.Bottom);
+
+        if (_pendingSnappedVertexCount == MaxSnappedVertexBatchSize)
+            FlushFullSnappedVertexBatch();
+    }
+
+    private void FlushSnappedVertexBatch()
+    {
+        if (_pendingSnappedVertexCount == 0)
+        {
+            _pendingSnappedVertexAtlas = null;
+            return;
+        }
+
+        if (_pendingSnappedVertexAtlas is null)
+        {
+            throw new InvalidOperationException(
+                "Snapped vertex batch has queued tiles without an atlas image.");
+        }
+
+        int offset = 0;
+        int remaining = _pendingSnappedVertexCount;
+
+        foreach (int size in PartialSnappedVertexBatchSizes)
+        {
+            while (remaining >= size)
+            {
+                var buffers = _partialSnappedVertexBuffers[size];
+                Array.Copy(
+                    _pendingSnappedPositions,
+                    offset * 4,
+                    buffers.Positions,
+                    0,
+                    size * 4);
+                Array.Copy(
+                    _pendingSnappedTextureCoordinates,
+                    offset * 4,
+                    buffers.TextureCoordinates,
+                    0,
+                    size * 4);
+
+                DrawSnappedVertexBatch(
+                    _pendingSnappedVertexAtlas,
+                    buffers.Positions,
+                    buffers.TextureCoordinates,
+                    buffers.Indices,
+                    size);
+
+                offset += size;
+                remaining -= size;
+            }
+        }
+
+        ResetSnappedVertexBatch();
+    }
+
+    private void FlushFullSnappedVertexBatch()
+    {
+        if (_pendingSnappedVertexAtlas is null ||
+            _pendingSnappedVertexCount != MaxSnappedVertexBatchSize)
+        {
+            return;
+        }
+
+        DrawSnappedVertexBatch(
+            _pendingSnappedVertexAtlas,
+            _pendingSnappedPositions,
+            _pendingSnappedTextureCoordinates,
+            _fullSnappedVertexIndices,
+            MaxSnappedVertexBatchSize);
+
+        _pendingSnappedVertexCount = 0;
+    }
+
+    private void DrawSnappedVertexBatch(
+        SKImage atlas,
+        SKPoint[] positions,
+        SKPoint[] textureCoordinates,
+        ushort[] indices,
+        int tileCount)
+    {
+        using var vertices = SKVertices.CreateCopy(
+            SKVertexMode.Triangles,
+            positions,
+            textureCoordinates,
+            null,
+            indices);
+
+        if (!_atlasShaderCache.TryGetValue(atlas, out var shader))
+        {
+            shader = atlas.ToShader(
+                SKShaderTileMode.Clamp,
+                SKShaderTileMode.Clamp,
+                new SKSamplingOptions(
+                    SKFilterMode.Nearest,
+                    SKMipmapMode.None));
+            _atlasShaderCache.Add(atlas, shader);
+        }
+
+        _snappedVertexPaint.Shader = shader;
+        Canvas.DrawVertices(
+            vertices,
+            SKBlendMode.Modulate,
+            _snappedVertexPaint);
+
+        AtlasBatchCount++;
+        AtlasBatchedTileCount += tileCount;
+    }
+
+    private static ushort[] CreateQuadIndices(int tileCount)
+    {
+        var indices = new ushort[tileCount * 6];
+
+        for (int tile = 0; tile < tileCount; tile++)
+        {
+            int vertex = tile * 4;
+            int index = tile * 6;
+
+            indices[index] = (ushort)vertex;
+            indices[index + 1] = (ushort)(vertex + 1);
+            indices[index + 2] = (ushort)(vertex + 2);
+            indices[index + 3] = (ushort)vertex;
+            indices[index + 4] = (ushort)(vertex + 2);
+            indices[index + 5] = (ushort)(vertex + 3);
+        }
+
+        return indices;
+    }
+
+    private void ResetSnappedVertexBatch()
+    {
+        _pendingSnappedVertexAtlas = null;
+        _pendingSnappedVertexCount = 0;
+    }
+
+    private void DisposeAtlasShaders()
+    {
+        _snappedVertexPaint.Shader = null;
+
+        foreach (var shader in _atlasShaderCache.Values)
+            shader.Dispose();
+
+        _atlasShaderCache.Clear();
     }
 
     internal bool TryQueueTile(SceneLayerTile tile, RectangleF destination)
@@ -534,6 +836,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     public override void Dispose()
     {
         Cancel();
+        _snappedVertexPaint.Dispose();
         _recorder.Dispose();
         base.Dispose();
     }

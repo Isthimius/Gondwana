@@ -116,7 +116,7 @@ public sealed class RenderFrameSnapshotIntegrationTests
 
         var view = Assert.Single(host.ViewManager.Views);
         view.Viewport.SnapZoom(1.5f);
-        view.Camera.SnapTo(new PointF(7f, 5f));
+        view.Camera.SnapTo(new PointF(8f, 6f));
 
         host.RenderToBackbuffer(1);
         using var expectedImage = backbuffer.Snapshot();
@@ -133,25 +133,22 @@ public sealed class RenderFrameSnapshotIntegrationTests
     [Fact]
     public void FractionalZoomAtlasTiles_DoNotExposeBackgroundSeams()
     {
-        var bitmap = new SKBitmap(16, 16);
-        bitmap.Erase(SKColors.Red);
+        using var bitmap = CreateOpaqueAtlas();
 
         using var sheet = new Tilesheet("fractional-zoom-seam-test", bitmap);
         sheet.DefaultRegion.TileSize = new Size(16, 16);
 
         using var scene = new Scene();
-        var layer = scene.AddLayer(12, 12, 16, 16);
-        for (int y = 0; y < 12; y++)
-            for (int x = 0; x < 12; x++)
-                layer[x, y]!.CurrentFrame = sheet.GetFrame(0, 0);
+        var layer = scene.AddLayer(40, 30, 16, 16);
+        PopulateOpaqueAtlasGrid(layer, sheet);
 
         using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
         using var backbuffer = host.Backbuffer;
         host.Bind(scene, false);
 
         var view = Assert.Single(host.ViewManager.Views);
-        view.Viewport.SnapZoom(0.335f);
-        view.Camera.SnapTo(PointF.Empty);
+        view.Viewport.SnapZoom(0.694f);
+        view.Camera.SnapTo(new PointF(-13.2f, -7.6f));
 
         backbuffer.ClearColor = SKColors.Black;
         host.ProduceRenderFrameSnapshot(1);
@@ -159,45 +156,32 @@ public sealed class RenderFrameSnapshotIntegrationTests
         using var image = host.GlRenderAndSnapshot();
         using var actual = SKBitmap.FromImage(image!);
 
-        RectangleF first = layer[0, 0]!.GetDrawLocationScreen(view);
-        RectangleF last = layer[11, 11]!.GetDrawLocationScreen(view);
-
-        int left = Math.Max(0, (int)MathF.Ceiling(first.Left) + 1);
-        int top = Math.Max(0, (int)MathF.Ceiling(first.Top) + 1);
-        int right = Math.Min(actual.Width - 1, (int)MathF.Floor(last.Right) - 1);
-        int bottom = Math.Min(actual.Height - 1, (int)MathF.Floor(last.Bottom) - 1);
-
-        for (int y = top; y <= bottom; y++)
-            for (int x = left; x <= right; x++)
-                Assert.NotEqual(SKColors.Black, actual.GetPixel(x, y));
+        AssertGridInteriorContainsNoBlackPixels(actual, layer, view);
     }
 
     [Fact]
     public void FractionalZoomAtlasTiles_WithTransformedException_DoNotExposeBackgroundSeams()
     {
-        var bitmap = new SKBitmap(16, 16);
-        bitmap.Erase(SKColors.Red);
+        using var bitmap = CreateOpaqueAtlas();
 
         using var sheet = new Tilesheet("fractional-zoom-seam-mixed-test", bitmap);
         sheet.DefaultRegion.TileSize = new Size(16, 16);
 
         using var scene = new Scene();
-        var layer = scene.AddLayer(12, 12, 16, 16);
-        for (int y = 0; y < 12; y++)
-            for (int x = 0; x < 12; x++)
-                layer[x, y]!.CurrentFrame = sheet.GetFrame(0, 0);
+        var layer = scene.AddLayer(40, 30, 16, 16);
+        PopulateOpaqueAtlasGrid(layer, sheet);
 
         // Force the materialized fixed-grid path used by real scenes that contain
         // a handful of transformed tiles, while keeping the visual result identical.
-        layer[11, 11]!.Transform = TileTransform.Rotate90;
+        layer[20, 15]!.Transform = TileTransform.Rotate90;
 
         using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
         using var backbuffer = host.Backbuffer;
         host.Bind(scene, false);
 
         var view = Assert.Single(host.ViewManager.Views);
-        view.Viewport.SnapZoom(0.335f);
-        view.Camera.SnapTo(PointF.Empty);
+        view.Viewport.SnapZoom(0.694f);
+        view.Camera.SnapTo(new PointF(-13.2f, -7.6f));
 
         backbuffer.ClearColor = SKColors.Black;
         host.ProduceRenderFrameSnapshot(1);
@@ -205,17 +189,83 @@ public sealed class RenderFrameSnapshotIntegrationTests
         using var image = host.GlRenderAndSnapshot();
         using var actual = SKBitmap.FromImage(image!);
 
-        RectangleF first = layer[0, 0]!.GetDrawLocationScreen(view);
-        RectangleF last = layer[11, 11]!.GetDrawLocationScreen(view);
+        AssertGridInteriorContainsNoBlackPixels(actual, layer, view);
+    }
 
-        int left = Math.Max(0, (int)MathF.Ceiling(first.Left) + 1);
-        int top = Math.Max(0, (int)MathF.Ceiling(first.Top) + 1);
-        int right = Math.Min(actual.Width - 1, (int)MathF.Floor(last.Right) - 1);
-        int bottom = Math.Min(actual.Height - 1, (int)MathF.Floor(last.Bottom) - 1);
+    private static SKBitmap CreateOpaqueAtlas()
+    {
+        var bitmap = new SKBitmap(32, 32);
+        using var canvas = new SKCanvas(bitmap);
+        using var paint = new SKPaint();
+
+        SKColor[] colors =
+        [
+            SKColors.Red,
+            SKColors.Green,
+            SKColors.Blue,
+            SKColors.Yellow
+        ];
+
+        for (int y = 0; y < 2; y++)
+        {
+            for (int x = 0; x < 2; x++)
+            {
+                paint.Color = colors[y * 2 + x];
+                canvas.DrawRect(
+                    x * 16,
+                    y * 16,
+                    16,
+                    16,
+                    paint);
+            }
+        }
+
+        return bitmap;
+    }
+
+    private static void PopulateOpaqueAtlasGrid(
+        SceneLayer layer,
+        Tilesheet sheet)
+    {
+        Frame[] frames =
+        [
+            sheet.GetFrame(0, 0),
+            sheet.GetFrame(1, 0),
+            sheet.GetFrame(0, 1),
+            sheet.GetFrame(1, 1)
+        ];
+
+        for (int y = 0; y < layer.GridRowCount; y++)
+            for (int x = 0; x < layer.GridColumnCount; x++)
+                layer[x, y]!.CurrentFrame = frames[(x + y) & 3];
+    }
+
+    private static void AssertGridInteriorContainsNoBlackPixels(
+        SKBitmap bitmap,
+        SceneLayer layer,
+        Rendering.Views.View view)
+    {
+        RectangleF first = layer[0, 0]!.GetDrawLocationScreen(view);
+        RectangleF last =
+            layer[layer.GridColumnCount - 1, layer.GridRowCount - 1]!
+                .GetDrawLocationScreen(view);
+
+        int left = Math.Max(
+            0,
+            (int)MathF.Round(first.Left, MidpointRounding.AwayFromZero) + 1);
+        int top = Math.Max(
+            0,
+            (int)MathF.Round(first.Top, MidpointRounding.AwayFromZero) + 1);
+        int right = Math.Min(
+            bitmap.Width - 1,
+            (int)MathF.Round(last.Right, MidpointRounding.AwayFromZero) - 1);
+        int bottom = Math.Min(
+            bitmap.Height - 1,
+            (int)MathF.Round(last.Bottom, MidpointRounding.AwayFromZero) - 1);
 
         for (int y = top; y <= bottom; y++)
             for (int x = left; x <= right; x++)
-                Assert.NotEqual(SKColors.Black, actual.GetPixel(x, y));
+                Assert.NotEqual(SKColors.Black, bitmap.GetPixel(x, y));
     }
 
     [Fact]
