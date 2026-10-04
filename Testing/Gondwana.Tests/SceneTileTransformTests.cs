@@ -182,6 +182,36 @@ public sealed class SceneTileTransformTests
 
     [Theory]
     [MemberData(nameof(SceneLayerWrappingTests.Projections), MemberType = typeof(SceneLayerWrappingTests))]
+    public void StreamingRenderQueryMatchesMaterializedCandidateOrder(
+        CoordinateSystemTypes projection)
+    {
+        using var scene = new Scene();
+        var layer = scene.AddLayer(12, 10, 40, 40, coordinateSystem: projection);
+        var query = new Rectangle(-80, -40, 320, 240);
+
+        var materialized = layer.CoordinateSystem.GetSceneLayerTilesForRendering(
+            layer,
+            query,
+            includeOverhang: true);
+
+        var streamed = new List<SceneLayerTile>();
+        bool completed = RenderTileQuery.VisitCandidates(
+            layer.CoordinateSystem,
+            layer,
+            query,
+            includeOverhang: true,
+            tile =>
+            {
+                streamed.Add(tile);
+                return true;
+            });
+
+        Assert.True(completed);
+        Assert.Equal(materialized.Tiles, streamed);
+    }
+
+    [Theory]
+    [MemberData(nameof(SceneLayerWrappingTests.Projections), MemberType = typeof(SceneLayerWrappingTests))]
     public void NonSquareTransformedTilesDisableRenderOrderGuarantee(
         CoordinateSystemTypes projection)
     {

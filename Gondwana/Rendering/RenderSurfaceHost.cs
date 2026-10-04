@@ -482,38 +482,74 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                         layerWorldRectF.Inflate(layer.TileWidth, layer.TileHeight);
                         var layerWorldRect = layerWorldRectF.ToPixelAlignedRect();
 
-                        long queryStartTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+                        long queryStartTick =
+                            collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
                         long layerSortTicks = 0;
-                        List<IDrawable> drawables;
-                        if (collectDiagnostics)
-                        {
-                            drawables = layer.GetDrawablesInWorldRectWithDiagnostics(
+                        int layerDrawableCount;
+                        int layerTileCount;
+
+                        bool streamed = target is RecordingBackbuffer recording &&
+                            recording.TryPrepareFixedGridLayer(
+                                layer,
                                 layerWorldRect,
-                                out layerSortTicks);
+                                out var fixedGridPlan);
+
+                        long queryEndTick;
+                        long drawStartTick;
+                        long drawEndTick;
+
+                        if (streamed)
+                        {
+                            queryEndTick =
+                                collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+
+                            layerDrawableCount = fixedGridPlan.DrawableCount;
+                            layerTileCount = fixedGridPlan.TileCount;
+
+                            drawStartTick =
+                                collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+                            recording!.DrawFixedGridLayer(view, fixedGridPlan, vp);
+                            drawEndTick =
+                                collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
                         }
                         else
                         {
-                            drawables = layer.GetDrawablesInWorldRect(layerWorldRect);
-                        }
-                        long queryEndTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
-
-                        int layerTileCount = 0;
-                        if (collectDiagnostics)
-                        {
-                            for (int d = 0; d < drawables.Count; d++)
+                            List<IDrawable> drawables;
+                            if (collectDiagnostics)
                             {
-                                IDrawable drawable = drawables[d] is WrappedDrawable wrapped
-                                    ? wrapped.Owner
-                                    : drawables[d];
-
-                                if (drawable is Tile)
-                                    layerTileCount++;
+                                drawables = layer.GetDrawablesInWorldRectWithDiagnostics(
+                                    layerWorldRect,
+                                    out layerSortTicks);
                             }
-                        }
+                            else
+                            {
+                                drawables = layer.GetDrawablesInWorldRect(layerWorldRect);
+                            }
 
-                        long drawStartTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
-                        target.DrawDrawables(view, drawables, vp);
-                        long drawEndTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+                            queryEndTick =
+                                collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+
+                            layerDrawableCount = drawables.Count;
+                            layerTileCount = 0;
+                            if (collectDiagnostics)
+                            {
+                                for (int d = 0; d < drawables.Count; d++)
+                                {
+                                    IDrawable drawable = drawables[d] is WrappedDrawable wrapped
+                                        ? wrapped.Owner
+                                        : drawables[d];
+
+                                    if (drawable is Tile)
+                                        layerTileCount++;
+                                }
+                            }
+
+                            drawStartTick =
+                                collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+                            target.DrawDrawables(view, drawables, vp);
+                            drawEndTick =
+                                collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+                        }
 
                         if (collectDiagnostics)
                         {
@@ -526,14 +562,14 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                             queryTicks += layerQueryTicks;
                             sortTicks += layerSortTicks;
                             drawTicks += layerDrawTicks;
-                            drawableCount += drawables.Count;
+                            drawableCount += layerDrawableCount;
                             tileCount += layerTileCount;
 
                             layerDiagnostics!.Add(new GpuLayerRenderDiagnostics(
                                 i,
                                 layer.ID,
                                 layer.ZOrder,
-                                drawables.Count,
+                                layerDrawableCount,
                                 layerTileCount,
                                 layer.TransformedTiles.Count,
                                 layer.TileWidth,

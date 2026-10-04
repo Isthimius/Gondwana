@@ -1,6 +1,8 @@
 using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Coordinates;
+using Gondwana.Drawing.Direct;
+using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
@@ -34,6 +36,12 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         SKImage Atlas,
         SKRect Source,
         Spacing Overhang);
+
+    internal readonly record struct FixedGridRenderPlan(
+        SceneLayer Layer,
+        Rectangle WorldRect,
+        int DrawableCount,
+        int TileCount);
 
     private readonly record struct LayerScreenMap(
         float OffsetX,
@@ -126,6 +134,107 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         picture.Dispose();
     }
 
+    internal bool TryPrepareFixedGridLayer(
+        SceneLayer layer,
+        Rectangle worldRect,
+        out FixedGridRenderPlan plan)
+    {
+        plan = default;
+
+        if (layer.WrapHorizontally ||
+            layer.WrapVertically ||
+            layer.TransformedTiles.Count != 0 ||
+            layer.ShowGridLines ||
+            layer.ShowCollisionBoxes ||
+            !RenderTileQuery.IsRenderOrdered(layer))
+        {
+            return false;
+        }
+
+        var queryRect = worldRect;
+        queryRect.Inflate(layer.TileWidth, layer.TileHeight);
+        queryRect.Inflate(1, 1);
+
+        if (SpriteManager.Instance.HasVisibleSpriteInWorldRect(queryRect, layer) ||
+            DirectDrawingManager.Instance.HasVisibleDrawingForLayer(layer, worldRect))
+        {
+            return false;
+        }
+
+        int? zOrder = null;
+        int tileCount = 0;
+
+        bool valid = RenderTileQuery.VisitCandidates(
+            layer.CoordinateSystem,
+            layer,
+            worldRect,
+            includeOverhang: true,
+            tile =>
+            {
+                if (!tile.Visible)
+                    return true;
+
+                if (tile.GetType() != typeof(SceneLayerTile) ||
+                    !ReferenceEquals(tile.SceneLayer, layer) ||
+                    tile.Transform != TileTransform.Identity ||
+                    tile.EnableFog)
+                {
+                    return false;
+                }
+
+                if (tile.CurrentFrame.Tilesheet is null)
+                    return true;
+
+                if (zOrder.HasValue && zOrder.Value != tile.ZOrder)
+                    return false;
+
+                zOrder ??= tile.ZOrder;
+                tileCount++;
+                return true;
+            });
+
+        if (!valid)
+            return false;
+
+        plan = new(layer, worldRect, tileCount, tileCount);
+        return true;
+    }
+
+    internal void DrawFixedGridLayer(
+        View view,
+        FixedGridRenderPlan plan,
+        Rectangle clipRect)
+    {
+        var layer = plan.Layer;
+        LayerScreenMap screen = LayerScreenMap.Create(view, layer);
+
+        Canvas.Save();
+        Canvas.ClipRect(clipRect.ToSKRect());
+
+        try
+        {
+            RenderTileQuery.VisitCandidates(
+                layer.CoordinateSystem,
+                layer,
+                plan.WorldRect,
+                includeOverhang: true,
+                tile =>
+                {
+                    if (!tile.Visible || tile.CurrentFrame.Tilesheet is null)
+                        return true;
+
+                    DrawFixedGridTile(view, layer, screen, tile);
+                    return true;
+                });
+
+            FlushTileBatch();
+        }
+        finally
+        {
+            Canvas.Restore();
+        }
+    }
+
     internal bool TryDrawFixedGridDrawables(
         View view,
         IReadOnlyList<IDrawable> drawables,
@@ -167,41 +276,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         try
         {
             for (int i = 0; i < drawables.Count; i++)
-            {
-                var tile = (SceneLayerTile)drawables[i];
-
-                if (tile.Transform != TileTransform.Identity)
-                {
-                    FlushTileBatch();
-                    tile.Draw(this, tile.GetDrawLocationScreen(view));
-                    continue;
-                }
-
-                if (!TryGetFrameAtlasInfo(tile.CurrentFrame, out var frame))
-                {
-                    FlushTileBatch();
-                    tile.Draw(this, tile.GetDrawLocationScreen(view));
-                    continue;
-                }
-
-                Rectangle world = RenderTileQuery.GetFixedTileCellBounds(layer, tile);
-                if (!frame.Overhang.IsEmpty)
-                {
-                    world = Rectangle.FromLTRB(
-                        world.Left - frame.Overhang.Left,
-                        world.Top - frame.Overhang.Top,
-                        world.Right + frame.Overhang.Right,
-                        world.Bottom + frame.Overhang.Bottom);
-                }
-
-                RectangleF destination = screen.Map(world);
-
-                if (!TryQueueAtlas(frame.Atlas, frame.Source, destination))
-                {
-                    FlushTileBatch();
-                    tile.Draw(this, destination);
-                }
-            }
+                DrawFixedGridTile(view, layer, screen, (SceneLayerTile)drawables[i]);
 
             FlushTileBatch();
             return true;
@@ -209,6 +284,45 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         finally
         {
             Canvas.Restore();
+        }
+    }
+
+    private void DrawFixedGridTile(
+        View view,
+        SceneLayer layer,
+        LayerScreenMap screen,
+        SceneLayerTile tile)
+    {
+        if (tile.Transform != TileTransform.Identity)
+        {
+            FlushTileBatch();
+            tile.Draw(this, tile.GetDrawLocationScreen(view));
+            return;
+        }
+
+        if (!TryGetFrameAtlasInfo(tile.CurrentFrame, out var frame))
+        {
+            FlushTileBatch();
+            tile.Draw(this, tile.GetDrawLocationScreen(view));
+            return;
+        }
+
+        Rectangle world = RenderTileQuery.GetFixedTileCellBounds(layer, tile);
+        if (!frame.Overhang.IsEmpty)
+        {
+            world = Rectangle.FromLTRB(
+                world.Left - frame.Overhang.Left,
+                world.Top - frame.Overhang.Top,
+                world.Right + frame.Overhang.Right,
+                world.Bottom + frame.Overhang.Bottom);
+        }
+
+        RectangleF destination = screen.Map(world);
+
+        if (!TryQueueAtlas(frame.Atlas, frame.Source, destination))
+        {
+            FlushTileBatch();
+            tile.Draw(this, destination);
         }
     }
 

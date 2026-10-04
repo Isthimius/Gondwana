@@ -261,6 +261,25 @@ public sealed class DirectDrawingManager : IDisposable
 
     #region helper methods
 
+    internal bool HasVisibleDrawingForLayer(
+        SceneLayer layer,
+        Rectangle worldRect)
+    {
+        foreach (var value in _directDrawings.Values)
+        {
+            if (value is DirectDrawingBase drawing &&
+                drawing.Visible &&
+                drawing.Mode == DirectDrawingMode.SceneLayer &&
+                ReferenceEquals(drawing.SceneLayer, layer) &&
+                drawing.WorldBounds.IntersectsWith(worldRect))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /// <summary>
     /// Returns all direct drawings associated with a specific scene layer, ordered by Z-order then nickname.
     /// </summary>
