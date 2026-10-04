@@ -8,21 +8,22 @@ namespace Gondwana.Rendering;
 internal sealed class RenderFrameMailbox : IDisposable
 {
     /// <summary>
-    /// Represents state.
+    /// Describes the current ownership state of a mailbox slot.
     /// </summary>
     internal enum State { Free, Building, Published, Rendering, Releasing }
 
     /// <summary>
-    /// Represents slot.
+    /// Holds one snapshot while ownership moves between producer, mailbox, consumer, and recycler.
     /// </summary>
     internal sealed class Slot
     {
         /// <summary>
-        /// Gets or sets the frame.
+        /// Gets or sets the snapshot currently stored in this slot.
         /// </summary>
         internal RenderFrameSnapshot? Frame { get; set; }
+
         /// <summary>
-        /// Stores the ownership.
+        /// Stores the slot's current ownership state.
         /// </summary>
         internal State Ownership;
 
@@ -40,7 +41,7 @@ internal sealed class RenderFrameMailbox : IDisposable
     private long _droppedCount;
 
     /// <summary>
-    /// Gets the counters.
+    /// Gets cumulative publish/drop counts and the number of slots currently in use.
     /// </summary>
     internal (long Published, long Dropped, int InUse) Counters
     {
@@ -52,9 +53,12 @@ internal sealed class RenderFrameMailbox : IDisposable
     }
 
     /// <summary>
-    /// Attempts to begin build.
+    /// Claims a free slot for the snapshot producer.
     /// </summary>
-    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
+    /// <returns>
+    /// A slot transitioned to <see cref="State.Building"/>, or <see langword="null"/> when
+    /// the mailbox is closed or all slots are currently in use.
+    /// </returns>
     internal Slot? TryBeginBuild()
     {
         lock (_gate)
@@ -71,7 +75,7 @@ internal sealed class RenderFrameMailbox : IDisposable
 
     // Takes ownership of frame even if the mailbox was closed during construction.
     /// <summary>
-    /// Performs the publish operation.
+    /// Publishes a completed snapshot into a producer-owned building slot, replacing any older unpublished snapshot.
     /// </summary>
     /// <param name="slot">The mailbox slot.</param>
     /// <param name="frame">The frame to publish.</param>
@@ -104,7 +108,7 @@ internal sealed class RenderFrameMailbox : IDisposable
     }
 
     /// <summary>
-    /// Aborts build.
+    /// Returns a producer-owned building slot to the free pool without publishing a snapshot.
     /// </summary>
     /// <param name="slot">The mailbox slot.</param>
     internal void AbortBuild(Slot slot)
@@ -117,9 +121,12 @@ internal sealed class RenderFrameMailbox : IDisposable
     }
 
     /// <summary>
-    /// Attempts to acquire.
+    /// Acquires the newest published snapshot for the consumer.
     /// </summary>
-    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
+    /// <returns>
+    /// The slot transitioned to <see cref="State.Rendering"/>, or <see langword="null"/> when
+    /// no snapshot is available or the mailbox is closed.
+    /// </returns>
     internal Slot? TryAcquire()
     {
         lock (_gate)
@@ -135,7 +142,7 @@ internal sealed class RenderFrameMailbox : IDisposable
     }
 
     /// <summary>
-    /// Performs the release operation.
+    /// Releases a consumer-owned rendering slot and recycles its snapshot resources.
     /// </summary>
     /// <param name="slot">The mailbox slot.</param>
     internal void Release(Slot slot)

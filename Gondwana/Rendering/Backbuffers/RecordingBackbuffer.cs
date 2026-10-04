@@ -63,10 +63,10 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         Spacing Overhang);
 
     /// <summary>
-    /// Represents fixed grid render plan.
+    /// Describes a fixed-grid layer and the visible world rectangle to record through the streaming fast path.
     /// </summary>
-    /// <param name="Layer">The layer.</param>
-    /// <param name="WorldRect">The world rect.</param>
+    /// <param name="Layer">The scene layer to record.</param>
+    /// <param name="WorldRect">The visible world-space rectangle.</param>
     internal readonly record struct FixedGridRenderPlan(
         SceneLayer Layer,
         Rectangle WorldRect);
@@ -78,11 +78,11 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         float ScaleY)
     {
         /// <summary>
-        /// Performs the create operation.
+        /// Creates the affine world-to-screen mapping for a view and scene layer.
         /// </summary>
-        /// <param name="view">The view used for the operation.</param>
-        /// <param name="layer">The scene layer used for the operation.</param>
-        /// <returns>The resulting value.</returns>
+        /// <param name="view">The view whose camera and viewport define the transform.</param>
+        /// <param name="layer">The scene layer whose parallax contributes to the transform.</param>
+        /// <returns>The resolved layer-to-screen mapping.</returns>
         internal static LayerScreenMap Create(View view, SceneLayer layer)
         {
             RectangleF unit = view.WorldRectToScreenRect(
@@ -93,10 +93,10 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         }
 
         /// <summary>
-        /// Performs the map operation.
+        /// Maps a world-space rectangle to continuous screen-space coordinates.
         /// </summary>
-        /// <param name="world">The world.</param>
-        /// <returns>The resulting value.</returns>
+        /// <param name="world">The world-space rectangle.</param>
+        /// <returns>The corresponding screen-space rectangle.</returns>
         internal RectangleF Map(Rectangle world) =>
             new(
                 OffsetX + world.Left * ScaleX,
@@ -105,10 +105,10 @@ internal sealed class RecordingBackbuffer : BackbufferBase
                 world.Height * ScaleY);
 
         /// <summary>
-        /// Performs the map pixel snapped operation.
+        /// Maps a world-space rectangle to screen space and snaps all four edges to shared integer pixel boundaries.
         /// </summary>
-        /// <param name="world">The world.</param>
-        /// <returns>The resulting value.</returns>
+        /// <param name="world">The world-space rectangle.</param>
+        /// <returns>The pixel-snapped screen-space rectangle.</returns>
         internal RectangleF MapPixelSnapped(Rectangle world)
         {
             float left = Snap(OffsetX + world.Left * ScaleX);
@@ -123,9 +123,9 @@ internal sealed class RecordingBackbuffer : BackbufferBase
             MathF.Round(value, MidpointRounding.AwayFromZero);
 
         /// <summary>
-        /// Creates world to screen matrix.
+        /// Creates the Skia matrix that applies this mapping to world-space geometry.
         /// </summary>
-        /// <returns>The resulting value.</returns>
+        /// <returns>The world-to-screen scale/translation matrix.</returns>
         internal SKMatrix CreateWorldToScreenMatrix() =>
             SKMatrix.CreateScaleTranslation(
                 ScaleX,
@@ -174,11 +174,12 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     private int _pendingSnappedVertexCount;
 
     /// <summary>
-    /// Gets or sets the atlas batch count.
+    /// Gets the number of atlas or textured-vertex batches recorded in the current frame.
     /// </summary>
     internal int AtlasBatchCount { get; private set; }
+
     /// <summary>
-    /// Gets or sets the atlas batched tile count.
+    /// Gets the number of tiles included in those batches for the current frame.
     /// </summary>
     internal int AtlasBatchedTileCount { get; private set; }
 
@@ -193,9 +194,9 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     public override bool IsGlThreadRendered => true;
 
     /// <summary>
-    /// Performs the start operation.
+    /// Begins recording a new frame using the source backbuffer's size and drawing configuration.
     /// </summary>
-    /// <param name="source">The source backbuffer.</param>
+    /// <param name="source">The live backbuffer whose dimensions and drawing paints should be mirrored.</param>
     internal void Start(BackbufferBase source)
     {
         ResetPendingBatch();
@@ -217,9 +218,9 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     }
 
     /// <summary>
-    /// Performs the complete operation.
+    /// Completes the current recording after flushing pending batches.
     /// </summary>
-    /// <returns>The resulting value.</returns>
+    /// <returns>The immutable picture containing the recorded frame commands.</returns>
     internal SKPicture Complete()
     {
         FlushTileBatch();
@@ -233,7 +234,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     }
 
     /// <summary>
-    /// Performs the cancel operation.
+    /// Cancels the current recording and disposes the incomplete picture.
     /// </summary>
     internal void Cancel()
     {
@@ -253,12 +254,12 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     }
 
     /// <summary>
-    /// Attempts to prepare fixed grid layer.
+    /// Determines whether a scene layer can use the streaming fixed-grid snapshot fast path.
     /// </summary>
-    /// <param name="layer">The scene layer used for the operation.</param>
-    /// <param name="worldRect">The world rect.</param>
-    /// <param name="plan">The plan.</param>
-    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
+    /// <param name="layer">The scene layer to evaluate.</param>
+    /// <param name="worldRect">The visible world-space rectangle.</param>
+    /// <param name="plan">Receives the prepared render plan when the fast path is eligible.</param>
+    /// <returns><see langword="true"/> when the layer can use the fast path; otherwise, <see langword="false"/>.</returns>
     internal bool TryPrepareFixedGridLayer(
         SceneLayer layer,
         Rectangle worldRect,
@@ -292,12 +293,12 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     }
 
     /// <summary>
-    /// Draws fixed grid layer.
+    /// Records a prepared fixed-grid layer directly from projection-ordered tile traversal.
     /// </summary>
-    /// <param name="view">The view used for the operation.</param>
-    /// <param name="plan">The plan.</param>
-    /// <param name="clipRect">The clipping rectangle.</param>
-    /// <returns>The resulting value.</returns>
+    /// <param name="view">The view used to transform the layer.</param>
+    /// <param name="plan">The prepared fixed-grid render plan.</param>
+    /// <param name="clipRect">The screen-space clipping rectangle.</param>
+    /// <returns>The number of visible tiles recorded.</returns>
     internal int DrawFixedGridLayer(
         View view,
         FixedGridRenderPlan plan,
@@ -353,12 +354,12 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     }
 
     /// <summary>
-    /// Attempts to draw fixed grid drawables.
+    /// Attempts to record an already materialized fixed-grid drawable list using the optimized tile paths.
     /// </summary>
-    /// <param name="view">The view used for the operation.</param>
-    /// <param name="drawables">The drawables to render.</param>
-    /// <param name="clipRect">The clipping rectangle.</param>
-    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
+    /// <param name="view">The view used to transform the tiles.</param>
+    /// <param name="drawables">The ordered drawables to record.</param>
+    /// <param name="clipRect">The screen-space clipping rectangle.</param>
+    /// <returns><see langword="true"/> when the optimized path handled the complete list; otherwise, <see langword="false"/>.</returns>
     internal bool TryDrawFixedGridDrawables(
         View view,
         IReadOnlyList<IDrawable> drawables,
@@ -760,11 +761,11 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     }
 
     /// <summary>
-    /// Attempts to queue tile.
+    /// Attempts to append an identity-transformed tile to the current atlas batch.
     /// </summary>
-    /// <param name="tile">The tile to process.</param>
-    /// <param name="destination">The destination rectangle.</param>
-    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
+    /// <param name="tile">The tile whose current frame should be queued.</param>
+    /// <param name="destination">The destination rectangle in screen space.</param>
+    /// <returns><see langword="true"/> when the tile was queued; otherwise, <see langword="false"/>.</returns>
     internal bool TryQueueTile(SceneLayerTile tile, RectangleF destination)
     {
         if (tile.Transform != TileTransform.Identity ||
@@ -852,7 +853,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     }
 
     /// <summary>
-    /// Flushes tile batch.
+    /// Emits all pending conventional <c>DrawAtlas</c> tiles into the recording.
     /// </summary>
     internal void FlushTileBatch()
     {

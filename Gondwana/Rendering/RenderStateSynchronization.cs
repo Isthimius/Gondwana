@@ -12,12 +12,12 @@ internal static class RenderStateSynchronization
     private static int _pendingGpuRenderers;
 
     /// <summary>
-    /// Gets the sync root.
+    /// Gets the monitor used to serialize mutable engine render state with synchronous live rendering.
     /// </summary>
     internal static object SyncRoot { get; } = new();
 
     /// <summary>
-    /// Gets the has pending gpu renderers.
+    /// Gets a value indicating whether a synchronous GPU renderer is waiting to enter the shared render-state monitor.
     /// </summary>
     internal static bool HasPendingGpuRenderers =>
         Volatile.Read(ref _pendingGpuRenderers) > 0;

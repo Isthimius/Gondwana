@@ -16,11 +16,11 @@ internal sealed class RenderFrameSnapshot : IDisposable
     /// <summary>
     /// Initializes a new instance of <see cref="RenderFrameSnapshot"/>.
     /// </summary>
-    /// <param name="commands">The commands.</param>
-    /// <param name="sequence">The sequence.</param>
-    /// <param name="producedTick">The produced tick.</param>
-    /// <param name="width">The width.</param>
-    /// <param name="height">The height.</param>
+    /// <param name="commands">The immutable recorded Skia commands for the frame.</param>
+    /// <param name="sequence">The monotonically increasing publication sequence.</param>
+    /// <param name="producedTick">The engine tick at which the frame was produced.</param>
+    /// <param name="width">The recorded backbuffer width in pixels.</param>
+    /// <param name="height">The recorded backbuffer height in pixels.</param>
     internal RenderFrameSnapshot(SKPicture commands, long sequence, long producedTick, int width, int height)
     {
         _commands = commands;
@@ -31,30 +31,34 @@ internal sealed class RenderFrameSnapshot : IDisposable
     }
 
     /// <summary>
-    /// Gets the sequence.
+    /// Gets the monotonically increasing sequence assigned to this snapshot.
     /// </summary>
     internal long Sequence { get; }
+
     /// <summary>
-    /// Gets the produced tick.
+    /// Gets the engine tick at which this snapshot was produced.
     /// </summary>
     internal long ProducedTick { get; }
+
     /// <summary>
-    /// Gets the width.
+    /// Gets the recorded backbuffer width in pixels.
     /// </summary>
     internal int Width { get; }
+
     /// <summary>
-    /// Gets the height.
+    /// Gets the recorded backbuffer height in pixels.
     /// </summary>
     internal int Height { get; }
+
     /// <summary>
-    /// Gets the command count.
+    /// Gets Skia's approximate number of operations recorded in the snapshot.
     /// </summary>
     internal int CommandCount => _commands.ApproximateOperationCount;
 
     /// <summary>
-    /// Performs the replay operation.
+    /// Replays the immutable recorded commands onto the supplied canvas.
     /// </summary>
-    /// <param name="canvas">The canvas.</param>
+    /// <param name="canvas">The destination canvas.</param>
     internal void Replay(SKCanvas canvas) => canvas.DrawPicture(_commands);
 
     /// <summary>

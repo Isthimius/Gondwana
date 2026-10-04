@@ -14,17 +14,17 @@ namespace Gondwana.Rendering;
 public abstract class RenderSurfaceHostBase : IDisposable
 {
     /// <summary>
-    /// Gets the frame mailbox.
+    /// Gets the bounded mailbox that transfers immutable desktop GPU snapshots from producer to consumer.
     /// </summary>
     internal RenderFrameMailbox FrameMailbox { get; } = new();
     /// <summary>
-    /// Gets the uses render frame snapshots.
+    /// Gets a value indicating whether this host uses asynchronous desktop GPU render snapshots.
     /// </summary>
     internal bool UsesRenderFrameSnapshots => !OperatingSystem.IsBrowser() && Backbuffer is GpuBackbuffer;
     /// <summary>
-    /// Produces render frame snapshot.
+    /// Produces and publishes an immutable desktop GPU render snapshot when supported by the host.
     /// </summary>
-    /// <param name="tick">The engine tick associated with the operation.</param>
+    /// <param name="tick">The engine tick associated with the frame.</param>
     internal virtual void ProduceRenderFrameSnapshot(long tick) { }
 
     /// <summary>
@@ -56,12 +56,12 @@ public abstract class RenderSurfaceHostBase : IDisposable
     public float PresentationScale => RenderSurfaceAdapter?.PresentationScale ?? 0f;
 
     /// <summary>
-    /// Requests render scale.
+    /// Requests a logical backbuffer resolution change using the supplied render scale.
     /// </summary>
     /// <param name="scale">The requested render scale.</param>
     internal virtual void RequestRenderScale(float scale) { }
     /// <summary>
-    /// Invalidates presentation.
+    /// Requests that the current completed frame be presented again.
     /// </summary>
     internal virtual void InvalidatePresentation() { }
 

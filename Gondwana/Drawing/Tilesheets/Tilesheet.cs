@@ -36,7 +36,7 @@ public sealed class Tilesheet : IDisposable
     }
 
     /// <summary>
-    /// Occurs when disposed.
+    /// Occurs when this tilesheet is disposed.
     /// </summary>
     public event Action<Tilesheet>? Disposed;
 
@@ -45,8 +45,8 @@ public sealed class Tilesheet : IDisposable
     /// <summary>
     /// Initializes a new instance of <see cref="Tilesheet"/>.
     /// </summary>
-    /// <param name="name">The name of the item.</param>
-    /// <param name="bitmap">The source bitmap.</param>
+    /// <param name="name">The logical name of the tilesheet.</param>
+    /// <param name="bitmap">The bitmap that supplies the tilesheet image.</param>
     /// <param name="addDefaultRegion">Whether to create the default tilesheet region.</param>
     internal Tilesheet(string name, SKBitmap bitmap, bool addDefaultRegion = true)
     {
@@ -60,8 +60,8 @@ public sealed class Tilesheet : IDisposable
     /// <summary>
     /// Initializes a new instance of <see cref="Tilesheet"/>.
     /// </summary>
-    /// <param name="name">The name of the item.</param>
-    /// <param name="stream">The source stream.</param>
+    /// <param name="name">The logical name of the tilesheet.</param>
+    /// <param name="stream">The stream containing the encoded tilesheet image.</param>
     /// <param name="addDefaultRegion">Whether to create the default tilesheet region.</param>
     internal Tilesheet(string name, Stream stream, bool addDefaultRegion = true)
         : this(
@@ -74,8 +74,8 @@ public sealed class Tilesheet : IDisposable
     /// <summary>
     /// Initializes a new instance of <see cref="Tilesheet"/>.
     /// </summary>
-    /// <param name="name">The name of the item.</param>
-    /// <param name="file">The source file path.</param>
+    /// <param name="name">The logical name of the tilesheet.</param>
+    /// <param name="file">The path to the encoded tilesheet image.</param>
     /// <param name="addDefaultRegion">Whether to create the default tilesheet region.</param>
     internal Tilesheet(string name, string file, bool addDefaultRegion = true)
         : this(
@@ -89,8 +89,8 @@ public sealed class Tilesheet : IDisposable
     /// <summary>
     /// Initializes a new instance of <see cref="Tilesheet"/>.
     /// </summary>
-    /// <param name="resFile">The res file.</param>
-    /// <param name="entryName">The asset entry name.</param>
+    /// <param name="resFile">The asset file containing the tilesheet image.</param>
+    /// <param name="entryName">The image entry to load from the asset file.</param>
     /// <param name="addDefaultRegion">Whether to create the default tilesheet region.</param>
     internal Tilesheet(AssetsFile resFile, string entryName, bool addDefaultRegion = true)
     {
@@ -121,9 +121,9 @@ public sealed class Tilesheet : IDisposable
     /// Creates a tilesheet from another tilesheet's metadata while loading a replacement image.
     /// Region and per-frame collision metadata are copied.
     /// </summary>
-    /// <param name="baseSheet">The base sheet.</param>
-    /// <param name="name">The name of the item.</param>
-    /// <param name="file">The source file path.</param>
+    /// <param name="baseSheet">The tilesheet whose metadata should be copied.</param>
+    /// <param name="name">The logical name for the new tilesheet.</param>
+    /// <param name="file">The replacement image file to load.</param>
     internal Tilesheet(Tilesheet baseSheet, string name, string file)
     {
         ArgumentNullException.ThrowIfNull(baseSheet);
@@ -178,63 +178,72 @@ public sealed class Tilesheet : IDisposable
     }
 
     /// <summary>
-    /// Gets or sets the sk bitmap.
+    /// Gets the bitmap that currently backs this tilesheet.
     /// </summary>
     public SKBitmap SkBitmap { get; private set; } = null!;
+
     /// <summary>
-    /// Gets or sets the sk bitmap original.
+    /// Gets the original bitmap retained before runtime mask or premultiplication transforms, when available.
     /// </summary>
     public SKBitmap? SkBitmapOriginal { get; private set; }
+
     /// <summary>
-    /// Gets or sets the name.
+    /// Gets or sets the logical tilesheet name.
     /// </summary>
     public string Name { get; internal set; } = string.Empty;
+
     /// <summary>
-    /// Gets or sets the regions.
+    /// Gets the regions defined on this tilesheet.
     /// </summary>
     public List<TilesheetRegion> Regions { get; private set; } = new();
+
     /// <summary>
-    /// Gets the item identified by the supplied index.
+    /// Gets the default tilesheet region.
     /// </summary>
-    /// <param name="DefaultRegionName">The default region name.</param>
     public TilesheetRegion DefaultRegion => this[TilesheetRegion.DefaultRegionName];
+
     /// <summary>
-    /// Gets or sets the value bag.
+    /// Gets or sets the extensible metadata associated with this tilesheet.
     /// </summary>
     public TypedValueBag ValueBag { get; set; } = new();
+
     /// <summary>
-    /// Gets or sets the asset identifier.
+    /// Gets the packed-asset identifier used to load this tilesheet, when applicable.
     /// </summary>
     public AssetsFileIdentifier? AssetIdentifier { get; private set; }
+
     /// <summary>
-    /// Gets or sets the image file path.
+    /// Gets the source image file path for a file-backed tilesheet.
     /// </summary>
     public string ImageFilePath { get; private set; } = string.Empty;
+
     /// <summary>
-    /// Gets or sets the mask color.
+    /// Gets the color used for alpha masking, when masking has been applied.
     /// </summary>
     public SKColor? MaskColor { get; private set; }
+
     /// <summary>
-    /// Gets or sets the mask tolerance.
+    /// Gets the tolerance used by the current alpha mask.
     /// </summary>
     public byte MaskTolerance { get; private set; } = 5;
+
     /// <summary>
-    /// Gets or sets the premultiplied.
+    /// Gets a value indicating whether the runtime bitmap uses premultiplied alpha.
     /// </summary>
     public bool Premultiplied { get; private set; }
 
     /// <summary>
     /// Adds a region with the supplied default collision adjustment and collision type.
     /// </summary>
-    /// <param name="name">The name of the item.</param>
-    /// <param name="area">The area.</param>
-    /// <param name="tileSize">The tile size.</param>
-    /// <param name="tilePadding">The tile padding.</param>
-    /// <param name="regionMargin">The region margin.</param>
-    /// <param name="overhangPixels">The overhang pixels.</param>
-    /// <param name="collisionAdjust">The collision adjust.</param>
-    /// <param name="collisionType">The collision type.</param>
-    /// <returns>The resulting value.</returns>
+    /// <param name="name">The unique region name.</param>
+    /// <param name="area">The source-image area occupied by the region.</param>
+    /// <param name="tileSize">The unpadded size of each frame.</param>
+    /// <param name="tilePadding">Optional padding around each frame.</param>
+    /// <param name="regionMargin">Optional margins inside the region area.</param>
+    /// <param name="overhangPixels">Optional visual overhang applied when frames are rendered.</param>
+    /// <param name="collisionAdjust">Optional default collision adjustment inherited by frames.</param>
+    /// <param name="collisionType">The default collision type inherited by frames.</param>
+    /// <returns>The newly created region.</returns>
     public TilesheetRegion AddRegion(
         string name,
         Rectangle area,
@@ -267,10 +276,10 @@ public sealed class Tilesheet : IDisposable
     }
 
     /// <summary>
-    /// Gets region.
+    /// Gets a tilesheet region by name.
     /// </summary>
-    /// <param name="name">The name of the item.</param>
-    /// <returns>The requested value, or <see langword="null"/> when it is unavailable.</returns>
+    /// <param name="name">The region name to resolve.</param>
+    /// <returns>The matching region, or <see langword="null"/> when no region has that name.</returns>
     public TilesheetRegion? GetRegion(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -286,9 +295,9 @@ public sealed class Tilesheet : IDisposable
     }
 
     /// <summary>
-    /// Removes region.
+    /// Removes a tilesheet region by name.
     /// </summary>
-    /// <param name="name">The name of the item.</param>
+    /// <param name="name">The region name to remove.</param>
     /// <param name="dispose">Whether the removed item should be disposed.</param>
     /// <returns><see langword="true"/> if an item was removed; otherwise, <see langword="false"/>.</returns>
     public bool RemoveRegion(string name, bool dispose = true)
@@ -306,26 +315,26 @@ public sealed class Tilesheet : IDisposable
     }
 
     /// <summary>
-    /// Gets frame.
+    /// Creates a lightweight frame reference for the specified region coordinates.
     /// </summary>
     /// <param name="regionName">The tilesheet region name.</param>
     /// <param name="x">The horizontal tile coordinate.</param>
     /// <param name="y">The vertical tile coordinate.</param>
-    /// <returns>The resulting value.</returns>
+    /// <returns>A frame referencing the requested region coordinates.</returns>
     public Frame GetFrame(string regionName, int x, int y) =>
         new(this, regionName, x, y);
 
     /// <summary>
-    /// Gets frame.
+    /// Creates a lightweight frame reference for the specified coordinates in the default region.
     /// </summary>
     /// <param name="x">The horizontal tile coordinate.</param>
     /// <param name="y">The vertical tile coordinate.</param>
-    /// <returns>The resulting value.</returns>
+    /// <returns>A frame referencing the requested default-region coordinates.</returns>
     public Frame GetFrame(int x, int y) =>
         new(this, TilesheetRegion.DefaultRegionName, x, y);
 
     /// <summary>
-    /// Applies mask.
+    /// Applies an alpha mask to the runtime bitmap and rebuilds cached frame slices.
     /// </summary>
     /// <param name="maskColor">The mask color to apply.</param>
     /// <param name="tolerance">The mask-color tolerance.</param>
@@ -369,7 +378,7 @@ public sealed class Tilesheet : IDisposable
     }
 
     /// <summary>
-    /// Applies premultiply alpha.
+    /// Premultiplies the runtime bitmap alpha and rebuilds cached frame slices.
     /// </summary>
     public void ApplyPremultiplyAlpha()
     {
@@ -388,11 +397,11 @@ public sealed class Tilesheet : IDisposable
     }
 
     /// <summary>
-    /// Converts to byte array.
+    /// Encodes the current runtime bitmap into an image byte array.
     /// </summary>
-    /// <param name="format">The format.</param>
-    /// <param name="quality">The quality.</param>
-    /// <returns>The resulting value.</returns>
+    /// <param name="format">The image format to encode.</param>
+    /// <param name="quality">The encoding quality from 0 through 100.</param>
+    /// <returns>The encoded image bytes.</returns>
     public byte[] ToByteArray(
         SKEncodedImageFormat format = SKEncodedImageFormat.Png,
         int quality = 100)
@@ -478,11 +487,9 @@ public sealed class Tilesheet : IDisposable
         GetRegion(regionName)?.GetBitmap(x, y);
 
     /// <summary>
-    /// Initializes a new instance of <see cref="Dictionary<"/>.
+    /// Gets all cached frame bitmaps across all regions.
     /// </summary>
-    /// <param name="regionName">The tilesheet region name.</param>
-    /// <param name="x">The horizontal tile coordinate.</param>
-    /// <param name="y">The vertical tile coordinate.</param>
+    /// <returns>A dictionary keyed by region name and frame coordinates.</returns>
     public Dictionary<(string regionName, int x, int y), SKBitmap> GetAllBitmaps()
     {
         var tiles = new Dictionary<(string regionName, int x, int y), SKBitmap>();
@@ -497,11 +504,9 @@ public sealed class Tilesheet : IDisposable
     }
 
     /// <summary>
-    /// Initializes a new instance of <see cref="Dictionary<"/>.
+    /// Gets all cached frame images across all regions.
     /// </summary>
-    /// <param name="regionName">The tilesheet region name.</param>
-    /// <param name="x">The horizontal tile coordinate.</param>
-    /// <param name="y">The vertical tile coordinate.</param>
+    /// <returns>A dictionary keyed by region name and frame coordinates.</returns>
     public Dictionary<(string regionName, int x, int y), SKImage> GetAllImages()
     {
         var tiles = new Dictionary<(string regionName, int x, int y), SKImage>();

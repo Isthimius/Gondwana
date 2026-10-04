@@ -195,11 +195,14 @@ public sealed class SpriteManager : IDisposable
     }
 
     /// <summary>
-    /// Determines whether visible sprite in world rect.
+    /// Determines whether a visible sprite on the specified layer intersects a world-space rectangle.
     /// </summary>
-    /// <param name="worldRect">The world rect.</param>
-    /// <param name="sceneLayer">The scene layer used for the operation.</param>
-    /// <returns><see langword="true"/> when the condition is satisfied; otherwise, <see langword="false"/>.</returns>
+    /// <param name="worldRect">The world-space rectangle to test.</param>
+    /// <param name="sceneLayer">The scene layer to inspect.</param>
+    /// <returns>
+    /// <see langword="true"/> when a visible sprite intersects <paramref name="worldRect"/>;
+    /// otherwise, <see langword="false"/>.
+    /// </returns>
     internal bool HasVisibleSpriteInWorldRect(
         Rectangle worldRect,
         SceneLayer sceneLayer)
@@ -338,9 +341,9 @@ public sealed class SpriteManager : IDisposable
     #region internal methods
 
     /// <summary>
-    /// Adds sprite.
+    /// Adds a sprite to the manager's tracked collection.
     /// </summary>
-    /// <param name="sprite">The sprite to process.</param>
+    /// <param name="sprite">The sprite to add.</param>
     internal void AddSprite(Sprite sprite)
     {
         lock (_spriteListLock)
@@ -371,9 +374,9 @@ public sealed class SpriteManager : IDisposable
     }
 
     /// <summary>
-    /// Moves sprites.
+    /// Advances movement for all managed sprites to the supplied simulation tick.
     /// </summary>
-    /// <param name="tick">The engine tick associated with the operation.</param>
+    /// <param name="tick">The current simulation tick.</param>
     internal void MoveSprites(long tick)
     {
         if (tick <= _lastTick)

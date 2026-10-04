@@ -27,15 +27,15 @@ public sealed class TilesheetRegion : IDisposable
     /// <summary>
     /// Initializes a new instance of <see cref="TilesheetRegion"/>.
     /// </summary>
-    /// <param name="tilesheet">The tilesheet.</param>
-    /// <param name="name">The name of the item.</param>
-    /// <param name="area">The area.</param>
-    /// <param name="tileSize">The tile size.</param>
-    /// <param name="tilePadding">The tile padding.</param>
-    /// <param name="regionMargin">The region margin.</param>
-    /// <param name="overhangPixels">The overhang pixels.</param>
-    /// <param name="collisionAdjust">The collision adjust.</param>
-    /// <param name="collisionType">The collision type.</param>
+    /// <param name="tilesheet">The tilesheet that owns the region.</param>
+    /// <param name="name">The region name.</param>
+    /// <param name="area">The source-image area occupied by the region.</param>
+    /// <param name="tileSize">The unpadded size of each frame.</param>
+    /// <param name="tilePadding">The padding around each frame.</param>
+    /// <param name="regionMargin">The margins inside the region area.</param>
+    /// <param name="overhangPixels">The visual overhang applied when frames are rendered.</param>
+    /// <param name="collisionAdjust">The default collision adjustment inherited by frames.</param>
+    /// <param name="collisionType">The default collision type inherited by frames.</param>
     internal TilesheetRegion(
         Tilesheet tilesheet,
         string name,
@@ -233,10 +233,9 @@ public sealed class TilesheetRegion : IDisposable
     }
 
     /// <summary>
-    /// Initializes a new instance of <see cref="Dictionary<"/>.
+    /// Gets all cached frame bitmaps in this region.
     /// </summary>
-    /// <param name="x">The horizontal tile coordinate.</param>
-    /// <param name="y">The vertical tile coordinate.</param>
+    /// <returns>A dictionary keyed by frame coordinates.</returns>
     public Dictionary<(int x, int y), SKBitmap> GetAllBitmaps()
     {
         ThrowIfDisposed();
@@ -261,10 +260,9 @@ public sealed class TilesheetRegion : IDisposable
     }
 
     /// <summary>
-    /// Initializes a new instance of <see cref="Dictionary<"/>.
+    /// Gets all cached frame images in this region.
     /// </summary>
-    /// <param name="x">The horizontal tile coordinate.</param>
-    /// <param name="y">The vertical tile coordinate.</param>
+    /// <returns>A dictionary keyed by frame coordinates.</returns>
     public Dictionary<(int x, int y), SKImage> GetAllImages()
     {
         ThrowIfDisposed();
@@ -573,7 +571,7 @@ public sealed class TilesheetRegion : IDisposable
     }
 
     /// <summary>
-    /// Clears tile cache.
+    /// Disposes and clears all cached frame bitmap and image slices.
     /// </summary>
     internal void ClearTileCache()
     {
@@ -594,11 +592,11 @@ public sealed class TilesheetRegion : IDisposable
     }
 
     /// <summary>
-    /// Gets frame source bounds.
+    /// Gets the source-image rectangle for a frame in this region.
     /// </summary>
-    /// <param name="xTile">The horizontal tile coordinate.</param>
-    /// <param name="yTile">The vertical tile coordinate.</param>
-    /// <returns>The resulting value.</returns>
+    /// <param name="xTile">The horizontal frame coordinate.</param>
+    /// <param name="yTile">The vertical frame coordinate.</param>
+    /// <returns>The frame source rectangle, or <see cref="Rectangle.Empty"/> when the coordinates are invalid.</returns>
     internal Rectangle GetFrameSourceBounds(int xTile, int yTile)
     {
         ThrowIfDisposed();
