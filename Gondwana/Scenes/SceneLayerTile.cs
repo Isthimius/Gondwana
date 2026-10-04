@@ -15,6 +15,9 @@ public class SceneLayerTile : Tile
 {
     #region private / internal fields
 
+    /// <summary>
+    /// Stores the parent scene layer.
+    /// </summary>
     [JsonIgnore]
     internal SceneLayer parentSceneLayer;
 
@@ -41,6 +44,10 @@ public class SceneLayerTile : Tile
         parentSceneLayer = SceneLayer.Empty;
     }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="SceneLayerTile"/>.
+    /// </summary>
+    /// <param name="sceneLayer">The scene layer.</param>
     internal SceneLayerTile(SceneLayer sceneLayer)
     {
         zOrder = 0;

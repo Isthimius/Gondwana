@@ -13,6 +13,14 @@ internal sealed class RenderFrameSnapshot : IDisposable
 {
     private readonly SKPicture _commands;
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="RenderFrameSnapshot"/>.
+    /// </summary>
+    /// <param name="commands">The commands.</param>
+    /// <param name="sequence">The sequence.</param>
+    /// <param name="producedTick">The produced tick.</param>
+    /// <param name="width">The width.</param>
+    /// <param name="height">The height.</param>
     internal RenderFrameSnapshot(SKPicture commands, long sequence, long producedTick, int width, int height)
     {
         _commands = commands;
@@ -22,13 +30,35 @@ internal sealed class RenderFrameSnapshot : IDisposable
         Height = height;
     }
 
+    /// <summary>
+    /// Gets the sequence.
+    /// </summary>
     internal long Sequence { get; }
+    /// <summary>
+    /// Gets the produced tick.
+    /// </summary>
     internal long ProducedTick { get; }
+    /// <summary>
+    /// Gets the width.
+    /// </summary>
     internal int Width { get; }
+    /// <summary>
+    /// Gets the height.
+    /// </summary>
     internal int Height { get; }
+    /// <summary>
+    /// Gets the command count.
+    /// </summary>
     internal int CommandCount => _commands.ApproximateOperationCount;
 
+    /// <summary>
+    /// Performs the replay operation.
+    /// </summary>
+    /// <param name="canvas">The canvas.</param>
     internal void Replay(SKCanvas canvas) => canvas.DrawPicture(_commands);
 
+    /// <summary>
+    /// Releases resources used by this instance.
+    /// </summary>
     public void Dispose() => _commands.Dispose();
 }

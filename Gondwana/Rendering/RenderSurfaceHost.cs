@@ -305,6 +305,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// Renders all visible scene layers for every configured view onto the backbuffer.
     /// Called as part of DoForegroundTasks().
     /// </summary>
+    /// <param name="tick">The engine tick associated with the operation.</param>
     internal override void RenderToBackbuffer(long tick)
     {
         Backbuffer.BeginFrame();
@@ -323,6 +324,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         RenderBackbufferEnd?.Invoke();
     }
 
+    /// <inheritdoc/>
     internal override void ProduceRenderFrameSnapshot(long tick)
     {
         if (!UsesRenderFrameSnapshots || _disposed) return;
@@ -1063,8 +1065,10 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         }
     }
 
+    /// <inheritdoc/>
     internal override void InvalidatePresentation() => Interlocked.Exchange(ref _presentationInvalidated, 1);
 
+    /// <inheritdoc/>
     internal override void RequestRenderScale(float scale)
     {
         if (!_resolutionEstablished || _disposed) return;

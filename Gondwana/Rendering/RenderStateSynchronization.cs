@@ -11,8 +11,14 @@ internal static class RenderStateSynchronization
     private static readonly ManualResetEventSlim NoPendingGpuRenderers = new(initialState: true);
     private static int _pendingGpuRenderers;
 
+    /// <summary>
+    /// Gets the sync root.
+    /// </summary>
     internal static object SyncRoot { get; } = new();
 
+    /// <summary>
+    /// Gets the has pending gpu renderers.
+    /// </summary>
     internal static bool HasPendingGpuRenderers =>
         Volatile.Read(ref _pendingGpuRenderers) > 0;
 

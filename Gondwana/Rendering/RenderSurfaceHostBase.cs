@@ -13,8 +13,18 @@ namespace Gondwana.Rendering;
 /// </summary>
 public abstract class RenderSurfaceHostBase : IDisposable
 {
+    /// <summary>
+    /// Gets the frame mailbox.
+    /// </summary>
     internal RenderFrameMailbox FrameMailbox { get; } = new();
+    /// <summary>
+    /// Gets the uses render frame snapshots.
+    /// </summary>
     internal bool UsesRenderFrameSnapshots => !OperatingSystem.IsBrowser() && Backbuffer is GpuBackbuffer;
+    /// <summary>
+    /// Produces render frame snapshot.
+    /// </summary>
+    /// <param name="tick">The engine tick associated with the operation.</param>
     internal virtual void ProduceRenderFrameSnapshot(long tick) { }
 
     /// <summary>
@@ -45,7 +55,14 @@ public abstract class RenderSurfaceHostBase : IDisposable
     /// <summary>Actual scale used to fit this Backbuffer into its current adapter.</summary>
     public float PresentationScale => RenderSurfaceAdapter?.PresentationScale ?? 0f;
 
+    /// <summary>
+    /// Requests render scale.
+    /// </summary>
+    /// <param name="scale">The requested render scale.</param>
     internal virtual void RequestRenderScale(float scale) { }
+    /// <summary>
+    /// Invalidates presentation.
+    /// </summary>
     internal virtual void InvalidatePresentation() { }
 
     /// <summary>
@@ -368,6 +385,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
     /// Renders all visible scene layers for every configured view onto the backbuffer.
     /// Called as part of DoForegroundTasks().
     /// </summary>
+    /// <param name="tick">The engine tick associated with the operation.</param>
     internal abstract void RenderToBackbuffer(long tick);
 
     /// <summary>

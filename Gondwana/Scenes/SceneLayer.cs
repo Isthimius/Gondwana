@@ -143,18 +143,33 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     private bool _fixedGridRenderEligible = true;
     private bool _sceneLayerTileArrayExternallyExposed;
 
+    /// <summary>
+    /// Gets or sets the effect opacity.
+    /// </summary>
     [JsonIgnore]
     internal float EffectOpacity { get; set; } = 1f;
 
+    /// <summary>
+    /// Gets or sets the effect reveal.
+    /// </summary>
     [JsonIgnore]
     internal float EffectReveal { get; set; } = 1f;
 
+    /// <summary>
+    /// Gets or sets the effect reveal direction.
+    /// </summary>
     [JsonIgnore]
     internal EffectDirection EffectRevealDirection { get; set; } = EffectDirection.FromLeftToRight;
 
+    /// <summary>
+    /// Gets or sets the effect offset factor.
+    /// </summary>
     [JsonIgnore]
     internal PointF EffectOffsetFactor { get; set; } = PointF.Empty;
 
+    /// <summary>
+    /// Gets or sets the effect offset px.
+    /// </summary>
     [JsonIgnore]
     internal PointF EffectOffsetPx { get; set; } = PointF.Empty;
 
@@ -250,6 +265,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     [JsonIgnore]
     public TypedValueBag ValueBag { get; } = new();
 
+    /// <summary>
+    /// Gets or sets the coordinate system.
+    /// </summary>
     [JsonIgnore]
     internal ISceneLayerCoordinates CoordinateSystem { get; private set; } = new OrthogonalCoordinates();
 
@@ -334,6 +352,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     [JsonIgnore]
     public Scene Scene { get; internal set; }
 
+    /// <summary>
+    /// Gets or sets the refresh queue.
+    /// </summary>
     [JsonIgnore]
     internal RefreshQueue RefreshQueue { get; set; }
 
@@ -475,6 +496,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets the transformed tiles.
+    /// </summary>
     [JsonIgnore]
     internal HashSet<SceneLayerTile> TransformedTiles { get; } = new();
 
@@ -691,6 +715,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     [JsonIgnore]
     public ColliderRegistry ColliderRegistry { get; private set; } = new();
 
+    /// <summary>
+    /// Gets or sets the collision resolver.
+    /// </summary>
     [JsonIgnore]
     internal CollisionResolver CollisionResolver { get; private set; } = null!;
 
@@ -784,6 +811,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// pixel anchor for that tile. Rectangular and oblique systems use the top-left
     /// corner of the image bounds; isometric systems use the diamond's top vertex.
     /// </summary>
+    /// <param name="grid">The grid.</param>
+    /// <returns>The resulting value.</returns>
     public PointF GridToWorldPx(PointF grid) => CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(this, grid);
 
     /// <summary>
@@ -791,6 +820,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// This uses the layer's active coordinate system (square, iso, hex, etc.)
     /// and returns fractional grid values when the point lies between tiles.
     /// </summary>
+    /// <param name="worldPx">The world px.</param>
+    /// <returns>The resulting value.</returns>
     public PointF WorldPxToGrid(PointF worldPx) => CoordinateSystem.GetSceneLayerCoordinatesAtPixel(this, worldPx);
 
     /// <summary>
@@ -798,6 +829,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// direction would move off the layer and wrapping is not enabled. The
     /// meaning of N,S,E,W depends on the active coordinate system.
     /// </summary>
+    /// <param name="tile">The tile.</param>
+    /// <param name="direction">The direction.</param>
+    /// <returns>The requested value, or <see langword="null"/> when it is unavailable.</returns>
     public SceneLayerTile? GetAdjacentTile(SceneLayerTile tile, CardinalDirections direction) => CoordinateSystem.GetAdjacentSceneLayerTile(tile, direction);
 
     /// <summary>
@@ -805,6 +839,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// Disabled axes are unchanged. Negative values use floor modulo; fractions are preserved.
     /// Invalid periodic geometry is rejected when wrapping is first used, after configuration.
     /// </summary>
+    /// <param name="grid">The grid.</param>
+    /// <returns>The resulting value.</returns>
     public PointF WrapGrid(PointF grid)
     {
         if (!WrapHorizontally && !WrapVertically)
@@ -823,6 +859,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// Resolves a virtual grid cell to its canonical tile. Only enabled axes wrap;
     /// an out-of-range disabled axis returns null. The ordinary indexer never wraps.
     /// </summary>
+    /// <param name="column">The column.</param>
+    /// <param name="row">The row.</param>
+    /// <returns>The requested value, or <see langword="null"/> when it is unavailable.</returns>
     public SceneLayerTile? ResolveWrappedTile(int column, int row)
     {
         if (WrapHorizontally || WrapVertically)
@@ -838,6 +877,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// Returns world-space translations of a canonical content rectangle that intersect
     /// a query rectangle. Disabled axes do not repeat. Useful for world-space hit testing.
     /// </summary>
+    /// <param name="contentBounds">The content bounds.</param>
+    /// <param name="queryBounds">The query bounds.</param>
+    /// <returns>The resulting value.</returns>
     /// <remarks>Invalid repeat geometry or more than one million candidate instances throws
     /// InvalidOperationException. Non-wrapped content yields only the zero translation.</remarks>
     public IEnumerable<PointF> GetWrappedOffsets(RectangleF contentBounds, RectangleF queryBounds)
@@ -848,6 +890,10 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         return contentBounds.IntersectsWith(queryBounds) ? new[] { PointF.Empty } : Array.Empty<PointF>();
     }
 
+    /// <summary>
+    /// Gets period.
+    /// </summary>
+    /// <returns>The resulting value.</returns>
     internal LayerPeriod GetPeriod() => CoordinateSystem.GetWrapPeriod(this);
 
     /// <summary>
@@ -856,6 +902,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// extreme grid tiles. Works for square, iso, hex, and any other supported
     /// projection.
     /// </summary>
+    /// <returns>The resulting value.</returns>
     public virtual RectangleF GetLayerBoundsPx()
     {
         if (GridColumnCount == 0 || GridRowCount == 0)
@@ -958,6 +1005,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets the is fixed grid snapshot fast path eligible.
+    /// </summary>
     internal bool IsFixedGridSnapshotFastPathEligible
     {
         get
@@ -972,6 +1022,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
+    /// <summary>
+    /// Invalidates fixed grid render eligibility.
+    /// </summary>
     internal void InvalidateFixedGridRenderEligibility() =>
         _fixedGridRenderEligibilityDirty = true;
 
@@ -1004,6 +1057,12 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         _fixedGridRenderEligibilityDirty = false;
     }
 
+    /// <summary>
+    /// Gets drawables in world rect.
+    /// </summary>
+    /// <param name="worldRect">The world-space rectangle.</param>
+    /// <param name="includeOverhang">The include overhang.</param>
+    /// <returns>The resulting value.</returns>
     internal virtual List<IDrawable> GetDrawablesInWorldRect(Rectangle worldRect, bool includeOverhang = true) =>
         GetDrawablesInWorldRectCore(
             worldRect,
@@ -1011,6 +1070,13 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             collectSortDiagnostics: false,
             out _);
 
+    /// <summary>
+    /// Gets drawables in world rect with diagnostics.
+    /// </summary>
+    /// <param name="worldRect">The world-space rectangle.</param>
+    /// <param name="sortTicks">The sort ticks.</param>
+    /// <param name="includeOverhang">The include overhang.</param>
+    /// <returns>The resulting value.</returns>
     internal virtual List<IDrawable> GetDrawablesInWorldRectWithDiagnostics(
         Rectangle worldRect,
         out long sortTicks,
@@ -1253,7 +1319,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// </summary>
     /// <param name="x">The zero-based column index (X coordinate).</param>
     /// <param name="y">The zero-based row index (Y coordinate).</param>
-    /// <returns>
     /// The <see cref="SceneLayerTile"/> at the specified position, or <c>null</c> if the coordinates
     /// are out of bounds.
     /// </returns>
@@ -1268,7 +1333,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// Gets the tile at the specified grid coordinates.
     /// </summary>
     /// <param name="pt">A <see cref="Point"/> specifying the grid coordinates (X = column, Y = row).</param>
-    /// <returns>
     /// The <see cref="SceneLayerTile"/> at the specified position, or <c>null</c> if the coordinates
     /// are out of bounds.
     /// </returns>
@@ -1285,7 +1349,6 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// A <see cref="PointF"/> specifying the grid coordinates (X = column, Y = row).
     /// Fractional values are truncated to integers.
     /// </param>
-    /// <returns>
     /// The <see cref="SceneLayerTile"/> at the truncated position, or <c>null</c> if the coordinates
     /// are out of bounds.
     /// </returns>
@@ -1416,6 +1479,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
     private sealed class EmptySceneLayer : SceneLayer
     {
+        /// <summary>
+        /// Initializes a new instance of <see cref="EmptySceneLayer"/>.
+        /// </summary>
         internal EmptySceneLayer()
             : base(columnCount: 0, rowCount: 0, width: 1, height: 1)
         {
