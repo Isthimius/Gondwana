@@ -79,6 +79,34 @@ public class SceneLayerTile : Tile
 
     #endregion constructors / finalizer
 
+    /// <inheritdoc/>
+    public override int ZOrder
+    {
+        get => base.ZOrder;
+        set
+        {
+            bool changed = zOrder != value;
+            base.ZOrder = value;
+
+            if (changed && !ReferenceEquals(parentSceneLayer, SceneLayer.Empty))
+                parentSceneLayer.InvalidateFixedGridRenderEligibility();
+        }
+    }
+
+    /// <inheritdoc/>
+    public override bool EnableFog
+    {
+        get => base.EnableFog;
+        set
+        {
+            bool changed = enableFog != value;
+            base.EnableFog = value;
+
+            if (changed && !ReferenceEquals(parentSceneLayer, SceneLayer.Empty))
+                parentSceneLayer.InvalidateFixedGridRenderEligibility();
+        }
+    }
+
     private TileTransform _transform;
 
     /// <summary>Gets or sets this placement's orthogonal orientation without changing its source frame.</summary>

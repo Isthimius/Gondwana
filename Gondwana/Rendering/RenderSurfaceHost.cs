@@ -505,12 +505,13 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                             queryEndTick =
                                 collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
 
-                            layerDrawableCount = fixedGridPlan.DrawableCount;
-                            layerTileCount = fixedGridPlan.TileCount;
-
                             drawStartTick =
                                 collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
-                            recording!.DrawFixedGridLayer(view, fixedGridPlan, vp);
+                            layerTileCount = recording!.DrawFixedGridLayer(
+                                view,
+                                fixedGridPlan,
+                                vp);
+                            layerDrawableCount = layerTileCount;
                             drawEndTick =
                                 collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
                         }

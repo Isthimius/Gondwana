@@ -1,8 +1,8 @@
 using Gondwana.Assets;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
-using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Animation.GANI;
+using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes;

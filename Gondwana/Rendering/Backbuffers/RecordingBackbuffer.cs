@@ -39,9 +39,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
 
     internal readonly record struct FixedGridRenderPlan(
         SceneLayer Layer,
-        Rectangle WorldRect,
-        int DrawableCount,
-        int TileCount);
+        Rectangle WorldRect);
 
     private readonly record struct LayerScreenMap(
         float OffsetX,
@@ -146,6 +144,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
             layer.TransformedTiles.Count != 0 ||
             layer.ShowGridLines ||
             layer.ShowCollisionBoxes ||
+            !layer.IsFixedGridSnapshotFastPathEligible ||
             !RenderTileQuery.IsRenderOrdered(layer))
         {
             return false;
@@ -161,52 +160,18 @@ internal sealed class RecordingBackbuffer : BackbufferBase
             return false;
         }
 
-        int? zOrder = null;
-        int tileCount = 0;
-
-        bool valid = RenderTileQuery.VisitCandidates(
-            layer.CoordinateSystem,
-            layer,
-            worldRect,
-            includeOverhang: true,
-            tile =>
-            {
-                if (!tile.Visible)
-                    return true;
-
-                if (tile.GetType() != typeof(SceneLayerTile) ||
-                    !ReferenceEquals(tile.SceneLayer, layer) ||
-                    tile.Transform != TileTransform.Identity ||
-                    tile.EnableFog)
-                {
-                    return false;
-                }
-
-                if (tile.CurrentFrame.Tilesheet is null)
-                    return true;
-
-                if (zOrder.HasValue && zOrder.Value != tile.ZOrder)
-                    return false;
-
-                zOrder ??= tile.ZOrder;
-                tileCount++;
-                return true;
-            });
-
-        if (!valid)
-            return false;
-
-        plan = new(layer, worldRect, tileCount, tileCount);
+        plan = new(layer, worldRect);
         return true;
     }
 
-    internal void DrawFixedGridLayer(
+    internal int DrawFixedGridLayer(
         View view,
         FixedGridRenderPlan plan,
         Rectangle clipRect)
     {
         var layer = plan.Layer;
         LayerScreenMap screen = LayerScreenMap.Create(view, layer);
+        int tileCount = 0;
 
         Canvas.Save();
         Canvas.ClipRect(clipRect.ToSKRect());
@@ -223,11 +188,13 @@ internal sealed class RecordingBackbuffer : BackbufferBase
                     if (!tile.Visible || tile.CurrentFrame.Tilesheet is null)
                         return true;
 
+                    tileCount++;
                     DrawFixedGridTile(view, layer, screen, tile);
                     return true;
                 });
 
             FlushTileBatch();
+            return tileCount;
         }
         finally
         {

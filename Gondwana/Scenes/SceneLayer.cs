@@ -139,6 +139,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     private int _tileHeight;    // rendered height
     private bool _visible;      // is SceneLayer to be rendered; useful with multiple layers
     private string _defaultTileCollisionProfile = CollisionProfileNames.World;
+    private bool _fixedGridRenderEligibilityDirty;
+    private bool _fixedGridRenderEligible = true;
+    private bool _sceneLayerTileArrayExternallyExposed;
 
     [JsonIgnore]
     internal float EffectOpacity { get; set; } = 1f;
@@ -189,6 +192,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     {
         // Preserve the deserialized tiles and presentation state. Re-running
         // InitValues here used to replace every loaded tile with an empty cell.
+        bool fastPathEligible = true;
+        int? fixedZOrder = null;
+
         for (int x = 0; x < GridColumnCount; x++)
             for (int y = 0; y < GridRowCount; y++)
             {
@@ -196,7 +202,19 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 tile.parentSceneLayer = this;
                 if (tile.Transform != TileTransform.Identity) TransformedTiles.Add(tile);
                 tile.sceneLayerCoordinates = new Point(x, y);
+
+                if (tile.GetType() != typeof(SceneLayerTile) || tile.EnableFog)
+                    fastPathEligible = false;
+
+                if (fixedZOrder.HasValue && fixedZOrder.Value != tile.ZOrder)
+                    fastPathEligible = false;
+                else
+                    fixedZOrder ??= tile.ZOrder;
             }
+
+        _fixedGridRenderEligible = fastPathEligible;
+        _fixedGridRenderEligibilityDirty = false;
+        _sceneLayerTileArrayExternallyExposed = false;
         BuildTileColliders();
     }
 
@@ -474,12 +492,27 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// by [x, y] or [column, row], where [0, 0] represents the top-left tile.
     /// </para>
     /// <para>
+    /// Because callers can replace array elements without notification, accessing this property
+    /// disables the persistent fixed-grid snapshot fast path for this layer. Ordinary tile
+    /// mutation through the indexers remains fast-path aware.
+    /// </para>
+    /// <para>
     /// For safer access with bounds checking and wrapping support, prefer using the layer's
     /// indexer properties (<c>layer[x, y]</c>, <c>layer[point]</c>, or <c>layer[pointf]</c>).
     /// </para>
     /// </remarks>
     [JsonIgnore]
-    public SceneLayerTile[,] SceneLayerTileArray => _sceneLayerTileArray;
+    public SceneLayerTile[,] SceneLayerTileArray
+    {
+        get
+        {
+            // Element replacement through the returned array bypasses SceneLayer mutation
+            // notifications. Disable the persistent fast path for this layer rather than risk
+            // recording custom/reparented tiles with fixed-grid assumptions.
+            _sceneLayerTileArrayExternallyExposed = true;
+            return _sceneLayerTileArray;
+        }
+    }
 
     /// <summary>
     /// Gets the number of columns (tiles wide) in this layer's grid.
@@ -892,6 +925,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
         // let each SceneLayerTile in array know its position in the array
         SaveGridCoordinatesToSceneLayerTiles();
+        _fixedGridRenderEligible = true;
+        _fixedGridRenderEligibilityDirty = false;
+        _sceneLayerTileArrayExternallyExposed = false;
         BuildTileColliders();
         // Unbound scenes retain dirty regions for a future bitmap host. Once bound,
         // the scene policy disables queue writes for full-frame GL rendering.
@@ -920,6 +956,52 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
             tile.EnsureCollider();
         }
+    }
+
+    internal bool IsFixedGridSnapshotFastPathEligible
+    {
+        get
+        {
+            if (_sceneLayerTileArrayExternallyExposed)
+                return false;
+
+            if (_fixedGridRenderEligibilityDirty)
+                RecalculateFixedGridRenderEligibility();
+
+            return _fixedGridRenderEligible;
+        }
+    }
+
+    internal void InvalidateFixedGridRenderEligibility() =>
+        _fixedGridRenderEligibilityDirty = true;
+
+    private void RecalculateFixedGridRenderEligibility()
+    {
+        bool eligible = true;
+        int? fixedZOrder = null;
+
+        foreach (var tile in _sceneLayerTileArray)
+        {
+            if (tile is null ||
+                tile.GetType() != typeof(SceneLayerTile) ||
+                !ReferenceEquals(tile.SceneLayer, this) ||
+                tile.EnableFog)
+            {
+                eligible = false;
+                break;
+            }
+
+            if (fixedZOrder.HasValue && fixedZOrder.Value != tile.ZOrder)
+            {
+                eligible = false;
+                break;
+            }
+
+            fixedZOrder ??= tile.ZOrder;
+        }
+
+        _fixedGridRenderEligible = eligible;
+        _fixedGridRenderEligibilityDirty = false;
     }
 
     internal virtual List<IDrawable> GetDrawablesInWorldRect(Rectangle worldRect, bool includeOverhang = true) =>
