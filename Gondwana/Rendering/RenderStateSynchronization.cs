@@ -1,18 +1,11 @@
 namespace Gondwana.Rendering;
 
 /// <summary>
-/// Serializes live render-state mutation on the engine thread with GPU scene traversal
-/// on platform GL threads.
+/// Serializes Engine state and resource disposal with recording and legacy live rendering.
+/// Desktop snapshot replay never enters this gate. The GPU admission helpers remain
+/// for the synchronous live WebGL/custom-backbuffer path; resize notifications also
+/// use SyncRoot briefly to update viewports. Do not use this gate around picture replay.
 /// </summary>
-/// <remarks>
-/// Holding the shared gate across an engine cycle and each live GPU render prevents native
-/// Skia resources from being configured or disposed while the GL thread is using them.
-///
-/// GPU paint callbacks receive admission priority once they are waiting for the gate. Without
-/// that handoff, the unconstrained engine loop can repeatedly release and immediately reacquire
-/// the monitor thousands of times per second, starving a waiting GL thread even when each engine
-/// cycle is individually short.
-/// </remarks>
 internal static class RenderStateSynchronization
 {
     private static readonly ManualResetEventSlim NoPendingGpuRenderers = new(initialState: true);

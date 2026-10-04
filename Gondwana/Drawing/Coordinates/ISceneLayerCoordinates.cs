@@ -40,6 +40,17 @@ internal interface ISceneLayerCoordinates
     List<SceneLayerTile> GetSceneLayerTilesInPixelRange(SceneLayer sceneLayer, Rectangle worldPixelRange, bool includeOverhang);
 
     /// <summary>
+    /// Returns a conservative tile candidate stream for full-frame rendering.
+    /// The stream may include a small clipped fringe, but must include every tile
+    /// that the exact intersection query would return.
+    /// </summary>
+    RenderTileCandidates GetSceneLayerTilesForRendering(
+        SceneLayer sceneLayer,
+        Rectangle worldPixelRange,
+        bool includeOverhang) =>
+        RenderTileQuery.GetCandidates(this, sceneLayer, worldPixelRange, includeOverhang);
+
+    /// <summary>
     /// Gets the pixel-space rectangle occupied by a given tile, optionally
     /// expanding to include any overhang region defined by the tile’s geometry.
     /// </summary>

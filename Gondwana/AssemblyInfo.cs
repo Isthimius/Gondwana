@@ -19,3 +19,4 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("Gondwana.Tests")]
 [assembly: InternalsVisibleTo("Gondwana.Blazor")]
+[assembly: InternalsVisibleTo("Gondwana.Avalonia")]

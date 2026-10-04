@@ -154,6 +154,79 @@ public sealed class SceneTileTransformTests
             draw => ReferenceEquals(draw.Owner, tile) && draw.Offset == offset);
     }
 
+    [Theory]
+    [MemberData(nameof(SceneLayerWrappingTests.Projections), MemberType = typeof(SceneLayerWrappingTests))]
+    public void RenderQueryContainsExactResultsAndMatchesFixedTileDepthOrder(
+        CoordinateSystemTypes projection)
+    {
+        using var scene = new Scene();
+        var layer = scene.AddLayer(12, 10, 40, 40, coordinateSystem: projection);
+        var query = new Rectangle(-80, -40, 320, 240);
+
+        var exact = layer.CoordinateSystem.GetSceneLayerTilesInPixelRange(
+            layer,
+            query,
+            includeOverhang: true);
+        var render = layer.CoordinateSystem.GetSceneLayerTilesForRendering(
+            layer,
+            query,
+            includeOverhang: true);
+
+        Assert.All(exact, tile => Assert.Contains(tile, render.Tiles));
+        Assert.True(render.IsRenderOrdered);
+
+        var expectedOrder = render.Tiles.ToList();
+        expectedOrder.Sort((left, right) => left.CompareTo(right));
+        Assert.Equal(expectedOrder, render.Tiles);
+    }
+
+    [Theory]
+    [MemberData(nameof(SceneLayerWrappingTests.Projections), MemberType = typeof(SceneLayerWrappingTests))]
+    public void StreamingRenderQueryMatchesMaterializedCandidateOrder(
+        CoordinateSystemTypes projection)
+    {
+        using var scene = new Scene();
+        var layer = scene.AddLayer(12, 10, 40, 40, coordinateSystem: projection);
+        var query = new Rectangle(-80, -40, 320, 240);
+
+        var materialized = layer.CoordinateSystem.GetSceneLayerTilesForRendering(
+            layer,
+            query,
+            includeOverhang: true);
+
+        var streamed = new List<SceneLayerTile>();
+        bool completed = RenderTileQuery.VisitCandidates(
+            layer.CoordinateSystem,
+            layer,
+            query,
+            includeOverhang: true,
+            tile =>
+            {
+                streamed.Add(tile);
+                return true;
+            });
+
+        Assert.True(completed);
+        Assert.Equal(materialized.Tiles, streamed);
+    }
+
+    [Theory]
+    [MemberData(nameof(SceneLayerWrappingTests.Projections), MemberType = typeof(SceneLayerWrappingTests))]
+    public void NonSquareTransformedTilesDisableRenderOrderGuarantee(
+        CoordinateSystemTypes projection)
+    {
+        using var scene = new Scene();
+        var layer = scene.AddLayer(4, 4, 40, 20, coordinateSystem: projection);
+        layer[1, 1]!.Transform = TileTransform.Rotate90;
+
+        var render = layer.CoordinateSystem.GetSceneLayerTilesForRendering(
+            layer,
+            new Rectangle(-100, -100, 400, 400),
+            includeOverhang: true);
+
+        Assert.False(render.IsRenderOrdered);
+    }
+
     [Fact]
     public void AnimatorRetainsOrientationWhileFollowingFrameCollisionMetadata()
     {

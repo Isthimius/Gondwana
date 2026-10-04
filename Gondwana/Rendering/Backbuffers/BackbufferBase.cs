@@ -2,6 +2,7 @@ using System.Drawing;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Rendering.Views;
+using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using SkiaSharp;
 
@@ -311,6 +312,13 @@ public abstract class BackbufferBase : IDisposable
 
     internal void DrawDrawables(View view, IEnumerable<IDrawable> drawables, Rectangle clipRect)
     {
+        if (this is RecordingBackbuffer recording &&
+            drawables is IReadOnlyList<IDrawable> ordered &&
+            recording.TryDrawFixedGridDrawables(view, ordered, clipRect))
+        {
+            return;
+        }
+
         Canvas.Save();
         Canvas.ClipRect(clipRect.ToSKRect());
 
@@ -330,7 +338,17 @@ public abstract class BackbufferBase : IDisposable
                 destRectScreen = sprite.ApplyJiggleToDestRect(destRectScreen);
             }
 
-            drawable.Draw(this, destRectScreen);
+            bool batched = this is RecordingBackbuffer recorder &&
+                instance is null &&
+                drawable.GetType() == typeof(SceneLayerTile) &&
+                drawable is SceneLayerTile layerTile &&
+                recorder.TryQueueTile(layerTile, destRectScreen);
+
+            if (!batched)
+            {
+                (this as RecordingBackbuffer)?.FlushTileBatch();
+                drawable.Draw(this, destRectScreen);
+            }
 
             // GPU/GL surfaces always present the complete backbuffer. Avoid calculating visual
             // bounds just to pass them to dirty-region tracking that the GPU path never consumes.
@@ -346,6 +364,8 @@ public abstract class BackbufferBase : IDisposable
             if (drawable is Tile tile)
                 tiles.Add((tile, instance));
         }
+
+        (this as RecordingBackbuffer)?.FlushTileBatch();
 
         PostDrawTiles(view, tiles);
 
@@ -484,9 +504,10 @@ public abstract class BackbufferBase : IDisposable
     /// the engine's background render thread.
     /// </summary>
     /// <remarks>
-    /// When <see langword="true"/>, the engine's <c>DoForegroundTasks</c> loop skips this surface.
-    /// Rendering and presentation are instead driven by the platform adapter from within
-    /// <c>SKGLControl.PaintSurface</c> via <see cref="RenderSurfaceHostBase.GlRenderAndSnapshot"/>.
+    /// When <see langword="true"/>, bitmap dirty-region rendering is skipped. Desktop GPU
+    /// hosts record immutable snapshots during foreground work; the platform GL callback
+    /// replays and presents them via <see cref="RenderSurfaceHostBase.GlRenderAndSnapshot"/>.
+    /// Browser GPU hosts retain synchronous full-viewport rendering.
     /// </remarks>
     public virtual bool IsGlThreadRendered => false;
 

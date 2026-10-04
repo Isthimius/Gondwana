@@ -2,6 +2,7 @@ using Gondwana.Assets;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Animation.GANI;
+using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes;
@@ -27,6 +28,37 @@ public sealed class ViewerTests : IDisposable
         Assert.Equal(ScenePath, SceneViewerArguments.Parse(["--scene", ScenePath], _directory));
         Assert.Null(SceneViewerArguments.Parse([], _directory));
     }
+
+    [Fact]
+    public void StressArgumentsParseTileCountAndProjection()
+    {
+        var defaultProjection = SceneViewerArguments.ParseStress(["--stress", "50000"]);
+        Assert.NotNull(defaultProjection);
+        Assert.Equal(50_000, defaultProjection.TileCount);
+        Assert.Equal(CoordinateSystemTypes.Orthogonal, defaultProjection.Projection);
+
+        var iso = SceneViewerArguments.ParseStress(
+            ["--stress", "20000", "--projection", "IsometricRhombic"]);
+        Assert.NotNull(iso);
+        Assert.Equal(20_000, iso.TileCount);
+        Assert.Equal(CoordinateSystemTypes.IsometricRhombic, iso.Projection);
+
+        Assert.Null(SceneViewerArguments.ParseStress(["--scene", "anything.gscn"]));
+    }
+
+    [Theory]
+    [InlineData("0")]
+    [InlineData("100001")]
+    [InlineData("not-a-number")]
+    public void InvalidStressTileCountsAreRejected(string value) =>
+        Assert.Throws<ArgumentException>(() =>
+            SceneViewerArguments.ParseStress(["--stress", value]));
+
+    [Fact]
+    public void InvalidStressProjectionIsRejected() =>
+        Assert.Throws<ArgumentException>(() =>
+            SceneViewerArguments.ParseStress(
+                ["--stress", "50000", "--projection", "NotAProjection"]));
 
     [Theory]
     [InlineData("--scene")]

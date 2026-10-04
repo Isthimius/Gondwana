@@ -8,6 +8,7 @@ using Gondwana.Drawing.Sprites;
 using Gondwana.Effects;
 using Gondwana.Physics.Collisions;
 using Gondwana.Rendering;
+using Gondwana.Timers;
 using Newtonsoft.Json;
 
 namespace Gondwana.Scenes;
@@ -138,6 +139,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     private int _tileHeight;    // rendered height
     private bool _visible;      // is SceneLayer to be rendered; useful with multiple layers
     private string _defaultTileCollisionProfile = CollisionProfileNames.World;
+    private bool _fixedGridRenderEligibilityDirty;
+    private bool _fixedGridRenderEligible = true;
+    private bool _sceneLayerTileArrayExternallyExposed;
 
     [JsonIgnore]
     internal float EffectOpacity { get; set; } = 1f;
@@ -188,6 +192,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     {
         // Preserve the deserialized tiles and presentation state. Re-running
         // InitValues here used to replace every loaded tile with an empty cell.
+        bool fastPathEligible = true;
+        int? fixedZOrder = null;
+
         for (int x = 0; x < GridColumnCount; x++)
             for (int y = 0; y < GridRowCount; y++)
             {
@@ -195,7 +202,19 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 tile.parentSceneLayer = this;
                 if (tile.Transform != TileTransform.Identity) TransformedTiles.Add(tile);
                 tile.sceneLayerCoordinates = new Point(x, y);
+
+                if (tile.GetType() != typeof(SceneLayerTile) || tile.EnableFog)
+                    fastPathEligible = false;
+
+                if (fixedZOrder.HasValue && fixedZOrder.Value != tile.ZOrder)
+                    fastPathEligible = false;
+                else
+                    fixedZOrder ??= tile.ZOrder;
             }
+
+        _fixedGridRenderEligible = fastPathEligible;
+        _fixedGridRenderEligibilityDirty = false;
+        _sceneLayerTileArrayExternallyExposed = false;
         BuildTileColliders();
     }
 
@@ -473,12 +492,27 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// by [x, y] or [column, row], where [0, 0] represents the top-left tile.
     /// </para>
     /// <para>
+    /// Because callers can replace array elements without notification, accessing this property
+    /// disables the persistent fixed-grid snapshot fast path for this layer. Ordinary tile
+    /// mutation through the indexers remains fast-path aware.
+    /// </para>
+    /// <para>
     /// For safer access with bounds checking and wrapping support, prefer using the layer's
     /// indexer properties (<c>layer[x, y]</c>, <c>layer[point]</c>, or <c>layer[pointf]</c>).
     /// </para>
     /// </remarks>
     [JsonIgnore]
-    public SceneLayerTile[,] SceneLayerTileArray => _sceneLayerTileArray;
+    public SceneLayerTile[,] SceneLayerTileArray
+    {
+        get
+        {
+            // Element replacement through the returned array bypasses SceneLayer mutation
+            // notifications. Disable the persistent fast path for this layer rather than risk
+            // recording custom/reparented tiles with fixed-grid assumptions.
+            _sceneLayerTileArrayExternallyExposed = true;
+            return _sceneLayerTileArray;
+        }
+    }
 
     /// <summary>
     /// Gets the number of columns (tiles wide) in this layer's grid.
@@ -891,6 +925,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
 
         // let each SceneLayerTile in array know its position in the array
         SaveGridCoordinatesToSceneLayerTiles();
+        _fixedGridRenderEligible = true;
+        _fixedGridRenderEligibilityDirty = false;
+        _sceneLayerTileArrayExternallyExposed = false;
         BuildTileColliders();
         // Unbound scenes retain dirty regions for a future bitmap host. Once bound,
         // the scene policy disables queue writes for full-frame GL rendering.
@@ -921,48 +958,119 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         }
     }
 
-    internal virtual List<IDrawable> GetDrawablesInWorldRect(Rectangle worldRect, bool includeOverhang = true)
+    internal bool IsFixedGridSnapshotFastPathEligible
+    {
+        get
+        {
+            if (_sceneLayerTileArrayExternallyExposed)
+                return false;
+
+            if (_fixedGridRenderEligibilityDirty)
+                RecalculateFixedGridRenderEligibility();
+
+            return _fixedGridRenderEligible;
+        }
+    }
+
+    internal void InvalidateFixedGridRenderEligibility() =>
+        _fixedGridRenderEligibilityDirty = true;
+
+    private void RecalculateFixedGridRenderEligibility()
+    {
+        bool eligible = true;
+        int? fixedZOrder = null;
+
+        foreach (var tile in _sceneLayerTileArray)
+        {
+            if (tile is null ||
+                tile.GetType() != typeof(SceneLayerTile) ||
+                !ReferenceEquals(tile.SceneLayer, this) ||
+                tile.EnableFog)
+            {
+                eligible = false;
+                break;
+            }
+
+            if (fixedZOrder.HasValue && fixedZOrder.Value != tile.ZOrder)
+            {
+                eligible = false;
+                break;
+            }
+
+            fixedZOrder ??= tile.ZOrder;
+        }
+
+        _fixedGridRenderEligible = eligible;
+        _fixedGridRenderEligibilityDirty = false;
+    }
+
+    internal virtual List<IDrawable> GetDrawablesInWorldRect(Rectangle worldRect, bool includeOverhang = true) =>
+        GetDrawablesInWorldRectCore(
+            worldRect,
+            includeOverhang,
+            collectSortDiagnostics: false,
+            out _);
+
+    internal virtual List<IDrawable> GetDrawablesInWorldRectWithDiagnostics(
+        Rectangle worldRect,
+        out long sortTicks,
+        bool includeOverhang = true) =>
+        GetDrawablesInWorldRectCore(
+            worldRect,
+            includeOverhang,
+            collectSortDiagnostics: true,
+            out sortTicks);
+
+    private List<IDrawable> GetDrawablesInWorldRectCore(
+        Rectangle worldRect,
+        bool includeOverhang,
+        bool collectSortDiagnostics,
+        out long sortTicks)
     {
         if (WrapHorizontally || WrapVertically)
-            return GetWrappedDrawables(worldRect);
+            return GetWrappedDrawables(worldRect, collectSortDiagnostics, out sortTicks);
 
         // Make selection rect covering so we never miss the edge tile.
         // Drawing is still clipped later, so over-selecting is safe.
         var queryRect = worldRect;
-        queryRect.Inflate(TileWidth, TileHeight); // <- KEY (tile-sized)
-        queryRect.Inflate(1, 1); // optional boundary insurance
+        queryRect.Inflate(TileWidth, TileHeight);
+        queryRect.Inflate(1, 1);
 
-        // Gather into a list so we can sort it.
-        var list = new List<IDrawable>(64);
-
-        // 1) Grid tiles
-        var sceneLayerTiles = CoordinateSystem.GetSceneLayerTilesInPixelRange(
+        // 1) Grid tiles. Every projection supplies a conservative render query whose
+        // traversal follows fixed-tile depth order for that coordinate system.
+        var renderTiles = CoordinateSystem.GetSceneLayerTilesForRendering(
             this,
             worldRect,
-            includeOverhang: includeOverhang);
+            includeOverhang);
+        var sceneLayerTiles = renderTiles.Tiles;
 
-        if (sceneLayerTiles != null)
+        var list = new List<IDrawable>(sceneLayerTiles.Count);
+        bool uniformGridZOrder = true;
+        int? gridZOrder = null;
+
+        for (int i = 0; i < sceneLayerTiles.Count; i++)
         {
-            for (int i = 0; i < sceneLayerTiles.Count; i++)
-            {
-                var tile = sceneLayerTiles[i];
+            var tile = sceneLayerTiles[i];
 
-                if (tile is null)
-                    continue;
+            if (!tile.Visible || !HasRenderableTileContent(tile))
+                continue;
 
-                if (!tile.Visible)
-                    continue;
+            int tileZ = tile.ZOrder;
+            if (gridZOrder.HasValue && gridZOrder.Value != tileZ)
+                uniformGridZOrder = false;
+            else
+                gridZOrder ??= tileZ;
 
-                // Defensive overlap check (same idea as sprites)
-                if (!tile.DrawLocationWorld.IntersectsWith(queryRect))
-                    continue;
-
-                list.Add(tile);
-            }
+            list.Add(tile);
         }
 
+        bool hasNonGridDrawables = false;
+
         // 2) Sprites
-        var sprites = SpriteManager.Instance.GetSpritesInWorldRectRange(queryRect, this, fullEnclosures: false);
+        var sprites = SpriteManager.Instance.GetSpritesInWorldRectRange(
+            queryRect,
+            this,
+            fullEnclosures: false);
 
         for (int i = 0; i < sprites.Count; i++)
         {
@@ -971,11 +1079,11 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             if (sprite is null)
                 continue;
 
-            // Defensive overlap check (cheap)
             if (!sprite.VisualBoundsWorld.IntersectsWith(queryRect))
                 continue;
 
             list.Add(sprite);
+            hasNonGridDrawables = true;
         }
 
         // 3) DirectDrawing instances
@@ -988,23 +1096,44 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             if (!drawing.Visible)
                 continue;
 
-            // Must be SceneLayer-mode by definition if it's "for layer", but be defensive:
             if (drawing.Mode != DirectDrawingMode.SceneLayer)
                 continue;
 
-            // Only include if it intersects this dirty rect
             if (!drawing.WorldBounds.IntersectsWith(worldRect))
                 continue;
 
             list.Add(drawing);
+            hasNonGridDrawables = true;
         }
 
-        // 4) Sort using Tile.CompareTo
-        list.Sort(CompareDrawables); // ← this calls Tile.CompareTo internally
+        // Projection-specific render queries are emitted in fixed-tile depth order.
+        // Per-tile Z differences or geometry-changing transforms still fall back to
+        // verification/sort so the optimization cannot change rendering semantics.
+        bool gridOrderGuaranteed =
+            renderTiles.IsRenderOrdered &&
+            uniformGridZOrder;
+
+        long sortStartTick = collectSortDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+        if (hasNonGridDrawables)
+        {
+            list.Sort(CompareDrawables);
+        }
+        else if (!gridOrderGuaranteed && !IsSorted(list, CompareDrawables))
+        {
+            list.Sort(CompareDrawables);
+        }
+
+        sortTicks = collectSortDiagnostics
+            ? Math.Max(0, HighResTimer.GetCurrentTick() - sortStartTick)
+            : 0;
+
         return list;
     }
 
-    private List<IDrawable> GetWrappedDrawables(Rectangle worldRect)
+    private List<IDrawable> GetWrappedDrawables(
+        Rectangle worldRect,
+        bool collectSortDiagnostics,
+        out long sortTicks)
     {
         var period = GetPeriod();
         var instances = new List<IDrawable>();
@@ -1018,6 +1147,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
                 instances.Add(new WrappedDrawable(drawable, this, offset));
             }
         }
+
         // Inspect actual artwork bounds, including overhang, rather than assuming
         // a tile-sized margin can enclose all content.
         foreach (var tile in _sceneLayerTileArray)
@@ -1026,26 +1156,80 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
             if (ReferenceEquals(sprite.SceneLayer, this)) Add(sprite, sprite.VisualBoundsWorld);
         foreach (var drawing in DirectDrawingManager.Instance.GetDrawingsForLayer(this))
             if (drawing.Mode == DirectDrawingMode.SceneLayer) Add(drawing, drawing.WorldBounds);
-        instances.Sort((a, b) =>
-        {
-            var x = (WrappedDrawable)a;
-            var y = (WrappedDrawable)b;
-            int z = a.ZOrder.CompareTo(b.ZOrder);
-            if (z != 0) return z;
-            if (x.Owner is Tile ta && y.Owner is Tile tb)
-            {
-                if (ta.IsPositionFixed != tb.IsPositionFixed) return ta.IsPositionFixed ? -1 : 1;
-                float ay = (ta.IsPositionFixed ? ta.DrawLocationWorld.Top + ta.Overhang.Top : ta.DrawLocationWorld.Bottom - ta.Overhang.Bottom - 1) + x.Offset.Y;
-                float by = (tb.IsPositionFixed ? tb.DrawLocationWorld.Top + tb.Overhang.Top : tb.DrawLocationWorld.Bottom - tb.Overhang.Bottom - 1) + y.Offset.Y;
-                int depth = ay.CompareTo(by);
-                if (depth != 0) return depth;
-                int horizontal = (ta.DrawLocationWorld.Left + x.Offset.X).CompareTo(tb.DrawLocationWorld.Left + y.Offset.X);
-                if (horizontal != 0) return horizontal;
-            }
-            int identity = a.Id.CompareTo(b.Id);
-            return identity != 0 ? identity : (x.Offset.Y, x.Offset.X).CompareTo((y.Offset.Y, y.Offset.X));
-        });
+
+        long sortStartTick = collectSortDiagnostics ? HighResTimer.GetCurrentTick() : 0;
+        instances.Sort(CompareWrappedDrawables);
+        sortTicks = collectSortDiagnostics
+            ? Math.Max(0, HighResTimer.GetCurrentTick() - sortStartTick)
+            : 0;
+
         return instances;
+    }
+
+    private bool HasRenderableTileContent(SceneLayerTile tile)
+    {
+        // Derived tiles may provide custom Draw behavior even without a frame.
+        if (tile.GetType() != typeof(SceneLayerTile))
+            return true;
+
+        if (tile.CurrentFrame.Tilesheet is not null)
+            return true;
+
+        // Empty cells still participate when a diagnostic/post-draw overlay needs
+        // their geometry.
+        return tile.EnableFog ||
+            ShowGridLines ||
+            (ShowCollisionBoxes && tile.CollisionsEnabled);
+    }
+
+    private static bool IsSorted(
+        List<IDrawable> drawables,
+        Comparison<IDrawable> comparison)
+    {
+        for (int i = 1; i < drawables.Count; i++)
+        {
+            if (comparison(drawables[i - 1], drawables[i]) > 0)
+                return false;
+        }
+
+        return true;
+    }
+
+    private static int CompareWrappedDrawables(IDrawable a, IDrawable b)
+    {
+        var x = (WrappedDrawable)a;
+        var y = (WrappedDrawable)b;
+        int z = a.ZOrder.CompareTo(b.ZOrder);
+        if (z != 0) return z;
+
+        if (x.Owner is Tile ta && y.Owner is Tile tb)
+        {
+            if (ta.IsPositionFixed != tb.IsPositionFixed)
+                return ta.IsPositionFixed ? -1 : 1;
+
+            float ay =
+                (ta.IsPositionFixed
+                    ? ta.DrawLocationWorld.Top + ta.Overhang.Top
+                    : ta.DrawLocationWorld.Bottom - ta.Overhang.Bottom - 1) +
+                x.Offset.Y;
+            float by =
+                (tb.IsPositionFixed
+                    ? tb.DrawLocationWorld.Top + tb.Overhang.Top
+                    : tb.DrawLocationWorld.Bottom - tb.Overhang.Bottom - 1) +
+                y.Offset.Y;
+            int depth = ay.CompareTo(by);
+            if (depth != 0) return depth;
+
+            int horizontal =
+                (ta.DrawLocationWorld.Left + x.Offset.X)
+                .CompareTo(tb.DrawLocationWorld.Left + y.Offset.X);
+            if (horizontal != 0) return horizontal;
+        }
+
+        int identity = a.Id.CompareTo(b.Id);
+        return identity != 0
+            ? identity
+            : (x.Offset.Y, x.Offset.X).CompareTo((y.Offset.Y, y.Offset.X));
     }
 
     private static int CompareDrawables(IDrawable a, IDrawable b)
@@ -1054,11 +1238,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
         if (z != 0)
             return z;
 
-        // Preserve legacy ordering for tiles/sprites when Z ties
         if (a is Tile ta && b is Tile tb)
             return ta.CompareTo(tb);
 
-        // Stable tie-breaker (avoid flicker)
         return a.Id.CompareTo(b.Id);
     }
 
