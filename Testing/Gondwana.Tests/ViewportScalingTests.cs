@@ -661,8 +661,13 @@ public sealed class ViewportScalingTests : IDisposable
     }
 
     /// <summary>
-    /// Represents adapter.
+    /// Provides a controllable render-surface adapter for viewport-scaling tests.
     /// </summary>
+    /// <param name="width">The initial adapter width in presentation pixels.</param>
+    /// <param name="height">The initial adapter height in presentation pixels.</param>
+    /// <param name="initial">
+    /// Whether the initial dimensions should be treated as immediately available for logical-resolution establishment.
+    /// </param>
     internal sealed class Adapter(int width, int height, bool initial = true) : RenderSurfaceAdapterBase(width, height, initial)
     {
         /// <summary>

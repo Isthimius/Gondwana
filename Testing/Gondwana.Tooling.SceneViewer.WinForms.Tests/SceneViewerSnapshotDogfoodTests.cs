@@ -6,6 +6,7 @@ using Xunit.Abstractions;
 namespace Gondwana.Tooling.SceneViewer.WinForms.Tests;
 
 /// <summary>Opt-in, process-isolated Scene Viewer run using the actual Engine and platform paint loop.</summary>
+/// <param name="output">The xUnit output sink used to report Scene Viewer dogfood diagnostics.</param>
 public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
 {
     private sealed class DogfoodFactAttribute : FactAttribute

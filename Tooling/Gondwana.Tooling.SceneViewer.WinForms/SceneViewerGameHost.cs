@@ -18,8 +18,11 @@ using GondwanaView = Gondwana.Rendering.Views.View;
 namespace Gondwana.Tooling.SceneViewer.WinForms;
 
 /// <summary>
-/// Represents scene viewer game host.
+/// Hosts Scene Viewer rendering, camera control, stress-mode content, and runtime diagnostics.
 /// </summary>
+/// <param name="surface">The GPU render-surface control used to present the viewer.</param>
+/// <param name="scenePath">The scene file to load, or <see langword="null"/> when stress mode is active.</param>
+/// <param name="stress">Optional synthetic stress-test configuration.</param>
 internal sealed class SceneViewerGameHost(
     WinFormGpuRenderSurfaceControl surface,
     string? scenePath,

@@ -9,6 +9,7 @@ using Xunit.Abstractions;
 namespace Gondwana.Tooling.SceneViewer.WinForms.Tests;
 
 /// <summary>Opt-in hardware check: GONDWANA_GPU_TESTS=1 dotnet test --filter DesktopGpuSnapshotTests.</summary>
+/// <param name="output">The xUnit output sink used to report hardware-test diagnostics.</param>
 public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
 {
     private sealed class HardwareFactAttribute : FactAttribute

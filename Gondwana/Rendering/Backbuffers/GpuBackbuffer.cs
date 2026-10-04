@@ -350,8 +350,11 @@ public class GpuBackbuffer : BackbufferBase
     // ── Surface creation helpers ─────────────────────────────────────────────
 
     /// <summary>
-    /// Stores the member.
+    /// Captures the requested MSAA sample count and its configuration revision under the MSAA state lock.
     /// </summary>
+    /// <returns>
+    /// A tuple containing the requested sample count and the associated configuration revision.
+    /// </returns>
     internal (int SampleCount, long Revision) GetMsaaConfigurationSnapshot()
     {
         lock (_msaaSyncRoot)
