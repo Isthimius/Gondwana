@@ -24,6 +24,18 @@ public sealed class TilesheetRegion : IDisposable
 
     private TilesheetRegion() { }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="TilesheetRegion"/>.
+    /// </summary>
+    /// <param name="tilesheet">The tilesheet.</param>
+    /// <param name="name">The name of the item.</param>
+    /// <param name="area">The area.</param>
+    /// <param name="tileSize">The tile size.</param>
+    /// <param name="tilePadding">The tile padding.</param>
+    /// <param name="regionMargin">The region margin.</param>
+    /// <param name="overhangPixels">The overhang pixels.</param>
+    /// <param name="collisionAdjust">The collision adjust.</param>
+    /// <param name="collisionType">The collision type.</param>
     internal TilesheetRegion(
         Tilesheet tilesheet,
         string name,
@@ -65,6 +77,9 @@ public sealed class TilesheetRegion : IDisposable
     /// </summary>
     public string Name { get; private set; } = DefaultRegionName;
 
+    /// <summary>
+    /// Gets or sets the area.
+    /// </summary>
     public Rectangle Area
     {
         get => _area;
@@ -75,6 +90,9 @@ public sealed class TilesheetRegion : IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets or sets the tile size.
+    /// </summary>
     public Size TileSize
     {
         get => _tileSize;
@@ -85,6 +103,9 @@ public sealed class TilesheetRegion : IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets or sets the tile padding.
+    /// </summary>
     public Spacing TilePadding
     {
         get => _tilePadding;
@@ -95,6 +116,9 @@ public sealed class TilesheetRegion : IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets or sets the region margin.
+    /// </summary>
     public Spacing RegionMargin
     {
         get => _regionMargin;
@@ -145,11 +169,29 @@ public sealed class TilesheetRegion : IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets the columns.
+    /// </summary>
     public int Columns => _tileCache?.GetLength(0) ?? 0;
+    /// <summary>
+    /// Gets the rows.
+    /// </summary>
     public int Rows => _tileCache?.GetLength(1) ?? 0;
+    /// <summary>
+    /// Gets the tile width including padding.
+    /// </summary>
     public int TileWidthIncludingPadding => _tilePadding.Left + _tileSize.Width + _tilePadding.Right;
+    /// <summary>
+    /// Gets the tile height including padding.
+    /// </summary>
     public int TileHeightIncludingPadding => _tilePadding.Top + _tileSize.Height + _tilePadding.Bottom;
 
+    /// <summary>
+    /// Gets image.
+    /// </summary>
+    /// <param name="x">The horizontal tile coordinate.</param>
+    /// <param name="y">The vertical tile coordinate.</param>
+    /// <returns>The requested value, or <see langword="null"/> when it is unavailable.</returns>
     public SKImage? GetImage(int x, int y)
     {
         ThrowIfDisposed();
@@ -167,6 +209,12 @@ public sealed class TilesheetRegion : IDisposable
         return _tileCache[x, y]?.Image;
     }
 
+    /// <summary>
+    /// Gets bitmap.
+    /// </summary>
+    /// <param name="x">The horizontal tile coordinate.</param>
+    /// <param name="y">The vertical tile coordinate.</param>
+    /// <returns>The requested value, or <see langword="null"/> when it is unavailable.</returns>
     public SKBitmap? GetBitmap(int x, int y)
     {
         ThrowIfDisposed();
@@ -184,6 +232,11 @@ public sealed class TilesheetRegion : IDisposable
         return _tileCache[x, y]?.Bitmap;
     }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="Dictionary<"/>.
+    /// </summary>
+    /// <param name="x">The horizontal tile coordinate.</param>
+    /// <param name="y">The vertical tile coordinate.</param>
     public Dictionary<(int x, int y), SKBitmap> GetAllBitmaps()
     {
         ThrowIfDisposed();
@@ -207,6 +260,11 @@ public sealed class TilesheetRegion : IDisposable
         return bitmaps;
     }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="Dictionary<"/>.
+    /// </summary>
+    /// <param name="x">The horizontal tile coordinate.</param>
+    /// <param name="y">The vertical tile coordinate.</param>
     public Dictionary<(int x, int y), SKImage> GetAllImages()
     {
         ThrowIfDisposed();
@@ -233,6 +291,9 @@ public sealed class TilesheetRegion : IDisposable
     /// <summary>
     /// Gets the effective collision adjustment for one frame.
     /// </summary>
+    /// <param name="x">The horizontal tile coordinate.</param>
+    /// <param name="y">The vertical tile coordinate.</param>
+    /// <returns>The resulting value.</returns>
     public CollisionAdjust GetFrameCollisionAdjust(int x, int y)
     {
         ThrowIfDisposed();
@@ -249,6 +310,10 @@ public sealed class TilesheetRegion : IDisposable
     /// <summary>
     /// Attempts to get the explicit collision adjustment assigned to one frame.
     /// </summary>
+    /// <param name="x">The horizontal tile coordinate.</param>
+    /// <param name="y">The vertical tile coordinate.</param>
+    /// <param name="collisionAdjust">The collision adjust.</param>
+    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     /// <remarks>
     /// Returns <see langword="true"/> when an explicit frame-level override exists.
     /// When <see langword="false"/>, no override exists (the frame inherits <see cref="CollisionAdjust"/>).
@@ -278,6 +343,9 @@ public sealed class TilesheetRegion : IDisposable
     /// <summary>
     /// Sets the collision adjustment for one frame and updates its cache entry.
     /// </summary>
+    /// <param name="x">The horizontal tile coordinate.</param>
+    /// <param name="y">The vertical tile coordinate.</param>
+    /// <param name="collisionAdjust">The collision adjust.</param>
     public void SetFrameCollisionAdjust(int x, int y, CollisionAdjust collisionAdjust)
     {
         ThrowIfDisposed();
@@ -302,6 +370,8 @@ public sealed class TilesheetRegion : IDisposable
     /// Removes a frame-level collision adjustment so the frame once again inherits
     /// <see cref="CollisionAdjust"/>.
     /// </summary>
+    /// <param name="x">The horizontal tile coordinate.</param>
+    /// <param name="y">The vertical tile coordinate.</param>
     /// <returns>
     /// <see langword="true"/> when an explicit frame override was removed;
     /// otherwise, <see langword="false"/>.
@@ -332,6 +402,9 @@ public sealed class TilesheetRegion : IDisposable
     /// <summary>
     /// Gets the frame-local collision rectangle for one frame.
     /// </summary>
+    /// <param name="x">The horizontal tile coordinate.</param>
+    /// <param name="y">The vertical tile coordinate.</param>
+    /// <returns>The resulting value.</returns>
     public Rectangle GetFrameCollisionArea(int x, int y) =>
         GetFrameCollisionAdjust(x, y)
             .ApplyTo(new Rectangle(Point.Empty, _tileSize));
@@ -339,6 +412,9 @@ public sealed class TilesheetRegion : IDisposable
     /// <summary>
     /// Gets the effective collision type for one frame.
     /// </summary>
+    /// <param name="x">The horizontal tile coordinate.</param>
+    /// <param name="y">The vertical tile coordinate.</param>
+    /// <returns>The resulting value.</returns>
     public TileCollisionType GetFrameCollisionType(int x, int y)
     {
         ThrowIfDisposed();
@@ -354,6 +430,10 @@ public sealed class TilesheetRegion : IDisposable
     /// <summary>
     /// Attempts to get the explicit collision type assigned to one frame.
     /// </summary>
+    /// <param name="x">The horizontal tile coordinate.</param>
+    /// <param name="y">The vertical tile coordinate.</param>
+    /// <param name="collisionType">The collision type.</param>
+    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     public bool TryGetFrameCollisionTypeOverride(
         int x,
         int y,
@@ -376,6 +456,9 @@ public sealed class TilesheetRegion : IDisposable
     /// <summary>
     /// Sets an explicit collision type for one frame.
     /// </summary>
+    /// <param name="x">The horizontal tile coordinate.</param>
+    /// <param name="y">The vertical tile coordinate.</param>
+    /// <param name="collisionType">The collision type.</param>
     public void SetFrameCollisionType(int x, int y, TileCollisionType collisionType)
     {
         ThrowIfDisposed();
@@ -397,6 +480,9 @@ public sealed class TilesheetRegion : IDisposable
     /// Removes a frame-level collision type so the frame once again inherits
     /// <see cref="CollisionType"/>.
     /// </summary>
+    /// <param name="x">The horizontal tile coordinate.</param>
+    /// <param name="y">The vertical tile coordinate.</param>
+    /// <returns>The resulting value.</returns>
     public bool ClearFrameCollisionTypeOverride(int x, int y)
     {
         ThrowIfDisposed();
@@ -486,6 +572,9 @@ public sealed class TilesheetRegion : IDisposable
         }
     }
 
+    /// <summary>
+    /// Clears tile cache.
+    /// </summary>
     internal void ClearTileCache()
     {
         if (_tileCache == null)
@@ -504,6 +593,12 @@ public sealed class TilesheetRegion : IDisposable
         _tileCache = null;
     }
 
+    /// <summary>
+    /// Gets frame source bounds.
+    /// </summary>
+    /// <param name="xTile">The horizontal tile coordinate.</param>
+    /// <param name="yTile">The vertical tile coordinate.</param>
+    /// <returns>The resulting value.</returns>
     internal Rectangle GetFrameSourceBounds(int xTile, int yTile)
     {
         ThrowIfDisposed();
@@ -604,6 +699,9 @@ public sealed class TilesheetRegion : IDisposable
             throw new ObjectDisposedException(nameof(TilesheetRegion));
     }
 
+    /// <summary>
+    /// Releases resources used by this instance.
+    /// </summary>
     public void Dispose()
     {
         if (_disposed)

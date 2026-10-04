@@ -13,6 +13,9 @@ namespace Gondwana.Drawing.Sprites;
 /// </summary>
 public sealed class SpriteManager : IDisposable
 {
+    /// <summary>
+    /// Gets or sets the definition provenance.
+    /// </summary>
     [Newtonsoft.Json.JsonIgnore]
     internal DefinitionProvenance? DefinitionProvenance { get; set; }
 
@@ -24,6 +27,9 @@ public sealed class SpriteManager : IDisposable
     /// <value>The shared <see cref="SpriteManager"/> instance.</value>
     public static SpriteManager Instance => _instance.Value;
 
+    /// <summary>
+    /// Stores the sprite list.
+    /// </summary>
     internal readonly List<Sprite> _spriteList = new();
     private readonly object _spriteListLock = new();
 
@@ -188,6 +194,12 @@ public sealed class SpriteManager : IDisposable
         return null;
     }
 
+    /// <summary>
+    /// Determines whether visible sprite in world rect.
+    /// </summary>
+    /// <param name="worldRect">The world rect.</param>
+    /// <param name="sceneLayer">The scene layer used for the operation.</param>
+    /// <returns><see langword="true"/> when the condition is satisfied; otherwise, <see langword="false"/>.</returns>
     internal bool HasVisibleSpriteInWorldRect(
         Rectangle worldRect,
         SceneLayer sceneLayer)
@@ -325,6 +337,10 @@ public sealed class SpriteManager : IDisposable
 
     #region internal methods
 
+    /// <summary>
+    /// Adds sprite.
+    /// </summary>
+    /// <param name="sprite">The sprite to process.</param>
     internal void AddSprite(Sprite sprite)
     {
         lock (_spriteListLock)
@@ -335,6 +351,7 @@ public sealed class SpriteManager : IDisposable
     /// Resolves retained collision profile names for sprites whose layer has just
     /// become attached to a scene.
     /// </summary>
+    /// <param name="sceneLayer">The scene layer used for the operation.</param>
     internal void RefreshCollisionProfiles(SceneLayer sceneLayer)
     {
         ArgumentNullException.ThrowIfNull(sceneLayer);
@@ -353,6 +370,10 @@ public sealed class SpriteManager : IDisposable
         }
     }
 
+    /// <summary>
+    /// Moves sprites.
+    /// </summary>
+    /// <param name="tick">The engine tick associated with the operation.</param>
     internal void MoveSprites(long tick)
     {
         if (tick <= _lastTick)
