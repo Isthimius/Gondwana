@@ -338,11 +338,11 @@ public abstract class BackbufferBase : IDisposable
                 destRectScreen = sprite.ApplyJiggleToDestRect(destRectScreen);
             }
 
-            bool batched = this is RecordingBackbuffer recording &&
+            bool batched = this is RecordingBackbuffer recorder &&
                 instance is null &&
                 drawable.GetType() == typeof(SceneLayerTile) &&
                 drawable is SceneLayerTile layerTile &&
-                recording.TryQueueTile(layerTile, destRectScreen);
+                recorder.TryQueueTile(layerTile, destRectScreen);
 
             if (!batched)
             {
