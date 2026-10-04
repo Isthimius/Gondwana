@@ -2,6 +2,9 @@ using Gondwana.WinForms.Rendering;
 
 namespace Gondwana.Tooling.SceneViewer.WinForms;
 
+/// <summary>
+/// Represents scene viewer form.
+/// </summary>
 internal sealed class SceneViewerForm : Form
 {
     private readonly WinFormGpuRenderSurfaceControl _surface = new() { Dock = DockStyle.Fill };
@@ -9,6 +12,10 @@ internal sealed class SceneViewerForm : Form
     private readonly SceneViewerStressOptions? _stress;
     private SceneViewerGameHost? _host;
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="SceneViewerForm"/>.
+    /// </summary>
+    /// <param name="scenePath">The scene file path.</param>
     internal SceneViewerForm(string scenePath)
     {
         _scenePath = scenePath;
@@ -16,6 +23,10 @@ internal sealed class SceneViewerForm : Form
         Initialize();
     }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="SceneViewerForm"/>.
+    /// </summary>
+    /// <param name="stress">The optional stress-test configuration.</param>
     internal SceneViewerForm(SceneViewerStressOptions stress)
     {
         _stress = stress;
@@ -31,6 +42,7 @@ internal sealed class SceneViewerForm : Form
         Controls.Add(_surface);
     }
 
+    /// <inheritdoc/>
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
@@ -56,6 +68,7 @@ internal sealed class SceneViewerForm : Form
         BeginInvoke(Close);
     }
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing)

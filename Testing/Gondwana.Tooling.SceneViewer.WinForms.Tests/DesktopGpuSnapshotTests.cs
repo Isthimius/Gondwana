@@ -13,6 +13,9 @@ public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
 {
     private sealed class HardwareFactAttribute : FactAttribute
     {
+        /// <summary>
+        /// Initializes a new instance of <see cref="HardwareFactAttribute"/>.
+        /// </summary>
         public HardwareFactAttribute()
         {
             if (Environment.GetEnvironmentVariable("GONDWANA_GPU_TESTS") != "1")
@@ -20,6 +23,10 @@ public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
         }
     }
 
+    /// <summary>
+    /// Verifies that native replay survives msaa resize and context replacement.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     [HardwareFact]
     public async Task NativeReplaySurvivesMsaaResizeAndContextReplacement()
     {
@@ -77,6 +84,10 @@ public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
         buffer.Dispose();
     }
 
+    /// <summary>
+    /// Verifies that avalonia callbacks replay after context deinitialization.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     [HardwareFact]
     public async Task AvaloniaCallbacksReplayAfterContextDeinitialization()
     {
@@ -125,8 +136,17 @@ public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
 
     private sealed class AvaloniaControl : Gondwana.Avalonia.Rendering.AvaloniaGpuRenderSurfaceControl
     {
+        /// <summary>
+        /// Verifies that initialize.
+        /// </summary>
         internal void Initialize() => OnOpenGlInit(null!);
+        /// <summary>
+        /// Verifies that render.
+        /// </summary>
         internal void Render() => OnOpenGlRender(null!, 0);
+        /// <summary>
+        /// Verifies that deinitialize.
+        /// </summary>
         internal void Deinitialize() => OnOpenGlDeinit(null!);
     }
 
@@ -144,6 +164,7 @@ public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
 
     private sealed class Adapter() : RenderSurfaceAdapterBase(128, 128)
     {
+        /// <inheritdoc/>
         public override void Present(SKImage image, SKRectI source, SKRect destination) { }
     }
 }

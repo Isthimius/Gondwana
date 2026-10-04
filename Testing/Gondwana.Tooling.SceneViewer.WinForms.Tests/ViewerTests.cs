@@ -13,13 +13,22 @@ using SkiaSharp;
 
 namespace Gondwana.Tooling.SceneViewer.WinForms.Tests;
 
+/// <summary>
+/// Contains tests for viewer.
+/// </summary>
 public sealed class ViewerTests : IDisposable
 {
     private readonly string _directory = Path.Combine(Path.GetTempPath(), "GondwanaViewerTests", Guid.NewGuid().ToString("N"));
     private string ScenePath => Path.Combine(_directory, "scene with spaces.gscn");
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="ViewerTests"/>.
+    /// </summary>
     public ViewerTests() => Directory.CreateDirectory(_directory);
 
+    /// <summary>
+    /// Verifies that arguments normalize relative path and preserve spaces.
+    /// </summary>
     [Fact]
     public void ArgumentsNormalizeRelativePathAndPreserveSpaces()
     {
@@ -29,6 +38,9 @@ public sealed class ViewerTests : IDisposable
         Assert.Null(SceneViewerArguments.Parse([], _directory));
     }
 
+    /// <summary>
+    /// Verifies that stress arguments parse tile count and projection.
+    /// </summary>
     [Fact]
     public void StressArgumentsParseTileCountAndProjection()
     {
@@ -46,6 +58,10 @@ public sealed class ViewerTests : IDisposable
         Assert.Null(SceneViewerArguments.ParseStress(["--scene", "anything.gscn"]));
     }
 
+    /// <summary>
+    /// Verifies that invalid stress tile counts are rejected.
+    /// </summary>
+    /// <param name="value">The value value used by the test.</param>
     [Theory]
     [InlineData("0")]
     [InlineData("100001")]
@@ -54,18 +70,28 @@ public sealed class ViewerTests : IDisposable
         Assert.Throws<ArgumentException>(() =>
             SceneViewerArguments.ParseStress(["--stress", value]));
 
+    /// <summary>
+    /// Verifies that invalid stress projection is rejected.
+    /// </summary>
     [Fact]
     public void InvalidStressProjectionIsRejected() =>
         Assert.Throws<ArgumentException>(() =>
             SceneViewerArguments.ParseStress(
                 ["--stress", "50000", "--projection", "NotAProjection"]));
 
+    /// <summary>
+    /// Verifies that missing or unknown argument is rejected.
+    /// </summary>
+    /// <param name="argument">The argument value used by the test.</param>
     [Theory]
     [InlineData("--scene")]
     [InlineData("--unknown")]
     public void MissingOrUnknownArgumentIsRejected(string argument) =>
         Assert.Throws<ArgumentException>(() => SceneViewerArguments.Parse([argument], _directory));
 
+    /// <summary>
+    /// Verifies that invalid and missing paths are rejected.
+    /// </summary>
     [Fact]
     public void InvalidAndMissingPathsAreRejected()
     {
@@ -74,6 +100,9 @@ public sealed class ViewerTests : IDisposable
         Assert.Throws<FileNotFoundException>(() => SceneViewerArguments.Parse(["--scene", "missing.gscn"], _directory));
     }
 
+    /// <summary>
+    /// Verifies that loads scene dependencies and real runtime animation.
+    /// </summary>
     [Fact]
     public void LoadsSceneDependenciesAndRealRuntimeAnimation()
     {
@@ -90,6 +119,11 @@ public sealed class ViewerTests : IDisposable
         Assert.Equal(TileTransform.FlipHorizontal, scene[0]![1, 0]!.Transform);
     }
 
+    /// <summary>
+    /// Verifies that missing dependency identifies source.
+    /// </summary>
+    /// <param name="file">The file value used by the test.</param>
+    /// <param name="message">The message value used by the test.</param>
     [Theory]
     [InlineData("sheet.gts", "Tilesheet source 'sheet'")]
     [InlineData("animation.gani", "Animation source 'walk'")]
@@ -102,6 +136,9 @@ public sealed class ViewerTests : IDisposable
         Assert.Contains(file, error.Message);
     }
 
+    /// <summary>
+    /// Verifies that gani own tilesheets are resolved relative to gani.
+    /// </summary>
     [Fact]
     public void GaniOwnTilesheetsAreResolvedRelativeToGani()
     {
@@ -113,6 +150,9 @@ public sealed class ViewerTests : IDisposable
         Assert.True(scene[0]![0, 0]!.EnableAnimator);
     }
 
+    /// <summary>
+    /// Verifies that packed definitions and image use runtime archive loaders.
+    /// </summary>
     [Fact]
     public void PackedDefinitionsAndImageUseRuntimeArchiveLoaders()
     {
@@ -139,6 +179,9 @@ public sealed class ViewerTests : IDisposable
         Assert.True(scene[0]![0, 0]!.EnableAnimator);
     }
 
+    /// <summary>
+    /// Verifies that invalid scene fails before materialization.
+    /// </summary>
     [Fact]
     public void InvalidSceneFailsBeforeMaterialization()
     {
@@ -146,6 +189,9 @@ public sealed class ViewerTests : IDisposable
         Assert.Contains("validation", Assert.Throws<InvalidDataException>(() => new ViewerSceneLoader().Load(ScenePath)).Message);
     }
 
+    /// <summary>
+    /// Verifies that cross cycle links are wired after registration.
+    /// </summary>
     [Fact]
     public void CrossCycleLinksAreWiredAfterRegistration()
     {
@@ -165,6 +211,9 @@ public sealed class ViewerTests : IDisposable
         Assert.Same(cycle, cycle.NextCycle.NextCycle);
     }
 
+    /// <summary>
+    /// Verifies that conflicting logical tilesheet sources fail clearly.
+    /// </summary>
     [Fact]
     public void ConflictingLogicalTilesheetSourcesFailClearly()
     {
@@ -217,6 +266,9 @@ public sealed class ViewerTests : IDisposable
         });
     }
 
+    /// <summary>
+    /// Verifies that dispose.
+    /// </summary>
     public void Dispose()
     {
         Scene.ClearAllScenes();

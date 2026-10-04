@@ -2,6 +2,9 @@ using System.Diagnostics;
 
 namespace Gondwana.Tooling.SceneViewer.WinForms;
 
+/// <summary>
+/// Represents program.
+/// </summary>
 internal static class Program
 {
     [STAThread]
@@ -54,6 +57,10 @@ internal static class Program
         }
     }
 
+    /// <summary>
+    /// Reports error.
+    /// </summary>
+    /// <param name="exception">The exception to report.</param>
     internal static void ReportError(Exception exception)
     {
         Environment.ExitCode = 1;

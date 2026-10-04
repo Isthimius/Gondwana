@@ -17,6 +17,9 @@ using GondwanaView = Gondwana.Rendering.Views.View;
 
 namespace Gondwana.Tooling.SceneViewer.WinForms;
 
+/// <summary>
+/// Represents scene viewer game host.
+/// </summary>
 internal sealed class SceneViewerGameHost(
     WinFormGpuRenderSurfaceControl surface,
     string? scenePath,
@@ -79,10 +82,17 @@ internal sealed class SceneViewerGameHost(
     private TextBlock? _diagnosticsText;
     private Gondwana.CyclesPerSecondCalculatedEventArgs? _lastCpsSample;
 
+    /// <summary>
+    /// Gets or sets the camera.
+    /// </summary>
     internal ViewerCameraController? Camera { get; private set; }
 
+    /// <summary>
+    /// Occurs when close requested.
+    /// </summary>
     internal event Action? CloseRequested;
 
+    /// <inheritdoc/>
     protected override void LoadTilesheets()
     {
         if (stress is null)
@@ -121,6 +131,7 @@ internal sealed class SceneViewerGameHost(
         _stressTilesheet.DefaultRegion.TileSize = new Size(StressTileSize, StressTileSize);
     }
 
+    /// <inheritdoc/>
     protected override Scene CreateInitialScene()
     {
         if (stress is null)
@@ -159,6 +170,7 @@ internal sealed class SceneViewerGameHost(
         return scene;
     }
 
+    /// <inheritdoc/>
     protected override void OnSceneBound()
     {
         RenderSurface.Host.ViewManager.ConfigureSingleFullView();
@@ -202,6 +214,7 @@ internal sealed class SceneViewerGameHost(
             bounds.Top + (bounds.Height - visible.Height) / 2f));
     }
 
+    /// <inheritdoc/>
     protected override void CreateDirectDrawings()
     {
         if (_view is null)
@@ -226,6 +239,7 @@ internal sealed class SceneViewerGameHost(
         _view.Viewport.TargetRectChanged += OnViewportTargetRectChanged;
     }
 
+    /// <inheritdoc/>
     protected override void OnKeyboardAdapterInitialized()
     {
         var keyboard = Engine.Input.KeyboardEventPoller!;
@@ -235,6 +249,7 @@ internal sealed class SceneViewerGameHost(
             keyboard.StartMonitoringKey((int)key, key.ToString());
     }
 
+    /// <inheritdoc/>
     protected override void OnMouseAdapterInitialized()
     {
         var mouse = Engine.Input.MouseEventPoller!;
@@ -244,6 +259,7 @@ internal sealed class SceneViewerGameHost(
             timeBetweenEvents: 0);
     }
 
+    /// <inheritdoc/>
     protected override void OnEngineInitialized()
     {
         _lastTick = HighResTimer.GetCurrentTick();
@@ -252,8 +268,10 @@ internal sealed class SceneViewerGameHost(
         Engine.CPSCalculated += OnCpsCalculated;
     }
 
+    /// <inheritdoc/>
     protected override void ConfigureGamepads() { }
 
+    /// <inheritdoc/>
     protected override void UnhookEvents()
     {
         if (Engine.Input.KeyboardEventPoller is not null)
@@ -716,6 +734,7 @@ internal sealed class SceneViewerGameHost(
         }
     }
 
+    /// <inheritdoc/>
     protected override void OnDisposed()
     {
         _stressTilesheet?.Dispose();
@@ -730,18 +749,55 @@ internal sealed class SceneViewerGameHost(
 
     private sealed class LayerDiagnosticsWindow(int layerIndex, string layerId, int zOrder)
     {
+        /// <summary>
+        /// Gets or sets the layer index.
+        /// </summary>
         internal int LayerIndex { get; } = layerIndex;
+        /// <summary>
+        /// Gets or sets the layer id.
+        /// </summary>
         internal string LayerId { get; } = layerId;
+        /// <summary>
+        /// Gets or sets the z order.
+        /// </summary>
         internal int ZOrder { get; } = zOrder;
+        /// <summary>
+        /// Gets or sets the transformed tile count.
+        /// </summary>
         internal int TransformedTileCount { get; private set; }
+        /// <summary>
+        /// Gets or sets the tile width.
+        /// </summary>
         internal int TileWidth { get; private set; }
+        /// <summary>
+        /// Gets or sets the tile height.
+        /// </summary>
         internal int TileHeight { get; private set; }
+        /// <summary>
+        /// Gets or sets the samples.
+        /// </summary>
         internal long Samples { get; private set; }
+        /// <summary>
+        /// Gets or sets the query total ms.
+        /// </summary>
         internal double QueryTotalMs { get; private set; }
+        /// <summary>
+        /// Gets or sets the draw total ms.
+        /// </summary>
         internal double DrawTotalMs { get; private set; }
+        /// <summary>
+        /// Gets or sets the drawable total.
+        /// </summary>
         internal long DrawableTotal { get; private set; }
+        /// <summary>
+        /// Gets or sets the tile total.
+        /// </summary>
         internal long TileTotal { get; private set; }
 
+        /// <summary>
+        /// Performs the add operation.
+        /// </summary>
+        /// <param name="diagnostics">The diagnostics sample to add.</param>
         internal void Add(GpuLayerRenderDiagnostics diagnostics)
         {
             Samples++;
@@ -754,6 +810,10 @@ internal sealed class SceneViewerGameHost(
             TileHeight = diagnostics.TileHeight;
         }
 
+        /// <summary>
+        /// Performs the to snapshot operation.
+        /// </summary>
+        /// <returns>The resulting value.</returns>
         internal LayerDiagnosticsSnapshot ToSnapshot() =>
             new(
                 LayerIndex,
@@ -820,16 +880,31 @@ internal sealed class SceneViewerGameHost(
 
     // Viewer startup must not load an unrelated game config/state from the cwd.
     // Run uncapped and without VSync so diagnostics expose actual Engine/GPU throughput.
+    /// <summary>
+    /// Represents viewer configuration.
+    /// </summary>
     internal sealed class ViewerConfiguration : IEngineConfigurationStore
     {
+        /// <summary>
+        /// Gets or sets the configuration.
+        /// </summary>
         public EngineConfiguration Configuration { get; } = new()
         {
             TargetFPS = 0,
             VSync = true
         };
 
+        /// <summary>
+        /// Gets or sets the auto save.
+        /// </summary>
         public bool AutoSave { get; set; }
+        /// <summary>
+        /// Performs the save operation.
+        /// </summary>
         public void Save() { }
+        /// <summary>
+        /// Releases resources used by this instance.
+        /// </summary>
         public void Dispose() { }
     }
 }

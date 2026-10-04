@@ -12,9 +12,15 @@ using SkiaSharp;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains tests for viewport scaling.
+/// </summary>
 [Collection("Global engine state")]
 public sealed class ViewportScalingTests : IDisposable
 {
+    /// <summary>
+    /// Initializes a new instance of <see cref="ViewportScalingTests"/>.
+    /// </summary>
     public ViewportScalingTests()
     {
         Engine.Instance.EngineDispatcher.BindToCurrentThread();
@@ -22,6 +28,9 @@ public sealed class ViewportScalingTests : IDisposable
         Engine.Instance.Configuration.RenderScale = 1;
     }
 
+    /// <summary>
+    /// Verifies that dispose.
+    /// </summary>
     public void Dispose()
     {
         MouseEventPoller.Reset();
@@ -30,6 +39,15 @@ public sealed class ViewportScalingTests : IDisposable
         Engine.Instance.Configuration.RenderScalingFilter = RenderScalingFilter.Linear;
     }
 
+    /// <summary>
+    /// Verifies that establishes logical resolution.
+    /// </summary>
+    /// <param name="w">The w value used by the test.</param>
+    /// <param name="h">The h value used by the test.</param>
+    /// <param name="scale">The scale value used by the test.</param>
+    /// <param name="bw">The bw value used by the test.</param>
+    /// <param name="bh">The bh value used by the test.</param>
+    /// <param name="presentation">The presentation value used by the test.</param>
     [Theory]
     [InlineData(3840, 2160, 0.5f, 1920, 1080, 2f)]
     [InlineData(1920, 1080, 1f, 1920, 1080, 1f)]
@@ -48,6 +66,10 @@ public sealed class ViewportScalingTests : IDisposable
         Assert.Equal(new Rectangle(0, 0, bw, bh), Assert.Single(host.ViewManager.Views).Viewport.TargetRectPx);
     }
 
+    /// <summary>
+    /// Verifies that rejects invalid intent.
+    /// </summary>
+    /// <param name="scale">The scale value used by the test.</param>
     [Theory]
     [InlineData(0f)]
     [InlineData(-1f)]
@@ -57,6 +79,9 @@ public sealed class ViewportScalingTests : IDisposable
     public void RejectsInvalidIntent(float scale)
         => Assert.Throws<ArgumentOutOfRangeException>(() => Engine.Instance.Configuration.RenderScale = scale);
 
+    /// <summary>
+    /// Verifies that resize preserves buffer canvas views and camera explicit scale uses current adapter.
+    /// </summary>
     [Fact]
     public void ResizePreservesBufferCanvasViewsAndCamera_ExplicitScaleUsesCurrentAdapter()
     {
@@ -94,6 +119,9 @@ public sealed class ViewportScalingTests : IDisposable
         Assert.Equal(new Rectangle(0, 0, 800, 500), view.Viewport.TargetRectPx);
     }
 
+    /// <summary>
+    /// Verifies that deferred initial layout is established once explicit change while minimized is deferred.
+    /// </summary>
     [Fact]
     public void DeferredInitialLayoutIsEstablishedOnce_ExplicitChangeWhileMinimizedIsDeferred()
     {
@@ -114,6 +142,11 @@ public sealed class ViewportScalingTests : IDisposable
         Assert.Equal((1600, 1200), (buffer.Width, buffer.Height));
     }
 
+    /// <summary>
+    /// Verifies that repeated unavailable dimensions do not raise resize.
+    /// </summary>
+    /// <param name="width">The width value used by the test.</param>
+    /// <param name="height">The height value used by the test.</param>
     [Theory]
     [InlineData(0, 0)]
     [InlineData(0, 720)]
@@ -131,6 +164,9 @@ public sealed class ViewportScalingTests : IDisposable
         Assert.False(adapter.InitialSizeAvailable);
     }
 
+    /// <summary>
+    /// Verifies that first valid layout matching placeholder establishes resolution once.
+    /// </summary>
     [Fact]
     public void FirstValidLayoutMatchingPlaceholderEstablishesResolutionOnce()
     {
@@ -148,6 +184,11 @@ public sealed class ViewportScalingTests : IDisposable
         Assert.Equal(1, events);
     }
 
+    /// <summary>
+    /// Verifies that adapter to screen to world to grid is independent of zoom.
+    /// </summary>
+    /// <param name="scale">The scale value used by the test.</param>
+    /// <param name="zoom">The zoom value used by the test.</param>
     [Theory]
     [InlineData(0.5f, 2f)]
     [InlineData(2f, 0.5f)]
@@ -181,6 +222,10 @@ public sealed class ViewportScalingTests : IDisposable
         }
     }
 
+    /// <summary>
+    /// Verifies that fractional zoom snapped tile edges keep mouse and touch on expected grid sides.
+    /// </summary>
+    /// <param name="renderScale">The render scale value used by the test.</param>
     [Theory]
     [InlineData(0.5f)]
     [InlineData(1f)]
@@ -287,6 +332,9 @@ public sealed class ViewportScalingTests : IDisposable
         }
     }
 
+    /// <summary>
+    /// Verifies that fractional zoom snapped boundary uses continuous screen to world contract.
+    /// </summary>
     [Fact]
     public void FractionalZoomSnappedBoundary_UsesContinuousScreenToWorldContract()
     {
@@ -329,6 +377,9 @@ public sealed class ViewportScalingTests : IDisposable
         Assert.Equal(snappedScreen.Y, roundTrip.Y, 3);
     }
 
+    /// <summary>
+    /// Verifies that margins are outside not clamped or truncated to zero.
+    /// </summary>
     [Fact]
     public void MarginsAreOutside_NotClampedOrTruncatedToZero()
     {
@@ -344,6 +395,9 @@ public sealed class ViewportScalingTests : IDisposable
         Assert.Equal(new Point(-1, -1), adapter.AdapterPxToScreenPx(Point.Empty));
     }
 
+    /// <summary>
+    /// Verifies that dirty edges round outwards without holes.
+    /// </summary>
     [Fact]
     public void DirtyEdgesRoundOutwardsWithoutHoles()
     {
@@ -354,6 +408,10 @@ public sealed class ViewportScalingTests : IDisposable
         Assert.True(first.Right >= second.Left);
     }
 
+    /// <summary>
+    /// Verifies that presentation clears margins and honors filter.
+    /// </summary>
+    /// <param name="filter">The filter value used by the test.</param>
     [Theory]
     [InlineData(RenderScalingFilter.NearestNeighbor)]
     [InlineData(RenderScalingFilter.Linear)]
@@ -378,6 +436,10 @@ public sealed class ViewportScalingTests : IDisposable
             Assert.InRange(dest.GetPixel(3, 3).Blue, (byte)1, (byte)254);
     }
 
+    /// <summary>
+    /// Verifies that widget router click focus capture and drag use logical coordinates.
+    /// </summary>
+    /// <param name="scale">The scale value used by the test.</param>
     [Theory]
     [InlineData(0.5f)]
     [InlineData(2f)]
@@ -434,6 +496,12 @@ public sealed class ViewportScalingTests : IDisposable
         Assert.DoesNotContain("click", events);
     }
 
+    /// <summary>
+    /// Verifies that text block logical pixels and bounds survive presentation resize.
+    /// </summary>
+    /// <param name="scale">The scale value used by the test.</param>
+    /// <param name="zoom">The zoom value used by the test.</param>
+    /// <param name="worldMode">The world mode value used by the test.</param>
     [Theory]
     [InlineData(0.5f, 2f, true)]
     [InlineData(2f, 0.5f, true)]
@@ -471,6 +539,10 @@ public sealed class ViewportScalingTests : IDisposable
         Assert.Contains(presented.Pixels, p => p.Red > 0);
     }
 
+    /// <summary>
+    /// Verifies that touch router preserves click and capture through scaling and resize.
+    /// </summary>
+    /// <param name="scale">The scale value used by the test.</param>
     [Theory]
     [InlineData(0.5f)]
     [InlineData(2f)]
@@ -518,6 +590,10 @@ public sealed class ViewportScalingTests : IDisposable
         Assert.Equal(2, ups);
     }
 
+    /// <summary>
+    /// Verifies that direct surface presentation applies filter and margins.
+    /// </summary>
+    /// <param name="filter">The filter value used by the test.</param>
     [Theory]
     [InlineData(RenderScalingFilter.Linear)]
     [InlineData(RenderScalingFilter.NearestNeighbor)]
@@ -546,9 +622,25 @@ public sealed class ViewportScalingTests : IDisposable
     private sealed class Touch(Adapter adapter) : ITouchAdapter
     {
         private TouchPoint[] _active = [], _began = [], _ended = [];
+        /// <summary>
+        /// Gets the active touches.
+        /// </summary>
         public IReadOnlyList<TouchPoint> ActiveTouches => _active;
+        /// <summary>
+        /// Verifies that consume began touches.
+        /// </summary>
+        /// <returns>The resulting value.</returns>
         public IReadOnlyList<TouchPoint> ConsumeBeganTouches() { var result = _began; _began = []; return result; }
+        /// <summary>
+        /// Verifies that consume ended touches.
+        /// </summary>
+        /// <returns>The resulting value.</returns>
         public IReadOnlyList<TouchPoint> ConsumeEndedTouches() { var result = _ended; _ended = []; return result; }
+        /// <summary>
+        /// Verifies that set.
+        /// </summary>
+        /// <param name="physical">The physical value used by the test.</param>
+        /// <param name="phase">The phase value used by the test.</param>
         internal void Set(PointF physical, TouchPhase phase)
         {
             var point = new TouchPoint(1, adapter.AdapterPxToScreenPx(physical), phase);
@@ -568,23 +660,52 @@ public sealed class ViewportScalingTests : IDisposable
             transform.DestinationRect.Top + (logical.Y + 0.5f) * transform.Scale);
     }
 
+    /// <summary>
+    /// Represents adapter.
+    /// </summary>
     internal sealed class Adapter(int width, int height, bool initial = true) : RenderSurfaceAdapterBase(width, height, initial)
     {
+        /// <summary>
+        /// Verifies that resize.
+        /// </summary>
+        /// <param name="width">The width value used by the test.</param>
+        /// <param name="height">The height value used by the test.</param>
         internal void Resize(int width, int height) => SetDestinationSize(width, height);
+        /// <inheritdoc/>
         public override void Present(SKImage image, SKRectI source, SKRect dest) => image.Dispose();
     }
 
     private sealed class Mouse(Adapter adapter) : IMouseAdapter
     {
+        /// <summary>
+        /// Stores the position.
+        /// </summary>
         internal PointF Position;
+        /// <summary>
+        /// Gets the current position.
+        /// </summary>
         public Point CurrentPosition => adapter.AdapterPxToScreenPx(Position);
+        /// <summary>
+        /// Gets the pressed buttons.
+        /// </summary>
         public HashSet<MouseButton> PressedButtons { get; } = [];
+        /// <summary>
+        /// Gets the current keyboard modifiers.
+        /// </summary>
         public KeyboardModifierState CurrentKeyboardModifiers => KeyboardModifierState.None;
+        /// <summary>
+        /// Gets the scroll delta.
+        /// </summary>
         public int ScrollDelta => 0;
     }
 
     private sealed class DragWidget : DraggableWidgetBase
     {
+        /// <summary>
+        /// Initializes a new instance of <see cref="DragWidget"/>.
+        /// </summary>
+        /// <param name="host">The host value used by the test.</param>
+        /// <param name="view">The view value used by the test.</param>
         internal DragWidget(RenderSurfaceHostBase host, View view) : base(host, DirectDrawingMode.View, new PointF(10, 10))
         {
             CanReceiveFocus = true;

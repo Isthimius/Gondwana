@@ -10,6 +10,9 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
 {
     private sealed class DogfoodFactAttribute : FactAttribute
     {
+        /// <summary>
+        /// Initializes a new instance of <see cref="DogfoodFactAttribute"/>.
+        /// </summary>
         public DogfoodFactAttribute()
         {
             if (Environment.GetEnvironmentVariable("GONDWANA_VIEWER_DOGFOOD") != "1")
@@ -17,6 +20,10 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
         }
     }
 
+    /// <summary>
+    /// Verifies that island running and paused.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     [DogfoodFact]
     public async Task IslandRunningAndPaused()
     {

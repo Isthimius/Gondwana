@@ -37,5 +37,6 @@ foreach (int width in new[] { 1920, 3840 })
 
 sealed class Adapter(int width, int height) : RenderSurfaceAdapterBase(width, height)
 {
+    /// <inheritdoc/>
     public override void Present(SKImage image, SKRectI source, SKRect destination) => image.Dispose();
 }
