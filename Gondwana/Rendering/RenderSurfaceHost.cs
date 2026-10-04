@@ -488,11 +488,13 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                         int layerDrawableCount;
                         int layerTileCount;
 
-                        bool streamed = target is RecordingBackbuffer recording &&
+                        var recording = target as RecordingBackbuffer;
+                        RecordingBackbuffer.FixedGridRenderPlan fixedGridPlan = default;
+                        bool streamed = recording is not null &&
                             recording.TryPrepareFixedGridLayer(
                                 layer,
                                 layerWorldRect,
-                                out var fixedGridPlan);
+                                out fixedGridPlan);
 
                         long queryEndTick;
                         long drawStartTick;
