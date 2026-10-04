@@ -263,11 +263,14 @@ public sealed class DirectDrawingManager : IDisposable
     #region helper methods
 
     /// <summary>
-    /// Determines whether visible Drawing For Layer.
+    /// Determines whether the layer contains a visible direct drawing that intersects a world-space rectangle.
     /// </summary>
-    /// <param name="layer">The scene layer used for the operation.</param>
-    /// <param name="worldRect">The world-space rectangle.</param>
-    /// <returns><see langword="true"/> when the condition is satisfied; otherwise, <see langword="false"/>.</returns>
+    /// <param name="layer">The scene layer to inspect.</param>
+    /// <param name="worldRect">The world-space rectangle to test.</param>
+    /// <returns>
+    /// <see langword="true"/> when a visible direct drawing intersects <paramref name="worldRect"/>;
+    /// otherwise, <see langword="false"/>.
+    /// </returns>
     internal bool HasVisibleDrawingForLayer(
         SceneLayer layer,
         Rectangle worldRect)
