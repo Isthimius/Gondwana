@@ -289,6 +289,10 @@ public abstract class BackbufferBase : IDisposable
         }
     }
 
+    /// <summary>
+    /// Clears rect.
+    /// </summary>
+    /// <param name="rectPx">The rect px.</param>
     internal void ClearRect(Rectangle rectPx)
     {
         if (rectPx.IsEmpty)
@@ -310,6 +314,12 @@ public abstract class BackbufferBase : IDisposable
         Canvas.Restore();
     }
 
+    /// <summary>
+    /// Draws drawables.
+    /// </summary>
+    /// <param name="view">The view used for the operation.</param>
+    /// <param name="drawables">The drawables to render.</param>
+    /// <param name="clipRect">The clipping rectangle.</param>
     internal void DrawDrawables(View view, IEnumerable<IDrawable> drawables, Rectangle clipRect)
     {
         if (this is RecordingBackbuffer recording &&
@@ -454,6 +464,7 @@ public abstract class BackbufferBase : IDisposable
     /// No-op for GL-thread-rendered backbuffers: the adapter always presents the full surface,
     /// so there is no partial-blit dirty region to track.
     /// </summary>
+    /// <param name="area">The area.</param>
     protected internal void AddToBackbufferDirtyRectangle(Rectangle area)
     {
         if (IsGlThreadRendered || area.IsEmpty)

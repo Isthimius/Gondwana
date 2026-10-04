@@ -240,6 +240,8 @@ public class GpuBackbuffer : BackbufferBase
     /// <summary>
     /// Queues an explicit logical resolution change for the next owning GL callback.
     /// </summary>
+    /// <param name="width">The width in pixels.</param>
+    /// <param name="height">The height in pixels.</param>
     protected internal override void RequestResize(int width, int height)
         => Interlocked.Exchange(ref _requestedResolution, new(width, height));
 
@@ -248,6 +250,8 @@ public class GpuBackbuffer : BackbufferBase
     /// Adapter dimensions are deliberately absent: window resize never reallocates this surface.
     /// Returns true when a new surface needs its first complete frame.
     /// </summary>
+    /// <param name="context">The context.</param>
+    /// <returns>The resulting value.</returns>
     public bool EnsureInitialized(GRContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
@@ -313,6 +317,7 @@ public class GpuBackbuffer : BackbufferBase
     /// <summary>
     /// Creates an immutable snapshot of the current backbuffer contents.
     /// </summary>
+    /// <returns>The resulting value.</returns>
     /// <remarks>
     /// For the GPU surface this returns a lightweight GPU-backed image that shares the underlying
     /// texture.  The caller must dispose the returned image after consuming it (typically within
@@ -339,16 +344,25 @@ public class GpuBackbuffer : BackbufferBase
     /// Returns the number of frames recorded since the last call and atomically resets the
     /// counter to zero.  Called by the engine's CPS sampler on the background thread.
     /// </summary>
+    /// <returns>The resulting value.</returns>
     internal long ConsumeFrameCount() => Interlocked.Exchange(ref _frameCount, 0);
 
     // ── Surface creation helpers ─────────────────────────────────────────────
 
+    /// <summary>
+    /// Stores the member.
+    /// </summary>
     internal (int SampleCount, long Revision) GetMsaaConfigurationSnapshot()
     {
         lock (_msaaSyncRoot)
             return (_msaaSampleCount, _msaaConfigurationRevision);
     }
 
+    /// <summary>
+    /// Marks msaa configuration applied.
+    /// </summary>
+    /// <param name="revision">The configuration revision.</param>
+    /// <param name="actualSampleCount">The actual MSAA sample count.</param>
     internal void MarkMsaaConfigurationApplied(long revision, int actualSampleCount)
     {
         Volatile.Write(ref _actualMsaaSampleCount, actualSampleCount);
@@ -402,6 +416,9 @@ public class GpuBackbuffer : BackbufferBase
     // Called by a platform's GL deinitialization callback, while its old context
     // is still current. Logical state and Engine-owned recordings survive a
     // temporary context loss; EnsureInitialized will attach the next context.
+    /// <summary>
+    /// Releases context.
+    /// </summary>
     internal void ReleaseContext()
     {
         DisposeSurface();

@@ -7,13 +7,28 @@ namespace Gondwana.Rendering;
 /// </summary>
 internal sealed class RenderFrameMailbox : IDisposable
 {
+    /// <summary>
+    /// Represents state.
+    /// </summary>
     internal enum State { Free, Building, Published, Rendering, Releasing }
 
+    /// <summary>
+    /// Represents slot.
+    /// </summary>
     internal sealed class Slot
     {
+        /// <summary>
+        /// Gets or sets the frame.
+        /// </summary>
         internal RenderFrameSnapshot? Frame { get; set; }
+        /// <summary>
+        /// Stores the ownership.
+        /// </summary>
         internal State Ownership;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="Slot"/>.
+        /// </summary>
         internal Slot() { }
     }
 
@@ -24,6 +39,9 @@ internal sealed class RenderFrameMailbox : IDisposable
     private long _publishedCount;
     private long _droppedCount;
 
+    /// <summary>
+    /// Gets the counters.
+    /// </summary>
     internal (long Published, long Dropped, int InUse) Counters
     {
         get
@@ -33,6 +51,10 @@ internal sealed class RenderFrameMailbox : IDisposable
         }
     }
 
+    /// <summary>
+    /// Attempts to begin build.
+    /// </summary>
+    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     internal Slot? TryBeginBuild()
     {
         lock (_gate)
@@ -48,6 +70,11 @@ internal sealed class RenderFrameMailbox : IDisposable
     }
 
     // Takes ownership of frame even if the mailbox was closed during construction.
+    /// <summary>
+    /// Performs the publish operation.
+    /// </summary>
+    /// <param name="slot">The mailbox slot.</param>
+    /// <param name="frame">The frame to publish.</param>
     internal void Publish(Slot slot, RenderFrameSnapshot frame)
     {
         Slot? retired;
@@ -76,6 +103,10 @@ internal sealed class RenderFrameMailbox : IDisposable
         if (retired is not null) Recycle(retired);
     }
 
+    /// <summary>
+    /// Aborts build.
+    /// </summary>
+    /// <param name="slot">The mailbox slot.</param>
     internal void AbortBuild(Slot slot)
     {
         lock (_gate)
@@ -85,6 +116,10 @@ internal sealed class RenderFrameMailbox : IDisposable
         }
     }
 
+    /// <summary>
+    /// Attempts to acquire.
+    /// </summary>
+    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     internal Slot? TryAcquire()
     {
         lock (_gate)
@@ -99,6 +134,10 @@ internal sealed class RenderFrameMailbox : IDisposable
         }
     }
 
+    /// <summary>
+    /// Performs the release operation.
+    /// </summary>
+    /// <param name="slot">The mailbox slot.</param>
     internal void Release(Slot slot)
     {
         lock (_gate)
@@ -128,6 +167,9 @@ internal sealed class RenderFrameMailbox : IDisposable
         }
     }
 
+    /// <summary>
+    /// Releases resources used by this instance.
+    /// </summary>
     public void Dispose()
     {
         Slot? retired;

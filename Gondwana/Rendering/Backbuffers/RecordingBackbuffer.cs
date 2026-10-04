@@ -25,14 +25,29 @@ internal sealed class RecordingBackbuffer : BackbufferBase
 
     private sealed class AtlasBatchBuffer(int size)
     {
+        /// <summary>
+        /// Gets the sprites.
+        /// </summary>
         internal SKRect[] Sprites { get; } = new SKRect[size];
+        /// <summary>
+        /// Gets the transforms.
+        /// </summary>
         internal SKRotationScaleMatrix[] Transforms { get; } = new SKRotationScaleMatrix[size];
     }
 
     private sealed class SnappedVertexBatchBuffer(int tileCount)
     {
+        /// <summary>
+        /// Gets the positions.
+        /// </summary>
         internal SKPoint[] Positions { get; } = new SKPoint[tileCount * 4];
+        /// <summary>
+        /// Gets the texture coordinates.
+        /// </summary>
         internal SKPoint[] TextureCoordinates { get; } = new SKPoint[tileCount * 4];
+        /// <summary>
+        /// Gets the indices.
+        /// </summary>
         internal ushort[] Indices { get; } = CreateQuadIndices(tileCount);
     }
 
@@ -47,6 +62,11 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         SKRect Source,
         Spacing Overhang);
 
+    /// <summary>
+    /// Represents fixed grid render plan.
+    /// </summary>
+    /// <param name="Layer">The layer.</param>
+    /// <param name="WorldRect">The world rect.</param>
     internal readonly record struct FixedGridRenderPlan(
         SceneLayer Layer,
         Rectangle WorldRect);
@@ -57,6 +77,12 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         float ScaleX,
         float ScaleY)
     {
+        /// <summary>
+        /// Performs the create operation.
+        /// </summary>
+        /// <param name="view">The view used for the operation.</param>
+        /// <param name="layer">The scene layer used for the operation.</param>
+        /// <returns>The resulting value.</returns>
         internal static LayerScreenMap Create(View view, SceneLayer layer)
         {
             RectangleF unit = view.WorldRectToScreenRect(
@@ -66,6 +92,11 @@ internal sealed class RecordingBackbuffer : BackbufferBase
             return new(unit.Left, unit.Top, unit.Width, unit.Height);
         }
 
+        /// <summary>
+        /// Performs the map operation.
+        /// </summary>
+        /// <param name="world">The world.</param>
+        /// <returns>The resulting value.</returns>
         internal RectangleF Map(Rectangle world) =>
             new(
                 OffsetX + world.Left * ScaleX,
@@ -73,6 +104,11 @@ internal sealed class RecordingBackbuffer : BackbufferBase
                 world.Width * ScaleX,
                 world.Height * ScaleY);
 
+        /// <summary>
+        /// Performs the map pixel snapped operation.
+        /// </summary>
+        /// <param name="world">The world.</param>
+        /// <returns>The resulting value.</returns>
         internal RectangleF MapPixelSnapped(Rectangle world)
         {
             float left = Snap(OffsetX + world.Left * ScaleX);
@@ -86,6 +122,10 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         private static float Snap(float value) =>
             MathF.Round(value, MidpointRounding.AwayFromZero);
 
+        /// <summary>
+        /// Creates world to screen matrix.
+        /// </summary>
+        /// <returns>The resulting value.</returns>
         internal SKMatrix CreateWorldToScreenMatrix() =>
             SKMatrix.CreateScaleTranslation(
                 ScaleX,
@@ -133,14 +173,29 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     private int _pendingCount;
     private int _pendingSnappedVertexCount;
 
+    /// <summary>
+    /// Gets or sets the atlas batch count.
+    /// </summary>
     internal int AtlasBatchCount { get; private set; }
+    /// <summary>
+    /// Gets or sets the atlas batched tile count.
+    /// </summary>
     internal int AtlasBatchedTileCount { get; private set; }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="RecordingBackbuffer"/>.
+    /// </summary>
     internal RecordingBackbuffer() : base(1, 1) { }
 
+    /// <inheritdoc/>
     public override SKCanvas Canvas => _canvas ?? throw new InvalidOperationException("No recording is active.");
+    /// <inheritdoc/>
     public override bool IsGlThreadRendered => true;
 
+    /// <summary>
+    /// Performs the start operation.
+    /// </summary>
+    /// <param name="source">The source backbuffer.</param>
     internal void Start(BackbufferBase source)
     {
         ResetPendingBatch();
@@ -161,6 +216,10 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         _canvas = _recorder.BeginRecording(new SKRect(0, 0, Width, Height));
     }
 
+    /// <summary>
+    /// Performs the complete operation.
+    /// </summary>
+    /// <returns>The resulting value.</returns>
     internal SKPicture Complete()
     {
         FlushTileBatch();
@@ -173,6 +232,9 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         return picture;
     }
 
+    /// <summary>
+    /// Performs the cancel operation.
+    /// </summary>
     internal void Cancel()
     {
         ResetPendingBatch();
@@ -190,6 +252,13 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         DisposeAtlasShaders();
     }
 
+    /// <summary>
+    /// Attempts to prepare fixed grid layer.
+    /// </summary>
+    /// <param name="layer">The scene layer used for the operation.</param>
+    /// <param name="worldRect">The world rect.</param>
+    /// <param name="plan">The plan.</param>
+    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     internal bool TryPrepareFixedGridLayer(
         SceneLayer layer,
         Rectangle worldRect,
@@ -222,6 +291,13 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         return true;
     }
 
+    /// <summary>
+    /// Draws fixed grid layer.
+    /// </summary>
+    /// <param name="view">The view used for the operation.</param>
+    /// <param name="plan">The plan.</param>
+    /// <param name="clipRect">The clipping rectangle.</param>
+    /// <returns>The resulting value.</returns>
     internal int DrawFixedGridLayer(
         View view,
         FixedGridRenderPlan plan,
@@ -276,6 +352,13 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         }
     }
 
+    /// <summary>
+    /// Attempts to draw fixed grid drawables.
+    /// </summary>
+    /// <param name="view">The view used for the operation.</param>
+    /// <param name="drawables">The drawables to render.</param>
+    /// <param name="clipRect">The clipping rectangle.</param>
+    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     internal bool TryDrawFixedGridDrawables(
         View view,
         IReadOnlyList<IDrawable> drawables,
@@ -676,6 +759,12 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         _atlasShaderCache.Clear();
     }
 
+    /// <summary>
+    /// Attempts to queue tile.
+    /// </summary>
+    /// <param name="tile">The tile to process.</param>
+    /// <param name="destination">The destination rectangle.</param>
+    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     internal bool TryQueueTile(SceneLayerTile tile, RectangleF destination)
     {
         if (tile.Transform != TileTransform.Identity ||
@@ -762,6 +851,9 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         return true;
     }
 
+    /// <summary>
+    /// Flushes tile batch.
+    /// </summary>
     internal void FlushTileBatch()
     {
         if (_pendingCount == 0)
@@ -822,17 +914,22 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         _pendingCount = 0;
     }
 
+    /// <inheritdoc/>
     protected internal override void BeginFrame() { }
+    /// <inheritdoc/>
     protected internal override void EndFrame() { }
+    /// <inheritdoc/>
     protected internal override SKImage Snapshot() =>
         throw new NotSupportedException("A recording has commands, not pixels. Read pixels on the GL thread after replay.");
 
+    /// <inheritdoc/>
     protected internal override void DrawTileFrame(Tile tile, RectangleF destRectScreen)
     {
         var image = tile.CurrentFrame.SkImage;
         if (image is not null) Canvas.DrawImage(image, destRectScreen.ToSKRect());
     }
 
+    /// <inheritdoc/>
     public override void Dispose()
     {
         Cancel();
