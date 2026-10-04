@@ -574,107 +574,119 @@ $(function(){initNavTree('TilesheetRegion_8cs_source.html','',''); });
 <div class="line"><a id="l00504" name="l00504"></a><span class="lineno">  504</span>        _tileCache = <span class="keyword">null</span>;</div>
 <div class="line"><a id="l00505" name="l00505"></a><span class="lineno">  505</span>    }</div>
 <div class="line"><a id="l00506" name="l00506"></a><span class="lineno">  506</span> </div>
-<div class="line"><a id="l00507" name="l00507"></a><span class="lineno">  507</span>    <span class="keyword">private</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a> GetTileBounds(<span class="keywordtype">int</span> xTile, <span class="keywordtype">int</span> yTile)</div>
+<div class="line"><a id="l00507" name="l00507"></a><span class="lineno">  507</span>    <span class="keyword">internal</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a> GetFrameSourceBounds(<span class="keywordtype">int</span> xTile, <span class="keywordtype">int</span> yTile)</div>
 <div class="line"><a id="l00508" name="l00508"></a><span class="lineno">  508</span>    {</div>
-<div class="line"><a id="l00509" name="l00509"></a><span class="lineno">  509</span>        <span class="keywordtype">int</span> x = _area.X + _regionMargin.Left + (xTile * <a class="code hl_property" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a9753537c47c09930f4476a9d44540c97">TileWidthIncludingPadding</a>);</div>
-<div class="line"><a id="l00510" name="l00510"></a><span class="lineno">  510</span>        <span class="keywordtype">int</span> y = _area.Y + _regionMargin.Top + (yTile * <a class="code hl_property" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#aff5b3d53abbdfd791a174f38436c2320">TileHeightIncludingPadding</a>);</div>
-<div class="line"><a id="l00511" name="l00511"></a><span class="lineno">  511</span> </div>
-<div class="line"><a id="l00512" name="l00512"></a><span class="lineno">  512</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>(</div>
-<div class="line"><a id="l00513" name="l00513"></a><span class="lineno">  513</span>            x + _tilePadding.Left,</div>
-<div class="line"><a id="l00514" name="l00514"></a><span class="lineno">  514</span>            y + _tilePadding.Top,</div>
-<div class="line"><a id="l00515" name="l00515"></a><span class="lineno">  515</span>            _tileSize.Width,</div>
-<div class="line"><a id="l00516" name="l00516"></a><span class="lineno">  516</span>            _tileSize.Height);</div>
+<div class="line"><a id="l00509" name="l00509"></a><span class="lineno">  509</span>        ThrowIfDisposed();</div>
+<div class="line"><a id="l00510" name="l00510"></a><span class="lineno">  510</span> </div>
+<div class="line"><a id="l00511" name="l00511"></a><span class="lineno">  511</span>        <span class="keywordflow">if</span> (_tileCache is <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00512" name="l00512"></a><span class="lineno">  512</span>            BuildTileCache();</div>
+<div class="line"><a id="l00513" name="l00513"></a><span class="lineno">  513</span> </div>
+<div class="line"><a id="l00514" name="l00514"></a><span class="lineno">  514</span>        <span class="keywordflow">return</span> IsFrameCoordinateValid(xTile, yTile)</div>
+<div class="line"><a id="l00515" name="l00515"></a><span class="lineno">  515</span>            ? GetTileBounds(xTile, yTile)</div>
+<div class="line"><a id="l00516" name="l00516"></a><span class="lineno">  516</span>            : <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>.Empty;</div>
 <div class="line"><a id="l00517" name="l00517"></a><span class="lineno">  517</span>    }</div>
 <div class="line"><a id="l00518" name="l00518"></a><span class="lineno">  518</span> </div>
-<div class="line"><a id="l00519" name="l00519"></a><span class="lineno">  519</span>    <span class="keyword">private</span> TilesheetRegionSlice? CreateSlice(</div>
-<div class="line"><a id="l00520" name="l00520"></a><span class="lineno">  520</span>        Rectangle srcRect,</div>
-<div class="line"><a id="l00521" name="l00521"></a><span class="lineno">  521</span>        <a class="code hl_property" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a764f33f21e9f8d29079815898647faac">CollisionAdjust</a> collisionAdjust)</div>
-<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span>    {</div>
-<div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span>        var srcInfo = <a class="code hl_property" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#afe617c08fedd3ba6ae5f7622c5e0ba4a">Tilesheet</a>.SkBitmap.Info;</div>
-<div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span>        var sliceInfo = <span class="keyword">new</span> SKImageInfo(</div>
-<div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span>            srcRect.Width,</div>
-<div class="line"><a id="l00526" name="l00526"></a><span class="lineno">  526</span>            srcRect.Height,</div>
-<div class="line"><a id="l00527" name="l00527"></a><span class="lineno">  527</span>            srcInfo.ColorType,</div>
-<div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span>            srcInfo.AlphaType);</div>
-<div class="line"><a id="l00529" name="l00529"></a><span class="lineno">  529</span> </div>
-<div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span>        var bmp = <span class="keyword">new</span> SKBitmap(sliceInfo);</div>
-<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span>        bmp.Erase(SKColors.Transparent);</div>
-<div class="line"><a id="l00532" name="l00532"></a><span class="lineno">  532</span> </div>
-<div class="line"><a id="l00533" name="l00533"></a><span class="lineno">  533</span>        <span class="keywordflow">if</span> (!<a class="code hl_property" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#afe617c08fedd3ba6ae5f7622c5e0ba4a">Tilesheet</a>.SkBitmap.ExtractSubset(bmp, srcRect.ToSKRectI()))</div>
-<div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span>        {</div>
-<div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span>            bmp.Dispose();</div>
-<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span>            <span class="keywordflow">return</span> <span class="keyword">null</span>;</div>
-<div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span>        }</div>
-<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span> </div>
-<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span>        var img = SKImage.FromBitmap(bmp);</div>
-<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> TilesheetRegionSlice(bmp, img, collisionAdjust);</div>
-<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span>    }</div>
-<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span> </div>
-<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>    <span class="keyword">private</span> <a class="code hl_property" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a764f33f21e9f8d29079815898647faac">CollisionAdjust</a> GetStoredFrameCollisionAdjust(<span class="keywordtype">int</span> x, <span class="keywordtype">int</span> y) =&gt;</div>
-<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span>        _frameCollisionAdjustments.TryGetValue((x, y), out var collisionAdjust)</div>
-<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span>            ? collisionAdjust</div>
-<div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span>            : _collisionAdjust;</div>
-<div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span> </div>
-<div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span>    <span class="keyword">private</span> <span class="keywordtype">bool</span> IsFrameCoordinateValid(<span class="keywordtype">int</span> x, <span class="keywordtype">int</span> y) =&gt;</div>
-<div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span>        _tileCache is not <span class="keyword">null</span> &amp;&amp;</div>
-<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span>        (uint)x &lt; (uint)_tileCache.GetLength(0) &amp;&amp;</div>
-<div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span>        (uint)y &lt; (uint)_tileCache.GetLength(1);</div>
-<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span> </div>
-<div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> ApplyDefaultCollisionAdjustToCache()</div>
-<div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span>    {</div>
-<div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span>        <span class="keywordflow">if</span> (_tileCache is <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span> </div>
-<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = 0; y &lt; _tileCache.GetLength(1); y++)</div>
-<div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span>        {</div>
-<div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 0; x &lt; _tileCache.GetLength(0); x++)</div>
-<div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span>            {</div>
-<div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span>                <span class="keywordflow">if</span> (!_frameCollisionAdjustments.ContainsKey((x, y)) &amp;&amp;</div>
-<div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span>                    _tileCache[x, y] is { } slice)</div>
-<div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span>                {</div>
-<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>                    _tileCache[x, y] = slice.WithCollisionAdjust(_collisionAdjust);</div>
-<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>                }</div>
-<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>            }</div>
-<div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>        }</div>
-<div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span>    }</div>
-<div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span> </div>
-<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> PruneFrameCollisionAdjustments(<span class="keywordtype">int</span> columns, <span class="keywordtype">int</span> rows)</div>
-<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>    {</div>
-<div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span>        <span class="keywordflow">foreach</span> (var key <span class="keywordflow">in</span> _frameCollisionAdjustments.Keys.ToArray())</div>
-<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span>        {</div>
-<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>            <span class="keywordflow">if</span> ((uint)key.x &gt;= (uint)columns || (uint)key.y &gt;= (uint)rows)</div>
-<div class="line"><a id="l00576" name="l00576"></a><span class="lineno">  576</span>                _frameCollisionAdjustments.Remove(key);</div>
-<div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span>        }</div>
-<div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span>    }</div>
-<div class="line"><a id="l00579" name="l00579"></a><span class="lineno">  579</span> </div>
-<div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> PruneFrameCollisionTypes(<span class="keywordtype">int</span> columns, <span class="keywordtype">int</span> rows)</div>
-<div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span>    {</div>
-<div class="line"><a id="l00582" name="l00582"></a><span class="lineno">  582</span>        <span class="keywordflow">foreach</span> (var key <span class="keywordflow">in</span> _frameCollisionTypes.Keys.ToArray())</div>
-<div class="line"><a id="l00583" name="l00583"></a><span class="lineno">  583</span>        {</div>
-<div class="line"><a id="l00584" name="l00584"></a><span class="lineno">  584</span>            <span class="keywordflow">if</span> ((uint)key.x &gt;= (uint)columns || (uint)key.y &gt;= (uint)rows)</div>
-<div class="line"><a id="l00585" name="l00585"></a><span class="lineno">  585</span>                _frameCollisionTypes.Remove(key);</div>
-<div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span>        }</div>
-<div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span>    }</div>
-<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span> </div>
-<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> ThrowIfDisposed()</div>
-<div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span>    {</div>
-<div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span>        <span class="keywordflow">if</span> (_disposed)</div>
-<div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> ObjectDisposedException(nameof(TilesheetRegion));</div>
-<div class="line"><a id="l00593" name="l00593"></a><span class="lineno">  593</span>    }</div>
-<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span> </div>
-<div class="foldopen" id="foldopen00595" data-start="{" data-end="}">
-<div class="line"><a id="l00595" name="l00595"></a><span class="lineno"><a class="line" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#aefb4133ea192c0a298134f2e7cebe729">  595</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#aefb4133ea192c0a298134f2e7cebe729">Dispose</a>()</div>
-<div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span>    {</div>
-<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span>        <span class="keywordflow">if</span> (_disposed)</div>
-<div class="line"><a id="l00598" name="l00598"></a><span class="lineno">  598</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00599" name="l00599"></a><span class="lineno">  599</span> </div>
-<div class="line"><a id="l00600" name="l00600"></a><span class="lineno">  600</span>        _disposed = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span>        ClearTileCache();</div>
-<div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span>        _frameCollisionAdjustments.Clear();</div>
-<div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span>        _frameCollisionTypes.Clear();</div>
-<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span>    }</div>
+<div class="line"><a id="l00519" name="l00519"></a><span class="lineno">  519</span>    <span class="keyword">private</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a> GetTileBounds(<span class="keywordtype">int</span> xTile, <span class="keywordtype">int</span> yTile)</div>
+<div class="line"><a id="l00520" name="l00520"></a><span class="lineno">  520</span>    {</div>
+<div class="line"><a id="l00521" name="l00521"></a><span class="lineno">  521</span>        <span class="keywordtype">int</span> x = _area.X + _regionMargin.Left + (xTile * <a class="code hl_property" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a9753537c47c09930f4476a9d44540c97">TileWidthIncludingPadding</a>);</div>
+<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span>        <span class="keywordtype">int</span> y = _area.Y + _regionMargin.Top + (yTile * <a class="code hl_property" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#aff5b3d53abbdfd791a174f38436c2320">TileHeightIncludingPadding</a>);</div>
+<div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span> </div>
+<div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>(</div>
+<div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span>            x + _tilePadding.Left,</div>
+<div class="line"><a id="l00526" name="l00526"></a><span class="lineno">  526</span>            y + _tilePadding.Top,</div>
+<div class="line"><a id="l00527" name="l00527"></a><span class="lineno">  527</span>            _tileSize.Width,</div>
+<div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span>            _tileSize.Height);</div>
+<div class="line"><a id="l00529" name="l00529"></a><span class="lineno">  529</span>    }</div>
+<div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span> </div>
+<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span>    <span class="keyword">private</span> TilesheetRegionSlice? CreateSlice(</div>
+<div class="line"><a id="l00532" name="l00532"></a><span class="lineno">  532</span>        Rectangle srcRect,</div>
+<div class="line"><a id="l00533" name="l00533"></a><span class="lineno">  533</span>        <a class="code hl_property" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a764f33f21e9f8d29079815898647faac">CollisionAdjust</a> collisionAdjust)</div>
+<div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span>    {</div>
+<div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span>        var srcInfo = <a class="code hl_property" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#afe617c08fedd3ba6ae5f7622c5e0ba4a">Tilesheet</a>.SkBitmap.Info;</div>
+<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span>        var sliceInfo = <span class="keyword">new</span> SKImageInfo(</div>
+<div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span>            srcRect.Width,</div>
+<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span>            srcRect.Height,</div>
+<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span>            srcInfo.ColorType,</div>
+<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>            srcInfo.AlphaType);</div>
+<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span> </div>
+<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span>        var bmp = <span class="keyword">new</span> SKBitmap(sliceInfo);</div>
+<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>        bmp.Erase(SKColors.Transparent);</div>
+<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span> </div>
+<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span>        <span class="keywordflow">if</span> (!<a class="code hl_property" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#afe617c08fedd3ba6ae5f7622c5e0ba4a">Tilesheet</a>.SkBitmap.ExtractSubset(bmp, srcRect.ToSKRectI()))</div>
+<div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span>        {</div>
+<div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span>            bmp.Dispose();</div>
+<div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span>            <span class="keywordflow">return</span> <span class="keyword">null</span>;</div>
+<div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span>        }</div>
+<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span> </div>
+<div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span>        var img = SKImage.FromBitmap(bmp);</div>
+<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> TilesheetRegionSlice(bmp, img, collisionAdjust);</div>
+<div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span>    }</div>
+<div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span> </div>
+<div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span>    <span class="keyword">private</span> <a class="code hl_property" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a764f33f21e9f8d29079815898647faac">CollisionAdjust</a> GetStoredFrameCollisionAdjust(<span class="keywordtype">int</span> x, <span class="keywordtype">int</span> y) =&gt;</div>
+<div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span>        _frameCollisionAdjustments.TryGetValue((x, y), out var collisionAdjust)</div>
+<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span>            ? collisionAdjust</div>
+<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>            : _collisionAdjust;</div>
+<div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span> </div>
+<div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span>    <span class="keyword">private</span> <span class="keywordtype">bool</span> IsFrameCoordinateValid(<span class="keywordtype">int</span> x, <span class="keywordtype">int</span> y) =&gt;</div>
+<div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span>        _tileCache is not <span class="keyword">null</span> &amp;&amp;</div>
+<div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span>        (uint)x &lt; (uint)_tileCache.GetLength(0) &amp;&amp;</div>
+<div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span>        (uint)y &lt; (uint)_tileCache.GetLength(1);</div>
+<div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span> </div>
+<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> ApplyDefaultCollisionAdjustToCache()</div>
+<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>    {</div>
+<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>        <span class="keywordflow">if</span> (_tileCache is <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span> </div>
+<div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = 0; y &lt; _tileCache.GetLength(1); y++)</div>
+<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>        {</div>
+<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 0; x &lt; _tileCache.GetLength(0); x++)</div>
+<div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span>            {</div>
+<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span>                <span class="keywordflow">if</span> (!_frameCollisionAdjustments.ContainsKey((x, y)) &amp;&amp;</div>
+<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>                    _tileCache[x, y] is { } slice)</div>
+<div class="line"><a id="l00576" name="l00576"></a><span class="lineno">  576</span>                {</div>
+<div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span>                    _tileCache[x, y] = slice.WithCollisionAdjust(_collisionAdjust);</div>
+<div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span>                }</div>
+<div class="line"><a id="l00579" name="l00579"></a><span class="lineno">  579</span>            }</div>
+<div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span>        }</div>
+<div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span>    }</div>
+<div class="line"><a id="l00582" name="l00582"></a><span class="lineno">  582</span> </div>
+<div class="line"><a id="l00583" name="l00583"></a><span class="lineno">  583</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> PruneFrameCollisionAdjustments(<span class="keywordtype">int</span> columns, <span class="keywordtype">int</span> rows)</div>
+<div class="line"><a id="l00584" name="l00584"></a><span class="lineno">  584</span>    {</div>
+<div class="line"><a id="l00585" name="l00585"></a><span class="lineno">  585</span>        <span class="keywordflow">foreach</span> (var key <span class="keywordflow">in</span> _frameCollisionAdjustments.Keys.ToArray())</div>
+<div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span>        {</div>
+<div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span>            <span class="keywordflow">if</span> ((uint)key.x &gt;= (uint)columns || (uint)key.y &gt;= (uint)rows)</div>
+<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span>                _frameCollisionAdjustments.Remove(key);</div>
+<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span>        }</div>
+<div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span>    }</div>
+<div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span> </div>
+<div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> PruneFrameCollisionTypes(<span class="keywordtype">int</span> columns, <span class="keywordtype">int</span> rows)</div>
+<div class="line"><a id="l00593" name="l00593"></a><span class="lineno">  593</span>    {</div>
+<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span>        <span class="keywordflow">foreach</span> (var key <span class="keywordflow">in</span> _frameCollisionTypes.Keys.ToArray())</div>
+<div class="line"><a id="l00595" name="l00595"></a><span class="lineno">  595</span>        {</div>
+<div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span>            <span class="keywordflow">if</span> ((uint)key.x &gt;= (uint)columns || (uint)key.y &gt;= (uint)rows)</div>
+<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span>                _frameCollisionTypes.Remove(key);</div>
+<div class="line"><a id="l00598" name="l00598"></a><span class="lineno">  598</span>        }</div>
+<div class="line"><a id="l00599" name="l00599"></a><span class="lineno">  599</span>    }</div>
+<div class="line"><a id="l00600" name="l00600"></a><span class="lineno">  600</span> </div>
+<div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> ThrowIfDisposed()</div>
+<div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span>    {</div>
+<div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span>        <span class="keywordflow">if</span> (_disposed)</div>
+<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> ObjectDisposedException(nameof(TilesheetRegion));</div>
+<div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span>    }</div>
+<div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span> </div>
+<div class="foldopen" id="foldopen00607" data-start="{" data-end="}">
+<div class="line"><a id="l00607" name="l00607"></a><span class="lineno"><a class="line" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#aefb4133ea192c0a298134f2e7cebe729">  607</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#aefb4133ea192c0a298134f2e7cebe729">Dispose</a>()</div>
+<div class="line"><a id="l00608" name="l00608"></a><span class="lineno">  608</span>    {</div>
+<div class="line"><a id="l00609" name="l00609"></a><span class="lineno">  609</span>        <span class="keywordflow">if</span> (_disposed)</div>
+<div class="line"><a id="l00610" name="l00610"></a><span class="lineno">  610</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00611" name="l00611"></a><span class="lineno">  611</span> </div>
+<div class="line"><a id="l00612" name="l00612"></a><span class="lineno">  612</span>        _disposed = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00613" name="l00613"></a><span class="lineno">  613</span>        ClearTileCache();</div>
+<div class="line"><a id="l00614" name="l00614"></a><span class="lineno">  614</span>        _frameCollisionAdjustments.Clear();</div>
+<div class="line"><a id="l00615" name="l00615"></a><span class="lineno">  615</span>        _frameCollisionTypes.Clear();</div>
+<div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span>    }</div>
 </div>
-<div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span>}</div>
+<div class="line"><a id="l00617" name="l00617"></a><span class="lineno">  617</span>}</div>
 </div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion_html"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html">Gondwana.Drawing.Tilesheets.TilesheetRegion</a></div><div class="ttdoc">Represents a rectangular region within a tilesheet that contains a grid of frames.</div><div class="ttdef"><b>Definition</b> <a href="#l00011">TilesheetRegion.cs:12</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion_html_a08cd7497917f8541d5f4b00e01f3b945"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a08cd7497917f8541d5f4b00e01f3b945">Gondwana.Drawing.Tilesheets.TilesheetRegion.RegionMargin</a></div><div class="ttdeci">Spacing RegionMargin</div><div class="ttdef"><b>Definition</b> <a href="#l00098">TilesheetRegion.cs:99</a></div></div>
@@ -701,13 +713,13 @@ $(function(){initNavTree('TilesheetRegion_8cs_source.html','',''); });
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion_html_add47325469353bfc96dfbccaa721e998"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#add47325469353bfc96dfbccaa721e998">Gondwana.Drawing.Tilesheets.TilesheetRegion.GetAllImages</a></div><div class="ttdeci">Dictionary&lt;(int x, int y), SKImage &gt; GetAllImages()</div><div class="ttdef"><b>Definition</b> <a href="#l00210">TilesheetRegion.cs:210</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion_html_adef4e4a14635522de774b357df1a5e26"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#adef4e4a14635522de774b357df1a5e26">Gondwana.Drawing.Tilesheets.TilesheetRegion.Name</a></div><div class="ttdeci">string Name</div><div class="ttdoc">Gets the region name.</div><div class="ttdef"><b>Definition</b> <a href="#l00066">TilesheetRegion.cs:66</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion_html_ae01fb265bc8cb9b0fc09ca7a19b67a4e"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#ae01fb265bc8cb9b0fc09ca7a19b67a4e">Gondwana.Drawing.Tilesheets.TilesheetRegion.GetFrameCollisionType</a></div><div class="ttdeci">TileCollisionType GetFrameCollisionType(int x, int y)</div><div class="ttdoc">Gets the effective collision type for one frame.</div><div class="ttdef"><b>Definition</b> <a href="#l00342">TilesheetRegion.cs:342</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion_html_aefb4133ea192c0a298134f2e7cebe729"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#aefb4133ea192c0a298134f2e7cebe729">Gondwana.Drawing.Tilesheets.TilesheetRegion.Dispose</a></div><div class="ttdeci">void Dispose()</div><div class="ttdef"><b>Definition</b> <a href="#l00595">TilesheetRegion.cs:595</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion_html_aefb4133ea192c0a298134f2e7cebe729"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#aefb4133ea192c0a298134f2e7cebe729">Gondwana.Drawing.Tilesheets.TilesheetRegion.Dispose</a></div><div class="ttdeci">void Dispose()</div><div class="ttdef"><b>Definition</b> <a href="#l00607">TilesheetRegion.cs:607</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion_html_af0de586adf0cb501987da930e94d3f1b"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#af0de586adf0cb501987da930e94d3f1b">Gondwana.Drawing.Tilesheets.TilesheetRegion.ClearFrameCollisionAdjustOverride</a></div><div class="ttdeci">bool ClearFrameCollisionAdjustOverride(int x, int y)</div><div class="ttdoc">Removes a frame-level collision adjustment so the frame once again inherits CollisionAdjust.</div><div class="ttdef"><b>Definition</b> <a href="#l00309">TilesheetRegion.cs:309</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion_html_af809406fdde943b7bd522abdbed08a82"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#af809406fdde943b7bd522abdbed08a82">Gondwana.Drawing.Tilesheets.TilesheetRegion.TryGetFrameCollisionTypeOverride</a></div><div class="ttdeci">bool TryGetFrameCollisionTypeOverride(int x, int y, out TileCollisionType collisionType)</div><div class="ttdoc">Attempts to get the explicit collision type assigned to one frame.</div><div class="ttdef"><b>Definition</b> <a href="#l00357">TilesheetRegion.cs:357</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion_html_afe617c08fedd3ba6ae5f7622c5e0ba4a"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#afe617c08fedd3ba6ae5f7622c5e0ba4a">Gondwana.Drawing.Tilesheets.TilesheetRegion.Tilesheet</a></div><div class="ttdeci">Tilesheet Tilesheet</div><div class="ttdoc">Gets the tilesheet that owns this region.</div><div class="ttdef"><b>Definition</b> <a href="#l00061">TilesheetRegion.cs:61</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion_html_aff5b3d53abbdfd791a174f38436c2320"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#aff5b3d53abbdfd791a174f38436c2320">Gondwana.Drawing.Tilesheets.TilesheetRegion.TileHeightIncludingPadding</a></div><div class="ttdeci">int TileHeightIncludingPadding</div><div class="ttdef"><b>Definition</b> <a href="#l00151">TilesheetRegion.cs:151</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet_html"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Gondwana.Drawing.Tilesheets.Tilesheet</a></div><div class="ttdoc">Represents a tilesheet image and metadata for rendering tiles.</div><div class="ttdef"><b>Definition</b> <a href="Tilesheet_8cs_source.html#l00013">Tilesheet.cs:14</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet_html_ac09643888382111a32e3bc8cc5fd0b47"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#ac09643888382111a32e3bc8cc5fd0b47">Gondwana.Drawing.Tilesheets.Tilesheet.SkBitmap</a></div><div class="ttdeci">SKBitmap SkBitmap</div><div class="ttdef"><b>Definition</b> <a href="Tilesheet_8cs_source.html#l00130">Tilesheet.cs:130</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet_html_ac09643888382111a32e3bc8cc5fd0b47"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html#ac09643888382111a32e3bc8cc5fd0b47">Gondwana.Drawing.Tilesheets.Tilesheet.SkBitmap</a></div><div class="ttdeci">SKBitmap SkBitmap</div><div class="ttdef"><b>Definition</b> <a href="Tilesheet_8cs_source.html#l00147">Tilesheet.cs:147</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_1_1Direct_1_1Particles_html_af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e"><div class="ttname"><a href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Gondwana.Drawing.Direct.Particles.ParticleSpawnDistribution.Rectangle</a></div><div class="ttdeci">@ Rectangle</div><div class="ttdoc">Particles are spawned uniformly within a rectangular area. This is the default distribution.</div><div class="ttdef"><b>Definition</b> <a href="ParticleSpawnDistribution_8cs_source.html#l00011">ParticleSpawnDistribution.cs:11</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_1_1Tilesheets_html"><div class="ttname"><a href="namespaceGondwana_1_1Drawing_1_1Tilesheets.html">Gondwana.Drawing.Tilesheets</a></div><div class="ttdef"><b>Definition</b> <a href="TilesheetDefinition_8cs_source.html#l00001">TilesheetDefinition.cs:1</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_html_a6b8743455b186d888a346c497e7f1068"><div class="ttname"><a href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Gondwana.Drawing.Spacing</a></div><div class="ttdeci">record struct Spacing([property:JsonProperty(&quot;left&quot;)] int Left, [property:JsonProperty(&quot;top&quot;)] int Top, [property:JsonProperty(&quot;right&quot;)] int Right, [property:JsonProperty(&quot;bottom&quot;)] int Bottom)</div><div class="ttdoc">Represents dimensions in pixels when spacing Tilesheets.</div><div class="ttdef"><b>Definition</b> <a href="Spacing_8cs_source.html#l00012">Spacing.cs:12</a></div></div>

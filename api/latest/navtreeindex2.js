@@ -1,5 +1,9 @@
 var NAVTREEINDEX2 =
 {
+"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#af042d53e1d872cdc1590d4a3792e39b7":[1,0,0,3,1,1,18],
+"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#af1c9eb47d132c8e0f8f84545c6b773e7":[0,0,0,3,1,1,13],
+"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#af1c9eb47d132c8e0f8f84545c6b773e7":[1,0,0,3,1,1,13],
+"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGpuGameHost.html":[0,0,0,3,1,2],
 "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGpuGameHost.html":[1,0,0,3,1,2],
 "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGpuGameHost.html#a36eeccdafa734838182e857485c7f355":[0,0,0,3,1,2,1],
 "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGpuGameHost.html#a36eeccdafa734838182e857485c7f355":[1,0,0,3,1,2,1],
@@ -245,9 +249,5 @@ var NAVTREEINDEX2 =
 "classGondwana_1_1Drawing_1_1Animation_1_1Animator.html#a390c529411ff3fa02d659d5f1dcbedde":[1,0,0,5,0,1,1],
 "classGondwana_1_1Drawing_1_1Animation_1_1Animator.html#a436cd964279b12fd35fb20def4a142b9":[0,0,0,5,0,1,5],
 "classGondwana_1_1Drawing_1_1Animation_1_1Animator.html#a436cd964279b12fd35fb20def4a142b9":[1,0,0,5,0,1,5],
-"classGondwana_1_1Drawing_1_1Animation_1_1Animator.html#a47bd062544a3205996b73987c43ca4aa":[0,0,0,5,0,1,10],
-"classGondwana_1_1Drawing_1_1Animation_1_1Animator.html#a47bd062544a3205996b73987c43ca4aa":[1,0,0,5,0,1,10],
-"classGondwana_1_1Drawing_1_1Animation_1_1Animator.html#a53e5fe7745f09c7417c6f86550fd6c68":[0,0,0,5,0,1,6],
-"classGondwana_1_1Drawing_1_1Animation_1_1Animator.html#a53e5fe7745f09c7417c6f86550fd6c68":[1,0,0,5,0,1,6],
-"classGondwana_1_1Drawing_1_1Animation_1_1Animator.html#a57d91f3c0ada57776d48e8d09cd8f823":[0,0,0,5,0,1,2]
+"classGondwana_1_1Drawing_1_1Animation_1_1Animator.html#a47bd062544a3205996b73987c43ca4aa":[0,0,0,5,0,1,10]
 };

@@ -1,5 +1,11 @@
 var NAVTREEINDEX16 =
 {
+"classGondwana_1_1Widgets_1_1Controls_1_1CheckBoxWidget.html#a3598a0a79ac2bfadc94c42070e0cbd02":[1,0,0,16,0,1,7],
+"classGondwana_1_1Widgets_1_1Controls_1_1CheckBoxWidget.html#a3910391ddf468216bd2b9cbb2cb782de":[0,0,0,17,0,1,12],
+"classGondwana_1_1Widgets_1_1Controls_1_1CheckBoxWidget.html#a3910391ddf468216bd2b9cbb2cb782de":[1,0,0,16,0,1,12],
+"classGondwana_1_1Widgets_1_1Controls_1_1CheckBoxWidget.html#a41abc8e813d8bee33044fc478551488a":[0,0,0,17,0,1,14],
+"classGondwana_1_1Widgets_1_1Controls_1_1CheckBoxWidget.html#a41abc8e813d8bee33044fc478551488a":[1,0,0,16,0,1,14],
+"classGondwana_1_1Widgets_1_1Controls_1_1CheckBoxWidget.html#a4bff5e66a39c97039bcfbcf52c47e5dd":[0,0,0,17,0,1,10],
 "classGondwana_1_1Widgets_1_1Controls_1_1CheckBoxWidget.html#a4bff5e66a39c97039bcfbcf52c47e5dd":[1,0,0,16,0,1,10],
 "classGondwana_1_1Widgets_1_1Controls_1_1CheckBoxWidget.html#a520c7edc9bab6dd1326b2973b04ca256":[0,0,0,17,0,1,0],
 "classGondwana_1_1Widgets_1_1Controls_1_1CheckBoxWidget.html#a520c7edc9bab6dd1326b2973b04ca256":[1,0,0,16,0,1,0],
@@ -243,11 +249,5 @@ var NAVTREEINDEX16 =
 "classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget.html#a7bcdb1d4dd2363d3ad66b43e1d80e6e6":[1,0,0,16,0,7,7],
 "classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget.html#a934dc0fea34514c4a906479813b183fa":[0,0,0,17,0,7,12],
 "classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget.html#a934dc0fea34514c4a906479813b183fa":[1,0,0,16,0,7,12],
-"classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget.html#a9f452ae335717793eb60a1fb91b49526":[0,0,0,17,0,7,6],
-"classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget.html#a9f452ae335717793eb60a1fb91b49526":[1,0,0,16,0,7,6],
-"classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget.html#aae0d0209b07c842d997e67307ae24864":[0,0,0,17,0,7,4],
-"classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget.html#aae0d0209b07c842d997e67307ae24864":[1,0,0,16,0,7,4],
-"classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget.html#ab509f82b907a35175fc3ea4bf0258fa2":[0,0,0,17,0,7,8],
-"classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget.html#ab509f82b907a35175fc3ea4bf0258fa2":[1,0,0,16,0,7,8],
-"classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget.html#ae247a09b883bc711d6618f7359454059":[0,0,0,17,0,7,14]
+"classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget.html#a9f452ae335717793eb60a1fb91b49526":[0,0,0,17,0,7,6]
 };

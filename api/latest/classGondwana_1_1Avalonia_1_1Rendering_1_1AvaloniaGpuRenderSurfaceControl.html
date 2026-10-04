@@ -112,6 +112,8 @@ Inheritance diagram for Gondwana.Avalonia.Rendering.AvaloniaGpuRenderSurfaceCont
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ae5bc90b7c72fbcbd7d27b4041301925f" id="r_ae5bc90b7c72fbcbd7d27b4041301925f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae5bc90b7c72fbcbd7d27b4041301925f">AvaloniaGpuRenderSurfaceControl</a> ()</td></tr>
 <tr class="memdesc:ae5bc90b7c72fbcbd7d27b4041301925f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaGpuRenderSurfaceControl.html" title="An Avalonia OpenGlControlBase that displays game frames produced by the Gondwana engine using GPU-acc...">AvaloniaGpuRenderSurfaceControl</a> class.  <br /></td></tr>
+<tr class="memitem:a09e172b9beb27cfa95393627080cb77e" id="r_a09e172b9beb27cfa95393627080cb77e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a09e172b9beb27cfa95393627080cb77e">Dispose</a> ()</td></tr>
+<tr class="memdesc:a09e172b9beb27cfa95393627080cb77e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ends the logical surface lifecycle. The hosting class calls this on shutdown; custom hosts should call it when permanently removing the control. Native GPU teardown remains in <a class="el" href="namespaceGondwana_1_1Avalonia.html">Avalonia</a>'s current-context deinitialization callback.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -151,11 +153,32 @@ Properties</h2></td></tr>
 
 <p>Initializes a new instance of the <a class="el" href="classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaGpuRenderSurfaceControl.html" title="An Avalonia OpenGlControlBase that displays game frames produced by the Gondwana engine using GPU-acc...">AvaloniaGpuRenderSurfaceControl</a> class. </p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html#l00057">57</a> of file <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html">AvaloniaGpuRenderSurfaceControl.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html#l00059">59</a> of file <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html">AvaloniaGpuRenderSurfaceControl.cs</a>.</p>
 
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a09e172b9beb27cfa95393627080cb77e" name="a09e172b9beb27cfa95393627080cb77e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09e172b9beb27cfa95393627080cb77e">&#9670;&#160;</a></span>Dispose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Avalonia.Rendering.AvaloniaGpuRenderSurfaceControl.Dispose </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Ends the logical surface lifecycle. The hosting class calls this on shutdown; custom hosts should call it when permanently removing the control. Native GPU teardown remains in <a class="el" href="namespaceGondwana_1_1Avalonia.html">Avalonia</a>'s current-context deinitialization callback. </p>
+
+<p class="definition">Definition at line <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html#l00186">186</a> of file <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html">AvaloniaGpuRenderSurfaceControl.cs</a>.</p>
+
+</div>
+</div>
 <a id="a3714b8c41328a8dd8a47182b9321dda8" name="a3714b8c41328a8dd8a47182b9321dda8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3714b8c41328a8dd8a47182b9321dda8">&#9670;&#160;</a></span>OnOpenGlDeinit()</h2>
 
@@ -181,7 +204,7 @@ Properties</h2></td></tr>
 
 <p></p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html#l00156">156</a> of file <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html">AvaloniaGpuRenderSurfaceControl.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html#l00166">166</a> of file <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html">AvaloniaGpuRenderSurfaceControl.cs</a>.</p>
 
 </div>
 </div>
@@ -210,7 +233,7 @@ Properties</h2></td></tr>
 
 <p></p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html#l00074">74</a> of file <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html">AvaloniaGpuRenderSurfaceControl.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html#l00076">76</a> of file <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html">AvaloniaGpuRenderSurfaceControl.cs</a>.</p>
 
 </div>
 </div>
@@ -243,7 +266,7 @@ Properties</h2></td></tr>
 
 <p></p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html#l00100">100</a> of file <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html">AvaloniaGpuRenderSurfaceControl.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html#l00110">110</a> of file <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html">AvaloniaGpuRenderSurfaceControl.cs</a>.</p>
 
 </div>
 </div>
@@ -270,7 +293,7 @@ Properties</h2></td></tr>
 
 <p>Gets the GPU render surface adapter used to drive this control. </p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html#l00047">47</a> of file <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html">AvaloniaGpuRenderSurfaceControl.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html#l00049">49</a> of file <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html">AvaloniaGpuRenderSurfaceControl.cs</a>.</p>
 
 </div>
 </div>
@@ -296,7 +319,7 @@ Properties</h2></td></tr>
 
 <p>Gets the <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html" title="Hosts a render surface and manages rendering of a scene to a backbuffer of the specified type....">RenderSurfaceHost&lt;T&gt;</a> bound to this control. </p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html#l00052">52</a> of file <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html">AvaloniaGpuRenderSurfaceControl.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html#l00054">54</a> of file <a class="el" href="AvaloniaGpuRenderSurfaceControl_8cs_source.html">AvaloniaGpuRenderSurfaceControl.cs</a>.</p>
 
 </div>
 </div>

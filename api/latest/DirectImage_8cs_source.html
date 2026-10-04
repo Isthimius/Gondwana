@@ -319,77 +319,80 @@ $(function(){initNavTree('DirectImage_8cs_source.html','',''); });
 <div class="line"><a id="l00585" name="l00585"></a><span class="lineno">  585</span>        <span class="keywordflow">if</span> (img is <span class="keyword">null</span>)</div>
 <div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span>            <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span> </div>
-<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span>        <span class="comment">// source rect (pixels in image space)</span></div>
-<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span>        SKRect src = _src ?? <span class="keyword">new</span> SKRect(0, 0, img.Width, img.Height);</div>
+<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span>        <span class="keywordflow">if</span> (backbuffer is RecordingBackbuffer &amp;&amp; img.IsTextureBacked)</div>
+<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> NotSupportedException(<span class="stringliteral">&quot;Desktop frame recording requires a CPU image, not a context-bound texture.&quot;</span>);</div>
 <div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span> </div>
-<div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span>        <span class="comment">// destination rect (screen space), computed by scale mode</span></div>
-<div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span>        SKRect dst = ComputeDestRect(destRectScreen.ToPixelAlignedRect(), src, _scale);</div>
+<div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span>        <span class="comment">// source rect (pixels in image space)</span></div>
+<div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span>        SKRect src = _src ?? <span class="keyword">new</span> SKRect(0, 0, img.Width, img.Height);</div>
 <div class="line"><a id="l00593" name="l00593"></a><span class="lineno">  593</span> </div>
-<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span>        <span class="comment">// apply tint/opacity via color filter</span></div>
-<div class="line"><a id="l00595" name="l00595"></a><span class="lineno">  595</span>        <span class="comment">// combine tint with opacity (multiply in linear-ish sRGB)</span></div>
-<div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span>        var tint = _tint ?? SKColors.White;</div>
-<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span>        var withAlpha = <span class="keyword">new</span> SKColor(tint.Red, tint.Green, tint.Blue, _opacity);</div>
-<div class="line"><a id="l00598" name="l00598"></a><span class="lineno">  598</span>        <span class="keyword">using </span>var cf = SKColorFilter.CreateBlendMode(withAlpha, SKBlendMode.Modulate);</div>
-<div class="line"><a id="l00599" name="l00599"></a><span class="lineno">  599</span>        _paint.ColorFilter = cf;</div>
-<div class="line"><a id="l00600" name="l00600"></a><span class="lineno">  600</span> </div>
-<div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span>        <span class="comment">// rotation about anchor inside dst</span></div>
-<div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span>        <span class="keywordflow">if</span> (_rotationDeg != 0f)</div>
-<div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span>        {</div>
-<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span>            <span class="keywordtype">float</span> ax = dst.Left + _anchorX * dst.Width;</div>
-<div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span>            <span class="keywordtype">float</span> ay = dst.Top + _anchorY * dst.Height;</div>
-<div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span>            canvas.Save();</div>
-<div class="line"><a id="l00607" name="l00607"></a><span class="lineno">  607</span>            canvas.RotateDegrees(_rotationDeg, ax, ay);</div>
-<div class="line"><a id="l00608" name="l00608"></a><span class="lineno">  608</span>        }</div>
-<div class="line"><a id="l00609" name="l00609"></a><span class="lineno">  609</span> </div>
-<div class="line"><a id="l00610" name="l00610"></a><span class="lineno">  610</span>        <span class="comment">// draw</span></div>
-<div class="line"><a id="l00611" name="l00611"></a><span class="lineno">  611</span>        canvas.DrawImage(img, src, dst, _paint);</div>
+<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span>        <span class="comment">// destination rect (screen space), computed by scale mode</span></div>
+<div class="line"><a id="l00595" name="l00595"></a><span class="lineno">  595</span>        SKRect dst = ComputeDestRect(destRectScreen.ToPixelAlignedRect(), src, _scale);</div>
+<div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span> </div>
+<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span>        <span class="comment">// apply tint/opacity via color filter</span></div>
+<div class="line"><a id="l00598" name="l00598"></a><span class="lineno">  598</span>        <span class="comment">// combine tint with opacity (multiply in linear-ish sRGB)</span></div>
+<div class="line"><a id="l00599" name="l00599"></a><span class="lineno">  599</span>        var tint = _tint ?? SKColors.White;</div>
+<div class="line"><a id="l00600" name="l00600"></a><span class="lineno">  600</span>        var withAlpha = <span class="keyword">new</span> SKColor(tint.Red, tint.Green, tint.Blue, _opacity);</div>
+<div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span>        <span class="keyword">using </span>var cf = SKColorFilter.CreateBlendMode(withAlpha, SKBlendMode.Modulate);</div>
+<div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span>        _paint.ColorFilter = cf;</div>
+<div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span> </div>
+<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span>        <span class="comment">// rotation about anchor inside dst</span></div>
+<div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span>        <span class="keywordflow">if</span> (_rotationDeg != 0f)</div>
+<div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span>        {</div>
+<div class="line"><a id="l00607" name="l00607"></a><span class="lineno">  607</span>            <span class="keywordtype">float</span> ax = dst.Left + _anchorX * dst.Width;</div>
+<div class="line"><a id="l00608" name="l00608"></a><span class="lineno">  608</span>            <span class="keywordtype">float</span> ay = dst.Top + _anchorY * dst.Height;</div>
+<div class="line"><a id="l00609" name="l00609"></a><span class="lineno">  609</span>            canvas.Save();</div>
+<div class="line"><a id="l00610" name="l00610"></a><span class="lineno">  610</span>            canvas.RotateDegrees(_rotationDeg, ax, ay);</div>
+<div class="line"><a id="l00611" name="l00611"></a><span class="lineno">  611</span>        }</div>
 <div class="line"><a id="l00612" name="l00612"></a><span class="lineno">  612</span> </div>
-<div class="line"><a id="l00613" name="l00613"></a><span class="lineno">  613</span>        <span class="keywordflow">if</span> (_rotationDeg != 0f)</div>
-<div class="line"><a id="l00614" name="l00614"></a><span class="lineno">  614</span>            canvas.Restore();</div>
+<div class="line"><a id="l00613" name="l00613"></a><span class="lineno">  613</span>        <span class="comment">// draw</span></div>
+<div class="line"><a id="l00614" name="l00614"></a><span class="lineno">  614</span>        canvas.DrawImage(img, src, dst, _paint);</div>
 <div class="line"><a id="l00615" name="l00615"></a><span class="lineno">  615</span> </div>
-<div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span>        <span class="comment">// if we created a transient SKImage from a bitmap, dispose it now</span></div>
-<div class="line"><a id="l00617" name="l00617"></a><span class="lineno">  617</span>        <span class="keywordflow">if</span> (_image is <span class="keyword">null</span> &amp;&amp; img is not <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00618" name="l00618"></a><span class="lineno">  618</span>            img.Dispose();</div>
-<div class="line"><a id="l00619" name="l00619"></a><span class="lineno">  619</span>    }</div>
+<div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span>        <span class="keywordflow">if</span> (_rotationDeg != 0f)</div>
+<div class="line"><a id="l00617" name="l00617"></a><span class="lineno">  617</span>            canvas.Restore();</div>
+<div class="line"><a id="l00618" name="l00618"></a><span class="lineno">  618</span> </div>
+<div class="line"><a id="l00619" name="l00619"></a><span class="lineno">  619</span>        <span class="comment">// if we created a transient SKImage from a bitmap, dispose it now</span></div>
+<div class="line"><a id="l00620" name="l00620"></a><span class="lineno">  620</span>        <span class="keywordflow">if</span> (_image is <span class="keyword">null</span> &amp;&amp; img is not <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00621" name="l00621"></a><span class="lineno">  621</span>            img.Dispose();</div>
+<div class="line"><a id="l00622" name="l00622"></a><span class="lineno">  622</span>    }</div>
 </div>
-<div class="line"><a id="l00620" name="l00620"></a><span class="lineno">  620</span> </div>
-<div class="line"><a id="l00621" name="l00621"></a><span class="lineno">  621</span>    <span class="keyword">private</span> <span class="keyword">static</span> SKRect ComputeDestRect(Rectangle bounds, SKRect src, <a class="code hl_enumeration" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3">ScaleMode</a> mode)</div>
-<div class="line"><a id="l00622" name="l00622"></a><span class="lineno">  622</span>    {</div>
-<div class="line"><a id="l00623" name="l00623"></a><span class="lineno">  623</span>        var dst = bounds.ToSKRect();</div>
-<div class="line"><a id="l00624" name="l00624"></a><span class="lineno">  624</span> </div>
-<div class="line"><a id="l00625" name="l00625"></a><span class="lineno">  625</span>        <span class="keywordflow">if</span> (mode == <a class="code hl_enumeration" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3">ScaleMode</a>.Stretch)</div>
-<div class="line"><a id="l00626" name="l00626"></a><span class="lineno">  626</span>            <span class="keywordflow">return</span> dst;</div>
+<div class="line"><a id="l00623" name="l00623"></a><span class="lineno">  623</span> </div>
+<div class="line"><a id="l00624" name="l00624"></a><span class="lineno">  624</span>    <span class="keyword">private</span> <span class="keyword">static</span> SKRect ComputeDestRect(Rectangle bounds, SKRect src, <a class="code hl_enumeration" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3">ScaleMode</a> mode)</div>
+<div class="line"><a id="l00625" name="l00625"></a><span class="lineno">  625</span>    {</div>
+<div class="line"><a id="l00626" name="l00626"></a><span class="lineno">  626</span>        var dst = bounds.ToSKRect();</div>
 <div class="line"><a id="l00627" name="l00627"></a><span class="lineno">  627</span> </div>
-<div class="line"><a id="l00628" name="l00628"></a><span class="lineno">  628</span>        <span class="keywordflow">if</span> (mode == <a class="code hl_enumeration" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3">ScaleMode</a>.Center)  <span class="comment">// center, no scale</span></div>
-<div class="line"><a id="l00629" name="l00629"></a><span class="lineno">  629</span>        {</div>
-<div class="line"><a id="l00630" name="l00630"></a><span class="lineno">  630</span>            <span class="keywordtype">float</span> w = MathF.Min(dst.Width, src.Width);</div>
-<div class="line"><a id="l00631" name="l00631"></a><span class="lineno">  631</span>            <span class="keywordtype">float</span> h = MathF.Min(dst.Height, src.Height);</div>
-<div class="line"><a id="l00632" name="l00632"></a><span class="lineno">  632</span>            <span class="keywordtype">float</span> dx = dst.MidX - w * 0.5f, dy = dst.MidY - h * 0.5f;</div>
-<div class="line"><a id="l00633" name="l00633"></a><span class="lineno">  633</span> </div>
-<div class="line"><a id="l00634" name="l00634"></a><span class="lineno">  634</span>            <span class="keywordflow">return</span> <span class="keyword">new</span> SKRect(dx, dy, dx + w, dy + h);</div>
-<div class="line"><a id="l00635" name="l00635"></a><span class="lineno">  635</span>        }</div>
+<div class="line"><a id="l00628" name="l00628"></a><span class="lineno">  628</span>        <span class="keywordflow">if</span> (mode == <a class="code hl_enumeration" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3">ScaleMode</a>.Stretch)</div>
+<div class="line"><a id="l00629" name="l00629"></a><span class="lineno">  629</span>            <span class="keywordflow">return</span> dst;</div>
+<div class="line"><a id="l00630" name="l00630"></a><span class="lineno">  630</span> </div>
+<div class="line"><a id="l00631" name="l00631"></a><span class="lineno">  631</span>        <span class="keywordflow">if</span> (mode == <a class="code hl_enumeration" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3">ScaleMode</a>.Center)  <span class="comment">// center, no scale</span></div>
+<div class="line"><a id="l00632" name="l00632"></a><span class="lineno">  632</span>        {</div>
+<div class="line"><a id="l00633" name="l00633"></a><span class="lineno">  633</span>            <span class="keywordtype">float</span> w = MathF.Min(dst.Width, src.Width);</div>
+<div class="line"><a id="l00634" name="l00634"></a><span class="lineno">  634</span>            <span class="keywordtype">float</span> h = MathF.Min(dst.Height, src.Height);</div>
+<div class="line"><a id="l00635" name="l00635"></a><span class="lineno">  635</span>            <span class="keywordtype">float</span> dx = dst.MidX - w * 0.5f, dy = dst.MidY - h * 0.5f;</div>
 <div class="line"><a id="l00636" name="l00636"></a><span class="lineno">  636</span> </div>
-<div class="line"><a id="l00637" name="l00637"></a><span class="lineno">  637</span>        <span class="keywordtype">float</span> srcW = src.Width, srcH = src.Height;</div>
-<div class="line"><a id="l00638" name="l00638"></a><span class="lineno">  638</span>        <span class="keywordtype">float</span> dstW = dst.Width, dstH = dst.Height;</div>
+<div class="line"><a id="l00637" name="l00637"></a><span class="lineno">  637</span>            <span class="keywordflow">return</span> <span class="keyword">new</span> SKRect(dx, dy, dx + w, dy + h);</div>
+<div class="line"><a id="l00638" name="l00638"></a><span class="lineno">  638</span>        }</div>
 <div class="line"><a id="l00639" name="l00639"></a><span class="lineno">  639</span> </div>
-<div class="line"><a id="l00640" name="l00640"></a><span class="lineno">  640</span>        <span class="keywordtype">float</span> scaleX = dstW / srcW;</div>
-<div class="line"><a id="l00641" name="l00641"></a><span class="lineno">  641</span>        <span class="keywordtype">float</span> scaleY = dstH / srcH;</div>
+<div class="line"><a id="l00640" name="l00640"></a><span class="lineno">  640</span>        <span class="keywordtype">float</span> srcW = src.Width, srcH = src.Height;</div>
+<div class="line"><a id="l00641" name="l00641"></a><span class="lineno">  641</span>        <span class="keywordtype">float</span> dstW = dst.Width, dstH = dst.Height;</div>
 <div class="line"><a id="l00642" name="l00642"></a><span class="lineno">  642</span> </div>
-<div class="line"><a id="l00643" name="l00643"></a><span class="lineno">  643</span>        <span class="keywordtype">float</span> scale = mode <span class="keywordflow">switch</span></div>
-<div class="line"><a id="l00644" name="l00644"></a><span class="lineno">  644</span>        {</div>
-<div class="line"><a id="l00645" name="l00645"></a><span class="lineno">  645</span>            ScaleMode.Fit =&gt; MathF.Min(scaleX, scaleY),</div>
-<div class="line"><a id="l00646" name="l00646"></a><span class="lineno">  646</span>            ScaleMode.Fill =&gt; MathF.Max(scaleX, scaleY),</div>
-<div class="line"><a id="l00647" name="l00647"></a><span class="lineno">  647</span>            ScaleMode.PixelPerfect =&gt; MathF.Max(1f, MathF.Floor(MathF.Min(scaleX, scaleY))),</div>
-<div class="line"><a id="l00648" name="l00648"></a><span class="lineno">  648</span>            _ =&gt; 1f</div>
-<div class="line"><a id="l00649" name="l00649"></a><span class="lineno">  649</span>        };</div>
-<div class="line"><a id="l00650" name="l00650"></a><span class="lineno">  650</span> </div>
-<div class="line"><a id="l00651" name="l00651"></a><span class="lineno">  651</span>        <span class="keywordtype">float</span> w2 = srcW * scale, h2 = srcH * scale;</div>
-<div class="line"><a id="l00652" name="l00652"></a><span class="lineno">  652</span>        <span class="keywordtype">float</span> x = dst.MidX - w2 * 0.5f;</div>
-<div class="line"><a id="l00653" name="l00653"></a><span class="lineno">  653</span>        <span class="keywordtype">float</span> y = dst.MidY - h2 * 0.5f;</div>
-<div class="line"><a id="l00654" name="l00654"></a><span class="lineno">  654</span> </div>
-<div class="line"><a id="l00655" name="l00655"></a><span class="lineno">  655</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> SKRect(x, y, x + w2, y + h2);</div>
-<div class="line"><a id="l00656" name="l00656"></a><span class="lineno">  656</span>    }</div>
-<div class="line"><a id="l00657" name="l00657"></a><span class="lineno">  657</span>}</div>
+<div class="line"><a id="l00643" name="l00643"></a><span class="lineno">  643</span>        <span class="keywordtype">float</span> scaleX = dstW / srcW;</div>
+<div class="line"><a id="l00644" name="l00644"></a><span class="lineno">  644</span>        <span class="keywordtype">float</span> scaleY = dstH / srcH;</div>
+<div class="line"><a id="l00645" name="l00645"></a><span class="lineno">  645</span> </div>
+<div class="line"><a id="l00646" name="l00646"></a><span class="lineno">  646</span>        <span class="keywordtype">float</span> scale = mode <span class="keywordflow">switch</span></div>
+<div class="line"><a id="l00647" name="l00647"></a><span class="lineno">  647</span>        {</div>
+<div class="line"><a id="l00648" name="l00648"></a><span class="lineno">  648</span>            ScaleMode.Fit =&gt; MathF.Min(scaleX, scaleY),</div>
+<div class="line"><a id="l00649" name="l00649"></a><span class="lineno">  649</span>            ScaleMode.Fill =&gt; MathF.Max(scaleX, scaleY),</div>
+<div class="line"><a id="l00650" name="l00650"></a><span class="lineno">  650</span>            ScaleMode.PixelPerfect =&gt; MathF.Max(1f, MathF.Floor(MathF.Min(scaleX, scaleY))),</div>
+<div class="line"><a id="l00651" name="l00651"></a><span class="lineno">  651</span>            _ =&gt; 1f</div>
+<div class="line"><a id="l00652" name="l00652"></a><span class="lineno">  652</span>        };</div>
+<div class="line"><a id="l00653" name="l00653"></a><span class="lineno">  653</span> </div>
+<div class="line"><a id="l00654" name="l00654"></a><span class="lineno">  654</span>        <span class="keywordtype">float</span> w2 = srcW * scale, h2 = srcH * scale;</div>
+<div class="line"><a id="l00655" name="l00655"></a><span class="lineno">  655</span>        <span class="keywordtype">float</span> x = dst.MidX - w2 * 0.5f;</div>
+<div class="line"><a id="l00656" name="l00656"></a><span class="lineno">  656</span>        <span class="keywordtype">float</span> y = dst.MidY - h2 * 0.5f;</div>
+<div class="line"><a id="l00657" name="l00657"></a><span class="lineno">  657</span> </div>
+<div class="line"><a id="l00658" name="l00658"></a><span class="lineno">  658</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> SKRect(x, y, x + w2, y + h2);</div>
+<div class="line"><a id="l00659" name="l00659"></a><span class="lineno">  659</span>    }</div>
+<div class="line"><a id="l00660" name="l00660"></a><span class="lineno">  660</span>}</div>
 </div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase_html_a45228a4aba8bc2629472cb6560b8d554"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a45228a4aba8bc2629472cb6560b8d554">Gondwana.Drawing.Direct.DirectDrawingBase.View</a></div><div class="ttdeci">View? View</div><div class="ttdoc">Gets the view to which this direct drawing is attached, or null if the drawing is in scene-layer mode...</div><div class="ttdef"><b>Definition</b> <a href="DirectDrawingBase_8cs_source.html#l00271">DirectDrawingBase.cs:271</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase_html_ab464e191526e772a9cf74077c7f36f55"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#ab464e191526e772a9cf74077c7f36f55">Gondwana.Drawing.Direct.DirectDrawingBase.SceneLayer</a></div><div class="ttdeci">SceneLayer? SceneLayer</div><div class="ttdoc">Gets the scene layer to which this direct drawing is attached, or null if the drawing is in view mode...</div><div class="ttdef"><b>Definition</b> <a href="DirectDrawingBase_8cs_source.html#l00257">DirectDrawingBase.cs:257</a></div></div>
@@ -416,16 +419,16 @@ $(function(){initNavTree('DirectImage_8cs_source.html','',''); });
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Direct_1_1DirectImage_html_afadff1139e7f66fda31ae528c1bc9bc3adb3e3f51c9107e26c9bccf9a188ce2ed"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3adb3e3f51c9107e26c9bccf9a188ce2ed">Gondwana.Drawing.Direct.DirectImage.ScaleMode.Fill</a></div><div class="ttdeci">@ Fill</div><div class="ttdoc">Scales the image to completely cover the destination rectangle while preserving aspect ratio....</div><div class="ttdef"><b>Definition</b> <a href="#l00089">DirectImage.cs:89</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Direct_1_1DirectImage_html_afadff1139e7f66fda31ae528c1bc9bc3afbb09a82eafab60150d0996e8fe46560"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afadff1139e7f66fda31ae528c1bc9bc3afbb09a82eafab60150d0996e8fe46560">Gondwana.Drawing.Direct.DirectImage.ScaleMode.Stretch</a></div><div class="ttdeci">@ Stretch</div><div class="ttdoc">Stretches the image to fill the entire destination rectangle, ignoring aspect ratio....</div><div class="ttdef"><b>Definition</b> <a href="#l00075">DirectImage.cs:75</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Direct_1_1DirectImage_html_afd048eb1c3b8d4feda9fabff19596b5b"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Direct_1_1DirectImage.html#afd048eb1c3b8d4feda9fabff19596b5b">Gondwana.Drawing.Direct.DirectImage.DirectImage</a></div><div class="ttdeci">DirectImage(SKBitmap bitmap, RenderSurfaceHostBase renderSurfaceHost, View view, Rectangle screenBounds, string? nickname=null)</div><div class="ttdoc">Initializes a new instance of the DirectImage class for view (screen-space) rendering using a bitmap.</div><div class="ttdef"><b>Definition</b> <a href="#l00200">DirectImage.cs:200</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase_html"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html">Gondwana.Rendering.Backbuffers.BackbufferBase</a></div><div class="ttdoc">Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rende...</div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00018">BackbufferBase.cs:19</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase_html_aec9089b369950756218d786c83a59af5"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Gondwana.Rendering.Backbuffers.BackbufferBase.Canvas</a></div><div class="ttdeci">SKCanvas Canvas</div><div class="ttdoc">Gets the SkiaSharp canvas used for drawing operations on this backbuffer.</div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00059">BackbufferBase.cs:59</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase_html"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html">Gondwana.Rendering.Backbuffers.BackbufferBase</a></div><div class="ttdoc">Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rende...</div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00019">BackbufferBase.cs:20</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase_html_aec9089b369950756218d786c83a59af5"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#aec9089b369950756218d786c83a59af5">Gondwana.Rendering.Backbuffers.BackbufferBase.Canvas</a></div><div class="ttdeci">SKCanvas Canvas</div><div class="ttdoc">Gets the SkiaSharp canvas used for drawing operations on this backbuffer.</div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00060">BackbufferBase.cs:60</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1RenderSurfaceHostBase_html"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">Gondwana.Rendering.RenderSurfaceHostBase</a></div><div class="ttdoc">Represents a base class for hosting a render surface, providing functionality for managing rendering ...</div><div class="ttdef"><b>Definition</b> <a href="RenderSurfaceHostBase_8cs_source.html#l00014">RenderSurfaceHostBase.cs:15</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1Views_1_1View_html"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Views_1_1View.html">Gondwana.Rendering.Views.View</a></div><div class="ttdoc">Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...</div><div class="ttdef"><b>Definition</b> <a href="View_8cs_source.html#l00013">View.cs:14</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Scenes_1_1SceneLayer_html"><div class="ttname"><a href="classGondwana_1_1Scenes_1_1SceneLayer.html">Gondwana.Scenes.SceneLayer</a></div><div class="ttdoc">Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...</div><div class="ttdef"><b>Definition</b> <a href="SceneLayer_8cs_source.html#l00038">SceneLayer.cs:39</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Scenes_1_1SceneLayer_html"><div class="ttname"><a href="classGondwana_1_1Scenes_1_1SceneLayer.html">Gondwana.Scenes.SceneLayer</a></div><div class="ttdoc">Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...</div><div class="ttdef"><b>Definition</b> <a href="SceneLayer_8cs_source.html#l00039">SceneLayer.cs:40</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_1_1Direct_html"><div class="ttname"><a href="namespaceGondwana_1_1Drawing_1_1Direct.html">Gondwana.Drawing.Direct</a></div><div class="ttdef"><b>Definition</b> <a href="DirectVideo_8cs_source.html#l00009">DirectVideo.cs:9</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_1_1Direct_html_a8700c7fb68e73aae545e0fb474b37e31"><div class="ttname"><a href="namespaceGondwana_1_1Drawing_1_1Direct.html#a8700c7fb68e73aae545e0fb474b37e31">Gondwana.Drawing.Direct.DirectDrawingMode</a></div><div class="ttdeci">DirectDrawingMode</div><div class="ttdoc">Specifies where direct drawing operations are applied within the rendering pipeline.</div><div class="ttdef"><b>Definition</b> <a href="DirectDrawingMode_8cs_source.html#l00025">DirectDrawingMode.cs:26</a></div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Rendering_1_1Backbuffers_html"><div class="ttname"><a href="namespaceGondwana_1_1Rendering_1_1Backbuffers.html">Gondwana.Rendering.Backbuffers</a></div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00008">BackbufferBase.cs:8</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Rendering_1_1Backbuffers_html"><div class="ttname"><a href="namespaceGondwana_1_1Rendering_1_1Backbuffers.html">Gondwana.Rendering.Backbuffers</a></div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00009">BackbufferBase.cs:9</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Rendering_1_1Views_html"><div class="ttname"><a href="namespaceGondwana_1_1Rendering_1_1Views.html">Gondwana.Rendering.Views</a></div><div class="ttdef"><b>Definition</b> <a href="Camera_8cs_source.html#l00007">Camera.cs:7</a></div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Rendering_html"><div class="ttname"><a href="namespaceGondwana_1_1Rendering.html">Gondwana.Rendering</a></div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00008">BackbufferBase.cs:8</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Rendering_html"><div class="ttname"><a href="namespaceGondwana_1_1Rendering.html">Gondwana.Rendering</a></div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00009">BackbufferBase.cs:9</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Scenes_html"><div class="ttname"><a href="namespaceGondwana_1_1Scenes.html">Gondwana.Scenes</a></div><div class="ttdef"><b>Definition</b> <a href="SceneAnimationSourceDefinition_8cs_source.html#l00004">SceneAnimationSourceDefinition.cs:4</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1SkiaSharp_html"><div class="ttname"><a href="namespaceGondwana_1_1SkiaSharp.html">Gondwana.SkiaSharp</a></div><div class="ttdef"><b>Definition</b> <a href="DrawingExtensions_8cs_source.html#l00003">DrawingExtensions.cs:3</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

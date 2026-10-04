@@ -708,233 +708,237 @@ $(function(){initNavTree('Engine_8cs_source.html','',''); });
 <div class="line"><a id="l01121" name="l01121"></a><span class="lineno"> 1121</span>        <span class="comment">// update the DirectDrawing instances&#39; states</span></div>
 <div class="line"><a id="l01122" name="l01122"></a><span class="lineno"> 1122</span>        DirectDrawingManager.Instance.UpdateAll(tick);</div>
 <div class="line"><a id="l01123" name="l01123"></a><span class="lineno"> 1123</span> </div>
-<div class="line"><a id="l01124" name="l01124"></a><span class="lineno"> 1124</span>        <span class="comment">// refresh all RenderSurfaceHost backbuffers (skip surfaces rendered on the GL thread)</span></div>
+<div class="line"><a id="l01124" name="l01124"></a><span class="lineno"> 1124</span>        <span class="comment">// Resolve desktop GPU visual state at foreground cadence before requesting repaint.</span></div>
 <div class="line"><a id="l01125" name="l01125"></a><span class="lineno"> 1125</span>        <span class="keywordflow">foreach</span> (var surface <span class="keywordflow">in</span> RenderSurfaceHostRegistry.All)</div>
-<div class="line"><a id="l01126" name="l01126"></a><span class="lineno"> 1126</span>            <span class="keywordflow">if</span> (!surface.Backbuffer.IsGlThreadRendered)</div>
-<div class="line"><a id="l01127" name="l01127"></a><span class="lineno"> 1127</span>                surface.RenderToBackbuffer(tick);</div>
-<div class="line"><a id="l01128" name="l01128"></a><span class="lineno"> 1128</span> </div>
-<div class="line"><a id="l01129" name="l01129"></a><span class="lineno"> 1129</span>        <span class="comment">// render each Backbuffer to RenderSurfaceHost adapter (skip GL-thread surfaces)</span></div>
-<div class="line"><a id="l01130" name="l01130"></a><span class="lineno"> 1130</span>        <span class="keywordflow">foreach</span> (var surface <span class="keywordflow">in</span> RenderSurfaceHostRegistry.All)</div>
-<div class="line"><a id="l01131" name="l01131"></a><span class="lineno"> 1131</span>            <span class="keywordflow">if</span> (!surface.Backbuffer.IsGlThreadRendered)</div>
-<div class="line"><a id="l01132" name="l01132"></a><span class="lineno"> 1132</span>                surface.PresentBackbufferToAdapter();</div>
-<div class="line"><a id="l01133" name="l01133"></a><span class="lineno"> 1133</span> </div>
-<div class="line"><a id="l01134" name="l01134"></a><span class="lineno"> 1134</span>        <span class="comment">// update state of gamepad(s)</span></div>
-<div class="line"><a id="l01135" name="l01135"></a><span class="lineno"> 1135</span>        <a class="code hl_property" href="classGondwana_1_1Engine.html#a8cbd2e084b892eb8fd53fb4c75d2ee77">Input</a>.GamepadManager?.Update();</div>
-<div class="line"><a id="l01136" name="l01136"></a><span class="lineno"> 1136</span> </div>
-<div class="line"><a id="l01137" name="l01137"></a><span class="lineno"> 1137</span>        <span class="comment">// raise event</span></div>
-<div class="line"><a id="l01138" name="l01138"></a><span class="lineno"> 1138</span>        <span class="comment">// GL thread rendering is done as part of this invocation</span></div>
-<div class="line"><a id="l01139" name="l01139"></a><span class="lineno"> 1139</span>        <a class="code hl_event" href="classGondwana_1_1Engine.html#a3376a217fab6a271437d14854831a65c">AfterFrameRender</a>?.Invoke();</div>
+<div class="line"><a id="l01126" name="l01126"></a><span class="lineno"> 1126</span>            surface.ProduceRenderFrameSnapshot(tick);</div>
+<div class="line"><a id="l01127" name="l01127"></a><span class="lineno"> 1127</span> </div>
+<div class="line"><a id="l01128" name="l01128"></a><span class="lineno"> 1128</span>        <span class="comment">// Bitmap rendering remains on the engine thread.</span></div>
+<div class="line"><a id="l01129" name="l01129"></a><span class="lineno"> 1129</span>        <span class="keywordflow">foreach</span> (var surface <span class="keywordflow">in</span> RenderSurfaceHostRegistry.All)</div>
+<div class="line"><a id="l01130" name="l01130"></a><span class="lineno"> 1130</span>            <span class="keywordflow">if</span> (!surface.Backbuffer.IsGlThreadRendered)</div>
+<div class="line"><a id="l01131" name="l01131"></a><span class="lineno"> 1131</span>                surface.RenderToBackbuffer(tick);</div>
+<div class="line"><a id="l01132" name="l01132"></a><span class="lineno"> 1132</span> </div>
+<div class="line"><a id="l01133" name="l01133"></a><span class="lineno"> 1133</span>        <span class="comment">// render each Backbuffer to RenderSurfaceHost adapter (skip GL-thread surfaces)</span></div>
+<div class="line"><a id="l01134" name="l01134"></a><span class="lineno"> 1134</span>        <span class="keywordflow">foreach</span> (var surface <span class="keywordflow">in</span> RenderSurfaceHostRegistry.All)</div>
+<div class="line"><a id="l01135" name="l01135"></a><span class="lineno"> 1135</span>            <span class="keywordflow">if</span> (!surface.Backbuffer.IsGlThreadRendered)</div>
+<div class="line"><a id="l01136" name="l01136"></a><span class="lineno"> 1136</span>                surface.PresentBackbufferToAdapter();</div>
+<div class="line"><a id="l01137" name="l01137"></a><span class="lineno"> 1137</span> </div>
+<div class="line"><a id="l01138" name="l01138"></a><span class="lineno"> 1138</span>        <span class="comment">// update state of gamepad(s)</span></div>
+<div class="line"><a id="l01139" name="l01139"></a><span class="lineno"> 1139</span>        <a class="code hl_property" href="classGondwana_1_1Engine.html#a8cbd2e084b892eb8fd53fb4c75d2ee77">Input</a>.GamepadManager?.Update();</div>
 <div class="line"><a id="l01140" name="l01140"></a><span class="lineno"> 1140</span> </div>
-<div class="line"><a id="l01141" name="l01141"></a><span class="lineno"> 1141</span>        <span class="comment">// raise post-cycle timer events</span></div>
-<div class="line"><a id="l01142" name="l01142"></a><span class="lineno"> 1142</span>        Timer.RaiseTimerEvents(<a class="code hl_enumeration" href="namespaceGondwana_1_1Timers.html#a9719fea9a031c57c60c092f3ac64af41">TimerType</a>.PostCycle, tick);</div>
-<div class="line"><a id="l01143" name="l01143"></a><span class="lineno"> 1143</span>    }</div>
+<div class="line"><a id="l01141" name="l01141"></a><span class="lineno"> 1141</span>        <span class="comment">// raise event</span></div>
+<div class="line"><a id="l01142" name="l01142"></a><span class="lineno"> 1142</span>        <span class="comment">// GL thread rendering is done as part of this invocation</span></div>
+<div class="line"><a id="l01143" name="l01143"></a><span class="lineno"> 1143</span>        <a class="code hl_event" href="classGondwana_1_1Engine.html#a3376a217fab6a271437d14854831a65c">AfterFrameRender</a>?.Invoke();</div>
 <div class="line"><a id="l01144" name="l01144"></a><span class="lineno"> 1144</span> </div>
-<div class="line"><a id="l01145" name="l01145"></a><span class="lineno"> 1145</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> CalculateCPS(<span class="keywordtype">long</span> tick)</div>
-<div class="line"><a id="l01146" name="l01146"></a><span class="lineno"> 1146</span>    {</div>
-<div class="line"><a id="l01147" name="l01147"></a><span class="lineno"> 1147</span>        <span class="comment">// Has the sampling interval elapsed?</span></div>
-<div class="line"><a id="l01148" name="l01148"></a><span class="lineno"> 1148</span>        <span class="keywordtype">long</span> elapsedTicks = tick - _lastCPSSamplingTick;</div>
-<div class="line"><a id="l01149" name="l01149"></a><span class="lineno"> 1149</span>        <span class="keywordflow">if</span> (elapsedTicks &lt; <a class="code hl_property" href="classGondwana_1_1Engine.html#ad8821f813581b2d22fabbb4c9c7c3cb2">Configuration</a>.SamplingTimeForCPSTicks)</div>
-<div class="line"><a id="l01150" name="l01150"></a><span class="lineno"> 1150</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l01151" name="l01151"></a><span class="lineno"> 1151</span> </div>
-<div class="line"><a id="l01152" name="l01152"></a><span class="lineno"> 1152</span>        <span class="comment">// SNAPSHOT the counters BEFORE resetting or posting</span></div>
-<div class="line"><a id="l01153" name="l01153"></a><span class="lineno"> 1153</span>        <span class="keywordtype">long</span> grossCycles = _grossCyclesThisMeasure;</div>
-<div class="line"><a id="l01154" name="l01154"></a><span class="lineno"> 1154</span>        <span class="keywordtype">long</span> netCycles = _netCyclesThisMeasure;</div>
+<div class="line"><a id="l01145" name="l01145"></a><span class="lineno"> 1145</span>        <span class="comment">// raise post-cycle timer events</span></div>
+<div class="line"><a id="l01146" name="l01146"></a><span class="lineno"> 1146</span>        Timer.RaiseTimerEvents(<a class="code hl_enumeration" href="namespaceGondwana_1_1Timers.html#a9719fea9a031c57c60c092f3ac64af41">TimerType</a>.PostCycle, tick);</div>
+<div class="line"><a id="l01147" name="l01147"></a><span class="lineno"> 1147</span>    }</div>
+<div class="line"><a id="l01148" name="l01148"></a><span class="lineno"> 1148</span> </div>
+<div class="line"><a id="l01149" name="l01149"></a><span class="lineno"> 1149</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> CalculateCPS(<span class="keywordtype">long</span> tick)</div>
+<div class="line"><a id="l01150" name="l01150"></a><span class="lineno"> 1150</span>    {</div>
+<div class="line"><a id="l01151" name="l01151"></a><span class="lineno"> 1151</span>        <span class="comment">// Has the sampling interval elapsed?</span></div>
+<div class="line"><a id="l01152" name="l01152"></a><span class="lineno"> 1152</span>        <span class="keywordtype">long</span> elapsedTicks = tick - _lastCPSSamplingTick;</div>
+<div class="line"><a id="l01153" name="l01153"></a><span class="lineno"> 1153</span>        <span class="keywordflow">if</span> (elapsedTicks &lt; <a class="code hl_property" href="classGondwana_1_1Engine.html#ad8821f813581b2d22fabbb4c9c7c3cb2">Configuration</a>.SamplingTimeForCPSTicks)</div>
+<div class="line"><a id="l01154" name="l01154"></a><span class="lineno"> 1154</span>            <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l01155" name="l01155"></a><span class="lineno"> 1155</span> </div>
-<div class="line"><a id="l01156" name="l01156"></a><span class="lineno"> 1156</span>        <span class="comment">// Compute using the snapshot</span></div>
-<div class="line"><a id="l01157" name="l01157"></a><span class="lineno"> 1157</span>        <span class="keywordtype">double</span> elapsedSec = elapsedTicks / (double)HighResTimer.TicksPerSecond;</div>
-<div class="line"><a id="l01158" name="l01158"></a><span class="lineno"> 1158</span>        <span class="keywordtype">double</span> grossCps = grossCycles * HighResTimer.TicksPerSecond / (double)elapsedTicks;</div>
-<div class="line"><a id="l01159" name="l01159"></a><span class="lineno"> 1159</span>        <span class="keywordtype">double</span> netCps = netCycles * HighResTimer.TicksPerSecond / (double)elapsedTicks;</div>
-<div class="line"><a id="l01160" name="l01160"></a><span class="lineno"> 1160</span> </div>
-<div class="line"><a id="l01161" name="l01161"></a><span class="lineno"> 1161</span>        <span class="comment">// Collect actual GPU FPS from all registered GPU-rendered backbuffers.</span></div>
-<div class="line"><a id="l01162" name="l01162"></a><span class="lineno"> 1162</span>        <span class="keywordtype">long</span> totalGpuFrames = 0;</div>
-<div class="line"><a id="l01163" name="l01163"></a><span class="lineno"> 1163</span>        <span class="keywordtype">int</span> gpuSurfaceCount = 0;</div>
-<div class="line"><a id="l01164" name="l01164"></a><span class="lineno"> 1164</span>        <span class="keywordflow">foreach</span> (var surface <span class="keywordflow">in</span> RenderSurfaceHostRegistry.All.ToArray())</div>
-<div class="line"><a id="l01165" name="l01165"></a><span class="lineno"> 1165</span>        {</div>
-<div class="line"><a id="l01166" name="l01166"></a><span class="lineno"> 1166</span>            <span class="keywordflow">if</span> (surface.Backbuffer is GpuBackbuffer gpuBb)</div>
-<div class="line"><a id="l01167" name="l01167"></a><span class="lineno"> 1167</span>            {</div>
-<div class="line"><a id="l01168" name="l01168"></a><span class="lineno"> 1168</span>                totalGpuFrames += gpuBb.ConsumeFrameCount();</div>
-<div class="line"><a id="l01169" name="l01169"></a><span class="lineno"> 1169</span>                gpuSurfaceCount++;</div>
-<div class="line"><a id="l01170" name="l01170"></a><span class="lineno"> 1170</span>            }</div>
-<div class="line"><a id="l01171" name="l01171"></a><span class="lineno"> 1171</span>        }</div>
-<div class="line"><a id="l01172" name="l01172"></a><span class="lineno"> 1172</span>        <span class="keywordtype">double</span>? gpuFps = gpuSurfaceCount &gt; 0</div>
-<div class="line"><a id="l01173" name="l01173"></a><span class="lineno"> 1173</span>            ? totalGpuFrames * HighResTimer.TicksPerSecond / (double)elapsedTicks</div>
-<div class="line"><a id="l01174" name="l01174"></a><span class="lineno"> 1174</span>            : null;</div>
-<div class="line"><a id="l01175" name="l01175"></a><span class="lineno"> 1175</span> </div>
-<div class="line"><a id="l01176" name="l01176"></a><span class="lineno"> 1176</span>        <span class="comment">// Build immutable args NOW (so lambda doesn&#39;t read changing fields later)</span></div>
-<div class="line"><a id="l01177" name="l01177"></a><span class="lineno"> 1177</span>        var args = <span class="keyword">new</span> CyclesPerSecondCalculatedEventArgs(</div>
-<div class="line"><a id="l01178" name="l01178"></a><span class="lineno"> 1178</span>            grossCycles,</div>
-<div class="line"><a id="l01179" name="l01179"></a><span class="lineno"> 1179</span>            netCycles,</div>
-<div class="line"><a id="l01180" name="l01180"></a><span class="lineno"> 1180</span>            grossCps,</div>
-<div class="line"><a id="l01181" name="l01181"></a><span class="lineno"> 1181</span>            netCps,</div>
-<div class="line"><a id="l01182" name="l01182"></a><span class="lineno"> 1182</span>            elapsedSec,</div>
-<div class="line"><a id="l01183" name="l01183"></a><span class="lineno"> 1183</span>            gpuFps</div>
-<div class="line"><a id="l01184" name="l01184"></a><span class="lineno"> 1184</span>        );</div>
-<div class="line"><a id="l01185" name="l01185"></a><span class="lineno"> 1185</span> </div>
-<div class="line"><a id="l01186" name="l01186"></a><span class="lineno"> 1186</span>        <span class="comment">// Post the snapshot</span></div>
-<div class="line"><a id="l01187" name="l01187"></a><span class="lineno"> 1187</span>        <a class="code hl_property" href="classGondwana_1_1Engine.html#ab77dee07cb432a785afea9b92c28c4b4">UiDispatcher</a>!.Post(() =&gt; <a class="code hl_event" href="classGondwana_1_1Engine.html#a587a18579b91b31848634e1586e38127">CPSCalculated</a>?.Invoke(args));</div>
-<div class="line"><a id="l01188" name="l01188"></a><span class="lineno"> 1188</span> </div>
-<div class="line"><a id="l01189" name="l01189"></a><span class="lineno"> 1189</span>        _grossCPS = grossCps;</div>
-<div class="line"><a id="l01190" name="l01190"></a><span class="lineno"> 1190</span>        _netFPS = netCps;</div>
-<div class="line"><a id="l01191" name="l01191"></a><span class="lineno"> 1191</span> </div>
-<div class="line"><a id="l01192" name="l01192"></a><span class="lineno"> 1192</span>        <span class="comment">// Reset for next window</span></div>
-<div class="line"><a id="l01193" name="l01193"></a><span class="lineno"> 1193</span>        _lastCPSSamplingTick = tick;</div>
-<div class="line"><a id="l01194" name="l01194"></a><span class="lineno"> 1194</span>        _grossCyclesThisMeasure = 0;</div>
-<div class="line"><a id="l01195" name="l01195"></a><span class="lineno"> 1195</span>        _netCyclesThisMeasure = 0;</div>
-<div class="line"><a id="l01196" name="l01196"></a><span class="lineno"> 1196</span>    }</div>
-<div class="line"><a id="l01197" name="l01197"></a><span class="lineno"> 1197</span> </div>
-<div class="line"><a id="l01198" name="l01198"></a><span class="lineno"> 1198</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">void</span> ConfigureLogging(EngineConfiguration configuration)</div>
-<div class="line"><a id="l01199" name="l01199"></a><span class="lineno"> 1199</span>    {</div>
-<div class="line"><a id="l01200" name="l01200"></a><span class="lineno"> 1200</span>        <span class="comment">// Logging may already be active because hosts can configure it before</span></div>
-<div class="line"><a id="l01201" name="l01201"></a><span class="lineno"> 1201</span>        <span class="comment">// Engine.Initialize. Recreate the async pipeline so its channel uses</span></div>
-<div class="line"><a id="l01202" name="l01202"></a><span class="lineno"> 1202</span>        <span class="comment">// the capacity loaded from this configuration.</span></div>
-<div class="line"><a id="l01203" name="l01203"></a><span class="lineno"> 1203</span>        EngineLogger.StopAsyncLogging(flush: <span class="keyword">true</span>);</div>
-<div class="line"><a id="l01204" name="l01204"></a><span class="lineno"> 1204</span> </div>
-<div class="line"><a id="l01205" name="l01205"></a><span class="lineno"> 1205</span>        <span class="keywordflow">if</span> (configuration.<a class="code hl_property" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#ab2115476b30f35d3cb762a3f2a4a979f">LoggingMode</a> == <a class="code hl_enumeration" href="namespaceGondwana_1_1Logging.html#a13d81980428de8344a144441d03b249d">EngineLoggingMode</a>.Asynchronous)</div>
-<div class="line"><a id="l01206" name="l01206"></a><span class="lineno"> 1206</span>        {</div>
-<div class="line"><a id="l01207" name="l01207"></a><span class="lineno"> 1207</span>            EngineLogger.SwitchToAsync(configuration.<a class="code hl_property" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#a1256ecbc22e69298a52eda5eae3a142f">LoggingQueueCapacity</a>);</div>
-<div class="line"><a id="l01208" name="l01208"></a><span class="lineno"> 1208</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l01209" name="l01209"></a><span class="lineno"> 1209</span>        }</div>
-<div class="line"><a id="l01210" name="l01210"></a><span class="lineno"> 1210</span> </div>
-<div class="line"><a id="l01211" name="l01211"></a><span class="lineno"> 1211</span>        EngineLogger.Mode = <a class="code hl_enumeration" href="namespaceGondwana_1_1Logging.html#a13d81980428de8344a144441d03b249d">EngineLoggingMode</a>.Synchronous;</div>
-<div class="line"><a id="l01212" name="l01212"></a><span class="lineno"> 1212</span>    }</div>
-<div class="line"><a id="l01213" name="l01213"></a><span class="lineno"> 1213</span> </div>
-<div class="line"><a id="l01214" name="l01214"></a><span class="lineno"> 1214</span><span class="preprocessor">    #endregion private methods</span></div>
-<div class="line"><a id="l01215" name="l01215"></a><span class="lineno"> 1215</span> </div>
-<div class="line"><a id="l01216" name="l01216"></a><span class="lineno"> 1216</span><span class="preprocessor">    #region IDisposable support</span></div>
+<div class="line"><a id="l01156" name="l01156"></a><span class="lineno"> 1156</span>        <span class="comment">// SNAPSHOT the counters BEFORE resetting or posting</span></div>
+<div class="line"><a id="l01157" name="l01157"></a><span class="lineno"> 1157</span>        <span class="keywordtype">long</span> grossCycles = _grossCyclesThisMeasure;</div>
+<div class="line"><a id="l01158" name="l01158"></a><span class="lineno"> 1158</span>        <span class="keywordtype">long</span> netCycles = _netCyclesThisMeasure;</div>
+<div class="line"><a id="l01159" name="l01159"></a><span class="lineno"> 1159</span> </div>
+<div class="line"><a id="l01160" name="l01160"></a><span class="lineno"> 1160</span>        <span class="comment">// Compute using the snapshot</span></div>
+<div class="line"><a id="l01161" name="l01161"></a><span class="lineno"> 1161</span>        <span class="keywordtype">double</span> elapsedSec = elapsedTicks / (double)HighResTimer.TicksPerSecond;</div>
+<div class="line"><a id="l01162" name="l01162"></a><span class="lineno"> 1162</span>        <span class="keywordtype">double</span> grossCps = grossCycles * HighResTimer.TicksPerSecond / (double)elapsedTicks;</div>
+<div class="line"><a id="l01163" name="l01163"></a><span class="lineno"> 1163</span>        <span class="keywordtype">double</span> netCps = netCycles * HighResTimer.TicksPerSecond / (double)elapsedTicks;</div>
+<div class="line"><a id="l01164" name="l01164"></a><span class="lineno"> 1164</span> </div>
+<div class="line"><a id="l01165" name="l01165"></a><span class="lineno"> 1165</span>        <span class="comment">// Collect actual GPU FPS from all registered GPU-rendered backbuffers.</span></div>
+<div class="line"><a id="l01166" name="l01166"></a><span class="lineno"> 1166</span>        <span class="keywordtype">long</span> totalGpuFrames = 0;</div>
+<div class="line"><a id="l01167" name="l01167"></a><span class="lineno"> 1167</span>        <span class="keywordtype">int</span> gpuSurfaceCount = 0;</div>
+<div class="line"><a id="l01168" name="l01168"></a><span class="lineno"> 1168</span>        <span class="keywordflow">foreach</span> (var surface <span class="keywordflow">in</span> RenderSurfaceHostRegistry.All.ToArray())</div>
+<div class="line"><a id="l01169" name="l01169"></a><span class="lineno"> 1169</span>        {</div>
+<div class="line"><a id="l01170" name="l01170"></a><span class="lineno"> 1170</span>            <span class="keywordflow">if</span> (surface.Backbuffer is GpuBackbuffer gpuBb)</div>
+<div class="line"><a id="l01171" name="l01171"></a><span class="lineno"> 1171</span>            {</div>
+<div class="line"><a id="l01172" name="l01172"></a><span class="lineno"> 1172</span>                totalGpuFrames += gpuBb.ConsumeFrameCount();</div>
+<div class="line"><a id="l01173" name="l01173"></a><span class="lineno"> 1173</span>                gpuSurfaceCount++;</div>
+<div class="line"><a id="l01174" name="l01174"></a><span class="lineno"> 1174</span>            }</div>
+<div class="line"><a id="l01175" name="l01175"></a><span class="lineno"> 1175</span>        }</div>
+<div class="line"><a id="l01176" name="l01176"></a><span class="lineno"> 1176</span>        <span class="keywordtype">double</span>? gpuFps = gpuSurfaceCount &gt; 0</div>
+<div class="line"><a id="l01177" name="l01177"></a><span class="lineno"> 1177</span>            ? totalGpuFrames * HighResTimer.TicksPerSecond / (double)elapsedTicks</div>
+<div class="line"><a id="l01178" name="l01178"></a><span class="lineno"> 1178</span>            : null;</div>
+<div class="line"><a id="l01179" name="l01179"></a><span class="lineno"> 1179</span> </div>
+<div class="line"><a id="l01180" name="l01180"></a><span class="lineno"> 1180</span>        <span class="comment">// Build immutable args NOW (so lambda doesn&#39;t read changing fields later)</span></div>
+<div class="line"><a id="l01181" name="l01181"></a><span class="lineno"> 1181</span>        var args = <span class="keyword">new</span> CyclesPerSecondCalculatedEventArgs(</div>
+<div class="line"><a id="l01182" name="l01182"></a><span class="lineno"> 1182</span>            grossCycles,</div>
+<div class="line"><a id="l01183" name="l01183"></a><span class="lineno"> 1183</span>            netCycles,</div>
+<div class="line"><a id="l01184" name="l01184"></a><span class="lineno"> 1184</span>            grossCps,</div>
+<div class="line"><a id="l01185" name="l01185"></a><span class="lineno"> 1185</span>            netCps,</div>
+<div class="line"><a id="l01186" name="l01186"></a><span class="lineno"> 1186</span>            elapsedSec,</div>
+<div class="line"><a id="l01187" name="l01187"></a><span class="lineno"> 1187</span>            gpuFps</div>
+<div class="line"><a id="l01188" name="l01188"></a><span class="lineno"> 1188</span>        );</div>
+<div class="line"><a id="l01189" name="l01189"></a><span class="lineno"> 1189</span> </div>
+<div class="line"><a id="l01190" name="l01190"></a><span class="lineno"> 1190</span>        <span class="comment">// Post the snapshot</span></div>
+<div class="line"><a id="l01191" name="l01191"></a><span class="lineno"> 1191</span>        <a class="code hl_property" href="classGondwana_1_1Engine.html#ab77dee07cb432a785afea9b92c28c4b4">UiDispatcher</a>!.Post(() =&gt; <a class="code hl_event" href="classGondwana_1_1Engine.html#a587a18579b91b31848634e1586e38127">CPSCalculated</a>?.Invoke(args));</div>
+<div class="line"><a id="l01192" name="l01192"></a><span class="lineno"> 1192</span> </div>
+<div class="line"><a id="l01193" name="l01193"></a><span class="lineno"> 1193</span>        _grossCPS = grossCps;</div>
+<div class="line"><a id="l01194" name="l01194"></a><span class="lineno"> 1194</span>        _netFPS = netCps;</div>
+<div class="line"><a id="l01195" name="l01195"></a><span class="lineno"> 1195</span> </div>
+<div class="line"><a id="l01196" name="l01196"></a><span class="lineno"> 1196</span>        <span class="comment">// Reset for next window</span></div>
+<div class="line"><a id="l01197" name="l01197"></a><span class="lineno"> 1197</span>        _lastCPSSamplingTick = tick;</div>
+<div class="line"><a id="l01198" name="l01198"></a><span class="lineno"> 1198</span>        _grossCyclesThisMeasure = 0;</div>
+<div class="line"><a id="l01199" name="l01199"></a><span class="lineno"> 1199</span>        _netCyclesThisMeasure = 0;</div>
+<div class="line"><a id="l01200" name="l01200"></a><span class="lineno"> 1200</span>    }</div>
+<div class="line"><a id="l01201" name="l01201"></a><span class="lineno"> 1201</span> </div>
+<div class="line"><a id="l01202" name="l01202"></a><span class="lineno"> 1202</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">void</span> ConfigureLogging(EngineConfiguration configuration)</div>
+<div class="line"><a id="l01203" name="l01203"></a><span class="lineno"> 1203</span>    {</div>
+<div class="line"><a id="l01204" name="l01204"></a><span class="lineno"> 1204</span>        <span class="comment">// Logging may already be active because hosts can configure it before</span></div>
+<div class="line"><a id="l01205" name="l01205"></a><span class="lineno"> 1205</span>        <span class="comment">// Engine.Initialize. Recreate the async pipeline so its channel uses</span></div>
+<div class="line"><a id="l01206" name="l01206"></a><span class="lineno"> 1206</span>        <span class="comment">// the capacity loaded from this configuration.</span></div>
+<div class="line"><a id="l01207" name="l01207"></a><span class="lineno"> 1207</span>        EngineLogger.StopAsyncLogging(flush: <span class="keyword">true</span>);</div>
+<div class="line"><a id="l01208" name="l01208"></a><span class="lineno"> 1208</span> </div>
+<div class="line"><a id="l01209" name="l01209"></a><span class="lineno"> 1209</span>        <span class="keywordflow">if</span> (configuration.<a class="code hl_property" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#ab2115476b30f35d3cb762a3f2a4a979f">LoggingMode</a> == <a class="code hl_enumeration" href="namespaceGondwana_1_1Logging.html#a13d81980428de8344a144441d03b249d">EngineLoggingMode</a>.Asynchronous)</div>
+<div class="line"><a id="l01210" name="l01210"></a><span class="lineno"> 1210</span>        {</div>
+<div class="line"><a id="l01211" name="l01211"></a><span class="lineno"> 1211</span>            EngineLogger.SwitchToAsync(configuration.<a class="code hl_property" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#a1256ecbc22e69298a52eda5eae3a142f">LoggingQueueCapacity</a>);</div>
+<div class="line"><a id="l01212" name="l01212"></a><span class="lineno"> 1212</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l01213" name="l01213"></a><span class="lineno"> 1213</span>        }</div>
+<div class="line"><a id="l01214" name="l01214"></a><span class="lineno"> 1214</span> </div>
+<div class="line"><a id="l01215" name="l01215"></a><span class="lineno"> 1215</span>        EngineLogger.Mode = <a class="code hl_enumeration" href="namespaceGondwana_1_1Logging.html#a13d81980428de8344a144441d03b249d">EngineLoggingMode</a>.Synchronous;</div>
+<div class="line"><a id="l01216" name="l01216"></a><span class="lineno"> 1216</span>    }</div>
 <div class="line"><a id="l01217" name="l01217"></a><span class="lineno"> 1217</span> </div>
-<div class="line"><a id="l01218" name="l01218"></a><span class="lineno"> 1218</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Engine.html#a747162c754167416264068b5b834114f">Dispose</a>(<span class="keywordtype">bool</span> disposing)</div>
-<div class="line"><a id="l01219" name="l01219"></a><span class="lineno"> 1219</span>    {</div>
-<div class="line"><a id="l01220" name="l01220"></a><span class="lineno"> 1220</span>        <span class="keywordflow">if</span> (!<a class="code hl_property" href="classGondwana_1_1Engine.html#aab46d0dc7d179dc508a5bc35460fa61f">IsDisposed</a>)</div>
-<div class="line"><a id="l01221" name="l01221"></a><span class="lineno"> 1221</span>        {</div>
-<div class="line"><a id="l01222" name="l01222"></a><span class="lineno"> 1222</span>            <span class="keywordflow">if</span> (disposing)</div>
-<div class="line"><a id="l01223" name="l01223"></a><span class="lineno"> 1223</span>            {</div>
-<div class="line"><a id="l01224" name="l01224"></a><span class="lineno"> 1224</span>                <span class="keywordflow">if</span> (<a class="code hl_property" href="classGondwana_1_1Engine.html#ad96cc3ca3960fccd5070d4dc53a82329">IsDisposing</a>)</div>
-<div class="line"><a id="l01225" name="l01225"></a><span class="lineno"> 1225</span>                    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l01226" name="l01226"></a><span class="lineno"> 1226</span> </div>
-<div class="line"><a id="l01227" name="l01227"></a><span class="lineno"> 1227</span>                <a class="code hl_property" href="classGondwana_1_1Engine.html#ad96cc3ca3960fccd5070d4dc53a82329">IsDisposing</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l01228" name="l01228"></a><span class="lineno"> 1228</span> </div>
-<div class="line"><a id="l01229" name="l01229"></a><span class="lineno"> 1229</span>                <span class="comment">// stop the loop first so handlers don&#39;t race the cycle thread</span></div>
-<div class="line"><a id="l01230" name="l01230"></a><span class="lineno"> 1230</span>                <span class="keywordflow">try</span></div>
-<div class="line"><a id="l01231" name="l01231"></a><span class="lineno"> 1231</span>                {</div>
-<div class="line"><a id="l01232" name="l01232"></a><span class="lineno"> 1232</span>                    <a class="code hl_function" href="classGondwana_1_1Engine.html#ac7d30da86dbc3b9533d5753330e4b87f">Stop</a>();</div>
-<div class="line"><a id="l01233" name="l01233"></a><span class="lineno"> 1233</span>                }</div>
-<div class="line"><a id="l01234" name="l01234"></a><span class="lineno"> 1234</span>                <span class="keywordflow">catch</span> (Exception ex)</div>
+<div class="line"><a id="l01218" name="l01218"></a><span class="lineno"> 1218</span><span class="preprocessor">    #endregion private methods</span></div>
+<div class="line"><a id="l01219" name="l01219"></a><span class="lineno"> 1219</span> </div>
+<div class="line"><a id="l01220" name="l01220"></a><span class="lineno"> 1220</span><span class="preprocessor">    #region IDisposable support</span></div>
+<div class="line"><a id="l01221" name="l01221"></a><span class="lineno"> 1221</span> </div>
+<div class="line"><a id="l01222" name="l01222"></a><span class="lineno"> 1222</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Engine.html#a747162c754167416264068b5b834114f">Dispose</a>(<span class="keywordtype">bool</span> disposing)</div>
+<div class="line"><a id="l01223" name="l01223"></a><span class="lineno"> 1223</span>    {</div>
+<div class="line"><a id="l01224" name="l01224"></a><span class="lineno"> 1224</span>        <span class="keywordflow">if</span> (!<a class="code hl_property" href="classGondwana_1_1Engine.html#aab46d0dc7d179dc508a5bc35460fa61f">IsDisposed</a>)</div>
+<div class="line"><a id="l01225" name="l01225"></a><span class="lineno"> 1225</span>        {</div>
+<div class="line"><a id="l01226" name="l01226"></a><span class="lineno"> 1226</span>            <span class="keywordflow">if</span> (disposing)</div>
+<div class="line"><a id="l01227" name="l01227"></a><span class="lineno"> 1227</span>            {</div>
+<div class="line"><a id="l01228" name="l01228"></a><span class="lineno"> 1228</span>                <span class="keywordflow">if</span> (<a class="code hl_property" href="classGondwana_1_1Engine.html#ad96cc3ca3960fccd5070d4dc53a82329">IsDisposing</a>)</div>
+<div class="line"><a id="l01229" name="l01229"></a><span class="lineno"> 1229</span>                    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l01230" name="l01230"></a><span class="lineno"> 1230</span> </div>
+<div class="line"><a id="l01231" name="l01231"></a><span class="lineno"> 1231</span>                <a class="code hl_property" href="classGondwana_1_1Engine.html#ad96cc3ca3960fccd5070d4dc53a82329">IsDisposing</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l01232" name="l01232"></a><span class="lineno"> 1232</span> </div>
+<div class="line"><a id="l01233" name="l01233"></a><span class="lineno"> 1233</span>                <span class="comment">// stop the loop first so handlers don&#39;t race the cycle thread</span></div>
+<div class="line"><a id="l01234" name="l01234"></a><span class="lineno"> 1234</span>                <span class="keywordflow">try</span></div>
 <div class="line"><a id="l01235" name="l01235"></a><span class="lineno"> 1235</span>                {</div>
-<div class="line"><a id="l01236" name="l01236"></a><span class="lineno"> 1236</span>                    <a class="code hl_property" href="classGondwana_1_1Engine.html#a626de1eeb9d5528a11c8e1a6756d252f">Logger</a>.LogError(ex, <span class="stringliteral">&quot;Unhandled exception calling Stop()&quot;</span>);</div>
+<div class="line"><a id="l01236" name="l01236"></a><span class="lineno"> 1236</span>                    <a class="code hl_function" href="classGondwana_1_1Engine.html#ac7d30da86dbc3b9533d5753330e4b87f">Stop</a>();</div>
 <div class="line"><a id="l01237" name="l01237"></a><span class="lineno"> 1237</span>                }</div>
-<div class="line"><a id="l01238" name="l01238"></a><span class="lineno"> 1238</span> </div>
-<div class="line"><a id="l01239" name="l01239"></a><span class="lineno"> 1239</span>                <span class="comment">// wait for the background loop to actually exit unless we&#39;re already on it</span></div>
-<div class="line"><a id="l01240" name="l01240"></a><span class="lineno"> 1240</span>                <span class="keywordflow">try</span></div>
-<div class="line"><a id="l01241" name="l01241"></a><span class="lineno"> 1241</span>                {</div>
-<div class="line"><a id="l01242" name="l01242"></a><span class="lineno"> 1242</span>                    var cycleTask = _cycleTask;</div>
-<div class="line"><a id="l01243" name="l01243"></a><span class="lineno"> 1243</span>                    <span class="keywordflow">if</span> (cycleTask is not <span class="keyword">null</span> &amp;&amp; <a class="code hl_property" href="classGondwana_1_1Engine.html#a6d9a264fa4828437d36fe82e77cafc04">EngineDispatcher</a>.IsOnEngineThread &amp;&amp; !cycleTask.IsCompleted)</div>
-<div class="line"><a id="l01244" name="l01244"></a><span class="lineno"> 1244</span>                    {</div>
-<div class="line"><a id="l01245" name="l01245"></a><span class="lineno"> 1245</span>                        <span class="keywordflow">if</span> (!_deferredDisposeScheduled)</div>
-<div class="line"><a id="l01246" name="l01246"></a><span class="lineno"> 1246</span>                        {</div>
-<div class="line"><a id="l01247" name="l01247"></a><span class="lineno"> 1247</span>                            _deferredDisposeScheduled = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l01248" name="l01248"></a><span class="lineno"> 1248</span>                            cycleTask.ContinueWith(</div>
-<div class="line"><a id="l01249" name="l01249"></a><span class="lineno"> 1249</span>                                _ =&gt; CompleteManagedDisposal(),</div>
-<div class="line"><a id="l01250" name="l01250"></a><span class="lineno"> 1250</span>                                System.Threading.CancellationToken.None,</div>
-<div class="line"><a id="l01251" name="l01251"></a><span class="lineno"> 1251</span>                                System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously,</div>
-<div class="line"><a id="l01252" name="l01252"></a><span class="lineno"> 1252</span>                                System.Threading.Tasks.TaskScheduler.Default);</div>
-<div class="line"><a id="l01253" name="l01253"></a><span class="lineno"> 1253</span>                        }</div>
-<div class="line"><a id="l01254" name="l01254"></a><span class="lineno"> 1254</span> </div>
-<div class="line"><a id="l01255" name="l01255"></a><span class="lineno"> 1255</span>                        <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l01256" name="l01256"></a><span class="lineno"> 1256</span>                    }</div>
-<div class="line"><a id="l01257" name="l01257"></a><span class="lineno"> 1257</span> </div>
-<div class="line"><a id="l01258" name="l01258"></a><span class="lineno"> 1258</span>                    <span class="keywordflow">if</span> (cycleTask is not <span class="keyword">null</span> &amp;&amp; !<a class="code hl_property" href="classGondwana_1_1Engine.html#a6d9a264fa4828437d36fe82e77cafc04">EngineDispatcher</a>.IsOnEngineThread)</div>
-<div class="line"><a id="l01259" name="l01259"></a><span class="lineno"> 1259</span>                        cycleTask.Wait();</div>
-<div class="line"><a id="l01260" name="l01260"></a><span class="lineno"> 1260</span>                }</div>
-<div class="line"><a id="l01261" name="l01261"></a><span class="lineno"> 1261</span>                <span class="keywordflow">catch</span> (Exception ex)</div>
-<div class="line"><a id="l01262" name="l01262"></a><span class="lineno"> 1262</span>                {</div>
-<div class="line"><a id="l01263" name="l01263"></a><span class="lineno"> 1263</span>                    <a class="code hl_property" href="classGondwana_1_1Engine.html#a626de1eeb9d5528a11c8e1a6756d252f">Logger</a>.LogError(ex, <span class="stringliteral">&quot;Error waiting for engine loop to exit.&quot;</span>);</div>
+<div class="line"><a id="l01238" name="l01238"></a><span class="lineno"> 1238</span>                <span class="keywordflow">catch</span> (Exception ex)</div>
+<div class="line"><a id="l01239" name="l01239"></a><span class="lineno"> 1239</span>                {</div>
+<div class="line"><a id="l01240" name="l01240"></a><span class="lineno"> 1240</span>                    <a class="code hl_property" href="classGondwana_1_1Engine.html#a626de1eeb9d5528a11c8e1a6756d252f">Logger</a>.LogError(ex, <span class="stringliteral">&quot;Unhandled exception calling Stop()&quot;</span>);</div>
+<div class="line"><a id="l01241" name="l01241"></a><span class="lineno"> 1241</span>                }</div>
+<div class="line"><a id="l01242" name="l01242"></a><span class="lineno"> 1242</span> </div>
+<div class="line"><a id="l01243" name="l01243"></a><span class="lineno"> 1243</span>                <span class="comment">// wait for the background loop to actually exit unless we&#39;re already on it</span></div>
+<div class="line"><a id="l01244" name="l01244"></a><span class="lineno"> 1244</span>                <span class="keywordflow">try</span></div>
+<div class="line"><a id="l01245" name="l01245"></a><span class="lineno"> 1245</span>                {</div>
+<div class="line"><a id="l01246" name="l01246"></a><span class="lineno"> 1246</span>                    var cycleTask = _cycleTask;</div>
+<div class="line"><a id="l01247" name="l01247"></a><span class="lineno"> 1247</span>                    <span class="keywordflow">if</span> (cycleTask is not <span class="keyword">null</span> &amp;&amp; <a class="code hl_property" href="classGondwana_1_1Engine.html#a6d9a264fa4828437d36fe82e77cafc04">EngineDispatcher</a>.IsOnEngineThread &amp;&amp; !cycleTask.IsCompleted)</div>
+<div class="line"><a id="l01248" name="l01248"></a><span class="lineno"> 1248</span>                    {</div>
+<div class="line"><a id="l01249" name="l01249"></a><span class="lineno"> 1249</span>                        <span class="keywordflow">if</span> (!_deferredDisposeScheduled)</div>
+<div class="line"><a id="l01250" name="l01250"></a><span class="lineno"> 1250</span>                        {</div>
+<div class="line"><a id="l01251" name="l01251"></a><span class="lineno"> 1251</span>                            _deferredDisposeScheduled = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l01252" name="l01252"></a><span class="lineno"> 1252</span>                            cycleTask.ContinueWith(</div>
+<div class="line"><a id="l01253" name="l01253"></a><span class="lineno"> 1253</span>                                _ =&gt; CompleteManagedDisposal(),</div>
+<div class="line"><a id="l01254" name="l01254"></a><span class="lineno"> 1254</span>                                System.Threading.CancellationToken.None,</div>
+<div class="line"><a id="l01255" name="l01255"></a><span class="lineno"> 1255</span>                                System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously,</div>
+<div class="line"><a id="l01256" name="l01256"></a><span class="lineno"> 1256</span>                                System.Threading.Tasks.TaskScheduler.Default);</div>
+<div class="line"><a id="l01257" name="l01257"></a><span class="lineno"> 1257</span>                        }</div>
+<div class="line"><a id="l01258" name="l01258"></a><span class="lineno"> 1258</span> </div>
+<div class="line"><a id="l01259" name="l01259"></a><span class="lineno"> 1259</span>                        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l01260" name="l01260"></a><span class="lineno"> 1260</span>                    }</div>
+<div class="line"><a id="l01261" name="l01261"></a><span class="lineno"> 1261</span> </div>
+<div class="line"><a id="l01262" name="l01262"></a><span class="lineno"> 1262</span>                    <span class="keywordflow">if</span> (cycleTask is not <span class="keyword">null</span> &amp;&amp; !<a class="code hl_property" href="classGondwana_1_1Engine.html#a6d9a264fa4828437d36fe82e77cafc04">EngineDispatcher</a>.IsOnEngineThread)</div>
+<div class="line"><a id="l01263" name="l01263"></a><span class="lineno"> 1263</span>                        cycleTask.Wait();</div>
 <div class="line"><a id="l01264" name="l01264"></a><span class="lineno"> 1264</span>                }</div>
-<div class="line"><a id="l01265" name="l01265"></a><span class="lineno"> 1265</span> </div>
-<div class="line"><a id="l01266" name="l01266"></a><span class="lineno"> 1266</span>                CompleteManagedDisposal();</div>
-<div class="line"><a id="l01267" name="l01267"></a><span class="lineno"> 1267</span>            }</div>
-<div class="line"><a id="l01268" name="l01268"></a><span class="lineno"> 1268</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01269" name="l01269"></a><span class="lineno"> 1269</span>            {</div>
-<div class="line"><a id="l01270" name="l01270"></a><span class="lineno"> 1270</span>                <span class="comment">// unmanaged cleanup...</span></div>
-<div class="line"><a id="l01271" name="l01271"></a><span class="lineno"> 1271</span>                <a class="code hl_property" href="classGondwana_1_1Engine.html#aab46d0dc7d179dc508a5bc35460fa61f">IsDisposed</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l01272" name="l01272"></a><span class="lineno"> 1272</span>            }</div>
-<div class="line"><a id="l01273" name="l01273"></a><span class="lineno"> 1273</span>        }</div>
-<div class="line"><a id="l01274" name="l01274"></a><span class="lineno"> 1274</span>    }</div>
-<div class="line"><a id="l01275" name="l01275"></a><span class="lineno"> 1275</span> </div>
-<div class="line"><a id="l01276" name="l01276"></a><span class="lineno"> 1276</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> CompleteManagedDisposal()</div>
-<div class="line"><a id="l01277" name="l01277"></a><span class="lineno"> 1277</span>    {</div>
-<div class="line"><a id="l01278" name="l01278"></a><span class="lineno"> 1278</span>        <span class="keywordflow">if</span> (<a class="code hl_property" href="classGondwana_1_1Engine.html#aab46d0dc7d179dc508a5bc35460fa61f">IsDisposed</a>)</div>
-<div class="line"><a id="l01279" name="l01279"></a><span class="lineno"> 1279</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l01280" name="l01280"></a><span class="lineno"> 1280</span> </div>
-<div class="line"><a id="l01281" name="l01281"></a><span class="lineno"> 1281</span>        <span class="comment">// raise Disposing on UI thread if possible; otherwise inline</span></div>
-<div class="line"><a id="l01282" name="l01282"></a><span class="lineno"> 1282</span>        <span class="keywordflow">if</span> (<a class="code hl_property" href="classGondwana_1_1Engine.html#ab77dee07cb432a785afea9b92c28c4b4">UiDispatcher</a> is not <span class="keyword">null</span>)</div>
-<div class="line"><a id="l01283" name="l01283"></a><span class="lineno"> 1283</span>            <a class="code hl_property" href="classGondwana_1_1Engine.html#ab77dee07cb432a785afea9b92c28c4b4">UiDispatcher</a>.Post(() =&gt; SafeInvoke(<a class="code hl_event" href="classGondwana_1_1Engine.html#ab80856e97f9f913863165bd99d719105">Disposing</a>));</div>
-<div class="line"><a id="l01284" name="l01284"></a><span class="lineno"> 1284</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01285" name="l01285"></a><span class="lineno"> 1285</span>            SafeInvoke(<a class="code hl_event" href="classGondwana_1_1Engine.html#ab80856e97f9f913863165bd99d719105">Disposing</a>);</div>
-<div class="line"><a id="l01286" name="l01286"></a><span class="lineno"> 1286</span> </div>
-<div class="line"><a id="l01287" name="l01287"></a><span class="lineno"> 1287</span>        <span class="comment">// managed cleanup...</span></div>
-<div class="line"><a id="l01288" name="l01288"></a><span class="lineno"> 1288</span>        <a class="code hl_property" href="classGondwana_1_1Engine.html#a8cbd2e084b892eb8fd53fb4c75d2ee77">Input</a>.KeyboardEventPoller?.StopMonitoringAllKeys();</div>
-<div class="line"><a id="l01289" name="l01289"></a><span class="lineno"> 1289</span>        MouseEventPoller.Reset();</div>
-<div class="line"><a id="l01290" name="l01290"></a><span class="lineno"> 1290</span>        TouchEventPoller.Reset();</div>
-<div class="line"><a id="l01291" name="l01291"></a><span class="lineno"> 1291</span> </div>
-<div class="line"><a id="l01292" name="l01292"></a><span class="lineno"> 1292</span>        <span class="keywordflow">if</span> (<a class="code hl_property" href="classGondwana_1_1Engine.html#a8cbd2e084b892eb8fd53fb4c75d2ee77">Input</a>.GamepadManager is not <span class="keyword">null</span>)</div>
-<div class="line"><a id="l01293" name="l01293"></a><span class="lineno"> 1293</span>            <span class="keywordflow">foreach</span> (var gamepadAdapter <span class="keywordflow">in</span> <a class="code hl_property" href="classGondwana_1_1Engine.html#a8cbd2e084b892eb8fd53fb4c75d2ee77">Input</a>.GamepadManager.ConnectedAdapters)</div>
-<div class="line"><a id="l01294" name="l01294"></a><span class="lineno"> 1294</span>                <a class="code hl_property" href="classGondwana_1_1Engine.html#a8cbd2e084b892eb8fd53fb4c75d2ee77">Input</a>.GamepadEventPoller?.StopMonitoringAllButtons(gamepadAdapter.GamepadId);</div>
+<div class="line"><a id="l01265" name="l01265"></a><span class="lineno"> 1265</span>                <span class="keywordflow">catch</span> (Exception ex)</div>
+<div class="line"><a id="l01266" name="l01266"></a><span class="lineno"> 1266</span>                {</div>
+<div class="line"><a id="l01267" name="l01267"></a><span class="lineno"> 1267</span>                    <a class="code hl_property" href="classGondwana_1_1Engine.html#a626de1eeb9d5528a11c8e1a6756d252f">Logger</a>.LogError(ex, <span class="stringliteral">&quot;Error waiting for engine loop to exit.&quot;</span>);</div>
+<div class="line"><a id="l01268" name="l01268"></a><span class="lineno"> 1268</span>                }</div>
+<div class="line"><a id="l01269" name="l01269"></a><span class="lineno"> 1269</span> </div>
+<div class="line"><a id="l01270" name="l01270"></a><span class="lineno"> 1270</span>                CompleteManagedDisposal();</div>
+<div class="line"><a id="l01271" name="l01271"></a><span class="lineno"> 1271</span>            }</div>
+<div class="line"><a id="l01272" name="l01272"></a><span class="lineno"> 1272</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01273" name="l01273"></a><span class="lineno"> 1273</span>            {</div>
+<div class="line"><a id="l01274" name="l01274"></a><span class="lineno"> 1274</span>                <span class="comment">// unmanaged cleanup...</span></div>
+<div class="line"><a id="l01275" name="l01275"></a><span class="lineno"> 1275</span>                <a class="code hl_property" href="classGondwana_1_1Engine.html#aab46d0dc7d179dc508a5bc35460fa61f">IsDisposed</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l01276" name="l01276"></a><span class="lineno"> 1276</span>            }</div>
+<div class="line"><a id="l01277" name="l01277"></a><span class="lineno"> 1277</span>        }</div>
+<div class="line"><a id="l01278" name="l01278"></a><span class="lineno"> 1278</span>    }</div>
+<div class="line"><a id="l01279" name="l01279"></a><span class="lineno"> 1279</span> </div>
+<div class="line"><a id="l01280" name="l01280"></a><span class="lineno"> 1280</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> CompleteManagedDisposal()</div>
+<div class="line"><a id="l01281" name="l01281"></a><span class="lineno"> 1281</span>    {</div>
+<div class="line"><a id="l01282" name="l01282"></a><span class="lineno"> 1282</span>        <span class="keywordflow">if</span> (<a class="code hl_property" href="classGondwana_1_1Engine.html#aab46d0dc7d179dc508a5bc35460fa61f">IsDisposed</a>)</div>
+<div class="line"><a id="l01283" name="l01283"></a><span class="lineno"> 1283</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l01284" name="l01284"></a><span class="lineno"> 1284</span> </div>
+<div class="line"><a id="l01285" name="l01285"></a><span class="lineno"> 1285</span>        <span class="comment">// raise Disposing on UI thread if possible; otherwise inline</span></div>
+<div class="line"><a id="l01286" name="l01286"></a><span class="lineno"> 1286</span>        <span class="keywordflow">if</span> (<a class="code hl_property" href="classGondwana_1_1Engine.html#ab77dee07cb432a785afea9b92c28c4b4">UiDispatcher</a> is not <span class="keyword">null</span>)</div>
+<div class="line"><a id="l01287" name="l01287"></a><span class="lineno"> 1287</span>            <a class="code hl_property" href="classGondwana_1_1Engine.html#ab77dee07cb432a785afea9b92c28c4b4">UiDispatcher</a>.Post(() =&gt; SafeInvoke(<a class="code hl_event" href="classGondwana_1_1Engine.html#ab80856e97f9f913863165bd99d719105">Disposing</a>));</div>
+<div class="line"><a id="l01288" name="l01288"></a><span class="lineno"> 1288</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01289" name="l01289"></a><span class="lineno"> 1289</span>            SafeInvoke(<a class="code hl_event" href="classGondwana_1_1Engine.html#ab80856e97f9f913863165bd99d719105">Disposing</a>);</div>
+<div class="line"><a id="l01290" name="l01290"></a><span class="lineno"> 1290</span> </div>
+<div class="line"><a id="l01291" name="l01291"></a><span class="lineno"> 1291</span>        <span class="comment">// managed cleanup...</span></div>
+<div class="line"><a id="l01292" name="l01292"></a><span class="lineno"> 1292</span>        <a class="code hl_property" href="classGondwana_1_1Engine.html#a8cbd2e084b892eb8fd53fb4c75d2ee77">Input</a>.KeyboardEventPoller?.StopMonitoringAllKeys();</div>
+<div class="line"><a id="l01293" name="l01293"></a><span class="lineno"> 1293</span>        MouseEventPoller.Reset();</div>
+<div class="line"><a id="l01294" name="l01294"></a><span class="lineno"> 1294</span>        TouchEventPoller.Reset();</div>
 <div class="line"><a id="l01295" name="l01295"></a><span class="lineno"> 1295</span> </div>
-<div class="line"><a id="l01296" name="l01296"></a><span class="lineno"> 1296</span>        <span class="keywordflow">try</span></div>
-<div class="line"><a id="l01297" name="l01297"></a><span class="lineno"> 1297</span>        {</div>
-<div class="line"><a id="l01298" name="l01298"></a><span class="lineno"> 1298</span>            _configurationStore?.Dispose();</div>
-<div class="line"><a id="l01299" name="l01299"></a><span class="lineno"> 1299</span>        }</div>
-<div class="line"><a id="l01300" name="l01300"></a><span class="lineno"> 1300</span>        <span class="keywordflow">catch</span> (Exception ex)</div>
+<div class="line"><a id="l01296" name="l01296"></a><span class="lineno"> 1296</span>        <span class="keywordflow">if</span> (<a class="code hl_property" href="classGondwana_1_1Engine.html#a8cbd2e084b892eb8fd53fb4c75d2ee77">Input</a>.GamepadManager is not <span class="keyword">null</span>)</div>
+<div class="line"><a id="l01297" name="l01297"></a><span class="lineno"> 1297</span>            <span class="keywordflow">foreach</span> (var gamepadAdapter <span class="keywordflow">in</span> <a class="code hl_property" href="classGondwana_1_1Engine.html#a8cbd2e084b892eb8fd53fb4c75d2ee77">Input</a>.GamepadManager.ConnectedAdapters)</div>
+<div class="line"><a id="l01298" name="l01298"></a><span class="lineno"> 1298</span>                <a class="code hl_property" href="classGondwana_1_1Engine.html#a8cbd2e084b892eb8fd53fb4c75d2ee77">Input</a>.GamepadEventPoller?.StopMonitoringAllButtons(gamepadAdapter.GamepadId);</div>
+<div class="line"><a id="l01299" name="l01299"></a><span class="lineno"> 1299</span> </div>
+<div class="line"><a id="l01300" name="l01300"></a><span class="lineno"> 1300</span>        <span class="keywordflow">try</span></div>
 <div class="line"><a id="l01301" name="l01301"></a><span class="lineno"> 1301</span>        {</div>
-<div class="line"><a id="l01302" name="l01302"></a><span class="lineno"> 1302</span>            <a class="code hl_property" href="classGondwana_1_1Engine.html#a626de1eeb9d5528a11c8e1a6756d252f">Logger</a>.LogError(ex, <span class="stringliteral">&quot;Error saving the engine configuration during disposal.&quot;</span>);</div>
+<div class="line"><a id="l01302" name="l01302"></a><span class="lineno"> 1302</span>            _configurationStore?.Dispose();</div>
 <div class="line"><a id="l01303" name="l01303"></a><span class="lineno"> 1303</span>        }</div>
-<div class="line"><a id="l01304" name="l01304"></a><span class="lineno"> 1304</span>        <span class="keywordflow">finally</span></div>
+<div class="line"><a id="l01304" name="l01304"></a><span class="lineno"> 1304</span>        <span class="keywordflow">catch</span> (Exception ex)</div>
 <div class="line"><a id="l01305" name="l01305"></a><span class="lineno"> 1305</span>        {</div>
-<div class="line"><a id="l01306" name="l01306"></a><span class="lineno"> 1306</span>            _configurationStore = <span class="keyword">null</span>;</div>
+<div class="line"><a id="l01306" name="l01306"></a><span class="lineno"> 1306</span>            <a class="code hl_property" href="classGondwana_1_1Engine.html#a626de1eeb9d5528a11c8e1a6756d252f">Logger</a>.LogError(ex, <span class="stringliteral">&quot;Error saving the engine configuration during disposal.&quot;</span>);</div>
 <div class="line"><a id="l01307" name="l01307"></a><span class="lineno"> 1307</span>        }</div>
-<div class="line"><a id="l01308" name="l01308"></a><span class="lineno"> 1308</span> </div>
-<div class="line"><a id="l01309" name="l01309"></a><span class="lineno"> 1309</span>        <span class="keywordflow">if</span> (EngineLogger.Mode == <a class="code hl_enumeration" href="namespaceGondwana_1_1Logging.html#a13d81980428de8344a144441d03b249d">EngineLoggingMode</a>.Asynchronous)</div>
-<div class="line"><a id="l01310" name="l01310"></a><span class="lineno"> 1310</span>            EngineLogger.StopAsyncLogging(flush: <a class="code hl_property" href="classGondwana_1_1Engine.html#ad8821f813581b2d22fabbb4c9c7c3cb2">Configuration</a>.FlushAsyncLogsOnShutdown);</div>
-<div class="line"><a id="l01311" name="l01311"></a><span class="lineno"> 1311</span> </div>
-<div class="line"><a id="l01312" name="l01312"></a><span class="lineno"> 1312</span>        Timer.<a class="code hl_function" href="classGondwana_1_1Timers_1_1Timer.html#a2d23cde3973017fd8e0ca32c05f0718a">ClearAll</a>();</div>
-<div class="line"><a id="l01313" name="l01313"></a><span class="lineno"> 1313</span>        <a class="code hl_property" href="classGondwana_1_1Engine.html#a32e96d66aa1054ff905343cc8f0dc1ac">State</a>.Clear();</div>
-<div class="line"><a id="l01314" name="l01314"></a><span class="lineno"> 1314</span> </div>
-<div class="line"><a id="l01315" name="l01315"></a><span class="lineno"> 1315</span>        <span class="comment">// unmanaged cleanup...</span></div>
-<div class="line"><a id="l01316" name="l01316"></a><span class="lineno"> 1316</span>        <a class="code hl_property" href="classGondwana_1_1Engine.html#aab46d0dc7d179dc508a5bc35460fa61f">IsDisposed</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l01317" name="l01317"></a><span class="lineno"> 1317</span> </div>
-<div class="line"><a id="l01318" name="l01318"></a><span class="lineno"> 1318</span>        <span class="comment">// now signal we&#39;re fully torn down</span></div>
-<div class="line"><a id="l01319" name="l01319"></a><span class="lineno"> 1319</span>        <span class="keywordflow">if</span> (<a class="code hl_property" href="classGondwana_1_1Engine.html#ab77dee07cb432a785afea9b92c28c4b4">UiDispatcher</a> is not <span class="keyword">null</span>)</div>
-<div class="line"><a id="l01320" name="l01320"></a><span class="lineno"> 1320</span>            <a class="code hl_property" href="classGondwana_1_1Engine.html#ab77dee07cb432a785afea9b92c28c4b4">UiDispatcher</a>.Post(() =&gt; SafeInvoke(<a class="code hl_event" href="classGondwana_1_1Engine.html#a00b0e4f9d003fbb6e1711f8fadc33bb8">Disposed</a>));</div>
-<div class="line"><a id="l01321" name="l01321"></a><span class="lineno"> 1321</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01322" name="l01322"></a><span class="lineno"> 1322</span>            SafeInvoke(<a class="code hl_event" href="classGondwana_1_1Engine.html#a00b0e4f9d003fbb6e1711f8fadc33bb8">Disposed</a>);</div>
-<div class="line"><a id="l01323" name="l01323"></a><span class="lineno"> 1323</span>    }</div>
-<div class="line"><a id="l01324" name="l01324"></a><span class="lineno"> 1324</span> </div>
-<div class="line"><a id="l01325" name="l01325"></a><span class="lineno"> 1325</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">void</span> SafeInvoke(Action? evnt)</div>
-<div class="line"><a id="l01326" name="l01326"></a><span class="lineno"> 1326</span>    {</div>
-<div class="line"><a id="l01327" name="l01327"></a><span class="lineno"> 1327</span>        <span class="keywordflow">try</span> { evnt?.Invoke(); }</div>
-<div class="line"><a id="l01328" name="l01328"></a><span class="lineno"> 1328</span>        <span class="keywordflow">catch</span> (Exception ex)</div>
-<div class="line"><a id="l01329" name="l01329"></a><span class="lineno"> 1329</span>        {</div>
-<div class="line"><a id="l01330" name="l01330"></a><span class="lineno"> 1330</span>            <span class="comment">// Keep disposal robust; log and continue</span></div>
-<div class="line"><a id="l01331" name="l01331"></a><span class="lineno"> 1331</span>            <a class="code hl_property" href="classGondwana_1_1Engine.html#a626de1eeb9d5528a11c8e1a6756d252f">Logger</a>.LogError(ex, <span class="stringliteral">&quot;Unhandled exception in disposal event handler.&quot;</span>);</div>
-<div class="line"><a id="l01332" name="l01332"></a><span class="lineno"> 1332</span>        }</div>
-<div class="line"><a id="l01333" name="l01333"></a><span class="lineno"> 1333</span>    }</div>
-<div class="line"><a id="l01334" name="l01334"></a><span class="lineno"> 1334</span></div>
-<div class="foldopen" id="foldopen01357" data-start="{" data-end="}">
-<div class="line"><a id="l01357" name="l01357"></a><span class="lineno"><a class="line" href="classGondwana_1_1Engine.html#a747162c754167416264068b5b834114f"> 1357</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Engine.html#a747162c754167416264068b5b834114f">Dispose</a>()</div>
-<div class="line"><a id="l01358" name="l01358"></a><span class="lineno"> 1358</span>    {</div>
-<div class="line"><a id="l01359" name="l01359"></a><span class="lineno"> 1359</span>        <a class="code hl_function" href="classGondwana_1_1Engine.html#a747162c754167416264068b5b834114f">Dispose</a>(disposing: <span class="keyword">true</span>);</div>
-<div class="line"><a id="l01360" name="l01360"></a><span class="lineno"> 1360</span>        GC.SuppressFinalize(<span class="keyword">this</span>);</div>
-<div class="line"><a id="l01361" name="l01361"></a><span class="lineno"> 1361</span>    }</div>
+<div class="line"><a id="l01308" name="l01308"></a><span class="lineno"> 1308</span>        <span class="keywordflow">finally</span></div>
+<div class="line"><a id="l01309" name="l01309"></a><span class="lineno"> 1309</span>        {</div>
+<div class="line"><a id="l01310" name="l01310"></a><span class="lineno"> 1310</span>            _configurationStore = <span class="keyword">null</span>;</div>
+<div class="line"><a id="l01311" name="l01311"></a><span class="lineno"> 1311</span>        }</div>
+<div class="line"><a id="l01312" name="l01312"></a><span class="lineno"> 1312</span> </div>
+<div class="line"><a id="l01313" name="l01313"></a><span class="lineno"> 1313</span>        <span class="keywordflow">if</span> (EngineLogger.Mode == <a class="code hl_enumeration" href="namespaceGondwana_1_1Logging.html#a13d81980428de8344a144441d03b249d">EngineLoggingMode</a>.Asynchronous)</div>
+<div class="line"><a id="l01314" name="l01314"></a><span class="lineno"> 1314</span>            EngineLogger.StopAsyncLogging(flush: <a class="code hl_property" href="classGondwana_1_1Engine.html#ad8821f813581b2d22fabbb4c9c7c3cb2">Configuration</a>.FlushAsyncLogsOnShutdown);</div>
+<div class="line"><a id="l01315" name="l01315"></a><span class="lineno"> 1315</span> </div>
+<div class="line"><a id="l01316" name="l01316"></a><span class="lineno"> 1316</span>        Timer.<a class="code hl_function" href="classGondwana_1_1Timers_1_1Timer.html#a2d23cde3973017fd8e0ca32c05f0718a">ClearAll</a>();</div>
+<div class="line"><a id="l01317" name="l01317"></a><span class="lineno"> 1317</span>        <a class="code hl_property" href="classGondwana_1_1Engine.html#a32e96d66aa1054ff905343cc8f0dc1ac">State</a>.Clear();</div>
+<div class="line"><a id="l01318" name="l01318"></a><span class="lineno"> 1318</span> </div>
+<div class="line"><a id="l01319" name="l01319"></a><span class="lineno"> 1319</span>        <span class="comment">// unmanaged cleanup...</span></div>
+<div class="line"><a id="l01320" name="l01320"></a><span class="lineno"> 1320</span>        <a class="code hl_property" href="classGondwana_1_1Engine.html#aab46d0dc7d179dc508a5bc35460fa61f">IsDisposed</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l01321" name="l01321"></a><span class="lineno"> 1321</span> </div>
+<div class="line"><a id="l01322" name="l01322"></a><span class="lineno"> 1322</span>        <span class="comment">// now signal we&#39;re fully torn down</span></div>
+<div class="line"><a id="l01323" name="l01323"></a><span class="lineno"> 1323</span>        <span class="keywordflow">if</span> (<a class="code hl_property" href="classGondwana_1_1Engine.html#ab77dee07cb432a785afea9b92c28c4b4">UiDispatcher</a> is not <span class="keyword">null</span>)</div>
+<div class="line"><a id="l01324" name="l01324"></a><span class="lineno"> 1324</span>            <a class="code hl_property" href="classGondwana_1_1Engine.html#ab77dee07cb432a785afea9b92c28c4b4">UiDispatcher</a>.Post(() =&gt; SafeInvoke(<a class="code hl_event" href="classGondwana_1_1Engine.html#a00b0e4f9d003fbb6e1711f8fadc33bb8">Disposed</a>));</div>
+<div class="line"><a id="l01325" name="l01325"></a><span class="lineno"> 1325</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01326" name="l01326"></a><span class="lineno"> 1326</span>            SafeInvoke(<a class="code hl_event" href="classGondwana_1_1Engine.html#a00b0e4f9d003fbb6e1711f8fadc33bb8">Disposed</a>);</div>
+<div class="line"><a id="l01327" name="l01327"></a><span class="lineno"> 1327</span>    }</div>
+<div class="line"><a id="l01328" name="l01328"></a><span class="lineno"> 1328</span> </div>
+<div class="line"><a id="l01329" name="l01329"></a><span class="lineno"> 1329</span>    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keywordtype">void</span> SafeInvoke(Action? evnt)</div>
+<div class="line"><a id="l01330" name="l01330"></a><span class="lineno"> 1330</span>    {</div>
+<div class="line"><a id="l01331" name="l01331"></a><span class="lineno"> 1331</span>        <span class="keywordflow">try</span> { evnt?.Invoke(); }</div>
+<div class="line"><a id="l01332" name="l01332"></a><span class="lineno"> 1332</span>        <span class="keywordflow">catch</span> (Exception ex)</div>
+<div class="line"><a id="l01333" name="l01333"></a><span class="lineno"> 1333</span>        {</div>
+<div class="line"><a id="l01334" name="l01334"></a><span class="lineno"> 1334</span>            <span class="comment">// Keep disposal robust; log and continue</span></div>
+<div class="line"><a id="l01335" name="l01335"></a><span class="lineno"> 1335</span>            <a class="code hl_property" href="classGondwana_1_1Engine.html#a626de1eeb9d5528a11c8e1a6756d252f">Logger</a>.LogError(ex, <span class="stringliteral">&quot;Unhandled exception in disposal event handler.&quot;</span>);</div>
+<div class="line"><a id="l01336" name="l01336"></a><span class="lineno"> 1336</span>        }</div>
+<div class="line"><a id="l01337" name="l01337"></a><span class="lineno"> 1337</span>    }</div>
+<div class="line"><a id="l01338" name="l01338"></a><span class="lineno"> 1338</span></div>
+<div class="foldopen" id="foldopen01361" data-start="{" data-end="}">
+<div class="line"><a id="l01361" name="l01361"></a><span class="lineno"><a class="line" href="classGondwana_1_1Engine.html#a747162c754167416264068b5b834114f"> 1361</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Engine.html#a747162c754167416264068b5b834114f">Dispose</a>()</div>
+<div class="line"><a id="l01362" name="l01362"></a><span class="lineno"> 1362</span>    {</div>
+<div class="line"><a id="l01363" name="l01363"></a><span class="lineno"> 1363</span>        <a class="code hl_function" href="classGondwana_1_1Engine.html#a747162c754167416264068b5b834114f">Dispose</a>(disposing: <span class="keyword">true</span>);</div>
+<div class="line"><a id="l01364" name="l01364"></a><span class="lineno"> 1364</span>        GC.SuppressFinalize(<span class="keyword">this</span>);</div>
+<div class="line"><a id="l01365" name="l01365"></a><span class="lineno"> 1365</span>    }</div>
 </div>
-<div class="line"><a id="l01362" name="l01362"></a><span class="lineno"> 1362</span> </div>
-<div class="line"><a id="l01363" name="l01363"></a><span class="lineno"> 1363</span>    <a class="code hl_class" href="classGondwana_1_1Engine.html">~Engine</a>()</div>
-<div class="line"><a id="l01364" name="l01364"></a><span class="lineno"> 1364</span>    {</div>
-<div class="line"><a id="l01365" name="l01365"></a><span class="lineno"> 1365</span>        <span class="comment">// Do not change this code. Put cleanup code in &#39;Dispose(bool disposing)&#39; method</span></div>
-<div class="line"><a id="l01366" name="l01366"></a><span class="lineno"> 1366</span>        <a class="code hl_function" href="classGondwana_1_1Engine.html#a747162c754167416264068b5b834114f">Dispose</a>(disposing: <span class="keyword">false</span>);</div>
-<div class="line"><a id="l01367" name="l01367"></a><span class="lineno"> 1367</span>    }</div>
-<div class="line"><a id="l01368" name="l01368"></a><span class="lineno"> 1368</span> </div>
-<div class="line"><a id="l01369" name="l01369"></a><span class="lineno"> 1369</span><span class="preprocessor">    #endregion IDisposable support</span></div>
-<div class="line"><a id="l01370" name="l01370"></a><span class="lineno"> 1370</span>}</div>
+<div class="line"><a id="l01366" name="l01366"></a><span class="lineno"> 1366</span> </div>
+<div class="line"><a id="l01367" name="l01367"></a><span class="lineno"> 1367</span>    <a class="code hl_class" href="classGondwana_1_1Engine.html">~Engine</a>()</div>
+<div class="line"><a id="l01368" name="l01368"></a><span class="lineno"> 1368</span>    {</div>
+<div class="line"><a id="l01369" name="l01369"></a><span class="lineno"> 1369</span>        <span class="comment">// Do not change this code. Put cleanup code in &#39;Dispose(bool disposing)&#39; method</span></div>
+<div class="line"><a id="l01370" name="l01370"></a><span class="lineno"> 1370</span>        <a class="code hl_function" href="classGondwana_1_1Engine.html#a747162c754167416264068b5b834114f">Dispose</a>(disposing: <span class="keyword">false</span>);</div>
+<div class="line"><a id="l01371" name="l01371"></a><span class="lineno"> 1371</span>    }</div>
+<div class="line"><a id="l01372" name="l01372"></a><span class="lineno"> 1372</span> </div>
+<div class="line"><a id="l01373" name="l01373"></a><span class="lineno"> 1373</span><span class="preprocessor">    #endregion IDisposable support</span></div>
+<div class="line"><a id="l01374" name="l01374"></a><span class="lineno"> 1374</span>}</div>
 </div>
 <div class="ttc" id="aclassGondwana_1_1Configuration_1_1EngineConfiguration_html"><div class="ttname"><a href="classGondwana_1_1Configuration_1_1EngineConfiguration.html">Gondwana.Configuration.EngineConfiguration</a></div><div class="ttdoc">Settings used by the engine when cycling.</div><div class="ttdef"><b>Definition</b> <a href="EngineConfiguration_8cs_source.html#l00013">EngineConfiguration.cs:14</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Configuration_1_1EngineConfiguration_html_a1256ecbc22e69298a52eda5eae3a142f"><div class="ttname"><a href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#a1256ecbc22e69298a52eda5eae3a142f">Gondwana.Configuration.EngineConfiguration.LoggingQueueCapacity</a></div><div class="ttdeci">int LoggingQueueCapacity</div><div class="ttdoc">Maximum number of queued log events when LoggingMode is EngineLoggingMode.Asynchronous....</div><div class="ttdef"><b>Definition</b> <a href="EngineConfiguration_8cs_source.html#l00297">EngineConfiguration.cs:298</a></div></div>
@@ -964,7 +968,7 @@ $(function(){initNavTree('Engine_8cs_source.html','',''); });
 <div class="ttc" id="aclassGondwana_1_1Engine_html_a626de1eeb9d5528a11c8e1a6756d252f"><div class="ttname"><a href="classGondwana_1_1Engine.html#a626de1eeb9d5528a11c8e1a6756d252f">Gondwana.Engine.Logger</a></div><div class="ttdeci">static ILogger&lt; Engine &gt; Logger</div><div class="ttdoc">Gets the logger instance used by the engine for diagnostic and informational messages.</div><div class="ttdef"><b>Definition</b> <a href="#l00059">Engine.cs:59</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Engine_html_a6556d7a8f6b8698661386dca3e58fbc5"><div class="ttname"><a href="classGondwana_1_1Engine.html#a6556d7a8f6b8698661386dca3e58fbc5">Gondwana.Engine.StopAndWait</a></div><div class="ttdeci">void StopAndWait()</div><div class="ttdoc">Stops the engine and waits for its background cycle to finish before returning. Resources used by ren...</div><div class="ttdef"><b>Definition</b> <a href="#l00733">Engine.cs:733</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Engine_html_a6d9a264fa4828437d36fe82e77cafc04"><div class="ttname"><a href="classGondwana_1_1Engine.html#a6d9a264fa4828437d36fe82e77cafc04">Gondwana.Engine.EngineDispatcher</a></div><div class="ttdeci">IEngineDispatcher EngineDispatcher</div><div class="ttdoc">Gets the engine dispatcher used for marshalling operations to the engine&#39;s background thread.</div><div class="ttdef"><b>Definition</b> <a href="#l00784">Engine.cs:784</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Engine_html_a747162c754167416264068b5b834114f"><div class="ttname"><a href="classGondwana_1_1Engine.html#a747162c754167416264068b5b834114f">Gondwana.Engine.Dispose</a></div><div class="ttdeci">void Dispose()</div><div class="ttdoc">Releases all resources used by the Engine and stops all subsystems.</div><div class="ttdef"><b>Definition</b> <a href="#l01357">Engine.cs:1357</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Engine_html_a747162c754167416264068b5b834114f"><div class="ttname"><a href="classGondwana_1_1Engine.html#a747162c754167416264068b5b834114f">Gondwana.Engine.Dispose</a></div><div class="ttdeci">void Dispose()</div><div class="ttdoc">Releases all resources used by the Engine and stops all subsystems.</div><div class="ttdef"><b>Definition</b> <a href="#l01361">Engine.cs:1361</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Engine_html_a759df33a555fca215571dedb17c85228"><div class="ttname"><a href="classGondwana_1_1Engine.html#a759df33a555fca215571dedb17c85228">Gondwana.Engine.InitializationComplete</a></div><div class="ttdeci">Action? InitializationComplete</div><div class="ttdoc">Occurs after all initialization steps and post-initialization logic have completed.</div><div class="ttdef"><b>Definition</b> <a href="#l00138">Engine.cs:138</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Engine_html_a792f37da86d34e4777fa59a91964ab28"><div class="ttname"><a href="classGondwana_1_1Engine.html#a792f37da86d34e4777fa59a91964ab28">Gondwana.Engine.IsRunning</a></div><div class="ttdeci">bool IsRunning</div><div class="ttdoc">Gets a value indicating whether the engine&#39;s main loop is currently executing.</div><div class="ttdef"><b>Definition</b> <a href="#l00814">Engine.cs:814</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Engine_html_a8cbd2e084b892eb8fd53fb4c75d2ee77"><div class="ttname"><a href="classGondwana_1_1Engine.html#a8cbd2e084b892eb8fd53fb4c75d2ee77">Gondwana.Engine.Input</a></div><div class="ttdeci">EngineInputSystems Input</div><div class="ttdoc">Gets the collection of input subsystems for keyboard, mouse, touch, and gamepad input.</div><div class="ttdef"><b>Definition</b> <a href="#l00944">Engine.cs:944</a></div></div>
@@ -1003,8 +1007,8 @@ $(function(){initNavTree('Engine_8cs_source.html','',''); });
 <div class="ttc" id="anamespaceGondwana_1_1Input_1_1Touch_html"><div class="ttname"><a href="namespaceGondwana_1_1Input_1_1Touch.html">Gondwana.Input.Touch</a></div><div class="ttdef"><b>Definition</b> <a href="GestureEventArgs_8cs_source.html#l00001">GestureEventArgs.cs:1</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Logging_html"><div class="ttname"><a href="namespaceGondwana_1_1Logging.html">Gondwana.Logging</a></div><div class="ttdef"><b>Definition</b> <a href="EngineLogger_8cs_source.html#l00006">EngineLogger.cs:6</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Logging_html_a13d81980428de8344a144441d03b249d"><div class="ttname"><a href="namespaceGondwana_1_1Logging.html#a13d81980428de8344a144441d03b249d">Gondwana.Logging.EngineLoggingMode</a></div><div class="ttdeci">EngineLoggingMode</div><div class="ttdoc">Specifies the logging mode for the engine.</div><div class="ttdef"><b>Definition</b> <a href="EngineLoggingMode_8cs_source.html#l00009">EngineLoggingMode.cs:10</a></div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Rendering_1_1Backbuffers_html"><div class="ttname"><a href="namespaceGondwana_1_1Rendering_1_1Backbuffers.html">Gondwana.Rendering.Backbuffers</a></div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00008">BackbufferBase.cs:8</a></div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Rendering_html"><div class="ttname"><a href="namespaceGondwana_1_1Rendering.html">Gondwana.Rendering</a></div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00008">BackbufferBase.cs:8</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Rendering_1_1Backbuffers_html"><div class="ttname"><a href="namespaceGondwana_1_1Rendering_1_1Backbuffers.html">Gondwana.Rendering.Backbuffers</a></div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00009">BackbufferBase.cs:9</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Rendering_html"><div class="ttname"><a href="namespaceGondwana_1_1Rendering.html">Gondwana.Rendering</a></div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00009">BackbufferBase.cs:9</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Timers_html"><div class="ttname"><a href="namespaceGondwana_1_1Timers.html">Gondwana.Timers</a></div><div class="ttdef"><b>Definition</b> <a href="EngineSimulationClock_8cs_source.html#l00001">EngineSimulationClock.cs:1</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Timers_html_a9719fea9a031c57c60c092f3ac64af41"><div class="ttname"><a href="namespaceGondwana_1_1Timers.html#a9719fea9a031c57c60c092f3ac64af41">Gondwana.Timers.TimerType</a></div><div class="ttdeci">TimerType</div><div class="ttdoc">Specifies when a Timer should have its Timer.Tick event raised relative to the engine&#39;s main update a...</div><div class="ttdef"><b>Definition</b> <a href="TimerType_8cs_source.html#l00021">TimerType.cs:22</a></div></div>
 <div class="ttc" id="anamespaceGondwana_html"><div class="ttname"><a href="namespaceGondwana.html">Gondwana</a></div><div class="ttdef"><b>Definition</b> <a href="BrowserAudioBackend_8cs_source.html#l00003">BrowserAudioBackend.cs:3</a></div></div>

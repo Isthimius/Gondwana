@@ -1,5 +1,11 @@
 var NAVTREEINDEX20 =
 {
+"classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html#aabbe69e3ac67de94a280201eff280a87":[1,0,0,16,5,2,6],
+"classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html#abdde236361218d0a7de014efb43c0f74":[0,0,0,17,5,2,1],
+"classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html#abdde236361218d0a7de014efb43c0f74":[1,0,0,16,5,2,1],
+"classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html#ac77b0ecfea583d52ce3b9e26f0e2c5cb":[0,0,0,17,5,2,11],
+"classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html#ac77b0ecfea583d52ce3b9e26f0e2c5cb":[1,0,0,16,5,2,11],
+"classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html#ad408f2b2209c7834d0fe091c53eb83c7":[0,0,0,17,5,2,5],
 "classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html#ad408f2b2209c7834d0fe091c53eb83c7":[1,0,0,16,5,2,5],
 "classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html#ad830ae947b040a70cc2d3951051b4a62":[0,0,0,17,5,2,8],
 "classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html#ad830ae947b040a70cc2d3951051b4a62":[1,0,0,16,5,2,8],
@@ -243,11 +249,5 @@ var NAVTREEINDEX20 =
 "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html":[1,0,0,17,0,2],
 "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html#a096e836807fa848e6cc7727fd96dc15b":[0,0,0,18,0,2,2],
 "classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html#a096e836807fa848e6cc7727fd96dc15b":[1,0,0,17,0,2,2],
-"classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html#a2e530bb0d0ae1e78b57434fdf9d49506":[0,0,0,18,0,2,0],
-"classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html#a2e530bb0d0ae1e78b57434fdf9d49506":[1,0,0,17,0,2,0],
-"classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html#a4fc985c76ece2a9ec3a6e3eb3bdccbe8":[0,0,0,18,0,2,1],
-"classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html#a4fc985c76ece2a9ec3a6e3eb3bdccbe8":[1,0,0,17,0,2,1],
-"classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadAdapter.html":[0,0,0,18,1,0,0,0],
-"classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadAdapter.html":[1,0,0,17,1,0,0,0],
-"classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadAdapter.html#a146f581f289ea39a6b0cbfc20d8c1bb2":[0,0,0,18,1,0,0,0,2]
+"classGondwana_1_1WinForms_1_1Hosting_1_1WinFormsGpuGameHost.html#a2e530bb0d0ae1e78b57434fdf9d49506":[0,0,0,18,0,2,0]
 };

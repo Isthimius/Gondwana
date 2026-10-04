@@ -159,6 +159,7 @@ var hierarchy =
       [ "Gondwana.Avalonia.Input.Touch.AvaloniaTouchInputAdapter", "classGondwana_1_1Avalonia_1_1Input_1_1Touch_1_1AvaloniaTouchInputAdapter.html", null ],
       [ "Gondwana.Avalonia.Rendering.AvaloniaBitmapRenderSurfaceAdapter", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceAdapter.html", null ],
       [ "Gondwana.Avalonia.Rendering.AvaloniaGpuRenderSurfaceAdapter", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaGpuRenderSurfaceAdapter.html", null ],
+      [ "Gondwana.Avalonia.Rendering.AvaloniaGpuRenderSurfaceControl", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaGpuRenderSurfaceControl.html", null ],
       [ "Gondwana.Blazor.Input.Keyboard.BlazorKeyboardAdapter", "classGondwana_1_1Blazor_1_1Input_1_1Keyboard_1_1BlazorKeyboardAdapter.html", null ],
       [ "Gondwana.Blazor.Input.Mouse.BlazorMouseAdapter", "classGondwana_1_1Blazor_1_1Input_1_1Mouse_1_1BlazorMouseAdapter.html", null ],
       [ "Gondwana.Blazor.Input.Touch.BlazorTouchAdapter", "classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html", null ],

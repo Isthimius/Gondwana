@@ -111,8 +111,12 @@ Classes</h2></td></tr>
 <tr class="memitem:RefreshQueue" id="r_RefreshQueue"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>RefreshQueue</b></td></tr>
 <tr class="memitem:RenderContext" id="r_RenderContext"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>RenderContext</b></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ambient per-render-pass context (per thread). Set once per <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a> render pass in RenderSurfaceHost. SceneLayer-mode drawables can query this when they don't hold a <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a> reference. <br /></td></tr>
+<tr class="memitem:RenderFrameMailbox" id="r_RenderFrameMailbox"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>RenderFrameMailbox</b></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bounded single-producer/single-consumer mailbox. The monitor protects only slot ownership. Building, replay and resource disposal always happen outside it. A stalled consumer owns one slot; the producer alternates the other two. <br /></td></tr>
+<tr class="memitem:RenderFrameSnapshot" id="r_RenderFrameSnapshot"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>RenderFrameSnapshot</b></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Completed visual commands for one surface. Contains no live scene objects. Ownership transfers to the mailbox; only its slot owner may dispose the picture. Skia pictures copy paint/path state and retain native image and font references, so disposing the original managed drawing resources cannot invalidate replay. Recordings must contain CPU resources, never context-bound textures or surfaces. <br /></td></tr>
 <tr class="memitem:RenderStateSynchronization" id="r_RenderStateSynchronization"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><b>RenderStateSynchronization</b></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes live render-state mutation on the engine thread with GPU scene traversal on platform GL threads. <br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes <a class="el" href="classGondwana_1_1Engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a> state and resource disposal with recording and legacy live rendering. Desktop snapshot replay never enters this gate. The GPU admission helpers remain for the synchronous live WebGL/custom-backbuffer path; resize notifications also use SyncRoot briefly to update viewports. Do not use this gate around picture replay. <br /></td></tr>
 <tr class="memitem:RenderSurfaceAdapterBase" id="r_RenderSurfaceAdapterBase"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html">RenderSurfaceAdapterBase</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the abstract base class for render surface adapters that present backbuffer output to a destination surface.  <a href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#details">More...</a><br /></td></tr>
 <tr class="memitem:RenderSurfaceAdapterResizedEventArgs" id="r_RenderSurfaceAdapterResizedEventArgs"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html">RenderSurfaceAdapterResizedEventArgs</a></td></tr>
@@ -294,6 +298,12 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Captures measured scene-render work for one full-frame GPU render. </p>
+<p>Time gathering visible drawable candidates before sorting.</p>
+<p>Time validating existing order or sorting the gathered drawable lists.</p>
+<p>Number of DrawAtlas operations recorded for fixed-grid tiles.</p>
+<p>Number of fixed-grid tiles represented by DrawAtlas operations.</p>
+
+<p class="definition">Definition at line <a class="el" href="GpuRenderFrameDiagnostics_8cs_source.html#l00021">21</a> of file <a class="el" href="GpuRenderFrameDiagnostics_8cs_source.html">GpuRenderFrameDiagnostics.cs</a>.</p>
 
 </div>
 </div>
@@ -325,6 +335,17 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Captures time spent waiting for and holding the shared live render-state synchronization gate. </p>
+<p>CPU time replaying completed commands and flushing the backbuffer.</p>
+<p>CPU time spent replaying the recorded SKPicture onto the GPU backbuffer canvas.</p>
+<p>CPU time spent flushing the GPU backbuffer after picture replay.</p>
+<p>CPU time spent creating the lightweight GPU-backed snapshot used for presentation.</p>
+<p>Age of the completed snapshot when acquired by GL.</p>
+<p>Total snapshots published by this surface.</p>
+<p>Total published snapshots replaced before acquisition.</p>
+<p>Occupied slots at acquisition, including the rendering slot (maximum three).</p>
+<p>Approximate number of native Skia operations in the acquired recording.</p>
+
+<p class="definition">Definition at line <a class="el" href="GpuRenderFrameDiagnostics_8cs_source.html#l00047">47</a> of file <a class="el" href="GpuRenderFrameDiagnostics_8cs_source.html">GpuRenderFrameDiagnostics.cs</a>.</p>
 
 </div>
 </div>

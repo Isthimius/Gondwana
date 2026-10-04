@@ -127,6 +127,8 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:a4988b2d0a57aabc6499f949b30dd47b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the touch adapter for the <a class="el" href="namespaceGondwana_1_1Avalonia.html">Avalonia</a> GPU render surface.  <br /></td></tr>
 <tr class="memitem:a27a77b554ffe3fec87b00c692ecf5786" id="r_a27a77b554ffe3fec87b00c692ecf5786"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a27a77b554ffe3fec87b00c692ecf5786">BindScene</a> ()</td></tr>
 <tr class="memdesc:a27a77b554ffe3fec87b00c692ecf5786"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the current scene to the GPU render surface host.  <br /></td></tr>
+<tr class="memitem:ae6ed573f73af403a486442984ba2536f" id="r_ae6ed573f73af403a486442984ba2536f"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae6ed573f73af403a486442984ba2536f">OnDisposing</a> ()</td></tr>
+<tr class="memdesc:ae6ed573f73af403a486442984ba2536f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs before managed resources are disposed.  <br /></td></tr>
 <tr class="memitem:a2220a6be94f91ef6678003d94eec3620" id="r_a2220a6be94f91ef6678003d94eec3620"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2220a6be94f91ef6678003d94eec3620">OnConfigurePlatform</a> ()</td></tr>
 <tr class="memdesc:a2220a6be94f91ef6678003d94eec3620"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides a hook for configuring platform-specific settings during initialization.  <br /></td></tr>
 <tr class="memitem:a0f488891beffad1c5cbbe5ea6141e78f" id="r_a0f488891beffad1c5cbbe5ea6141e78f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0f488891beffad1c5cbbe5ea6141e78f">OnKeyboardAdapterInitialized</a> ()</td></tr>
@@ -200,8 +202,6 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:a01d0076d5fdd803e7169d35890eb362a inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs platform-specific engine shutdown work.  <br /></td></tr>
 <tr class="memitem:a38c70b8d3afe90cb0c3837957448a88c inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase" id="r_a38c70b8d3afe90cb0c3837957448a88c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a38c70b8d3afe90cb0c3837957448a88c">DisposeEngine</a> ()</td></tr>
 <tr class="memdesc:a38c70b8d3afe90cb0c3837957448a88c inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disposes the engine instance.  <br /></td></tr>
-<tr class="memitem:a3f34005c50744e316edad63029186c3c inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase" id="r_a3f34005c50744e316edad63029186c3c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a3f34005c50744e316edad63029186c3c">OnDisposing</a> ()</td></tr>
-<tr class="memdesc:a3f34005c50744e316edad63029186c3c inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs before managed resources are disposed.  <br /></td></tr>
 <tr class="memitem:a5455d7dbc4323016f0139d406436b0c6 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase" id="r_a5455d7dbc4323016f0139d406436b0c6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a5455d7dbc4323016f0139d406436b0c6">OnDisposed</a> ()</td></tr>
 <tr class="memdesc:a5455d7dbc4323016f0139d406436b0c6 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs after managed resources have been disposed.  <br /></td></tr>
 <tr class="memitem:a4190e4b3760094a46347a24609f32cb3 inherit pro_methods_classGondwana_1_1Hosting_1_1GameHostBase" id="r_a4190e4b3760094a46347a24609f32cb3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a4190e4b3760094a46347a24609f32cb3">EnsureNotInitialized</a> ()</td></tr>
@@ -488,7 +488,38 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Provides a hook for configuring platform-specific settings during initialization. </p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGpuGameHost_8cs_source.html#l00087">87</a> of file <a class="el" href="AvaloniaGpuGameHost_8cs_source.html">AvaloniaGpuGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGpuGameHost_8cs_source.html#l00094">94</a> of file <a class="el" href="AvaloniaGpuGameHost_8cs_source.html">AvaloniaGpuGameHost.cs</a>.</p>
+
+</div>
+</div>
+<a id="ae6ed573f73af403a486442984ba2536f" name="ae6ed573f73af403a486442984ba2536f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6ed573f73af403a486442984ba2536f">&#9670;&#160;</a></span>OnDisposing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">override void Gondwana.Avalonia.Hosting.AvaloniaGpuGameHost.OnDisposing </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Runs before managed resources are disposed. </p>
+
+<p>Reimplemented from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a3f34005c50744e316edad63029186c3c">Gondwana.Hosting.GameHostBase</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="AvaloniaGpuGameHost_8cs_source.html#l00085">85</a> of file <a class="el" href="AvaloniaGpuGameHost_8cs_source.html">AvaloniaGpuGameHost.cs</a>.</p>
 
 </div>
 </div>
@@ -517,7 +548,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Called after the gamepad manager has been initialized. Override to perform additional gamepad setup. </p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGpuGameHost_8cs_source.html#l00102">102</a> of file <a class="el" href="AvaloniaGpuGameHost_8cs_source.html">AvaloniaGpuGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGpuGameHost_8cs_source.html#l00109">109</a> of file <a class="el" href="AvaloniaGpuGameHost_8cs_source.html">AvaloniaGpuGameHost.cs</a>.</p>
 
 </div>
 </div>
@@ -548,7 +579,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a1414fa93f4ce9d54abea8ce7f5ea1522">Gondwana.Hosting.GameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGpuGameHost_8cs_source.html#l00113">113</a> of file <a class="el" href="AvaloniaGpuGameHost_8cs_source.html">AvaloniaGpuGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGpuGameHost_8cs_source.html#l00120">120</a> of file <a class="el" href="AvaloniaGpuGameHost_8cs_source.html">AvaloniaGpuGameHost.cs</a>.</p>
 
 </div>
 </div>
@@ -577,7 +608,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Called after the keyboard adapter has been initialized. Override to perform additional keyboard setup. </p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGpuGameHost_8cs_source.html#l00092">92</a> of file <a class="el" href="AvaloniaGpuGameHost_8cs_source.html">AvaloniaGpuGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGpuGameHost_8cs_source.html#l00099">99</a> of file <a class="el" href="AvaloniaGpuGameHost_8cs_source.html">AvaloniaGpuGameHost.cs</a>.</p>
 
 </div>
 </div>
@@ -606,7 +637,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Called after the mouse adapter has been initialized. Override to perform additional mouse setup. </p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGpuGameHost_8cs_source.html#l00097">97</a> of file <a class="el" href="AvaloniaGpuGameHost_8cs_source.html">AvaloniaGpuGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGpuGameHost_8cs_source.html#l00104">104</a> of file <a class="el" href="AvaloniaGpuGameHost_8cs_source.html">AvaloniaGpuGameHost.cs</a>.</p>
 
 </div>
 </div>
@@ -635,7 +666,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Called after the touch adapter has been initialized. Override to perform additional touch setup, such as attaching gesture recognizers. </p>
 
-<p class="definition">Definition at line <a class="el" href="AvaloniaGpuGameHost_8cs_source.html#l00108">108</a> of file <a class="el" href="AvaloniaGpuGameHost_8cs_source.html">AvaloniaGpuGameHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AvaloniaGpuGameHost_8cs_source.html#l00115">115</a> of file <a class="el" href="AvaloniaGpuGameHost_8cs_source.html">AvaloniaGpuGameHost.cs</a>.</p>
 
 </div>
 </div>

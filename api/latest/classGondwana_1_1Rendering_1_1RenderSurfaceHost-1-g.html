@@ -244,7 +244,7 @@ Events</h2></td></tr>
 <p>Binding a scene unregisters event handlers from the previous scene (if any), registers handlers with the new scene, and triggers a full refresh on the next frame. The <a class="el" href="#af8bbb7657b2a182575fabb206ea4d974" title="Occurs when a scene is bound to or unbound from this render surface host.">BindToScene</a> event fires after the binding operation completes. </p>
 <p>If the specified scene is already bound, this method returns immediately without performing any operations. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00254">254</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00258">258</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -281,7 +281,7 @@ This method always unregisters the instance from the registry. Derived classes s
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a32a3f463b8575f0e76057f9312c43125">Gondwana.Rendering.RenderSurfaceHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00911">911</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l01017">1017</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -315,7 +315,7 @@ This method always unregisters the instance from the registry. Derived classes s
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00118">118</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00122">122</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -344,7 +344,7 @@ This method always unregisters the instance from the registry. Derived classes s
 <p>The <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html" title="Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rende...">BackbufferBase</a> instance managing the render target canvas and dirty-rectangle tracking. </p>
 <p>The backbuffer holds the rendered frame content and tracks which regions have changed since the last presentation. All rendering operations are performed on the backbuffer's canvas before being copied to the UI adapter during presentation. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00176">176</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00180">180</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -372,7 +372,7 @@ This method always unregisters the instance from the registry. Derived classes s
 <p><code>true</code> to present only dirty regions (default); <code>false</code> to present the entire backbuffer every frame. </p>
 <p>Enabling dirty-rectangle-only presentation improves performance by reducing the amount of data transferred to the UI adapter. Disable this when troubleshooting rendering issues or when the adapter does not support partial updates. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00229">229</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00233">233</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -400,7 +400,7 @@ This method always unregisters the instance from the registry. Derived classes s
 <p>The <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html" title="Represents the abstract base class for render surface adapters that present backbuffer output to a de...">RenderSurfaceAdapterBase</a> instance representing the UI control or window where rendered content is displayed. </p>
 <p>The adapter handles platform-specific presentation details and provides size/resize notifications. The Backbuffer retains its logical dimensions across adapter resizes. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00201">201</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00205">205</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -428,7 +428,7 @@ This method always unregisters the instance from the registry. Derived classes s
 <p>The <a class="el" href="#a5443506468c1f60d06d90d65d49ebee7" title="Gets the scene currently bound to this render surface host.">Scene</a> instance being rendered, or <a class="el" href="classGondwana_1_1Scenes_1_1Scene.html#a98e66a9feac69e867a1a0b0ba172642f" title="Gets the singleton empty scene instance.">Scene.Empty</a> if no scene is bound. </p>
 <p>The scene contains all layers, sprites, and direct drawings that are rendered each frame. Use <a class="el" href="#ad2eee4bd5139d89c515b2d79463f2f03" title="Binds a scene to this render surface host, replacing any previously bound scene.">Bind</a> to change the active scene. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00188">188</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00192">192</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -456,7 +456,7 @@ This method always unregisters the instance from the registry. Derived classes s
 <p>The <a class="el" href="#a476c1ed70c6bd1d0683feac077a4fa73" title="Gets the view manager that controls camera positions, viewports, and multi-view rendering.">ViewManager</a> instance managing all views associated with this render surface host. </p>
 <p>Use the view manager to create, configure, and remove views. Each view defines a viewport rectangle on the backbuffer, a camera position in the scene, and zoom/parallax settings. <a class="el" href="namespaceGondwana_1_1Rendering_1_1Views.html">Views</a> enable split-screen, picture-in-picture, and minimap rendering. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00214">214</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00218">218</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -476,7 +476,7 @@ This method always unregisters the instance from the registry. Derived classes s
 <p>Occurs when a scene is bound to or unbound from this render surface host. </p>
 <p>This event fires after the scene binding operation completes. Event handlers receive information about the previously bound scene (if any) and the newly bound scene. Use this event to respond to scene changes, such as updating UI elements or resetting state that depends on the active scene. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00051">51</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00054">54</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -494,7 +494,7 @@ This method always unregisters the instance from the registry. Derived classes s
 
 <p>Occurs after a full-frame GPU render when at least one subscriber has requested diagnostics. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00071">71</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00074">74</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -512,7 +512,7 @@ This method always unregisters the instance from the registry. Derived classes s
 
 <p>Occurs at the beginning of the backbuffer rendering process. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00056">56</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00059">59</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -530,7 +530,7 @@ This method always unregisters the instance from the registry. Derived classes s
 
 <p>Occurs at the end of the backbuffer rendering process. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00061">61</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00064">64</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -548,7 +548,7 @@ This method always unregisters the instance from the registry. Derived classes s
 
 <p>Occurs when a backbuffer render operation is skipped because the scene is not dirty. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00066">66</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00069">69</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -571,11 +571,11 @@ This method always unregisters the instance from the registry. Derived classes s
 <li>
 <b>CPU/bitmap surfaces</b> — raised on the engine background thread.  </li>
 <li>
-<b>GPU/GL surfaces</b> — raised on the GL thread from within <code>PaintSurface</code>, while the <code>GRContext</code> is current. Do not marshal GPU canvas operations to a different thread.  </li>
+<b>Desktop GPU surfaces</b> — raised on the <a class="el" href="classGondwana_1_1Engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a> thread with a recording canvas. Use the supplied canvas and CPU resources; no GRContext is current and canvas.Surface is unavailable. Browser WebGL retains its synchronous GL callback behavior.  </li>
 </ul>
 <p>This event is not raised when a frame is skipped (scene not dirty) or when the surface has no configured views. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00108">108</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00112">112</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>

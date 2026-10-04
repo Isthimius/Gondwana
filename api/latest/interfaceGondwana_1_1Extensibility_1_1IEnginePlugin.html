@@ -255,11 +255,11 @@ Properties</h2></td></tr>
 <li>
 <b>CPU/bitmap surfaces</b> — called on the engine thread. In the normal desktop loop this is the engine background thread; in timer-driven mode it is the thread driving <a class="el" href="classGondwana_1_1Engine.html#a00078dddd49aef40c79cbbf1493da5f4" title="Advances the timer-driven engine by one externally presented frame.">Engine.Tick</a>.  </li>
 <li>
-<b>GPU/GL surfaces</b> — called from the GL paint callback while the <code>GRContext</code> is current. Do not marshal GPU operations to a different thread.  </li>
+<b>Desktop GPU surfaces</b> — called on the <a class="el" href="classGondwana_1_1Engine.html" title="Represents the core game engine singleton responsible for managing the main update loop,...">Engine</a> thread with a recording canvas. Use the supplied canvas and CPU resources; GRContext and canvas.Surface are unavailable. Browser WebGL retains synchronous GL execution.  </li>
 </ul>
 <p>This hook is not called when a frame is skipped (scene not dirty) or when the surface has no configured views. </p>
 
-<p class="definition">Definition at line <a class="el" href="IEnginePlugin_8cs_source.html#l00109">109</a> of file <a class="el" href="IEnginePlugin_8cs_source.html">IEnginePlugin.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IEnginePlugin_8cs_source.html#l00110">110</a> of file <a class="el" href="IEnginePlugin_8cs_source.html">IEnginePlugin.cs</a>.</p>
 
 </div>
 </div>

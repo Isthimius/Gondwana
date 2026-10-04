@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gondwana Game Engine: Gondwana/Rendering/DirtyRectnagleExtensions.cs Source File</title>
+<title>Gondwana Game Engine: Gondwana/Rendering/RenderFrameSnapshot.cs Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -69,7 +69,7 @@ $(function() {
   </div>
 </div>
 <script type="text/javascript">
-$(function(){initNavTree('DirtyRectnagleExtensions_8cs_source.html','',''); });
+$(function(){initNavTree('RenderFrameSnapshot_8cs_source.html','',''); });
 </script>
 <div id="container">
 <div id="doc-content">
@@ -95,38 +95,36 @@ $(function(){initNavTree('DirtyRectnagleExtensions_8cs_source.html','',''); });
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">DirtyRectnagleExtensions.cs</div></div>
+  <div class="headertitle"><div class="title">RenderFrameSnapshot.cs</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="keyword">using </span>System.Drawing;</div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="keyword">using </span>SkiaSharp;</div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceGondwana_1_1Rendering.html">Gondwana.Rendering</a>;</div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">internal</span> <span class="keyword">static</span> <span class="keyword">class </span>DirtyRectangleExtensions</div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>{</div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>    <span class="keyword">internal</span> <span class="keyword">static</span> <span class="keywordtype">void</span> AddDeduped(<span class="keyword">this</span> List&lt;Rectangle&gt; rects, Rectangle rect)</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    {</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>        <span class="comment">// If an existing rect fully contains this one, skip it</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; rects.Count; i++)</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        {</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>            <span class="keywordflow">if</span> (rects[i].Contains(rect))</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>                <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        }</div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">internal</span> <span class="keyword">sealed</span> <span class="keyword">class </span>RenderFrameSnapshot : IDisposable</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>{</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keyword">private</span> readonly SKPicture _commands;</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="comment">// Merge with any overlapping rects</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = rects.Count - 1; i &gt;= 0; i--)</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        {</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>            <span class="keywordflow">if</span> (rect.IntersectsWith(rects[i]))</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>            {</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>                rect = <a class="code hl_enumvalue" href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Rectangle</a>.Union(rect, rects[i]);</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>                rects.RemoveAt(i);</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>            }</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        }</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        rects.Add(rect);</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    }</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
-<div class="ttc" id="anamespaceGondwana_1_1Drawing_1_1Direct_1_1Particles_html_af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e"><div class="ttname"><a href="namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1ace9291906a4c3b042650b70d7f3b152e">Gondwana.Drawing.Direct.Particles.ParticleSpawnDistribution.Rectangle</a></div><div class="ttdeci">@ Rectangle</div><div class="ttdoc">Particles are spawned uniformly within a rectangular area. This is the default distribution.</div><div class="ttdef"><b>Definition</b> <a href="ParticleSpawnDistribution_8cs_source.html#l00011">ParticleSpawnDistribution.cs:11</a></div></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">internal</span> RenderFrameSnapshot(SKPicture commands, <span class="keywordtype">long</span> sequence, <span class="keywordtype">long</span> producedTick, <span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height)</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        _commands = commands;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        Sequence = sequence;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        ProducedTick = producedTick;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        Width = width;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        Height = height;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    }</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">internal</span> <span class="keywordtype">long</span> Sequence { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">internal</span> <span class="keywordtype">long</span> ProducedTick { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">internal</span> <span class="keywordtype">int</span> Width { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">internal</span> <span class="keywordtype">int</span> Height { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">internal</span> <span class="keywordtype">int</span> CommandCount =&gt; _commands.ApproximateOperationCount;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">internal</span> <span class="keywordtype">void</span> Replay(SKCanvas canvas) =&gt; canvas.DrawPicture(_commands);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">public</span> <span class="keywordtype">void</span> Dispose() =&gt; _commands.Dispose();</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
 <div class="ttc" id="anamespaceGondwana_1_1Rendering_html"><div class="ttname"><a href="namespaceGondwana_1_1Rendering.html">Gondwana.Rendering</a></div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00009">BackbufferBase.cs:9</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
@@ -134,7 +132,7 @@ $(function(){initNavTree('DirtyRectnagleExtensions_8cs_source.html','',''); });
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a href="dir_8a18fa2392a55d1b63cbd1c00c033f48.html">Gondwana</a></li><li class="navelem"><a href="dir_a53add3ce6819377e0be983d8a9376d4.html">Rendering</a></li><li class="navelem"><b>DirtyRectnagleExtensions.cs</b></li>
+    <li class="navelem"><a href="dir_8a18fa2392a55d1b63cbd1c00c033f48.html">Gondwana</a></li><li class="navelem"><a href="dir_a53add3ce6819377e0be983d8a9376d4.html">Rendering</a></li><li class="navelem"><b>RenderFrameSnapshot.cs</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0 </li>
   </ul>
 </div>

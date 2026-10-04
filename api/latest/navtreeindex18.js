@@ -1,5 +1,11 @@
 var NAVTREEINDEX18 =
 {
+"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a217af7ca662cdaaafd08dd2c42c004ee":[1,0,0,16,1,2,0],
+"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a431619f6939aa629b8a84f5329910c2f":[0,0,0,17,1,2,5],
+"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a431619f6939aa629b8a84f5329910c2f":[1,0,0,16,1,2,5],
+"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a521afe0add2167db08bc1e7078781925":[0,0,0,17,1,2,13],
+"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a521afe0add2167db08bc1e7078781925":[1,0,0,16,1,2,13],
+"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a5a2ac7580f39b77130019536f1b5fd56":[0,0,0,17,1,2,10],
 "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a5a2ac7580f39b77130019536f1b5fd56":[1,0,0,16,1,2,10],
 "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a6f30473249fc06340ecdbbb754f64363":[0,0,0,17,1,2,14],
 "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a6f30473249fc06340ecdbbb754f64363":[1,0,0,16,1,2,14],
@@ -243,11 +249,5 @@ var NAVTREEINDEX18 =
 "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html#af9683634a8c0c12acdd10ccf9e4e3198":[1,0,0,16,4,2,5],
 "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html#afafef91da8e34495185e88c26c93a5bf":[0,0,0,17,4,2,11],
 "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html#afafef91da8e34495185e88c26c93a5bf":[1,0,0,16,4,2,11],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html":[0,0,0,17,4,3],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html":[1,0,0,16,4,3],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#a1f1112860f149e06e5a52ca74d703bfa":[0,0,0,17,4,3,12],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#a1f1112860f149e06e5a52ca74d703bfa":[1,0,0,16,4,3,12],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#a2dc60908de59a95becbf001882a02d04":[0,0,0,17,4,3,4],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#a2dc60908de59a95becbf001882a02d04":[1,0,0,16,4,3,4],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#a50bc1cc2801a00109259ccab9982b979":[0,0,0,17,4,3,8]
+"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html":[0,0,0,17,4,3]
 };

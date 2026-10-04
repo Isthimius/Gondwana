@@ -1,5 +1,9 @@
 var NAVTREEINDEX6 =
 {
+"classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#abd56e6d67bf59d132cf0768420eea4a9":[1,0,0,5,2,1,1,0],
+"classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#ac31f78030af367a77419d292d89a30b5":[0,0,0,5,3,1,1,4],
+"classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#ac31f78030af367a77419d292d89a30b5":[1,0,0,5,2,1,1,4],
+"classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#acf1c7c0f3e5207da8fd6f9c819c0d7b3":[0,0,0,5,3,1,1,5],
 "classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#acf1c7c0f3e5207da8fd6f9c819c0d7b3":[1,0,0,5,2,1,1,5],
 "classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#acf35ad3a5338e3dc8b65eb28553da6d8":[0,0,0,5,3,1,1,12],
 "classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html#acf35ad3a5338e3dc8b65eb28553da6d8":[1,0,0,5,2,1,1,12],
@@ -245,9 +249,5 @@ var NAVTREEINDEX6 =
 "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteFrameDefinition.html#a50c18cc36f9de697d54ff87585826c8d":[1,0,0,5,3,0,2,2],
 "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteFrameDefinition.html#a7a3f4104024150f2af1dd934050489f6":[0,0,0,5,4,0,2,0],
 "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteFrameDefinition.html#a7a3f4104024150f2af1dd934050489f6":[1,0,0,5,3,0,2,0],
-"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html":[0,0,0,5,4,0,3],
-"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html":[1,0,0,5,3,0,3],
-"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a0ae1648dd18ac8affcf0cd145735db71":[0,0,0,5,4,0,3,4],
-"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a0ae1648dd18ac8affcf0cd145735db71":[1,0,0,5,3,0,3,4],
-"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a0d071ccaa32b1d6842af148679e5e7e8":[0,0,0,5,4,0,3,0]
+"classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html":[0,0,0,5,4,0,3]
 };

@@ -112,6 +112,7 @@ $(function(){initNavTree('GpuRenderFrameDiagnostics_8cs_source.html','',''); });
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordtype">double</span> QueryAndSortMilliseconds,</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordtype">double</span> DrawMilliseconds);</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span></div>
+<div class="foldopen" id="foldopen00021" data-start="{" data-end="}">
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="namespaceGondwana_1_1Rendering.html#ad12dec9881fd25abac1fc0dee54ddfd7">   21</a></span><span class="keyword">public</span> <span class="keyword">sealed</span> record <a class="code hl_function" href="namespaceGondwana_1_1Rendering.html#ad12dec9881fd25abac1fc0dee54ddfd7">GpuRenderFrameDiagnostics</a>(</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordtype">double</span> TotalRenderMilliseconds,</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordtype">double</span> QueryAndSortMilliseconds,</div>
@@ -119,16 +120,43 @@ $(function(){initNavTree('GpuRenderFrameDiagnostics_8cs_source.html','',''); });
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordtype">double</span> OverlayMilliseconds,</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordtype">int</span> DrawableCount,</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">int</span> TileCount,</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    IReadOnlyList&lt;GpuLayerRenderDiagnostics&gt; Layers);</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span></div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="namespaceGondwana_1_1Rendering.html#a399e1f9257dd0c3ffd1092e800ddaa50">   34</a></span><span class="keyword">public</span> <span class="keyword">sealed</span> record <a class="code hl_function" href="namespaceGondwana_1_1Rendering.html#a399e1f9257dd0c3ffd1092e800ddaa50">GpuRenderSynchronizationDiagnostics</a>(</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">double</span> LockWaitMilliseconds,</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">double</span> LockHeldMilliseconds);</div>
-<div class="ttc" id="anamespaceGondwana_1_1Rendering_html"><div class="ttname"><a href="namespaceGondwana_1_1Rendering.html">Gondwana.Rendering</a></div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00008">BackbufferBase.cs:8</a></div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Rendering_html_a399e1f9257dd0c3ffd1092e800ddaa50"><div class="ttname"><a href="namespaceGondwana_1_1Rendering.html#a399e1f9257dd0c3ffd1092e800ddaa50">Gondwana.Rendering.GpuRenderSynchronizationDiagnostics</a></div><div class="ttdeci">record GpuRenderSynchronizationDiagnostics(double LockWaitMilliseconds, double LockHeldMilliseconds)</div><div class="ttdoc">Captures time spent waiting for and holding the shared live render-state synchronization gate.</div></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    IReadOnlyList&lt;GpuLayerRenderDiagnostics&gt; Layers)</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>{</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">public</span> <span class="keywordtype">double</span> QueryMilliseconds { <span class="keyword">get</span>; init; }</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">public</span> <span class="keywordtype">double</span> SortMilliseconds { <span class="keyword">get</span>; init; }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">public</span> <span class="keywordtype">int</span> AtlasBatchCount { <span class="keyword">get</span>; init; }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">public</span> <span class="keywordtype">int</span> AtlasBatchedTileCount { <span class="keyword">get</span>; init; }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span></div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="}">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="namespaceGondwana_1_1Rendering.html#a399e1f9257dd0c3ffd1092e800ddaa50">   47</a></span><span class="keyword">public</span> <span class="keyword">sealed</span> record <a class="code hl_function" href="namespaceGondwana_1_1Rendering.html#a399e1f9257dd0c3ffd1092e800ddaa50">GpuRenderSynchronizationDiagnostics</a>(</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">double</span> LockWaitMilliseconds,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">double</span> LockHeldMilliseconds)</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>{</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">public</span> <span class="keywordtype">double</span> ReplayMilliseconds { <span class="keyword">get</span>; init; }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">public</span> <span class="keywordtype">double</span> PictureReplayMilliseconds { <span class="keyword">get</span>; init; }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">public</span> <span class="keywordtype">double</span> BackbufferFlushMilliseconds { <span class="keyword">get</span>; init; }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">public</span> <span class="keywordtype">double</span> SnapshotMilliseconds { <span class="keyword">get</span>; init; }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">public</span> <span class="keywordtype">double</span> SnapshotAgeMilliseconds { <span class="keyword">get</span>; init; }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">public</span> <span class="keywordtype">long</span> PublishedSnapshots { <span class="keyword">get</span>; init; }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">public</span> <span class="keywordtype">long</span> DroppedSnapshots { <span class="keyword">get</span>; init; }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">public</span> <span class="keywordtype">int</span> SnapshotSlotsInUse { <span class="keyword">get</span>; init; }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">public</span> <span class="keywordtype">int</span> SnapshotCommandCount { <span class="keyword">get</span>; init; }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}</div>
+</div>
+<div class="ttc" id="anamespaceGondwana_1_1Rendering_html"><div class="ttname"><a href="namespaceGondwana_1_1Rendering.html">Gondwana.Rendering</a></div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00009">BackbufferBase.cs:9</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Rendering_html_a399e1f9257dd0c3ffd1092e800ddaa50"><div class="ttname"><a href="namespaceGondwana_1_1Rendering.html#a399e1f9257dd0c3ffd1092e800ddaa50">Gondwana.Rendering.GpuRenderSynchronizationDiagnostics</a></div><div class="ttdeci">record GpuRenderSynchronizationDiagnostics(double LockWaitMilliseconds, double LockHeldMilliseconds)</div><div class="ttdoc">Captures time spent waiting for and holding the shared live render-state synchronization gate.</div><div class="ttdef"><b>Definition</b> <a href="#l00047">GpuRenderFrameDiagnostics.cs:47</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Rendering_html_a824244c578dc502790602911ac8f66a7"><div class="ttname"><a href="namespaceGondwana_1_1Rendering.html#a824244c578dc502790602911ac8f66a7">Gondwana.Rendering.GpuLayerRenderDiagnostics</a></div><div class="ttdeci">record GpuLayerRenderDiagnostics(int LayerIndex, string LayerId, int ZOrder, int DrawableCount, int TileCount, int TransformedTileCount, int TileWidth, int TileHeight, double QueryAndSortMilliseconds, double DrawMilliseconds)</div><div class="ttdoc">Captures the measured work performed for one scene layer during a full-frame GPU render.</div></div>
-<div class="ttc" id="anamespaceGondwana_1_1Rendering_html_ad12dec9881fd25abac1fc0dee54ddfd7"><div class="ttname"><a href="namespaceGondwana_1_1Rendering.html#ad12dec9881fd25abac1fc0dee54ddfd7">Gondwana.Rendering.GpuRenderFrameDiagnostics</a></div><div class="ttdeci">record GpuRenderFrameDiagnostics(double TotalRenderMilliseconds, double QueryAndSortMilliseconds, double DrawMilliseconds, double OverlayMilliseconds, int DrawableCount, int TileCount, IReadOnlyList&lt; GpuLayerRenderDiagnostics &gt; Layers)</div><div class="ttdoc">Captures measured scene-render work for one full-frame GPU render.</div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Rendering_html_ad12dec9881fd25abac1fc0dee54ddfd7"><div class="ttname"><a href="namespaceGondwana_1_1Rendering.html#ad12dec9881fd25abac1fc0dee54ddfd7">Gondwana.Rendering.GpuRenderFrameDiagnostics</a></div><div class="ttdeci">record GpuRenderFrameDiagnostics(double TotalRenderMilliseconds, double QueryAndSortMilliseconds, double DrawMilliseconds, double OverlayMilliseconds, int DrawableCount, int TileCount, IReadOnlyList&lt; GpuLayerRenderDiagnostics &gt; Layers)</div><div class="ttdoc">Captures measured scene-render work for one full-frame GPU render.</div><div class="ttdef"><b>Definition</b> <a href="#l00021">GpuRenderFrameDiagnostics.cs:21</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->
