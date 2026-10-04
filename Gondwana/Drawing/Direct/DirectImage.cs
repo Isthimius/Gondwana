@@ -585,6 +585,9 @@ public sealed class DirectImage : DirectDrawingMovableBase
         if (img is null)
             return;
 
+        if (backbuffer is RecordingBackbuffer && img.IsTextureBacked)
+            throw new NotSupportedException("Desktop frame recording requires a CPU image, not a context-bound texture.");
+
         // source rect (pixels in image space)
         SKRect src = _src ?? new SKRect(0, 0, img.Width, img.Height);
 

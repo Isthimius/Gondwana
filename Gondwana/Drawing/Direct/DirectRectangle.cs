@@ -880,6 +880,9 @@ public class DirectRectangle : DirectDrawingMovableBase
     /// </remarks>
     protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
+        if (backbuffer is RecordingBackbuffer && _fillImage?.IsTextureBacked == true)
+            throw new NotSupportedException("Desktop frame recording requires a CPU image, not a context-bound texture.");
+
         var canvas = backbuffer.Canvas;
 
         if (_needsRebuildPaints)

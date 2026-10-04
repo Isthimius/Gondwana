@@ -127,7 +127,7 @@ repeat
                   Rendering is driven from the GL/UI thread.
                 end note
 
-                :Engine loop **skips** GpuBackbuffer surfaces\n(both RenderToBackbuffer and\nPresentBackbufferToAdapter are no-ops);
+                :Engine records and publishes RenderFrameSnapshot;
 
             end fork
 
@@ -167,7 +167,7 @@ if (GRContext available\nfor the first time?) then (yes)
       uses before the OpenGL context is ready.
     end note
 else (no)
-    if (Control resized?) then (yes)
+    if (Logical resolution / MSAA / context changed?) then (yes)
         :GpuBackbuffer.Initialize(grContext, newW, newH)\n— Recreate GPU render-target surface\n  with optional MSAA;
         note right
           Falls back to sampleCount=1
@@ -186,34 +186,13 @@ note right
   No CPU↔GPU pixel copy occurs.
 end note
 
-:RenderSurfaceHost.RenderToBackbuffer(tick)\n→ RenderToBackbufferGpuFull(tick);
+:Acquire newest completed RenderFrameSnapshot;
+:Replay immutable commands (no live Scene traversal); 
 note right
-  Bypasses RefreshQueue entirely —
-  redraws the full surface every frame.
+  Engine records commands at foreground cadence.
+  Three slots; replaced unacquired frames are dropped.
+  Rendering slot remains owned until release.
 end note
-
-if (Scene has visible layers?) then (no)
-    :ClearRect (full backbuffer);
-    :Scene.FullRefreshNeeded = false;
-else (yes)
-    repeat : **For each View**;
-        :RenderContext.Push(view, tick);
-        :ForceRefresh all View-based DirectDrawings;
-        :Clip canvas to viewport;
-        :GpuBackbuffer.ClearRect(viewport)\n— fill with ClearColor on GPU canvas;
-
-        repeat : **For each visible SceneLayer (back→front)**;
-            :Compute layer world rect visible\nthrough this viewport;
-            :GetDrawablesInWorldRect\n→ GpuBackbuffer.DrawDrawables\n→ DrawTileFrame(tile)\n→ SKCanvas.DrawImage (GPU texture);
-        repeat while (more layers?)
-
-        :Draw View-based DirectDrawings;
-        :Restore viewport clip;
-        :RenderContext.Pop();
-    repeat while (more views?)
-
-    :Scene.FullRefreshNeeded = false;
-endif
 
 :GpuBackbuffer.EndFrame()\n— SKSurface.Flush (queues GPU work);
 :GpuBackbuffer.Snapshot()\n— Lightweight GPU-backed SKImage\n  (no pixel readback);
@@ -221,6 +200,7 @@ endif
 
 :Blit SKImage to window framebuffer\n— SKCanvas.DrawImage covers full render target\n  (zero-copy GPU draw call);
 
+:Release snapshot ownership;
 :GRContext.Flush()\n— Submit all queued GPU commands;
 :GpuBackbuffer.RecordFrame()\n— Increment GPU FPS counter\n  (read by Engine.CalculateCPS);
 

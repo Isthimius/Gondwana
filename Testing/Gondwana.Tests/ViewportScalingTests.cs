@@ -181,6 +181,154 @@ public sealed class ViewportScalingTests : IDisposable
         }
     }
 
+    [Theory]
+    [InlineData(0.5f)]
+    [InlineData(1f)]
+    [InlineData(2f)]
+    public void FractionalZoomSnappedTileEdges_KeepMouseAndTouchOnExpectedGridSides(
+        float renderScale)
+    {
+        Engine.Instance.Configuration.RenderScale = renderScale;
+
+        var adapter = new Adapter(800, 600);
+        using var host = new RenderSurfaceHost<BitmapBackbuffer>(adapter);
+        using var buffer = host.Backbuffer;
+        using var scene = new Scene();
+        var layer = scene.AddLayer(20, 20, width: 16, height: 16);
+        host.Bind(scene, false);
+
+        var view = Assert.Single(host.ViewManager.Views);
+        view.Viewport.Zoom = 0.694f;
+        view.Camera.SnapTo(new PointF(13.2f, 7.6f));
+
+        var mouse = new Mouse(adapter);
+        var touch = new Touch(adapter);
+
+        Point ToMouseScreen(Point logical)
+        {
+            mouse.Position = LogicalPixelCenterToAdapter(adapter, logical);
+            return mouse.CurrentPosition;
+        }
+
+        Point ToTouchScreen(Point logical)
+        {
+            touch.Set(
+                LogicalPixelCenterToAdapter(adapter, logical),
+                TouchPhase.Began);
+            return Assert.Single(touch.ActiveTouches).Position;
+        }
+
+        // Rendering rounds shared orthogonal tile edges to the nearest ScreenPx.
+        // Input deliberately remains in Gondwana's continuous ScreenPx -> WorldPx
+        // transform. One logical pixel to either side of a snapped edge must still
+        // resolve to the visually adjacent tiles for both mouse and touch input.
+        for (int column = 2; column <= 10; column++)
+        {
+            float worldBoundaryX = column * layer.TileWidth;
+            float worldCenterY = 5 * layer.TileHeight + layer.TileHeight / 2f;
+            PointF mathematicalScreen = view.WorldPxToScreenPx(
+                layer,
+                new PointF(worldBoundaryX, worldCenterY));
+
+            int snappedX = (int)MathF.Round(
+                mathematicalScreen.X,
+                MidpointRounding.AwayFromZero);
+            int screenY = (int)MathF.Round(
+                mathematicalScreen.Y,
+                MidpointRounding.AwayFromZero);
+
+            Assert.InRange(
+                MathF.Abs(snappedX - mathematicalScreen.X),
+                0f,
+                0.5f);
+
+            AssertGridColumn(column - 1, ToMouseScreen(new(snappedX - 1, screenY)));
+            AssertGridColumn(column, ToMouseScreen(new(snappedX + 1, screenY)));
+            AssertGridColumn(column - 1, ToTouchScreen(new(snappedX - 1, screenY)));
+            AssertGridColumn(column, ToTouchScreen(new(snappedX + 1, screenY)));
+        }
+
+        for (int row = 2; row <= 10; row++)
+        {
+            float worldCenterX = 5 * layer.TileWidth + layer.TileWidth / 2f;
+            float worldBoundaryY = row * layer.TileHeight;
+            PointF mathematicalScreen = view.WorldPxToScreenPx(
+                layer,
+                new PointF(worldCenterX, worldBoundaryY));
+
+            int screenX = (int)MathF.Round(
+                mathematicalScreen.X,
+                MidpointRounding.AwayFromZero);
+            int snappedY = (int)MathF.Round(
+                mathematicalScreen.Y,
+                MidpointRounding.AwayFromZero);
+
+            Assert.InRange(
+                MathF.Abs(snappedY - mathematicalScreen.Y),
+                0f,
+                0.5f);
+
+            AssertGridRow(row - 1, ToMouseScreen(new(screenX, snappedY - 1)));
+            AssertGridRow(row, ToMouseScreen(new(screenX, snappedY + 1)));
+            AssertGridRow(row - 1, ToTouchScreen(new(screenX, snappedY - 1)));
+            AssertGridRow(row, ToTouchScreen(new(screenX, snappedY + 1)));
+        }
+
+        void AssertGridColumn(int expectedColumn, Point screen)
+        {
+            PointF grid = view.ScreenPxToGrid(layer, screen);
+            Assert.Equal(expectedColumn, (int)MathF.Floor(grid.X));
+        }
+
+        void AssertGridRow(int expectedRow, Point screen)
+        {
+            PointF grid = view.ScreenPxToGrid(layer, screen);
+            Assert.Equal(expectedRow, (int)MathF.Floor(grid.Y));
+        }
+    }
+
+    [Fact]
+    public void FractionalZoomSnappedBoundary_UsesContinuousScreenToWorldContract()
+    {
+        var adapter = new Adapter(800, 600);
+        using var host = new RenderSurfaceHost<BitmapBackbuffer>(adapter);
+        using var buffer = host.Backbuffer;
+        using var scene = new Scene();
+        var layer = scene.AddLayer(20, 20, width: 16, height: 16);
+        host.Bind(scene, false);
+
+        var view = Assert.Single(host.ViewManager.Views);
+        view.Viewport.Zoom = 0.373f;
+        view.Camera.SnapTo(new PointF(11.35f, 8.6f));
+
+        const int boundaryColumn = 7;
+        float boundaryWorldX = boundaryColumn * layer.TileWidth;
+        PointF mathematicalScreen = view.WorldPxToScreenPx(
+            layer,
+            new PointF(boundaryWorldX, 64f));
+        int snappedX = (int)MathF.Round(
+            mathematicalScreen.X,
+            MidpointRounding.AwayFromZero);
+        int screenY = (int)MathF.Round(
+            mathematicalScreen.Y,
+            MidpointRounding.AwayFromZero);
+
+        var snappedScreen = new PointF(snappedX, screenY);
+        PointF world = view.ScreenPxToWorldPx(layer, snappedScreen);
+        PointF grid = view.ScreenPxToGrid(layer, snappedScreen);
+
+        // The snapped raster edge is a presentation detail. Picking remains the
+        // inverse of the continuous View transform rather than being rewritten to
+        // follow render-time pixel snapping.
+        Assert.Equal(
+            (int)MathF.Floor(world.X / layer.TileWidth),
+            (int)MathF.Floor(grid.X));
+
+        PointF roundTrip = view.WorldPxToScreenPx(layer, world);
+        Assert.Equal(snappedScreen.X, roundTrip.X, 3);
+        Assert.Equal(snappedScreen.Y, roundTrip.Y, 3);
+    }
+
     [Fact]
     public void MarginsAreOutside_NotClampedOrTruncatedToZero()
     {
@@ -307,6 +455,7 @@ public sealed class ViewportScalingTests : IDisposable
             : new TextBlock(host, view, new Rectangle(15, 15, 100, 70)))
             .SetText("Scale").SetFont(SKTypeface.Default, 14).SetColors(SKColors.White, SKColors.Transparent);
         var beforeBounds = text.GetDrawLocationScreen(view);
+        host.ProduceRenderFrameSnapshot(0);
         using var before = host.GlRenderAndSnapshot();
         using var beforePixels = SKBitmap.FromImage(before!);
         Assert.Contains(beforePixels.Pixels, p => p.Red > 0);
@@ -407,6 +556,16 @@ public sealed class ViewportScalingTests : IDisposable
             if (phase == TouchPhase.Began) _began = [point];
             if (phase == TouchPhase.Ended) _ended = [point];
         }
+    }
+
+    private static PointF LogicalPixelCenterToAdapter(
+        Adapter adapter,
+        Point logical)
+    {
+        var transform = adapter.Presentation;
+        return new PointF(
+            transform.DestinationRect.Left + (logical.X + 0.5f) * transform.Scale,
+            transform.DestinationRect.Top + (logical.Y + 0.5f) * transform.Scale);
     }
 
     internal sealed class Adapter(int width, int height, bool initial = true) : RenderSurfaceAdapterBase(width, height, initial)

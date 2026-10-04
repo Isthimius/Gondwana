@@ -188,6 +188,27 @@ public sealed class SpriteManager : IDisposable
         return null;
     }
 
+    internal bool HasVisibleSpriteInWorldRect(
+        Rectangle worldRect,
+        SceneLayer sceneLayer)
+    {
+        lock (_spriteListLock)
+        {
+            for (int i = 0; i < _spriteList.Count; i++)
+            {
+                var sprite = _spriteList[i];
+                if (sprite.Visible &&
+                    ReferenceEquals(sprite.SceneLayer, sceneLayer) &&
+                    sprite.VisualBoundsWorld.IntersectsWith(worldRect))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     // world
     /// <summary>
     /// Gets all sprites within the specified world rectangle range.

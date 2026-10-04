@@ -41,7 +41,7 @@ box "Foreground Tasks — Bitmap Path\n(CPU / SkiaSharp, same thread)" #E8F5E9
     participant "RenderSurfaceAdapterBase\n(WinForms/Avalonia Bitmap)" as BitmapAdapter
 end box
 
-box "Foreground Tasks — GPU Path\n(skipped; rendered on GL thread)" #FFF3E0
+box "Foreground Tasks — GPU Path\n(Engine records; GL replays)" #FFF3E0
     participant "RenderSurfaceHost\n<GpuBackbuffer>" as RSH_Gpu
     participant "GpuBackbuffer" as GpuBB
     participant "RenderSurfaceAdapterBase\n(WinForms/Avalonia GPU)" as GpuAdapter
@@ -101,13 +101,12 @@ alt TargetFPS <= 0 OR throttle elapsed
             deactivate RSH_Bitmap
         end
 
-        group GPU Backbuffer Path (IsGlThreadRendered = true — SKIPPED in ForegroundTasks)
-            Engine -> RSH_Gpu : [skipped — IsGlThreadRendered = true]
-            note over RSH_Gpu, GpuBB
-              GPU surfaces are NOT rendered here.
-              Rendering and presentation happen
-              entirely on the GL/UI thread below.
-            end note
+        group Desktop GPU snapshot production
+            Engine -> RSH_Gpu : ProduceRenderFrameSnapshot(tick)
+            RSH_Gpu -> RSH_Gpu : resolve scene, record immutable commands
+(CPU resources; no GPU surface)
+            RSH_Gpu -> RSH_Gpu : publish newest completed slot
+recycle replaced frame (three slots total)
         end
 
         Engine -> Gamepad : Update() (IGamepadManager)
@@ -122,15 +121,18 @@ end
 GLThread -> RSH_Gpu : GlRenderAndSnapshot() [called from PaintSurface]
 activate RSH_Gpu
     RSH_Gpu -> GpuBB : Initialize(grContext, w, h) [on first call / resize]
-    RSH_Gpu -> GpuBB : BeginFrame() — creates SKSurface on GrContext
-    RSH_Gpu -> GpuBB : draw scene layers, tiles, sprites\n(via BackbufferBase.DrawTileFrame)
+    RSH_Gpu -> RSH_Gpu : acquire latest completed RenderFrameSnapshot
+(no live Scene traversal / simulation gate)
+    RSH_Gpu -> GpuBB : BeginFrame()
+    RSH_Gpu -> GpuBB : replay immutable recorded commands
     note right of GpuBB
-      DirectDrawings composed
-      directly into the GPU surface
+      Engine-resolved commands retain CPU resources;
+      only replay touches the GPU surface.
     end note
     RSH_Gpu -> GpuBB : EndFrame() — flushes GrContext
     RSH_Gpu -> GpuBB : Snapshot() → SKImage
     RSH_Gpu -> GpuBB : RecordFrame() — increments GPU FPS counter
+    RSH_Gpu -> RSH_Gpu : release rendering slot
     RSH_Gpu --> GLThread : returns SKImage
 deactivate RSH_Gpu
 

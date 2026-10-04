@@ -1,3 +1,5 @@
+> Desktop GPU contract: the Engine records immutable `RenderFrameSnapshot` commands at foreground cadence. GL adapters consume the latest completed recording through `GlRenderAndSnapshot`. Post-scene hooks execute on the Engine recording canvas with CPU resources, without GRContext or canvas.Surface. See [[GL Rendering Path]] for mailbox ownership, resize handling, and callback migration.
+
 Gondwana deliberately separates **scene rendering** from **platform presentation**.
 
 That separation is what allows the same scene, views, sprites, direct drawings, widgets, and rendering rules to target very different environments:
@@ -575,7 +577,7 @@ using var image =
 
 `GlRenderAndSnapshot()`:
 
-1. renders the Gondwana scene
+1. acquires and replays the newest desktop RenderFrameSnapshot without live Scene traversal
 2. ends the GPU backbuffer frame
 3. snapshots the GPU surface
 4. begins the next backbuffer frame
@@ -766,9 +768,7 @@ gpuBackbuffer.Initialize(
 
 A production adapter normally performs that initialization automatically the first time its native GL paint callback receives a valid context.
 
-On later resizes, call `Initialize(...)` again on the GL thread with the new dimensions.
-
-For `GpuBackbuffer`, `RequestResize()` is intentionally a no-op. GPU resource recreation must happen where the GL context is valid.
+`GpuBackbuffer.RequestResize(...)` queues an explicit logical-resolution change; the next GL-thread call to `EnsureInitialized(...)` applies it. Ordinary adapter resize changes presentation only. `EnsureInitialized(...)` also applies MSAA and context changes.
 
 ---
 
@@ -782,8 +782,9 @@ The GPU path:
 
 - does not consume the normal refresh queue
 - does not accumulate a backbuffer dirty rectangle
-- redraws the full viewport for each GL paint
-- renders and presents synchronously on the GL thread
+- records the full viewport on the Engine at foreground cadence for desktop GPU hosts
+- replays the newest completed snapshot and presents on GL; intermediate frames may be dropped
+- retains synchronous live rendering for browser WebGL
 
 This is deliberate.
 
@@ -808,9 +809,9 @@ capture current GRContext
         ↓
 GpuBackbuffer.Initialize(GRContext, width, height)
         ↓
-Gondwana renders into off-screen GPU surface
+GlRenderAndSnapshot(): acquire newest Engine recording
         ↓
-GlRenderAndSnapshot()
+replay immutable commands into off-screen GPU surface
         ↓
 draw GPU-backed SKImage to the window surface
 ```
@@ -926,7 +927,8 @@ The threading rule follows the backbuffer:
 | Surface | Post-render hook thread |
 |---|---|
 | bitmap/CPU | engine render/background thread |
-| GPU/GL | native GL thread while the `GRContext` is current |
+| Desktop GPU | Engine thread with a recording canvas and CPU resources |
+| WebGL | native browser callback while GRContext is current |
 
 Do not marshal a GPU canvas operation to another thread.
 
@@ -1130,8 +1132,9 @@ When it remains `false`, Gondwana uses the normal CPU/bitmap-style engine path.
 
 When it returns `true`, the host treats the backbuffer as a GL-thread-driven surface:
 
-- the normal engine render loop skips it
-- the adapter is expected to drive rendering
+- the bitmap dirty-region loop skips it
+- desktop `GpuBackbuffer` hosts produce snapshots on the Engine
+- the adapter drives GL replay/presentation; other custom GL backbuffers retain their live path
 - full-frame GPU rendering is used
 - dirty-rectangle presentation is bypassed
 - `GlRenderAndSnapshot()` becomes the expected presentation path

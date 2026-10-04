@@ -5,13 +5,26 @@ namespace Gondwana.Tooling.SceneViewer.WinForms;
 internal sealed class SceneViewerForm : Form
 {
     private readonly WinFormGpuRenderSurfaceControl _surface = new() { Dock = DockStyle.Fill };
-    private readonly string _scenePath;
+    private readonly string? _scenePath;
+    private readonly SceneViewerStressOptions? _stress;
     private SceneViewerGameHost? _host;
 
     internal SceneViewerForm(string scenePath)
     {
         _scenePath = scenePath;
         Text = $"Gondwana Scene Viewer — {Path.GetFileName(scenePath)}";
+        Initialize();
+    }
+
+    internal SceneViewerForm(SceneViewerStressOptions stress)
+    {
+        _stress = stress;
+        Text = $"Gondwana Scene Viewer — stress {stress.TileCount:N0} — {stress.Projection}";
+        Initialize();
+    }
+
+    private void Initialize()
+    {
         ClientSize = new Size(1024, 768);
         MinimumSize = new Size(320, 240);
         StartPosition = FormStartPosition.CenterScreen;
@@ -23,7 +36,7 @@ internal sealed class SceneViewerForm : Form
         base.OnShown(e);
         try
         {
-            _host = new SceneViewerGameHost(_surface, _scenePath);
+            _host = new SceneViewerGameHost(_surface, _scenePath, _stress);
             _host.CloseRequested += OnCloseRequested;
             _host.InitializeWithConfigurationStore(new SceneViewerGameHost.ViewerConfiguration());
             _surface.Focus();

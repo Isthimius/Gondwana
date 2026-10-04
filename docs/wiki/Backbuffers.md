@@ -103,6 +103,10 @@ After GPU initialization it owns an off-screen Skia GPU `SKSurface` associated w
 
 `GpuBackbuffer.IsGlThreadRendered` is always `true`, which tells the normal engine foreground loop not to render or present that host directly.
 
+### Render-state snapshots are separate from the Backbuffer
+
+Desktop GPU hosts publish immutable `RenderFrameSnapshot` command streams through three bounded latest-frame-wins slots. GL replays commands into this existing Backbuffer without traversing Scene state. The picture retains CPU resources across producer/consumer overlap; it does not buffer GPU render targets. See [[GL Rendering Path]] for ownership and callback migration.
+
 ### Before the GL/WebGL context exists
 
 A newly constructed `GpuBackbuffer` initially creates a temporary CPU raster surface. This keeps the object in a valid state before a platform GL/WebGL callback can provide a `GRContext`.
@@ -172,7 +176,7 @@ Both implementations flush their Skia surface before presentation or snapshot co
 
 For bitmap rendering, `EndFrame()` occurs before the CPU snapshot is sent toward the adapter.
 
-For GPU rendering, it occurs while the active `GRContext` is current and before the GPU Backbuffer is copied/drawn into the platform surface.
+For desktop GPU rendering, hooks run on the Engine recording canvas before publication. They must use CPU resources and the supplied canvas, with no current GRContext or canvas.Surface. WebGL hooks still run synchronously with the active context.
 
 ---
 

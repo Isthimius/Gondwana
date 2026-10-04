@@ -81,6 +81,13 @@ public abstract class AvaloniaGpuGameHost : GameHostBase
         RenderSurface.Host.Bind(Scene!, false);
     }
 
+    /// <inheritdoc/>
+    protected override void OnDisposing()
+    {
+        RenderSurface.Dispose();
+        base.OnDisposing();
+    }
+
     /// <summary>
     /// Provides a hook for configuring platform-specific settings during initialization.
     /// </summary>

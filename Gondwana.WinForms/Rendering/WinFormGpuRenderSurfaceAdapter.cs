@@ -10,11 +10,10 @@ namespace Gondwana.WinForms.Rendering;
 /// Provides a GPU-accelerated render surface adapter for Windows Forms using OpenGL and SKGLControl.
 /// </summary>
 /// <remarks>
-/// All scene rendering and presentation are driven from within <c>PaintSurface</c> on the GL thread
-/// <c>Invalidate()</c> is posted to the UI thread via <see cref="Engine.UiDispatcher"/>
-/// at the end of each <c>Engine.DoForegroundTasks</c> cycle (via <c>Engine.AfterFrameRender</c>), so
-/// the paint loop stays in lockstep with the engine's own frame rate.  The engine's background render
-/// loop skips GPU-rendered surfaces entirely (see <see cref="GpuBackbuffer.IsGlThreadRendered"/>).
+/// Engine foreground work publishes immutable render snapshots and requests repaint
+/// through AfterFrameRender. PaintSurface replays the newest completed recording and
+/// presents it with the current GL context. Repaint requests coalesce; intermediate
+/// recordings may be replaced without blocking simulation.
 /// </remarks>
 public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, IDisposable
 {
@@ -207,7 +206,7 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
         }
 
         // Capture/refresh the GRContext so callers can wire the backbuffer to the same one.
-        GrContext ??= _glControl.GRContext;
+        GrContext = _glControl.GRContext;
 
         if (GrContext != null)
         {
@@ -246,7 +245,7 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
         }
 
         // Render + blit entirely on the GL thread.
-        // GlRenderAndSnapshot drives RenderToBackbuffer on the GPU surface then returns a
+        // GlRenderAndSnapshot replays immutable Engine commands on the GPU surface and returns a
         // lightweight GPU-backed snapshot. Both the snapshot texture and e.Surface share the
         // same GRContext, so DrawImage is a zero-copy GPU blit.
         if (_host != null)

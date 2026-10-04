@@ -72,7 +72,8 @@ flowchart TD
     B --> C{"Foreground frame due?"}
     C -- No --> A
     C -- Yes --> D["DirectDrawingManager.UpdateAll(tick)"]
-    D --> E["Bitmap hosts: render now"]
+    D --> S["Desktop GPU hosts: record and publish snapshot"]
+    S --> E["Bitmap hosts: render now"]
     E --> F["Bitmap hosts: present snapshot"]
     F --> G["AfterFrameRender"]
     G --> H["Desktop GL adapters request platform repaint"]
@@ -80,7 +81,7 @@ flowchart TD
 
 Bitmap hosts are rendered and presented directly by the engine foreground pass.
 
-Desktop GL hosts are deliberately skipped by those direct render/present loops. `AfterFrameRender` causes the platform adapter to request a GL paint, and actual GPU rendering then occurs while the native GL context is current.
+Desktop GL hosts record and publish immutable `RenderFrameSnapshot` command streams before `AfterFrameRender` requests repaint. The platform GL callback acquires the newest completed frame and replays it without live Scene traversal. Three slots bound storage; unacquired intermediate frames may be replaced. Bitmap rendering and browser WebGL retain their existing paths.
 
 ---
 
@@ -116,12 +117,14 @@ For WinForms and Avalonia GPU surfaces, the engine prepares state and requests a
 
 ```text
 Engine foreground pass
+  -> ProduceRenderFrameSnapshot(tick): resolve, record, publish
   -> AfterFrameRender
      -> adapter requests native GL repaint
         -> platform GL callback
            -> GpuBackbuffer.EnsureInitialized(current GRContext)
            -> RenderSurfaceHost.GlRenderAndSnapshot()
-              -> RenderToBackbufferGpuFull(tick)
+              -> acquire newest immutable snapshot
+              -> replay recorded commands (no live Scene traversal)
               -> EndFrame()
               -> GPU-backed snapshot
               -> BeginFrame()
@@ -176,10 +179,10 @@ Thread ownership depends on the path:
 | --- | --- |
 | Bitmap desktop | Engine/render thread |
 | Bitmap browser | The timer-driven browser execution context that called `Engine.Tick()` |
-| Desktop GL | Native UI/GL callback thread |
+| Desktop GL | Engine thread, recording canvas with CPU resources |
 | WebGL | Browser `SKGLView` WebGL paint callback |
 
-For GPU paths, GL/WebGL canvas work must remain inside the callback where the `GRContext` is current.
+Desktop hooks use the supplied recording canvas and cannot access a GPU surface/context. This changes their previous GL-thread contract; see [[GL Rendering Path]]. WebGL GPU canvas work remains inside its current-context callback.
 
 For bitmap paths, Gondwana marks the complete Backbuffer dirty when post-scene handlers or plugins are present so arbitrary post-scene drawing is included in presentation.
 
