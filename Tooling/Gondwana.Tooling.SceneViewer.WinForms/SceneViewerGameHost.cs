@@ -825,7 +825,7 @@ internal sealed class SceneViewerGameHost(
         public EngineConfiguration Configuration { get; } = new()
         {
             TargetFPS = 0,
-            VSync = false
+            VSync = true
         };
 
         public bool AutoSave { get; set; }
