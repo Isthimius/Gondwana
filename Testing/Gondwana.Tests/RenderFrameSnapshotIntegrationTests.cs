@@ -95,6 +95,42 @@ public sealed class RenderFrameSnapshotIntegrationTests
     }
 
     [Fact]
+    public void BulkGridRecording_MatchesLegacyDrawing_WithZoomCameraAndOverhang()
+    {
+        var bitmap = new SKBitmap(16, 16);
+        bitmap.Erase(SKColors.CornflowerBlue);
+
+        using var sheet = new Tilesheet("bulk-grid-parity", bitmap);
+        sheet.DefaultRegion.TileSize = new Size(16, 16);
+        sheet.DefaultRegion.Overhang = new Spacing(2, 2, 2, 2);
+
+        using var scene = new Scene();
+        var layer = scene.AddLayer(6, 4, 16, 16);
+        for (int y = 0; y < 4; y++)
+            for (int x = 0; x < 6; x++)
+                layer[x, y]!.CurrentFrame = sheet.GetFrame(0, 0);
+
+        using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
+        using var backbuffer = host.Backbuffer;
+        host.Bind(scene, false);
+
+        var view = Assert.Single(host.ViewManager.Views);
+        view.Viewport.SnapZoom(1.5f);
+        view.Camera.SnapTo(new PointF(7f, 5f));
+
+        host.RenderToBackbuffer(1);
+        using var expectedImage = backbuffer.Snapshot();
+        using var expected = SKBitmap.FromImage(expectedImage);
+
+        backbuffer.Canvas.Clear(SKColors.Transparent);
+        host.ProduceRenderFrameSnapshot(2);
+        using var actualImage = host.GlRenderAndSnapshot();
+        using var actual = SKBitmap.FromImage(actualImage!);
+
+        Assert.Equal(expected.Pixels, actual.Pixels);
+    }
+
+    [Fact]
     public void EmptyGridCells_AreCulledUnlessPostDrawGeometryIsNeeded()
     {
         using var scene = new Scene();

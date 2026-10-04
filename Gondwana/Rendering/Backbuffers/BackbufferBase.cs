@@ -312,6 +312,13 @@ public abstract class BackbufferBase : IDisposable
 
     internal void DrawDrawables(View view, IEnumerable<IDrawable> drawables, Rectangle clipRect)
     {
+        if (this is RecordingBackbuffer recording &&
+            drawables is IReadOnlyList<IDrawable> ordered &&
+            recording.TryDrawFixedGridDrawables(view, ordered, clipRect))
+        {
+            return;
+        }
+
         Canvas.Save();
         Canvas.ClipRect(clipRect.ToSKRect());
 
