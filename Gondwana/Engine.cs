@@ -1121,7 +1121,11 @@ public sealed class Engine : IDisposable
         // update the DirectDrawing instances' states
         DirectDrawingManager.Instance.UpdateAll(tick);
 
-        // refresh all RenderSurfaceHost backbuffers (skip surfaces rendered on the GL thread)
+        // Resolve desktop GPU visual state at foreground cadence before requesting repaint.
+        foreach (var surface in RenderSurfaceHostRegistry.All)
+            surface.ProduceRenderFrameSnapshot(tick);
+
+        // Bitmap rendering remains on the engine thread.
         foreach (var surface in RenderSurfaceHostRegistry.All)
             if (!surface.Backbuffer.IsGlThreadRendered)
                 surface.RenderToBackbuffer(tick);

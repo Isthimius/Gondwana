@@ -13,6 +13,10 @@ namespace Gondwana.Rendering;
 /// </summary>
 public abstract class RenderSurfaceHostBase : IDisposable
 {
+    internal RenderFrameMailbox FrameMailbox { get; } = new();
+    internal bool UsesRenderFrameSnapshots => !OperatingSystem.IsBrowser() && Backbuffer is GpuBackbuffer;
+    internal virtual void ProduceRenderFrameSnapshot(long tick) { }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="RenderSurfaceHostBase"/> class and registers it
     /// with the <see cref="RenderSurfaceHostRegistry"/>.
@@ -110,6 +114,9 @@ public abstract class RenderSurfaceHostBase : IDisposable
         if (!Backbuffer.IsGlThreadRendered)
             return null;
 
+        if (UsesRenderFrameSnapshots)
+            return ReplayRenderFrameSnapshot();
+
         bool collectSynchronizationDiagnostics =
             GpuRenderSynchronizationDiagnosticsCalculated is not null;
         long waitStarted = collectSynchronizationDiagnostics
@@ -153,6 +160,83 @@ public abstract class RenderSurfaceHostBase : IDisposable
         return image;
     }
 
+    private SKImage? ReplayRenderFrameSnapshot()
+    {
+        var diagnostics = GpuRenderSynchronizationDiagnosticsCalculated;
+        var slot = FrameMailbox.TryAcquire();
+        if (slot is null) return Backbuffer.Snapshot();
+
+        long acquired = diagnostics is null ? 0 : HighResTimer.GetCurrentTick();
+        var counters = diagnostics is null ? default : FrameMailbox.Counters;
+        long replayEnd = acquired;
+        long pictureReplayTicks = 0;
+        long backbufferFlushTicks = 0;
+        long snapshotTicks = 0;
+        int commands = diagnostics is null ? 0 : slot.Frame!.CommandCount;
+        double age = diagnostics is null ? 0 :
+            HighResTimer.GetDuration(slot.Frame!.ProducedTick, acquired) * 1000d;
+
+        try
+        {
+            var frame = slot.Frame!;
+
+            // A logical resize invalidates geometry, but context/MSAA recreation does
+            // not: recordings contain CPU resources and are uploaded by the current GL context.
+            if (frame.Width != Backbuffer.Width || frame.Height != Backbuffer.Height)
+            {
+                long snapshotStart = diagnostics is null ? 0 : HighResTimer.GetCurrentTick();
+                var resizedSnapshot = Backbuffer.Snapshot();
+                if (diagnostics is not null)
+                    snapshotTicks = HighResTimer.GetCurrentTick() - snapshotStart;
+                return resizedSnapshot;
+            }
+
+            Backbuffer.BeginFrame();
+
+            long pictureStart = diagnostics is null ? 0 : HighResTimer.GetCurrentTick();
+            frame.Replay(Backbuffer.Canvas);
+            long pictureEnd = diagnostics is null ? 0 : HighResTimer.GetCurrentTick();
+
+            Backbuffer.EndFrame();
+            long flushEnd = diagnostics is null ? 0 : HighResTimer.GetCurrentTick();
+
+            if (diagnostics is not null)
+            {
+                pictureReplayTicks = pictureEnd - pictureStart;
+                backbufferFlushTicks = flushEnd - pictureEnd;
+                replayEnd = flushEnd;
+            }
+
+            long snapshotStartTick = diagnostics is null ? 0 : HighResTimer.GetCurrentTick();
+            var snapshot = Backbuffer.Snapshot();
+            if (diagnostics is not null)
+                snapshotTicks = HighResTimer.GetCurrentTick() - snapshotStartTick;
+
+            return snapshot;
+        }
+        finally
+        {
+            try { Backbuffer.BeginFrame(); }
+            finally { FrameMailbox.Release(slot); }
+
+            diagnostics?.Invoke(new(0, 0)
+            {
+                ReplayMilliseconds = HighResTimer.GetDuration(acquired, replayEnd) * 1000d,
+                PictureReplayMilliseconds =
+                    HighResTimer.GetDuration(0, pictureReplayTicks) * 1000d,
+                BackbufferFlushMilliseconds =
+                    HighResTimer.GetDuration(0, backbufferFlushTicks) * 1000d,
+                SnapshotMilliseconds =
+                    HighResTimer.GetDuration(0, snapshotTicks) * 1000d,
+                SnapshotAgeMilliseconds = age,
+                PublishedSnapshots = counters.Published,
+                DroppedSnapshots = counters.Dropped,
+                SnapshotSlotsInUse = counters.InUse,
+                SnapshotCommandCount = commands
+            });
+        }
+    }
+
     /// <summary>
     /// Renders the current scene frame and draws the GPU backbuffer surface directly to another
     /// GPU canvas. Linear scaling uses a scoped GPU texture snapshot because direct surface drawing
@@ -171,6 +255,13 @@ public abstract class RenderSurfaceHostBase : IDisposable
 
         if (!Backbuffer.IsGlThreadRendered)
             return false;
+
+        if (UsesRenderFrameSnapshots)
+        {
+            using var image = ReplayRenderFrameSnapshot();
+            DrawCurrentSurface(destinationCanvas);
+            return true;
+        }
 
         RenderStateSynchronization.EnterGpuRender();
         try
@@ -301,7 +392,8 @@ public abstract class RenderSurfaceHostBase : IDisposable
     /// </remarks>
     public void Dispose()
     {
-        Dispose(true);
+        lock (RenderStateSynchronization.SyncRoot)
+            Dispose(true);
         GC.SuppressFinalize(this);
     }
 
@@ -321,7 +413,10 @@ public abstract class RenderSurfaceHostBase : IDisposable
     protected virtual void Dispose(bool disposing)
     {
         if (disposing)
+        {
+            FrameMailbox.Dispose();
             Effects.Dispose();
+        }
 
         RenderSurfaceHostRegistry.Unregister(this);
     }

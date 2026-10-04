@@ -504,6 +504,18 @@ public sealed class TilesheetRegion : IDisposable
         _tileCache = null;
     }
 
+    internal Rectangle GetFrameSourceBounds(int xTile, int yTile)
+    {
+        ThrowIfDisposed();
+
+        if (_tileCache is null)
+            BuildTileCache();
+
+        return IsFrameCoordinateValid(xTile, yTile)
+            ? GetTileBounds(xTile, yTile)
+            : Rectangle.Empty;
+    }
+
     private Rectangle GetTileBounds(int xTile, int yTile)
     {
         int x = _area.X + _regionMargin.Left + (xTile * TileWidthIncludingPadding);

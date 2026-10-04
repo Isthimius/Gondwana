@@ -12,8 +12,25 @@ namespace Gondwana.Drawing.Tilesheets;
 /// </summary>
 public sealed class Tilesheet : IDisposable
 {
+    private SKImage? _atlasImage;
+
     [Newtonsoft.Json.JsonIgnore]
     internal DefinitionProvenance? DefinitionProvenance { get; set; }
+
+    /// <summary>
+    /// Lazily-created image view of the complete tilesheet used by the command recorder
+    /// for DrawAtlas batching. The bitmap remains the authoritative source.
+    /// </summary>
+    internal SKImage? AtlasImage
+    {
+        get
+        {
+            if (_disposed || SkBitmap is null || SkBitmap.IsEmpty)
+                return null;
+
+            return _atlasImage ??= SKImage.FromBitmap(SkBitmap);
+        }
+    }
 
     public event Action<Tilesheet>? Disposed;
 
@@ -218,6 +235,7 @@ public sealed class Tilesheet : IDisposable
         MaskTolerance = tolerance;
         Premultiplied = true;
 
+        InvalidateAtlasImage();
         ClearTileCache();
 
         if (SkBitmap.Info.AlphaType == SKAlphaType.Opaque)
@@ -251,6 +269,7 @@ public sealed class Tilesheet : IDisposable
             throw new ArgumentException("Invalid bitmap.");
 
         Premultiplied = true;
+        InvalidateAtlasImage();
         ClearTileCache();
 
         SkBitmapOriginal?.Dispose();
@@ -379,6 +398,12 @@ public sealed class Tilesheet : IDisposable
             region.ClearTileCache();
     }
 
+    private void InvalidateAtlasImage()
+    {
+        _atlasImage?.Dispose();
+        _atlasImage = null;
+    }
+
     private void AddDefaultRegion(
         Size? tileSize = null,
         Spacing? tilePadding = null,
@@ -421,6 +446,7 @@ public sealed class Tilesheet : IDisposable
 
         Regions.Clear();
 
+        InvalidateAtlasImage();
         SkBitmap?.Dispose();
         SkBitmapOriginal?.Dispose();
 

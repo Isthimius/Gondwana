@@ -307,6 +307,7 @@ public sealed class ViewportScalingTests : IDisposable
             : new TextBlock(host, view, new Rectangle(15, 15, 100, 70)))
             .SetText("Scale").SetFont(SKTypeface.Default, 14).SetColors(SKColors.White, SKColors.Transparent);
         var beforeBounds = text.GetDrawLocationScreen(view);
+        host.ProduceRenderFrameSnapshot(0);
         using var before = host.GlRenderAndSnapshot();
         using var beforePixels = SKBitmap.FromImage(before!);
         Assert.Contains(beforePixels.Pixels, p => p.Red > 0);
