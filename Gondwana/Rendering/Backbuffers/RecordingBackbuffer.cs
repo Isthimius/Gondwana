@@ -1,5 +1,8 @@
 using System.Drawing;
 using Gondwana.Drawing;
+using Gondwana.Drawing.Coordinates;
+using Gondwana.Drawing.Tilesheets;
+using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.SkiaSharp;
 using SkiaSharp;
@@ -21,10 +24,45 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         internal SKRotationScaleMatrix[] Transforms { get; } = new SKRotationScaleMatrix[size];
     }
 
+    private readonly record struct FrameAtlasKey(
+        Tilesheet Tilesheet,
+        string RegionName,
+        int XTile,
+        int YTile);
+
+    private readonly record struct FrameAtlasInfo(
+        SKImage Atlas,
+        SKRect Source,
+        Spacing Overhang);
+
+    private readonly record struct LayerScreenMap(
+        float OffsetX,
+        float OffsetY,
+        float ScaleX,
+        float ScaleY)
+    {
+        internal static LayerScreenMap Create(View view, SceneLayer layer)
+        {
+            RectangleF unit = view.WorldRectToScreenRect(
+                layer,
+                new RectangleF(0f, 0f, 1f, 1f));
+
+            return new(unit.Left, unit.Top, unit.Width, unit.Height);
+        }
+
+        internal RectangleF Map(Rectangle world) =>
+            new(
+                OffsetX + world.Left * ScaleX,
+                OffsetY + world.Top * ScaleY,
+                world.Width * ScaleX,
+                world.Height * ScaleY);
+    }
+
     private readonly SKPictureRecorder _recorder = new();
     private readonly SKRect[] _pendingSprites = new SKRect[MaxAtlasBatchSize];
     private readonly SKRotationScaleMatrix[] _pendingTransforms =
         new SKRotationScaleMatrix[MaxAtlasBatchSize];
+    private readonly Dictionary<FrameAtlasKey, FrameAtlasInfo> _frameAtlasCache = [];
     private readonly Dictionary<int, AtlasBatchBuffer> _partialBatchBuffers = new()
     {
         [1] = new(1),
@@ -52,6 +90,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
     internal void Start(BackbufferBase source)
     {
         ResetPendingBatch();
+        _frameAtlasCache.Clear();
         AtlasBatchCount = 0;
         AtlasBatchedTileCount = 0;
 
@@ -87,17 +126,143 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         picture.Dispose();
     }
 
+    internal bool TryDrawFixedGridDrawables(
+        View view,
+        IReadOnlyList<IDrawable> drawables,
+        Rectangle clipRect)
+    {
+        if (drawables.Count == 0)
+            return true;
+
+        SceneLayer? layer = null;
+
+        // This path deliberately handles only the engine's fixed tile type and no
+        // post-tile debug/fog overlays. Anything richer retains the generic renderer.
+        for (int i = 0; i < drawables.Count; i++)
+        {
+            if (drawables[i].GetType() != typeof(SceneLayerTile) ||
+                drawables[i] is not SceneLayerTile tile ||
+                tile.EnableFog)
+            {
+                return false;
+            }
+
+            layer ??= tile.SceneLayer;
+            if (!ReferenceEquals(layer, tile.SceneLayer))
+                return false;
+        }
+
+        if (layer is null ||
+            layer.ShowGridLines ||
+            layer.ShowCollisionBoxes)
+        {
+            return false;
+        }
+
+        LayerScreenMap screen = LayerScreenMap.Create(view, layer);
+
+        Canvas.Save();
+        Canvas.ClipRect(clipRect.ToSKRect());
+
+        try
+        {
+            for (int i = 0; i < drawables.Count; i++)
+            {
+                var tile = (SceneLayerTile)drawables[i];
+
+                if (tile.Transform != TileTransform.Identity)
+                {
+                    FlushTileBatch();
+                    tile.Draw(this, tile.GetDrawLocationScreen(view));
+                    continue;
+                }
+
+                if (!TryGetFrameAtlasInfo(tile.CurrentFrame, out var frame))
+                {
+                    FlushTileBatch();
+                    tile.Draw(this, tile.GetDrawLocationScreen(view));
+                    continue;
+                }
+
+                Rectangle world = RenderTileQuery.GetFixedTileCellBounds(layer, tile);
+                if (!frame.Overhang.IsEmpty)
+                {
+                    world = Rectangle.FromLTRB(
+                        world.Left - frame.Overhang.Left,
+                        world.Top - frame.Overhang.Top,
+                        world.Right + frame.Overhang.Right,
+                        world.Bottom + frame.Overhang.Bottom);
+                }
+
+                RectangleF destination = screen.Map(world);
+
+                if (!TryQueueAtlas(frame.Atlas, frame.Source, destination))
+                {
+                    FlushTileBatch();
+                    tile.Draw(this, destination);
+                }
+            }
+
+            FlushTileBatch();
+            return true;
+        }
+        finally
+        {
+            Canvas.Restore();
+        }
+    }
+
     internal bool TryQueueTile(SceneLayerTile tile, RectangleF destination)
     {
-        if (tile.Transform != TileTransform.Identity)
+        if (tile.Transform != TileTransform.Identity ||
+            !TryGetFrameAtlasInfo(tile.CurrentFrame, out var frame))
+        {
             return false;
+        }
 
-        var frame = tile.CurrentFrame;
+        return TryQueueAtlas(frame.Atlas, frame.Source, destination);
+    }
+
+    private bool TryGetFrameAtlasInfo(Frame frame, out FrameAtlasInfo info)
+    {
+        if (frame.Tilesheet is null)
+        {
+            info = default;
+            return false;
+        }
+
+        var key = new FrameAtlasKey(
+            frame.Tilesheet,
+            frame.RegionName ?? string.Empty,
+            frame.XTile,
+            frame.YTile);
+
+        if (_frameAtlasCache.TryGetValue(key, out info))
+            return true;
+
         var atlas = frame.AtlasImage;
-        var source = frame.AtlasSourceBounds;
+        Rectangle source = frame.AtlasSourceBounds;
+        if (atlas is null || source.IsEmpty)
+        {
+            info = default;
+            return false;
+        }
 
-        if (atlas is null ||
-            source.IsEmpty ||
+        info = new(
+            atlas,
+            source.ToSKRect(),
+            frame.Overhang);
+        _frameAtlasCache.Add(key, info);
+        return true;
+    }
+
+    private bool TryQueueAtlas(
+        SKImage atlas,
+        SKRect source,
+        RectangleF destination)
+    {
+        if (source.Width <= 0 ||
+            source.Height <= 0 ||
             destination.Width <= 0 ||
             destination.Height <= 0)
         {
@@ -120,12 +285,13 @@ internal sealed class RecordingBackbuffer : BackbufferBase
 
         _pendingAtlas = atlas;
         int index = _pendingCount++;
-        _pendingSprites[index] = source.ToSKRect();
+        _pendingSprites[index] = source;
         _pendingTransforms[index] = new SKRotationScaleMatrix(
             scaleX,
             0f,
             destination.Left,
             destination.Top);
+
         if (_pendingCount == MaxAtlasBatchSize)
             FlushFullTileBatch();
 

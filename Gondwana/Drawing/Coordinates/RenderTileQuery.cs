@@ -266,6 +266,33 @@ internal static class RenderTileQuery
         return result;
     }
 
+    internal static Rectangle GetFixedTileCellBounds(
+        SceneLayer layer,
+        SceneLayerTile tile)
+    {
+        Point grid = tile.GridCoordinatesAbs;
+        int width = layer.TileWidth;
+        int height = layer.TileHeight;
+
+        if (layer.CoordinateSystem is OrthogonalCoordinates)
+        {
+            return new Rectangle(
+                grid.X * width - layer.OriginPx.X,
+                grid.Y * height - layer.OriginPx.Y,
+                width,
+                height);
+        }
+
+        Point anchor = layer.CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(
+            layer,
+            grid);
+
+        if (layer.CoordinateSystem is IsometricRhombicCoordinates or IsometricAxialCoordinates)
+            return new Rectangle(anchor.X - width / 2, anchor.Y, width, height);
+
+        return new Rectangle(anchor.X, anchor.Y, width, height);
+    }
+
     private static bool Clamp(
         SceneLayer layer,
         ref int minX,
