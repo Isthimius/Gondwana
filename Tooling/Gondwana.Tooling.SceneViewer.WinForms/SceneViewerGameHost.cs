@@ -213,7 +213,7 @@ internal sealed class SceneViewerGameHost(
                 GetDiagnosticsBounds(_view.Viewport.TargetRectPx),
                 "scene-viewer-diagnostics")
             .SetFont(SKTypeface.Default, 15f)
-            .SetColors(SKColors.White, SKColors.Black)
+            .SetColors(SKColors.White, new SKColor(0, 0, 0, 102))
             .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Top)
             .EnableWrapping(false);
 
