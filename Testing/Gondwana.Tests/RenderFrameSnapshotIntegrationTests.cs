@@ -243,7 +243,7 @@ public sealed class RenderFrameSnapshotIntegrationTests
     private static void AssertGridInteriorContainsNoBlackPixels(
         SKBitmap bitmap,
         SceneLayer layer,
-        Rendering.Views.View view)
+        Gondwana.Rendering.Views.View view)
     {
         RectangleF first = layer[0, 0]!.GetDrawLocationScreen(view);
         RectangleF last =
