@@ -62,6 +62,13 @@ internal sealed class RecordingBackbuffer : BackbufferBase
                 OffsetY + world.Top * ScaleY,
                 world.Width * ScaleX,
                 world.Height * ScaleY);
+
+        internal SKMatrix CreateWorldToScreenMatrix() =>
+            SKMatrix.CreateScaleTranslation(
+                ScaleX,
+                ScaleY,
+                OffsetX,
+                OffsetY);
     }
 
     private readonly SKPictureRecorder _recorder = new();
@@ -176,6 +183,9 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         Canvas.Save();
         Canvas.ClipRect(clipRect.ToSKRect());
 
+        var worldToScreen = screen.CreateWorldToScreenMatrix();
+        Canvas.Concat(ref worldToScreen);
+
         try
         {
             RenderTileQuery.VisitCandidates(
@@ -189,7 +199,7 @@ internal sealed class RecordingBackbuffer : BackbufferBase
                         return true;
 
                     tileCount++;
-                    DrawFixedGridTile(view, layer, screen, tile);
+                    DrawFixedGridTileInWorldSpace(layer, tile);
                     return true;
                 });
 
@@ -252,6 +262,38 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         {
             Canvas.Restore();
         }
+    }
+
+    private void DrawFixedGridTileInWorldSpace(
+        SceneLayer layer,
+        SceneLayerTile tile)
+    {
+        if (!TryGetFrameAtlasInfo(tile.CurrentFrame, out var frame))
+            return;
+
+        Rectangle world = RenderTileQuery.GetFixedTileCellBounds(layer, tile);
+        if (!frame.Overhang.IsEmpty)
+        {
+            world = Rectangle.FromLTRB(
+                world.Left - frame.Overhang.Left,
+                world.Top - frame.Overhang.Top,
+                world.Right + frame.Overhang.Right,
+                world.Bottom + frame.Overhang.Bottom);
+        }
+
+        // Record atlas entries in integer world coordinates. A single canvas transform
+        // scales/translates the complete fixed-grid layer to screen space, so adjacent
+        // tile edges are transformed from the same world boundary instead of from
+        // independently rounded fractional destination rectangles.
+        if (TryQueueAtlas(frame.Atlas, frame.Source, world))
+            return;
+
+        FlushTileBatch();
+        Canvas.DrawImage(
+            frame.Atlas,
+            frame.Source,
+            world.ToSKRect(),
+            SKSamplingOptions.Default);
     }
 
     private void DrawFixedGridTile(
