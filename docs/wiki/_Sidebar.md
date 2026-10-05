@@ -82,9 +82,7 @@
 - [[Widgets Overview]]
 - [[Creating Your Own Custom Widget]]
 
-- <details>
-  <summary><strong>Controls</strong></summary>
-
+- <strong>Controls</strong>
   - [[ButtonWidget|Widgets---ButtonWidget]]
   - [[CheckBoxWidget|Widgets---CheckBoxWidget]]
   - [[ComboBoxWidget|Widgets---ComboBoxWidget]]
@@ -97,47 +95,25 @@
   - [[TabControlWidget|Widgets---TabControlWidget]]
   - [[TextBoxWidget|Widgets---TextBoxWidget]]
 
-  </details>
-
-- <details>
-  <summary><strong>Dialogs</strong></summary>
-
+- <strong>Dialogs</strong>
   - [[AboutBox|Widgets---AboutBox]]
   - [[ConversationBox|Widgets---ConversationBox]]
   - [[DialogBox|Widgets---DialogBox]] — base class for custom dialogs
 
-  </details>
-
-- <details>
-  <summary><strong>Hud</strong></summary>
-
+- <strong>Hud</strong>
   - [[HealthBarWidget|Widgets---HealthBarWidget]]
   - [[NameTagWidget|Widgets---NameTagWidget]]
 
-  </details>
-
-- <details>
-  <summary><strong>Layout</strong></summary>
-
+- <strong>Layout</strong>
   - [[StackPanelWidget|Widgets---StackPanelWidget]]
 
-  </details>
-
-- <details>
-  <summary><strong>Menus</strong></summary>
-
+- <strong>Menus</strong>
   - [[MenuBarWidget|Widgets---MenuBarWidget]]
 
-  </details>
-
-- <details>
-  <summary><strong>Overlays</strong></summary>
-
+- <strong>Overlays</strong>
   - [[PopupWidget|Widgets---PopupWidget]]
   - [[SplashScreen|Widgets---SplashScreen]]
   - [[ToastWidget|Widgets---ToastWidget]]
-
-  </details>
 
 </details>
 
