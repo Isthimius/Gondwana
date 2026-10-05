@@ -1,5 +1,13 @@
 var NAVTREEINDEX18 =
 {
+"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a09ce406c347bd5a1fe1fbe021483b23e":[1,0,0,16,1,2,8],
+"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a0e6561861a96b63696103675758ccdbf":[0,0,0,17,1,2,9],
+"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a0e6561861a96b63696103675758ccdbf":[1,0,0,16,1,2,9],
+"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a110c441055fc5604d5fd182df83ba299":[0,0,0,17,1,2,12],
+"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a110c441055fc5604d5fd182df83ba299":[1,0,0,16,1,2,12],
+"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a215aff469dccc3f83e5c026b36d890de":[0,0,0,17,1,2,1],
+"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a215aff469dccc3f83e5c026b36d890de":[1,0,0,16,1,2,1],
+"classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a217af7ca662cdaaafd08dd2c42c004ee":[0,0,0,17,1,2,0],
 "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a217af7ca662cdaaafd08dd2c42c004ee":[1,0,0,16,1,2,0],
 "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a431619f6939aa629b8a84f5329910c2f":[0,0,0,17,1,2,5],
 "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html#a431619f6939aa629b8a84f5329910c2f":[1,0,0,16,1,2,5],
@@ -241,13 +249,5 @@ var NAVTREEINDEX18 =
 "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html#af0b0689a052b0de114534535350fb2bd":[1,0,0,16,4,2,18],
 "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html#af1dfcccd1e474837a2d3d98b76af8032":[0,0,0,17,4,2,3],
 "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html#af1dfcccd1e474837a2d3d98b76af8032":[1,0,0,16,4,2,3],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html#af1e4ed0b6797fe0f85617e8a11acdd7b":[0,0,0,17,4,2,17],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html#af1e4ed0b6797fe0f85617e8a11acdd7b":[1,0,0,16,4,2,17],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html#af5624d355969827bec51ade88882a40d":[0,0,0,17,4,2,7],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html#af5624d355969827bec51ade88882a40d":[1,0,0,16,4,2,7],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html#af9683634a8c0c12acdd10ccf9e4e3198":[0,0,0,17,4,2,5],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html#af9683634a8c0c12acdd10ccf9e4e3198":[1,0,0,16,4,2,5],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html#afafef91da8e34495185e88c26c93a5bf":[0,0,0,17,4,2,11],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html#afafef91da8e34495185e88c26c93a5bf":[1,0,0,16,4,2,11],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html":[0,0,0,17,4,3]
+"classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html#af1e4ed0b6797fe0f85617e8a11acdd7b":[0,0,0,17,4,2,17]
 };

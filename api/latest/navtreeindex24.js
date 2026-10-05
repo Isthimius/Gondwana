@@ -1,5 +1,13 @@
 var NAVTREEINDEX24 =
 {
+"namespaceGondwana_1_1Effects.html#ac6d752660f6a90f9190e6223db194176a5bda814c4aedb126839228f1a3d92f09":[0,0,0,6,16,1],
+"namespaceGondwana_1_1Effects.html#ac6d752660f6a90f9190e6223db194176aa149e85a44aeec9140e92733d9ed694e":[0,0,0,6,16,3],
+"namespaceGondwana_1_1Extensibility.html":[0,0,0,7],
+"namespaceGondwana_1_1Hosting.html":[0,0,0,8],
+"namespaceGondwana_1_1Input.html":[0,0,0,9],
+"namespaceGondwana_1_1Input_1_1Gamepad.html":[0,0,0,9,0],
+"namespaceGondwana_1_1Input_1_1Gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92":[0,0,0,9,0,7],
+"namespaceGondwana_1_1Input_1_1Gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92a08a38277b0309070706f6652eeae9a53":[0,0,0,9,0,7,2],
 "namespaceGondwana_1_1Input_1_1Gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92a258f49887ef8d14ac268c92b02503aaa":[0,0,0,9,0,7,1],
 "namespaceGondwana_1_1Input_1_1Gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92a6adf97f83acf6453d4a6a4b1070f3754":[0,0,0,9,0,7,0],
 "namespaceGondwana_1_1Input_1_1Gamepad.html#ab0d7f2096fb65dc0c414b76a1ee8cf92a92b09c7c48c520c3c55e497875da437c":[0,0,0,9,0,7,4],
@@ -241,13 +249,5 @@ var NAVTREEINDEX24 =
 "structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html#a173f4cab10e283e789d44f96154c11bf":[1,0,0,5,2,1,0,5],
 "structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html#a24febb21f2566fe4b575595ffbc0e135":[0,0,0,5,3,1,0,2],
 "structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html#a24febb21f2566fe4b575595ffbc0e135":[1,0,0,5,2,1,0,2],
-"structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html#a471fc42b937c56add758dc22a4317ae8":[0,0,0,5,3,1,0,12],
-"structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html#a471fc42b937c56add758dc22a4317ae8":[1,0,0,5,2,1,0,12],
-"structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html#a4e30e9b80ac7db8b6a85ffca1f225d1d":[0,0,0,5,3,1,0,15],
-"structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html#a4e30e9b80ac7db8b6a85ffca1f225d1d":[1,0,0,5,2,1,0,15],
-"structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html#a538b822b7843ffec2f05adb326d30318":[0,0,0,5,3,1,0,1],
-"structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html#a538b822b7843ffec2f05adb326d30318":[1,0,0,5,2,1,0,1],
-"structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html#a5f84a285d24624e9034c6ad4dd494ebc":[0,0,0,5,3,1,0,8],
-"structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html#a5f84a285d24624e9034c6ad4dd494ebc":[1,0,0,5,2,1,0,8],
-"structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html#a66406cf643202c7241c9918faa2393ef":[0,0,0,5,3,1,0,0]
+"structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html#a471fc42b937c56add758dc22a4317ae8":[0,0,0,5,3,1,0,12]
 };

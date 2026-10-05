@@ -128,15 +128,23 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ae49406b652e17dd718e8b9399bcec323"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantly pans the camera by the given offset in world-space pixels. This adds the offset to the current camera position without changing any follow or pan targets.  <br /></td></tr>
 <tr class="memitem:a64bab28573b38fae3b2c09bc6f8897ec" id="r_a64bab28573b38fae3b2c09bc6f8897ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a64bab28573b38fae3b2c09bc6f8897ec">Follow</a> (Func&lt; PointF &gt; getWorldPixel, bool hardFollow=false)</td></tr>
 <tr class="memdesc:a64bab28573b38fae3b2c09bc6f8897ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the camera to follow a dynamically supplied world-space target position. Each update, the supplier is called to get the desired target "point of interest" in world pixels (typically a character center), and the camera moves so that point stays visible, honoring dead-zones and clamping.  <br /></td></tr>
+<tr class="memitem:aa04f35ddcd189b20a5a51283f0d57983" id="r_aa04f35ddcd189b20a5a51283f0d57983"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa04f35ddcd189b20a5a51283f0d57983">FollowAt</a> (Func&lt; PointF &gt; getWorldPixel, PointF viewportAnchor, bool hardFollow=false)</td></tr>
+<tr class="memdesc:aa04f35ddcd189b20a5a51283f0d57983"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the camera to follow a dynamically supplied world-space target while keeping that target at a normalized position within the visible view.  <br /></td></tr>
 <tr class="memitem:abefaa18f075ae51b56ee2a23305902f1" id="r_abefaa18f075ae51b56ee2a23305902f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abefaa18f075ae51b56ee2a23305902f1">FollowTo</a> (PointF worldPointOfInterestPx)</td></tr>
 <tr class="memdesc:abefaa18f075ae51b56ee2a23305902f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts smooth camera movement toward a fixed world-space "point of
 interest" (typically a center point). Uses the same follow logic as Follow(Func&lt;PointF&gt;, bool) but with a constant target.  <br /></td></tr>
 <tr class="memitem:a45edc63ad6a2ab528d6992b6b9469035" id="r_a45edc63ad6a2ab528d6992b6b9469035"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a45edc63ad6a2ab528d6992b6b9469035">FollowCentered</a> (<a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer.html">IMovableOnSceneLayer</a> target, float speed=-1f, bool hard=false)</td></tr>
 <tr class="memdesc:a45edc63ad6a2ab528d6992b6b9469035"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the camera follow an IMovable-on-SceneLayer so that the object stays centered in the view. Supports both grid-space and pixel-space movement, using the current coordinate system for the layer.  <br /></td></tr>
+<tr class="memitem:ad2224797e78cbbb325f806b8e951eacd" id="r_ad2224797e78cbbb325f806b8e951eacd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad2224797e78cbbb325f806b8e951eacd">FollowAt</a> (<a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer.html">IMovableOnSceneLayer</a> target, PointF viewportAnchor, float speed=-1f, bool hard=false)</td></tr>
+<tr class="memdesc:ad2224797e78cbbb325f806b8e951eacd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the camera follow an IMovable-on-SceneLayer while keeping the object's center at a normalized position within the visible view.  <br /></td></tr>
 <tr class="memitem:aba7aad4b099d0d5eed328d4ed4834d32" id="r_aba7aad4b099d0d5eed328d4ed4834d32"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba7aad4b099d0d5eed328d4ed4834d32">FollowCenteredX</a> (<a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer.html">IMovableOnSceneLayer</a> target, float speed=-1f, bool hard=false)</td></tr>
 <tr class="memdesc:aba7aad4b099d0d5eed328d4ed4834d32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smoothly follows an <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html" title="Defines an object that can be moved within a specific coordinate space.">IMovable</a> target, centering it horizontally only. Vertical camera position is left unchanged.  <br /></td></tr>
+<tr class="memitem:a665c8335393bbd51b58c389686e34f6e" id="r_a665c8335393bbd51b58c389686e34f6e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a665c8335393bbd51b58c389686e34f6e">FollowAtX</a> (<a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer.html">IMovableOnSceneLayer</a> target, float horizontalAnchor, float speed=-1f, bool hard=false)</td></tr>
+<tr class="memdesc:a665c8335393bbd51b58c389686e34f6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smoothly follows an <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html" title="Defines an object that can be moved within a specific coordinate space.">IMovable</a> target horizontally while keeping its center at a normalized horizontal position in the visible view. Vertical camera position is left unchanged.  <br /></td></tr>
 <tr class="memitem:a58ae46c4104f3905f4d6d4b066543445" id="r_a58ae46c4104f3905f4d6d4b066543445"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a58ae46c4104f3905f4d6d4b066543445">FollowCenteredY</a> (<a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer.html">IMovableOnSceneLayer</a> target, float speed=-1f, bool hard=false)</td></tr>
 <tr class="memdesc:a58ae46c4104f3905f4d6d4b066543445"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smoothly follows an <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html" title="Defines an object that can be moved within a specific coordinate space.">IMovable</a> target, centering it vertically only. Horizontal camera position is left unchanged.  <br /></td></tr>
+<tr class="memitem:a35073174ec6f0acf3309d06d4dd5ec1f" id="r_a35073174ec6f0acf3309d06d4dd5ec1f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a35073174ec6f0acf3309d06d4dd5ec1f">FollowAtY</a> (<a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer.html">IMovableOnSceneLayer</a> target, float verticalAnchor, float speed=-1f, bool hard=false)</td></tr>
+<tr class="memdesc:a35073174ec6f0acf3309d06d4dd5ec1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smoothly follows an <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html" title="Defines an object that can be moved within a specific coordinate space.">IMovable</a> target vertically while keeping its center at a normalized vertical position in the visible view. Horizontal camera position is left unchanged.  <br /></td></tr>
 <tr class="memitem:a6e833771207933086408610b4c50c5b2" id="r_a6e833771207933086408610b4c50c5b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6e833771207933086408610b4c50c5b2">ClearFollow</a> ()</td></tr>
 <tr class="memdesc:a6e833771207933086408610b4c50c5b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears any active follow or pan targets; the camera remains at its current position until moved again.  <br /></td></tr>
 </table><table class="memberdecls">
@@ -187,7 +195,7 @@ Properties</h2></td></tr>
 
 <p>Smoothly pans the camera until the specified grid tile is centered in the view. Uses the given follow speed for the motion. </p>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00157">157</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00158">158</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -214,7 +222,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00104">104</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00105">105</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -244,7 +252,7 @@ Properties</h2></td></tr>
 
 <p>Instantly centers the camera on the specified tile in the given <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a>. The tile's visual center is placed at the center of the view. </p>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00116">116</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00117">117</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -265,7 +273,7 @@ Properties</h2></td></tr>
 
 <p>Clears any active follow or pan targets; the camera remains at its current position until moved again. </p>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00492">492</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00583">583</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -297,7 +305,178 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00359">359</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00360">360</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+
+</div>
+</div>
+<a id="aa04f35ddcd189b20a5a51283f0d57983" name="aa04f35ddcd189b20a5a51283f0d57983"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa04f35ddcd189b20a5a51283f0d57983">&#9670;&#160;</a></span>FollowAt() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Rendering.Views.Camera.FollowAt </td>
+          <td>(</td>
+          <td class="paramtype">Func&lt; PointF &gt;</td>          <td class="paramname"><span class="paramname"><em>getWorldPixel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PointF</td>          <td class="paramname"><span class="paramname"><em>viewportAnchor</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>hardFollow</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures the camera to follow a dynamically supplied world-space target while keeping that target at a normalized position within the visible view. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">getWorldPixel</td><td>Function that returns the target world-space point of interest each frame. </td></tr>
+    <tr><td class="paramname">viewportAnchor</td><td>Normalized position within the visible view, where <code>(0, 0)</code> is the upper-left and <code>(1, 1)</code> is the lower-right. For example, <code>(0.2, 0.5)</code> keeps the target 20% from the left and vertically centered. </td></tr>
+    <tr><td class="paramname">hardFollow</td><td>If true, the camera snaps directly to the desired position (no smoothing). If false, the camera smoothly lerps toward the target using <a class="el" href="#a44856449f475bd2c38c8910206eaa23a" title="Controls how quickly the camera moves toward its follow target when smooth follow is enabled....">FollowLerpPerSecond</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>When <a class="el" href="#a3b236c3250296087727f389e5961f86a" title="Size of the dead zone, in pixels, around the center of the view where the follow target is allowed to...">DeadZonePx</a> is non-empty, the dead zone owns target containment and the anchor is used as the follow reference for wrapped worlds. World-bound clamping can also prevent the requested anchor from being reached near a scene edge. </p>
+
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00388">388</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+
+</div>
+</div>
+<a id="ad2224797e78cbbb325f806b8e951eacd" name="ad2224797e78cbbb325f806b8e951eacd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2224797e78cbbb325f806b8e951eacd">&#9670;&#160;</a></span>FollowAt() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Rendering.Views.Camera.FollowAt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer.html">IMovableOnSceneLayer</a></td>          <td class="paramname"><span class="paramname"><em>target</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PointF</td>          <td class="paramname"><span class="paramname"><em>viewportAnchor</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>speed</em></span><span class="paramdefsep"> = </span><span class="paramdefval">-1f</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>hard</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Makes the camera follow an IMovable-on-SceneLayer while keeping the object's center at a normalized position within the visible view. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>Object whose world-space center should be followed.</td></tr>
+    <tr><td class="paramname">viewportAnchor</td><td>Normalized position within the visible view, where <code>(0, 0)</code> is the upper-left and <code>(1, 1)</code> is the lower-right. </td></tr>
+    <tr><td class="paramname">speed</td><td>Follow speed in lerp-units per second. Values greater than zero replace <a class="el" href="#a44856449f475bd2c38c8910206eaa23a" title="Controls how quickly the camera moves toward its follow target when smooth follow is enabled....">FollowLerpPerSecond</a>; values less than or equal to zero leave the current setting unchanged. </td></tr>
+    <tr><td class="paramname">hard</td><td>If true, the camera snaps to the desired position each update.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00439">439</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+
+</div>
+</div>
+<a id="a665c8335393bbd51b58c389686e34f6e" name="a665c8335393bbd51b58c389686e34f6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a665c8335393bbd51b58c389686e34f6e">&#9670;&#160;</a></span>FollowAtX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Rendering.Views.Camera.FollowAtX </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer.html">IMovableOnSceneLayer</a></td>          <td class="paramname"><span class="paramname"><em>target</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>horizontalAnchor</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>speed</em></span><span class="paramdefsep"> = </span><span class="paramdefval">-1f</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>hard</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Smoothly follows an <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html" title="Defines an object that can be moved within a specific coordinate space.">IMovable</a> target horizontally while keeping its center at a normalized horizontal position in the visible view. Vertical camera position is left unchanged. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>Object whose horizontal world position should be followed.</td></tr>
+    <tr><td class="paramname">horizontalAnchor</td><td>Normalized horizontal position where <code>0</code> is the left edge and <code>1</code> is the right edge. </td></tr>
+    <tr><td class="paramname">speed</td><td>Follow speed in lerp-units per second. Values greater than zero replace <a class="el" href="#a44856449f475bd2c38c8910206eaa23a" title="Controls how quickly the camera moves toward its follow target when smooth follow is enabled....">FollowLerpPerSecond</a>. </td></tr>
+    <tr><td class="paramname">hard</td><td>If true, the camera snaps to the desired horizontal position each update.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00485">485</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+
+</div>
+</div>
+<a id="a35073174ec6f0acf3309d06d4dd5ec1f" name="a35073174ec6f0acf3309d06d4dd5ec1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35073174ec6f0acf3309d06d4dd5ec1f">&#9670;&#160;</a></span>FollowAtY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Rendering.Views.Camera.FollowAtY </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovableOnSceneLayer.html">IMovableOnSceneLayer</a></td>          <td class="paramname"><span class="paramname"><em>target</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>verticalAnchor</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>speed</em></span><span class="paramdefsep"> = </span><span class="paramdefval">-1f</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>hard</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Smoothly follows an <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html" title="Defines an object that can be moved within a specific coordinate space.">IMovable</a> target vertically while keeping its center at a normalized vertical position in the visible view. Horizontal camera position is left unchanged. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>Object whose vertical world position should be followed.</td></tr>
+    <tr><td class="paramname">verticalAnchor</td><td>Normalized vertical position where <code>0</code> is the top edge and <code>1</code> is the bottom edge. </td></tr>
+    <tr><td class="paramname">speed</td><td>Follow speed in lerp-units per second. Values greater than zero replace <a class="el" href="#a44856449f475bd2c38c8910206eaa23a" title="Controls how quickly the camera moves toward its follow target when smooth follow is enabled....">FollowLerpPerSecond</a>. </td></tr>
+    <tr><td class="paramname">hard</td><td>If true, the camera snaps to the desired vertical position each update.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00544">544</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -327,7 +506,7 @@ Properties</h2></td></tr>
 
 <p>Makes the camera follow an IMovable-on-SceneLayer so that the object stays centered in the view. Supports both grid-space and pixel-space movement, using the current coordinate system for the layer. </p>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00386">386</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00419">419</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -357,7 +536,7 @@ Properties</h2></td></tr>
 
 <p>Smoothly follows an <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html" title="Defines an object that can be moved within a specific coordinate space.">IMovable</a> target, centering it horizontally only. Vertical camera position is left unchanged. </p>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00412">412</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00465">465</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -387,7 +566,7 @@ Properties</h2></td></tr>
 
 <p>Smoothly follows an <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html" title="Defines an object that can be moved within a specific coordinate space.">IMovable</a> target, centering it vertically only. Horizontal camera position is left unchanged. </p>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00452">452</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00524">524</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -415,7 +594,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00375">375</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00408">408</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -436,7 +615,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
 
 <p>Instantly pans the camera by the given offset in world-space pixels. This adds the offset to the current camera position without changing any follow or pan targets. </p>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00329">329</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00330">330</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -468,7 +647,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00144">144</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00145">145</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -500,7 +679,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00212">212</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00213">213</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -532,7 +711,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00281">281</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00282">282</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -564,7 +743,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00179">179</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00180">180</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -608,7 +787,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00309">309</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00310">310</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -640,7 +819,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00239">239</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00240">240</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -667,7 +846,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00091">91</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00092">92</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -694,7 +873,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
 
 <p>Size of the dead zone, in pixels, around the center of the view where the follow target is allowed to move without forcing the camera to track it. A larger dead zone produces a looser, less reactive camera. </p>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00064">64</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00065">65</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -720,7 +899,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
 
 <p>Controls how quickly the camera moves toward its follow target when smooth follow is enabled. Interpreted as a lerp factor per second: higher values feel snappier, lower values feel more floaty. </p>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00071">71</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00072">72</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -746,7 +925,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
 
 <p>Gets or sets the camera's world-space position in pixels, interpreted as the upper-left corner of the visible region. All world-to-screen projections for this camera are based on this position. </p>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00035">35</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00036">36</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -772,7 +951,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
 
 <p>World-space rectangle (in pixels) that the camera is allowed to move within. Clamping logic uses this to prevent the view from scrolling past the edges of the world or map. Wrapped axes are unconstrained in the selected layer's period-vector basis. Following uses the target layer; otherwise the first visible layer in scene insertion order supplies topology. </p>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00057">57</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00058">58</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
