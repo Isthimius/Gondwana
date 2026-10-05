@@ -13,6 +13,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+## Fixed
+- Add initial TextBox key repeat delay ([#411](https://github.com/Isthimius/Gondwana/pull/411))
+
+
+
 ## Refactoring
 - Use MenuBarWidget and GPU-only rendering ([#401](https://github.com/Isthimius/Gondwana/pull/401))
 - Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))

@@ -7,6 +7,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+## Added
+- Add asynchronous browser console logging ([#408](https://github.com/Isthimius/Gondwana/pull/408))
+
+
+
 ## Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
 

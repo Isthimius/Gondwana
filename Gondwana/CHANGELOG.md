@@ -12,7 +12,6 @@ All notable changes to this project will be documented in this file.
 
 
 ## Added
-- Add packed GAF definition references and source-preserving EngineState save options for GTS, GANI, GSCN, GSND, and GSPR; support relative archive paths and optional stream origins.
 - Add GSCN format and EngineState integration ([#372](https://github.com/Isthimius/Gondwana/pull/372))
 - Add GANI format and EngineState integration ([#373](https://github.com/Isthimius/Gondwana/pull/373))
 - Compose the standalone WinForms authoring editors ([#383](https://github.com/Isthimius/Gondwana/pull/383))
@@ -20,6 +19,8 @@ All notable changes to this project will be documented in this file.
 - Load GAF asset files from streams ([#392](https://github.com/Isthimius/Gondwana/pull/392))
 - Add scrollable list boxes with mouse wheel support ([#403](https://github.com/Isthimius/Gondwana/pull/403))
 - Add scrollable labels and Spot help ([#405](https://github.com/Isthimius/Gondwana/pull/405))
+- Add asynchronous browser console logging ([#408](https://github.com/Isthimius/Gondwana/pull/408))
+- Native scene tile transforms, GSCN tooling and Tiled import ([#417](https://github.com/Isthimius/Gondwana/pull/417))
 
 
 

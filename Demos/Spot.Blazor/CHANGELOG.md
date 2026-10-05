@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 
 
+## Added
+- Add asynchronous browser console logging ([#408](https://github.com/Isthimius/Gondwana/pull/408))
+- Add tiled island sample assets ([#422](https://github.com/Isthimius/Gondwana/pull/422))
+
+
+
 ## Refactoring
 - Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))
 
