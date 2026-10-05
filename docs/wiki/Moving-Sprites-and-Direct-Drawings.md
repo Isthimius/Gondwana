@@ -1,138 +1,76 @@
 > **Movement and Controllers**
 >
-> A practical guide to using `MovementController` with Gondwana's two most common movable visual types.
+> This page applies Gondwana's movement system to its two most common movable visual types: `Sprite` and movable direct drawings. For the movement system itself—follow, scripted movement, integrated movement, priority, cancellation, events, and controller APIs—see [[Movement and Controllers]].
 
 ---
 
 ## Table of Contents
 
 - [What This Page Covers](#what-this-page-covers)
-- [The Mental Model](#the-mental-model)
-- [The Two Built-In Mover Models](#the-two-built-in-mover-models)
+- [Sprite vs. Direct-Drawing Movement](#sprite-vs-direct-drawing-movement)
 - [How Movement Is Attached](#how-movement-is-attached)
-- [Movement Spaces and Units](#movement-spaces-and-units)
 - [Moving Sprites](#moving-sprites)
 - [Moving Direct Drawings](#moving-direct-drawings)
-- [The Three Movement Families](#the-three-movement-families)
-- [Follow Movement](#follow-movement)
-- [Scripted Movement](#scripted-movement)
-- [Integrated Movement](#integrated-movement)
-- [Priority, Ownership, and Cancellation](#priority-ownership-and-cancellation)
-- [Status and Events](#status-and-events)
-- [Update Timing](#update-timing)
-- [Common Recipes](#common-recipes)
+- [Following Across Movement Spaces](#following-across-movement-spaces)
 - [Movement and Rendering](#movement-and-rendering)
 - [Movement and Collision](#movement-and-collision)
+- [Update Timing](#update-timing)
+- [Practical Examples](#practical-examples)
 - [Common Mistakes](#common-mistakes)
 - [Troubleshooting](#troubleshooting)
 - [Quick Reference](#quick-reference)
-- [Glossary](#glossary)
+- [Related Documentation](#related-documentation)
 - [Related Source Files](#related-source-files)
 
 ---
 
 ## What This Page Covers
 
-The parent page, [[Movement and Controllers]], introduces Gondwana's three movement styles:
+`MovementController` works through the `IMovable` contract, so the same high-level movement APIs can drive objects with different coordinate systems.
 
-- follow;
-- scripted;
-- integrated.
+The important part is understanding what position means for each object.
 
-This page explains how those styles are used by:
+This page focuses on:
 
 - `Sprite`;
-- classes derived from `DirectDrawingMovableBase`, including movable direct images, rectangles, text blocks, SVG drawings, particle surfaces, and related direct-drawing types.
+- classes derived from `DirectDrawingMovableBase`, including movable images, rectangles, text, SVG drawings, particle surfaces, and related direct-drawing types.
 
-The focus is practical:
+It explains:
 
-- what coordinate units each object uses;
-- how to start and stop movement;
-- how follow differs from scripted motion;
-- how velocity and acceleration work;
-- how movement interacts with rendering;
-- how a sprite differs from a direct drawing even though both expose `.Movement`.
+- what coordinate space each type uses;
+- what a reported position represents;
+- how movement affects rendering;
+- how cameras affect each type;
+- how one type can follow the other;
+- what collision behavior movement does and does not imply.
 
-This page does not explain the internal design of `MovementController` in detail. It explains the public behavior a game or tool developer needs to use it correctly.
+It does **not** duplicate the complete `MovementController` API. See [[Movement and Controllers]] for:
 
----
-
-## The Mental Model
-
-A `MovementController` does not decide what a position means.
-
-The movable object decides that.
-
-Every movable supplies three pieces of information through the `IMovable` contract:
-
-```csharp
-MovementSpace PositionSpace { get; }
-
-Vector2 GetPosition();
-
-void SetPosition(Vector2 position);
-```
-
-The controller:
-
-1. reads the object's current position;
-2. calculates a new position;
-3. gives the new position back to the object;
-4. lets the object update its own bounds, rendering state, and related systems.
-
-```mermaid
-flowchart LR
-    Command["Movement command"]
-    Controller["MovementController"]
-    Read["IMovable.GetPosition()"]
-    Calculate["Calculate next position"]
-    Write["IMovable.SetPosition()"]
-    Object["Sprite or DirectDrawing"]
-    Render["Rendering refresh"]
-
-    Command --> Controller
-    Controller --> Read
-    Read --> Calculate
-    Calculate --> Write
-    Write --> Object
-    Object --> Render
-```
-
-That shared contract allows the same high-level movement APIs to work with objects that use very different coordinate systems.
-
-For example:
-
-```csharp
-sprite.Movement.MoveTo(...);
-
-directDrawing.Movement.MoveTo(...);
-```
-
-The method name is the same.
-
-The units are not necessarily the same.
-
-> **Always interpret movement values in the movable object's position space.**
+- follow, scripted, and integrated movement;
+- movement priority and ownership;
+- cancellation rules;
+- velocity, acceleration, damping, and max speed;
+- status properties and events;
+- world wrapping;
+- general movement troubleshooting.
 
 ---
 
-## The Two Built-In Mover Models
-
-Sprites and movable direct drawings are both movable, but they represent position differently.
+## Sprite vs. Direct-Drawing Movement
 
 | Behavior | `Sprite` | `DirectDrawingMovableBase` |
 |---|---|---|
 | Position space | `MovementSpace.Grid` | `MovementSpace.Pixel` |
-| Stored position | Scene-layer coordinates | Pixel top-left |
-| Rendering space | Converted from grid to world pixels | World or screen pixels depending on mode |
-| Belongs to scene layer | Always | Only in `SceneLayer` mode |
+| Stored position | Scene-layer coordinates | Bounds top-left |
+| Movement units | Grid units | Pixels |
+| Velocity units | Grid units/sec | Pixels/sec |
+| Position may be fractional | Yes | Yes internally |
+| Belongs to a `SceneLayer` | Always | Only in `SceneLayer` mode |
 | Can be view-bound | No | Yes |
 | Camera affects it | Yes | Scene-layer mode: yes; view mode: no |
-| Movement units | Grid units / tiles | Pixels |
-| Position may be fractional | Yes | Yes internally |
-| Rendering is pixel-aligned | Through layer conversion | Bounds rounded for rendering |
+| Rendering space | Grid converted to world pixels | World or screen pixels depending on mode |
 | Automatic movement updates | `SpriteManager` | Direct-drawing update cycle |
-| Built-in collision participation | Sprite collision system | Not implied by movement alone |
+| Built-in sprite collision participation | Yes, when configured | No; movement alone does not imply collision |
 
 The most important distinction is:
 
@@ -140,13 +78,35 @@ The most important distinction is:
 Sprite position
     = scene-layer grid coordinates
 
-DirectDrawing position
+Direct-drawing position
     = pixel coordinates
 ```
 
-A sprite at `(5, 3)` is normally at grid coordinate `(5, 3)`.
+A sprite at:
 
-A direct drawing at `(5, 3)` is normally five pixels from its applicable origin.
+```text
+(5, 3)
+```
+
+is normally at scene-layer coordinate `(5, 3)`.
+
+A direct drawing at:
+
+```text
+(5, 3)
+```
+
+is positioned five pixels from its applicable pixel-space origin.
+
+The APIs may look identical:
+
+```csharp
+sprite.Movement.MoveTo(...);
+
+drawing.Movement.MoveTo(...);
+```
+
+The units are not identical.
 
 ---
 
@@ -169,17 +129,20 @@ MovementController movement =
     sprite.Movement;
 ```
 
-A sprite's controller is configured for:
+A sprite is a grid-space mover:
 
 ```csharp
-MovementSpace.Grid
+sprite.PositionSpace
+// MovementSpace.Grid
 ```
 
-and is given the sprite's `SceneLayer`, allowing it to perform grid/pixel conversions when required.
+Its owning `SceneLayer` gives the engine the coordinate-system context needed to convert logical grid positions into world-pixel drawing positions.
 
 ### Movable direct drawing
 
-Concrete movable direct drawings inherit their controller from `DirectDrawingMovableBase`.
+Concrete movable direct drawings inherit movement behavior from `DirectDrawingMovableBase`.
+
+For example:
 
 ```csharp
 var marker =
@@ -194,144 +157,86 @@ MovementController movement =
     marker.Movement;
 ```
 
-The controller is configured for:
+A movable direct drawing is a pixel-space mover:
 
 ```csharp
-MovementSpace.Pixel
+marker.PositionSpace
+// MovementSpace.Pixel
 ```
 
 The direct drawing's mode determines what those pixels mean:
 
-- `SceneLayer` mode → world pixels;
-- `View` mode → absolute screen pixels.
+- `DirectDrawingMode.SceneLayer` → world pixels;
+- `DirectDrawingMode.View` → absolute screen/backbuffer pixels.
 
-### No manual update call is required
+### No manual movement update call
 
-You do not normally call:
-
-```csharp
-movement.AdvanceMovement(...)
-```
-
-yourself.
-
-The engine updates registered sprites and direct drawings as part of its normal cycle.
-
-Your code configures the movement:
+For both object families, game code normally configures movement:
 
 ```csharp
 sprite.Movement.SetVelocity(...);
+
+marker.Movement.MoveTo(...);
 ```
 
-The engine advances it.
+The engine advances movement as part of its normal update cycle.
 
----
-
-## Movement Spaces and Units
-
-Gondwana currently exposes two movement spaces:
-
-```csharp
-MovementSpace.Grid
-MovementSpace.Pixel
-```
-
-### Grid space
-
-Grid-space values use the owning layer's coordinate system.
-
-For an orthogonal map:
-
-```text
-X = column
-Y = row
-```
-
-For other coordinate systems, the values are interpreted by that layer's coordinate implementation.
-
-Grid positions can be fractional:
-
-```csharp
-new Vector2(5.25f, 3.5f)
-```
-
-This allows smooth movement between cells.
-
-Grid-space speed is measured in grid units per second.
-
-```csharp
-sprite.Movement.SetVelocity(
-    new Vector2(2f, 0f));
-```
-
-For a sprite, that means approximately two grid units per second horizontally.
-
-It does **not** mean two screen pixels per second.
-
-### Pixel space
-
-Pixel-space values are measured in pixels, but context still matters.
-
-| Direct drawing mode | Pixel meaning |
-|---|---|
-| `DirectDrawingMode.SceneLayer` | World pixels |
-| `DirectDrawingMode.View` | Absolute screen/adapter pixels |
-
-A scene-layer direct drawing moving by:
-
-```csharp
-new Vector2(100, 0)
-```
-
-moves 100 world pixels.
-
-A view-mode direct drawing moving by the same amount moves 100 screen pixels.
-
-### Position meaning matters too
-
-A sprite's position is its scene-layer coordinate.
-
-A direct drawing's position is its bounds' upper-left.
-
-```text
-Sprite.GetPosition()
-    → grid coordinate
-
-DirectDrawing.GetPosition()
-    → top-left pixel position
-```
-
-This becomes especially important when following another object.
+Do not manually call internal movement-advance methods.
 
 ---
 
 ## Moving Sprites
 
-A sprite is:
+A `Sprite` is:
 
 - attached to one `SceneLayer`;
 - stored in scene-layer coordinates;
 - rendered after the layer converts those coordinates to world pixels;
 - updated automatically by `SpriteManager`.
 
-### Create and position a sprite
+### Sprite position is grid position
 
 ```csharp
-var sprite =
-    SpriteManager.Instance.CreateSprite(
-        layer,
-        frame,
-        "guard");
-
 sprite.SetPosition(
     new Vector2(8, 4));
 ```
 
-The position `(8, 4)` is in the layer's grid coordinate space.
+The position `(8, 4)` is in the layer's scene-coordinate space.
 
-### The rendered rectangle is derived
+For an orthogonal map, that usually corresponds to column 8, row 4.
 
-A sprite's movement position is not necessarily the top-left pixel of its rendered image.
+For other coordinate systems, the owning layer determines how that logical position maps to world pixels.
+
+### Fractional grid movement
+
+Sprite coordinates may be fractional:
+
+```csharp
+sprite.SetPosition(
+    new Vector2(8.25f, 4f));
+```
+
+or may become fractional through movement:
+
+```csharp
+sprite.Movement.SetVelocity(
+    new Vector2(1.5f, 0f));
+```
+
+That allows smooth motion through positions such as:
+
+```text
+(8.00, 4.00)
+(8.10, 4.00)
+(8.20, 4.00)
+...
+```
+
+while retaining a grid-aware logical position.
+
+### Rendered position is derived from logical position
+
+A sprite's movement position is not necessarily the top-left pixel of its artwork.
 
 The final world drawing rectangle also accounts for:
 
@@ -357,51 +262,17 @@ nudge
 rendered world rectangle
 ```
 
-This separation is useful.
+This allows a sprite to remain logically at grid coordinate `(8, 4)` while its artwork is:
 
-A sprite can remain logically attached to grid coordinate `(8, 4)` while its artwork is:
-
-- centered within the tile;
+- centered in the cell;
 - bottom-aligned;
 - larger than the tile;
 - nudged upward;
-- rendered using a custom size.
-
-### Movement changes the logical position
-
-```csharp
-sprite.Movement.MoveTo(
-    target: new Vector2(12, 4),
-    durationSec: 1.5f);
-```
-
-This moves the sprite's scene-layer coordinate toward `(12, 4)`.
-
-The sprite then recalculates its world drawing location from that coordinate.
-
-### Fractional grid movement
-
-```csharp
-sprite.Movement.SetVelocity(
-    new Vector2(1.5f, 0));
-```
-
-The sprite can move through positions such as:
-
-```text
-(8.0, 4.0)
-(8.1, 4.0)
-(8.2, 4.0)
-...
-```
-
-The layer's coordinate system determines how each fractional coordinate maps to a world location.
-
-This allows smooth sprite movement without giving up grid-aware positioning.
+- rendered at a custom size.
 
 ### Alignment is not movement
 
-This changes only rendering alignment:
+These change visual placement:
 
 ```csharp
 sprite.VertAlign =
@@ -410,21 +281,21 @@ sprite.VertAlign =
 sprite.NudgeY = -8;
 ```
 
-It does not change:
+They do not change:
 
 ```csharp
 sprite.GetPosition()
 ```
 
-Similarly, movement does not erase alignment settings.
+Likewise, movement does not erase alignment or nudge settings.
 
-Use movement for where the sprite exists in the layer.
+Use movement for **where the sprite exists logically**.
 
-Use alignment and nudges for how its visual frame is placed around that location.
+Use alignment, nudge, and render size for **how the artwork is placed around that logical location**.
 
 ### Sprite movement raises `SpriteMoved`
 
-When `SetPosition` changes the coordinate, the sprite raises:
+When `SetPosition` changes the sprite's coordinate, the sprite raises:
 
 ```csharp
 sprite.SpriteMoved += args =>
@@ -433,34 +304,11 @@ sprite.SpriteMoved += args =>
 };
 ```
 
-It also invalidates the union of its old and new world drawing regions so that bitmap rendering can redraw both places.
-
-### Sprite setup example
-
-```csharp
-var guard =
-    SpriteManager.Instance.CreateSprite(
-        layer,
-        guardFrame,
-        "guard");
-
-guard.SetPosition(
-    new Vector2(4, 7));
-
-guard.Movement.SetMaxSpeed(3f);
-guard.Movement.SetLinearDamping(5f);
-```
-
-The speed and damping now apply to movement in grid-space units.
+The sprite also refreshes the appropriate old/new drawing regions for rendering.
 
 ---
 
 ## Moving Direct Drawings
-
-A direct drawing is a custom visual that may be attached to:
-
-- a scene layer;
-- a view.
 
 Movable direct drawings derive from:
 
@@ -477,7 +325,11 @@ Common examples include:
 - `ParticleSurface`;
 - other movable direct-drawing types.
 
+Their movement position is always pixel-based, but the meaning of those pixels depends on how the drawing is attached.
+
 ### Scene-layer direct drawing
+
+A scene-layer direct drawing uses **world pixels**.
 
 ```csharp
 var marker =
@@ -493,7 +345,7 @@ var marker =
         "marker");
 ```
 
-The rectangle's position is:
+Its position is:
 
 ```text
 (300, 200) world pixels
@@ -501,9 +353,11 @@ The rectangle's position is:
 
 Moving it by 100 X units means 100 world pixels.
 
-The camera and layer parallax affect where it appears on screen.
+Because it belongs to a scene layer, camera movement and layer projection affect where it appears on screen.
 
 ### View-mode direct drawing
+
+A view-bound direct drawing uses **absolute screen/backbuffer pixels**.
 
 ```csharp
 var panel =
@@ -519,14 +373,12 @@ var panel =
         "status-panel");
 ```
 
-The position is in absolute screen pixels.
-
-The camera does not affect it.
+Camera movement does not affect it.
 
 > [!IMPORTANT]
-> View-mode screen bounds are final adapter/backbuffer coordinates. They are not automatically relative to the viewport's upper-left.
+> View-mode bounds are absolute adapter/backbuffer coordinates. They are not automatically relative to the viewport's upper-left.
 
-For a view beginning at screen `(800, 0)`, a panel intended to appear 20 pixels inside that view should begin at approximately:
+If a view begins at screen coordinate `(800, 0)`, a panel intended to appear 20 pixels inside that view should use the viewport origin:
 
 ```csharp
 new Rectangle(
@@ -536,24 +388,26 @@ new Rectangle(
     80);
 ```
 
-### Movement uses the bounds' upper-left
+### Direct-drawing position is the bounds' upper-left
 
-For a direct drawing:
+For a movable direct drawing:
 
 ```csharp
 Vector2 position =
     drawing.GetPosition();
 ```
 
-returns the precise upper-left position.
+the movement position represents the precise upper-left coordinate of its bounds.
 
-Movement changes that upper-left while preserving the drawing's width and height.
+Movement changes that position while preserving width and height.
 
-### Precise movement and pixel-aligned rendering
+This differs from sprites, whose logical position is a scene-layer coordinate rather than a rendered rectangle's top-left pixel.
 
-`DirectDrawingMovableBase` stores its movement position as a `Vector2`.
+### Fractional movement, integer render bounds
 
-That internal position can remain fractional:
+`DirectDrawingMovableBase` stores movement position as a `Vector2`.
+
+That internal value can remain fractional:
 
 ```text
 100.25
@@ -561,814 +415,207 @@ That internal position can remain fractional:
 100.75
 ```
 
-When updating render bounds, the X and Y values are rounded to integer pixels.
+When render bounds are updated, X and Y are rounded to integer pixels.
 
 This provides:
 
 - smooth movement calculations;
 - stable pixel-aligned drawing bounds;
-- fewer rendering artifacts from unintentionally fractional screen rectangles.
+- predictable raster rendering.
 
-### Dirty-region updates are automatic
-
-When a direct drawing changes position, it refreshes:
-
-- the old area;
-- the new area.
-
-You do not normally need to manually enqueue dirty rectangles when moving through `.Movement`.
-
-### Scene-layer and view-mode example
-
-The same movement call has different coordinate meaning:
-
-```csharp
-worldMarker.Movement.MoveBy(
-    delta: new Vector2(100, 0),
-    durationSec: 1f);
-
-hudPanel.Movement.MoveBy(
-    delta: new Vector2(100, 0),
-    durationSec: 1f);
-```
-
-For `worldMarker`:
-
-```text
-100 world pixels
-```
-
-For `hudPanel`:
-
-```text
-100 absolute screen pixels
-```
+At very low speeds, the visible drawing may remain on one pixel for several updates and then advance by one pixel. That is expected.
 
 ---
 
-## The Three Movement Families
+## Following Across Movement Spaces
 
-Every `MovementController` supports the same three families.
+The follow APIs are particularly useful when the target and follower use different position spaces.
 
-| Family | Purpose | Typical examples |
-|---|---|---|
-| **Follow** | Track a live target | Name tag, companion, attached marker |
-| **Scripted** | Execute an explicit movement command | Tween, move to destination, authored transition |
-| **Integrated** | Advance velocity and acceleration | Player input, momentum, projectiles |
+The complete follow API is documented in [[Movement and Controllers]]. This section focuses only on the sprite/direct-drawing conversion cases.
 
-The controller resolves them in this priority order:
+### Pixel drawing follows a sprite
 
-```mermaid
-flowchart TD
-    Start["Movement update"]
-    Follow{"Follow active?"}
-    Script{"Script active?"}
-    Integrated{"Velocity or acceleration active?"}
-
-    Start --> Follow
-    Follow -- Yes --> RunFollow["Run follow behavior"]
-    Follow -- No --> Script
-    Script -- Yes --> RunScript["Advance scripted movement"]
-    Script -- No --> Integrated
-    Integrated -- Yes --> RunIntegrated["Integrate velocity and acceleration"]
-    Integrated -- No --> Idle["No movement"]
-```
-
-This priority is not merely an implementation detail.
-
-It determines which behavior owns the object at a given time.
-
----
-
-## Follow Movement
-
-Follow movement continuously tracks a live target.
-
-It is useful for:
-
-- a name tag attached to a sprite;
-- a world marker attached to a moving unit;
-- a companion tracking a player;
-- a UI element following another screen-space element;
-- an effect tracking a live point.
-
-Gondwana supports:
-
-- pixel targets;
-- tile/grid targets;
-- hard follow;
-- soft follow;
-- speed-based follow;
-- duration/easing-based follow;
-- offsets.
-
-### Hard versus soft follow
-
-| Type | Behavior |
-|---|---|
-| Hard follow | Follower snaps to the current target each update |
-| Soft follow | Follower moves toward the current target |
-
-Hard follow is rigid.
-
-Soft follow produces lag, pursuit, or easing.
-
-### Follow a pixel target at constant speed
-
-```csharp
-label.Movement.FollowPixelSoft(
-    getPixelPos: () => target.GetPosition(),
-    speed: 240f,
-    snap: 0.5f,
-    offsetPx: new Vector2(0, -24));
-```
-
-For a pixel-space follower, `speed` is pixels per second.
-
-The delegate is evaluated repeatedly so the target can move.
-
-### Hard-follow a pixel target
-
-```csharp
-label.Movement.FollowPixelHard(
-    getPixelPos: () => target.GetPosition(),
-    offsetPx: new Vector2(0, -24));
-```
-
-The follower jumps directly to the target plus offset each update.
-
-### Follow a tile target
+A common example is a name tag or marker following a sprite.
 
 ```csharp
 nameTag.Movement.FollowTileSoft(
     tileTarget: player,
-    speedTilesPerSec: 5f,
-    snapTiles: 0.1f,
-    gridOffset: new Vector2(0, -0.75f));
+    speedTilesPerSec: 10f,
+    snapTiles: 0.02f,
+    gridOffset: new Vector2(0, -0.75f),
+    pixelOffset: new Vector2(0, -6f));
 ```
-
-This is particularly useful for a pixel-space direct drawing following a grid-space sprite.
 
 The controller:
 
-1. reads the sprite's grid coordinate;
-2. applies the grid offset;
-3. converts the result to a world-pixel anchor using the sprite's layer;
-4. applies any pixel offset;
+1. reads the sprite's grid position;
+2. applies `gridOffset`;
+3. converts the grid coordinate to world pixels using the target's scene layer;
+4. applies `pixelOffset` for the pixel-space follower;
 5. moves the direct drawing.
 
-### Hard-follow a tile target
+For rigid attachment:
 
 ```csharp
 nameTag.Movement.FollowTileHard(
     tileTarget: player,
-    gridOffset: new Vector2(0, -0.75f));
+    gridOffset: new Vector2(0, -0.75f),
+    pixelOffset: new Vector2(0, -6f));
 ```
 
-### Grid and pixel offsets
+### Why both offsets exist
 
-These offsets are applied in different stages.
-
-| Offset | Units | Applied when |
+| Offset | Units | Purpose |
 |---|---|---|
-| `gridOffset` | Grid units | Before grid-to-pixel conversion |
-| `pixelOffset` | Pixels | After conversion, for pixel followers |
+| `gridOffset` | grid units | Move the logical attachment point before coordinate conversion |
+| `pixelOffset` | pixels | Fine-tune the final visual placement after conversion |
 
-Example:
+For example, a name tag may logically sit three-quarters of a tile above a sprite, then need another six-pixel visual nudge.
 
-```csharp
-nameTag.Movement.FollowTileSoft(
-    tileTarget: player,
-    speedTilesPerSec: 8f,
-    snapTiles: 0.05f,
-    gridOffset: new Vector2(0, -0.5f),
-    pixelOffset: new Vector2(0, -8f));
-```
+### Pixel target followed by a grid mover
 
-This follows half a tile above the target, then nudges the visual another eight pixels upward.
+The reverse is also supported when the grid mover has the scene-layer coordinate context needed to convert a pixel target into grid space.
 
-### Duration and easing follow
+The same rule remains:
 
-Soft follow overloads can use a duration and easing function.
-
-```csharp
-label.Movement.FollowPixelSoft(
-    getPixelPos: () => target.GetPosition(),
-    durationSec: 0.25f,
-    easingKind: EasingKind.EaseOutCubic,
-    snap: 0.5f,
-    offsetPx: new Vector2(0, -24));
-```
-
-For tile targets:
-
-```csharp
-marker.Movement.FollowTileSoft(
-    tileTarget: player,
-    durationSec: 0.3f,
-    easingKind: EasingKind.EaseOutQuad,
-    snap: 0.1f,
-    gridOffset: new Vector2(0, -1));
-```
-
-### Stop following
-
-```csharp
-mover.Movement.Unfollow();
-```
-
-`Unfollow` clears:
-
-- pixel follow target;
-- tile follow target;
-- follow offsets;
-- follow speed;
-- easing state;
-- hard-follow state.
-
-It also cancels the current scripted movement.
-
-### Follow remains active
-
-Follow is continuous.
-
-The follower does not stop owning follow state merely because it has caught up.
-
-To transition from follow to another movement style:
-
-```csharp
-mover.Movement.Unfollow();
-
-mover.Movement.MoveTo(...);
-```
+> **The follower ultimately moves in the follower's own `PositionSpace`.**
 
 ---
 
-## Scripted Movement
+## Movement and Rendering
 
-Scripted movement moves the object according to an explicit command.
+Movement changes logical position.
 
-Use it for:
+Each object type is responsible for translating that position into visible rendering state.
 
-- authored transitions;
-- UI animation;
-- doors and platforms;
-- cutscene movement;
-- predictable object travel;
-- moving to a known destination.
+### Sprite rendering
 
-### `MoveTo`
+When a sprite moves, it:
 
-`MoveTo` moves to an absolute position over a duration.
-
-Sprite:
-
-```csharp
-sprite.Movement.MoveTo(
-    target: new Vector2(12, 6),
-    durationSec: 1.5f);
-```
-
-The target is in grid coordinates.
-
-Scene-layer direct drawing:
-
-```csharp
-marker.Movement.MoveTo(
-    target: new Vector2(900, 480),
-    durationSec: 1.5f);
-```
-
-The target is in world pixels.
-
-View-mode direct drawing:
-
-```csharp
-panel.Movement.MoveTo(
-    target: new Vector2(40, 40),
-    durationSec: 0.4f);
-```
-
-The target is in absolute screen pixels.
-
-### Easing
-
-```csharp
-panel.Movement.MoveTo(
-    target: new Vector2(40, 40),
-    seconds: 0.4f,
-    easingKind: EasingKind.EaseOutCubic);
-```
-
-Built-in easing choices include:
-
-- `Linear`;
-- `EaseInQuad`;
-- `EaseOutQuad`;
-- `EaseInOutQuad`;
-- cubic, quartic, and quintic variants;
-- `SmoothStep`;
-- `SmootherStep`.
-
-### `MoveBy`
-
-`MoveBy` moves relative to the current position.
-
-Duration-based:
-
-```csharp
-sprite.Movement.MoveBy(
-    delta: new Vector2(3, 0),
-    durationSec: 0.75f);
-```
-
-Constant-speed:
-
-```csharp
-sprite.Movement.MoveBy(
-    delta: new Vector2(3, 0),
-    speedPerSec: 4f);
-```
-
-Use named arguments here.
-
-The duration-based and speed-based overloads intentionally accept similar value types, so names make the intended behavior clear and avoid ambiguous-looking code.
-
-### `MoveToward`
-
-`MoveToward` moves toward an absolute target at constant speed.
-
-```csharp
-sprite.Movement.MoveToward(
-    target: new Vector2(20, 8),
-    speedPerSec: 3f,
-    snapEpsilon: 0.05f);
-```
-
-Unlike a duration tween, the travel time depends on distance.
-
-### Snap tolerance
-
-`snapEpsilon` is interpreted in the mover's own units.
+1. remembers its old world drawing rectangle;
+2. updates its scene-layer coordinate;
+3. recalculates its world drawing rectangle;
+4. refreshes the old/new drawing region as required;
+5. raises `SpriteMoved`.
 
 For a sprite:
 
-```text
-0.1 = one tenth of a grid unit
+```csharp
+sprite.GetPosition()
 ```
 
-For a direct drawing:
+returns logical grid coordinates.
 
-```text
-0.5 = half a pixel
-```
-
-The controller snaps to the exact target when sufficiently close.
-
-### Beginning callback
+It does **not** return:
 
 ```csharp
-panel.Movement
-    .MoveTo(
-        target: new Vector2(40, 40),
-        durationSec: 0.4f)
-    .OnBeginning(() =>
-    {
-        PlayPanelSound();
-    });
+sprite.DrawLocationWorld.Location
 ```
 
-`OnBeginning` runs immediately when registered against the active script.
+### Direct-drawing rendering
 
-It is not a future notification.
+When a movable direct drawing changes position, it refreshes its old and new bounds.
 
-### Completion callback
+For:
 
-```csharp
-panel.Movement
-    .MoveTo(
-        target: new Vector2(40, 40),
-        durationSec: 0.4f)
-    .OnComplete(() =>
-    {
-        EnablePanelInput();
-    });
-```
+- scene-layer mode, those bounds are world-space bounds;
+- view mode, those bounds are screen-space bounds.
 
-The completion callback runs only when the script completes normally.
+For direct drawings, the movement position corresponds to the bounds' upper-left, but the complete rectangle also includes width and height.
 
-It does not run when the script is:
+### Camera behavior
 
-- cancelled;
-- replaced.
+| Mover | Camera movement changes screen position? |
+|---|:---:|
+| `Sprite` | Yes |
+| Scene-layer direct drawing | Yes |
+| View-mode direct drawing | No |
 
-### Cancel a script
-
-```csharp
-mover.Movement.CancelScript();
-```
-
-This clears the active scripted movement and discards its completion callbacks.
-
-### Replacing a script
-
-Starting a new scripted movement replaces the previous script state.
-
-```csharp
-mover.Movement.MoveTo(...);
-
-// Before it finishes:
-mover.Movement.MoveTo(...);
-```
-
-The second command becomes current.
-
-The first script's `.OnComplete(...)` callback is discarded.
+A view-mode direct drawing may still move through its own `MovementController`. It simply does not move because the world camera moved.
 
 ---
 
-## Integrated Movement
+## Movement and Collision
 
-Integrated movement advances:
+Movement support does not imply identical collision support.
 
-- velocity;
-- acceleration;
-- maximum speed;
-- damping.
+### Sprites
 
-Use it for ordinary gameplay movement where direction or force changes over time.
+Sprites participate in Gondwana's sprite/tile collision architecture when collision is configured.
 
-### Set velocity
+Collision response may cancel one velocity component while preserving another.
 
-Sprite:
-
-```csharp
-sprite.Movement.SetVelocity(
-    new Vector2(2f, 0));
-```
-
-This means two grid units per second to the right.
-
-Direct drawing:
-
-```csharp
-drawing.Movement.SetVelocity(
-    new Vector2(180f, 0));
-```
-
-This means 180 pixels per second.
-
-### Set acceleration
-
-```csharp
-sprite.Movement.SetAcceleration(
-    new Vector2(0, 4f));
-```
-
-For a sprite, the units are grid units per second squared.
-
-For a direct drawing:
-
-```csharp
-particleMarker.Movement.SetAcceleration(
-    new Vector2(0, 600f));
-```
-
-the units are pixels per second squared.
-
-### Maximum speed
-
-```csharp
-mover.Movement.SetMaxSpeed(
-    6f);
-```
-
-The maximum applies to the total velocity magnitude.
-
-Remove the cap:
-
-```csharp
-mover.Movement.SetMaxSpeed(
-    null);
-```
-
-### Linear damping
-
-```csharp
-mover.Movement.SetLinearDamping(
-    5f);
-```
-
-Damping gradually reduces velocity.
-
-Higher values stop movement more aggressively.
-
-Zero disables damping:
-
-```csharp
-mover.Movement.SetLinearDamping(
-    0f);
-```
-
-Damping affects integrated movement, not scripted movement.
-
-### Input-driven movement
-
-```csharp
-Vector2 acceleration =
-    new Vector2(inputX, inputY) * 8f;
-
-sprite.Movement.SetAcceleration(
-    acceleration);
-
-sprite.Movement.SetMaxSpeed(
-    4f);
-
-sprite.Movement.SetLinearDamping(
-    6f);
-```
-
-When input stops:
-
-```csharp
-sprite.Movement.SetAcceleration(
-    Vector2.Zero);
-```
-
-Damping slows the remaining velocity.
-
-### Setters cancel scripts, not follow
-
-`SetVelocity` and `SetAcceleration` cancel the active scripted movement.
-
-They do not automatically clear follow state.
-
-Therefore this may not produce visible integrated movement:
-
-```csharp
-mover.Movement.SetVelocity(...);
-```
-
-when follow is still active.
-
-Use:
-
-```csharp
-mover.Movement.Unfollow();
-mover.Movement.SetVelocity(...);
-```
-
-when switching from follow to manual or physics-style movement.
-
----
-
-## Priority, Ownership, and Cancellation
-
-The priority order is:
+Conceptually:
 
 ```text
-Follow
-  ↓
-Scripted
-  ↓
-Integrated
+horizontal collision
+    → cancel X velocity
+    → preserve Y velocity
 ```
 
-A higher-priority behavior can prevent a lower-priority behavior from controlling the frame.
+This supports behaviors such as:
 
-### Practical ownership table
+- wall sliding;
+- floor contact;
+- ceiling contact;
+- movement along an unblocked axis.
 
-| Active state | What normally controls position? |
-|---|---|
-| Follow target active | Follow |
-| No follow, script active | Scripted movement |
-| No follow or script, velocity/acceleration active | Integrated movement |
-| None active | Position remains unchanged |
+### Direct drawings
 
-### Switch from follow to scripted
+A direct drawing receives movement because it derives from `DirectDrawingMovableBase`.
 
-```csharp
-mover.Movement.Unfollow();
+That does **not** automatically make it part of sprite collision detection.
 
-mover.Movement.MoveTo(
-    target,
-    durationSec: 1f);
-```
+Direct drawings are well suited for:
 
-### Switch from follow to integrated
+- visuals;
+- overlays;
+- effects;
+- indicators;
+- custom engine-native drawing.
 
-```csharp
-mover.Movement.Unfollow();
+Use a sprite or an explicit collision component/system when collision semantics are required.
 
-mover.Movement.SetVelocity(
-    velocity);
-```
+### Scripts and follow are not pathfinding
 
-### Switch from scripted to integrated
+A sprite using `MoveTo` does not automatically navigate around walls.
 
-```csharp
-mover.Movement.SetVelocity(
-    velocity);
-```
+A companion using follow movement does not automatically find a route around obstacles.
 
-`SetVelocity` cancels the current script.
-
-### Stop all movement
-
-```csharp
-mover.Movement.StopAllMovement();
-```
-
-This:
-
-- clears follow;
-- cancels scripted movement;
-- zeros velocity;
-- zeros acceleration.
-
-The object remains at its current position.
-
-### `CancelScript` versus `StopAllMovement`
-
-| Method | Follow | Script | Velocity | Acceleration |
-|---|:---:|:---:|:---:|:---:|
-| `CancelScript()` | Preserved | Cleared | Preserved unless script already zeroed it | Preserved unless script already zeroed it |
-| `Unfollow()` | Cleared | Cleared | Preserved | Preserved |
-| `StopAllMovement()` | Cleared | Cleared | Zeroed | Zeroed |
-
-Use the narrowest method that matches the intended transition.
-
----
-
-## Status and Events
-
-### Status properties
-
-```csharp
-bool following =
-    mover.Movement.IsFollowing;
-
-bool scripted =
-    mover.Movement.IsScripted;
-
-bool integrated =
-    mover.Movement.IsIntegratedActive;
-```
-
-These are useful for:
-
-- gameplay state;
-- debugging;
-- editor property panels;
-- animation selection;
-- deciding whether a new command should replace an old one.
-
-### Movement state
-
-```csharp
-MovementState state =
-    mover.Movement.MovementState;
-```
-
-The state exposes values such as:
-
-- velocity;
-- acceleration;
-- maximum speed;
-- linear damping;
-- whether integrated motion exists.
-
-`MovementState` is returned as a value. Treat it as a readable snapshot of current controller state rather than an object to mutate directly.
-
-Use controller methods to change movement.
-
-### Script events
-
-```csharp
-mover.Movement.ScriptedMovementStarted += script =>
-{
-    // A scripted command began.
-};
-
-mover.Movement.ScriptedMovementStopped += script =>
-{
-    // A script completed or was explicitly cancelled.
-};
-```
-
-`ScriptedMovementStopped` is raised for normal completion and explicit `CancelScript()`.
-
-When a script is directly replaced by another script, the older completion callback is discarded. Do not rely on `.OnComplete(...)` for replacement cleanup.
-
-### Sprite movement event
-
-Sprites also expose:
-
-```csharp
-sprite.SpriteMoved += args =>
-{
-    // Sprite grid position changed.
-};
-```
-
-This is a sprite-level position event, not a controller-family event.
-
-It can fire during:
-
-- follow;
-- scripted movement;
-- integrated movement;
-- direct calls to `SetPosition`.
+See [[Movement and Controllers]] and [[Collision Detection and Resolution]] for the separation between movement, collision response, and pathfinding.
 
 ---
 
 ## Update Timing
 
-Sprites and movable direct drawings both advance movement automatically using the actual elapsed time since the previous engine update.
+Both object families use elapsed-time movement, but they enter the movement system through different update paths.
 
-Neither type requires game code to call `AdvanceMovement(...)` manually.
+### Sprites
 
-### Sprite timing
+`SpriteManager` advances registered sprite movement as part of the sprite update cycle.
 
-`SpriteManager` calculates one elapsed duration for its update and passes that duration to each active sprite's controller:
+A sprite's movement controller therefore receives elapsed time automatically.
 
-```csharp
-float duration =
-    HighResTimer.GetDuration(
-        _lastTick,
-        tick);
+### Direct drawings
 
-sprite.Movement.AdvanceMovement(
-    duration);
-```
+`DirectDrawingMovableBase` advances movement from its normal direct-drawing `Update` path.
 
-The same duration is also used for sprite resize and jiggle updates during that manager cycle.
+Again, elapsed time is supplied automatically.
 
-### Direct-drawing timing
+### What this means
 
-Each `DirectDrawingMovableBase` calculates the elapsed duration from its inherited `_lastTick` and advances its controller once:
+For normal game code:
 
-```csharp
-public override void Update(long tick)
-{
-    if (tick <= _lastTick)
-        return;
-
-    float dt =
-        HighResTimer.GetDuration(
-            _lastTick,
-            tick);
-
-    Movement.AdvanceMovement(dt);
-
-    base.Update(tick);
-}
-```
-
-The call to `base.Update(tick)` then advances inherited direct-drawing behavior such as fade and reveal animations and records the current tick for the next update.
-
-There is no separate fixed-timestep accumulator, substep loop, or independent movement frequency for movable direct drawings.
-
-### What this means for users
-
-In normal use:
-
-- both movement systems are time-based;
-- movement values should be expressed per second;
-- the engine supplies elapsed time automatically;
+- movement values are expressed per second;
+- the engine advances movement;
 - you do not multiply speeds by frame rate;
-- you do not call the controller manually.
+- you do not manually advance the controller.
 
-Do not write:
-
-```csharp
-drawing.Movement.SetVelocity(
-    input * frameCount);
-```
-
-Use stable units:
-
-```csharp
-drawing.Movement.SetVelocity(
-    input * pixelsPerSecond);
-```
-
-### Do not expect identical raw position values
-
-A sprite and direct drawing given numerically similar movement settings may still produce different position values or visual paths because:
-
-- their units differ;
-- one is grid-based;
-- one is pixel-based;
-- grid-to-world conversion may be nonlinear for some coordinate systems;
-- sprite alignment and nudges affect rendered placement;
-- direct-drawing render bounds are pixel-aligned.
-
-Compare the intended visual behavior after converting values into each object's native movement space rather than copying the same raw vectors between them.
+The fact that sprites and direct drawings use different update owners does not change the public movement model.
 
 ---
 
-## Common Recipes
+## Practical Examples
 
 ### Move a sprite three tiles to the right
 
@@ -1381,6 +628,8 @@ sprite.Movement.MoveBy(
     easingKind: EasingKind.EaseInOutQuad);
 ```
 
+The delta is three grid units.
+
 ### Move a world-space marker 200 pixels upward
 
 ```csharp
@@ -1391,6 +640,8 @@ marker.Movement.MoveBy(
     durationSec: 0.5f,
     easingKind: EasingKind.EaseOutCubic);
 ```
+
+The delta is 200 world pixels.
 
 ### Slide a HUD panel onto the screen
 
@@ -1409,24 +660,13 @@ var panel =
 
 panel.Movement.MoveTo(
     target: new Vector2(20, 20),
-    seconds: 0.35f,
+    durationSec: 0.35f,
     easingKind: EasingKind.EaseOutCubic);
 ```
 
-For a viewport that does not begin at screen X zero, include its absolute screen origin in both the starting and target positions.
+For a viewport whose target rectangle does not begin at screen `(0, 0)`, include its absolute screen origin in both starting and target coordinates.
 
 ### Attach a name tag to a sprite
-
-```csharp
-nameTag.Movement.FollowTileSoft(
-    tileTarget: player,
-    speedTilesPerSec: 10f,
-    snapTiles: 0.02f,
-    gridOffset: new Vector2(0, -0.75f),
-    pixelOffset: new Vector2(0, -6f));
-```
-
-For perfectly rigid attachment:
 
 ```csharp
 nameTag.Movement.FollowTileHard(
@@ -1435,224 +675,39 @@ nameTag.Movement.FollowTileHard(
     pixelOffset: new Vector2(0, -6f));
 ```
 
-### Make a companion pursue the player
-
-For a grid-space sprite companion:
+### Accelerate a player sprite
 
 ```csharp
-companion.Movement.FollowTileSoft(
-    tileTarget: player,
-    speedTilesPerSec: 4f,
-    snapTiles: 0.25f,
-    gridOffset: new Vector2(-1, 0));
-```
+player.Movement.Unfollow();
 
-### Accelerated player movement
-
-```csharp
-void ApplyPlayerInput(
-    Sprite player,
-    Vector2 input)
-{
-    const float acceleration = 10f;
-    const float maxSpeed = 4f;
-    const float damping = 6f;
-
-    player.Movement.Unfollow();
-
-    player.Movement.SetAcceleration(
-        input * acceleration);
-
-    player.Movement.SetMaxSpeed(
-        maxSpeed);
-
-    player.Movement.SetLinearDamping(
-        damping);
-}
-```
-
-When input is released:
-
-```csharp
 player.Movement.SetAcceleration(
-    Vector2.Zero);
+    input * 10f);
+
+player.Movement.SetMaxSpeed(
+    4f);
+
+player.Movement.SetLinearDamping(
+    6f);
 ```
 
-### Constant-speed projectile-like direct drawing
+All of those numeric motion values are in the sprite's grid-space scale.
+
+### Move a pixel-space effect at constant speed
 
 ```csharp
-projectile.Movement.Unfollow();
+effect.Movement.Unfollow();
 
-projectile.Movement.SetVelocity(
+effect.Movement.SetVelocity(
     direction * 500f);
 
-projectile.Movement.SetMaxSpeed(
+effect.Movement.SetMaxSpeed(
     500f);
 
-projectile.Movement.SetLinearDamping(
+effect.Movement.SetLinearDamping(
     0f);
 ```
 
-This moves 500 pixels per second in the direct drawing's pixel space.
-
-### Door or platform movement
-
-```csharp
-platform.Movement
-    .MoveTo(
-        target: openPosition,
-        seconds: 1.25f,
-        easingKind: EasingKind.SmoothStep)
-    .OnComplete(() =>
-    {
-        platformIsOpen = true;
-    });
-```
-
-### Interrupt a move and reverse it
-
-```csharp
-platform.Movement.CancelScript();
-
-platform.Movement.MoveTo(
-    target: closedPosition,
-    seconds: 0.75f,
-    easingKind: EasingKind.EaseOutQuad);
-```
-
-### Stop a moving object immediately
-
-```csharp
-mover.Movement.StopAllMovement();
-```
-
----
-
-## Movement and Rendering
-
-Movement changes position.
-
-The movable object is responsible for making that position visible.
-
-### Sprite rendering refresh
-
-When a sprite position changes, it:
-
-1. remembers its old world drawing rectangle;
-2. updates its scene-layer coordinate;
-3. calculates its new world drawing rectangle;
-4. invalidates the union of both regions;
-5. raises `SpriteMoved`.
-
-This prevents trails when using the bitmap dirty-region renderer.
-
-### Direct-drawing rendering refresh
-
-When a direct drawing position changes, it refreshes its old bounds and new bounds.
-
-For scene-layer mode, those are world bounds.
-
-For view mode, those are screen bounds.
-
-### Movement values are not draw rectangles
-
-For a sprite:
-
-```csharp
-sprite.GetPosition()
-```
-
-returns grid coordinates.
-
-It does not return:
-
-```csharp
-sprite.DrawLocationWorld.Location
-```
-
-For a direct drawing, the movement position does correspond to the bounds' top-left, but the complete drawing rectangle also includes width and height.
-
-### Camera behavior
-
-Scene-layer movers are projected through views and cameras.
-
-View-mode movers remain in absolute screen space.
-
-| Mover | Camera movement changes its screen position? |
-|---|:---:|
-| Sprite | Yes |
-| Scene-layer direct drawing | Yes |
-| View-mode direct drawing | No |
-
-A view-mode direct drawing can move because of its own `MovementController`, but it does not move merely because the camera moved.
-
----
-
-## Movement and Collision
-
-`MovementController` calculates movement.
-
-It is not, by itself, a complete collision system.
-
-### Sprites
-
-Sprites participate in Gondwana's sprite/tile collision architecture and expose collision-related behavior separately from movement.
-
-Collision resolution may cancel one velocity component while preserving another.
-
-Example concept:
-
-```text
-horizontal collision
-    → cancel X velocity
-    → preserve Y velocity
-```
-
-This allows behaviors such as:
-
-- wall sliding;
-- floor contact;
-- ceiling contact;
-- movement along an unblocked axis.
-
-### Direct drawings
-
-A movable direct drawing has movement because it derives from `DirectDrawingMovableBase`.
-
-That does not automatically mean it participates in sprite collision detection.
-
-Use a direct drawing for:
-
-- visuals;
-- overlays;
-- effects;
-- indicators;
-- custom engine-native drawing.
-
-Use a sprite or an explicit collision component when collision semantics are required.
-
-### Scripted movement and collision
-
-A scripted movement has an authored target.
-
-Whether collision should:
-
-- stop it;
-- redirect it;
-- allow it to pass through;
-- cancel the script;
-
-is a game or subsystem decision.
-
-Do not assume that selecting `MoveTo` automatically gives the object pathfinding or obstacle avoidance.
-
-### Follow and collision
-
-Follow behavior continually pursues a target.
-
-Collision may prevent the follower from reaching it.
-
-If a companion must navigate around walls, follow movement alone is not pathfinding.
+For a direct drawing, that speed is 500 pixels per second.
 
 ---
 
@@ -1660,25 +715,20 @@ If a companion must navigate around walls, follow movement alone is not pathfind
 
 ### Treating sprite movement as pixels
 
-Wrong:
+This:
 
 ```csharp
 sprite.Movement.SetVelocity(
     new Vector2(200, 0));
 ```
 
-unless 200 grid units per second is genuinely intended.
+means 200 grid units per second, not 200 pixels per second.
 
-For a sprite, use grid-scale values:
-
-```csharp
-sprite.Movement.SetVelocity(
-    new Vector2(3, 0));
-```
+Use values appropriate to the layer's grid scale.
 
 ### Treating a scene-layer direct drawing as grid-space
 
-Wrong:
+This:
 
 ```csharp
 marker.Movement.MoveTo(
@@ -1686,145 +736,62 @@ marker.Movement.MoveTo(
     durationSec: 1f);
 ```
 
-when the intention is tile `(10, 5)`.
+means world pixel position `(10, 5)` for a direct drawing.
 
-A direct drawing uses pixels.
+It does not mean tile `(10, 5)`.
 
-Convert the tile to world pixels first, or use tile-follow helpers when following a live grid target.
+Convert the desired grid coordinate to world pixels or use tile-follow helpers for live grid targets.
 
 ### Treating view-mode coordinates as viewport-local
 
-View-mode direct drawings use absolute screen coordinates.
+View-mode direct drawings use absolute screen/backbuffer coordinates.
 
-For a viewport beginning at `(800, 0)`, screen X `20` is near the adapter's left edge—not 20 pixels inside that viewport.
+If a viewport begins at screen X 800, screen X 20 is near the adapter's left edge—not 20 pixels inside that viewport.
 
-### Forgetting the difference between anchor and center
+### Forgetting anchor differences
 
-A direct drawing follows its top-left position.
+A direct drawing moves by its upper-left bounds position.
 
-A sprite's reported position is its grid coordinate.
+A sprite moves by its logical scene-layer coordinate.
 
-Offsets should account for the desired visual attachment point.
+When attaching visuals, offsets must account for the desired visual anchor.
 
-### Starting a script while follow is active
+### Comparing raw movement vectors between sprites and drawings
 
-Follow has priority.
-
-Use:
+A sprite velocity of:
 
 ```csharp
-mover.Movement.Unfollow();
-
-mover.Movement.MoveTo(...);
+new Vector2(3, 0)
 ```
 
-### Setting velocity while follow is active
+means three grid units per second.
 
-`SetVelocity` cancels a script, but does not clear follow.
+The same direct-drawing velocity means three pixels per second.
 
-Use:
+Compare intended visual behavior after converting values to each object's native units.
 
-```csharp
-mover.Movement.Unfollow();
-mover.Movement.SetVelocity(...);
-```
+### Treating alignment as sprite movement
 
-### Expecting `OnComplete` after cancellation
+`HorizAlign`, `VertAlign`, `NudgeX`, `NudgeY`, and `RenderSize` affect drawing placement.
 
-Completion callbacks run only on normal completion.
-
-They are discarded when the script is cancelled or replaced.
-
-### Using an unnamed `MoveBy` float
-
-These calls are much clearer:
-
-```csharp
-MoveBy(
-    delta: offset,
-    durationSec: 1f);
-```
-
-```csharp
-MoveBy(
-    delta: offset,
-    speedPerSec: 120f);
-```
-
-Avoid relying on positional arguments where duration and speed overloads look similar.
-
-### Manually updating movement every frame
-
-Do not call internal movement advancement yourself.
-
-Configure the controller and let the engine update it.
-
-### Applying frame rate to per-second values
-
-Wrong:
-
-```csharp
-SetVelocity(direction * fps);
-```
-
-Correct:
-
-```csharp
-SetVelocity(direction * unitsPerSecond);
-```
-
-### Assuming movement implies pathfinding
-
-`MoveToward` moves toward a destination.
-
-It does not find a route around obstacles.
-
-### Assuming movement implies collision
-
-A movable direct drawing is not automatically a collidable sprite.
-
-### Mutating a copied `MovementState`
-
-This does not reconfigure the controller:
-
-```csharp
-var state = mover.Movement.MovementState;
-```
-
-Use controller methods to change velocity, acceleration, damping, or scripts.
+They do not change the sprite's logical movement position.
 
 ---
 
 ## Troubleshooting
 
-### The object does not move
+### A sprite moves far too quickly
+
+The velocity or script speed may have been supplied as pixels per second.
 
 Check:
 
-1. Is follow active and returning the current position?
-2. Is the object's script active?
-3. Are velocity and acceleration both zero?
-4. Is the object registered with the appropriate manager?
-5. Has the engine started?
-6. Is the direct drawing visible?
-7. Is the sprite pending disposal?
-8. Is the movement speed appropriate for its units?
-
-### A sprite moves far too quickly
-
-The speed may have been supplied as pixels per second even though sprites use grid units.
-
-Inspect:
-
 ```csharp
 sprite.PositionSpace
+// MovementSpace.Grid
 ```
 
-It should be:
-
-```csharp
-MovementSpace.Grid
-```
+Use a grid-scale speed.
 
 ### A direct drawing barely moves
 
@@ -1832,55 +799,7 @@ The value may have been chosen as though it were tiles per second.
 
 A pixel mover with velocity `(3, 0)` moves only three pixels per second.
 
-### A scripted move never seems to run
-
-Check:
-
-```csharp
-mover.Movement.IsFollowing
-```
-
-A follow target may still own movement.
-
-Call:
-
-```csharp
-mover.Movement.Unfollow();
-```
-
-before starting the script.
-
-### Velocity has no visible effect
-
-Again, inspect follow state first.
-
-Also check:
-
-```csharp
-mover.Movement.IsIntegratedActive
-```
-
-### The object reaches the wrong location
-
-Confirm:
-
-- sprite target → grid coordinates;
-- scene-layer direct target → world pixels;
-- view direct target → absolute screen pixels;
-- direct drawing target refers to upper-left, not center.
-
-### A name tag is offset incorrectly
-
-Separate the two offset types:
-
-```text
-gridOffset  → before grid-to-pixel conversion
-pixelOffset → after conversion
-```
-
-Also check whether the target's grid anchor corresponds to the desired visual point.
-
-### A sprite appears visually offset from its movement position
+### A sprite reaches the right logical coordinate but looks offset
 
 Inspect:
 
@@ -1892,55 +811,75 @@ NudgeY
 RenderSize
 ```
 
-Those affect rendering without changing the logical grid coordinate.
+Those affect rendering without changing the sprite's logical grid position.
 
-### A direct drawing jitters by one pixel
+### A direct drawing is in the wrong place inside a secondary viewport
 
-The controller stores fractional position, but rendering rounds bounds to integer pixels.
+View-mode positions are absolute screen/backbuffer coordinates.
 
-At very low speeds, the visual position may remain on one pixel for several steps and then advance.
+Include:
 
-That is expected pixel-aligned rendering behavior.
+```csharp
+view.Viewport.TargetRectPx.Left
+view.Viewport.TargetRectPx.Top
+```
 
-### Movement differs between a sprite and direct drawing
+when you want viewport-relative visual placement.
 
-They use different:
+### A name tag follows at the wrong offset
 
-- units;
-- coordinate conversion;
-- update timing;
-- render alignment.
+Separate:
 
-Convert the desired behavior into each object's native units rather than copying the same raw vector.
+```text
+gridOffset
+    → before grid-to-pixel conversion
 
-### `OnComplete` did not run
+pixelOffset
+    → after conversion
+```
 
-The script may have been:
+Also remember that a sprite's logical grid coordinate may not correspond to the visual center or top of its artwork.
 
-- cancelled;
-- replaced;
-- superseded by follow behavior before normal completion.
+### A direct drawing jitters one pixel at low speed
 
-Use `ScriptedMovementStopped` when you need to observe both completion and explicit cancellation, then inspect your own game state to distinguish the reason if necessary.
+Movement stores a fractional `Vector2` position, while render bounds are rounded to integer pixels.
+
+At sufficiently low speed, the visible object may remain on a pixel for multiple updates before advancing.
+
+### Movement behavior itself is not doing what you expect
+
+If the problem involves:
+
+- follow versus scripted priority;
+- scripts not running;
+- velocity having no effect;
+- cancellation;
+- `OnComplete`;
+- damping;
+- world wrapping;
+
+see [[Movement and Controllers]]. Those are controller-level concerns rather than sprite/direct-drawing differences.
 
 ---
 
 ## Quick Reference
 
-### Sprite position and movement
+### Sprite
 
 ```csharp
 sprite.PositionSpace
 // MovementSpace.Grid
 
 sprite.GetPosition()
-// Scene-layer coordinates
+// Scene-layer coordinate
 
 sprite.SetPosition(
     new Vector2(column, row));
 ```
 
-### Direct-drawing position and movement
+Movement values are grid-space values.
+
+### Direct drawing
 
 ```csharp
 drawing.PositionSpace
@@ -1953,186 +892,74 @@ drawing.SetPosition(
     new Vector2(xPx, yPx));
 ```
 
-### Follow
+Movement values are pixel-space values.
 
-```csharp
-mover.Movement.FollowPixelSoft(
-    getPixelPos,
-    speed: pixelsPerSecond);
+### Camera behavior
 
-mover.Movement.FollowPixelHard(
-    getPixelPos);
+```text
+Sprite
+    → camera affects screen position
 
-mover.Movement.FollowTileSoft(
-    tileTarget,
-    speedTilesPerSec);
+Scene-layer direct drawing
+    → camera affects screen position
 
-mover.Movement.FollowTileHard(
-    tileTarget);
-
-mover.Movement.Unfollow();
+View-mode direct drawing
+    → camera does not affect screen position
 ```
 
-### Scripted movement
+### Cross-space follow
 
 ```csharp
-mover.Movement.MoveTo(
-    target,
-    durationSec: seconds);
-
-mover.Movement.MoveTo(
-    target,
-    seconds,
-    easingKind);
-
-mover.Movement.MoveBy(
-    delta,
-    durationSec: seconds);
-
-mover.Movement.MoveBy(
-    delta,
-    speedPerSec: speed);
-
-mover.Movement.MoveToward(
-    target,
-    speedPerSec: speed);
-
-mover.Movement.CancelScript();
+nameTag.Movement.FollowTileSoft(
+    tileTarget: player,
+    speedTilesPerSec: 8f,
+    snapTiles: 0.05f,
+    gridOffset: new Vector2(0, -0.5f),
+    pixelOffset: new Vector2(0, -8f));
 ```
 
-### Script callbacks
-
-```csharp
-mover.Movement
-    .MoveTo(
-        target,
-        durationSec: seconds)
-    .OnBeginning(() =>
-    {
-    })
-    .OnComplete(() =>
-    {
-    });
-```
-
-### Integrated movement
-
-```csharp
-mover.Movement.SetVelocity(
-    velocity);
-
-mover.Movement.SetAcceleration(
-    acceleration);
-
-mover.Movement.SetMaxSpeed(
-    maxSpeed);
-
-mover.Movement.SetLinearDamping(
-    dampingPerSecond);
-```
-
-### Stop movement
-
-```csharp
-mover.Movement.Unfollow();
-
-mover.Movement.CancelScript();
-
-mover.Movement.StopAllMovement();
-```
-
-### Status
-
-```csharp
-mover.Movement.IsFollowing
-
-mover.Movement.IsScripted
-
-mover.Movement.IsIntegratedActive
-
-mover.Movement.MovementState
-```
-
-### Events
-
-```csharp
-mover.Movement.ScriptedMovementStarted +=
-    script => { };
-
-mover.Movement.ScriptedMovementStopped +=
-    script => { };
-
-sprite.SpriteMoved +=
-    args => { };
-```
+For the complete movement API, see [[Movement and Controllers]].
 
 ---
 
-## Glossary
+## Related Documentation
 
-| Term | Meaning |
-|---|---|
-| **Direct drawing** | Engine-managed custom visual outside the normal tile/sprite model |
-| **Follow movement** | Continuous tracking of a live target |
-| **Grid movement** | Movement expressed in scene-layer coordinates |
-| **Hard follow** | Immediate target matching each update |
-| **Integrated movement** | Velocity/acceleration-based motion |
-| **`IMovable`** | Contract allowing `MovementController` to read and write an object's position |
-| **`IMovableOnSceneLayer`** | Movable that also exposes its owning `SceneLayer` |
-| **Movement space** | Unit system used by a movable's position |
-| **Pixel movement** | Movement expressed in context-specific pixels |
-| **Scene-layer direct drawing** | Direct drawing positioned in world pixels and affected by a view/camera |
-| **Scripted movement** | Authored motion toward an explicit target |
-| **Snap epsilon** | Arrival tolerance before exact target placement |
-| **Soft follow** | Smoothed or speed-based pursuit |
-| **Sprite position** | Scene-layer coordinate, not necessarily rendered pixel top-left |
-| **View-mode direct drawing** | Direct drawing positioned in absolute screen pixels |
-| **World pixels** | Pixel-like units within scene/layer space |
+- [[Movement and Controllers]] — authoritative guide to `MovementController` behavior and APIs
+- [[Sprites]] — sprite creation, rendering, animation, events, and lifetime
+- [[DirectDrawing]] — direct-drawing types, modes, positioning, and composition
+- [[Using Views and Cameras]] — camera projection and view behavior
+- [[Coordinate Systems]] — how scene-layer coordinates map to world space
+- [[Collision Detection and Resolution]] — collision behavior separate from movement
+- [[Input Handling]] — driving movement from user input
 
 ---
 
 ## Related Source Files
 
-- [`Gondwana/Physics/Movement/MovementController.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementController_8cs_source.html)
-- [`Gondwana/Physics/Movement/MovementController.Follow.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementController_8Follow_8cs_source.html)
-- [`Gondwana/Physics/Movement/MovementController.Scripted.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementController_8Scripted_8cs_source.html)
-- [`Gondwana/Physics/Movement/MovementController.Integrated.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementController_8Integrated_8cs_source.html)
-- [`Gondwana/Physics/Movement/MovementState.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementState_8cs_source.html)
-- [`Gondwana/Physics/Movement/MovementSpace.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementSpace_8cs_source.html)
-- [`Gondwana/Physics/Movement/IMovable.cs`](https://isthimius.github.io/Gondwana/api/latest/IMovable_8cs_source.html)
-- [`Gondwana/Physics/Movement/IMovableOnSceneLayer.cs`](https://isthimius.github.io/Gondwana/api/latest/IMovableOnSceneLayer_8cs_source.html)
 - [`Gondwana/Drawing/Sprites/Sprite.cs`](https://isthimius.github.io/Gondwana/api/latest/Sprite_8cs_source.html)
 - [`Gondwana/Drawing/Sprites/SpriteManager.cs`](https://isthimius.github.io/Gondwana/api/latest/SpriteManager_8cs_source.html)
 - [`Gondwana/Drawing/Direct/DirectDrawingMovableBase.cs`](https://isthimius.github.io/Gondwana/api/latest/DirectDrawingMovableBase_8cs_source.html)
-- [`Gondwana/Physics/Movement/Easing/EasingKind.cs`](https://isthimius.github.io/Gondwana/api/latest/EasingKind_8cs_source.html)
-
-Related wiki pages:
-
-- [[Movement and Controllers]]
-- [[Using Views and Cameras]]
-- [[DirectDrawing]]
-- [[Sprites]]
-- [[Coordinate Systems]]
-- [[Collision Detection and Resolution]]
+- [`Gondwana/Physics/Movement/MovementController.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementController_8cs_source.html)
+- [`Gondwana/Physics/Movement/MovementSpace.cs`](https://isthimius.github.io/Gondwana/api/latest/MovementSpace_8cs_source.html)
+- [`Gondwana/Physics/Movement/IMovable.cs`](https://isthimius.github.io/Gondwana/api/latest/IMovable_8cs_source.html)
+- [`Gondwana/Physics/Movement/IMovableOnSceneLayer.cs`](https://isthimius.github.io/Gondwana/api/latest/IMovableOnSceneLayer_8cs_source.html)
 
 ---
 
 ## Final Mental Model
 
-Keep these rules in mind:
-
-> **`MovementController` moves an `IMovable` in that object's own units.**
+Keep these object-specific rules in mind:
 
 > **Sprites move in scene-layer grid coordinates.**
 
 > **Movable direct drawings move in pixels.**
 
-> **Scene-layer direct-drawing pixels are world pixels. View-mode pixels are absolute screen pixels.**
+> **Scene-layer direct-drawing pixels are world pixels; view-mode pixels are absolute screen/backbuffer pixels.**
 
-> **Follow owns movement before scripted motion; scripted motion owns it before integrated motion.**
+> **A sprite's logical position is not necessarily the top-left of its rendered artwork.**
 
-> **Switch movement families explicitly by clearing the behavior that currently owns the object.**
+> **A direct drawing's movement position is its bounds' upper-left.**
 
-> **Movement changes position. Rendering, collision, and pathfinding remain separate concerns.**
+> **The same `MovementController` API can drive both because each object defines its own position space.**
 
-Once those distinctions are clear, the same controller API becomes predictable across both sprites and direct drawings.
+For everything about movement-family behavior itself, continue with [[Movement and Controllers]].
