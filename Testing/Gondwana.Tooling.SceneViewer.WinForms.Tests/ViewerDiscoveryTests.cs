@@ -238,6 +238,7 @@ public sealed partial class ViewerTests
         WriteSprites("sprites.gspr", false, Sprite("Valid"), invalid);
         var error = Assert.Throws<InvalidDataException>(() => new ViewerSceneLoader().Load(ScenePath));
         Assert.Contains("missing-layer", error.Message);
+        Assert.Contains("sprites.gspr", error.Message);
         Assert.Empty(SpriteManager.Instance.AllSprites);
     }
 
@@ -361,5 +362,43 @@ public sealed partial class ViewerTests
         Assert.Contains("Multiple packed GTS", error.Message);
         Assert.Contains("a.gaf :: arbitrary-sheet-entry", error.Message);
         Assert.Contains("z.gaf :: arbitrary-sheet-entry", error.Message);
+    }
+
+    [Fact]
+    public void PackedAnimationFallbackStillUsesLocalLooseTilesheet()
+    {
+        WriteContent();
+        Directory.CreateDirectory(Path.Combine(_directory, "external"));
+        var animationPath = Path.Combine(_directory, "animation.gani");
+        var animation = AnimationDefinitionSerializer.Load(animationPath);
+        animation.TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("sheet", "missing.gts")];
+        Pack("external/animations.gaf", AssetTypes.AnimationDefinition, "walk", AnimationDefinitionSerializer.ToJson(animation));
+        File.Delete(animationPath);
+        var sheet = TilesheetDefinitionSerializer.Load(Path.Combine(_directory, "sheet.gts"));
+        sheet.Image.FilePath = "missing-packed-image.png";
+        Pack("sheets.gaf", AssetTypes.TilesheetDefinition, "sheet", TilesheetDefinitionSerializer.ToJson(sheet));
+        var definition = SceneDefinitionSerializer.Load(ScenePath);
+        definition.TilesheetSources.Clear();
+        definition.AnimationSources = [SceneAnimationSourceDefinition.Packed("walk", "external/animations.gaf", "walk")];
+        SceneDefinitionSerializer.Save(ScenePath, definition);
+        using var scene = new ViewerSceneLoader().Load(ScenePath);
+        Assert.True(scene[0]![0, 0]!.TileAnimator.IsCycling);
+    }
+
+    [Fact]
+    public void SpriteOnlySheetPrefersLooseOverPacked()
+    {
+        WriteContent();
+        var definition = SceneDefinitionSerializer.Load(ScenePath);
+        definition.TilesheetSources.Clear();
+        definition.AnimationSources.Clear();
+        foreach (var layer in definition.Layers) layer.Tiles.Clear();
+        SceneDefinitionSerializer.Save(ScenePath, definition);
+        var sheet = TilesheetDefinitionSerializer.Load(Path.Combine(_directory, "sheet.gts"));
+        sheet.Image.FilePath = "missing-packed-image.png";
+        Pack("sheets.gaf", AssetTypes.TilesheetDefinition, "sheet", TilesheetDefinitionSerializer.ToJson(sheet));
+        WriteSprites("sprites.gspr", false, Sprite("Player"));
+        using var scene = new ViewerSceneLoader().Load(ScenePath);
+        Assert.Equal("sheet", Assert.Single(SpriteManager.Instance.AllSprites).CurrentFrame.Tilesheet.Name);
     }
 }

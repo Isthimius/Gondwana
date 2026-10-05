@@ -87,7 +87,15 @@ internal sealed class ViewerSceneLoader
                     throw new InvalidDataException($"GSPR source '{document.Source}', sprite '{candidate.Sprite.Nickname}' / {candidate.Sprite.Id}: {ex.Message}", ex);
                 }
             }
-            SpriteDefinitionSerializer.ToSprites(new SpriteDefinition { Sprites = selected.Select(candidate => candidate.Sprite).ToList() });
+            try
+            {
+                SpriteDefinitionSerializer.ToSprites(new SpriteDefinition { Sprites = selected.Select(candidate => candidate.Sprite).ToList() });
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidDataException($"GSPR materialization failed for sources:\n" +
+                    string.Join("\n", selected.Select(candidate => candidate.Document.Source).Distinct()) + $"\n{ex.Message}", ex);
+            }
             return scene;
         }
         catch (Exception ex)
@@ -146,6 +154,8 @@ internal sealed class ViewerSceneLoader
                 entry = selected.Entry;
                 description = selected.ToString();
             }
+            if (selected is null && string.IsNullOrWhiteSpace(packed ? archivePath : loosePath))
+                throw new InvalidDataException($"No local GTS or explicit authored source exists for tilesheet '{name}'.");
             var location = selected?.Path ?? Resolve(packed ? archivePath : loosePath, directory);
             var identity = (location, packed ? entry : null);
             if (_tilesheets.TryGetValue(name, out var previous))
