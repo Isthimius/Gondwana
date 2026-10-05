@@ -48,9 +48,9 @@ Sprites on a periodic layer render at equivalent positions around seams, includi
 
 A camera can move continuously along wrapped axes. It is not periodically teleported. Its configured `WorldBoundsPx` continues to constrain non-wrapped axes. For projected grids, clamping operates in the period-vector basis; the configured world rectangle and viewport are projected into that basis to determine the remaining constrained interval. With both flags off, the existing rectangular clamping behavior is unchanged.
 
-`FollowCentered` uses the target's layer. Otherwise, the first visible layer in the scene's insertion order supplies camera topology, independent of layer Z-order. Other layers repeat according to their own dimensions and flags; they do not combine their periods or override the camera's topology. This makes mixed background/gameplay layers deterministic.
+Follow helpers that receive an `IMovableOnSceneLayer` use the target's layer. Delegate-based follow uses the first visible layer in the scene's insertion order for camera topology, independent of layer Z-order. Other layers repeat according to their own dimensions and flags; they do not combine their periods or override the camera's topology. This makes mixed background/gameplay layers deterministic.
 
-Following chooses the equivalent target position nearest the current camera center. When a movement controller normalizes a sprite from one edge to the opposite canonical edge, following continues near the seam instead of scrolling backward through the map. `RectangleF.Empty` world bounds still means no clamping.
+Following chooses the equivalent target position nearest the current follow anchor. Centered follow therefore retains the previous camera-center behavior, while `FollowAt`, `FollowAtX`, and `FollowAtY` use their configured normalized viewport anchor. When a movement controller normalizes a sprite from one edge to the opposite canonical edge, following continues near the seam instead of scrolling backward through the map. `RectangleF.Empty` world bounds still means no clamping.
 
 ## Collisions at seams
 
