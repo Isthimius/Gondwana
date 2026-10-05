@@ -239,6 +239,11 @@ All notable changes to this project will be documented in this file.
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
 
+## Tooling / Gondwana.Tooling.SceneViewer.WinForms
+
+### Added
+- Discover Scene Viewer local definitions and sprites with loose-over-packed precedence ([#438](https://github.com/Isthimius/Gondwana/pull/438))
+
 ## Tooling / Gondwana.Tooling.Scenes.WinForms
 
 ### Added

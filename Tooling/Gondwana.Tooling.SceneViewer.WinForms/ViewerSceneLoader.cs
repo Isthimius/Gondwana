@@ -76,9 +76,16 @@ internal sealed class ViewerSceneLoader
                 var source = document.Definition.TilesheetSources.SingleOrDefault(source => source.Tilesheet == frame.Tilesheet);
                 // An already selected sheet can satisfy a frame without its own authoring metadata.
                 if (source is null && _tilesheets.ContainsKey(frame.Tilesheet)) continue;
-                LoadTilesheet(frame.Tilesheet, Path.GetDirectoryName(document.Source.Path)!,
-                    source?.Kind == SpriteTilesheetSourceKind.PackedDefinitionFile,
-                    source?.GtsPath, source?.AssetsFilePath, source?.AssetEntryName);
+                try
+                {
+                    LoadTilesheet(frame.Tilesheet, Path.GetDirectoryName(document.Source.Path)!,
+                        source?.Kind == SpriteTilesheetSourceKind.PackedDefinitionFile,
+                        source?.GtsPath, source?.AssetsFilePath, source?.AssetEntryName);
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidDataException($"GSPR source '{document.Source}', sprite '{candidate.Sprite.Nickname}' / {candidate.Sprite.Id}: {ex.Message}", ex);
+                }
             }
             SpriteDefinitionSerializer.ToSprites(new SpriteDefinition { Sprites = selected.Select(candidate => candidate.Sprite).ToList() });
             return scene;
@@ -144,7 +151,8 @@ internal sealed class ViewerSceneLoader
             if (_tilesheets.TryGetValue(name, out var previous))
             {
                 if (!string.Equals(previous.Path, location, StringComparison.OrdinalIgnoreCase) || previous.Entry != identity.Item2)
-                    throw new InvalidDataException($"Conflicting sources for tilesheet '{name}'.");
+                    throw new InvalidDataException($"Conflicting sources for tilesheet '{name}':\n" +
+                        $"{new ViewerContentCatalog.Source(previous.Path, previous.Entry)}\n{new ViewerContentCatalog.Source(location, identity.Item2)}");
                 return;
             }
             TilesheetDefinition definition;
