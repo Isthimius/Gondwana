@@ -11,7 +11,7 @@ using View = Gondwana.Rendering.Views.View;
 
 namespace WidgetsTest;
 
-/// <summary>Executable examples of the recommended callback-oriented menu API.</summary>
+/// <summary>Executable examples of Gondwana's menu, input, and composite widget APIs.</summary>
 internal sealed class WidgetsTestHost : WinFormsGpuGameHost
 {
     private MenuBarWidget _menuBar = null!;
@@ -19,39 +19,48 @@ internal sealed class WidgetsTestHost : WinFormsGpuGameHost
     private LabelWidget _instructions = null!;
     private TextBoxWidget _editor = null!;
     private DirectComposite _grid = null!;
+    private TabControlWidget _tabControl = null!;
     private SKImage? _icon;
     private string _lastCommand = "Ready";
     private string _units = "Pixels";
     private bool _documentIsDirty;
 
+    /// <summary>
+    /// Initializes the widgets demonstration host.
+    /// </summary>
+    /// <param name="renderSurface">The Windows GPU render surface used by the host.</param>
     internal WidgetsTestHost(WinFormGpuRenderSurfaceControl renderSurface) : base(renderSurface) { }
 
+    /// <inheritdoc/>
     protected override Scene CreateInitialScene() => Scene.Empty;
 
+    /// <inheritdoc/>
     protected override void CreateInitialViews() => RenderSurface.Host.ViewManager.ConfigureSingleFullView();
 
+    /// <inheritdoc/>
     protected override void CreateDirectDrawings()
     {
         var host = RenderSurface.Host;
         View view = host.ViewManager.Views[0];
-        _instructions = new LabelWidget(host, view, new Rectangle(24, 70, 590, 110),
+        _instructions = new LabelWidget(host, view, new Rectangle(24, 54, 590, 112),
             "Menus: click, hover, Alt+F/E/V/H, arrows, Enter, Space, Escape.\n" +
             "File > Export > Image demonstrates deep submenus.\n" +
-            "Type below to enable Save. Ctrl+S works while editing;\n" +
-            "Ctrl+Z is consumed by the editor before menu fallback.")
+            "Type below to enable Save. Ctrl+S works while editing.\n" +
+            "Tabs: click, Alt+G/A/D/N/O, or drag a header to reorder.")
             .SetFont(SKTypeface.Default, 16);
         _instructions.Show();
 
-        _editor = new TextBoxWidget(host, view, new Rectangle(24, 205, 590, 38),
+        _editor = new TextBoxWidget(host, view, new Rectangle(24, 177, 590, 38),
             placeholder: "Click here, type, then try Ctrl+S or Ctrl+Z");
         _editor.TextChanged += OnDocumentChanged;
         _editor.KeyboardInput += OnEditorKeyboardInput;
         _editor.Show();
 
-        _status = new LabelWidget(host, view, new Rectangle(24, 270, 590, 105))
+        _status = new LabelWidget(host, view, new Rectangle(24, 232, 590, 64))
             .SetFont(SKTypeface.Default, 18);
         _status.Show();
         BuildGrid(view);
+        BuildTabControl(view);
         BuildMenuBar(view);
         UpdateStatus();
     }
@@ -59,12 +68,63 @@ internal sealed class WidgetsTestHost : WinFormsGpuGameHost
     private void BuildGrid(View view)
     {
         _grid = new DirectComposite(RenderSurface.Host, DirectDrawingMode.View);
-        for (int x = 24; x <= 600; x += 32)
+        for (int x = 420; x <= 612; x += 24)
             _grid.Add(new DirectRectangle(Color.FromArgb(90, 120, 150), RenderSurface.Host, view,
-                new Rectangle(x, 400, 1, 192)).SetFilled(true));
-        for (int y = 400; y <= 592; y += 32)
+                new Rectangle(x, 320, 1, 264)).SetFilled(true));
+        for (int y = 320; y <= 584; y += 24)
             _grid.Add(new DirectRectangle(Color.FromArgb(90, 120, 150), RenderSurface.Host, view,
-                new Rectangle(24, y, 576, 1)).SetFilled(true));
+                new Rectangle(420, y, 192, 1)).SetFilled(true));
+    }
+
+    private void BuildTabControl(View view)
+    {
+        var host = RenderSurface.Host;
+
+        _tabControl = new TabControlWidget(host, view, new Rectangle(24, 320, 370, 264))
+        {
+            AutoExpandRows = true,
+            PreferredTabWidth = 120,
+            IsTabReorderingEnabled = true
+        }
+            .SetTabControlZOrder(500);
+
+        TabPageWidget general = _tabControl.AddTab("General", mnemonic: 'G');
+        TabPageWidget audio = _tabControl.AddTab("Audio", mnemonic: 'A');
+        TabPageWidget display = _tabControl.AddTab("Display", mnemonic: 'D');
+        TabPageWidget network = _tabControl.AddTab("Network", mnemonic: 'N');
+        TabPageWidget options = _tabControl.AddTab("Options", mnemonic: 'O');
+
+        general
+            .AddWidget(new LabelWidget(host, view, new Rectangle(0, 0, 320, 30),
+                "Every page is a normal container for other widgets.").SetFont(SKTypeface.Default, 16), new Point(16, 16))
+            .AddWidget(new ButtonWidget(host, view, new Rectangle(0, 0, 154, 34), "Open Audio"), new Point(16, 58));
+
+        ButtonWidget openAudio = general.ChildWidgets.OfType<ButtonWidget>().Single();
+        openAudio.Clicked += () => _tabControl.SelectTab(audio);
+
+        audio
+            .AddWidget(new CheckBoxWidget(host, view, new Rectangle(0, 0, 250, 30), "Music enabled", isChecked: true), new Point(16, 16))
+            .AddWidget(new LabelWidget(host, view, new Rectangle(0, 0, 320, 30),
+                "Try Alt+A from anywhere outside a focused editor.").SetFont(SKTypeface.Default, 16), new Point(16, 58));
+
+        display
+            .AddWidget(new ProgressBarWidget(host, view, new Rectangle(0, 0, 300, 26), 0.72f), new Point(16, 20))
+            .AddWidget(new LabelWidget(host, view, new Rectangle(0, 0, 320, 30),
+                "Display settings remain intact while another tab is selected.").SetFont(SKTypeface.Default, 15), new Point(16, 56));
+
+        network
+            .AddWidget(new TextBoxWidget(host, view, new Rectangle(0, 0, 300, 34),
+                placeholder: "Example server address"), new Point(16, 20))
+            .AddWidget(new LabelWidget(host, view, new Rectangle(0, 0, 320, 44),
+                "The active page receives input; inactive page widgets are hidden.").SetFont(SKTypeface.Default, 15), new Point(16, 66));
+
+        options
+            .AddWidget(new LabelWidget(host, view, new Rectangle(0, 0, 320, 44),
+                "Drag tab headers to rearrange them.\nThe header row expands automatically.").SetFont(SKTypeface.Default, 16), new Point(16, 18));
+
+        _tabControl.SelectedTabChanged += page => SetStatus($"Tab selected: {page.Title}");
+        _tabControl.TabReordered += (page, from, to) => SetStatus($"Tab reordered: {page.Title} ({from + 1} to {to + 1})");
+        _tabControl.Show();
     }
 
     private void BuildMenuBar(View view)
@@ -171,8 +231,9 @@ internal sealed class WidgetsTestHost : WinFormsGpuGameHost
     private void SetStatus(string command) { _lastCommand = command; UpdateStatus(); }
     private void UpdateStatus() => _status.SetText(
         $"Last command: {_lastCommand}\nShow Grid: {(_menuBar["view.grid"].IsChecked ? "On" : "Off")}\n" +
-        $"Units: {_units}    Save: {(_documentIsDirty ? "Enabled" : "Disabled")}");
+        $"Units: {_units}    Save: {(_documentIsDirty ? "Enabled" : "Disabled")}    Tab: {_tabControl.SelectedTab?.Title ?? "None"}");
 
+    /// <inheritdoc/>
     protected override void OnKeyboardAdapterInitialized()
     {
         // Hosts monitor keys explicitly; menu gestures use the same adapter key codes.
@@ -184,6 +245,7 @@ internal sealed class WidgetsTestHost : WinFormsGpuGameHost
             keyboard.StartMonitoringKey(key, timeBetweenEvents: repeatIntervalSec);
     }
 
+    /// <inheritdoc/>
     protected override void UnhookEvents()
     {
         if (_editor is null) return;
@@ -191,8 +253,10 @@ internal sealed class WidgetsTestHost : WinFormsGpuGameHost
         _editor.KeyboardInput -= OnEditorKeyboardInput;
     }
 
+    /// <inheritdoc/>
     protected override void OnDisposing()
     {
+        _tabControl?.Dispose();
         _menuBar?.Dispose();
         _editor?.Dispose();
         _instructions?.Dispose();
