@@ -118,6 +118,8 @@ var hierarchy =
           [ "Gondwana.Widgets.ContainerWidget", "classGondwana_1_1Widgets_1_1ContainerWidget.html", [
             [ "Gondwana.Widgets.Controls.ComboBoxWidget", "classGondwana_1_1Widgets_1_1Controls_1_1ComboBoxWidget.html", null ],
             [ "Gondwana.Widgets.Controls.PanelWidget", "classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget.html", null ],
+            [ "Gondwana.Widgets.Controls.TabControlWidget", "classGondwana_1_1Widgets_1_1Controls_1_1TabControlWidget.html", null ],
+            [ "Gondwana.Widgets.Controls.TabPageWidget", "classGondwana_1_1Widgets_1_1Controls_1_1TabPageWidget.html", null ],
             [ "Gondwana.Widgets.DraggableContainerWidget", "classGondwana_1_1Widgets_1_1DraggableContainerWidget.html", [
               [ "Gondwana.Widgets.Dialogs.DialogBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1DialogBox.html", [
                 [ "Gondwana.Widgets.Dialogs.AboutBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox.html", null ]

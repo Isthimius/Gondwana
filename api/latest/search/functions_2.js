@@ -16,7 +16,7 @@ var searchData=
   ['clearallanimationcycles_13',['ClearAllAnimationCycles',['../classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html#a0fdd2e85a2390fd7aabcd7b7bc504d86',1,'Gondwana::Drawing::Animation::Cycle']]],
   ['clearallscenes_14',['ClearAllScenes',['../classGondwana_1_1Scenes_1_1Scene.html#a7a5c7f8b4fd1c27a1d18f3fece7a5afd',1,'Gondwana::Scenes::Scene']]],
   ['clearanimationcycle_15',['ClearAnimationCycle',['../classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html#a7a66da9913ecec08e41c955674754d41',1,'Gondwana::Drawing::Animation::Cycle']]],
-  ['clearbackgroundimage_16',['ClearBackgroundImage',['../classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget.html#a712bb6bcb9adbeab537b12bd96070112',1,'Gondwana::Widgets::Controls::PanelWidget']]],
+  ['clearbackgroundimage_16',['ClearBackgroundImage',['../classGondwana_1_1Widgets_1_1Controls_1_1PanelWidget.html#a712bb6bcb9adbeab537b12bd96070112',1,'Gondwana.Widgets.Controls.PanelWidget.ClearBackgroundImage()'],['../classGondwana_1_1Widgets_1_1Controls_1_1TabPageWidget.html#aa0a991726f00f2bad48315a29a49f21c',1,'Gondwana.Widgets.Controls.TabPageWidget.ClearBackgroundImage()']]],
   ['clearcollisionadjustoverride_17',['ClearCollisionAdjustOverride',['../structGondwana_1_1Drawing_1_1Frame.html#a2826657b90c16eb70d231152f050acfe',1,'Gondwana::Drawing::Frame']]],
   ['clearcollisiontypeoverride_18',['ClearCollisionTypeOverride',['../structGondwana_1_1Drawing_1_1Frame.html#a23eb14c77e89048d5b74b822b62b31da',1,'Gondwana::Drawing::Frame']]],
   ['clearconfigurationsection_19',['ClearConfigurationSection',['../classGondwana_1_1Configuration_1_1EngineConfiguration.html#ad1dc9477f1c07a45432694155dd29238',1,'Gondwana::Configuration::EngineConfiguration']]],
