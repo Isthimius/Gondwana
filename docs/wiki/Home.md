@@ -73,7 +73,6 @@ Gondwana is a natural fit for developers who value deterministic behavior, inspe
 | Linux | Avalonia | Engine-driven background loop |
 | macOS | Avalonia | Engine-driven background loop |
 | Browser / WebAssembly | Blazor | Timer-driven engine ticks |
-| Gamepads | Optional SDL2 provider | Polled through the shared input subsystem |
 
 The platform adapter projects handle render-surface creation, presentation, native input wiring, and application lifecycle integration. Game and engine code remain in the platform-neutral assemblies wherever possible.
 
