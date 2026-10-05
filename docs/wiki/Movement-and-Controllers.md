@@ -393,7 +393,11 @@ mover.Movement
     });
 ```
 
+`OnBeginning(...)` runs immediately when it is registered against the active script. It is not a future notification.
+
 Completion callbacks are discarded if the script is cancelled or replaced.
+
+Starting a new scripted movement directly replaces the previous script state. The older script's `OnComplete(...)` callback is discarded; do not rely on completion callbacks for replacement cleanup.
 
 ### Starting a script replaces integrated motion
 
@@ -628,9 +632,11 @@ mover.Movement.WrapX = true;
 mover.Movement.WrapY = true;
 ```
 
-Wrapping applies to integrated movement for grid-space movers that belong to a scene layer.
+Wrapping is available only for grid-space movers that belong to a scene layer.
 
-When enabled, the controller asks the layer's coordinate system for an equivalent scene-layer coordinate after movement crosses a wrapped boundary.
+The controller applies wrapping through its physics-style movement step. Integrated movement uses that path, and constant-speed `MoveToward` also advances through it. Duration-based `MoveTo` interpolation and hard follow set positions directly and do not use the wrapping step.
+
+When wrapping is applied, the controller asks the layer's coordinate system for an equivalent scene-layer coordinate after movement crosses a wrapped boundary.
 
 Wrapping is ignored for pixel-space movers.
 
