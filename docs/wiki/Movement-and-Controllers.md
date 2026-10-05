@@ -347,7 +347,7 @@ With easing:
 ```csharp
 mover.Movement.MoveTo(
     target: destination,
-    durationSec: 1.25f,
+    seconds: 1.25f,
     easingKind: EasingKind.EaseInOutQuad);
 ```
 
@@ -634,7 +634,7 @@ When enabled, the controller asks the layer's coordinate system for an equivalen
 
 Wrapping is ignored for pixel-space movers.
 
-For scene-layer-level wrapping behavior and rendering implications, also see the relevant [[Scene Layers]] documentation.
+For scene-layer-level wrapping behavior and rendering implications, also see [[SceneLayer Wrapping]].
 
 ---
 
@@ -769,7 +769,7 @@ platform.Movement.CancelScript();
 
 platform.Movement.MoveTo(
     target: closedPosition,
-    durationSec: 0.75f,
+    seconds: 0.75f,
     easingKind: EasingKind.EaseOutQuad);
 ```
 
