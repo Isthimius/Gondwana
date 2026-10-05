@@ -660,7 +660,7 @@ var panel =
 
 panel.Movement.MoveTo(
     target: new Vector2(20, 20),
-    durationSec: 0.35f,
+    seconds: 0.35f,
     easingKind: EasingKind.EaseOutCubic);
 ```
 
