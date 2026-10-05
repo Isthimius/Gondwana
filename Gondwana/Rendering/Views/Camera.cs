@@ -439,6 +439,7 @@ public sealed class Camera
     public void FollowAt(IMovableOnSceneLayer target, PointF viewportAnchor, float speed = -1f, bool hard = false)
     {
         ArgumentNullException.ThrowIfNull(target);
+        ValidateViewportAnchor(viewportAnchor, nameof(viewportAnchor));
 
         if (speed > 0f)
             FollowLerpPerSecond = speed;
