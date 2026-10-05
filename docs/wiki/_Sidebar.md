@@ -11,7 +11,7 @@
 - [[Gondwana CLI Cheatsheet]]
 - [[Using Gondwana with ChatGPT and Codex]]
 
-<details open>
+<details>
 <summary><strong>Core Concepts</strong></summary>
 
 - [[Assets Files]]
@@ -37,7 +37,7 @@
 
 </details>
 
-<details open>
+<details>
 <summary><strong>Systems</strong></summary>
 
 - [[Tile Animation]]
@@ -62,7 +62,7 @@
 
 </details>
 
-<details open>
+<details>
 <summary><strong>Rendering</strong></summary>
 
 - [[Rendering Order and Z-Order]]
@@ -76,7 +76,7 @@
 
 </details>
 
-<details open>
+<details>
 <summary><strong>Widgets</strong></summary>
 
 - [[Widgets Overview]]
@@ -141,7 +141,7 @@
 
 </details>
 
-<details open>
+<details>
 <summary><strong>Advanced Topics</strong></summary>
 
 - [[Serialization and EngineState]]
