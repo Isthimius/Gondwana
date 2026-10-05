@@ -709,9 +709,7 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
         for (int index = 0; index < _tabs.Count; index++)
         {
             TabHeaderWidget header = _headers[_tabs[index]];
-            if (Mode == DirectDrawingMode.View
-                ? header.Bounds.Contains(screenPosition)
-                : header.HitTest(view, screenPosition))
+            if (header.HitTest(view, screenPosition))
             {
                 return index;
             }
