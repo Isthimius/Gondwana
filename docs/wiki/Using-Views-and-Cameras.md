@@ -847,6 +847,49 @@ Lower values produce more camera lag.
 
 A value less than or equal to zero results in snapping behavior.
 
+### `FollowAt`
+
+`FollowAt` keeps a followed point or movable object at a configurable normalized position inside the visible view instead of always aiming for the center.
+
+```csharp
+camera.FollowAt(
+    player,
+    new PointF(0.20f, 0.50f),
+    speed: 8f);
+```
+
+The anchor uses Gondwana's normal screen orientation:
+
+- `(0, 0)` is the upper-left;
+- `(0.5, 0.5)` is the center;
+- `(1, 1)` is the lower-right.
+
+For example, a side-scrolling game can keep the player 20% from the left while vertically centered:
+
+```csharp
+new PointF(0.20f, 0.50f)
+```
+
+A bottom-center composition with the player 15% above the bottom is:
+
+```csharp
+new PointF(0.50f, 0.85f)
+```
+
+The Y value is `0.85`, rather than `0.15`, because Gondwana screen coordinates increase downward from the top edge.
+
+The same anchor overload is available for a dynamic world-point supplier:
+
+```csharp
+camera.FollowAt(
+    () => GetPlayerCenterWorldPx(),
+    new PointF(0.20f, 0.50f));
+```
+
+Anchors must be finite values from `0` through `1`.
+
+World-bound clamping can prevent the requested composition near a map edge. If `DeadZonePx` is configured, the dead zone remains the explicit target-containment region; the follow anchor is still used to choose the nearest equivalent target in wrapped worlds.
+
 ### `FollowTo`
 
 `FollowTo` follows a fixed world point.
@@ -895,6 +938,19 @@ Useful for:
 - horizontal runners;
 - games with fixed vertical framing.
 
+### `FollowAtX`
+
+`FollowAtX` is the offset equivalent of `FollowCenteredX`. It follows only horizontal motion, leaves the camera's vertical position unchanged, and places the target at the requested normalized horizontal anchor.
+
+```csharp
+camera.FollowAtX(
+    player,
+    horizontalAnchor: 0.20f,
+    speed: 7f);
+```
+
+This is useful for side-scrollers and shooters where the player should sit toward the left side of the view so more of the upcoming world remains visible.
+
 ### `FollowCenteredY`
 
 This follows only the target's vertical movement.
@@ -912,6 +968,19 @@ Useful for:
 - vertical shooters;
 - elevator or climbing sequences;
 - vertically constrained maps.
+
+### `FollowAtY`
+
+`FollowAtY` is the offset equivalent of `FollowCenteredY`. It follows only vertical motion, leaves the camera's horizontal position unchanged, and places the target at the requested normalized vertical anchor.
+
+```csharp
+camera.FollowAtY(
+    player,
+    verticalAnchor: 0.85f,
+    speed: 7f);
+```
+
+This can keep a player near the bottom of a vertical composition while preserving a fixed horizontal camera position.
 
 ### `PanCenterTo`
 
@@ -2417,17 +2486,33 @@ camera.PanToGridOverDuration(
 camera.Follow(
     () => worldPointPx);
 
+camera.FollowAt(
+    () => worldPointPx,
+    viewportAnchor);
+
 camera.FollowTo(
     fixedWorldPointPx);
 
 camera.FollowCentered(
     target);
 
+camera.FollowAt(
+    target,
+    viewportAnchor);
+
 camera.FollowCenteredX(
     target);
 
+camera.FollowAtX(
+    target,
+    horizontalAnchor);
+
 camera.FollowCenteredY(
     target);
+
+camera.FollowAtY(
+    target,
+    verticalAnchor);
 
 camera.PanCenterTo(
     fixedWorldPointPx,
@@ -2575,6 +2660,7 @@ mover.Movement.StopAllMovement();
 | **Dead zone** | Region in which a follow target may move without moving the camera |
 | **Grid coordinates** | Tile or layer coordinates |
 | **Hard follow** | Target is applied immediately each update |
+| **Follow anchor** | Normalized location inside the visible view where a followed target is composed; `(0, 0)` is upper-left and `(1, 1)` is lower-right |
 | **One-shot pan** | Camera movement that stops after reaching its destination |
 | **Parallax** | Layer multiplier controlling how strongly camera movement affects that layer |
 | **Screen pixels** | Absolute pixels on the complete adapter/backbuffer |

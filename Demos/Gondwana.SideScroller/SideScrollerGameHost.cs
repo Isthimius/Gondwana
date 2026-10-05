@@ -28,6 +28,7 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
     private const float EnemyShotSpeed = 8f;
     private const float PlayerFireDelay = .16f;
     private const float PlayerMaxHealth = 100f;
+    private const float PlayerCameraHorizontalAnchor = 0.2f;
 
     private readonly HashSet<Keys> _keysDown = [];
     private readonly List<Enemy> _enemies = [];
@@ -103,7 +104,7 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
         }
 
         var camera = RenderSurface.Host.ViewManager.Views[0].Camera;
-        camera.FollowCenteredX(_player, speed: 10f);
+        camera.FollowAtX(_player, PlayerCameraHorizontalAnchor, speed: 10f);
     }
 
     protected override void CreateDirectDrawings()
@@ -304,7 +305,7 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
         _playerHealth = PlayerMaxHealth; _score = 0; _fireCooldown = 0;
         _player.SetPosition(new Vector2(5, 9)); _player.Visible = true; _healthBar.Value = PlayerMaxHealth; _healthBar.Show();
         foreach (Enemy enemy in _enemies) { enemy.Alive = true; enemy.Age = 0; enemy.Sprite.SetPosition(enemy.Spawn); enemy.Sprite.Visible = true; }
-        var camera = RenderSurface.Host.ViewManager.Views[0].Camera; camera.ClearFollow(); camera.SnapTo(PointF.Empty); camera.FollowCenteredX(_player, 10f);
+        var camera = RenderSurface.Host.ViewManager.Views[0].Camera; camera.ClearFollow(); camera.SnapTo(PointF.Empty); camera.FollowAtX(_player, PlayerCameraHorizontalAnchor, 10f);
         _message.Visible = false; _playing = true; _lastTick = HighResTimer.GetCurrentTick(); UpdateHud();
     }
 
