@@ -1,5 +1,7 @@
 ## Gondwana Wiki
 
+🔎 [Search the Gondwana Wiki](https://github.com/search?q=repo%3AIsthimius%2FGondwana&type=wikis)
+
 ### Introduction
 - [[Home]]
 - [[Make Your First Game in 30 Minutes]]
