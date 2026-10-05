@@ -619,11 +619,10 @@ public sealed class TabControlWidget : ContainerWidget, IWidgetKeyboardFallback
         Remove(header);
         Remove(page);
 
+        header.Dispose();
+
         if (dispose)
-        {
-            header.Dispose();
             page.Dispose();
-        }
 
         if (_tabs.Count == 0)
         {
