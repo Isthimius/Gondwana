@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 - Add scrollable labels and Spot help ([#405](https://github.com/Isthimius/Gondwana/pull/405))
 - Add asynchronous browser console logging ([#408](https://github.com/Isthimius/Gondwana/pull/408))
 - Native scene tile transforms, GSCN tooling and Tiled import ([#417](https://github.com/Isthimius/Gondwana/pull/417))
+- Add configurable normalized camera follow anchors ([#431](https://github.com/Isthimius/Gondwana/pull/431))
 
 
 
