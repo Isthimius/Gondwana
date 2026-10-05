@@ -20,6 +20,7 @@ public sealed class Camera
     private bool _hardFollow;
     private SceneLayer? _followLayer;
     private int _followAxis; // 0 = both, 1 = screen X, 2 = screen Y
+    private PointF _followAnchor = new(0.5f, 0.5f);
     private SceneLayer? TopologyLayer => _followLayer ?? _scene.SceneLayers.FirstOrDefault(layer => layer.Visible);
 
     // Explicit pan-to-target (camera upper-left) state.
@@ -358,9 +359,41 @@ public sealed class Camera
     /// </param>
     public void Follow(Func<PointF> getWorldPixel, bool hardFollow = false)
     {
+        FollowAt(getWorldPixel, new PointF(0.5f, 0.5f), hardFollow);
+    }
+
+    /// <summary>
+    /// Configures the camera to follow a dynamically supplied world-space target
+    /// while keeping that target at a normalized position within the visible view.
+    /// </summary>
+    /// <param name="getWorldPixel">
+    /// Function that returns the target world-space point of interest each frame.
+    /// </param>
+    /// <param name="viewportAnchor">
+    /// Normalized position within the visible view, where <c>(0, 0)</c> is the
+    /// upper-left and <c>(1, 1)</c> is the lower-right. For example,
+    /// <c>(0.2, 0.5)</c> keeps the target 20% from the left and vertically centered.
+    /// </param>
+    /// <param name="hardFollow">
+    /// If true, the camera snaps directly to the desired position (no smoothing).
+    /// If false, the camera smoothly lerps toward the target using
+    /// <see cref="FollowLerpPerSecond"/>.
+    /// </param>
+    /// <remarks>
+    /// When <see cref="DeadZonePx"/> is non-empty, the dead zone owns target
+    /// containment and the anchor is used as the follow reference for wrapped worlds.
+    /// World-bound clamping can also prevent the requested anchor from being reached
+    /// near a scene edge.
+    /// </remarks>
+    public void FollowAt(Func<PointF> getWorldPixel, PointF viewportAnchor, bool hardFollow = false)
+    {
+        ArgumentNullException.ThrowIfNull(getWorldPixel);
+        ValidateViewportAnchor(viewportAnchor, nameof(viewportAnchor));
+
         _followAxis = 0;
         _followLayer = null;
-        _followWorldPx = getWorldPixel ?? throw new ArgumentNullException(nameof(getWorldPixel));
+        _followWorldPx = getWorldPixel;
+        _followAnchor = viewportAnchor;
         _hardFollow = hardFollow;
     }
 
@@ -385,22 +418,41 @@ public sealed class Camera
     /// </summary>
     public void FollowCentered(IMovableOnSceneLayer target, float speed = -1f, bool hard = false)
     {
+        FollowAt(target, new PointF(0.5f, 0.5f), speed, hard);
+    }
+
+    /// <summary>
+    /// Makes the camera follow an IMovable-on-SceneLayer while keeping the
+    /// object's center at a normalized position within the visible view.
+    /// </summary>
+    /// <param name="target">Object whose world-space center should be followed.</param>
+    /// <param name="viewportAnchor">
+    /// Normalized position within the visible view, where <c>(0, 0)</c> is the
+    /// upper-left and <c>(1, 1)</c> is the lower-right.
+    /// </param>
+    /// <param name="speed">
+    /// Follow speed in lerp-units per second. Values greater than zero replace
+    /// <see cref="FollowLerpPerSecond"/>; values less than or equal to zero leave
+    /// the current setting unchanged.
+    /// </param>
+    /// <param name="hard">If true, the camera snaps to the desired position each update.</param>
+    public void FollowAt(IMovableOnSceneLayer target, PointF viewportAnchor, float speed = -1f, bool hard = false)
+    {
+        ArgumentNullException.ThrowIfNull(target);
+
         if (speed > 0f)
             FollowLerpPerSecond = speed;
 
-        Follow(() =>
+        FollowAt(() =>
         {
             var layer = target.SceneLayer;
-            var pos = target.GetPosition();     // Vector2
+            var pos = target.GetPosition();
 
-            // Convert to world-space center.
-            PointF worldCenter =
-                target.PositionSpace == MovementSpace.Grid
-                    ? GetCenteredTile(layer, pos)
-                    : new PointF(pos.X, pos.Y);
-
-            return worldCenter; // treated as point-of-interest (center)
+            return target.PositionSpace == MovementSpace.Grid
+                ? GetCenteredTile(layer, pos)
+                : new PointF(pos.X, pos.Y);
         },
+        viewportAnchor,
         hard);
         _followLayer = target.SceneLayer;
     }
@@ -411,15 +463,37 @@ public sealed class Camera
     /// </summary>
     public void FollowCenteredX(IMovableOnSceneLayer target, float speed = -1f, bool hard = false)
     {
+        FollowAtX(target, 0.5f, speed, hard);
+    }
+
+    /// <summary>
+    /// Smoothly follows an IMovable target horizontally while keeping its center
+    /// at a normalized horizontal position in the visible view. Vertical camera
+    /// position is left unchanged.
+    /// </summary>
+    /// <param name="target">Object whose horizontal world position should be followed.</param>
+    /// <param name="horizontalAnchor">
+    /// Normalized horizontal position where <c>0</c> is the left edge and
+    /// <c>1</c> is the right edge.
+    /// </param>
+    /// <param name="speed">
+    /// Follow speed in lerp-units per second. Values greater than zero replace
+    /// <see cref="FollowLerpPerSecond"/>.
+    /// </param>
+    /// <param name="hard">If true, the camera snaps to the desired horizontal position each update.</param>
+    public void FollowAtX(IMovableOnSceneLayer target, float horizontalAnchor, float speed = -1f, bool hard = false)
+    {
+        ArgumentNullException.ThrowIfNull(target);
+        ValidateNormalizedAnchor(horizontalAnchor, nameof(horizontalAnchor));
+
         if (speed > 0f)
             FollowLerpPerSecond = speed;
 
-        Follow(() =>
+        FollowAt(() =>
         {
             var layer = target.SceneLayer;
             var pos = target.GetPosition();
 
-            // Convert to world pixel center X.
             float worldCenterX;
             if (target.PositionSpace == MovementSpace.Grid)
             {
@@ -431,15 +505,12 @@ public sealed class Camera
                 worldCenterX = pos.X;
             }
 
-            // Use current camera Y as the vertical "anchor".
-            float currentCamY = PositionPx.Y;
             var vis = GetVisibleWorldSizePx();
-
-            // Reconstruct a center point whose Y keeps the current camera row.
             return new PointF(
                 worldCenterX,
-                currentCamY + vis.Height * 0.5f);
+                PositionPx.Y + vis.Height * 0.5f);
         },
+        new PointF(horizontalAnchor, 0.5f),
         hard);
         _followLayer = target.SceneLayer;
         _followAxis = 1;
@@ -451,15 +522,37 @@ public sealed class Camera
     /// </summary>
     public void FollowCenteredY(IMovableOnSceneLayer target, float speed = -1f, bool hard = false)
     {
+        FollowAtY(target, 0.5f, speed, hard);
+    }
+
+    /// <summary>
+    /// Smoothly follows an IMovable target vertically while keeping its center
+    /// at a normalized vertical position in the visible view. Horizontal camera
+    /// position is left unchanged.
+    /// </summary>
+    /// <param name="target">Object whose vertical world position should be followed.</param>
+    /// <param name="verticalAnchor">
+    /// Normalized vertical position where <c>0</c> is the top edge and
+    /// <c>1</c> is the bottom edge.
+    /// </param>
+    /// <param name="speed">
+    /// Follow speed in lerp-units per second. Values greater than zero replace
+    /// <see cref="FollowLerpPerSecond"/>.
+    /// </param>
+    /// <param name="hard">If true, the camera snaps to the desired vertical position each update.</param>
+    public void FollowAtY(IMovableOnSceneLayer target, float verticalAnchor, float speed = -1f, bool hard = false)
+    {
+        ArgumentNullException.ThrowIfNull(target);
+        ValidateNormalizedAnchor(verticalAnchor, nameof(verticalAnchor));
+
         if (speed > 0f)
             FollowLerpPerSecond = speed;
 
-        Follow(() =>
+        FollowAt(() =>
         {
             var layer = target.SceneLayer;
             var pos = target.GetPosition();
 
-            // Convert to world pixel center Y.
             float worldCenterY;
             if (target.PositionSpace == MovementSpace.Grid)
             {
@@ -471,15 +564,12 @@ public sealed class Camera
                 worldCenterY = pos.Y;
             }
 
-            // Use current camera X as the horizontal "anchor".
-            float currentCamX = PositionPx.X;
             var vis = GetVisibleWorldSizePx();
-
-            // Reconstruct a center point whose X keeps the current camera column.
             return new PointF(
-                currentCamX + vis.Width * 0.5f,
+                PositionPx.X + vis.Width * 0.5f,
                 worldCenterY);
         },
+        new PointF(0.5f, verticalAnchor),
         hard);
         _followLayer = target.SceneLayer;
         _followAxis = 2;
@@ -494,6 +584,7 @@ public sealed class Camera
         _followAxis = 0;
         _followLayer = null;
         _followWorldPx = null;
+        _followAnchor = new PointF(0.5f, 0.5f);
         _panTargetUpperLeftPx = null;
         _hardFollow = false;
     }
@@ -543,21 +634,23 @@ public sealed class Camera
         if (TopologyLayer is { } layer && (layer.WrapHorizontally || layer.WrapVertically))
         {
             var visible = GetVisibleWorldSizePx();
-            var center = new PointF(PositionPx.X + visible.Width / 2, PositionPx.Y + visible.Height / 2);
+            var followReference = new PointF(
+                PositionPx.X + visible.Width * _followAnchor.X,
+                PositionPx.Y + visible.Height * _followAnchor.Y);
             var period = layer.GetPeriod();
             if (_followAxis == 1)
             {
-                target = NearestWrappedByAxis(period, target, center, followX: true);
-                target.Y = center.Y;
+                target = NearestWrappedByAxis(period, target, followReference, followX: true);
+                target.Y = followReference.Y;
             }
             else if (_followAxis == 2)
             {
-                target = NearestWrappedByAxis(period, target, center, followX: false);
-                target.X = center.X;
+                target = NearestWrappedByAxis(period, target, followReference, followX: false);
+                target.X = followReference.X;
             }
             else
             {
-                target = period.Nearest(target, center);
+                target = period.Nearest(target, followReference);
             }
         }
         var desiredUL = DesiredUpperLeftToContainTarget(target);
@@ -581,8 +674,9 @@ public sealed class Camera
     {
         var vis = GetVisibleWorldSizePx();
         if (DeadZonePx == Rectangle.Empty)
-            return new PointF(targetWorldPx.X - vis.Width * 0.5f,
-                              targetWorldPx.Y - vis.Height * 0.5f);
+            return new PointF(
+                targetWorldPx.X - vis.Width * _followAnchor.X,
+                targetWorldPx.Y - vis.Height * _followAnchor.Y);
 
         var viewWorld = new RectangleF(PositionPx.X, PositionPx.Y, vis.Width, vis.Height);
         var dzWorld = new RectangleF(viewWorld.X + DeadZonePx.X,
@@ -682,6 +776,18 @@ public sealed class Camera
         return new PointF(
             Math.Clamp(ul.X, minX, maxX),
             Math.Clamp(ul.Y, minY, maxY));
+    }
+
+    private static void ValidateViewportAnchor(PointF viewportAnchor, string paramName)
+    {
+        ValidateNormalizedAnchor(viewportAnchor.X, paramName);
+        ValidateNormalizedAnchor(viewportAnchor.Y, paramName);
+    }
+
+    private static void ValidateNormalizedAnchor(float value, string paramName)
+    {
+        if (!float.IsFinite(value) || value < 0f || value > 1f)
+            throw new ArgumentOutOfRangeException(paramName, value, "Camera follow anchors must be finite values from 0 through 1.");
     }
 
     /// <summary>
