@@ -245,7 +245,11 @@ package "Rendering" {
         +SnapTo(worldUpperLeftPx)
         +CenterOn(worldCenterPx)
         +Follow(getWorldPixel, hardFollow)
+        +FollowAt(getWorldPixel, viewportAnchor, hardFollow)
         +FollowCentered(target, speed, hard)
+        +FollowAt(target, viewportAnchor, speed, hard)
+        +FollowAtX(target, horizontalAnchor, speed, hard)
+        +FollowAtY(target, verticalAnchor, speed, hard)
         +PanCenterTo(worldCenterPx, speed)
         +PanToOverDuration(worldTopLeftPx, durationSeconds)
     }
