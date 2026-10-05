@@ -92,6 +92,7 @@
   - [[PanelWidget|Widgets---PanelWidget]]
   - [[ProgressBarWidget|Widgets---ProgressBarWidget]]
   - [[RadioButtonWidget|Widgets---RadioButtonWidget]]
+  - [[TabControlWidget|Widgets---TabControlWidget]]
   - [[TextBoxWidget|Widgets---TextBoxWidget]]
 
   </details>

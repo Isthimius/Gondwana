@@ -78,7 +78,7 @@ It:
 * routes mouse or touch input to that widget
 * manages pointer capture during clicks and drags
 * manages keyboard focus
-* routes keyboard input to the focused widget, then offers unhandled keys to eligible menu bars
+* routes keyboard input to the focused widget, then offers unhandled keys to eligible menu bars and tab controls
 * provides a platform-agnostic input path
 
 The platform hosts translate native input into Gondwana input events. Widgets themselves do not need to know whether they are running under WinForms, Avalonia, or Blazor.
@@ -174,6 +174,10 @@ A single-choice control that can participate in a `RadioButtonGroup` so selectin
 
 A single-line editable text control with caret movement, insertion, deletion, placeholder text, length limits, and submit behavior.
 
+### [[TabControlWidget|Widgets---TabControlWidget]]
+
+A tabbed container whose pages own ordinary widgets. Headers resize across configurable rows, pages can use `Alt` mnemonics, and optional pointer dragging can reorder tabs.
+
 ---
 
 ## Layout
@@ -232,7 +236,7 @@ A temporary view-level notification that can slide or fade into place, remain vi
 
 ## Input at a Glance
 
-Interactive widgets such as buttons, check boxes, radio buttons, list boxes, combo boxes, text boxes, conversation boxes, dialogs, hyperlinks, and dismissible toasts participate in normal widget focus, pointer, and keyboard routing.
+Interactive widgets such as buttons, check boxes, radio buttons, list boxes, combo boxes, text boxes, tab controls, conversation boxes, dialogs, hyperlinks, and dismissible toasts participate in normal widget focus, pointer, and keyboard routing.
 
 Display and layout widgets such as:
 

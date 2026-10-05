@@ -12,7 +12,7 @@ and backbuffers using the same engine-driven drawing pipeline as the rest of the
 
 - Reusable in-game UI widgets for Gondwana projects
 - DirectDrawing-friendly controls and overlays
-- Common controls including labels, buttons, check boxes, radio buttons, list boxes, combo boxes, and editable text boxes
+- Common controls including labels, buttons, check boxes, radio buttons, list boxes, combo boxes, tabbed containers, and editable text boxes
 - Game-oriented components such as HUD elements, health bars, name tags, dialogs, conversation boxes, and menus
 - Code-first widget composition with no external editor or scene GUI required
 - Designed for 2D and 2.5D games using Gondwana's scene, view, and rendering systems
@@ -62,6 +62,12 @@ input after the focused widget, including while dropdowns are closed.
 
 See the [menu guide](https://github.com/Isthimius/Gondwana/wiki/Widgets---MenuBarWidget)
 and `Demos/WidgetsTest/WidgetsTestHost.cs` for complete consumer examples.
+
+### Tabbed containers
+
+`TabControlWidget` groups ordinary child widgets into selectable `TabPageWidget` containers. Tab headers resize across the configured rows, can select pages through explicit `Alt` mnemonics, and support optional primary-pointer drag reordering. Use `AutoExpandRows` and `PreferredTabWidth` when the control should add header rows as pages are added.
+
+See the [tab-control guide](https://github.com/Isthimius/Gondwana/wiki/Widgets---TabControlWidget) and `Demos/WidgetsTest/WidgetsTestHost.cs` for a working example.
 
 ### Toast notifications
 
