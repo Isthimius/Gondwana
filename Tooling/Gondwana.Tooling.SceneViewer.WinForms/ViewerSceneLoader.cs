@@ -1,6 +1,7 @@
 using Gondwana.Assets;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Animation.GANI;
+using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes;
@@ -8,19 +9,21 @@ using Gondwana.Scenes.GSCN;
 
 namespace Gondwana.Tooling.SceneViewer.WinForms;
 
-/// <summary>Registers explicit authored dependencies, then delegates materialization to the runtime.</summary>
+/// <summary>Resolves local and authored dependencies, then delegates materialization to the runtime.</summary>
 internal sealed class ViewerSceneLoader
 {
     private readonly Dictionary<string, (string Path, string? Entry)> _tilesheets = new(StringComparer.Ordinal);
     private readonly Dictionary<string, AssetsFile> _archives = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, AnimationDefinition> _animations = new(StringComparer.Ordinal);
     private readonly Dictionary<string, Cycle> _cycles = new(StringComparer.Ordinal);
+    private ViewerContentCatalog _catalog = null!;
 
     internal Scene Load(string path)
     {
         var definition = SceneDefinitionSerializer.Load(path);
         Validate(SceneDefinitionValidator.Validate(definition), "GSCN");
         var directory = Path.GetDirectoryName(Path.GetFullPath(path))!;
+        _catalog = new ViewerContentCatalog(directory, Archive);
 
         foreach (var source in definition.TilesheetSources)
         {
@@ -34,10 +37,13 @@ internal sealed class ViewerSceneLoader
             var description = source.GaniPath ?? $"{source.AssetsFilePath} :: {source.AssetEntryName}";
             try
             {
-                bool packed = source.Kind == SceneAnimationSourceKind.PackedDefinitionFile;
-                string location = Resolve(packed ? source.AssetsFilePath : source.GaniPath, directory);
+                var selected = _catalog.Animation(source.AnimationKey);
+                bool packed = selected?.Packed ?? source.Kind == SceneAnimationSourceKind.PackedDefinitionFile;
+                string location = selected?.Path ?? Resolve(packed ? source.AssetsFilePath : source.GaniPath, directory);
+                var entry = selected?.Entry ?? source.AssetEntryName;
+                description = selected?.ToString() ?? description;
                 var animation = packed
-                    ? AnimationDefinitionSerializer.Load(Archive(location), source.AssetEntryName!)
+                    ? AnimationDefinitionSerializer.Load(Archive(location), entry!)
                     : AnimationDefinitionSerializer.Load(location);
                 Validate(AnimationDefinitionValidator.Validate(animation), "GANI");
                 if (!string.Equals(animation.Key, source.AnimationKey, StringComparison.Ordinal))
@@ -58,15 +64,29 @@ internal sealed class ViewerSceneLoader
 
         RegisterCycles();
 
-        // No GSCN-to-GSPR association exists. Future explicit sprite sources belong
-        // after this step, when their owning runtime scene and layers are available.
+        Scene? scene = null;
         try
         {
-            return SceneDefinitionSerializer.ToScene(definition);
+            scene = SceneDefinitionSerializer.ToScene(definition);
+            var selected = _catalog.Sprites(scene.ID);
+            foreach (var candidate in selected)
+            {
+                if (candidate.Sprite.Frame is not { } frame) continue;
+                var document = candidate.Document;
+                var source = document.Definition.TilesheetSources.SingleOrDefault(source => source.Tilesheet == frame.Tilesheet);
+                // An already selected sheet can satisfy a frame without its own authoring metadata.
+                if (source is null && _tilesheets.ContainsKey(frame.Tilesheet)) continue;
+                LoadTilesheet(frame.Tilesheet, Path.GetDirectoryName(document.Source.Path)!,
+                    source?.Kind == SpriteTilesheetSourceKind.PackedDefinitionFile,
+                    source?.GtsPath, source?.AssetsFilePath, source?.AssetEntryName);
+            }
+            SpriteDefinitionSerializer.ToSprites(new SpriteDefinition { Sprites = selected.Select(candidate => candidate.Sprite).ToList() });
+            return scene;
         }
         catch (Exception ex)
         {
-            throw new InvalidDataException($"Scene '{path}' could not be materialized. Check its explicit GTS/GANI sources.\n{ex.Message}", ex);
+            scene?.Dispose();
+            throw new InvalidDataException($"Scene '{path}' could not be materialized. Check its GTS/GANI/GSPR sources.\n{ex.Message}", ex);
         }
     }
 
@@ -112,7 +132,14 @@ internal sealed class ViewerSceneLoader
         var description = loosePath ?? $"{archivePath} :: {entry}";
         try
         {
-            var location = Resolve(packed ? archivePath : loosePath, directory);
+            var selected = _catalog.Tilesheet(name);
+            if (selected is not null)
+            {
+                packed = selected.Packed;
+                entry = selected.Entry;
+                description = selected.ToString();
+            }
+            var location = selected?.Path ?? Resolve(packed ? archivePath : loosePath, directory);
             var identity = (location, packed ? entry : null);
             if (_tilesheets.TryGetValue(name, out var previous))
             {
