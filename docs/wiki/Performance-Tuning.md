@@ -82,11 +82,11 @@ Do not log this information every cycle. Consume the sampled event, display it i
 | `GrossCPS` | Total engine cycles per second, including cycles that perform no foreground rendering |
 | `NetCPS` | Cycles per second that entered Gondwana's foreground-frame work after `TargetFPS` pacing |
 | `Engine.FramesPerSecond` | The most recently sampled `NetCPS` value |
-| `GpuFps` | Completed GPU paint frames during the sample window; `null` when no GPU backbuffer is registered |
+| `GpuFps` | Successful GPU presentation/paint frames during the sample window; `null` when no GPU backbuffer is registered |
 
 `NetCPS` is best understood as the **foreground scheduling rate**. It does not guarantee that a new image was ultimately presented. A bitmap scene may be clean and skip rendering. On desktop GPU hosts, foreground work produces a `RenderFrameSnapshot` that is replayed later by the GL callback. In browser WebGL, foreground Scene-render decisions and GPU drawing occur within the browser paint callback, but browser presentation cadence can still differ because paints may re-present the existing GPU backbuffer.
 
-`GpuFps` is the better measure of completed GPU frames. When an application has more than one registered GPU surface, the current value may combine frames from those surfaces rather than representing a single display.
+`GpuFps` is the better measure of GPU presentation activity. When an application has more than one registered GPU surface, the current value may combine frames from those surfaces rather than representing a single display. On WebGL, it can include browser paints that re-present the existing GPU backbuffer without a new Scene render.
 
 ### Reading the symptoms
 
@@ -454,7 +454,7 @@ Continuous camera motion requires continuous full scene refreshes. Test the same
 
 ### GPU rendering stops at the display refresh rate
 
-Check `VSync` and compare `NetCPS` with `GpuFps`. A 60 Hz display commonly produces approximately 60 completed GPU frames per second with VSync enabled.
+Check `VSync` and compare `NetCPS` with `GpuFps`. A 60 Hz display commonly produces approximately 60 GPU presentations per second with VSync enabled.
 
 ### Performance falls as enemies are added, even when they are off-screen
 
