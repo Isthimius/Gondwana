@@ -57,13 +57,21 @@ The background timing spans Gondwana's normal background phase from `BeforeBackg
 
 ## Runtime loading
 
-The viewer derives from `WinFormsGpuGameHost`, using the template's GPU surface and normal host lifecycle. It validates GSCN, loads its explicit `TilesheetSources` and `AnimationSources`, registers runtime tilesheets/cycles, and calls `SceneDefinitionSerializer.ToScene`. GANI's own explicit GTS sources are also loaded. Shared logical tilesheets must resolve to the same source; conflicting sources fail clearly.
+The viewer derives from `WinFormsGpuGameHost`, using the template's GPU surface and normal host lifecycle. It validates GSCN, resolves its `TilesheetSources` and `AnimationSources`, registers runtime tilesheets/cycles, and calls `SceneDefinitionSerializer.ToScene`. The content root is the directory containing the opened GSCN, independent of the process working directory.
 
-Loose sources resolve relative to the containing definition. Packed sources use the existing GAF definition loaders; filesystem references within packed definitions resolve relative to the archive's directory, as in the runtime GTS loader. Packed GTS image entries may refer to the same archive. Entry names and types are explicit. Missing archives are never created. Encrypted dependencies requiring a password are unsupported because GSCN source metadata has no password mechanism; the viewer does not guess passwords or scan directories.
+Loose sources resolve relative to the containing definition. Packed sources use the existing GAF definition loaders; filesystem references within packed definitions resolve relative to the archive's directory, as in the runtime GTS loader. Packed GTS image entries may refer to the same archive. Entry names and types are explicit. Missing archives are never created. Encrypted dependencies requiring a password are unsupported because GSCN source metadata has no password mechanism; the viewer does not guess passwords. Unreadable adjacent archives or malformed definitions fail with their source path.
 
 Cycles are registered through the GANI serializer, then their public `NextCycle` links are connected, preserving authored self-links and mutual links in the registry. Every referenced next-cycle key needs an explicit GANI source. Current runtime `Cycle.GetAnimationCycle` clones share the frame sequence and reset `NextCycle` to the clone itself, so independently timed copies and cross-cycle playback retain those existing runtime limitations. The viewer does not patch or simulate them. Actual animation timing, per-tile animators, transforms, overhang, padding, collision geometry, projection, layer visibility/Z order, parallax, and wrapping belong entirely to Gondwana.
 
-GSCN currently has no canonical collection of associated GSPR sources. Automatic sprite discovery is therefore unavailable. Future explicit sources can materialize sprites after the owning scene/layers exist. This version never scans for or guesses GSPR relationships.
+The viewer scans only the content root, non-recursively, for loose `.gts`, `.gani`, `.gspr`, and typed GTS/GANI/GSPR entries in every adjacent `.gaf`. Serializers establish logical GTS names and GANI keys; filenames and archive entry names need not match those identities. Resolution uses **loose definition > packed definition > explicit source fallback**. GANI → GTS and GSPR → GTS use the same resolver as GSCN → GTS. Explicit fallback paths remain relative to their containing definition or archive. Shared logical tilesheets must select one consistent source throughout a load.
+
+Multiple matching loose definitions fail; multiple matching packed definitions fail when no loose match overrides them. Files, archives, and entries are processed in ordinal order, and conflict errors list source paths and packed entry names.
+
+After scene/layer materialization, adjacent GSPR documents contribute only entries whose `SceneId` matches the viewed scene using ordinal comparison. Other scene entries are validated but not instantiated, and `SceneSources` never cause other scenes to load. Only selected sprites' frame tilesheets are required; their document's `TilesheetSources` supply fallback locations. Sprites use normal runtime layer, position, frame, and state materialization.
+
+Across documents, a matching non-empty ID **or** non-empty nickname identifies a duplicate sprite. Loose entries override matching packed entries. Duplicate identities among surviving loose or packed entries fail; anonymous entries with neither identity remain distinct. Each complete GSPR document is structurally validated, even if some entries target another scene or are overridden. Source documents are not changed. The combined filtered sprite collection does not claim the provenance of any single source document.
+
+This is a Viewer convention; the portable definition schemas and runtime serializers retain their existing explicit behavior.
 
 ## View Scene from tooling
 
@@ -75,7 +83,7 @@ Development builds locate the viewer in its sibling tooling project's matching `
 
 ## Scope and verification
 
-This is a saved-content Scene Viewer, not an editor or gameplay host. There is no snapshot transport, hot reload, save-back, scripting, gameplay, debugger, or asset discovery.
+This is a saved-content Scene Viewer, not an editor or gameplay host. There is no snapshot transport, hot reload, save-back, scripting, gameplay, or debugger.
 
 Automated tests cover arguments, dependency registration/materialization (loose and packed), missing sources, camera movement/zoom/reset, and saved-document launch decisions. The Scene editor's lightweight, definition-driven preview remains an authoring tool, using representative animation frames without an Engine.
 
