@@ -13,6 +13,8 @@ namespace Gondwana.Rendering;
 /// </summary>
 public abstract class RenderSurfaceHostBase : IDisposable
 {
+    /// <summary>Neutral session-local measurements for this host; null when the collector source limit was reached.</summary>
+    public Diagnostics.TelemetrySource? Telemetry { get; internal set; }
     internal RenderFrameMailbox FrameMailbox { get; } = new();
     internal bool UsesRenderFrameSnapshots => !OperatingSystem.IsBrowser() && Backbuffer is GpuBackbuffer;
     internal virtual void ProduceRenderFrameSnapshot(long tick) { }
@@ -163,17 +165,19 @@ public abstract class RenderSurfaceHostBase : IDisposable
     private SKImage? ReplayRenderFrameSnapshot()
     {
         var diagnostics = GpuRenderSynchronizationDiagnosticsCalculated;
+        long telemetryGeneration = Telemetry?.BeginSample() ?? 0;
+        bool collectDiagnostics = diagnostics is not null || telemetryGeneration != 0;
         var slot = FrameMailbox.TryAcquire();
         if (slot is null) return Backbuffer.Snapshot();
 
-        long acquired = diagnostics is null ? 0 : HighResTimer.GetCurrentTick();
-        var counters = diagnostics is null ? default : FrameMailbox.Counters;
+        long acquired = !collectDiagnostics ? 0 : HighResTimer.GetCurrentTick();
+        var counters = !collectDiagnostics ? default : FrameMailbox.Counters;
         long replayEnd = acquired;
         long pictureReplayTicks = 0;
         long backbufferFlushTicks = 0;
         long snapshotTicks = 0;
-        int commands = diagnostics is null ? 0 : slot.Frame!.CommandCount;
-        double age = diagnostics is null ? 0 :
+        int commands = !collectDiagnostics ? 0 : slot.Frame!.CommandCount;
+        double age = !collectDiagnostics ? 0 :
             HighResTimer.GetDuration(slot.Frame!.ProducedTick, acquired) * 1000d;
 
         try
@@ -184,32 +188,32 @@ public abstract class RenderSurfaceHostBase : IDisposable
             // not: recordings contain CPU resources and are uploaded by the current GL context.
             if (frame.Width != Backbuffer.Width || frame.Height != Backbuffer.Height)
             {
-                long snapshotStart = diagnostics is null ? 0 : HighResTimer.GetCurrentTick();
+                long snapshotStart = !collectDiagnostics ? 0 : HighResTimer.GetCurrentTick();
                 var resizedSnapshot = Backbuffer.Snapshot();
-                if (diagnostics is not null)
+                if (collectDiagnostics)
                     snapshotTicks = HighResTimer.GetCurrentTick() - snapshotStart;
                 return resizedSnapshot;
             }
 
             Backbuffer.BeginFrame();
 
-            long pictureStart = diagnostics is null ? 0 : HighResTimer.GetCurrentTick();
+            long pictureStart = !collectDiagnostics ? 0 : HighResTimer.GetCurrentTick();
             frame.Replay(Backbuffer.Canvas);
-            long pictureEnd = diagnostics is null ? 0 : HighResTimer.GetCurrentTick();
+            long pictureEnd = !collectDiagnostics ? 0 : HighResTimer.GetCurrentTick();
 
             Backbuffer.EndFrame();
-            long flushEnd = diagnostics is null ? 0 : HighResTimer.GetCurrentTick();
+            long flushEnd = !collectDiagnostics ? 0 : HighResTimer.GetCurrentTick();
 
-            if (diagnostics is not null)
+            if (collectDiagnostics)
             {
                 pictureReplayTicks = pictureEnd - pictureStart;
                 backbufferFlushTicks = flushEnd - pictureEnd;
                 replayEnd = flushEnd;
             }
 
-            long snapshotStartTick = diagnostics is null ? 0 : HighResTimer.GetCurrentTick();
+            long snapshotStartTick = !collectDiagnostics ? 0 : HighResTimer.GetCurrentTick();
             var snapshot = Backbuffer.Snapshot();
-            if (diagnostics is not null)
+            if (collectDiagnostics)
                 snapshotTicks = HighResTimer.GetCurrentTick() - snapshotStartTick;
 
             return snapshot;
@@ -219,21 +223,37 @@ public abstract class RenderSurfaceHostBase : IDisposable
             try { Backbuffer.BeginFrame(); }
             finally { FrameMailbox.Release(slot); }
 
-            diagnostics?.Invoke(new(0, 0)
+            if (collectDiagnostics)
             {
-                ReplayMilliseconds = HighResTimer.GetDuration(acquired, replayEnd) * 1000d,
-                PictureReplayMilliseconds =
-                    HighResTimer.GetDuration(0, pictureReplayTicks) * 1000d,
-                BackbufferFlushMilliseconds =
-                    HighResTimer.GetDuration(0, backbufferFlushTicks) * 1000d,
-                SnapshotMilliseconds =
-                    HighResTimer.GetDuration(0, snapshotTicks) * 1000d,
-                SnapshotAgeMilliseconds = age,
-                PublishedSnapshots = counters.Published,
-                DroppedSnapshots = counters.Dropped,
-                SnapshotSlotsInUse = counters.InUse,
-                SnapshotCommandCount = commands
-            });
+                double replayMs = HighResTimer.GetDuration(acquired, replayEnd) * 1000d;
+                double pictureMs = HighResTimer.GetDuration(0, pictureReplayTicks) * 1000d;
+                double flushMs = HighResTimer.GetDuration(0, backbufferFlushTicks) * 1000d;
+                double snapshotMs = HighResTimer.GetDuration(0, snapshotTicks) * 1000d;
+                if (telemetryGeneration != 0)
+                {
+                    Telemetry!.Record(telemetryGeneration, "replay.cpu.ms", replayMs);
+                    Telemetry.Record(telemetryGeneration, "picture.cpu.ms", pictureMs);
+                    Telemetry.Record(telemetryGeneration, "backbuffer.flush.cpu.ms", flushMs);
+                    Telemetry.Record(telemetryGeneration, "snapshot.cpu.ms", snapshotMs);
+                    Telemetry.Record(telemetryGeneration, "snapshot.age.ms", age);
+                    Telemetry.Record(telemetryGeneration, "mailbox.published.lifetime", counters.Published);
+                    Telemetry.Record(telemetryGeneration, "mailbox.dropped.lifetime", counters.Dropped);
+                    Telemetry.Record(telemetryGeneration, "mailbox.slots", counters.InUse);
+                    Telemetry.Record(telemetryGeneration, "snapshot.commands.approximate", commands);
+                }
+                diagnostics?.Invoke(new(0, 0)
+                {
+                    ReplayMilliseconds = replayMs,
+                    PictureReplayMilliseconds = pictureMs,
+                    BackbufferFlushMilliseconds = flushMs,
+                    SnapshotMilliseconds = snapshotMs,
+                    SnapshotAgeMilliseconds = age,
+                    PublishedSnapshots = counters.Published,
+                    DroppedSnapshots = counters.Dropped,
+                    SnapshotSlotsInUse = counters.InUse,
+                    SnapshotCommandCount = commands
+                });
+            }
         }
     }
 
@@ -412,6 +432,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
     /// </remarks>
     protected virtual void Dispose(bool disposing)
     {
+        Telemetry?.Dispose();
         if (disposing)
         {
             FrameMailbox.Dispose();

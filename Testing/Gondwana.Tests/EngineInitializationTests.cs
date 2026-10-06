@@ -7,6 +7,28 @@ namespace Gondwana.Tests;
 public sealed class EngineInitializationTests
 {
     [Fact]
+    public void ProfilerCollectsCyclesWhenLegacyCpsNotificationsAreDisabled()
+    {
+        var engine = CreateEngineInstance();
+        try
+        {
+            engine.Configuration.SamplingTimeForCPS = 0;
+            engine.EngineDispatcher.BindToCurrentThread();
+            using (engine.Profiler.Start())
+                InvokeCycle(engine);
+            var snapshot = engine.Profiler.GetLatestSnapshot()!;
+            var source = Assert.Single(snapshot.Sources);
+            Assert.Equal(1, source.Metrics["cycle.cpu.ms"].Count);
+            Assert.Equal(1, source.Metrics["background.cpu.ms"].Count);
+        }
+        finally
+        {
+            engine.Profiler.Dispose();
+            GC.SuppressFinalize(engine);
+        }
+    }
+
+    [Fact]
     public void Initialize_WhenInitializationThrows_ResetsInitializationStateAndSignalsCompletion()
     {
         var engine = CreateEngineInstance();

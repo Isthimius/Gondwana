@@ -218,7 +218,19 @@ public sealed class Engine : IDisposable
 
     #endregion events
 
-    private Engine() { }
+    private readonly Diagnostics.TelemetrySource _engineTelemetry;
+
+    /// <summary>Opt-in runtime CPU measurements and bounded history, independent of CPS notifications.</summary>
+    /// <remarks>Each consumer owns a disposable collection request. Queries return detached data.</remarks>
+    public Diagnostics.RuntimeProfiler Profiler { get; } = new();
+
+    private Engine()
+    {
+        _engineTelemetry = Profiler.RegisterSource("Engine", "Core")!;
+        _engineTelemetry.Define("cycle.cpu.ms");
+        _engineTelemetry.Define("background.cpu.ms");
+        _engineTelemetry.Define("foreground.cpu.ms");
+    }
 
     private volatile bool _isInitialized = false;
     private volatile bool _isInitializing = false;
@@ -1000,6 +1012,8 @@ public sealed class Engine : IDisposable
         double frameDelta,
         bool sampleCps)
     {
+        long telemetryGeneration = _engineTelemetry.BeginSample();
+        long telemetryStarted = telemetryGeneration == 0 ? 0 : HighResTimer.GetCurrentTick();
         EnginePluginRegistry.InvokePreCycle(this, simulationDelta);
 
         DoBackgroundTasks(simulationTick);
@@ -1013,6 +1027,9 @@ public sealed class Engine : IDisposable
             CalculateCPS(renderTick);
 
         EnginePluginRegistry.InvokePostCycle(this, simulationDelta);
+        if (telemetryGeneration != 0)
+            _engineTelemetry.Record(telemetryGeneration, "cycle.cpu.ms",
+                HighResTimer.GetDuration(telemetryStarted, HighResTimer.GetCurrentTick()) * 1000d);
     }
 
     private bool IsForegroundDue(long tick) =>
@@ -1054,6 +1071,8 @@ public sealed class Engine : IDisposable
 
     private void RenderFrame(long tick, double delta)
     {
+        long telemetryGeneration = _engineTelemetry.BeginSample();
+        long telemetryStarted = telemetryGeneration == 0 ? 0 : HighResTimer.GetCurrentTick();
         EnginePluginRegistry.InvokePreFrameRender(this, delta);
 
         DoForegroundTasks(tick);
@@ -1062,10 +1081,15 @@ public sealed class Engine : IDisposable
 
         _lastForegroundTick = tick;
         _netCyclesThisMeasure++;
+        if (telemetryGeneration != 0)
+            _engineTelemetry.Record(telemetryGeneration, "foreground.cpu.ms",
+                HighResTimer.GetDuration(telemetryStarted, HighResTimer.GetCurrentTick()) * 1000d);
     }
 
     private void DoBackgroundTasks(long tick)
     {
+        long telemetryGeneration = _engineTelemetry.BeginSample();
+        long telemetryStarted = telemetryGeneration == 0 ? 0 : HighResTimer.GetCurrentTick();
         // find total real seconds passed since last background loop
         var deltaSeconds = HighResTimer.GetDuration(_lastBackgroundTick, tick);
 
@@ -1107,6 +1131,9 @@ public sealed class Engine : IDisposable
         AfterBackgroundTasksExecute?.Invoke();
 
         _lastBackgroundTick = tick;
+        if (telemetryGeneration != 0)
+            _engineTelemetry.Record(telemetryGeneration, "background.cpu.ms",
+                HighResTimer.GetDuration(telemetryStarted, HighResTimer.GetCurrentTick()) * 1000d);
     }
 
     private void DoForegroundTasks(long tick)
@@ -1287,6 +1314,8 @@ public sealed class Engine : IDisposable
             UiDispatcher.Post(() => SafeInvoke(Disposing));
         else
             SafeInvoke(Disposing);
+
+        Profiler.Dispose();
 
         // managed cleanup...
         Input.KeyboardEventPoller?.StopMonitoringAllKeys();

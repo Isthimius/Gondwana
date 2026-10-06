@@ -137,6 +137,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         _logicalWidth = _resolutionEstablished ? PresentationTransform.ScaleDimension(w, scale) : 1;
         _logicalHeight = _resolutionEstablished ? PresentationTransform.ScaleDimension(h, scale) : 1;
         _backbuffer = CreateBackbuffer(_logicalWidth, _logicalHeight);
+        Telemetry = Diagnostics.RenderTelemetry.Register(_backbuffer is GpuBackbuffer, renderSurfaceAdapter.GetType().Name);
         RenderSurfaceAdapter.SetBackbufferSize(_logicalWidth, _logicalHeight);
         Backbuffer.BeginFrame();
 
@@ -330,7 +331,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (slot is null) return;
         var recorder = _recordingBackbuffer ??= new RecordingBackbuffer();
         bool transferred = false;
-        long started = GpuRenderFrameDiagnosticsCalculated is null ? 0 : HighResTimer.GetCurrentTick();
+        long telemetryGeneration = Telemetry?.BeginSample() ?? 0;
+        long started = GpuRenderFrameDiagnosticsCalculated is null && telemetryGeneration == 0 ? 0 : HighResTimer.GetCurrentTick();
         _recordingDiagnostics = null;
         try
         {
@@ -342,6 +344,12 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                 HighResTimer.GetCurrentTick(), recorder.Width, recorder.Height);
             transferred = true;
             FrameMailbox.Publish(slot, frame);
+            if (telemetryGeneration != 0)
+            {
+                Telemetry!.Record(telemetryGeneration, "build.cpu.ms", HighResTimer.GetDuration(started, HighResTimer.GetCurrentTick()) * 1000d);
+                Telemetry.Record(telemetryGeneration, "atlas.batches", recorder.AtlasBatchCount);
+                Telemetry.Record(telemetryGeneration, "atlas.tiles", recorder.AtlasBatchedTileCount);
+            }
             if (_recordingDiagnostics is { } diagnostics)
                 GpuRenderFrameDiagnosticsCalculated?.Invoke(diagnostics with
                 {
@@ -392,7 +400,9 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     private void RenderToBackbufferGpuFull(long tick, BackbufferBase? destination = null)
     {
         var target = destination ?? Backbuffer;
-        bool collectDiagnostics = GpuRenderFrameDiagnosticsCalculated is not null;
+        long telemetryGeneration = Telemetry?.BeginSample() ?? 0;
+        bool legacyDiagnostics = GpuRenderFrameDiagnosticsCalculated is not null;
+        bool collectDiagnostics = legacyDiagnostics || telemetryGeneration != 0;
         long diagnosticsStartTick = collectDiagnostics ? HighResTimer.GetCurrentTick() : 0;
         long queryAndSortTicks = 0;
         long queryTicks = 0;
@@ -401,7 +411,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         long overlayTicks = 0;
         int drawableCount = 0;
         int tileCount = 0;
-        List<GpuLayerRenderDiagnostics>? layerDiagnostics = collectDiagnostics
+        List<GpuLayerRenderDiagnostics>? layerDiagnostics = legacyDiagnostics
             ? new List<GpuLayerRenderDiagnostics>(Scene.VisibleSceneLayers.Count)
             : null;
 
@@ -568,7 +578,20 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                             drawableCount += layerDrawableCount;
                             tileCount += layerTileCount;
 
-                            layerDiagnostics!.Add(new GpuLayerRenderDiagnostics(
+                            if (telemetryGeneration != 0 && i < Diagnostics.RenderTelemetry.Layers.Length)
+                            {
+                                var keys = Diagnostics.RenderTelemetry.Layers[i];
+                                Telemetry!.Record(telemetryGeneration, keys[0], HighResTimer.GetDuration(0, layerQueryAndSortTicks) * 1000d);
+                                Telemetry.Record(telemetryGeneration, keys[1], HighResTimer.GetDuration(0, layerDrawTicks) * 1000d);
+                                Telemetry.Record(telemetryGeneration, keys[2], layerDrawableCount);
+                                Telemetry.Record(telemetryGeneration, keys[3], layerTileCount);
+                                Telemetry.Record(telemetryGeneration, keys[4], layer.TransformedTiles.Count);
+                                Telemetry.Record(telemetryGeneration, keys[5], layer.TileWidth);
+                                Telemetry.Record(telemetryGeneration, keys[6], layer.TileHeight);
+                                Telemetry.Record(telemetryGeneration, keys[7], layer.ZOrder);
+                            }
+
+                            layerDiagnostics?.Add(new GpuLayerRenderDiagnostics(
                                 i,
                                 layer.ID,
                                 layer.ZOrder,
@@ -613,6 +636,21 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         if (collectDiagnostics)
         {
             long diagnosticsEndTick = HighResTimer.GetCurrentTick();
+            if (telemetryGeneration != 0)
+            {
+                if (destination is not RecordingBackbuffer)
+                    Telemetry!.Record(telemetryGeneration, "build.cpu.ms", HighResTimer.GetDuration(diagnosticsStartTick, diagnosticsEndTick) * 1000d);
+                Telemetry!.Record(telemetryGeneration, "query.cpu.ms", HighResTimer.GetDuration(0, queryTicks) * 1000d);
+                Telemetry.Record(telemetryGeneration, "sort.cpu.ms", HighResTimer.GetDuration(0, sortTicks) * 1000d);
+                Telemetry.Record(telemetryGeneration, "record.cpu.ms", HighResTimer.GetDuration(0, drawTicks) * 1000d);
+                Telemetry.Record(telemetryGeneration, "overlay.cpu.ms", HighResTimer.GetDuration(0, overlayTicks) * 1000d);
+                Telemetry.Record(telemetryGeneration, "visible.drawables", drawableCount);
+                Telemetry.Record(telemetryGeneration, "visible.tiles", tileCount);
+                Telemetry.Record(telemetryGeneration, "layers.omitted", Math.Max(0, Scene.VisibleSceneLayers.Count - Diagnostics.RenderTelemetry.Layers.Length));
+                if (Scene.VisibleSceneLayers.Count > Diagnostics.RenderTelemetry.Layers.Length)
+                    Telemetry.MarkTruncated(telemetryGeneration);
+            }
+            if (!legacyDiagnostics) return;
             var diagnostics = new GpuRenderFrameDiagnostics(
                 HighResTimer.GetDuration(diagnosticsStartTick, diagnosticsEndTick) * 1000d,
                 HighResTimer.GetDuration(0, queryAndSortTicks) * 1000d,

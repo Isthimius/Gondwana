@@ -109,6 +109,7 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
     /// <inheritdoc/>
     protected override void OnOpenGlRender(GlInterface gl, int fb)
     {
+        long telemetryGeneration = Host?.Telemetry?.BeginSample() ?? 0;
         if (Volatile.Read(ref _disposeRequested) != 0 || _grContext == null || _gpuBackbuffer == null) return;
 
         // Notify SkiaSharp that external GL code (Avalonia's compositor) may have
@@ -160,6 +161,7 @@ public class AvaloniaGpuRenderSurfaceControl : OpenGlControlBase, IDisposable
 
         _grContext.Flush();
         _gpuBackbuffer.RecordFrame();
+        if (telemetryGeneration != 0) Host!.Telemetry!.Record(telemetryGeneration, "presentation.count", 1);
     }
 
     /// <inheritdoc/>

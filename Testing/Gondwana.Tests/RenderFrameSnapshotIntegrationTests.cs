@@ -13,6 +13,33 @@ namespace Gondwana.Tests;
 [Collection("Effects rendering")]
 public sealed class RenderFrameSnapshotIntegrationTests
 {
+    [Fact]
+    public void ProfilerObservesBuildAndReplayWithoutChangingMailboxOrLegacySubscribers()
+    {
+        var profiler = Engine.Instance.Profiler;
+        profiler.Reset();
+        using var scene = new Scene();
+        using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
+        using var buffer = host.Backbuffer;
+        host.Bind(scene, false);
+        int legacy = 0;
+        host.GpuRenderFrameDiagnosticsCalculated += _ => legacy++;
+        using (profiler.Start())
+        {
+            host.ProduceRenderFrameSnapshot(1);
+            using var image = host.GlRenderAndSnapshot();
+        }
+        var source = profiler.GetLatestSnapshot()!.Sources.Single(s => s.Id == host.Telemetry!.Id);
+        Assert.Equal(1, source.Metrics["build.cpu.ms"].Count);
+        Assert.Equal(1, source.Metrics["replay.cpu.ms"].Count);
+        Assert.Equal(Gondwana.Diagnostics.TelemetryAvailability.NotApplicable, source.Metrics["gate.wait.cpu.ms"].Availability);
+        var counters = host.FrameMailbox.Counters;
+        profiler.Reset();
+        Assert.Equal(counters, host.FrameMailbox.Counters);
+        host.ProduceRenderFrameSnapshot(2);
+        Assert.Equal(2, legacy);
+    }
+
     public RenderFrameSnapshotIntegrationTests()
     {
         Engine.Instance.EngineDispatcher.BindToCurrentThread();

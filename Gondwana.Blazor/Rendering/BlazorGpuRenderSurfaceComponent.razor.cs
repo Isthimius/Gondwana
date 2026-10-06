@@ -111,6 +111,7 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
 
     private void HandlePaintSurface(SKPaintGLSurfaceEventArgs e)
     {
+        long telemetryGeneration = Host?.Telemetry?.BeginSample() ?? 0;
         if (_disposed)
             return;
 
@@ -159,6 +160,7 @@ public sealed partial class BlazorGpuRenderSurfaceComponent : BlazorRenderSurfac
         // Count successful WebGL paint/presentation callbacks. This intentionally measures the
         // browser GPU presentation cadence, which may differ from the engine's TargetFPS.
         backbuffer.RecordFrame();
+        if (telemetryGeneration != 0) Host!.Telemetry!.Record(telemetryGeneration, "presentation.count", 1);
     }
 
     /// <inheritdoc/>
