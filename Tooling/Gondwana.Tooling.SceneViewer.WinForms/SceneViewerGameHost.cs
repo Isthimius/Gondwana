@@ -204,6 +204,7 @@ internal sealed class SceneViewerGameHost(
             timeBetweenEvents: 0);
     }
 
+    /// <inheritdoc/>
     protected override void OnEngineInitialized()
     {
         _lastTick = HighResTimer.GetCurrentTick();
@@ -214,6 +215,7 @@ internal sealed class SceneViewerGameHost(
 
     protected override void ConfigureGamepads() { }
 
+    /// <inheritdoc/>
     protected override void UnhookEvents()
     {
         if (Engine.Input.KeyboardEventPoller is not null)
@@ -354,7 +356,7 @@ internal sealed class SceneViewerGameHost(
         {
             if (source is null || !source.Metrics.TryGetValue(key, out var metric)) return "NotYetSampled";
             return metric.Availability == Gondwana.Diagnostics.TelemetryAvailability.Available
-                ? (last ? metric.Last : metric.Mean)?.ToString("0.000") ?? "NotYetSampled"
+                ? (last ? metric.Last : metric.Mean)?.ToString(last ? "0" : key.EndsWith(".ms", StringComparison.Ordinal) ? "0.000" : "0.0") ?? "NotYetSampled"
                 : metric.Availability.ToString();
         }
         string Rate(Gondwana.Diagnostics.TelemetrySourceSnapshot? source, string key)
@@ -382,7 +384,7 @@ internal sealed class SceneViewerGameHost(
             .AppendLine($"GL replay avg/max: {Timing(render, "replay.cpu.ms")}")
             .AppendLine($"Picture / backbuffer flush / snapshot: {Value(render, "picture.cpu.ms")} / {Value(render, "backbuffer.flush.cpu.ms")} / {Value(render, "snapshot.cpu.ms")} ms")
             .AppendLine($"Snapshot age: {Value(render, "snapshot.age.ms")} ms")
-            .AppendLine($"Published / dropped / slots / approx commands: {Value(render, "mailbox.published.lifetime", true)} / {Value(render, "mailbox.dropped.lifetime", true)} / {Value(render, "mailbox.slots", true)} / {Value(render, "snapshot.commands.approximate", true)}")
+            .AppendLine($"Published / dropped / slots / commands: {Value(render, "mailbox.published.lifetime", true)} / {Value(render, "mailbox.dropped.lifetime", true)} / {Value(render, "mailbox.slots", true)} / {Value(render, "snapshot.commands.approximate", true)}")
             .AppendLine($"Blit / final flush: {Value(render, "blit.cpu.ms")} / {Value(render, "flush.cpu.ms")} ms")
             .AppendLine($"Visible draw instances / tiles: {Value(render, "visible.drawables")} / {Value(render, "visible.tiles")}")
             .AppendLine($"Atlas batches / tiles: {Value(render, "atlas.batches")} / {Value(render, "atlas.tiles")}")
@@ -396,7 +398,7 @@ internal sealed class SceneViewerGameHost(
         for (int i = 0; i < MaxDiagnosticLayers; i++)
         {
             if (render?.Metrics.TryGetValue($"layer.{i}.query.cpu.ms", out var layer) != true || layer.Count == 0) continue;
-            text.AppendLine($"L{i} z{Value(render, $"layer.{i}.z", true)} {Value(render, $"layer.{i}.tile.width.px", true)}x{Value(render, $"layer.{i}.tile.height.px", true)} xform={Value(render, $"layer.{i}.transformed.tiles", true)}: query / record {Value(render, $"layer.{i}.query.cpu.ms")} / {Value(render, $"layer.{i}.record.cpu.ms")} ms; drawables / tiles {Value(render, $"layer.{i}.drawables")} / {Value(render, $"layer.{i}.tiles")}");
+            text.AppendLine($"L{i} z{Value(render, $"layer.{i}.z", true)} {Value(render, $"layer.{i}.tile.width.px", true)}x{Value(render, $"layer.{i}.tile.height.px", true)} xform={Value(render, $"layer.{i}.transformed.tiles", true)}: q/rec {Value(render, $"layer.{i}.query.cpu.ms")} / {Value(render, $"layer.{i}.record.cpu.ms")} ms; draw/tiles {Value(render, $"layer.{i}.drawables")} / {Value(render, $"layer.{i}.tiles")}");
         }
         if (snapshot?.Truncated == true) text.AppendLine("Telemetry detail truncated.");
         _diagnosticsText.SetText(text.ToString().TrimEnd());
@@ -442,17 +444,22 @@ internal sealed class SceneViewerGameHost(
     }
 
     // Viewer startup must not load an unrelated game config/state from the cwd.
-    // Run uncapped and without VSync so diagnostics expose actual Engine/GPU throughput.
+    // Keep Engine foreground work uncapped and preserve the viewer's GPU VSync default.
+    /// <summary>Provides standalone viewer defaults without persisting unrelated game configuration.</summary>
     internal sealed class ViewerConfiguration : IEngineConfigurationStore
     {
+        /// <inheritdoc/>
         public EngineConfiguration Configuration { get; } = new()
         {
             TargetFPS = 0,
             VSync = true
         };
 
+        /// <inheritdoc/>
         public bool AutoSave { get; set; }
+        /// <inheritdoc/>
         public void Save() { }
+        /// <inheritdoc/>
         public void Dispose() { }
     }
 }

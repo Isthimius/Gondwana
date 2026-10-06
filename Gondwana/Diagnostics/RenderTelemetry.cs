@@ -4,6 +4,7 @@ namespace Gondwana.Diagnostics;
 /// <summary>Neutral fixed render measurement definitions shared by runtime and platform adapters.</summary>
 internal static class RenderTelemetry
 {
+    /// <summary>Fixed neutral names; CPU durations are milliseconds, remaining values are counts or gauges.</summary>
     internal static readonly string[] Metrics =
     [
         "build.cpu.ms", "query.cpu.ms", "sort.cpu.ms", "record.cpu.ms", "overlay.cpu.ms",
@@ -13,25 +14,32 @@ internal static class RenderTelemetry
         "gate.wait.cpu.ms", "gate.held.cpu.ms", "presentation.cpu.ms", "render.snapshot.cpu.ms", "blit.cpu.ms", "flush.cpu.ms"
     ];
 
+    /// <summary>At most eight layer indices are retained; measurements count draw instances across views.</summary>
     internal static readonly string[][] Layers = Enumerable.Range(0, 8).Select(i => new[]
     {
         $"layer.{i}.query.cpu.ms", $"layer.{i}.record.cpu.ms", $"layer.{i}.drawables", $"layer.{i}.tiles",
         $"layer.{i}.transformed.tiles", $"layer.{i}.tile.width.px", $"layer.{i}.tile.height.px", $"layer.{i}.z"
     }).ToArray();
 
-    internal static TelemetrySource? Register(bool gpu, string adapter)
+    /// <summary>Defines bounded render measurements when a host is constructed.</summary>
+    /// <param name="gpu">Whether this host uses a GPU backbuffer.</param>
+    /// <returns>A neutral handle without references to the host, or null if source capacity is exhausted.</returns>
+    internal static TelemetrySource? Register(bool gpu)
     {
-        var source = Engine.Instance.Profiler.RegisterSource("Render surface",
+        var source = Engine.Instance.Profiler.TryRegisterSource("Render surface",
             gpu ? (OperatingSystem.IsBrowser() ? "WebGL" : "Desktop GPU") : "Bitmap");
         if (source is null) return null;
         foreach (var name in Metrics)
         {
             var availability = TelemetryAvailability.NotYetSampled;
             if (!gpu) availability = TelemetryAvailability.Unsupported;
-            else if (name.StartsWith("gate.", StringComparison.Ordinal) ||
-                (OperatingSystem.IsBrowser() && (Array.IndexOf(Metrics, name) is >= 9 and <= 17)))
+            else if (name.StartsWith("gate.", StringComparison.Ordinal))
+                availability = OperatingSystem.IsBrowser() ? TelemetryAvailability.Unsupported : TelemetryAvailability.NotApplicable;
+            else if (OperatingSystem.IsBrowser() && Array.IndexOf(Metrics, name) is >= 9 and <= 17)
                 availability = TelemetryAvailability.NotApplicable;
-            else if (Array.IndexOf(Metrics, name) >= 20 && !adapter.Contains("WinForm", StringComparison.Ordinal))
+            else if (OperatingSystem.IsBrowser() && name.StartsWith("atlas.", StringComparison.Ordinal))
+                availability = TelemetryAvailability.Unsupported;
+            else if (Array.IndexOf(Metrics, name) >= 20)
                 availability = TelemetryAvailability.Unsupported;
             source.Define(name, availability, name.EndsWith(".lifetime", StringComparison.Ordinal) ? TelemetryMetricKind.LifetimeCounter :
                 name.Contains("cpu.ms", StringComparison.Ordinal) ? TelemetryMetricKind.Sample : TelemetryMetricKind.Gauge);
@@ -39,7 +47,8 @@ internal static class RenderTelemetry
         source.Define("presentation.count", gpu ? TelemetryAvailability.NotYetSampled : TelemetryAvailability.Unsupported);
         source.Define("layers.omitted");
         foreach (var layer in Layers)
-            foreach (var name in layer) source.Define(name, gpu ? TelemetryAvailability.NotYetSampled : TelemetryAvailability.Unsupported);
+            foreach (var name in layer) source.Define(name, gpu ? TelemetryAvailability.NotYetSampled : TelemetryAvailability.Unsupported,
+                name.Contains("cpu.ms", StringComparison.Ordinal) ? TelemetryMetricKind.Sample : TelemetryMetricKind.Gauge);
         return source;
     }
 

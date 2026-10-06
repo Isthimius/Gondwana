@@ -1,5 +1,9 @@
 Gondwana is designed to be inspectable while it runs. The engine exposes lifecycle events, render-surface events, runtime performance samples, logging infrastructure, and visual overlays that can help narrow a problem to a specific stage of the engine.
 
+For opt-in collection, detached snapshots, and bounded history usable by ordinary
+applications, see [Runtime Telemetry](Runtime-Telemetry). SceneViewer F3 consumes
+that same service; legacy diagnostic events remain independently available.
+
 The most useful debugging question is usually not simply *“Why is this wrong?”* It is:
 
 > At which stage did the engine stop doing what I expected?

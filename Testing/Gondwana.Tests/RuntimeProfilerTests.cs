@@ -2,8 +2,105 @@ using Gondwana.Diagnostics;
 
 namespace Gondwana.Tests;
 
+/// <summary>Deterministic aggregation, ownership, bounds, and concurrency regressions.</summary>
 public sealed class RuntimeProfilerTests
 {
+    /// <summary>Verifies sustained collection retains only configured completed windows.</summary>
+    [Fact]
+    public void SustainedCollectionRetainsOnlyConfiguredCompletedWindows()
+    {
+        double now = 0;
+        using var profiler = new RuntimeProfiler(() => now);
+        using var source = profiler.RegisterSource("test", "test")!;
+        source.Define("work.cpu.ms");
+        using var request = profiler.Start();
+        for (int i = 0; i < 2400; i++)
+        {
+            source.Record(source.BeginSample(), "work.cpu.ms", i);
+            now += .25;
+            profiler.GetLatestSnapshot();
+        }
+        var history = profiler.GetHistory();
+        Assert.Equal(120, history.Count);
+        Assert.Equal(2280, history[0].Sources[0].Metrics["work.cpu.ms"].Last);
+        Assert.Equal(2399, history[^1].Sources[0].Metrics["work.cpu.ms"].Last);
+    }
+
+    /// <summary>Verifies ordinary application example reads detached measurements.</summary>
+    [Fact]
+    public void OrdinaryApplicationExampleReadsDetachedMeasurements()
+    {
+        double now = 0;
+        using var profiler = new RuntimeProfiler(() => now);
+        using var source = profiler.RegisterSource("Engine", "Core")!;
+        source.Define("cycle.cpu.ms");
+        using var request = profiler.Start();
+        source.Record(source.BeginSample(), "cycle.cpu.ms", 2);
+        now = .25;
+        using var output = new StringWriter();
+        Gondwana.Examples.RuntimeTelemetryExample.PrintLatest(profiler, output);
+        Assert.Contains("CPS=", output.ToString());
+        Assert.Contains("CPU mean=", output.ToString());
+    }
+
+    /// <summary>Verifies in flight work cannot cross reset or source retirement.</summary>
+    [Fact]
+    public async Task InFlightWorkCannotCrossResetOrSourceRetirement()
+    {
+        double now = 0;
+        using var profiler = new RuntimeProfiler(() => now);
+        using var source = profiler.RegisterSource("first", "GPU")!;
+        source.Define("cpu.ms");
+        using var request = profiler.Start();
+        var captured = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var resume = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var worker = Task.Run(async () =>
+        {
+            long oldEpoch = source.BeginSample();
+            captured.SetResult();
+            await resume.Task;
+            source.Record(oldEpoch, "cpu.ms", 999);
+        });
+        await captured.Task;
+        profiler.Reset();
+        source.Dispose();
+        using var replacement = profiler.RegisterSource("replacement", "GPU")!;
+        Assert.NotEqual(source.Id, replacement.Id);
+        replacement.Define("cpu.ms");
+        resume.SetResult();
+        await worker;
+        now = .25;
+        var snapshot = profiler.GetLatestSnapshot()!;
+        Assert.Equal(0, Assert.Single(snapshot.Sources).Metrics["cpu.ms"].Count);
+        Assert.Throws<NotSupportedException>(() => ((IList<TelemetrySourceSnapshot>)snapshot.Sources).Clear());
+        Assert.Throws<NotSupportedException>(() => ((IDictionary<string, TelemetrySummary>)snapshot.Sources[0].Metrics).Clear());
+    }
+
+    /// <summary>Verifies lifetime counters rebase without changing observed lifetime value.</summary>
+    [Fact]
+    public void LifetimeCountersRebaseWithoutChangingObservedLifetimeValue()
+    {
+        double now = 0;
+        using var profiler = new RuntimeProfiler(() => now);
+        using var source = profiler.RegisterSource("mailbox", "GPU")!;
+        source.Define("published", kind: TelemetryMetricKind.LifetimeCounter);
+        using var request = profiler.Start();
+        source.Record(source.BeginSample(), "published", 100);
+        now = .25;
+        Assert.Null(profiler.GetLatestSnapshot()!.Sources[0].Metrics["published"].WindowDelta);
+        source.Record(source.BeginSample(), "published", 104);
+        now = .5;
+        Assert.Equal(4, profiler.GetLatestSnapshot()!.Sources[0].Metrics["published"].WindowDelta);
+        profiler.Reset();
+        source.Record(source.BeginSample(), "published", 108);
+        now = .75;
+        var value = profiler.GetLatestSnapshot()!.Sources[0].Metrics["published"];
+        Assert.Equal(108, value.Last);
+        Assert.Null(value.WindowDelta);
+        Assert.Equal(.5, value.LastObservedSeconds);
+    }
+
+    /// <summary>Verifies leases windows reset and detached queries.</summary>
     [Fact]
     public void LeasesWindowsResetAndDetachedQueries()
     {
@@ -46,6 +143,7 @@ public sealed class RuntimeProfilerTests
         Assert.Equal(.25, profiler.GetLatestSnapshot()!.ElapsedSeconds);
     }
 
+    /// <summary>Verifies capacity availability retirement and weighted history.</summary>
     [Fact]
     public void CapacityAvailabilityRetirementAndWeightedHistory()
     {
@@ -86,6 +184,7 @@ public sealed class RuntimeProfilerTests
         Assert.Single(second.Sources);
     }
 
+    /// <summary>Verifies configuration and disposal are predictable.</summary>
     [Fact]
     public void ConfigurationAndDisposalArePredictable()
     {
@@ -100,8 +199,10 @@ public sealed class RuntimeProfilerTests
         request.Dispose();
         Assert.False(profiler.IsCollecting);
         Assert.Throws<ObjectDisposedException>(() => profiler.Start());
+        Assert.Null(profiler.TryRegisterSource("late host", "GPU"));
     }
 
+    /// <summary>Verifies concurrent producers and readers preserve totals and separate sources.</summary>
     [Fact]
     public async Task ConcurrentProducersAndReadersPreserveTotalsAndSeparateSources()
     {
@@ -123,6 +224,7 @@ public sealed class RuntimeProfilerTests
         Assert.Equal(3000, snapshot.Sources.Single(s => s.Id == gl.Id).Metrics["presentation.count"].Count);
     }
 
+    /// <summary>Verifies hot observations do not allocate.</summary>
     [Fact]
     public void HotObservationsDoNotAllocate()
     {

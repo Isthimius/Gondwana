@@ -13,7 +13,7 @@ namespace Gondwana.Rendering;
 /// </summary>
 public abstract class RenderSurfaceHostBase : IDisposable
 {
-    /// <summary>Neutral session-local measurements for this host; null when the collector source limit was reached.</summary>
+    /// <summary>Neutral session-local measurements for this host; null when source capacity is exhausted or the shared collector is disposed.</summary>
     public Diagnostics.TelemetrySource? Telemetry { get; internal set; }
     internal RenderFrameMailbox FrameMailbox { get; } = new();
     internal bool UsesRenderFrameSnapshots => !OperatingSystem.IsBrowser() && Backbuffer is GpuBackbuffer;

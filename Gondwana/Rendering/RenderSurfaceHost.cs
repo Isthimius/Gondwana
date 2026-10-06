@@ -137,7 +137,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         _logicalWidth = _resolutionEstablished ? PresentationTransform.ScaleDimension(w, scale) : 1;
         _logicalHeight = _resolutionEstablished ? PresentationTransform.ScaleDimension(h, scale) : 1;
         _backbuffer = CreateBackbuffer(_logicalWidth, _logicalHeight);
-        Telemetry = Diagnostics.RenderTelemetry.Register(_backbuffer is GpuBackbuffer, renderSurfaceAdapter.GetType().Name);
+        Telemetry = Diagnostics.RenderTelemetry.Register(_backbuffer is GpuBackbuffer);
         RenderSurfaceAdapter.SetBackbufferSize(_logicalWidth, _logicalHeight);
         Backbuffer.BeginFrame();
 
@@ -324,6 +324,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         RenderBackbufferEnd?.Invoke();
     }
 
+    /// <summary>Records and publishes desktop GPU commands on the Engine thread, with optional shared CPU measurements.</summary>
+    /// <param name="tick">Foreground simulation tick; CPU durations use the real monotonic clock.</param>
     internal override void ProduceRenderFrameSnapshot(long tick)
     {
         if (!UsesRenderFrameSnapshots || _disposed) return;

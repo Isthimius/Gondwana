@@ -69,7 +69,15 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
             Engine.Instance.EngineDispatcher.Post(() =>
             {
                 surface.Host.ViewManager.Views[0].Viewport.Zoom = .125f;
+                using var applicationRequest = Engine.Instance.Profiler.Start();
+                var toggle = typeof(SceneViewerGameHost).GetMethod("ToggleDiagnostics", BindingFlags.Instance | BindingFlags.NonPublic)!;
+                toggle.Invoke(host, null);
+                toggle.Invoke(host, null);
+                Assert.True(Engine.Instance.Profiler.IsCollecting);
                 typeof(SceneViewerGameHost).GetMethod("ToggleDiagnostics", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(host, null);
+                var diagnosticsText = (TextBlock)typeof(SceneViewerGameHost).GetField("_diagnosticsText", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(host)!;
+                var background = (global::SkiaSharp.SKColor)typeof(TextBlock).GetField("_backColor", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(diagnosticsText)!;
+                Assert.Equal(102, background.Alpha);
             });
             surface.Adapter.FrameDiagnosticsCalculated += _ =>
             {

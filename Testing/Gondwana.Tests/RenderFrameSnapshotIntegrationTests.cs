@@ -14,6 +14,19 @@ namespace Gondwana.Tests;
 public sealed class RenderFrameSnapshotIntegrationTests
 {
     [Fact]
+    public void BitmapSourceExplicitlyReportsUnsupportedGpuStages()
+    {
+        var profiler = Engine.Instance.Profiler;
+        profiler.Reset();
+        using var host = new RenderSurfaceHost<BitmapBackbuffer>(new Adapter());
+        using var buffer = host.Backbuffer;
+        using (profiler.Start()) { }
+        var source = profiler.GetLatestSnapshot()!.Sources.Single(s => s.Id == host.Telemetry!.Id);
+        Assert.Equal("Bitmap", source.Backend);
+        Assert.Equal(Gondwana.Diagnostics.TelemetryAvailability.Unsupported, source.Metrics["replay.cpu.ms"].Availability);
+    }
+
+    [Fact]
     public void ProfilerObservesBuildAndReplayWithoutChangingMailboxOrLegacySubscribers()
     {
         var profiler = Engine.Instance.Profiler;

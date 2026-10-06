@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- Add `Engine.Profiler` for opt-in CPU timing summaries, bounded history, neutral render measurements, and collection leases shared with SceneViewer F3.
+
 - Allow authoring hosts to load detached asset packages without registering runtime assets; clean up packages after failed loads.
 
 

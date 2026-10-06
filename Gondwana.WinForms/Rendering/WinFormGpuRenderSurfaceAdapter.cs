@@ -139,6 +139,10 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     public void SetHost(RenderSurfaceHostBase host)
     {
         _host = host ?? throw new ArgumentNullException(nameof(host));
+        _host.Telemetry?.Define("presentation.cpu.ms");
+        _host.Telemetry?.Define("render.snapshot.cpu.ms");
+        _host.Telemetry?.Define("blit.cpu.ms");
+        _host.Telemetry?.Define("flush.cpu.ms");
 
         // Cache the GpuBackbuffer so OnPaintSurface can read its settings.
         _gpuBackbuffer = _host.Backbuffer as GpuBackbuffer;
