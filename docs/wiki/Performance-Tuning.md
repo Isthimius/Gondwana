@@ -28,9 +28,13 @@ flowchart TD
     A["Engine cycle"] --> B["Input, animation, movement, collisions"]
     B --> C{"Foreground frame due?"}
     C -->|Bitmap| D["Dirty-region render and partial presentation"]
-    C -->|GPU| E["Request GL paint"]
-    E --> F["Full-viewport GPU render and presentation"]
+    C -->|Desktop GPU| E["Record RenderFrameSnapshot"]
+    E --> F["Platform GL callback replays newest snapshot"]
+    C -->|WebGL GPU| G["Render Scene synchronously in current WebGL paint"]
+    G --> H["Present GPU backbuffer"]
 ```
+
+Browser WebGL has one additional distinction: `SKGLView` owns the browser animation callback and calls `Engine.Tick()` from inside that callback. Browser paints for which no new Gondwana Scene frame is due can re-present the existing GPU backbuffer without rebuilding the Scene.
 
 These stages are related, but they are not interchangeable. Reducing rendering work will not repair an expensive collision pass, and raising `TargetFPS` will not make a platform adapter present frames faster than it can handle.
 
@@ -80,7 +84,7 @@ Do not log this information every cycle. Consume the sampled event, display it i
 | `Engine.FramesPerSecond` | The most recently sampled `NetCPS` value |
 | `GpuFps` | Completed GPU paint frames during the sample window; `null` when no GPU backbuffer is registered |
 
-`NetCPS` is best understood as the **foreground scheduling rate**. It does not guarantee that a new image was ultimately presented. A bitmap scene may be clean and skip rendering, while GPU rendering completes separately on the GL thread.
+`NetCPS` is best understood as the **foreground scheduling rate**. It does not guarantee that a new image was ultimately presented. A bitmap scene may be clean and skip rendering. On desktop GPU hosts, foreground work produces a `RenderFrameSnapshot` that is replayed later by the GL callback. In browser WebGL, foreground Scene-render decisions and GPU drawing occur within the browser paint callback, but browser presentation cadence can still differ because paints may re-present the existing GPU backbuffer.
 
 `GpuFps` is the better measure of completed GPU frames. When an application has more than one registered GPU surface, the current value may combine frames from those surfaces rather than representing a single display.
 
@@ -95,7 +99,7 @@ The following patterns are useful starting points, not absolute proof:
 | `NetCPS` reaches its target but `GpuFps` remains lower | GPU drawing, VSync, the UI message loop, or compositor behavior |
 | A stationary bitmap scene rarely reports render no-ops | something is continually invalidating scene content |
 | Performance drops after adding another view | repeated projection, culling, clipping, and drawing per view |
-| Desktop is healthy but browser performance is poor | canvas resolution, pixel transfer, JavaScript interop, or browser scheduling |
+| Desktop is healthy but browser performance is poor | WebGL: render resolution, full-scene GPU cost, WASM/browser scheduling, or compositor behavior; Canvas 2D: also inspect pixel-transfer area and JavaScript interop |
 
 For deeper instrumentation techniques, see **Debugging and Instrumentation**.
 
@@ -111,7 +115,8 @@ Gondwana's bitmap and GPU backbuffers use intentionally different rendering mode
 | Board game, puzzle, editor, or turn-based game | Bitmap backbuffer |
 | Continuously scrolling platformer or action game | GPU backbuffer |
 | Many moving sprites, particles, rotations, or fullscreen effects | GPU backbuffer |
-| Browser/WASM application using the current Canvas 2D adapter | Bitmap backbuffer, with tightly controlled presentation area and resolution |
+| Browser/WASM gameplay using WebGL | GPU backbuffer |
+| Browser/WASM application using the Canvas 2D compatibility adapter | Bitmap backbuffer, with tightly controlled presentation area and resolution |
 
 Measure the actual game rather than selecting a backbuffer by reputation. A bitmap backbuffer can be excellent when most pixels remain unchanged. A GPU backbuffer is usually a better fit when nearly everything changes anyway.
 
@@ -269,7 +274,7 @@ The engine's background cycle performs work whether or not a visual frame is due
 5. camera updates
 6. application and plugin cycle hooks
 
-Foreground work then updates DirectDrawings and processes bitmap rendering when `TargetFPS` pacing allows it. GPU surfaces are rendered later on the GL thread after the platform adapter receives the frame request.
+Foreground work then updates DirectDrawings and processes bitmap rendering when `TargetFPS` pacing allows it. Desktop GPU hosts record a `RenderFrameSnapshot` during foreground work and replay the newest completed snapshot later in the platform GL callback. Browser WebGL instead calls `Engine.Tick()` from the `SKGLView` paint callback and, when a new Scene frame is due, renders it synchronously while the WebGL context is current.
 
 If `GrossCPS` deteriorates as gameplay complexity increases, begin with engine-cycle work rather than backbuffer tuning.
 
@@ -388,30 +393,44 @@ A diagnostic system that changes the result beyond recognition is just a very di
 
 ## Blazor and WebAssembly
 
-The current browser host uses a different execution and presentation model from desktop hosts:
+The browser host supports two rendering paths with different performance characteristics.
 
-- JavaScript `requestAnimationFrame` calls into `.NET`
-- `Engine.Tick()` advances the timer-driven engine
-- the bitmap surface is presented to an HTML Canvas 2D context through `putImageData`
+### WebGL
 
-Pixel transfer cost grows with the presented region:
+WebGL is the normal GPU rendering path for browser games. `SKGLView` owns the browser `requestAnimationFrame` loop, and Gondwana advances the timer-driven engine and performs GPU presentation while the WebGL context is current.
+
+When a new Gondwana Scene frame is due, the Scene is rendered into a `GpuBackbuffer` and presented directly to the browser's WebGL surface. Completed frame pixels remain on the GPU; they are not copied into CPU memory or transferred through JavaScript.
+
+Browser paint cadence and Gondwana Scene-render cadence are separate. If the browser paints but `TargetFPS` does not require a new Scene frame, Gondwana can re-present the existing GPU backbuffer instead of rebuilding the Scene.
+
+For WebGL performance, pay particular attention to:
+
+- logical backbuffer resolution and `RenderScale`
+- visible tile, sprite, DirectDrawing, and effect count
+- full-scene rendering cost when a new Scene frame is due
+- work performed by `Engine.Tick()` in the browser/WASM execution context
+- browser `requestAnimationFrame` and compositor behavior
+- unnecessary JavaScript interop from game code
+- browser console logging inside frequently executed paths
+- MSAA and presentation-scaling costs
+
+See [[WebGL Rendering Path]] for the complete browser GPU execution model.
+
+### Bitmap / Canvas 2D compatibility path
+
+The bitmap browser path has a different presentation cost. The CPU-backed backbuffer is converted to RGBA pixels and transferred through .NET/JavaScript interop to an HTML Canvas 2D context.
+
+Its transfer cost grows with the presented region:
 
 ```text
 bytes transferred = width × height × 4
 ```
 
-A large canvas or frequently changing fullscreen scene can therefore spend substantial time crossing the .NET/JavaScript boundary and uploading RGBA pixels even when game logic is inexpensive.
+Large or frequently changing presentation regions can therefore become expensive even when game logic is inexpensive. Dirty-region rendering, controlled backbuffer resolution, and localized updates are especially important when using this path.
 
-For the current browser adapter:
+The bitmap path remains useful for compatibility, diagnostics, and workloads that benefit from CPU-backed rendering, but its pixel-transfer behavior should not be used to predict WebGL performance.
 
-- keep the canvas backing resolution no larger than necessary
-- preserve localized bitmap updates where the game permits it
-- avoid per-frame JavaScript interop from game code
-- avoid browser console output in the animation loop
-- test without browser developer tools actively recording
-- compare engine-cycle rate separately from visible browser frame rate
-
-Desktop and browser results should not be expected to match exactly. They use different scheduling, threading, and presentation mechanisms.
+Desktop and browser results should still not be expected to match exactly. WebGL uses browser-controlled scheduling and synchronous browser/WASM rendering, while desktop GPU hosts use separate Engine-side snapshot production and platform GL consumption.
 
 ---
 
@@ -447,7 +466,11 @@ Each view adds projection, selection, clipping, and drawing work. Profile the vi
 
 ### Browser performance is much lower than desktop
 
-Check canvas pixel dimensions, fullscreen invalidation, pixel-transfer area, JavaScript interop, console logging, and browser scheduling before assuming that the underlying game logic is slow.
+First identify which browser rendering path is active.
+
+For WebGL, check logical backbuffer resolution, visible Scene complexity, full-scene render cost, browser/WASM scheduling, compositor behavior, MSAA, presentation scaling, JavaScript interop from game code, and console logging.
+
+For the bitmap Canvas 2D path, also check fullscreen invalidation, dirty-region size, and pixel-transfer area. Those RGBA transfer costs do not apply to WebGL frame presentation.
 
 ---
 
@@ -479,6 +502,7 @@ Performance tuning works best when it remains boring and methodical. Guessing is
 - **Dirty Rectangles**
 - **Bitmap Rendering Path**
 - **GL Rendering Path**
+- **WebGL Rendering Path**
 - **Views and Cameras**
 - **DirectDrawing**
 - **Particles**
