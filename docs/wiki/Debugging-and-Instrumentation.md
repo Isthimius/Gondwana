@@ -62,11 +62,12 @@ Bitmap and GPU backbuffers do not use the same redraw strategy. Determine which 
 | Path | Rendering behavior | Dirty-region behavior |
 | --- | --- | --- |
 | Bitmap backbuffer | Renders on the engine thread during the foreground portion of an engine cycle | Consumes per-layer world-space refresh queues and can present only the resulting screen-space dirty area |
-| GPU backbuffer | Renders on the GL thread when the platform raises its paint callback | Redraws the complete viewport and deliberately bypasses refresh queues |
+| Desktop GPU backbuffer | Engine foreground work records an immutable `RenderFrameSnapshot`; the platform GL callback later replays the newest completed snapshot | Redraws the complete viewport and deliberately bypasses refresh queues |
+| Browser WebGL backbuffer | `SKGLView` owns the browser paint callback, calls `Engine.Tick()`, and renders a new Scene synchronously when one is due; other browser paints can re-present the existing GPU backbuffer | Redraws the complete viewport for new Scene frames and deliberately bypasses refresh queues |
 
-This distinction matters. A missing refresh rectangle can explain a bitmap-only artifact, but it cannot explain a GPU-only artifact because the GPU path does not consume `RefreshQueue` at all.
+This distinction matters. A missing refresh rectangle can explain a bitmap-only artifact, but it cannot explain a GPU-only artifact because GPU rendering does not consume `RefreshQueue`.
 
-For a GPU-only problem, concentrate on drawable selection, coordinate projection, GL-thread behavior, canvas state, and post-scene drawing. For a bitmap-only problem, invalidation and dirty-region projection belong much higher on the suspect list.
+For a desktop GPU problem, distinguish Engine-side snapshot production from platform GL replay. For a WebGL problem, inspect the synchronous browser paint path, Scene-render cost, canvas state, and presentation behavior. For a bitmap-only problem, invalidation and dirty-region projection belong much higher on the suspect list.
 
 ---
 
@@ -101,13 +102,29 @@ A high gross CPS therefore does not prove that frames are reaching the display s
 
 `NetCPS` counts engine cycles that entered the foreground portion of the loop. It is also exposed through `Engine.FramesPerSecond` after the latest sample.
 
-For a bitmap surface, this is a useful approximation of the engine-driven frame rate. For a GPU surface, it is not the actual number of GL paint callbacks because GPU drawing is driven independently by the platform adapter.
+For a bitmap surface, this is a useful approximation of the engine-driven frame rate. For desktop GPU surfaces, it measures foreground snapshot-production cadence rather than platform GL replay cadence. For browser WebGL, it measures Gondwana foreground Scene-render decisions made from inside the browser paint callback; browser presentation cadence can still be higher because the current GPU backbuffer may be re-presented without rebuilding the Scene.
 
 ### `GpuFps`
 
-`GpuFps` counts actual frames rendered by registered GPU backbuffers. It is `null` when no GPU surface is registered.
+`GpuFps` counts successful GPU presentation/paint frames recorded by registered GPU backbuffers. It is `null` when no GPU surface is registered.
 
-With one GPU surface, it represents that surface's observed paint rate. With multiple GPU surfaces, Gondwana currently reports their combined frame count over the sampling window rather than a per-surface rate.
+With one GPU surface, it represents that surface's observed presentation rate. With multiple GPU surfaces, Gondwana currently reports their combined frame count over the sampling window rather than a per-surface rate. On WebGL, this count includes browser paints that re-present an existing GPU backbuffer without a new Scene render.
+
+### Scene Viewer F3 diagnostics
+
+The Scene Viewer provides a built-in F3 diagnostics overlay for separating desktop GPU producer and consumer costs. It reports:
+
+- Gross CPS and Engine foreground FPS
+- GPU presentation FPS
+- snapshot build, query/sort, command-recording, and overlay-recording time
+- GL replay CPU duration
+- snapshot age from publication to acquisition
+- published/replaced frame counts and occupied snapshot slots
+- broad GL synchronization wait/held measurements
+
+These values are particularly useful when Engine production is healthy but GL presentation falls behind. Snapshot replay can drop intermediate visual frames without blocking simulation. The GL replay duration measures CPU command replay and backbuffer flush time; it is not a direct measurement of GPU execution time.
+
+See [[GL Rendering Path]] for the desktop snapshot diagnostics model.
 
 ### Displaying the built-in sample
 
@@ -251,22 +268,26 @@ This measures the region between the two event invocations, including the behavi
 
 ### GPU timing caveat
 
-`BeforeFrameRender` and `AfterFrameRender` bracket the engine's foreground phase. Bitmap backbuffers render inside that phase, but GPU backbuffers render later on the GL thread in response to the adapter's paint callback.
+`BeforeFrameRender` and `AfterFrameRender` bracket the engine's foreground phase, but their relationship to GPU presentation depends on the host.
 
-Consequently, the engine frame events do not measure actual GPU drawing time. Use render-surface events or a GPU profiler when the GL render itself is the subject of the investigation.
+- Bitmap backbuffers render inside that foreground phase.
+- Desktop GPU hosts record the `RenderFrameSnapshot` during foreground work; the platform GL callback replays it later.
+- Browser WebGL runs `Engine.Tick()` inside the `SKGLView` paint callback, and a due Scene frame is rendered synchronously after the foreground phase completes.
+
+Consequently, the engine frame events do not measure final GPU presentation time. For desktop GPU work, use the snapshot/replay diagnostics to separate producer and consumer cost. For WebGL, profile the synchronous browser paint path. A GPU profiler is still required when actual device execution is the subject of the investigation.
 
 ---
 
 ## Render-surface instrumentation
 
-Concrete `RenderSurfaceHost<TBackbuffer>` instances expose events around the actual backbuffer-rendering operation.
+Concrete `RenderSurfaceHost<TBackbuffer>` instances expose events around Scene rendering or recording. Their exact execution context depends on the rendering path.
 
 | Event | Meaning |
 | --- | --- |
-| `RenderBackbufferBegin` | A backbuffer render operation has started |
-| `RenderBackbufferEnd` | That render operation has completed |
+| `RenderBackbufferBegin` | A Scene render/record operation has started |
+| `RenderBackbufferEnd` | That Scene render/record operation has completed |
 | `RenderBackbufferNoOp` | Bitmap rendering was skipped because the scene had no pending dirty work |
-| `RenderBackbufferPostScene` | Scene content has been drawn, but the backbuffer has not yet been finalized and presented |
+| `RenderBackbufferPostScene` | Scene content has been drawn to the active render or recording canvas |
 
 In a WinForms game host, the concrete host is available through `RenderSurface.Host`:
 
@@ -285,18 +306,19 @@ RenderSurface.Host.RenderBackbufferNoOp += () =>
 };
 ```
 
-Count or aggregate hot events instead of logging every invocation. `RenderBackbufferNoOp` is specific to the bitmap dirty-region path; a GPU backbuffer performs a full render and does not raise it merely because the scene is unchanged.
+Count or aggregate hot events instead of logging every invocation. `RenderBackbufferNoOp` is specific to the bitmap dirty-region path. GPU Scene renders are full-viewport rather than dirty-region operations; browser WebGL can also re-present the existing GPU backbuffer without performing a new Scene render.
 
 ### Threading
 
-Render-surface hooks run on the thread performing the render:
+Render-surface hook behavior differs by path:
 
-- bitmap hooks run on the engine thread
-- GPU hooks run on the GL thread
+- bitmap hooks run on the engine thread against the CPU-backed render canvas
+- desktop GPU hooks run on the engine thread while Gondwana records the `RenderFrameSnapshot`; the supplied canvas is a recording canvas, not a live GL surface
+- browser WebGL hooks run synchronously inside the `SKGLView` paint callback while the WebGL context is current
 
-A GPU surface creates its host when the control and GL adapter are initialized. Subscribe only after that initialization has occurred.
+A GPU surface creates its host when the control and adapter are initialized. Subscribe only after that initialization has occurred.
 
-`RenderBackbufferPostScene` receives the active `SKCanvas`. On a GPU surface, use it directly on the GL thread while the graphics context is current. Do not marshal GPU canvas operations to another thread.
+`RenderBackbufferPostScene` therefore has different resource rules on desktop GPU and WebGL. During desktop snapshot recording, draw only with CPU-safe resources and the supplied recording canvas; do not depend on `canvas.Surface`, a current `GRContext`, GPU textures, pixel readback, or other context-bound resources. In WebGL, the hook executes synchronously with the active context, so immediate GPU canvas work is legal, but context-bound resources must not be retained for later use.
 
 If a handler changes the canvas matrix or clipping region, save and restore the canvas state:
 
@@ -454,7 +476,7 @@ Do not enlarge a collision box merely to conceal a tunnelling or resolution prob
 | --- | --- |
 | No `CPSCalculated` events arrive | Confirm the engine is running and `SamplingTimeForCPS` is greater than zero |
 | Gross CPS is high but animation looks slow | Compare `NetCPS` and, for GPU rendering, `GpuFps` |
-| GPU motion stutters while `NetCPS` looks healthy | Treat `GpuFps` as the relevant render rate and inspect the GL paint path |
+| GPU motion stutters while `NetCPS` looks healthy | Compare `GpuFps`; on desktop inspect snapshot production versus GL replay, and on WebGL inspect the synchronous browser paint path |
 | Logs appear late or out of order | Check whether asynchronous logging is active; temporarily use synchronous mode when ordering matters |
 | Logs disappear under extreme volume | Check the enabled level and remember that a saturated asynchronous queue drops new records |
 | Collision boxes do not appear | Verify layer selection, object visibility, and `CollisionsEnabled` |
@@ -462,7 +484,7 @@ Do not enlarge a collision box merely to conceal a tunnelling or resolution prob
 | A bitmap-rendered object changes state but leaves stale pixels | Force `Scene.FullRefreshNeeded`; if that fixes it, investigate invalidation |
 | Full-buffer presentation fixes a bitmap artifact | Inspect screen-space dirty bounds and adapter partial presentation |
 | GPU rendering works but bitmap rendering is stale | Investigate refresh queues and world-to-screen dirty-region projection |
-| Bitmap rendering works but GPU rendering is wrong | Investigate GL-thread drawing, canvas state, projection, or GPU-specific adapter behavior |
+| Bitmap rendering works but GPU rendering is wrong | Desktop: separate snapshot recording from GL replay; WebGL: inspect synchronous paint, canvas state, projection, and GPU-specific presentation behavior |
 | `RenderBackbufferNoOp` never fires on a GPU surface | Expected: the GPU path performs full rendering rather than dirty-scene no-ops |
 | Mouse picking is consistently offset | Log screen → world → grid → world → screen conversions and inspect camera, zoom, parallax, and layer origin |
 
@@ -490,8 +512,9 @@ Instrumentation should make the engine easier to understand without quietly beco
 - [Gondwana Engine Lifecycle](https://github.com/Isthimius/Gondwana/wiki/Gondwana-Engine-Lifecycle)
 - [Performance Tuning](https://github.com/Isthimius/Gondwana/wiki/Performance-Tuning)
 - [Refresh Queues](https://github.com/Isthimius/Gondwana/wiki/Refresh-Queues)
-- [Bitmap Path](https://github.com/Isthimius/Gondwana/wiki/Bitmap-Path)
-- [GL Path](https://github.com/Isthimius/Gondwana/wiki/GL-Path)
+- [Bitmap Rendering Path](https://github.com/Isthimius/Gondwana/wiki/Bitmap-Rendering-Path)
+- [GL Rendering Path](https://github.com/Isthimius/Gondwana/wiki/GL-Rendering-Path)
+- [WebGL Rendering Path](https://github.com/Isthimius/Gondwana/wiki/WebGL-Rendering-Path)
 - [Coordinate Spaces](https://github.com/Isthimius/Gondwana/wiki/Coordinate-Spaces)
 - [Views and Cameras](https://github.com/Isthimius/Gondwana/wiki/Views-and-Cameras)
 - [Engine Configuration](https://github.com/Isthimius/Gondwana/wiki/Engine-Configuration)
