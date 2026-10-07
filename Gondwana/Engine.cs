@@ -1001,6 +1001,10 @@ public sealed class Engine : IDisposable
         double frameDelta,
         bool sampleCps)
     {
+        // Refresh native gamepad state before any simulation callbacks consume it.
+        // Connection discovery and live state polling use independent configured cadences.
+        Input.RefreshGamepads(simulationTick, Configuration);
+
         EnginePluginRegistry.InvokePreCycle(this, simulationDelta);
 
         DoBackgroundTasks(simulationTick);
@@ -1069,10 +1073,6 @@ public sealed class Engine : IDisposable
     {
         // find total real seconds passed since last background loop
         var deltaSeconds = HighResTimer.GetDuration(_lastBackgroundTick, tick);
-
-        // Refresh native gamepad state before game callbacks and event pollers consume it.
-        // Connection discovery and live state polling use independent configured cadences.
-        Input.RefreshGamepads(tick, Configuration);
 
         BeforeBackgroundTasksExecute?.Invoke();
 
