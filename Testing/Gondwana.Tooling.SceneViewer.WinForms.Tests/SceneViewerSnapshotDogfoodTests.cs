@@ -84,6 +84,42 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
                 Assert.Equal(102, background.Alpha);
                 Assert.Equal(ProfilerContextInfo.All, diagnosticsWidget.ContextInfo);
                 Assert.NotNull(diagnosticsWidget.AdditionalLinesProvider);
+
+                var onMouse = typeof(SceneViewerGameHost)
+                    .GetMethod("OnMouse", BindingFlags.Instance | BindingFlags.NonPublic)!;
+                var view = surface.Host.ViewManager.Views[0];
+                float zoomBeforeDiagnosticsScroll = view.Viewport.Zoom;
+                var noButtons = new Dictionary<
+                    Gondwana.Input.Mouse.MouseButton,
+                    Gondwana.Input.Mouse.MouseButtonState>();
+
+                onMouse.Invoke(host,
+                [
+                    new Gondwana.Input.Mouse.MouseEventArgs(
+                        new Gondwana.Input.Mouse.MouseEventConfiguration(false),
+                        Gondwana.Input.Keyboard.KeyboardModifierState.None,
+                        noButtons,
+                        new Point(20, 20),
+                        new Point(20, 20),
+                        120,
+                        0)
+                ]);
+
+                Assert.Equal(zoomBeforeDiagnosticsScroll, view.Viewport.Zoom);
+
+                onMouse.Invoke(host,
+                [
+                    new Gondwana.Input.Mouse.MouseEventArgs(
+                        new Gondwana.Input.Mouse.MouseEventConfiguration(false),
+                        Gondwana.Input.Keyboard.KeyboardModifierState.None,
+                        noButtons,
+                        new Point(900, 700),
+                        new Point(900, 700),
+                        120,
+                        0)
+                ]);
+
+                Assert.NotEqual(zoomBeforeDiagnosticsScroll, view.Viewport.Zoom);
             });
             surface.Adapter.FrameDiagnosticsCalculated += _ =>
             {
