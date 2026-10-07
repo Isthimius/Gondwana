@@ -33,6 +33,13 @@ var recent = profiler.GetHistory(); // non-consuming, oldest to newest
 // Dispose collection when this consumer no longer needs measurements.
 ```
 
+`TelemetryOptions` keeps both individual and combined retention bounded. In addition
+to the documented per-property ranges, the configured product of
+`HistoryCapacity * SourceCapacity * MetricCapacity` may not exceed **1,048,576**
+metric-summary slots. This prevents individually legal maxima from combining into a
+multi-gigabyte retained history. The default configuration uses 245,760 of those
+configured slots.
+
 ## In-game ProfilerWidget
 
 Games that reference `Gondwana.Widgets` can display the same detached runtime telemetry
