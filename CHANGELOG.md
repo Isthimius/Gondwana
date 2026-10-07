@@ -122,7 +122,7 @@ All notable changes to this project will be documented in this file.
 ## Gondwana.Widgets
 
 ### Added
-- Add runtime ProfilerWidget with configurable source/measurement visibility, optional Scene/View/backbuffer/config/MSAA context, and application-defined extension lines ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
+- Add runtime ProfilerWidget with configurable source/measurement visibility, optional Scene/View/backbuffer/config/MSAA context, application-defined extension lines, hover definitions, and an in-widget Metrics selector; add reusable TooltipWidget ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 - Add scrollable list boxes with mouse wheel support ([#403](https://github.com/Isthimius/Gondwana/pull/403))
 - Add scrollable labels and Spot help ([#405](https://github.com/Isthimius/Gondwana/pull/405))
 
@@ -247,7 +247,7 @@ All notable changes to this project will be documented in this file.
 ## Tooling / Gondwana.Tooling.SceneViewer.WinForms
 
 ### Added
-- Dogfood ProfilerWidget for the Scene Viewer F3 diagnostics overlay, including generic runtime context and viewer-specific extension lines ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
+- Dogfood ProfilerWidget for the Scene Viewer F3 diagnostics overlay, including generic runtime context, curated default measurements, an explicit GPU FPS label, hover help, and runtime metric selection ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 - Discover Scene Viewer local definitions and sprites with loose-over-packed precedence ([#438](https://github.com/Isthimius/Gondwana/pull/438))
 
 ## Tooling / Gondwana.Tooling.Scenes.WinForms
