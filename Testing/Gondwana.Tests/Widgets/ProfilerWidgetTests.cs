@@ -81,6 +81,58 @@ public sealed class ProfilerWidgetTests
     }
 
     [Fact]
+    public void RuntimeContextAndAdditionalLines_AreOptInAndComposable()
+    {
+        using var host = new TestRenderSurfaceHost();
+        View view = AddView(host);
+
+        using var widget = new ProfilerWidget(
+            host,
+            view,
+            new Rectangle(0, 0, 400, 300))
+        {
+            HeaderText = "Custom diagnostics",
+            ContextInfo = ProfilerContextInfo.Scene | ProfilerContextInfo.View,
+            ShowSnapshotMetadata = false
+        };
+
+        ProfilerWidgetExtensionContext? observedContext = null;
+        widget.AdditionalLinesProvider = context =>
+        {
+            observedContext = context;
+            return ["Application: test"];
+        };
+
+        widget.Refresh();
+
+        Assert.NotNull(observedContext);
+        Assert.Same(host, observedContext.RenderSurfaceHost);
+        Assert.Same(view, observedContext.View);
+        Assert.Contains("Custom diagnostics", widget.Display.Text);
+        Assert.Contains("Application: test", widget.Display.Text);
+        Assert.Contains("Animating tiles:", widget.Display.Text);
+        Assert.Contains("Layers / grid cells:", widget.Display.Text);
+        Assert.Contains("Camera:", widget.Display.Text);
+        Assert.Contains("Viewport:", widget.Display.Text);
+    }
+
+    [Fact]
+    public void RuntimeContext_DefaultsToNone()
+    {
+        using var host = new TestRenderSurfaceHost();
+        View view = AddView(host);
+
+        using var widget = new ProfilerWidget(
+            host,
+            view,
+            new Rectangle(0, 0, 400, 300));
+
+        Assert.Equal(ProfilerContextInfo.None, widget.ContextInfo);
+        Assert.Null(widget.AdditionalLinesProvider);
+        Assert.Equal("Gondwana Runtime Profiler", widget.HeaderText);
+    }
+
+    [Fact]
     public void RefreshInterval_RejectsExcessiveDisplayPolling()
     {
         using var host = new TestRenderSurfaceHost();
