@@ -1,4 +1,5 @@
 using Gondwana.Configuration;
+using Gondwana.Diagnostics;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Input.Keyboard;
