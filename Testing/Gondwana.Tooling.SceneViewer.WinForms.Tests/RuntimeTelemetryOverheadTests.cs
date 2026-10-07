@@ -16,7 +16,14 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
     {
         string mode = Environment.GetEnvironmentVariable("GONDWANA_TELEMETRY_MODE") ?? "disabled";
         var engine = (Engine)Activator.CreateInstance(typeof(Engine), nonPublic: true)!;
-        engine.Configuration.SamplingTimeForCPS = 0;
+        typeof(Engine).Assembly
+            .GetType("Gondwana.Configuration.EngineConfiguration")?
+            .GetProperty("LegacyCpsSamplingTime", BindingFlags.Instance | BindingFlags.NonPublic)?
+            .SetValue(engine.Configuration, 0d);
+        typeof(Engine).Assembly
+            .GetType("Gondwana.Configuration.EngineConfiguration")?
+            .GetProperty("SamplingTimeForCPS")?
+            .SetValue(engine.Configuration, 0d);
         var cycle = (Action<long, double, bool, long, double, bool>)typeof(Engine)
             .GetMethod("RunSimulationCycle", BindingFlags.Instance | BindingFlags.NonPublic)!
             .CreateDelegate(typeof(Action<long, double, bool, long, double, bool>), engine);
@@ -119,35 +126,45 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
         };
         sample = () =>
         {
-            if (phase == 0) retainedAtWarmup = GC.GetTotalMemory(true);
-            long now = Stopwatch.GetTimestamp();
-            long allocated = GC.GetTotalAllocatedBytes(false);
-            var currentCpu = process.TotalProcessorTime;
-            if (phase > 0)
+            try
             {
-                double seconds = (now - ticks) / (double)Stopwatch.Frequency;
-                output.WriteLine($"BENCH mode={mode} tiles={tiles} run={phase} seconds={seconds:F3} cpu_ms={(currentCpu - cpu).TotalMilliseconds:F1} alloc_Bps={(allocated - allocation) / seconds:F0} heap_bytes={GC.GetTotalMemory(false)} cycles_ps={(cycles - lastCycles) / seconds:F0} foreground_ps={(frames - lastFrames) / seconds:F1}");
-                if (mode != "disabled")
+    
+                if (phase == 0) retainedAtWarmup = GC.GetTotalMemory(true);
+                long now = Stopwatch.GetTimestamp();
+                long allocated = GC.GetTotalAllocatedBytes(false);
+                var currentCpu = process.TotalProcessorTime;
+                if (phase > 0)
                 {
-                    dynamic profiler = typeof(Engine).GetProperty("Profiler")!.GetValue(Engine.Instance)!;
-                    dynamic snapshot = profiler.GetLatestSnapshot();
-                    Assert.NotNull((object?)snapshot);
-                    foreach (dynamic source in snapshot.Sources)
-                        foreach (string metric in new[] { "cycle.cpu.ms", "background.cpu.ms", "build.cpu.ms", "replay.cpu.ms" })
-                            if (source.Metrics.ContainsKey(metric))
-                                output.WriteLine($"LAST_WINDOW source={source.Id} metric={metric} mean_ms={source.Metrics[metric].Mean} count={source.Metrics[metric].Count}");
+                    double seconds = (now - ticks) / (double)Stopwatch.Frequency;
+                    output.WriteLine($"BENCH mode={mode} tiles={tiles} run={phase} seconds={seconds:F3} cpu_ms={(currentCpu - cpu).TotalMilliseconds:F1} alloc_Bps={(allocated - allocation) / seconds:F0} heap_bytes={GC.GetTotalMemory(false)} cycles_ps={(cycles - lastCycles) / seconds:F0} foreground_ps={(frames - lastFrames) / seconds:F1}");
+                    if (mode != "disabled")
+                    {
+                        dynamic profiler = typeof(Engine).GetProperty("Profiler")!.GetValue(Engine.Instance)!;
+                        dynamic snapshot = profiler.GetLatestSnapshot();
+                        Assert.NotNull((object?)snapshot);
+                        foreach (dynamic source in snapshot.Sources)
+                            foreach (string metric in new[] { "cycle.cpu.ms", "background.cpu.ms", "build.cpu.ms", "replay.cpu.ms" })
+                                if (source.Metrics.ContainsKey(metric))
+                                    output.WriteLine($"LAST_WINDOW source={source.Id} metric={metric} mean_ms={source.Metrics[metric].Mean} count={source.Metrics[metric].Count}");
+                    }
+                    if (warmupMilliseconds >= 30000)
+                        output.WriteLine($"RETAINED_FULL_HISTORY run={phase} bytes={GC.GetTotalMemory(true)}");
                 }
-                if (warmupMilliseconds >= 30000)
-                    output.WriteLine($"RETAINED_FULL_HISTORY run={phase} bytes={GC.GetTotalMemory(true)}");
+                if (++phase == 4)
+                {
+                    output.WriteLine($"RETAINED warmup_bytes={retainedAtWarmup} end_bytes={GC.GetTotalMemory(true)}");
+                    form.BeginInvoke(() => form.Close());
+                    return;
+                }
+                ticks = now; allocation = allocated; cpu = currentCpu; lastCycles = cycles; lastFrames = frames;
+                timer.Change(5000, Timeout.Infinite);
             }
-            if (++phase == 4)
+            catch (Exception error)
             {
-                output.WriteLine($"RETAINED warmup_bytes={retainedAtWarmup} end_bytes={GC.GetTotalMemory(true)}");
-                form.BeginInvoke(() => form.Close());
-                return;
+                failure = error;
+                if (!form.IsDisposed)
+                    form.BeginInvoke(() => form.Close());
             }
-            ticks = now; allocation = allocated; cpu = currentCpu; lastCycles = cycles; lastFrames = frames;
-            timer.Change(5000, Timeout.Infinite);
         };
         try { Application.Run(form); }
         finally { request?.Dispose(); host?.Dispose(); }
