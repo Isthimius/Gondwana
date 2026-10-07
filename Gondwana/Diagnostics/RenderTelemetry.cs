@@ -41,15 +41,37 @@ internal static class RenderTelemetry
                 availability = TelemetryAvailability.Unsupported;
             else if (Array.IndexOf(Metrics, name) >= 20)
                 availability = TelemetryAvailability.Unsupported;
-            source.Define(name, availability, name.EndsWith(".lifetime", StringComparison.Ordinal) ? TelemetryMetricKind.LifetimeCounter :
-                name.Contains("cpu.ms", StringComparison.Ordinal) ? TelemetryMetricKind.Sample : TelemetryMetricKind.Gauge);
+            source.Define(name, availability, GetMetricKind(name));
         }
         source.Define("presentation.count", gpu ? TelemetryAvailability.NotYetSampled : TelemetryAvailability.Unsupported);
         source.Define("layers.omitted", gpu ? TelemetryAvailability.NotYetSampled : TelemetryAvailability.Unsupported);
         foreach (var layer in Layers)
-            foreach (var name in layer) source.Define(name, gpu ? TelemetryAvailability.NotYetSampled : TelemetryAvailability.Unsupported,
-                name.Contains("cpu.ms", StringComparison.Ordinal) ? TelemetryMetricKind.Sample : TelemetryMetricKind.Gauge);
+        {
+            for (int index = 0; index < layer.Length; index++)
+            {
+                source.Define(
+                    layer[index],
+                    gpu ? TelemetryAvailability.NotYetSampled : TelemetryAvailability.Unsupported,
+                    index <= 3 ? TelemetryMetricKind.Sample : TelemetryMetricKind.Gauge);
+            }
+        }
+
         return source;
     }
 
+    private static TelemetryMetricKind GetMetricKind(string name)
+    {
+        if (name.EndsWith(".lifetime", StringComparison.Ordinal))
+            return TelemetryMetricKind.LifetimeCounter;
+
+        if (name.Contains("cpu.ms", StringComparison.Ordinal) ||
+            name == "snapshot.age.ms" ||
+            name.StartsWith("visible.", StringComparison.Ordinal) ||
+            name.StartsWith("atlas.", StringComparison.Ordinal))
+        {
+            return TelemetryMetricKind.Sample;
+        }
+
+        return TelemetryMetricKind.Gauge;
+    }
 }
