@@ -275,8 +275,13 @@ internal sealed class SceneViewerGameHost(
 
     private void OnMouse(GondwanaMouseEventArgs args)
     {
-        if (args.ScrollDelta != 0)
-            Camera?.Zoom(args.CurrentPosition, args.ScrollDelta);
+        if (args.ScrollDelta == 0 ||
+            _diagnosticsWidget?.Display.HitTest(args.CurrentPosition) == true)
+        {
+            return;
+        }
+
+        Camera?.Zoom(args.CurrentPosition, args.ScrollDelta);
     }
 
     private void BeforeBackgroundTasksExecute() => UpdateCamera();
