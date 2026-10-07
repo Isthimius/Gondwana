@@ -1025,8 +1025,9 @@ public sealed class Engine : IDisposable
         bool sampleCps)
     {
         // Refresh native gamepad state before any simulation callbacks consume it.
-        // Connection discovery and live state polling use independent configured cadences.
-        Input.RefreshGamepads(simulationTick, Configuration);
+        // Use the real driver/render tick rather than the fixed-step simulation clock so
+        // timer-driven catch-up steps cannot compress or delay hardware polling cadence.
+        Input.RefreshGamepads(renderTick, Configuration);
 
         long telemetryGeneration = _engineTelemetry.BeginSample();
         long telemetryStarted = telemetryGeneration == 0 ? 0 : HighResTimer.GetCurrentTick();
