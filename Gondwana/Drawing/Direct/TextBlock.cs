@@ -96,6 +96,7 @@ public class TextBlock : DirectDrawingMovableBase
     private SKTextAlign _hAlign = SKTextAlign.Left;
     private VerticalAlign _vAlign = VerticalAlign.Top;
     private float _verticalScrollOffsetPx;
+    private float _verticalScrollEndPaddingPx;
 
     // --- Pulse (text color) ---
     private bool _pulseTextEnabled;
@@ -224,6 +225,29 @@ public class TextBlock : DirectDrawingMovableBase
     }
 
     /// <summary>
+    /// Gets or sets extra scrollable space after the final laid-out line.
+    /// </summary>
+    /// <remarks>
+    /// Applied only when the text already exceeds the available height. This lets dense
+    /// diagnostics and log views move the final glyph descent clear of the clip edge.
+    /// </remarks>
+    public float VerticalScrollEndPaddingPx
+    {
+        get => _verticalScrollEndPaddingPx;
+        set
+        {
+            if (!float.IsFinite(value) || value < 0f)
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            if (Math.Abs(_verticalScrollEndPaddingPx - value) < 0.001f)
+                return;
+
+            _verticalScrollEndPaddingPx = value;
+            ForceRefresh();
+        }
+    }
+
+    /// <summary>
     /// Measures the maximum vertical scroll offset required to expose all currently laid-out text.
     /// </summary>
     /// <returns>
@@ -268,6 +292,8 @@ public class TextBlock : DirectDrawingMovableBase
             }
 
             float maximumOffset = Math.Max(0f, contentHeight - innerHeight);
+            if (maximumOffset > 0f)
+                maximumOffset += VerticalScrollEndPaddingPx;
 
             // Measurement may have laid out at an auto-shrunk font size. Force the next draw
             // to rebuild from the configured font settings rather than reusing measurement state.
@@ -916,6 +942,8 @@ public class TextBlock : DirectDrawingMovableBase
 
         float contentH = linesToDraw * _lineHeight;
         float maximumScrollOffset = Math.Max(0f, contentH - innerH);
+        if (maximumScrollOffset > 0f)
+            maximumScrollOffset += VerticalScrollEndPaddingPx;
         float yStart = maximumScrollOffset > 0f
             ? rect.Top + vPad
             : _vAlign switch
