@@ -28,9 +28,10 @@ repeat
     :Drain EngineDispatcher queue;
     :tick = HighResTimer.GetCurrentTick();
 
+    :IGamepadManager.UpdateConnections()\nwhen connection cadence is due;
+    :IGamepadManager.Poll()\nwhen state cadence is due;
+
     partition "**DoBackgroundTasks(tick)**" {
-        :IGamepadManager.UpdateConnections()\nwhen connection cadence is due;
-        :IGamepadManager.Poll()\nwhen state cadence is due;
         :BeforeBackgroundTasksExecute?.Invoke();
         :Timer.RaiseTimerEvents(PreCycle, tick);
         :KeyboardEventPoller.PollForEvents(tick);
