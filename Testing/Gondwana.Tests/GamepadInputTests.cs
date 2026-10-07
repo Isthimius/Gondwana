@@ -70,7 +70,7 @@ public sealed class GamepadInputTests
     }
 
     [Fact]
-    public void DoBackgroundTasks_PollsGamepadBeforeGameCallbacksAndButtonEvents()
+    public void RunSimulationCycle_PollsGamepadBeforeGameCallbacksAndButtonEvents()
     {
         var engine = CreateEngineInstance();
         var manager = new TestGamepadManager();
@@ -96,7 +96,7 @@ public sealed class GamepadInputTests
             poller.ButtonDown += _ => order.Add("event");
 
             long tick = HighResTimer.GetCurrentTick() + HighResTimer.TicksPerSecond;
-            InvokeDoBackgroundTasks(engine, tick);
+            InvokeRunSimulationCycle(engine, tick);
 
             Assert.Equal(["poll", "game", "event"], order);
         }
@@ -139,14 +139,23 @@ public sealed class GamepadInputTests
     private static Engine CreateEngineInstance() =>
         (Engine)Activator.CreateInstance(typeof(Engine), nonPublic: true)!;
 
-    private static void InvokeDoBackgroundTasks(Engine engine, long tick)
+    private static void InvokeRunSimulationCycle(Engine engine, long tick)
     {
         var method = typeof(Engine).GetMethod(
-            "DoBackgroundTasks",
+            "RunSimulationCycle",
             BindingFlags.Instance | BindingFlags.NonPublic)
-            ?? throw new InvalidOperationException("Could not find Engine.DoBackgroundTasks via reflection.");
+            ?? throw new InvalidOperationException("Could not find Engine.RunSimulationCycle via reflection.");
 
-        method.Invoke(engine, [tick]);
+        method.Invoke(
+            engine,
+            [
+                tick,
+                1d / 60d,
+                false,
+                tick,
+                1d / 60d,
+                false
+            ]);
     }
 
     private sealed class TestGamepadManager : IGamepadManager<IGamepadAdapter>
