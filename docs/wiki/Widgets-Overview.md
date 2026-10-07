@@ -219,8 +219,9 @@ A world-space text label that automatically follows a `Sprite`, suitable for NPC
 A view-level, scrollable runtime diagnostics HUD backed by `Engine.Instance.Profiler`.
 It owns telemetry collection only while shown, can include or suppress individual
 measurements and sources, can opt into Scene/View/backbuffer/configuration/MSAA
-context, and supports application-defined extension lines. The saved-scene Scene
-Viewer dogfoods this widget for its F3 diagnostics overlay.
+context, supports application-defined extension lines, hover definitions, and a
+built-in Metrics selector for toggling individual diagnostics at runtime. The
+saved-scene Scene Viewer dogfoods this widget for its F3 diagnostics overlay.
 
 ---
 
@@ -235,6 +236,11 @@ Typical uses include damage numbers, healing values, XP gains, item pickups, and
 ### [[SplashScreen|Widgets---SplashScreen]]
 
 A full-view splash image that fades in, holds for a minimum duration, optionally performs startup work, and then fades out.
+
+### [[TooltipWidget|Widgets---TooltipWidget]]
+
+A lightweight, non-interactive view overlay for contextual hover help. It positions
+near the pointer, clamps to the owning View, and does not intercept underlying input.
 
 ### [[ToastWidget|Widgets---ToastWidget]]
 
@@ -254,6 +260,7 @@ Display and layout widgets such as:
 * `HealthBarWidget`
 * `NameTagWidget`
 * `ProfilerWidget`
+* `TooltipWidget`
 * `PopupWidget`
 * `StackPanelWidget`
 
