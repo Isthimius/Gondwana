@@ -254,7 +254,11 @@ public partial class EngineConfiguration
     /// <summary>
     /// Gets the compatibility CPS sampling interval without consuming the obsolete public API.
     /// </summary>
-    internal double LegacyCpsSamplingTime => _samplingTimeForCPS;
+    internal double LegacyCpsSamplingTime
+    {
+        get => _samplingTimeForCPS;
+        set => _samplingTimeForCPS = value < 0 ? 0 : value;
+    }
 
     /// <summary>
     /// Gets the compatibility CPS sampling interval in high-resolution ticks.
