@@ -468,20 +468,24 @@ public sealed class ProfilerWidget : ContainerWidget
         if (!IsSourceVisible(sourceName))
             return false;
 
+        bool selected;
         if (_sourceMeasurementVisibility.TryGetValue(
                 CreateSourceMetricKey(sourceName, metricKey),
                 out bool sourceMetricVisible))
         {
-            return sourceMetricVisible;
+            selected = sourceMetricVisible;
+        }
+        else if (_measurementVisibility.TryGetValue(metricKey, out bool metricVisible))
+        {
+            selected = metricVisible;
+        }
+        else
+        {
+            selected = MeasurementVisibilityMode == ProfilerMeasurementVisibilityMode.All;
         }
 
-        if (_measurementVisibility.TryGetValue(metricKey, out bool metricVisible))
-            return metricVisible;
-
-        if (MeasurementVisibilityMode == ProfilerMeasurementVisibilityMode.Selected)
-            return false;
-
-        return ShowUnavailableMeasurements || availability == TelemetryAvailability.Available;
+        return selected &&
+            (ShowUnavailableMeasurements || availability == TelemetryAvailability.Available);
     }
 
     private static string FormatSummary(TelemetrySummary summary, double elapsedSeconds)
@@ -518,7 +522,7 @@ public sealed class ProfilerWidget : ContainerWidget
 
     private static string CreateSourceMetricKey(string sourceName, string metricKey)
     {
-        return $"{sourceName}\u001f{metricKey}";
+        return $"{sourceName.ToUpperInvariant()}\u001f{metricKey}";
     }
 
     private static void ValidateMetricKey(string metricKey)
