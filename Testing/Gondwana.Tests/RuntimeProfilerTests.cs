@@ -193,6 +193,20 @@ public sealed class RuntimeProfilerTests
         Assert.Throws<ArgumentOutOfRangeException>(() => profiler.Configure(new() { Interval = TimeSpan.Zero }));
         Assert.Throws<ArgumentOutOfRangeException>(() => profiler.Configure(new() { SourceCapacity = 1000 }));
         Assert.Throws<ArgumentOutOfRangeException>(() => profiler.Configure(new() { MetricCapacity = 1000 }));
+        Assert.Throws<ArgumentException>(() => profiler.Configure(new()
+        {
+            HistoryCapacity = 1024,
+            SourceCapacity = 64,
+            MetricCapacity = 512
+        }));
+
+        profiler.Configure(new()
+        {
+            HistoryCapacity = 128,
+            SourceCapacity = 16,
+            MetricCapacity = 512
+        });
+
         using var request = profiler.Start();
         Assert.Throws<InvalidOperationException>(() => profiler.Configure(new()));
         profiler.Dispose();
