@@ -214,6 +214,12 @@ A world-space health bar that automatically follows a `Sprite` and displays curr
 
 A world-space text label that automatically follows a `Sprite`, suitable for NPC names, player names, unit labels, or similar identifiers.
 
+### [[ProfilerWidget|Widgets---ProfilerWidget]]
+
+A view-level, scrollable runtime diagnostics HUD backed by `Engine.Instance.Profiler`.
+It owns telemetry collection only while shown and can include or suppress individual
+measurements and sources.
+
 ---
 
 ## Overlays
@@ -245,6 +251,7 @@ Display and layout widgets such as:
 * `ProgressBarWidget`
 * `HealthBarWidget`
 * `NameTagWidget`
+* `ProfilerWidget`
 * `PopupWidget`
 * `StackPanelWidget`
 
