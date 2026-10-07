@@ -118,15 +118,28 @@ namespace Slider
             double? cps = GetRate(engineSource, "cycle.cpu.ms", snapshot.ElapsedSeconds);
             double? foregroundFps = GetRate(engineSource, "foreground.cpu.ms", snapshot.ElapsedSeconds);
 
-            if (lblInfo.IsDisposed || !lblInfo.IsHandleCreated)
+            if (lblInfo.IsDisposed || lblInfo.Disposing || !lblInfo.IsHandleCreated)
                 return;
 
-            lblInfo.BeginInvoke((Action)(() =>
-                lblInfo.Text = string.Format(
-                    "FPS: {0}\r\nCPS: {1}\r\nSampling Time: {2}",
-                    FormatRate(foregroundFps),
-                    FormatRate(cps),
-                    snapshot.ElapsedSeconds.ToString("N2"))));
+            try
+            {
+                lblInfo.BeginInvoke((Action)(() =>
+                {
+                    if (lblInfo.IsDisposed || lblInfo.Disposing || !lblInfo.IsHandleCreated)
+                        return;
+
+                    lblInfo.Text = string.Format(
+                        "FPS: {0}\r\nCPS: {1}\r\nSampling Time: {2}",
+                        FormatRate(foregroundFps),
+                        FormatRate(cps),
+                        snapshot.ElapsedSeconds.ToString("N2"));
+                }));
+            }
+            catch (InvalidOperationException) when (
+                lblInfo.IsDisposed || lblInfo.Disposing || !lblInfo.IsHandleCreated)
+            {
+                // The label can lose its handle between the guard and BeginInvoke.
+            }
         }
 
         private static double? GetRate(
