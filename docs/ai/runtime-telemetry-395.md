@@ -12,8 +12,12 @@ remains for Mike's review. Studio, transport, and object inspection are deferred
   diagnostics remain independent. No profiler event subscriptions enable legacy
   layer allocations. Desktop replay still uses the existing mailbox without taking
   the simulation gate.
-- F3 reads the shared snapshots, releases its own request when hidden, and formats
-  on the Engine thread at about 4 Hz. White text/background alpha 102 and F4 remain.
+- `ProfilerWidget` owns the reusable on-screen presentation, optional runtime-context
+  sections, and application extension lines. The saved-scene Scene Viewer used by
+  the `.gscn` editor/Studio workflow dogfoods that widget for its F3 diagnostics
+  overlay; F3 is a Scene Viewer control, not a general Engine hotkey. Showing/hiding
+  the widget acquires/releases its independent profiler request. White text/background
+  alpha 102 and the Scene Viewer's F4 animation control remain.
 - Backend support, CPU timing semantics, history gaps, counter rebasing, and source
   retirement are documented in `docs/wiki/Runtime-Telemetry.md`. A compiling ordinary
   application example is linked into Gondwana.Tests from `docs/examples/`.
@@ -35,8 +39,13 @@ and three approximately 5-second samples. Cases were repeated in reverse order.
 The second batch also forced full GC at the end of warmup and at completion for
 retained process-heap readings, and queried CPU stages at sample boundaries.
 Default profiler options: 250 ms, 120 history buckets, 16 sources, 128 metrics per
-source. F3 off baseline, revised disabled, collecting without F3, and F3 visible
-were measured separately. The initial stalled UI-timer attempt was discarded;
+source. Scene Viewer F3-off baseline, revised disabled, collecting without the
+Scene Viewer overlay, and F3-visible cases were measured separately. These native
+display measurements predate the final ProfilerWidget retrofit in this PR, so they
+remain useful for the collector/old-viewer comparison but should not be treated as a
+final measurement of ProfilerWidget text-layout overhead. The isolated profiler
+measurements below are unaffected by that presentation refactor. The initial stalled
+UI-timer attempt was discarded;
 the retained harness samples on a background timer.
 
 Raw six-sample results per case: `docs/performance/runtime-telemetry-395.csv`.
@@ -57,8 +66,10 @@ samples: `docs/performance/runtime-telemetry-395-detail.txt`.
 Native throughput varies substantially between batches. In particular, the large
 scene's disabled mean is lower than baseline, with overlapping ranges; this data
 cannot establish a precise disabled percentage or a hardware-independent bound.
-F3 drawing has a clear cost on the small uncapped scene. Collecting/display CPU
-stage samples from the large scene put background means around 0.010–0.017 ms and
+The then-current Scene Viewer F3 drawing had a clear cost on the small uncapped
+scene. Because the final branch later moved F3 presentation to ProfilerWidget, rerun
+the native display case before using those particular display-overhead numbers for a
+new comparison. Collecting/display CPU stage samples from the large scene put background means around 0.010–0.017 ms and
 build means around 8.7–12.0 ms in the reverse-order batch. Full stage samples are in
 the detail file; they are individual recent buckets, not whole-run averages.
 
@@ -116,8 +127,10 @@ run disabled mode there for baseline. Keep other builds/tests out of timed runs.
   Engine routing, and rendering/mailbox tests passed again.
 - Viewer/native suite after fixing optional registration after collector disposal:
   57 passed, 2 benchmark tests skipped. Includes actual GPU context/MSAA/resize,
-  Avalonia context recreation, F3/F4 dogfood, independent F3 request ownership, and
-  alpha 102 assertions. F3 screenshot was visually inspected for legibility/layout.
+  Avalonia context recreation, Scene Viewer F3/F4 dogfood, independent collection
+  request ownership, and alpha 102 assertions. The final Scene Viewer dogfood test
+  now exercises ProfilerWidget context plus extension output; the earlier F3
+  screenshot was visually inspected before that presentation retrofit.
 - Browser JavaScript helpers: 11 passed.
 - Requested whole-solution IDE0005/IDE0059/IDE0051 style check passed. Whole-solution
   whitespace reports a pre-existing `CHARSET` error in unchanged
@@ -134,4 +147,6 @@ and no multi-hour memory/leak study. CPU-backed rendering/mailbox
 regressions, actual desktop GL runs, WebAssembly build, and browser helper tests
 provide the recorded coverage. Existing build warnings remain.
 
-The native F3 capture is available at `docs/performance/runtime-telemetry-f3.png`.
+The native Scene Viewer F3 capture is available at
+`docs/performance/runtime-telemetry-f3.png`; it records the pre-ProfilerWidget
+presentation used during the original benchmark pass.
