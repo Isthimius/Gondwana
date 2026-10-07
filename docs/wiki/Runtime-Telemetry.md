@@ -217,9 +217,37 @@ baseline exists, and reset never writes to the renderer counter.
 | Presentation cadence | Unsupported | WinForms and Avalonia | Supported, including re-presentation |
 | Callback components | Unsupported | WinForms; Unsupported on Avalonia | Unsupported |
 
-Legacy `CPSCalculated` and render diagnostic events retain their independent
-behavior. Profiler collection works when `SamplingTimeForCPS` is zero. A profiler
-request does not install event subscriptions or consume legacy frame counters.
+## Legacy CPS/FPS compatibility API
+
+The older CPS/FPS surface remains functional for source and configuration compatibility,
+but its public entry points are now warning-only obsolete with diagnostic ID
+`GOND0001`:
+
+- `Engine.CyclesPerSecond`
+- `Engine.FramesPerSecond`
+- `Engine.CPSCalculated`
+- `EngineConfiguration.SamplingTimeForCPS`
+- `EngineConfiguration.SamplingTimeForCPSTicks`
+
+New code should use `Engine.Profiler` for telemetry or `ProfilerWidget` for an
+in-game display. The old `CyclesPerSecondCalculatedEventArgs` DTO itself is not
+obsolete so existing compatibility handlers can continue to compile without
+additional type-level warning noise.
+
+The conceptual migration is:
+
+| Legacy value | Runtime telemetry equivalent |
+| --- | --- |
+| Gross CPS / `CyclesPerSecond` | `Engine [Core] / cycle.cpu.ms` sample count divided by snapshot elapsed seconds |
+| Net CPS / `FramesPerSecond` | `Engine [Core] / foreground.cpu.ms` sample count divided by snapshot elapsed seconds |
+| `GpuFps` | Render-surface `presentation.count` sample count divided by snapshot elapsed seconds |
+| `SamplingTimeForCPS` | `RuntimeProfiler.Configure(new TelemetryOptions { Interval = ... })` while collection is inactive |
+
+The compatibility sampler remains independent for now. Profiler collection works
+even when legacy CPS sampling is disabled, and profiler requests neither install
+legacy event subscriptions nor consume the legacy frame counters. No removal version
+is committed by this deprecation.
+
 Render identities last for the host's lifetime, including temporary context loss,
 and end at permanent disposal. Existing bitmap rendering and invalidation behavior
 are unchanged; no bitmap dirty-area or resource inventory is inferred.
