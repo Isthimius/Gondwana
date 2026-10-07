@@ -1045,14 +1045,18 @@ public sealed class ProfilerWidget : ContainerWidget
                          .Distinct(StringComparer.Ordinal)
                          .OrderBy(value => value, StringComparer.Ordinal))
             {
-                bool metricVisible = IsMeasurementVisible(sourceName, metricKey);
                 TelemetryAvailability availability = sourceGroup
                     .Where(source => source.Metrics.ContainsKey(metricKey))
                     .Select(source => source.Metrics[metricKey].Availability)
                     .DefaultIfEmpty(TelemetryAvailability.Unsupported)
                     .Max();
+                bool metricVisible = ResolveMeasurementVisibility(
+                    sourceName,
+                    metricKey,
+                    availability);
                 string capturedMetricKey = metricKey;
                 string capturedSourceName = sourceName;
+                TelemetryAvailability capturedAvailability = availability;
                 string availabilitySuffix = availability == TelemetryAvailability.Available
                     ? string.Empty
                     : $" [{FormatAvailability(availability)}]";
@@ -1063,7 +1067,10 @@ public sealed class ProfilerWidget : ContainerWidget
                     () => SetMeasurementVisible(
                         capturedSourceName,
                         capturedMetricKey,
-                        !IsMeasurementVisible(capturedSourceName, capturedMetricKey)));
+                        !ResolveMeasurementVisibility(
+                            capturedSourceName,
+                            capturedMetricKey,
+                            capturedAvailability)));
             }
         }
 
