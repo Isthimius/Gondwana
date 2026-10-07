@@ -194,6 +194,9 @@ public sealed class Engine : IDisposable
     /// This event is posted to the UI thread when a <see cref="UiDispatcher"/> is available.
     /// </para>
     /// </remarks>
+    [Obsolete(
+        "Legacy CPS/FPS notifications are deprecated. Use Engine.Profiler for runtime telemetry; ProfilerWidget provides an optional in-game display.",
+        DiagnosticId = "GOND0001")]
     public event Action<CyclesPerSecondCalculatedEventArgs>? CPSCalculated;
 
     /// <summary>
@@ -669,7 +672,7 @@ public sealed class Engine : IDisposable
                 if (render)
                     RenderFrame(driverTick, frameDelta);
 
-                if (Configuration.SamplingTimeForCPS > 0)
+                if (Configuration.LegacyCpsSamplingTime > 0)
                     CalculateCPS(driverTick);
 
                 return;
@@ -860,6 +863,9 @@ public sealed class Engine : IDisposable
     /// This value is updated at the interval specified by <see cref="EngineConfiguration.SamplingTimeForCPS"/>.
     /// </para>
     /// </remarks>
+    [Obsolete(
+        "Legacy CPS/FPS properties are deprecated. Use Engine.Profiler for runtime telemetry; ProfilerWidget provides an optional in-game display.",
+        DiagnosticId = "GOND0001")]
     public double CyclesPerSecond => _grossCPS;
 
     /// <summary>
@@ -876,6 +882,9 @@ public sealed class Engine : IDisposable
     /// This value is updated at the interval specified by <see cref="EngineConfiguration.SamplingTimeForCPS"/>.
     /// </para>
     /// </remarks>
+    [Obsolete(
+        "Legacy CPS/FPS properties are deprecated. Use Engine.Profiler for runtime telemetry; ProfilerWidget provides an optional in-game display.",
+        DiagnosticId = "GOND0001")]
     public double FramesPerSecond => _netFPS;
 
     /// <summary>
@@ -1023,7 +1032,7 @@ public sealed class Engine : IDisposable
 
         _grossCyclesThisMeasure++;
 
-        if (sampleCps && Configuration.SamplingTimeForCPS > 0)
+        if (sampleCps && Configuration.LegacyCpsSamplingTime > 0)
             CalculateCPS(renderTick);
 
         EnginePluginRegistry.InvokePostCycle(this, simulationDelta);
@@ -1177,7 +1186,7 @@ public sealed class Engine : IDisposable
     {
         // Has the sampling interval elapsed?
         long elapsedTicks = tick - _lastCPSSamplingTick;
-        if (elapsedTicks < Configuration.SamplingTimeForCPSTicks)
+        if (elapsedTicks < Configuration.LegacyCpsSamplingTicks)
             return;
 
         // SNAPSHOT the counters BEFORE resetting or posting
