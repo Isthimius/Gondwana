@@ -45,7 +45,7 @@ internal static class RenderTelemetry
                 name.Contains("cpu.ms", StringComparison.Ordinal) ? TelemetryMetricKind.Sample : TelemetryMetricKind.Gauge);
         }
         source.Define("presentation.count", gpu ? TelemetryAvailability.NotYetSampled : TelemetryAvailability.Unsupported);
-        source.Define("layers.omitted");
+        source.Define("layers.omitted", gpu ? TelemetryAvailability.NotYetSampled : TelemetryAvailability.Unsupported);
         foreach (var layer in Layers)
             foreach (var name in layer) source.Define(name, gpu ? TelemetryAvailability.NotYetSampled : TelemetryAvailability.Unsupported,
                 name.Contains("cpu.ms", StringComparison.Ordinal) ? TelemetryMetricKind.Sample : TelemetryMetricKind.Gauge);
