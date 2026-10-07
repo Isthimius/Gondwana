@@ -351,7 +351,7 @@ internal sealed class SceneViewerGameHost(
         TelemetrySourceSnapshot? renderSource = snapshot.Sources
             .FirstOrDefault(source => source.Id == renderSourceId);
 
-        return renderSource?.Metrics.TryGetValue("presentation.count", out TelemetrySummary? summary) == true &&
+        return renderSource?.Metrics.TryGetValue("presentation.count", out var summary) == true &&
             summary.Availability == TelemetryAvailability.Available
                 ? (summary.Count / snapshot.ElapsedSeconds).ToString("0.0")
                 : "n/a";
