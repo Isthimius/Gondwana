@@ -75,7 +75,7 @@ public sealed class ProfilerWidgetTests
         Assert.False(widget.ShowSnapshotMetadata);
         Assert.False(widget.ShowSourceHeaders);
         Assert.True(widget.ShowUnavailableMeasurements);
-        Assert.Equal(Controls.ScrollBarVisibility.Auto, widget.Display.VerticalScrollBarVisibility);
+        Assert.Equal(Gondwana.Widgets.Controls.ScrollBarVisibility.Auto, widget.Display.VerticalScrollBarVisibility);
     }
 
     [Fact]
