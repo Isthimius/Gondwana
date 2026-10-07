@@ -16,7 +16,7 @@ namespace Gondwana.Tooling.SceneViewer.WinForms.Tests;
 /// <summary>
 /// Contains tests for viewer.
 /// </summary>
-public sealed class ViewerTests : IDisposable
+public sealed partial class ViewerTests : IDisposable
 {
     private readonly string _directory = Path.Combine(Path.GetTempPath(), "GondwanaViewerTests", Guid.NewGuid().ToString("N"));
     private string ScenePath => Path.Combine(_directory, "scene with spaces.gscn");
@@ -175,6 +175,8 @@ public sealed class ViewerTests : IDisposable
         definition.TilesheetSources = [SceneTilesheetSourceDefinition.Packed("sheet", "content.gaf", "sheet")];
         definition.AnimationSources = [SceneAnimationSourceDefinition.Packed("walk", "content.gaf", "walk")];
         SceneDefinitionSerializer.Save(ScenePath, definition);
+        File.Delete(Path.Combine(_directory, "sheet.gts"));
+        File.Delete(Path.Combine(_directory, "animation.gani"));
         using var scene = new ViewerSceneLoader().Load(ScenePath);
         Assert.True(scene[0]![0, 0]!.EnableAnimator);
     }
@@ -222,7 +224,10 @@ public sealed class ViewerTests : IDisposable
         var animation = AnimationDefinitionSerializer.Load(Path.Combine(_directory, "animation.gani"));
         animation.TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("sheet", "other.gts")];
         AnimationDefinitionSerializer.Save(Path.Combine(_directory, "animation.gani"), animation);
-        Assert.Contains("Conflicting sources", Assert.Throws<InvalidDataException>(() => new ViewerSceneLoader().Load(ScenePath)).Message);
+        var error = Assert.Throws<InvalidDataException>(() => new ViewerSceneLoader().Load(ScenePath));
+        Assert.Contains("Multiple loose GTS", error.Message);
+        Assert.Contains("sheet.gts", error.Message);
+        Assert.Contains("other.gts", error.Message);
     }
 
     private void WriteContent()
@@ -271,6 +276,11 @@ public sealed class ViewerTests : IDisposable
     /// </summary>
     public void Dispose()
     {
+        Gondwana.Drawing.Sprites.SpriteManager.Instance.Clear();
+        // Headless tests have no engine update loop to sweep the queued removals.
+        typeof(Gondwana.Drawing.Sprites.SpriteManager).GetMethod("SweepDisposedSprites",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+            .Invoke(Gondwana.Drawing.Sprites.SpriteManager.Instance, null);
         Scene.ClearAllScenes();
         Cycle.ClearAllAnimationCycles();
         TilesheetRegistry.Instance.Clear();

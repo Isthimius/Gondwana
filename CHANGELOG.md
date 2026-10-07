@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 ## Gondwana
 
 ### Added
-- Add packed GAF definition references and source-preserving EngineState save options for GTS, GANI, GSCN, GSND, and GSPR; support relative archive paths and optional stream origins.
+- Add opt-in runtime telemetry with independent collection requests, bounded detached history, and an in-game ProfilerWidget now dogfooded by the saved-scene Scene Viewer F3 diagnostics overlay ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 - Add GSCN format and EngineState integration ([#372](https://github.com/Isthimius/Gondwana/pull/372))
 - Add GANI format and EngineState integration ([#373](https://github.com/Isthimius/Gondwana/pull/373))
 - Compose the standalone WinForms authoring editors ([#383](https://github.com/Isthimius/Gondwana/pull/383))
@@ -15,17 +15,21 @@ All notable changes to this project will be documented in this file.
 - Load GAF asset files from streams ([#392](https://github.com/Isthimius/Gondwana/pull/392))
 - Add scrollable list boxes with mouse wheel support ([#403](https://github.com/Isthimius/Gondwana/pull/403))
 - Add scrollable labels and Spot help ([#405](https://github.com/Isthimius/Gondwana/pull/405))
+- Add asynchronous browser console logging ([#408](https://github.com/Isthimius/Gondwana/pull/408))
+- Native scene tile transforms, GSCN tooling and Tiled import ([#417](https://github.com/Isthimius/Gondwana/pull/417))
+- Add configurable normalized camera follow anchors ([#431](https://github.com/Isthimius/Gondwana/pull/431))
+
+### Deprecated
+- Mark the legacy CPS/FPS properties, event, and sampling configuration as warning-only obsolete under `GOND0001`; migrate Gondwana-owned consumers to `Engine.Profiler` ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 
 
 
 ### Fixed
-- Preserve the Avalonia GPU host across GL context recreation; custom hosts should dispose the GPU control when permanently removing it.
 - Recreate GPU surface when MSAA changes ([#402](https://github.com/Isthimius/Gondwana/pull/402))
 
 
 
 ### Refactoring
-- Decouple desktop GPU replay from simulation with immutable RenderFrameSnapshot recordings and a bounded three-slot latest-frame mailbox. Desktop drawing/post-scene hooks now execute on the Engine recording canvas with CPU resources; context-bound drawing must remain in platform GL lifecycle code. Add snapshot/replay diagnostics and native GL regression coverage.
 - Use MenuBarWidget and GPU-only rendering ([#401](https://github.com/Isthimius/Gondwana/pull/401))
 - Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))
 
@@ -72,6 +76,11 @@ All notable changes to this project will be documented in this file.
 
 ## Gondwana.Blazor
 
+### Added
+- Add asynchronous browser console logging ([#408](https://github.com/Isthimius/Gondwana/pull/408))
+
+
+
 ### Refactoring
 - Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))
 
@@ -81,6 +90,11 @@ All notable changes to this project will be documented in this file.
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
 
 ## Gondwana.Blazor.Hosting
+
+### Added
+- Add asynchronous browser console logging ([#408](https://github.com/Isthimius/Gondwana/pull/408))
+
+
 
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
@@ -108,8 +122,15 @@ All notable changes to this project will be documented in this file.
 ## Gondwana.Widgets
 
 ### Added
+- Add runtime ProfilerWidget with configurable source/measurement visibility, optional Scene/View/backbuffer/config/MSAA context, application-defined extension lines, hover definitions, and an in-widget Metrics selector; add reusable TooltipWidget ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 - Add scrollable list boxes with mouse wheel support ([#403](https://github.com/Isthimius/Gondwana/pull/403))
 - Add scrollable labels and Spot help ([#405](https://github.com/Isthimius/Gondwana/pull/405))
+
+
+
+### Fixed
+- Allow scrollable diagnostic/log labels to expose trailing scroll padding so the final line can move clear of the clip edge ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
+- Add initial TextBox key repeat delay ([#411](https://github.com/Isthimius/Gondwana/pull/411))
 
 
 
@@ -211,13 +232,31 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Compose the standalone WinForms authoring editors ([#383](https://github.com/Isthimius/Gondwana/pull/383))
 - Add external asset import pipeline for tmx/tsx, Godot assets, Aesprite ([#390](https://github.com/Isthimius/Gondwana/pull/390))
+- Persist and restore the project folder within Gondwana Studio ([#415](https://github.com/Isthimius/Gondwana/pull/415))
+- Support Godot 3 TileSet resources ([#416](https://github.com/Isthimius/Gondwana/pull/416))
+
+
+
+### Documentation
+- Credit DockPanel Suite creator ([#412](https://github.com/Isthimius/Gondwana/pull/412))
 
 
 
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
 
+## Tooling / Gondwana.Tooling.SceneViewer.WinForms
+
+### Added
+- Dogfood ProfilerWidget for the Scene Viewer F3 diagnostics overlay, including generic runtime context, curated default measurements, an explicit GPU FPS label, hover help, and runtime metric selection ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
+- Discover Scene Viewer local definitions and sprites with loose-over-packed precedence ([#438](https://github.com/Isthimius/Gondwana/pull/438))
+
 ## Tooling / Gondwana.Tooling.Scenes.WinForms
+
+### Added
+- Native scene tile transforms, GSCN tooling and Tiled import ([#417](https://github.com/Isthimius/Gondwana/pull/417))
+
+
 
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
@@ -248,6 +287,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Compose the standalone WinForms authoring editors ([#383](https://github.com/Isthimius/Gondwana/pull/383))
 - Add external asset import pipeline for tmx/tsx, Godot assets, Aesprite ([#390](https://github.com/Isthimius/Gondwana/pull/390))
+- Support Godot 3 TileSet resources ([#416](https://github.com/Isthimius/Gondwana/pull/416))
+- Add tiled island sample assets ([#422](https://github.com/Isthimius/Gondwana/pull/422))
 
 
 
@@ -259,6 +300,13 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Document gondwana and studio overview ([#387](https://github.com/Isthimius/Gondwana/pull/387))
+- Clarify plugin images and oblique coordinates ([#424](https://github.com/Isthimius/Gondwana/pull/424))
+- Clarify and condense readme content ([#429](https://github.com/Isthimius/Gondwana/pull/429))
+
+
+
+### CI
+- Remove Spot-specific checks from master workflow ([#414](https://github.com/Isthimius/Gondwana/pull/414))
 
 
 
@@ -271,6 +319,7 @@ All notable changes to this project will be documented in this file.
 ### Other Changes
 - Fix note formatting in README.md ([#400](https://github.com/Isthimius/Gondwana/pull/400))
 - Update README with new discussion link ([#399](https://github.com/Isthimius/Gondwana/pull/399))
+- Add image to README for Gondwana Studio
 
 # [v2.6.0] - 2026-09-17
 

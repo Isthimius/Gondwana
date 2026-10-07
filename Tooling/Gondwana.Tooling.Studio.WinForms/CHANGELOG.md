@@ -18,6 +18,13 @@ All notable changes to this project will be documented in this file.
 ## Added
 - Compose the standalone WinForms authoring editors ([#383](https://github.com/Isthimius/Gondwana/pull/383))
 - Add external asset import pipeline for tmx/tsx, Godot assets, Aesprite ([#390](https://github.com/Isthimius/Gondwana/pull/390))
+- Persist and restore the project folder within Gondwana Studio ([#415](https://github.com/Isthimius/Gondwana/pull/415))
+- Support Godot 3 TileSet resources ([#416](https://github.com/Isthimius/Gondwana/pull/416))
+
+
+
+## Documentation
+- Credit DockPanel Suite creator ([#412](https://github.com/Isthimius/Gondwana/pull/412))
 
 
 

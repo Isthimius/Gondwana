@@ -48,9 +48,9 @@ public sealed class XInputGamepadManager : IGamepadManager<XInputGamepadAdapter>
     public IReadOnlyCollection<XInputGamepadAdapter> ConnectedAdapters => _activeAdapters.Values;
 
     /// <summary>
-    /// Updates the gamepad manager by polling all XInput controller slots (0-3) for connection status and state changes.
+    /// Checks the four XInput controller slots for connection and disconnection changes.
     /// </summary>
-    public void Update()
+    public void UpdateConnections()
     {
         for (int i = 0; i < 4; i++)
         {
@@ -59,18 +59,31 @@ public sealed class XInputGamepadManager : IGamepadManager<XInputGamepadAdapter>
             if (isConnected)
             {
                 if (!_activeAdapters.ContainsKey(i))
-                {
                     _activeAdapters[i] = new XInputGamepadAdapter(i);
-                }
-
-                // ** DO NOT CALL THIS UNBOUNDED!! **
-                // ** limit to Engine framerate **
-                _activeAdapters[i].Poll(); // Keep state fresh
             }
             else
             {
-                _activeAdapters.Remove(i); // Implicitly disposes if needed
+                _activeAdapters.Remove(i);
             }
         }
+    }
+
+    /// <summary>
+    /// Polls the current state of all connected XInput controllers.
+    /// </summary>
+    public void Poll()
+    {
+        foreach (var adapter in _activeAdapters.Values)
+            adapter.Poll();
+    }
+
+    /// <summary>
+    /// Performs the legacy combined connection and state refresh.
+    /// </summary>
+    [Obsolete("Use UpdateConnections() and Poll() separately.")]
+    public void Update()
+    {
+        UpdateConnections();
+        Poll();
     }
 }

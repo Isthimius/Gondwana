@@ -1,5 +1,7 @@
 ## Gondwana Wiki
 
+🔎 [Search the Gondwana Wiki](https://github.com/search?q=repo%3AIsthimius%2FGondwana&type=wikis)
+
 ### Introduction
 - [[Home]]
 - [[Make Your First Game in 30 Minutes]]
@@ -9,7 +11,7 @@
 - [[Gondwana CLI Cheatsheet]]
 - [[Using Gondwana with ChatGPT and Codex]]
 
-<details open>
+<details>
 <summary><strong>Core Concepts</strong></summary>
 
 - [[Assets Files]]
@@ -35,7 +37,7 @@
 
 </details>
 
-<details open>
+<details>
 <summary><strong>Systems</strong></summary>
 
 - [[Tile Animation]]
@@ -60,7 +62,7 @@
 
 </details>
 
-<details open>
+<details>
 <summary><strong>Rendering</strong></summary>
 
 - [[Rendering Order and Z-Order]]
@@ -74,15 +76,13 @@
 
 </details>
 
-<details open>
+<details>
 <summary><strong>Widgets</strong></summary>
 
 - [[Widgets Overview]]
 - [[Creating Your Own Custom Widget]]
 
-- <details>
-  <summary><strong>Controls</strong></summary>
-
+- <strong>Controls</strong>
   - [[ButtonWidget|Widgets---ButtonWidget]]
   - [[CheckBoxWidget|Widgets---CheckBoxWidget]]
   - [[ComboBoxWidget|Widgets---ComboBoxWidget]]
@@ -92,53 +92,34 @@
   - [[PanelWidget|Widgets---PanelWidget]]
   - [[ProgressBarWidget|Widgets---ProgressBarWidget]]
   - [[RadioButtonWidget|Widgets---RadioButtonWidget]]
+  - [[TabControlWidget|Widgets---TabControlWidget]]
   - [[TextBoxWidget|Widgets---TextBoxWidget]]
 
-  </details>
-
-- <details>
-  <summary><strong>Dialogs</strong></summary>
-
+- <strong>Dialogs</strong>
   - [[AboutBox|Widgets---AboutBox]]
   - [[ConversationBox|Widgets---ConversationBox]]
   - [[DialogBox|Widgets---DialogBox]] — base class for custom dialogs
 
-  </details>
-
-- <details>
-  <summary><strong>Hud</strong></summary>
-
+- <strong>Hud</strong>
   - [[HealthBarWidget|Widgets---HealthBarWidget]]
   - [[NameTagWidget|Widgets---NameTagWidget]]
+  - [[ProfilerWidget|Widgets---ProfilerWidget]]
 
-  </details>
-
-- <details>
-  <summary><strong>Layout</strong></summary>
-
+- <strong>Layout</strong>
   - [[StackPanelWidget|Widgets---StackPanelWidget]]
 
-  </details>
-
-- <details>
-  <summary><strong>Menus</strong></summary>
-
+- <strong>Menus</strong>
   - [[MenuBarWidget|Widgets---MenuBarWidget]]
 
-  </details>
-
-- <details>
-  <summary><strong>Overlays</strong></summary>
-
+- <strong>Overlays</strong>
   - [[PopupWidget|Widgets---PopupWidget]]
   - [[SplashScreen|Widgets---SplashScreen]]
   - [[ToastWidget|Widgets---ToastWidget]]
-
-  </details>
+  - [[TooltipWidget|Widgets---TooltipWidget]]
 
 </details>
 
-<details open>
+<details>
 <summary><strong>Advanced Topics</strong></summary>
 
 - [[Serialization and EngineState]]

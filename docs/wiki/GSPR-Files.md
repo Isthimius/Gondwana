@@ -71,3 +71,9 @@ loads use `AssetsFile.SourcePath`, including an explicitly supplied stream origi
 anonymous archives cannot produce path-based provenance. See
 [Definition persistence options](Serialization-and-EngineState#definition-persistence-options)
 for collection ownership, generated identities, relative paths, and safe fallback.
+
+## Runtime Scene Viewer discovery
+
+The standalone Scene Viewer discovers loose GSPR and typed GSPR entries in every GAF directly beside the opened GSCN. It validates complete documents but materializes only entries whose `SceneId` matches the viewed scene (ordinal comparison), after its layers exist. It never follows `SceneSources` to load other scenes.
+
+For selected frame tilesheets, the shared Viewer resolver prefers a matching local loose GTS, then a packed GTS in an adjacent GAF, then the GSPR's explicit source metadata. Discovery is non-recursive. A matching non-empty sprite ID or nickname makes loose sprites override packed sprites; duplicate identities at the surviving precedence fail with source diagnostics. Entries without either identity remain distinct. Source documents remain unchanged; the assembled filtered collection cannot preserve one document's collection-wide provenance.

@@ -223,9 +223,16 @@ public partial class EngineConfiguration
     private double _samplingTimeForCPS = 1.5;
 
     /// <summary>
-    /// Total number of seconds between Cycles Per Second (CPS) calculation.
+    /// Total number of seconds between legacy Cycles Per Second (CPS) calculations.
     /// Default is 1.5 seconds.
     /// </summary>
+    /// <remarks>
+    /// This setting controls only the compatibility CPS/FPS sampler. New diagnostics should
+    /// configure <see cref="Diagnostics.RuntimeProfiler"/> through <see cref="Engine.Profiler"/>.
+    /// </remarks>
+    [Obsolete(
+        "Legacy CPS/FPS sampling is deprecated. Use Engine.Profiler.Configure(...) for runtime telemetry.",
+        DiagnosticId = "GOND0001")]
     public double SamplingTimeForCPS
     {
         get => _samplingTimeForCPS;
@@ -233,10 +240,31 @@ public partial class EngineConfiguration
     }
 
     /// <summary>
-    /// Total number of system ticks between each CPS sampling.
+    /// Total number of system ticks between each legacy CPS sampling.
     /// </summary>
+    /// <remarks>
+    /// This property exists for compatibility with the legacy CPS/FPS sampler.
+    /// </remarks>
     [JsonIgnore]
-    public long SamplingTimeForCPSTicks => (long)(SamplingTimeForCPS * HighResTimer.TicksPerSecond);
+    [Obsolete(
+        "Legacy CPS/FPS sampling is deprecated. Use Engine.Profiler.Configure(...) for runtime telemetry.",
+        DiagnosticId = "GOND0001")]
+    public long SamplingTimeForCPSTicks => LegacyCpsSamplingTicks;
+
+    /// <summary>
+    /// Gets the compatibility CPS sampling interval without consuming the obsolete public API.
+    /// </summary>
+    internal double LegacyCpsSamplingTime
+    {
+        get => _samplingTimeForCPS;
+        set => _samplingTimeForCPS = value < 0 ? 0 : value;
+    }
+
+    /// <summary>
+    /// Gets the compatibility CPS sampling interval in high-resolution ticks.
+    /// </summary>
+    internal long LegacyCpsSamplingTicks =>
+        (long)(_samplingTimeForCPS * HighResTimer.TicksPerSecond);
 
     /// <summary>
     /// Minimum time (in seconds) allowed between Keyboard events.
@@ -245,9 +273,43 @@ public partial class EngineConfiguration
     /// </summary>
     public double TimeBetweenKeyboardEvents { get; set; } = 0.03;
 
+    private double _gamepadConnectionUpdateFrequencyHz = 0.2;
+
+    /// <summary>
+    /// Gets or sets how often the engine checks for gamepad connection and disconnection changes.
+    /// </summary>
+    /// <value>
+    /// The connection-discovery frequency in hertz. The default is <c>0.2</c> Hz, or once every
+    /// five seconds. Negative and non-finite values are treated as <c>0</c>; <c>0</c> disables
+    /// automatic connection discovery.
+    /// </value>
+    public double GamepadConnectionUpdateFrequencyHz
+    {
+        get => _gamepadConnectionUpdateFrequencyHz;
+        set => _gamepadConnectionUpdateFrequencyHz =
+            double.IsFinite(value) && value > 0d ? value : 0d;
+    }
+
+    private double _gamepadPollFrequencyHz = 60d;
+
+    /// <summary>
+    /// Gets or sets how often the engine refreshes the state of already-connected gamepads.
+    /// </summary>
+    /// <value>
+    /// The controller-state polling frequency in hertz. The default is <c>60</c> Hz. Negative
+    /// and non-finite values are treated as <c>0</c>; <c>0</c> disables automatic state polling.
+    /// </value>
+    public double GamepadPollFrequencyHz
+    {
+        get => _gamepadPollFrequencyHz;
+        set => _gamepadPollFrequencyHz =
+            double.IsFinite(value) && value > 0d ? value : 0d;
+    }
+
     /// <summary>
     /// Minimum time (in seconds) allowed between Gamepad events.
     /// Use this to prevent flooding the system with too many events at once (holding down a button, etc).
+    /// This event-throttle setting is independent of <see cref="GamepadPollFrequencyHz"/>.
     /// Default is 0.03 seconds (30 milliseconds).
     /// </summary>
     public double TimeBetweenGamepadEvents { get; set; } = 0.03;

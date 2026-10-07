@@ -18,6 +18,8 @@ via `EngineInputSystems`.
 ## Engine cycle placement
 Input is polled during `DoBackgroundTasks`, before rendering. That means input changes can affect movement, animation, or scene state before the next frame is drawn.
 
+Gamepads have two cadence-limited manager operations at the start of that phase: connection discovery (`UpdateConnections()`, default `0.2 Hz`) and live controller-state polling (`Poll()`, default `60 Hz`). When due, they run before `BeforeBackgroundTasksExecute` and before `GamepadEventPoller`, so game code and button events consume the newest scheduled controller snapshot. These cadences are independent of render `TargetFPS`.
+
 ---
 
 ## Why polling fits Gondwana

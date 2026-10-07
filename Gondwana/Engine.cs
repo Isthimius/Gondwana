@@ -194,6 +194,9 @@ public sealed class Engine : IDisposable
     /// This event is posted to the UI thread when a <see cref="UiDispatcher"/> is available.
     /// </para>
     /// </remarks>
+    [Obsolete(
+        "Legacy CPS/FPS notifications are deprecated. Use Engine.Profiler for runtime telemetry; ProfilerWidget provides an optional in-game display.",
+        DiagnosticId = "GOND0001")]
     public event Action<CyclesPerSecondCalculatedEventArgs>? CPSCalculated;
 
     /// <summary>
@@ -218,7 +221,19 @@ public sealed class Engine : IDisposable
 
     #endregion events
 
-    private Engine() { }
+    private readonly Diagnostics.TelemetrySource _engineTelemetry;
+
+    /// <summary>Opt-in runtime CPU measurements and bounded history, independent of CPS notifications.</summary>
+    /// <remarks>Each consumer owns a disposable collection request. Queries return detached data.</remarks>
+    public Diagnostics.RuntimeProfiler Profiler { get; } = new();
+
+    private Engine()
+    {
+        _engineTelemetry = Profiler.RegisterSource("Engine", "Core")!;
+        _engineTelemetry.Define("cycle.cpu.ms");
+        _engineTelemetry.Define("background.cpu.ms");
+        _engineTelemetry.Define("foreground.cpu.ms");
+    }
 
     private volatile bool _isInitialized = false;
     private volatile bool _isInitializing = false;
@@ -272,6 +287,8 @@ public sealed class Engine : IDisposable
     /// </param>
     /// <param name="gamepadManager">
     /// Optional <see cref="IGamepadManager{T}"/> instance used to initialize the gamepad subsystem.
+    /// When <see langword="null"/>, an already configured <see cref="EngineInputSystems.GamepadManager"/>
+    /// is preserved rather than cleared.
     /// </param>
     /// <seealso cref="Start(SynchronizationContext)"/>
     /// <seealso cref="Stop"/>
@@ -381,7 +398,8 @@ public sealed class Engine : IDisposable
             if (touchAdapter != null)
                 Input.TouchAdapter = touchAdapter;
 
-            Input.GamepadManager = gamepadManager;
+            if (gamepadManager is not null)
+                Input.GamepadManager = gamepadManager;
 
             if (UiDispatcher == null)
                 PostInitialization?.Invoke();
@@ -657,7 +675,7 @@ public sealed class Engine : IDisposable
                 if (render)
                     RenderFrame(driverTick, frameDelta);
 
-                if (Configuration.SamplingTimeForCPS > 0)
+                if (Configuration.LegacyCpsSamplingTime > 0)
                     CalculateCPS(driverTick);
 
                 return;
@@ -847,6 +865,9 @@ public sealed class Engine : IDisposable
     /// This value is updated at the interval specified by <see cref="EngineConfiguration.SamplingTimeForCPS"/>.
     /// </para>
     /// </remarks>
+    [Obsolete(
+        "Legacy CPS/FPS properties are deprecated. Use Engine.Profiler for runtime telemetry; ProfilerWidget provides an optional in-game display.",
+        DiagnosticId = "GOND0001")]
     public double CyclesPerSecond => _grossCPS;
 
     /// <summary>
@@ -863,6 +884,9 @@ public sealed class Engine : IDisposable
     /// This value is updated at the interval specified by <see cref="EngineConfiguration.SamplingTimeForCPS"/>.
     /// </para>
     /// </remarks>
+    [Obsolete(
+        "Legacy CPS/FPS properties are deprecated. Use Engine.Profiler for runtime telemetry; ProfilerWidget provides an optional in-game display.",
+        DiagnosticId = "GOND0001")]
     public double FramesPerSecond => _netFPS;
 
     /// <summary>
@@ -999,6 +1023,13 @@ public sealed class Engine : IDisposable
         double frameDelta,
         bool sampleCps)
     {
+        // Refresh native gamepad state before any simulation callbacks consume it.
+        // Use the real driver/render tick rather than the fixed-step simulation clock so
+        // timer-driven catch-up steps cannot compress or delay hardware polling cadence.
+        Input.RefreshGamepads(renderTick, Configuration);
+
+        long telemetryGeneration = _engineTelemetry.BeginSample();
+        long telemetryStarted = telemetryGeneration == 0 ? 0 : HighResTimer.GetCurrentTick();
         EnginePluginRegistry.InvokePreCycle(this, simulationDelta);
 
         DoBackgroundTasks(simulationTick);
@@ -1008,10 +1039,13 @@ public sealed class Engine : IDisposable
 
         _grossCyclesThisMeasure++;
 
-        if (sampleCps && Configuration.SamplingTimeForCPS > 0)
+        if (sampleCps && Configuration.LegacyCpsSamplingTime > 0)
             CalculateCPS(renderTick);
 
         EnginePluginRegistry.InvokePostCycle(this, simulationDelta);
+        if (telemetryGeneration != 0)
+            _engineTelemetry.Record(telemetryGeneration, "cycle.cpu.ms",
+                HighResTimer.GetDuration(telemetryStarted, HighResTimer.GetCurrentTick()) * 1000d);
     }
 
     private bool IsForegroundDue(long tick) =>
@@ -1053,6 +1087,8 @@ public sealed class Engine : IDisposable
 
     private void RenderFrame(long tick, double delta)
     {
+        long telemetryGeneration = _engineTelemetry.BeginSample();
+        long telemetryStarted = telemetryGeneration == 0 ? 0 : HighResTimer.GetCurrentTick();
         EnginePluginRegistry.InvokePreFrameRender(this, delta);
 
         DoForegroundTasks(tick);
@@ -1061,10 +1097,15 @@ public sealed class Engine : IDisposable
 
         _lastForegroundTick = tick;
         _netCyclesThisMeasure++;
+        if (telemetryGeneration != 0)
+            _engineTelemetry.Record(telemetryGeneration, "foreground.cpu.ms",
+                HighResTimer.GetDuration(telemetryStarted, HighResTimer.GetCurrentTick()) * 1000d);
     }
 
     private void DoBackgroundTasks(long tick)
     {
+        long telemetryGeneration = _engineTelemetry.BeginSample();
+        long telemetryStarted = telemetryGeneration == 0 ? 0 : HighResTimer.GetCurrentTick();
         // find total real seconds passed since last background loop
         var deltaSeconds = HighResTimer.GetDuration(_lastBackgroundTick, tick);
 
@@ -1106,6 +1147,9 @@ public sealed class Engine : IDisposable
         AfterBackgroundTasksExecute?.Invoke();
 
         _lastBackgroundTick = tick;
+        if (telemetryGeneration != 0)
+            _engineTelemetry.Record(telemetryGeneration, "background.cpu.ms",
+                HighResTimer.GetDuration(telemetryStarted, HighResTimer.GetCurrentTick()) * 1000d);
     }
 
     private void DoForegroundTasks(long tick)
@@ -1134,9 +1178,6 @@ public sealed class Engine : IDisposable
             if (!surface.Backbuffer.IsGlThreadRendered)
                 surface.PresentBackbufferToAdapter();
 
-        // update state of gamepad(s)
-        Input.GamepadManager?.Update();
-
         // raise event
         // GL thread rendering is done as part of this invocation
         AfterFrameRender?.Invoke();
@@ -1149,7 +1190,7 @@ public sealed class Engine : IDisposable
     {
         // Has the sampling interval elapsed?
         long elapsedTicks = tick - _lastCPSSamplingTick;
-        if (elapsedTicks < Configuration.SamplingTimeForCPSTicks)
+        if (elapsedTicks < Configuration.LegacyCpsSamplingTicks)
             return;
 
         // SNAPSHOT the counters BEFORE resetting or posting
@@ -1286,6 +1327,8 @@ public sealed class Engine : IDisposable
             UiDispatcher.Post(() => SafeInvoke(Disposing));
         else
             SafeInvoke(Disposing);
+
+        Profiler.Dispose();
 
         // managed cleanup...
         Input.KeyboardEventPoller?.StopMonitoringAllKeys();

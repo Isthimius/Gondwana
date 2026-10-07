@@ -57,7 +57,7 @@ In 2.5.0, the hosting design is intentionally stricter:
 | `BeforeBackgroundTasksExecute` / `AfterBackgroundTasksExecute` | Engine thread | Same thread as `Tick()` |
 | `BeforeFrameRender` / `AfterFrameRender` | Engine thread | Same thread as `Tick()` |
 | `RenderBackbufferPostScene` / `IEnginePlugin.OnPostRenderCanvas` | Engine thread (CPU surfaces); GL thread (GPU surfaces) | Engine/tick thread (CPU); GL thread (GPU) |
-| `CPSCalculated` | Posted to `UiDispatcher` | Posted to `UiDispatcher` |
+| `CPSCalculated` *(legacy, obsolete `GOND0001`)* | Posted to `UiDispatcher` | Posted to `UiDispatcher` |
 | `Disposing` / `Disposed` on `Engine` | Posted to `UiDispatcher` when available | Posted to `UiDispatcher` when available |
 
 ### Important nuance: initialization events can be inline or dispatched
@@ -167,7 +167,7 @@ When `Engine.Initialize(...)` runs, the ordered flow is:
 4. Apply logging mode.
 5. Merge any configured `EngineState` files.
 6. Initialize keyboard and mouse pollers if adapters were supplied.
-7. Store the touch adapter and gamepad manager.
+7. Store the touch adapter if supplied, and replace the gamepad manager only when a non-null manager was supplied. A manager already installed by a platform host is preserved.
 8. Raise `PostInitialization`.
 9. Invoke registered plugin `OnInitialize` hooks.
 10. Mark `IsInitialized = true`.
@@ -229,6 +229,7 @@ The `Cycle()` method is the heart of Gondwana. In normal mode it runs on the eng
 ```text
 Cycle()
   → EngineDispatcher.Drain()
+  → Gamepad UpdateConnections/Poll when each cadence is due
   → IEnginePlugin.OnPreCycle
   → DoBackgroundTasks
        → BeforeBackgroundTasksExecute
@@ -236,7 +237,7 @@ Cycle()
        → Keyboard poll
        → Mouse poll
        → Touch poll
-       → Gamepad poll
+       → Gamepad button-event poll
        → Tile animation advance
        → Sprite movement advance
        → Collision resolution
@@ -251,13 +252,12 @@ Cycle()
             → RenderSurfaceHost.RenderBackbufferPostScene (CPU-backed surfaces, if scene was drawn)
             → IEnginePlugin.OnPostRenderCanvas (CPU-backed surfaces, if scene was drawn)
             → PresentBackbufferToAdapter (CPU-backed surfaces)
-            → Gamepad manager state update
             → AfterFrameRender
             → Timer.RaiseTimerEvents(PostCycle)
        → IEnginePlugin.OnPostFrameRender
   → [if CPS sampling is enabled]
        → CalculateCPS
-            → Engine.CPSCalculated (posted to UI dispatcher)
+            → Engine.CPSCalculated (legacy compatibility event; posted to UI dispatcher)
   → IEnginePlugin.OnPostCycle
 ```
 
@@ -289,7 +289,6 @@ During this phase Gondwana:
 - updates retained direct drawings
 - records and publishes immutable desktop GPU snapshots (latest completed frame wins)
 - renders/presents non-GL backbuffers
-- updates gamepad state snapshots
 - raises `AfterFrameRender`
 - fires post-cycle timers
 
@@ -302,7 +301,7 @@ These hooks track foreground production cadence, not completed GPU presentation:
 
 ### CPS/FPS sampling
 
-`CPSCalculated` is raised only when `Configuration.SamplingTimeForCPS > 0` and the configured sampling interval has elapsed. The payload includes:
+`CPSCalculated` is a legacy compatibility event and is warning-only obsolete under `GOND0001`. It is still raised when the legacy `Configuration.SamplingTimeForCPS > 0` interval elapses. New diagnostics should use `Engine.Profiler`. The compatibility payload includes:
 
 - gross cycle count / CPS
 - net foreground production count / Engine FPS
@@ -460,7 +459,7 @@ The tables below group the public runtime events exposed by the core `Gondwana` 
 | `Engine.AfterBackgroundTasksExecute` | At the end of each background phase | Engine thread |
 | `Engine.BeforeFrameRender` | Right before foreground/render work | Engine thread |
 | `Engine.AfterFrameRender` | Right after foreground/render work | Engine thread |
-| `Engine.CPSCalculated` | When CPS/FPS sampling is computed | UI dispatcher |
+| `Engine.CPSCalculated` *(legacy / obsolete `GOND0001`)* | When compatibility CPS/FPS sampling is computed | UI dispatcher |
 | `Engine.Disposing` | When explicit engine disposal starts | UI dispatcher if available |
 | `Engine.Disposed` | After explicit engine disposal completes | UI dispatcher if available |
 

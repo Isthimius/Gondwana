@@ -66,7 +66,7 @@ This setting applies only to `GpuBackbuffer`.
 
 | Setting | Type | Default | What it does | When it takes effect |
 | --- | --- | ---: | --- | --- |
-| `SamplingTimeForCPS` | `double` | `1.5` seconds | Sets the interval between Gondwana's cycles-per-second and frame-rate measurements. Use `0` to disable performance sampling. Negative values are clamped to `0`. | Immediately; the running engine reads it during its cycle. |
+| `SamplingTimeForCPS` | `double` | `1.5` seconds | **Legacy / obsolete (`GOND0001`).** Controls only the compatibility CPS/FPS sampler. New telemetry uses `Engine.Profiler.Configure(...)`. Use `0` to disable the legacy sampler. | Immediately; the compatibility sampler reads it during its cycle. |
 
 ```json
 "SamplingTimeForCPS": 1.5
@@ -76,7 +76,25 @@ A shorter interval updates the measurements more often but makes them more volat
 
 This is a diagnostics interval. It is not the simulation timestep and does not limit the frame rate.
 
-`SamplingTimeForCPSTicks` is a read-only helper calculated from `SamplingTimeForCPS`. It is marked `JsonIgnore` and is **not** a configuration-file setting.
+`SamplingTimeForCPSTicks` is a read-only compatibility helper calculated from `SamplingTimeForCPS`. It is also obsolete under `GOND0001`, is marked `JsonIgnore`, and is **not** a configuration-file setting.
+
+---
+
+## Gamepad refresh cadence
+
+| Setting | Type | Default | What it does | When it takes effect |
+| --- | --- | ---: | --- | --- |
+| `GamepadConnectionUpdateFrequencyHz` | `double` | `0.2 Hz` | Controls how often `IGamepadManager.UpdateConnections()` scans for attached/removed controllers. | Read continuously during the input/simulation phase. |
+| `GamepadPollFrequencyHz` | `double` | `60 Hz` | Controls how often `IGamepadManager.Poll()` refreshes buttons, sticks, and triggers for connected controllers. | Read continuously during the input/simulation phase. |
+
+```json
+"GamepadConnectionUpdateFrequencyHz": 0.2,
+"GamepadPollFrequencyHz": 60.0
+```
+
+These frequencies are independent of `TargetFPS`. An uncapped renderer therefore does not create an uncapped gamepad polling loop, and lowering render FPS does not lower the gamepad state-sampling rate.
+
+A value of `0` disables automatic scheduling for that operation. Installing a manager still performs one initial connection/state refresh.
 
 ---
 
@@ -85,7 +103,7 @@ This is a diagnostics interval. It is not the simulation timestep and does not l
 | Setting | Type | Default | What it does |
 | --- | --- | ---: | --- |
 | `TimeBetweenKeyboardEvents` | `double` | `0.03` seconds | Sets the default minimum delay between repeated events for a monitored key. |
-| `TimeBetweenGamepadEvents` | `double` | `0.03` seconds | Sets the default minimum delay between repeated events for a monitored gamepad button. |
+| `TimeBetweenGamepadEvents` | `double` | `0.03` seconds | Sets the default minimum delay between repeated events for a monitored gamepad button; this is separate from the manager's state-poll frequency. |
 | `TimeBetweenMouseEvents` | `double` | `0.03` seconds | Sets the default minimum delay for monitored mouse activity, including high-frequency movement. |
 | `TimeBetweenTouchEvents` | `double` | `0.03` seconds | Sets the default minimum delay between touch-movement events. Touch begin and end transitions are not throttled. |
 
@@ -272,7 +290,7 @@ Hand-written JSON can use enum names such as `"Asynchronous"` and `"All"`. A fil
 
 | Behavior | Settings |
 | --- | --- |
-| Read or propagated while the engine is running | `TargetFPS`, `VSync`, `SamplingTimeForCPS` |
+| Read or propagated while the engine is running | `TargetFPS`, `VSync`; legacy `SamplingTimeForCPS` remains supported for compatibility |
 | Automatically recreates the GPU render target on the next GL/WebGL callback | `MsaaSampleCount` |
 | Copied when an input monitor is configured | `TimeBetweenKeyboardEvents`, `TimeBetweenGamepadEvents`, `TimeBetweenMouseEvents`, `TimeBetweenTouchEvents` |
 | Applied to the logger during initialization | `LoggingMode`, `LoggingQueueCapacity` |

@@ -78,7 +78,7 @@ It:
 * routes mouse or touch input to that widget
 * manages pointer capture during clicks and drags
 * manages keyboard focus
-* routes keyboard input to the focused widget, then offers unhandled keys to eligible menu bars
+* routes keyboard input to the focused widget, then offers unhandled keys to eligible menu bars and tab controls
 * provides a platform-agnostic input path
 
 The platform hosts translate native input into Gondwana input events. Widgets themselves do not need to know whether they are running under WinForms, Avalonia, or Blazor.
@@ -174,6 +174,10 @@ A single-choice control that can participate in a `RadioButtonGroup` so selectin
 
 A single-line editable text control with caret movement, insertion, deletion, placeholder text, length limits, and submit behavior.
 
+### [[TabControlWidget|Widgets---TabControlWidget]]
+
+A tabbed container whose pages own ordinary widgets. Headers resize across configurable rows, pages can use `Alt` mnemonics, and optional pointer dragging can reorder tabs.
+
 ---
 
 ## Layout
@@ -210,6 +214,15 @@ A world-space health bar that automatically follows a `Sprite` and displays curr
 
 A world-space text label that automatically follows a `Sprite`, suitable for NPC names, player names, unit labels, or similar identifiers.
 
+### [[ProfilerWidget|Widgets---ProfilerWidget]]
+
+A view-level, scrollable runtime diagnostics HUD backed by `Engine.Instance.Profiler`.
+It owns telemetry collection only while shown, can include or suppress individual
+measurements and sources, can opt into Scene/View/backbuffer/configuration/MSAA
+context, supports application-defined extension lines, hover definitions, and a
+built-in Metrics selector for toggling individual diagnostics at runtime. The
+saved-scene Scene Viewer dogfoods this widget for its F3 diagnostics overlay.
+
 ---
 
 ## Overlays
@@ -224,6 +237,11 @@ Typical uses include damage numbers, healing values, XP gains, item pickups, and
 
 A full-view splash image that fades in, holds for a minimum duration, optionally performs startup work, and then fades out.
 
+### [[TooltipWidget|Widgets---TooltipWidget]]
+
+A lightweight, non-interactive view overlay for contextual hover help. It positions
+near the pointer, clamps to the owning View, and does not intercept underlying input.
+
 ### [[ToastWidget|Widgets---ToastWidget]]
 
 A temporary view-level notification that can slide or fade into place, remain visible for a configured duration, and dismiss automatically or on user input.
@@ -232,7 +250,7 @@ A temporary view-level notification that can slide or fade into place, remain vi
 
 ## Input at a Glance
 
-Interactive widgets such as buttons, check boxes, radio buttons, list boxes, combo boxes, text boxes, conversation boxes, dialogs, hyperlinks, and dismissible toasts participate in normal widget focus, pointer, and keyboard routing.
+Interactive widgets such as buttons, check boxes, radio buttons, list boxes, combo boxes, text boxes, tab controls, conversation boxes, dialogs, hyperlinks, and dismissible toasts participate in normal widget focus, pointer, and keyboard routing.
 
 Display and layout widgets such as:
 
@@ -241,6 +259,8 @@ Display and layout widgets such as:
 * `ProgressBarWidget`
 * `HealthBarWidget`
 * `NameTagWidget`
+* `ProfilerWidget`
+* `TooltipWidget`
 * `PopupWidget`
 * `StackPanelWidget`
 

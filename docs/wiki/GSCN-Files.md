@@ -465,10 +465,12 @@ The reusable GSCN editor provides **View Scene** on its preview toolbar, both in
 Gondwana.Tooling.SceneViewer.WinForms.exe --scene "Content\Scenes\level1.gscn"
 ```
 
-The viewer loads the saved GSCN's explicit loose/packed GTS and GANI dependencies (including GANI tilesheet sources), registers runtime content, and calls `SceneDefinitionSerializer.ToScene`. Gondwana owns animation playback, frame transforms and associated geometry, layer projection, wrapping, parallax, and rendering. The viewer uses the current WinForms GPU host lifecycle.
+The viewer resolves the saved GSCN's GTS and GANI dependencies (including GANI tilesheet sources) from local definitions with explicit authored source fallback, registers runtime content, and calls `SceneDefinitionSerializer.ToScene`. Gondwana owns animation playback, frame transforms and associated geometry, layer projection, wrapping, parallax, and rendering. The viewer uses the current WinForms GPU host lifecycle.
 
 WASD or arrows move the camera continuously; Shift accelerates; the mouse wheel changes runtime viewport zoom; Home resets position/zoom; Esc closes. The resizable window uses normal runtime presentation scaling.
 
 Only saved files are viewed. New/dirty documents require confirmation and a successful save before launch. **Scene Preview** remains lightweight, editable, definition-driven, and Engine-free, with representative/static animation frames. It is not replaced by the viewer.
 
-Automatic GSPR discovery is unavailable: current GSCN metadata has no explicit relationship to associated GSPR files. No directory scanning or heuristic matching is performed. Packed dependencies that require passwords are unsupported because source metadata does not carry them.
+The Viewer content root is the directory containing the opened GSCN. It scans that directory non-recursively for loose GTS/GANI/GSPR files and typed definitions in adjacent GAFs. Logical GTS names and GANI keys resolve with **loose definition > packed definition > explicit source fallback**; GANI → GTS and GSPR → GTS follow the same policy. Fallback paths are relative to the containing definition/archive. Multiple same-precedence matches fail with candidate source diagnostics rather than choosing arbitrarily.
+
+Adjacent GSPR documents are validated, then only sprites with a `SceneId` matching the viewed scene are materialized on its runtime layers. Matching non-empty sprite IDs or nicknames are deduplicated: loose wins over packed, and remaining same-precedence duplicates fail. Entries with neither identity remain distinct. Other scenes referenced by GSPR are never loaded. This Viewer-specific discovery convention adds no GSCN source fields and changes no format semantics. Packed dependencies that require passwords remain unsupported.

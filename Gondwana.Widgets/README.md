@@ -12,8 +12,8 @@ and backbuffers using the same engine-driven drawing pipeline as the rest of the
 
 - Reusable in-game UI widgets for Gondwana projects
 - DirectDrawing-friendly controls and overlays
-- Common controls including labels, buttons, check boxes, radio buttons, list boxes, combo boxes, and editable text boxes
-- Game-oriented components such as HUD elements, health bars, name tags, dialogs, conversation boxes, and menus
+- Common controls including labels, buttons, check boxes, radio buttons, list boxes, combo boxes, tabbed containers, and editable text boxes
+- Game-oriented components such as HUD elements, health bars, name tags, dialogs, conversation boxes, menus, and an opt-in runtime profiler HUD
 - Code-first widget composition with no external editor or scene GUI required
 - Designed for 2D and 2.5D games using Gondwana's scene, view, and rendering systems
 - Cross-platform-friendly architecture through the core Gondwana rendering pipeline
@@ -52,6 +52,21 @@ A typical widget can be used for in-game interface elements such as:
 
 Exact usage depends on the specific widget type being used.
 
+### Runtime profiler HUD
+
+`ProfilerWidget` displays detached `Engine.Instance.Profiler` measurements in-game.
+It can filter individual sources/measurements, optionally include current Scene/View/
+backbuffer/configuration/MSAA context, accept application-specific lines through
+`AdditionalLinesProvider`, show hover definitions, and expose a built-in Metrics
+selector for runtime visibility changes. The saved-scene Scene Viewer uses the same
+widget for its F3 diagnostics overlay, providing a built-in real-world consumer of
+the API.
+
+`TooltipWidget` is also available as a reusable non-interactive view overlay for
+contextual pointer help outside the profiler.
+
+See the [ProfilerWidget guide](https://github.com/Isthimius/Gondwana/wiki/Widgets---ProfilerWidget).
+
 ### Menu bars
 
 `MenuBarWidget` supports callback commands, immutable optional item keys, check/radio
@@ -62,6 +77,12 @@ input after the focused widget, including while dropdowns are closed.
 
 See the [menu guide](https://github.com/Isthimius/Gondwana/wiki/Widgets---MenuBarWidget)
 and `Demos/WidgetsTest/WidgetsTestHost.cs` for complete consumer examples.
+
+### Tabbed containers
+
+`TabControlWidget` groups ordinary child widgets into selectable `TabPageWidget` containers. Tab headers resize across the configured rows, can select pages through explicit `Alt` mnemonics, and support optional primary-pointer drag reordering. Use `AutoExpandRows` and `PreferredTabWidth` when the control should add header rows as pages are added.
+
+See the [tab-control guide](https://github.com/Isthimius/Gondwana/wiki/Widgets---TabControlWidget) and `Demos/WidgetsTest/WidgetsTestHost.cs` for a working example.
 
 ### Toast notifications
 

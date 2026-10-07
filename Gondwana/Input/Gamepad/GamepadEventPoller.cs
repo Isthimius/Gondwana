@@ -23,14 +23,7 @@ public sealed class GamepadEventPoller
     {
         _configsByGamepadId.Clear();
 
-        Adapters = adapters;
-        if (adapters is not null)
-        {
-            foreach (var adapter in adapters)
-            {
-                _configsByGamepadId[adapter.GamepadId] = new Dictionary<string, GamepadButtonEventConfiguration>();
-            }
-        }
+        RefreshAdapters(adapters);
     }
 
     /// <summary>
@@ -44,6 +37,30 @@ public sealed class GamepadEventPoller
     public static void Initialize(IEnumerable<IGamepadAdapter>? adapters)
     {
         Instance = new GamepadEventPoller(adapters);
+    }
+
+    /// <summary>
+    /// Refreshes the adapter snapshot without replacing this poller instance.
+    /// </summary>
+    /// <remarks>
+    /// Existing button registrations, pause state, and event subscribers are preserved. Configuration
+    /// entries for disconnected gamepad IDs are intentionally retained so reconnecting the same device
+    /// can resume previously registered bindings.
+    /// </remarks>
+    /// <param name="adapters">The current connected gamepad adapters, or <c>null</c> when none are available.</param>
+    internal void RefreshAdapters(IEnumerable<IGamepadAdapter>? adapters)
+    {
+        var snapshot = adapters?.ToArray();
+        Adapters = snapshot;
+
+        if (snapshot is null)
+            return;
+
+        foreach (var adapter in snapshot)
+        {
+            if (!_configsByGamepadId.ContainsKey(adapter.GamepadId))
+                _configsByGamepadId[adapter.GamepadId] = new Dictionary<string, GamepadButtonEventConfiguration>();
+        }
     }
 
     /// <summary>

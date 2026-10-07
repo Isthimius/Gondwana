@@ -221,11 +221,17 @@ It does not interpret game actions such as **Jump**, **Open Inventory**, or **Se
 
 # The Engine Cycle
 
-Input polling occurs in `Engine.DoBackgroundTasks()`.
+Most input event polling occurs in `Engine.DoBackgroundTasks()`. Gamepad manager refresh is scheduled one step earlier at the start of `RunSimulationCycle()`, so refreshed controller state is available even to pre-cycle plugin callbacks.
 
 The current order is:
 
 ```text
+Gamepad connection/state refresh when due
+    ↓
+Plugin OnPreCycle callbacks
+    ↓
+BeforeBackgroundTasksExecute game callback
+    ↓
 Pre-cycle timers
     ↓
 Keyboard polling
@@ -258,7 +264,9 @@ TouchEventPoller.Instance?.PollForEvents(tick);
 GamepadEventPoller.Instance?.PollForEvents(tick);
 ```
 
-Gamepad device state has one additional layer: the active `IGamepadManager` refreshes connected adapters during foreground processing. The event poller consumes the latest state stored by those adapters.
+Gamepad device state has one additional layer. Before game callbacks and button-event polling run, the active `IGamepadManager` performs connection discovery and live state polling when their independent cadences are due. The event poller then consumes the refreshed state stored by those adapters.
+
+The default cadences are `0.2 Hz` for `UpdateConnections()` (once every five seconds) and `60 Hz` for `Poll()`. These are controlled by `EngineConfiguration.GamepadConnectionUpdateFrequencyHz` and `EngineConfiguration.GamepadPollFrequencyHz`, and are independent of render `TargetFPS`.
 
 ## Why adapters and pollers are separate
 
@@ -615,19 +623,24 @@ IGamepadManager
 
 ## Gamepad manager
 
-`IGamepadManager<T>` owns discovery and state refresh:
+`IGamepadManager<T>` owns two distinct operations:
 
 ```csharp
 IReadOnlyCollection<T> ConnectedAdapters { get; }
-void Update();
+void UpdateConnections();
+void Poll();
 ```
+
+`UpdateConnections()` discovers attachments and removals. `Poll()` refreshes buttons, sticks, and triggers for controllers that are already connected. Keeping them separate allows expensive device discovery to run much less frequently than latency-sensitive state polling.
 
 Concrete managers include:
 
 - `XInputGamepadManager` on Windows
 - `SdlGamepadManager` for cross-platform SDL2 input
 
-Assigning a manager through `Engine.Input.GamepadManager` also initializes `GamepadEventPoller` against its adapter collection.
+Assigning a manager through `Engine.Input.GamepadManager` performs one initial discovery/state refresh and initializes `GamepadEventPoller` against its adapter collection.
+
+The legacy combined `Update()` member remains as a compatibility path for older custom managers. New manager implementations should implement the split operations.
 
 ## Gamepad adapter
 
@@ -715,26 +728,29 @@ if (stick is { } left && left.IsEngaged())
 - `Direction()`
 - `WithDeadzone()`
 
-## Connection timing
+## Connection and polling timing
 
-A gamepad manager discovers devices during `Update()`.
+When a manager is assigned, Gondwana performs one immediate `UpdateConnections()` followed by one `Poll()`. Existing controllers are therefore available to platform host initialization hooks without a manual refresh.
 
-At host initialization time, `ConnectedAdapters` may still be empty. A setup routine may perform one explicit initial update before registering existing controllers:
+During runtime, the engine schedules the two operations independently:
+
+| Operation | Default | Purpose |
+|---|---:|---|
+| `UpdateConnections()` | `0.2 Hz` | Detect attachments and removals. |
+| `Poll()` | `60 Hz` | Refresh buttons, sticks, and triggers. |
+
+Configure them through:
 
 ```csharp
-manager.Update();
-
-foreach (var adapter in manager.ConnectedAdapters)
-{
-    poller.StartMonitoringButton(
-        adapter.GamepadId,
-        "A");
-}
+Engine.Configuration.GamepadConnectionUpdateFrequencyHz = 0.2;
+Engine.Configuration.GamepadPollFrequencyHz = 60;
 ```
 
-Do not call `Update()` in an unbounded custom loop. The engine already refreshes the manager as part of its runtime cycle.
+A value of `0` disables automatic scheduling for that operation. These frequencies are independent of `TargetFPS`, so an uncapped renderer does not create an uncapped controller poll loop.
 
-Hot-plugged devices also need game-specific registration for whichever buttons the game wants to monitor.
+Both operations run at the start of the simulation cycle when due, before plugin pre-cycle hooks, `BeforeBackgroundTasksExecute` callbacks, and `GamepadEventPoller` reads adapter state.
+
+Hot-plugged devices still need game-specific registration for whichever buttons the game wants to monitor.
 
 ---
 

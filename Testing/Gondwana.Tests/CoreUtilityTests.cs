@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Reflection;
 using Gondwana.Timers;
 
 namespace Gondwana.Tests;
@@ -54,6 +55,31 @@ public sealed class CoreUtilityTests
         var text = args.ToString();
 
         Assert.DoesNotContain("GPU FPS", text);
+    }
+
+    /// <summary>
+    /// Verifies that the legacy CPS/FPS public surface is warning-only deprecated with the Gondwana migration diagnostic.
+    /// </summary>
+    [Fact]
+    public void LegacyCpsPublicSurface_IsMarkedObsolete()
+    {
+        var members = new MemberInfo[]
+        {
+            typeof(Engine).GetProperty(nameof(Engine.CyclesPerSecond))!,
+            typeof(Engine).GetProperty(nameof(Engine.FramesPerSecond))!,
+            typeof(Engine).GetEvent(nameof(Engine.CPSCalculated))!,
+            typeof(Configuration.EngineConfiguration).GetProperty(nameof(Configuration.EngineConfiguration.SamplingTimeForCPS))!,
+            typeof(Configuration.EngineConfiguration).GetProperty(nameof(Configuration.EngineConfiguration.SamplingTimeForCPSTicks))!
+        };
+
+        foreach (MemberInfo member in members)
+        {
+            var obsolete = member.GetCustomAttribute<ObsoleteAttribute>();
+
+            Assert.NotNull(obsolete);
+            Assert.False(obsolete.IsError);
+            Assert.Equal("GOND0001", obsolete.DiagnosticId);
+        }
     }
 
     /// <summary>

@@ -12,7 +12,7 @@ This separation is deliberate. The camera moves through world space. The viewpor
 The Camera stores a world-space upper-left position in pixels. It can:
 - snap instantly
 - center on points or tiles
-- smoothly follow a target
+- smoothly follow a target at the center or a configurable normalized viewport anchor
 - pan over time
 - clamp itself to world bounds
 - use a dead zone for less twitchy follow behavior
@@ -54,4 +54,4 @@ Because rendering flows through views, multiple cameras are not a bolt-on featur
 
 ## Cameras in periodic worlds
 
-Wrapped layer axes allow continuous camera movement; non-wrapped axes retain clamping. Following selects the target image nearest the camera center. A followed object's layer supplies topology; other camera uses select the first visible layer in scene insertion order. See [[SceneLayer Wrapping]] for projected-axis clamping and mixed-layer behavior.
+Wrapped layer axes allow continuous camera movement; non-wrapped axes retain clamping. Following selects the target image nearest the current follow anchor, which is the camera center for the legacy centered-follow APIs. Movable-target follow helpers use the followed object's layer for topology; delegate-based follow and other camera uses select the first visible layer in scene insertion order. See [[SceneLayer Wrapping]] for projected-axis clamping and mixed-layer behavior.

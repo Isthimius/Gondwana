@@ -79,6 +79,8 @@ package "Engine" {
         +VSync : bool
         +MsaaSampleCount : int
         +SamplingTimeForCPS : double
+        +GamepadConnectionUpdateFrequencyHz : double
+        +GamepadPollFrequencyHz : double
         +TimeBetweenKeyboardEvents : double
         +TimeBetweenMouseEvents : double
         +TimeBetweenGamepadEvents : double
@@ -245,7 +247,11 @@ package "Rendering" {
         +SnapTo(worldUpperLeftPx)
         +CenterOn(worldCenterPx)
         +Follow(getWorldPixel, hardFollow)
+        +FollowAt(getWorldPixel, viewportAnchor, hardFollow)
         +FollowCentered(target, speed, hard)
+        +FollowAt(target, viewportAnchor, speed, hard)
+        +FollowAtX(target, horizontalAnchor, speed, hard)
+        +FollowAtY(target, verticalAnchor, speed, hard)
         +PanCenterTo(worldCenterPx, speed)
         +PanToOverDuration(worldTopLeftPx, durationSeconds)
     }
@@ -624,7 +630,9 @@ package "Input" {
 
     interface "IGamepadManager<TAdapter>" as IGamepadManager {
         +ConnectedAdapters : IReadOnlyList<TAdapter>
-        +Update()
+        +UpdateConnections()
+        +Poll()
+        +Update() <<obsolete>>
     }
 }
 
