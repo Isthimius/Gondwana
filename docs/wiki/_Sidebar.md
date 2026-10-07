@@ -123,7 +123,7 @@
 <details>
 <summary><strong>Studio & Desktop Tools</strong></summary>
 
-- [[Studio & Desktop Tools]]
+- [[Studio & Desktop Tools|Studio-and-Desktop-Tools]]
 - [[Gondwana Studio]]
 - [[Standalone Desktop Tools]]
   - [Scene Viewer](Standalone-Desktop-Tools#scene-viewer)
