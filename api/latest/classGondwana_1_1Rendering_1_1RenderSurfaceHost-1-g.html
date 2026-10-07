@@ -156,6 +156,8 @@ Properties</h2></td></tr>
 <tr class="memitem:af6c088dcc08eff11fb58064e4cdaeb25" id="r_af6c088dcc08eff11fb58064e4cdaeb25"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af6c088dcc08eff11fb58064e4cdaeb25">RedrawDirtyRectangleOnly</a> = true<code> [get, set]</code></td></tr>
 <tr class="memdesc:af6c088dcc08eff11fb58064e4cdaeb25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets a value indicating whether only the dirty (changed) regions of the backbuffer are presented to the adapter each frame.  <br /></td></tr>
 <tr class="inherit_header properties_classGondwana_1_1Rendering_1_1RenderSurfaceHostBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('properties_classGondwana_1_1Rendering_1_1RenderSurfaceHostBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Properties inherited from <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html">Gondwana.Rendering.RenderSurfaceHostBase</a></td></tr>
+<tr class="memitem:a37780e72022e802d041800eefc1b6b2a inherit properties_classGondwana_1_1Rendering_1_1RenderSurfaceHostBase" id="r_a37780e72022e802d041800eefc1b6b2a"><td class="memItemLeft" align="right" valign="top">Diagnostics.? TelemetrySource&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a37780e72022e802d041800eefc1b6b2a">Telemetry</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a37780e72022e802d041800eefc1b6b2a inherit properties_classGondwana_1_1Rendering_1_1RenderSurfaceHostBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Neutral session-local measurements for this host; null when source capacity is exhausted or the shared collector is disposed.  <br /></td></tr>
 <tr class="memitem:aa5cd6f2a3441111e38acdff4b721512a inherit properties_classGondwana_1_1Rendering_1_1RenderSurfaceHostBase" id="r_aa5cd6f2a3441111e38acdff4b721512a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html">BackbufferBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#aa5cd6f2a3441111e38acdff4b721512a">Backbuffer</a><code> [get]</code></td></tr>
 <tr class="memdesc:aa5cd6f2a3441111e38acdff4b721512a inherit properties_classGondwana_1_1Rendering_1_1RenderSurfaceHostBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the in-memory <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html" title="Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rende...">BackbufferBase</a> associated with the current rendering context.  <br /></td></tr>
 <tr class="memitem:a5d574c0284efea733170f575df69e7f9 inherit properties_classGondwana_1_1Rendering_1_1RenderSurfaceHostBase" id="r_a5d574c0284efea733170f575df69e7f9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a5d574c0284efea733170f575df69e7f9">PresentationScale</a><code> [get]</code></td></tr>
@@ -244,7 +246,7 @@ Events</h2></td></tr>
 <p>Binding a scene unregisters event handlers from the previous scene (if any), registers handlers with the new scene, and triggers a full refresh on the next frame. The <a class="el" href="#af8bbb7657b2a182575fabb206ea4d974" title="Occurs when a scene is bound to or unbound from this render surface host.">BindToScene</a> event fires after the binding operation completes. </p>
 <p>If the specified scene is already bound, this method returns immediately without performing any operations. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00258">258</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00259">259</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -281,7 +283,7 @@ This method always unregisters the instance from the registry. Derived classes s
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html#a32a3f463b8575f0e76057f9312c43125">Gondwana.Rendering.RenderSurfaceHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l01017">1017</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l01067">1067</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -344,7 +346,7 @@ This method always unregisters the instance from the registry. Derived classes s
 <p>The <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html" title="Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rende...">BackbufferBase</a> instance managing the render target canvas and dirty-rectangle tracking. </p>
 <p>The backbuffer holds the rendered frame content and tracks which regions have changed since the last presentation. All rendering operations are performed on the backbuffer's canvas before being copied to the UI adapter during presentation. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00180">180</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00181">181</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -372,7 +374,7 @@ This method always unregisters the instance from the registry. Derived classes s
 <p><code>true</code> to present only dirty regions (default); <code>false</code> to present the entire backbuffer every frame. </p>
 <p>Enabling dirty-rectangle-only presentation improves performance by reducing the amount of data transferred to the UI adapter. Disable this when troubleshooting rendering issues or when the adapter does not support partial updates. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00233">233</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00234">234</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -400,7 +402,7 @@ This method always unregisters the instance from the registry. Derived classes s
 <p>The <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html" title="Represents the abstract base class for render surface adapters that present backbuffer output to a de...">RenderSurfaceAdapterBase</a> instance representing the UI control or window where rendered content is displayed. </p>
 <p>The adapter handles platform-specific presentation details and provides size/resize notifications. The Backbuffer retains its logical dimensions across adapter resizes. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00205">205</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00206">206</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -428,7 +430,7 @@ This method always unregisters the instance from the registry. Derived classes s
 <p>The <a class="el" href="#a5443506468c1f60d06d90d65d49ebee7" title="Gets the scene currently bound to this render surface host.">Scene</a> instance being rendered, or <a class="el" href="classGondwana_1_1Scenes_1_1Scene.html#a98e66a9feac69e867a1a0b0ba172642f" title="Gets the singleton empty scene instance.">Scene.Empty</a> if no scene is bound. </p>
 <p>The scene contains all layers, sprites, and direct drawings that are rendered each frame. Use <a class="el" href="#ad2eee4bd5139d89c515b2d79463f2f03" title="Binds a scene to this render surface host, replacing any previously bound scene.">Bind</a> to change the active scene. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00192">192</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00193">193</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>
@@ -456,7 +458,7 @@ This method always unregisters the instance from the registry. Derived classes s
 <p>The <a class="el" href="#a476c1ed70c6bd1d0683feac077a4fa73" title="Gets the view manager that controls camera positions, viewports, and multi-view rendering.">ViewManager</a> instance managing all views associated with this render surface host. </p>
 <p>Use the view manager to create, configure, and remove views. Each view defines a viewport rectangle on the backbuffer, a camera position in the scene, and zoom/parallax settings. <a class="el" href="namespaceGondwana_1_1Rendering_1_1Views.html">Views</a> enable split-screen, picture-in-picture, and minimap rendering. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00218">218</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHost_8cs_source.html#l00219">219</a> of file <a class="el" href="RenderSurfaceHost_8cs_source.html">RenderSurfaceHost.cs</a>.</p>
 
 </div>
 </div>

@@ -643,7 +643,7 @@ $(function(){initNavTree('EngineState_8cs_source.html','',''); });
 <div class="line"><a id="l00742" name="l00742"></a><span class="lineno">  742</span> </div>
 <div class="line"><a id="l00743" name="l00743"></a><span class="lineno">  743</span>        <span class="comment">// Work from a stable snapshot. Scene construction/disposal may occur on</span></div>
 <div class="line"><a id="l00744" name="l00744"></a><span class="lineno">  744</span>        <span class="comment">// other threads while a state file is being assembled.</span></div>
-<div class="line"><a id="l00745" name="l00745"></a><span class="lineno">  745</span>        <span class="keywordflow">foreach</span> (var scene <span class="keywordflow">in</span> Scene._allScenes.ToList())</div>
+<div class="line"><a id="l00745" name="l00745"></a><span class="lineno">  745</span>        <span class="keywordflow">foreach</span> (var scene <span class="keywordflow">in</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Widgets_1_1Hud.html#aa54c6ede40bfda28c589c2ff03d4bd93a9ead0d38e06ec253ca0ecbf6ea56e59b">Scene</a>._allScenes.ToList())</div>
 <div class="line"><a id="l00746" name="l00746"></a><span class="lineno">  746</span>        {</div>
 <div class="line"><a id="l00747" name="l00747"></a><span class="lineno">  747</span>            <span class="keywordflow">if</span> (scene is <span class="keyword">null</span>)</div>
 <div class="line"><a id="l00748" name="l00748"></a><span class="lineno">  748</span>                <span class="keywordflow">continue</span>;</div>
@@ -788,7 +788,7 @@ $(function(){initNavTree('EngineState_8cs_source.html','',''); });
 <div class="line"><a id="l00891" name="l00891"></a><span class="lineno">  891</span>            Cycle.ClearAllAnimationCycles();</div>
 <div class="line"><a id="l00892" name="l00892"></a><span class="lineno">  892</span> </div>
 <div class="line"><a id="l00893" name="l00893"></a><span class="lineno">  893</span>        <span class="keywordflow">if</span> (parts.HasFlag(<a class="code hl_enumeration" href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575">EngineStateParts</a>.Scenes))</div>
-<div class="line"><a id="l00894" name="l00894"></a><span class="lineno">  894</span>            Scene.ClearAllScenes();</div>
+<div class="line"><a id="l00894" name="l00894"></a><span class="lineno">  894</span>            <a class="code hl_enumvalue" href="namespaceGondwana_1_1Widgets_1_1Hud.html#aa54c6ede40bfda28c589c2ff03d4bd93a9ead0d38e06ec253ca0ecbf6ea56e59b">Scene</a>.ClearAllScenes();</div>
 <div class="line"><a id="l00895" name="l00895"></a><span class="lineno">  895</span> </div>
 <div class="line"><a id="l00896" name="l00896"></a><span class="lineno">  896</span>        <span class="keywordflow">if</span> (parts.HasFlag(<a class="code hl_enumeration" href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575">EngineStateParts</a>.Sprites))</div>
 <div class="line"><a id="l00897" name="l00897"></a><span class="lineno">  897</span>        {</div>
@@ -1228,7 +1228,7 @@ $(function(){initNavTree('EngineState_8cs_source.html','',''); });
 <div class="line"><a id="l01331" name="l01331"></a><span class="lineno"> 1331</span>        <span class="keywordflow">foreach</span> (var entry <span class="keywordflow">in</span> scenes)</div>
 <div class="line"><a id="l01332" name="l01332"></a><span class="lineno"> 1332</span>        {</div>
 <div class="line"><a id="l01333" name="l01333"></a><span class="lineno"> 1333</span>            <span class="keywordflow">if</span> (entry?.LegacyScene is { } legacyScene)</div>
-<div class="line"><a id="l01334" name="l01334"></a><span class="lineno"> 1334</span>                Scene._allScenes.Remove(legacyScene);</div>
+<div class="line"><a id="l01334" name="l01334"></a><span class="lineno"> 1334</span>                <a class="code hl_enumvalue" href="namespaceGondwana_1_1Widgets_1_1Hud.html#aa54c6ede40bfda28c589c2ff03d4bd93a9ead0d38e06ec253ca0ecbf6ea56e59b">Scene</a>._allScenes.Remove(legacyScene);</div>
 <div class="line"><a id="l01335" name="l01335"></a><span class="lineno"> 1335</span>        }</div>
 <div class="line"><a id="l01336" name="l01336"></a><span class="lineno"> 1336</span>    }</div>
 <div class="line"><a id="l01337" name="l01337"></a><span class="lineno"> 1337</span> </div>
@@ -1241,9 +1241,9 @@ $(function(){initNavTree('EngineState_8cs_source.html','',''); });
 <div class="line"><a id="l01344" name="l01344"></a><span class="lineno"> 1344</span>            <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l01345" name="l01345"></a><span class="lineno"> 1345</span> </div>
 <div class="line"><a id="l01346" name="l01346"></a><span class="lineno"> 1346</span>        var existingIndexById = <span class="keyword">new</span> Dictionary&lt;string, int&gt;(StringComparer.Ordinal);</div>
-<div class="line"><a id="l01347" name="l01347"></a><span class="lineno"> 1347</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; Scene._allScenes.Count; i++)</div>
+<div class="line"><a id="l01347" name="l01347"></a><span class="lineno"> 1347</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_enumvalue" href="namespaceGondwana_1_1Widgets_1_1Hud.html#aa54c6ede40bfda28c589c2ff03d4bd93a9ead0d38e06ec253ca0ecbf6ea56e59b">Scene</a>._allScenes.Count; i++)</div>
 <div class="line"><a id="l01348" name="l01348"></a><span class="lineno"> 1348</span>        {</div>
-<div class="line"><a id="l01349" name="l01349"></a><span class="lineno"> 1349</span>            var <span class="keywordtype">id</span> = Scene._allScenes[i].ID;</div>
+<div class="line"><a id="l01349" name="l01349"></a><span class="lineno"> 1349</span>            var <span class="keywordtype">id</span> = <a class="code hl_enumvalue" href="namespaceGondwana_1_1Widgets_1_1Hud.html#aa54c6ede40bfda28c589c2ff03d4bd93a9ead0d38e06ec253ca0ecbf6ea56e59b">Scene</a>._allScenes[i].ID;</div>
 <div class="line"><a id="l01350" name="l01350"></a><span class="lineno"> 1350</span>            <span class="keywordflow">if</span> (!<span class="keywordtype">string</span>.IsNullOrWhiteSpace(<span class="keywordtype">id</span>) &amp;&amp; !existingIndexById.ContainsKey(<span class="keywordtype">id</span>))</div>
 <div class="line"><a id="l01351" name="l01351"></a><span class="lineno"> 1351</span>                existingIndexById.Add(<span class="keywordtype">id</span>, i);</div>
 <div class="line"><a id="l01352" name="l01352"></a><span class="lineno"> 1352</span>        }</div>
@@ -1257,7 +1257,7 @@ $(function(){initNavTree('EngineState_8cs_source.html','',''); });
 <div class="line"><a id="l01360" name="l01360"></a><span class="lineno"> 1360</span>            <span class="keywordflow">if</span> (entry is <span class="keyword">null</span>)</div>
 <div class="line"><a id="l01361" name="l01361"></a><span class="lineno"> 1361</span>                <span class="keywordflow">continue</span>;</div>
 <div class="line"><a id="l01362" name="l01362"></a><span class="lineno"> 1362</span> </div>
-<div class="line"><a id="l01363" name="l01363"></a><span class="lineno"> 1363</span>            Scene incoming;</div>
+<div class="line"><a id="l01363" name="l01363"></a><span class="lineno"> 1363</span>            <a class="code hl_enumvalue" href="namespaceGondwana_1_1Widgets_1_1Hud.html#aa54c6ede40bfda28c589c2ff03d4bd93a9ead0d38e06ec253ca0ecbf6ea56e59b">Scene</a> incoming;</div>
 <div class="line"><a id="l01364" name="l01364"></a><span class="lineno"> 1364</span>            <span class="keywordtype">bool</span> materializedFromDefinition = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l01365" name="l01365"></a><span class="lineno"> 1365</span> </div>
 <div class="line"><a id="l01366" name="l01366"></a><span class="lineno"> 1366</span>            <span class="keywordflow">if</span> (entry.LegacyScene is not <span class="keyword">null</span>)</div>
@@ -1289,7 +1289,7 @@ $(function(){initNavTree('EngineState_8cs_source.html','',''); });
 <div class="line"><a id="l01392" name="l01392"></a><span class="lineno"> 1392</span>            <span class="comment">// Scene materialization registers runtime scenes immediately. Detach newly</span></div>
 <div class="line"><a id="l01393" name="l01393"></a><span class="lineno"> 1393</span>            <span class="comment">// materialized definitions so this method remains the single merge owner.</span></div>
 <div class="line"><a id="l01394" name="l01394"></a><span class="lineno"> 1394</span>            <span class="keywordflow">if</span> (materializedFromDefinition)</div>
-<div class="line"><a id="l01395" name="l01395"></a><span class="lineno"> 1395</span>                Scene._allScenes.Remove(incoming);</div>
+<div class="line"><a id="l01395" name="l01395"></a><span class="lineno"> 1395</span>                <a class="code hl_enumvalue" href="namespaceGondwana_1_1Widgets_1_1Hud.html#aa54c6ede40bfda28c589c2ff03d4bd93a9ead0d38e06ec253ca0ecbf6ea56e59b">Scene</a>._allScenes.Remove(incoming);</div>
 <div class="line"><a id="l01396" name="l01396"></a><span class="lineno"> 1396</span> </div>
 <div class="line"><a id="l01397" name="l01397"></a><span class="lineno"> 1397</span>            <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.IsNullOrWhiteSpace(incoming.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a7b07d735642db1f17879761d27f209d8">ID</a>))</div>
 <div class="line"><a id="l01398" name="l01398"></a><span class="lineno"> 1398</span>                incoming.ID = Guid.NewGuid().ToString();</div>
@@ -1306,12 +1306,12 @@ $(function(){initNavTree('EngineState_8cs_source.html','',''); });
 <div class="line"><a id="l01409" name="l01409"></a><span class="lineno"> 1409</span>                    <span class="keywordflow">continue</span>;</div>
 <div class="line"><a id="l01410" name="l01410"></a><span class="lineno"> 1410</span>                }</div>
 <div class="line"><a id="l01411" name="l01411"></a><span class="lineno"> 1411</span> </div>
-<div class="line"><a id="l01412" name="l01412"></a><span class="lineno"> 1412</span>                Scene._allScenes[existingIndex] = incoming;</div>
+<div class="line"><a id="l01412" name="l01412"></a><span class="lineno"> 1412</span>                <a class="code hl_enumvalue" href="namespaceGondwana_1_1Widgets_1_1Hud.html#aa54c6ede40bfda28c589c2ff03d4bd93a9ead0d38e06ec253ca0ecbf6ea56e59b">Scene</a>._allScenes[existingIndex] = incoming;</div>
 <div class="line"><a id="l01413" name="l01413"></a><span class="lineno"> 1413</span>            }</div>
 <div class="line"><a id="l01414" name="l01414"></a><span class="lineno"> 1414</span>            <span class="keywordflow">else</span></div>
 <div class="line"><a id="l01415" name="l01415"></a><span class="lineno"> 1415</span>            {</div>
-<div class="line"><a id="l01416" name="l01416"></a><span class="lineno"> 1416</span>                existingIndexById[incoming.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a7b07d735642db1f17879761d27f209d8">ID</a>] = Scene._allScenes.Count;</div>
-<div class="line"><a id="l01417" name="l01417"></a><span class="lineno"> 1417</span>                Scene._allScenes.Add(incoming);</div>
+<div class="line"><a id="l01416" name="l01416"></a><span class="lineno"> 1416</span>                existingIndexById[incoming.<a class="code hl_property" href="classGondwana_1_1Scenes_1_1Scene.html#a7b07d735642db1f17879761d27f209d8">ID</a>] = <a class="code hl_enumvalue" href="namespaceGondwana_1_1Widgets_1_1Hud.html#aa54c6ede40bfda28c589c2ff03d4bd93a9ead0d38e06ec253ca0ecbf6ea56e59b">Scene</a>._allScenes.Count;</div>
+<div class="line"><a id="l01417" name="l01417"></a><span class="lineno"> 1417</span>                <a class="code hl_enumvalue" href="namespaceGondwana_1_1Widgets_1_1Hud.html#aa54c6ede40bfda28c589c2ff03d4bd93a9ead0d38e06ec253ca0ecbf6ea56e59b">Scene</a>._allScenes.Add(incoming);</div>
 <div class="line"><a id="l01418" name="l01418"></a><span class="lineno"> 1418</span>            }</div>
 <div class="line"><a id="l01419" name="l01419"></a><span class="lineno"> 1419</span>        }</div>
 <div class="line"><a id="l01420" name="l01420"></a><span class="lineno"> 1420</span>    }</div>
@@ -1333,7 +1333,7 @@ $(function(){initNavTree('EngineState_8cs_source.html','',''); });
 <div class="line"><a id="l01436" name="l01436"></a><span class="lineno"> 1436</span> </div>
 <div class="line"><a id="l01437" name="l01437"></a><span class="lineno"> 1437</span>        <span class="keywordflow">if</span> (!<span class="keywordtype">string</span>.IsNullOrWhiteSpace(sceneId))</div>
 <div class="line"><a id="l01438" name="l01438"></a><span class="lineno"> 1438</span>        {</div>
-<div class="line"><a id="l01439" name="l01439"></a><span class="lineno"> 1439</span>            var scene = Scene._allScenes.FirstOrDefault(</div>
+<div class="line"><a id="l01439" name="l01439"></a><span class="lineno"> 1439</span>            var scene = <a class="code hl_enumvalue" href="namespaceGondwana_1_1Widgets_1_1Hud.html#aa54c6ede40bfda28c589c2ff03d4bd93a9ead0d38e06ec253ca0ecbf6ea56e59b">Scene</a>._allScenes.FirstOrDefault(</div>
 <div class="line"><a id="l01440" name="l01440"></a><span class="lineno"> 1440</span>                candidate =&gt; <span class="keywordtype">string</span>.Equals(candidate.ID, sceneId, StringComparison.Ordinal));</div>
 <div class="line"><a id="l01441" name="l01441"></a><span class="lineno"> 1441</span> </div>
 <div class="line"><a id="l01442" name="l01442"></a><span class="lineno"> 1442</span>            targetLayer = scene?.GetSceneLayerByID(layerId);</div>
@@ -1488,7 +1488,8 @@ $(function(){initNavTree('EngineState_8cs_source.html','',''); });
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_html"><div class="ttname"><a href="namespaceGondwana_1_1Drawing.html">Gondwana.Drawing</a></div><div class="ttdef"><b>Definition</b> <a href="DirectVideo_8cs_source.html#l00009">DirectVideo.cs:9</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Scenes_1_1GSCN_html"><div class="ttname"><a href="namespaceGondwana_1_1Scenes_1_1GSCN.html">Gondwana.Scenes.GSCN</a></div><div class="ttdef"><b>Definition</b> <a href="SceneAnimationSourceDefinition_8cs_source.html#l00004">SceneAnimationSourceDefinition.cs:4</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Scenes_html"><div class="ttname"><a href="namespaceGondwana_1_1Scenes.html">Gondwana.Scenes</a></div><div class="ttdef"><b>Definition</b> <a href="SceneAnimationSourceDefinition_8cs_source.html#l00004">SceneAnimationSourceDefinition.cs:4</a></div></div>
-<div class="ttc" id="anamespaceGondwana_html"><div class="ttname"><a href="namespaceGondwana.html">Gondwana</a></div><div class="ttdef"><b>Definition</b> <a href="BrowserAudioBackend_8cs_source.html#l00003">BrowserAudioBackend.cs:3</a></div></div>
+<div class="ttc" id="anamespaceGondwana_1_1Widgets_1_1Hud_html_aa54c6ede40bfda28c589c2ff03d4bd93a9ead0d38e06ec253ca0ecbf6ea56e59b"><div class="ttname"><a href="namespaceGondwana_1_1Widgets_1_1Hud.html#aa54c6ede40bfda28c589c2ff03d4bd93a9ead0d38e06ec253ca0ecbf6ea56e59b">Gondwana.Widgets.Hud.ProfilerContextInfo.Scene</a></div><div class="ttdeci">@ Scene</div><div class="ttdoc">Displays scene layer, grid-cell, and active tile-animation counts.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerWidget_8cs_source.html#l00047">ProfilerWidget.cs:47</a></div></div>
+<div class="ttc" id="anamespaceGondwana_html"><div class="ttname"><a href="namespaceGondwana.html">Gondwana</a></div><div class="ttdef"><b>Definition</b> <a href="RuntimeTelemetryExample_8cs_source.html#l00007">RuntimeTelemetryExample.cs:7</a></div></div>
 <div class="ttc" id="anamespaceGondwana_html_a41a5393997f1467717cf9a6ca9281575"><div class="ttname"><a href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575">Gondwana.EngineStateParts</a></div><div class="ttdeci">EngineStateParts</div><div class="ttdoc">Represents different parts of the engine state that can be managed, saved, or loaded independently....</div><div class="ttdef"><b>Definition</b> <a href="EngineStateParts_8cs_source.html#l00011">EngineStateParts.cs:12</a></div></div>
 <div class="ttc" id="anamespaceGondwana_html_a41a5393997f1467717cf9a6ca9281575a2578806b448ef3b8bd75bdfedcd01ae3"><div class="ttname"><a href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575a2578806b448ef3b8bd75bdfedcd01ae3">Gondwana.EngineStateParts.AssetsFiles</a></div><div class="ttdeci">@ AssetsFiles</div><div class="ttdoc">Represents the asset files state, including loaded file references, asset metadata,...</div><div class="ttdef"><b>Definition</b> <a href="EngineStateParts_8cs_source.html#l00024">EngineStateParts.cs:24</a></div></div>
 <div class="ttc" id="anamespaceGondwana_html_a41a5393997f1467717cf9a6ca9281575abb34f602e45a9fbcb2cdfee7a48673fc"><div class="ttname"><a href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575abb34f602e45a9fbcb2cdfee7a48673fc">Gondwana.EngineStateParts.Scenes</a></div><div class="ttdeci">@ Scenes</div><div class="ttdoc">Represents the scenes state, including scene definitions, layer configurations, entity placements,...</div><div class="ttdef"><b>Definition</b> <a href="EngineStateParts_8cs_source.html#l00045">EngineStateParts.cs:45</a></div></div>

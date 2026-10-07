@@ -90,6 +90,10 @@ var annotated_dup =
         [ "EngineConfigurationFile", "classGondwana_1_1Configuration_1_1EngineConfigurationFile.html", "classGondwana_1_1Configuration_1_1EngineConfigurationFile" ],
         [ "IEngineConfigurationStore", "interfaceGondwana_1_1Configuration_1_1IEngineConfigurationStore.html", "interfaceGondwana_1_1Configuration_1_1IEngineConfigurationStore" ]
       ] ],
+      [ "Diagnostics", "namespaceGondwana_1_1Diagnostics.html", [
+        [ "RuntimeProfiler", "classGondwana_1_1Diagnostics_1_1RuntimeProfiler.html", "classGondwana_1_1Diagnostics_1_1RuntimeProfiler" ],
+        [ "TelemetrySource", "classGondwana_1_1Diagnostics_1_1TelemetrySource.html", "classGondwana_1_1Diagnostics_1_1TelemetrySource" ]
+      ] ],
       [ "Drawing", "namespaceGondwana_1_1Drawing.html", [
         [ "Animation", "namespaceGondwana_1_1Drawing_1_1Animation.html", [
           [ "GANI", "namespaceGondwana_1_1Drawing_1_1Animation_1_1GANI.html", [
@@ -333,7 +337,9 @@ var annotated_dup =
         ] ],
         [ "Hud", "namespaceGondwana_1_1Widgets_1_1Hud.html", [
           [ "HealthBarWidget", "classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget.html", "classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget" ],
-          [ "NameTagWidget", "classGondwana_1_1Widgets_1_1Hud_1_1NameTagWidget.html", "classGondwana_1_1Widgets_1_1Hud_1_1NameTagWidget" ]
+          [ "NameTagWidget", "classGondwana_1_1Widgets_1_1Hud_1_1NameTagWidget.html", "classGondwana_1_1Widgets_1_1Hud_1_1NameTagWidget" ],
+          [ "ProfilerWidget", "classGondwana_1_1Widgets_1_1Hud_1_1ProfilerWidget.html", "classGondwana_1_1Widgets_1_1Hud_1_1ProfilerWidget" ],
+          [ "ProfilerWidgetExtensionContext", "classGondwana_1_1Widgets_1_1Hud_1_1ProfilerWidgetExtensionContext.html", "classGondwana_1_1Widgets_1_1Hud_1_1ProfilerWidgetExtensionContext" ]
         ] ],
         [ "Layout", "namespaceGondwana_1_1Widgets_1_1Layout.html", [
           [ "StackPanelWidget", "classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget.html", "classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget" ]
@@ -349,7 +355,8 @@ var annotated_dup =
         [ "Overlays", "namespaceGondwana_1_1Widgets_1_1Overlays.html", [
           [ "PopupWidget", "classGondwana_1_1Widgets_1_1Overlays_1_1PopupWidget.html", "classGondwana_1_1Widgets_1_1Overlays_1_1PopupWidget" ],
           [ "SplashScreen", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen" ],
-          [ "ToastWidget", "classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html", "classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget" ]
+          [ "ToastWidget", "classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html", "classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget" ],
+          [ "TooltipWidget", "classGondwana_1_1Widgets_1_1Overlays_1_1TooltipWidget.html", "classGondwana_1_1Widgets_1_1Overlays_1_1TooltipWidget" ]
         ] ],
         [ "ContainerWidget", "classGondwana_1_1Widgets_1_1ContainerWidget.html", "classGondwana_1_1Widgets_1_1ContainerWidget" ],
         [ "DraggableContainerWidget", "classGondwana_1_1Widgets_1_1DraggableContainerWidget.html", "classGondwana_1_1Widgets_1_1DraggableContainerWidget" ],

@@ -125,6 +125,7 @@ var hierarchy =
                 [ "Gondwana.Widgets.Dialogs.AboutBox", "classGondwana_1_1Widgets_1_1Dialogs_1_1AboutBox.html", null ]
               ] ]
             ] ],
+            [ "Gondwana.Widgets.Hud.ProfilerWidget", "classGondwana_1_1Widgets_1_1Hud_1_1ProfilerWidget.html", null ],
             [ "Gondwana.Widgets.Layout.StackPanelWidget", "classGondwana_1_1Widgets_1_1Layout_1_1StackPanelWidget.html", null ],
             [ "Gondwana.Widgets.Menus.MenuBarWidget", "classGondwana_1_1Widgets_1_1Menus_1_1MenuBarWidget.html", null ],
             [ "Gondwana.Widgets.Menus.MenuDropDownWidget", "classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html", null ]
@@ -147,7 +148,8 @@ var hierarchy =
           [ "Gondwana.Widgets.Menus.MenuItemWidget", "classGondwana_1_1Widgets_1_1Menus_1_1MenuItemWidget.html", null ],
           [ "Gondwana.Widgets.Overlays.PopupWidget", "classGondwana_1_1Widgets_1_1Overlays_1_1PopupWidget.html", null ],
           [ "Gondwana.Widgets.Overlays.SplashScreen", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html", null ],
-          [ "Gondwana.Widgets.Overlays.ToastWidget", "classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html", null ]
+          [ "Gondwana.Widgets.Overlays.ToastWidget", "classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html", null ],
+          [ "Gondwana.Widgets.Overlays.TooltipWidget", "classGondwana_1_1Widgets_1_1Overlays_1_1TooltipWidget.html", null ]
         ] ]
       ] ]
     ] ],
@@ -172,6 +174,8 @@ var hierarchy =
         [ "Gondwana.Blazor.Configuration.BrowserLocalStorageEngineConfigurationStore", "classGondwana_1_1Blazor_1_1Configuration_1_1BrowserLocalStorageEngineConfigurationStore.html", null ],
         [ "Gondwana.Configuration.EngineConfigurationFile", "classGondwana_1_1Configuration_1_1EngineConfigurationFile.html", null ]
       ] ],
+      [ "Gondwana.Diagnostics.RuntimeProfiler", "classGondwana_1_1Diagnostics_1_1RuntimeProfiler.html", null ],
+      [ "Gondwana.Diagnostics.TelemetrySource", "classGondwana_1_1Diagnostics_1_1TelemetrySource.html", null ],
       [ "Gondwana.Drawing.Animation.Animator", "classGondwana_1_1Drawing_1_1Animation_1_1Animator.html", null ],
       [ "Gondwana.Drawing.Animation.Cycle", "classGondwana_1_1Drawing_1_1Animation_1_1Cycle.html", null ],
       [ "Gondwana.Drawing.Direct.DirectDrawingManager", "classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingManager.html", null ],
@@ -314,6 +318,7 @@ var hierarchy =
     ] ],
     [ "Gondwana.Drawing.Direct.Particles.Particle", "structGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1Particle.html", null ],
     [ "Gondwana.Drawing.Direct.Particles.ParticleEmitter", "classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html", null ],
+    [ "Gondwana.Widgets.Hud.ProfilerWidgetExtensionContext", "classGondwana_1_1Widgets_1_1Hud_1_1ProfilerWidgetExtensionContext.html", null ],
     [ "Gondwana.Widgets.Controls.RadioButtonGroup", "classGondwana_1_1Widgets_1_1Controls_1_1RadioButtonGroup.html", null ],
     [ "Gondwana.Rendering.RenderSurfaceAdapterBase", "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html", [
       [ "Gondwana.Avalonia.Rendering.AvaloniaBitmapRenderSurfaceAdapter", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceAdapter.html", null ],

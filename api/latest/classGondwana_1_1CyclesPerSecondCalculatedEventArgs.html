@@ -99,7 +99,7 @@ $(function(){initNavTree('classGondwana_1_1CyclesPerSecondCalculatedEventArgs.ht
 </div><!--header-->
 <div class="contents">
 
-<p>Provides data for events that report calculated cycles per second (CPS) performance metrics. This event args class contains both gross and net cycle counts, their corresponding rates per second, and the sampling time period. Net CPS typically represents the effective frame rate (FPS) of the engine, while gross CPS includes all cycles regardless of whether they resulted in rendered frames.  
+<p>Provides the compatibility payload for legacy cycles-per-second (CPS) performance notifications. This event args class contains both gross and net cycle counts, their corresponding rates per second, and the sampling time period. Net CPS typically represents the effective frame rate (FPS) of the engine, while gross CPS includes all cycles regardless of whether they resulted in rendered frames.  
  <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.CyclesPerSecondCalculatedEventArgs:</div>
@@ -111,7 +111,7 @@ Inheritance diagram for Gondwana.CyclesPerSecondCalculatedEventArgs:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ae3def773ec340fb7c56adb4d3ba6bc68" id="r_ae3def773ec340fb7c56adb4d3ba6bc68"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae3def773ec340fb7c56adb4d3ba6bc68">CyclesPerSecondCalculatedEventArgs</a> (long totalGross, long totalNet, double grossCPS, double netCPS, double sampleTime, double? gpuFps=null)</td></tr>
-<tr class="memdesc:ae3def773ec340fb7c56adb4d3ba6bc68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html" title="Provides data for events that report calculated cycles per second (CPS) performance metrics....">CyclesPerSecondCalculatedEventArgs</a> class with the specified cycle counts, rates, sampling time, and optional GPU FPS.  <br /></td></tr>
+<tr class="memdesc:ae3def773ec340fb7c56adb4d3ba6bc68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html" title="Provides the compatibility payload for legacy cycles-per-second (CPS) performance notifications....">CyclesPerSecondCalculatedEventArgs</a> class with the specified cycle counts, rates, sampling time, and optional GPU FPS.  <br /></td></tr>
 <tr class="memitem:a1efdf4ba59140f1ecb644704b0756eee" id="r_a1efdf4ba59140f1ecb644704b0756eee"><td class="memItemLeft" align="right" valign="top">override string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1efdf4ba59140f1ecb644704b0756eee">ToString</a> ()</td></tr>
 <tr class="memdesc:a1efdf4ba59140f1ecb644704b0756eee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a formatted string representation of the performance metrics, including total cycle counts, sampling time, and calculated rates. This provides a human-readable summary of all performance data suitable for logging, debugging, or display purposes.  <br /></td></tr>
 </table><table class="memberdecls">
@@ -131,9 +131,10 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:a950f6a3a313494c672cb52c4ce16c4ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">The duration of the sampling period in seconds over which the cycle counts and rates were measured. This time window determines the granularity and accuracy of the CPS calculations.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Provides data for events that report calculated cycles per second (CPS) performance metrics. This event args class contains both gross and net cycle counts, their corresponding rates per second, and the sampling time period. Net CPS typically represents the effective frame rate (FPS) of the engine, while gross CPS includes all cycles regardless of whether they resulted in rendered frames. </p>
+<div class="textblock"><p>Provides the compatibility payload for legacy cycles-per-second (CPS) performance notifications. This event args class contains both gross and net cycle counts, their corresponding rates per second, and the sampling time period. Net CPS typically represents the effective frame rate (FPS) of the engine, while gross CPS includes all cycles regardless of whether they resulted in rendered frames. </p>
+<p>The payload type itself remains supported so existing compatibility handlers can continue to compile. <a class="el" href="classGondwana_1_1Engine.html#a587a18579b91b31848634e1586e38127" title="Occurs whenever cycles-per-second (CPS) and frames-per-second (FPS) metrics are calculated.">Engine.CPSCalculated</a> is warning-only obsolete; new diagnostics should use <a class="el" href="classGondwana_1_1Engine.html#a4a105772389ea8e28e1fe436a4bd12c9" title="Opt-in runtime CPU measurements and bounded history, independent of CPS notifications.">Engine.Profiler</a> or the optional <code>ProfilerWidget</code> display. </p>
 
-<p class="definition">Definition at line <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html#l00011">11</a> of file <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html#l00016">16</a> of file <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ae3def773ec340fb7c56adb4d3ba6bc68" name="ae3def773ec340fb7c56adb4d3ba6bc68"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae3def773ec340fb7c56adb4d3ba6bc68">&#9670;&#160;</a></span>CyclesPerSecondCalculatedEventArgs()</h2>
@@ -174,7 +175,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes a new instance of the <a class="el" href="classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html" title="Provides data for events that report calculated cycles per second (CPS) performance metrics....">CyclesPerSecondCalculatedEventArgs</a> class with the specified cycle counts, rates, sampling time, and optional GPU FPS. </p>
+<p>Initializes a new instance of the <a class="el" href="classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html" title="Provides the compatibility payload for legacy cycles-per-second (CPS) performance notifications....">CyclesPerSecondCalculatedEventArgs</a> class with the specified cycle counts, rates, sampling time, and optional GPU FPS. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">totalGross</td><td>The total number of gross cycles counted during the sampling period. </td></tr>
@@ -187,7 +188,7 @@ Public Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html#l00083">83</a> of file <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html#l00088">88</a> of file <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -210,7 +211,7 @@ Public Attributes</h2></td></tr>
 <p>Returns a formatted string representation of the performance metrics, including total cycle counts, sampling time, and calculated rates. This provides a human-readable summary of all performance data suitable for logging, debugging, or display purposes. </p>
 <dl class="section return"><dt>Returns</dt><dd>A multi-line string containing formatted performance metrics with the following information: total gross cycles, total net cycles, sampling time in seconds, gross CPS, and net CPS (FPS). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html#l00102">102</a> of file <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html#l00107">107</a> of file <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -229,7 +230,7 @@ Public Attributes</h2></td></tr>
 
 <p>The actual GPU presentation rate, measured by counting successful GPU <code>PaintSurface</code> callbacks over the same sampling window used for <a class="el" href="#a1c87063c8632163cc66fd59e827dbe61" title="The calculated net cycles per second rate, representing the effective frame rate (FPS)....">NetCPS</a>. On platforms where presentation cadence is independent of <a class="el" href="namespaceGondwana.html">Gondwana</a>'s foreground cadence, this value can differ from <a class="el" href="#a1c87063c8632163cc66fd59e827dbe61" title="The calculated net cycles per second rate, representing the effective frame rate (FPS)....">NetCPS</a>. For example, the <a class="el" href="namespaceGondwana_1_1Blazor.html">Blazor</a> WebGL path may re-present the current GPU backbuffer on a browser animation frame without rendering a new <a class="el" href="namespaceGondwana.html">Gondwana</a> scene frame. <code>null</code> when no GPU-rendered surfaces are registered (i.e. when only <code>BitmapBackbuffer</code> surfaces are in use). </p>
 
-<p class="definition">Definition at line <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html#l00053">53</a> of file <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html#l00058">58</a> of file <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -247,7 +248,7 @@ Public Attributes</h2></td></tr>
 
 <p>The calculated gross cycles per second rate, representing how many engine cycles occurred per second during the sampling period. This includes all cycles regardless of whether they produced rendered output. </p>
 
-<p class="definition">Definition at line <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html#l00033">33</a> of file <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html#l00038">38</a> of file <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -265,7 +266,7 @@ Public Attributes</h2></td></tr>
 
 <p>The calculated net cycles per second rate, representing the effective frame rate (FPS). This value indicates how many rendered frames or meaningful engine cycles occurred per second during the sampling period, providing the most relevant performance metric for visual smoothness. </p>
 
-<p class="definition">Definition at line <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html#l00040">40</a> of file <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html#l00045">45</a> of file <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -283,7 +284,7 @@ Public Attributes</h2></td></tr>
 
 <p>The duration of the sampling period in seconds over which the cycle counts and rates were measured. This time window determines the granularity and accuracy of the CPS calculations. </p>
 
-<p class="definition">Definition at line <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html#l00059">59</a> of file <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html#l00064">64</a> of file <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -301,7 +302,7 @@ Public Attributes</h2></td></tr>
 
 <p>The total number of gross cycles counted during the sampling period. Gross cycles represent all engine update cycles, including those that may not have resulted in a rendered frame. This value provides insight into the engine's overall processing activity. </p>
 
-<p class="definition">Definition at line <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html#l00019">19</a> of file <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html#l00024">24</a> of file <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
 
 </div>
 </div>
@@ -319,7 +320,7 @@ Public Attributes</h2></td></tr>
 
 <p>The total number of net cycles counted during the sampling period. Net cycles typically represent engine update cycles that resulted in rendered frames, providing a more accurate measure of visible performance and frame delivery. </p>
 
-<p class="definition">Definition at line <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html#l00026">26</a> of file <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html#l00031">31</a> of file <a class="el" href="CyclesPerSecondCalculatedEventArgs_8cs_source.html">CyclesPerSecondCalculatedEventArgs.cs</a>.</p>
 
 </div>
 </div>

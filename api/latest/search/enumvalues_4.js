@@ -16,9 +16,10 @@ var searchData=
   ['ellipse_13',['Ellipse',['../namespaceGondwana_1_1Drawing_1_1Direct_1_1Particles.html#af3fd14a7c01a388157964c14899f80a1a119518c2134c46108179369f0ce81fa2',1,'Gondwana::Drawing::Direct::Particles']]],
   ['end_14',['End',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a87557f11575c0ad78e4e28abedc13b6e',1,'Gondwana::Blazor::Input::Keyboard']]],
   ['ended_15',['Ended',['../namespaceGondwana_1_1Input_1_1Touch_1_1Gestures.html#a2618e09d93b4f70dcc496cb140b8ed62a0157fbb99be9622bdaa6e544270c0622',1,'Gondwana.Input.Touch.Gestures.Ended'],['../namespaceGondwana_1_1Input_1_1Touch.html#ae45771976c0d97929be599f0dac9a837a0157fbb99be9622bdaa6e544270c0622',1,'Gondwana.Input.Touch.Ended']]],
-  ['enter_16',['Enter',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864af1851d5600eae616ee802a31ac74701b',1,'Gondwana::Blazor::Input::Keyboard']]],
-  ['entering_17',['Entering',['../namespaceGondwana_1_1Widgets_1_1Overlays.html#a3c2639cc4db86f63d5b54405a2b57686a8509939e44cc05f7a4da43eaa87e45c4',1,'Gondwana::Widgets::Overlays']]],
-  ['equal_18',['Equal',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864af5f286e73bda105e538310b3190f75c5',1,'Gondwana::Blazor::Input::Keyboard']]],
-  ['escape_19',['Escape',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a013ec032d3460d4be4431c6ab1f8f224',1,'Gondwana::Blazor::Input::Keyboard']]],
-  ['exiting_20',['Exiting',['../namespaceGondwana_1_1Widgets_1_1Overlays.html#a3c2639cc4db86f63d5b54405a2b57686a0657d962b72e6f1f37dda8dad3684cb8',1,'Gondwana::Widgets::Overlays']]]
+  ['engineconfiguration_16',['EngineConfiguration',['../namespaceGondwana_1_1Widgets_1_1Hud.html#aa54c6ede40bfda28c589c2ff03d4bd93a291a8bbd66c51b1e6362da887361379c',1,'Gondwana::Widgets::Hud']]],
+  ['enter_17',['Enter',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864af1851d5600eae616ee802a31ac74701b',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['entering_18',['Entering',['../namespaceGondwana_1_1Widgets_1_1Overlays.html#a3c2639cc4db86f63d5b54405a2b57686a8509939e44cc05f7a4da43eaa87e45c4',1,'Gondwana::Widgets::Overlays']]],
+  ['equal_19',['Equal',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864af5f286e73bda105e538310b3190f75c5',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['escape_20',['Escape',['../namespaceGondwana_1_1Blazor_1_1Input_1_1Keyboard.html#a74784c083c30984df5eb879b70d87864a013ec032d3460d4be4431c6ab1f8f224',1,'Gondwana::Blazor::Input::Keyboard']]],
+  ['exiting_21',['Exiting',['../namespaceGondwana_1_1Widgets_1_1Overlays.html#a3c2639cc4db86f63d5b54405a2b57686a0657d962b72e6f1f37dda8dad3684cb8',1,'Gondwana::Widgets::Overlays']]]
 ];

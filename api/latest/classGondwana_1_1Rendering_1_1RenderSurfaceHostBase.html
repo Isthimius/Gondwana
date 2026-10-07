@@ -133,6 +133,8 @@ Protected Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
+<tr class="memitem:a37780e72022e802d041800eefc1b6b2a" id="r_a37780e72022e802d041800eefc1b6b2a"><td class="memItemLeft" align="right" valign="top">Diagnostics.? TelemetrySource&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37780e72022e802d041800eefc1b6b2a">Telemetry</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a37780e72022e802d041800eefc1b6b2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Neutral session-local measurements for this host; null when source capacity is exhausted or the shared collector is disposed.  <br /></td></tr>
 <tr class="memitem:aa5cd6f2a3441111e38acdff4b721512a" id="r_aa5cd6f2a3441111e38acdff4b721512a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html">BackbufferBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa5cd6f2a3441111e38acdff4b721512a">Backbuffer</a><code> [get]</code></td></tr>
 <tr class="memdesc:aa5cd6f2a3441111e38acdff4b721512a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the in-memory <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html" title="Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rende...">BackbufferBase</a> associated with the current rendering context.  <br /></td></tr>
 <tr class="memitem:a5d574c0284efea733170f575df69e7f9" id="r_a5d574c0284efea733170f575df69e7f9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5d574c0284efea733170f575df69e7f9">PresentationScale</a><code> [get]</code></td></tr>
@@ -182,7 +184,7 @@ Events</h2></td></tr>
 <p>Initializes a new instance of the <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHostBase.html" title="Represents a base class for hosting a render surface, providing functionality for managing rendering ...">RenderSurfaceHostBase</a> class and registers it with the RenderSurfaceHostRegistry. </p>
 <p>Registration ensures the render surface host is tracked for lifecycle management and can be enumerated by other system components. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00028">28</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00030">30</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -206,7 +208,7 @@ Events</h2></td></tr>
 <p>This method unregisters the render surface host from the RenderSurfaceHostRegistry and releases any managed resources. Derived classes should override <a class="el" href="#a32a3f463b8575f0e76057f9312c43125" title="Releases resources used by this RenderSurfaceHostBase instance and unregisters it from the RenderSurf...">Dispose(bool)</a> to release additional resources specific to their implementation. </p>
 <p>After calling <a class="el" href="#a9eee1fb0d47a5b75e3f6457af9148703" title="Releases all resources used by this RenderSurfaceHostBase instance.">Dispose()</a>, this instance should not be used. Calling <a class="el" href="#a9eee1fb0d47a5b75e3f6457af9148703" title="Releases all resources used by this RenderSurfaceHostBase instance.">Dispose()</a> multiple times is safe and has no additional effect. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00393">393</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00419">419</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -244,7 +246,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a79f88c27799c59b82709dbe3994e0d6c">Gondwana.Rendering.RenderSurfaceHost&lt; TBackbuffer &gt;</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00413">413</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00439">439</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -273,7 +275,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> when the current GPU surface was drawn; otherwise <code>false</code>.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00301">301</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00327">327</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -298,7 +300,7 @@ Events</h2></td></tr>
 <p>Returns <code>null</code> when <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a18931760ccfbf7d8ee7aa962fec386d1" title="Gets a value indicating whether this backbuffer is rendered on the GL thread rather than the engine&#39;s...">BackbufferBase.IsGlThreadRendered</a> is <code>false</code> (i.e. this is not a GPU-rendered surface). </p>
 <dl class="section return"><dt>Returns</dt><dd>A GPU-backed SKImage snapshot of the rendered frame, or <code>null</code> if this surface does not use GL-thread rendering. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00112">112</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00114">114</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -327,7 +329,7 @@ Events</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> when a GPU surface was rendered and drawn; otherwise <code>false</code>.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00252">252</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00278">278</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -351,7 +353,7 @@ Events</h2></td></tr>
 <p>Call only from the active GPU paint callback while the backbuffer's GRContext is current. The returned SKImage must be disposed before that callback returns. </p>
 <dl class="section return"><dt>Returns</dt><dd>A GPU-backed snapshot of the current backbuffer, or <code>null</code> when the surface does not use GL-thread rendering. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00359">359</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00385">385</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -378,7 +380,7 @@ Events</h2></td></tr>
 
 <p>Gets the in-memory <a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html" title="Represents a base class for managing a graphical backbuffer, and is the in-memory surface where rende...">BackbufferBase</a> associated with the current rendering context. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00043">43</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00045">45</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -404,7 +406,7 @@ Events</h2></td></tr>
 
 <p>Gets the manager that owns presentation effects for this render surface. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00078">78</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00080">80</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -430,7 +432,7 @@ Events</h2></td></tr>
 
 <p>Actual scale used to fit this Backbuffer into its current adapter. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00046">46</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00048">48</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -456,7 +458,7 @@ Events</h2></td></tr>
 
 <p>Gets the platform-specific <a class="el" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html" title="Represents the abstract base class for render surface adapters that present backbuffer output to a de...">RenderSurfaceAdapterBase</a> responsible for rendering the image from the <a class="el" href="#aa5cd6f2a3441111e38acdff4b721512a" title="Gets the in-memory BackbufferBase associated with the current rendering context.">Backbuffer</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00060">60</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00062">62</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -482,7 +484,33 @@ Events</h2></td></tr>
 
 <p>Gets the source <a class="el" href="classGondwana_1_1Scenes_1_1Scene.html" title="Represents a game scene containing multiple layers of tiles, sprites, and game objects....">Scenes.Scene</a> used for rendering operations. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00054">54</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00056">56</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+
+</div>
+</div>
+<a id="a37780e72022e802d041800eefc1b6b2a" name="a37780e72022e802d041800eefc1b6b2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37780e72022e802d041800eefc1b6b2a">&#9670;&#160;</a></span>Telemetry</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Diagnostics.? TelemetrySource Gondwana.Rendering.RenderSurfaceHostBase.Telemetry</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Neutral session-local measurements for this host; null when source capacity is exhausted or the shared collector is disposed. </p>
+
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00017">17</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -510,7 +538,7 @@ Events</h2></td></tr>
 <p>The <a class="el" href="#a6343c6c478d911e1ce79e67a0bb04f5a" title="Gets the view manager that controls camera positions, viewports, and multi-view rendering for this re...">ViewManager</a> instance managing all views associated with this render surface host. </p>
 <p>The view manager enables split-screen, picture-in-picture, and minimap rendering by managing multiple views with independent cameras and viewports. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00073">73</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00075">75</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -529,7 +557,7 @@ Events</h2></td></tr>
 
 <p>Occurs after a GPU render/snapshot call when a subscriber requests timing for the shared render-state synchronization gate. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00084">84</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceHostBase_8cs_source.html#l00086">86</a> of file <a class="el" href="RenderSurfaceHostBase_8cs_source.html">RenderSurfaceHostBase.cs</a>.</p>
 
 </div>
 </div>

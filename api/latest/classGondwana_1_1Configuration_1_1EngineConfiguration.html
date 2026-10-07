@@ -144,9 +144,9 @@ Properties</h2></td></tr>
 <tr class="memitem:ab614f324c6124fb90cbd818886755602" id="r_ab614f324c6124fb90cbd818886755602"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab614f324c6124fb90cbd818886755602">MsaaSampleCount</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:ab614f324c6124fb90cbd818886755602"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the number of MSAA (multisample anti-aliasing) samples used when creating GPU render-target surfaces.  <br /></td></tr>
 <tr class="memitem:ac855c43adbb76108ebf60b3a4e607f37" id="r_ac855c43adbb76108ebf60b3a4e607f37"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac855c43adbb76108ebf60b3a4e607f37">SamplingTimeForCPS</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:ac855c43adbb76108ebf60b3a4e607f37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of seconds between Cycles Per Second (CPS) calculation. Default is 1.5 seconds.  <br /></td></tr>
+<tr class="memdesc:ac855c43adbb76108ebf60b3a4e607f37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of seconds between legacy Cycles Per Second (CPS) calculations. Default is 1.5 seconds.  <br /></td></tr>
 <tr class="memitem:a54425e8fee2e8de5f3bb71b94fa9bcbc" id="r_a54425e8fee2e8de5f3bb71b94fa9bcbc"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54425e8fee2e8de5f3bb71b94fa9bcbc">SamplingTimeForCPSTicks</a><code> [get]</code></td></tr>
-<tr class="memdesc:a54425e8fee2e8de5f3bb71b94fa9bcbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of system ticks between each CPS sampling.  <br /></td></tr>
+<tr class="memdesc:a54425e8fee2e8de5f3bb71b94fa9bcbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of system ticks between each legacy CPS sampling.  <br /></td></tr>
 <tr class="memitem:ac1cf26699f1a240bc2face7c098067d8" id="r_ac1cf26699f1a240bc2face7c098067d8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac1cf26699f1a240bc2face7c098067d8">TimeBetweenKeyboardEvents</a> = 0.03<code> [get, set]</code></td></tr>
 <tr class="memdesc:ac1cf26699f1a240bc2face7c098067d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum time (in seconds) allowed between Keyboard events. Use this to prevent flooding the system with too many events at once (holding down a key, etc). Default is 0.03 seconds (30 milliseconds).  <br /></td></tr>
 <tr class="memitem:a723ed7b99319baaa075ddbe6e2d90699" id="r_a723ed7b99319baaa075ddbe6e2d90699"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a723ed7b99319baaa075ddbe6e2d90699">TimeBetweenGamepadEvents</a> = 0.03<code> [get, set]</code></td></tr>
@@ -199,7 +199,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> if the section existed and was cleared; otherwise, <code>false</code>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00497">497</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00525">525</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -220,7 +220,7 @@ Properties</h2></td></tr>
 
 <p>Removes all configuration sections and all contained key/value pairs. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00511">511</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00539">539</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -248,7 +248,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The existing or newly created dictionary for the specified section. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00377">377</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00405">405</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -276,7 +276,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A read-only dictionary containing the section values, or <code>null</code> if the section does not exist. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00411">411</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00439">439</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -315,7 +315,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The stored configuration value, or <em>defaultValue</em>  if no value exists. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00446">446</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00474">474</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -343,7 +343,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> if the section exists; otherwise, <code>false</code>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00365">365</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00393">393</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -376,7 +376,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> if the section and key exist; otherwise, <code>false</code>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00428">428</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00456">456</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -404,7 +404,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> if the section was removed; otherwise, <code>false</code>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00397">397</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00425">425</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -437,7 +437,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> if the value was removed; otherwise, <code>false</code>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00481">481</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00509">509</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -475,7 +475,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00463">463</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00491">491</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -513,7 +513,7 @@ Properties</h2></td></tr>
 <div class="line">var volume = engineConfiguration.ConfigurationSections[<span class="stringliteral">&quot;audio&quot;</span>][<span class="stringliteral">&quot;volume&quot;</span>];</div>
 <div class="line">var resolution = engineConfiguration.ConfigurationSections[<span class="stringliteral">&quot;graphics&quot;</span>][<span class="stringliteral">&quot;resolution&quot;</span>];</div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00356">356</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00384">384</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -539,7 +539,7 @@ Properties</h2></td></tr>
 
 <p>If true, the engine will attempt to flush queued async log events during shutdown. Default is true. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00312">312</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00340">340</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -568,7 +568,7 @@ Properties</h2></td></tr>
 <p>When set to EngineLoggingMode.Synchronous, log entries are written immediately on the calling thread. This guarantees ordering and delivery but may negatively impact engine performance, especially when logging to the console. </p>
 <p>The logging execution mode. The default value is EngineLoggingMode.Asynchronous. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00284">284</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00312">312</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -600,7 +600,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00297">297</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00325">325</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -733,9 +733,10 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Total number of seconds between Cycles Per Second (CPS) calculation. Default is 1.5 seconds. </p>
+<p>Total number of seconds between legacy Cycles Per Second (CPS) calculations. Default is 1.5 seconds. </p>
+<p>This setting controls only the compatibility CPS/FPS sampler. New diagnostics should configure <a class="el" href="classGondwana_1_1Diagnostics_1_1RuntimeProfiler.html" title="Opt-in, bounded runtime measurements independent of legacy CPS notifications.">Diagnostics.RuntimeProfiler</a> through <a class="el" href="classGondwana_1_1Engine.html#a4a105772389ea8e28e1fe436a4bd12c9" title="Opt-in runtime CPU measurements and bounded history, independent of CPS notifications.">Engine.Profiler</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00229">229</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00236">236</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -759,9 +760,10 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Total number of system ticks between each CPS sampling. </p>
+<p>Total number of system ticks between each legacy CPS sampling. </p>
+<p>This property exists for compatibility with the legacy CPS/FPS sampler. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00239">239</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00252">252</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -814,7 +816,7 @@ Properties</h2></td></tr>
 
 <p>Optional collection of serialized <a class="el" href="classGondwana_1_1EngineState.html" title="Represents the complete serializable state of the game engine, including assets, scenes,...">EngineState</a>s to mount at initialization. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00317">317</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00345">345</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -876,7 +878,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The stored configuration value, or <code>null</code> if not found. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00564">564</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00592">592</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -910,7 +912,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The dictionary of key/value pairs for the section, or <code>null</code> if the section does not exist. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00527">527</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00555">555</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -936,7 +938,7 @@ Properties</h2></td></tr>
 
 <p>Minimum time (in seconds) allowed between Gamepad events. Use this to prevent flooding the system with too many events at once (holding down a button, etc). Default is 0.03 seconds (30 milliseconds). </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00253">253</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00281">281</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -962,7 +964,7 @@ Properties</h2></td></tr>
 
 <p>Minimum time (in seconds) allowed between Keyboard events. Use this to prevent flooding the system with too many events at once (holding down a key, etc). Default is 0.03 seconds (30 milliseconds). </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00246">246</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00274">274</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -988,7 +990,7 @@ Properties</h2></td></tr>
 
 <p>Minimum time (in seconds) allowed between Mouse events. Use this to prevent flooding the system with too many events at once (holding down a button, dragging, etc). Default is 0.03 seconds (30 milliseconds). </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00260">260</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00288">288</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -1014,7 +1016,7 @@ Properties</h2></td></tr>
 
 <p>Minimum time (in seconds) allowed between Touch events. Use this to prevent flooding the system with too many events at once (fast drags, multi-touch, etc). Default is 0.03 seconds (30 milliseconds). </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00267">267</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00295">295</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>

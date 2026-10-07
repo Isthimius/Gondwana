@@ -21,6 +21,7 @@ var classGondwana_1_1Engine =
     [ "IsInitializing", "classGondwana_1_1Engine.html#ad073459d6183972cbb44c4f5ac522425", null ],
     [ "IsRunning", "classGondwana_1_1Engine.html#a792f37da86d34e4777fa59a91964ab28", null ],
     [ "Managers", "classGondwana_1_1Engine.html#a93f6aa01595d787e0eb33e4995afc760", null ],
+    [ "Profiler", "classGondwana_1_1Engine.html#a4a105772389ea8e28e1fe436a4bd12c9", null ],
     [ "State", "classGondwana_1_1Engine.html#a32e96d66aa1054ff905343cc8f0dc1ac", null ],
     [ "TotalSecondsEngineRunning", "classGondwana_1_1Engine.html#aff8192ad9f289084c19ebbf7ba1d743b", null ],
     [ "TotalTicksEngineRunning", "classGondwana_1_1Engine.html#a1f43c5236ee7f4625e54bb4098a05353", null ],

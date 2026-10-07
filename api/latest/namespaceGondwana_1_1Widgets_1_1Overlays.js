@@ -3,6 +3,7 @@ var namespaceGondwana_1_1Widgets_1_1Overlays =
     [ "PopupWidget", "classGondwana_1_1Widgets_1_1Overlays_1_1PopupWidget.html", "classGondwana_1_1Widgets_1_1Overlays_1_1PopupWidget" ],
     [ "SplashScreen", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen.html", "classGondwana_1_1Widgets_1_1Overlays_1_1SplashScreen" ],
     [ "ToastWidget", "classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget.html", "classGondwana_1_1Widgets_1_1Overlays_1_1ToastWidget" ],
+    [ "TooltipWidget", "classGondwana_1_1Widgets_1_1Overlays_1_1TooltipWidget.html", "classGondwana_1_1Widgets_1_1Overlays_1_1TooltipWidget" ],
     [ "ToastSlideOrigin", "namespaceGondwana_1_1Widgets_1_1Overlays.html#a2e57bc1642821a18f8a7cedea17fab52", [
       [ "Top", "namespaceGondwana_1_1Widgets_1_1Overlays.html#a2e57bc1642821a18f8a7cedea17fab52aa4ffdcf0dc1f31b9acaf295d75b51d00", null ],
       [ "Right", "namespaceGondwana_1_1Widgets_1_1Overlays.html#a2e57bc1642821a18f8a7cedea17fab52a92b09c7c48c520c3c55e497875da437c", null ],

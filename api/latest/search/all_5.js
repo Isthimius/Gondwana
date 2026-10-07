@@ -39,7 +39,7 @@ var searchData=
   ['endposition_36',['EndPosition',['../classGondwana_1_1Input_1_1Touch_1_1Gestures_1_1SwipedEventArgs.html#a11f369d810b4d239c1e1f2283fcc0933',1,'Gondwana::Input::Touch::Gestures::SwipedEventArgs']]],
   ['engine_37',['Engine',['../classGondwana_1_1Engine.html',1,'Gondwana.Engine'],['../classGondwana_1_1Hosting_1_1GameHostBase.html#aea7f4a44e1f5292bc86f8b75c9ba791c',1,'Gondwana.Hosting.GameHostBase.Engine']]],
   ['engineconfig_38',['EngineConfig',['../classGondwana_1_1Configuration_1_1EngineConfigurationFile.html#a617d6e239ab02a1a645fa237857fb751',1,'Gondwana::Configuration::EngineConfigurationFile']]],
-  ['engineconfiguration_39',['EngineConfiguration',['../classGondwana_1_1Configuration_1_1EngineConfiguration.html',1,'Gondwana::Configuration']]],
+  ['engineconfiguration_39',['EngineConfiguration',['../classGondwana_1_1Configuration_1_1EngineConfiguration.html',1,'Gondwana.Configuration.EngineConfiguration'],['../namespaceGondwana_1_1Widgets_1_1Hud.html#aa54c6ede40bfda28c589c2ff03d4bd93a291a8bbd66c51b1e6362da887361379c',1,'Gondwana.Widgets.Hud.EngineConfiguration']]],
   ['engineconfigurationfile_40',['EngineConfigurationFile',['../classGondwana_1_1Configuration_1_1EngineConfigurationFile.html',1,'Gondwana::Configuration']]],
   ['enginedispatcher_41',['EngineDispatcher',['../classGondwana_1_1EngineDispatcher.html',1,'Gondwana.EngineDispatcher'],['../classGondwana_1_1Engine.html#a6d9a264fa4828437d36fe82e77cafc04',1,'Gondwana.Engine.EngineDispatcher']]],
   ['engineinputsystems_42',['EngineInputSystems',['../classGondwana_1_1EngineInputSystems.html',1,'Gondwana']]],

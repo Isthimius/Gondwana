@@ -71,6 +71,7 @@ var classGondwana_1_1Drawing_1_1Direct_1_1TextBlock =
     [ "TextRevealRate", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#af5c289c26e2178bcff82a41629af0622", null ],
     [ "TypeFace", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a6ffd5a29f999a827f1d0e67d1a1aa9d4", null ],
     [ "VerticalPadding", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#ac4ebbeb2dd7544a956a051426cf922fc", null ],
+    [ "VerticalScrollEndPaddingPx", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a955c97ce0efc99fc1aa24f5faa9fc0b0", null ],
     [ "VerticalScrollOffsetPx", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#acd1ad47d2d03292355863f5e56a6abbb", null ],
     [ "WrapText", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a575e61c710ec7ed5fecad27a05afee27", null ],
     [ "TextRevealComplete", "classGondwana_1_1Drawing_1_1Direct_1_1TextBlock.html#a9789930c51fc4d4567f495dc74cac796", null ],

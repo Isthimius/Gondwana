@@ -105,7 +105,89 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Displays a world-space health bar that follows a sprite.  <a href="classGondwana_1_1Widgets_1_1Hud_1_1HealthBarWidget.html#details">More...</a><br /></td></tr>
 <tr class="memitem:NameTagWidget" id="r_NameTagWidget"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1Hud_1_1NameTagWidget.html">NameTagWidget</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Displays a world-space name label that automatically follows a sprite.  <a href="classGondwana_1_1Widgets_1_1Hud_1_1NameTagWidget.html#details">More...</a><br /></td></tr>
+<tr class="memitem:ProfilerWidget" id="r_ProfilerWidget"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1Hud_1_1ProfilerWidget.html">ProfilerWidget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Displays detached <a class="el" href="classGondwana_1_1Diagnostics_1_1RuntimeProfiler.html" title="Opt-in, bounded runtime measurements independent of legacy CPS notifications.">RuntimeProfiler</a> snapshots as a screen-space HUD widget.  <a href="classGondwana_1_1Widgets_1_1Hud_1_1ProfilerWidget.html#details">More...</a><br /></td></tr>
+<tr class="memitem:ProfilerWidgetExtensionContext" id="r_ProfilerWidgetExtensionContext"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGondwana_1_1Widgets_1_1Hud_1_1ProfilerWidgetExtensionContext.html">ProfilerWidgetExtensionContext</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides detached telemetry and rendering context to a <a class="el" href="classGondwana_1_1Widgets_1_1Hud_1_1ProfilerWidget.html#a3fd4b2f5c9fd8a446c1055af111fba09" title="Gets or sets an optional callback that supplies application-specific diagnostic lines.">ProfilerWidget.AdditionalLinesProvider</a> callback.  <a href="classGondwana_1_1Widgets_1_1Hud_1_1ProfilerWidgetExtensionContext.html#details">More...</a><br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:aa20853aeb845a675c81bc11a783d2742" id="r_aa20853aeb845a675c81bc11a783d2742"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa20853aeb845a675c81bc11a783d2742">ProfilerMeasurementVisibilityMode</a> { <a class="el" href="#aa20853aeb845a675c81bc11a783d2742ab1c94ca2fbc3e78fc30069c8d0f01680">All</a>
+, <a class="el" href="#aa20853aeb845a675c81bc11a783d2742a91b442d385b54e1418d81adc34871053">Selected</a>
+ }</td></tr>
+<tr class="memdesc:aa20853aeb845a675c81bc11a783d2742"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="namespaceGondwana_1_1Widgets_1_1Controls.html">Controls</a> the default visibility policy for runtime-profiler measurements.  <a href="#aa20853aeb845a675c81bc11a783d2742">More...</a><br /></td></tr>
+<tr class="memitem:aa54c6ede40bfda28c589c2ff03d4bd93" id="r_aa54c6ede40bfda28c589c2ff03d4bd93"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa54c6ede40bfda28c589c2ff03d4bd93">ProfilerContextInfo</a> { <br />
+&#160;&#160;<a class="el" href="#aa54c6ede40bfda28c589c2ff03d4bd93a6adf97f83acf6453d4a6a4b1070f3754">None</a> = 0
+, <a class="el" href="#aa54c6ede40bfda28c589c2ff03d4bd93a9ead0d38e06ec253ca0ecbf6ea56e59b">Scene</a> = 1 &lt;&lt; 0
+, <a class="el" href="#aa54c6ede40bfda28c589c2ff03d4bd93a4351cfebe4b61d8aa5efa1d020710005">View</a> = 1 &lt;&lt; 1
+, <a class="el" href="#aa54c6ede40bfda28c589c2ff03d4bd93ae6f83fb9ff312b66fd7489a28ea5f062">Backbuffer</a> = 1 &lt;&lt; 2
+, <br />
+&#160;&#160;<a class="el" href="#aa54c6ede40bfda28c589c2ff03d4bd93a291a8bbd66c51b1e6362da887361379c">EngineConfiguration</a> = 1 &lt;&lt; 3
+, <a class="el" href="#aa54c6ede40bfda28c589c2ff03d4bd93a21d51c15e811ddea38b999c5b87cb8da">Msaa</a> = 1 &lt;&lt; 4
+, <a class="el" href="#aa54c6ede40bfda28c589c2ff03d4bd93ab1c94ca2fbc3e78fc30069c8d0f01680">All</a> = Scene | View | Backbuffer | EngineConfiguration | Msaa
+<br />
+ }</td></tr>
+<tr class="memdesc:aa54c6ede40bfda28c589c2ff03d4bd93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects optional non-profiler runtime context rendered alongside telemetry measurements.  <a href="#aa54c6ede40bfda28c589c2ff03d4bd93">More...</a><br /></td></tr>
 </table>
+<a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
+<a id="aa54c6ede40bfda28c589c2ff03d4bd93" name="aa54c6ede40bfda28c589c2ff03d4bd93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa54c6ede40bfda28c589c2ff03d4bd93">&#9670;&#160;</a></span>ProfilerContextInfo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#aa54c6ede40bfda28c589c2ff03d4bd93">Gondwana.Widgets.Hud.ProfilerContextInfo</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Selects optional non-profiler runtime context rendered alongside telemetry measurements. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aa54c6ede40bfda28c589c2ff03d4bd93a6adf97f83acf6453d4a6a4b1070f3754" name="aa54c6ede40bfda28c589c2ff03d4bd93a6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"><p>Displays no supplemental runtime context. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa54c6ede40bfda28c589c2ff03d4bd93a9ead0d38e06ec253ca0ecbf6ea56e59b" name="aa54c6ede40bfda28c589c2ff03d4bd93a9ead0d38e06ec253ca0ecbf6ea56e59b"></a>Scene&#160;</td><td class="fielddoc"><p>Displays scene layer, grid-cell, and active tile-animation counts. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa54c6ede40bfda28c589c2ff03d4bd93a4351cfebe4b61d8aa5efa1d020710005" name="aa54c6ede40bfda28c589c2ff03d4bd93a4351cfebe4b61d8aa5efa1d020710005"></a>View&#160;</td><td class="fielddoc"><p>Displays camera position, viewport zoom, and viewport dimensions. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa54c6ede40bfda28c589c2ff03d4bd93ae6f83fb9ff312b66fd7489a28ea5f062" name="aa54c6ede40bfda28c589c2ff03d4bd93ae6f83fb9ff312b66fd7489a28ea5f062"></a>Backbuffer&#160;</td><td class="fielddoc"><p>Displays logical backbuffer dimensions. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa54c6ede40bfda28c589c2ff03d4bd93a291a8bbd66c51b1e6362da887361379c" name="aa54c6ede40bfda28c589c2ff03d4bd93a291a8bbd66c51b1e6362da887361379c"></a>EngineConfiguration&#160;</td><td class="fielddoc"><p>Displays target FPS and VSync configuration. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa54c6ede40bfda28c589c2ff03d4bd93a21d51c15e811ddea38b999c5b87cb8da" name="aa54c6ede40bfda28c589c2ff03d4bd93a21d51c15e811ddea38b999c5b87cb8da"></a>Msaa&#160;</td><td class="fielddoc"><p>Displays requested, actual, and maximum MSAA values when the backbuffer is GPU-backed. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa54c6ede40bfda28c589c2ff03d4bd93ab1c94ca2fbc3e78fc30069c8d0f01680" name="aa54c6ede40bfda28c589c2ff03d4bd93ab1c94ca2fbc3e78fc30069c8d0f01680"></a>All&#160;</td><td class="fielddoc"><p>Displays every available supplemental runtime-context section. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="ProfilerWidget_8cs_source.html#l00037">37</a> of file <a class="el" href="ProfilerWidget_8cs_source.html">ProfilerWidget.cs</a>.</p>
+
+</div>
+</div>
+<a id="aa20853aeb845a675c81bc11a783d2742" name="aa20853aeb845a675c81bc11a783d2742"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa20853aeb845a675c81bc11a783d2742">&#9670;&#160;</a></span>ProfilerMeasurementVisibilityMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#aa20853aeb845a675c81bc11a783d2742">Gondwana.Widgets.Hud.ProfilerMeasurementVisibilityMode</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="namespaceGondwana_1_1Widgets_1_1Controls.html">Controls</a> the default visibility policy for runtime-profiler measurements. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aa20853aeb845a675c81bc11a783d2742ab1c94ca2fbc3e78fc30069c8d0f01680" name="aa20853aeb845a675c81bc11a783d2742ab1c94ca2fbc3e78fc30069c8d0f01680"></a>All&#160;</td><td class="fielddoc"><p>Shows every measurement unless it is explicitly hidden. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa20853aeb845a675c81bc11a783d2742a91b442d385b54e1418d81adc34871053" name="aa20853aeb845a675c81bc11a783d2742a91b442d385b54e1418d81adc34871053"></a>Selected&#160;</td><td class="fielddoc"><p>Hides measurements unless they are explicitly shown. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="ProfilerWidget_8cs_source.html#l00020">20</a> of file <a class="el" href="ProfilerWidget_8cs_source.html">ProfilerWidget.cs</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

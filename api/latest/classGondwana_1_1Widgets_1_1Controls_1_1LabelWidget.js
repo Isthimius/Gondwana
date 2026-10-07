@@ -27,5 +27,6 @@ var classGondwana_1_1Widgets_1_1Controls_1_1LabelWidget =
     [ "VerticalScrollBarThumb", "classGondwana_1_1Widgets_1_1Controls_1_1LabelWidget.html#a956d4c530eda55c0d9995b59462c04b3", null ],
     [ "VerticalScrollBarTrack", "classGondwana_1_1Widgets_1_1Controls_1_1LabelWidget.html#a0e35ee651e6a0c7087864c57e124b284", null ],
     [ "VerticalScrollBarVisibility", "classGondwana_1_1Widgets_1_1Controls_1_1LabelWidget.html#a63315d9f5c907d87d00007e1e9e2de16", null ],
+    [ "VerticalScrollEndPaddingPx", "classGondwana_1_1Widgets_1_1Controls_1_1LabelWidget.html#a7fe3c8162332de1544cbc44e586d8ce4", null ],
     [ "VerticalScrollOffsetPx", "classGondwana_1_1Widgets_1_1Controls_1_1LabelWidget.html#a0a0fb2ee6c5e4d9a44be63b063cfac83", null ]
 ];
