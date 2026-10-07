@@ -1,7 +1,7 @@
 # Runtime telemetry
 
 `Engine.Instance.Profiler` provides opt-in CPU measurements without SceneViewer or
-Studio. It is disabled until an application, `ProfilerWidget`, or F3 holds a collection request.
+Studio. It is disabled until an application, `ProfilerWidget`, or the Scene Viewer's F3 diagnostics overlay holds a collection request. That F3 binding belongs specifically to the saved-scene Scene Viewer used by the `.gscn` editor/Studio tooling (and direct Scene Viewer launches); it is not a general Engine hotkey.
 
 The repository also includes `docs/examples/RuntimeTelemetryExample.cs`, compiled
 and exercised by `Gondwana.Tests` without a viewer dependency.
@@ -92,12 +92,41 @@ profilerWidget
 ```
 
 Whole sources can be hidden with `SetSourceVisible`. `ShowUnavailableMeasurements`,
-`ShowHeader`, `ShowSnapshotMetadata`, `ShowSourceHeaders`, `RefreshInterval`,
-font/colors, size, and Z-order are also configurable. See
-[[ProfilerWidget|Widgets---ProfilerWidget]] for the complete widget usage notes.
+`ShowHeader`, `HeaderText`, `ShowSnapshotMetadata`, `ShowSourceHeaders`,
+`RefreshInterval`, font/colors, size, and Z-order are also configurable.
+
+The widget can optionally include non-profiler runtime context without making those
+values part of telemetry history:
+
+```csharp
+profilerWidget.ContextInfo =
+    ProfilerContextInfo.Scene |
+    ProfilerContextInfo.View |
+    ProfilerContextInfo.Backbuffer |
+    ProfilerContextInfo.EngineConfiguration |
+    ProfilerContextInfo.Msaa;
+```
+
+Applications can append their own lightweight lines at the same refresh cadence.
+The callback receives the latest detached snapshot together with the host and view:
+
+```csharp
+profilerWidget.AdditionalLinesProvider = context =>
+[
+    $"Level: {currentLevelName}",
+    $"Player state: {player.State}"
+];
+```
+
+The saved-scene Scene Viewer used by the `.gscn` editor/Studio workflow now dogfoods
+this API: its F3 overlay is a `ProfilerWidget` using `ProfilerContextInfo.All`, while
+the extension callback supplies the viewer-specific scene/stress and F4 animation-state
+lines.
+
+See [[ProfilerWidget|Widgets---ProfilerWidget]] for the complete widget usage notes.
 
 Do not start and dispose the request every time a display refreshes. Each consumer
-holds its own request. Hiding a `ProfilerWidget` releases only that widget's request, and hiding F3 releases only F3's request. The last release stops
+holds its own request. Hiding a `ProfilerWidget` releases only that widget's request, and hiding the Scene Viewer's F3 diagnostics overlay releases only that Scene Viewer widget's request. The last release stops
 collection and publishes the final partial window, if time has elapsed. Engine
 disposal invalidates all requests and retires registered sources.
 Engine owns the shared collector; application consumers own their collection requests.
@@ -135,7 +164,7 @@ source capacities 1–64, and per-source metric capacities 8–512. Defaults ret
 requests and cannot shrink below registered definitions. Source names, backend
 labels, and metric keys are limited to 96 characters. Rejected registrations and
 omitted layer detail mark `Truncated`; truncation remains visible for the collector
-session. Render detail retains the first eight layer indices, matching F3's display
+session. Render detail retains the first eight layer indices, matching the saved-scene Scene Viewer's F3 diagnostics display
 limit. `layers.omitted` reports the excess. A refused source returns null and does
 not later register itself automatically when another source retires.
 
@@ -195,10 +224,13 @@ Render identities last for the host's lifetime, including temporary context loss
 and end at permanent disposal. Existing bitmap rendering and invalidation behavior
 are unchanged; no bitmap dirty-area or resource inventory is inferred.
 
-F3 formats snapshots on the Engine thread at approximately 4 Hz. Its camera,
-dimensions, configuration, MSAA, and cheap scene/context counts are captured there
-at that cadence. It preserves white text, black background alpha 102, and F4
-animation pause. These display-context values are not presented as GPU draw calls.
+The saved-scene Scene Viewer's **F3 diagnostics overlay**—used when viewing a
+`.gscn` from the standalone Scene editor, Studio, or a direct Scene Viewer launch—is
+implemented with `ProfilerWidget`. The widget formats snapshots on the Engine thread
+at approximately 4 Hz. Its optional runtime-context flags provide camera, dimensions,
+configuration, MSAA, and cheap scene/context counts at that cadence; the Scene Viewer
+uses the extension callback for its scene/stress and F4 animation-state lines. These
+display-context values are not presented as GPU draw calls.
 
 ## Small extensions
 
