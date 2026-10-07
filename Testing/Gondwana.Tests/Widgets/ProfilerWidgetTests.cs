@@ -17,6 +17,7 @@ public sealed class ProfilerWidgetTests
             view,
             new Rectangle(12, 12, 400, 300));
 
+        Assert.False(widget.IsCollectionActive);
         Assert.True(widget.IsMeasurementVisible("Engine", "cycle.cpu.ms"));
 
         widget.SetMeasurementVisible("cycle.cpu.ms", false);
