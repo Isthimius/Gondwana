@@ -60,9 +60,24 @@ public sealed class XInputGamepadAdapter : IGamepadAdapter
         _pressedButtons.Clear();
 
         if (GetState(_controllerIndex, out var state) != 0)
-            return; // Controller not connected
+        {
+            ClearState();
+            return;
+        }
 
         ApplyState(state.Gamepad);
+    }
+
+    /// <summary>
+    /// Clears the current controller state to neutral values.
+    /// </summary>
+    internal void ClearState()
+    {
+        _pressedButtons.Clear();
+        LeftStick = null;
+        RightStick = null;
+        LeftTrigger = 0f;
+        RightTrigger = 0f;
     }
 
     /// <summary>
