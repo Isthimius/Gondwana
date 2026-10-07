@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 
 - Add `Engine.Profiler` for opt-in CPU timing summaries, bounded history, neutral render measurements, and collection leases consumed by `ProfilerWidget` and the saved-scene Scene Viewer F3 diagnostics overlay.
+- Mark `CyclesPerSecond`, `FramesPerSecond`, `CPSCalculated`, `SamplingTimeForCPS`, and `SamplingTimeForCPSTicks` as warning-only obsolete (`GOND0001`); use `Engine.Profiler` for new diagnostics.
 
 - Allow authoring hosts to load detached asset packages without registering runtime assets; clean up packages after failed loads.
 
