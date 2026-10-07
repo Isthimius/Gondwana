@@ -381,7 +381,8 @@ public sealed class Engine : IDisposable
             if (touchAdapter != null)
                 Input.TouchAdapter = touchAdapter;
 
-            Input.GamepadManager = gamepadManager;
+            if (gamepadManager is not null)
+                Input.GamepadManager = gamepadManager;
 
             if (UiDispatcher == null)
                 PostInitialization?.Invoke();
@@ -1069,6 +1070,10 @@ public sealed class Engine : IDisposable
         // find total real seconds passed since last background loop
         var deltaSeconds = HighResTimer.GetDuration(_lastBackgroundTick, tick);
 
+        // Refresh native gamepad state before game callbacks and event pollers consume it.
+        // Connection discovery and live state polling use independent configured cadences.
+        Input.RefreshGamepads(tick, Configuration);
+
         BeforeBackgroundTasksExecute?.Invoke();
 
         // raise pre-cycle timer events
@@ -1134,9 +1139,6 @@ public sealed class Engine : IDisposable
         foreach (var surface in RenderSurfaceHostRegistry.All)
             if (!surface.Backbuffer.IsGlThreadRendered)
                 surface.PresentBackbufferToAdapter();
-
-        // update state of gamepad(s)
-        Input.GamepadManager?.Update();
 
         // raise event
         // GL thread rendering is done as part of this invocation
