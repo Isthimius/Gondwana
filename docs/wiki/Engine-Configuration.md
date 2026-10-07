@@ -216,9 +216,9 @@ engine.Start();
 
 | Setting | Default | Behavior |
 | --- | ---: | --- |
-| `SamplingTimeForCPS` | `1.5` seconds | Controls how often Gondwana calculates and reports engine-cycle and frame-rate measurements. `0` disables sampling. |
+| `SamplingTimeForCPS` | `1.5` seconds | **Legacy / obsolete (`GOND0001`).** Controls the compatibility CPS/FPS sampler only. New telemetry uses `Engine.Profiler.Configure(...)`; `0` disables the legacy sampler. |
 
-Gondwana converts this value to high-resolution timer ticks through the read-only `SamplingTimeForCPSTicks` property.
+The compatibility sampler converts this value to high-resolution timer ticks through the read-only `SamplingTimeForCPSTicks` property, which is also obsolete under `GOND0001`.
 
 This is a diagnostic sampling interval, not the update timestep and not the target frame rate.
 
@@ -434,7 +434,7 @@ Some configuration properties are read continuously or propagate changes. Others
 | `TargetFPS` | Takes effect without restarting and updates registered GPU backbuffers. |
 | `VSync` | Propagates to GPU backbuffers; applied on a later GPU paint. |
 | `MsaaSampleCount` | Stores and propagates the request; the GPU render target is recreated automatically on the next owning GL/WebGL callback. |
-| `SamplingTimeForCPS` | Read by the running engine's sampling logic. |
+| `SamplingTimeForCPS` | Legacy compatibility value read by the old CPS/FPS sampler; prefer `Engine.Profiler`. |
 | Input intervals | Used as defaults when monitors are created or reconfigured. Existing monitor settings remain unchanged. |
 | Logging settings | Mode and queue capacity are applied during initialization. Later configuration-only assignments do not rebuild the active logger. |
 | `StateFiles` | Processed only during initialization. |
