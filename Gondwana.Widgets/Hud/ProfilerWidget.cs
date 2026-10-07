@@ -1233,8 +1233,8 @@ public sealed class ProfilerWidget : ContainerWidget
 
     private string? GetMeasurementDescription(string metricKey)
     {
-        if (_measurementDescriptions.TryGetValue(metricKey, out string? description))
-            return description;
+        if (_measurementDescriptions.TryGetValue(metricKey, out string? overrideDescription))
+            return overrideDescription;
 
         string normalizedKey = NormalizeLayerMetricKey(metricKey);
         string? description = normalizedKey switch
