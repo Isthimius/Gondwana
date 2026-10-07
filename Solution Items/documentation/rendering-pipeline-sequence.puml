@@ -56,10 +56,11 @@ end box
 
 Engine -> Dispatcher : Drain() — process queued lambdas
 
+Engine -> GamepadManager : UpdateConnections() [when cadence due]
+Engine -> GamepadManager : Poll() [when cadence due]
+
 group DoBackgroundTasks(tick)
     Engine -> Engine : calculate deltaSeconds
-    Engine -> GamepadManager : UpdateConnections() [when cadence due]
-    Engine -> GamepadManager : Poll() [when cadence due]
     Engine -> Engine : BeforeBackgroundTasksExecute?.Invoke()
     Engine -> TimerPre : RaiseTimerEvents(PreCycle, tick)
     Engine -> KB : PollForEvents(tick)
