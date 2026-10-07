@@ -80,6 +80,11 @@ public sealed record TelemetrySummary(
 }
 
 /// <summary>Validated shared settings; configure only when collection is inactive.</summary>
+/// <remarks>
+/// Individual capacity limits are also constrained by a combined retained-detail budget:
+/// <c>HistoryCapacity * SourceCapacity * MetricCapacity</c> cannot exceed 1,048,576
+/// configured metric-summary slots.
+/// </remarks>
 public sealed record TelemetryOptions
 {
     /// <summary>Maximum configured retained metric summaries across history, sources, and metrics.</summary>
