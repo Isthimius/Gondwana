@@ -98,7 +98,7 @@ public sealed class ProfilerWidget : ContainerWidget
         IsKeyboardInputEnabled = false;
         CanReceiveFocus = false;
 
-        Refresh();
+        Display.SetText("Gondwana Runtime Profiler\nInactive. Call Show() to collect telemetry.");
     }
 
     /// <summary>
