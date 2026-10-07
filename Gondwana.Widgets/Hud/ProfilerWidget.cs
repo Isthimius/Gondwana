@@ -281,8 +281,21 @@ public sealed class ProfilerWidget : ContainerWidget
     /// <summary>
     /// Gets or sets the default measurement visibility policy.
     /// </summary>
-    public ProfilerMeasurementVisibilityMode MeasurementVisibilityMode { get; set; } =
-        ProfilerMeasurementVisibilityMode.All;
+    public ProfilerMeasurementVisibilityMode MeasurementVisibilityMode
+    {
+        get => _measurementVisibilityMode;
+        set
+        {
+            if (!Enum.IsDefined(value))
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            if (_measurementVisibilityMode == value)
+                return;
+
+            _measurementVisibilityMode = value;
+            _metricSelectorSignature = null;
+        }
+    }
 
     /// <summary>
     /// Gets or sets the heading displayed when <see cref="ShowHeader"/> is enabled.
@@ -331,8 +344,68 @@ public sealed class ProfilerWidget : ContainerWidget
     public bool ShowUnavailableMeasurements
     {
         get => _showUnavailableMeasurements;
-        set => _showUnavailableMeasurements = value;
+        set
+        {
+            if (_showUnavailableMeasurements == value)
+                return;
+
+            _showUnavailableMeasurements = value;
+            _metricSelectorSignature = null;
+        }
     }
+
+    /// <summary>
+    /// Gets or sets whether hovering a rendered measurement shows its definition.
+    /// </summary>
+    public bool MeasurementTooltipsEnabled
+    {
+        get => _measurementTooltipsEnabled;
+        set
+        {
+            if (_measurementTooltipsEnabled == value)
+                return;
+
+            _measurementTooltipsEnabled = value;
+            _metricSelectorSignature = null;
+
+            if (!value)
+                _measurementTooltip.HideTooltip();
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets whether the built-in Metrics menu is displayed.
+    /// </summary>
+    /// <remarks>
+    /// The menu is populated from the latest detached snapshot and exposes per-source
+    /// measurement check items together with show-all/hide-all, unavailable-state,
+    /// and tooltip controls.
+    /// </remarks>
+    public bool ShowMetricSelector
+    {
+        get => _showMetricSelector;
+        set
+        {
+            if (_showMetricSelector == value)
+                return;
+
+            _showMetricSelector = value;
+            _metricSelectorSignature = null;
+
+            if (!value)
+                DisposeMetricSelector();
+
+            ApplyLayout();
+
+            if (value && _latestSnapshot is not null)
+                EnsureMetricSelector(_latestSnapshot);
+        }
+    }
+
+    /// <summary>
+    /// Gets the tooltip used for measurement definitions.
+    /// </summary>
+    public TooltipWidget MeasurementTooltip => _measurementTooltip;
 
     /// <summary>
     /// Gets or sets the supplemental runtime context rendered before profiler measurements.
