@@ -167,7 +167,7 @@ When `Engine.Initialize(...)` runs, the ordered flow is:
 4. Apply logging mode.
 5. Merge any configured `EngineState` files.
 6. Initialize keyboard and mouse pollers if adapters were supplied.
-7. Store the touch adapter and gamepad manager.
+7. Store the touch adapter if supplied, and replace the gamepad manager only when a non-null manager was supplied. A manager already installed by a platform host is preserved.
 8. Raise `PostInitialization`.
 9. Invoke registered plugin `OnInitialize` hooks.
 10. Mark `IsInitialized = true`.
@@ -231,12 +231,13 @@ Cycle()
   → EngineDispatcher.Drain()
   → IEnginePlugin.OnPreCycle
   → DoBackgroundTasks
+       → Gamepad UpdateConnections/Poll when each cadence is due
        → BeforeBackgroundTasksExecute
        → Timer.RaiseTimerEvents(PreCycle)
        → Keyboard poll
        → Mouse poll
        → Touch poll
-       → Gamepad poll
+       → Gamepad button-event poll
        → Tile animation advance
        → Sprite movement advance
        → Collision resolution
@@ -251,7 +252,6 @@ Cycle()
             → RenderSurfaceHost.RenderBackbufferPostScene (CPU-backed surfaces, if scene was drawn)
             → IEnginePlugin.OnPostRenderCanvas (CPU-backed surfaces, if scene was drawn)
             → PresentBackbufferToAdapter (CPU-backed surfaces)
-            → Gamepad manager state update
             → AfterFrameRender
             → Timer.RaiseTimerEvents(PostCycle)
        → IEnginePlugin.OnPostFrameRender
@@ -289,7 +289,6 @@ During this phase Gondwana:
 - updates retained direct drawings
 - records and publishes immutable desktop GPU snapshots (latest completed frame wins)
 - renders/presents non-GL backbuffers
-- updates gamepad state snapshots
 - raises `AfterFrameRender`
 - fires post-cycle timers
 
