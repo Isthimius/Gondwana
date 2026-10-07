@@ -9,7 +9,6 @@ using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Widgets.Controls;
-using Gondwana.Widgets.Menus;
 using Gondwana.Widgets.Overlays;
 using SkiaSharp;
 
@@ -144,8 +143,11 @@ public sealed class ProfilerWidget : ContainerWidget
     private bool _measurementTooltipsEnabled = true;
     private bool _showMetricSelector = true;
     private TelemetrySnapshot? _latestSnapshot;
-    private MenuBarWidget? _metricSelector;
+    private ButtonWidget? _metricSelectorButton;
+    private ListBoxWidget? _metricSelectorList;
+    private readonly List<MetricSelectorRow> _metricSelectorRows = [];
     private string? _metricSelectorSignature;
+    private bool _metricSelectorOpen;
     private int _profilerZOrder;
     private bool _showHeader = true;
     private bool _showSnapshotMetadata = true;
@@ -556,7 +558,8 @@ public sealed class ProfilerWidget : ContainerWidget
     {
         _profilerZOrder = zOrder;
         Display.SetLabelZOrder(zOrder);
-        _metricSelector?.SetMenuZOrder(zOrder + 100);
+        _metricSelectorButton?.SetButtonZOrder(zOrder + 100);
+        _metricSelectorList?.SetListBoxZOrder(zOrder + 200);
         _measurementTooltip.SetTooltipZOrder(zOrder + 1000);
         return this;
     }
