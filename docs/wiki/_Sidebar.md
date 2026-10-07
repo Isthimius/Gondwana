@@ -103,6 +103,7 @@
 - <strong>Hud</strong>
   - [[HealthBarWidget|Widgets---HealthBarWidget]]
   - [[NameTagWidget|Widgets---NameTagWidget]]
+  - [[ProfilerWidget|Widgets---ProfilerWidget]]
 
 - <strong>Layout</strong>
   - [[StackPanelWidget|Widgets---StackPanelWidget]]
