@@ -338,14 +338,14 @@ internal sealed class SceneViewerGameHost(
             ? $"Scene: {Path.GetFileName(scenePath)}"
             : $"Stress: {stress.TileCount:N0} tiles / {stress.Projection}";
         yield return $"Animations: {(_animationsPaused ? "PAUSED" : "running")}  [F4]";
-        yield return $"GPU FPS (presentation.count): {GetPresentationRate(context):0.0}";
+        yield return $"GPU FPS (presentation.count): {GetPresentationRate(context)}";
     }
 
-    private static double GetPresentationRate(ProfilerWidgetExtensionContext context)
+    private static string GetPresentationRate(ProfilerWidgetExtensionContext context)
     {
         TelemetrySnapshot? snapshot = context.Snapshot;
         if (snapshot is null || snapshot.ElapsedSeconds <= 0d)
-            return 0d;
+            return "n/a";
 
         long? renderSourceId = context.RenderSurfaceHost.Telemetry?.Id;
         TelemetrySourceSnapshot? renderSource = snapshot.Sources
@@ -353,8 +353,8 @@ internal sealed class SceneViewerGameHost(
 
         return renderSource?.Metrics.TryGetValue("presentation.count", out TelemetrySummary? summary) == true &&
             summary.Availability == TelemetryAvailability.Available
-                ? summary.Count / snapshot.ElapsedSeconds
-                : 0d;
+                ? (summary.Count / snapshot.ElapsedSeconds).ToString("0.0")
+                : "n/a";
     }
 
     private static void ConfigureSceneViewerDiagnostics(ProfilerWidget widget)
