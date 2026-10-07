@@ -29,6 +29,8 @@ repeat
     :tick = HighResTimer.GetCurrentTick();
 
     partition "**DoBackgroundTasks(tick)**" {
+        :IGamepadManager.UpdateConnections()\nwhen connection cadence is due;
+        :IGamepadManager.Poll()\nwhen state cadence is due;
         :BeforeBackgroundTasksExecute?.Invoke();
         :Timer.RaiseTimerEvents(PreCycle, tick);
         :KeyboardEventPoller.PollForEvents(tick);
@@ -114,8 +116,6 @@ repeat
             end note
             :BitmapBackbuffer.ClearDirtyRectangle;
             :BitmapBackbuffer.BeginFrame()\n— reset matrix, clip rect;
-
-            :IGamepadManager?.Update();
             :AfterFrameRender?.Invoke();
             :Timer.RaiseTimerEvents(PostCycle, tick);
         }
