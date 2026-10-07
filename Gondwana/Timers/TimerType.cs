@@ -30,7 +30,8 @@ namespace Gondwana.Timers
         /// PreCycle timers execute during the engine's background task phase, which includes:
         /// </para>
         /// <list type="bullet">
-        /// <item><description>Input polling, including cadence-limited gamepad discovery and state refresh</description></item>
+        /// <item><description>Keyboard, mouse, touch, and gamepad event polling; cadence-limited gamepad
+        /// connection/state refresh occurs immediately before the background phase begins</description></item>
         /// <item><description>Tile animation cycling</description></item>
         /// <item><description>Sprite movement processing</description></item>
         /// <item><description>Collision detection and resolution</description></item>
