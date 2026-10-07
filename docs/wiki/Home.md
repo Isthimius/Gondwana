@@ -374,13 +374,13 @@ Queued work posted through `EngineDispatcher` is executed on the engine thread b
 
 Each background cycle performs the engine's simulation-oriented work:
 
-1. Raise pre-cycle timer callbacks.
-2. Poll keyboard, mouse, touch, and gamepad input.
-3. Advance animated tiles.
-4. Advance sprite movement.
-5. Resolve collisions after movement.
-6. Update cameras.
-7. Raise background lifecycle events and plugin hooks.
+1. Refresh gamepad connections/state when their independent cadences are due.
+2. Raise background/pre-cycle callbacks.
+3. Poll keyboard, mouse, touch, and gamepad button events.
+4. Advance animated tiles.
+5. Advance sprite movement.
+6. Resolve collisions after movement.
+7. Update cameras and finish background lifecycle/plugin hooks.
 
 The background cycle rate and rendered frame rate are tracked separately.
 
@@ -392,8 +392,7 @@ When the configured frame interval has elapsed, or when rendering is unbounded, 
 2. Updates DirectDrawing state.
 3. Renders each registered surface to its backbuffer.
 4. Presents each completed backbuffer through its platform adapter.
-5. Updates gamepad state.
-6. Raises post-render and post-cycle timer events.
+5. Raises post-render and post-cycle timer events.
 
 GPU surfaces whose rendering must occur on a platform GL thread are coordinated through their platform-specific render path rather than forced through the standard CPU presentation loop.
 
