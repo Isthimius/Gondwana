@@ -91,6 +91,11 @@ The same summaries also retain timing information: for example,
 `Count / ElapsedSeconds` is cycle cadence. Presentation is recorded per render
 surface rather than being forced into the old cross-surface aggregate.
 
+On the current desktop `RenderFrameSnapshot` path, `gate.wait.cpu.ms` and
+`gate.held.cpu.ms` are **NotApplicable**: ordinary GL replay deliberately does not
+acquire the broad live render-state/simulation gate. Selecting either metric in a
+`ProfilerWidget` therefore shows `NotApplicable`, rather than a numeric timing.
+
 These rates answer different questions:
 
 - a low cycle rate points toward expensive or blocked simulation/background work;
