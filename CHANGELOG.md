@@ -19,6 +19,9 @@ All notable changes to this project will be documented in this file.
 - Native scene tile transforms, GSCN tooling and Tiled import ([#417](https://github.com/Isthimius/Gondwana/pull/417))
 - Add configurable normalized camera follow anchors ([#431](https://github.com/Isthimius/Gondwana/pull/431))
 
+### Deprecated
+- Mark the legacy CPS/FPS properties, event, and sampling configuration as warning-only obsolete under `GOND0001`; migrate Gondwana-owned consumers to `Engine.Profiler` ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
+
 
 
 ### Fixed
