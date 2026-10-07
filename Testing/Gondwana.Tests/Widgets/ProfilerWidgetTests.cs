@@ -1,4 +1,6 @@
 using System.Drawing;
+using System.Reflection;
+using Gondwana.Diagnostics;
 using Gondwana.Rendering.Views;
 using Gondwana.Widgets.Hud;
 
@@ -51,6 +53,64 @@ public sealed class ProfilerWidgetTests
 
         Assert.True(widget.IsMeasurementVisible("Engine", "cycle.cpu.ms"));
         Assert.False(widget.IsMeasurementVisible("Engine", "background.cpu.ms"));
+    }
+
+    [Fact]
+    public void SampleSummary_UsesExplicitSampleTerminology()
+    {
+        var summary = new TelemetrySummary(
+            TelemetryAvailability.Available,
+            Count: 4,
+            Sum: 10d,
+            Minimum: 1d,
+            Maximum: 4d,
+            Last: 4d)
+        {
+            Kind = TelemetryMetricKind.Sample
+        };
+
+        var method = typeof(ProfilerWidget)
+            .GetMethod("FormatSummary", BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        string text = (string)method.Invoke(null, [summary, 0.25d])!;
+
+        Assert.Equal(
+            "avg 2.5, min 1, max 4, samples 4 (16.0 samples/s)",
+            text);
+    }
+
+    [Fact]
+    public void ExplicitSelection_ShowsUnavailableMetricWithoutEnablingAllUnavailableRows()
+    {
+        using var host = new TestRenderSurfaceHost();
+        View view = AddView(host);
+        using var widget = new ProfilerWidget(
+            host,
+            view,
+            new Rectangle(0, 0, 400, 300))
+        {
+            MeasurementVisibilityMode = ProfilerMeasurementVisibilityMode.Selected
+        };
+
+        var method = typeof(ProfilerWidget)
+            .GetMethod("ResolveMeasurementVisibility", BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+        bool before = (bool)method.Invoke(
+            widget,
+            ["Render surface", "gate.wait.cpu.ms", TelemetryAvailability.NotApplicable])!;
+
+        widget.SetMeasurementVisible(
+            "Render surface",
+            "gate.wait.cpu.ms",
+            true);
+
+        bool after = (bool)method.Invoke(
+            widget,
+            ["Render surface", "gate.wait.cpu.ms", TelemetryAvailability.NotApplicable])!;
+
+        Assert.False(widget.ShowUnavailableMeasurements);
+        Assert.False(before);
+        Assert.True(after);
     }
 
     [Fact]
