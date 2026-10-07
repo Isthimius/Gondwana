@@ -49,6 +49,27 @@ The 250 ms widget refresh interval is only a presentation cadence. It does not c
 the profiler to poll the engine every 250 ms. Measurements are still recorded at
 their normal instrumentation boundaries.
 
+### Reading sample rows
+
+Sample measurements are formatted as:
+
+```text
+avg 0.084, min 0.054, max 2.109, samples 386 (1543.9 samples/s)
+```
+
+These fields mean:
+
+- **avg** — arithmetic mean of the values recorded during the current telemetry window;
+- **min** — smallest recorded value in that window;
+- **max** — largest recorded value in that window;
+- **samples** — number of times that metric was recorded during the window; and
+- **samples/s** — sample count divided by the window duration.
+
+`samples/s` is the **measurement cadence**, not the metric's value per second. For
+example, `atlas.tiles: avg 817 ... samples 386 (1543.9 samples/s)` means the renderer
+observed about 817 atlas tiles each time that metric was recorded, and recorded that
+metric 386 times during the current window.
+
 ## Measurement visibility
 
 Hide or show a metric key across every source:
@@ -107,6 +128,12 @@ containing:
 This UI modifies the same source/measurement visibility state exposed by
 `SetSourceVisible(...)`, `SetMeasurementVisible(...)`, and
 `MeasurementVisibilityMode`.
+
+Unavailable metrics are annotated in the selector as **not applicable**,
+**unsupported**, or **not yet sampled**. They remain hidden by default, but explicitly
+checking one shows its availability state in the profiler even when **Show unavailable**
+is off. This is useful for confirming that a diagnostic does not apply to the current
+render path rather than mistaking its absence for a selector failure.
 
 Disable the selector when an application supplies its own controls:
 
