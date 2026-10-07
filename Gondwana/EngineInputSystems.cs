@@ -1,7 +1,9 @@
+using Gondwana.Configuration;
 using Gondwana.Input.Gamepad;
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.Input.Touch;
+using Gondwana.Timers;
 
 namespace Gondwana;
 
@@ -13,6 +15,8 @@ public sealed class EngineInputSystems
     internal EngineInputSystems() { }
 
     private IGamepadManager<IGamepadAdapter>? _gamepadManager = null;
+    private long _lastGamepadConnectionUpdateTick;
+    private long _lastGamepadPollTick;
 
     /// <summary>
     /// Gets or sets the gamepad manager responsible for handling gamepad input.
@@ -23,9 +27,71 @@ public sealed class EngineInputSystems
         get => _gamepadManager;
         set
         {
-            GamepadEventPoller.Initialize(value?.ConnectedAdapters);
             _gamepadManager = value;
+
+            if (value is null)
+            {
+                _lastGamepadConnectionUpdateTick = 0;
+                _lastGamepadPollTick = 0;
+                GamepadEventPoller.Initialize(null);
+                return;
+            }
+
+            // Prime discovery and state once so platform host initialization hooks can immediately
+            // observe controllers that were already connected when the manager was installed.
+            value.UpdateConnections();
+            value.Poll();
+
+            long tick = HighResTimer.GetCurrentTick();
+            _lastGamepadConnectionUpdateTick = tick;
+            _lastGamepadPollTick = tick;
+
+            GamepadEventPoller.Initialize(value.ConnectedAdapters);
         }
+    }
+
+    /// <summary>
+    /// Refreshes gamepad connection and controller state when their configured cadences are due.
+    /// </summary>
+    /// <param name="tick">The current engine tick.</param>
+    /// <param name="configuration">The active engine configuration.</param>
+    internal void RefreshGamepads(long tick, EngineConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        var manager = _gamepadManager;
+        if (manager is null)
+            return;
+
+        if (IsGamepadRefreshDue(
+                tick,
+                _lastGamepadConnectionUpdateTick,
+                configuration.GamepadConnectionUpdateFrequencyHz))
+        {
+            manager.UpdateConnections();
+            _lastGamepadConnectionUpdateTick = tick;
+        }
+
+        if (IsGamepadRefreshDue(
+                tick,
+                _lastGamepadPollTick,
+                configuration.GamepadPollFrequencyHz))
+        {
+            manager.Poll();
+            _lastGamepadPollTick = tick;
+        }
+    }
+
+    private static bool IsGamepadRefreshDue(long tick, long lastTick, double frequencyHz)
+    {
+        if (frequencyHz <= 0d)
+            return false;
+
+        long intervalTicks = Math.Max(
+            1,
+            (long)(HighResTimer.TicksPerSecond / frequencyHz));
+
+        return tick - lastTick >= intervalTicks;
     }
 
     /// <summary>
