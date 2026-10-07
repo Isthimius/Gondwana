@@ -33,12 +33,20 @@ var recent = profiler.GetHistory(); // non-consuming, oldest to newest
 // Dispose collection when this consumer no longer needs measurements.
 ```
 
-`TelemetryOptions` keeps both individual and combined retention bounded. In addition
-to the documented per-property ranges, the configured product of
-`HistoryCapacity * SourceCapacity * MetricCapacity` may not exceed **1,048,576**
-metric-summary slots. This prevents individually legal maxima from combining into a
-multi-gigabyte retained history. The default configuration uses 245,760 of those
-configured slots.
+`TelemetryOptions` keeps both retained memory and publication work bounded. In
+addition to the documented per-property ranges:
+
+- `HistoryCapacity * SourceCapacity * MetricCapacity` may not exceed **1,048,576**
+  retained metric-summary slots.
+- `SourceCapacity * MetricCapacity / Interval.TotalSeconds` may not exceed
+  **262,144 configured metric-summary materializations per second**.
+
+The first budget prevents individually legal maxima from combining into a
+multi-gigabyte retained history. The second prevents very short intervals combined
+with maximum source/metric capacities from forcing millions of summary/dictionary
+allocations per second while holding the producer lock. The default configuration
+uses 245,760 retained slots and a worst-case publication rate of 8,192 configured
+metric summaries per second.
 
 ## In-game ProfilerWidget
 
