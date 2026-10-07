@@ -28,7 +28,7 @@ dotnet run --project Tooling/Gondwana.Tooling.SceneViewer.WinForms -c Release --
 | Shift | Faster camera |
 | Mouse wheel | Zoom |
 | Home | Restore initial camera position and zoom |
-| F3 | Toggle runtime diagnostics |
+| F3 | Toggle this Scene Viewer's runtime diagnostics overlay |
 | F4 | Pause/resume all active tile animations |
 | Esc | Close viewer |
 
@@ -38,7 +38,11 @@ The window is resizable. Gondwana's current GPU host preserves the initial logic
 
 ### Diagnostics
 
-Press **F3** to toggle a black, white-text diagnostics overlay in the upper-left of the View. The overlay is hidden by default and reports sampled runtime information without replacing the normal Gondwana rendering path:
+Press **F3** to toggle this Scene Viewer's black, white-text diagnostics overlay in the upper-left of the View. This is a Scene Viewer control—including when the viewer was launched through **View Scene** from the `.gscn` editor or Studio—not a global Gondwana Engine hotkey. The overlay is hidden by default and reports sampled runtime information without replacing the normal Gondwana rendering path.
+
+The overlay is implemented with `Gondwana.Widgets.Hud.ProfilerWidget`. It enables the widget's generic Scene/View/backbuffer/configuration/MSAA context and uses `AdditionalLinesProvider` for the viewer-specific scene/stress and F4 animation-state lines. This makes the Scene Viewer a real runtime consumer of the same diagnostics widget available to games.
+
+It reports:
 
 - gross engine CPS, engine FPS, and actual GPU FPS
 - average and maximum background-work time across the sample window
