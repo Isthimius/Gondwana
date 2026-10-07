@@ -201,10 +201,19 @@ public sealed class RuntimeProfilerTests
             MetricCapacity = 512
         }));
 
+        Assert.Throws<ArgumentException>(() => profiler.Configure(new()
+        {
+            Interval = TimeSpan.FromMilliseconds(10),
+            HistoryCapacity = 32,
+            SourceCapacity = 64,
+            MetricCapacity = 512
+        }));
+
         profiler.Configure(new()
         {
-            HistoryCapacity = 128,
-            SourceCapacity = 16,
+            Interval = TimeSpan.FromMilliseconds(125),
+            HistoryCapacity = 32,
+            SourceCapacity = 64,
             MetricCapacity = 512
         });
 
