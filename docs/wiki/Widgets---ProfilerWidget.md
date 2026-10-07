@@ -39,8 +39,11 @@ The default display:
 - formats gauges as their latest value;
 - formats lifetime counters as latest value plus window delta;
 - shows snapshot generation/window metadata;
-- refreshes the display every 250 ms; and
-- enables a vertical scrollbar when the text exceeds the widget bounds.
+- refreshes the display every 250 ms;
+- enables a vertical scrollbar when the text exceeds the widget bounds;
+- reserves a small trailing scroll margin so the final line can be moved clear of the clip edge;
+- shows hover definitions for known measurements; and
+- displays a built-in **Metrics...** selector for changing diagnostic visibility at runtime.
 
 The 250 ms widget refresh interval is only a presentation cadence. It does not cause
 the profiler to poll the engine every 250 ms. Measurements are still recorded at
@@ -90,6 +93,48 @@ Call `ClearVisibilityOverrides()` to remove explicit source and metric overrides
 `IsMeasurementVisible(sourceName, metricKey)` reports the current selection policy
 for an otherwise available measurement.
 
+## Interactive metric selector
+
+The built-in **Metrics...** control is enabled by default. It opens a scrollable list
+containing:
+
+- one toggle for each profiler source;
+- one toggle for each individual measurement;
+- **Show all measurements** and **Hide all measurements** commands;
+- **Show unavailable**; and
+- **Hover definitions**.
+
+This UI modifies the same source/measurement visibility state exposed by
+`SetSourceVisible(...)`, `SetMeasurementVisible(...)`, and
+`MeasurementVisibilityMode`.
+
+Disable the selector when an application supplies its own controls:
+
+```csharp
+profiler.ShowMetricSelector = false;
+```
+
+## Hover definitions
+
+Known profiler measurements have built-in descriptions. Hovering a visible metric line
+shows the definition through a reusable `TooltipWidget`.
+
+Disable hover help with:
+
+```csharp
+profiler.MeasurementTooltipsEnabled = false;
+```
+
+Applications can define or replace help text for custom metrics:
+
+```csharp
+profiler.SetMeasurementDescription(
+    "pathfinding.cpu.ms",
+    "CPU time spent updating the pathfinding system.");
+```
+
+See [[TooltipWidget|Widgets---TooltipWidget]] for the reusable overlay itself.
+
 ## Display options
 
 The following properties control presentation:
@@ -103,6 +148,8 @@ The following properties control presentation:
 | `HeaderText` | `Gondwana Runtime Profiler` | Customize the profiler heading |
 | `ShowSnapshotMetadata` | `true` | Show generation, window duration, and truncation state |
 | `ShowSourceHeaders` | `true` | Show source name/backend headings |
+| `MeasurementTooltipsEnabled` | `true` | Show metric definitions when hovering diagnostic lines |
+| `ShowMetricSelector` | `true` | Show the built-in Metrics... visibility selector |
 | `Size` | constructor bounds | Resize while preserving the widget position |
 
 The fluent `SetColors`, `SetFont`, and `SetProfilerZOrder` methods adjust the
