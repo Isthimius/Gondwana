@@ -175,6 +175,7 @@ internal sealed class SceneViewerGameHost(
         };
 
         _diagnosticsWidget.Display.TextBlock.LineSpacingMultiplier = 1.05f;
+        ConfigureSceneViewerDiagnostics(_diagnosticsWidget);
         _diagnosticsWidget.SetProfilerZOrder(20_000);
 
         _view.Viewport.TargetRectChanged += OnViewportTargetRectChanged;
@@ -332,12 +333,59 @@ internal sealed class SceneViewerGameHost(
     private IEnumerable<string> GetSceneViewerDiagnosticLines(
         ProfilerWidgetExtensionContext context)
     {
-        _ = context;
-
         yield return stress is null
             ? $"Scene: {Path.GetFileName(scenePath)}"
             : $"Stress: {stress.TileCount:N0} tiles / {stress.Projection}";
         yield return $"Animations: {(_animationsPaused ? "PAUSED" : "running")}  [F4]";
+        yield return $"GPU FPS (presentation.count): {GetPresentationRate(context):0.0}";
+    }
+
+    private static double GetPresentationRate(ProfilerWidgetExtensionContext context)
+    {
+        TelemetrySnapshot? snapshot = context.Snapshot;
+        if (snapshot is null || snapshot.ElapsedSeconds <= 0d)
+            return 0d;
+
+        long? renderSourceId = context.RenderSurfaceHost.Telemetry?.Id;
+        TelemetrySourceSnapshot? renderSource = snapshot.Sources
+            .FirstOrDefault(source => source.Id == renderSourceId);
+
+        return renderSource?.Metrics.TryGetValue("presentation.count", out TelemetrySummary? summary) == true &&
+            summary.Availability == TelemetryAvailability.Available
+                ? summary.Count / snapshot.ElapsedSeconds
+                : 0d;
+    }
+
+    private static void ConfigureSceneViewerDiagnostics(ProfilerWidget widget)
+    {
+        widget.MeasurementVisibilityMode = ProfilerMeasurementVisibilityMode.Selected;
+
+        string[] defaultMeasurements =
+        [
+            "cycle.cpu.ms",
+            "background.cpu.ms",
+            "foreground.cpu.ms",
+            "build.cpu.ms",
+            "query.cpu.ms",
+            "sort.cpu.ms",
+            "record.cpu.ms",
+            "overlay.cpu.ms",
+            "visible.drawables",
+            "visible.tiles",
+            "atlas.batches",
+            "atlas.tiles",
+            "replay.cpu.ms",
+            "presentation.cpu.ms",
+            "render.snapshot.cpu.ms",
+            "snapshot.age.ms",
+            "mailbox.published.lifetime",
+            "mailbox.dropped.lifetime",
+            "mailbox.slots",
+            "layers.omitted"
+        ];
+
+        foreach (string metricKey in defaultMeasurements)
+            widget.SetMeasurementVisible(metricKey, true);
     }
 
     private void OnViewportTargetRectChanged(ViewportResizedEventArgs args)
