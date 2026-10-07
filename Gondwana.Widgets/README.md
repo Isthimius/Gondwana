@@ -13,7 +13,7 @@ and backbuffers using the same engine-driven drawing pipeline as the rest of the
 - Reusable in-game UI widgets for Gondwana projects
 - DirectDrawing-friendly controls and overlays
 - Common controls including labels, buttons, check boxes, radio buttons, list boxes, combo boxes, tabbed containers, and editable text boxes
-- Game-oriented components such as HUD elements, health bars, name tags, dialogs, conversation boxes, and menus
+- Game-oriented components such as HUD elements, health bars, name tags, dialogs, conversation boxes, menus, and an opt-in runtime profiler HUD
 - Code-first widget composition with no external editor or scene GUI required
 - Designed for 2D and 2.5D games using Gondwana's scene, view, and rendering systems
 - Cross-platform-friendly architecture through the core Gondwana rendering pipeline
@@ -51,6 +51,16 @@ A typical widget can be used for in-game interface elements such as:
 - Health bars, name tags, and status indicators
 
 Exact usage depends on the specific widget type being used.
+
+### Runtime profiler HUD
+
+`ProfilerWidget` displays detached `Engine.Instance.Profiler` measurements in-game.
+It can filter individual sources/measurements, optionally include current Scene/View/
+backbuffer/configuration/MSAA context, and accept application-specific lines through
+`AdditionalLinesProvider`. The saved-scene Scene Viewer uses the same widget for its
+F3 diagnostics overlay, providing a built-in real-world consumer of the API.
+
+See the [ProfilerWidget guide](https://github.com/Isthimius/Gondwana/wiki/Widgets---ProfilerWidget).
 
 ### Menu bars
 
