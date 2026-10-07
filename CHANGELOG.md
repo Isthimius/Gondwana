@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 ## Gondwana
 
 ### Added
-- Add opt-in runtime telemetry with independent collection requests, bounded detached history, and shared SceneViewer F3 measurements ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
+- Add opt-in runtime telemetry with independent collection requests, bounded detached history, shared SceneViewer F3 measurements, and an in-game ProfilerWidget ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 - Add GSCN format and EngineState integration ([#372](https://github.com/Isthimius/Gondwana/pull/372))
 - Add GANI format and EngineState integration ([#373](https://github.com/Isthimius/Gondwana/pull/373))
 - Compose the standalone WinForms authoring editors ([#383](https://github.com/Isthimius/Gondwana/pull/383))
@@ -119,6 +119,7 @@ All notable changes to this project will be documented in this file.
 ## Gondwana.Widgets
 
 ### Added
+- Add runtime ProfilerWidget with configurable source and measurement visibility ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 - Add scrollable list boxes with mouse wheel support ([#403](https://github.com/Isthimius/Gondwana/pull/403))
 - Add scrollable labels and Spot help ([#405](https://github.com/Isthimius/Gondwana/pull/405))
 
