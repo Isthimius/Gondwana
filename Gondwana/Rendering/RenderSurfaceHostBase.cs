@@ -173,6 +173,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
         long acquired = !collectDiagnostics ? 0 : HighResTimer.GetCurrentTick();
         var counters = !collectDiagnostics ? default : FrameMailbox.Counters;
         long replayEnd = acquired;
+        bool replayCompleted = false;
         long pictureReplayTicks = 0;
         long backbufferFlushTicks = 0;
         long snapshotTicks = 0;
@@ -203,6 +204,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
 
             Backbuffer.EndFrame();
             long flushEnd = !collectDiagnostics ? 0 : HighResTimer.GetCurrentTick();
+            replayCompleted = true;
 
             if (collectDiagnostics)
             {
@@ -231,10 +233,14 @@ public abstract class RenderSurfaceHostBase : IDisposable
                 double snapshotMs = HighResTimer.GetDuration(0, snapshotTicks) * 1000d;
                 if (telemetryGeneration != 0)
                 {
-                    Telemetry!.Record(telemetryGeneration, "replay.cpu.ms", replayMs);
-                    Telemetry.Record(telemetryGeneration, "picture.cpu.ms", pictureMs);
-                    Telemetry.Record(telemetryGeneration, "backbuffer.flush.cpu.ms", flushMs);
-                    Telemetry.Record(telemetryGeneration, "snapshot.cpu.ms", snapshotMs);
+                    if (replayCompleted)
+                    {
+                        Telemetry!.Record(telemetryGeneration, "replay.cpu.ms", replayMs);
+                        Telemetry.Record(telemetryGeneration, "picture.cpu.ms", pictureMs);
+                        Telemetry.Record(telemetryGeneration, "backbuffer.flush.cpu.ms", flushMs);
+                    }
+
+                    Telemetry!.Record(telemetryGeneration, "snapshot.cpu.ms", snapshotMs);
                     Telemetry.Record(telemetryGeneration, "snapshot.age.ms", age);
                     Telemetry.Record(telemetryGeneration, "mailbox.published.lifetime", counters.Published);
                     Telemetry.Record(telemetryGeneration, "mailbox.dropped.lifetime", counters.Dropped);
