@@ -106,6 +106,7 @@ public sealed class RenderFrameSnapshotIntegrationTests
         Assert.Equal(1, source.Metrics["build.cpu.ms"].Count);
         Assert.Equal(1, source.Metrics["replay.cpu.ms"].Count);
         Assert.Equal(Gondwana.Diagnostics.TelemetryAvailability.NotApplicable, source.Metrics["gate.wait.cpu.ms"].Availability);
+        Assert.Equal(Gondwana.Diagnostics.TelemetryAvailability.NotApplicable, source.Metrics["gate.held.cpu.ms"].Availability);
         var counters = host.FrameMailbox.Counters;
         profiler.Reset();
         Assert.Equal(counters, host.FrameMailbox.Counters);
