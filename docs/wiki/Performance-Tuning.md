@@ -165,7 +165,7 @@ The final bitmap presentation area is a single screen-space union of the redrawn
 
 ## GPU rendering
 
-A GPU backbuffer does not consume `SceneLayer` refresh queues. Desktop Engine foreground work resolves and records a complete immutable `RenderFrameSnapshot`; GL replays the newest available recording without holding the simulation gate. Three slots bound buffering and intermediate frames may be dropped. Query/cull/sort and recording still cost Engine time. F3 separates snapshot build/query/record time from GL replay, acquisition age, and publication/drop counts. A zero broad-lock metric describes ordinary replay, not resize/context handoff. Browser WebGL retains synchronous rendering. See [[GL Rendering Path]].
+A GPU backbuffer does not consume `SceneLayer` refresh queues. Desktop Engine foreground work resolves and records a complete immutable `RenderFrameSnapshot`; GL replays the newest available recording without holding the simulation gate. Three slots bound buffering and intermediate frames may be dropped. Query/cull/sort and recording still cost Engine time. The saved-scene Scene Viewer's F3 diagnostics overlay (the `.gscn`/Studio View Scene tooling, not a global Engine hotkey) separates snapshot build/query/record time from GL replay, acquisition age, and publication/drop counts. A zero broad-lock metric describes ordinary replay, not resize/context handoff. Browser WebGL retains synchronous rendering. See [[GL Rendering Path]].
 
 This model is appropriate when most of the viewport is changing already. It avoids CPU-to-GPU transfer of the completed backbuffer and allows Skia to render directly into a GPU-backed surface.
 
