@@ -27,6 +27,8 @@ public static class RuntimeTelemetryExample
         // Hide any metric globally, or target a single named source.
         widget.SetMeasurementVisible("layers.omitted", false);
         widget.SetMeasurementVisible("Render surface", "snapshot.commands.approximate", false);
+        widget.ContextInfo = ProfilerContextInfo.View | ProfilerContextInfo.Backbuffer;
+        widget.AdditionalLinesProvider = _ => ["Diagnostics: application-defined line"];
         return widget;
     }
 
