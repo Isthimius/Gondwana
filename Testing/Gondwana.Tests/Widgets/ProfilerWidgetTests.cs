@@ -77,7 +77,32 @@ public sealed class ProfilerWidgetTests
         Assert.False(widget.ShowSnapshotMetadata);
         Assert.False(widget.ShowSourceHeaders);
         Assert.True(widget.ShowUnavailableMeasurements);
+        Assert.True(widget.MeasurementTooltipsEnabled);
+        Assert.True(widget.ShowMetricSelector);
         Assert.Equal(Gondwana.Widgets.Controls.ScrollBarVisibility.Auto, widget.Display.VerticalScrollBarVisibility);
+        Assert.Equal(8f, widget.Display.VerticalScrollEndPaddingPx);
+        Assert.Equal(8f, widget.Display.TextBlock.VerticalScrollEndPaddingPx);
+    }
+
+    [Fact]
+    public void ScrollEndPaddingExtendsTheActualTextScrollRange()
+    {
+        using var host = new TestRenderSurfaceHost();
+        View view = AddView(host);
+
+        using var widget = new ProfilerWidget(
+            host,
+            view,
+            new Rectangle(0, 0, 400, 180));
+
+        widget.Display.SetText(string.Join("\n", Enumerable.Repeat("diagnostic line", 24)));
+        float padded = widget.Display.MaximumVerticalScrollOffsetPx;
+
+        widget.Display.VerticalScrollEndPaddingPx = 0f;
+        float unpadded = widget.Display.MaximumVerticalScrollOffsetPx;
+
+        Assert.True(unpadded > 0f);
+        Assert.Equal(unpadded + 8f, padded, 3);
     }
 
     [Fact]
