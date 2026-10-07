@@ -12,7 +12,7 @@ public sealed class EngineInitializationTests
         var engine = CreateEngineInstance();
         try
         {
-            engine.Configuration.SamplingTimeForCPS = 0;
+            engine.Configuration.LegacyCpsSamplingTime = 0;
             engine.Configuration.TargetFPS = 0;
             engine.Configuration.MaxTimerDrivenSimulationSteps = 3;
             engine.EngineDispatcher.BindToCurrentThread();
@@ -40,7 +40,7 @@ public sealed class EngineInitializationTests
         var engine = CreateEngineInstance();
         try
         {
-            engine.Configuration.SamplingTimeForCPS = 0;
+            engine.Configuration.LegacyCpsSamplingTime = 0;
             engine.EngineDispatcher.BindToCurrentThread();
             using (engine.Profiler.Start())
                 InvokeCycle(engine);
@@ -222,7 +222,7 @@ public sealed class EngineInitializationTests
         try
         {
             SetIsRunning(engine, true);
-            engine.Configuration.SamplingTimeForCPS = 0;
+            engine.Configuration.LegacyCpsSamplingTime = 0;
             engine.BeforeBackgroundTasksExecute += () =>
             {
                 engine.Dispose();
