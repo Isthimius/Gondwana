@@ -1046,12 +1046,20 @@ public sealed class ProfilerWidget : ContainerWidget
                          .OrderBy(value => value, StringComparer.Ordinal))
             {
                 bool metricVisible = IsMeasurementVisible(sourceName, metricKey);
+                TelemetryAvailability availability = sourceGroup
+                    .Where(source => source.Metrics.ContainsKey(metricKey))
+                    .Select(source => source.Metrics[metricKey].Availability)
+                    .DefaultIfEmpty(TelemetryAvailability.Unsupported)
+                    .Max();
                 string capturedMetricKey = metricKey;
                 string capturedSourceName = sourceName;
+                string availabilitySuffix = availability == TelemetryAvailability.Available
+                    ? string.Empty
+                    : $" [{FormatAvailability(availability)}]";
 
                 AddSelectorRow(
                     metricVisible,
-                    $"  {metricKey}",
+                    $"  {metricKey}{availabilitySuffix}",
                     () => SetMeasurementVisible(
                         capturedSourceName,
                         capturedMetricKey,
@@ -1267,9 +1275,9 @@ public sealed class ProfilerWidget : ContainerWidget
             "snapshot.commands.approximate" =>
                 "Approximate command count retained by the latest render snapshot.",
             "gate.wait.cpu.ms" =>
-                "Desktop GPU time spent waiting to enter the render/presentation gate.",
+                "Time spent waiting to enter the shared live render-state gate. Current desktop snapshot replay does not enter this broad gate, so the desktop GPU source reports NotApplicable.",
             "gate.held.cpu.ms" =>
-                "Desktop GPU time spent while holding the render/presentation gate.",
+                "Time spent while holding the shared live render-state gate. Current desktop snapshot replay does not enter this broad gate, so the desktop GPU source reports NotApplicable.",
             "presentation.count" =>
                 "Completed presentation callbacks. Its sample rate is the actual GPU presentation FPS for this render surface.",
             "presentation.cpu.ms" =>
@@ -1319,8 +1327,8 @@ public sealed class ProfilerWidget : ContainerWidget
         return summary?.Kind == TelemetryMetricKind.Sample
             ? description +
               "\n\navg/min/max are values observed during the current telemetry window. " +
-              "observations is how many times this metric was recorded; observation rate is " +
-              "that count divided by the window duration, not the metric value per second."
+              "samples is how many times this metric was recorded; samples/s is that count " +
+              "divided by the window duration, not the metric value per second."
             : description;
     }
 
@@ -1394,8 +1402,8 @@ public sealed class ProfilerWidget : ContainerWidget
                     : $"last {FormatNumber(summary.Last)}, delta n/a",
             _ =>
                 $"avg {FormatNumber(summary.Mean)}, min {FormatNumber(summary.Minimum)}, " +
-                $"max {FormatNumber(summary.Maximum)}, observations {summary.Count:N0}, " +
-                $"observation rate {FormatRate(summary.Count, elapsedSeconds)}/s"
+                $"max {FormatNumber(summary.Maximum)}, samples {summary.Count:N0} " +
+                $"({FormatRate(summary.Count, elapsedSeconds)} samples/s)"
         };
     }
 
@@ -1409,6 +1417,17 @@ public sealed class ProfilerWidget : ContainerWidget
     private static string FormatNumber(double? value)
     {
         return value?.ToString("0.###") ?? "n/a";
+    }
+
+    private static string FormatAvailability(TelemetryAvailability availability)
+    {
+        return availability switch
+        {
+            TelemetryAvailability.Unsupported => "unsupported",
+            TelemetryAvailability.NotApplicable => "not applicable",
+            TelemetryAvailability.NotYetSampled => "not yet sampled",
+            _ => "available"
+        };
     }
 
     private static string CreateSourceMetricKey(string sourceName, string metricKey)
