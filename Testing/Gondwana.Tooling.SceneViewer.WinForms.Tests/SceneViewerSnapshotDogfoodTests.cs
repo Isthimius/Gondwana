@@ -1,5 +1,6 @@
 using System.Reflection;
 using Gondwana.Drawing.Direct;
+using Gondwana.Widgets.Hud;
 using Gondwana.WinForms.Rendering;
 using Xunit.Abstractions;
 
@@ -75,9 +76,14 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
                 toggle.Invoke(host, null);
                 Assert.True(Engine.Instance.Profiler.IsCollecting);
                 typeof(SceneViewerGameHost).GetMethod("ToggleDiagnostics", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(host, null);
-                var diagnosticsText = (TextBlock)typeof(SceneViewerGameHost).GetField("_diagnosticsText", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(host)!;
-                var background = (global::SkiaSharp.SKColor)typeof(TextBlock).GetField("_backColor", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(diagnosticsText)!;
+                var diagnosticsWidget = (ProfilerWidget)typeof(SceneViewerGameHost)
+                    .GetField("_diagnosticsWidget", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(host)!;
+                TextBlock diagnosticsText = diagnosticsWidget.Display.TextBlock;
+                var background = (global::SkiaSharp.SKColor)typeof(TextBlock)
+                    .GetField("_backColor", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(diagnosticsText)!;
                 Assert.Equal(102, background.Alpha);
+                Assert.Equal(ProfilerContextInfo.All, diagnosticsWidget.ContextInfo);
+                Assert.NotNull(diagnosticsWidget.AdditionalLinesProvider);
             });
             surface.Adapter.FrameDiagnosticsCalculated += _ =>
             {
@@ -94,13 +100,14 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
             };
             takeSample = () =>
             {
-                // Capture the F3 text on its owner thread before changing phase.
+                // Capture the Scene Viewer F3 ProfilerWidget text on its owner thread before changing phase.
                 Engine.Instance.EngineDispatcher.Post(() =>
                 {
                     try
                     {
-                        var text = (TextBlock)typeof(SceneViewerGameHost)
-                            .GetField("_diagnosticsText", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(host)!;
+                        var widget = (ProfilerWidget)typeof(SceneViewerGameHost)
+                            .GetField("_diagnosticsWidget", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(host)!;
+                        TextBlock text = widget.Display.TextBlock;
                         if (phase == 0)
                         {
                             running = text.Text;
@@ -133,8 +140,12 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
         output.WriteLine("RUNNING\n" + running);
         output.WriteLine("PAUSED\n" + paused);
         output.WriteLine("STALLED GL (100 ms/callback)\n" + stalled);
-        Assert.Contains("running", running);
+        Assert.Contains("Scene:", running);
+        Assert.Contains("Animations: running", running);
+        Assert.Contains("Camera:", running);
+        Assert.Contains("Layers / grid cells:", running);
+        Assert.Contains("MSAA requested / actual / max:", running);
         Assert.Contains("PAUSED", paused);
-        Assert.Contains("Snapshot build", paused);
+        Assert.Contains("build.cpu.ms", paused);
     }
 }
