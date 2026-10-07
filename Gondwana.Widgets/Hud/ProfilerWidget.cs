@@ -99,6 +99,7 @@ public sealed class ProfilerWidget : ContainerWidget
         CanReceiveFocus = false;
 
         Display.SetText("Gondwana Runtime Profiler\nInactive. Call Show() to collect telemetry.");
+        SetIsVisible(false);
     }
 
     /// <summary>
