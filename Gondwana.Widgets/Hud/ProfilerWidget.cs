@@ -125,7 +125,6 @@ public sealed class ProfilerWidget : ContainerWidget
     private const int MetricSelectorHeight = 30;
     private const int MetricSelectorWidth = 92;
     private const int MetricSelectorMargin = 4;
-    private const int MaximumDirectMetricMenuItems = 18;
 
     private readonly Dictionary<string, bool> _sourceVisibility = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, bool> _measurementVisibility = new(StringComparer.Ordinal);
@@ -591,6 +590,9 @@ public sealed class ProfilerWidget : ContainerWidget
     {
         base.ProcessShown();
 
+        if (!_metricSelectorOpen)
+            _metricSelectorList?.Hide();
+
         if (_collectionRequest is not null)
             return;
 
@@ -604,6 +606,8 @@ public sealed class ProfilerWidget : ContainerWidget
     protected override void ProcessHidden()
     {
         _measurementTooltip.HideTooltip();
+        _metricSelectorOpen = false;
+        _metricSelectorList?.Hide();
         StopCollection();
         base.ProcessHidden();
     }
@@ -615,8 +619,16 @@ public sealed class ProfilerWidget : ContainerWidget
             return;
 
         _disposed = true;
+
+        PointerMove -= OnProfilerPointerMove;
+        PointerLeave -= OnProfilerPointerLeave;
+        Display.PointerMove -= OnProfilerPointerMove;
+        Display.PointerLeave -= OnProfilerPointerLeave;
+        Display.MouseWheel -= OnProfilerMouseWheel;
+
         _measurementTooltip.HideTooltip();
         _measurementTooltip.Dispose();
+        DisposeMetricSelector();
         StopCollection();
         base.Dispose();
     }
@@ -894,7 +906,8 @@ public sealed class ProfilerWidget : ContainerWidget
 
     private void EnsureMetricSelector(TelemetrySnapshot snapshot)
     {
-        if (!ShowMetricSelector || View is null)
+        View? view = View;
+        if (!ShowMetricSelector || view is null)
             return;
 
         string signature = BuildMetricSelectorSignature(snapshot);
@@ -912,7 +925,7 @@ public sealed class ProfilerWidget : ContainerWidget
 
             _metricSelectorButton = new ButtonWidget(
                     RenderSurfaceHost,
-                    View,
+                    view,
                     buttonBounds,
                     "Metrics...",
                     $"{Nickname}.metric-selector.button")
@@ -922,7 +935,7 @@ public sealed class ProfilerWidget : ContainerWidget
 
             _metricSelectorList = new ListBoxWidget(
                 RenderSurfaceHost,
-                View,
+                view,
                 listBounds,
                 nickname: $"{Nickname}.metric-selector.list")
             {
