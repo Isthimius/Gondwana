@@ -238,7 +238,7 @@ Engine events are useful for broad instrumentation and for determining whether g
 | `AfterBackgroundTasksExecute` | Stop background timing or inspect the resulting state |
 | `BeforeFrameRender` | Inspect state immediately before the engine foreground phase |
 | `AfterFrameRender` | Observe completion of the engine foreground phase |
-| `CPSCalculated` | Consume periodic cycle and rendering-rate samples |
+| `CPSCalculated` *(legacy / obsolete `GOND0001`)* | Consume compatibility cycle and rendering-rate samples; prefer `Engine.Profiler` |
 | `Disposing` | Inspect still-readable state before managed teardown |
 | `Disposed` | Confirm teardown has completed |
 
