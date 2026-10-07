@@ -32,7 +32,9 @@ public interface IGamepadManager<out T> where T : IGamepadAdapter
     /// The default implementation forwards to the legacy <see cref="Update"/> method so custom
     /// managers compiled against the older combined contract continue to refresh state.
     /// </remarks>
+#pragma warning disable CS0618 // Compatibility bridge to the legacy combined operation.
     void Poll() => Update();
+#pragma warning restore CS0618
 
     /// <summary>
     /// Refreshes connection and controller state using the legacy combined operation.
