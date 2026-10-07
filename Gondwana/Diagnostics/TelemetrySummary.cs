@@ -82,6 +82,9 @@ public sealed record TelemetrySummary(
 /// <summary>Validated shared settings; configure only when collection is inactive.</summary>
 public sealed record TelemetryOptions
 {
+    /// <summary>Maximum configured retained metric summaries across history, sources, and metrics.</summary>
+    internal const long MaxRetainedMetricSummaries = 1_048_576;
+
     /// <summary>Minimum completed-window duration; defaults to 250 ms, allowed range 10 ms–1 minute.</summary>
     public TimeSpan Interval { get; init; } = TimeSpan.FromMilliseconds(250);
     /// <summary>Completed windows retained; allowed range 1–1024.</summary>
@@ -99,6 +102,14 @@ public sealed record TelemetryOptions
         if (HistoryCapacity is < 1 or > 1024) throw new ArgumentOutOfRangeException(nameof(HistoryCapacity));
         if (SourceCapacity is < 1 or > 64) throw new ArgumentOutOfRangeException(nameof(SourceCapacity));
         if (MetricCapacity is < 8 or > 512) throw new ArgumentOutOfRangeException(nameof(MetricCapacity));
+
+        long retainedMetricSummaries =
+            (long)HistoryCapacity * SourceCapacity * MetricCapacity;
+        if (retainedMetricSummaries > MaxRetainedMetricSummaries)
+        {
+            throw new ArgumentException(
+                $"HistoryCapacity * SourceCapacity * MetricCapacity must not exceed {MaxRetainedMetricSummaries:N0} retained metric summaries.");
+        }
     }
 }
 
