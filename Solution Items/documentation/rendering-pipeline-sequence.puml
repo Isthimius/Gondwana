@@ -26,6 +26,7 @@ box "Background Tasks (every cycle)" #FFFACD
     participant "Timer\n(PreCycle)" as TimerPre
     participant "KeyboardEventPoller" as KB
     participant "MouseEventPoller" as Mouse
+    participant "IGamepadManager" as GamepadManager
     participant "GamepadEventPoller" as Gamepad
     participant "Tile.TilesAnimating\n(Animator)" as Anim
     participant "SpriteManager" as Sprites
@@ -57,6 +58,8 @@ Engine -> Dispatcher : Drain() — process queued lambdas
 
 group DoBackgroundTasks(tick)
     Engine -> Engine : calculate deltaSeconds
+    Engine -> GamepadManager : UpdateConnections() [when cadence due]
+    Engine -> GamepadManager : Poll() [when cadence due]
     Engine -> Engine : BeforeBackgroundTasksExecute?.Invoke()
     Engine -> TimerPre : RaiseTimerEvents(PreCycle, tick)
     Engine -> KB : PollForEvents(tick)
@@ -108,8 +111,6 @@ alt TargetFPS <= 0 OR throttle elapsed
             RSH_Gpu -> RSH_Gpu : publish newest completed slot
 recycle replaced frame (three slots total)
         end
-
-        Engine -> Gamepad : Update() (IGamepadManager)
         Engine -> Engine : AfterFrameRender?.Invoke()
         Engine -> TimerPost : RaiseTimerEvents(PostCycle, tick)
     end
