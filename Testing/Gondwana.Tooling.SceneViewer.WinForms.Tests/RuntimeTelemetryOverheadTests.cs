@@ -128,7 +128,6 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
         {
             try
             {
-    
                 if (phase == 0) retainedAtWarmup = GC.GetTotalMemory(true);
                 long now = Stopwatch.GetTimestamp();
                 long allocated = GC.GetTotalAllocatedBytes(false);
@@ -162,8 +161,15 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
             catch (Exception error)
             {
                 failure = error;
-                if (!form.IsDisposed)
-                    form.BeginInvoke(() => form.Close());
+                try
+                {
+                    if (!form.IsDisposed && form.IsHandleCreated)
+                        form.BeginInvoke(() => form.Close());
+                }
+                catch (Exception closeError)
+                {
+                    failure = new AggregateException(error, closeError);
+                }
             }
         };
         try { Application.Run(form); }
