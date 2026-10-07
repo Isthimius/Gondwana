@@ -29,6 +29,64 @@ public sealed class RenderFrameSnapshotIntegrationTests
     }
 
     [Fact]
+    public void RenderMetricKindsPreserveWindowSamplesAndCurrentStateGauges()
+    {
+        var profiler = Engine.Instance.Profiler;
+        profiler.Reset();
+        using var scene = new Scene();
+        scene.AddLayer(2, 1, 16, 16);
+        using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
+        using var buffer = host.Backbuffer;
+        host.Bind(scene, false);
+
+        using (profiler.Start())
+        {
+            host.ProduceRenderFrameSnapshot(1);
+            using var image = host.GlRenderAndSnapshot();
+        }
+
+        var metrics = profiler.GetLatestSnapshot()!
+            .Sources.Single(source => source.Id == host.Telemetry!.Id)
+            .Metrics;
+
+        foreach (string key in new[]
+        {
+            "snapshot.age.ms",
+            "visible.drawables",
+            "visible.tiles",
+            "atlas.batches",
+            "atlas.tiles",
+            "layers.omitted",
+            "presentation.count",
+            "layer.0.drawables",
+            "layer.0.tiles"
+        })
+        {
+            Assert.Equal(Gondwana.Diagnostics.TelemetryMetricKind.Sample, metrics[key].Kind);
+        }
+
+        foreach (string key in new[]
+        {
+            "mailbox.slots",
+            "snapshot.commands.approximate",
+            "layer.0.transformed.tiles",
+            "layer.0.tile.width.px",
+            "layer.0.tile.height.px",
+            "layer.0.z"
+        })
+        {
+            Assert.Equal(Gondwana.Diagnostics.TelemetryMetricKind.Gauge, metrics[key].Kind);
+        }
+
+        Assert.Equal(
+            Gondwana.Diagnostics.TelemetryMetricKind.LifetimeCounter,
+            metrics["mailbox.published.lifetime"].Kind);
+        Assert.Equal(
+            Gondwana.Diagnostics.TelemetryMetricKind.LifetimeCounter,
+            metrics["mailbox.dropped.lifetime"].Kind);
+    }
+
+    [Fact]
     public void ProfilerObservesBuildAndReplayWithoutChangingMailboxOrLegacySubscribers()
     {
         var profiler = Engine.Instance.Profiler;
