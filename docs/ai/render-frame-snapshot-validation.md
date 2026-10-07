@@ -19,11 +19,11 @@
 ## Actual Scene Viewer dogfood
 
 `SceneViewerSnapshotDogfoodTests` hosts the real SceneViewerGameHost, Engine loop,
-WinForms GPU surface and F3 diagnostics in an offscreen window. Scene:
+WinForms GPU surface and the saved-scene Scene Viewer's F3 diagnostics in an offscreen window. F3 here is the Scene Viewer control used by `.gscn`/Studio tooling, not a global Engine hotkey. Scene:
 `assets/island.gscn`, 1024x768 logical pixels, zoom 0.125, 8,178 visible tiles,
 2,155 animators, TargetFPS 60, VSync enabled, MSAA 1.
 
-| F3 sample | CPS | Engine FPS | GPU FPS | Build avg ms | Replay avg ms |
+| Scene Viewer F3 sample | CPS | Engine FPS | GPU FPS | Build avg ms | Replay avg ms |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | Animations running | 24,460.3 | 60.0 | 60.0 | 4.878 | 15.467 |
 | Animations paused | 15,341.8 | 59.1 | 51.1 | 6.814 | 18.079 |
@@ -38,7 +38,7 @@ for replay by construction, not a measurement of mailbox or resize handoff locks
 These short samples demonstrate independent simulation progress and bounded
 latest-frame delivery, not a portable GPU performance guarantee. Other builds/tests
 ran on the machine during parts of this session; do not compare these figures
-directly with the original user's hardware baseline. A native F3 image was captured
+directly with the original user's hardware baseline. A native Scene Viewer F3 image was captured
 and visually inspected for readable diagnostics and intact composition.
 
 Run hardware tests explicitly and separately from normal CI:
@@ -56,7 +56,7 @@ $env:GONDWANA_VIEWER_SCENE = (Resolve-Path assets/island.gscn).Path
 dotnet test Testing/Gondwana.Tooling.SceneViewer.WinForms.Tests -c Release --filter SceneViewerSnapshotDogfoodTests
 ```
 
-Optional `GONDWANA_GPU_CAPTURE` names a PNG output path for the native F3 image.
+Optional `GONDWANA_GPU_CAPTURE` names a PNG output path for the native Scene Viewer F3 image.
 
 ## October 3 follow-up
 
