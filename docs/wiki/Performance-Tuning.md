@@ -60,33 +60,33 @@ Debug builds, active profilers, development overlays, and console output are val
 
 ## Understand Gondwana's runtime metrics
 
-Gondwana periodically raises `Engine.CPSCalculated` with a `CyclesPerSecondCalculatedEventArgs` snapshot. The default sampling interval is 1.5 seconds and is controlled by `EngineConfiguration.SamplingTimeForCPS`. Setting that value to `0` disables sampling.
+Use `Engine.Instance.Profiler` or `ProfilerWidget` for new performance work. The
+profiler is opt-in and publishes detached windows with a measured elapsed duration.
 
-```csharp
-Engine.Instance.CPSCalculated += sample =>
-{
-    Debug.WriteLine($"Gross CPS: {sample.GrossCPS:N1}");
-    Debug.WriteLine($"Foreground rate: {sample.NetCPS:N1}");
-
-    if (sample.GpuFps.HasValue)
-        Debug.WriteLine($"GPU FPS: {sample.GpuFps.Value:N1}");
-};
-```
-
-Do not log this information every cycle. Consume the sampled event, display it in a diagnostic overlay, or collect it for later analysis.
-
-### What each value means
+For throughput, divide a metric's sample count by the snapshot duration:
 
 | Metric | Meaning |
 | --- | --- |
-| `GrossCPS` | Total engine cycles per second, including cycles that perform no foreground rendering |
-| `NetCPS` | Cycles per second that entered Gondwana's foreground-frame work after `TargetFPS` pacing |
-| `Engine.FramesPerSecond` | The most recently sampled `NetCPS` value |
-| `GpuFps` | Successful GPU presentation/paint frames during the sample window; `null` when no GPU backbuffer is registered |
+| `Engine [Core] / cycle.cpu.ms` rate | total simulation cycles per second |
+| `Engine [Core] / foreground.cpu.ms` rate | foreground-frame production cadence after `TargetFPS` pacing |
+| render-source `presentation.count` rate | actual presentation/paint cadence for that render surface |
 
-`NetCPS` is best understood as the **foreground scheduling rate**. It does not guarantee that a new image was ultimately presented. A bitmap scene may be clean and skip rendering. On desktop GPU hosts, foreground work produces a `RenderFrameSnapshot` that is replayed later by the GL callback. In browser WebGL, foreground Scene-render decisions and GPU drawing occur within the browser paint callback, but browser presentation cadence can still differ because paints may re-present the existing GPU backbuffer.
+The timing summaries answer a complementary question: `Mean`, `Minimum`, and
+`Maximum` describe CPU cost per observation rather than cadence.
 
-`GpuFps` is the better measure of GPU presentation activity. When an application has more than one registered GPU surface, the current value may combine frames from those surfaces rather than representing a single display. On WebGL, it can include browser paints that re-present the existing GPU backbuffer without a new Scene render.
+`foreground.cpu.ms` cadence does not guarantee that a new image reached the
+display. A bitmap scene may be clean and skip rendering. Desktop GPU hosts produce
+`RenderFrameSnapshot` instances that a later GL callback replays. Browser WebGL
+renders synchronously when a new Scene frame is due, while other browser paints can
+re-present the existing GPU backbuffer.
+
+The per-render-source `presentation.count` measurement is therefore the preferred
+presentation-rate signal and avoids the legacy CPS sampler's cross-surface GPU
+aggregation.
+
+The old `Engine.CyclesPerSecond`, `Engine.FramesPerSecond`,
+`Engine.CPSCalculated`, and `SamplingTimeForCPS` APIs remain functional but are
+warning-only obsolete as `GOND0001`. See [[Runtime Telemetry]] for migration.
 
 ### Reading the symptoms
 
@@ -94,9 +94,9 @@ The following patterns are useful starting points, not absolute proof:
 
 | Symptom | First place to investigate |
 | --- | --- |
-| `GrossCPS` falls sharply as sprites or colliders are added | movement, collisions, animation, or custom cycle handlers |
-| `NetCPS` cannot reach `TargetFPS` on a bitmap surface | rendering or presentation cost on the engine thread |
-| `NetCPS` reaches its target but `GpuFps` remains lower | GPU drawing, VSync, the UI message loop, or compositor behavior |
+| Cycle rate falls sharply as sprites or colliders are added | movement, collisions, animation, or custom cycle handlers |
+| Foreground rate cannot reach `TargetFPS` on a bitmap surface | rendering or presentation cost on the engine thread |
+| Foreground rate reaches its target but presentation rate remains lower | GPU drawing, VSync, the UI message loop, or compositor behavior |
 | A stationary bitmap scene rarely reports render no-ops | something is continually invalidating scene content |
 | Performance drops after adding another view | repeated projection, culling, clipping, and drawing per view |
 | Desktop is healthy but browser performance is poor | WebGL: render resolution, full-scene GPU cost, WASM/browser scheduling, or compositor behavior; Canvas 2D: also inspect pixel-transfer area and JavaScript interop |
@@ -276,7 +276,7 @@ The engine's background cycle performs work whether or not a visual frame is due
 
 Foreground work then updates DirectDrawings and processes bitmap rendering when `TargetFPS` pacing allows it. Desktop GPU hosts record a `RenderFrameSnapshot` during foreground work and replay the newest completed snapshot later in the platform GL callback. Browser WebGL instead calls `Engine.Tick()` from the `SKGLView` paint callback and, when a new Scene frame is due, renders it synchronously while the WebGL context is current.
 
-If `GrossCPS` deteriorates as gameplay complexity increases, begin with engine-cycle work rather than backbuffer tuning.
+If the profiler's cycle rate deteriorates as gameplay complexity increases, begin with engine-cycle work rather than backbuffer tuning.
 
 ### Game-loop handlers
 
@@ -353,7 +353,7 @@ Do not set `TargetFPS` to `0` merely to chase the highest displayed number. Unbo
 
 `EngineConfiguration.VSync` applies to GPU backbuffers. When enabled, presentation is synchronized to the display and actual GPU FPS may be capped by the monitor's refresh rate.
 
-If `NetCPS` is near 120 but `GpuFps` remains near 60 on a 60 Hz display, that can be normal VSync behavior rather than a rendering defect.
+If foreground production is near 120/s but presentation remains near 60/s on a 60 Hz display, that can be normal VSync behavior rather than a rendering defect.
 
 Disable VSync only when testing uncapped throughput or when the application deliberately accepts the risk of screen tearing.
 
@@ -454,7 +454,7 @@ Continuous camera motion requires continuous full scene refreshes. Test the same
 
 ### GPU rendering stops at the display refresh rate
 
-Check `VSync` and compare `NetCPS` with `GpuFps`. A 60 Hz display commonly produces approximately 60 GPU presentations per second with VSync enabled.
+Check `VSync` and compare the profiler's foreground-production rate with the render source's `presentation.count` rate. A 60 Hz display commonly produces approximately 60 GPU presentations per second with VSync enabled.
 
 ### Performance falls as enemies are added, even when they are off-screen
 
@@ -479,7 +479,7 @@ For the bitmap Canvas 2D path, also check fullscreen invalidation, dirty-region 
 When performance is poor, ask these questions in order:
 
 1. Is the test repeatable and free from diagnostic noise?
-2. Is `GrossCPS`, foreground rate, or presentation rate the first value to deteriorate?
+2. Is cycle rate, foreground rate, or presentation rate the first value to deteriorate?
 3. Is the workload mostly static or continuously changing?
 4. Does the selected backbuffer match that workload?
 5. Is the camera moving or zooming continuously?
