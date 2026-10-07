@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 
 ## Added
+- Add runtime ProfilerWidget with configurable source and measurement visibility ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 - Add scrollable list boxes with mouse wheel support ([#403](https://github.com/Isthimius/Gondwana/pull/403))
 - Add scrollable labels and Spot help ([#405](https://github.com/Isthimius/Gondwana/pull/405))
 
