@@ -81,14 +81,19 @@ public sealed record TelemetrySummary(
 
 /// <summary>Validated shared settings; configure only when collection is inactive.</summary>
 /// <remarks>
-/// Individual capacity limits are also constrained by a combined retained-detail budget:
+/// Individual capacity limits are also constrained by two combined budgets:
 /// <c>HistoryCapacity * SourceCapacity * MetricCapacity</c> cannot exceed 1,048,576
-/// configured metric-summary slots.
+/// configured retained metric-summary slots, and
+/// <c>SourceCapacity * MetricCapacity / Interval.TotalSeconds</c> cannot exceed 262,144
+/// configured metric-summary materializations per second.
 /// </remarks>
 public sealed record TelemetryOptions
 {
     /// <summary>Maximum configured retained metric summaries across history, sources, and metrics.</summary>
     internal const long MaxRetainedMetricSummaries = 1_048_576;
+
+    /// <summary>Maximum configured worst-case metric summaries materialized per second.</summary>
+    internal const long MaxPublishedMetricSummariesPerSecond = 262_144;
 
     /// <summary>Minimum completed-window duration; defaults to 250 ms, allowed range 10 ms–1 minute.</summary>
     public TimeSpan Interval { get; init; } = TimeSpan.FromMilliseconds(250);
@@ -114,6 +119,14 @@ public sealed record TelemetryOptions
         {
             throw new ArgumentException(
                 $"HistoryCapacity * SourceCapacity * MetricCapacity must not exceed {MaxRetainedMetricSummaries:N0} retained metric summaries.");
+        }
+
+        double publishedMetricSummariesPerSecond =
+            (double)SourceCapacity * MetricCapacity / Interval.TotalSeconds;
+        if (publishedMetricSummariesPerSecond > MaxPublishedMetricSummariesPerSecond)
+        {
+            throw new ArgumentException(
+                $"SourceCapacity * MetricCapacity / Interval.TotalSeconds must not exceed {MaxPublishedMetricSummariesPerSecond:N0} configured metric summaries per second.");
         }
     }
 }
