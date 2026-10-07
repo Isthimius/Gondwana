@@ -250,7 +250,7 @@ public sealed class ProfilerWidget : ContainerWidget
         {
             ValidateSize(value);
             _size = value;
-            Display.Size = value;
+            ApplyLayout();
         }
     }
 
@@ -441,6 +441,7 @@ public sealed class ProfilerWidget : ContainerWidget
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(sourceName);
         _sourceVisibility[sourceName] = visible;
+        _metricSelectorSignature = null;
         return this;
     }
 
@@ -454,6 +455,7 @@ public sealed class ProfilerWidget : ContainerWidget
     {
         ValidateMetricKey(metricKey);
         _measurementVisibility[metricKey] = visible;
+        _metricSelectorSignature = null;
         return this;
     }
 
@@ -472,6 +474,7 @@ public sealed class ProfilerWidget : ContainerWidget
         ArgumentException.ThrowIfNullOrWhiteSpace(sourceName);
         ValidateMetricKey(metricKey);
         _sourceMeasurementVisibility[CreateSourceMetricKey(sourceName, metricKey)] = visible;
+        _metricSelectorSignature = null;
         return this;
     }
 
@@ -484,6 +487,25 @@ public sealed class ProfilerWidget : ContainerWidget
         _sourceVisibility.Clear();
         _measurementVisibility.Clear();
         _sourceMeasurementVisibility.Clear();
+        _metricSelectorSignature = null;
+        return this;
+    }
+
+    /// <summary>
+    /// Defines or replaces hover help for a measurement key.
+    /// </summary>
+    /// <param name="metricKey">The metric key.</param>
+    /// <param name="description">Human-readable definition. Null or whitespace removes the override.</param>
+    /// <returns>The current widget.</returns>
+    public ProfilerWidget SetMeasurementDescription(string metricKey, string? description)
+    {
+        ValidateMetricKey(metricKey);
+
+        if (string.IsNullOrWhiteSpace(description))
+            _measurementDescriptions.Remove(metricKey);
+        else
+            _measurementDescriptions[metricKey] = description.Trim();
+
         return this;
     }
 
@@ -532,7 +554,10 @@ public sealed class ProfilerWidget : ContainerWidget
     /// <returns>The current widget.</returns>
     public ProfilerWidget SetProfilerZOrder(int zOrder)
     {
+        _profilerZOrder = zOrder;
         Display.SetLabelZOrder(zOrder);
+        _metricSelector?.SetMenuZOrder(zOrder + 100);
+        _measurementTooltip.SetTooltipZOrder(zOrder + 1000);
         return this;
     }
 
@@ -546,7 +571,15 @@ public sealed class ProfilerWidget : ContainerWidget
             return this;
 
         TelemetrySnapshot? snapshot = Engine.Instance.Profiler.GetLatestSnapshot();
-        Display.SetText(FormatSnapshot(snapshot));
+        _latestSnapshot = snapshot;
+
+        string text = FormatSnapshot(snapshot);
+        CaptureRenderedMetricLines(text);
+        Display.SetText(text);
+
+        if (snapshot is not null)
+            EnsureMetricSelector(snapshot);
+
         return this;
     }
 
@@ -567,6 +600,7 @@ public sealed class ProfilerWidget : ContainerWidget
     /// <inheritdoc/>
     protected override void ProcessHidden()
     {
+        _measurementTooltip.HideTooltip();
         StopCollection();
         base.ProcessHidden();
     }
@@ -578,6 +612,8 @@ public sealed class ProfilerWidget : ContainerWidget
             return;
 
         _disposed = true;
+        _measurementTooltip.HideTooltip();
+        _measurementTooltip.Dispose();
         StopCollection();
         base.Dispose();
     }
