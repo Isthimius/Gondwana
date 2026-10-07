@@ -1,5 +1,6 @@
 using System.Numerics;
 using System.Text;
+using Gondwana.Diagnostics;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Direct.Particles;
 using Gondwana.Physics.Movement.Easing;
@@ -12,6 +13,8 @@ public partial class Form1 : Form
 {
     private ParticleSurface? _particleSurface;
     private TextBlock? _textBlock;
+    private IDisposable? _profilerRequest;
+    private double _lastProfilerSnapshotEnd;
 
     public Form1()
     {
@@ -38,15 +41,8 @@ public partial class Form1 : Form
 
         //renderSurface.Bind(scene);
 
-        Engine.Instance.CPSCalculated += (cps) =>
-        {
-            var sb = new StringBuilder()
-                .Append("Oh no!!! The wizard doth spray purple slime! (version " + EngineInfo.Version + ")")
-                .AppendLine($" There are {_particleSurface?.ActiveParticleCount ?? 0} active particles!!!")
-                .AppendLine(cps.ToString());
-
-            _textBlock?.SetText(sb.ToString());     //.StartWordReveal(5);
-        };
+        _profilerRequest = Engine.Instance.Profiler.Start();
+        Engine.Instance.AfterBackgroundTasksExecute += UpdateProfilerText;
 
         Engine.Instance.Start();
         Engine.Instance.Configuration.TargetFPS = 60;
@@ -104,8 +100,47 @@ public partial class Form1 : Form
         composite.Movement.MoveBy(new Vector2(0, -500), 10f, EasingFunctions.EaseInOutQuad);
     }
 
+    private void UpdateProfilerText()
+    {
+        var snapshot = Engine.Instance.Profiler.GetLatestSnapshot();
+        if (snapshot is null || snapshot.EndedSeconds <= _lastProfilerSnapshotEnd)
+            return;
+
+        _lastProfilerSnapshotEnd = snapshot.EndedSeconds;
+
+        var engineSource = snapshot.Sources.FirstOrDefault(source => source.Backend == "Core");
+        double? cps = GetRate(engineSource, "cycle.cpu.ms", snapshot.ElapsedSeconds);
+        double? foregroundFps = GetRate(engineSource, "foreground.cpu.ms", snapshot.ElapsedSeconds);
+
+        var text = new StringBuilder()
+            .Append("Oh no!!! The wizard doth spray purple slime! (version " + EngineInfo.Version + ")")
+            .AppendLine($" There are {_particleSurface?.ActiveParticleCount ?? 0} active particles!!!")
+            .AppendLine($"Gross CPS: {FormatRate(cps)}")
+            .AppendLine($"Foreground FPS: {FormatRate(foregroundFps)}")
+            .AppendLine($"Sampling time: {snapshot.ElapsedSeconds:N2}s");
+
+        _textBlock?.SetText(text.ToString());
+    }
+
+    private static double? GetRate(
+        TelemetrySourceSnapshot? source,
+        string metricKey,
+        double elapsedSeconds)
+    {
+        return elapsedSeconds > 0d &&
+            source?.Metrics.TryGetValue(metricKey, out var metric) == true &&
+            metric.Availability == TelemetryAvailability.Available
+                ? metric.Count / elapsedSeconds
+                : null;
+    }
+
+    private static string FormatRate(double? rate) => rate?.ToString("N2") ?? "n/a";
+
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)
     {
+        Engine.Instance.AfterBackgroundTasksExecute -= UpdateProfilerText;
+        _profilerRequest?.Dispose();
+        _profilerRequest = null;
         Engine.Instance.Stop();
     }
 

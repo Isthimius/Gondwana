@@ -3,6 +3,7 @@ using Gondwana.Blazor.Hosting;
 using Gondwana.Blazor.Input;
 using Gondwana.Blazor.Input.Keyboard;
 using Gondwana.Blazor.Rendering;
+using Gondwana.Diagnostics;
 using Gondwana.Input.Keyboard;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
@@ -15,6 +16,8 @@ internal sealed partial class SpotGameHost : BlazorGpuGameHost
 {
     private readonly AssetsFile _assets;
     private readonly SpotGameRuntime _runtime;
+    private IDisposable? _profilerRequest;
+    private bool _msaaLogged;
 
     internal SpotGameHost(
         BlazorGpuRenderSurfaceComponent renderSurface,
@@ -55,25 +58,50 @@ internal sealed partial class SpotGameHost : BlazorGpuGameHost
     {
         Logging.EngineLogger.SetLogLevel(Microsoft.Extensions.Logging.LogLevel.Information);
 
-        bool msaaLogged = false;
-        Gondwana.Engine.Instance.CPSCalculated += args =>
-        {
-            if (msaaLogged ||
-                args.GpuFps is not > 0 ||
-                RenderSurface.Host.Backbuffer is not GpuBackbuffer gpuBackbuffer)
-            {
-                return;
-            }
-
-            msaaLogged = true;
-            Engine.Logger.LogInformation(
-                "Spot.Blazor MSAA requested {MsaaSampleCount} | actual {ActualMsaaSampleCount} | max {MaxSupportedMsaaSampleCount}",
-                gpuBackbuffer.MsaaSampleCount,
-                gpuBackbuffer.ActualMsaaSampleCount,
-                gpuBackbuffer.MaxSupportedMsaaSampleCount);
-        };
+        _profilerRequest = Engine.Profiler.Start();
+        Engine.AfterBackgroundTasksExecute += LogMsaaAfterFirstPresentation;
 
         return _runtime.CreateInitialScene();
+    }
+
+    private void LogMsaaAfterFirstPresentation()
+    {
+        if (_msaaLogged)
+            return;
+
+        var snapshot = Engine.Profiler.GetLatestSnapshot();
+        var renderSource = snapshot?.Sources.FirstOrDefault(
+            source => source.Id == RenderSurface.Host.Telemetry?.Id);
+
+        if (snapshot is null ||
+            GetRate(renderSource, "presentation.count", snapshot.ElapsedSeconds) is not > 0d ||
+            RenderSurface.Host.Backbuffer is not GpuBackbuffer gpuBackbuffer)
+        {
+            return;
+        }
+
+        _msaaLogged = true;
+        Engine.Logger.LogInformation(
+            "Spot.Blazor MSAA requested {MsaaSampleCount} | actual {ActualMsaaSampleCount} | max {MaxSupportedMsaaSampleCount}",
+            gpuBackbuffer.MsaaSampleCount,
+            gpuBackbuffer.ActualMsaaSampleCount,
+            gpuBackbuffer.MaxSupportedMsaaSampleCount);
+
+        Engine.AfterBackgroundTasksExecute -= LogMsaaAfterFirstPresentation;
+        _profilerRequest?.Dispose();
+        _profilerRequest = null;
+    }
+
+    private static double? GetRate(
+        TelemetrySourceSnapshot? source,
+        string metricKey,
+        double elapsedSeconds)
+    {
+        return elapsedSeconds > 0d &&
+            source?.Metrics.TryGetValue(metricKey, out var metric) == true &&
+            metric.Availability == TelemetryAvailability.Available
+                ? metric.Count / elapsedSeconds
+                : null;
     }
 
     protected override void OnSceneGraphCreated() => _runtime.OnSceneGraphCreated();
@@ -82,7 +110,13 @@ internal sealed partial class SpotGameHost : BlazorGpuGameHost
 
     protected override void OnKeyboardAdapterInitialized() => _runtime.OnKeyboardAdapterInitialized();
 
-    protected override void UnhookEvents() => _runtime.UnhookEvents();
+    protected override void UnhookEvents()
+    {
+        Engine.AfterBackgroundTasksExecute -= LogMsaaAfterFirstPresentation;
+        _profilerRequest?.Dispose();
+        _profilerRequest = null;
+        _runtime.UnhookEvents();
+    }
 
     protected override void CreateDirectDrawings()
     {

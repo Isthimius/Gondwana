@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ## Gondwana
 
 ### Added
+- Add opt-in runtime telemetry with independent collection requests, bounded detached history, and an in-game ProfilerWidget now dogfooded by the saved-scene Scene Viewer F3 diagnostics overlay ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 - Add GSCN format and EngineState integration ([#372](https://github.com/Isthimius/Gondwana/pull/372))
 - Add GANI format and EngineState integration ([#373](https://github.com/Isthimius/Gondwana/pull/373))
 - Compose the standalone WinForms authoring editors ([#383](https://github.com/Isthimius/Gondwana/pull/383))
@@ -17,6 +18,9 @@ All notable changes to this project will be documented in this file.
 - Add asynchronous browser console logging ([#408](https://github.com/Isthimius/Gondwana/pull/408))
 - Native scene tile transforms, GSCN tooling and Tiled import ([#417](https://github.com/Isthimius/Gondwana/pull/417))
 - Add configurable normalized camera follow anchors ([#431](https://github.com/Isthimius/Gondwana/pull/431))
+
+### Deprecated
+- Mark the legacy CPS/FPS properties, event, and sampling configuration as warning-only obsolete under `GOND0001`; migrate Gondwana-owned consumers to `Engine.Profiler` ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 
 
 
@@ -118,12 +122,14 @@ All notable changes to this project will be documented in this file.
 ## Gondwana.Widgets
 
 ### Added
+- Add runtime ProfilerWidget with configurable source/measurement visibility, optional Scene/View/backbuffer/config/MSAA context, application-defined extension lines, hover definitions, and an in-widget Metrics selector; add reusable TooltipWidget ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 - Add scrollable list boxes with mouse wheel support ([#403](https://github.com/Isthimius/Gondwana/pull/403))
 - Add scrollable labels and Spot help ([#405](https://github.com/Isthimius/Gondwana/pull/405))
 
 
 
 ### Fixed
+- Allow scrollable diagnostic/log labels to expose trailing scroll padding so the final line can move clear of the clip edge ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 - Add initial TextBox key repeat delay ([#411](https://github.com/Isthimius/Gondwana/pull/411))
 
 
@@ -242,6 +248,7 @@ All notable changes to this project will be documented in this file.
 ## Tooling / Gondwana.Tooling.SceneViewer.WinForms
 
 ### Added
+- Dogfood ProfilerWidget for the Scene Viewer F3 diagnostics overlay, including generic runtime context, curated default measurements, an explicit GPU FPS label, hover help, and runtime metric selection ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 - Discover Scene Viewer local definitions and sprites with loose-over-packed precedence ([#438](https://github.com/Isthimius/Gondwana/pull/438))
 
 ## Tooling / Gondwana.Tooling.Scenes.WinForms

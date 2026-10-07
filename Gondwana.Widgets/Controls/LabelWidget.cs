@@ -24,6 +24,7 @@ public sealed class LabelWidget : WidgetBase
     private ScrollBarVisibility _verticalScrollBarVisibility = ScrollBarVisibility.Never;
     private int _mouseWheelScrollPixels = 48;
     private float _verticalScrollOffsetPx;
+    private float _verticalScrollEndPaddingPx;
     private float _maximumVerticalScrollOffsetPx;
     private bool _isDraggingScrollBarThumb;
     private float _scrollBarDragOffset;
@@ -159,6 +160,31 @@ public sealed class LabelWidget : WidgetBase
         set => _mouseWheelScrollPixels = value > 0
             ? value
             : throw new ArgumentOutOfRangeException(nameof(value), "Mouse-wheel scrolling must advance at least one pixel.");
+    }
+
+    /// <summary>
+    /// Gets or sets additional space exposed after the last line when scrolled fully down.
+    /// </summary>
+    /// <remarks>
+    /// The default is zero. A small positive value is useful for dense diagnostic/log views
+    /// so font descent and rasterization rounding never leave the final line touching the clip edge.
+    /// It does not create a scrollbar when the text otherwise fits.
+    /// </remarks>
+    public float VerticalScrollEndPaddingPx
+    {
+        get => _verticalScrollEndPaddingPx;
+        set
+        {
+            if (!float.IsFinite(value) || value < 0f)
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            if (Math.Abs(_verticalScrollEndPaddingPx - value) < 0.001f)
+                return;
+
+            _verticalScrollEndPaddingPx = value;
+            TextBlock.VerticalScrollEndPaddingPx = value;
+            RefreshScrollState();
+        }
     }
 
     /// <summary>Gets or sets the current vertical text-content scroll offset.</summary>

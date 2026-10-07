@@ -57,7 +57,7 @@ In 2.5.0, the hosting design is intentionally stricter:
 | `BeforeBackgroundTasksExecute` / `AfterBackgroundTasksExecute` | Engine thread | Same thread as `Tick()` |
 | `BeforeFrameRender` / `AfterFrameRender` | Engine thread | Same thread as `Tick()` |
 | `RenderBackbufferPostScene` / `IEnginePlugin.OnPostRenderCanvas` | Engine thread (CPU surfaces); GL thread (GPU surfaces) | Engine/tick thread (CPU); GL thread (GPU) |
-| `CPSCalculated` | Posted to `UiDispatcher` | Posted to `UiDispatcher` |
+| `CPSCalculated` *(legacy, obsolete `GOND0001`)* | Posted to `UiDispatcher` | Posted to `UiDispatcher` |
 | `Disposing` / `Disposed` on `Engine` | Posted to `UiDispatcher` when available | Posted to `UiDispatcher` when available |
 
 ### Important nuance: initialization events can be inline or dispatched
@@ -257,7 +257,7 @@ Cycle()
        → IEnginePlugin.OnPostFrameRender
   → [if CPS sampling is enabled]
        → CalculateCPS
-            → Engine.CPSCalculated (posted to UI dispatcher)
+            → Engine.CPSCalculated (legacy compatibility event; posted to UI dispatcher)
   → IEnginePlugin.OnPostCycle
 ```
 
@@ -301,7 +301,7 @@ These hooks track foreground production cadence, not completed GPU presentation:
 
 ### CPS/FPS sampling
 
-`CPSCalculated` is raised only when `Configuration.SamplingTimeForCPS > 0` and the configured sampling interval has elapsed. The payload includes:
+`CPSCalculated` is a legacy compatibility event and is warning-only obsolete under `GOND0001`. It is still raised when the legacy `Configuration.SamplingTimeForCPS > 0` interval elapses. New diagnostics should use `Engine.Profiler`. The compatibility payload includes:
 
 - gross cycle count / CPS
 - net foreground production count / Engine FPS
@@ -459,7 +459,7 @@ The tables below group the public runtime events exposed by the core `Gondwana` 
 | `Engine.AfterBackgroundTasksExecute` | At the end of each background phase | Engine thread |
 | `Engine.BeforeFrameRender` | Right before foreground/render work | Engine thread |
 | `Engine.AfterFrameRender` | Right after foreground/render work | Engine thread |
-| `Engine.CPSCalculated` | When CPS/FPS sampling is computed | UI dispatcher |
+| `Engine.CPSCalculated` *(legacy / obsolete `GOND0001`)* | When compatibility CPS/FPS sampling is computed | UI dispatcher |
 | `Engine.Disposing` | When explicit engine disposal starts | UI dispatcher if available |
 | `Engine.Disposed` | After explicit engine disposal completes | UI dispatcher if available |
 

@@ -1,4 +1,5 @@
 using System.Numerics;
+using Gondwana.Diagnostics;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Direct;
@@ -127,6 +128,8 @@ public class Game : IDisposable
     private DirectRectangle? _directRectangle;
     private TextBlock? _textBlockCPS;
     private TextBlock? _textBlockMouse;
+    private IDisposable? _profilerRequest;
+    private double _lastProfilerSnapshotEnd;
     private ParticleSurface? _particleSurface;
     private ParticleEmitter? _clickEmitter;
 
@@ -154,10 +157,8 @@ public class Game : IDisposable
                                       null);
         _textBlockCPS.SetColors(Color.Black, Color.Transparent).ZOrder = 10;
 
-        Engine.Instance.CPSCalculated += (e) =>
-        {
-            _textBlockCPS.SetText(e.ToString());
-        };
+        _profilerRequest = Engine.Instance.Profiler.Start();
+        Engine.Instance.AfterBackgroundTasksExecute += UpdateProfilerText;
 
         _textBlockMouse = new TextBlock(RenderSurface.Host,
                                         RenderSurface.Host.ViewManager.Views[0],
@@ -174,6 +175,43 @@ public class Game : IDisposable
         _spriteNameTag.SetColors(Color.Blue, Color.White).SetText("Mister Rooster").ZOrder = 20;
         _spriteNameTag.Movement.FollowTileSoft(SpriteManager.Instance.GetSpriteByID("rooster_1")!, 0.75f, 0.1f, new Vector2(0, 0.75f));
     }
+
+    private void UpdateProfilerText()
+    {
+        var snapshot = Engine.Instance.Profiler.GetLatestSnapshot();
+        if (snapshot is null || snapshot.EndedSeconds <= _lastProfilerSnapshotEnd)
+            return;
+
+        _lastProfilerSnapshotEnd = snapshot.EndedSeconds;
+
+        var engineSource = snapshot.Sources.FirstOrDefault(source => source.Backend == "Core");
+        var renderSource = snapshot.Sources.FirstOrDefault(
+            source => source.Id == RenderSurface.Host.Telemetry?.Id);
+
+        double? cps = GetRate(engineSource, "cycle.cpu.ms", snapshot.ElapsedSeconds);
+        double? foregroundFps = GetRate(engineSource, "foreground.cpu.ms", snapshot.ElapsedSeconds);
+        double? gpuFps = GetRate(renderSource, "presentation.count", snapshot.ElapsedSeconds);
+
+        _textBlockCPS?.SetText(
+            $"Gross CPS: {FormatRate(cps)}\n" +
+            $"Foreground FPS: {FormatRate(foregroundFps)}\n" +
+            $"GPU FPS: {FormatRate(gpuFps)}\n" +
+            $"Sampling time: {snapshot.ElapsedSeconds:N2}s");
+    }
+
+    private static double? GetRate(
+        TelemetrySourceSnapshot? source,
+        string metricKey,
+        double elapsedSeconds)
+    {
+        return elapsedSeconds > 0d &&
+            source?.Metrics.TryGetValue(metricKey, out var metric) == true &&
+            metric.Availability == TelemetryAvailability.Available
+                ? metric.Count / elapsedSeconds
+                : null;
+    }
+
+    private static string FormatRate(double? rate) => rate?.ToString("N2") ?? "n/a";
 
     private void InitializeParticles()
     {
@@ -512,6 +550,9 @@ public class Game : IDisposable
                 Engine.Instance.Input.KeyboardEventPoller!.KeyDown -= KeyboardEventPoller_KeyDown;
                 Engine.Instance.Input.MouseEventPoller!.MouseEvent -= MouseEventPoller_MouseEvent;
                 Engine.Instance.Input.GamepadEventPoller!.ButtonDown -= GamepadEventPoller_ButtonDown;
+                Engine.Instance.AfterBackgroundTasksExecute -= UpdateProfilerText;
+                _profilerRequest?.Dispose();
+                _profilerRequest = null;
 
                 // Dispose managed resources
                 Engine.Instance.Stop();

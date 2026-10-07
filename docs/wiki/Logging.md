@@ -288,44 +288,36 @@ Changing `Engine.Instance.Configuration.LoggingMode` after initialization does n
 
 ## Runtime performance samples
 
-Logging `CPSCalculated` is an easy way to record engine and rendering throughput without writing a per-frame message:
+For new performance logging, collect `RuntimeProfiler` snapshots and log them at a
+deliberate cadence rather than writing on every cycle:
 
 ```csharp
-Engine.Instance.CPSCalculated += sample =>
-{
-    string gpuFps = sample.GpuFps is double value
-        ? value.ToString("F1")
-        : "n/a";
+using var request = Engine.Instance.Profiler.Start();
 
+TelemetrySnapshot? snapshot = Engine.Instance.Profiler.GetLatestSnapshot();
+TelemetrySourceSnapshot? engine = snapshot?.Sources
+    .FirstOrDefault(source => source.Backend == "Core");
+
+if (snapshot is not null &&
+    engine?.Metrics.TryGetValue("cycle.cpu.ms", out var cycles) == true &&
+    engine.Metrics.TryGetValue("foreground.cpu.ms", out var foreground) &&
+    snapshot.ElapsedSeconds > 0)
+{
     Log.LogInformation(
-        "CPS {GrossCps:F1}; foreground FPS {NetFps:F1}; GPU FPS {GpuFps}",
-        sample.GrossCPS,
-        sample.NetCPS,
-        gpuFps);
-};
-```
-
-The event runs at the interval specified by `SamplingTimeForCPS`, which defaults to 1.5 seconds. This is generally much more useful than emitting one timing message on every cycle.
-
-Remember to unsubscribe temporary handlers if the containing object can be recreated:
-
-```csharp
-private void OnCpsCalculated(
-    CyclesPerSecondCalculatedEventArgs sample)
-{
-    Log.LogDebug("{PerformanceSample}", sample);
-}
-
-private void StartDiagnostics()
-{
-    Engine.Instance.CPSCalculated += OnCpsCalculated;
-}
-
-private void StopDiagnostics()
-{
-    Engine.Instance.CPSCalculated -= OnCpsCalculated;
+        "CPS {Cps:F1}; foreground FPS {ForegroundFps:F1}",
+        cycles.Count / snapshot.ElapsedSeconds,
+        foreground.Count / snapshot.ElapsedSeconds);
 }
 ```
+
+For GPU presentation cadence, read `presentation.count` from the appropriate render
+source. Keep the logging cadence lower than the profiler window cadence when the
+output is only for human inspection.
+
+The former `Engine.CPSCalculated` logging pattern remains source-compatible but is
+warning-only obsolete under `GOND0001`. Existing compatibility handlers can still
+use `CyclesPerSecondCalculatedEventArgs`; new code should use `Engine.Profiler`.
+
 
 ---
 

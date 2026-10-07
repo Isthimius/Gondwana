@@ -7,6 +7,56 @@ namespace Gondwana.Tests;
 public sealed class EngineInitializationTests
 {
     [Fact]
+    public void TimerDrivenProfilerCountsSimulationStepsAndSingleForegroundIndependently()
+    {
+        var engine = CreateEngineInstance();
+        try
+        {
+            engine.Configuration.LegacyCpsSamplingTime = 0;
+            engine.Configuration.TargetFPS = 0;
+            engine.Configuration.MaxTimerDrivenSimulationSteps = 3;
+            engine.EngineDispatcher.BindToCurrentThread();
+            typeof(Engine).GetField("_isTimerDriven", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(engine, true);
+            var steps = (Gondwana.Timers.FixedStepAccumulator)typeof(Engine)
+                .GetField("_timerDrivenSteps", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(engine)!;
+            steps.Reset(Gondwana.Timers.HighResTimer.GetCurrentTick() - Gondwana.Timers.HighResTimer.TicksPerSecond);
+            SetIsRunning(engine, true);
+            using (engine.Profiler.Start()) engine.Tick();
+            var history = engine.Profiler.GetHistory();
+            Assert.Equal(3, history.Sum(s => s.Sources[0].Metrics["cycle.cpu.ms"].Count));
+            Assert.Equal(1, history.Sum(s => s.Sources[0].Metrics["foreground.cpu.ms"].Count));
+        }
+        finally
+        {
+            engine.Stop();
+            engine.Profiler.Dispose();
+            GC.SuppressFinalize(engine);
+        }
+    }
+
+    [Fact]
+    public void ProfilerCollectsCyclesWhenLegacyCpsNotificationsAreDisabled()
+    {
+        var engine = CreateEngineInstance();
+        try
+        {
+            engine.Configuration.LegacyCpsSamplingTime = 0;
+            engine.EngineDispatcher.BindToCurrentThread();
+            using (engine.Profiler.Start())
+                InvokeCycle(engine);
+            var snapshot = engine.Profiler.GetLatestSnapshot()!;
+            var source = Assert.Single(snapshot.Sources);
+            Assert.Equal(1, source.Metrics["cycle.cpu.ms"].Count);
+            Assert.Equal(1, source.Metrics["background.cpu.ms"].Count);
+        }
+        finally
+        {
+            engine.Profiler.Dispose();
+            GC.SuppressFinalize(engine);
+        }
+    }
+
+    [Fact]
     public void Initialize_WhenInitializationThrows_ResetsInitializationStateAndSignalsCompletion()
     {
         var engine = CreateEngineInstance();
@@ -172,7 +222,7 @@ public sealed class EngineInitializationTests
         try
         {
             SetIsRunning(engine, true);
-            engine.Configuration.SamplingTimeForCPS = 0;
+            engine.Configuration.LegacyCpsSamplingTime = 0;
             engine.BeforeBackgroundTasksExecute += () =>
             {
                 engine.Dispose();

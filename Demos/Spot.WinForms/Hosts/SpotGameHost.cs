@@ -1,4 +1,5 @@
 using Gondwana.Assets;
+using Gondwana.Diagnostics;
 using Gondwana.Input.Keyboard;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Scenes;
@@ -16,6 +17,8 @@ internal sealed partial class SpotGameHost : WinFormsGpuGameHost
 {
     private readonly SpotGameRuntime _runtime;
     private readonly AssetsFile _assets = LoadAssetPackage();
+    private IDisposable? _profilerRequest;
+    private double _lastProfilerLogSeconds;
 
     private static AssetsFile LoadAssetPackage()
     {
@@ -60,33 +63,66 @@ internal sealed partial class SpotGameHost : WinFormsGpuGameHost
     {
         Logging.EngineLogger.SetLogLevel(LogLevel.Information);
 
-        Gondwana.Engine.Instance.CPSCalculated += args =>
-        {
-            if (RenderSurface.Host.Backbuffer is GpuBackbuffer gpuBackbuffer)
-            {
-                string gpuFps = args.GpuFps.HasValue
-                    ? args.GpuFps.Value.ToString("0.0")
-                    : "n/a";
-
-                Engine.Logger.LogInformation(
-                    "CPS {Cps:0.0} | engine FPS {EngineFps:0.0} | GPU FPS {GpuFps} | " +
-                    "MSAA requested {MsaaSampleCount} | MSAA actual {ActualMsaaSampleCount} | " +
-                    "MSAA max {MaxSupportedMsaaSampleCount}",
-                    args.GrossCPS,
-                    args.NetCPS,
-                    gpuFps,
-                    gpuBackbuffer.MsaaSampleCount,
-                    gpuBackbuffer.ActualMsaaSampleCount,
-                    gpuBackbuffer.MaxSupportedMsaaSampleCount);
-
-                return;
-            }
-
-            Engine.Logger.LogInformation("{CyclesPerSecond}", args);
-        };
+        _profilerRequest = Engine.Profiler.Start();
+        Engine.AfterBackgroundTasksExecute += LogRuntimeProfilerSample;
 
         return _runtime.CreateInitialScene();
     }
+
+    private void LogRuntimeProfilerSample()
+    {
+        var snapshot = Engine.Profiler.GetLatestSnapshot();
+        if (snapshot is null ||
+            snapshot.EndedSeconds - _lastProfilerLogSeconds < 1.5d)
+        {
+            return;
+        }
+
+        _lastProfilerLogSeconds = snapshot.EndedSeconds;
+
+        var engineSource = snapshot.Sources.FirstOrDefault(source => source.Backend == "Core");
+        var renderSource = snapshot.Sources.FirstOrDefault(
+            source => source.Id == RenderSurface.Host.Telemetry?.Id);
+
+        double? cps = GetRate(engineSource, "cycle.cpu.ms", snapshot.ElapsedSeconds);
+        double? engineFps = GetRate(engineSource, "foreground.cpu.ms", snapshot.ElapsedSeconds);
+        double? gpuFps = GetRate(renderSource, "presentation.count", snapshot.ElapsedSeconds);
+
+        if (RenderSurface.Host.Backbuffer is GpuBackbuffer gpuBackbuffer)
+        {
+            Engine.Logger.LogInformation(
+                "CPS {Cps} | engine FPS {EngineFps} | GPU FPS {GpuFps} | " +
+                "MSAA requested {MsaaSampleCount} | MSAA actual {ActualMsaaSampleCount} | " +
+                "MSAA max {MaxSupportedMsaaSampleCount}",
+                FormatRate(cps),
+                FormatRate(engineFps),
+                FormatRate(gpuFps),
+                gpuBackbuffer.MsaaSampleCount,
+                gpuBackbuffer.ActualMsaaSampleCount,
+                gpuBackbuffer.MaxSupportedMsaaSampleCount);
+
+            return;
+        }
+
+        Engine.Logger.LogInformation(
+            "CPS {Cps} | engine FPS {EngineFps}",
+            FormatRate(cps),
+            FormatRate(engineFps));
+    }
+
+    private static double? GetRate(
+        TelemetrySourceSnapshot? source,
+        string metricKey,
+        double elapsedSeconds)
+    {
+        return elapsedSeconds > 0d &&
+            source?.Metrics.TryGetValue(metricKey, out var metric) == true &&
+            metric.Availability == TelemetryAvailability.Available
+                ? metric.Count / elapsedSeconds
+                : null;
+    }
+
+    private static string FormatRate(double? rate) => rate?.ToString("0.0") ?? "n/a";
 
     protected override void OnSceneGraphCreated() => _runtime.OnSceneGraphCreated();
 
@@ -94,7 +130,13 @@ internal sealed partial class SpotGameHost : WinFormsGpuGameHost
 
     protected override void OnKeyboardAdapterInitialized() => _runtime.OnKeyboardAdapterInitialized();
 
-    protected override void UnhookEvents() => _runtime.UnhookEvents();
+    protected override void UnhookEvents()
+    {
+        Engine.AfterBackgroundTasksExecute -= LogRuntimeProfilerSample;
+        _profilerRequest?.Dispose();
+        _profilerRequest = null;
+        _runtime.UnhookEvents();
+    }
 
     protected override void CreateDirectDrawings()
     {
