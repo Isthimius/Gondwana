@@ -229,9 +229,9 @@ The `Cycle()` method is the heart of Gondwana. In normal mode it runs on the eng
 ```text
 Cycle()
   → EngineDispatcher.Drain()
+  → Gamepad UpdateConnections/Poll when each cadence is due
   → IEnginePlugin.OnPreCycle
   → DoBackgroundTasks
-       → Gamepad UpdateConnections/Poll when each cadence is due
        → BeforeBackgroundTasksExecute
        → Timer.RaiseTimerEvents(PreCycle)
        → Keyboard poll
