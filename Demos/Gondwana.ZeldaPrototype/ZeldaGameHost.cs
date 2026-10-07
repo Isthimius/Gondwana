@@ -158,11 +158,6 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
         //Engine.Configuration.TargetFPS = 60;
         Engine.Configuration.VSync = true;
 
-        // WinFormsGpuGameHost initializes XInput before Engine.Initialize(). The current
-        // Engine.Initialize signature assigns its optional gamepad argument afterward,
-        // so reattaching here preserves the host's intended XInput manager.
-        Engine.InitializeXInputGamepadManager();
-
         _lastUpdateTick = HighResTimer.GetCurrentTick();
         Engine.BeforeBackgroundTasksExecute += BeforeBackgroundTasksExecute;
         Engine.AfterBackgroundTasksExecute += AfterBackgroundTasksExecute;
