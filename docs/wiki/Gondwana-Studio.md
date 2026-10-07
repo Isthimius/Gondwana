@@ -19,7 +19,7 @@ Studio currently hosts six built-in editors:
 
 The editor controls and their document models remain authoritative. Studio's document adapter routes shell commands into those existing APIs; it does not maintain duplicate format models or serializers.
 
-For the format semantics themselves, see [[Studio & Desktop Tools#authoring-formats]].
+For the format semantics themselves, see [Authoring formats](Studio-and-Desktop-Tools#authoring-formats).
 
 ## Running Studio
 
