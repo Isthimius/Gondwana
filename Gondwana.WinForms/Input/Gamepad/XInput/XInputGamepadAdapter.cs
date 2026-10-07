@@ -60,24 +60,50 @@ public sealed class XInputGamepadAdapter : IGamepadAdapter
         _pressedButtons.Clear();
 
         if (GetState(_controllerIndex, out var state) != 0)
-            return; // Controller not connected
+        {
+            ClearState();
+            return;
+        }
 
-        var buttons = (XInputButtons)state.Gamepad.wButtons;
+        ApplyState(state.Gamepad);
+    }
+
+    /// <summary>
+    /// Clears the current controller state to neutral values.
+    /// </summary>
+    internal void ClearState()
+    {
+        _pressedButtons.Clear();
+        LeftStick = null;
+        RightStick = null;
+        LeftTrigger = 0f;
+        RightTrigger = 0f;
+    }
+
+    /// <summary>
+    /// Applies one XInput state snapshot to the adapter.
+    /// </summary>
+    /// <param name="gamepad">The raw XInput gamepad state to project into Gondwana state.</param>
+    internal void ApplyState(XINPUT_GAMEPAD gamepad)
+    {
+        _pressedButtons.Clear();
+
+        LeftStick = GamepadStickState.FromRaw16(gamepad.sThumbLX, gamepad.sThumbLY);
+        RightStick = GamepadStickState.FromRaw16(gamepad.sThumbRX, gamepad.sThumbRY);
+        LeftTrigger = gamepad.bLeftTrigger / 255f;
+        RightTrigger = gamepad.bRightTrigger / 255f;
+
+        var buttons = (XInputButtons)gamepad.wButtons;
         foreach (XInputButtons button in Enum.GetValues<XInputButtons>())
         {
             if ((buttons & button) != 0)
                 _pressedButtons.Add(button.ToString());
-
-            if (LeftTrigger > 0.5f)
-                _pressedButtons.Add("LeftTrigger");
-
-            if (RightTrigger > 0.5f)
-                _pressedButtons.Add("RightTrigger");
         }
 
-        LeftStick = GamepadStickState.FromRaw16(state.Gamepad.sThumbLX, state.Gamepad.sThumbLY);
-        RightStick = GamepadStickState.FromRaw16(state.Gamepad.sThumbRX, state.Gamepad.sThumbRY);
-        LeftTrigger = state.Gamepad.bLeftTrigger / 255f;
-        RightTrigger = state.Gamepad.bRightTrigger / 255f;
+        if (LeftTrigger > 0.5f)
+            _pressedButtons.Add("LeftTrigger");
+
+        if (RightTrigger > 0.5f)
+            _pressedButtons.Add("RightTrigger");
     }
 }

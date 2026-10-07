@@ -49,7 +49,15 @@ Register a button for each GamepadId
 Handle ButtonDown
 ```
 
-The manager owns devices. The event poller owns registered button events.
+The manager owns devices. The engine schedules connection discovery and live controller-state polling independently, and the event poller owns registered button events.
+
+By default:
+
+- `UpdateConnections()` runs at `0.2 Hz` (once every five seconds).
+- `Poll()` runs at `60 Hz`.
+- both operations run in the input/simulation phase, before game callbacks and `GamepadEventPoller` consume controller state.
+
+These cadences are controlled by `Engine.Configuration.GamepadConnectionUpdateFrequencyHz` and `Engine.Configuration.GamepadPollFrequencyHz`. They are independent of `TargetFPS`, including when rendering is uncapped.
 
 ---
 
@@ -70,9 +78,7 @@ protected override void OnGamepadManagerInitialized()
     if (manager is null || poller is null)
         return;
 
-    // Perform one initial discovery/state refresh.
-    manager.Update();
-
+    // Assigning the manager performs one initial discovery/state refresh.
     poller.ButtonDown += OnGamepadButtonDown;
 
     foreach (var gamepad in manager.ConnectedAdapters)
@@ -324,9 +330,11 @@ private void RegisterNewGamepads()
 }
 ```
 
-Call this from an appropriate game update or periodic timer.
+Call this from an appropriate game update or periodic timer. A newly attached controller becomes visible after the next configured connection-discovery pass; the default maximum delay is about five seconds.
 
-Do not call `manager.Update()` in a separate unbounded loop. The engine already refreshes it at the engine frame rate.
+Do not put `UpdateConnections()` or `Poll()` in an unbounded loop. The engine schedules them independently through `GamepadConnectionUpdateFrequencyHz` and `GamepadPollFrequencyHz`.
+
+The legacy combined `Update()` method remains for compatibility with older custom managers, but new code should use the split operations.
 
 ---
 
@@ -434,19 +442,29 @@ float right = gamepad.RightTrigger;
 string id = gamepad.GamepadId;
 ```
 
+## Polling cadences
+
+```csharp
+Engine.Configuration.GamepadConnectionUpdateFrequencyHz = 0.2; // every 5 seconds
+Engine.Configuration.GamepadPollFrequencyHz = 60;              // live state
+```
+
 ---
 
 # Common Problems
 
 ## No controllers appear during initialization
 
-Perform one initial manager update:
+Assigning a gamepad manager performs one initial connection discovery and state poll, so controllers already present during initialization should appear immediately.
+
+If a controller is attached afterward, wait for the next connection-discovery pass or deliberately request one:
 
 ```csharp
-manager.Update();
+manager.UpdateConnections();
+manager.Poll();
 ```
 
-The engine handles ongoing updates afterward.
+Ongoing automatic discovery defaults to `0.2 Hz` and state polling defaults to `60 Hz`.
 
 ## A controller appears, but A does nothing
 
@@ -481,9 +499,17 @@ gamepad.LeftStick?
 
 Register the buttons for its new `GamepadId`.
 
-## The controller state seems one frame behind
+## The controller state seems stale
 
-The manager refresh and event polling occupy distinct parts of the engine cycle. Treat controller state as frame-sampled input and avoid assumptions about native-event immediacy.
+Gondwana refreshes controller state in the input/simulation phase before game callbacks and button-event polling. The default state cadence is `60 Hz`, independent of render FPS.
+
+If lower latency or lower polling overhead is desired, adjust:
+
+```csharp
+Engine.Configuration.GamepadPollFrequencyHz = 120;
+```
+
+Connection discovery is a separate, much slower cadence and does not control live stick/button responsiveness for already-connected controllers.
 
 ---
 

@@ -81,6 +81,8 @@ The outer JSON property must be named `EngineConfig`, because that is the sectio
     "VSync": true,
     "MsaaSampleCount": 1,
     "SamplingTimeForCPS": 1.5,
+    "GamepadConnectionUpdateFrequencyHz": 0.2,
+    "GamepadPollFrequencyHz": 60.0,
     "TimeBetweenKeyboardEvents": 0.03,
     "TimeBetweenGamepadEvents": 0.03,
     "TimeBetweenMouseEvents": 0.03,
@@ -222,12 +224,23 @@ The compatibility sampler converts this value to high-resolution timer ticks thr
 
 This is a diagnostic sampling interval, not the update timestep and not the target frame rate.
 
+### Gamepad refresh cadence
+
+| Setting | Default | Behavior |
+| --- | ---: | --- |
+| `GamepadConnectionUpdateFrequencyHz` | `0.2 Hz` | Runs `IGamepadManager.UpdateConnections()` about once every five seconds to detect attachments/removals. |
+| `GamepadPollFrequencyHz` | `60 Hz` | Runs `IGamepadManager.Poll()` to refresh buttons, sticks, and triggers for connected controllers. |
+
+Both operations run in the input/simulation phase before game callbacks and gamepad button-event polling. They are independent of `TargetFPS`, so uncapped rendering does not produce uncapped controller polling and a low render rate does not reduce controller-state sampling.
+
+A value of `0` disables the engine's automatic scheduling for that operation. Assigning a gamepad manager still performs one initial discovery/state refresh so controllers already connected at startup are immediately visible.
+
 ### Input-event throttling
 
 | Setting | Default | Used by |
 | --- | ---: | --- |
 | `TimeBetweenKeyboardEvents` | `0.03` seconds | Repeated keyboard events. |
-| `TimeBetweenGamepadEvents` | `0.03` seconds | Repeated gamepad-button events. |
+| `TimeBetweenGamepadEvents` | `0.03` seconds | Repeated gamepad-button events. This is separate from `GamepadPollFrequencyHz`. |
 | `TimeBetweenMouseEvents` | `0.03` seconds | Mouse monitoring and high-frequency pointer activity. |
 | `TimeBetweenTouchEvents` | `0.03` seconds | Touch-movement events. Touch begin/end transitions are not throttled. |
 
@@ -435,6 +448,7 @@ Some configuration properties are read continuously or propagate changes. Others
 | `VSync` | Propagates to GPU backbuffers; applied on a later GPU paint. |
 | `MsaaSampleCount` | Stores and propagates the request; the GPU render target is recreated automatically on the next owning GL/WebGL callback. |
 | `SamplingTimeForCPS` | Legacy compatibility value read by the old CPS/FPS sampler; prefer `Engine.Profiler`. |
+| Gamepad refresh frequencies | Read continuously by the simulation/input scheduler; runtime changes affect the next due calculation. |
 | Input intervals | Used as defaults when monitors are created or reconfigured. Existing monitor settings remain unchanged. |
 | Logging settings | Mode and queue capacity are applied during initialization. Later configuration-only assignments do not rebuild the active logger. |
 | `StateFiles` | Processed only during initialization. |

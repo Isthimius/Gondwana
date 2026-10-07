@@ -287,6 +287,8 @@ public sealed class Engine : IDisposable
     /// </param>
     /// <param name="gamepadManager">
     /// Optional <see cref="IGamepadManager{T}"/> instance used to initialize the gamepad subsystem.
+    /// When <see langword="null"/>, an already configured <see cref="EngineInputSystems.GamepadManager"/>
+    /// is preserved rather than cleared.
     /// </param>
     /// <seealso cref="Start(SynchronizationContext)"/>
     /// <seealso cref="Stop"/>
@@ -396,7 +398,8 @@ public sealed class Engine : IDisposable
             if (touchAdapter != null)
                 Input.TouchAdapter = touchAdapter;
 
-            Input.GamepadManager = gamepadManager;
+            if (gamepadManager is not null)
+                Input.GamepadManager = gamepadManager;
 
             if (UiDispatcher == null)
                 PostInitialization?.Invoke();
@@ -1021,6 +1024,11 @@ public sealed class Engine : IDisposable
         double frameDelta,
         bool sampleCps)
     {
+        // Refresh native gamepad state before any simulation callbacks consume it.
+        // Use the real driver/render tick rather than the fixed-step simulation clock so
+        // timer-driven catch-up steps cannot compress or delay hardware polling cadence.
+        Input.RefreshGamepads(renderTick, Configuration);
+
         long telemetryGeneration = _engineTelemetry.BeginSample();
         long telemetryStarted = telemetryGeneration == 0 ? 0 : HighResTimer.GetCurrentTick();
         EnginePluginRegistry.InvokePreCycle(this, simulationDelta);
@@ -1170,9 +1178,6 @@ public sealed class Engine : IDisposable
         foreach (var surface in RenderSurfaceHostRegistry.All)
             if (!surface.Backbuffer.IsGlThreadRendered)
                 surface.PresentBackbufferToAdapter();
-
-        // update state of gamepad(s)
-        Input.GamepadManager?.Update();
 
         // raise event
         // GL thread rendering is done as part of this invocation

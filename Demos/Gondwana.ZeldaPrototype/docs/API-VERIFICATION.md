@@ -72,7 +72,9 @@ Checked against:
 
 The game snapshots `PressedButtons` to implement rising-edge button actions, as recommended by the gamepad guide, and reads the left stick directly for held movement. Controller Y is inverted because Gondwana's grid uses positive Y downward while XInput describes stick-up as positive.
 
-The current source initializes XInput in `WinFormsGameHostBase.ConfigureGamepads`, then `Engine.Initialize` assigns its optional `gamepadManager` parameter. Because the host does not pass that value into the later call, the prototype explicitly calls `Engine.InitializeXInputGamepadManager()` in `OnEngineInitialized`.
+Current source preserves a gamepad manager already installed by `WinFormsGameHostBase.ConfigureGamepads` when the later `Engine.Initialize` call does not supply a replacement. The prototype therefore relies on the normal WinForms host lifecycle and does not reinitialize XInput in `OnEngineInitialized`.
+
+Gamepad connection discovery and live state polling are scheduled independently by the engine before simulation/game callbacks consume controller state. The prototype can remain render-uncapped without increasing the configured controller polling rate.
 
 ## Save/load
 

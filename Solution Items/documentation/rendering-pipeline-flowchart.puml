@@ -28,6 +28,9 @@ repeat
     :Drain EngineDispatcher queue;
     :tick = HighResTimer.GetCurrentTick();
 
+    :IGamepadManager.UpdateConnections()\nwhen connection cadence is due;
+    :IGamepadManager.Poll()\nwhen state cadence is due;
+
     partition "**DoBackgroundTasks(tick)**" {
         :BeforeBackgroundTasksExecute?.Invoke();
         :Timer.RaiseTimerEvents(PreCycle, tick);
@@ -130,8 +133,6 @@ repeat
                 :Engine records and publishes RenderFrameSnapshot;
 
             end fork
-
-            :IGamepadManager?.Update();
             :AfterFrameRender?.Invoke();
 
             note right

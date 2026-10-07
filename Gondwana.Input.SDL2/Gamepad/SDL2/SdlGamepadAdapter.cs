@@ -61,6 +61,12 @@ public sealed class SdlGamepadAdapter : IGamepadAdapter
     {
         _pressedButtons.Clear();
 
+        if (SDL_GameControllerGetAttached(_controller) == SDL_bool.SDL_FALSE)
+        {
+            ClearState();
+            return;
+        }
+
         foreach (SDL_GameControllerButton button in Enum.GetValues(typeof(SDL_GameControllerButton)))
         {
             if (button == SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_INVALID)
@@ -82,6 +88,15 @@ public sealed class SdlGamepadAdapter : IGamepadAdapter
         RightStick = GamepadStickState.FromRaw16(rx, ry);
         LeftTrigger = NormalizeTrigger(lt);
         RightTrigger = NormalizeTrigger(rt);
+    }
+
+    private void ClearState()
+    {
+        _pressedButtons.Clear();
+        LeftStick = null;
+        RightStick = null;
+        LeftTrigger = 0f;
+        RightTrigger = 0f;
     }
 
     private static float NormalizeTrigger(int raw)

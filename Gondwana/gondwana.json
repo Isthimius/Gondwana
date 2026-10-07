@@ -2,6 +2,8 @@
   "EngineConfig": {
     "TargetFPS": 60,
     "SamplingTimeForCPS": 1.5,
+    "GamepadConnectionUpdateFrequencyHz": 0.2,
+    "GamepadPollFrequencyHz": 60.0,
     "TimeBetweenKeyboardEvents": 0.03,
     "TimeBetweenGamepadEvents": 0.03,
     "TimeBetweenMouseEvents": 0.03

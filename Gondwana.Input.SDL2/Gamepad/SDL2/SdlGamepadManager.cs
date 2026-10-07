@@ -60,13 +60,10 @@ public sealed class SdlGamepadManager : IGamepadManager<SdlGamepadAdapter>
     }
 
     /// <summary>
-    /// Updates the gamepad manager by polling SDL for controller state changes, detecting new connections, 
-    /// and handling disconnections.
+    /// Checks SDL controller devices for connection and disconnection changes.
     /// </summary>
-    public void Update()
+    public void UpdateConnections()
     {
-        SDL_GameControllerUpdate();
-
         var stillConnected = new HashSet<int>();
 
         for (int i = 0; i < SDL_NumJoysticks(); i++)
@@ -81,10 +78,6 @@ public sealed class SdlGamepadManager : IGamepadManager<SdlGamepadAdapter>
                 _connected[i] = new SdlGamepadAdapter(i);
                 Engine.Logger.LogInformation("Gamepad connected: SDL_CONTROLLER_{ControllerIndex}", i);
             }
-
-            // ** DO NOT CALL THIS UNBOUNDED!! **
-            // ** limit to Engine framerate **
-            _connected[i].Poll();
         }
 
         foreach (var index in _connected.Keys.Except(stillConnected).ToList())
@@ -93,5 +86,26 @@ public sealed class SdlGamepadManager : IGamepadManager<SdlGamepadAdapter>
             _connected[index].Dispose();
             _connected.Remove(index);
         }
+    }
+
+    /// <summary>
+    /// Refreshes SDL controller state and polls all currently connected adapters.
+    /// </summary>
+    public void Poll()
+    {
+        SDL_GameControllerUpdate();
+
+        foreach (var adapter in _connected.Values)
+            adapter.Poll();
+    }
+
+    /// <summary>
+    /// Performs the legacy combined connection and state refresh.
+    /// </summary>
+    [Obsolete("Use UpdateConnections() and Poll() separately.")]
+    public void Update()
+    {
+        UpdateConnections();
+        Poll();
     }
 }
