@@ -1,5 +1,8 @@
 Gondwana is designed to be inspectable while it runs. The engine exposes lifecycle events, render-surface events, runtime performance samples, logging infrastructure, and visual overlays that can help narrow a problem to a specific stage of the engine.
 
+For opt-in collection, detached snapshots, and bounded history usable by ordinary
+applications, see [Runtime Telemetry](Runtime-Telemetry). The saved-scene Scene Viewer's F3 diagnostics overlay—used by the `.gscn` editor/Studio workflow or direct Scene Viewer launches—consumes that same service; F3 is not a general Engine hotkey. The older CPS/FPS properties and event remain as warning-only obsolete compatibility APIs (`GOND0001`).
+
 The most useful debugging question is usually not simply *“Why is this wrong?”* It is:
 
 > At which stage did the engine stop doing what I expected?
@@ -22,24 +25,21 @@ Instrumentation is most valuable when it identifies which of those stages still 
 The following is a reasonable temporary starting point while diagnosing a game:
 
 ```csharp
-using Gondwana;
 using Gondwana.Logging;
+using Gondwana.Widgets.Hud;
 using Microsoft.Extensions.Logging;
 
 EngineLogger.SetLogLevel(LogLevel.Debug);
 
-Engine.Instance.CPSCalculated += sample =>
+var diagnostics = new ProfilerWidget(
+    host,
+    view,
+    new Rectangle(12, 12, 700, 520))
 {
-    string gpuFps = sample.GpuFps is double value
-        ? value.ToString("F1")
-        : "n/a";
-
-    Engine.Logger.LogInformation(
-        "CPS {GrossCps:F1}; foreground FPS {NetFps:F1}; GPU FPS {GpuFps}",
-        sample.GrossCPS,
-        sample.NetCPS,
-        gpuFps);
+    ContextInfo = ProfilerContextInfo.All
 };
+
+diagnostics.Show();
 
 worldLayer.ShowGridLines = true;
 worldLayer.ShowCollisionBoxes = true;
@@ -71,48 +71,77 @@ For a desktop GPU problem, distinguish Engine-side snapshot production from plat
 
 ---
 
-## Runtime sampling: CPS, foreground FPS, and GPU FPS
+## Runtime telemetry: cycle, foreground, and presentation rates
 
-Gondwana periodically raises `Engine.CPSCalculated` with a `CyclesPerSecondCalculatedEventArgs` sample. The default sampling interval is 1.5 seconds and is controlled by `EngineConfiguration.SamplingTimeForCPS`.
+For new diagnostics, use `Engine.Instance.Profiler`. It records neutral measurements
+only while at least one collection request is active. A completed
+`TelemetrySnapshot` includes an actual elapsed window, so cadence is derived as
+sample count divided by `snapshot.ElapsedSeconds`.
 
-Setting `SamplingTimeForCPS` to zero disables sampling:
+The primary rate equivalents are:
+
+| Question | Profiler measurement |
+| --- | --- |
+| How quickly is the simulation cycling? | `Engine [Core] / cycle.cpu.ms` count / elapsed seconds |
+| How often is foreground work being produced? | `Engine [Core] / foreground.cpu.ms` count / elapsed seconds |
+| How often is this GPU surface presenting? | render-source `presentation.count` count / elapsed seconds |
+
+The same summaries also retain timing information: for example,
+`cycle.cpu.ms.Mean` is average CPU duration per observed cycle, while its
+`Count / ElapsedSeconds` is cycle cadence. Presentation is recorded per render
+surface rather than being forced into the old cross-surface aggregate.
+
+On the current desktop `RenderFrameSnapshot` path, `gate.wait.cpu.ms` and
+`gate.held.cpu.ms` are **NotApplicable**: ordinary GL replay deliberately does not
+acquire the broad live render-state/simulation gate. Selecting either metric in a
+`ProfilerWidget` therefore shows `NotApplicable`, rather than a numeric timing.
+
+These rates answer different questions:
+
+- a low cycle rate points toward expensive or blocked simulation/background work;
+- a healthy cycle rate with a low foreground rate can indicate foreground pacing or rendering cost; and
+- a low presentation rate with healthier foreground production points toward the GPU render/presentation path, VSync, the platform message loop, or compositor behavior.
+
+The profiler is diagnostic instrumentation, not a gameplay clock.
+
+### In-game runtime profiler widget
+
+For an ordinary game, `Gondwana.Widgets` provides a view-level `ProfilerWidget`
+that reads `Engine.Instance.Profiler` snapshots and formats them as a scrollable HUD:
 
 ```csharp
-Engine.Instance.Configuration.SamplingTimeForCPS = 1.0;
+using System.Drawing;
+using Gondwana.Widgets.Hud;
+
+var diagnostics = new ProfilerWidget(
+    host,
+    view,
+    new Rectangle(12, 12, 700, 520));
+
+diagnostics.SetMeasurementVisible("layers.omitted", false);
+diagnostics.Show();
 ```
 
-The sample contains three rates with different meanings.
+Showing the widget acquires its own profiler collection request. Hiding or disposing
+it releases only that request, so it can coexist with the saved-scene Scene Viewer's F3 diagnostics overlay or another
+telemetry consumer. Individual measurements and entire sources can be shown or hidden,
+and selected mode can be used as an explicit allow-list when a compact diagnostic view
+is preferable.
 
-### `GrossCPS`
+See [[Runtime Telemetry]] and [[ProfilerWidget|Widgets---ProfilerWidget]] for the
+measurement definitions and widget options.
 
-`GrossCPS` is the number of complete engine cycles per second. It includes cycles that perform background work without rendering a foreground frame.
+### Scene Viewer F3 diagnostics (`.gscn` / Studio tooling)
 
-Background work currently includes:
+The saved-scene **Scene Viewer** provides a built-in **F3 diagnostics overlay** for separating desktop GPU producer and consumer costs. This is the viewer opened by the standalone `.gscn` Scene editor/Studio **View Scene** workflow (and it can also be launched directly); F3 is therefore a Scene Viewer control, not a global Gondwana diagnostic shortcut. The overlay is implemented with `ProfilerWidget`, using its generic runtime-context options plus an extension callback for viewer-specific lines. It reports:
 
-- input polling
-- timer events
-- animation advancement
-- sprite movement
-- collision resolution
-- camera updates
-
-A high gross CPS therefore does not prove that frames are reaching the display smoothly.
-
-### `NetCPS`
-
-`NetCPS` counts engine cycles that entered the foreground portion of the loop. It is also exposed through `Engine.FramesPerSecond` after the latest sample.
-
-For a bitmap surface, this is a useful approximation of the engine-driven frame rate. For desktop GPU surfaces, it measures foreground snapshot-production cadence rather than platform GL replay cadence. For browser WebGL, it measures Gondwana foreground Scene-render decisions made from inside the browser paint callback; browser presentation cadence can still be higher because the current GPU backbuffer may be re-presented without rebuilding the Scene.
-
-### `GpuFps`
-
-`GpuFps` counts successful GPU presentation/paint frames recorded by registered GPU backbuffers. It is `null` when no GPU surface is registered.
-
-With one GPU surface, it represents that surface's observed presentation rate. With multiple GPU surfaces, Gondwana currently reports their combined frame count over the sampling window rather than a per-surface rate. On WebGL, this count includes browser paints that re-present an existing GPU backbuffer without a new Scene render.
-
-### Scene Viewer F3 diagnostics
-
-The Scene Viewer provides a built-in F3 diagnostics overlay for separating desktop GPU producer and consumer costs. It reports:
+The Scene Viewer uses a curated default metric set and adds an explicit
+`GPU FPS (presentation.count)` summary. Open **Metrics...** inside the overlay to
+toggle individual sources or measurements, including lower-level/per-layer details
+that are hidden by default. Hover a displayed measurement for its definition;
+**Hover definitions** in the selector turns that help on or off. Scrolling over the
+diagnostics panel scrolls its contents rather than changing the Scene Viewer camera
+zoom.
 
 - Gross CPS and Engine foreground FPS
 - GPU presentation FPS
@@ -126,20 +155,18 @@ These values are particularly useful when Engine production is healthy but GL pr
 
 See [[GL Rendering Path]] for the desktop snapshot diagnostics model.
 
-### Displaying the built-in sample
+### Legacy CPS/FPS compatibility surface
 
-`CyclesPerSecondCalculatedEventArgs.ToString()` already produces a readable multi-line summary:
+`Engine.CyclesPerSecond`, `Engine.FramesPerSecond`, `Engine.CPSCalculated`,
+`EngineConfiguration.SamplingTimeForCPS`, and
+`EngineConfiguration.SamplingTimeForCPSTicks` remain available for compatibility,
+but are warning-only obsolete under `GOND0001`.
 
-```csharp
-Engine.Instance.CPSCalculated += sample =>
-{
-    debugTextBlock.SetText(sample.ToString());
-};
-```
+Existing handlers using `CyclesPerSecondCalculatedEventArgs` continue to work and
+the DTO itself is intentionally not obsolete. New code should migrate to
+`Engine.Profiler` or `ProfilerWidget`; see [[Runtime Telemetry]] for the exact
+legacy-to-profiler mapping.
 
-`CPSCalculated` is posted through the engine's UI dispatcher. It is suitable for updating ordinary UI or debug text, but handlers should still remain lightweight.
-
-The Spot demo logs this sample, while the Slider demo displays the individual values in its UI. Both are useful reference implementations.
 
 ---
 
@@ -224,7 +251,7 @@ Engine events are useful for broad instrumentation and for determining whether g
 | `AfterBackgroundTasksExecute` | Stop background timing or inspect the resulting state |
 | `BeforeFrameRender` | Inspect state immediately before the engine foreground phase |
 | `AfterFrameRender` | Observe completion of the engine foreground phase |
-| `CPSCalculated` | Consume periodic cycle and rendering-rate samples |
+| `CPSCalculated` *(legacy / obsolete `GOND0001`)* | Consume compatibility cycle and rendering-rate samples; prefer `Engine.Profiler` |
 | `Disposing` | Inspect still-readable state before managed teardown |
 | `Disposed` | Confirm teardown has completed |
 
@@ -474,9 +501,9 @@ Do not enlarge a collision box merely to conceal a tunnelling or resolution prob
 
 | Symptom | First things to check |
 | --- | --- |
-| No `CPSCalculated` events arrive | Confirm the engine is running and `SamplingTimeForCPS` is greater than zero |
-| Gross CPS is high but animation looks slow | Compare `NetCPS` and, for GPU rendering, `GpuFps` |
-| GPU motion stutters while `NetCPS` looks healthy | Compare `GpuFps`; on desktop inspect snapshot production versus GL replay, and on WebGL inspect the synchronous browser paint path |
+| No profiler snapshots arrive | Confirm a `Profiler.Start()` request is active and enough time has elapsed for the configured telemetry interval |
+| Cycle rate is high but animation looks slow | Compare foreground and presentation rates |
+| GPU motion stutters while foreground production looks healthy | Compare the render source's `presentation.count` rate; on desktop inspect snapshot production versus GL replay, and on WebGL inspect the synchronous browser paint path |
 | Logs appear late or out of order | Check whether asynchronous logging is active; temporarily use synchronous mode when ordering matters |
 | Logs disappear under extreme volume | Check the enabled level and remember that a saturated asynchronous queue drops new records |
 | Collision boxes do not appear | Verify layer selection, object visibility, and `CollisionsEnabled` |

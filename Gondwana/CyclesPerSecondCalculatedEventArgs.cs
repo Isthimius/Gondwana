@@ -3,11 +3,16 @@ using System.Text;
 namespace Gondwana;
 
 /// <summary>
-/// Provides data for events that report calculated cycles per second (CPS) performance metrics.
+/// Provides the compatibility payload for legacy cycles-per-second (CPS) performance notifications.
 /// This event args class contains both gross and net cycle counts, their corresponding rates per second,
 /// and the sampling time period. Net CPS typically represents the effective frame rate (FPS) of the engine,
 /// while gross CPS includes all cycles regardless of whether they resulted in rendered frames.
 /// </summary>
+/// <remarks>
+/// The payload type itself remains supported so existing compatibility handlers can continue to compile.
+/// <see cref="Engine.CPSCalculated"/> is warning-only obsolete; new diagnostics should use
+/// <see cref="Engine.Profiler"/> or the optional <c>ProfilerWidget</c> display.
+/// </remarks>
 public class CyclesPerSecondCalculatedEventArgs : EventArgs
 {
     /// <summary>

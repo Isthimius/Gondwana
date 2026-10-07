@@ -1,0 +1,78 @@
+Native last-window CPU samples and retained process heaps (bytes):
+telemetry-repeat-baseline-1024.log: RETAINED warmup_bytes=3367216 end_bytes=3365664
+telemetry-repeat-baseline-65536.log: RETAINED warmup_bytes=27164560 end_bytes=27166544
+telemetry-repeat-collecting-1024.log: LAST_WINDOW source=1 metric=cycle.cpu.ms mean_ms=0.0753647133626528 count=3140
+telemetry-repeat-collecting-1024.log: LAST_WINDOW source=1 metric=background.cpu.ms mean_ms=0.0011478980898871692 count=3140
+telemetry-repeat-collecting-1024.log: LAST_WINDOW source=2 metric=build.cpu.ms mean_ms=0.07032359869189332 count=3140
+telemetry-repeat-collecting-1024.log: LAST_WINDOW source=2 metric=replay.cpu.ms mean_ms=0.22351333318511024 count=30
+telemetry-repeat-collecting-1024.log: LAST_WINDOW source=1 metric=cycle.cpu.ms mean_ms=0.0767928638172316 count=3181
+telemetry-repeat-collecting-1024.log: LAST_WINDOW source=1 metric=background.cpu.ms mean_ms=0.001282772713407931 count=3181
+telemetry-repeat-collecting-1024.log: LAST_WINDOW source=2 metric=build.cpu.ms mean_ms=0.07188406172550121 count=3181
+telemetry-repeat-collecting-1024.log: LAST_WINDOW source=2 metric=replay.cpu.ms mean_ms=0.23020333173917606 count=30
+telemetry-repeat-collecting-1024.log: LAST_WINDOW source=1 metric=cycle.cpu.ms mean_ms=0.08502018865733578 count=2863
+telemetry-repeat-collecting-1024.log: LAST_WINDOW source=1 metric=background.cpu.ms mean_ms=0.0026672721680635098 count=2863
+telemetry-repeat-collecting-1024.log: LAST_WINDOW source=2 metric=build.cpu.ms mean_ms=0.07870268946179658 count=2863
+telemetry-repeat-collecting-1024.log: LAST_WINDOW source=2 metric=replay.cpu.ms mean_ms=0.24318666886150217 count=30
+telemetry-repeat-collecting-1024.log: RETAINED warmup_bytes=3536768 end_bytes=5033600
+telemetry-repeat-collecting-65536.log: LAST_WINDOW source=1 metric=cycle.cpu.ms mean_ms=10.664441583988568 count=24
+telemetry-repeat-collecting-65536.log: LAST_WINDOW source=1 metric=background.cpu.ms mean_ms=0.01410833330813451 count=24
+telemetry-repeat-collecting-65536.log: LAST_WINDOW source=2 metric=build.cpu.ms mean_ms=10.383979223358134 count=24
+telemetry-repeat-collecting-65536.log: LAST_WINDOW source=2 metric=replay.cpu.ms mean_ms=2.6506913076762273 count=23
+telemetry-repeat-collecting-65536.log: LAST_WINDOW source=1 metric=cycle.cpu.ms mean_ms=9.492692658332762 count=27
+telemetry-repeat-collecting-65536.log: LAST_WINDOW source=1 metric=background.cpu.ms mean_ms=0.010155555594758846 count=27
+telemetry-repeat-collecting-65536.log: LAST_WINDOW source=2 metric=build.cpu.ms mean_ms=9.336655631799388 count=27
+telemetry-repeat-collecting-65536.log: LAST_WINDOW source=2 metric=replay.cpu.ms mean_ms=2.0357807739995994 count=26
+telemetry-repeat-collecting-65536.log: LAST_WINDOW source=1 metric=cycle.cpu.ms mean_ms=10.605958426215997 count=24
+telemetry-repeat-collecting-65536.log: LAST_WINDOW source=1 metric=background.cpu.ms mean_ms=0.010145833376403365 count=24
+telemetry-repeat-collecting-65536.log: LAST_WINDOW source=2 metric=build.cpu.ms mean_ms=10.563816778206577 count=24
+telemetry-repeat-collecting-65536.log: LAST_WINDOW source=2 metric=replay.cpu.ms mean_ms=2.6134608526025778 count=23
+telemetry-repeat-collecting-65536.log: RETAINED warmup_bytes=27323528 end_bytes=28841584
+telemetry-repeat-disabled-1024.log: RETAINED warmup_bytes=3367392 end_bytes=3372720
+telemetry-repeat-disabled-65536.log: RETAINED warmup_bytes=27151984 end_bytes=27155656
+telemetry-repeat-display-1024.log: LAST_WINDOW source=1 metric=cycle.cpu.ms mean_ms=0.15594075292081583 count=1514
+telemetry-repeat-display-1024.log: LAST_WINDOW source=1 metric=background.cpu.ms mean_ms=0.0015672174423332855 count=1513
+telemetry-repeat-display-1024.log: LAST_WINDOW source=2 metric=build.cpu.ms mean_ms=0.1505444515919017 count=1514
+telemetry-repeat-display-1024.log: LAST_WINDOW source=2 metric=replay.cpu.ms mean_ms=0.5045233401081836 count=30
+telemetry-repeat-display-1024.log: LAST_WINDOW source=1 metric=cycle.cpu.ms mean_ms=0.16228420693017864 count=1450
+telemetry-repeat-display-1024.log: LAST_WINDOW source=1 metric=background.cpu.ms mean_ms=0.0016442758519901715 count=1450
+telemetry-repeat-display-1024.log: LAST_WINDOW source=2 metric=build.cpu.ms mean_ms=0.15695689658529993 count=1450
+telemetry-repeat-display-1024.log: LAST_WINDOW source=2 metric=replay.cpu.ms mean_ms=0.4679533332819119 count=30
+telemetry-repeat-display-1024.log: LAST_WINDOW source=1 metric=cycle.cpu.ms mean_ms=0.15361342163860361 count=1587
+telemetry-repeat-display-1024.log: LAST_WINDOW source=1 metric=background.cpu.ms mean_ms=0.0014938248167060077 count=1587
+telemetry-repeat-display-1024.log: LAST_WINDOW source=2 metric=build.cpu.ms mean_ms=0.14882551955703086 count=1587
+telemetry-repeat-display-1024.log: LAST_WINDOW source=2 metric=replay.cpu.ms mean_ms=0.4215900000417605 count=30
+telemetry-repeat-display-1024.log: RETAINED warmup_bytes=3553056 end_bytes=5032952
+telemetry-repeat-display-65536.log: LAST_WINDOW source=1 metric=cycle.cpu.ms mean_ms=11.94517132604406 count=21
+telemetry-repeat-display-65536.log: LAST_WINDOW source=1 metric=background.cpu.ms mean_ms=0.012938095074960507 count=21
+telemetry-repeat-display-65536.log: LAST_WINDOW source=2 metric=build.cpu.ms mean_ms=11.714876230273928 count=21
+telemetry-repeat-display-65536.log: LAST_WINDOW source=2 metric=replay.cpu.ms mean_ms=3.993590891530568 count=22
+telemetry-repeat-display-65536.log: LAST_WINDOW source=1 metric=cycle.cpu.ms mean_ms=8.898753539792128 count=28
+telemetry-repeat-display-65536.log: LAST_WINDOW source=1 metric=background.cpu.ms mean_ms=0.01313928565390857 count=28
+telemetry-repeat-display-65536.log: LAST_WINDOW source=2 metric=build.cpu.ms mean_ms=8.673203576888357 count=28
+telemetry-repeat-display-65536.log: LAST_WINDOW source=2 metric=replay.cpu.ms mean_ms=2.506396421397637 count=28
+telemetry-repeat-display-65536.log: LAST_WINDOW source=1 metric=cycle.cpu.ms mean_ms=12.179361922400338 count=21
+telemetry-repeat-display-65536.log: LAST_WINDOW source=1 metric=background.cpu.ms mean_ms=0.017071428114182448 count=21
+telemetry-repeat-display-65536.log: LAST_WINDOW source=2 metric=build.cpu.ms mean_ms=11.951485604402565 count=21
+telemetry-repeat-display-65536.log: LAST_WINDOW source=2 metric=replay.cpu.ms mean_ms=3.196171396190212 count=21
+telemetry-repeat-display-65536.log: RETAINED warmup_bytes=27326960 end_bytes=28801392
+
+Isolated Engine loop samples:
+telemetry-engine-baseline.log: ENGINE mode=disabled run=0 ns_per_cycle=425.59 bytes_per_cycle=248.0000
+telemetry-engine-baseline.log: ENGINE mode=disabled run=1 ns_per_cycle=275.09 bytes_per_cycle=248.0000
+telemetry-engine-baseline.log: ENGINE mode=disabled run=2 ns_per_cycle=281.33 bytes_per_cycle=248.0000
+telemetry-engine-baseline.log: ENGINE mode=disabled run=0 ns_per_cycle=443.15 bytes_per_cycle=248.0000
+telemetry-engine-baseline.log: ENGINE mode=disabled run=1 ns_per_cycle=262.59 bytes_per_cycle=248.0000
+telemetry-engine-baseline.log: ENGINE mode=disabled run=2 ns_per_cycle=267.49 bytes_per_cycle=248.0000
+telemetry-engine-collecting.log: ENGINE mode=collecting run=0 ns_per_cycle=713.12 bytes_per_cycle=248.0032
+telemetry-engine-collecting.log: ENGINE mode=collecting run=1 ns_per_cycle=469.64 bytes_per_cycle=248.0021
+telemetry-engine-collecting.log: ENGINE mode=collecting run=2 ns_per_cycle=466.44 bytes_per_cycle=248.0010
+telemetry-engine-disabled.log: ENGINE mode=disabled run=0 ns_per_cycle=433.58 bytes_per_cycle=248.0000
+telemetry-engine-disabled.log: ENGINE mode=disabled run=1 ns_per_cycle=272.14 bytes_per_cycle=248.0000
+telemetry-engine-disabled.log: ENGINE mode=disabled run=2 ns_per_cycle=272.05 bytes_per_cycle=248.0000
+telemetry-engine-disabled.log: ENGINE mode=disabled run=0 ns_per_cycle=462.80 bytes_per_cycle=248.0000
+telemetry-engine-disabled.log: ENGINE mode=disabled run=1 ns_per_cycle=279.72 bytes_per_cycle=248.0000
+telemetry-engine-disabled.log: ENGINE mode=disabled run=2 ns_per_cycle=279.45 bytes_per_cycle=248.0000
+RETAINED_FULL_HISTORY run=1 bytes=29520952
+RETAINED_FULL_HISTORY run=2 bytes=29523160
+RETAINED_FULL_HISTORY run=3 bytes=29522728
+RETAINED warmup_bytes=28929016 end_bytes=29522408

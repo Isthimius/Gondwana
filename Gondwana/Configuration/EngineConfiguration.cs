@@ -223,9 +223,16 @@ public partial class EngineConfiguration
     private double _samplingTimeForCPS = 1.5;
 
     /// <summary>
-    /// Total number of seconds between Cycles Per Second (CPS) calculation.
+    /// Total number of seconds between legacy Cycles Per Second (CPS) calculations.
     /// Default is 1.5 seconds.
     /// </summary>
+    /// <remarks>
+    /// This setting controls only the compatibility CPS/FPS sampler. New diagnostics should
+    /// configure <see cref="Diagnostics.RuntimeProfiler"/> through <see cref="Engine.Profiler"/>.
+    /// </remarks>
+    [Obsolete(
+        "Legacy CPS/FPS sampling is deprecated. Use Engine.Profiler.Configure(...) for runtime telemetry.",
+        DiagnosticId = "GOND0001")]
     public double SamplingTimeForCPS
     {
         get => _samplingTimeForCPS;
@@ -233,10 +240,31 @@ public partial class EngineConfiguration
     }
 
     /// <summary>
-    /// Total number of system ticks between each CPS sampling.
+    /// Total number of system ticks between each legacy CPS sampling.
     /// </summary>
+    /// <remarks>
+    /// This property exists for compatibility with the legacy CPS/FPS sampler.
+    /// </remarks>
     [JsonIgnore]
-    public long SamplingTimeForCPSTicks => (long)(SamplingTimeForCPS * HighResTimer.TicksPerSecond);
+    [Obsolete(
+        "Legacy CPS/FPS sampling is deprecated. Use Engine.Profiler.Configure(...) for runtime telemetry.",
+        DiagnosticId = "GOND0001")]
+    public long SamplingTimeForCPSTicks => LegacyCpsSamplingTicks;
+
+    /// <summary>
+    /// Gets the compatibility CPS sampling interval without consuming the obsolete public API.
+    /// </summary>
+    internal double LegacyCpsSamplingTime
+    {
+        get => _samplingTimeForCPS;
+        set => _samplingTimeForCPS = value < 0 ? 0 : value;
+    }
+
+    /// <summary>
+    /// Gets the compatibility CPS sampling interval in high-resolution ticks.
+    /// </summary>
+    internal long LegacyCpsSamplingTicks =>
+        (long)(_samplingTimeForCPS * HighResTimer.TicksPerSecond);
 
     /// <summary>
     /// Minimum time (in seconds) allowed between Keyboard events.

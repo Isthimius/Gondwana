@@ -38,7 +38,7 @@ Use `HighResTimer` when code needs to *measure* time. Use `Timer` when code need
 | Update state before movement, collisions, and rendering | `TimerType.PreCycle` | Runs early in the background phase |
 | Run diagnostics or cleanup after a rendered frame | `TimerType.PostCycle` | Runs at the end of the foreground phase |
 | Read total engine runtime | `Engine.TotalSecondsEngineRunning` | Reports elapsed real time since the engine started |
-| Observe update and render rates | `Engine.CyclesPerSecond`, `Engine.FramesPerSecond`, and `Engine.CPSCalculated` | Exposes sampled engine performance metrics |
+| Observe update and render rates | `Engine.Profiler` or `ProfilerWidget` | Exposes opt-in sampled engine and presentation telemetry |
 
 Gondwana timing is based on elapsed real time. The timer system does not currently provide a simulated game clock, time scaling, or deterministic fixed-step scheduling. If a game needs slow motion, replayable simulation, or a pauseable world clock, build that layer on top of elapsed time rather than treating raw timer ticks as simulation steps.
 
@@ -436,42 +436,45 @@ public sealed class EncounterController : IDisposable
 
 ## Engine runtime and performance timing
 
-The engine uses `HighResTimer` internally to advance animation, movement, camera state, effects, rendering cadence, and performance sampling. Applications can inspect several related values through `Engine.Instance`:
+The engine uses `HighResTimer` internally to advance animation, movement, camera
+state, effects, rendering cadence, and performance instrumentation. Applications
+can always read total runtime:
 
 ```csharp
 double runningSeconds = Engine.Instance.TotalSecondsEngineRunning;
 long runningTicks = Engine.Instance.TotalTicksEngineRunning;
-
-double updateRate = Engine.Instance.CyclesPerSecond;
-double foregroundRate = Engine.Instance.FramesPerSecond;
 ```
 
-`CyclesPerSecond` counts all completed engine cycles. `FramesPerSecond` counts cycles that performed foreground work. The values are sampled rather than recalculated on every property access.
-
-Subscribe to `CPSCalculated` for the complete sample:
+For performance rates, new code should use `Engine.Instance.Profiler` or
+`ProfilerWidget`. With an active collection request, a completed snapshot exposes
+both work duration and cadence:
 
 ```csharp
-Engine.Instance.CPSCalculated += sample =>
-{
-    Console.WriteLine($"Update CPS: {sample.GrossCPS:N1}");
-    Console.WriteLine($"Foreground FPS: {sample.NetCPS:N1}");
+using var request = Engine.Instance.Profiler.Start();
 
-    if (sample.GpuFps is double gpuFps)
-        Console.WriteLine($"GPU FPS: {gpuFps:N1}");
-};
+TelemetrySnapshot? snapshot = Engine.Instance.Profiler.GetLatestSnapshot();
+TelemetrySourceSnapshot? engine = snapshot?.Sources
+    .FirstOrDefault(source => source.Backend == "Core");
+
+if (snapshot is not null &&
+    engine?.Metrics.TryGetValue("cycle.cpu.ms", out var cycles) == true)
+{
+    double cyclesPerSecond = cycles.Count / snapshot.ElapsedSeconds;
+    Console.WriteLine($"Update CPS: {cyclesPerSecond:N1}");
+}
 ```
 
-The sampling interval is controlled by `Engine.Instance.Configuration.SamplingTimeForCPS` and defaults to 1.5 seconds. Setting it to `0` disables sampling. `CPSCalculated` is posted through the engine's UI dispatcher, which differs from ordinary `Timer.Tick` execution.
+Use `foreground.cpu.ms` the same way for foreground-production cadence and the
+render source's `presentation.count` for actual GPU presentation cadence.
 
-On bitmap-backed surfaces, the foreground rate closely describes presented engine frames. GPU-backed surfaces can render on their graphics callback rather than directly on the background cycle; use `CyclesPerSecondCalculatedEventArgs.GpuFps` when an actual GPU frame count is available.
+The older `Engine.CyclesPerSecond`, `Engine.FramesPerSecond`,
+`Engine.CPSCalculated`, `SamplingTimeForCPS`, and
+`SamplingTimeForCPSTicks` members remain functional for compatibility but are
+warning-only obsolete under `GOND0001`. Their 1.5-second compatibility sampler is
+separate from `RuntimeProfiler` and should not be used for new diagnostics.
 
-These values answer different questions:
+These values are diagnostics, not clocks for gameplay logic.
 
-- Low CPS indicates that background/update work is expensive or blocked.
-- Healthy CPS with low foreground FPS can indicate rendering cost or foreground throttling.
-- A low GPU FPS with a healthier scheduled foreground rate points toward the GPU render path, presentation, or vsync behavior.
-
-They are diagnostics, not clocks for gameplay logic.
 
 ## Common mistakes
 

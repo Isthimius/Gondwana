@@ -1,14 +1,12 @@
-using System.Text;
 using Gondwana.Configuration;
+using Gondwana.Diagnostics;
 using Gondwana.Drawing;
-using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Input.Keyboard;
-using Gondwana.Rendering;
-using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.Timers;
+using Gondwana.Widgets.Hud;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
 using SkiaSharp;
@@ -27,57 +25,15 @@ internal sealed class SceneViewerGameHost(
     private const int DiagnosticsMargin = 12;
     private const int DiagnosticsWidth = 700;
     private const int DiagnosticsHeight = 760;
-    private const int MaxDiagnosticLayers = 8;
 
     private readonly HashSet<Keys> _keysDown = [];
-    private readonly object _renderDiagnosticsLock = new();
-    private readonly Dictionary<int, LayerDiagnosticsWindow> _layerDiagnostics = [];
-
     private long _lastTick;
-    private long _backgroundStartTick;
-    private long _backgroundTotalTicks;
-    private long _backgroundMaxTicks;
-    private long _backgroundSampleCount;
-    private int _animatingTileCount;
-
-    private long _sceneRenderSamples;
-    private double _sceneRenderTotalMs;
-    private double _sceneRenderMaxMs;
-    private double _queryAndSortTotalMs;
-    private double _queryTotalMs;
-    private double _sortTotalMs;
-    private double _drawTotalMs;
-    private double _overlayTotalMs;
-    private long _visibleDrawableTotal;
-    private long _visibleTileTotal;
-    private long _atlasBatchTotal;
-    private long _atlasBatchedTileTotal;
-
-    private long _gpuCallbackSamples;
-    private double _gpuCallbackTotalMs;
-    private double _gpuCallbackMaxMs;
-    private double _renderAndSnapshotTotalMs;
-    private double _blitTotalMs;
-    private double _flushTotalMs;
-
-    private long _gpuSynchronizationSamples;
-    private double _replayTotalMs, _replayMaxMs, _ageTotalMs;
-    private double _pictureReplayTotalMs;
-    private double _backbufferFlushTotalMs;
-    private double _snapshotTotalMs;
-    private long _publishedSnapshots, _droppedSnapshots;
-    private int _snapshotSlotsInUse, _snapshotCommandCount;
-    private double _gpuLockWaitTotalMs;
-    private double _gpuLockWaitMaxMs;
-    private double _gpuLockHeldTotalMs;
-    private double _gpuLockHeldMaxMs;
-
     private bool _animationsPaused;
     private Tilesheet? _stressTilesheet;
     private SceneLayer? _stressLayer;
     private GondwanaView? _view;
-    private TextBlock? _diagnosticsText;
-    private Gondwana.CyclesPerSecondCalculatedEventArgs? _lastCpsSample;
+    private ProfilerWidget? _diagnosticsWidget;
+
 
     internal ViewerCameraController? Camera { get; private set; }
 
@@ -207,21 +163,21 @@ internal sealed class SceneViewerGameHost(
         if (_view is null)
             return;
 
-        _diagnosticsText = new TextBlock(
-                RenderSurface.Host,
-                _view,
-                GetDiagnosticsBounds(_view.Viewport.TargetRectPx),
-                "scene-viewer-diagnostics")
-            .SetFont(SKTypeface.Default, 15f)
-            .SetColors(SKColors.White, new SKColor(0, 0, 0, 102))
-            .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Top)
-            .EnableWrapping(false);
+        _diagnosticsWidget = new ProfilerWidget(
+            RenderSurface.Host,
+            _view,
+            GetDiagnosticsBounds(_view.Viewport.TargetRectPx),
+            "scene-viewer-diagnostics")
+        {
+            HeaderText = "Gondwana Scene Viewer Diagnostics  [F3]",
+            ContextInfo = ProfilerContextInfo.All,
+            ShowSnapshotMetadata = false,
+            AdditionalLinesProvider = GetSceneViewerDiagnosticLines
+        };
 
-        _diagnosticsText.HorizontalPadding = 12f;
-        _diagnosticsText.VerticalPadding = 10f;
-        _diagnosticsText.LineSpacingMultiplier = 1.05f;
-        _diagnosticsText.ZOrder = 20_000;
-        _diagnosticsText.Visible = false;
+        _diagnosticsWidget.Display.TextBlock.LineSpacingMultiplier = 1.05f;
+        ConfigureSceneViewerDiagnostics(_diagnosticsWidget);
+        _diagnosticsWidget.SetProfilerZOrder(20_000);
 
         _view.Viewport.TargetRectChanged += OnViewportTargetRectChanged;
     }
@@ -244,16 +200,16 @@ internal sealed class SceneViewerGameHost(
             timeBetweenEvents: 0);
     }
 
+    /// <inheritdoc/>
     protected override void OnEngineInitialized()
     {
         _lastTick = HighResTimer.GetCurrentTick();
         Engine.BeforeBackgroundTasksExecute += BeforeBackgroundTasksExecute;
-        Engine.AfterBackgroundTasksExecute += AfterBackgroundTasksExecute;
-        Engine.CPSCalculated += OnCpsCalculated;
     }
 
     protected override void ConfigureGamepads() { }
 
+    /// <inheritdoc/>
     protected override void UnhookEvents()
     {
         if (Engine.Input.KeyboardEventPoller is not null)
@@ -263,11 +219,9 @@ internal sealed class SceneViewerGameHost(
             Engine.Input.MouseEventPoller.MouseEvent -= OnMouse;
 
         Engine.BeforeBackgroundTasksExecute -= BeforeBackgroundTasksExecute;
-        Engine.AfterBackgroundTasksExecute -= AfterBackgroundTasksExecute;
-        Engine.CPSCalculated -= OnCpsCalculated;
-        RenderSurface.Host.GpuRenderFrameDiagnosticsCalculated -= OnGpuRenderFrameDiagnostics;
-        RenderSurface.Host.GpuRenderSynchronizationDiagnosticsCalculated -= OnGpuRenderSynchronizationDiagnostics;
-        RenderSurface.Adapter.FrameDiagnosticsCalculated -= OnGpuFrameDiagnostics;
+
+        _diagnosticsWidget?.Dispose();
+        _diagnosticsWidget = null;
 
         if (_view is not null)
             _view.Viewport.TargetRectChanged -= OnViewportTargetRectChanged;
@@ -323,24 +277,16 @@ internal sealed class SceneViewerGameHost(
 
     private void OnMouse(GondwanaMouseEventArgs args)
     {
-        if (args.ScrollDelta != 0)
-            Camera?.Zoom(args.CurrentPosition, args.ScrollDelta);
+        if (args.ScrollDelta == 0 ||
+            _diagnosticsWidget?.Display.HitTest(args.CurrentPosition) == true)
+        {
+            return;
+        }
+
+        Camera?.Zoom(args.CurrentPosition, args.ScrollDelta);
     }
 
-    private void BeforeBackgroundTasksExecute()
-    {
-        _backgroundStartTick = HighResTimer.GetCurrentTick();
-        UpdateCamera();
-    }
-
-    private void AfterBackgroundTasksExecute()
-    {
-        long elapsedTicks = Math.Max(0, HighResTimer.GetCurrentTick() - _backgroundStartTick);
-        Interlocked.Add(ref _backgroundTotalTicks, elapsedTicks);
-        Interlocked.Increment(ref _backgroundSampleCount);
-        RecordMaximum(ref _backgroundMaxTicks, elapsedTicks);
-        Volatile.Write(ref _animatingTileCount, Tile.TilesAnimating.Count);
-    }
+    private void BeforeBackgroundTasksExecute() => UpdateCamera();
 
     private void UpdateCamera()
     {
@@ -370,303 +316,77 @@ internal sealed class SceneViewerGameHost(
         foreach (Tile tile in Tile.TilesAnimating.ToArray())
             tile.PauseAnimation = _animationsPaused;
 
-        if (_diagnosticsText?.Visible == true)
-            UpdateDiagnosticsText(_lastCpsSample);
-    }
-
-    private void OnGpuRenderFrameDiagnostics(GpuRenderFrameDiagnostics diagnostics)
-    {
-        lock (_renderDiagnosticsLock)
-        {
-            _sceneRenderSamples++;
-            _sceneRenderTotalMs += diagnostics.TotalRenderMilliseconds;
-            _sceneRenderMaxMs = Math.Max(_sceneRenderMaxMs, diagnostics.TotalRenderMilliseconds);
-            _queryAndSortTotalMs += diagnostics.QueryAndSortMilliseconds;
-            _queryTotalMs += diagnostics.QueryMilliseconds;
-            _sortTotalMs += diagnostics.SortMilliseconds;
-            _drawTotalMs += diagnostics.DrawMilliseconds;
-            _overlayTotalMs += diagnostics.OverlayMilliseconds;
-            _visibleDrawableTotal += diagnostics.DrawableCount;
-            _visibleTileTotal += diagnostics.TileCount;
-            _atlasBatchTotal += diagnostics.AtlasBatchCount;
-            _atlasBatchedTileTotal += diagnostics.AtlasBatchedTileCount;
-
-            foreach (var layer in diagnostics.Layers)
-            {
-                if (!_layerDiagnostics.TryGetValue(layer.LayerIndex, out var window))
-                {
-                    window = new LayerDiagnosticsWindow(layer.LayerIndex, layer.LayerId, layer.ZOrder);
-                    _layerDiagnostics.Add(layer.LayerIndex, window);
-                }
-
-                window.Add(layer);
-            }
-        }
-    }
-
-    private void OnGpuRenderSynchronizationDiagnostics(
-        GpuRenderSynchronizationDiagnostics diagnostics)
-    {
-        lock (_renderDiagnosticsLock)
-        {
-            _gpuSynchronizationSamples++;
-            _replayTotalMs += diagnostics.ReplayMilliseconds;
-            _replayMaxMs = Math.Max(_replayMaxMs, diagnostics.ReplayMilliseconds);
-            _pictureReplayTotalMs += diagnostics.PictureReplayMilliseconds;
-            _backbufferFlushTotalMs += diagnostics.BackbufferFlushMilliseconds;
-            _snapshotTotalMs += diagnostics.SnapshotMilliseconds;
-            _ageTotalMs += diagnostics.SnapshotAgeMilliseconds;
-            _publishedSnapshots = diagnostics.PublishedSnapshots;
-            _droppedSnapshots = diagnostics.DroppedSnapshots;
-            _snapshotSlotsInUse = diagnostics.SnapshotSlotsInUse;
-            _snapshotCommandCount = diagnostics.SnapshotCommandCount;
-            _gpuLockWaitTotalMs += diagnostics.LockWaitMilliseconds;
-            _gpuLockWaitMaxMs = Math.Max(
-                _gpuLockWaitMaxMs,
-                diagnostics.LockWaitMilliseconds);
-            _gpuLockHeldTotalMs += diagnostics.LockHeldMilliseconds;
-            _gpuLockHeldMaxMs = Math.Max(
-                _gpuLockHeldMaxMs,
-                diagnostics.LockHeldMilliseconds);
-        }
-    }
-
-    private void OnGpuFrameDiagnostics(WinFormGpuFrameDiagnostics diagnostics)
-    {
-        lock (_renderDiagnosticsLock)
-        {
-            _gpuCallbackSamples++;
-            _gpuCallbackTotalMs += diagnostics.TotalCallbackMilliseconds;
-            _gpuCallbackMaxMs = Math.Max(_gpuCallbackMaxMs, diagnostics.TotalCallbackMilliseconds);
-            _renderAndSnapshotTotalMs += diagnostics.RenderAndSnapshotMilliseconds;
-            _blitTotalMs += diagnostics.BlitMilliseconds;
-            _flushTotalMs += diagnostics.FlushMilliseconds;
-        }
-    }
-
-    private void OnCpsCalculated(Gondwana.CyclesPerSecondCalculatedEventArgs sample)
-    {
-        if (Engine.IsDisposed)
-            return;
-
-        Engine.EngineDispatcher.Post(() =>
-        {
-            _lastCpsSample = sample;
-            if (_diagnosticsText?.Visible == true)
-                UpdateDiagnosticsText(sample);
-            else
-            {
-                ResetBackgroundDiagnosticsWindow();
-                ResetRenderDiagnosticsWindow();
-            }
-        });
+        if (_diagnosticsWidget?.Visible == true)
+            _diagnosticsWidget.Refresh();
     }
 
     private void ToggleDiagnostics()
     {
-        if (_diagnosticsText is null)
+        if (_diagnosticsWidget is null)
             return;
 
-        _diagnosticsText.Visible = !_diagnosticsText.Visible;
-        if (_diagnosticsText.Visible)
-        {
-            ResetRenderDiagnosticsWindow();
-            RenderSurface.Host.GpuRenderFrameDiagnosticsCalculated += OnGpuRenderFrameDiagnostics;
-            RenderSurface.Host.GpuRenderSynchronizationDiagnosticsCalculated += OnGpuRenderSynchronizationDiagnostics;
-            RenderSurface.Adapter.FrameDiagnosticsCalculated += OnGpuFrameDiagnostics;
-        }
+        if (_diagnosticsWidget.Visible)
+            _diagnosticsWidget.Hide();
         else
-        {
-            RenderSurface.Host.GpuRenderFrameDiagnosticsCalculated -= OnGpuRenderFrameDiagnostics;
-            RenderSurface.Host.GpuRenderSynchronizationDiagnosticsCalculated -= OnGpuRenderSynchronizationDiagnostics;
-            RenderSurface.Adapter.FrameDiagnosticsCalculated -= OnGpuFrameDiagnostics;
-        }
-
-        if (_diagnosticsText.Visible)
-            UpdateDiagnosticsText(_lastCpsSample);
+            _diagnosticsWidget.Show();
     }
 
-    private void UpdateDiagnosticsText(Gondwana.CyclesPerSecondCalculatedEventArgs? sample)
+    private IEnumerable<string> GetSceneViewerDiagnosticLines(
+        ProfilerWidgetExtensionContext context)
     {
-        if (_diagnosticsText is null || _view is null)
-            return;
-
-        (double averageBackgroundMs, double maxBackgroundMs, long backgroundSamples) =
-            ResetBackgroundDiagnosticsWindow();
-        var render = ResetRenderDiagnosticsWindow();
-
-        var viewport = _view.Viewport.TargetRectPx;
-        var cameraPosition = _view.Camera.PositionPx;
-        var backbuffer = RenderSurface.Host.Backbuffer;
-        int layerCount = Scene?.SceneLayers.Count ?? 0;
-        long gridTileCount = Scene?.SceneLayers.Sum(
-            layer => (long)layer.GridColumnCount * layer.GridRowCount) ?? 0L;
-
-        string gpuFps = sample?.GpuFps is double gpu
-            ? gpu.ToString("0.0")
-            : "n/a";
-
-        string msaa = backbuffer is GpuBackbuffer gpuBackbuffer
-            ? $"{gpuBackbuffer.MsaaSampleCount} / {gpuBackbuffer.ActualMsaaSampleCount} / {gpuBackbuffer.MaxSupportedMsaaSampleCount}"
-            : "n/a";
-
-        double sceneRenderAverageMs = Average(render.SceneRenderTotalMs, render.SceneRenderSamples);
-        double renderAndSnapshotAverageMs = Average(render.RenderAndSnapshotTotalMs, render.GpuCallbackSamples);
-        double lockWaitAverageMs = Average(
-            render.GpuLockWaitTotalMs,
-            render.GpuSynchronizationSamples);
-        double lockHeldAverageMs = Average(
-            render.GpuLockHeldTotalMs,
-            render.GpuSynchronizationSamples);
-        var text = new StringBuilder()
-            .AppendLine("Gondwana Scene Viewer Diagnostics  [F3]")
-            .AppendLine(stress is null
-                ? $"Scene: {Path.GetFileName(scenePath)}"
-                : $"Stress: {stress.TileCount:N0} tiles / {stress.Projection}")
-            .AppendLine($"Animations: {(_animationsPaused ? "PAUSED" : "running")}  [F4]")
-            .AppendLine($"CPS: {(sample?.GrossCPS ?? 0):0.0}")
-            .AppendLine($"Engine FPS: {(sample?.NetCPS ?? 0):0.0}")
-            .AppendLine($"GPU FPS: {gpuFps}")
-            .AppendLine($"Background avg/max: {averageBackgroundMs:0.000} / {maxBackgroundMs:0.000} ms  ({backgroundSamples:N0} samples)")
-            .AppendLine($"GL callback avg/max: {Average(render.GpuCallbackTotalMs, render.GpuCallbackSamples):0.000} / {render.GpuCallbackMaxMs:0.000} ms")
-            .AppendLine($"Render+snapshot avg: {renderAndSnapshotAverageMs:0.000} ms")
-            .AppendLine($"GL lock wait avg/max: {lockWaitAverageMs:0.000} / {render.GpuLockWaitMaxMs:0.000} ms")
-            .AppendLine($"GL lock held avg/max: {lockHeldAverageMs:0.000} / {render.GpuLockHeldMaxMs:0.000} ms")
-            .AppendLine($"Snapshot build avg/max: {sceneRenderAverageMs:0.000} / {render.SceneRenderMaxMs:0.000} ms")
-            .AppendLine($"Build query / sort avg: {Average(render.QueryTotalMs, render.SceneRenderSamples):0.000} / {Average(render.SortTotalMs, render.SceneRenderSamples):0.000} ms")
-            .AppendLine($"Command record avg: {Average(render.DrawTotalMs, render.SceneRenderSamples):0.000} ms")
-            .AppendLine($"Overlay record avg: {Average(render.OverlayTotalMs, render.SceneRenderSamples):0.000} ms")
-            .AppendLine($"GL replay total avg/max: {Average(render.ReplayTotalMs, render.GpuSynchronizationSamples):0.000} / {render.ReplayMaxMs:0.000} ms")
-            .AppendLine($"  Picture replay avg: {Average(render.PictureReplayTotalMs, render.GpuSynchronizationSamples):0.000} ms")
-            .AppendLine($"  Backbuffer flush avg: {Average(render.BackbufferFlushTotalMs, render.GpuSynchronizationSamples):0.000} ms")
-            .AppendLine($"  GPU snapshot avg: {Average(render.SnapshotTotalMs, render.GpuSynchronizationSamples):0.000} ms")
-            .AppendLine($"Snapshot age avg: {Average(render.AgeTotalMs, render.GpuSynchronizationSamples):0.000} ms")
-            .AppendLine($"Published / dropped / slots: {render.PublishedSnapshots:N0} / {render.DroppedSnapshots:N0} / {render.SnapshotSlotsInUse}/3  commands: {render.SnapshotCommandCount:N0}")
-            .AppendLine($"Blit avg: {Average(render.BlitTotalMs, render.GpuCallbackSamples):0.000} ms")
-            .AppendLine($"Final GL flush avg: {Average(render.FlushTotalMs, render.GpuCallbackSamples):0.000} ms")
-            .AppendLine($"Visible drawables/tiles avg: {Average(render.VisibleDrawableTotal, render.SceneRenderSamples):0.0} / {Average(render.VisibleTileTotal, render.SceneRenderSamples):0.0}")
-            .AppendLine($"Atlas batches / tiles avg: {Average(render.AtlasBatchTotal, render.SceneRenderSamples):0.0} / {Average(render.AtlasBatchedTileTotal, render.SceneRenderSamples):0.0}")
-            .AppendLine($"Animating tiles: {Volatile.Read(ref _animatingTileCount):N0}")
-            .AppendLine($"Layers / grid cells: {layerCount:N0} / {gridTileCount:N0}")
-            .AppendLine($"Camera: {cameraPosition.X:0.0}, {cameraPosition.Y:0.0} px")
-            .AppendLine($"Zoom: {_view.Viewport.Zoom:0.000}x")
-            .AppendLine($"Viewport / backbuffer: {viewport.Width}x{viewport.Height} / {backbuffer.Width}x{backbuffer.Height}")
-            .AppendLine($"Target FPS / VSync: {Engine.Configuration.TargetFPS} / {(Engine.Configuration.VSync ? "on" : "off")}")
-            .AppendLine($"MSAA requested / actual / max: {msaa}");
-
-        if (render.Layers.Count > 0)
-        {
-            text.AppendLine("Layers (avg query / draw ms; drawables / tiles):");
-            foreach (var layer in render.Layers.Take(MaxDiagnosticLayers))
-            {
-                text.AppendLine(
-                    $"  L{layer.LayerIndex} z{layer.ZOrder} {layer.TileWidth}x{layer.TileHeight} " +
-                    $"xform={layer.TransformedTileCount}: " +
-                    $"{Average(layer.QueryTotalMs, layer.Samples):0.000} / " +
-                    $"{Average(layer.DrawTotalMs, layer.Samples):0.000}; " +
-                    $"{Average(layer.DrawableTotal, layer.Samples):0.0} / " +
-                    $"{Average(layer.TileTotal, layer.Samples):0.0}");
-            }
-
-            if (render.Layers.Count > MaxDiagnosticLayers)
-                text.AppendLine($"  ... {render.Layers.Count - MaxDiagnosticLayers} more layer(s)");
-        }
-
-        _diagnosticsText.SetText(text.ToString().TrimEnd());
+        yield return stress is null
+            ? $"Scene: {Path.GetFileName(scenePath)}"
+            : $"Stress: {stress.TileCount:N0} tiles / {stress.Projection}";
+        yield return $"Animations: {(_animationsPaused ? "PAUSED" : "running")}  [F4]";
+        yield return $"GPU FPS (presentation.count): {GetPresentationRate(context)}";
     }
 
-    private (double AverageMs, double MaxMs, long Samples) ResetBackgroundDiagnosticsWindow()
+    private static string GetPresentationRate(ProfilerWidgetExtensionContext context)
     {
-        long totalTicks = Interlocked.Exchange(ref _backgroundTotalTicks, 0);
-        long maxTicks = Interlocked.Exchange(ref _backgroundMaxTicks, 0);
-        long samples = Interlocked.Exchange(ref _backgroundSampleCount, 0);
+        TelemetrySnapshot? snapshot = context.Snapshot;
+        if (snapshot is null || snapshot.ElapsedSeconds <= 0d)
+            return "n/a";
 
-        if (samples <= 0)
-            return (0, 0, 0);
+        long? renderSourceId = context.RenderSurfaceHost.Telemetry?.Id;
+        TelemetrySourceSnapshot? renderSource = snapshot.Sources
+            .FirstOrDefault(source => source.Id == renderSourceId);
 
-        double millisecondsPerTick = 1000d / HighResTimer.TicksPerSecond;
-        return (
-            totalTicks * millisecondsPerTick / samples,
-            maxTicks * millisecondsPerTick,
-            samples);
+        return renderSource?.Metrics.TryGetValue("presentation.count", out var summary) == true &&
+            summary.Availability == TelemetryAvailability.Available
+                ? (summary.Count / snapshot.ElapsedSeconds).ToString("0.0")
+                : "n/a";
     }
 
-    private RenderDiagnosticsSnapshot ResetRenderDiagnosticsWindow()
+    private static void ConfigureSceneViewerDiagnostics(ProfilerWidget widget)
     {
-        lock (_renderDiagnosticsLock)
-        {
-            var layers = _layerDiagnostics.Values
-                .OrderBy(layer => layer.LayerIndex)
-                .Select(layer => layer.ToSnapshot())
-                .ToArray();
+        widget.MeasurementVisibilityMode = ProfilerMeasurementVisibilityMode.Selected;
 
-            var snapshot = new RenderDiagnosticsSnapshot(
-                _sceneRenderSamples,
-                _sceneRenderTotalMs,
-                _sceneRenderMaxMs,
-                _queryAndSortTotalMs,
-                _queryTotalMs,
-                _sortTotalMs,
-                _drawTotalMs,
-                _overlayTotalMs,
-                _visibleDrawableTotal,
-                _visibleTileTotal,
-                _atlasBatchTotal,
-                _atlasBatchedTileTotal,
-                _gpuCallbackSamples,
-                _gpuCallbackTotalMs,
-                _gpuCallbackMaxMs,
-                _renderAndSnapshotTotalMs,
-                _blitTotalMs,
-                _flushTotalMs,
-                _gpuSynchronizationSamples,
-                _gpuLockWaitTotalMs,
-                _gpuLockWaitMaxMs,
-                _gpuLockHeldTotalMs,
-                _gpuLockHeldMaxMs,
-                layers,
-                _replayTotalMs,
-                _replayMaxMs,
-                _pictureReplayTotalMs,
-                _backbufferFlushTotalMs,
-                _snapshotTotalMs,
-                _ageTotalMs,
-                _publishedSnapshots,
-                _droppedSnapshots,
-                _snapshotSlotsInUse,
-                _snapshotCommandCount);
+        string[] defaultMeasurements =
+        [
+            "cycle.cpu.ms",
+            "background.cpu.ms",
+            "foreground.cpu.ms",
+            "build.cpu.ms",
+            "query.cpu.ms",
+            "sort.cpu.ms",
+            "record.cpu.ms",
+            "overlay.cpu.ms",
+            "visible.drawables",
+            "visible.tiles",
+            "atlas.batches",
+            "atlas.tiles",
+            "replay.cpu.ms",
+            "presentation.cpu.ms",
+            "render.snapshot.cpu.ms",
+            "snapshot.age.ms",
+            "mailbox.published.lifetime",
+            "mailbox.dropped.lifetime",
+            "mailbox.slots",
+            "layers.omitted"
+        ];
 
-            _sceneRenderSamples = 0;
-            _sceneRenderTotalMs = 0;
-            _sceneRenderMaxMs = 0;
-            _queryAndSortTotalMs = 0;
-            _queryTotalMs = 0;
-            _sortTotalMs = 0;
-            _drawTotalMs = 0;
-            _overlayTotalMs = 0;
-            _visibleDrawableTotal = 0;
-            _visibleTileTotal = 0;
-            _atlasBatchTotal = 0;
-            _atlasBatchedTileTotal = 0;
-            _gpuCallbackSamples = 0;
-            _gpuCallbackTotalMs = 0;
-            _gpuCallbackMaxMs = 0;
-            _renderAndSnapshotTotalMs = 0;
-            _blitTotalMs = 0;
-            _flushTotalMs = 0;
-            _gpuSynchronizationSamples = 0;
-            _replayTotalMs = _replayMaxMs = _ageTotalMs = 0;
-            _pictureReplayTotalMs = 0;
-            _backbufferFlushTotalMs = 0;
-            _snapshotTotalMs = 0;
-            _gpuLockWaitTotalMs = 0;
-            _gpuLockWaitMaxMs = 0;
-            _gpuLockHeldTotalMs = 0;
-            _gpuLockHeldMaxMs = 0;
-            _layerDiagnostics.Clear();
-
-            return snapshot;
-        }
+        foreach (string metricKey in defaultMeasurements)
+            widget.SetMeasurementVisible(metricKey, true);
     }
 
     private void OnViewportTargetRectChanged(ViewportResizedEventArgs args)
@@ -676,8 +396,12 @@ internal sealed class SceneViewerGameHost(
 
         Engine.EngineDispatcher.Post(() =>
         {
-            if (_diagnosticsText is not null)
-                _diagnosticsText.ScreenBounds = GetDiagnosticsBounds(args.NewRect);
+            if (_diagnosticsWidget is not null)
+            {
+                Rectangle bounds = GetDiagnosticsBounds(args.NewRect);
+                _diagnosticsWidget.SetPosition(bounds.X, bounds.Y);
+                _diagnosticsWidget.Size = bounds.Size;
+            }
         });
     }
 
@@ -697,25 +421,6 @@ internal sealed class SceneViewerGameHost(
             height);
     }
 
-    private static double Average(double total, long count) =>
-        count > 0 ? total / count : 0d;
-
-    private static double Average(long total, long count) =>
-        count > 0 ? (double)total / count : 0d;
-
-    private static void RecordMaximum(ref long target, long value)
-    {
-        long current = Volatile.Read(ref target);
-        while (value > current)
-        {
-            long observed = Interlocked.CompareExchange(ref target, value, current);
-            if (observed == current)
-                return;
-
-            current = observed;
-        }
-    }
-
     protected override void OnDisposed()
     {
         _stressTilesheet?.Dispose();
@@ -728,108 +433,23 @@ internal sealed class SceneViewerGameHost(
         (Engine.Input.KeyboardEventPoller?.Adapter as IDisposable)?.Dispose();
     }
 
-    private sealed class LayerDiagnosticsWindow(int layerIndex, string layerId, int zOrder)
-    {
-        internal int LayerIndex { get; } = layerIndex;
-        internal string LayerId { get; } = layerId;
-        internal int ZOrder { get; } = zOrder;
-        internal int TransformedTileCount { get; private set; }
-        internal int TileWidth { get; private set; }
-        internal int TileHeight { get; private set; }
-        internal long Samples { get; private set; }
-        internal double QueryTotalMs { get; private set; }
-        internal double DrawTotalMs { get; private set; }
-        internal long DrawableTotal { get; private set; }
-        internal long TileTotal { get; private set; }
-
-        internal void Add(GpuLayerRenderDiagnostics diagnostics)
-        {
-            Samples++;
-            QueryTotalMs += diagnostics.QueryAndSortMilliseconds;
-            DrawTotalMs += diagnostics.DrawMilliseconds;
-            DrawableTotal += diagnostics.DrawableCount;
-            TileTotal += diagnostics.TileCount;
-            TransformedTileCount = diagnostics.TransformedTileCount;
-            TileWidth = diagnostics.TileWidth;
-            TileHeight = diagnostics.TileHeight;
-        }
-
-        internal LayerDiagnosticsSnapshot ToSnapshot() =>
-            new(
-                LayerIndex,
-                LayerId,
-                ZOrder,
-                Samples,
-                QueryTotalMs,
-                DrawTotalMs,
-                DrawableTotal,
-                TileTotal,
-                TransformedTileCount,
-                TileWidth,
-                TileHeight);
-    }
-
-    private sealed record LayerDiagnosticsSnapshot(
-        int LayerIndex,
-        string LayerId,
-        int ZOrder,
-        long Samples,
-        double QueryTotalMs,
-        double DrawTotalMs,
-        long DrawableTotal,
-        long TileTotal,
-        int TransformedTileCount,
-        int TileWidth,
-        int TileHeight);
-
-    private sealed record RenderDiagnosticsSnapshot(
-        long SceneRenderSamples,
-        double SceneRenderTotalMs,
-        double SceneRenderMaxMs,
-        double QueryAndSortTotalMs,
-        double QueryTotalMs,
-        double SortTotalMs,
-        double DrawTotalMs,
-        double OverlayTotalMs,
-        long VisibleDrawableTotal,
-        long VisibleTileTotal,
-        long AtlasBatchTotal,
-        long AtlasBatchedTileTotal,
-        long GpuCallbackSamples,
-        double GpuCallbackTotalMs,
-        double GpuCallbackMaxMs,
-        double RenderAndSnapshotTotalMs,
-        double BlitTotalMs,
-        double FlushTotalMs,
-        long GpuSynchronizationSamples,
-        double GpuLockWaitTotalMs,
-        double GpuLockWaitMaxMs,
-        double GpuLockHeldTotalMs,
-        double GpuLockHeldMaxMs,
-        IReadOnlyList<LayerDiagnosticsSnapshot> Layers,
-        double ReplayTotalMs,
-        double ReplayMaxMs,
-        double PictureReplayTotalMs,
-        double BackbufferFlushTotalMs,
-        double SnapshotTotalMs,
-        double AgeTotalMs,
-        long PublishedSnapshots,
-        long DroppedSnapshots,
-        int SnapshotSlotsInUse,
-        int SnapshotCommandCount);
-
     // Viewer startup must not load an unrelated game config/state from the cwd.
-    // Run uncapped and without VSync so diagnostics expose actual Engine/GPU throughput.
+    // Keep Engine foreground work uncapped and preserve the viewer's GPU VSync default.
+    /// <summary>Provides standalone viewer defaults without persisting unrelated game configuration.</summary>
     internal sealed class ViewerConfiguration : IEngineConfigurationStore
     {
+        /// <inheritdoc/>
         public EngineConfiguration Configuration { get; } = new()
         {
             TargetFPS = 0,
             VSync = true
         };
 
+        /// <inheritdoc/>
         public bool AutoSave { get; set; }
+        /// <inheritdoc/>
         public void Save() { }
+        /// <inheritdoc/>
         public void Dispose() { }
     }
 }

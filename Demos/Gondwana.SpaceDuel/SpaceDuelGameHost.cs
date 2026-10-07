@@ -56,6 +56,8 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
     private TextBlock _messageText = null!;
     private ParticleSurface _particleSurface = null!;
     private TextBlock _performanceText = null!;
+    private IDisposable? _profilerRequest;
+    private double _lastPerformanceSnapshotEnd;
 
     private long _lastUpdateTick;
     private float _frameDelta;
@@ -275,17 +277,42 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
             .UseShadow();
 
         _performanceText.ZOrder = 1200;
-
-        Engine.CPSCalculated += OnCpsCalculated;
     }
 
-    private void OnCpsCalculated(CyclesPerSecondCalculatedEventArgs e)
+    private void UpdatePerformanceText()
     {
-        double fps = e.GpuFps ?? e.NetCPS;
+        var snapshot = Engine.Profiler.GetLatestSnapshot();
+        if (snapshot is null || snapshot.EndedSeconds <= _lastPerformanceSnapshotEnd)
+            return;
+
+        _lastPerformanceSnapshotEnd = snapshot.EndedSeconds;
+
+        var engineSource = snapshot.Sources.FirstOrDefault(source => source.Backend == "Core");
+        var renderSource = snapshot.Sources.FirstOrDefault(
+            source => source.Id == RenderSurface.Host.Telemetry?.Id);
+
+        double? cps = GetRate(engineSource, "cycle.cpu.ms", snapshot.ElapsedSeconds);
+        double? fps =
+            GetRate(renderSource, "presentation.count", snapshot.ElapsedSeconds)
+            ?? GetRate(engineSource, "foreground.cpu.ms", snapshot.ElapsedSeconds);
 
         _performanceText.SetText(
-            $"CPS {e.GrossCPS:0.0}   FPS {fps:0.0}");
+            $"CPS {FormatRate(cps)}   FPS {FormatRate(fps)}");
     }
+
+    private static double? GetRate(
+        Diagnostics.TelemetrySourceSnapshot? source,
+        string metricKey,
+        double elapsedSeconds)
+    {
+        return elapsedSeconds > 0d &&
+            source?.Metrics.TryGetValue(metricKey, out var metric) == true &&
+            metric.Availability == Diagnostics.TelemetryAvailability.Available
+                ? metric.Count / elapsedSeconds
+                : null;
+    }
+
+    private static string FormatRate(double? rate) => rate?.ToString("0.0") ?? "n/a";
 
     protected override void OnKeyboardAdapterInitialized()
     {
@@ -299,6 +326,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
     protected override void OnEngineInitialized()
     {
         _lastUpdateTick = HighResTimer.GetCurrentTick();
+        _profilerRequest = Engine.Profiler.Start();
         Engine.BeforeBackgroundTasksExecute += BeforeBackgroundTasksExecute;
         Engine.AfterBackgroundTasksExecute += AfterBackgroundTasksExecute;
     }
@@ -310,7 +338,8 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
 
         Engine.BeforeBackgroundTasksExecute -= BeforeBackgroundTasksExecute;
         Engine.AfterBackgroundTasksExecute -= AfterBackgroundTasksExecute;
-        Engine.CPSCalculated -= OnCpsCalculated;
+        _profilerRequest?.Dispose();
+        _profilerRequest = null;
     }
 
     private static Keys[] MonitoredKeys =>
@@ -439,6 +468,8 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
 
     private void AfterBackgroundTasksExecute()
     {
+        UpdatePerformanceText();
+
         if (_gameState != GameState.Playing)
             return;
 

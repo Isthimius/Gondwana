@@ -55,7 +55,7 @@ context loss is not permanent disposal.
 
 ## Diagnostics
 
-Scene Viewer F3 subscribes to render diagnostics only while visible. Its measurements distinguish:
+The saved-scene Scene Viewer's **F3 diagnostics overlay** (used by the `.gscn` editor/Studio View Scene workflow or direct Scene Viewer launches) holds a `ProfilerWidget` collection request only while visible. F3 is a Scene Viewer control, not a global Engine hotkey. Its measurements distinguish:
 
 - Gross CPS: simulation cycles.
 - Engine FPS: foreground production cadence.

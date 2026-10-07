@@ -34,6 +34,7 @@
 	</ItemGroup>
 
     <ItemGroup>
+        <Compile Include="../../docs/examples/RuntimeTelemetryExample.cs" Link="Examples/RuntimeTelemetryExample.cs" />
         <!-- Exercise pure sample processing without a Windows audio device or platform dependency. -->
         <Compile Include="../../Gondwana.Audio.NAudio/VariableSpeedSampleProvider.cs" Link="Audio/VariableSpeedSampleProvider.cs" />
         <Compile Include="../../Gondwana.Audio.NAudio/NAudioPlaybackHandle.cs" Link="Audio/NAudioPlaybackHandle.cs" />

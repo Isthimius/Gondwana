@@ -28,7 +28,7 @@ dotnet run --project Tooling/Gondwana.Tooling.SceneViewer.WinForms -c Release --
 | Shift | Faster camera |
 | Mouse wheel | Zoom |
 | Home | Restore initial camera position and zoom |
-| F3 | Toggle runtime diagnostics |
+| F3 | Toggle this Scene Viewer's runtime diagnostics overlay |
 | F4 | Pause/resume all active tile animations |
 | Esc | Close viewer |
 
@@ -38,20 +38,29 @@ The window is resizable. Gondwana's current GPU host preserves the initial logic
 
 ### Diagnostics
 
-Press **F3** to toggle a black, white-text diagnostics overlay in the upper-left of the View. The overlay is hidden by default and reports sampled runtime information without replacing the normal Gondwana rendering path:
+Press **F3** to toggle this Scene Viewer's black, white-text diagnostics overlay in the upper-left of the View. This is a Scene Viewer control—including when the viewer was launched through **View Scene** from the `.gscn` editor or Studio—not a global Gondwana Engine hotkey. The overlay is hidden by default and reports sampled runtime information without replacing the normal Gondwana rendering path.
 
-- gross engine CPS, engine FPS, and actual GPU FPS
+The overlay is implemented with `Gondwana.Widgets.Hud.ProfilerWidget`. It enables the widget's generic Scene/View/backbuffer/configuration/MSAA context and uses `AdditionalLinesProvider` for the viewer-specific scene/stress, F4 animation-state, and explicit `GPU FPS (presentation.count)` summary lines. This makes the Scene Viewer a real runtime consumer of the same diagnostics widget available to games.
+
+The Scene Viewer starts with a curated measurement set rather than every low-level/per-layer diagnostic. Use the built-in **Metrics...** control to enable or disable any individual source or measurement while the viewer is running. Hover a displayed metric to see its definition; **Hover definitions** in the same selector toggles that behavior. Mouse-wheel input over the diagnostics panel scrolls diagnostics instead of zooming the scene.
+
+It reports:
+
+- engine-cycle and foreground-production rates plus an explicit actual GPU FPS line
 - average and maximum background-work time across the sample window
-- average and maximum WinForms GL callback time
-- render+snapshot, scene-render, drawable query/sort, draw, overlay, blit, and flush timings
-- average visible drawable/tile counts
-- per-layer query/draw timings, drawable/tile counts, tile size, and transformed-tile count
+- render build/query/sort/record/overlay and GPU replay/presentation timings
+- average visible drawable/tile and atlas-batch counts
+- snapshot age and mailbox publication/drop/occupancy diagnostics
 - active animating tile count and pause state
 - scene layer count and total grid-cell count
 - camera world position and viewport zoom
 - viewport and logical backbuffer dimensions
 - target FPS and VSync state
 - requested, actual, and maximum supported MSAA sample counts
+
+Lower-level diagnostics—including picture/flush stages, command counts, and detailed
+per-layer query/record/drawable/tile/dimension/Z/transform measurements—remain
+available from **Metrics...** without being shown by default.
 
 The background timing spans Gondwana's normal background phase from `BeforeBackgroundTasksExecute` through `AfterBackgroundTasksExecute`, so it includes input polling, tile animation, sprite movement, collision resolution, and camera updates. GPU diagnostics are collected only while a subscriber is attached and break the GL frame into query/sort, draw, overlay, snapshot/finalize, blit, and flush work. Press **F4** to pause or resume all currently active tile animations without editing GANI files; paused tiles stay in the active animation list, making this useful for isolating frame-change/render cost from the cost of polling animators.
 

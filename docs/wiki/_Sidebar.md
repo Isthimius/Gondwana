@@ -103,6 +103,7 @@
 - <strong>Hud</strong>
   - [[HealthBarWidget|Widgets---HealthBarWidget]]
   - [[NameTagWidget|Widgets---NameTagWidget]]
+  - [[ProfilerWidget|Widgets---ProfilerWidget]]
 
 - <strong>Layout</strong>
   - [[StackPanelWidget|Widgets---StackPanelWidget]]
@@ -114,6 +115,7 @@
   - [[PopupWidget|Widgets---PopupWidget]]
   - [[SplashScreen|Widgets---SplashScreen]]
   - [[ToastWidget|Widgets---ToastWidget]]
+  - [[TooltipWidget|Widgets---TooltipWidget]]
 
 </details>
 
