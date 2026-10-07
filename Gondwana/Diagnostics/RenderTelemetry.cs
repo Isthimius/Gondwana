@@ -4,7 +4,7 @@ namespace Gondwana.Diagnostics;
 /// <summary>Neutral fixed render measurement definitions shared by runtime and platform adapters.</summary>
 internal static class RenderTelemetry
 {
-    /// <summary>Fixed neutral names; CPU durations are milliseconds, remaining values are counts or gauges.</summary>
+    /// <summary>Fixed neutral names; per-render observations are samples, current state is gauge data, and cumulative counters are lifetime values.</summary>
     internal static readonly string[] Metrics =
     [
         "build.cpu.ms", "query.cpu.ms", "sort.cpu.ms", "record.cpu.ms", "overlay.cpu.ms",
