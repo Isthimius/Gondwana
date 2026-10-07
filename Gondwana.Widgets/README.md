@@ -56,9 +56,14 @@ Exact usage depends on the specific widget type being used.
 
 `ProfilerWidget` displays detached `Engine.Instance.Profiler` measurements in-game.
 It can filter individual sources/measurements, optionally include current Scene/View/
-backbuffer/configuration/MSAA context, and accept application-specific lines through
-`AdditionalLinesProvider`. The saved-scene Scene Viewer uses the same widget for its
-F3 diagnostics overlay, providing a built-in real-world consumer of the API.
+backbuffer/configuration/MSAA context, accept application-specific lines through
+`AdditionalLinesProvider`, show hover definitions, and expose a built-in Metrics
+selector for runtime visibility changes. The saved-scene Scene Viewer uses the same
+widget for its F3 diagnostics overlay, providing a built-in real-world consumer of
+the API.
+
+`TooltipWidget` is also available as a reusable non-interactive view overlay for
+contextual pointer help outside the profiler.
 
 See the [ProfilerWidget guide](https://github.com/Isthimius/Gondwana/wiki/Widgets---ProfilerWidget).
 
