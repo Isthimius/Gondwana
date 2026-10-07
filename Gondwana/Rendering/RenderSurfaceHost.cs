@@ -424,6 +424,16 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
         {
             target.ClearRect(new Rectangle(0, 0, target.Width, target.Height));
             Scene.FullRefreshNeeded = false;
+
+            if (telemetryGeneration != 0 && destination is not RecordingBackbuffer)
+            {
+                long diagnosticsEndTick = HighResTimer.GetCurrentTick();
+                Telemetry!.Record(
+                    telemetryGeneration,
+                    "build.cpu.ms",
+                    HighResTimer.GetDuration(diagnosticsStartTick, diagnosticsEndTick) * 1000d);
+            }
+
             return;
         }
 
@@ -583,7 +593,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
                             if (telemetryGeneration != 0 && i < Diagnostics.RenderTelemetry.Layers.Length)
                             {
                                 var keys = Diagnostics.RenderTelemetry.Layers[i];
-                                Telemetry!.Record(telemetryGeneration, keys[0], HighResTimer.GetDuration(0, layerQueryAndSortTicks) * 1000d);
+                                Telemetry!.Record(telemetryGeneration, keys[0], HighResTimer.GetDuration(0, layerQueryTicks) * 1000d);
                                 Telemetry.Record(telemetryGeneration, keys[1], HighResTimer.GetDuration(0, layerDrawTicks) * 1000d);
                                 Telemetry.Record(telemetryGeneration, keys[2], layerDrawableCount);
                                 Telemetry.Record(telemetryGeneration, keys[3], layerTileCount);
