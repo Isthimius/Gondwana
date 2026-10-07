@@ -1,8 +1,7 @@
 Gondwana is designed to be inspectable while it runs. The engine exposes lifecycle events, render-surface events, runtime performance samples, logging infrastructure, and visual overlays that can help narrow a problem to a specific stage of the engine.
 
 For opt-in collection, detached snapshots, and bounded history usable by ordinary
-applications, see [Runtime Telemetry](Runtime-Telemetry). SceneViewer F3 consumes
-that same service; legacy diagnostic events remain independently available.
+applications, see [Runtime Telemetry](Runtime-Telemetry). The saved-scene Scene Viewer's F3 diagnostics overlay—used by the `.gscn` editor/Studio workflow or direct Scene Viewer launches—consumes that same service; F3 is not a general Engine hotkey. Legacy diagnostic events remain independently available.
 
 The most useful debugging question is usually not simply *“Why is this wrong?”* It is:
 
@@ -133,7 +132,7 @@ diagnostics.Show();
 ```
 
 Showing the widget acquires its own profiler collection request. Hiding or disposing
-it releases only that request, so it can coexist with Scene Viewer F3 or another
+it releases only that request, so it can coexist with the saved-scene Scene Viewer's F3 diagnostics overlay or another
 telemetry consumer. Individual measurements and entire sources can be shown or hidden,
 and selected mode can be used as an explicit allow-list when a compact diagnostic view
 is preferable.
@@ -141,9 +140,9 @@ is preferable.
 See [[Runtime Telemetry]] and [[ProfilerWidget|Widgets---ProfilerWidget]] for the
 measurement definitions and widget options.
 
-### Scene Viewer F3 diagnostics
+### Scene Viewer F3 diagnostics (`.gscn` / Studio tooling)
 
-The Scene Viewer provides a built-in F3 diagnostics overlay for separating desktop GPU producer and consumer costs. It reports:
+The saved-scene **Scene Viewer** provides a built-in **F3 diagnostics overlay** for separating desktop GPU producer and consumer costs. This is the viewer opened by the standalone `.gscn` Scene editor/Studio **View Scene** workflow (and it can also be launched directly); F3 is therefore a Scene Viewer control, not a global Gondwana diagnostic shortcut. The overlay is implemented with `ProfilerWidget`, using its generic runtime-context options plus an extension callback for viewer-specific lines. It reports:
 
 - Gross CPS and Engine foreground FPS
 - GPU presentation FPS
