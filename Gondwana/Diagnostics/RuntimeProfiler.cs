@@ -13,6 +13,7 @@ public sealed class RuntimeProfiler : IDisposable
     private readonly Func<double> _clock;
     private readonly Dictionary<long, TelemetrySource> _sources = [];
     private Queue<TelemetrySnapshot> _history = new(120);
+    private TelemetrySnapshot? _latestSnapshot;
     private TelemetryOptions _options = new();
     private long _nextId, _generation;
     private int _requests;
@@ -105,7 +106,7 @@ public sealed class RuntimeProfiler : IDisposable
         lock (_sync)
         {
             Advance();
-            return _history.LastOrDefault();
+            return _latestSnapshot;
         }
     }
 
@@ -134,6 +135,7 @@ public sealed class RuntimeProfiler : IDisposable
             _generation++;
             _sources.Clear();
             _history.Clear();
+            _latestSnapshot = null;
         }
     }
 
@@ -203,6 +205,7 @@ public sealed class RuntimeProfiler : IDisposable
     {
         _generation++;
         _history.Clear();
+        _latestSnapshot = null;
         _started = _clock();
         ClearAccumulators();
         foreach (var source in _sources.Values)
@@ -227,7 +230,8 @@ public sealed class RuntimeProfiler : IDisposable
         var sources = _sources.Values.Select(source => new TelemetrySourceSnapshot(source.Id, source.Name, source.Backend,
             new ReadOnlyDictionary<string, TelemetrySummary>(source.Metrics.ToDictionary(p => p.Key, p => p.Value.Snapshot())))).ToArray();
         if (_history.Count == _options.HistoryCapacity) _history.Dequeue();
-        _history.Enqueue(new(_generation, _started, now, Array.AsReadOnly(sources), _truncated));
+        _latestSnapshot = new(_generation, _started, now, Array.AsReadOnly(sources), _truncated);
+        _history.Enqueue(_latestSnapshot);
         ClearAccumulators();
         _started = now;
     }

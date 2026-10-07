@@ -129,6 +129,7 @@ public sealed class RuntimeProfilerTests
         first.Dispose();
         Assert.True(profiler.IsCollecting);
         profiler.Reset();
+        Assert.Null(profiler.GetLatestSnapshot());
         source.Record(epoch, "update.cpu.ms", 1000);
         clock = .5;
         Assert.Equal(TelemetryAvailability.NotYetSampled,
