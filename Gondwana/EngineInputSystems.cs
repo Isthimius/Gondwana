@@ -74,6 +74,7 @@ public sealed class EngineInputSystems
                 configuration.GamepadConnectionUpdateFrequencyHz))
         {
             manager.UpdateConnections();
+            GamepadEventPoller.Instance?.RefreshAdapters(manager.ConnectedAdapters);
             _lastGamepadConnectionUpdateTick = tick;
         }
 
