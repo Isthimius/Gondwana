@@ -48,6 +48,7 @@ public sealed class GamepadInputTests
         var manager = new TestGamepadManager();
         var configuration = new EngineConfiguration
         {
+            TargetFPS = 0,
             GamepadConnectionUpdateFrequencyHz = 0.2d,
             GamepadPollFrequencyHz = 2d
         };
