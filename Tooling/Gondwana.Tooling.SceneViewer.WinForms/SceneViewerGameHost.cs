@@ -1,13 +1,11 @@
-using System.Text;
 using Gondwana.Configuration;
 using Gondwana.Drawing;
-using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Input.Keyboard;
-using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Scenes;
 using Gondwana.Timers;
+using Gondwana.Widgets.Hud;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Rendering;
 using SkiaSharp;
@@ -26,17 +24,14 @@ internal sealed class SceneViewerGameHost(
     private const int DiagnosticsMargin = 12;
     private const int DiagnosticsWidth = 700;
     private const int DiagnosticsHeight = 760;
-    private const int MaxDiagnosticLayers = 8;
 
     private readonly HashSet<Keys> _keysDown = [];
     private long _lastTick;
-    private long _lastDiagnosticsTick;
-    private IDisposable? _telemetryRequest;
     private bool _animationsPaused;
     private Tilesheet? _stressTilesheet;
     private SceneLayer? _stressLayer;
     private GondwanaView? _view;
-    private TextBlock? _diagnosticsText;
+    private ProfilerWidget? _diagnosticsWidget;
 
 
     internal ViewerCameraController? Camera { get; private set; }
@@ -167,21 +162,20 @@ internal sealed class SceneViewerGameHost(
         if (_view is null)
             return;
 
-        _diagnosticsText = new TextBlock(
-                RenderSurface.Host,
-                _view,
-                GetDiagnosticsBounds(_view.Viewport.TargetRectPx),
-                "scene-viewer-diagnostics")
-            .SetFont(SKTypeface.Default, 15f)
-            .SetColors(SKColors.White, new SKColor(0, 0, 0, 102))
-            .SetAlignment(SKTextAlign.Left, TextBlock.VerticalAlign.Top)
-            .EnableWrapping(false);
+        _diagnosticsWidget = new ProfilerWidget(
+            RenderSurface.Host,
+            _view,
+            GetDiagnosticsBounds(_view.Viewport.TargetRectPx),
+            "scene-viewer-diagnostics")
+        {
+            HeaderText = "Gondwana Scene Viewer Diagnostics  [F3]",
+            ContextInfo = ProfilerContextInfo.All,
+            ShowSnapshotMetadata = false,
+            AdditionalLinesProvider = GetSceneViewerDiagnosticLines
+        };
 
-        _diagnosticsText.HorizontalPadding = 12f;
-        _diagnosticsText.VerticalPadding = 10f;
-        _diagnosticsText.LineSpacingMultiplier = 1.05f;
-        _diagnosticsText.ZOrder = 20_000;
-        _diagnosticsText.Visible = false;
+        _diagnosticsWidget.Display.TextBlock.LineSpacingMultiplier = 1.05f;
+        _diagnosticsWidget.SetProfilerZOrder(20_000);
 
         _view.Viewport.TargetRectChanged += OnViewportTargetRectChanged;
     }
@@ -209,8 +203,6 @@ internal sealed class SceneViewerGameHost(
     {
         _lastTick = HighResTimer.GetCurrentTick();
         Engine.BeforeBackgroundTasksExecute += BeforeBackgroundTasksExecute;
-        Engine.AfterBackgroundTasksExecute += AfterBackgroundTasksExecute;
-
     }
 
     protected override void ConfigureGamepads() { }
@@ -225,10 +217,9 @@ internal sealed class SceneViewerGameHost(
             Engine.Input.MouseEventPoller.MouseEvent -= OnMouse;
 
         Engine.BeforeBackgroundTasksExecute -= BeforeBackgroundTasksExecute;
-        Engine.AfterBackgroundTasksExecute -= AfterBackgroundTasksExecute;
-        _telemetryRequest?.Dispose();
-        _telemetryRequest = null;
 
+        _diagnosticsWidget?.Dispose();
+        _diagnosticsWidget = null;
 
         if (_view is not null)
             _view.Viewport.TargetRectChanged -= OnViewportTargetRectChanged;
@@ -290,14 +281,6 @@ internal sealed class SceneViewerGameHost(
 
     private void BeforeBackgroundTasksExecute() => UpdateCamera();
 
-    private void AfterBackgroundTasksExecute()
-    {
-        if (_telemetryRequest is null) return;
-        long now = HighResTimer.GetCurrentTick();
-        if (HighResTimer.GetDuration(_lastDiagnosticsTick, now) < .25) return;
-        _lastDiagnosticsTick = now;
-        UpdateDiagnosticsText();
-    }
     private void UpdateCamera()
     {
         long tick = HighResTimer.GetCurrentTick();
@@ -326,83 +309,32 @@ internal sealed class SceneViewerGameHost(
         foreach (Tile tile in Tile.TilesAnimating.ToArray())
             tile.PauseAnimation = _animationsPaused;
 
-        if (_diagnosticsText?.Visible == true)
-            UpdateDiagnosticsText();
+        if (_diagnosticsWidget?.Visible == true)
+            _diagnosticsWidget.Refresh();
     }
 
     private void ToggleDiagnostics()
     {
-        if (_diagnosticsText is null) return;
-        _diagnosticsText.Visible = !_diagnosticsText.Visible;
-        if (_diagnosticsText.Visible)
-        {
-            _telemetryRequest = Engine.Profiler.Start();
-            UpdateDiagnosticsText();
-        }
+        if (_diagnosticsWidget is null)
+            return;
+
+        if (_diagnosticsWidget.Visible)
+            _diagnosticsWidget.Hide();
         else
-        {
-            _telemetryRequest?.Dispose();
-            _telemetryRequest = null;
-        }
+            _diagnosticsWidget.Show();
     }
 
-    private void UpdateDiagnosticsText()
+    private IEnumerable<string> GetSceneViewerDiagnosticLines(
+        ProfilerWidgetExtensionContext context)
     {
-        if (_diagnosticsText is null || _view is null) return;
-        var snapshot = Engine.Profiler.GetLatestSnapshot();
-        var core = snapshot?.Sources.FirstOrDefault(s => s.Backend == "Core");
-        var render = snapshot?.Sources.FirstOrDefault(s => s.Id == RenderSurface.Host.Telemetry?.Id);
-        string Value(Gondwana.Diagnostics.TelemetrySourceSnapshot? source, string key, bool last = false)
-        {
-            if (source is null || !source.Metrics.TryGetValue(key, out var metric)) return "NotYetSampled";
-            return metric.Availability == Gondwana.Diagnostics.TelemetryAvailability.Available
-                ? (last ? metric.Last : metric.Mean)?.ToString(last ? "0" : key.EndsWith(".ms", StringComparison.Ordinal) ? "0.000" : "0.0") ?? "NotYetSampled"
-                : metric.Availability.ToString();
-        }
-        string Rate(Gondwana.Diagnostics.TelemetrySourceSnapshot? source, string key)
-            => snapshot is { ElapsedSeconds: > 0 } && source?.Metrics.TryGetValue(key, out var metric) == true
-                && metric.Count > 0 ? (metric.Count / snapshot.ElapsedSeconds).ToString("0.0") : "NotYetSampled";
-        string Timing(Gondwana.Diagnostics.TelemetrySourceSnapshot? source, string key)
-            => source?.Metrics.TryGetValue(key, out var metric) == true && metric.Count > 0
-                ? $"{metric.Mean:0.000} / {metric.Maximum:0.000} ms ({metric.Count:N0})" : Value(source, key);
+        _ = context;
 
-        var viewport = _view.Viewport.TargetRectPx;
-        var position = _view.Camera.PositionPx;
-        var backbuffer = RenderSurface.Host.Backbuffer;
-        var text = new StringBuilder()
-            .AppendLine("Gondwana Scene Viewer Diagnostics  [F3]")
-            .AppendLine(stress is null ? $"Scene: {Path.GetFileName(scenePath)}" : $"Stress: {stress.TileCount:N0} tiles / {stress.Projection}")
-            .AppendLine($"Animations: {(_animationsPaused ? "PAUSED" : "running")}  [F4]")
-            .AppendLine($"CPS / foreground / presentation: {Rate(core, "cycle.cpu.ms")} / {Rate(core, "foreground.cpu.ms")} / {Rate(render, "presentation.count")}")
-            .AppendLine($"Background avg/max: {Timing(core, "background.cpu.ms")}")
-            .AppendLine($"GL callback avg/max: {Timing(render, "presentation.cpu.ms")}")
-            .AppendLine($"Render+snapshot avg: {Value(render, "render.snapshot.cpu.ms")} ms")
-            .AppendLine($"GL gate wait / held: {Value(render, "gate.wait.cpu.ms")} / {Value(render, "gate.held.cpu.ms")}")
-            .AppendLine($"Snapshot build avg/max: {Timing(render, "build.cpu.ms")}")
-            .AppendLine($"Build query / sort: {Value(render, "query.cpu.ms")} / {Value(render, "sort.cpu.ms")} ms")
-            .AppendLine($"Command / overlay record: {Value(render, "record.cpu.ms")} / {Value(render, "overlay.cpu.ms")} ms")
-            .AppendLine($"GL replay avg/max: {Timing(render, "replay.cpu.ms")}")
-            .AppendLine($"Picture / backbuffer flush / snapshot: {Value(render, "picture.cpu.ms")} / {Value(render, "backbuffer.flush.cpu.ms")} / {Value(render, "snapshot.cpu.ms")} ms")
-            .AppendLine($"Snapshot age: {Value(render, "snapshot.age.ms")} ms")
-            .AppendLine($"Published / dropped / slots / commands: {Value(render, "mailbox.published.lifetime", true)} / {Value(render, "mailbox.dropped.lifetime", true)} / {Value(render, "mailbox.slots", true)} / {Value(render, "snapshot.commands.approximate", true)}")
-            .AppendLine($"Blit / final flush: {Value(render, "blit.cpu.ms")} / {Value(render, "flush.cpu.ms")} ms")
-            .AppendLine($"Visible draw instances / tiles: {Value(render, "visible.drawables")} / {Value(render, "visible.tiles")}")
-            .AppendLine($"Atlas batches / tiles: {Value(render, "atlas.batches")} / {Value(render, "atlas.tiles")}")
-            .AppendLine($"Animating tiles: {Tile.TilesAnimating.Count:N0}")
-            .AppendLine($"Layers / grid cells: {Scene?.SceneLayers.Count ?? 0} / {Scene?.SceneLayers.Sum(l => (long)l.GridColumnCount * l.GridRowCount) ?? 0}")
-            .AppendLine($"Camera: {position.X:0.0}, {position.Y:0.0} px; zoom: {_view.Viewport.Zoom:0.000}x")
-            .AppendLine($"Viewport / backbuffer: {viewport.Width}x{viewport.Height} / {backbuffer.Width}x{backbuffer.Height}")
-            .AppendLine($"Target FPS / VSync: {Engine.Configuration.TargetFPS} / {Engine.Configuration.VSync}");
-        if (backbuffer is GpuBackbuffer gpu)
-            text.AppendLine($"MSAA requested / actual / max: {gpu.MsaaSampleCount} / {gpu.ActualMsaaSampleCount} / {gpu.MaxSupportedMsaaSampleCount}");
-        for (int i = 0; i < MaxDiagnosticLayers; i++)
-        {
-            if (render?.Metrics.TryGetValue($"layer.{i}.query.cpu.ms", out var layer) != true || layer.Count == 0) continue;
-            text.AppendLine($"L{i} z{Value(render, $"layer.{i}.z", true)} {Value(render, $"layer.{i}.tile.width.px", true)}x{Value(render, $"layer.{i}.tile.height.px", true)} xform={Value(render, $"layer.{i}.transformed.tiles", true)}: q/rec {Value(render, $"layer.{i}.query.cpu.ms")} / {Value(render, $"layer.{i}.record.cpu.ms")} ms; draw/tiles {Value(render, $"layer.{i}.drawables")} / {Value(render, $"layer.{i}.tiles")}");
-        }
-        if (snapshot?.Truncated == true) text.AppendLine("Telemetry detail truncated.");
-        _diagnosticsText.SetText(text.ToString().TrimEnd());
+        yield return stress is null
+            ? $"Scene: {Path.GetFileName(scenePath)}"
+            : $"Stress: {stress.TileCount:N0} tiles / {stress.Projection}";
+        yield return $"Animations: {(_animationsPaused ? "PAUSED" : "running")}  [F4]";
     }
+
     private void OnViewportTargetRectChanged(ViewportResizedEventArgs args)
     {
         if (Engine.IsDisposed)
@@ -410,8 +342,12 @@ internal sealed class SceneViewerGameHost(
 
         Engine.EngineDispatcher.Post(() =>
         {
-            if (_diagnosticsText is not null)
-                _diagnosticsText.ScreenBounds = GetDiagnosticsBounds(args.NewRect);
+            if (_diagnosticsWidget is not null)
+            {
+                Rectangle bounds = GetDiagnosticsBounds(args.NewRect);
+                _diagnosticsWidget.SetPosition(bounds.X, bounds.Y);
+                _diagnosticsWidget.Size = bounds.Size;
+            }
         });
     }
 
