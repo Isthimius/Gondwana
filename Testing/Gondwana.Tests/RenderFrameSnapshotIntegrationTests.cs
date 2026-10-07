@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Reflection;
 using Gondwana.Drawing;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Tilesheets;
@@ -24,6 +25,7 @@ public sealed class RenderFrameSnapshotIntegrationTests
         var source = profiler.GetLatestSnapshot()!.Sources.Single(s => s.Id == host.Telemetry!.Id);
         Assert.Equal("Bitmap", source.Backend);
         Assert.Equal(Gondwana.Diagnostics.TelemetryAvailability.Unsupported, source.Metrics["replay.cpu.ms"].Availability);
+        Assert.Equal(Gondwana.Diagnostics.TelemetryAvailability.Unsupported, source.Metrics["layers.omitted"].Availability);
     }
 
     [Fact]
@@ -57,6 +59,78 @@ public sealed class RenderFrameSnapshotIntegrationTests
     {
         Engine.Instance.EngineDispatcher.BindToCurrentThread();
         Engine.Instance.EngineDispatcher.Drain();
+    }
+
+    [Fact]
+    public void PerLayerQueryTelemetryUsesSameUnsortedBoundaryAsAggregateQuery()
+    {
+        var profiler = Engine.Instance.Profiler;
+        profiler.Reset();
+        using var scene = new Scene();
+        scene.AddLayer(2, 1, 16, 16);
+        using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
+        using var buffer = host.Backbuffer;
+        host.Bind(scene, false);
+
+        using (profiler.Start())
+            host.ProduceRenderFrameSnapshot(1);
+
+        var source = profiler.GetLatestSnapshot()!.Sources.Single(s => s.Id == host.Telemetry!.Id);
+        Assert.Equal(
+            source.Metrics["query.cpu.ms"].Last,
+            source.Metrics["layer.0.query.cpu.ms"].Last);
+    }
+
+    [Fact]
+    public void ClearOnlyGpuRenderRecordsBuildWithoutUnsampledStages()
+    {
+        var profiler = Engine.Instance.Profiler;
+        profiler.Reset();
+        using var scene = new Scene();
+        using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
+        using var buffer = host.Backbuffer;
+        host.Bind(scene, false);
+        host.ViewManager.ClearViews();
+
+        using (profiler.Start())
+            host.RenderToBackbuffer(1);
+
+        var source = profiler.GetLatestSnapshot()!.Sources.Single(s => s.Id == host.Telemetry!.Id);
+        Assert.Equal(1, source.Metrics["build.cpu.ms"].Count);
+        Assert.Equal(
+            Gondwana.Diagnostics.TelemetryAvailability.NotYetSampled,
+            source.Metrics["query.cpu.ms"].Availability);
+        Assert.Equal(
+            Gondwana.Diagnostics.TelemetryAvailability.NotYetSampled,
+            source.Metrics["record.cpu.ms"].Availability);
+    }
+
+    [Fact]
+    public void StaleSizedFrameDoesNotCountAsSuccessfulReplay()
+    {
+        var profiler = Engine.Instance.Profiler;
+        profiler.Reset();
+        using var scene = new Scene();
+        using var host = new RenderSurfaceHost<GpuBackbuffer>(new Adapter());
+        using var backbuffer = host.Backbuffer;
+        host.Bind(scene, false);
+
+        using (profiler.Start())
+        {
+            host.ProduceRenderFrameSnapshot(1);
+            ForceLogicalBackbufferSize(backbuffer, 64, 64);
+            using var image = host.GlRenderAndSnapshot();
+            Assert.NotNull(image);
+        }
+
+        var source = profiler.GetLatestSnapshot()!.Sources.Single(s => s.Id == host.Telemetry!.Id);
+        Assert.Equal(0, source.Metrics["replay.cpu.ms"].Count);
+        Assert.Equal(0, source.Metrics["picture.cpu.ms"].Count);
+        Assert.Equal(0, source.Metrics["backbuffer.flush.cpu.ms"].Count);
+        Assert.Equal(1, source.Metrics["snapshot.cpu.ms"].Count);
+        Assert.Equal(1, source.Metrics["snapshot.age.ms"].Count);
+        Assert.Equal(1, source.Metrics["mailbox.slots"].Count);
+        Assert.Equal(1, source.Metrics["snapshot.commands.approximate"].Count);
     }
 
     [Fact]
@@ -434,6 +508,16 @@ public sealed class RenderFrameSnapshotIntegrationTests
         host.RenderBackbufferBegin += () => throw new InvalidOperationException("test");
         Assert.Throws<InvalidOperationException>(() => host.ProduceRenderFrameSnapshot(1));
         Assert.Equal(0, host.FrameMailbox.Counters.InUse);
+    }
+
+    private static void ForceLogicalBackbufferSize(
+        BackbufferBase backbuffer,
+        int width,
+        int height)
+    {
+        typeof(BackbufferBase)
+            .GetMethod("UpdateSize", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .Invoke(backbuffer, [width, height]);
     }
 
     private sealed class Adapter() : RenderSurfaceAdapterBase(128, 128)
