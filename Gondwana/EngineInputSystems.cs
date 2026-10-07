@@ -21,7 +21,12 @@ public sealed class EngineInputSystems
     /// <summary>
     /// Gets or sets the gamepad manager responsible for handling gamepad input.
     /// </summary>
-    /// <remarks>Setting this property attaches an update callback to the engine cycle, polling attached adapters</remarks>
+    /// <remarks>
+    /// Assigning a non-null manager performs one initial connection discovery and state poll, then
+    /// the engine refreshes connections and live controller state on the independent cadences in
+    /// <see cref="EngineConfiguration.GamepadConnectionUpdateFrequencyHz"/> and
+    /// <see cref="EngineConfiguration.GamepadPollFrequencyHz"/>.
+    /// </remarks>
     public IGamepadManager<IGamepadAdapter>? GamepadManager
     {
         get => _gamepadManager;
