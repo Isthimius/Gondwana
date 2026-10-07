@@ -1222,7 +1222,7 @@ public sealed class ProfilerWidget : ContainerWidget
             return description;
 
         string normalizedKey = NormalizeLayerMetricKey(metricKey);
-        return normalizedKey switch
+        string? description = normalizedKey switch
         {
             "cycle.cpu.ms" =>
                 "CPU time for one complete Engine cycle. The sample rate is the Engine cycle rate (CPS).",
@@ -1300,6 +1300,28 @@ public sealed class ProfilerWidget : ContainerWidget
                 "Current SceneLayer Z-order.",
             _ => null
         };
+
+        if (description is null)
+            return null;
+
+        if (_latestSnapshot is null)
+            return description;
+
+        TelemetrySummary? summary = _latestSnapshot.Sources
+            .SelectMany(source => source.Metrics)
+            .Where(pair => string.Equals(
+                NormalizeLayerMetricKey(pair.Key),
+                normalizedKey,
+                StringComparison.Ordinal))
+            .Select(pair => pair.Value)
+            .FirstOrDefault();
+
+        return summary?.Kind == TelemetryMetricKind.Sample
+            ? description +
+              "\n\navg/min/max are values observed during the current telemetry window. " +
+              "observations is how many times this metric was recorded; observation rate is " +
+              "that count divided by the window duration, not the metric value per second."
+            : description;
     }
 
     private static string NormalizeLayerMetricKey(string metricKey)
@@ -1329,24 +1351,32 @@ public sealed class ProfilerWidget : ContainerWidget
         if (!IsSourceVisible(sourceName))
             return false;
 
+        bool explicitlySelected = false;
         bool selected;
+
         if (_sourceMeasurementVisibility.TryGetValue(
                 CreateSourceMetricKey(sourceName, metricKey),
                 out bool sourceMetricVisible))
         {
             selected = sourceMetricVisible;
+            explicitlySelected = sourceMetricVisible;
         }
         else if (_measurementVisibility.TryGetValue(metricKey, out bool metricVisible))
         {
             selected = metricVisible;
+            explicitlySelected = metricVisible;
         }
         else
         {
             selected = MeasurementVisibilityMode == ProfilerMeasurementVisibilityMode.All;
         }
 
-        return selected &&
-            (ShowUnavailableMeasurements || availability == TelemetryAvailability.Available);
+        if (!selected)
+            return false;
+
+        return availability == TelemetryAvailability.Available ||
+            ShowUnavailableMeasurements ||
+            explicitlySelected;
     }
 
     private static string FormatSummary(TelemetrySummary summary, double elapsedSeconds)
@@ -1364,8 +1394,8 @@ public sealed class ProfilerWidget : ContainerWidget
                     : $"last {FormatNumber(summary.Last)}, delta n/a",
             _ =>
                 $"avg {FormatNumber(summary.Mean)}, min {FormatNumber(summary.Minimum)}, " +
-                $"max {FormatNumber(summary.Maximum)}, n {summary.Count:N0}, " +
-                $"{FormatRate(summary.Count, elapsedSeconds)}/s"
+                $"max {FormatNumber(summary.Maximum)}, observations {summary.Count:N0}, " +
+                $"observation rate {FormatRate(summary.Count, elapsedSeconds)}/s"
         };
     }
 
