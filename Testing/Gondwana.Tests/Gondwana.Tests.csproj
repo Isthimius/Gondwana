@@ -41,6 +41,9 @@
         <Compile Include="../../Gondwana.Audio.NAudio/StereoPanSampleProvider.cs" Link="Audio/StereoPanSampleProvider.cs" />
         <Compile Include="../../Demos/Gondwana.Platformer/EnemyContact.cs" Link="Demos/EnemyContact.cs" />
         <Compile Include="../../Demos/Gondwana.Platformer/PlatformerArt.cs" Link="Demos/PlatformerArt.cs" />
+        <!-- Exercise XInput state projection without requiring a Windows controller or native call. -->
+        <Compile Include="../../Gondwana.WinForms/Input/Gamepad/XInput/XInput.cs" Link="WinFormsInput/XInput.cs" />
+        <Compile Include="../../Gondwana.WinForms/Input/Gamepad/XInput/XInputGamepadAdapter.cs" Link="WinFormsInput/XInputGamepadAdapter.cs" />
         <!-- Keep the standalone editor's document model testable without a Windows UI. -->
         <Compile Include="../../Tooling/Gondwana.Tooling.Tilesheets.WinForms/Editing/*.cs" Link="TilesheetEditing/%(Filename)%(Extension)" />
         <Compile Include="../../Tooling/Gondwana.Tooling.Tilesheets.WinForms/PropertyFields.cs" Link="TilesheetEditing/PropertyFields.cs" />
