@@ -182,6 +182,7 @@ public sealed class LabelWidget : WidgetBase
                 return;
 
             _verticalScrollEndPaddingPx = value;
+            TextBlock.VerticalScrollEndPaddingPx = value;
             RefreshScrollState();
         }
     }
@@ -422,8 +423,7 @@ public sealed class LabelWidget : WidgetBase
             TextBlock.VerticalScrollOffsetPx = 0f;
         }
 
-        _maximumVerticalScrollOffsetPx = ApplyEndPadding(
-            TextBlock.MeasureMaximumVerticalScrollOffsetPx());
+        _maximumVerticalScrollOffsetPx = TextBlock.MeasureMaximumVerticalScrollOffsetPx();
 
         bool showScrollBar = VerticalScrollBarVisibility == ScrollBarVisibility.Always ||
             (VerticalScrollBarVisibility == ScrollBarVisibility.Auto &&
@@ -437,8 +437,7 @@ public sealed class LabelWidget : WidgetBase
                 Math.Max(1, bounds.Width - ScrollBarWidth - ScrollBarMargin * 2),
                 bounds.Height);
             SetTextBlockBounds(contentBounds);
-            _maximumVerticalScrollOffsetPx = ApplyEndPadding(
-                TextBlock.MeasureMaximumVerticalScrollOffsetPx());
+            _maximumVerticalScrollOffsetPx = TextBlock.MeasureMaximumVerticalScrollOffsetPx();
         }
 
         IsInputEnabled = showScrollBar;
@@ -454,13 +453,6 @@ public sealed class LabelWidget : WidgetBase
 
         if (visible)
             RefreshScrollBarBounds();
-    }
-
-    private float ApplyEndPadding(float measuredMaximum)
-    {
-        return measuredMaximum > 0f
-            ? measuredMaximum + VerticalScrollEndPaddingPx
-            : 0f;
     }
 
     private void SetVerticalScrollOffset(float value)
