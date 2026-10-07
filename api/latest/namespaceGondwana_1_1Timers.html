@@ -167,7 +167,7 @@ Enumerations</h2></td></tr>
 <p>PreCycle timers execute during the engine's background task phase, which includes: </p>
 <ul>
 <li>
-<a class="el" href="namespaceGondwana_1_1Input.html">Input</a> polling (keyboard, mouse, gamepad) </li>
+Keyboard, mouse, touch, and gamepad event polling; cadence-limited gamepad connection/state refresh occurs immediately before the background phase begins </li>
 <li>
 Tile animation cycling </li>
 <li>
@@ -188,8 +188,6 @@ Direct drawing updates </li>
 Render surface backbuffer rendering </li>
 <li>
 Backbuffer presentation to display adapters </li>
-<li>
-Gamepad state updates </li>
 </ul>
 <p>This timing is appropriate for post-render operations such as performance monitoring, screenshot capture, frame statistics collection, deferred resource cleanup, or any operations that should occur after a complete frame has been rendered and presented. PostCycle timers run at the effective render frame rate (FPS), which may be throttled by the engine's target FPS setting. </p>
 </td></tr>

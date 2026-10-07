@@ -12,6 +12,8 @@ var classGondwana_1_1Configuration_1_1EngineConfiguration =
     [ "SetConfigurationValue", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#aa1cf9d1068cf9ac1c7c7b8a7b346e03c", null ],
     [ "ConfigurationSections", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#af0867377c22596c6ec503c2ace2da69a", null ],
     [ "FlushAsyncLogsOnShutdown", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#aeb4cba8fce3cc6bf8a4bfcf377e89a0d", null ],
+    [ "GamepadConnectionUpdateFrequencyHz", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#ab3449a5a9a942b0b216d40541b31f6e1", null ],
+    [ "GamepadPollFrequencyHz", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a74bbac8e0055b39f9600ef8e77553340", null ],
     [ "LoggingMode", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#ab2115476b30f35d3cb762a3f2a4a979f", null ],
     [ "LoggingQueueCapacity", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#a1256ecbc22e69298a52eda5eae3a142f", null ],
     [ "MaxTimerDrivenSimulationSteps", "classGondwana_1_1Configuration_1_1EngineConfiguration.html#aeed3a01229d4da4c1fbdea5e31cda862", null ],

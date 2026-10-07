@@ -1,5 +1,9 @@
 var NAVTREEINDEX5 =
 {
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a6317cc56116124af62fd849f601193a2":[1,0,0,6,2,9,2],
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a725fd47660e3f269909e3593befd2e60":[0,0,0,6,3,9,15],
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a725fd47660e3f269909e3593befd2e60":[1,0,0,6,2,9,15],
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a7a6466d6fc58f5ab7373069f680f5655":[0,0,0,6,3,9,0],
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a7a6466d6fc58f5ab7373069f680f5655":[1,0,0,6,2,9,0],
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a7c59a3d1e6124bfc56f47e07d1df143e":[0,0,0,6,3,9,6],
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a7c59a3d1e6124bfc56f47e07d1df143e":[1,0,0,6,2,9,6],
@@ -245,9 +249,5 @@ var NAVTREEINDEX5 =
 "classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#a7d830227802b73f01f003b2635701f9a":[1,0,0,6,2,0,1,5],
 "classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#a975069acc936844a31ce8f5f5d554a9a":[0,0,0,6,3,0,1,11],
 "classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#a975069acc936844a31ce8f5f5d554a9a":[1,0,0,6,2,0,1,11],
-"classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#a99fc8cad5a93854460928c1807171e17":[0,0,0,6,3,0,1,0],
-"classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#a99fc8cad5a93854460928c1807171e17":[1,0,0,6,2,0,1,0],
-"classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#abaf7822bc5a486b2dc2bbfbccde18394":[0,0,0,6,3,0,1,3],
-"classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#abaf7822bc5a486b2dc2bbfbccde18394":[1,0,0,6,2,0,1,3],
-"classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#abeb409e58d4def531914cc43f5b5fe50":[0,0,0,6,3,0,1,10]
+"classGondwana_1_1Drawing_1_1Direct_1_1ImageLayer_1_1ImageInstanceLayer.html#a99fc8cad5a93854460928c1807171e17":[0,0,0,6,3,0,1,0]
 };

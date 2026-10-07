@@ -120,7 +120,7 @@ Properties</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Provides centralized access to all the input systems of the engine, including gamepad, keyboard, mouse, and touch input. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineInputSystems_8cs_source.html#l00011">11</a> of file <a class="el" href="EngineInputSystems_8cs_source.html">EngineInputSystems.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineInputSystems_8cs_source.html#l00013">13</a> of file <a class="el" href="EngineInputSystems_8cs_source.html">EngineInputSystems.cs</a>.</p>
 </div><a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
 <a id="ac9312622d39edeaf6df5ff5c318fc6d2" name="ac9312622d39edeaf6df5ff5c318fc6d2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac9312622d39edeaf6df5ff5c318fc6d2">&#9670;&#160;</a></span>GamepadEventPoller</h2>
@@ -146,7 +146,7 @@ Properties</h2></td></tr>
 <p>The <a class="el" href="classGondwana_1_1Input_1_1Gamepad_1_1GamepadEventPoller.html" title="Provides centralized polling and event management for gamepad button inputs across multiple gamepad d...">Gondwana.Input.Gamepad.GamepadEventPoller</a> instance if initialized; otherwise, <code>null</code>. </p>
 <p>This property provides access to the gamepad input subsystem. The poller is automatically initialized when a <a class="el" href="#ae10f8d42f3de55ff3bc18e57d5d93c94" title="Gets or sets the gamepad manager responsible for handling gamepad input.">GamepadManager</a> is assigned. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineInputSystems_8cs_source.html#l00042">42</a> of file <a class="el" href="EngineInputSystems_8cs_source.html">EngineInputSystems.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineInputSystems_8cs_source.html#l00114">114</a> of file <a class="el" href="EngineInputSystems_8cs_source.html">EngineInputSystems.cs</a>.</p>
 
 </div>
 </div>
@@ -171,9 +171,9 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets or sets the gamepad manager responsible for handling gamepad input. </p>
-<p>Setting this property attaches an update callback to the engine cycle, polling attached adapters</p>
+<p>Assigning a non-null manager performs one initial connection discovery and state poll, then the engine refreshes connections and live controller state on the independent cadences in <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#ab3449a5a9a942b0b216d40541b31f6e1" title="Gets or sets how often the engine checks for gamepad connection and disconnection changes.">EngineConfiguration.GamepadConnectionUpdateFrequencyHz</a> and <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#a74bbac8e0055b39f9600ef8e77553340" title="Gets or sets how often the engine refreshes the state of already-connected gamepads.">EngineConfiguration.GamepadPollFrequencyHz</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineInputSystems_8cs_source.html#l00021">21</a> of file <a class="el" href="EngineInputSystems_8cs_source.html">EngineInputSystems.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineInputSystems_8cs_source.html#l00030">30</a> of file <a class="el" href="EngineInputSystems_8cs_source.html">EngineInputSystems.cs</a>.</p>
 
 </div>
 </div>
@@ -201,7 +201,7 @@ Properties</h2></td></tr>
 <p>The <a class="el" href="classGondwana_1_1Input_1_1Keyboard_1_1KeyboardEventPoller.html" title="Cross-platform singleton keyboard handler with throttling and manual input state feeding.">Gondwana.Input.Keyboard.KeyboardEventPoller</a> instance if initialized; otherwise, <code>null</code>. </p>
 <p>This property provides access to the keyboard input subsystem. The poller must be initialized via Initialize with a valid <a class="el" href="interfaceGondwana_1_1Input_1_1Keyboard_1_1IKeyboardAdapter.html" title="Represents an adapter for keyboard input, providing access to the currently pressed keys and active m...">IKeyboardAdapter</a> before use. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineInputSystems_8cs_source.html#l00056">56</a> of file <a class="el" href="EngineInputSystems_8cs_source.html">EngineInputSystems.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineInputSystems_8cs_source.html#l00128">128</a> of file <a class="el" href="EngineInputSystems_8cs_source.html">EngineInputSystems.cs</a>.</p>
 
 </div>
 </div>
@@ -229,7 +229,7 @@ Properties</h2></td></tr>
 <p>The <a class="el" href="classGondwana_1_1Input_1_1Mouse_1_1MouseEventPoller.html" title="Provides centralized polling and event management for mouse input, including button presses,...">Gondwana.Input.Mouse.MouseEventPoller</a> instance if initialized; otherwise, <code>null</code>. </p>
 <p>This property provides access to the mouse input subsystem. The poller must be initialized via Initialize with a valid <a class="el" href="interfaceGondwana_1_1Input_1_1Mouse_1_1IMouseAdapter.html" title="Defines an adapter interface for accessing mouse device state, including cursor position,...">IMouseAdapter</a> before use. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineInputSystems_8cs_source.html#l00070">70</a> of file <a class="el" href="EngineInputSystems_8cs_source.html">EngineInputSystems.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineInputSystems_8cs_source.html#l00142">142</a> of file <a class="el" href="EngineInputSystems_8cs_source.html">EngineInputSystems.cs</a>.</p>
 
 </div>
 </div>
@@ -256,7 +256,7 @@ Properties</h2></td></tr>
 <p>Gets or sets the touch adapter responsible for providing raw touch state to the engine. </p>
 <p>Setting this property disposes the previous adapter (if it implements IDisposable) and initializes a new <a class="el" href="#a6cb1806f9ed4e915bfae5a82570e6f5f" title="Gets the touch event polling subsystem, if initialized.">TouchEventPoller</a> instance backed by the supplied adapter. Pass <code>null</code> to clear the current adapter without replacing it. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineInputSystems_8cs_source.html#l00081">81</a> of file <a class="el" href="EngineInputSystems_8cs_source.html">EngineInputSystems.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineInputSystems_8cs_source.html#l00153">153</a> of file <a class="el" href="EngineInputSystems_8cs_source.html">EngineInputSystems.cs</a>.</p>
 
 </div>
 </div>
@@ -284,7 +284,7 @@ Properties</h2></td></tr>
 <p>The <a class="el" href="classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html" title="Provides centralized polling and event management for touch input. This singleton class monitors touc...">Gondwana.Input.Touch.TouchEventPoller</a> instance if initialized; otherwise, <code>null</code>. </p>
 <p>This property provides access to the touch input subsystem, which also implements <a class="el" href="interfaceGondwana_1_1Input_1_1Touch_1_1ITouchInput.html" title="Represents a touch input source that tracks active contact points and raises lifecycle events when fi...">ITouchInput</a> for gesture recognizer consumption. Initialize it by assigning a platform adapter to <a class="el" href="#add85c5827da679bdf017d6958ea90060" title="Gets or sets the touch adapter responsible for providing raw touch state to the engine.">TouchAdapter</a>, or by calling <code>engine.InitializeAvaloniaTouchAdapter(control)</code> from the <code><a class="el" href="namespaceGondwana_1_1Avalonia.html">Gondwana.Avalonia</a></code> package. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineInputSystems_8cs_source.html#l00107">107</a> of file <a class="el" href="EngineInputSystems_8cs_source.html">EngineInputSystems.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineInputSystems_8cs_source.html#l00179">179</a> of file <a class="el" href="EngineInputSystems_8cs_source.html">EngineInputSystems.cs</a>.</p>
 
 </div>
 </div>

@@ -1,5 +1,13 @@
 var NAVTREEINDEX12 =
 {
+"classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a6da93940e80c048aa682cdcca5f69d97":[1,0,0,10,3,5,10],
+"classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a741302b23df78e86aded0c55b56665aa":[0,0,0,11,4,5,6],
+"classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a741302b23df78e86aded0c55b56665aa":[1,0,0,10,3,5,6],
+"classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a9374cc6b8ca39d73c6c7a8c5f832ab8b":[0,0,0,11,4,5,1],
+"classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a9374cc6b8ca39d73c6c7a8c5f832ab8b":[1,0,0,10,3,5,1],
+"classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#ab6d7301df6ba7c7d5adf446907dc856c":[0,0,0,11,4,5,4],
+"classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#ab6d7301df6ba7c7d5adf446907dc856c":[1,0,0,10,3,5,4],
+"classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#ab9e2646ef78763655b60d696a5a94d2b":[0,0,0,11,4,5,8],
 "classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#ab9e2646ef78763655b60d696a5a94d2b":[1,0,0,10,3,5,8],
 "classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#ad736d5ad5e18bd222559180bfb1e1c79":[0,0,0,11,4,5,2],
 "classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#ad736d5ad5e18bd222559180bfb1e1c79":[1,0,0,10,3,5,2],
@@ -241,13 +249,5 @@ var NAVTREEINDEX12 =
 "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a78783cfbc2578e9269179221138bada4":[1,0,0,13,4,4],
 "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a832f3cb246dbe37104bd3cb0196755f6":[0,0,0,14,4,2],
 "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a832f3cb246dbe37104bd3cb0196755f6":[1,0,0,13,4,2],
-"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a8a0ca745aff5ce1f6e339b257b69f7bb":[0,0,0,14,4,5],
-"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a8a0ca745aff5ce1f6e339b257b69f7bb":[1,0,0,13,4,5],
-"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a961e4c29ccb8f2514c7dc76a34278fa9":[0,0,0,14,4,0],
-"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a961e4c29ccb8f2514c7dc76a34278fa9":[1,0,0,13,4,0],
-"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a9fb3ca7a6384ed8c853ebce8075d2430":[0,0,0,14,4,1],
-"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a9fb3ca7a6384ed8c853ebce8075d2430":[1,0,0,13,4,1],
-"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#ab47d7c6afd4cbac57356fcfba571897e":[0,0,0,14,4,3],
-"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#ab47d7c6afd4cbac57356fcfba571897e":[1,0,0,13,4,3],
-"classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html":[0,0,0,14,5]
+"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a8a0ca745aff5ce1f6e339b257b69f7bb":[0,0,0,14,4,5]
 };

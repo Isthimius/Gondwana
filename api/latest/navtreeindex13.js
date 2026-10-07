@@ -1,5 +1,13 @@
 var NAVTREEINDEX13 =
 {
+"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a8a0ca745aff5ce1f6e339b257b69f7bb":[1,0,0,13,4,5],
+"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a961e4c29ccb8f2514c7dc76a34278fa9":[0,0,0,14,4,0],
+"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a961e4c29ccb8f2514c7dc76a34278fa9":[1,0,0,13,4,0],
+"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a9fb3ca7a6384ed8c853ebce8075d2430":[0,0,0,14,4,1],
+"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a9fb3ca7a6384ed8c853ebce8075d2430":[1,0,0,13,4,1],
+"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#ab47d7c6afd4cbac57356fcfba571897e":[0,0,0,14,4,3],
+"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#ab47d7c6afd4cbac57356fcfba571897e":[1,0,0,13,4,3],
+"classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html":[0,0,0,14,5],
 "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html":[1,0,0,13,5],
 "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a151554f182dd08531fd615f01e0e1272":[0,0,0,14,5,13],
 "classGondwana_1_1Rendering_1_1RenderSurfaceHost-1-g.html#a151554f182dd08531fd615f01e0e1272":[1,0,0,13,5,13],
@@ -241,13 +249,5 @@ var NAVTREEINDEX13 =
 "classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition.html#a5b3b98269646080faf115b633c4c779f":[1,0,0,14,0,0,3],
 "classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition.html#a727b4700cab14cbd08fb45126498aaad":[0,0,0,15,0,0,4],
 "classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition.html#a727b4700cab14cbd08fb45126498aaad":[1,0,0,14,0,0,4],
-"classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition.html#a86936264efdf782887e07ae00113b830":[0,0,0,15,0,0,1],
-"classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition.html#a86936264efdf782887e07ae00113b830":[1,0,0,14,0,0,1],
-"classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition.html#aa37f1ec4b1699a0c055ec5ceea86a543":[0,0,0,15,0,0,0],
-"classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition.html#aa37f1ec4b1699a0c055ec5ceea86a543":[1,0,0,14,0,0,0],
-"classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition.html#ac12b3b1965e2e539998d443bba20070e":[0,0,0,15,0,0,2],
-"classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition.html#ac12b3b1965e2e539998d443bba20070e":[1,0,0,14,0,0,2],
-"classGondwana_1_1Scenes_1_1GSCN_1_1SceneCollisionProfileDefinition.html":[0,0,0,15,0,1],
-"classGondwana_1_1Scenes_1_1GSCN_1_1SceneCollisionProfileDefinition.html":[1,0,0,14,0,1],
-"classGondwana_1_1Scenes_1_1GSCN_1_1SceneCollisionProfileDefinition.html#a6d1c853a11cfb4850237f2f657bc73e9":[0,0,0,15,0,1,0]
+"classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition.html#a86936264efdf782887e07ae00113b830":[0,0,0,15,0,0,1]
 };

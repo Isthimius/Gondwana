@@ -149,8 +149,12 @@ Properties</h2></td></tr>
 <tr class="memdesc:a54425e8fee2e8de5f3bb71b94fa9bcbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of system ticks between each legacy CPS sampling.  <br /></td></tr>
 <tr class="memitem:ac1cf26699f1a240bc2face7c098067d8" id="r_ac1cf26699f1a240bc2face7c098067d8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac1cf26699f1a240bc2face7c098067d8">TimeBetweenKeyboardEvents</a> = 0.03<code> [get, set]</code></td></tr>
 <tr class="memdesc:ac1cf26699f1a240bc2face7c098067d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum time (in seconds) allowed between Keyboard events. Use this to prevent flooding the system with too many events at once (holding down a key, etc). Default is 0.03 seconds (30 milliseconds).  <br /></td></tr>
+<tr class="memitem:ab3449a5a9a942b0b216d40541b31f6e1" id="r_ab3449a5a9a942b0b216d40541b31f6e1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab3449a5a9a942b0b216d40541b31f6e1">GamepadConnectionUpdateFrequencyHz</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:ab3449a5a9a942b0b216d40541b31f6e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets how often the engine checks for gamepad connection and disconnection changes.  <br /></td></tr>
+<tr class="memitem:a74bbac8e0055b39f9600ef8e77553340" id="r_a74bbac8e0055b39f9600ef8e77553340"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a74bbac8e0055b39f9600ef8e77553340">GamepadPollFrequencyHz</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a74bbac8e0055b39f9600ef8e77553340"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets how often the engine refreshes the state of already-connected gamepads.  <br /></td></tr>
 <tr class="memitem:a723ed7b99319baaa075ddbe6e2d90699" id="r_a723ed7b99319baaa075ddbe6e2d90699"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a723ed7b99319baaa075ddbe6e2d90699">TimeBetweenGamepadEvents</a> = 0.03<code> [get, set]</code></td></tr>
-<tr class="memdesc:a723ed7b99319baaa075ddbe6e2d90699"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum time (in seconds) allowed between Gamepad events. Use this to prevent flooding the system with too many events at once (holding down a button, etc). Default is 0.03 seconds (30 milliseconds).  <br /></td></tr>
+<tr class="memdesc:a723ed7b99319baaa075ddbe6e2d90699"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum time (in seconds) allowed between Gamepad events. Use this to prevent flooding the system with too many events at once (holding down a button, etc). This event-throttle setting is independent of <a class="el" href="#a74bbac8e0055b39f9600ef8e77553340" title="Gets or sets how often the engine refreshes the state of already-connected gamepads.">GamepadPollFrequencyHz</a>. Default is 0.03 seconds (30 milliseconds).  <br /></td></tr>
 <tr class="memitem:a5c881d1a987fc214a2f8b4913add7ccd" id="r_a5c881d1a987fc214a2f8b4913add7ccd"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5c881d1a987fc214a2f8b4913add7ccd">TimeBetweenMouseEvents</a> = 0.03<code> [get, set]</code></td></tr>
 <tr class="memdesc:a5c881d1a987fc214a2f8b4913add7ccd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum time (in seconds) allowed between Mouse events. Use this to prevent flooding the system with too many events at once (holding down a button, dragging, etc). Default is 0.03 seconds (30 milliseconds).  <br /></td></tr>
 <tr class="memitem:af6271aca8aee604872e689b753cb57eb" id="r_af6271aca8aee604872e689b753cb57eb"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af6271aca8aee604872e689b753cb57eb">TimeBetweenTouchEvents</a> = 0.03<code> [get, set]</code></td></tr>
@@ -199,7 +203,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> if the section existed and was cleared; otherwise, <code>false</code>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00525">525</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00559">559</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -220,7 +224,7 @@ Properties</h2></td></tr>
 
 <p>Removes all configuration sections and all contained key/value pairs. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00539">539</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00573">573</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -248,7 +252,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The existing or newly created dictionary for the specified section. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00405">405</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00439">439</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -276,7 +280,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A read-only dictionary containing the section values, or <code>null</code> if the section does not exist. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00439">439</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00473">473</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -315,7 +319,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The stored configuration value, or <em>defaultValue</em>  if no value exists. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00474">474</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00508">508</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -343,7 +347,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> if the section exists; otherwise, <code>false</code>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00393">393</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00427">427</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -376,7 +380,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> if the section and key exist; otherwise, <code>false</code>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00456">456</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00490">490</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -404,7 +408,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> if the section was removed; otherwise, <code>false</code>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00425">425</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00459">459</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -437,7 +441,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> if the value was removed; otherwise, <code>false</code>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00509">509</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00543">543</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -475,7 +479,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00491">491</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00525">525</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -513,7 +517,7 @@ Properties</h2></td></tr>
 <div class="line">var volume = engineConfiguration.ConfigurationSections[<span class="stringliteral">&quot;audio&quot;</span>][<span class="stringliteral">&quot;volume&quot;</span>];</div>
 <div class="line">var resolution = engineConfiguration.ConfigurationSections[<span class="stringliteral">&quot;graphics&quot;</span>][<span class="stringliteral">&quot;resolution&quot;</span>];</div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00384">384</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00418">418</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -539,7 +543,61 @@ Properties</h2></td></tr>
 
 <p>If true, the engine will attempt to flush queued async log events during shutdown. Default is true. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00340">340</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00374">374</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+
+</div>
+</div>
+<a id="ab3449a5a9a942b0b216d40541b31f6e1" name="ab3449a5a9a942b0b216d40541b31f6e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3449a5a9a942b0b216d40541b31f6e1">&#9670;&#160;</a></span>GamepadConnectionUpdateFrequencyHz</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Gondwana.Configuration.EngineConfiguration.GamepadConnectionUpdateFrequencyHz</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets how often the engine checks for gamepad connection and disconnection changes. </p>
+<p>The connection-discovery frequency in hertz. The default is <code>0.2</code> Hz, or once every five seconds. Negative and non-finite values are treated as <code>0</code>; <code>0</code> disables automatic connection discovery. </p>
+
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00286">286</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+
+</div>
+</div>
+<a id="a74bbac8e0055b39f9600ef8e77553340" name="a74bbac8e0055b39f9600ef8e77553340"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74bbac8e0055b39f9600ef8e77553340">&#9670;&#160;</a></span>GamepadPollFrequencyHz</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Gondwana.Configuration.EngineConfiguration.GamepadPollFrequencyHz</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel get">get</span><span class="mlabel set">set</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets or sets how often the engine refreshes the state of already-connected gamepads. </p>
+<p>The controller-state polling frequency in hertz. The default is <code>60</code> Hz. Negative and non-finite values are treated as <code>0</code>; <code>0</code> disables automatic state polling. </p>
+
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00302">302</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -568,7 +626,7 @@ Properties</h2></td></tr>
 <p>When set to EngineLoggingMode.Synchronous, log entries are written immediately on the calling thread. This guarantees ordering and delivery but may negatively impact engine performance, especially when logging to the console. </p>
 <p>The logging execution mode. The default value is EngineLoggingMode.Asynchronous. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00312">312</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00346">346</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -600,7 +658,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00325">325</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00359">359</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -816,7 +874,7 @@ Properties</h2></td></tr>
 
 <p>Optional collection of serialized <a class="el" href="classGondwana_1_1EngineState.html" title="Represents the complete serializable state of the game engine, including assets, scenes,...">EngineState</a>s to mount at initialization. </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00345">345</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00379">379</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -878,7 +936,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The stored configuration value, or <code>null</code> if not found. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00592">592</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00626">626</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -912,7 +970,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The dictionary of key/value pairs for the section, or <code>null</code> if the section does not exist. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00555">555</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00589">589</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -936,9 +994,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Minimum time (in seconds) allowed between Gamepad events. Use this to prevent flooding the system with too many events at once (holding down a button, etc). Default is 0.03 seconds (30 milliseconds). </p>
+<p>Minimum time (in seconds) allowed between Gamepad events. Use this to prevent flooding the system with too many events at once (holding down a button, etc). This event-throttle setting is independent of <a class="el" href="#a74bbac8e0055b39f9600ef8e77553340" title="Gets or sets how often the engine refreshes the state of already-connected gamepads.">GamepadPollFrequencyHz</a>. Default is 0.03 seconds (30 milliseconds). </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00281">281</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00315">315</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -990,7 +1048,7 @@ Properties</h2></td></tr>
 
 <p>Minimum time (in seconds) allowed between Mouse events. Use this to prevent flooding the system with too many events at once (holding down a button, dragging, etc). Default is 0.03 seconds (30 milliseconds). </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00288">288</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00322">322</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>
@@ -1016,7 +1074,7 @@ Properties</h2></td></tr>
 
 <p>Minimum time (in seconds) allowed between Touch events. Use this to prevent flooding the system with too many events at once (fast drags, multi-touch, etc). Default is 0.03 seconds (30 milliseconds). </p>
 
-<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00295">295</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EngineConfiguration_8cs_source.html#l00329">329</a> of file <a class="el" href="EngineConfiguration_8cs_source.html">EngineConfiguration.cs</a>.</p>
 
 </div>
 </div>

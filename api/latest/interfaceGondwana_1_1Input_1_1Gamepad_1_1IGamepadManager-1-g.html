@@ -99,7 +99,7 @@ $(function(){initNavTree('interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadManag
 </div><!--header-->
 <div class="contents">
 
-<p>Interface to track a collection of <a class="el" href="interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadAdapter.html" title="Defines an adapter interface for accessing gamepad input state and information.">IGamepadAdapter</a> gamepad adapters."/&gt;  
+<p>Interface to track a collection of <a class="el" href="interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadAdapter.html" title="Defines an adapter interface for accessing gamepad input state and information.">IGamepadAdapter</a> gamepad adapters.  
  <a href="#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for Gondwana.Input.Gamepad.IGamepadManager&lt; out T &gt;:</div>
@@ -114,8 +114,12 @@ Inheritance diagram for Gondwana.Input.Gamepad.IGamepadManager&lt; out T &gt;:</
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a238dd966c9524bd1a41496d8c4600eaa" id="r_a238dd966c9524bd1a41496d8c4600eaa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a238dd966c9524bd1a41496d8c4600eaa">UpdateConnections</a> ()</td></tr>
+<tr class="memdesc:a238dd966c9524bd1a41496d8c4600eaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refreshes the collection of connected and disconnected gamepad adapters.  <br /></td></tr>
+<tr class="memitem:a28881c99ca6fba1b582dd3672226a87e" id="r_a28881c99ca6fba1b582dd3672226a87e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a28881c99ca6fba1b582dd3672226a87e">Poll</a> ()</td></tr>
+<tr class="memdesc:a28881c99ca6fba1b582dd3672226a87e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Polls the current state of already-connected gamepad adapters.  <br /></td></tr>
 <tr class="memitem:ab042232254ee55f61b6ed1178efcba83" id="r_ab042232254ee55f61b6ed1178efcba83"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab042232254ee55f61b6ed1178efcba83">Update</a> ()</td></tr>
-<tr class="memdesc:ab042232254ee55f61b6ed1178efcba83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the <a class="el" href="#a5d4c6afdc7f15fc74d8d31b902c9da07" title="Gets the list of currently connected gamepad adapters.">ConnectedAdapters</a> of all connected gamepads. This will be called every frame to ensure the gamepad state is up-to-date.  <br /></td></tr>
+<tr class="memdesc:ab042232254ee55f61b6ed1178efcba83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refreshes connection and controller state using the legacy combined operation.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
@@ -123,7 +127,7 @@ Properties</h2></td></tr>
 <tr class="memdesc:a5d4c6afdc7f15fc74d8d31b902c9da07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the list of currently connected gamepad adapters.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Interface to track a collection of <a class="el" href="interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadAdapter.html" title="Defines an adapter interface for accessing gamepad input state and information.">IGamepadAdapter</a> gamepad adapters."/&gt; </p>
+<div class="textblock"><p>Interface to track a collection of <a class="el" href="interfaceGondwana_1_1Input_1_1Gamepad_1_1IGamepadAdapter.html" title="Defines an adapter interface for accessing gamepad input state and information.">IGamepadAdapter</a> gamepad adapters. </p>
 <div class="typeconstraint">
 <dl><dt><b>Type Constraints</b></dt><dd>
 <table border="0" cellspacing="2" cellpadding="0">
@@ -135,6 +139,28 @@ Properties</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="IGamepadManager_8cs_source.html#l00006">6</a> of file <a class="el" href="IGamepadManager_8cs_source.html">IGamepadManager.cs</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a28881c99ca6fba1b582dd3672226a87e" name="a28881c99ca6fba1b582dd3672226a87e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28881c99ca6fba1b582dd3672226a87e">&#9670;&#160;</a></span>Poll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Input.Gamepad.IGamepadManager&lt; out T &gt;.Poll </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Polls the current state of already-connected gamepad adapters. </p>
+<p>The engine invokes this operation on the cadence configured by <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#a74bbac8e0055b39f9600ef8e77553340" title="Gets or sets how often the engine refreshes the state of already-connected gamepads.">Gondwana.Configuration.EngineConfiguration.GamepadPollFrequencyHz</a>. The default implementation forwards to the legacy <a class="el" href="#ab042232254ee55f61b6ed1178efcba83" title="Refreshes connection and controller state using the legacy combined operation.">Update</a> method so custom managers compiled against the older combined contract continue to refresh state. </p>
+
+<p>Implemented in <a class="el" href="classGondwana_1_1Input_1_1Gamepad_1_1SDL2_1_1SdlGamepadManager.html#a6980c99e215d84528163f8f49232f395">Gondwana.Input.Gamepad.SDL2.SdlGamepadManager</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadManager.html#a618dfe970c34da73a33703c626927f47">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadManager</a>.</p>
+
+</div>
+</div>
 <a id="ab042232254ee55f61b6ed1178efcba83" name="ab042232254ee55f61b6ed1178efcba83"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab042232254ee55f61b6ed1178efcba83">&#9670;&#160;</a></span>Update()</h2>
 
@@ -150,10 +176,34 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Updates the <a class="el" href="#a5d4c6afdc7f15fc74d8d31b902c9da07" title="Gets the list of currently connected gamepad adapters.">ConnectedAdapters</a> of all connected gamepads. This will be called every frame to ensure the gamepad state is up-to-date. </p>
-<p>*** DO NOT CALL THIS WITHOUT THROTTLING; LIMIT TO ENGINE FRAMERATE ***</p>
+<p>Refreshes connection and controller state using the legacy combined operation. </p>
+<p>New implementations should override <a class="el" href="#a238dd966c9524bd1a41496d8c4600eaa" title="Refreshes the collection of connected and disconnected gamepad adapters.">UpdateConnections</a> and <a class="el" href="#a28881c99ca6fba1b582dd3672226a87e" title="Polls the current state of already-connected gamepad adapters.">Poll</a> separately. This member remains abstract for compatibility with existing custom managers; the engine no longer calls it directly. </p>
 
 <p>Implemented in <a class="el" href="classGondwana_1_1Input_1_1Gamepad_1_1SDL2_1_1SdlGamepadManager.html#ae65132ef4ca5796cc02867214fdf416b">Gondwana.Input.Gamepad.SDL2.SdlGamepadManager</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadManager.html#a4b2749a69f3f9c717a06a5982b98ecc1">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadManager</a>.</p>
+
+</div>
+</div>
+<a id="a238dd966c9524bd1a41496d8c4600eaa" name="a238dd966c9524bd1a41496d8c4600eaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a238dd966c9524bd1a41496d8c4600eaa">&#9670;&#160;</a></span>UpdateConnections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Input.Gamepad.IGamepadManager&lt; out T &gt;.UpdateConnections </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Refreshes the collection of connected and disconnected gamepad adapters. </p>
+<p>The engine invokes this operation on the cadence configured by <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#ab3449a5a9a942b0b216d40541b31f6e1" title="Gets or sets how often the engine checks for gamepad connection and disconnection changes.">Gondwana.Configuration.EngineConfiguration.GamepadConnectionUpdateFrequencyHz</a>. Implementations should keep connection discovery separate from live controller-state polling when the underlying backend permits it. </p>
+
+<p>Implemented in <a class="el" href="classGondwana_1_1Input_1_1Gamepad_1_1SDL2_1_1SdlGamepadManager.html#ae0f26bcc15fb1c9480e7e7c3ca0455b5">Gondwana.Input.Gamepad.SDL2.SdlGamepadManager</a>, and <a class="el" href="classGondwana_1_1WinForms_1_1Input_1_1Gamepad_1_1XInput_1_1XInputGamepadManager.html#a158a96f6031b1d127ede957419074d39">Gondwana.WinForms.Input.Gamepad.XInput.XInputGamepadManager</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="IGamepadManager_8cs_source.html#l00022">22</a> of file <a class="el" href="IGamepadManager_8cs_source.html">IGamepadManager.cs</a>.</p>
 
 </div>
 </div>

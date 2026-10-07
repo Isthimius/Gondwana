@@ -1,5 +1,13 @@
 var NAVTREEINDEX19 =
 {
+"classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a6bce6741acff354682af77adf5132746":[1,0,0,17,8,13],
+"classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a71abccb4b48aaba5fca29e9222613c35":[0,0,0,19,8,6],
+"classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a71abccb4b48aaba5fca29e9222613c35":[1,0,0,17,8,6],
+"classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a899596a076eab34d0be2a4c6f51c6a29":[0,0,0,19,8,18],
+"classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a899596a076eab34d0be2a4c6f51c6a29":[1,0,0,17,8,18],
+"classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a8c24aaa30eb8f60511526fa97b7f4fe9":[0,0,0,19,8,7],
+"classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#a8c24aaa30eb8f60511526fa97b7f4fe9":[1,0,0,17,8,7],
+"classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#aa61145a91b6006337ed9a8700bbe9c7b":[0,0,0,19,8,11],
 "classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#aa61145a91b6006337ed9a8700bbe9c7b":[1,0,0,17,8,11],
 "classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#aac4f4fa0fa2911914d5652c0819ba669":[0,0,0,19,8,1],
 "classGondwana_1_1Widgets_1_1DraggableWidgetBase.html#aac4f4fa0fa2911914d5652c0819ba669":[1,0,0,17,8,1],
@@ -241,13 +249,5 @@ var NAVTREEINDEX19 =
 "classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#a8804b66c01b251d5616090889a63674b":[1,0,0,17,4,3,11],
 "classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#a9e1772bed16a98a003b9a4d24571398e":[0,0,0,19,4,3,14],
 "classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#a9e1772bed16a98a003b9a4d24571398e":[1,0,0,17,4,3,14],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#aa63f925b58562a5e547ac038540fd286":[0,0,0,19,4,3,2],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#aa63f925b58562a5e547ac038540fd286":[1,0,0,17,4,3,2],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#ab783d70784fa259790304df8fa8cdc60":[0,0,0,19,4,3,5],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#ab783d70784fa259790304df8fa8cdc60":[1,0,0,17,4,3,5],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#abc7d6ede79fcb99267eac0a37c64d094":[0,0,0,19,4,3,13],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#abc7d6ede79fcb99267eac0a37c64d094":[1,0,0,17,4,3,13],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#abfbbdd864c8cf8b8385f4d2e55fa798e":[0,0,0,19,4,3,1],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#abfbbdd864c8cf8b8385f4d2e55fa798e":[1,0,0,17,4,3,1],
-"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#ad120899f89d5b88a64e7407f39a23896":[0,0,0,19,4,3,6]
+"classGondwana_1_1Widgets_1_1Menus_1_1MenuDropDownWidget.html#aa63f925b58562a5e547ac038540fd286":[0,0,0,19,4,3,2]
 };
