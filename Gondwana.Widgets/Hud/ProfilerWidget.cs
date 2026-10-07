@@ -294,7 +294,6 @@ public sealed class ProfilerWidget : ContainerWidget
                 return;
 
             _measurementVisibilityMode = value;
-            _metricSelectorSignature = null;
         }
     }
 
@@ -351,7 +350,6 @@ public sealed class ProfilerWidget : ContainerWidget
                 return;
 
             _showUnavailableMeasurements = value;
-            _metricSelectorSignature = null;
         }
     }
 
@@ -367,7 +365,6 @@ public sealed class ProfilerWidget : ContainerWidget
                 return;
 
             _measurementTooltipsEnabled = value;
-            _metricSelectorSignature = null;
 
             if (!value)
                 _measurementTooltip.HideTooltip();
@@ -375,11 +372,11 @@ public sealed class ProfilerWidget : ContainerWidget
     }
 
     /// <summary>
-    /// Gets or sets whether the built-in Metrics menu is displayed.
+    /// Gets or sets whether the built-in Metrics selector control is displayed.
     /// </summary>
     /// <remarks>
-    /// The menu is populated from the latest detached snapshot and exposes per-source
-    /// measurement check items together with show-all/hide-all, unavailable-state,
+    /// The selector is populated from the latest detached snapshot and exposes a persistent,
+    /// scrollable checklist together with show-all/hide-all, runtime-context, unavailable-state,
     /// and tooltip controls.
     /// </remarks>
     public bool ShowMetricSelector
@@ -442,7 +439,6 @@ public sealed class ProfilerWidget : ContainerWidget
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(sourceName);
         _sourceVisibility[sourceName] = visible;
-        _metricSelectorSignature = null;
         return this;
     }
 
@@ -456,7 +452,6 @@ public sealed class ProfilerWidget : ContainerWidget
     {
         ValidateMetricKey(metricKey);
         _measurementVisibility[metricKey] = visible;
-        _metricSelectorSignature = null;
         return this;
     }
 
@@ -475,7 +470,6 @@ public sealed class ProfilerWidget : ContainerWidget
         ArgumentException.ThrowIfNullOrWhiteSpace(sourceName);
         ValidateMetricKey(metricKey);
         _sourceMeasurementVisibility[CreateSourceMetricKey(sourceName, metricKey)] = visible;
-        _metricSelectorSignature = null;
         return this;
     }
 
@@ -488,7 +482,6 @@ public sealed class ProfilerWidget : ContainerWidget
         _sourceVisibility.Clear();
         _measurementVisibility.Clear();
         _sourceMeasurementVisibility.Clear();
-        _metricSelectorSignature = null;
         return this;
     }
 
