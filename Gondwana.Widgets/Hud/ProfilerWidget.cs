@@ -9,6 +9,8 @@ using Gondwana.Rendering;
 using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Widgets.Controls;
+using Gondwana.Widgets.Menus;
+using Gondwana.Widgets.Overlays;
 using SkiaSharp;
 
 namespace Gondwana.Widgets.Hud;
@@ -121,16 +123,29 @@ public sealed class ProfilerWidget : ContainerWidget
 {
     private static readonly TimeSpan MinimumRefreshInterval = TimeSpan.FromMilliseconds(10);
     private static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMinutes(1);
+    private const int MetricSelectorHeight = 30;
+    private const int MetricSelectorWidth = 92;
+    private const int MetricSelectorMargin = 4;
+    private const int MaximumDirectMetricMenuItems = 18;
 
     private readonly Dictionary<string, bool> _sourceVisibility = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, bool> _measurementVisibility = new(StringComparer.Ordinal);
     private readonly Dictionary<string, bool> _sourceMeasurementVisibility = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, string> _measurementDescriptions = new(StringComparer.Ordinal);
+    private readonly Dictionary<int, string> _renderedMetricLines = [];
     private Size _size;
     private TimeSpan _refreshInterval = TimeSpan.FromMilliseconds(250);
     private long _lastRefreshTimestamp;
     private IDisposable? _collectionRequest;
     private bool _disposed;
     private string _headerText = "Gondwana Runtime Profiler";
+    private ProfilerMeasurementVisibilityMode _measurementVisibilityMode = ProfilerMeasurementVisibilityMode.All;
+    private bool _measurementTooltipsEnabled = true;
+    private bool _showMetricSelector = true;
+    private TelemetrySnapshot? _latestSnapshot;
+    private MenuBarWidget? _metricSelector;
+    private string? _metricSelectorSignature;
+    private int _profilerZOrder;
     private bool _showHeader = true;
     private bool _showSnapshotMetadata = true;
     private bool _showSourceHeaders = true;
