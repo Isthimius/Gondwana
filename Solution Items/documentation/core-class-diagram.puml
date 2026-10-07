@@ -79,6 +79,8 @@ package "Engine" {
         +VSync : bool
         +MsaaSampleCount : int
         +SamplingTimeForCPS : double
+        +GamepadConnectionUpdateFrequencyHz : double
+        +GamepadPollFrequencyHz : double
         +TimeBetweenKeyboardEvents : double
         +TimeBetweenMouseEvents : double
         +TimeBetweenGamepadEvents : double
@@ -628,7 +630,9 @@ package "Input" {
 
     interface "IGamepadManager<TAdapter>" as IGamepadManager {
         +ConnectedAdapters : IReadOnlyList<TAdapter>
-        +Update()
+        +UpdateConnections()
+        +Poll()
+        +Update() <<obsolete>>
     }
 }
 
