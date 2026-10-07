@@ -80,12 +80,30 @@ This is a diagnostics interval. It is not the simulation timestep and does not l
 
 ---
 
+## Gamepad refresh cadence
+
+| Setting | Type | Default | What it does | When it takes effect |
+| --- | --- | ---: | --- | --- |
+| `GamepadConnectionUpdateFrequencyHz` | `double` | `0.2 Hz` | Controls how often `IGamepadManager.UpdateConnections()` scans for attached/removed controllers. | Read continuously during the input/simulation phase. |
+| `GamepadPollFrequencyHz` | `double` | `60 Hz` | Controls how often `IGamepadManager.Poll()` refreshes buttons, sticks, and triggers for connected controllers. | Read continuously during the input/simulation phase. |
+
+```json
+"GamepadConnectionUpdateFrequencyHz": 0.2,
+"GamepadPollFrequencyHz": 60.0
+```
+
+These frequencies are independent of `TargetFPS`. An uncapped renderer therefore does not create an uncapped gamepad polling loop, and lowering render FPS does not lower the gamepad state-sampling rate.
+
+A value of `0` disables automatic scheduling for that operation. Installing a manager still performs one initial connection/state refresh.
+
+---
+
 ## Input-event throttling
 
 | Setting | Type | Default | What it does |
 | --- | --- | ---: | --- |
 | `TimeBetweenKeyboardEvents` | `double` | `0.03` seconds | Sets the default minimum delay between repeated events for a monitored key. |
-| `TimeBetweenGamepadEvents` | `double` | `0.03` seconds | Sets the default minimum delay between repeated events for a monitored gamepad button. |
+| `TimeBetweenGamepadEvents` | `double` | `0.03` seconds | Sets the default minimum delay between repeated events for a monitored gamepad button; this is separate from the manager's state-poll frequency. |
 | `TimeBetweenMouseEvents` | `double` | `0.03` seconds | Sets the default minimum delay for monitored mouse activity, including high-frequency movement. |
 | `TimeBetweenTouchEvents` | `double` | `0.03` seconds | Sets the default minimum delay between touch-movement events. Touch begin and end transitions are not throttled. |
 
