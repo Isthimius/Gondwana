@@ -84,6 +84,10 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
                 Assert.Equal(102, background.Alpha);
                 Assert.Equal(ProfilerContextInfo.All, diagnosticsWidget.ContextInfo);
                 Assert.NotNull(diagnosticsWidget.AdditionalLinesProvider);
+                Assert.Equal(ProfilerMeasurementVisibilityMode.Selected, diagnosticsWidget.MeasurementVisibilityMode);
+                Assert.True(diagnosticsWidget.IsMeasurementVisible("Render surface", "build.cpu.ms"));
+                Assert.False(diagnosticsWidget.IsMeasurementVisible("Render surface", "presentation.count"));
+                Assert.False(diagnosticsWidget.IsMeasurementVisible("Render surface", "layer.0.query.cpu.ms"));
 
                 var onMouse = typeof(SceneViewerGameHost)
                     .GetMethod("OnMouse", BindingFlags.Instance | BindingFlags.NonPublic)!;
@@ -178,6 +182,7 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
         output.WriteLine("STALLED GL (100 ms/callback)\n" + stalled);
         Assert.Contains("Scene:", running);
         Assert.Contains("Animations: running", running);
+        Assert.Contains("GPU FPS (presentation.count):", running);
         Assert.Contains("Camera:", running);
         Assert.Contains("Layers / grid cells:", running);
         Assert.Contains("MSAA requested / actual / max:", running);
