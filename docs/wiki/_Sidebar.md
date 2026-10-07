@@ -115,6 +115,7 @@
   - [[PopupWidget|Widgets---PopupWidget]]
   - [[SplashScreen|Widgets---SplashScreen]]
   - [[ToastWidget|Widgets---ToastWidget]]
+  - [[TooltipWidget|Widgets---TooltipWidget]]
 
 </details>
 
