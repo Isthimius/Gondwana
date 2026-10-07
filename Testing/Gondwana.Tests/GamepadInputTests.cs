@@ -35,6 +35,7 @@ public sealed class GamepadInputTests
         }
         finally
         {
+            engine.Input.GamepadManager = null;
             engine.Dispose();
             GC.SuppressFinalize(engine);
         }
@@ -51,22 +52,29 @@ public sealed class GamepadInputTests
             GamepadPollFrequencyHz = 2d
         };
 
-        input.GamepadManager = manager;
-        manager.ResetCounts();
+        try
+        {
+            input.GamepadManager = manager;
+            manager.ResetCounts();
 
-        long start = HighResTimer.GetCurrentTick();
+            long start = HighResTimer.GetCurrentTick();
 
-        input.RefreshGamepads(start + HighResTimer.TicksPerSecond / 4, configuration);
-        Assert.Equal(0, manager.ConnectionUpdateCount);
-        Assert.Equal(0, manager.PollCount);
+            input.RefreshGamepads(start + HighResTimer.TicksPerSecond / 4, configuration);
+            Assert.Equal(0, manager.ConnectionUpdateCount);
+            Assert.Equal(0, manager.PollCount);
 
-        input.RefreshGamepads(start + (HighResTimer.TicksPerSecond * 3 / 4), configuration);
-        Assert.Equal(0, manager.ConnectionUpdateCount);
-        Assert.Equal(1, manager.PollCount);
+            input.RefreshGamepads(start + (HighResTimer.TicksPerSecond * 3 / 4), configuration);
+            Assert.Equal(0, manager.ConnectionUpdateCount);
+            Assert.Equal(1, manager.PollCount);
 
-        input.RefreshGamepads(start + (HighResTimer.TicksPerSecond * 21 / 4), configuration);
-        Assert.Equal(1, manager.ConnectionUpdateCount);
-        Assert.Equal(2, manager.PollCount);
+            input.RefreshGamepads(start + (HighResTimer.TicksPerSecond * 21 / 4), configuration);
+            Assert.Equal(1, manager.ConnectionUpdateCount);
+            Assert.Equal(2, manager.PollCount);
+        }
+        finally
+        {
+            input.GamepadManager = null;
+        }
     }
 
     [Fact]
@@ -102,6 +110,7 @@ public sealed class GamepadInputTests
         }
         finally
         {
+            engine.Input.GamepadManager = null;
             GC.SuppressFinalize(engine);
         }
     }
