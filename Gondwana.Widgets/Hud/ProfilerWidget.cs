@@ -3,8 +3,10 @@ using System.Drawing;
 using System.Numerics;
 using System.Text;
 using Gondwana.Diagnostics;
+using Gondwana.Drawing;
 using Gondwana.Drawing.Direct;
 using Gondwana.Rendering;
+using Gondwana.Rendering.Backbuffers;
 using Gondwana.Rendering.Views;
 using Gondwana.Widgets.Controls;
 using SkiaSharp;
@@ -28,6 +30,86 @@ public enum ProfilerMeasurementVisibilityMode
 }
 
 /// <summary>
+/// Selects optional non-profiler runtime context rendered alongside telemetry measurements.
+/// </summary>
+[Flags]
+public enum ProfilerContextInfo
+{
+    /// <summary>
+    /// Displays no supplemental runtime context.
+    /// </summary>
+    None = 0,
+
+    /// <summary>
+    /// Displays scene layer, grid-cell, and active tile-animation counts.
+    /// </summary>
+    Scene = 1 << 0,
+
+    /// <summary>
+    /// Displays camera position, viewport zoom, and viewport dimensions.
+    /// </summary>
+    View = 1 << 1,
+
+    /// <summary>
+    /// Displays logical backbuffer dimensions.
+    /// </summary>
+    Backbuffer = 1 << 2,
+
+    /// <summary>
+    /// Displays target FPS and VSync configuration.
+    /// </summary>
+    EngineConfiguration = 1 << 3,
+
+    /// <summary>
+    /// Displays requested, actual, and maximum MSAA values when the backbuffer is GPU-backed.
+    /// </summary>
+    Msaa = 1 << 4,
+
+    /// <summary>
+    /// Displays every available supplemental runtime-context section.
+    /// </summary>
+    All = Scene | View | Backbuffer | EngineConfiguration | Msaa
+}
+
+/// <summary>
+/// Provides detached telemetry and rendering context to a
+/// <see cref="ProfilerWidget.AdditionalLinesProvider"/> callback.
+/// </summary>
+public sealed class ProfilerWidgetExtensionContext
+{
+    /// <summary>
+    /// Initializes a new profiler-widget extension context.
+    /// </summary>
+    /// <param name="snapshot">The latest detached telemetry snapshot, or <see langword="null"/> before the first window completes.</param>
+    /// <param name="renderSurfaceHost">The render surface host displayed by the widget.</param>
+    /// <param name="view">The view displayed by the widget.</param>
+    public ProfilerWidgetExtensionContext(
+        TelemetrySnapshot? snapshot,
+        RenderSurfaceHostBase renderSurfaceHost,
+        View view)
+    {
+        Snapshot = snapshot;
+        RenderSurfaceHost = renderSurfaceHost ?? throw new ArgumentNullException(nameof(renderSurfaceHost));
+        View = view ?? throw new ArgumentNullException(nameof(view));
+    }
+
+    /// <summary>
+    /// Gets the latest detached telemetry snapshot, or <see langword="null"/> before the first window completes.
+    /// </summary>
+    public TelemetrySnapshot? Snapshot { get; }
+
+    /// <summary>
+    /// Gets the render surface host displayed by the widget.
+    /// </summary>
+    public RenderSurfaceHostBase RenderSurfaceHost { get; }
+
+    /// <summary>
+    /// Gets the view displayed by the widget.
+    /// </summary>
+    public View View { get; }
+}
+
+/// <summary>
 /// Displays detached <see cref="RuntimeProfiler"/> snapshots as a screen-space HUD widget.
 /// </summary>
 /// <remarks>
@@ -48,6 +130,7 @@ public sealed class ProfilerWidget : ContainerWidget
     private long _lastRefreshTimestamp;
     private IDisposable? _collectionRequest;
     private bool _disposed;
+    private string _headerText = "Gondwana Runtime Profiler";
     private bool _showHeader = true;
     private bool _showSnapshotMetadata = true;
     private bool _showSourceHeaders = true;
@@ -168,7 +251,20 @@ public sealed class ProfilerWidget : ContainerWidget
         ProfilerMeasurementVisibilityMode.All;
 
     /// <summary>
-    /// Gets or sets whether the "Gondwana Runtime Profiler" heading is displayed.
+    /// Gets or sets the heading displayed when <see cref="ShowHeader"/> is enabled.
+    /// </summary>
+    public string HeaderText
+    {
+        get => _headerText;
+        set
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(value);
+            _headerText = value;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets whether <see cref="HeaderText"/> is displayed.
     /// </summary>
     public bool ShowHeader
     {
@@ -203,6 +299,25 @@ public sealed class ProfilerWidget : ContainerWidget
         get => _showUnavailableMeasurements;
         set => _showUnavailableMeasurements = value;
     }
+
+    /// <summary>
+    /// Gets or sets the supplemental runtime context rendered before profiler measurements.
+    /// </summary>
+    /// <remarks>
+    /// The default is <see cref="ProfilerContextInfo.None"/> so ordinary profiler displays
+    /// remain telemetry-only unless a consumer explicitly requests broader runtime context.
+    /// </remarks>
+    public ProfilerContextInfo ContextInfo { get; set; } = ProfilerContextInfo.None;
+
+    /// <summary>
+    /// Gets or sets an optional callback that supplies application-specific diagnostic lines.
+    /// </summary>
+    /// <remarks>
+    /// The callback runs on the profiler widget's refresh thread, normally the Engine thread,
+    /// and should remain lightweight. Returned lines are inserted after the header and before
+    /// built-in runtime context and profiler measurements.
+    /// </remarks>
+    public Func<ProfilerWidgetExtensionContext, IEnumerable<string>?>? AdditionalLinesProvider { get; set; }
 
     /// <summary>
     /// Gets whether this widget currently owns an active profiler collection request.
@@ -389,12 +504,24 @@ public sealed class ProfilerWidget : ContainerWidget
         var text = new StringBuilder();
 
         if (ShowHeader)
-            text.AppendLine("Gondwana Runtime Profiler");
+            text.AppendLine(HeaderText);
+
+        View? view = View;
+        if (view is not null)
+        {
+            var extensionContext = new ProfilerWidgetExtensionContext(
+                snapshot,
+                RenderSurfaceHost,
+                view);
+
+            AppendAdditionalLines(text, extensionContext);
+            AppendRuntimeContext(text, extensionContext);
+        }
 
         if (snapshot is null)
         {
             text.Append("Waiting for first completed telemetry window...");
-            return text.ToString();
+            return text.ToString().TrimEnd();
         }
 
         if (ShowSnapshotMetadata)
@@ -454,6 +581,99 @@ public sealed class ProfilerWidget : ContainerWidget
             text.Append("No measurements selected.");
 
         return text.ToString().TrimEnd();
+    }
+
+    private void AppendAdditionalLines(
+        StringBuilder text,
+        ProfilerWidgetExtensionContext context)
+    {
+        IEnumerable<string>? lines = AdditionalLinesProvider?.Invoke(context);
+        if (lines is null)
+            return;
+
+        foreach (string line in lines)
+            text.AppendLine(line ?? string.Empty);
+    }
+
+    private void AppendRuntimeContext(
+        StringBuilder text,
+        ProfilerWidgetExtensionContext context)
+    {
+        if ((ContextInfo & ProfilerContextInfo.Scene) != 0)
+        {
+            var scene = context.RenderSurfaceHost.Scene;
+            long gridCells = scene.SceneLayers.Sum(
+                static layer => (long)layer.GridColumnCount * layer.GridRowCount);
+
+            text.Append("Animating tiles: ")
+                .AppendLine(Tile.TilesAnimating.Count.ToString("N0"));
+            text.Append("Layers / grid cells: ")
+                .Append(scene.SceneLayers.Count)
+                .Append(" / ")
+                .AppendLine(gridCells.ToString("N0"));
+        }
+
+        Rectangle viewport = context.View.Viewport.TargetRectPx;
+        if ((ContextInfo & ProfilerContextInfo.View) != 0)
+        {
+            PointF camera = context.View.Camera.PositionPx;
+            text.Append("Camera: ")
+                .Append(camera.X.ToString("0.0"))
+                .Append(", ")
+                .Append(camera.Y.ToString("0.0"))
+                .Append(" px; zoom: ")
+                .Append(context.View.Viewport.Zoom.ToString("0.000"))
+                .AppendLine("x");
+        }
+
+        bool includeViewport = (ContextInfo & ProfilerContextInfo.View) != 0;
+        bool includeBackbuffer = (ContextInfo & ProfilerContextInfo.Backbuffer) != 0;
+        if (includeViewport && includeBackbuffer)
+        {
+            var backbuffer = context.RenderSurfaceHost.Backbuffer;
+            text.Append("Viewport / backbuffer: ")
+                .Append(viewport.Width)
+                .Append('x')
+                .Append(viewport.Height)
+                .Append(" / ")
+                .Append(backbuffer.Width)
+                .Append('x')
+                .AppendLine(backbuffer.Height.ToString());
+        }
+        else if (includeViewport)
+        {
+            text.Append("Viewport: ")
+                .Append(viewport.Width)
+                .Append('x')
+                .AppendLine(viewport.Height.ToString());
+        }
+        else if (includeBackbuffer)
+        {
+            var backbuffer = context.RenderSurfaceHost.Backbuffer;
+            text.Append("Backbuffer: ")
+                .Append(backbuffer.Width)
+                .Append('x')
+                .AppendLine(backbuffer.Height.ToString());
+        }
+
+        if ((ContextInfo & ProfilerContextInfo.EngineConfiguration) != 0)
+        {
+            text.Append("Target FPS / VSync: ")
+                .Append(Engine.Instance.Configuration.TargetFPS)
+                .Append(" / ")
+                .AppendLine(Engine.Instance.Configuration.VSync.ToString());
+        }
+
+        if ((ContextInfo & ProfilerContextInfo.Msaa) != 0 &&
+            context.RenderSurfaceHost.Backbuffer is GpuBackbuffer gpu)
+        {
+            text.Append("MSAA requested / actual / max: ")
+                .Append(gpu.MsaaSampleCount)
+                .Append(" / ")
+                .Append(gpu.ActualMsaaSampleCount)
+                .Append(" / ")
+                .AppendLine(gpu.MaxSupportedMsaaSampleCount.ToString());
+        }
     }
 
     private bool IsSourceVisible(string sourceName)
