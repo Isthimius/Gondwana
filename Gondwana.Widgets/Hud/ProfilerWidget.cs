@@ -401,7 +401,7 @@ public sealed class ProfilerWidget : ContainerWidget
             text.Append("Generation ")
                 .Append(snapshot.Generation)
                 .Append(" | window ")
-                .Append(snapshot.ElapsedSeconds * 1000d, 0, "0.0")
+                .Append((snapshot.ElapsedSeconds * 1000d).ToString("0.0"))
                 .Append(" ms");
 
             if (snapshot.Truncated)
