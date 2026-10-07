@@ -133,6 +133,7 @@ public sealed class ProfilerWidget : ContainerWidget
     private readonly Dictionary<string, bool> _sourceMeasurementVisibility = new(StringComparer.Ordinal);
     private readonly Dictionary<string, string> _measurementDescriptions = new(StringComparer.Ordinal);
     private readonly Dictionary<int, string> _renderedMetricLines = [];
+    private readonly TooltipWidget _measurementTooltip;
     private Size _size;
     private TimeSpan _refreshInterval = TimeSpan.FromMilliseconds(250);
     private long _lastRefreshTimestamp;
@@ -172,14 +173,16 @@ public sealed class ProfilerWidget : ContainerWidget
         ArgumentNullException.ThrowIfNull(view);
 
         _size = bounds.Size;
+        Rectangle displayBounds = GetDisplayBounds(bounds, showSelector: true);
 
         Display = new LabelWidget(
             renderSurfaceHost,
             view,
-            bounds,
+            displayBounds,
             nickname: $"{Nickname}.display")
         {
-            VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            VerticalScrollEndPaddingPx = 8f
         };
 
         Display
@@ -189,12 +192,28 @@ public sealed class ProfilerWidget : ContainerWidget
             .SetPadding(12f, 10f)
             .EnableWrapping(false);
 
-        Add(Display, Vector2.Zero);
+        Add(
+            Display,
+            new Vector2(
+                displayBounds.X - bounds.X,
+                displayBounds.Y - bounds.Y));
 
-        IsInputEnabled = false;
-        IsPointerInputEnabled = false;
+        _measurementTooltip = new TooltipWidget(
+            renderSurfaceHost,
+            view,
+            new Size(420, 78),
+            $"{Nickname}.tooltip");
+
+        IsInputEnabled = true;
+        IsPointerInputEnabled = true;
         IsKeyboardInputEnabled = false;
         CanReceiveFocus = false;
+
+        PointerMove += OnProfilerPointerMove;
+        PointerLeave += OnProfilerPointerLeave;
+        Display.PointerMove += OnProfilerPointerMove;
+        Display.PointerLeave += OnProfilerPointerLeave;
+        Display.MouseWheel += OnProfilerMouseWheel;
 
         Display.SetText("Gondwana Runtime Profiler\nInactive. Call Show() to collect telemetry.");
         SetIsVisible(false);
