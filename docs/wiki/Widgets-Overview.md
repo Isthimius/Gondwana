@@ -217,8 +217,10 @@ A world-space text label that automatically follows a `Sprite`, suitable for NPC
 ### [[ProfilerWidget|Widgets---ProfilerWidget]]
 
 A view-level, scrollable runtime diagnostics HUD backed by `Engine.Instance.Profiler`.
-It owns telemetry collection only while shown and can include or suppress individual
-measurements and sources.
+It owns telemetry collection only while shown, can include or suppress individual
+measurements and sources, can opt into Scene/View/backbuffer/configuration/MSAA
+context, and supports application-defined extension lines. The saved-scene Scene
+Viewer dogfoods this widget for its F3 diagnostics overlay.
 
 ---
 
