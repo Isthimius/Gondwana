@@ -1,4 +1,8 @@
+using System.Drawing;
 using Gondwana.Diagnostics;
+using Gondwana.Rendering;
+using Gondwana.Rendering.Views;
+using Gondwana.Widgets.Hud;
 
 namespace Gondwana.Examples;
 
@@ -8,6 +12,23 @@ public static class RuntimeTelemetryExample
     /// <summary>Starts a request to retain for the application's diagnostic session.</summary>
     /// <returns>A request that the application must dispose when finished.</returns>
     public static IDisposable StartCollection() => Engine.Instance.Profiler.Start();
+
+    /// <summary>Creates an in-game profiler widget that owns collection while it is shown.</summary>
+    /// <param name="host">Render surface host for the game.</param>
+    /// <param name="view">View that should contain the diagnostics HUD.</param>
+    /// <returns>A profiler widget. Call Show/Hide to control both display and its collection request.</returns>
+    public static ProfilerWidget CreateWidget(RenderSurfaceHostBase host, View view)
+    {
+        var widget = new ProfilerWidget(
+            host,
+            view,
+            new Rectangle(12, 12, 700, 520));
+
+        // Hide any metric globally, or target a single named source.
+        widget.SetMeasurementVisible("layers.omitted", false);
+        widget.SetMeasurementVisible("Render surface", "snapshot.commands.approximate", false);
+        return widget;
+    }
 
     /// <summary>Formats an already detached snapshot at the application's chosen display cadence.</summary>
     /// <param name="profiler">Usually Engine.Instance.Profiler.</param>
