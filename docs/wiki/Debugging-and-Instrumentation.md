@@ -130,6 +130,14 @@ measurement definitions and widget options.
 
 The saved-scene **Scene Viewer** provides a built-in **F3 diagnostics overlay** for separating desktop GPU producer and consumer costs. This is the viewer opened by the standalone `.gscn` Scene editor/Studio **View Scene** workflow (and it can also be launched directly); F3 is therefore a Scene Viewer control, not a global Gondwana diagnostic shortcut. The overlay is implemented with `ProfilerWidget`, using its generic runtime-context options plus an extension callback for viewer-specific lines. It reports:
 
+The Scene Viewer uses a curated default metric set and adds an explicit
+`GPU FPS (presentation.count)` summary. Open **Metrics...** inside the overlay to
+toggle individual sources or measurements, including lower-level/per-layer details
+that are hidden by default. Hover a displayed measurement for its definition;
+**Hover definitions** in the selector turns that help on or off. Scrolling over the
+diagnostics panel scrolls its contents rather than changing the Scene Viewer camera
+zoom.
+
 - Gross CPS and Engine foreground FPS
 - GPU presentation FPS
 - snapshot build, query/sort, command-recording, and overlay-recording time
