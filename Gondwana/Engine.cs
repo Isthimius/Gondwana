@@ -272,6 +272,8 @@ public sealed class Engine : IDisposable
     /// </param>
     /// <param name="gamepadManager">
     /// Optional <see cref="IGamepadManager{T}"/> instance used to initialize the gamepad subsystem.
+    /// When <see langword="null"/>, an already configured <see cref="EngineInputSystems.GamepadManager"/>
+    /// is preserved rather than cleared.
     /// </param>
     /// <seealso cref="Start(SynchronizationContext)"/>
     /// <seealso cref="Stop"/>
