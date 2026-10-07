@@ -134,6 +134,14 @@ public sealed class GamepadInputTests
         Assert.Contains("RightTrigger", adapter.PressedButtons);
         Assert.Equal(0f, adapter.LeftTrigger);
         Assert.Equal(220f / 255f, adapter.RightTrigger);
+
+        adapter.ClearState();
+
+        Assert.Empty(adapter.PressedButtons);
+        Assert.Null(adapter.LeftStick);
+        Assert.Null(adapter.RightStick);
+        Assert.Equal(0f, adapter.LeftTrigger);
+        Assert.Equal(0f, adapter.RightTrigger);
     }
 
     private static Engine CreateEngineInstance() =>
