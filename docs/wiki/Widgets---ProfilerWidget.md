@@ -3,7 +3,9 @@
 `ProfilerWidget` is a view-level HUD for displaying the opt-in runtime telemetry
 collected by `Engine.Instance.Profiler`. It is intended for development and
 diagnostic builds where an ordinary game needs the same underlying measurements
-available to Scene Viewer F3.
+available to the saved-scene Scene Viewer's F3 diagnostics overlay. That F3 binding
+belongs to the Scene Viewer used by the `.gscn` editor/Studio workflow (or launched
+directly); it is not a general Engine hotkey.
 
 The widget lives in:
 
@@ -97,7 +99,8 @@ The following properties control presentation:
 | `RefreshInterval` | 250 ms | How often the widget reads/formats the latest completed snapshot; valid range 10 ms–1 minute |
 | `MeasurementVisibilityMode` | `All` | Show all otherwise-eligible metrics or only explicitly selected ones |
 | `ShowUnavailableMeasurements` | `false` | Include unsupported/not-applicable/not-yet-sampled rows |
-| `ShowHeader` | `true` | Show the Gondwana Runtime Profiler heading |
+| `ShowHeader` | `true` | Show the profiler heading |
+| `HeaderText` | `Gondwana Runtime Profiler` | Customize the profiler heading |
 | `ShowSnapshotMetadata` | `true` | Show generation, window duration, and truncation state |
 | `ShowSourceHeaders` | `true` | Show source name/backend headings |
 | `Size` | constructor bounds | Resize while preserving the widget position |
@@ -106,6 +109,59 @@ The fluent `SetColors`, `SetFont`, and `SetProfilerZOrder` methods adjust the
 visual presentation. `Display` exposes the underlying `LabelWidget` for advanced
 label/scrollbar customization.
 
+## Optional runtime context
+
+Profiler snapshots intentionally contain neutral detached measurements rather than
+live Scene/View objects. For a diagnostic HUD, `ProfilerWidget` can optionally add
+cheap current runtime context at display-refresh cadence:
+
+```csharp
+profiler.ContextInfo =
+    ProfilerContextInfo.Scene |
+    ProfilerContextInfo.View |
+    ProfilerContextInfo.Backbuffer |
+    ProfilerContextInfo.EngineConfiguration |
+    ProfilerContextInfo.Msaa;
+```
+
+`ProfilerContextInfo.All` enables all of those sections. The default is
+`ProfilerContextInfo.None`, so creating a normal profiler HUD does not add scene,
+camera, backbuffer, configuration, or MSAA inspection.
+
+The context sections can report:
+
+- active animating tiles, Scene layer count, and total grid-cell count;
+- camera position, viewport zoom, and viewport dimensions;
+- logical backbuffer dimensions;
+- target FPS and VSync; and
+- requested, actual, and maximum MSAA values for GPU backbuffers.
+
+These are display-time values, not telemetry samples and not retained in profiler
+history.
+
+## Application-specific extension lines
+
+`AdditionalLinesProvider` is an optional extension point for application/tool-specific
+output. It receives a `ProfilerWidgetExtensionContext` containing the latest detached
+snapshot, render-surface host, and View:
+
+```csharp
+profiler.AdditionalLinesProvider = context =>
+[
+    $"Level: {currentLevelName}",
+    $"Player state: {player.State}"
+];
+```
+
+The callback runs at the widget refresh cadence, normally on the Engine thread, so it
+should remain lightweight.
+
+The saved-scene Scene Viewer is the first built-in dogfood consumer of this extension.
+Its F3 diagnostics overlay sets `ContextInfo = ProfilerContextInfo.All` and uses
+`AdditionalLinesProvider` for only the viewer-specific Scene/Stress and F4
+animation-state lines. All profiler measurements and generic runtime context remain
+owned by `ProfilerWidget`.
+
 ## Performance and ownership
 
 The widget does not walk live scenes or renderer object graphs. It calls
@@ -113,7 +169,7 @@ The widget does not walk live scenes or renderer object graphs. It calls
 data at the widget refresh cadence.
 
 Each widget owns exactly one collection request while shown. Multiple
-`ProfilerWidget` instances, Scene Viewer F3, or application code can collect
+`ProfilerWidget` instances, the saved-scene Scene Viewer's F3 diagnostics overlay, or application code can collect
 simultaneously; collection stops only after the final request is released.
 
 For measurement definitions, backend support, aggregation behavior, and measured
