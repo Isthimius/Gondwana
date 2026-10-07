@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using Gondwana;
+using Gondwana.Diagnostics;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Logging;
 using Gondwana.WinForms;
@@ -15,6 +16,9 @@ namespace Slider
 {
     public partial class PuzzleForm : Form
     {
+        private IDisposable? _profilerRequest;
+        private double _lastProfilerSnapshotEnd;
+
         public static string AssetDir;
 
         public Bitmap picBoxBmp;
@@ -65,7 +69,8 @@ namespace Slider
                     Gondwana.Engine.Instance.Configuration.TargetFPS = 120;
                     Gondwana.Engine.Instance.Start(SynchronizationContext.Current!);
 
-                    Gondwana.Engine.Instance.CPSCalculated += Engine_CPSCalculated;
+                    _profilerRequest = Gondwana.Engine.Instance.Profiler.Start();
+                    Gondwana.Engine.Instance.AfterBackgroundTasksExecute += UpdateProfilerLabel;
                 }
 
                 Engine.Instance.InitializeWinFormsKeyboardAdapter(winFormBitmapRenderSurfaceControl1);
@@ -101,11 +106,42 @@ namespace Slider
             //MidiFileReader.RegisterDefaultReaders();
         }
 
-        private void Engine_CPSCalculated(CyclesPerSecondCalculatedEventArgs e)
+        private void UpdateProfilerLabel()
         {
-            lblInfo.Text = string.Format("FPS: {0}\r\nCPS: {1}\r\nSampling Time: {2}",
-                e.NetCPS.ToString("N2"), e.GrossCPS.ToString("N2"), e.SampleTime.ToString("N2"));
+            var snapshot = Gondwana.Engine.Instance.Profiler.GetLatestSnapshot();
+            if (snapshot is null || snapshot.EndedSeconds <= _lastProfilerSnapshotEnd)
+                return;
+
+            _lastProfilerSnapshotEnd = snapshot.EndedSeconds;
+
+            var engineSource = snapshot.Sources.FirstOrDefault(source => source.Backend == "Core");
+            double? cps = GetRate(engineSource, "cycle.cpu.ms", snapshot.ElapsedSeconds);
+            double? foregroundFps = GetRate(engineSource, "foreground.cpu.ms", snapshot.ElapsedSeconds);
+
+            if (lblInfo.IsDisposed || !lblInfo.IsHandleCreated)
+                return;
+
+            lblInfo.BeginInvoke((Action)(() =>
+                lblInfo.Text = string.Format(
+                    "FPS: {0}\r\nCPS: {1}\r\nSampling Time: {2}",
+                    FormatRate(foregroundFps),
+                    FormatRate(cps),
+                    snapshot.ElapsedSeconds.ToString("N2"))));
         }
+
+        private static double? GetRate(
+            TelemetrySourceSnapshot? source,
+            string metricKey,
+            double elapsedSeconds)
+        {
+            return elapsedSeconds > 0d &&
+                source?.Metrics.TryGetValue(metricKey, out var metric) == true &&
+                metric.Availability == TelemetryAvailability.Available
+                    ? metric.Count / elapsedSeconds
+                    : null;
+        }
+
+        private static string FormatRate(double? rate) => rate?.ToString("N2") ?? "n/a";
 
         //private void Sprites_SpriteMovePointFinished(SpriteMovePointFinishedEventArgs e)
         //{
@@ -171,6 +207,10 @@ namespace Slider
 
         private void PuzzleForm_FormClosed(object sender, FormClosedEventArgs e)
         {
+            Gondwana.Engine.Instance.AfterBackgroundTasksExecute -= UpdateProfilerLabel;
+            _profilerRequest?.Dispose();
+            _profilerRequest = null;
+
             if (Program.puzzle != null)
                 Program.puzzle.Dispose();
         }
