@@ -114,6 +114,33 @@ For a bitmap surface, this is a useful approximation of the engine-driven frame 
 
 With one GPU surface, it represents that surface's observed presentation rate. With multiple GPU surfaces, Gondwana currently reports their combined frame count over the sampling window rather than a per-surface rate. On WebGL, this count includes browser paints that re-present an existing GPU backbuffer without a new Scene render.
 
+### In-game runtime profiler widget
+
+For an ordinary game, `Gondwana.Widgets` provides a view-level `ProfilerWidget`
+that reads `Engine.Instance.Profiler` snapshots and formats them as a scrollable HUD:
+
+```csharp
+using System.Drawing;
+using Gondwana.Widgets.Hud;
+
+var diagnostics = new ProfilerWidget(
+    host,
+    view,
+    new Rectangle(12, 12, 700, 520));
+
+diagnostics.SetMeasurementVisible("layers.omitted", false);
+diagnostics.Show();
+```
+
+Showing the widget acquires its own profiler collection request. Hiding or disposing
+it releases only that request, so it can coexist with Scene Viewer F3 or another
+telemetry consumer. Individual measurements and entire sources can be shown or hidden,
+and selected mode can be used as an explicit allow-list when a compact diagnostic view
+is preferable.
+
+See [[Runtime Telemetry]] and [[ProfilerWidget|Widgets---ProfilerWidget]] for the
+measurement definitions and widget options.
+
 ### Scene Viewer F3 diagnostics
 
 The Scene Viewer provides a built-in F3 diagnostics overlay for separating desktop GPU producer and consumer costs. It reports:
