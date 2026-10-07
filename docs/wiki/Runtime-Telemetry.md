@@ -1,7 +1,7 @@
 # Runtime telemetry
 
 `Engine.Instance.Profiler` provides opt-in CPU measurements without SceneViewer or
-Studio. It is disabled until an application or F3 holds a collection request.
+Studio. It is disabled until an application, `ProfilerWidget`, or F3 holds a collection request.
 
 The repository also includes `docs/examples/RuntimeTelemetryExample.cs`, compiled
 and exercised by `Gondwana.Tests` without a viewer dependency.
@@ -33,8 +33,71 @@ var recent = profiler.GetHistory(); // non-consuming, oldest to newest
 // Dispose collection when this consumer no longer needs measurements.
 ```
 
+## In-game ProfilerWidget
+
+Games that reference `Gondwana.Widgets` can display the same detached runtime telemetry
+without building their own diagnostics text:
+
+```csharp
+using System.Drawing;
+using Gondwana.Widgets.Hud;
+
+var profilerWidget = new ProfilerWidget(
+    host,
+    view,
+    new Rectangle(12, 12, 700, 520));
+
+profilerWidget.SetMeasurementVisible("layers.omitted", false);
+profilerWidget.Show();
+```
+
+`ProfilerWidget` is a view-level HUD widget. `Show()` acquires one independent
+`Engine.Instance.Profiler.Start()` request, while `Hide()` and `Dispose()` release
+that request. Merely constructing the widget does not keep telemetry collection active.
+
+By default it displays all sampled measurements from all visible sources and omits
+`Unsupported`, `NotApplicable`, and `NotYetSampled` rows. The label is vertically
+scrollable when the selected measurements exceed its bounds. Display refresh defaults
+to 250 ms and is independent of the profiler's aggregation interval.
+
+Individual measurements can be hidden or shown globally:
+
+```csharp
+profilerWidget.SetMeasurementVisible("snapshot.age.ms", false);
+profilerWidget.SetMeasurementVisible("cycle.cpu.ms", true);
+```
+
+Or for one named source:
+
+```csharp
+profilerWidget.SetMeasurementVisible(
+    "Render surface",
+    "snapshot.commands.approximate",
+    false);
+```
+
+For a compact allow-list, switch to selected mode and explicitly enable only the
+measurements needed for the current investigation:
+
+```csharp
+profilerWidget.MeasurementVisibilityMode =
+    ProfilerMeasurementVisibilityMode.Selected;
+
+profilerWidget
+    .SetMeasurementVisible("cycle.cpu.ms", true)
+    .SetMeasurementVisible("foreground.cpu.ms", true)
+    .SetMeasurementVisible("presentation.count", true)
+    .SetMeasurementVisible("build.cpu.ms", true)
+    .SetMeasurementVisible("replay.cpu.ms", true);
+```
+
+Whole sources can be hidden with `SetSourceVisible`. `ShowUnavailableMeasurements`,
+`ShowHeader`, `ShowSnapshotMetadata`, `ShowSourceHeaders`, `RefreshInterval`,
+font/colors, size, and Z-order are also configurable. See
+[[ProfilerWidget|Widgets---ProfilerWidget]] for the complete widget usage notes.
+
 Do not start and dispose the request every time a display refreshes. Each consumer
-holds its own request. Hiding F3 releases only F3's request. The last release stops
+holds its own request. Hiding a `ProfilerWidget` releases only that widget's request, and hiding F3 releases only F3's request. The last release stops
 collection and publishes the final partial window, if time has elapsed. Engine
 disposal invalidates all requests and retires registered sources.
 Engine owns the shared collector; application consumers own their collection requests.
