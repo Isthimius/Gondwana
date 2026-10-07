@@ -62,22 +62,22 @@ public sealed class XInputGamepadAdapter : IGamepadAdapter
         if (GetState(_controllerIndex, out var state) != 0)
             return; // Controller not connected
 
+        LeftStick = GamepadStickState.FromRaw16(state.Gamepad.sThumbLX, state.Gamepad.sThumbLY);
+        RightStick = GamepadStickState.FromRaw16(state.Gamepad.sThumbRX, state.Gamepad.sThumbRY);
+        LeftTrigger = state.Gamepad.bLeftTrigger / 255f;
+        RightTrigger = state.Gamepad.bRightTrigger / 255f;
+
         var buttons = (XInputButtons)state.Gamepad.wButtons;
         foreach (XInputButtons button in Enum.GetValues<XInputButtons>())
         {
             if ((buttons & button) != 0)
                 _pressedButtons.Add(button.ToString());
-
-            if (LeftTrigger > 0.5f)
-                _pressedButtons.Add("LeftTrigger");
-
-            if (RightTrigger > 0.5f)
-                _pressedButtons.Add("RightTrigger");
         }
 
-        LeftStick = GamepadStickState.FromRaw16(state.Gamepad.sThumbLX, state.Gamepad.sThumbLY);
-        RightStick = GamepadStickState.FromRaw16(state.Gamepad.sThumbRX, state.Gamepad.sThumbRY);
-        LeftTrigger = state.Gamepad.bLeftTrigger / 255f;
-        RightTrigger = state.Gamepad.bRightTrigger / 255f;
+        if (LeftTrigger > 0.5f)
+            _pressedButtons.Add("LeftTrigger");
+
+        if (RightTrigger > 0.5f)
+            _pressedButtons.Add("RightTrigger");
     }
 }
