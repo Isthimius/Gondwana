@@ -134,6 +134,7 @@
   - [[GSND|GSND-Files]]
   - [[GSCN|GSCN-Files]]
   - [[GSPR|GSPR-Files]]
+- [[External Asset Importing]]
 
 </details>
 
@@ -148,7 +149,6 @@
 - [[Adding a New Deployable Project]]
 - [[GitHub Automation and Workflows]]
 - [[Tooling Scripts]]
-- [[External Asset Importing]]
 - [[Gondwana MCP Service|Gondwana MCP Service — Setup, Deployment, and Maintenance Guide]]
 
 </details>
