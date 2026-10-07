@@ -119,6 +119,25 @@
 
 </details>
 
+
+<details>
+<summary><strong>Studio & Desktop Tools</strong></summary>
+
+- [[Studio & Desktop Tools|Studio-and-Desktop-Tools]]
+- [[Gondwana Studio]]
+- [[Standalone Desktop Tools]]
+  - [Scene Viewer](Standalone-Desktop-Tools#scene-viewer)
+- <strong>Content Editors</strong>
+  - [[GAF / ZIP|Assets Files]]
+  - [[GTS|GTS-Files]]
+  - [[GANI|GANI-Files]]
+  - [[GSND|GSND-Files]]
+  - [[GSCN|GSCN-Files]]
+  - [[GSPR|GSPR-Files]]
+- [[External Asset Importing]]
+
+</details>
+
 <details>
 <summary><strong>Advanced Topics</strong></summary>
 
@@ -130,7 +149,6 @@
 - [[Adding a New Deployable Project]]
 - [[GitHub Automation and Workflows]]
 - [[Tooling Scripts]]
-- [[External Asset Importing]]
 - [[Gondwana MCP Service|Gondwana MCP Service — Setup, Deployment, and Maintenance Guide]]
 
 </details>

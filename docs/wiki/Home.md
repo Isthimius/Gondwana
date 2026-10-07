@@ -509,6 +509,13 @@ gondwana
 
 Use the CLI to create projects, inspect the development environment, work with asset packages, and manage templates.
 
+
+### Studio and Desktop Authoring Tools
+
+Gondwana also includes optional Windows authoring tools for GAF, GTS, GANI, GSND, GSCN, and GSPR content. The standalone editors provide the reusable authoring surfaces; Gondwana Studio hosts those same editors in one integrated shell.
+
+See [[Studio & Desktop Tools]] for the tooling map, [[Gondwana Studio]] for the integrated shell, and [[Standalone Desktop Tools]] for the focused editors and runtime Scene Viewer.
+
 ---
 
 # Key Design Principles
