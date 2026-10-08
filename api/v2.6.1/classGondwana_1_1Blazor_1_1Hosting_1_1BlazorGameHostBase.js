@@ -1,0 +1,26 @@
+var classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase =
+[
+    [ "BlazorGameHostBase", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#a6360a4141eedfb73c227ea4ee7545d32", null ],
+    [ "BindScene", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#ad17dbb0044aa6e3cbef26cf36a3fc3c1", null ],
+    [ "BindSceneCore", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#a67d831ff39286a67a2ea02002a07e35b", null ],
+    [ "ConfigureGamepads", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#a2d8312d6f1cbe882eba31863d82d68ee", null ],
+    [ "ConfigureKeyboard", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#a38f423e62b957f6df6ae0d897365ee5d", null ],
+    [ "ConfigureMouse", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#a9c735921495c077fa130b6a80edd5e40", null ],
+    [ "ConfigurePlatform", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#aabdf115c481ef86889610f97b6cb11a7", null ],
+    [ "ConfigureTouch", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#a42c93b1b871004816a9552c2049df413", null ],
+    [ "GetSynchronizationContext", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#aea0b6a49597184902c42ab00a6ece9ec", null ],
+    [ "OnAnimationFrame", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#aeaf838a8b3f9956d59d89ed99a81515e", null ],
+    [ "OnBlazorDisposed", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#a4471bc1517def88974c7ea981fe518ac", null ],
+    [ "OnConfigureGamepads", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#aadbd6faeeee5bcf0b955cfce80e04155", null ],
+    [ "OnConfigurePlatform", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#ac8205eddbe1c3b7d9efff97f319a1132", null ],
+    [ "OnDisposed", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#af1c9eb47d132c8e0f8f84545c6b773e7", null ],
+    [ "OnInputConfigured", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#aab637bc4f07665284daad85b5527a624", null ],
+    [ "OnKeyboardAdapterInitialized", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#a1e9fce651464e7749f68c8cdcc8742b0", null ],
+    [ "OnMouseAdapterInitialized", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#a35612b4c617184201c11002b03d4bbd1", null ],
+    [ "OnTouchAdapterInitialized", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#abd49503cf34148d6b991a43dc9c80e0b", null ],
+    [ "StartEngineCore", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#af042d53e1d872cdc1590d4a3792e39b7", null ],
+    [ "StopEngineCore", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#abddb33965cdcc6ef7ad758ecfc2dcc19", null ],
+    [ "RenderSurfaceComponent", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#a0008b1dd76fbc34bf6f89acaad970c0e", null ],
+    [ "RenderSurfaceDrivesBrowserFrames", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#ae3aadf6bfbe7fb8c7d38d754f6210b52", null ],
+    [ "RenderSurfaceHost", "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#aa5e44643f3870a1b9459ab26595ee6c9", null ]
+];
