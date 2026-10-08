@@ -114,13 +114,37 @@ Inheritance diagram for Gondwana.Audio.Browser.BrowserAudioBackend:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a72ae6498c58d2699af2f117a49684ce8" id="r_a72ae6498c58d2699af2f117a49684ce8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interfaceGondwana_1_1Audio_1_1IAudioPlaybackHandle.html">IAudioPlaybackHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a72ae6498c58d2699af2f117a49684ce8">CreateFromBytes</a> (string key, byte[] data, string fileNameOrExtension, float volume, float pan, float playbackSpeed)</td></tr>
-<tr class="memdesc:a72ae6498c58d2699af2f117a49684ce8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a playback handle from raw audio bytes. The implementation is responsible for interpreting the provided data according to the file hint.  <br /></td></tr>
+<tr class="memdesc:a72ae6498c58d2699af2f117a49684ce8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a playback handle from raw audio bytes. The implementation is responsible for interpreting the provided data according to the file hint.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>A unique key for the audio resource.</td></tr>
+    <tr><td class="paramname">data</td><td>Raw audio data bytes.</td></tr>
+    <tr><td class="paramname">fileNameOrExtension</td><td>A file name or extension used as a hint for format detection (for example ".wav").</td></tr>
+    <tr><td class="paramname">volume</td><td>Initial volume (0.0 to 1.0).</td></tr>
+    <tr><td class="paramname">pan</td><td>Initial stereo pan (-1.0 to 1.0).</td></tr>
+    <tr><td class="paramname">playbackSpeed</td><td>Initial playback speed.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An <a class="el" href="interfaceGondwana_1_1Audio_1_1IAudioPlaybackHandle.html" title="Backend-provided playback handle used by AudioResource. Implements IDisposable to allow releasing any...">IAudioPlaybackHandle</a> representing the created playback instance.</dd></dl>
+  <br /></td></tr>
 <tr class="memitem:a3641158621570a76e6c0d39b60222025" id="r_a3641158621570a76e6c0d39b60222025"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interfaceGondwana_1_1Audio_1_1IAudioPlaybackHandle.html">IAudioPlaybackHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3641158621570a76e6c0d39b60222025">CreateFromUri</a> (string key, string uri, float volume, float pan, float playbackSpeed)</td></tr>
-<tr class="memdesc:a3641158621570a76e6c0d39b60222025"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a playback handle that plays audio from the specified URI. This is intended for backends that can stream or reference remote/local URIs directly (for example browser audio backends).  <br /></td></tr>
+<tr class="memdesc:a3641158621570a76e6c0d39b60222025"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a playback handle that plays audio from the specified URI. This is intended for backends that can stream or reference remote/local URIs directly (for example browser audio backends).<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>A unique key for the audio resource.</td></tr>
+    <tr><td class="paramname">uri</td><td>The URI that identifies the audio resource.</td></tr>
+    <tr><td class="paramname">volume</td><td>Initial volume (0.0 to 1.0).</td></tr>
+    <tr><td class="paramname">pan</td><td>Initial stereo pan (-1.0 to 1.0).</td></tr>
+    <tr><td class="paramname">playbackSpeed</td><td>Initial playback speed.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An <a class="el" href="interfaceGondwana_1_1Audio_1_1IAudioPlaybackHandle.html" title="Backend-provided playback handle used by AudioResource. Implements IDisposable to allow releasing any...">IAudioPlaybackHandle</a> representing the created playback instance.</dd></dl>
+  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a0c7ddc8a55816ae9306db193b92a85a2" id="r_a0c7ddc8a55816ae9306db193b92a85a2"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioBackend.html">BrowserAudioBackend</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0c7ddc8a55816ae9306db193b92a85a2">Instance</a> = new()<code> [get]</code></td></tr>
+<tr class="memdesc:a0c7ddc8a55816ae9306db193b92a85a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the shared instance.  <br /></td></tr>
 <tr class="memitem:a2dc48f7a6c3c292856d2a1c0184e5ad7" id="r_a2dc48f7a6c3c292856d2a1c0184e5ad7"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2dc48f7a6c3c292856d2a1c0184e5ad7">Name</a><code> [get]</code></td></tr>
 <tr class="memdesc:a2dc48f7a6c3c292856d2a1c0184e5ad7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the human-readable name of the backend implementation.  <br /></td></tr>
 </table>
@@ -168,8 +192,7 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Creates a playback handle from raw audio bytes. The implementation is responsible for interpreting the provided data according to the file hint. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Creates a playback handle from raw audio bytes. The implementation is responsible for interpreting the provided data according to the file hint.<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key</td><td>A unique key for the audio resource.</td></tr>
     <tr><td class="paramname">data</td><td>Raw audio data bytes.</td></tr>
@@ -181,10 +204,11 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>An <a class="el" href="interfaceGondwana_1_1Audio_1_1IAudioPlaybackHandle.html" title="Backend-provided playback handle used by AudioResource. Implements IDisposable to allow releasing any...">IAudioPlaybackHandle</a> representing the created playback instance.</dd></dl>
+ </p>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Audio_1_1IAudioBackend.html#ab8d3128a05169c39d44705304da85ae6">Gondwana.Audio.IAudioBackend</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BrowserAudioBackend_8cs_source.html#l00015">15</a> of file <a class="el" href="BrowserAudioBackend_8cs_source.html">BrowserAudioBackend.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrowserAudioBackend_8cs_source.html#l00020">20</a> of file <a class="el" href="BrowserAudioBackend_8cs_source.html">BrowserAudioBackend.cs</a>.</p>
 
 </div>
 </div>
@@ -222,8 +246,7 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Creates a playback handle that plays audio from the specified URI. This is intended for backends that can stream or reference remote/local URIs directly (for example browser audio backends). </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Creates a playback handle that plays audio from the specified URI. This is intended for backends that can stream or reference remote/local URIs directly (for example browser audio backends).<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key</td><td>A unique key for the audio resource.</td></tr>
     <tr><td class="paramname">uri</td><td>The URI that identifies the audio resource.</td></tr>
@@ -234,6 +257,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>An <a class="el" href="interfaceGondwana_1_1Audio_1_1IAudioPlaybackHandle.html" title="Backend-provided playback handle used by AudioResource. Implements IDisposable to allow releasing any...">IAudioPlaybackHandle</a> representing the created playback instance.</dd></dl>
+ </p>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Audio_1_1IAudioBackend.html#aca661b84eec5393b59da2b6fbbccfafa">Gondwana.Audio.IAudioBackend</a>.</p>
 
@@ -260,7 +284,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BrowserAudioBackend_8cs_source.html#l00011">11</a> of file <a class="el" href="BrowserAudioBackend_8cs_source.html">BrowserAudioBackend.cs</a>.</p>
+<p>Gets the shared instance. </p>
+
+<p class="definition">Definition at line <a class="el" href="BrowserAudioBackend_8cs_source.html#l00014">14</a> of file <a class="el" href="BrowserAudioBackend_8cs_source.html">BrowserAudioBackend.cs</a>.</p>
 
 </div>
 </div>
@@ -288,7 +314,7 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Audio_1_1IAudioBackend.html#adbab83d0403e1c9ec41660b254450440">Gondwana.Audio.IAudioBackend</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BrowserAudioBackend_8cs_source.html#l00013">13</a> of file <a class="el" href="BrowserAudioBackend_8cs_source.html">BrowserAudioBackend.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BrowserAudioBackend_8cs_source.html#l00017">17</a> of file <a class="el" href="BrowserAudioBackend_8cs_source.html">BrowserAudioBackend.cs</a>.</p>
 
 </div>
 </div>

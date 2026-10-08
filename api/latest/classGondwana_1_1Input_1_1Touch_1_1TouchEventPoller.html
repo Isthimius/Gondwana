@@ -278,7 +278,7 @@ Events</h2></td></tr>
 <p>Starts or reconfigures touch input monitoring with the specified settings. This method creates a new configuration that controls event throttling and pause state. Call this method to begin monitoring touch input or to change monitoring settings. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">timeBetweenEvents</td><td>The minimum time interval in seconds between consecutive touch movement events. <a class="el" href="namespaceGondwana_1_1Input_1_1Touch.html">Touch</a> beginnings, endings, and cancellations are never throttled. Use the default time between touch events from Engine.Configuration.TimeBetweenTouchEvents when a value less than zero is supplied. A value of 0 means no throttling. </td></tr>
+    <tr><td class="paramname">timeBetweenEvents</td><td>The minimum time interval in seconds between consecutive touch movement events. <a class="el" href="namespaceGondwana_1_1Input_1_1Touch.html">Touch</a> beginnings, endings, and cancellations are never throttled. Use the default time between touch events from <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#af6271aca8aee604872e689b753cb57eb" title="Minimum time (in seconds) allowed between Touch events. Use this to prevent flooding the system with ...">Gondwana.Configuration.EngineConfiguration.TimeBetweenTouchEvents</a> when a value less than zero is supplied. A value of 0 means no throttling. </td></tr>
     <tr><td class="paramname">isPaused</td><td>A value indicating whether event processing for touch should be initially paused. When paused, touch will not generate events even if contacts change. Default is <code>false</code>. </td></tr>
   </table>
   </dd>

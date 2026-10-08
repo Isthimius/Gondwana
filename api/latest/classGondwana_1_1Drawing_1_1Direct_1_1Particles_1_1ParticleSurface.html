@@ -542,7 +542,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Renders all live particles to the current backbuffer. </p>
-<p>Draws each particle as either a Skia circle or a textured quad (if a sprite is provided). Alpha fades with age. Uses additive blending (SkiaSharp.SKBlendMode.Plus) by default for bright/glowy effects. </p>
+<p>Draws each particle as either a Skia circle or a textured quad (if a sprite is provided). Alpha fades with age. Uses additive blending (global::SkiaSharp.SKBlendMode.Plus) by default for bright/glowy effects. </p>
 <p>Do not call this directly. Once the system is registered with <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingManager.html" title="Manages the lifecycle, registration, and retrieval of all direct drawing objects in the Gondwana engi...">DirectDrawingManager</a>, the manager invokes <code>Render()</code> during the host's render pass. </p>
 <div class="fragment"><div class="line"><span class="comment">// One-time setup</span></div>
 <div class="line">directDrawingManager.AddOrReplace(particles);</div>
@@ -552,8 +552,15 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"> </div>
 <div class="line"><span class="comment">// If you must force an extra redraw (e.g., after a burst):</span></div>
 <div class="line">particles.Invalidate();       <span class="comment">// mark dirty so the manager re-renders</span></div>
-</div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="ParticleSurface_8cs_source.html#l00405">405</a> of file <a class="el" href="ParticleSurface_8cs_source.html">ParticleSurface.cs</a>.</p>
+</div><!-- fragment --> <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">backbuffer</td><td>The backbuffer receiving the drawing commands.</td></tr>
+    <tr><td class="paramname">destRectScreen</td><td>The destination rectangle in screen pixels.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="ParticleSurface_8cs_source.html#l00407">407</a> of file <a class="el" href="ParticleSurface_8cs_source.html">ParticleSurface.cs</a>.</p>
 
 </div>
 </div>

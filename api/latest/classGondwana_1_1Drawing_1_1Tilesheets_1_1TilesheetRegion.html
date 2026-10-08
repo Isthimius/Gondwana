@@ -111,9 +111,13 @@ Inheritance diagram for Gondwana.Drawing.Tilesheets.TilesheetRegion:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a1f5a8a145a4db0265ec7d19f2de04d03" id="r_a1f5a8a145a4db0265ec7d19f2de04d03"><td class="memItemLeft" align="right" valign="top">SKImage?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1f5a8a145a4db0265ec7d19f2de04d03">GetImage</a> (int x, int y)</td></tr>
+<tr class="memdesc:a1f5a8a145a4db0265ec7d19f2de04d03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cached image for the specified frame.  <br /></td></tr>
 <tr class="memitem:a336750f7bc8073697ccf03a7037cb87c" id="r_a336750f7bc8073697ccf03a7037cb87c"><td class="memItemLeft" align="right" valign="top">SKBitmap?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a336750f7bc8073697ccf03a7037cb87c">GetBitmap</a> (int x, int y)</td></tr>
+<tr class="memdesc:a336750f7bc8073697ccf03a7037cb87c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cached bitmap for the specified frame.  <br /></td></tr>
 <tr class="memitem:a0b79fdd0e65b33bb473d063e57a94a2a" id="r_a0b79fdd0e65b33bb473d063e57a94a2a"><td class="memItemLeft" align="right" valign="top">Dictionary&lt;(int x, int y), SKBitmap &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0b79fdd0e65b33bb473d063e57a94a2a">GetAllBitmaps</a> ()</td></tr>
+<tr class="memdesc:a0b79fdd0e65b33bb473d063e57a94a2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collects the cached frame bitmaps indexed by their tile coordinates.  <br /></td></tr>
 <tr class="memitem:add47325469353bfc96dfbccaa721e998" id="r_add47325469353bfc96dfbccaa721e998"><td class="memItemLeft" align="right" valign="top">Dictionary&lt;(int x, int y), SKImage &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#add47325469353bfc96dfbccaa721e998">GetAllImages</a> ()</td></tr>
+<tr class="memdesc:add47325469353bfc96dfbccaa721e998"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collects the cached frame images indexed by their tile coordinates.  <br /></td></tr>
 <tr class="memitem:a88f6068af0a9127725375b6aa8660a05" id="r_a88f6068af0a9127725375b6aa8660a05"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a88f6068af0a9127725375b6aa8660a05">GetFrameCollisionAdjust</a> (int x, int y)</td></tr>
 <tr class="memdesc:a88f6068af0a9127725375b6aa8660a05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the effective collision adjustment for one frame.  <br /></td></tr>
 <tr class="memitem:a61672c6a0a53bd00a458e3433807592e" id="r_a61672c6a0a53bd00a458e3433807592e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a61672c6a0a53bd00a458e3433807592e">TryGetFrameCollisionAdjustOverride</a> (int x, int y, out <a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a> collisionAdjust)</td></tr>
@@ -133,6 +137,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:add2e5c74c3f808242ac34bd979807ac7" id="r_add2e5c74c3f808242ac34bd979807ac7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#add2e5c74c3f808242ac34bd979807ac7">ClearFrameCollisionTypeOverride</a> (int x, int y)</td></tr>
 <tr class="memdesc:add2e5c74c3f808242ac34bd979807ac7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a frame-level collision type so the frame once again inherits <a class="el" href="#a165ac48925714329921e7549b84f5782" title="Gets or sets the collision type inherited by frames that do not have an explicit frame-level override...">CollisionType</a>.  <br /></td></tr>
 <tr class="memitem:aefb4133ea192c0a298134f2e7cebe729" id="r_aefb4133ea192c0a298134f2e7cebe729"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aefb4133ea192c0a298134f2e7cebe729">Dispose</a> ()</td></tr>
+<tr class="memdesc:aefb4133ea192c0a298134f2e7cebe729"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases the resources owned by this instance.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -146,9 +151,13 @@ Properties</h2></td></tr>
 <tr class="memitem:adef4e4a14635522de774b357df1a5e26" id="r_adef4e4a14635522de774b357df1a5e26"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adef4e4a14635522de774b357df1a5e26">Name</a> = <a class="el" href="#a52a05822424baaa432ca55e592e12c1b">DefaultRegionName</a><code> [get]</code></td></tr>
 <tr class="memdesc:adef4e4a14635522de774b357df1a5e26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the region name.  <br /></td></tr>
 <tr class="memitem:a103042c56580fe4614b2f5fd800450c3" id="r_a103042c56580fe4614b2f5fd800450c3"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a103042c56580fe4614b2f5fd800450c3">Area</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a103042c56580fe4614b2f5fd800450c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the region bounds in tilesheet image pixels.  <br /></td></tr>
 <tr class="memitem:a8b891f59dc32e1926655c1bbe9e6212c" id="r_a8b891f59dc32e1926655c1bbe9e6212c"><td class="memItemLeft" align="right" valign="top">Size&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8b891f59dc32e1926655c1bbe9e6212c">TileSize</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a8b891f59dc32e1926655c1bbe9e6212c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the tile dimensions in pixels.  <br /></td></tr>
 <tr class="memitem:a6734b2a46042ed4ef7b5f0e183274c9b" id="r_a6734b2a46042ed4ef7b5f0e183274c9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6734b2a46042ed4ef7b5f0e183274c9b">TilePadding</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a6734b2a46042ed4ef7b5f0e183274c9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the spacing around each tile.  <br /></td></tr>
 <tr class="memitem:a08cd7497917f8541d5f4b00e01f3b945" id="r_a08cd7497917f8541d5f4b00e01f3b945"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a08cd7497917f8541d5f4b00e01f3b945">RegionMargin</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a08cd7497917f8541d5f4b00e01f3b945"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the spacing inside the region boundary.  <br /></td></tr>
 <tr class="memitem:a59d41b78bcd54660b382a312452bb7ce" id="r_a59d41b78bcd54660b382a312452bb7ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a59d41b78bcd54660b382a312452bb7ce">Overhang</a> = Spacing.None<code> [get, set]</code></td></tr>
 <tr class="memdesc:a59d41b78bcd54660b382a312452bb7ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets visual overhang. This affects rendering, not slicing.  <br /></td></tr>
 <tr class="memitem:a764f33f21e9f8d29079815898647faac" id="r_a764f33f21e9f8d29079815898647faac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a764f33f21e9f8d29079815898647faac">CollisionAdjust</a><code> [get, set]</code></td></tr>
@@ -158,9 +167,13 @@ Properties</h2></td></tr>
 <tr class="memitem:a165ac48925714329921e7549b84f5782" id="r_a165ac48925714329921e7549b84f5782"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceGondwana_1_1Physics_1_1Collisions.html#a84746e66ff584652acc19981dd0b410c">TileCollisionType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a165ac48925714329921e7549b84f5782">CollisionType</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a165ac48925714329921e7549b84f5782"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the collision type inherited by frames that do not have an explicit frame-level override.  <br /></td></tr>
 <tr class="memitem:a7c877739b31c4ea9c00b5cb0eee137a5" id="r_a7c877739b31c4ea9c00b5cb0eee137a5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7c877739b31c4ea9c00b5cb0eee137a5">Columns</a><code> [get]</code></td></tr>
+<tr class="memdesc:a7c877739b31c4ea9c00b5cb0eee137a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of tile columns in the region.  <br /></td></tr>
 <tr class="memitem:a206c5cf6d83fc4ff6e6d29d4d0716477" id="r_a206c5cf6d83fc4ff6e6d29d4d0716477"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a206c5cf6d83fc4ff6e6d29d4d0716477">Rows</a><code> [get]</code></td></tr>
+<tr class="memdesc:a206c5cf6d83fc4ff6e6d29d4d0716477"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of tile rows in the region.  <br /></td></tr>
 <tr class="memitem:a9753537c47c09930f4476a9d44540c97" id="r_a9753537c47c09930f4476a9d44540c97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9753537c47c09930f4476a9d44540c97">TileWidthIncludingPadding</a><code> [get]</code></td></tr>
+<tr class="memdesc:a9753537c47c09930f4476a9d44540c97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the horizontal tile stride including padding.  <br /></td></tr>
 <tr class="memitem:aff5b3d53abbdfd791a174f38436c2320" id="r_aff5b3d53abbdfd791a174f38436c2320"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aff5b3d53abbdfd791a174f38436c2320">TileHeightIncludingPadding</a><code> [get]</code></td></tr>
+<tr class="memdesc:aff5b3d53abbdfd791a174f38436c2320"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the vertical tile stride including padding.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a rectangular region within a tilesheet that contains a grid of frames. </p>
@@ -188,8 +201,15 @@ Properties</h2></td></tr>
 
 <p>Removes a frame-level collision adjustment so the frame once again inherits <a class="el" href="#a764f33f21e9f8d29079815898647faac" title="Gets or sets the collision adjustment inherited by frames that do not have an explicit frame-level ov...">CollisionAdjust</a>. </p>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> when an explicit frame override was removed; otherwise, <code>false</code>. </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>The zero-based column in the tile grid.</td></tr>
+    <tr><td class="paramname">y</td><td>The zero-based row in the tile grid.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00309">309</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00365">365</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -213,8 +233,16 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Removes a frame-level collision type so the frame once again inherits <a class="el" href="#a165ac48925714329921e7549b84f5782" title="Gets or sets the collision type inherited by frames that do not have an explicit frame-level override...">CollisionType</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>The zero-based column in the tile grid.</td></tr>
+    <tr><td class="paramname">y</td><td>The zero-based row in the tile grid.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the frame had a collision type override that was cleared; otherwise, <code>false</code>.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00400">400</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00472">472</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -233,7 +261,9 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00607">607</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p>Releases the resources owned by this instance. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00682">682</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -252,7 +282,10 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00187">187</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p>Collects the cached frame bitmaps indexed by their tile coordinates. </p>
+<dl class="section return"><dt>Returns</dt><dd>A dictionary of cached bitmaps keyed by frame coordinates. The tilesheet retains ownership of the bitmaps.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00227">227</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -271,7 +304,10 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00210">210</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p>Collects the cached frame images indexed by their tile coordinates. </p>
+<dl class="section return"><dt>Returns</dt><dd>A dictionary of cached images keyed by frame coordinates. The tilesheet retains ownership of the images.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00254">254</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -294,7 +330,17 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00170">170</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p>Gets the cached bitmap for the specified frame. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>The zero-based column in the tile grid.</td></tr>
+    <tr><td class="paramname">y</td><td>The zero-based row in the tile grid.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The cached frame bitmap, or <code>null</code> if the frame is unavailable. The tilesheet retains ownership.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00206">206</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -318,8 +364,16 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the effective collision adjustment for one frame. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>The zero-based column in the tile grid.</td></tr>
+    <tr><td class="paramname">y</td><td>The zero-based row in the tile grid.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The frame override, or the region default when no override is present.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00236">236</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00283">283</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -343,6 +397,14 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the frame-local collision rectangle for one frame. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>The zero-based column in the tile grid.</td></tr>
+    <tr><td class="paramname">y</td><td>The zero-based row in the tile grid.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The frame collision rectangle after applying its effective collision adjustment.</dd></dl>
 
 </div>
 </div>
@@ -366,8 +428,16 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the effective collision type for one frame. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>The zero-based column in the tile grid.</td></tr>
+    <tr><td class="paramname">y</td><td>The zero-based row in the tile grid.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The frame collision type override, or the inherited region default.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00342">342</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00404">404</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -390,7 +460,17 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00153">153</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p>Gets the cached image for the specified frame. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>The zero-based column in the tile grid.</td></tr>
+    <tr><td class="paramname">y</td><td>The zero-based row in the tile grid.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The cached frame image, or <code>null</code> if the frame is unavailable. The tilesheet retains ownership.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00183">183</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -419,8 +499,16 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sets the collision adjustment for one frame and updates its cache entry. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>The zero-based column in the tile grid.</td></tr>
+    <tr><td class="paramname">y</td><td>The zero-based row in the tile grid.</td></tr>
+    <tr><td class="paramname">collisionAdjust</td><td>The adjustment applied to the frame's collision bounds.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00281">281</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00335">335</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -449,8 +537,16 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sets an explicit collision type for one frame. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>The zero-based column in the tile grid.</td></tr>
+    <tr><td class="paramname">y</td><td>The zero-based row in the tile grid.</td></tr>
+    <tr><td class="paramname">collisionType</td><td>The collision type.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00379">379</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00448">448</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -480,8 +576,17 @@ Properties</h2></td></tr>
 
 <p>Attempts to get the explicit collision adjustment assigned to one frame. </p>
 <p>Returns <code>true</code> when an explicit frame-level override exists. When <code>false</code>, no override exists (the frame inherits <a class="el" href="#a764f33f21e9f8d29079815898647faac" title="Gets or sets the collision adjustment inherited by frames that do not have an explicit frame-level ov...">CollisionAdjust</a>). The <em>collisionAdjust</em>  out parameter is only meaningful when the method returns <code>true</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>The zero-based column in the tile grid.</td></tr>
+    <tr><td class="paramname">y</td><td>The zero-based row in the tile grid.</td></tr>
+    <tr><td class="paramname">collisionAdjust</td><td>When this method returns, contains the collision adjust.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the operation succeeded; otherwise, <code>false</code>.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00257">257</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00308">308</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -510,8 +615,17 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Attempts to get the explicit collision type assigned to one frame. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>The zero-based column in the tile grid.</td></tr>
+    <tr><td class="paramname">y</td><td>The zero-based row in the tile grid.</td></tr>
+    <tr><td class="paramname">collisionType</td><td>When this method returns, contains the collision type.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the operation succeeded; otherwise, <code>false</code>.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00357">357</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00423">423</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -563,7 +677,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00068">68</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p>Gets or sets the region bounds in tilesheet image pixels. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00071">71</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -589,7 +705,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the collision adjustment inherited by frames that do not have an explicit frame-level override. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00117">117</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00129">129</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -615,7 +731,7 @@ Properties</h2></td></tr>
 
 <p>Gets the region-default frame-local collision rectangle. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00131">131</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00143">143</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -641,7 +757,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the collision type inherited by frames that do not have an explicit frame-level override. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00138">138</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00150">150</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -665,7 +781,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00148">148</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p>Gets the number of tile columns in the region. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00163">163</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -717,7 +835,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets visual overhang. This affects rendering, not slicing. </p>
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00111">111</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00123">123</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -741,7 +859,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00098">98</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p>Gets or sets the spacing inside the region boundary. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00110">110</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -765,7 +885,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00149">149</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p>Gets the number of tile rows in the region. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00167">167</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -789,7 +911,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00151">151</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p>Gets the vertical tile stride including padding. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00175">175</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -813,7 +937,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00088">88</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p>Gets or sets the spacing around each tile. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00097">97</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -863,7 +989,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00078">78</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p>Gets or sets the tile dimensions in pixels. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00084">84</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>
@@ -887,7 +1015,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00150">150</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
+<p>Gets the horizontal tile stride including padding. </p>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegion_8cs_source.html#l00171">171</a> of file <a class="el" href="TilesheetRegion_8cs_source.html">TilesheetRegion.cs</a>.</p>
 
 </div>
 </div>

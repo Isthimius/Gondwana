@@ -160,7 +160,7 @@ Properties</h2></td></tr>
 
 <p>Disposes all loaded fonts and clears the manager. </p>
 
-<p class="definition">Definition at line <a class="el" href="FontManager_8cs_source.html#l00190">190</a> of file <a class="el" href="FontManager_8cs_source.html">FontManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FontManager_8cs_source.html#l00198">198</a> of file <a class="el" href="FontManager_8cs_source.html">FontManager.cs</a>.</p>
 
 </div>
 </div>
@@ -180,8 +180,15 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns true if a font exists for the given key. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The lookup key for the resource.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if a player is registered for the key; otherwise, <code>false</code>.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="FontManager_8cs_source.html#l00157">157</a> of file <a class="el" href="FontManager_8cs_source.html">FontManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FontManager_8cs_source.html#l00165">165</a> of file <a class="el" href="FontManager_8cs_source.html">FontManager.cs</a>.</p>
 
 </div>
 </div>
@@ -202,7 +209,7 @@ Properties</h2></td></tr>
 
 <p>Disposes all loaded fonts managed by this instance and prevents further use. </p>
 
-<p class="definition">Definition at line <a class="el" href="FontManager_8cs_source.html#l00234">234</a> of file <a class="el" href="FontManager_8cs_source.html">FontManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FontManager_8cs_source.html#l00242">242</a> of file <a class="el" href="FontManager_8cs_source.html">FontManager.cs</a>.</p>
 
 </div>
 </div>
@@ -236,7 +243,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="FontManager_8cs_source.html#l00105">105</a> of file <a class="el" href="FontManager_8cs_source.html">FontManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FontManager_8cs_source.html#l00108">108</a> of file <a class="el" href="FontManager_8cs_source.html">FontManager.cs</a>.</p>
 
 </div>
 </div>
@@ -264,7 +271,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The typeface associated with the specified key, or the default typeface if the key is not found or the key is null or whitespace.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="FontManager_8cs_source.html#l00142">142</a> of file <a class="el" href="FontManager_8cs_source.html">FontManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FontManager_8cs_source.html#l00148">148</a> of file <a class="el" href="FontManager_8cs_source.html">FontManager.cs</a>.</p>
 
 </div>
 </div>
@@ -374,8 +381,16 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Loads a font from an embedded resource in the calling assembly and stores it under the given key. If the key already exists, the old font is disposed and replaced. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The lookup key for the resource.</td></tr>
+    <tr><td class="paramname">resourceName</td><td>The resource name.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The resulting sk typeface.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="FontManager_8cs_source.html#l00094">94</a> of file <a class="el" href="FontManager_8cs_source.html">FontManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FontManager_8cs_source.html#l00097">97</a> of file <a class="el" href="FontManager_8cs_source.html">FontManager.cs</a>.</p>
 
 </div>
 </div>
@@ -403,7 +418,7 @@ Properties</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if the font was found and removed; otherwise false.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="FontManager_8cs_source.html#l00172">172</a> of file <a class="el" href="FontManager_8cs_source.html">FontManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FontManager_8cs_source.html#l00180">180</a> of file <a class="el" href="FontManager_8cs_source.html">FontManager.cs</a>.</p>
 
 </div>
 </div>
@@ -427,8 +442,16 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Tries to get a font by key. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The lookup key for the resource.</td></tr>
+    <tr><td class="paramname">typeface</td><td>The typeface used to render text.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the player was found; otherwise, <code>false</code>.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="FontManager_8cs_source.html#l00121">121</a> of file <a class="el" href="FontManager_8cs_source.html">FontManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FontManager_8cs_source.html#l00127">127</a> of file <a class="el" href="FontManager_8cs_source.html">FontManager.cs</a>.</p>
 
 </div>
 </div>
@@ -481,7 +504,7 @@ Properties</h2></td></tr>
 
 <p>Gets all currently registered font keys. </p>
 
-<p class="definition">Definition at line <a class="el" href="FontManager_8cs_source.html#l00203">203</a> of file <a class="el" href="FontManager_8cs_source.html">FontManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FontManager_8cs_source.html#l00211">211</a> of file <a class="el" href="FontManager_8cs_source.html">FontManager.cs</a>.</p>
 
 </div>
 </div>

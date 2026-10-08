@@ -909,50 +909,50 @@ $(function(){initNavTree('WidgetInputRouter_8cs_source.html','',''); });
 <div class="line"><a id="l00837" name="l00837"></a><span class="lineno">  837</span> </div>
 <div class="line"><a id="l00838" name="l00838"></a><span class="lineno">  838</span>    <span class="keyword">private</span> <span class="keyword">sealed</span> <span class="keyword">class </span>WidgetHit</div>
 <div class="line"><a id="l00839" name="l00839"></a><span class="lineno">  839</span>    {</div>
-<div class="line"><a id="l00845" name="l00845"></a><span class="lineno">  845</span>        <span class="keyword">public</span> WidgetHit(WidgetBase widget,</div>
-<div class="line"><a id="l00846" name="l00846"></a><span class="lineno">  846</span>                         View view,</div>
-<div class="line"><a id="l00847" name="l00847"></a><span class="lineno">  847</span>                         PointF instanceOffset)</div>
-<div class="line"><a id="l00848" name="l00848"></a><span class="lineno">  848</span>        {</div>
-<div class="line"><a id="l00849" name="l00849"></a><span class="lineno">  849</span>            Widget = widget;</div>
-<div class="line"><a id="l00850" name="l00850"></a><span class="lineno">  850</span>            View = view;</div>
-<div class="line"><a id="l00851" name="l00851"></a><span class="lineno">  851</span>            InstanceOffset = instanceOffset;</div>
-<div class="line"><a id="l00852" name="l00852"></a><span class="lineno">  852</span>        }</div>
-<div class="line"><a id="l00853" name="l00853"></a><span class="lineno">  853</span> </div>
-<div class="line"><a id="l00854" name="l00854"></a><span class="lineno">  854</span>        <span class="keyword">public</span> PointF InstanceOffset { <span class="keyword">get</span>; }</div>
-<div class="line"><a id="l00855" name="l00855"></a><span class="lineno">  855</span></div>
-<div class="line"><a id="l00859" name="l00859"></a><span class="lineno">  859</span>        <span class="keyword">public</span> WidgetBase Widget { <span class="keyword">get</span>; }</div>
-<div class="line"><a id="l00860" name="l00860"></a><span class="lineno">  860</span></div>
-<div class="line"><a id="l00864" name="l00864"></a><span class="lineno">  864</span>        <span class="keyword">public</span> View View { <span class="keyword">get</span>; }</div>
-<div class="line"><a id="l00865" name="l00865"></a><span class="lineno">  865</span>    }</div>
-<div class="line"><a id="l00866" name="l00866"></a><span class="lineno">  866</span> </div>
-<div class="line"><a id="l00867" name="l00867"></a><span class="lineno">  867</span>    <span class="keyword">private</span> <span class="keyword">sealed</span> <span class="keyword">class </span>PointerCapture</div>
-<div class="line"><a id="l00868" name="l00868"></a><span class="lineno">  868</span>    {</div>
-<div class="line"><a id="l00876" name="l00876"></a><span class="lineno">  876</span>        <span class="keyword">public</span> PointerCapture(WidgetBase widget,</div>
-<div class="line"><a id="l00877" name="l00877"></a><span class="lineno">  877</span>                              View view,</div>
-<div class="line"><a id="l00878" name="l00878"></a><span class="lineno">  878</span>                              <a class="code hl_enumeration" href="namespaceGondwana_1_1Widgets.html#a4f23503be12c54428a2e6fb6efd473fe">WidgetPointerButtonEnum</a> button,</div>
-<div class="line"><a id="l00879" name="l00879"></a><span class="lineno">  879</span>                              Point lastPosition,</div>
-<div class="line"><a id="l00880" name="l00880"></a><span class="lineno">  880</span>                              PointF instanceOffset)</div>
-<div class="line"><a id="l00881" name="l00881"></a><span class="lineno">  881</span>        {</div>
-<div class="line"><a id="l00882" name="l00882"></a><span class="lineno">  882</span>            Widget = widget;</div>
-<div class="line"><a id="l00883" name="l00883"></a><span class="lineno">  883</span>            View = view;</div>
-<div class="line"><a id="l00884" name="l00884"></a><span class="lineno">  884</span>            Button = button;</div>
-<div class="line"><a id="l00885" name="l00885"></a><span class="lineno">  885</span>            LastPosition = lastPosition;</div>
-<div class="line"><a id="l00886" name="l00886"></a><span class="lineno">  886</span>            InstanceOffset = instanceOffset;</div>
-<div class="line"><a id="l00887" name="l00887"></a><span class="lineno">  887</span>        }</div>
-<div class="line"><a id="l00888" name="l00888"></a><span class="lineno">  888</span></div>
-<div class="line"><a id="l00892" name="l00892"></a><span class="lineno">  892</span>        <span class="keyword">public</span> WidgetBase Widget { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00846" name="l00846"></a><span class="lineno">  846</span>        <span class="keyword">public</span> WidgetHit(WidgetBase widget,</div>
+<div class="line"><a id="l00847" name="l00847"></a><span class="lineno">  847</span>                         View view,</div>
+<div class="line"><a id="l00848" name="l00848"></a><span class="lineno">  848</span>                         PointF instanceOffset)</div>
+<div class="line"><a id="l00849" name="l00849"></a><span class="lineno">  849</span>        {</div>
+<div class="line"><a id="l00850" name="l00850"></a><span class="lineno">  850</span>            Widget = widget;</div>
+<div class="line"><a id="l00851" name="l00851"></a><span class="lineno">  851</span>            View = view;</div>
+<div class="line"><a id="l00852" name="l00852"></a><span class="lineno">  852</span>            InstanceOffset = instanceOffset;</div>
+<div class="line"><a id="l00853" name="l00853"></a><span class="lineno">  853</span>        }</div>
+<div class="line"><a id="l00854" name="l00854"></a><span class="lineno">  854</span></div>
+<div class="line"><a id="l00858" name="l00858"></a><span class="lineno">  858</span>        <span class="keyword">public</span> PointF InstanceOffset { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00859" name="l00859"></a><span class="lineno">  859</span></div>
+<div class="line"><a id="l00863" name="l00863"></a><span class="lineno">  863</span>        <span class="keyword">public</span> WidgetBase Widget { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00864" name="l00864"></a><span class="lineno">  864</span></div>
+<div class="line"><a id="l00868" name="l00868"></a><span class="lineno">  868</span>        <span class="keyword">public</span> View View { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00869" name="l00869"></a><span class="lineno">  869</span>    }</div>
+<div class="line"><a id="l00870" name="l00870"></a><span class="lineno">  870</span> </div>
+<div class="line"><a id="l00871" name="l00871"></a><span class="lineno">  871</span>    <span class="keyword">private</span> <span class="keyword">sealed</span> <span class="keyword">class </span>PointerCapture</div>
+<div class="line"><a id="l00872" name="l00872"></a><span class="lineno">  872</span>    {</div>
+<div class="line"><a id="l00881" name="l00881"></a><span class="lineno">  881</span>        <span class="keyword">public</span> PointerCapture(WidgetBase widget,</div>
+<div class="line"><a id="l00882" name="l00882"></a><span class="lineno">  882</span>                              View view,</div>
+<div class="line"><a id="l00883" name="l00883"></a><span class="lineno">  883</span>                              <a class="code hl_enumeration" href="namespaceGondwana_1_1Widgets.html#a4f23503be12c54428a2e6fb6efd473fe">WidgetPointerButtonEnum</a> button,</div>
+<div class="line"><a id="l00884" name="l00884"></a><span class="lineno">  884</span>                              Point lastPosition,</div>
+<div class="line"><a id="l00885" name="l00885"></a><span class="lineno">  885</span>                              PointF instanceOffset)</div>
+<div class="line"><a id="l00886" name="l00886"></a><span class="lineno">  886</span>        {</div>
+<div class="line"><a id="l00887" name="l00887"></a><span class="lineno">  887</span>            Widget = widget;</div>
+<div class="line"><a id="l00888" name="l00888"></a><span class="lineno">  888</span>            View = view;</div>
+<div class="line"><a id="l00889" name="l00889"></a><span class="lineno">  889</span>            Button = button;</div>
+<div class="line"><a id="l00890" name="l00890"></a><span class="lineno">  890</span>            LastPosition = lastPosition;</div>
+<div class="line"><a id="l00891" name="l00891"></a><span class="lineno">  891</span>            InstanceOffset = instanceOffset;</div>
+<div class="line"><a id="l00892" name="l00892"></a><span class="lineno">  892</span>        }</div>
 <div class="line"><a id="l00893" name="l00893"></a><span class="lineno">  893</span></div>
-<div class="line"><a id="l00897" name="l00897"></a><span class="lineno">  897</span>        <span class="keyword">public</span> View View { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00897" name="l00897"></a><span class="lineno">  897</span>        <span class="keyword">public</span> WidgetBase Widget { <span class="keyword">get</span>; }</div>
 <div class="line"><a id="l00898" name="l00898"></a><span class="lineno">  898</span></div>
-<div class="line"><a id="l00902" name="l00902"></a><span class="lineno">  902</span>        <span class="keyword">public</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Widgets.html#a4f23503be12c54428a2e6fb6efd473fe">WidgetPointerButtonEnum</a> Button { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00902" name="l00902"></a><span class="lineno">  902</span>        <span class="keyword">public</span> View View { <span class="keyword">get</span>; }</div>
 <div class="line"><a id="l00903" name="l00903"></a><span class="lineno">  903</span></div>
-<div class="line"><a id="l00910" name="l00910"></a><span class="lineno">  910</span>        <span class="keyword">public</span> Point LastPosition { <span class="keyword">get</span>; <span class="keyword">set</span>; }</div>
-<div class="line"><a id="l00911" name="l00911"></a><span class="lineno">  911</span>        <span class="keyword">public</span> PointF InstanceOffset { <span class="keyword">get</span>; }</div>
-<div class="line"><a id="l00912" name="l00912"></a><span class="lineno">  912</span>    }</div>
-<div class="line"><a id="l00913" name="l00913"></a><span class="lineno">  913</span>}</div>
+<div class="line"><a id="l00907" name="l00907"></a><span class="lineno">  907</span>        <span class="keyword">public</span> <a class="code hl_enumeration" href="namespaceGondwana_1_1Widgets.html#a4f23503be12c54428a2e6fb6efd473fe">WidgetPointerButtonEnum</a> Button { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00908" name="l00908"></a><span class="lineno">  908</span></div>
+<div class="line"><a id="l00915" name="l00915"></a><span class="lineno">  915</span>        <span class="keyword">public</span> Point LastPosition { <span class="keyword">get</span>; <span class="keyword">set</span>; }</div>
+<div class="line"><a id="l00919" name="l00919"></a><span class="lineno">  919</span>        <span class="keyword">public</span> PointF InstanceOffset { <span class="keyword">get</span>; }</div>
+<div class="line"><a id="l00920" name="l00920"></a><span class="lineno">  920</span>    }</div>
+<div class="line"><a id="l00921" name="l00921"></a><span class="lineno">  921</span>}</div>
 </div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Direct_1_1DirectComposite_html_a457d537ccd3317239c91b5980f9f7982"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#a457d537ccd3317239c91b5980f9f7982">Gondwana.Drawing.Direct.DirectComposite.RenderSurfaceHost</a></div><div class="ttdeci">RenderSurfaceHostBase RenderSurfaceHost</div><div class="ttdoc">Gets the render surface host shared by the composite and its children.</div><div class="ttdef"><b>Definition</b> <a href="DirectComposite_8cs_source.html#l00098">DirectComposite.cs:98</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Drawing_1_1Direct_1_1DirectComposite_html_aa39a1233d310b325bc27a7c9a61c546b"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#aa39a1233d310b325bc27a7c9a61c546b">Gondwana.Drawing.Direct.DirectComposite.Clear</a></div><div class="ttdeci">virtual DirectComposite Clear()</div><div class="ttdoc">Removes every child without disposing them.</div><div class="ttdef"><b>Definition</b> <a href="DirectComposite_8cs_source.html#l00301">DirectComposite.cs:301</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Drawing_1_1Direct_1_1DirectComposite_html_aa39a1233d310b325bc27a7c9a61c546b"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#aa39a1233d310b325bc27a7c9a61c546b">Gondwana.Drawing.Direct.DirectComposite.Clear</a></div><div class="ttdeci">virtual DirectComposite Clear()</div><div class="ttdoc">Removes every child without disposing them.</div><div class="ttdef"><b>Definition</b> <a href="DirectComposite_8cs_source.html#l00302">DirectComposite.cs:302</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyDownEventArgs_html_a1aff53422c51970c2e611682aa89f8e7"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyDownEventArgs.html#a1aff53422c51970c2e611682aa89f8e7">Gondwana.Input.Keyboard.KeyDownEventArgs.Modifiers</a></div><div class="ttdeci">KeyboardModifierState Modifiers</div><div class="ttdoc">Gets the state of keyboard modifier keys (Shift, Ctrl, Alt) at the time this event was generated....</div><div class="ttdef"><b>Definition</b> <a href="KeyDownEventArgs_8cs_source.html#l00024">KeyDownEventArgs.cs:24</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyDownEventArgs_html_ab602259867bce4e452fd3fa18b813a92"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyDownEventArgs.html#ab602259867bce4e452fd3fa18b813a92">Gondwana.Input.Keyboard.KeyDownEventArgs.KeyConfig</a></div><div class="ttdeci">KeyEventConfiguration KeyConfig</div><div class="ttdoc">Gets the configuration details for the keyboard key that generated this event, including the key iden...</div><div class="ttdef"><b>Definition</b> <a href="KeyDownEventArgs_8cs_source.html#l00016">KeyDownEventArgs.cs:16</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Input_1_1Keyboard_1_1KeyDownEventArgs_html_aeacbe0f1e54a9dc8673dbf795277901e"><div class="ttname"><a href="classGondwana_1_1Input_1_1Keyboard_1_1KeyDownEventArgs.html#aeacbe0f1e54a9dc8673dbf795277901e">Gondwana.Input.Keyboard.KeyDownEventArgs.KeyAction</a></div><div class="ttdeci">KeyAction KeyAction</div><div class="ttdoc">Gets the type of action that occurred for this key, indicating whether the key was initially pressed,...</div><div class="ttdef"><b>Definition</b> <a href="KeyDownEventArgs_8cs_source.html#l00031">KeyDownEventArgs.cs:31</a></div></div>

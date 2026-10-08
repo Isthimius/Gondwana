@@ -131,11 +131,17 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a4e9ee0404f577a45310db1df811f642a" id="r_a4e9ee0404f577a45310db1df811f642a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4e9ee0404f577a45310db1df811f642a">DisplayEffect</a> (float durationSeconds, <a class="el" href="namespaceGondwana_1_1Physics_1_1Movement_1_1Easing.html#afc5970aaefa30a4c61cc1f800f15e5bc">EasingKind</a> easing=EasingKind.Linear)</td></tr>
+<tr class="memdesc:a4e9ee0404f577a45310db1df811f642a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <code><a class="el" href="classGondwana_1_1Effects_1_1DisplayEffect.html" title="Base class for transient effects applied to a View or SceneLayer.">DisplayEffect</a></code> class.  <br /></td></tr>
 <tr class="memitem:a76d974b5251ab7e2fe39273b1dbf5e7b" id="r_a76d974b5251ab7e2fe39273b1dbf5e7b"><td class="memItemLeft" align="right" valign="top">TTarget&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a76d974b5251ab7e2fe39273b1dbf5e7b">GetTarget&lt; TTarget &gt;</a> ()</td></tr>
+<tr class="memdesc:a76d974b5251ab7e2fe39273b1dbf5e7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the effect target as the requested reference type.  <br /></td></tr>
 <tr class="memitem:acb7bb87e79cf7a4452e6235e8fe6d4b7" id="r_acb7bb87e79cf7a4452e6235e8fe6d4b7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acb7bb87e79cf7a4452e6235e8fe6d4b7">OnStarting</a> ()</td></tr>
+<tr class="memdesc:acb7bb87e79cf7a4452e6235e8fe6d4b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captures or prepares target state before the effect starts.  <br /></td></tr>
 <tr class="memitem:a9fa0d8f3db636087cf817efe791fa76d" id="r_a9fa0d8f3db636087cf817efe791fa76d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9fa0d8f3db636087cf817efe791fa76d">ApplyProgress</a> (float progress)</td></tr>
+<tr class="memdesc:a9fa0d8f3db636087cf817efe791fa76d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies the eased effect progress to the target.  <br /></td></tr>
 <tr class="memitem:a0b6af10fa98f0055b0ad073e88e41a77" id="r_a0b6af10fa98f0055b0ad073e88e41a77"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0b6af10fa98f0055b0ad073e88e41a77">OnCompleted</a> ()</td></tr>
+<tr class="memdesc:a0b6af10fa98f0055b0ad073e88e41a77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs the effect-specific completion behavior.  <br /></td></tr>
 <tr class="memitem:a2a4e55e9be0b5e22aa92c324fda196ed" id="r_a2a4e55e9be0b5e22aa92c324fda196ed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2a4e55e9be0b5e22aa92c324fda196ed">RestoreOriginalState</a> ()</td></tr>
+<tr class="memdesc:a2a4e55e9be0b5e22aa92c324fda196ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restores the target state captured when the effect started.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
@@ -190,7 +196,16 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00018">18</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
+<p>Initializes a new instance of the <code><a class="el" href="classGondwana_1_1Effects_1_1DisplayEffect.html" title="Base class for transient effects applied to a View or SceneLayer.">DisplayEffect</a></code> class. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">durationSeconds</td><td>The duration in seconds.</td></tr>
+    <tr><td class="paramname">easing</td><td>The easing function applied to progress.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00023">23</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
 
 </div>
 </div>
@@ -217,6 +232,14 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Applies the eased effect progress to the target. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">progress</td><td>The normalized progress of the operation.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -261,6 +284,15 @@ Events</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Gets the effect target as the requested reference type. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">TTarget</td><td>The type of target.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The effect target cast to the requested type.</dd></dl>
 <div class="typeconstraint">
 <dl><dt><b>Type Constraints</b></dt><dd>
 <table border="0" cellspacing="2" cellpadding="0">
@@ -295,9 +327,11 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Runs the effect-specific completion behavior. </p>
+
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Effects_1_1ZoomEffect.html#aa5249298183cdb6d04849d7fad687ff1">Gondwana.Effects.ZoomEffect</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00138">138</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00158">158</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
 
 </div>
 </div>
@@ -324,9 +358,11 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Captures or prepares target state before the effect starts. </p>
+
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Effects_1_1EarthquakeEffect.html#ab96ac4af8e16644e48c2e7c7a156d32b">Gondwana.Effects.EarthquakeEffect</a>, <a class="el" href="classGondwana_1_1Effects_1_1FadeEffect.html#a6792acec2af3b99112486a6ce17a4b28">Gondwana.Effects.FadeEffect</a>, <a class="el" href="classGondwana_1_1Effects_1_1SlideEffect.html#a3434d92b926bb84a3bf69497e3d871a2">Gondwana.Effects.SlideEffect</a>, <a class="el" href="classGondwana_1_1Effects_1_1WipeEffect.html#aa397655fe7de8b654b1fa9ec08c058eb">Gondwana.Effects.WipeEffect</a>, and <a class="el" href="classGondwana_1_1Effects_1_1ZoomEffect.html#a3be3298a17c836768ebf4246a0b62334">Gondwana.Effects.ZoomEffect</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00132">132</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00145">145</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
 
 </div>
 </div>
@@ -353,6 +389,8 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Restores the target state captured when the effect started. </p>
+
 </div>
 </div>
 <a name="doc-property-members" id="doc-property-members"></a><h2 id="header-doc-property-members" class="groupheader">Property Documentation</h2>
@@ -378,7 +416,7 @@ Events</h2></td></tr>
 
 <p>Gets the requested effect duration in seconds. </p>
 
-<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00036">36</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00041">41</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
 
 </div>
 </div>
@@ -404,7 +442,7 @@ Events</h2></td></tr>
 
 <p>Gets the easing curve used to transform normalized progress. </p>
 
-<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00039">39</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00044">44</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
 
 </div>
 </div>
@@ -430,7 +468,7 @@ Events</h2></td></tr>
 
 <p>Gets the effect's unique identifier. </p>
 
-<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00033">33</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00038">38</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
 
 </div>
 </div>
@@ -456,7 +494,7 @@ Events</h2></td></tr>
 
 <p>Gets the normalized, uneased progress in the range 0 through 1. </p>
 
-<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00045">45</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00050">50</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
 
 </div>
 </div>
@@ -482,7 +520,7 @@ Events</h2></td></tr>
 
 <p>Gets the current lifecycle state. </p>
 
-<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00042">42</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00047">47</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
 
 </div>
 </div>
@@ -501,7 +539,7 @@ Events</h2></td></tr>
 
 <p>Occurs when the effect is cancelled or replaced. </p>
 
-<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00030">30</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00035">35</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
 
 </div>
 </div>
@@ -519,7 +557,7 @@ Events</h2></td></tr>
 
 <p>Occurs when the effect reaches its requested duration. </p>
 
-<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00027">27</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DisplayEffect_8cs_source.html#l00032">32</a> of file <a class="el" href="DisplayEffect_8cs_source.html">DisplayEffect.cs</a>.</p>
 
 </div>
 </div>

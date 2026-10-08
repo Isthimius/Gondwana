@@ -145,6 +145,7 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Drains and returns all touch contacts that began since the last call. Keeping beginnings in a queue prevents a short tap that begins and ends between two engine polls from being lost. Adapters that do not maintain a beginning queue may rely on the default empty implementation; the poller will still discover active contacts from <a class="el" href="#a601a6f3607954b68d6bc7b6d0dc77c56" title="Gets the list of touch contact points that are currently active (in contact with the surface)....">ActiveTouches</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>The newly begun touch contacts, consumed from the pending collection.</dd></dl>
 
 <p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Touch_1_1AvaloniaTouchInputAdapter.html#a6431dd7652a51f5151d0f9fa0bf47b39">Gondwana.Avalonia.Input.Touch.AvaloniaTouchInputAdapter</a>, and <a class="el" href="classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html#ade3759735eccf6020a4832d169957936">Gondwana.Blazor.Input.Touch.BlazorTouchAdapter</a>.</p>
 
@@ -197,7 +198,7 @@ Properties</h2></td></tr>
 
 <p>Implemented in <a class="el" href="classGondwana_1_1Avalonia_1_1Input_1_1Touch_1_1AvaloniaTouchInputAdapter.html#a12353ced690ce028d602f41c829846cd">Gondwana.Avalonia.Input.Touch.AvaloniaTouchInputAdapter</a>, and <a class="el" href="classGondwana_1_1Blazor_1_1Input_1_1Touch_1_1BlazorTouchAdapter.html#a4630be0ec39112e57bfe9c44b772d6ea">Gondwana.Blazor.Input.Touch.BlazorTouchAdapter</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ITouchAdapter_8cs_source.html#l00025">25</a> of file <a class="el" href="ITouchAdapter_8cs_source.html">ITouchAdapter.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ITouchAdapter_8cs_source.html#l00026">26</a> of file <a class="el" href="ITouchAdapter_8cs_source.html">ITouchAdapter.cs</a>.</p>
 
 </div>
 </div>

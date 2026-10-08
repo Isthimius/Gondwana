@@ -105,9 +105,13 @@ $(function(){initNavTree('classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1Anima
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a9e9c71a5c72d16e25410e968d047d2ca" id="r_a9e9c71a5c72d16e25410e968d047d2ca"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinitionSource.html">AnimationDefinitionSource</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e9c71a5c72d16e25410e968d047d2ca">LooseDefinitionFile</a> (string ganiFilePath)</td></tr>
+<tr class="memdesc:a9e9c71a5c72d16e25410e968d047d2ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates provenance for a definition stored in a loose file.  <br /></td></tr>
 <tr class="memitem:af4129911b1804fc0b83911c3f1ae7cf5" id="r_af4129911b1804fc0b83911c3f1ae7cf5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinitionSource.html">AnimationDefinitionSource</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af4129911b1804fc0b83911c3f1ae7cf5">PackedDefinitionFile</a> (string assetsFilePath, string assetEntryName)</td></tr>
+<tr class="memdesc:af4129911b1804fc0b83911c3f1ae7cf5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates provenance for a definition stored inside an assets file.  <br /></td></tr>
 <tr class="memitem:a84388b6323516de20f67a9e2640378ce" id="r_a84388b6323516de20f67a9e2640378ce"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinitionSource.html">AnimationDefinitionSource</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a84388b6323516de20f67a9e2640378ce">Generated</a> ()</td></tr>
+<tr class="memdesc:a84388b6323516de20f67a9e2640378ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates provenance for a definition generated from runtime state.  <br /></td></tr>
 <tr class="memitem:a96a57e86294760fdbecc2452bd2e1b2a" id="r_a96a57e86294760fdbecc2452bd2e1b2a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinitionSource.html">AnimationDefinitionSource</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a96a57e86294760fdbecc2452bd2e1b2a">None</a> ()</td></tr>
+<tr class="memdesc:a96a57e86294760fdbecc2452bd2e1b2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an empty definition-source descriptor.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
@@ -148,6 +152,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Creates provenance for a definition generated from runtime state. </p>
+<dl class="section return"><dt>Returns</dt><dd>A source descriptor identifying runtime-generated content.</dd></dl>
+
 </div>
 </div>
 <a id="a9e9c71a5c72d16e25410e968d047d2ca" name="a9e9c71a5c72d16e25410e968d047d2ca"></a>
@@ -173,7 +180,16 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AnimationDefinitionSource_8cs_source.html#l00037">37</a> of file <a class="el" href="AnimationDefinitionSource_8cs_source.html">AnimationDefinitionSource.cs</a>.</p>
+<p>Creates provenance for a definition stored in a loose file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ganiFilePath</td><td>The path to the loose <a class="el" href="namespaceGondwana_1_1Drawing_1_1Animation_1_1GANI.html">GANI</a> animation definition.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A source descriptor containing the loose definition file path.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="AnimationDefinitionSource_8cs_source.html#l00042">42</a> of file <a class="el" href="AnimationDefinitionSource_8cs_source.html">AnimationDefinitionSource.cs</a>.</p>
 
 </div>
 </div>
@@ -199,6 +215,9 @@ Properties</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Creates an empty definition-source descriptor. </p>
+<dl class="section return"><dt>Returns</dt><dd>A descriptor with no persisted source.</dd></dl>
 
 </div>
 </div>
@@ -229,7 +248,17 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AnimationDefinitionSource_8cs_source.html#l00049">49</a> of file <a class="el" href="AnimationDefinitionSource_8cs_source.html">AnimationDefinitionSource.cs</a>.</p>
+<p>Creates provenance for a definition stored inside an assets file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">assetsFilePath</td><td>The path to the assets file.</td></tr>
+    <tr><td class="paramname">assetEntryName</td><td>The entry name inside the assets file.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A source descriptor containing the assets file path and entry name.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="AnimationDefinitionSource_8cs_source.html#l00060">60</a> of file <a class="el" href="AnimationDefinitionSource_8cs_source.html">AnimationDefinitionSource.cs</a>.</p>
 
 </div>
 </div>

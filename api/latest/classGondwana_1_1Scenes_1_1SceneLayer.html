@@ -247,7 +247,7 @@ Clearing all event subscriptions </li>
 <p>After disposal, the layer should not be used. This method can be overridden in derived classes to add custom cleanup logic, but the base implementation should be called to ensure proper resource release. </p>
 <p>This method suppresses finalization to prevent the finalizer from running, as cleanup has already been performed. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01372">1372</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01388">1388</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -271,6 +271,14 @@ Clearing all event subscriptions </li>
 </div><div class="memdoc">
 
 <p>Returns the neighboring tile in the given direction, or null if the direction would move off the layer and wrapping is not enabled. The meaning of N,S,E,W depends on the active coordinate system. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tile</td><td>The tile.</td></tr>
+    <tr><td class="paramname">direction</td><td>The direction.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The requested scene layer tile, or <code>null</code> when unavailable.</dd></dl>
 
 </div>
 </div>
@@ -319,8 +327,9 @@ Clearing all event subscriptions </li>
 </div><div class="memdoc">
 
 <p>Computes the world-space pixel bounding rectangle for this <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a>. This uses the coordinate system to evaluate the pixel extents of the extreme grid tiles. Works for square, iso, hex, and any other supported projection. </p>
+<dl class="section return"><dt>Returns</dt><dd>The bounds of the layer in world pixels.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00859">859</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00875">875</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -345,8 +354,16 @@ Clearing all event subscriptions </li>
 
 <p>Returns world-space translations of a canonical content rectangle that intersect a query rectangle. Disabled axes do not repeat. Useful for world-space hit testing. </p>
 <p>Invalid repeat geometry or more than one million candidate instances throws InvalidOperationException. Non-wrapped content yields only the zero translation.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">contentBounds</td><td>The content bounds.</td></tr>
+    <tr><td class="paramname">queryBounds</td><td>The query bounds.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The world-pixel offsets for visible wrapped instances.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00843">843</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00858">858</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -366,6 +383,13 @@ Clearing all event subscriptions </li>
 </div><div class="memdoc">
 
 <p>Converts a grid coordinate (col,row) into the projection-defined world-space pixel anchor for that tile. Rectangular and oblique systems use the top-left corner of the image bounds; isometric systems use the diamond's top vertex. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">grid</td><td>The position in scene-layer grid coordinates.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The corresponding position in world pixels.</dd></dl>
 
 </div>
 </div>
@@ -389,8 +413,16 @@ Clearing all event subscriptions </li>
 </div><div class="memdoc">
 
 <p>Resolves a virtual grid cell to its canonical tile. Only enabled axes wrap; an out-of-range disabled axis returns null. The ordinary indexer never wraps. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">column</td><td>The column.</td></tr>
+    <tr><td class="paramname">row</td><td>The row.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The requested scene layer tile, or <code>null</code> when unavailable.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00826">826</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00838">838</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -444,6 +476,13 @@ Clearing all event subscriptions </li>
 </div><div class="memdoc">
 
 <p>Converts a world-space pixel position into this layer's grid coordinates. This uses the layer's active coordinate system (square, iso, hex, etc.) and returns fractional grid values when the point lies between tiles. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">worldPx</td><td>The position in world pixels.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The corresponding position in layer grid coordinates.</dd></dl>
 
 </div>
 </div>
@@ -463,8 +502,15 @@ Clearing all event subscriptions </li>
 </div><div class="memdoc">
 
 <p>Resolves a virtual grid coordinate to canonical coordinates on enabled wrapping axes. Disabled axes are unchanged. Negative values use floor modulo; fractions are preserved. Invalid periodic geometry is rejected when wrapping is first used, after configuration. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">grid</td><td>The position in scene-layer grid coordinates.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The equivalent grid position within the layer's wrapping period.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00808">808</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l00817">817</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -632,7 +678,7 @@ ZOrder: int.MinValue </li>
 Parallax: 1.0 </li>
 </ul>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01415">1415</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01431">1431</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -933,7 +979,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <dl class="section return"><dt>Returns</dt><dd>The <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayerTile.html" title="Represents the values stored at a single location on a SceneLayer.">SceneLayerTile</a> at the specified position, or <code>null</code> if the coordinates are out of bounds. </dd></dl>
 <p>This indexer provides bounds-checked access to tiles in the layer's grid. <a class="el" href="namespaceGondwana_1_1Drawing_1_1Coordinates.html">Coordinates</a> outside the valid range (0 to GridColumnCount-1, 0 to GridRowCount-1) return <code>null</code>. Wrapping is not applied; use <a class="el" href="#a1752ec1eb9abb1316ea8421f07f54006" title="Resolves a virtual grid coordinate to canonical coordinates on enabled wrapping axes....">WrapGrid</a> first if wrapping behavior is desired. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01265">1265</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01281">1281</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -967,7 +1013,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <dl class="section return"><dt>Returns</dt><dd>The <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayerTile.html" title="Represents the values stored at a single location on a SceneLayer.">SceneLayerTile</a> at the specified position, or <code>null</code> if the coordinates are out of bounds. </dd></dl>
 <p>This indexer provides convenient point-based access to tiles and internally uses the [x, y] indexer. <a class="el" href="namespaceGondwana_1_1Drawing_1_1Coordinates.html">Coordinates</a> outside the valid range return <code>null</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01279">1279</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01295">1295</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -1001,7 +1047,7 @@ Values greater than 1.0 (e.g., 1.5) create a foreground effect, moving faster th
 <dl class="section return"><dt>Returns</dt><dd>The <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayerTile.html" title="Represents the values stored at a single location on a SceneLayer.">SceneLayerTile</a> at the truncated position, or <code>null</code> if the coordinates are out of bounds. </dd></dl>
 <p>This indexer provides convenient access when working with floating-point grid coordinates, such as results from <a class="el" href="#a5a32b42fedf1dcf1365878805a4eeca1" title="Converts a world-space pixel position into this layer&#39;s grid coordinates. This uses the layer&#39;s activ...">WorldPxToGrid</a>. The coordinates are cast to integers, truncating toward zero. <a class="el" href="namespaceGondwana_1_1Drawing_1_1Coordinates.html">Coordinates</a> outside the valid range return <code>null</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01297">1297</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SceneLayer_8cs_source.html#l01313">1313</a> of file <a class="el" href="SceneLayer_8cs_source.html">SceneLayer.cs</a>.</p>
 
 </div>
 </div>

@@ -231,7 +231,13 @@ Protected Member Functions</h2></td></tr>
 </dl>
   <br /></td></tr>
 <tr class="memitem:accef8e2397c1f8a9bba20b90d7361b80" id="r_accef8e2397c1f8a9bba20b90d7361b80"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#accef8e2397c1f8a9bba20b90d7361b80">OnMouseWheel</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetMouseWheelEventArgs.html">WidgetMouseWheelEventArgs</a> args)</td></tr>
-<tr class="memdesc:accef8e2397c1f8a9bba20b90d7361b80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when mouse-wheel input is routed to the widget.  <br /></td></tr>
+<tr class="memdesc:accef8e2397c1f8a9bba20b90d7361b80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when mouse-wheel input is routed to the widget.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+  <br /></td></tr>
 <tr class="memitem:a0d896aba781a9e15f9315cad1459c78b" id="r_a0d896aba781a9e15f9315cad1459c78b"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0d896aba781a9e15f9315cad1459c78b">OnKeyboardInput</a> (<a class="el" href="classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html">WidgetKeyboardEventArgs</a> args)</td></tr>
 <tr class="memdesc:a0d896aba781a9e15f9315cad1459c78b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when keyboard input is routed to the widget.<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -440,8 +446,18 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Creates a view-level list box. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render-surface host that owns the drawing.</td></tr>
+    <tr><td class="paramname">view</td><td>The view used for presentation and coordinate conversion.</td></tr>
+    <tr><td class="paramname">bounds</td><td>The widget bounds in view-local pixels.</td></tr>
+    <tr><td class="paramname">items</td><td>The items.</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional name used to identify the object.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00050">50</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00055">55</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -480,8 +496,18 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Creates a scene-layer list box. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render-surface host that owns the drawing.</td></tr>
+    <tr><td class="paramname">sceneLayer</td><td>The scene layer that owns the content.</td></tr>
+    <tr><td class="paramname">bounds</td><td>The widget bounds in world pixels.</td></tr>
+    <tr><td class="paramname">items</td><td>The items.</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional name used to identify the object.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00075">75</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00085">85</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -502,8 +528,15 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Adds an item to the end of the list. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">item</td><td>The item.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00243">243</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00257">257</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -523,8 +556,9 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Removes all items and clears selection. </p>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00290">290</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00307">307</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -561,7 +595,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#aaec953c2a7d8d8d45daa4886b95f779b">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00514">514</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00539">539</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -588,11 +622,17 @@ Events</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Called when mouse-wheel input is routed to the widget. </p>
+<p>Called when mouse-wheel input is routed to the widget.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+ </p>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a25138e9b94f846e280f28513b18fb842">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00500">500</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00525">525</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -629,7 +669,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a7d02dee6a2c67a4c1365aad41a19d4c0">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00395">395</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00420">420</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -666,7 +706,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a3e21456ad03a8de98262b46bd1547fd8">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00433">433</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00458">458</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -703,7 +743,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a725381d7ffb12a61d2d5cfd40b0a7ad4">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00466">466</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00491">491</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -740,7 +780,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af68f779ee36ea91d59fe2d375c2c0eeb">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00487">487</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00512">512</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -771,7 +811,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af24739527ab6d68bbd1aa2bfb876b37a">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00386">386</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00411">411</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -802,7 +842,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a3233fc47ac2be8fac9af4c35c0810ebd">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00378">378</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00403">403</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -822,8 +862,15 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Removes an item by index. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>The index.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00254">254</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00270">270</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -843,8 +890,9 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Selects the next item when possible. </p>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00328">328</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00348">348</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -864,8 +912,9 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Selects the previous item when possible. </p>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00340">340</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00361">361</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -885,8 +934,15 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Replaces all list items and clears selection. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">items</td><td>The items.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00222">222</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00234">234</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -906,8 +962,15 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sets the base Z-order used by the list-box visuals. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">zOrder</td><td>The drawing order relative to other content.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00352">352</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00375">375</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -927,8 +990,15 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Selects the requested item index. Use -1 to clear selection. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>The index.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00307">307</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00326">326</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -948,8 +1018,15 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sets the selected-row highlight color. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">color</td><td>The color to apply.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00370">370</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00395">395</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -976,7 +1053,7 @@ Events</h2></td></tr>
 
 <p>Gets the list background. </p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00100">100</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00110">110</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1002,7 +1079,7 @@ Events</h2></td></tr>
 
 <p>Gets the list-box bounds in its native coordinate space. </p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00121">121</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00131">131</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1028,7 +1105,7 @@ Events</h2></td></tr>
 
 <p>Gets whether the vertical scrollbar is currently displayed. </p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00169">169</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00179">179</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1054,7 +1131,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the height of each row in native pixels. </p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00128">128</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00138">138</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1080,7 +1157,7 @@ Events</h2></td></tr>
 
 <p>Gets the current items. </p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00116">116</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00126">126</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1106,7 +1183,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the number of items scrolled for one wheel notch. </p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00175">175</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00185">185</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1132,7 +1209,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the selected item index. Use -1 to clear selection. </p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00206">206</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00216">216</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1158,7 +1235,7 @@ Events</h2></td></tr>
 
 <p>Gets the selected item text, or <code>null</code> when no item is selected. </p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00215">215</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00225">225</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1184,7 +1261,7 @@ Events</h2></td></tr>
 
 <p>Gets the rectangle used to highlight the selected row. </p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00105">105</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00115">115</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1210,7 +1287,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the index of the first visible item. </p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00189">189</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00199">199</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1236,7 +1313,7 @@ Events</h2></td></tr>
 
 <p>Gets the minimum height used for a visible scrollbar thumb. </p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00184">184</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00194">194</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1262,7 +1339,7 @@ Events</h2></td></tr>
 
 <p>Gets the vertical scrollbar thumb. </p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00111">111</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00121">121</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1288,7 +1365,7 @@ Events</h2></td></tr>
 
 <p>Gets the vertical scrollbar track. </p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00108">108</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00118">118</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1314,7 +1391,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets when the vertical scrollbar is displayed. </p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00152">152</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00162">162</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1340,7 +1417,7 @@ Events</h2></td></tr>
 
 <p>Gets the number of complete rows that can currently be displayed. </p>
 
-<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00149">149</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ListBoxWidget_8cs_source.html#l00159">159</a> of file <a class="el" href="ListBoxWidget_8cs_source.html">ListBoxWidget.cs</a>.</p>
 
 </div>
 </div>

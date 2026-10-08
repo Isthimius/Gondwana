@@ -475,8 +475,19 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Creates a view/screen-space widget. The default factory creates <a class="el" href="classGondwana_1_1Video_1_1VlcVideoPlayer.html" title="Desktop/native LibVLC 3 player. Controls are serialized; event handlers must not block on the engine ...">VlcVideoPlayer</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render-surface host that owns the drawing.</td></tr>
+    <tr><td class="paramname">view</td><td>The view used for presentation and coordinate conversion.</td></tr>
+    <tr><td class="paramname">bounds</td><td>The widget bounds in view-local pixels.</td></tr>
+    <tr><td class="paramname">source</td><td>The source.</td></tr>
+    <tr><td class="paramname">playerFactory</td><td>The factory used to create the video player.</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional name used to identify the object.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00023">23</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00029">29</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -520,8 +531,19 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Creates a scene-layer/world-space widget. The default factory creates <a class="el" href="classGondwana_1_1Video_1_1VlcVideoPlayer.html" title="Desktop/native LibVLC 3 player. Controls are serialized; event handlers must not block on the engine ...">VlcVideoPlayer</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render-surface host that owns the drawing.</td></tr>
+    <tr><td class="paramname">sceneLayer</td><td>The scene layer that owns the content.</td></tr>
+    <tr><td class="paramname">bounds</td><td>The widget bounds in world pixels.</td></tr>
+    <tr><td class="paramname">source</td><td>The source.</td></tr>
+    <tr><td class="paramname">playerFactory</td><td>The factory used to create the video player.</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional name used to identify the object.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00045">45</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00057">57</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -565,8 +587,19 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Creates a view widget transferring player ownership to <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render-surface host that owns the drawing.</td></tr>
+    <tr><td class="paramname">view</td><td>The view used for presentation and coordinate conversion.</td></tr>
+    <tr><td class="paramname">bounds</td><td>The widget bounds in view-local pixels.</td></tr>
+    <tr><td class="paramname">source</td><td>The source.</td></tr>
+    <tr><td class="paramname">player</td><td>The media player to use.</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional name used to identify the object.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00067">67</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00085">85</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -610,8 +643,19 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Creates a scene-layer widget transferring player ownership to <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render-surface host that owns the drawing.</td></tr>
+    <tr><td class="paramname">sceneLayer</td><td>The scene layer that owns the content.</td></tr>
+    <tr><td class="paramname">bounds</td><td>The widget bounds in world pixels.</td></tr>
+    <tr><td class="paramname">source</td><td>The source.</td></tr>
+    <tr><td class="paramname">player</td><td>The media player to use.</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional name used to identify the object.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00072">72</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00096">96</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -632,6 +676,12 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Replaces a URI/file source and starts playback through <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>The source.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -651,6 +701,12 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Replaces the source and starts playback through <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectVideo.html" title="Draws video frames provided by IVideoPlayer onto the backbuffer. Audio is handled by the IVideoPlayer...">DirectVideo</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>The source.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -708,6 +764,12 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Seeks to a media position. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">position</td><td>The requested playback position.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -727,8 +789,15 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Moves the composite and resizes its video using existing drawing bounds. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bounds</td><td>The new bounds in the widget's drawing coordinate space.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00083">83</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00109">109</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -766,7 +835,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets actual decoded dimensions, or (0, 0) before discovery. </p>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00118">118</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00147">147</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -793,7 +862,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets presentation bounds in screen pixels (View) or world pixels (SceneLayer). </p>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00080">80</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00104">104</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -819,7 +888,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets media duration; check metadata readiness before interpreting unknown values. </p>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00114">114</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00143">143</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -845,7 +914,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets audio-track presence; false is inconclusive until metadata is ready. </p>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00120">120</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00149">149</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -871,7 +940,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets whether metadata is available for this source. </p>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00122">122</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00151">151</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -897,7 +966,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the player's current playing state. </p>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00112">112</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00141">141</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -923,7 +992,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets or sets looping. </p>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00108">108</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00137">137</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -949,7 +1018,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the authoritative metadata snapshot. </p>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00124">124</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00153">153</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -973,7 +1042,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00118">118</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00147">147</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -999,7 +1068,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets or sets playback speed. </p>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00106">106</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00135">135</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1025,7 +1094,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the current media position. </p>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00116">116</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00145">145</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1051,7 +1120,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets or sets scaling within the presentation bounds. </p>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00110">110</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00139">139</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1077,7 +1146,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets the owned drawing for advanced configuration. Do not dispose it separately. </p>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00077">77</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00101">101</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1104,7 +1173,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Forwards end notifications on the player's event thread. </p>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00133">133</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00162">162</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1130,7 +1199,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Forwards pause notifications on the player's event thread. </p>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00129">129</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00158">158</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1156,7 +1225,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Forwards playback start notifications on the player's event thread. </p>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00127">127</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00156">156</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1182,7 +1251,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Forwards state/metadata notifications, retaining the player's sender and threading. </p>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00135">135</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00164">164</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -1208,7 +1277,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Forwards stop notifications on the player's event thread. </p>
 
-<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00131">131</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoWidget_8cs_source.html#l00160">160</a> of file <a class="el" href="VideoWidget_8cs_source.html">VideoWidget.cs</a>.</p>
 
 </div>
 </div>

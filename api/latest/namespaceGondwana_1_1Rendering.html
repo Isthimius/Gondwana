@@ -169,7 +169,7 @@ Functions</h2></td></tr>
 </td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="PresentationTransform_8cs_source.html#l00048">48</a> of file <a class="el" href="PresentationTransform_8cs_source.html">PresentationTransform.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PresentationTransform_8cs_source.html#l00060">60</a> of file <a class="el" href="PresentationTransform_8cs_source.html">PresentationTransform.cs</a>.</p>
 
 </div>
 </div>
@@ -242,6 +242,21 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Captures the measured work performed for one scene layer during a full-frame GPU render. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">LayerIndex</td><td>The layer index.</td></tr>
+    <tr><td class="paramname">LayerId</td><td>The layer id.</td></tr>
+    <tr><td class="paramname">ZOrder</td><td>The drawing order relative to other content.</td></tr>
+    <tr><td class="paramname">DrawableCount</td><td>The drawable count.</td></tr>
+    <tr><td class="paramname">TileCount</td><td>The tile count.</td></tr>
+    <tr><td class="paramname">TransformedTileCount</td><td>The transformed tile count.</td></tr>
+    <tr><td class="paramname">TileWidth</td><td>The tile width.</td></tr>
+    <tr><td class="paramname">TileHeight</td><td>The tile height.</td></tr>
+    <tr><td class="paramname">QueryAndSortMilliseconds</td><td>The query and sort milliseconds.</td></tr>
+    <tr><td class="paramname">DrawMilliseconds</td><td>The draw milliseconds.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -298,12 +313,24 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Captures measured scene-render work for one full-frame GPU render. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">TotalRenderMilliseconds</td><td>The total render milliseconds.</td></tr>
+    <tr><td class="paramname">QueryAndSortMilliseconds</td><td>The query and sort milliseconds.</td></tr>
+    <tr><td class="paramname">DrawMilliseconds</td><td>The draw milliseconds.</td></tr>
+    <tr><td class="paramname">OverlayMilliseconds</td><td>The overlay milliseconds.</td></tr>
+    <tr><td class="paramname">DrawableCount</td><td>The drawable count.</td></tr>
+    <tr><td class="paramname">TileCount</td><td>The tile count.</td></tr>
+    <tr><td class="paramname">Layers</td><td>The layers.</td></tr>
+  </table>
+  </dd>
+</dl>
 <p>Time gathering visible drawable candidates before sorting.</p>
 <p>Time validating existing order or sorting the gathered drawable lists.</p>
 <p>Number of DrawAtlas operations recorded for fixed-grid tiles.</p>
 <p>Number of fixed-grid tiles represented by DrawAtlas operations.</p>
 
-<p class="definition">Definition at line <a class="el" href="GpuRenderFrameDiagnostics_8cs_source.html#l00021">21</a> of file <a class="el" href="GpuRenderFrameDiagnostics_8cs_source.html">GpuRenderFrameDiagnostics.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuRenderFrameDiagnostics_8cs_source.html#l00038">38</a> of file <a class="el" href="GpuRenderFrameDiagnostics_8cs_source.html">GpuRenderFrameDiagnostics.cs</a>.</p>
 
 </div>
 </div>
@@ -335,6 +362,13 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Captures time spent waiting for and holding the shared live render-state synchronization gate. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">LockWaitMilliseconds</td><td>The lock wait milliseconds.</td></tr>
+    <tr><td class="paramname">LockHeldMilliseconds</td><td>The lock held milliseconds.</td></tr>
+  </table>
+  </dd>
+</dl>
 <p>CPU time replaying completed commands and flushing the backbuffer.</p>
 <p>CPU time spent replaying the recorded SKPicture onto the GPU backbuffer canvas.</p>
 <p>CPU time spent flushing the GPU backbuffer after picture replay.</p>
@@ -345,7 +379,7 @@ Functions</h2></td></tr>
 <p>Occupied slots at acquisition, including the rendering slot (maximum three).</p>
 <p>Approximate number of native Skia operations in the acquired recording.</p>
 
-<p class="definition">Definition at line <a class="el" href="GpuRenderFrameDiagnostics_8cs_source.html#l00047">47</a> of file <a class="el" href="GpuRenderFrameDiagnostics_8cs_source.html">GpuRenderFrameDiagnostics.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GpuRenderFrameDiagnostics_8cs_source.html#l00066">66</a> of file <a class="el" href="GpuRenderFrameDiagnostics_8cs_source.html">GpuRenderFrameDiagnostics.cs</a>.</p>
 
 </div>
 </div>
@@ -369,11 +403,40 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Aspect-preserving mapping between logical Backbuffer ScreenPx and adapter pixels. </p>
-<p>Fits the entire logical image inside the adapter, centered on both axes.</p>
-<p>Maps input without clamping margins. False means outside the presented game area.</p>
-<p>Maps logical dirty edges outwards to avoid gaps at fractional presentation scales.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Scale</td><td>The scale from logical backbuffer pixels to adapter pixels.</td></tr>
+    <tr><td class="paramname">DestinationRect</td><td>The centered presentation rectangle in adapter pixels.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Fits the entire logical image inside the adapter, centered on both axes. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bufferWidth</td><td>The logical backbuffer width in pixels.</td></tr>
+    <tr><td class="paramname">bufferHeight</td><td>The logical backbuffer height in pixels.</td></tr>
+    <tr><td class="paramname">adapterWidth</td><td>The adapter width in pixels.</td></tr>
+    <tr><td class="paramname">adapterHeight</td><td>The adapter height in pixels.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The aspect-preserving scale and centered destination rectangle.</dd></dl>
+<p>Maps input without clamping margins. False means outside the presented game area. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">adapterPx</td><td>The adapter px.</td></tr>
+    <tr><td class="paramname">screenPx</td><td>The point in logical backbuffer screen pixels.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the operation succeeded; otherwise, <code>false</code>.</dd></dl>
+<p>Maps logical dirty edges outwards to avoid gaps at fractional presentation scales. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">screenRect</td><td>The rectangle in logical backbuffer screen pixels.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The enclosing adapter-pixel rectangle, rounded outward to cover fractional edges.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="PresentationTransform_8cs_source.html#l00007">7</a> of file <a class="el" href="PresentationTransform_8cs_source.html">PresentationTransform.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PresentationTransform_8cs_source.html#l00009">9</a> of file <a class="el" href="PresentationTransform_8cs_source.html">PresentationTransform.cs</a>.</p>
 
 </div>
 </div>

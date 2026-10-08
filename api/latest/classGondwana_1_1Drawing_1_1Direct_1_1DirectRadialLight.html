@@ -282,7 +282,7 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Draws a bounded, radial light effect as a scene-layer direct drawing. </p>
 <p><a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html" title="Draws a bounded, radial light effect as a scene-layer direct drawing.">DirectRadialLight</a> is intended for localized draw-time lighting effects such as torches, lamps, spell glows, and other finite-radius light sources. It is deliberately modeled as a normal <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html" title="Provides the base implementation for direct drawing objects that can be rendered to the backbuffer wi...">DirectDrawingBase</a> instead of a post-process effect so it participates in <a class="el" href="namespaceGondwana.html">Gondwana</a>'s existing dirty-rectangle selection path. </p>
-<p>The important contract is its bounds: <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#abe9d1f20a5271daf8d6a926fe41b10ec" title="Gets or sets the world-space bounds of this direct drawing in pixels.">WorldBounds</a> is the full world-space area that may be affected by the light. When a light moves or changes radius, both the old and new bounds are marked dirty by the inherited <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#abe9d1f20a5271daf8d6a926fe41b10ec" title="Gets or sets the world-space bounds of this direct drawing in pixels.">DirectDrawingBase.WorldBounds</a> setter. </p>
+<p>The important contract is its bounds: <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#abe9d1f20a5271daf8d6a926fe41b10ec" title="Gets or sets the world-space bounds of this direct drawing in pixels.">DirectDrawingBase.WorldBounds</a> is the full world-space area that may be affected by the light. When a light moves or changes radius, both the old and new bounds are marked dirty by the inherited <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#abe9d1f20a5271daf8d6a926fe41b10ec" title="Gets or sets the world-space bounds of this direct drawing in pixels.">DirectDrawingBase.WorldBounds</a> setter. </p>
 <p><a class="el" href="namespaceGondwana_1_1Rendering.html">Rendering</a> uses a Skia radial-gradient SKShader on an SKPaint. This keeps the first lighting primitive compatible with both bitmap and GPU-backed backbuffers while still exercising the same "shader during draw" idea that a later SkSL-backed implementation would use. </p>
 
 <p class="definition">Definition at line <a class="el" href="DirectRadialLight_8cs_source.html#l00031">31</a> of file <a class="el" href="DirectRadialLight_8cs_source.html">DirectRadialLight.cs</a>.</p>
@@ -360,8 +360,15 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Moves the light center and returns this instance for chaining. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">centerWorldPx</td><td>The center in world pixels.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectRadialLight_8cs_source.html#l00304">304</a> of file <a class="el" href="DirectRadialLight_8cs_source.html">DirectRadialLight.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectRadialLight_8cs_source.html#l00306">306</a> of file <a class="el" href="DirectRadialLight_8cs_source.html">DirectRadialLight.cs</a>.</p>
 
 </div>
 </div>
@@ -394,7 +401,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p></p>
 
-<p class="definition">Definition at line <a class="el" href="DirectRadialLight_8cs_source.html#l00336">336</a> of file <a class="el" href="DirectRadialLight_8cs_source.html">DirectRadialLight.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectRadialLight_8cs_source.html#l00342">342</a> of file <a class="el" href="DirectRadialLight_8cs_source.html">DirectRadialLight.cs</a>.</p>
 
 </div>
 </div>
@@ -414,8 +421,15 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sets the light intensity and returns this instance for chaining. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">intensity</td><td>The intensity.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectRadialLight_8cs_source.html#l00322">322</a> of file <a class="el" href="DirectRadialLight_8cs_source.html">DirectRadialLight.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectRadialLight_8cs_source.html#l00328">328</a> of file <a class="el" href="DirectRadialLight_8cs_source.html">DirectRadialLight.cs</a>.</p>
 
 </div>
 </div>
@@ -435,8 +449,15 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sets the light radius and returns this instance for chaining. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">radiusWorldPx</td><td>The radius in world pixels.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectRadialLight_8cs_source.html#l00313">313</a> of file <a class="el" href="DirectRadialLight_8cs_source.html">DirectRadialLight.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectRadialLight_8cs_source.html#l00317">317</a> of file <a class="el" href="DirectRadialLight_8cs_source.html">DirectRadialLight.cs</a>.</p>
 
 </div>
 </div>
@@ -473,7 +494,7 @@ This method is called automatically by the <a class="el" href="classGondwana_1_1
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#a52ae59743dbd89bda3f0c721321939f0">Gondwana.Drawing.Direct.DirectDrawingBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DirectRadialLight_8cs_source.html#l00329">329</a> of file <a class="el" href="DirectRadialLight_8cs_source.html">DirectRadialLight.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectRadialLight_8cs_source.html#l00335">335</a> of file <a class="el" href="DirectRadialLight_8cs_source.html">DirectRadialLight.cs</a>.</p>
 
 </div>
 </div>
@@ -812,7 +833,7 @@ This method is called automatically by the <a class="el" href="classGondwana_1_1
 </div><div class="memdoc">
 
 <p>Gets the light radius in world pixels. </p>
-<p>Changing the radius changes <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#abe9d1f20a5271daf8d6a926fe41b10ec" title="Gets or sets the world-space bounds of this direct drawing in pixels.">WorldBounds</a>, which dirties the old and new light areas. </p>
+<p>Changing the radius changes <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectDrawingBase.html#abe9d1f20a5271daf8d6a926fe41b10ec" title="Gets or sets the world-space bounds of this direct drawing in pixels.">DirectDrawingBase.WorldBounds</a>, which dirties the old and new light areas. </p>
 
 <p class="definition">Definition at line <a class="el" href="DirectRadialLight_8cs_source.html#l00113">113</a> of file <a class="el" href="DirectRadialLight_8cs_source.html">DirectRadialLight.cs</a>.</p>
 

@@ -331,7 +331,7 @@ Events</h2></td></tr>
 <p>This method creates a new layer with the specified grid dimensions and visual properties, adds it to the scene's layer collection, and triggers the <a class="el" href="#a5083f1d20db3d14561f55205be029d89" title="Occurs when a SceneLayer is added to this scene.">SceneLayerAdded</a> event. The scene is marked for full refresh to ensure the new layer is rendered. </p>
 <p>The returned layer reference can be used to further configure the layer, such as setting tiles, adding sprites, or adjusting visual properties. </p>
 
-<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00464">464</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00466">466</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -360,7 +360,7 @@ Events</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>The added <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a>.</dd></dl>
 <p>This method adds a pre-existing layer to the scene's layer collection and triggers the <a class="el" href="#a5083f1d20db3d14561f55205be029d89" title="Occurs when a SceneLayer is added to this scene.">SceneLayerAdded</a> event. The scene is marked for full refresh to ensure the new layer is rendered. Use this method when you need to add a layer that was created separately or transferred from another scene. </p>
 
-<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00494">494</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00496">496</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -391,7 +391,7 @@ Events</h2></td></tr>
 <p>This method iterates through all active scenes and calls <a class="el" href="#a835d902d5621935b14b107c41acd8da2" title="Releases all resources used by the Scene and removes it from the global scene collection.">Dispose</a> on each one, effectively clearing the entire scene collection. This is typically used during engine shutdown or when resetting the application state. </p>
 <p>After calling this method, all scene references become invalid and should not be used. New scenes can be created after clearing. </p>
 
-<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00916">916</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00918">918</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -433,7 +433,7 @@ Clearing all event subscriptions </li>
 <p>After disposal, the scene should not be used. This method can be overridden in derived classes to add custom cleanup logic, but the base implementation should be called to ensure proper resource release. </p>
 <p>This method suppresses finalization to prevent the finalizer from running, as cleanup has already been performed. </p>
 
-<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00843">843</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00845">845</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -576,7 +576,7 @@ Clearing all event subscriptions </li>
 <dl class="section return"><dt>Returns</dt><dd>The <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a> with the matching ID, or <code>null</code> if no layer with that ID exists in this scene. </dd></dl>
 <p>This method performs a linear search through the scene's layers to find a matching ID. For frequent lookups, consider caching layer references or using the indexer syntax <code>scene["layerID"]</code> which calls this method internally. </p>
 
-<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00561">561</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00563">563</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -599,7 +599,7 @@ Clearing all event subscriptions </li>
 <dl class="section return"><dt>Returns</dt><dd>A RectangleF representing the union of all layer bounds in pixel coordinates, or RectangleF.Empty if the scene has no layers or all layers have empty bounds. </dd></dl>
 <p>Each layer reports its own bounds via <code>GetLayerBoundsPx()</code>, and this method unions them together to produce a single bounding rectangle that encompasses the entire scene. This is useful for determining camera limits, culling regions, or overall scene dimensions. </p>
 
-<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00584">584</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00586">586</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -674,7 +674,7 @@ Raises the <a class="el" href="#a5083f1d20db3d14561f55205be029d89" title="Occurs
 </ul>
 <p>Derived classes can override this method to add custom behavior when layers are added, but should call the base implementation to ensure proper setup. </p>
 
-<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00636">636</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00638">638</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -721,7 +721,7 @@ Raises the <a class="el" href="#a270894db366b87f8a329ee484e75c7d8" title="Occurs
 </ul>
 <p>Derived classes can override this method to add custom cleanup behavior when layers are removed, but should call the base implementation to ensure proper cleanup. </p>
 
-<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00676">676</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00678">678</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -744,7 +744,7 @@ Raises the <a class="el" href="#a270894db366b87f8a329ee484e75c7d8" title="Occurs
 <p>This method removes every <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a> from the scene, raising the <a class="el" href="#a270894db366b87f8a329ee484e75c7d8" title="Occurs when a SceneLayer is removed from this scene.">SceneLayerRemoved</a> event for each layer. The scene is marked for full refresh and the layer collection is cleared. </p>
 <p>Use this method when you need to completely reset the scene's content, such as when loading a new level or returning to a main menu. </p>
 
-<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00516">516</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00518">518</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -773,7 +773,7 @@ Raises the <a class="el" href="#a270894db366b87f8a329ee484e75c7d8" title="Occurs
 <p>This method removes the specified layer from the scene's layer collection and raises the <a class="el" href="#a270894db366b87f8a329ee484e75c7d8" title="Occurs when a SceneLayer is removed from this scene.">SceneLayerRemoved</a> event. The scene is marked for full refresh to ensure the visual representation is updated. </p>
 <p>If the specified layer is not in this scene, the method has no effect. </p>
 
-<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00541">541</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00543">543</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -913,7 +913,7 @@ Raises the <a class="el" href="#a270894db366b87f8a329ee484e75c7d8" title="Occurs
 <p>This scene is useful as a default value or placeholder when a valid scene is not available, avoiding null reference checks throughout the codebase. Attempting to add layers to this scene will throw an InvalidOperationException. </p>
 <p>The empty scene is not included in the global scene collection and cannot be disposed. </p>
 
-<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00946">946</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00948">948</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -1032,7 +1032,7 @@ Raises the <a class="el" href="#a270894db366b87f8a329ee484e75c7d8" title="Occurs
 <dl class="section return"><dt>Returns</dt><dd>The <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a> at the specified index, or <code>null</code> if the index is out of range. </dd></dl>
 <p>This indexer provides direct access to layers by their position in the collection. The order reflects the order in which layers were added, not their z-order for rendering. For rendering order, use <a class="el" href="#a62f82a3e296beb61cedf989dde078a65" title="Gets a read-only collection of visible layers sorted by z-order for rendering.">VisibleSceneLayers</a> which is sorted by z-order. </p>
 
-<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00767">767</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00769">769</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>
@@ -1066,7 +1066,7 @@ Raises the <a class="el" href="#a270894db366b87f8a329ee484e75c7d8" title="Occurs
 <dl class="section return"><dt>Returns</dt><dd>The <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a> with the matching ID, or <code>null</code> if no layer with that ID exists in this scene. </dd></dl>
 <p>This indexer provides convenient access to layers by their ID and internally calls <a class="el" href="#a0bd8ee56ed5fc05b4f5a52dc8ced7063" title="Retrieves a layer from this scene by its unique identifier.">GetSceneLayerByID</a>. For example: <code>var layer = scene["myLayerId"];</code> </p>
 
-<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00780">780</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Scene_8cs_source.html#l00782">782</a> of file <a class="el" href="Scene_8cs_source.html">Scene.cs</a>.</p>
 
 </div>
 </div>

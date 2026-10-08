@@ -107,24 +107,24 @@ $(function(){initNavTree('RenderSurfaceHostRegistry_8cs_source.html','',''); });
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span></div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">public</span> <span class="keyword">static</span> IReadOnlyList&lt;RenderSurfaceHostBase&gt; All =&gt; _all;</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span></div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">internal</span> <span class="keyword">static</span> RenderSurfaceHostBase[] Snapshot()</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    {</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        lock (_lock)</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            <span class="keywordflow">return</span> _all.ToArray();</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    }</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">internal</span> <span class="keyword">static</span> <span class="keywordtype">void</span> Register(RenderSurfaceHostBase host)</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    {</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        lock (_lock)</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            _all.Add(host);</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    }</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">internal</span> <span class="keyword">static</span> <span class="keywordtype">void</span> Unregister(RenderSurfaceHostBase host)</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    {</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        lock (_lock)</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            _all.Remove(host);</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    }</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">internal</span> <span class="keyword">static</span> RenderSurfaceHostBase[] Snapshot()</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        lock (_lock)</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="keywordflow">return</span> _all.ToArray();</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">internal</span> <span class="keyword">static</span> <span class="keywordtype">void</span> Register(RenderSurfaceHostBase host)</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        lock (_lock)</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            _all.Add(host);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">internal</span> <span class="keyword">static</span> <span class="keywordtype">void</span> Unregister(RenderSurfaceHostBase host)</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        lock (_lock)</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            _all.Remove(host);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
 <div class="ttc" id="anamespaceGondwana_1_1Rendering_html"><div class="ttname"><a href="namespaceGondwana_1_1Rendering.html">Gondwana.Rendering</a></div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00009">BackbufferBase.cs:9</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

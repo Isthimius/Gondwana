@@ -129,44 +129,44 @@ $(function(){initNavTree('BlazorGpuRenderSurfaceAdapter_8cs_source.html','','');
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        Engine.Instance.AfterFrameRender += _afterFrameRenderHandler;</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    }</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span></div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">internal</span> <span class="keywordtype">bool</span> ConsumeFrameRequest() =&gt;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        !_disposed &amp;&amp; Interlocked.Exchange(ref _pendingFrame, 0) != 0;</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span></div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">internal</span> <span class="keywordtype">void</span> BeginPaint(<span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height)</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    {</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">if</span> (!_disposed)</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            <a class="code hl_function" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#a406a663858eadcb3ed5de20e14ca049b">SetDestinationSize</a>(width, height);</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    }</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span></div>
-<div class="foldopen" id="foldopen00065" data-start="{" data-end="}">
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceAdapter.html#a101fa1bf592ae74a3c6a535377875bc5">   65</a></span>    <span class="keyword">public</span> <span class="keyword">override</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceAdapter.html#a101fa1bf592ae74a3c6a535377875bc5">Present</a>(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    {</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        bufferImage.Dispose();</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    }</div>
-</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">internal</span> <span class="keywordtype">bool</span> ConsumeFrameRequest() =&gt;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        !_disposed &amp;&amp; Interlocked.Exchange(ref _pendingFrame, 0) != 0;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">internal</span> <span class="keywordtype">void</span> BeginPaint(<span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height)</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">if</span> (!_disposed)</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <a class="code hl_function" href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#a406a663858eadcb3ed5de20e14ca049b">SetDestinationSize</a>(width, height);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span></div>
 <div class="foldopen" id="foldopen00071" data-start="{" data-end="}">
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceAdapter.html#a1e57ba8cc382b64326c979bdae6aabb3">   71</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceAdapter.html#a1e57ba8cc382b64326c979bdae6aabb3">Dispose</a>()</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceAdapter.html#a101fa1bf592ae74a3c6a535377875bc5">   71</a></span>    <span class="keyword">public</span> <span class="keyword">override</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceAdapter.html#a101fa1bf592ae74a3c6a535377875bc5">Present</a>(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    {</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">if</span> (_disposed)</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        _disposed = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        Interlocked.Exchange(ref _pendingFrame, 0);</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keywordflow">if</span> (_afterFrameRenderHandler is not <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        {</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            Engine.Instance.AfterFrameRender -= _afterFrameRenderHandler;</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            _afterFrameRenderHandler = <span class="keyword">null</span>;</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        }</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        bufferImage.Dispose();</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    }</div>
 </div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>}</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span></div>
+<div class="foldopen" id="foldopen00077" data-start="{" data-end="}">
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceAdapter.html#a1e57ba8cc382b64326c979bdae6aabb3">   77</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceAdapter.html#a1e57ba8cc382b64326c979bdae6aabb3">Dispose</a>()</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keywordflow">if</span> (_disposed)</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        _disposed = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        Interlocked.Exchange(ref _pendingFrame, 0);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keywordflow">if</span> (_afterFrameRenderHandler is not <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            Engine.Instance.AfterFrameRender -= _afterFrameRenderHandler;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            _afterFrameRenderHandler = <span class="keyword">null</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        }</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    }</div>
 </div>
-<div class="ttc" id="aclassGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceAdapter_html_a101fa1bf592ae74a3c6a535377875bc5"><div class="ttname"><a href="classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceAdapter.html#a101fa1bf592ae74a3c6a535377875bc5">Gondwana.Blazor.Rendering.BlazorGpuRenderSurfaceAdapter.Present</a></div><div class="ttdeci">override void Present(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)</div><div class="ttdoc">Not used by the WebGL path. GPU rendering and presentation both occur in the SKGLView paint callback.</div><div class="ttdef"><b>Definition</b> <a href="#l00065">BlazorGpuRenderSurfaceAdapter.cs:65</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceAdapter_html_a1e57ba8cc382b64326c979bdae6aabb3"><div class="ttname"><a href="classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceAdapter.html#a1e57ba8cc382b64326c979bdae6aabb3">Gondwana.Blazor.Rendering.BlazorGpuRenderSurfaceAdapter.Dispose</a></div><div class="ttdeci">void Dispose()</div><div class="ttdoc">Releases the engine frame-request subscription.</div><div class="ttdef"><b>Definition</b> <a href="#l00071">BlazorGpuRenderSurfaceAdapter.cs:71</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase_html_a406a663858eadcb3ed5de20e14ca049b"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#a406a663858eadcb3ed5de20e14ca049b">Gondwana.Rendering.RenderSurfaceAdapterBase.SetDestinationSize</a></div><div class="ttdeci">void SetDestinationSize(int destWidth, int destHeight)</div><div class="ttdoc">Sets the destination size of the render surface and raises the Resized event if the dimensions have c...</div><div class="ttdef"><b>Definition</b> <a href="RenderSurfaceAdapterBase_8cs_source.html#l00119">RenderSurfaceAdapterBase.cs:119</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase_html_ae5ec6cc715ff40b37cad1828c0164868"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#ae5ec6cc715ff40b37cad1828c0164868">Gondwana.Rendering.RenderSurfaceAdapterBase.RenderSurfaceAdapterBase</a></div><div class="ttdeci">RenderSurfaceAdapterBase(int destWidth, int destHeight)</div><div class="ttdoc">Initializes a new instance of the RenderSurfaceAdapterBase class with the specified dimensions.</div><div class="ttdef"><b>Definition</b> <a href="RenderSurfaceAdapterBase_8cs_source.html#l00097">RenderSurfaceAdapterBase.cs:97</a></div></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>}</div>
+</div>
+<div class="ttc" id="aclassGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceAdapter_html_a101fa1bf592ae74a3c6a535377875bc5"><div class="ttname"><a href="classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceAdapter.html#a101fa1bf592ae74a3c6a535377875bc5">Gondwana.Blazor.Rendering.BlazorGpuRenderSurfaceAdapter.Present</a></div><div class="ttdeci">override void Present(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)</div><div class="ttdoc">Not used by the WebGL path. GPU rendering and presentation both occur in the SKGLView paint callback.</div><div class="ttdef"><b>Definition</b> <a href="#l00071">BlazorGpuRenderSurfaceAdapter.cs:71</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceAdapter_html_a1e57ba8cc382b64326c979bdae6aabb3"><div class="ttname"><a href="classGondwana_1_1Blazor_1_1Rendering_1_1BlazorGpuRenderSurfaceAdapter.html#a1e57ba8cc382b64326c979bdae6aabb3">Gondwana.Blazor.Rendering.BlazorGpuRenderSurfaceAdapter.Dispose</a></div><div class="ttdeci">void Dispose()</div><div class="ttdoc">Releases the engine frame-request subscription.</div><div class="ttdef"><b>Definition</b> <a href="#l00077">BlazorGpuRenderSurfaceAdapter.cs:77</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase_html_a406a663858eadcb3ed5de20e14ca049b"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#a406a663858eadcb3ed5de20e14ca049b">Gondwana.Rendering.RenderSurfaceAdapterBase.SetDestinationSize</a></div><div class="ttdeci">void SetDestinationSize(int destWidth, int destHeight)</div><div class="ttdoc">Sets the destination size of the render surface and raises the Resized event if the dimensions have c...</div><div class="ttdef"><b>Definition</b> <a href="RenderSurfaceAdapterBase_8cs_source.html#l00124">RenderSurfaceAdapterBase.cs:124</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase_html_ae5ec6cc715ff40b37cad1828c0164868"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html#ae5ec6cc715ff40b37cad1828c0164868">Gondwana.Rendering.RenderSurfaceAdapterBase.RenderSurfaceAdapterBase</a></div><div class="ttdeci">RenderSurfaceAdapterBase(int destWidth, int destHeight)</div><div class="ttdoc">Initializes a new instance of the RenderSurfaceAdapterBase class with the specified dimensions.</div><div class="ttdef"><b>Definition</b> <a href="RenderSurfaceAdapterBase_8cs_source.html#l00102">RenderSurfaceAdapterBase.cs:102</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Blazor_1_1Rendering_html"><div class="ttname"><a href="namespaceGondwana_1_1Blazor_1_1Rendering.html">Gondwana.Blazor.Rendering</a></div><div class="ttdef"><b>Definition</b> <a href="BlazorBitmapRenderSurfaceAdapter_8cs_source.html#l00005">BlazorBitmapRenderSurfaceAdapter.cs:5</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Rendering_html"><div class="ttname"><a href="namespaceGondwana_1_1Rendering.html">Gondwana.Rendering</a></div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00009">BackbufferBase.cs:9</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

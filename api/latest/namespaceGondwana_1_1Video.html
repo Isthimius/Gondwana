@@ -148,10 +148,14 @@ Functions</h2></td></tr>
 
 <p>The availability of metadata for the active source. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab4fee478b3a0b01f9e591f7883c003f4a453e6aa38d87b28ccae545967c53004f" name="ab4fee478b3a0b01f9e591f7883c003f4a453e6aa38d87b28ccae545967c53004f"></a>Unavailable&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab4fee478b3a0b01f9e591f7883c003f4a2d13df6f8b5e4c5af9f87e0dc39df69d" name="ab4fee478b3a0b01f9e591f7883c003f4a2d13df6f8b5e4c5af9f87e0dc39df69d"></a>Pending&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab4fee478b3a0b01f9e591f7883c003f4ae7d31fc0602fb2ede144d18cdffd816b" name="ab4fee478b3a0b01f9e591f7883c003f4ae7d31fc0602fb2ede144d18cdffd816b"></a>Ready&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab4fee478b3a0b01f9e591f7883c003f4ad7c8c85bf79bbe1b7188497c32c3b0ca" name="ab4fee478b3a0b01f9e591f7883c003f4ad7c8c85bf79bbe1b7188497c32c3b0ca"></a>Failed&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab4fee478b3a0b01f9e591f7883c003f4a453e6aa38d87b28ccae545967c53004f" name="ab4fee478b3a0b01f9e591f7883c003f4a453e6aa38d87b28ccae545967c53004f"></a>Unavailable&#160;</td><td class="fielddoc"><p>No metadata is available for the current source. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ab4fee478b3a0b01f9e591f7883c003f4a2d13df6f8b5e4c5af9f87e0dc39df69d" name="ab4fee478b3a0b01f9e591f7883c003f4a2d13df6f8b5e4c5af9f87e0dc39df69d"></a>Pending&#160;</td><td class="fielddoc"><p>Metadata discovery is in progress. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ab4fee478b3a0b01f9e591f7883c003f4ae7d31fc0602fb2ede144d18cdffd816b" name="ab4fee478b3a0b01f9e591f7883c003f4ae7d31fc0602fb2ede144d18cdffd816b"></a>Ready&#160;</td><td class="fielddoc"><p>Metadata discovery completed successfully. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ab4fee478b3a0b01f9e591f7883c003f4ad7c8c85bf79bbe1b7188497c32c3b0ca" name="ab4fee478b3a0b01f9e591f7883c003f4ad7c8c85bf79bbe1b7188497c32c3b0ca"></a>Failed&#160;</td><td class="fielddoc"><p>Metadata discovery failed. </p>
+</td></tr>
 </table>
 
 <p class="definition">Definition at line <a class="el" href="VideoMetadata_8cs_source.html#l00004">4</a> of file <a class="el" href="VideoMetadata_8cs_source.html">VideoMetadata.cs</a>.</p>
@@ -192,8 +196,16 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>An immutable metadata snapshot. Values are authoritative only when status is Ready. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Status</td><td>The availability of the source metadata.</td></tr>
+    <tr><td class="paramname">HasAudio</td><td>Whether the source contains an audio track.</td></tr>
+    <tr><td class="paramname">Duration</td><td>The source duration. This value is authoritative only when metadata is ready.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="VideoMetadata_8cs_source.html#l00007">7</a> of file <a class="el" href="VideoMetadata_8cs_source.html">VideoMetadata.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoMetadata_8cs_source.html#l00028">28</a> of file <a class="el" href="VideoMetadata_8cs_source.html">VideoMetadata.cs</a>.</p>
 
 </div>
 </div>

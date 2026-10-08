@@ -416,8 +416,19 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 </div><div class="memdoc">
 
 <p>Creates a stack panel in the supplied drawing mode. The first child establishes the view or scene-layer target. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render-surface host that owns the drawing.</td></tr>
+    <tr><td class="paramname">mode</td><td>The mode.</td></tr>
+    <tr><td class="paramname">anchor</td><td>The anchor.</td></tr>
+    <tr><td class="paramname">orientation</td><td>The orientation.</td></tr>
+    <tr><td class="paramname">spacing</td><td>The spacing.</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional name used to identify the object.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00021">21</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00027">27</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -474,7 +485,7 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1ContainerWidget.html#a887170e07f6557b023bd723bf7dac35e">Gondwana.Widgets.ContainerWidget</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00143">143</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00155">155</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -494,8 +505,15 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 </div><div class="memdoc">
 
 <p>Adds a child widget and immediately recalculates layout. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">widget</td><td>The widget.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00078">78</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00086">86</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -527,7 +545,7 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1ContainerWidget.html#a047952e91978e175e777faa4304d343f">Gondwana.Widgets.ContainerWidget</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00164">164</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00176">176</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -547,8 +565,9 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 </div><div class="memdoc">
 
 <p>Recalculates every child offset from the current orientation and spacing. </p>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00101">101</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00113">113</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -586,7 +605,7 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1ContainerWidget.html#a6933cfe45f4134402296579008b8204e">Gondwana.Widgets.ContainerWidget</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00156">156</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00168">168</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -610,8 +629,16 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 </div><div class="memdoc">
 
 <p>Removes a child widget and immediately recalculates layout. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">widget</td><td>The widget.</td></tr>
+    <tr><td class="paramname">dispose</td><td>Whether to dispose the removed resource.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00088">88</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00099">99</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -638,7 +665,7 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 
 <p>Gets the current laid-out content size. </p>
 
-<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00073">73</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00079">79</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -664,7 +691,7 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 
 <p>Gets or sets the stacking direction. </p>
 
-<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00041">41</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00047">47</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -690,7 +717,7 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 
 <p>Gets or sets the number of pixels placed between adjacent child widgets. </p>
 
-<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00057">57</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StackPanelWidget_8cs_source.html#l00063">63</a> of file <a class="el" href="StackPanelWidget_8cs_source.html">StackPanelWidget.cs</a>.</p>
 
 </div>
 </div>

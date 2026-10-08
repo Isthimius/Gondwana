@@ -118,7 +118,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4accccd2b942873b7d80b05fddd14d06" id="r_a4accccd2b942873b7d80b05fddd14d06"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4accccd2b942873b7d80b05fddd14d06">BlazorKeyboardAdapter</a> (<a class="el" href="classGondwana_1_1Blazor_1_1Rendering_1_1BlazorRenderSurfaceComponentBase.html">BlazorRenderSurfaceComponentBase</a> component)</td></tr>
 <tr class="memdesc:a4accccd2b942873b7d80b05fddd14d06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of <a class="el" href="classGondwana_1_1Blazor_1_1Input_1_1Keyboard_1_1BlazorKeyboardAdapter.html" title="Keyboard adapter for Blazor applications that feeds the Gondwana KeyboardEventPoller by translating b...">BlazorKeyboardAdapter</a> for any <a class="el" href="namespaceGondwana.html">Gondwana</a> <a class="el" href="namespaceGondwana_1_1Blazor.html">Blazor</a> render surface.  <br /></td></tr>
 <tr class="memitem:ac7c74dd51441e527f5c93dc7506a992e" id="r_ac7c74dd51441e527f5c93dc7506a992e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac7c74dd51441e527f5c93dc7506a992e">IsDown</a> (int keyCode)</td></tr>
-<tr class="memdesc:ac7c74dd51441e527f5c93dc7506a992e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the specified platform-agnostic key code is currently down. Key codes should be stable integers agreed upon by the adapter and the engine. For <a class="el" href="namespaceGondwana_1_1WinForms.html">WinForms</a>, this should be the Windows Virtual-Key code (0..255).  <br /></td></tr>
+<tr class="memdesc:ac7c74dd51441e527f5c93dc7506a992e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the specified platform-agnostic key code is currently down. Key codes should be stable integers agreed upon by the adapter and the engine. For <a class="el" href="namespaceGondwana_1_1WinForms.html">WinForms</a>, this should be the Windows Virtual-Key code (0..255).<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">keyCode</td><td>The key code to query.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the key is currently pressed; otherwise, <code>false</code>.</dd></dl>
+  <br /></td></tr>
 <tr class="memitem:a2cc08dd78d1bda47bd783e9fa5aa2d4a" id="r_a2cc08dd78d1bda47bd783e9fa5aa2d4a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2cc08dd78d1bda47bd783e9fa5aa2d4a">Dispose</a> ()</td></tr>
 <tr class="memdesc:a2cc08dd78d1bda47bd783e9fa5aa2d4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all resources and removes event handlers registered by this adapter.  <br /></td></tr>
 </table><table class="memberdecls">
@@ -278,7 +285,14 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns true if the specified platform-agnostic key code is currently down. Key codes should be stable integers agreed upon by the adapter and the engine. For <a class="el" href="namespaceGondwana_1_1WinForms.html">WinForms</a>, this should be the Windows Virtual-Key code (0..255). </p>
+<p>Returns true if the specified platform-agnostic key code is currently down. Key codes should be stable integers agreed upon by the adapter and the engine. For <a class="el" href="namespaceGondwana_1_1WinForms.html">WinForms</a>, this should be the Windows Virtual-Key code (0..255).<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">keyCode</td><td>The key code to query.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the key is currently pressed; otherwise, <code>false</code>.</dd></dl>
+ </p>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Input_1_1Keyboard_1_1IKeyboardAdapter.html#ad3017d9edeed5d51a700adfa470dc045">Gondwana.Input.Keyboard.IKeyboardAdapter</a>.</p>
 

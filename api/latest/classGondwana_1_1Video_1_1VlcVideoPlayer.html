@@ -124,7 +124,14 @@ Public Member Functions</h2></td></tr>
 </dl>
   <br /></td></tr>
 <tr class="memitem:ab0945639fffd360dcc87c8486802cd30" id="r_ab0945639fffd360dcc87c8486802cd30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab0945639fffd360dcc87c8486802cd30">Open</a> (Stream source, bool leaveOpen=false)</td></tr>
-<tr class="memdesc:ab0945639fffd360dcc87c8486802cd30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens a readable stream. Ownership transfers on success unless leaveOpen is true. Keep a borrowed stream alive and unused until the next Open or Dispose. Seek/loop require a seekable stream. Backends without stream support throw without taking ownership.  <br /></td></tr>
+<tr class="memdesc:ab0945639fffd360dcc87c8486802cd30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens a readable stream. Ownership transfers on success unless leaveOpen is true. Keep a borrowed stream alive and unused until the next Open or Dispose. Seek/loop require a seekable stream. Backends without stream support throw without taking ownership.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>The source.</td></tr>
+    <tr><td class="paramname">leaveOpen</td><td>Whether to leave the supplied stream open after use.</td></tr>
+  </table>
+  </dd>
+</dl>
+  <br /></td></tr>
 <tr class="memitem:ac72ccb66897dd749a66b5b18329136ac" id="r_ac72ccb66897dd749a66b5b18329136ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac72ccb66897dd749a66b5b18329136ac">Play</a> ()</td></tr>
 <tr class="memdesc:ac72ccb66897dd749a66b5b18329136ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts or resumes playback of the video.  <br /></td></tr>
 <tr class="memitem:aebc3d3073452d11fc8b6782909214241" id="r_aebc3d3073452d11fc8b6782909214241"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aebc3d3073452d11fc8b6782909214241">Pause</a> ()</td></tr>
@@ -281,7 +288,14 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Opens a readable stream. Ownership transfers on success unless leaveOpen is true. Keep a borrowed stream alive and unused until the next Open or Dispose. Seek/loop require a seekable stream. Backends without stream support throw without taking ownership. </p>
+<p>Opens a readable stream. Ownership transfers on success unless leaveOpen is true. Keep a borrowed stream alive and unused until the next Open or Dispose. Seek/loop require a seekable stream. Backends without stream support throw without taking ownership.<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>The source.</td></tr>
+    <tr><td class="paramname">leaveOpen</td><td>Whether to leave the supplied stream open after use.</td></tr>
+  </table>
+  </dd>
+</dl>
+ </p>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Video_1_1IVideoPlayer.html#ae4de560d17fb42969171db033dbed368">Gondwana.Video.IVideoPlayer</a>.</p>
 

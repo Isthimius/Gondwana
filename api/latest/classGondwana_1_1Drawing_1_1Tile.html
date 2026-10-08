@@ -117,14 +117,17 @@ Inheritance diagram for Gondwana.Drawing.Tile:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a2c2d0e6d13d966cf1faca72bd05a85c9" id="r_a2c2d0e6d13d966cf1faca72bd05a85c9"><td class="memItemLeft" align="right" valign="top">virtual RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2c2d0e6d13d966cf1faca72bd05a85c9">GetDrawLocationScreen</a> (<a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> view)</td></tr>
-<tr class="memdesc:a2c2d0e6d13d966cf1faca72bd05a85c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the object's destination rectangle in SCREEN pixels for rendering on the Backbuffer, using the provided <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a> to project from world-space.  <br /></td></tr>
+<tr class="memdesc:a2c2d0e6d13d966cf1faca72bd05a85c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transforms the drawable bounds into screen pixels for the specified view.  <br /></td></tr>
 <tr class="memitem:a196e3fa81e6244609b0ca81d914d9f06" id="r_a196e3fa81e6244609b0ca81d914d9f06"><td class="memItemLeft" align="right" valign="top">virtual RectangleF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a196e3fa81e6244609b0ca81d914d9f06">GetCollisionAreaScreen</a> (<a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html">View</a> view)</td></tr>
+<tr class="memdesc:a196e3fa81e6244609b0ca81d914d9f06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transforms the collision bounds into screen pixels for the specified view.  <br /></td></tr>
 <tr class="memitem:a4927327e6c632c964beae3b3bcdcb69b" id="r_a4927327e6c632c964beae3b3bcdcb69b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4927327e6c632c964beae3b3bcdcb69b">Draw</a> (<a class="el" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html">BackbufferBase</a> backbuffer, RectangleF destRectScreen)</td></tr>
-<tr class="memdesc:a4927327e6c632c964beae3b3bcdcb69b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws the object to the Backbuffer using the provided SCREEN-space destination rectangle. The rectangle is assumed to already be projected into screen-space; no world-to-screen conversion should occur within this method.  <br /></td></tr>
+<tr class="memdesc:a4927327e6c632c964beae3b3bcdcb69b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws the current content into the backbuffer at the supplied screen-pixel bounds.  <br /></td></tr>
 <tr class="memitem:a7e7657d4ab7cc877fb6b42a5b9f1e0ba" id="r_a7e7657d4ab7cc877fb6b42a5b9f1e0ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7e7657d4ab7cc877fb6b42a5b9f1e0ba">SetCollisionProfile</a> (string profileName)</td></tr>
 <tr class="memdesc:a7e7657d4ab7cc877fb6b42a5b9f1e0ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a named profile from this tile's parent scene. If the layer has not yet been attached to a scene, the name is retained and resolved later when the collider is attached or the profile is reapplied.  <br /></td></tr>
 <tr class="memitem:a88e851955c75d87fb4077eb257b32684" id="r_a88e851955c75d87fb4077eb257b32684"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a88e851955c75d87fb4077eb257b32684">CompareTo</a> (<a class="el" href="classGondwana_1_1Drawing_1_1Tile.html">Tile</a>? tile)</td></tr>
+<tr class="memdesc:a88e851955c75d87fb4077eb257b32684"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares this tile with another tile using their render ordering.  <br /></td></tr>
 <tr class="memitem:a6ca4859d010ae75a57af442c51e83022" id="r_a6ca4859d010ae75a57af442c51e83022"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6ca4859d010ae75a57af442c51e83022">Dispose</a> ()</td></tr>
+<tr class="memdesc:a6ca4859d010ae75a57af442c51e83022"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases the resources owned by this instance.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -138,34 +141,46 @@ Protected Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a55b7cf5594bcb95ab5893c3c43842673" id="r_a55b7cf5594bcb95ab5893c3c43842673"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a55b7cf5594bcb95ab5893c3c43842673">pauseAnimation</a></td></tr>
+<tr class="memdesc:a55b7cf5594bcb95ab5893c3c43842673"><td class="mdescLeft">&#160;</td><td class="mdescRight">The pause animation.  <br /></td></tr>
 <tr class="memitem:abdab6a1ccfd3c2f07bc61b98e1cf84a1" id="r_abdab6a1ccfd3c2f07bc61b98e1cf84a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html">ICollider</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abdab6a1ccfd3c2f07bc61b98e1cf84a1">_collider</a></td></tr>
+<tr class="memdesc:abdab6a1ccfd3c2f07bc61b98e1cf84a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">The collider.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:ac3ae883651077bbeed079cd372670fcd" id="r_ac3ae883651077bbeed079cd372670fcd"><td class="memItemLeft" align="right" valign="top">static List&lt; <a class="el" href="classGondwana_1_1Drawing_1_1Tile.html">Tile</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac3ae883651077bbeed079cd372670fcd">TilesAnimating</a> = new()<code> [get]</code></td></tr>
 <tr class="memdesc:ac3ae883651077bbeed079cd372670fcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the collection of all tiles that are currently animating in the scene.  <br /></td></tr>
 <tr class="memitem:af2c80d03dc7693f9ea706e9d426e30b0" id="r_af2c80d03dc7693f9ea706e9d426e30b0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af2c80d03dc7693f9ea706e9d426e30b0">IsPositionFixed</a><code> [get]</code></td></tr>
+<tr class="memdesc:af2c80d03dc7693f9ea706e9d426e30b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether the tile occupies a fixed position in its layer.  <br /></td></tr>
 <tr class="memitem:aa018700bb26077b44c54a8c0e5f18aaa" id="r_aa018700bb26077b44c54a8c0e5f18aaa"><td class="memItemLeft" align="right" valign="top">Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa018700bb26077b44c54a8c0e5f18aaa">DrawLocationWorld</a><code> [get]</code></td></tr>
+<tr class="memdesc:aa018700bb26077b44c54a8c0e5f18aaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the tile drawing bounds in world pixels.  <br /></td></tr>
 <tr class="memitem:afaa33352c2ade338a6ffd65b907c3794" id="r_afaa33352c2ade338a6ffd65b907c3794"><td class="memItemLeft" align="right" valign="top">PointF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afaa33352c2ade338a6ffd65b907c3794">SceneLayerCoordinates</a><code> [get]</code></td></tr>
+<tr class="memdesc:afaa33352c2ade338a6ffd65b907c3794"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the position in scene-layer grid coordinates.  <br /></td></tr>
 <tr class="memitem:a3e4ea033721a0b7d9af2c49c2bddc385" id="r_a3e4ea033721a0b7d9af2c49c2bddc385"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html">SceneLayer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3e4ea033721a0b7d9af2c49c2bddc385">SceneLayer</a><code> [get]</code></td></tr>
+<tr class="memdesc:a3e4ea033721a0b7d9af2c49c2bddc385"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the scene layer that owns this tile.  <br /></td></tr>
 <tr class="memitem:adc5257abe94fe51485c14cb02d79bfb0" id="r_adc5257abe94fe51485c14cb02d79bfb0"><td class="memItemLeft" align="right" valign="top">Guid&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc5257abe94fe51485c14cb02d79bfb0">Id</a> = Guid.NewGuid()<code> [get, set]</code></td></tr>
-<tr class="memdesc:adc5257abe94fe51485c14cb02d79bfb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Auto-assigned unique identifier for the object.  <br /></td></tr>
+<tr class="memdesc:adc5257abe94fe51485c14cb02d79bfb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the unique identifier.  <br /></td></tr>
 <tr class="memitem:a56b469d237bd7f697309ad59a7fe606c" id="r_a56b469d237bd7f697309ad59a7fe606c"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56b469d237bd7f697309ad59a7fe606c">Nickname</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a56b469d237bd7f697309ad59a7fe606c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional human-readable name associated with the object.  <br /></td></tr>
+<tr class="memdesc:a56b469d237bd7f697309ad59a7fe606c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the optional lookup name.  <br /></td></tr>
 <tr class="memitem:a10c2b2334a3f0b7324524f3990d8eb3e" id="r_a10c2b2334a3f0b7324524f3990d8eb3e"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a10c2b2334a3f0b7324524f3990d8eb3e">Visible</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a10c2b2334a3f0b7324524f3990d8eb3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the object is visible.  <br /></td></tr>
+<tr class="memdesc:a10c2b2334a3f0b7324524f3990d8eb3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets whether this drawable is visible.  <br /></td></tr>
 <tr class="memitem:a6ea4696cfc6f3998c2cb0dc891a1987b" id="r_a6ea4696cfc6f3998c2cb0dc891a1987b"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6ea4696cfc6f3998c2cb0dc891a1987b">ZOrder</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:a6ea4696cfc6f3998c2cb0dc891a1987b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the z-order of the element, which determines its visual stacking order relative to other elements. Higher z-order values are drawn on top of lower ones.  <br /></td></tr>
+<tr class="memdesc:a6ea4696cfc6f3998c2cb0dc891a1987b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the drawing order within the layer.  <br /></td></tr>
 <tr class="memitem:aa2d4389c77e5845cfb7f9f67c49c4cb3" id="r_aa2d4389c77e5845cfb7f9f67c49c4cb3"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceGondwana_1_1Drawing.html#a6b8743455b186d888a346c497e7f1068">Spacing</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa2d4389c77e5845cfb7f9f67c49c4cb3">Overhang</a><code> [get]</code></td></tr>
+<tr class="memdesc:aa2d4389c77e5845cfb7f9f67c49c4cb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current frame's visual overhang beyond its tile bounds.  <br /></td></tr>
 <tr class="memitem:a1a7a5eb292031f6d4c23291f31c9aa93" id="r_a1a7a5eb292031f6d4c23291f31c9aa93"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structGondwana_1_1Drawing_1_1Frame.html">Frame</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1a7a5eb292031f6d4c23291f31c9aa93">CurrentFrame</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a1a7a5eb292031f6d4c23291f31c9aa93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets the current frame. The initial frame supplies the tile's default collision adjustment and collision type. Later frame changes update those values only when their corresponding by-frame options are enabled.  <br /></td></tr>
 <tr class="memitem:abe1c33a0aab3bfa09f748920e504b4ae" id="r_abe1c33a0aab3bfa09f748920e504b4ae"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classGondwana_1_1Drawing_1_1Animation_1_1Animator.html">Animator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abe1c33a0aab3bfa09f748920e504b4ae">TileAnimator</a><code> [get]</code></td></tr>
+<tr class="memdesc:abe1c33a0aab3bfa09f748920e504b4ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the animator associated with this tile.  <br /></td></tr>
 <tr class="memitem:a6d1b82d253d8c1f4b21f43ac41487884" id="r_a6d1b82d253d8c1f4b21f43ac41487884"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6d1b82d253d8c1f4b21f43ac41487884">PauseAnimation</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a6d1b82d253d8c1f4b21f43ac41487884"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets whether animation is paused.  <br /></td></tr>
 <tr class="memitem:a50bde19a832324893f058b03e14cf7f3" id="r_a50bde19a832324893f058b03e14cf7f3"><td class="memItemLeft" align="right" valign="top">virtual ? <a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollider.html">ICollider</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a50bde19a832324893f058b03e14cf7f3">Collider</a><code> [get]</code></td></tr>
+<tr class="memdesc:a50bde19a832324893f058b03e14cf7f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the collision shape associated with this tile.  <br /></td></tr>
 <tr class="memitem:a39985eb5adff013e78446f18336963e9" id="r_a39985eb5adff013e78446f18336963e9"><td class="memItemLeft" align="right" valign="top">virtual Rectangle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a39985eb5adff013e78446f18336963e9">CollisionArea</a><code> [get]</code></td></tr>
 <tr class="memdesc:a39985eb5adff013e78446f18336963e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the effective collision area in world coordinates.  <br /></td></tr>
 <tr class="memitem:a0862275089f09bfb25738641365856f6" id="r_a0862275089f09bfb25738641365856f6"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0862275089f09bfb25738641365856f6">EnableFog</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a0862275089f09bfb25738641365856f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets whether scene-layer fog applies to this tile.  <br /></td></tr>
 <tr class="memitem:a56ea85f53ad251db7f223588a341773a" id="r_a56ea85f53ad251db7f223588a341773a"><td class="memItemLeft" align="right" valign="top">virtual Point[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56ea85f53ad251db7f223588a341773a">OutlinePointsWorld</a><code> [get]</code></td></tr>
+<tr class="memdesc:a56ea85f53ad251db7f223588a341773a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the tile outline vertices in world pixels.  <br /></td></tr>
 <tr class="memitem:a6d0cea14ef259899fc970c5faac4360f" id="r_a6d0cea14ef259899fc970c5faac4360f"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6d0cea14ef259899fc970c5faac4360f">AdjustCollisionAreaByFrame</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a6d0cea14ef259899fc970c5faac4360f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets whether frame changes replace the tile's collision adjustment with the newly selected frame's adjustment.  <br /></td></tr>
 <tr class="memitem:acf06592c3e663726e5b7b93effe52bdc" id="r_acf06592c3e663726e5b7b93effe52bdc"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structGondwana_1_1Physics_1_1Collisions_1_1CollisionAdjust.html">CollisionAdjust</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acf06592c3e663726e5b7b93effe52bdc">AdjustCollisionArea</a><code> [get, set]</code></td></tr>
@@ -177,7 +192,9 @@ Properties</h2></td></tr>
 <tr class="memitem:aab464869f423ed4cb7b52b599693f516" id="r_aab464869f423ed4cb7b52b599693f516"><td class="memItemLeft" align="right" valign="top">string?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aab464869f423ed4cb7b52b599693f516">CollisionProfileName</a><code> [get]</code></td></tr>
 <tr class="memdesc:aab464869f423ed4cb7b52b599693f516"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the scene-level collision profile currently associated with this tile.  <br /></td></tr>
 <tr class="memitem:a04aecd48929540170b3fbe43cb5e06f8" id="r_a04aecd48929540170b3fbe43cb5e06f8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a04aecd48929540170b3fbe43cb5e06f8">CollisionsEnabled</a><code> [get, set]</code></td></tr>
+<tr class="memdesc:a04aecd48929540170b3fbe43cb5e06f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or sets whether this tile participates in collision detection.  <br /></td></tr>
 <tr class="memitem:a809ee69a8d25e7cf843f042c9b6298b6" id="r_a809ee69a8d25e7cf843f042c9b6298b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1TypedValueBag.html">TypedValueBag</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a809ee69a8d25e7cf843f042c9b6298b6">ValueBag</a> = new()<code> [get]</code></td></tr>
+<tr class="memdesc:a809ee69a8d25e7cf843f042c9b6298b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the custom typed values associated with this object.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents an abstract base class for drawable tiles in the <a class="el" href="namespaceGondwana.html">Gondwana</a> engine. Provides core functionality for rendering, animation, collision detection, and scene layer integration. </p>
@@ -208,8 +225,14 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Attaches this tile's collider and applies any collision state that was set before the collider became available. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">collider</td><td>The collider.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00417">417</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00504">504</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -228,7 +251,16 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00444">444</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p>Compares this tile with another tile using their render ordering. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tile</td><td>The tile.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A negative value, zero, or a positive value when this tile sorts before, with, or after the other tile. A null tile sorts after this instance.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00536">536</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -256,8 +288,14 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Copies collision behavior, profile, and effective frame metadata from another tile. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>The source.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00317">317</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00403">403</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -286,7 +324,7 @@ Properties</h2></td></tr>
 
 <p>Detaches the current collider from its scene-layer registry without otherwise changing this tile's serialized collision state. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00404">404</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00490">490</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -313,9 +351,11 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Releases the resources owned by this instance. </p>
+
 <p>Reimplemented in <a class="el" href="classGondwana_1_1Drawing_1_1Sprites_1_1Sprite.html#aa3c760f6aeae24f2a907da2f254cc84a">Gondwana.Drawing.Sprites.Sprite</a>, and <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayerTile.html#ac490b192f3edded07f16146e1a5dbb31">Gondwana.Scenes.SceneLayerTile</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00508">508</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00603">603</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -346,11 +386,11 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Draws the object to the Backbuffer using the provided SCREEN-space destination rectangle. The rectangle is assumed to already be projected into screen-space; no world-to-screen conversion should occur within this method. </p>
+<p>Draws the current content into the backbuffer at the supplied screen-pixel bounds. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">backbuffer</td><td>The Backbuffer to draw onto. </td></tr>
-    <tr><td class="paramname">destRectScreen</td><td>The destination rectangle in absolute SCREEN pixel coordinates on the Backbuffer. </td></tr>
+    <tr><td class="paramname">backbuffer</td><td>The backbuffer receiving the drawing commands.</td></tr>
+    <tr><td class="paramname">destRectScreen</td><td>The destination rectangle in screen pixels.</td></tr>
   </table>
   </dd>
 </dl>
@@ -384,6 +424,15 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Transforms the collision bounds into screen pixels for the specified view. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">view</td><td>The view used for presentation and coordinate conversion.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The bounds in screen pixels for the supplied view.</dd></dl>
+
 </div>
 </div>
 <a id="a2c2d0e6d13d966cf1faca72bd05a85c9" name="a2c2d0e6d13d966cf1faca72bd05a85c9"></a>
@@ -409,14 +458,14 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Computes the object's destination rectangle in SCREEN pixels for rendering on the Backbuffer, using the provided <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a> to project from world-space. </p>
+<p>Transforms the drawable bounds into screen pixels for the specified view. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">view</td><td>The <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a> providing camera, zoom, parallax, and viewport offsets used to convert the object's world-space bounds into screen-space. </td></tr>
+    <tr><td class="paramname">view</td><td>The view used for presentation and coordinate conversion.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A rectangle in absolute SCREEN pixel coordinates on the Backbuffer. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The bounds in screen pixels for the supplied view.</dd></dl>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#a8da83689234405828f7f6ed1f2062ec3">Gondwana.Drawing.IDrawable</a>.</p>
 
@@ -438,8 +487,14 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Applies a named profile from this tile's parent scene. If the layer has not yet been attached to a scene, the name is retained and resolved later when the collider is attached or the profile is reapplied. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">profileName</td><td>The name of the scene collision profile.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00291">291</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00376">376</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -464,7 +519,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00037">37</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p>The collider. </p>
+
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00058">58</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -488,7 +545,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00036">36</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p>The pause animation. </p>
+
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00054">54</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -515,7 +574,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the collision adjustment used to derive <a class="el" href="#a39985eb5adff013e78446f18336963e9" title="Gets the effective collision area in world coordinates.">CollisionArea</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00206">206</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00284">284</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -542,7 +601,7 @@ Properties</h2></td></tr>
 <p>Gets or sets whether frame changes replace the tile's collision adjustment with the newly selected frame's adjustment. </p>
 <p>The default is <code>false</code>, which keeps the collision area static across animation frames after the initial frame supplies its default value. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00190">190</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00268">268</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -566,7 +625,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00157">157</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p>Gets the collision shape associated with this tile. </p>
+
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00229">229</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -594,7 +655,7 @@ Properties</h2></td></tr>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Physics_1_1Collisions_1_1ICollisionEntity.html#a8a58a26477c003e9519fe88eb57c24f7">Gondwana.Physics.Collisions.ICollisionEntity</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00163">163</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00235">235</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -620,7 +681,7 @@ Properties</h2></td></tr>
 
 <p>Gets the scene-level collision profile currently associated with this tile. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00252">252</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00330">330</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -644,7 +705,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00259">259</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p>Gets or sets whether this tile participates in collision detection. </p>
+
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00340">340</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -670,7 +733,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the tile's collision behavior. This is initialized from the first assigned frame and may subsequently be overridden per tile. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00221">221</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00299">299</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -696,7 +759,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets whether frame changes replace this tile's collision type with the newly selected frame's effective collision type. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00236">236</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00314">314</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -722,7 +785,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the current frame. The initial frame supplies the tile's default collision adjustment and collision type. Later frame changes update those values only when their corresponding by-frame options are enabled. </p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00112">112</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00175">175</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -746,7 +809,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00056">56</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p>Gets the tile drawing bounds in world pixels. </p>
+
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00083">83</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -770,7 +835,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00167">167</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p>Gets or sets whether scene-layer fog applies to this tile. </p>
+
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00242">242</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -794,11 +861,11 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Auto-assigned unique identifier for the object. </p>
+<p>Gets the unique identifier. </p>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#ae2a09ae0aeb04bce1333130f416584fb">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00065">65</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00101">101</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -822,7 +889,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00055">55</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p>Gets whether the tile occupies a fixed position in its layer. </p>
+
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00079">79</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -846,11 +915,11 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Optional human-readable name associated with the object. </p>
+<p>Gets or sets the optional lookup name. </p>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#adc6a54d355d7b2a76c3dc69c4bf13a82">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00068">68</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00107">107</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -874,7 +943,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00178">178</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p>Gets the tile outline vertices in world pixels. </p>
+
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00256">256</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -898,7 +969,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00104">104</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p>Gets the current frame's visual overhang beyond its tile bounds. </p>
+
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00167">167</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -922,7 +995,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00154">154</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p>Gets or sets whether animation is paused. </p>
+
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00223">223</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -946,7 +1021,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00058">58</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p>Gets the scene layer that owns this tile. </p>
+
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00091">91</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -970,7 +1047,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00057">57</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p>Gets the position in scene-layer grid coordinates. </p>
+
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00087">87</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -994,7 +1073,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00151">151</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p>Gets the animator associated with this tile. </p>
+
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00217">217</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -1044,7 +1125,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00284">284</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p>Gets the custom typed values associated with this object. </p>
+
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00368">368</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -1068,11 +1151,11 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets a value indicating whether the object is visible. </p>
+<p>Gets or sets whether this drawable is visible. </p>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#a843ab6717c0e6887cf9d18f6240d6c2d">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00071">71</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00113">113</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>
@@ -1096,11 +1179,11 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the z-order of the element, which determines its visual stacking order relative to other elements. Higher z-order values are drawn on top of lower ones. </p>
+<p>Gets or sets the drawing order within the layer. </p>
 
 <p>Implements <a class="el" href="interfaceGondwana_1_1Drawing_1_1IDrawable.html#afe2fb2cda22db383aa386dc3c97af76c">Gondwana.Drawing.IDrawable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00082">82</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Tile_8cs_source.html#l00127">127</a> of file <a class="el" href="Tile_8cs_source.html">Tile.cs</a>.</p>
 
 </div>
 </div>

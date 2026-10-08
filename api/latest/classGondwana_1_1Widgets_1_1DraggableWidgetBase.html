@@ -409,8 +409,17 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Initializes a new instance of the <a class="el" href="classGondwana_1_1Widgets_1_1DraggableWidgetBase.html" title="Base type for leaf widgets that can be repositioned through pointer dragging.">DraggableWidgetBase</a> class. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render-surface host that owns the drawing.</td></tr>
+    <tr><td class="paramname">mode</td><td>The mode.</td></tr>
+    <tr><td class="paramname">anchor</td><td>The anchor.</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional name used to identify the object.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00034">34</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00038">38</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -439,8 +448,15 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Determines whether a pointer-down event may begin drag tracking. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The event data.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the pointer event can begin a drag; otherwise, <code>false</code>.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00122">122</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00128">128</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -468,8 +484,15 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Constrains a proposed anchor position before it is applied. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">proposedPositionPx</td><td>The proposed position px.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The proposed position after applying the drag constraints.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00139">139</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00150">150</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -501,8 +524,16 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Converts total screen movement into this widget's coordinate space. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">totalScreenDeltaPx</td><td>The total screen delta px.</td></tr>
+    <tr><td class="paramname">view</td><td>The view used for presentation and coordinate conversion.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The drag displacement converted into the widget position coordinate space.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00130">130</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00139">139</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -530,8 +561,14 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Called when dragging ends. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The event data.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00161">161</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00175">175</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -559,8 +596,14 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Called after the widget moves during dragging. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The event data.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00154">154</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00167">167</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -588,8 +631,14 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Called when dragging begins. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>The event data.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00147">147</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00159">159</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -620,7 +669,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a0e399de16422cd79a00116b964ff5841">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00074">74</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00078">78</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -651,7 +700,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af24739527ab6d68bbd1aa2bfb876b37a">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00067">67</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00071">71</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -688,7 +737,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#a81064cf8dce5b82040dbab4dfb53a638">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00081">81</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00085">85</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -725,7 +774,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#ae31c954d77c76c40a0798eb26883ae77">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00088">88</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00092">92</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -762,7 +811,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#af2ead0de926c468fb4e5b67c63a9bc96">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00101">101</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00105">105</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -800,7 +849,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#adb7aba8fa538a81c3dbb8154fb70246f">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00113">113</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00117">117</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -827,7 +876,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets or sets the minimum pointer movement required to begin dragging. </p>
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00060">60</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00064">64</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -853,7 +902,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets or sets whether new drag operations may begin. </p>
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00046">46</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00050">50</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>
@@ -879,7 +928,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Gets whether a drag operation is active. </p>
 
-<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00055">55</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DraggableWidgetBase_8cs_source.html#l00059">59</a> of file <a class="el" href="DraggableWidgetBase_8cs_source.html">DraggableWidgetBase.cs</a>.</p>
 
 </div>
 </div>

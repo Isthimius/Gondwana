@@ -177,8 +177,16 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Initializes a new instance of the <a class="el" href="structGondwana_1_1Drawing_1_1Frame.html" title="Represents the source Tilesheet and its coordinates to render on a destination.">Frame</a> struct with the specified tilesheet and tile coordinates. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tilesheet</td><td>The tilesheet.</td></tr>
+    <tr><td class="paramname">xTile</td><td>The x tile.</td></tr>
+    <tr><td class="paramname">yTile</td><td>The y tile.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00036">36</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00039">39</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -212,8 +220,17 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Initializes a new instance of the <a class="el" href="structGondwana_1_1Drawing_1_1Frame.html" title="Represents the source Tilesheet and its coordinates to render on a destination.">Frame</a> struct with the specified tilesheet and tile coordinates. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tilesheet</td><td>The tilesheet.</td></tr>
+    <tr><td class="paramname">regionName</td><td>The name of the tilesheet region.</td></tr>
+    <tr><td class="paramname">xTile</td><td>The x tile.</td></tr>
+    <tr><td class="paramname">yTile</td><td>The y tile.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00047">47</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00054">54</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -234,8 +251,9 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Removes this frame's explicit collision adjustment so it once again inherits its region's <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a764f33f21e9f8d29079815898647faac" title="Gets or sets the collision adjustment inherited by frames that do not have an explicit frame-level ov...">TilesheetRegion.CollisionAdjust</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if an explicit collision adjustment was cleared; otherwise, <code>false</code>.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00119">119</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00127">127</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -255,8 +273,9 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Removes this frame's explicit collision type so it once again inherits its region's <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a165ac48925714329921e7549b84f5782" title="Gets or sets the collision type inherited by frames that do not have an explicit frame-level override...">TilesheetRegion.CollisionType</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if an explicit collision type was cleared; otherwise, <code>false</code>.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00166">166</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00175">175</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -357,7 +376,7 @@ Properties</h2></td></tr>
 <p>Gets or sets the collision adjustment associated with this frame's region coordinates. </p>
 <p>A frame is a lightweight tilesheet reference, so assigning this property updates the authoritative per-frame metadata owned by <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html" title="Represents a rectangular region within a tilesheet that contains a grid of frames.">TilesheetRegion</a> and its cache. </p>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00091">91</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00098">98</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -383,7 +402,7 @@ Properties</h2></td></tr>
 
 <p>Gets the frame-local collision rectangle derived from <a class="el" href="#ae2a542e86b7014e183cda9b15fa4867f" title="Gets the base tile size, without overhang.">TileSize</a> and <a class="el" href="#a859e9b4a457c4825977915eee113b37c" title="Gets or sets the collision adjustment associated with this frame&#39;s region coordinates.">CollisionAdjust</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00132">132</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00140">140</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -409,7 +428,7 @@ Properties</h2></td></tr>
 
 <p>Gets or sets the effective collision type associated with this frame's region coordinates. </p>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00138">138</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00146">146</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -435,7 +454,7 @@ Properties</h2></td></tr>
 
 <p>Gets whether this frame has an explicit collision adjustment rather than inheriting its region's <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a764f33f21e9f8d29079815898647faac" title="Gets or sets the collision adjustment inherited by frames that do not have an explicit frame-level ov...">TilesheetRegion.CollisionAdjust</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00109">109</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00116">116</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -461,7 +480,7 @@ Properties</h2></td></tr>
 
 <p>Gets whether this frame has an explicit collision type rather than inheriting its region's <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a165ac48925714329921e7549b84f5782" title="Gets or sets the collision type inherited by frames that do not have an explicit frame-level override...">TilesheetRegion.CollisionType</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00156">156</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00164">164</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -487,7 +506,7 @@ Properties</h2></td></tr>
 
 <p>Gets the overhang dimensions for this frame. </p>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00079">79</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00086">86</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -513,7 +532,7 @@ Properties</h2></td></tr>
 
 <p>Gets the <a class="el" href="namespaceGondwana_1_1SkiaSharp.html">SkiaSharp</a> bitmap for this frame. </p>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00058">58</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00065">65</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -539,7 +558,7 @@ Properties</h2></td></tr>
 
 <p>Gets the <a class="el" href="namespaceGondwana_1_1SkiaSharp.html">SkiaSharp</a> image for this frame. </p>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00063">63</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00070">70</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -565,7 +584,7 @@ Properties</h2></td></tr>
 
 <p>Gets untransformed source atlas padding; placement transforms never alter slicing. </p>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00082">82</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00089">89</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>
@@ -591,7 +610,7 @@ Properties</h2></td></tr>
 
 <p>Gets the base tile size, without overhang. </p>
 
-<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00074">74</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Frame_8cs_source.html#l00081">81</a> of file <a class="el" href="Frame_8cs_source.html">Frame.cs</a>.</p>
 
 </div>
 </div>

@@ -428,8 +428,18 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 </div><div class="memdoc">
 
 <p>Creates a view-level panel. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render-surface host that owns the drawing.</td></tr>
+    <tr><td class="paramname">view</td><td>The view used for presentation and coordinate conversion.</td></tr>
+    <tr><td class="paramname">bounds</td><td>The widget bounds in view-local pixels.</td></tr>
+    <tr><td class="paramname">backgroundColor</td><td>The background color.</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional name used to identify the object.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00021">21</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00026">26</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -468,8 +478,18 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 </div><div class="memdoc">
 
 <p>Creates a scene-layer panel. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render-surface host that owns the drawing.</td></tr>
+    <tr><td class="paramname">sceneLayer</td><td>The scene layer that owns the content.</td></tr>
+    <tr><td class="paramname">bounds</td><td>The widget bounds in world pixels.</td></tr>
+    <tr><td class="paramname">backgroundColor</td><td>The background color.</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional name used to identify the object.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00041">41</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00051">51</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -494,8 +514,16 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 </div><div class="memdoc">
 
 <p>Adds a child widget at the supplied local offset from the panel's upper-left corner. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">widget</td><td>The widget.</td></tr>
+    <tr><td class="paramname">offsetPx</td><td>The offset in pixels.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00090">90</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00103">103</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -515,8 +543,9 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 </div><div class="memdoc">
 
 <p>Clears an image background and returns to the configured solid fill. </p>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00180">180</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00217">217</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -540,8 +569,16 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 </div><div class="memdoc">
 
 <p>Removes a child widget without disposing it unless requested. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">widget</td><td>The widget.</td></tr>
+    <tr><td class="paramname">dispose</td><td>Whether to dispose the removed resource.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00105">105</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00121">121</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -561,8 +598,15 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 </div><div class="memdoc">
 
 <p>Sets the solid background color. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">color</td><td>The color to apply.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00114">114</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00132">132</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -601,8 +645,19 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 </div><div class="memdoc">
 
 <p>Uses a bitmap as the panel background. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bitmap</td><td>The bitmap.</td></tr>
+    <tr><td class="paramname">mode</td><td>The mode.</td></tr>
+    <tr><td class="paramname">scale</td><td>The scale.</td></tr>
+    <tr><td class="paramname">offsetPx</td><td>The offset in pixels.</td></tr>
+    <tr><td class="paramname">filterQuality</td><td>The filter quality.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00154">154</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00184">184</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -641,8 +696,19 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 </div><div class="memdoc">
 
 <p>Uses an image as the panel background. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">image</td><td>The image.</td></tr>
+    <tr><td class="paramname">mode</td><td>The mode.</td></tr>
+    <tr><td class="paramname">scale</td><td>The scale.</td></tr>
+    <tr><td class="paramname">offsetPx</td><td>The offset in pixels.</td></tr>
+    <tr><td class="paramname">filterQuality</td><td>The filter quality.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00167">167</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00203">203</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -662,8 +728,15 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 </div><div class="memdoc">
 
 <p>Sets the panel border color. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">color</td><td>The color to apply.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00124">124</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00144">144</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -683,8 +756,15 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 </div><div class="memdoc">
 
 <p>Sets the panel corner radius. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">radius</td><td>The radius.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00144">144</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00168">168</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -704,8 +784,15 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 </div><div class="memdoc">
 
 <p>Places the background at the requested Z-order and child widgets immediately above it. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">zOrder</td><td>The drawing order relative to other content.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00189">189</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00228">228</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -725,8 +812,15 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 </div><div class="memdoc">
 
 <p>Sets the panel border width. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">width</td><td>The width.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00134">134</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00156">156</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -753,7 +847,7 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 
 <p>Gets the panel background drawing. </p>
 
-<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00061">61</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00071">71</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -779,7 +873,7 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 
 <p>Gets the panel bounds in its native coordinate space. </p>
 
-<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00066">66</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00076">76</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -805,7 +899,7 @@ Overrides should perform only non-throwing bookkeeping. Derived types that need 
 
 <p>Gets or sets the panel size while preserving its current position. </p>
 
-<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00073">73</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PanelWidget_8cs_source.html#l00083">83</a> of file <a class="el" href="PanelWidget_8cs_source.html">PanelWidget.cs</a>.</p>
 
 </div>
 </div>

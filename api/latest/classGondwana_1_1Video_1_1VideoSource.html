@@ -144,8 +144,16 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Creates a reusable GAF source. The archive must remain open until Open is called. Each Open obtains a fresh asset stream owned by the player; no temporary file is created. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">assets</td><td>The assets.</td></tr>
+    <tr><td class="paramname">name</td><td>The name.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The resulting video source.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="VideoSource_8cs_source.html#l00031">31</a> of file <a class="el" href="VideoSource_8cs_source.html">VideoSource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoSource_8cs_source.html#l00039">39</a> of file <a class="el" href="VideoSource_8cs_source.html">VideoSource.cs</a>.</p>
 
 </div>
 </div>
@@ -177,8 +185,16 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Creates a stream source. Ownership transfers to the player on successful Open unless leaveOpen is true. Do not reuse an owned source after replacement/disposal. A borrowed stream must remain open and exclusively available to the player. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>The source.</td></tr>
+    <tr><td class="paramname">leaveOpen</td><td>Whether to leave the supplied stream open after use.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The resulting video source.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="VideoSource_8cs_source.html#l00022">22</a> of file <a class="el" href="VideoSource_8cs_source.html">VideoSource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoSource_8cs_source.html#l00027">27</a> of file <a class="el" href="VideoSource_8cs_source.html">VideoSource.cs</a>.</p>
 
 </div>
 </div>
@@ -206,8 +222,15 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Creates a reusable URI source. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>The source.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The resulting video source.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="VideoSource_8cs_source.html#l00013">13</a> of file <a class="el" href="VideoSource_8cs_source.html">VideoSource.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="VideoSource_8cs_source.html#l00015">15</a> of file <a class="el" href="VideoSource_8cs_source.html">VideoSource.cs</a>.</p>
 
 </div>
 </div>

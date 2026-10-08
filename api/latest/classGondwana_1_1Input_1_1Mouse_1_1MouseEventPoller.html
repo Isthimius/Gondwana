@@ -203,7 +203,7 @@ Events</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">adapter</td><td>The mouse adapter that provides access to the current mouse state including cursor position, button presses, scroll wheel data, and keyboard modifiers. This adapter abstracts platform-specific mouse input handling. </td></tr>
-    <tr><td class="paramname">mouseEventConfiguration</td><td>Optional configuration for mouse event monitoring. If <code>null</code>, a default configuration is created with mouse movement tracking enabled and the throttling interval set from Engine.Configuration.TimeBetweenMouseEvents. </td></tr>
+    <tr><td class="paramname">mouseEventConfiguration</td><td>Optional configuration for mouse event monitoring. If <code>null</code>, a default configuration is created with mouse movement tracking enabled and the throttling interval set from <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#a5c881d1a987fc214a2f8b4913add7ccd" title="Minimum time (in seconds) allowed between Mouse events. Use this to prevent flooding the system with ...">Gondwana.Configuration.EngineConfiguration.TimeBetweenMouseEvents</a>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -269,7 +269,7 @@ Events</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">trackMouseMovement</td><td>A value indicating whether mouse cursor movement should be tracked and reported in events. Set to <code>true</code> to track all mouse movements including hover, or <code>false</code> to only track explicit actions like button presses and scrolling. Default is <code>true</code>. </td></tr>
-    <tr><td class="paramname">timeBetweenEvents</td><td>The minimum time interval in seconds between consecutive mouse events. Use this to throttle high-frequency mouse input. A value of -1 (default) uses the engine's default time between mouse events from Engine.Configuration.TimeBetweenMouseEvents. A value of 0 means no throttling. </td></tr>
+    <tr><td class="paramname">timeBetweenEvents</td><td>The minimum time interval in seconds between consecutive mouse events. Use this to throttle high-frequency mouse input. A value of -1 (default) uses the engine's default time between mouse events from <a class="el" href="classGondwana_1_1Configuration_1_1EngineConfiguration.html#a5c881d1a987fc214a2f8b4913add7ccd" title="Minimum time (in seconds) allowed between Mouse events. Use this to prevent flooding the system with ...">Gondwana.Configuration.EngineConfiguration.TimeBetweenMouseEvents</a>. A value of 0 means no throttling. </td></tr>
     <tr><td class="paramname">isPaused</td><td>A value indicating whether event processing for the mouse should be initially paused. When paused, the mouse will not generate events even if moved, clicked, or scrolled. Default is <code>false</code>. </td></tr>
   </table>
   </dd>

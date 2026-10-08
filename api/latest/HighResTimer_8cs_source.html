@@ -108,12 +108,12 @@ $(function(){initNavTree('HighResTimer_8cs_source.html','',''); });
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span></div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keywordtype">bool</span> HighPerfSupported =&gt; Stopwatch.IsHighResolution;</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keywordtype">long</span> GetCurrentTick() =&gt; Stopwatch.GetTimestamp();</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keywordtype">float</span> GetDuration(<span class="keywordtype">long</span> start, <span class="keywordtype">long</span> stop) =&gt; (float)(stop - start) / TicksPerSecond;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keywordtype">float</span> GetElapsedSince(<span class="keywordtype">long</span> start) =&gt; GetDuration(start, GetCurrentTick());</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keywordtype">long</span> GetCurrentTick() =&gt; Stopwatch.GetTimestamp();</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keywordtype">float</span> GetDuration(<span class="keywordtype">long</span> start, <span class="keywordtype">long</span> stop) =&gt; (float)(stop - start) / TicksPerSecond;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keywordtype">float</span> GetElapsedSince(<span class="keywordtype">long</span> start) =&gt; GetDuration(start, GetCurrentTick());</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}</div>
 <div class="ttc" id="anamespaceGondwana_1_1Timers_html"><div class="ttname"><a href="namespaceGondwana_1_1Timers.html">Gondwana.Timers</a></div><div class="ttdef"><b>Definition</b> <a href="EngineSimulationClock_8cs_source.html#l00001">EngineSimulationClock.cs:1</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

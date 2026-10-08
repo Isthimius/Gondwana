@@ -194,8 +194,17 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Smoothly pans the camera until the specified grid tile is centered in the view. Uses the given follow speed for the motion. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">layer</td><td>The layer.</td></tr>
+    <tr><td class="paramname">col</td><td>The col.</td></tr>
+    <tr><td class="paramname">row</td><td>The row.</td></tr>
+    <tr><td class="paramname">speed</td><td>The speed.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00158">158</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00165">165</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -251,8 +260,16 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Instantly centers the camera on the specified tile in the given <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a>. The tile's visual center is placed at the center of the view. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">layer</td><td>The layer.</td></tr>
+    <tr><td class="paramname">col</td><td>The col.</td></tr>
+    <tr><td class="paramname">row</td><td>The row.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00117">117</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00120">120</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -273,7 +290,7 @@ Properties</h2></td></tr>
 
 <p>Clears any active follow or pan targets; the camera remains at its current position until moved again. </p>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00583">583</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00600">600</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -305,7 +322,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00360">360</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00368">368</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -344,7 +361,7 @@ Properties</h2></td></tr>
 </dl>
 <p>When <a class="el" href="#a3b236c3250296087727f389e5961f86a" title="Size of the dead zone, in pixels, around the center of the view where the follow target is allowed to...">DeadZonePx</a> is non-empty, the dead zone owns target containment and the anchor is used as the follow reference for wrapped worlds. World-bound clamping can also prevent the requested anchor from being reached near a scene edge. </p>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00388">388</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00396">396</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -388,7 +405,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00439">439</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00450">450</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -432,7 +449,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00485">485</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00499">499</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -476,7 +493,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00544">544</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00561">561</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -505,8 +522,16 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Makes the camera follow an IMovable-on-SceneLayer so that the object stays centered in the view. Supports both grid-space and pixel-space movement, using the current coordinate system for the layer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>The target.</td></tr>
+    <tr><td class="paramname">speed</td><td>The speed.</td></tr>
+    <tr><td class="paramname">hard</td><td>Whether the light uses a hard edge.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00419">419</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00430">430</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -535,8 +560,16 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Smoothly follows an <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html" title="Defines an object that can be moved within a specific coordinate space.">IMovable</a> target, centering it horizontally only. Vertical camera position is left unchanged. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>The target.</td></tr>
+    <tr><td class="paramname">speed</td><td>The speed.</td></tr>
+    <tr><td class="paramname">hard</td><td>Whether the light uses a hard edge.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00465">465</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00479">479</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -565,8 +598,16 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Smoothly follows an <a class="el" href="interfaceGondwana_1_1Physics_1_1Movement_1_1IMovable.html" title="Defines an object that can be moved within a specific coordinate space.">IMovable</a> target, centering it vertically only. Horizontal camera position is left unchanged. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>The target.</td></tr>
+    <tr><td class="paramname">speed</td><td>The speed.</td></tr>
+    <tr><td class="paramname">hard</td><td>Whether the light uses a hard edge.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00524">524</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00541">541</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -594,7 +635,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00408">408</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00416">416</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -614,8 +655,14 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
 </div><div class="memdoc">
 
 <p>Instantly pans the camera by the given offset in world-space pixels. This adds the offset to the current camera position without changing any follow or pan targets. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">deltaPx</td><td>The delta px.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00330">330</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00338">338</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -647,7 +694,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00145">145</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00148">148</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -679,7 +726,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00213">213</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00220">220</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -711,7 +758,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00282">282</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00289">289</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -743,7 +790,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00180">180</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00187">187</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -787,7 +834,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00310">310</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00317">317</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>
@@ -819,7 +866,7 @@ interest" (typically a center point). Uses the same follow logic as Follow(Func&
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00240">240</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Camera_8cs_source.html#l00247">247</a> of file <a class="el" href="Camera_8cs_source.html">Camera.cs</a>.</p>
 
 </div>
 </div>

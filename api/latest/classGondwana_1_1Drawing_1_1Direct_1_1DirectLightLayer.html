@@ -165,8 +165,15 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Initializes a new light owner for the given render surface and scene layer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderSurfaceHost</td><td>The render-surface host that owns the drawing.</td></tr>
+    <tr><td class="paramname">sceneLayer</td><td>The scene layer that owns the content.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectLightLayer_8cs_source.html#l00039">39</a> of file <a class="el" href="DirectLightLayer_8cs_source.html">DirectLightLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectLightLayer_8cs_source.html#l00041">41</a> of file <a class="el" href="DirectLightLayer_8cs_source.html">DirectLightLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -201,8 +208,18 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Creates a warm, screen-blended torch-style light. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">centerWorldPx</td><td>The center in world pixels.</td></tr>
+    <tr><td class="paramname">radiusWorldPx</td><td>The radius in world pixels.</td></tr>
+    <tr><td class="paramname">color</td><td>The color to apply.</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional name used to identify the object.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The radial light added to the light layer.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectLightLayer_8cs_source.html#l00068">68</a> of file <a class="el" href="DirectLightLayer_8cs_source.html">DirectLightLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectLightLayer_8cs_source.html#l00075">75</a> of file <a class="el" href="DirectLightLayer_8cs_source.html">DirectLightLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -223,7 +240,7 @@ Events</h2></td></tr>
 
 <p>Disposes every light owned by this layer. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectLightLayer_8cs_source.html#l00110">110</a> of file <a class="el" href="DirectLightLayer_8cs_source.html">DirectLightLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectLightLayer_8cs_source.html#l00119">119</a> of file <a class="el" href="DirectLightLayer_8cs_source.html">DirectLightLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -244,7 +261,7 @@ Events</h2></td></tr>
 
 <p></p>
 
-<p class="definition">Definition at line <a class="el" href="DirectLightLayer_8cs_source.html#l00119">119</a> of file <a class="el" href="DirectLightLayer_8cs_source.html">DirectLightLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectLightLayer_8cs_source.html#l00128">128</a> of file <a class="el" href="DirectLightLayer_8cs_source.html">DirectLightLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -264,8 +281,15 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Removes and disposes a light owned by this layer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">light</td><td>The light.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the entry was found and removed; otherwise, <code>false</code>.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DirectLightLayer_8cs_source.html#l00097">97</a> of file <a class="el" href="DirectLightLayer_8cs_source.html">DirectLightLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectLightLayer_8cs_source.html#l00106">106</a> of file <a class="el" href="DirectLightLayer_8cs_source.html">DirectLightLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -292,7 +316,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the Z-order assigned to newly-created lights. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectLightLayer_8cs_source.html#l00063">63</a> of file <a class="el" href="DirectLightLayer_8cs_source.html">DirectLightLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectLightLayer_8cs_source.html#l00065">65</a> of file <a class="el" href="DirectLightLayer_8cs_source.html">DirectLightLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -318,7 +342,7 @@ Events</h2></td></tr>
 
 <p>Gets the lights owned by this layer. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectLightLayer_8cs_source.html#l00058">58</a> of file <a class="el" href="DirectLightLayer_8cs_source.html">DirectLightLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectLightLayer_8cs_source.html#l00060">60</a> of file <a class="el" href="DirectLightLayer_8cs_source.html">DirectLightLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -344,7 +368,7 @@ Events</h2></td></tr>
 
 <p>Gets the render surface host used by lights created from this owner. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectLightLayer_8cs_source.html#l00048">48</a> of file <a class="el" href="DirectLightLayer_8cs_source.html">DirectLightLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectLightLayer_8cs_source.html#l00050">50</a> of file <a class="el" href="DirectLightLayer_8cs_source.html">DirectLightLayer.cs</a>.</p>
 
 </div>
 </div>
@@ -370,7 +394,7 @@ Events</h2></td></tr>
 
 <p>Gets the scene layer where lights are drawn. </p>
 
-<p class="definition">Definition at line <a class="el" href="DirectLightLayer_8cs_source.html#l00053">53</a> of file <a class="el" href="DirectLightLayer_8cs_source.html">DirectLightLayer.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DirectLightLayer_8cs_source.html#l00055">55</a> of file <a class="el" href="DirectLightLayer_8cs_source.html">DirectLightLayer.cs</a>.</p>
 
 </div>
 </div>

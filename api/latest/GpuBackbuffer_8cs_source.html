@@ -214,154 +214,154 @@ $(function(){initNavTree('GpuBackbuffer_8cs_source.html','',''); });
 <div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    }</div>
 </div>
 <div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span></div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    <span class="keyword">protected</span> <span class="keyword">internal</span> <span class="keyword">override</span> <span class="keywordtype">void</span> RequestResize(<span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height)</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        =&gt; Interlocked.Exchange(ref _requestedResolution, <span class="keyword">new</span>(width, height));</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span></div>
-<div class="foldopen" id="foldopen00251" data-start="{" data-end="}">
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno"><a class="line" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a9fd9bb2abb6158420b144d0fcfefbf6b">  251</a></span>    <span class="keyword">public</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a9fd9bb2abb6158420b144d0fcfefbf6b">EnsureInitialized</a>(GRContext context)</div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    {</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>        ArgumentNullException.ThrowIfNull(context);</div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        <span class="keywordflow">if</span> (_disposed) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>        var request = Interlocked.Exchange(ref _requestedResolution, <span class="keyword">null</span>);</div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        <span class="keywordtype">int</span> width = request?.Width ?? <a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a4363faf5b1440170776c8881fb1e761a">Width</a>;</div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        <span class="keywordtype">int</span> height = request?.Height ?? <a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a904ea16bdee9a1de14718c23ceac671e">Height</a>;</div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        <span class="keywordflow">if</span> (ReferenceEquals(_context, context) &amp;&amp;</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>            width == <a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a4363faf5b1440170776c8881fb1e761a">Width</a> &amp;&amp;</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>            height == <a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a904ea16bdee9a1de14718c23ceac671e">Height</a> &amp;&amp;</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>            !IsMsaaSurfaceRecreationPending)</div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        {</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        }</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        <a class="code hl_function" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a4fef1b4ad8a55fd62cbaa501ec89290a">Initialize</a>(context, width, height);</div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    }</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    <span class="keyword">protected</span> <span class="keyword">internal</span> <span class="keyword">override</span> <span class="keywordtype">void</span> RequestResize(<span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height)</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        =&gt; Interlocked.Exchange(ref _requestedResolution, <span class="keyword">new</span>(width, height));</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span></div>
+<div class="foldopen" id="foldopen00255" data-start="{" data-end="}">
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno"><a class="line" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a9fd9bb2abb6158420b144d0fcfefbf6b">  255</a></span>    <span class="keyword">public</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a9fd9bb2abb6158420b144d0fcfefbf6b">EnsureInitialized</a>(GRContext context)</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    {</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        ArgumentNullException.ThrowIfNull(context);</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        <span class="keywordflow">if</span> (_disposed) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        var request = Interlocked.Exchange(ref _requestedResolution, <span class="keyword">null</span>);</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        <span class="keywordtype">int</span> width = request?.Width ?? <a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a4363faf5b1440170776c8881fb1e761a">Width</a>;</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>        <span class="keywordtype">int</span> height = request?.Height ?? <a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a904ea16bdee9a1de14718c23ceac671e">Height</a>;</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        <span class="keywordflow">if</span> (ReferenceEquals(_context, context) &amp;&amp;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>            width == <a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a4363faf5b1440170776c8881fb1e761a">Width</a> &amp;&amp;</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            height == <a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a904ea16bdee9a1de14718c23ceac671e">Height</a> &amp;&amp;</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>            !IsMsaaSurfaceRecreationPending)</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        {</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        }</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span> </div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        <a class="code hl_function" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a4fef1b4ad8a55fd62cbaa501ec89290a">Initialize</a>(context, width, height);</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    }</div>
 </div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span></div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno"><a class="line" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#af0584f5f0b09937cfafd3b512c838252">  273</a></span>    <span class="keyword">public</span> <span class="keyword">override</span> SKCanvas <a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#af0584f5f0b09937cfafd3b512c838252">Canvas</a> =&gt; _surface?.Canvas</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        ?? <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidOperationException($<span class="stringliteral">&quot;{nameof(GpuBackbuffer)} surface is not initialized.&quot;</span>);</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span></div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    <span class="keyword">protected</span> <span class="keyword">internal</span> <span class="keyword">override</span> <span class="keywordtype">void</span> BeginFrame()</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    {</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>        <span class="keywordflow">if</span> (_disposed || _surface is <span class="keyword">null</span>) <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>        var c = _surface.Canvas;</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>        c.RestoreToCount(1);</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>        c.Save();</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        c.ResetMatrix();</div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>        c.ClipRect(<span class="keyword">new</span> SKRect(0, 0, <a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a4363faf5b1440170776c8881fb1e761a">Width</a>, <a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a904ea16bdee9a1de14718c23ceac671e">Height</a>));</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>    }</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span></div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    <span class="keyword">protected</span> <span class="keyword">internal</span> <span class="keyword">override</span> <span class="keywordtype">void</span> EndFrame()</div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    {</div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        <span class="keywordflow">if</span> (_disposed || _surface is <span class="keyword">null</span>) <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>        _surface.Flush();</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    }</div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span></div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    <span class="keyword">protected</span> <span class="keyword">internal</span> <span class="keyword">override</span> <span class="keywordtype">void</span> DrawTileFrame(<a class="code hl_class" href="classGondwana_1_1Drawing_1_1Tile.html">Tile</a> tile, RectangleF destRectScreen)</div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>    {</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>        var image = tile.<a class="code hl_property" href="classGondwana_1_1Drawing_1_1Tile.html#a1a7a5eb292031f6d4c23291f31c9aa93">CurrentFrame</a>.<a class="code hl_property" href="structGondwana_1_1Drawing_1_1Frame.html#ab53f41f950e96e17b2c06986fff37739">SkImage</a>;</div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        <span class="keywordflow">if</span> (image is <span class="keyword">null</span> || _surface is <span class="keyword">null</span>) <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span> </div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        var canvas = _surface.Canvas;</div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span> </div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        canvas.DrawImage(image, destRectScreen.ToSKRect());</div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    }</div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span></div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    <span class="keyword">protected</span> <span class="keyword">internal</span> <span class="keyword">override</span> SKImage Snapshot()</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    {</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>        <span class="keywordflow">if</span> (_disposed || _surface is <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> ObjectDisposedException(nameof(<a class="code hl_function" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a4aec5c53e310704b6b92745c5ba51f64">GpuBackbuffer</a>));</div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span> </div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>        <span class="keywordflow">return</span> _surface.Snapshot();</div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    }</div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span> </div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    <span class="comment">// ── Actual FPS tracking ──────────────────────────────────────────────────</span></div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span></div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno"><a class="line" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#ad6ec6f40683db71c71ebf19b5a360516">  336</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#ad6ec6f40683db71c71ebf19b5a360516">RecordFrame</a>() =&gt; Interlocked.Increment(ref _frameCount);</div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span></div>
-<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>    <span class="keyword">internal</span> <span class="keywordtype">long</span> ConsumeFrameCount() =&gt; Interlocked.Exchange(ref _frameCount, 0);</div>
-<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span> </div>
-<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>    <span class="comment">// ── Surface creation helpers ─────────────────────────────────────────────</span></div>
-<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span> </div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>    <span class="keyword">internal</span> (<span class="keywordtype">int</span> SampleCount, <span class="keywordtype">long</span> Revision) GetMsaaConfigurationSnapshot()</div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>    {</div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>        lock (_msaaSyncRoot)</div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>            <span class="keywordflow">return</span> (_msaaSampleCount, _msaaConfigurationRevision);</div>
-<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>    }</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span></div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno"><a class="line" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#af0584f5f0b09937cfafd3b512c838252">  277</a></span>    <span class="keyword">public</span> <span class="keyword">override</span> SKCanvas <a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#af0584f5f0b09937cfafd3b512c838252">Canvas</a> =&gt; _surface?.Canvas</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>        ?? <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidOperationException($<span class="stringliteral">&quot;{nameof(GpuBackbuffer)} surface is not initialized.&quot;</span>);</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span></div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    <span class="keyword">protected</span> <span class="keyword">internal</span> <span class="keyword">override</span> <span class="keywordtype">void</span> BeginFrame()</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    {</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        <span class="keywordflow">if</span> (_disposed || _surface is <span class="keyword">null</span>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>        var c = _surface.Canvas;</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>        c.RestoreToCount(1);</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>        c.Save();</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>        c.ResetMatrix();</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>        c.ClipRect(<span class="keyword">new</span> SKRect(0, 0, <a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a4363faf5b1440170776c8881fb1e761a">Width</a>, <a class="code hl_property" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1BackbufferBase.html#a904ea16bdee9a1de14718c23ceac671e">Height</a>));</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    }</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span></div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    <span class="keyword">protected</span> <span class="keyword">internal</span> <span class="keyword">override</span> <span class="keywordtype">void</span> EndFrame()</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    {</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>        <span class="keywordflow">if</span> (_disposed || _surface is <span class="keyword">null</span>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>        _surface.Flush();</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    }</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span></div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    <span class="keyword">protected</span> <span class="keyword">internal</span> <span class="keyword">override</span> <span class="keywordtype">void</span> DrawTileFrame(<a class="code hl_class" href="classGondwana_1_1Drawing_1_1Tile.html">Tile</a> tile, RectangleF destRectScreen)</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    {</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        var image = tile.<a class="code hl_property" href="classGondwana_1_1Drawing_1_1Tile.html#a1a7a5eb292031f6d4c23291f31c9aa93">CurrentFrame</a>.<a class="code hl_property" href="structGondwana_1_1Drawing_1_1Frame.html#ab53f41f950e96e17b2c06986fff37739">SkImage</a>;</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        <span class="keywordflow">if</span> (image is <span class="keyword">null</span> || _surface is <span class="keyword">null</span>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span> </div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>        var canvas = _surface.Canvas;</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span> </div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>        canvas.DrawImage(image, destRectScreen.ToSKRect());</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    }</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span></div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>    <span class="keyword">protected</span> <span class="keyword">internal</span> <span class="keyword">override</span> SKImage Snapshot()</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    {</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>        <span class="keywordflow">if</span> (_disposed || _surface is <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> ObjectDisposedException(nameof(<a class="code hl_function" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a4aec5c53e310704b6b92745c5ba51f64">GpuBackbuffer</a>));</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span> </div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>        <span class="keywordflow">return</span> _surface.Snapshot();</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>    }</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span> </div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>    <span class="comment">// ── Actual FPS tracking ──────────────────────────────────────────────────</span></div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span></div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno"><a class="line" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#ad6ec6f40683db71c71ebf19b5a360516">  341</a></span>    <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#ad6ec6f40683db71c71ebf19b5a360516">RecordFrame</a>() =&gt; Interlocked.Increment(ref _frameCount);</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span></div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>    <span class="keyword">internal</span> <span class="keywordtype">long</span> ConsumeFrameCount() =&gt; Interlocked.Exchange(ref _frameCount, 0);</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span> </div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>    <span class="comment">// ── Surface creation helpers ─────────────────────────────────────────────</span></div>
 <div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span> </div>
-<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>    <span class="keyword">internal</span> <span class="keywordtype">void</span> MarkMsaaConfigurationApplied(<span class="keywordtype">long</span> revision, <span class="keywordtype">int</span> actualSampleCount)</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>    <span class="keyword">internal</span> (<span class="keywordtype">int</span> SampleCount, <span class="keywordtype">long</span> Revision) GetMsaaConfigurationSnapshot()</div>
 <div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>    {</div>
-<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>        Volatile.Write(ref _actualMsaaSampleCount, actualSampleCount);</div>
-<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>        Volatile.Write(ref _appliedMsaaConfigurationRevision, revision);</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>        lock (_msaaSyncRoot)</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>            <span class="keywordflow">return</span> (_msaaSampleCount, _msaaConfigurationRevision);</div>
 <div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    }</div>
 <div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span> </div>
-<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>    <span class="keyword">private</span> <span class="keywordtype">int</span> CreateGpuSurface(</div>
-<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>        GRContext grContext,</div>
-<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>        <span class="keywordtype">int</span> width,</div>
-<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>        <span class="keywordtype">int</span> height,</div>
-<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>        <span class="keywordtype">int</span> requestedSampleCount)</div>
-<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>    {</div>
-<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>        <span class="comment">// Rgba8888 / Premul is the natural format for an OpenGL render target.</span></div>
-<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>        var info = <span class="keyword">new</span> SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Premul);</div>
-<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>        _surface = SKSurface.Create(grContext, budgeted: <span class="keyword">true</span>, info, requestedSampleCount);</div>
-<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span> </div>
-<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>        <span class="keywordflow">if</span> (_surface is not <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>            <span class="keywordflow">return</span> requestedSampleCount;</div>
-<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span> </div>
-<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>        <span class="comment">// SKSurface.Create returns null when the requested MSAA sample count is not supported</span></div>
-<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>        <span class="comment">// by the hardware or driver. Fall back to no MSAA (sample count 1) so the surface</span></div>
-<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>        <span class="comment">// is always valid after Initialize() completes.</span></div>
-<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>        <span class="keywordflow">if</span> (requestedSampleCount &gt; 1)</div>
-<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>            _surface = SKSurface.Create(grContext, budgeted: <span class="keyword">true</span>, info, sampleCount: 1);</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>    <span class="keyword">internal</span> <span class="keywordtype">void</span> MarkMsaaConfigurationApplied(<span class="keywordtype">long</span> revision, <span class="keywordtype">int</span> actualSampleCount)</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>    {</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>        Volatile.Write(ref _actualMsaaSampleCount, actualSampleCount);</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>        Volatile.Write(ref _appliedMsaaConfigurationRevision, revision);</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>    }</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span> </div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>    <span class="keyword">private</span> <span class="keywordtype">int</span> CreateGpuSurface(</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>        GRContext grContext,</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>        <span class="keywordtype">int</span> width,</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>        <span class="keywordtype">int</span> height,</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>        <span class="keywordtype">int</span> requestedSampleCount)</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>    {</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>        <span class="comment">// Rgba8888 / Premul is the natural format for an OpenGL render target.</span></div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>        var info = <span class="keyword">new</span> SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Premul);</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>        _surface = SKSurface.Create(grContext, budgeted: <span class="keyword">true</span>, info, requestedSampleCount);</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span> </div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>        <span class="keywordflow">if</span> (_surface is not <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>            <span class="keywordflow">return</span> requestedSampleCount;</div>
 <div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span> </div>
-<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>        <span class="keywordflow">if</span> (_surface is <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidOperationException(</div>
-<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>                $<span class="stringliteral">&quot;Failed to create a {nameof(GpuBackbuffer)} GPU surface ({width}x{height}). &quot;</span> +</div>
-<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>                <span class="stringliteral">&quot;The GRContext may be invalid or the pixel format is not renderable.&quot;</span>);</div>
-<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span> </div>
-<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>        <span class="keywordflow">return</span> 1;</div>
-<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>    }</div>
-<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span> </div>
-<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> CreateCpuSurface(<span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height)</div>
-<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>    {</div>
-<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>        <span class="comment">// Bgra8888 matches the native Windows GDI pixel format; used only before</span></div>
-<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>        <span class="comment">// GRContext becomes available so rendering is always valid from frame one.</span></div>
-<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>        var info = <span class="keyword">new</span> SKImageInfo(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);</div>
-<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>        _cpuBitmap = <span class="keyword">new</span> SKBitmap(info);</div>
-<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>        _surface = SKSurface.Create(info, _cpuBitmap.GetPixels(), _cpuBitmap.Info.RowBytes);</div>
-<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>    }</div>
-<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span> </div>
-<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> DisposeSurface()</div>
-<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>    {</div>
-<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>        _surface?.Dispose();</div>
-<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>        _surface = <span class="keyword">null</span>;</div>
-<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>        _cpuBitmap?.Dispose();</div>
-<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>        _cpuBitmap = <span class="keyword">null</span>;</div>
-<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>    }</div>
-<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span> </div>
-<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>    <span class="comment">// Called by a platform&#39;s GL deinitialization callback, while its old context</span></div>
-<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>    <span class="comment">// is still current. Logical state and Engine-owned recordings survive a</span></div>
-<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>    <span class="comment">// temporary context loss; EnsureInitialized will attach the next context.</span></div>
-<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>    <span class="keyword">internal</span> <span class="keywordtype">void</span> ReleaseContext()</div>
-<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>    {</div>
-<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>        DisposeSurface();</div>
-<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>        _context = <span class="keyword">null</span>;</div>
-<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>    }</div>
-<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span></div>
-<div class="foldopen" id="foldopen00414" data-start="{" data-end="}">
-<div class="line"><a id="l00414" name="l00414"></a><span class="lineno"><a class="line" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#ae7f7fd8af54fb16b6914e046b4197cc0">  414</a></span>    <span class="keyword">public</span> <span class="keyword">override</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#ae7f7fd8af54fb16b6914e046b4197cc0">Dispose</a>()</div>
-<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>    {</div>
-<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>        <span class="keywordflow">if</span> (_disposed) <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>        _disposed = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>        base.Dispose();</div>
-<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>        DisposeSurface();</div>
-<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>        GC.SuppressFinalize(<span class="keyword">this</span>);</div>
-<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>    }</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>        <span class="comment">// SKSurface.Create returns null when the requested MSAA sample count is not supported</span></div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>        <span class="comment">// by the hardware or driver. Fall back to no MSAA (sample count 1) so the surface</span></div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>        <span class="comment">// is always valid after Initialize() completes.</span></div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>        <span class="keywordflow">if</span> (requestedSampleCount &gt; 1)</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>            _surface = SKSurface.Create(grContext, budgeted: <span class="keyword">true</span>, info, sampleCount: 1);</div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span> </div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>        <span class="keywordflow">if</span> (_surface is <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidOperationException(</div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>                $<span class="stringliteral">&quot;Failed to create a {nameof(GpuBackbuffer)} GPU surface ({width}x{height}). &quot;</span> +</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>                <span class="stringliteral">&quot;The GRContext may be invalid or the pixel format is not renderable.&quot;</span>);</div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span> </div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>        <span class="keywordflow">return</span> 1;</div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>    }</div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span> </div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> CreateCpuSurface(<span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height)</div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>    {</div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>        <span class="comment">// Bgra8888 matches the native Windows GDI pixel format; used only before</span></div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>        <span class="comment">// GRContext becomes available so rendering is always valid from frame one.</span></div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>        var info = <span class="keyword">new</span> SKImageInfo(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>        _cpuBitmap = <span class="keyword">new</span> SKBitmap(info);</div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>        _surface = SKSurface.Create(info, _cpuBitmap.GetPixels(), _cpuBitmap.Info.RowBytes);</div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>    }</div>
+<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span> </div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>    <span class="keyword">private</span> <span class="keywordtype">void</span> DisposeSurface()</div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>    {</div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>        _surface?.Dispose();</div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>        _surface = <span class="keyword">null</span>;</div>
+<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>        _cpuBitmap?.Dispose();</div>
+<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>        _cpuBitmap = <span class="keyword">null</span>;</div>
+<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>    }</div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span> </div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>    <span class="comment">// Called by a platform&#39;s GL deinitialization callback, while its old context</span></div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>    <span class="comment">// is still current. Logical state and Engine-owned recordings survive a</span></div>
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>    <span class="comment">// temporary context loss; EnsureInitialized will attach the next context.</span></div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>    <span class="keyword">internal</span> <span class="keywordtype">void</span> ReleaseContext()</div>
+<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>    {</div>
+<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>        DisposeSurface();</div>
+<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>        _context = <span class="keyword">null</span>;</div>
+<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>    }</div>
+<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span></div>
+<div class="foldopen" id="foldopen00420" data-start="{" data-end="}">
+<div class="line"><a id="l00420" name="l00420"></a><span class="lineno"><a class="line" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#ae7f7fd8af54fb16b6914e046b4197cc0">  420</a></span>    <span class="keyword">public</span> <span class="keyword">override</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#ae7f7fd8af54fb16b6914e046b4197cc0">Dispose</a>()</div>
+<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>    {</div>
+<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>        <span class="keywordflow">if</span> (_disposed) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span>        _disposed = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span>        base.Dispose();</div>
+<div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span>        DisposeSurface();</div>
+<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span>        GC.SuppressFinalize(<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span>    }</div>
 </div>
-<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>}</div>
+<div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span>}</div>
 </div>
 <div class="ttc" id="aclassGondwana_1_1Drawing_1_1Tile_html"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Tile.html">Gondwana.Drawing.Tile</a></div><div class="ttdoc">Represents an abstract base class for drawable tiles in the Gondwana engine. Provides core functional...</div><div class="ttdef"><b>Definition</b> <a href="Tile_8cs_source.html#l00018">Tile.cs:19</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Drawing_1_1Tile_html_a1a7a5eb292031f6d4c23291f31c9aa93"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Tile.html#a1a7a5eb292031f6d4c23291f31c9aa93">Gondwana.Drawing.Tile.CurrentFrame</a></div><div class="ttdeci">virtual Frame CurrentFrame</div><div class="ttdoc">Gets or sets the current frame. The initial frame supplies the tile&#39;s default collision adjustment an...</div><div class="ttdef"><b>Definition</b> <a href="Tile_8cs_source.html#l00112">Tile.cs:113</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Drawing_1_1Tile_html_a1a7a5eb292031f6d4c23291f31c9aa93"><div class="ttname"><a href="classGondwana_1_1Drawing_1_1Tile.html#a1a7a5eb292031f6d4c23291f31c9aa93">Gondwana.Drawing.Tile.CurrentFrame</a></div><div class="ttdeci">virtual Frame CurrentFrame</div><div class="ttdoc">Gets or sets the current frame. The initial frame supplies the tile&#39;s default collision adjustment an...</div><div class="ttdef"><b>Definition</b> <a href="Tile_8cs_source.html#l00175">Tile.cs:176</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Engine_html"><div class="ttname"><a href="classGondwana_1_1Engine.html">Gondwana.Engine</a></div><div class="ttdoc">Represents the core game engine singleton responsible for managing the main update loop,...</div><div class="ttdef"><b>Definition</b> <a href="Engine_8cs_source.html#l00035">Engine.cs:36</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Engine_html_a10ce957685d349193e8268c1421bcec5"><div class="ttname"><a href="classGondwana_1_1Engine.html#a10ce957685d349193e8268c1421bcec5">Gondwana.Engine.Instance</a></div><div class="ttdeci">static Engine Instance</div><div class="ttdoc">Gets the singleton instance of the Engine.</div><div class="ttdef"><b>Definition</b> <a href="Engine_8cs_source.html#l00049">Engine.cs:49</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Engine_html_ad8821f813581b2d22fabbb4c9c7c3cb2"><div class="ttname"><a href="classGondwana_1_1Engine.html#ad8821f813581b2d22fabbb4c9c7c3cb2">Gondwana.Engine.Configuration</a></div><div class="ttdeci">EngineConfiguration Configuration</div><div class="ttdoc">Gets the current engine configuration settings.</div><div class="ttdef"><b>Definition</b> <a href="Engine_8cs_source.html#l00927">Engine.cs:928</a></div></div>
@@ -377,14 +377,14 @@ $(function(){initNavTree('GpuBackbuffer_8cs_source.html','',''); });
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer_html_a4e131692290351bbb2224cf3966c3e0d"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a4e131692290351bbb2224cf3966c3e0d">Gondwana.Rendering.Backbuffers.GpuBackbuffer.MaxSupportedMsaaSampleCount</a></div><div class="ttdeci">int MaxSupportedMsaaSampleCount</div><div class="ttdoc">Gets the maximum MSAA sample count reported by the active GPU context for SKColorType....</div><div class="ttdef"><b>Definition</b> <a href="#l00170">GpuBackbuffer.cs:170</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer_html_a4fef1b4ad8a55fd62cbaa501ec89290a"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a4fef1b4ad8a55fd62cbaa501ec89290a">Gondwana.Rendering.Backbuffers.GpuBackbuffer.Initialize</a></div><div class="ttdeci">void Initialize(GRContext grContext, int width, int height)</div><div class="ttdoc">Creates (or recreates) the GPU render-target surface for this backbuffer.</div><div class="ttdef"><b>Definition</b> <a href="#l00215">GpuBackbuffer.cs:215</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer_html_a68033b8c7cccdc042fa6c352e977fcfc"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a68033b8c7cccdc042fa6c352e977fcfc">Gondwana.Rendering.Backbuffers.GpuBackbuffer.TargetFps</a></div><div class="ttdeci">int TargetFps</div><div class="ttdoc">Gets or sets the target frame rate associated with this GPU backbuffer.</div><div class="ttdef"><b>Definition</b> <a href="#l00073">GpuBackbuffer.cs:74</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer_html_a9fd9bb2abb6158420b144d0fcfefbf6b"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a9fd9bb2abb6158420b144d0fcfefbf6b">Gondwana.Rendering.Backbuffers.GpuBackbuffer.EnsureInitialized</a></div><div class="ttdeci">bool EnsureInitialized(GRContext context)</div><div class="ttdoc">Initializes on the owning GL thread, or applies an explicit logical resolution request....</div><div class="ttdef"><b>Definition</b> <a href="#l00251">GpuBackbuffer.cs:251</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer_html_a9fd9bb2abb6158420b144d0fcfefbf6b"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#a9fd9bb2abb6158420b144d0fcfefbf6b">Gondwana.Rendering.Backbuffers.GpuBackbuffer.EnsureInitialized</a></div><div class="ttdeci">bool EnsureInitialized(GRContext context)</div><div class="ttdoc">Initializes on the owning GL thread, or applies an explicit logical resolution request....</div><div class="ttdef"><b>Definition</b> <a href="#l00255">GpuBackbuffer.cs:255</a></div></div>
 <div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer_html_ad6ec6f40683db71c71ebf19b5a360516"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#ad6ec6f40683db71c71ebf19b5a360516">Gondwana.Rendering.Backbuffers.GpuBackbuffer.RecordFrame</a></div><div class="ttdeci">void RecordFrame()</div><div class="ttdoc">Records that one frame has been rendered. Called by the platform adapter on every PaintSurface callba...</div></div>
-<div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer_html_ae7f7fd8af54fb16b6914e046b4197cc0"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#ae7f7fd8af54fb16b6914e046b4197cc0">Gondwana.Rendering.Backbuffers.GpuBackbuffer.Dispose</a></div><div class="ttdeci">override void Dispose()</div><div class="ttdoc">Releases all resources used by this GpuBackbuffer.</div><div class="ttdef"><b>Definition</b> <a href="#l00414">GpuBackbuffer.cs:414</a></div></div>
-<div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer_html_af0584f5f0b09937cfafd3b512c838252"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#af0584f5f0b09937cfafd3b512c838252">Gondwana.Rendering.Backbuffers.GpuBackbuffer.Canvas</a></div><div class="ttdeci">override SKCanvas Canvas</div><div class="ttdoc">Gets the SkiaSharp canvas for drawing operations.</div><div class="ttdef"><b>Definition</b> <a href="#l00273">GpuBackbuffer.cs:273</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer_html_ae7f7fd8af54fb16b6914e046b4197cc0"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#ae7f7fd8af54fb16b6914e046b4197cc0">Gondwana.Rendering.Backbuffers.GpuBackbuffer.Dispose</a></div><div class="ttdeci">override void Dispose()</div><div class="ttdoc">Releases all resources used by this GpuBackbuffer.</div><div class="ttdef"><b>Definition</b> <a href="#l00420">GpuBackbuffer.cs:420</a></div></div>
+<div class="ttc" id="aclassGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer_html_af0584f5f0b09937cfafd3b512c838252"><div class="ttname"><a href="classGondwana_1_1Rendering_1_1Backbuffers_1_1GpuBackbuffer.html#af0584f5f0b09937cfafd3b512c838252">Gondwana.Rendering.Backbuffers.GpuBackbuffer.Canvas</a></div><div class="ttdeci">override SKCanvas Canvas</div><div class="ttdoc">Gets the SkiaSharp canvas for drawing operations.</div><div class="ttdef"><b>Definition</b> <a href="#l00277">GpuBackbuffer.cs:277</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_html"><div class="ttname"><a href="namespaceGondwana_1_1Drawing.html">Gondwana.Drawing</a></div><div class="ttdef"><b>Definition</b> <a href="DirectVideo_8cs_source.html#l00009">DirectVideo.cs:9</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Rendering_1_1Backbuffers_html"><div class="ttname"><a href="namespaceGondwana_1_1Rendering_1_1Backbuffers.html">Gondwana.Rendering.Backbuffers</a></div><div class="ttdef"><b>Definition</b> <a href="BackbufferBase_8cs_source.html#l00009">BackbufferBase.cs:9</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1SkiaSharp_html"><div class="ttname"><a href="namespaceGondwana_1_1SkiaSharp.html">Gondwana.SkiaSharp</a></div><div class="ttdef"><b>Definition</b> <a href="DrawingExtensions_8cs_source.html#l00003">DrawingExtensions.cs:3</a></div></div>
-<div class="ttc" id="astructGondwana_1_1Drawing_1_1Frame_html_ab53f41f950e96e17b2c06986fff37739"><div class="ttname"><a href="structGondwana_1_1Drawing_1_1Frame.html#ab53f41f950e96e17b2c06986fff37739">Gondwana.Drawing.Frame.SkImage</a></div><div class="ttdeci">readonly? SKImage SkImage</div><div class="ttdoc">Gets the SkiaSharp image for this frame.</div><div class="ttdef"><b>Definition</b> <a href="Frame_8cs_source.html#l00063">Frame.cs:63</a></div></div>
+<div class="ttc" id="astructGondwana_1_1Drawing_1_1Frame_html_ab53f41f950e96e17b2c06986fff37739"><div class="ttname"><a href="structGondwana_1_1Drawing_1_1Frame.html#ab53f41f950e96e17b2c06986fff37739">Gondwana.Drawing.Frame.SkImage</a></div><div class="ttdeci">readonly? SKImage SkImage</div><div class="ttdoc">Gets the SkiaSharp image for this frame.</div><div class="ttdef"><b>Definition</b> <a href="Frame_8cs_source.html#l00070">Frame.cs:70</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

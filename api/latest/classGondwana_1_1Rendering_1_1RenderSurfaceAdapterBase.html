@@ -191,7 +191,7 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00097">97</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00102">102</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
 
 </div>
 </div>
@@ -237,7 +237,7 @@ Events</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00104">104</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00109">109</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
 
 </div>
 </div>
@@ -258,8 +258,15 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Converts adapter input to logical ScreenPx, retaining outside coordinates for capture/leave. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">adapterPx</td><td>The adapter px.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The point in logical backbuffer screen pixels.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00039">39</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00041">41</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
 
 </div>
 </div>
@@ -288,8 +295,16 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Presents a complete image using the same transform as pointer normalization. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">canvas</td><td>The canvas.</td></tr>
+    <tr><td class="paramname">image</td><td>The image.</td></tr>
+    <tr><td class="paramname">clearColor</td><td>The clear color.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00047">47</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00052">52</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
 
 </div>
 </div>
@@ -375,7 +390,7 @@ Events</h2></td></tr>
 </dl>
 <p>If dimensions and size availability are unchanged, this method returns without raising <a class="el" href="#aec240b322b995ec0cdf4fca485cfba47" title="Occurs when the render surface adapter is resized.">Resized</a>. The first valid layout raises the event even if it matches the placeholder dimensions. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00119">119</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00124">124</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
 
 </div>
 </div>
@@ -403,7 +418,7 @@ Events</h2></td></tr>
 <p>Gets the current height of the render surface in pixels. </p>
 <p>The height of the render surface.</p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00086">86</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00091">91</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
 
 </div>
 </div>
@@ -482,7 +497,7 @@ Events</h2></td></tr>
 <p>Gets the current width of the render surface in pixels. </p>
 <p>The width of the render surface.</p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00076">76</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00081">81</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
 
 </div>
 </div>
@@ -502,7 +517,7 @@ Events</h2></td></tr>
 <p>Occurs when the render surface adapter is resized. </p>
 <p>This event is raised when the <a class="el" href="#a02161b1fcf631174f0b69d7595f5e74f" title="Gets the current width of the render surface in pixels.">Width</a> or <a class="el" href="#ae84340b8de8d385ce27da526d9a87317" title="Gets the current height of the render surface in pixels.">Height</a> properties change, providing both the old and new dimensions in the event arguments. </p>
 
-<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00070">70</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html#l00075">75</a> of file <a class="el" href="RenderSurfaceAdapterBase_8cs_source.html">RenderSurfaceAdapterBase.cs</a>.</p>
 
 </div>
 </div>

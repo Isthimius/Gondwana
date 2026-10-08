@@ -107,15 +107,22 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5e4c6e95b9f5be5f40017464a8bc74e2" id="r_a5e4c6e95b9f5be5f40017464a8bc74e2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html">BrowserAudioPlayer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5e4c6e95b9f5be5f40017464a8bc74e2">Load</a> (string key, string src, float volume, bool loop)</td></tr>
 <tr class="memdesc:a5e4c6e95b9f5be5f40017464a8bc74e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retains the original CLR signature for compiled browser clients.  <br /></td></tr>
 <tr class="memitem:ad8f56b1fb00f3af3b4998668506653b0" id="r_ad8f56b1fb00f3af3b4998668506653b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html">BrowserAudioPlayer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad8f56b1fb00f3af3b4998668506653b0">Load</a> (string key, string src, float volume=1.0f, bool loop=false, float pan=0.0f, float playbackSpeed=1.0f)</td></tr>
+<tr class="memdesc:ad8f56b1fb00f3af3b4998668506653b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads URI-backed audio and registers a browser player under the supplied key.  <br /></td></tr>
 <tr class="memitem:a226af6d4ee4e03f860e85d71521eb123" id="r_a226af6d4ee4e03f860e85d71521eb123"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a226af6d4ee4e03f860e85d71521eb123">Unload</a> (string key)</td></tr>
+<tr class="memdesc:a226af6d4ee4e03f860e85d71521eb123"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unloads the keyed audio resource and removes its browser player.  <br /></td></tr>
 <tr class="memitem:aab82dd58db6398ddc4891ee39e45e99a" id="r_aab82dd58db6398ddc4891ee39e45e99a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aab82dd58db6398ddc4891ee39e45e99a">UnloadAll</a> ()</td></tr>
+<tr class="memdesc:aab82dd58db6398ddc4891ee39e45e99a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unloads all audio resources tracked by this browser manager.  <br /></td></tr>
 <tr class="memitem:aae43ee1dd174b29ca3079b54fee17f21" id="r_aae43ee1dd174b29ca3079b54fee17f21"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aae43ee1dd174b29ca3079b54fee17f21">TryGet</a> (string key, out <a class="el" href="classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html">BrowserAudioPlayer</a>? player)</td></tr>
+<tr class="memdesc:aae43ee1dd174b29ca3079b54fee17f21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempts to retrieve the browser player registered under the specified key.  <br /></td></tr>
 <tr class="memitem:a760abefee50a6ecf9f337a65904671cc" id="r_a760abefee50a6ecf9f337a65904671cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioPlayer.html">BrowserAudioPlayer</a>?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a760abefee50a6ecf9f337a65904671cc">Get</a> (string key)</td></tr>
+<tr class="memdesc:a760abefee50a6ecf9f337a65904671cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the browser player registered under the specified key.  <br /></td></tr>
 <tr class="memitem:aee4eccabeccb3b1e4825f8f2964978b4" id="r_aee4eccabeccb3b1e4825f8f2964978b4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aee4eccabeccb3b1e4825f8f2964978b4">Contains</a> (string key)</td></tr>
+<tr class="memdesc:aee4eccabeccb3b1e4825f8f2964978b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether a browser player is registered under the specified key.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:a81e47f5a77662eac5d9eb404c8691904" id="r_a81e47f5a77662eac5d9eb404c8691904"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classGondwana_1_1Audio_1_1Browser_1_1BrowserAudioManager.html">BrowserAudioManager</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a81e47f5a77662eac5d9eb404c8691904">Instance</a><code> [get]</code></td></tr>
+<tr class="memdesc:a81e47f5a77662eac5d9eb404c8691904"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the shared instance.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Compatibility facade for browser audio. New code may use <a class="el" href="classGondwana_1_1Audio_1_1AudioResourceManager.html" title="Manages the lifecycle of audio resources independently of the playback backend.">AudioResourceManager</a> directly after calling <code>Engine.UseBrowserAudio()</code>. </p>
@@ -137,6 +144,15 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Determines whether a browser player is registered under the specified key. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The lookup key for the resource.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if a player is registered for the key; otherwise, <code>false</code>.</dd></dl>
+
 </div>
 </div>
 <a id="a760abefee50a6ecf9f337a65904671cc" name="a760abefee50a6ecf9f337a65904671cc"></a>
@@ -153,6 +169,15 @@ Properties</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Gets the browser player registered under the specified key. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The lookup key for the resource.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The registered browser player, or <code>null</code> if the key is absent.</dd></dl>
 
 </div>
 </div>
@@ -186,6 +211,16 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Retains the original CLR signature for compiled browser clients. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The lookup key for the resource.</td></tr>
+    <tr><td class="paramname">src</td><td>The URI of the audio source.</td></tr>
+    <tr><td class="paramname">volume</td><td>The playback volume.</td></tr>
+    <tr><td class="paramname">loop</td><td>Whether playback repeats at the end.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The resulting browser audio player.</dd></dl>
 
 </div>
 </div>
@@ -228,7 +263,21 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BrowserAudioManager_8cs_source.html#l00027">27</a> of file <a class="el" href="BrowserAudioManager_8cs_source.html">BrowserAudioManager.cs</a>.</p>
+<p>Loads URI-backed audio and registers a browser player under the supplied key. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The lookup key for the resource.</td></tr>
+    <tr><td class="paramname">src</td><td>The URI of the audio source.</td></tr>
+    <tr><td class="paramname">volume</td><td>The playback volume.</td></tr>
+    <tr><td class="paramname">loop</td><td>Whether playback repeats at the end.</td></tr>
+    <tr><td class="paramname">pan</td><td>The stereo pan, from -1 (left) to 1 (right).</td></tr>
+    <tr><td class="paramname">playbackSpeed</td><td>The playback speed multiplier.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The resulting browser audio player.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="BrowserAudioManager_8cs_source.html#l00045">45</a> of file <a class="el" href="BrowserAudioManager_8cs_source.html">BrowserAudioManager.cs</a>.</p>
 
 </div>
 </div>
@@ -251,6 +300,16 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Attempts to retrieve the browser player registered under the specified key. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The lookup key for the resource.</td></tr>
+    <tr><td class="paramname">player</td><td>The registered player when found; otherwise, null.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the player was found; otherwise, <code>false</code>.</dd></dl>
+
 </div>
 </div>
 <a id="a226af6d4ee4e03f860e85d71521eb123" name="a226af6d4ee4e03f860e85d71521eb123"></a>
@@ -268,7 +327,15 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BrowserAudioManager_8cs_source.html#l00047">47</a> of file <a class="el" href="BrowserAudioManager_8cs_source.html">BrowserAudioManager.cs</a>.</p>
+<p>Unloads the keyed audio resource and removes its browser player. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The lookup key for the resource.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="BrowserAudioManager_8cs_source.html#l00069">69</a> of file <a class="el" href="BrowserAudioManager_8cs_source.html">BrowserAudioManager.cs</a>.</p>
 
 </div>
 </div>
@@ -287,7 +354,9 @@ Properties</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BrowserAudioManager_8cs_source.html#l00053">53</a> of file <a class="el" href="BrowserAudioManager_8cs_source.html">BrowserAudioManager.cs</a>.</p>
+<p>Unloads all audio resources tracked by this browser manager. </p>
+
+<p class="definition">Definition at line <a class="el" href="BrowserAudioManager_8cs_source.html#l00078">78</a> of file <a class="el" href="BrowserAudioManager_8cs_source.html">BrowserAudioManager.cs</a>.</p>
 
 </div>
 </div>
@@ -312,7 +381,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="BrowserAudioManager_8cs_source.html#l00021">21</a> of file <a class="el" href="BrowserAudioManager_8cs_source.html">BrowserAudioManager.cs</a>.</p>
+<p>Gets the shared instance. </p>
+
+<p class="definition">Definition at line <a class="el" href="BrowserAudioManager_8cs_source.html#l00024">24</a> of file <a class="el" href="BrowserAudioManager_8cs_source.html">BrowserAudioManager.cs</a>.</p>
 
 </div>
 </div>

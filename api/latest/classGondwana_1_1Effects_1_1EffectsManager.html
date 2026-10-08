@@ -146,8 +146,14 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Cancels a running effect and restores its original presentation state. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">effect</td><td>The effect.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="EffectsManager_8cs_source.html#l00042">42</a> of file <a class="el" href="EffectsManager_8cs_source.html">EffectsManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EffectsManager_8cs_source.html#l00051">51</a> of file <a class="el" href="EffectsManager_8cs_source.html">EffectsManager.cs</a>.</p>
 
 </div>
 </div>
@@ -168,7 +174,7 @@ Properties</h2></td></tr>
 
 <p>Cancels every running effect owned by this manager. </p>
 
-<p class="definition">Definition at line <a class="el" href="EffectsManager_8cs_source.html#l00058">58</a> of file <a class="el" href="EffectsManager_8cs_source.html">EffectsManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EffectsManager_8cs_source.html#l00067">67</a> of file <a class="el" href="EffectsManager_8cs_source.html">EffectsManager.cs</a>.</p>
 
 </div>
 </div>
@@ -189,7 +195,7 @@ Properties</h2></td></tr>
 
 <p></p>
 
-<p class="definition">Definition at line <a class="el" href="EffectsManager_8cs_source.html#l00197">197</a> of file <a class="el" href="EffectsManager_8cs_source.html">EffectsManager.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EffectsManager_8cs_source.html#l00206">206</a> of file <a class="el" href="EffectsManager_8cs_source.html">EffectsManager.cs</a>.</p>
 
 </div>
 </div>
@@ -213,6 +219,20 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Starts an effect targeting a <a class="el" href="classGondwana_1_1Scenes_1_1SceneLayer.html" title="Represents a single layer within a Scene, containing a grid of tiles and supporting various coordinat...">SceneLayer</a> in the currently bound <a class="el" href="classGondwana_1_1Scenes_1_1Scene.html" title="Represents a game scene containing multiple layers of tiles, sprites, and game objects....">Scene</a>. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">TEffect</td><td>The type of effect.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>The target.</td></tr>
+    <tr><td class="paramname">effect</td><td>The effect.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The supplied effect, registered with this manager and started on the target.</dd></dl>
 <div class="typeconstraint">
 <dl><dt><b>Type Constraints</b></dt><dd>
 <table border="0" cellspacing="2" cellpadding="0">
@@ -244,6 +264,20 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Starts an effect targeting a <a class="el" href="classGondwana_1_1Rendering_1_1Views_1_1View.html" title="Represents a rendered view of a scene, combining a camera position with a viewport configuration to c...">View</a> owned by this render surface. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">TEffect</td><td>The type of effect.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>The target.</td></tr>
+    <tr><td class="paramname">effect</td><td>The effect.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The supplied effect, registered with this manager and started on the target.</dd></dl>
 <div class="typeconstraint">
 <dl><dt><b>Type Constraints</b></dt><dd>
 <table border="0" cellspacing="2" cellpadding="0">

@@ -122,14 +122,14 @@ $(function(){initNavTree('VideoDecodeBuffer_8cs_source.html','',''); });
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keywordflow">if</span> (Pixels == IntPtr.Zero) <span class="keywordflow">throw</span> <span class="keyword">new</span> OutOfMemoryException();</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        NativeMemory.Clear((<span class="keywordtype">void</span>*)Pixels, (nuint)bytes);</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    }</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">public</span> <span class="keywordtype">void</span> Dispose()</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    {</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">if</span> (Pixels == IntPtr.Zero) <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        NativeMemory.AlignedFree((<span class="keywordtype">void</span>*)Pixels);</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        Pixels = IntPtr.Zero;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    }</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">public</span> <span class="keywordtype">void</span> Dispose()</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">if</span> (Pixels == IntPtr.Zero) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        NativeMemory.AlignedFree((<span class="keywordtype">void</span>*)Pixels);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        Pixels = IntPtr.Zero;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
 <div class="ttc" id="anamespaceGondwana_1_1Video_html"><div class="ttname"><a href="namespaceGondwana_1_1Video.html">Gondwana.Video</a></div><div class="ttdef"><b>Definition</b> <a href="VideoWidget_8cs_source.html#l00009">VideoWidget.cs:9</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

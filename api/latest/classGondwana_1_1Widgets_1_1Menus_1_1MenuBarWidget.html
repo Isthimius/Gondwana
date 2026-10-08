@@ -443,8 +443,18 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Creates a menu bar attached to a view. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">host</td><td>The host.</td></tr>
+    <tr><td class="paramname">view</td><td>The view used for presentation and coordinate conversion.</td></tr>
+    <tr><td class="paramname">bounds</td><td>The widget bounds in view-local pixels.</td></tr>
+    <tr><td class="paramname">theme</td><td>The theme.</td></tr>
+    <tr><td class="paramname">nickname</td><td>An optional name used to identify the object.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00078">78</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00089">89</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -479,8 +489,18 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Adds a top-level menu and optionally configures its dropdown. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">text</td><td>The text to display.</td></tr>
+    <tr><td class="paramname">configure</td><td>The configure.</td></tr>
+    <tr><td class="paramname">headerWidth</td><td>The header width.</td></tr>
+    <tr><td class="paramname">mnemonic</td><td>The keyboard mnemonic used to activate the item.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00160">160</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00176">176</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -501,7 +521,7 @@ Events</h2></td></tr>
 
 <p>Closes the open menu, if any. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00287">287</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00304">304</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -532,7 +552,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Drawing_1_1Direct_1_1DirectComposite.html#ab4a9dddd84ec27a3a4701275077ef3e7">Gondwana.Drawing.Direct.DirectComposite</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00397">397</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00417">417</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -552,6 +572,13 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets an item by its stable, case-sensitive key, including nested descendants. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The lookup key for the resource.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The menu item registered under the requested identifier.</dd></dl>
 
 </div>
 </div>
@@ -588,7 +615,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1WidgetBase.html#aaec953c2a7d8d8d45daa4886b95f779b">Gondwana.Widgets.WidgetBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00334">334</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00354">354</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -608,8 +635,14 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Opens the specified top-level menu. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>The index.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00244">244</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00261">261</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -640,7 +673,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1ContainerWidget.html#ac25e4b4f7791710caef3c7dd7f9c5f03">Gondwana.Widgets.ContainerWidget</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00326">326</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00346">346</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -671,7 +704,7 @@ Events</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Widgets_1_1ContainerWidget.html#aa6169c0eb64d7861a1dbb583b8d2f0d6">Gondwana.Widgets.ContainerWidget</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00310">310</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00330">330</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -691,8 +724,15 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Applies a drawing Z-order to the menu-bar family. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">zOrder</td><td>The drawing order relative to other content.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This instance for fluent chaining.</dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00302">302</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00322">322</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -712,8 +752,14 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Toggles the specified top-level menu. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>The index.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00293">293</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00311">311</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -737,6 +783,14 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Looks up a stable key; returns false and null when absent. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The lookup key for the resource.</td></tr>
+    <tr><td class="paramname">item</td><td>When this method returns, contains the item.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the operation succeeded; otherwise, <code>false</code>.</dd></dl>
 
 </div>
 </div>
@@ -763,7 +817,7 @@ Events</h2></td></tr>
 
 <p>Gets the menu bar background drawing. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00136">136</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00147">147</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -792,7 +846,7 @@ Events</h2></td></tr>
 </div><!-- fragment -->
 <p>Gets or sets the dropdown animation. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00151">151</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00162">162</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -818,7 +872,7 @@ Events</h2></td></tr>
 
 <p>Gets or sets the dropdown animation duration, in seconds. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00155">155</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00166">166</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -844,7 +898,7 @@ Events</h2></td></tr>
 
 <p>Gets the configured top-level menus. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00139">139</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00150">150</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -870,7 +924,7 @@ Events</h2></td></tr>
 
 <p>Gets the currently open menu, or null. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00145">145</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00156">156</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -896,7 +950,7 @@ Events</h2></td></tr>
 
 <p>Gets the zero-based open-menu index, or -1. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00142">142</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00153">153</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -921,8 +975,14 @@ Events</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets an item by its stable key, or throws KeyNotFoundException. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The lookup key for the resource.</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00028">28</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00031">31</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -941,7 +1001,7 @@ Events</h2></td></tr>
 
 <p>Occurs when a command item is invoked. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00073">73</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00079">79</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -959,7 +1019,7 @@ Events</h2></td></tr>
 
 <p>Occurs after a top-level menu begins closing. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00070">70</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00076">76</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
@@ -977,7 +1037,7 @@ Events</h2></td></tr>
 
 <p>Occurs after a top-level menu opens. </p>
 
-<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00067">67</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MenuBarWidget_8cs_source.html#l00073">73</a> of file <a class="el" href="MenuBarWidget_8cs_source.html">MenuBarWidget.cs</a>.</p>
 
 </div>
 </div>
