@@ -19,6 +19,11 @@ internal static class NewSolutionHelper
         "\tEndGlobalSection\r\n" +
         "EndGlobal\r\n";
 
+    /// <summary>
+    /// Creates a solution containing the generated game project.
+    /// </summary>
+    /// <param name="projectName">The project name.</param>
+    /// <param name="projectDirectory">The project directory.</param>
     public static void CreateHoldingSolution(string projectName, string projectDirectory)
     {
         var fullProjectDirectory = Path.GetFullPath(projectDirectory);

@@ -14,11 +14,15 @@ public sealed class AnimationGaniTests : IDisposable
 {
     private readonly List<Tilesheet> _tilesheets = [];
 
+    /// <summary>
+    /// Initializes a new instance of the <c>AnimationGaniTests</c> class.
+    /// </summary>
     public AnimationGaniTests()
     {
         Cycle.ClearAllAnimationCycles();
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         Cycle.ClearAllAnimationCycles();
@@ -27,6 +31,9 @@ public sealed class AnimationGaniTests : IDisposable
             tilesheet.Dispose();
     }
 
+    /// <summary>
+    /// Verifies runtime cycle round trips persistent definition.
+    /// </summary>
     [Fact]
     public void RuntimeCycle_RoundTripsPersistentDefinition()
     {
@@ -71,6 +78,11 @@ public sealed class AnimationGaniTests : IDisposable
         Assert.Equal(1, restored.Sequence[1].XTile);
     }
 
+    /// <summary>
+    /// Verifies mixed durations round trip and follow displayed frame.
+    /// </summary>
+    /// <param name="type">The type value for this test case.</param>
+    /// <param name="total">The total value for this test case.</param>
     [Theory]
     [InlineData(CycleType.Simple, 0.6)]
     [InlineData(CycleType.Repeating, 0.6)]
@@ -102,6 +114,10 @@ public sealed class AnimationGaniTests : IDisposable
         Assert.Equal(0.1, cycle.Sequence.GetDurationSeconds(0));
     }
 
+    /// <summary>
+    /// Verifies invalid frame durations are rejected.
+    /// </summary>
+    /// <param name="duration">The duration value for this test case.</param>
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
@@ -113,6 +129,10 @@ public sealed class AnimationGaniTests : IDisposable
         Assert.Contains(AnimationDefinitionValidator.Validate(definition), e => e.Contains("DurationSeconds"));
     }
 
+    /// <summary>
+    /// Verifies animator consumes current frame delay including catch up.
+    /// </summary>
+    /// <param name="type">The type value for this test case.</param>
     [Theory]
     [InlineData(CycleType.Simple)]
     [InlineData(CycleType.Repeating)]
@@ -143,6 +163,9 @@ public sealed class AnimationGaniTests : IDisposable
         finally { Gondwana.Timers.EngineSimulationClock.UseWallClock(); }
     }
 
+    /// <summary>
+    /// Verifies definition resolves registered tilesheet frames.
+    /// </summary>
     [Fact]
     public void Definition_ResolvesRegisteredTilesheetFrames()
     {
@@ -173,6 +196,9 @@ public sealed class AnimationGaniTests : IDisposable
         Assert.Same(cycle, cycle.NextCycle);
     }
 
+    /// <summary>
+    /// Verifies save and load stamp loose definition source without mutating original.
+    /// </summary>
     [Fact]
     public void SaveAndLoad_StampLooseDefinitionSourceWithoutMutatingOriginal()
     {
@@ -210,6 +236,9 @@ public sealed class AnimationGaniTests : IDisposable
         }
     }
 
+    /// <summary>
+    /// Verifies tilesheet sources round trip as authoring metadata without changing runtime resolution.
+    /// </summary>
     [Fact]
     public void TilesheetSources_RoundTripAsAuthoringMetadataWithoutChangingRuntimeResolution()
     {
@@ -266,6 +295,9 @@ public sealed class AnimationGaniTests : IDisposable
         Assert.Same(sheet, cycle.Sequence[0].Tilesheet);
     }
 
+    /// <summary>
+    /// Verifies validator reports malformed tilesheet source metadata.
+    /// </summary>
     [Fact]
     public void Validator_ReportsMalformedTilesheetSourceMetadata()
     {
@@ -315,6 +347,9 @@ public sealed class AnimationGaniTests : IDisposable
                 StringComparison.OrdinalIgnoreCase));
     }
 
+    /// <summary>
+    /// Verifies validator reports missing key frames and invalid coordinates.
+    /// </summary>
     [Fact]
     public void Validator_ReportsMissingKeyFramesAndInvalidCoordinates()
     {

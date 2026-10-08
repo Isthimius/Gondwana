@@ -6,9 +6,17 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for wrapped sprite.
+/// </summary>
 [Collection("SpriteManager")]
 public sealed class WrappedSpriteTests
 {
+    /// <summary>
+    /// Verifies layer topology does not change movement opt in.
+    /// </summary>
+    /// <param name="layerWrap">The layer wrap value for this test case.</param>
+    /// <param name="movementWrap">The movement wrap value for this test case.</param>
     [Theory]
     [InlineData(false, false)]
     [InlineData(false, true)]
@@ -31,6 +39,9 @@ public sealed class WrappedSpriteTests
         finally { SpriteManager.Instance._spriteList.Remove(sprite); sprite.DisposeImmediate(); }
     }
 
+    /// <summary>
+    /// Verifies followed layer takes precedence and normalized sprite collides immediately.
+    /// </summary>
     [Fact]
     public void FollowedLayer_TakesPrecedence_AndNormalizedSpriteCollidesImmediately()
     {

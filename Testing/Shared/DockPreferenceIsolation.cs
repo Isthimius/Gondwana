@@ -11,6 +11,7 @@ public sealed class DockPreferenceIsolationAttribute : BeforeAfterTestAttribute
 {
     private string? _directory;
 
+    /// <inheritdoc/>
     public override void Before(MethodInfo methodUnderTest)
     {
         _directory = Path.Combine(Path.GetTempPath(), "GondwanaLayoutTests-" + Guid.NewGuid());
@@ -19,6 +20,7 @@ public sealed class DockPreferenceIsolationAttribute : BeforeAfterTestAttribute
         AppContext.SetData("Gondwana.Tooling.ApplicationId", "test-host");
     }
 
+    /// <inheritdoc/>
     public override void After(MethodInfo methodUnderTest)
     {
         // Leave the override in place between tests so no late disposal can reach real settings.

@@ -14,11 +14,17 @@ using Gondwana.Widgets.Hud;
 
 namespace Gondwana.Tests.Widgets;
 
+/// <summary>
+/// Contains regression tests for widgets.
+/// </summary>
 [Collection("SpriteManager")]
 public sealed class WidgetsTests : IDisposable
 {
     private readonly List<Sprite> _sprites = [];
 
+    /// <summary>
+    /// Verifies check box widget toggle changes state and raises event.
+    /// </summary>
     [Fact]
     public void CheckBoxWidget_ToggleChangesStateAndRaisesEvent()
     {
@@ -40,6 +46,9 @@ public sealed class WidgetsTests : IDisposable
         Assert.Equal(true, changedTo);
     }
 
+    /// <summary>
+    /// Verifies radio button widget group maintains single selection.
+    /// </summary>
     [Fact]
     public void RadioButtonWidget_GroupMaintainsSingleSelection()
     {
@@ -69,6 +78,9 @@ public sealed class WidgetsTests : IDisposable
         Assert.Same(second, group.SelectedButton);
     }
 
+    /// <summary>
+    /// Verifies list box widget selection scrolls into view and honors item height.
+    /// </summary>
     [Fact]
     public void ListBoxWidget_SelectionScrollsIntoViewAndHonorsItemHeight()
     {
@@ -89,6 +101,9 @@ public sealed class WidgetsTests : IDisposable
         Assert.Equal(20, listBox.SelectionHighlight.ScreenBounds.Height);
     }
 
+    /// <summary>
+    /// Verifies combo box widget navigation keeps drop down open until selection is committed.
+    /// </summary>
     [Fact]
     public void ComboBoxWidget_NavigationKeepsDropDownOpenUntilSelectionIsCommitted()
     {
@@ -122,6 +137,9 @@ public sealed class WidgetsTests : IDisposable
         Assert.Same(comboBox.Header, router.FocusedWidget);
     }
 
+    /// <summary>
+    /// Verifies combo box widget losing drop down focus collapses without stealing focus.
+    /// </summary>
     [Fact]
     public void ComboBoxWidget_LosingDropDownFocus_CollapsesWithoutStealingFocus()
     {
@@ -155,6 +173,9 @@ public sealed class WidgetsTests : IDisposable
         Assert.Same(otherButton, router.FocusedWidget);
     }
 
+    /// <summary>
+    /// Verifies text box widget supports caret insertion deletion and max length.
+    /// </summary>
     [Fact]
     public void TextBoxWidget_SupportsCaretInsertionDeletionAndMaxLength()
     {
@@ -184,6 +205,9 @@ public sealed class WidgetsTests : IDisposable
         Assert.Equal("abc", textBox.Text);
     }
 
+    /// <summary>
+    /// Verifies text box widget repeated key actions honor initial delay and repeat interval.
+    /// </summary>
     [Fact]
     public void TextBoxWidget_RepeatedKeyActionsHonorInitialDelayAndRepeatInterval()
     {
@@ -220,6 +244,9 @@ public sealed class WidgetsTests : IDisposable
         Assert.Equal("aaa", textBox.Text);
     }
 
+    /// <summary>
+    /// Verifies dialog box activate brings entire visual tree above other dialogs.
+    /// </summary>
     [Fact]
     public void DialogBox_ActivateBringsEntireVisualTreeAboveOtherDialogs()
     {
@@ -253,6 +280,9 @@ public sealed class WidgetsTests : IDisposable
         Assert.True(first.VisualZOrders.Min() > secondMaximum);
     }
 
+    /// <summary>
+    /// Verifies conversation box updates content and raises advance request.
+    /// </summary>
     [Fact]
     public void ConversationBox_UpdatesContentAndRaisesAdvanceRequest()
     {
@@ -276,6 +306,9 @@ public sealed class WidgetsTests : IDisposable
         Assert.Equal(1, advances);
     }
 
+    /// <summary>
+    /// Verifies widget show restores state dependent child visibility.
+    /// </summary>
     [Fact]
     public void WidgetShow_RestoresStateDependentChildVisibility()
     {
@@ -306,6 +339,9 @@ public sealed class WidgetsTests : IDisposable
         Assert.False(nameTag.Background.Visible);
     }
 
+    /// <summary>
+    /// Verifies text box widget null character resolver suppresses printable input.
+    /// </summary>
     [Fact]
     public void TextBoxWidget_NullCharacterResolverSuppressesPrintableInput()
     {
@@ -324,6 +360,9 @@ public sealed class WidgetsTests : IDisposable
         Assert.Equal("ab", textBox.Text);
     }
 
+    /// <summary>
+    /// Verifies name tag widget follows sprite visual bounds changes.
+    /// </summary>
     [Fact]
     public void NameTagWidget_FollowsSpriteVisualBoundsChanges()
     {
@@ -347,6 +386,9 @@ public sealed class WidgetsTests : IDisposable
             nameTag.BoundsWorld.Top);
     }
 
+    /// <summary>
+    /// Verifies name tag widget follows sprite and updates text.
+    /// </summary>
     [Fact]
     public void NameTagWidget_FollowsSpriteAndUpdatesText()
     {
@@ -371,6 +413,7 @@ public sealed class WidgetsTests : IDisposable
             nameTag.BoundsWorld.Left);
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         foreach (Sprite sprite in _sprites)

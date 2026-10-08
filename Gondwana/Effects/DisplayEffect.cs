@@ -15,6 +15,11 @@ public abstract class DisplayEffect
     private object? _target;
     private float _elapsedSeconds;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>DisplayEffect</c> class.
+    /// </summary>
+    /// <param name="durationSeconds">The duration in seconds.</param>
+    /// <param name="easing">The easing function applied to progress.</param>
     private protected DisplayEffect(
         float durationSeconds,
         EasingKind easing = EasingKind.Linear)
@@ -51,6 +56,11 @@ public abstract class DisplayEffect
 
     internal abstract bool SupportsTarget(object target);
 
+    /// <summary>
+    /// Gets the effect target as the requested reference type.
+    /// </summary>
+    /// <typeparam name="TTarget">The type of target.</typeparam>
+    /// <returns>The effect target cast to the requested type.</returns>
     private protected TTarget GetTarget<TTarget>() where TTarget : class =>
         Target as TTarget
         ?? throw new InvalidOperationException(
@@ -129,23 +139,48 @@ public abstract class DisplayEffect
         Completed?.Invoke(this);
     }
 
+    /// <summary>
+    /// Captures or prepares target state before the effect starts.
+    /// </summary>
     private protected virtual void OnStarting()
     {
     }
 
+    /// <summary>
+    /// Applies the eased effect progress to the target.
+    /// </summary>
+    /// <param name="progress">The normalized progress of the operation.</param>
     private protected abstract void ApplyProgress(float progress);
 
+    /// <summary>
+    /// Runs the effect-specific completion behavior.
+    /// </summary>
     private protected virtual void OnCompleted()
     {
     }
 
+    /// <summary>
+    /// Restores the target state captured when the effect started.
+    /// </summary>
     private protected abstract void RestoreOriginalState();
 }
 
 internal enum EffectChannel
 {
+    /// <summary>
+    /// Specifies transform.
+    /// </summary>
     Transform,
+    /// <summary>
+    /// Specifies opacity.
+    /// </summary>
     Opacity,
+    /// <summary>
+    /// Specifies reveal.
+    /// </summary>
     Reveal,
+    /// <summary>
+    /// Specifies zoom.
+    /// </summary>
     Zoom
 }

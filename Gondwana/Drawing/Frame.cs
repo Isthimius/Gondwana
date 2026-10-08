@@ -33,6 +33,9 @@ public struct Frame
     /// <summary>
     /// Initializes a new instance of the <see cref="Frame"/> struct with the specified tilesheet and tile coordinates.
     /// </summary>
+    /// <param name="tilesheet">The tilesheet.</param>
+    /// <param name="xTile">The x tile.</param>
+    /// <param name="yTile">The y tile.</param>
     public Frame(Tilesheet tilesheet, int xTile, int yTile)
     {
         Tilesheet = tilesheet;
@@ -44,6 +47,10 @@ public struct Frame
     /// <summary>
     /// Initializes a new instance of the <see cref="Frame"/> struct with the specified tilesheet and tile coordinates.
     /// </summary>
+    /// <param name="tilesheet">The tilesheet.</param>
+    /// <param name="regionName">The name of the tilesheet region.</param>
+    /// <param name="xTile">The x tile.</param>
+    /// <param name="yTile">The y tile.</param>
     public Frame(Tilesheet tilesheet, string regionName, int xTile, int yTile)
     {
         Tilesheet = tilesheet;
@@ -116,6 +123,7 @@ public struct Frame
     /// Removes this frame's explicit collision adjustment so it once again inherits
     /// its region's <see cref="TilesheetRegion.CollisionAdjust"/>.
     /// </summary>
+    /// <returns><see langword="true"/> if an explicit collision adjustment was cleared; otherwise, <see langword="false"/>.</returns>
     public readonly bool ClearCollisionAdjustOverride()
     {
         var region = Tilesheet?.GetRegion(RegionName)
@@ -163,6 +171,7 @@ public struct Frame
     /// Removes this frame's explicit collision type so it once again inherits
     /// its region's <see cref="TilesheetRegion.CollisionType"/>.
     /// </summary>
+    /// <returns><see langword="true"/> if an explicit collision type was cleared; otherwise, <see langword="false"/>.</returns>
     public readonly bool ClearCollisionTypeOverride()
     {
         var region = Tilesheet?.GetRegion(RegionName)

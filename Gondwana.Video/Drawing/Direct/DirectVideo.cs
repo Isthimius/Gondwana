@@ -89,41 +89,89 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     }
 
     /// <summary>Creates a world-space video with required presentation bounds. Owns the player.</summary>
+    /// <param name="player">The media player to use.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="worldBounds">The bounds in world pixels.</param>
+    /// <param name="name">The name.</param>
     public DirectVideo(IVideoPlayer player, Uri source, RenderSurfaceHostBase renderSurfaceHost,
         SceneLayer sceneLayer, Rectangle worldBounds, string? name = null)
         : this(player, VideoSource.FromUri(source), renderSurfaceHost, sceneLayer, worldBounds, name) { }
 
     /// <summary>Creates a screen-space video with required presentation bounds. Owns the player.</summary>
+    /// <param name="player">The media player to use.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="screenBounds">The bounds in screen pixels.</param>
+    /// <param name="name">The name.</param>
     public DirectVideo(IVideoPlayer player, Uri source, RenderSurfaceHostBase renderSurfaceHost,
         View view, Rectangle screenBounds, string? name = null)
         : this(player, VideoSource.FromUri(source), renderSurfaceHost, view, screenBounds, name) { }
 
     /// <summary>Creates a world-space video using an owned player from the factory.</summary>
+    /// <param name="playerFactory">The factory used to create the video player.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="worldBounds">The bounds in world pixels.</param>
+    /// <param name="name">The name.</param>
     public DirectVideo(Func<IVideoPlayer> playerFactory, Uri source, RenderSurfaceHostBase renderSurfaceHost,
         SceneLayer sceneLayer, Rectangle worldBounds, string? name = null)
         : this(playerFactory, VideoSource.FromUri(source), renderSurfaceHost, sceneLayer, worldBounds, name) { }
 
     /// <summary>Creates a screen-space video using an owned player from the factory.</summary>
+    /// <param name="playerFactory">The factory used to create the video player.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="screenBounds">The bounds in screen pixels.</param>
+    /// <param name="name">The name.</param>
     public DirectVideo(Func<IVideoPlayer> playerFactory, Uri source, RenderSurfaceHostBase renderSurfaceHost,
         View view, Rectangle screenBounds, string? name = null)
         : this(playerFactory, VideoSource.FromUri(source), renderSurfaceHost, view, screenBounds, name) { }
 
     /// <summary>Creates a world-space URI/stream/GAF video and starts playback. Owns the player.</summary>
+    /// <param name="player">The media player to use.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="worldBounds">The bounds in world pixels.</param>
+    /// <param name="name">The name.</param>
     public DirectVideo(IVideoPlayer player, VideoSource source, RenderSurfaceHostBase renderSurfaceHost,
         SceneLayer sceneLayer, Rectangle worldBounds, string? name = null)
         : this(() => player, source, renderSurfaceHost, DirectDrawingMode.SceneLayer, sceneLayer, null, null, worldBounds, name) { }
 
     /// <summary>Creates a screen-space URI/stream/GAF video and starts playback. Owns the player.</summary>
+    /// <param name="player">The media player to use.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="screenBounds">The bounds in screen pixels.</param>
+    /// <param name="name">The name.</param>
     public DirectVideo(IVideoPlayer player, VideoSource source, RenderSurfaceHostBase renderSurfaceHost,
         View view, Rectangle screenBounds, string? name = null)
         : this(() => player, source, renderSurfaceHost, DirectDrawingMode.View, null, view, screenBounds, null, name) { }
 
     /// <summary>Creates a world-space URI/stream/GAF video using an owned player from the factory.</summary>
+    /// <param name="playerFactory">The factory used to create the video player.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="worldBounds">The bounds in world pixels.</param>
+    /// <param name="name">The name.</param>
     public DirectVideo(Func<IVideoPlayer> playerFactory, VideoSource source, RenderSurfaceHostBase renderSurfaceHost,
         SceneLayer sceneLayer, Rectangle worldBounds, string? name = null)
         : this(playerFactory, source, renderSurfaceHost, DirectDrawingMode.SceneLayer, sceneLayer, null, null, worldBounds, name) { }
 
     /// <summary>Creates a screen-space URI/stream/GAF video using an owned player from the factory.</summary>
+    /// <param name="playerFactory">The factory used to create the video player.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="screenBounds">The bounds in screen pixels.</param>
+    /// <param name="name">The name.</param>
     public DirectVideo(Func<IVideoPlayer> playerFactory, VideoSource source, RenderSurfaceHostBase renderSurfaceHost,
         View view, Rectangle screenBounds, string? name = null)
         : this(playerFactory, source, renderSurfaceHost, DirectDrawingMode.View, null, view, screenBounds, null, name) { }
@@ -157,6 +205,7 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     }
 
     /// <summary>Replaces the source and starts playback. Call on the engine/UI thread.</summary>
+    /// <param name="source">The source.</param>
     public void Open(VideoSource source)
     {
         ObjectDisposedException.ThrowIf(_videoDisposed, this);
@@ -168,6 +217,7 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     }
 
     /// <summary>Replaces the URI source and starts playback on the engine/UI thread.</summary>
+    /// <param name="source">The source.</param>
     public void Open(Uri source) => Open(VideoSource.FromUri(source));
 
     /// <summary>Metadata snapshot for the active source; Pending values are not authoritative.</summary>
@@ -261,6 +311,7 @@ public sealed class DirectVideo : DirectDrawingMovableBase
     }
 
     /// <summary>Consumes the latest decoded frame on the engine thread, then advances fades.</summary>
+    /// <param name="tick">The current engine tick.</param>
     public override void Update(long tick)
     {
         if (_videoDisposed) return;

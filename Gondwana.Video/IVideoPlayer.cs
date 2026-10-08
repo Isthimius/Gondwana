@@ -16,6 +16,8 @@ public interface IVideoPlayer : IDisposable
     /// <summary>Opens a readable stream. Ownership transfers on success unless leaveOpen is true.
     /// Keep a borrowed stream alive and unused until the next Open or Dispose. Seek/loop require
     /// a seekable stream. Backends without stream support throw without taking ownership.</summary>
+    /// <param name="source">The source.</param>
+    /// <param name="leaveOpen">Whether to leave the supplied stream open after use.</param>
     void Open(Stream source, bool leaveOpen = false) => throw new NotSupportedException("This video backend does not support streams.");
 
     /// <summary>Gets an atomic snapshot of metadata availability and values for the current source.</summary>

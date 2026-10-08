@@ -6,6 +6,8 @@ namespace Gondwana.Tooling.Importers;
 public static class TiledTileTransform
 {
     /// <summary>Clears all four high bits and returns the native orientation and any retained hex-only flag.</summary>
+    /// <param name="raw">The raw.</param>
+    /// <returns>The tile identifier with flag bits removed, its orientation, and whether hexagonal rotation flags were present.</returns>
     public static (uint Gid, TileTransform Transform, bool HasHexRotation) Decode(uint raw)
     {
         var transform = (raw & 0x20000000) != 0 ? TileTransform.FlipDiagonal : TileTransform.Identity;

@@ -25,10 +25,14 @@ public struct FrameSequence : IEnumerable<Frame>
     private List<double?>? frameDurations;
 
     /// <summary>Gets the optional display duration for a frame occurrence.</summary>
+    /// <param name="index">The index.</param>
+    /// <returns>The requested double, or <see langword="null"/> when unavailable.</returns>
     public double? GetDurationSeconds(int index) =>
         frameDurations is not null && index < frameDurations.Count ? frameDurations[index] : null;
 
     /// <summary>Sets a positive display duration, or null to use the cycle default.</summary>
+    /// <param name="index">The index.</param>
+    /// <param name="seconds">The seconds.</param>
     public void SetDurationSeconds(int index, double? seconds)
     {
         if (index < 0 || index >= FrameCount) throw new ArgumentOutOfRangeException(nameof(index));

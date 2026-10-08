@@ -34,10 +34,13 @@ public sealed class BrowserConsoleLoggerProvider : ILoggerProvider
 
     private sealed class BrowserConsoleLogger(string categoryName) : ILogger
     {
+        /// <inheritdoc/>
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
 
+        /// <inheritdoc/>
         public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
 
+        /// <inheritdoc/>
         public void Log<TState>(
             LogLevel logLevel,
             EventId eventId,

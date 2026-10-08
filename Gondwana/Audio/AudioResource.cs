@@ -255,6 +255,7 @@ public class AudioResource : IDisposable
     /// <summary>
     /// Ensures this serialized resource is re-created in <see cref="AudioResourceManager"/> from its persisted source.
     /// </summary>
+    /// <param name="forceReload">Whether to replace an already registered audio resource.</param>
     internal void ReloadIntoManager(bool forceReload = false)
     {
         if (string.IsNullOrWhiteSpace(Key))

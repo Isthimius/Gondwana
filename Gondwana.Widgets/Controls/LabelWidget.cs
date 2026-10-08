@@ -33,6 +33,11 @@ public sealed class LabelWidget : WidgetBase
     /// <summary>
     /// Creates a view-level label.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="bounds">The widget bounds in view-local pixels.</param>
+    /// <param name="text">The text to display.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public LabelWidget(RenderSurfaceHostBase renderSurfaceHost,
                        View view,
                        Rectangle bounds,
@@ -59,6 +64,11 @@ public sealed class LabelWidget : WidgetBase
     /// <summary>
     /// Creates a scene-layer label.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="bounds">The widget bounds in world pixels.</param>
+    /// <param name="text">The text to display.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public LabelWidget(RenderSurfaceHostBase renderSurfaceHost,
                        SceneLayer sceneLayer,
                        Rectangle bounds,
@@ -206,6 +216,8 @@ public sealed class LabelWidget : WidgetBase
     /// <summary>
     /// Changes the displayed text.
     /// </summary>
+    /// <param name="text">The text to display.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public LabelWidget SetText(string text)
     {
         _text = text ?? string.Empty;
@@ -217,6 +229,10 @@ public sealed class LabelWidget : WidgetBase
     /// <summary>
     /// Configures the label typeface and size.
     /// </summary>
+    /// <param name="typeface">The typeface used to render text.</param>
+    /// <param name="size">The size.</param>
+    /// <param name="minSize">The min size.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public LabelWidget SetFont(SKTypeface typeface, float size, float? minSize = null)
     {
         ArgumentNullException.ThrowIfNull(typeface);
@@ -228,6 +244,9 @@ public sealed class LabelWidget : WidgetBase
     /// <summary>
     /// Sets foreground and background colors.
     /// </summary>
+    /// <param name="foreground">The foreground.</param>
+    /// <param name="background">The background.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public LabelWidget SetColors(SKColor foreground, SKColor background)
     {
         _foregroundColor = foreground;
@@ -239,6 +258,8 @@ public sealed class LabelWidget : WidgetBase
     /// <summary>
     /// Sets the foreground text color while preserving the background color.
     /// </summary>
+    /// <param name="color">The color to apply.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public LabelWidget SetTextColor(SKColor color)
     {
         _foregroundColor = color;
@@ -249,6 +270,8 @@ public sealed class LabelWidget : WidgetBase
     /// <summary>
     /// Sets the text-block background color while preserving the foreground color.
     /// </summary>
+    /// <param name="color">The color to apply.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public LabelWidget SetBackgroundColor(SKColor color)
     {
         _backgroundColor = color;
@@ -259,6 +282,9 @@ public sealed class LabelWidget : WidgetBase
     /// <summary>
     /// Configures horizontal and vertical text alignment.
     /// </summary>
+    /// <param name="horizontal">The horizontal.</param>
+    /// <param name="vertical">The vertical.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public LabelWidget SetAlignment(SKTextAlign horizontal, TextBlock.VerticalAlign vertical)
     {
         TextBlock.SetAlignment(horizontal, vertical);
@@ -268,6 +294,8 @@ public sealed class LabelWidget : WidgetBase
     /// <summary>
     /// Enables or disables wrapping.
     /// </summary>
+    /// <param name="enabled">Whether the feature is enabled.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public LabelWidget EnableWrapping(bool enabled = true)
     {
         TextBlock.EnableWrapping(enabled);
@@ -278,6 +306,9 @@ public sealed class LabelWidget : WidgetBase
     /// <summary>
     /// Sets symmetric horizontal and vertical padding.
     /// </summary>
+    /// <param name="horizontal">The horizontal.</param>
+    /// <param name="vertical">The vertical.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public LabelWidget SetPadding(float horizontal, float vertical)
     {
         if (!float.IsFinite(horizontal) || horizontal < 0f)
@@ -291,6 +322,8 @@ public sealed class LabelWidget : WidgetBase
     }
 
     /// <summary>Sets the base Z-order used by the label text and optional scrollbar.</summary>
+    /// <param name="zOrder">The drawing order relative to other content.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public LabelWidget SetLabelZOrder(int zOrder)
     {
         TextBlock.ZOrder = zOrder;

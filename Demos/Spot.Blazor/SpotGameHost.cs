@@ -49,11 +49,13 @@ internal sealed partial class SpotGameHost : BlazorGpuGameHost
 
     internal void SetCloudsEnabled(bool enabled) => _runtime.SetCloudsEnabled(enabled);
 
+    /// <inheritdoc/>
     protected override void OnConfigurePlatform()
     {
         Engine.UseBrowserAudio();
     }
 
+    /// <inheritdoc/>
     protected override Scene CreateInitialScene()
     {
         Logging.EngineLogger.SetLogLevel(Microsoft.Extensions.Logging.LogLevel.Information);
@@ -104,12 +106,16 @@ internal sealed partial class SpotGameHost : BlazorGpuGameHost
                 : null;
     }
 
+    /// <inheritdoc/>
     protected override void OnSceneGraphCreated() => _runtime.OnSceneGraphCreated();
 
+    /// <inheritdoc/>
     protected override void OnMouseAdapterInitialized() => _runtime.OnMouseAdapterInitialized();
 
+    /// <inheritdoc/>
     protected override void OnKeyboardAdapterInitialized() => _runtime.OnKeyboardAdapterInitialized();
 
+    /// <inheritdoc/>
     protected override void UnhookEvents()
     {
         Engine.AfterBackgroundTasksExecute -= LogMsaaAfterFirstPresentation;
@@ -118,16 +124,19 @@ internal sealed partial class SpotGameHost : BlazorGpuGameHost
         _runtime.UnhookEvents();
     }
 
+    /// <inheritdoc/>
     protected override void CreateDirectDrawings()
     {
         // Startup presentation is created after the splash completes.
     }
 
+    /// <inheritdoc/>
     protected override void OnEngineStarted()
     {
         // Music starts after the splash completes.
     }
 
+    /// <inheritdoc/>
     protected override void OnBlazorDisposed()
     {
         _assets.Dispose();

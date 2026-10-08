@@ -20,6 +20,7 @@ internal sealed class MeadowDrawing : DirectDrawingBase
 
     internal void Invalidate() => ForceRefresh();
 
+    /// <inheritdoc/>
     protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
         SKCanvas c = backbuffer.Canvas;
@@ -211,5 +212,6 @@ internal sealed class MeadowDrawing : DirectDrawingBase
     private static SKPath RoofPath() { var p = new SKPath(); p.MoveTo(1008, 120); p.LineTo(1147, 52); p.LineTo(1280, 120); p.Close(); return p; }
     private static SKPath TiePath(Vector2 p, float s) { var path = new SKPath(); path.MoveTo(p.X - 5 * s, p.Y - 3 * s); path.LineTo(p.X + 5 * s, p.Y - 3 * s); path.LineTo(p.X + 2 * s, p.Y + 16 * s); path.LineTo(p.X - 2 * s, p.Y + 16 * s); path.Close(); return path; }
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing) { if (disposing) { _paint.Dispose(); _text.Dispose(); } base.Dispose(disposing); }
 }

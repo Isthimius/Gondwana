@@ -14,6 +14,7 @@ public static class ServiceCollectionExtensions
     /// with the application's dependency-injection container.
     /// </summary>
     /// <returns>The same <see cref="IServiceCollection"/> for chaining.</returns>
+    /// <param name="services">The services.</param>
     public static IServiceCollection AddEngineLogging(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);

@@ -14,14 +14,26 @@ using Microsoft.Extensions.Logging;
 
 namespace Slider
 {
+    /// <summary>
+    /// Represents puzzle form.
+    /// </summary>
     public partial class PuzzleForm : Form
     {
         private IDisposable? _profilerRequest;
         private double _lastProfilerSnapshotEnd;
 
+        /// <summary>
+        /// The asset dir.
+        /// </summary>
         public static string AssetDir;
 
+        /// <summary>
+        /// The pic box bmp.
+        /// </summary>
         public Bitmap picBoxBmp;
+        /// <summary>
+        /// The pic box dc.
+        /// </summary>
         public Graphics picBoxDC;
 
         static PuzzleForm()
@@ -30,6 +42,9 @@ namespace Slider
             AssetDir = string.Format("{0}\\assets\\", Path.GetDirectoryName(AssetDir));
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <c>PuzzleForm</c> class.
+        /// </summary>
         public PuzzleForm()
         {
             EngineLogger.SetLogLevel(LogLevel.Trace);

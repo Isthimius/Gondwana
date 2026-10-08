@@ -8,6 +8,11 @@ internal sealed class ProjectDiagnosticsPanel : UserControl
     private readonly Label _status = new() { Dock = DockStyle.Bottom, Height = 42, AutoEllipsis = true };
     private readonly System.Windows.Forms.Timer _timer = new() { Interval = 100 };
 
+    /// <summary>
+    /// Initializes a new instance of the <c>ProjectDiagnosticsPanel</c> class.
+    /// </summary>
+    /// <param name="rescan">The rescan.</param>
+    /// <param name="poll">The poll.</param>
     public ProjectDiagnosticsPanel(Action rescan, Action poll)
     {
         var button = new Button { Text = "Rescan", Dock = DockStyle.Top, Height = 30 };
@@ -25,6 +30,10 @@ internal sealed class ProjectDiagnosticsPanel : UserControl
         Clear("No working directory.");
     }
 
+    /// <summary>
+    /// Clears the stored entries and resets the current state.
+    /// </summary>
+    /// <param name="status">The status.</param>
     public void Clear(string status)
     {
         if (IsDisposed) return;
@@ -33,6 +42,10 @@ internal sealed class ProjectDiagnosticsPanel : UserControl
         _status.Text = status;
     }
 
+    /// <summary>
+    /// Displays the project scan results.
+    /// </summary>
+    /// <param name="result">The result.</param>
     public void ShowResult(ProjectScanResult result)
     {
         if (IsDisposed) return;
@@ -58,6 +71,7 @@ internal sealed class ProjectDiagnosticsPanel : UserControl
         }
     }
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing) _timer.Dispose();

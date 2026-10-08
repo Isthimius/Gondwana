@@ -306,6 +306,7 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// Renders all visible scene layers for every configured view onto the backbuffer.
     /// Called as part of DoForegroundTasks().
     /// </summary>
+    /// <param name="tick">The timestamp for the current simulation or rendering step.</param>
     internal override void RenderToBackbuffer(long tick)
     {
         Backbuffer.BeginFrame();
@@ -399,6 +400,8 @@ public sealed class RenderSurfaceHost<TBackbuffer> : RenderSurfaceHostBase
     /// Desktop GL callbacks replay that completed composition without consulting this queue.
     /// </para>
     /// </remarks>
+    /// <param name="tick">The timestamp for the current simulation or rendering step.</param>
+    /// <param name="destination">An optional backbuffer receiving the full frame; null uses the host backbuffer.</param>
     private void RenderToBackbufferGpuFull(long tick, BackbufferBase? destination = null)
     {
         var target = destination ?? Backbuffer;

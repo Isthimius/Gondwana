@@ -7,6 +7,9 @@ using SkiaSharp;
 
 namespace Gondwana.Tooling.Importers.Tests;
 
+/// <summary>
+/// Contains regression tests for aseprite import.
+/// </summary>
 public sealed class AsepriteImportTests
 {
     // Handcrafted binary fixtures from the documented ASE layout. No external artwork/tool dependency.
@@ -49,6 +52,11 @@ public sealed class AsepriteImportTests
         return memory.ToArray();
     }
 
+    /// <summary>
+    /// Verifies binary frames render and tags round trip.
+    /// </summary>
+    /// <param name="depth">The depth value for this test case.</param>
+    /// <param name="direction">The direction value for this test case.</param>
     [Theory]
     [InlineData(32, 0)]
     [InlineData(16, 1)]
@@ -79,6 +87,9 @@ public sealed class AsepriteImportTests
         finally { Directory.Delete(directory, true); }
     }
 
+    /// <summary>
+    /// Verifies unsupported blend is an error.
+    /// </summary>
     [Fact]
     public void UnsupportedBlendIsAnError()
     {
@@ -86,6 +97,9 @@ public sealed class AsepriteImportTests
         Assert.Throws<InvalidDataException>(() => AsepriteFile.Read(stream, (_, _, _) => { }));
     }
 
+    /// <summary>
+    /// Verifies group opacity flag is independent of image layer opacity flag.
+    /// </summary>
     [Fact]
     public void GroupOpacityFlagIsIndependentOfImageLayerOpacityFlag()
     {
@@ -100,6 +114,12 @@ public sealed class AsepriteImportTests
         Assert.Equal(255, sprite.Layers[1].Opacity);
     }
 
+    /// <summary>
+    /// Verifies finite and untagged sequences.
+    /// </summary>
+    /// <param name="direction">The direction value for this test case.</param>
+    /// <param name="tags">The tags value for this test case.</param>
+    /// <param name="expected">The expected value for this test case.</param>
     [Theory]
     [InlineData(0, true, new int[] { 0, 1, 2, 0, 1, 2 })]
     [InlineData(1, true, new int[] { 2, 1, 0, 2, 1, 0 })]
@@ -122,6 +142,9 @@ public sealed class AsepriteImportTests
         finally { Directory.Delete(directory, true); }
     }
 
+    /// <summary>
+    /// Verifies normal groups visibility opacity and cel z order render correctly.
+    /// </summary>
     [Fact]
     public void NormalGroupsVisibilityOpacityAndCelZOrderRenderCorrectly()
     {

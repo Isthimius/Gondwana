@@ -9,6 +9,8 @@ public static class AnimationDefinitionValidator
     /// Validates the structural contents of an animation definition.
     /// Tilesheet existence and frame bounds are validated when the definition is materialized.
     /// </summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
     public static IReadOnlyList<string> Validate(AnimationDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);

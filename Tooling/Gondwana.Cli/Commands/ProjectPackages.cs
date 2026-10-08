@@ -12,21 +12,74 @@ internal sealed class ProjectPackages
     internal sealed record Package(string Name, XElement Reference, XObject? VersionNode, string? Version);
     private readonly Dictionary<string, XDocument> documents = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, byte[]> originals = new(StringComparer.OrdinalIgnoreCase);
+    /// <summary>
+    /// Gets the path.
+    /// </summary>
     public string Path { get; }
+    /// <summary>
+    /// Gets the project.
+    /// </summary>
     public XDocument Project { get; }
+    /// <summary>
+    /// Gets the central.
+    /// </summary>
     public XDocument? Central { get; }
+    /// <summary>
+    /// Gets whether centrally managed is enabled.
+    /// </summary>
     public bool CentrallyManaged { get; }
+    /// <summary>
+    /// Gets the packages.
+    /// </summary>
     public List<Package> Packages { get; } = [];
+    /// <summary>
+    /// Gets the references.
+    /// </summary>
     public List<string> References { get; }
+    /// <summary>
+    /// Gets the host.
+    /// </summary>
     public string? Host { get; }
+    /// <summary>
+    /// Gets the limitations.
+    /// </summary>
     public List<string> Limitations { get; } = [];
 
+    /// <summary>
+    /// Checks whether a package name identifies a Gondwana package.
+    /// </summary>
+    /// <param name="name">The name.</param>
+    /// <returns><see langword="true"/> if the package name belongs to Gondwana; otherwise, <see langword="false"/>.</returns>
     public static bool IsGondwana(string name) => name.Equals("Gondwana", StringComparison.OrdinalIgnoreCase) || name.StartsWith("Gondwana.", StringComparison.OrdinalIgnoreCase);
+    /// <summary>
+    /// Gets the package name from a project XML element.
+    /// </summary>
+    /// <param name="element">The element.</param>
+    /// <returns>The package name from the Include or Update attribute.</returns>
     public static string Name(XElement element) => element.Attribute("Include")?.Value ?? element.Attribute("Update")?.Value ?? "";
+    /// <summary>
+    /// Checks whether the project XML element has a condition.
+    /// </summary>
+    /// <param name="element">The element.</param>
+    /// <returns><see langword="true"/> if the element or its parent declares a condition; otherwise, <see langword="false"/>.</returns>
     public static bool Conditional(XElement element) => element.AncestorsAndSelf().Any(e => e.Attribute("Condition") is not null || e.Name.LocalName is "Choose" or "Target");
+    /// <summary>
+    /// Checks whether a value is a literal rather than an MSBuild expression.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns><see langword="true"/> if the value contains no MSBuild expression; otherwise, <see langword="false"/>.</returns>
     public static bool Literal(string value) => !string.IsNullOrWhiteSpace(value) && value.IndexOfAny(['$', '@', '%', '*', '?', ';']) < 0;
+    /// <summary>
+    /// Checks whether a version value names one exact package version.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns><see langword="true"/> if the value specifies one exact version; otherwise, <see langword="false"/>.</returns>
     public static bool ExactVersion(string? value) => value is not null && Regex.IsMatch(value, @"^\d+\.\d+(?:\.\d+){0,2}(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$");
 
+    /// <summary>
+    /// Initializes a new instance of the <c>ProjectPackages</c> class.
+    /// </summary>
+    /// <param name="path">The path.</param>
     public ProjectPackages(string path)
     {
         Path = System.IO.Path.GetFullPath(path);
@@ -99,6 +152,10 @@ internal sealed class ProjectPackages
         return candidates.Length == 1 && !Conditional(candidates[0]) && ExactVersion(candidates[0].Value) ? candidates[0] : null;
     }
 
+    /// <summary>
+    /// Gets the common version used by the project's Gondwana packages.
+    /// </summary>
+    /// <returns>The version shared by the Gondwana package references.</returns>
     public string AlignedVersion()
     {
         EnsureEditable();
@@ -108,6 +165,9 @@ internal sealed class ProjectPackages
         return versions[0]!;
     }
 
+    /// <summary>
+    /// Rejects project configurations that cannot be edited safely.
+    /// </summary>
     public void EnsureEditable()
     {
         if (Packages.Count == 0) throw new InvalidOperationException("No Gondwana NuGet references found. Project-reference-only games must manage versions in their source repository.");
@@ -129,6 +189,11 @@ internal sealed class ProjectPackages
         }
     }
 
+    /// <summary>
+    /// Updates Gondwana package references to the requested version.
+    /// </summary>
+    /// <param name="version">The version.</param>
+    /// <returns>Descriptions of the package-reference changes applied to the project.</returns>
     public IReadOnlyList<string> Upgrade(string version)
     {
         EnsureEditable();
@@ -154,6 +219,11 @@ internal sealed class ProjectPackages
         }
     }
 
+    /// <summary>
+    /// Resolves a feature name to its Gondwana package name.
+    /// </summary>
+    /// <param name="feature">The feature.</param>
+    /// <returns>The package name corresponding to the requested feature.</returns>
     public string FeaturePackage(string feature) => feature.ToLowerInvariant() switch
     {
         "widgets" => "Gondwana.Widgets",
@@ -171,6 +241,11 @@ internal sealed class ProjectPackages
         _ => throw new InvalidOperationException($"Unknown feature '{feature}'. Available: widgets, audio, midi, gamepad, video, video-widgets, hosting.")
     };
 
+    /// <summary>
+    /// Adds the supplied entry to the project packages.
+    /// </summary>
+    /// <param name="feature">The feature.</param>
+    /// <returns>Descriptions of the package-reference changes applied to the project.</returns>
     public IReadOnlyList<string> Add(string feature)
     {
         var name = FeaturePackage(feature);
@@ -206,6 +281,9 @@ internal sealed class ProjectPackages
         else group.Add(new XText(whitespace), item, new XText(newline + "    "));
     }
 
+    /// <summary>
+    /// Saves the current content to the destination file.
+    /// </summary>
     public void Save()
     {
         // Validate all owners before writing any of them; never overwrite concurrent edits.

@@ -6,8 +6,14 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for camera follow anchor.
+/// </summary>
 public sealed class CameraFollowAnchorTests
 {
+    /// <summary>
+    /// Verifies camera follow at places target at requested viewport anchor.
+    /// </summary>
     [Fact]
     public void Camera_FollowAt_PlacesTargetAtRequestedViewportAnchor()
     {
@@ -22,6 +28,9 @@ public sealed class CameraFollowAnchorTests
         Assert.Equal(new PointF(360, 225), camera.PositionPx);
     }
 
+    /// <summary>
+    /// Verifies camera follow centered remains centered.
+    /// </summary>
     [Fact]
     public void Camera_FollowCentered_RemainsCentered()
     {
@@ -36,6 +45,9 @@ public sealed class CameraFollowAnchorTests
         Assert.Equal(new PointF(300, 250), camera.PositionPx);
     }
 
+    /// <summary>
+    /// Verifies camera follow at x preserves vertical camera position.
+    /// </summary>
     [Fact]
     public void Camera_FollowAtX_PreservesVerticalCameraPosition()
     {
@@ -51,6 +63,9 @@ public sealed class CameraFollowAnchorTests
         Assert.Equal(new PointF(360, 70), camera.PositionPx);
     }
 
+    /// <summary>
+    /// Verifies camera follow at y preserves horizontal camera position.
+    /// </summary>
     [Fact]
     public void Camera_FollowAtY_PreservesHorizontalCameraPosition()
     {
@@ -66,6 +81,11 @@ public sealed class CameraFollowAnchorTests
         Assert.Equal(new PointF(80, 215), camera.PositionPx);
     }
 
+    /// <summary>
+    /// Verifies camera follow at rejects anchors outside viewport.
+    /// </summary>
+    /// <param name="x">The x value for this test case.</param>
+    /// <param name="y">The y value for this test case.</param>
     [Theory]
     [InlineData(-0.01f, 0.5f)]
     [InlineData(1.01f, 0.5f)]
@@ -81,6 +101,9 @@ public sealed class CameraFollowAnchorTests
             () => camera.FollowAt(() => PointF.Empty, new PointF(x, y)));
     }
 
+    /// <summary>
+    /// Verifies camera follow at uses anchor when choosing wrapped image.
+    /// </summary>
     [Fact]
     public void Camera_FollowAt_UsesAnchorWhenChoosingWrappedImage()
     {
@@ -115,12 +138,24 @@ public sealed class CameraFollowAnchorTests
         MovementSpace positionSpace,
         Vector2 position) : IMovableOnSceneLayer
     {
+        /// <summary>
+        /// Gets the coordinate space used by the position API.
+        /// </summary>
         public MovementSpace PositionSpace { get; } = positionSpace;
+        /// <inheritdoc/>
         public SceneLayer SceneLayer { get; } = sceneLayer;
         private Vector2 Position { get; set; } = position;
 
+        /// <summary>
+        /// Gets the sprite position in scene-layer grid coordinates.
+        /// </summary>
+        /// <returns>The sprite position in scene-layer grid coordinates.</returns>
         public Vector2 GetPosition() => Position;
 
+        /// <summary>
+        /// Sets the sprite position in scene-layer grid coordinates and invalidates its old and new bounds.
+        /// </summary>
+        /// <param name="pos">The pos value for this test case.</param>
         public void SetPosition(Vector2 pos) => Position = pos;
     }
 }

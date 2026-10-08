@@ -113,6 +113,9 @@ internal partial class SpotGameField : SceneLayer
     /// <summary>
     /// get a list of points on current field that are adjacent to the given point (x, y)
     /// </summary>
+    /// <param name="x">The column of the source cell.</param>
+    /// <param name="y">The row of the source cell.</param>
+    /// <returns>The neighboring cells available around the source cell.</returns>
     internal List<Cell> GetAdjacentCells(int x, int y)
     {
         var adjacentCells = new List<Cell>();

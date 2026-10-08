@@ -11,8 +11,14 @@ using SkiaSharp;
 
 namespace Gondwana.Tests.Widgets;
 
+/// <summary>
+/// Contains regression tests for menu features.
+/// </summary>
 public sealed class MenuFeaturesTests
 {
+    /// <summary>
+    /// Verifies keys are stable recursive and optional.
+    /// </summary>
     [Fact]
     public void Keys_AreStableRecursiveAndOptional()
     {
@@ -31,6 +37,9 @@ public sealed class MenuFeaturesTests
         Assert.Null(typeof(MenuItemWidget).GetProperty(nameof(MenuItemWidget.Key))!.SetMethod);
     }
 
+    /// <summary>
+    /// Verifies failed configuration rolls back keys shortcuts and widgets.
+    /// </summary>
     [Fact]
     public void FailedConfiguration_RollsBackKeysShortcutsAndWidgets()
     {
@@ -46,6 +55,9 @@ public sealed class MenuFeaturesTests
         Assert.Throws<ArgumentException>(() => context.Bar.Menus[0].DropDown.AddItem("Empty", key: " "));
     }
 
+    /// <summary>
+    /// Verifies disposed item unregisters key and shortcut.
+    /// </summary>
     [Fact]
     public void DisposedItem_UnregistersKeyAndShortcut()
     {
@@ -61,6 +73,9 @@ public sealed class MenuFeaturesTests
         context.Bar.Menus[0].DropDown.AddItem("Replacement", key: "save", shortcut: KeyGesture.Ctrl('S'));
     }
 
+    /// <summary>
+    /// Verifies replacing disposed item does not dispose remaining sibling.
+    /// </summary>
     [Fact]
     public void ReplacingDisposedItem_DoesNotDisposeRemainingSibling()
     {
@@ -83,6 +98,10 @@ public sealed class MenuFeaturesTests
         Assert.Same(second, remaining);
     }
 
+    /// <summary>
+    /// Verifies check invocation uses one path and closes before callback.
+    /// </summary>
+    /// <param name="path">The path value for this test case.</param>
     [Theory]
     [InlineData(0)]
     [InlineData(1)]
@@ -111,6 +130,9 @@ public sealed class MenuFeaturesTests
         Assert.True(item.IsChecked);
     }
 
+    /// <summary>
+    /// Verifies check setter is silent and disabled invocation does not toggle.
+    /// </summary>
     [Fact]
     public void CheckSetter_IsSilentAndDisabledInvocationDoesNotToggle()
     {
@@ -131,6 +153,9 @@ public sealed class MenuFeaturesTests
         Assert.Equal(2, count);
     }
 
+    /// <summary>
+    /// Verifies radio groups are local exclusive and programmatically settable.
+    /// </summary>
     [Fact]
     public void RadioGroups_AreLocalExclusiveAndProgrammaticallySettable()
     {
@@ -156,6 +181,9 @@ public sealed class MenuFeaturesTests
         Assert.False(tiles.IsChecked);
     }
 
+    /// <summary>
+    /// Verifies deep submenus navigate unwind invoke and dispose recursively.
+    /// </summary>
     [Fact]
     public void DeepSubmenus_NavigateUnwindInvokeAndDisposeRecursively()
     {
@@ -200,6 +228,9 @@ public sealed class MenuFeaturesTests
         Assert.Equal(1, count);
     }
 
+    /// <summary>
+    /// Verifies hover opens submenu and closes sibling and parent switch closes hierarchy.
+    /// </summary>
     [Fact]
     public void Hover_OpensSubmenuAndClosesSiblingAndParentSwitchClosesHierarchy()
     {
@@ -219,6 +250,9 @@ public sealed class MenuFeaturesTests
         Assert.False(context.Bar["two"].SubMenu!.Visible);
     }
 
+    /// <summary>
+    /// Verifies placement flips left and clamps vertically at every depth.
+    /// </summary>
     [Fact]
     public void Placement_FlipsLeftAndClampsVerticallyAtEveryDepth()
     {
@@ -234,6 +268,10 @@ public sealed class MenuFeaturesTests
         Assert.All(new[] { root, child, deep }, menu => Assert.True(context.View.Viewport.TargetRectPx.Contains(menu.Panel.ScreenBounds)));
     }
 
+    /// <summary>
+    /// Verifies rapid close reopen hide dispose leaves no visible descendants.
+    /// </summary>
+    /// <param name="animation">The animation value for this test case.</param>
     [Theory]
     [InlineData(MenuDropDownAnimation.None)]
     [InlineData(MenuDropDownAnimation.Fade)]
@@ -262,6 +300,9 @@ public sealed class MenuFeaturesTests
         Assert.Empty(child.Children);
     }
 
+    /// <summary>
+    /// Verifies icons and markers align in separate columns and follow visibility.
+    /// </summary>
     [Fact]
     public void IconsAndMarkers_AlignInSeparateColumnsAndFollowVisibility()
     {
@@ -286,6 +327,9 @@ public sealed class MenuFeaturesTests
         Assert.Equal(8, icon.Width); // The caller still owns the image.
     }
 
+    /// <summary>
+    /// Verifies shortcuts work closed and deep without opening or stealing focus.
+    /// </summary>
     [Fact]
     public void Shortcuts_WorkClosedAndDeepWithoutOpeningOrStealingFocus()
     {
@@ -315,6 +359,10 @@ public sealed class MenuFeaturesTests
         Assert.Equal(1, count);
     }
 
+    /// <summary>
+    /// Verifies focused widget gets first opportunity for shortcut and mnemonic.
+    /// </summary>
+    /// <param name="mnemonic">The mnemonic value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -342,6 +390,9 @@ public sealed class MenuFeaturesTests
         else Assert.Equal(new[] { "focused", "focused", "command" }, sequence);
     }
 
+    /// <summary>
+    /// Verifies one key invokes only most recently registered eligible bar.
+    /// </summary>
     [Fact]
     public void OneKey_InvokesOnlyMostRecentlyRegisteredEligibleBar()
     {
@@ -360,6 +411,9 @@ public sealed class MenuFeaturesTests
         Assert.Equal(1, second);
     }
 
+    /// <summary>
+    /// Verifies opening older bar promotes unhandled accelerators without breaking pointer order.
+    /// </summary>
     [Fact]
     public void OpeningOlderBar_PromotesUnhandledAcceleratorsWithoutBreakingPointerOrder()
     {
@@ -382,6 +436,9 @@ public sealed class MenuFeaturesTests
         Assert.Equal(-1, context.Bar.OpenMenuIndex);
     }
 
+    /// <summary>
+    /// Verifies disposing longest row recalculates width height and remaining positions.
+    /// </summary>
     [Fact]
     public void DisposingLongestRow_RecalculatesWidthHeightAndRemainingPositions()
     {
@@ -408,6 +465,9 @@ public sealed class MenuFeaturesTests
         Assert.False(dropdown.HitTest(context.View, new Point(15, firstRowTop + 15)));
     }
 
+    /// <summary>
+    /// Verifies mnemonics are explicit case insensitive and conflicts rejected.
+    /// </summary>
     [Fact]
     public void Mnemonics_AreExplicitCaseInsensitiveAndConflictsRejected()
     {
@@ -428,6 +488,9 @@ public sealed class MenuFeaturesTests
         Assert.Equal(-1, context.Bar.OpenMenuIndex);
     }
 
+    /// <summary>
+    /// Verifies navigation skips disabled and separators and switches top level.
+    /// </summary>
     [Fact]
     public void Navigation_SkipsDisabledAndSeparatorsAndSwitchesTopLevel()
     {
@@ -451,6 +514,9 @@ public sealed class MenuFeaturesTests
         Assert.Equal(0, context.Bar.OpenMenuIndex);
     }
 
+    /// <summary>
+    /// Verifies click away closes deep hierarchy and releases hit area.
+    /// </summary>
     [Fact]
     public void ClickAway_ClosesDeepHierarchyAndReleasesHitArea()
     {
@@ -466,6 +532,9 @@ public sealed class MenuFeaturesTests
         Assert.False(context.Bar.HitTest(context.View, new Point(600, 400)));
     }
 
+    /// <summary>
+    /// Verifies callback can dispose bar after hierarchy is stable.
+    /// </summary>
     [Fact]
     public void Callback_CanDisposeBarAfterHierarchyIsStable()
     {
@@ -480,6 +549,9 @@ public sealed class MenuFeaturesTests
         Assert.Empty(context.Bar.Children);
     }
 
+    /// <summary>
+    /// Verifies gestures compare exactly and generate display.
+    /// </summary>
     [Fact]
     public void Gestures_CompareExactlyAndGenerateDisplay()
     {
@@ -490,6 +562,9 @@ public sealed class MenuFeaturesTests
         Assert.Equal("F5", new KeyGesture(116).ToString());
     }
 
+    /// <summary>
+    /// Verifies animation completion does not hide reopened menu or leave reveal running.
+    /// </summary>
     [Fact]
     public void AnimationCompletion_DoesNotHideReopenedMenuOrLeaveRevealRunning()
     {
@@ -515,6 +590,9 @@ public sealed class MenuFeaturesTests
         Assert.False((bool)revealAnimating.GetValue(child.Panel)!);
     }
 
+    /// <summary>
+    /// Verifies pointer hit order prefers deep items and dismiss layer only while open.
+    /// </summary>
     [Fact]
     public void PointerHitOrder_PrefersDeepItemsAndDismissLayerOnlyWhileOpen()
     {
@@ -531,6 +609,9 @@ public sealed class MenuFeaturesTests
         Assert.Null(context.Hit(new Point(600, 450)));
     }
 
+    /// <summary>
+    /// Verifies disabled owner closes its branch and prevents descendant activation.
+    /// </summary>
     [Fact]
     public void DisabledOwner_ClosesItsBranchAndPreventsDescendantActivation()
     {
@@ -549,6 +630,9 @@ public sealed class MenuFeaturesTests
         Assert.False(context.Bar["export"].IsInputEnabled);
     }
 
+    /// <summary>
+    /// Verifies legacy text is display only and gesture display wins.
+    /// </summary>
     [Fact]
     public void LegacyText_IsDisplayOnlyAndGestureDisplayWins()
     {
@@ -563,6 +647,9 @@ public sealed class MenuFeaturesTests
         Assert.Equal(1, count);
     }
 
+    /// <summary>
+    /// Verifies typed input consumed by text box does not activate unmodified shortcut.
+    /// </summary>
     [Fact]
     public void TypedInput_ConsumedByTextBoxDoesNotActivateUnmodifiedShortcut()
     {
@@ -577,6 +664,9 @@ public sealed class MenuFeaturesTests
         Assert.Equal(0, count);
     }
 
+    /// <summary>
+    /// Verifies columns do not overlap for long labels shortcuts and submenu arrows.
+    /// </summary>
     [Fact]
     public void Columns_DoNotOverlapForLongLabelsShortcutsAndSubmenuArrows()
     {
@@ -594,6 +684,9 @@ public sealed class MenuFeaturesTests
         }
     }
 
+    /// <summary>
+    /// Verifies menu visuals render checks radios icons and text.
+    /// </summary>
     [Fact]
     public void MenuVisuals_RenderChecksRadiosIconsAndText()
     {
@@ -647,10 +740,26 @@ public sealed class MenuFeaturesTests
 
     private sealed class MenuContext : IDisposable
     {
+        /// <summary>
+        /// Gets the host.
+        /// </summary>
         public TestRenderSurfaceHost Host { get; } = new();
+        /// <summary>
+        /// Gets the view.
+        /// </summary>
         public View View { get; }
+        /// <summary>
+        /// Gets the router.
+        /// </summary>
         public WidgetInputRouter Router { get; }
+        /// <summary>
+        /// Gets the bar.
+        /// </summary>
         public MenuBarWidget Bar { get; }
+        /// <summary>
+        /// Initializes a new instance of the <c>MenuContext</c> class.
+        /// </summary>
+        /// <param name="bounds">The bounds value for this test case.</param>
         public MenuContext(Rectangle? bounds = null)
         {
             Host.ViewManager.AddView(new Rectangle(0, 0, 640, 480), zOrder: 0);
@@ -661,14 +770,25 @@ public sealed class MenuFeaturesTests
             { DropDownAnimation = MenuDropDownAnimation.None };
             Bar.Show();
         }
+        /// <summary>
+        /// Constructs a keyboard event for a widget input test.
+        /// </summary>
+        /// <param name="key">The key value for this test case.</param>
+        /// <param name="modifiers">The modifiers value for this test case.</param>
         public void Key(int key, KeyboardModifierState modifiers = KeyboardModifierState.None) => typeof(WidgetInputRouter)
             .GetMethod("OnKeyDown", BindingFlags.Instance | BindingFlags.NonPublic)!
             .Invoke(Router, new object[] { new KeyDownEventArgs(new KeyEventConfiguration(key.ToString()), modifiers, KeyAction.Pressed) });
+        /// <summary>
+        /// Performs a pointer hit test against the test widget.
+        /// </summary>
+        /// <param name="point">The point value for this test case.</param>
+        /// <returns>The requested widget base, or <see langword="null"/> when unavailable.</returns>
         public WidgetBase? Hit(Point point)
         {
             var hit = typeof(WidgetInputRouter).GetMethod("HitTest", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(Router, new object[] { point });
             return hit?.GetType().GetProperty("Widget")!.GetValue(hit) as WidgetBase;
         }
+        /// <inheritdoc/>
         public void Dispose()
         {
             Bar.Dispose();

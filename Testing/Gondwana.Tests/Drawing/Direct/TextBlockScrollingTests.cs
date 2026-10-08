@@ -6,6 +6,9 @@ using SkiaSharp;
 
 namespace Gondwana.Tests.Drawing.Direct;
 
+/// <summary>
+/// Contains regression tests for text block scrolling.
+/// </summary>
 public sealed class TextBlockScrollingTests
 {
     private const string OverflowText = """
@@ -16,6 +19,10 @@ public sealed class TextBlockScrollingTests
         Fifth line of scrollable text.
         """;
 
+    /// <summary>
+    /// Verifies overflowing content uses top origin at zero scroll.
+    /// </summary>
+    /// <param name="verticalAlign">The vertical align value for this test case.</param>
     [Theory]
     [InlineData(TextBlock.VerticalAlign.Center)]
     [InlineData(TextBlock.VerticalAlign.Bottom)]
@@ -33,6 +40,10 @@ public sealed class TextBlockScrollingTests
         Assert.Equal(expectedPixels, actualPixels);
     }
 
+    /// <summary>
+    /// Verifies overflowing content uses top origin at maximum scroll.
+    /// </summary>
+    /// <param name="verticalAlign">The vertical align value for this test case.</param>
     [Theory]
     [InlineData(TextBlock.VerticalAlign.Center)]
     [InlineData(TextBlock.VerticalAlign.Bottom)]

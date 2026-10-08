@@ -16,15 +16,19 @@ internal sealed class TestRenderSurfaceHost : RenderSurfaceHostBase
         ViewManager = new ViewManager(this);
     }
 
+    /// <inheritdoc/>
     public override BackbufferBase Backbuffer =>
         throw new NotSupportedException(
             "The test host does not render.");
 
+    /// <inheritdoc/>
     public override Scene Scene { get; }
 
+    /// <inheritdoc/>
     public override RenderSurfaceAdapterBase? RenderSurfaceAdapter =>
         null;
 
+    /// <inheritdoc/>
     public override ViewManager ViewManager { get; }
 
     internal override void RenderToBackbuffer(long tick)

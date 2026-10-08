@@ -23,10 +23,16 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
     internal bool IsAvailable => !_disposed && Visible && IsInputEnabled && IsKeyboardInputEnabled;
 
     /// <summary>Gets an item by its stable, case-sensitive key, including nested descendants.</summary>
+    /// <param name="key">The lookup key for the resource.</param>
+    /// <returns>The menu item registered under the requested identifier.</returns>
     public MenuItemWidget GetItem(string key) => _itemsByKey[key];
     /// <summary>Gets an item by its stable key, or throws KeyNotFoundException.</summary>
+    /// <param name="key">The lookup key for the resource.</param>
     public MenuItemWidget this[string key] => GetItem(key);
     /// <summary>Looks up a stable key; returns false and null when absent.</summary>
+    /// <param name="key">The lookup key for the resource.</param>
+    /// <param name="item">When this method returns, contains the item.</param>
+    /// <returns><see langword="true"/> if the operation succeeded; otherwise, <see langword="false"/>.</returns>
     public bool TryGetItem(string key, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out MenuItemWidget? item) =>
         _itemsByKey.TryGetValue(key, out item);
 
@@ -75,6 +81,11 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
     /// <summary>
     /// Creates a menu bar attached to a view.
     /// </summary>
+    /// <param name="host">The host.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="bounds">The widget bounds in view-local pixels.</param>
+    /// <param name="theme">The theme.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public MenuBarWidget(RenderSurfaceHostBase host,
                          View view,
                          Rectangle bounds,
@@ -157,6 +168,11 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
     /// <summary>
     /// Adds a top-level menu and optionally configures its dropdown.
     /// </summary>
+    /// <param name="text">The text to display.</param>
+    /// <param name="configure">The configure.</param>
+    /// <param name="headerWidth">The header width.</param>
+    /// <param name="mnemonic">The keyboard mnemonic used to activate the item.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public MenuBarWidget AddMenu(string text,
                                  Action<MenuDropDownWidget>? configure = null,
                                  int? headerWidth = null,
@@ -241,6 +257,7 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
     }
 
     /// <summary>Opens the specified top-level menu.</summary>
+    /// <param name="index">The index.</param>
     public void OpenMenuAt(int index)
     {
         if (index < 0 || index >= _menus.Count)
@@ -290,6 +307,7 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
     }
 
     /// <summary>Toggles the specified top-level menu.</summary>
+    /// <param name="index">The index.</param>
     public void ToggleMenu(int index)
     {
         if (_openMenuIndex == index)
@@ -299,6 +317,8 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
     }
 
     /// <summary>Applies a drawing Z-order to the menu-bar family.</summary>
+    /// <param name="zOrder">The drawing order relative to other content.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public MenuBarWidget SetMenuZOrder(int zOrder)
     {
         _menuZOrder = zOrder;
@@ -562,6 +582,7 @@ public sealed class MenuBarWidget : ContainerWidget, IWidgetKeyboardFallback
             HitArea.ZOrder = zOrder;
         }
 
+        /// <inheritdoc/>
         protected override void OnPointerClick(WidgetPointerEventArgs args)
         {
             base.OnPointerClick(args);

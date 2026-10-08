@@ -7,9 +7,15 @@ using static Gondwana.WinForms.Input.Gamepad.XInput.XInput;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for gamepad input.
+/// </summary>
 [Collection("Global engine state")]
 public sealed class GamepadInputTests
 {
+    /// <summary>
+    /// Verifies engine configuration uses requested gamepad cadence defaults.
+    /// </summary>
     [Fact]
     public void EngineConfiguration_UsesRequestedGamepadCadenceDefaults()
     {
@@ -19,6 +25,9 @@ public sealed class GamepadInputTests
         Assert.Equal(60d, configuration.GamepadPollFrequencyHz);
     }
 
+    /// <summary>
+    /// Verifies initialize with no gamepad argument preserves configured manager.
+    /// </summary>
     [Fact]
     public void Initialize_WithNoGamepadArgument_PreservesConfiguredManager()
     {
@@ -41,6 +50,9 @@ public sealed class GamepadInputTests
         }
     }
 
+    /// <summary>
+    /// Verifies refresh gamepads uses independent connection and polling cadences.
+    /// </summary>
     [Fact]
     public void RefreshGamepads_UsesIndependentConnectionAndPollingCadences()
     {
@@ -78,6 +90,9 @@ public sealed class GamepadInputTests
         }
     }
 
+    /// <summary>
+    /// Verifies refresh gamepads after discovery refreshes event poller snapshot without resetting bindings.
+    /// </summary>
     [Fact]
     public void RefreshGamepads_AfterDiscovery_RefreshesEventPollerSnapshotWithoutResettingBindings()
     {
@@ -115,6 +130,9 @@ public sealed class GamepadInputTests
         }
     }
 
+    /// <summary>
+    /// Verifies run simulation cycle uses driver tick for gamepad hardware cadence.
+    /// </summary>
     [Fact]
     public void RunSimulationCycle_UsesDriverTickForGamepadHardwareCadence()
     {
@@ -152,6 +170,9 @@ public sealed class GamepadInputTests
         }
     }
 
+    /// <summary>
+    /// Verifies run simulation cycle polls gamepad before game callbacks and button events.
+    /// </summary>
     [Fact]
     public void RunSimulationCycle_PollsGamepadBeforeGameCallbacksAndButtonEvents()
     {
@@ -190,6 +211,9 @@ public sealed class GamepadInputTests
         }
     }
 
+    /// <summary>
+    /// Verifies x input state projection uses current trigger values.
+    /// </summary>
     [Fact]
     public void XInputStateProjection_UsesCurrentTriggerValues()
     {
@@ -257,27 +281,45 @@ public sealed class GamepadInputTests
     {
         private readonly List<IGamepadAdapter> _adapters;
 
+        /// <summary>
+        /// Initializes a new instance of the <c>TestGamepadManager</c> class.
+        /// </summary>
         public TestGamepadManager()
         {
             Adapter = new TestGamepadAdapter();
             _adapters = [Adapter];
         }
 
+        /// <summary>
+        /// Gets the adapter.
+        /// </summary>
         public TestGamepadAdapter Adapter { get; }
 
+        /// <inheritdoc/>
         public IReadOnlyCollection<IGamepadAdapter> ConnectedAdapters => _adapters.ToArray();
 
+        /// <summary>
+        /// Gets the connection update count.
+        /// </summary>
         public int ConnectionUpdateCount { get; private set; }
 
+        /// <summary>
+        /// Gets the poll count.
+        /// </summary>
         public int PollCount { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the on poll.
+        /// </summary>
         public Action? OnPoll { get; set; }
 
+        /// <inheritdoc/>
         public void UpdateConnections()
         {
             ConnectionUpdateCount++;
         }
 
+        /// <inheritdoc/>
         public void Poll()
         {
             PollCount++;
@@ -285,6 +327,7 @@ public sealed class GamepadInputTests
         }
 
 #pragma warning disable CS0618
+        /// <inheritdoc/>
         public void Update()
         {
             UpdateConnections();
@@ -292,11 +335,18 @@ public sealed class GamepadInputTests
         }
 #pragma warning restore CS0618
 
+        /// <summary>
+        /// Adds adapter.
+        /// </summary>
+        /// <param name="adapter">The adapter value for this test case.</param>
         public void AddAdapter(IGamepadAdapter adapter)
         {
             _adapters.Add(adapter);
         }
 
+        /// <summary>
+        /// Resets counts.
+        /// </summary>
         public void ResetCounts()
         {
             ConnectionUpdateCount = 0;
@@ -312,23 +362,37 @@ public sealed class GamepadInputTests
 
         private readonly string _gamepadId;
 
+        /// <summary>
+        /// Initializes a new instance of the <c>TestGamepadAdapter</c> class.
+        /// </summary>
+        /// <param name="gamepadId">The gamepad id value for this test case.</param>
         public TestGamepadAdapter(string gamepadId = "test-gamepad")
         {
             _gamepadId = gamepadId;
         }
 
+        /// <inheritdoc/>
         public string GamepadId => _gamepadId;
 
+        /// <inheritdoc/>
         public IReadOnlyCollection<string> PressedButtons => _pressedButtons;
 
+        /// <inheritdoc/>
         public GamepadStickState? LeftStick => null;
 
+        /// <inheritdoc/>
         public GamepadStickState? RightStick => null;
 
+        /// <inheritdoc/>
         public float LeftTrigger => 0f;
 
+        /// <inheritdoc/>
         public float RightTrigger => 0f;
 
+        /// <summary>
+        /// Sets pressed buttons.
+        /// </summary>
+        /// <param name="buttons">The buttons value for this test case.</param>
         public void SetPressedButtons(params string[] buttons)
         {
             _pressedButtons.Clear();

@@ -5,8 +5,14 @@ using Gondwana.Rendering.Views;
 
 namespace Gondwana.Tests.Drawing.Direct;
 
+/// <summary>
+/// Contains regression tests for render state synchronization.
+/// </summary>
 public sealed class RenderStateSynchronizationTests
 {
+    /// <summary>
+    /// Verifies direct drawing dispose waits for active render state reader.
+    /// </summary>
     [Fact]
     public void DirectDrawingDispose_WaitsForActiveRenderStateReader()
     {
@@ -49,6 +55,9 @@ public sealed class RenderStateSynchronizationTests
         Assert.True(disposer.Wait(TimeSpan.FromSeconds(5)));
         Assert.True(holder.Wait(TimeSpan.FromSeconds(5)));
     }
+    /// <summary>
+    /// Verifies waiting gpu renderer gets admission before next engine style acquisition.
+    /// </summary>
     [Fact]
     public void WaitingGpuRenderer_GetsAdmissionBeforeNextEngineStyleAcquisition()
     {

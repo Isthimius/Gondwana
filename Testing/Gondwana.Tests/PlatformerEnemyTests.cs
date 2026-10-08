@@ -3,8 +3,14 @@ using Gondwana.Demos.Platformer;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for platformer enemy.
+/// </summary>
 public sealed class PlatformerEnemyTests
 {
+    /// <summary>
+    /// Verifies fast fall across head stomps.
+    /// </summary>
     [Fact]
     public void FastFallAcrossHeadStomps()
     {
@@ -13,6 +19,10 @@ public sealed class PlatformerEnemyTests
             new Rectangle(8, 40, 26, 29), new Rectangle(8, 40, 26, 29), 18f));
     }
 
+    /// <summary>
+    /// Verifies side contact never stomps.
+    /// </summary>
+    /// <param name="verticalVelocity">The vertical velocity value for this test case.</param>
     [Theory]
     [InlineData(14f)]
     [InlineData(0f)]
@@ -24,6 +34,9 @@ public sealed class PlatformerEnemyTests
             new Rectangle(20, 40, 26, 29), new Rectangle(20, 40, 26, 29), verticalVelocity));
     }
 
+    /// <summary>
+    /// Verifies upward velocity does not stomp.
+    /// </summary>
     [Fact]
     public void UpwardVelocityDoesNotStomp()
     {
@@ -32,6 +45,9 @@ public sealed class PlatformerEnemyTests
             new Rectangle(8, 40, 26, 29), new Rectangle(8, 40, 26, 29), -14f));
     }
 
+    /// <summary>
+    /// Verifies horizontal overlap must exist at head crossing.
+    /// </summary>
     [Fact]
     public void HorizontalOverlapMustExistAtHeadCrossing()
     {
@@ -40,6 +56,9 @@ public sealed class PlatformerEnemyTests
             new Rectangle(50, 40, 26, 29), new Rectangle(50, 40, 26, 29), 14f));
     }
 
+    /// <summary>
+    /// Verifies enemy art alternates feet and ends fully transparent.
+    /// </summary>
     [Fact]
     public void EnemyArtAlternatesFeetAndEndsFullyTransparent()
     {

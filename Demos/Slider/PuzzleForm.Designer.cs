@@ -239,6 +239,9 @@ namespace Slider
         private System.Windows.Forms.CheckBox chkGrid;
         private System.Windows.Forms.Label lblCoord;
         private System.Windows.Forms.Label lblInfo;
+        /// <summary>
+        /// The win form bitmap render surface control1.
+        /// </summary>
         protected internal Gondwana.WinForms.Rendering.WinFormBitmapRenderSurfaceControl winFormBitmapRenderSurfaceControl1;
     }
 }

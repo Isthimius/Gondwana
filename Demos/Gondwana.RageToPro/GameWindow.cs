@@ -20,12 +20,14 @@ internal sealed class GameWindow : Form
         KeyDown += (_, args) => { if (args.KeyCode == Keys.Escape) Close(); };
     }
 
+    /// <inheritdoc/>
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
         _host = new RageToProGameHost(_surface);
     }
 
+    /// <inheritdoc/>
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
@@ -41,6 +43,7 @@ internal sealed class GameWindow : Form
         }
     }
 
+    /// <inheritdoc/>
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
         _host?.Dispose();

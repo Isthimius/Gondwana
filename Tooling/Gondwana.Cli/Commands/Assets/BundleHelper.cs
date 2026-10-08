@@ -6,12 +6,24 @@ namespace Gondwana.Cli.Commands.Assets;
 
 internal static class BundleHelper
 {
+    /// <summary>
+    /// Checks whether an assets file requires a password.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <returns><see langword="true"/> if the assets file requires a password; otherwise, <see langword="false"/>.</returns>
     public static bool NeedsPassword(string path)
     {
         using var archive = new ZipFile(File.OpenRead(path));
         return archive.Cast<ZipEntry>().Any(e => e.IsCrypted);
     }
 
+    /// <summary>
+    /// Opens the supplied file for use by the bundle helper.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <param name="password">The password used to open the assets file, if required.</param>
+    /// <param name="testData">Whether to verify the archive data while opening it.</param>
+    /// <returns>The resulting assets file.</returns>
     public static AssetsFile Open(string path, string? password, bool testData = true)
     {
         // Validate before loading because the runtime intentionally ignores unknown
@@ -26,6 +38,12 @@ internal static class BundleHelper
         catch { bundle.Dispose(); throw; }
     }
 
+    /// <summary>
+    /// Checks the contents of an assets file and returns validation errors.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <param name="password">The password used to open the assets file, if required.</param>
+    /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
     public static IReadOnlyList<string> ValidateContents(string path, string? password)
     {
         using var bundle = Open(path, password);
@@ -38,6 +56,15 @@ internal static class BundleHelper
         return errors;
     }
 
+    /// <summary>
+    /// Extracts matching asset entries into the output directory.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <param name="output">The output.</param>
+    /// <param name="password">The password used to open the assets file, if required.</param>
+    /// <param name="type">The type.</param>
+    /// <param name="overwrite">Whether existing output files may be replaced.</param>
+    /// <returns>The number of entries extracted.</returns>
     public static int Extract(string path, string output, string? password, AssetTypes? type, bool overwrite)
     {
         using var bundle = Open(path, password);
@@ -73,6 +100,10 @@ internal static class BundleHelper
 
 internal static class SafeFilePath
 {
+    /// <summary>
+    /// Rejects asset entry names that are not safe relative paths.
+    /// </summary>
+    /// <param name="name">The name.</param>
     public static void ValidateRelative(string name)
     {
         var normalized = name.Replace('\\', '/');
@@ -87,6 +118,12 @@ internal static class SafeFilePath
         }
     }
 
+    /// <summary>
+    /// Resolves an asset entry name beneath the supplied root directory.
+    /// </summary>
+    /// <param name="root">The root.</param>
+    /// <param name="name">The name.</param>
+    /// <returns>The resolved path beneath the supplied root.</returns>
     public static string Resolve(string root, string name)
     {
         ValidateRelative(name);

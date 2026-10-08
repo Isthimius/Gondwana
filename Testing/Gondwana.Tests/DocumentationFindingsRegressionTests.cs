@@ -10,14 +10,23 @@ using SkiaSharp;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Represents global engine state collection.
+/// </summary>
 [CollectionDefinition("Global engine state", DisableParallelization = true)]
 public sealed class GlobalEngineStateCollection
 {
 }
 
+/// <summary>
+/// Contains regression tests for logging integration regression.
+/// </summary>
 [Collection("Global engine state")]
 public sealed class LoggingIntegrationRegressionTests
 {
+    /// <summary>
+    /// Verifies add engine logging uses registered factory without circular resolution.
+    /// </summary>
     [Fact]
     public void AddEngineLogging_UsesRegisteredFactoryWithoutCircularResolution()
     {
@@ -32,6 +41,9 @@ public sealed class LoggingIntegrationRegressionTests
         Assert.Same(resolvedFactory, EngineLogger.EngineLoggerFactory);
     }
 
+    /// <summary>
+    /// Verifies set log level does not replace externally provided factory.
+    /// </summary>
     [Fact]
     public void SetLogLevel_DoesNotReplaceExternallyProvidedFactory()
     {
@@ -67,6 +79,7 @@ public sealed class LoggingIntegrationRegressionTests
         private readonly bool _originalExternalFactory =
             (bool)ExternalFactoryField.GetValue(null)!;
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             LoggerFactoryField.SetValue(null, _originalFactory);
@@ -81,13 +94,16 @@ public sealed class LoggingIntegrationRegressionTests
 
     private sealed class TestLoggerFactory : ILoggerFactory
     {
+        /// <inheritdoc/>
         public void AddProvider(ILoggerProvider provider)
         {
         }
 
+        /// <inheritdoc/>
         public ILogger CreateLogger(string categoryName) =>
             TestLogger.Instance;
 
+        /// <inheritdoc/>
         public void Dispose()
         {
         }
@@ -95,14 +111,20 @@ public sealed class LoggingIntegrationRegressionTests
 
     private sealed class TestLogger : ILogger
     {
+        /// <summary>
+        /// Gets the shared instance.
+        /// </summary>
         public static TestLogger Instance { get; } = new();
 
+        /// <inheritdoc/>
         public IDisposable? BeginScope<TState>(TState state)
             where TState : notnull =>
             NoOpScope.Instance;
 
+        /// <inheritdoc/>
         public bool IsEnabled(LogLevel logLevel) => false;
 
+        /// <inheritdoc/>
         public void Log<TState>(
             LogLevel logLevel,
             EventId eventId,
@@ -115,17 +137,33 @@ public sealed class LoggingIntegrationRegressionTests
 
     private sealed class NoOpScope : IDisposable
     {
+        /// <summary>
+        /// Gets the shared instance.
+        /// </summary>
         public static NoOpScope Instance { get; } = new();
 
+        /// <inheritdoc/>
         public void Dispose()
         {
         }
     }
 }
 
+/// <summary>
+/// Contains regression tests for render surface presentation regression.
+/// </summary>
 [Collection("Global engine state")]
 public sealed class RenderSurfacePresentationRegressionTests
 {
+    /// <summary>
+    /// Verifies present backbuffer rect clamps dirty rectangle to backbuffer bounds.
+    /// </summary>
+    /// <param name="width">The width value for this test case.</param>
+    /// <param name="height">The height value for this test case.</param>
+    /// <param name="left">The left value for this test case.</param>
+    /// <param name="top">The top value for this test case.</param>
+    /// <param name="destWidth">The dest width value for this test case.</param>
+    /// <param name="destHeight">The dest height value for this test case.</param>
     [Theory]
     [InlineData(100, 80, 70, 50, 30, 30)]
     [InlineData(200, 200, 140, 120, 60, 60)]
@@ -178,10 +216,20 @@ public sealed class RenderSurfacePresentationRegressionTests
         : RenderSurfaceAdapterBase(width, height)
     {
         internal void Resize(int width, int height) => SetDestinationSize(width, height);
+        /// <summary>
+        /// Gets the present count.
+        /// </summary>
         public int PresentCount { get; private set; }
+        /// <summary>
+        /// Gets the buffer rect.
+        /// </summary>
         public SKRectI? BufferRect { get; private set; }
+        /// <summary>
+        /// Gets the destination rect.
+        /// </summary>
         public SKRect? DestinationRect { get; private set; }
 
+        /// <inheritdoc/>
         public override void Present(
             SKImage bufferImage,
             SKRectI bufferRect,
@@ -196,10 +244,13 @@ public sealed class RenderSurfacePresentationRegressionTests
 
     private sealed class ImmediateUiDispatcher : IUiDispatcher
     {
+        /// <inheritdoc/>
         public bool IsOnUIThread => true;
 
+        /// <inheritdoc/>
         public void Post(Action action) => action();
 
+        /// <inheritdoc/>
         public void Send(Action action) => action();
     }
 }

@@ -4,13 +4,66 @@ using SkiaSharp;
 
 namespace Gondwana.Tooling.Importers;
 
+/// <summary>
+/// Represents aseprite layer.
+/// </summary>
+/// <param name="Flags">The flags.</param>
+/// <param name="Type">The type.</param>
+/// <param name="Level">The level.</param>
+/// <param name="Blend">The blend.</param>
+/// <param name="Opacity">The opacity, from zero (transparent) to one (opaque).</param>
+/// <param name="Name">The name.</param>
 public sealed record AsepriteLayer(int Flags, int Type, int Level, int Blend, byte Opacity, string Name);
+/// <summary>
+/// Represents aseprite cel.
+/// </summary>
+/// <param name="Layer">The layer.</param>
+/// <param name="X">The horizontal coordinate.</param>
+/// <param name="Y">The vertical coordinate.</param>
+/// <param name="Opacity">The opacity, from zero (transparent) to one (opaque).</param>
+/// <param name="Z">The z.</param>
+/// <param name="Width">The width.</param>
+/// <param name="Height">The height.</param>
+/// <param name="Pixels">The pixels.</param>
+/// <param name="LinkedFrame">The linked frame.</param>
 public sealed record AsepriteCel(int Layer, int X, int Y, byte Opacity, int Z, int Width, int Height, byte[] Pixels, int? LinkedFrame);
+/// <summary>
+/// Represents aseprite frame.
+/// </summary>
+/// <param name="DurationMilliseconds">The duration milliseconds.</param>
+/// <param name="Cels">The cels.</param>
+/// <param name="Palette">The palette.</param>
 public sealed record AsepriteFrame(int DurationMilliseconds, IReadOnlyList<AsepriteCel> Cels, SKColor[] Palette);
+/// <summary>
+/// Represents aseprite tag.
+/// </summary>
+/// <param name="Name">The name.</param>
+/// <param name="From">The from.</param>
+/// <param name="To">The to.</param>
+/// <param name="Direction">The direction.</param>
+/// <param name="Repeat">The repeat.</param>
 public sealed record AsepriteTag(string Name, int From, int To, int Direction, int Repeat);
+/// <summary>
+/// Represents aseprite file.
+/// </summary>
+/// <param name="Width">The width.</param>
+/// <param name="Height">The height.</param>
+/// <param name="Depth">The depth.</param>
+/// <param name="Flags">The flags.</param>
+/// <param name="TransparentIndex">The transparent index.</param>
+/// <param name="Layers">The layers.</param>
+/// <param name="Frames">The frames.</param>
+/// <param name="Tags">The tags.</param>
 public sealed record AsepriteFile(int Width, int Height, int Depth, uint Flags, byte TransparentIndex,
     IReadOnlyList<AsepriteLayer> Layers, IReadOnlyList<AsepriteFrame> Frames, IReadOnlyList<AsepriteTag> Tags)
 {
+    /// <summary>
+    /// Reads an Aseprite file.
+    /// </summary>
+    /// <param name="stream">The stream supplying the serialized content.</param>
+    /// <param name="report">The report.</param>
+    /// <param name="token">The token.</param>
+    /// <returns>The parsed Aseprite document.</returns>
     public static AsepriteFile Read(Stream stream, Action<ExternalImportSeverity, string, string> report, CancellationToken token = default)
     {
         using var reader = new BinaryReader(stream, Encoding.UTF8, true);

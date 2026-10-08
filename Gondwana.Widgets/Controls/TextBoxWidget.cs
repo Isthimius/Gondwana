@@ -51,6 +51,12 @@ public sealed class TextBoxWidget : WidgetBase
     /// <summary>
     /// Creates a view-level text box.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="bounds">The widget bounds in view-local pixels.</param>
+    /// <param name="text">The text to display.</param>
+    /// <param name="placeholder">The placeholder text displayed when the input is empty.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public TextBoxWidget(RenderSurfaceHostBase renderSurfaceHost,
                          View view,
                          Rectangle bounds,
@@ -77,6 +83,12 @@ public sealed class TextBoxWidget : WidgetBase
     /// <summary>
     /// Creates a scene-layer text box.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="bounds">The widget bounds in world pixels.</param>
+    /// <param name="text">The text to display.</param>
+    /// <param name="placeholder">The placeholder text displayed when the input is empty.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public TextBoxWidget(RenderSurfaceHostBase renderSurfaceHost,
                          SceneLayer sceneLayer,
                          Rectangle bounds,
@@ -255,6 +267,8 @@ public sealed class TextBoxWidget : WidgetBase
     /// <summary>
     /// Replaces the text and moves the caret to the end.
     /// </summary>
+    /// <param name="text">The text to display.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public TextBoxWidget SetText(string? text)
     {
         string normalized = NormalizeText(text);
@@ -279,6 +293,8 @@ public sealed class TextBoxWidget : WidgetBase
     /// <summary>
     /// Inserts text at the current caret position.
     /// </summary>
+    /// <param name="text">The text to display.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public TextBoxWidget InsertText(string? text)
     {
         if (IsReadOnly || string.IsNullOrEmpty(text))
@@ -308,6 +324,7 @@ public sealed class TextBoxWidget : WidgetBase
     /// <summary>
     /// Removes the character before the caret when possible.
     /// </summary>
+    /// <returns>This instance for fluent chaining.</returns>
     public TextBoxWidget Backspace()
     {
         if (IsReadOnly || _caretIndex <= 0 || _text.Length == 0)
@@ -323,6 +340,7 @@ public sealed class TextBoxWidget : WidgetBase
     /// <summary>
     /// Removes the character at the caret when possible.
     /// </summary>
+    /// <returns>This instance for fluent chaining.</returns>
     public TextBoxWidget Delete()
     {
         if (IsReadOnly || _caretIndex < 0 || _caretIndex >= _text.Length)
@@ -337,6 +355,8 @@ public sealed class TextBoxWidget : WidgetBase
     /// <summary>
     /// Moves the caret by the specified character delta.
     /// </summary>
+    /// <param name="delta">The delta.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public TextBoxWidget MoveCaret(int delta)
     {
         CaretIndex = Math.Clamp(_caretIndex + delta, 0, _text.Length);
@@ -346,6 +366,10 @@ public sealed class TextBoxWidget : WidgetBase
     /// <summary>
     /// Sets the background and border colors used for normal and focused states.
     /// </summary>
+    /// <param name="background">The background.</param>
+    /// <param name="border">The border.</param>
+    /// <param name="focusedBorder">The focused border.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public TextBoxWidget SetColors(Color background,
                                    Color border,
                                    Color focusedBorder)
@@ -363,6 +387,9 @@ public sealed class TextBoxWidget : WidgetBase
     /// <summary>
     /// Sets the text and placeholder colors.
     /// </summary>
+    /// <param name="text">The text to display.</param>
+    /// <param name="placeholder">The placeholder text displayed when the input is empty.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public TextBoxWidget SetTextColors(SKColor text, SKColor placeholder)
     {
         _textColor = text;
@@ -374,6 +401,8 @@ public sealed class TextBoxWidget : WidgetBase
     /// <summary>
     /// Sets the base Z-order used by the text-box visuals.
     /// </summary>
+    /// <param name="zOrder">The drawing order relative to other content.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public TextBoxWidget SetTextBoxZOrder(int zOrder)
     {
         Background.ZOrder = zOrder;

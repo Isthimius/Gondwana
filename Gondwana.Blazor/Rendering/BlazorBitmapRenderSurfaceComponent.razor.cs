@@ -78,6 +78,7 @@ public sealed partial class BlazorBitmapRenderSurfaceComponent : BlazorRenderSur
     /// <summary>
     /// Updates the adapter with the current canvas client size.
     /// </summary>
+    /// <returns>A task that completes when the canvas dimensions have been updated.</returns>
     internal async Task UpdateCanvasSizeAsync()
     {
         if (!_moduleLoaded || _module is null) return;

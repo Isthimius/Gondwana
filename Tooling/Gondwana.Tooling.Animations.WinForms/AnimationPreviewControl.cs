@@ -25,12 +25,27 @@ internal sealed class AnimationPreviewControl : Control
     private FramePreview? _sourcePreview;
     private string? _sourcePreviewCaption;
 
+    /// <summary>
+    /// Gets whether playback is active.
+    /// </summary>
     public bool IsPlaying => _timer.Enabled;
+    /// <summary>
+    /// Gets the current frame index.
+    /// </summary>
     public int CurrentFrameIndex => _index;
+    /// <summary>
+    /// Gets whether the object is showing source frame.
+    /// </summary>
     public bool IsShowingSourceFrame => _sourcePreviewActive;
 
+    /// <summary>
+    /// Occurs when the current preview frame changes.
+    /// </summary>
     public event EventHandler? CurrentFrameChanged;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>AnimationPreviewControl</c> class.
+    /// </summary>
     public AnimationPreviewControl()
     {
         Dock = DockStyle.Fill;
@@ -41,6 +56,11 @@ internal sealed class AnimationPreviewControl : Control
         _timer.Tick += (_, _) => TickPreview();
     }
 
+    /// <summary>
+    /// Configures the preview content and its resource resolvers.
+    /// </summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <param name="resolver">The resolver.</param>
     public void Configure(
         AnimationDefinition definition,
         Func<AnimationFrameDefinition, FramePreview?> resolver)
@@ -54,6 +74,11 @@ internal sealed class AnimationPreviewControl : Control
         Invalidate();
     }
 
+    /// <summary>
+    /// Displays the selected source frame in the preview.
+    /// </summary>
+    /// <param name="preview">The preview.</param>
+    /// <param name="caption">The caption.</param>
     public void ShowSourceFrame(
         FramePreview? preview,
         string caption)
@@ -66,6 +91,9 @@ internal sealed class AnimationPreviewControl : Control
         Invalidate();
     }
 
+    /// <summary>
+    /// Clears the frame displayed from the source tilesheet.
+    /// </summary>
     public void ClearSourceFrame()
     {
         if (!_sourcePreviewActive)
@@ -77,6 +105,9 @@ internal sealed class AnimationPreviewControl : Control
         Invalidate();
     }
 
+    /// <summary>
+    /// Toggles animation preview playback.
+    /// </summary>
     public void TogglePlay()
     {
         if (IsPlaying)
@@ -85,6 +116,9 @@ internal sealed class AnimationPreviewControl : Control
             Play();
     }
 
+    /// <summary>
+    /// Starts playback.
+    /// </summary>
     public void Play()
     {
         ClearSourceFrame();
@@ -105,6 +139,9 @@ internal sealed class AnimationPreviewControl : Control
         Invalidate();
     }
 
+    /// <summary>
+    /// Pauses playback at the current position.
+    /// </summary>
     public void Pause()
     {
         _timer.Stop();
@@ -112,6 +149,9 @@ internal sealed class AnimationPreviewControl : Control
         Invalidate();
     }
 
+    /// <summary>
+    /// Restarts animation preview playback from the first frame.
+    /// </summary>
     public void Restart()
     {
         ClearSourceFrame();
@@ -129,6 +169,9 @@ internal sealed class AnimationPreviewControl : Control
         }
     }
 
+    /// <summary>
+    /// Advances the animation preview by one frame.
+    /// </summary>
     public void Step()
     {
         ClearSourceFrame();
@@ -137,6 +180,10 @@ internal sealed class AnimationPreviewControl : Control
         Invalidate();
     }
 
+    /// <summary>
+    /// Sets the preview zoom factor.
+    /// </summary>
+    /// <param name="zoom">The zoom factor.</param>
     public void SetZoom(float? zoom)
     {
         _zoom = zoom;
@@ -243,6 +290,7 @@ internal sealed class AnimationPreviewControl : Control
         return true;
     }
 
+    /// <inheritdoc/>
     protected override void OnPaint(PaintEventArgs e)
     {
         base.OnPaint(e);
@@ -364,6 +412,7 @@ internal sealed class AnimationPreviewControl : Control
             TextFormatFlags.VerticalCenter);
     }
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing)

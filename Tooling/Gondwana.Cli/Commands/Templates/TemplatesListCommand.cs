@@ -5,6 +5,7 @@ namespace Gondwana.Cli.Commands.Templates;
 
 internal sealed class TemplatesListCommand : Command
 {
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, CancellationToken cancellationToken)
     {
         AnsiConsole.MarkupLine("Installed [bold]Gondwana[/] templates:");

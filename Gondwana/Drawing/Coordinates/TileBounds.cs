@@ -12,6 +12,10 @@ public static class TileBounds
     /// extend beyond their fixed cell bounds. The normal coordinate-system lookup then remains
     /// bounded to nearby cells instead of scanning every transformed placement in the layer.
     /// </summary>
+    /// <param name="layer">The scene layer whose geometry is queried.</param>
+    /// <param name="query">The culling rectangle in world pixels.</param>
+    /// <param name="include">Whether transformed visual overhang should expand the query.</param>
+    /// <returns>The query expanded to include cells with transformed visual overhang.</returns>
     internal static Rectangle GetTransformedTileCandidateRange(
         Gondwana.Scenes.SceneLayer layer,
         Rectangle query,
@@ -36,6 +40,10 @@ public static class TileBounds
     }
 
     /// <summary>Applies placement geometry while preserving untransformed grid-cell bounds.</summary>
+    /// <param name="cell">The fixed cell rectangle in pixels.</param>
+    /// <param name="tile">The tile.</param>
+    /// <param name="include">Whether to include the tile overhang.</param>
+    /// <returns>The tile rectangle after applying the requested size and spacing adjustments.</returns>
     public static Rectangle ApplyTileGeometry(Rectangle cell, Tile tile, bool include)
     {
         if (!include) return cell;

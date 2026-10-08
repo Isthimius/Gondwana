@@ -90,12 +90,18 @@ public struct CollisionAdjust : IEquatable<CollisionAdjust>
     /// <summary>
     /// Determines whether two adjustments are equal.
     /// </summary>
+    /// <param name="left">The left.</param>
+    /// <param name="right">The right.</param>
+    /// <returns><see langword="true"/> if the operands are equal; otherwise, <see langword="false"/>.</returns>
     public static bool operator ==(CollisionAdjust left, CollisionAdjust right) =>
         left.Equals(right);
 
     /// <summary>
     /// Determines whether two adjustments are not equal.
     /// </summary>
+    /// <param name="left">The left.</param>
+    /// <param name="right">The right.</param>
+    /// <returns><see langword="true"/> if the operands are not equal; otherwise, <see langword="false"/>.</returns>
     public static bool operator !=(CollisionAdjust left, CollisionAdjust right) =>
         !left.Equals(right);
 }

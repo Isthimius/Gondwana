@@ -5,34 +5,85 @@ namespace Gondwana.ZeldaPrototype;
 
 internal enum GameMode
 {
+    /// <summary>
+    /// Specifies title.
+    /// </summary>
     Title,
+    /// <summary>
+    /// Specifies playing.
+    /// </summary>
     Playing,
+    /// <summary>
+    /// Specifies dialogue.
+    /// </summary>
     Dialogue,
+    /// <summary>
+    /// Specifies inventory.
+    /// </summary>
     Inventory,
+    /// <summary>
+    /// Specifies paused.
+    /// </summary>
     Paused,
+    /// <summary>
+    /// Specifies game over.
+    /// </summary>
     GameOver,
+    /// <summary>
+    /// Specifies victory.
+    /// </summary>
     Victory
 }
 
 internal enum WorldArea
 {
+    /// <summary>
+    /// Specifies overworld.
+    /// </summary>
     Overworld,
+    /// <summary>
+    /// Specifies dungeon.
+    /// </summary>
     Dungeon
 }
 
 internal enum Facing
 {
+    /// <summary>
+    /// Specifies up.
+    /// </summary>
     Up,
+    /// <summary>
+    /// Specifies down.
+    /// </summary>
     Down,
+    /// <summary>
+    /// Specifies left.
+    /// </summary>
     Left,
+    /// <summary>
+    /// Specifies right.
+    /// </summary>
     Right
 }
 
 internal enum InventoryItem
 {
+    /// <summary>
+    /// Specifies sword.
+    /// </summary>
     Sword,
+    /// <summary>
+    /// Specifies rusted key.
+    /// </summary>
     RustedKey,
+    /// <summary>
+    /// Specifies potion.
+    /// </summary>
     Potion,
+    /// <summary>
+    /// Specifies sun relic.
+    /// </summary>
     SunRelic
 }
 

@@ -9,8 +9,14 @@ using Gondwana.Widgets.Overlays;
 
 namespace Gondwana.Tests.Widgets;
 
+/// <summary>
+/// Contains regression tests for transient overlay widget.
+/// </summary>
 public sealed class TransientOverlayWidgetTests
 {
+    /// <summary>
+    /// Verifies toast anchors inside view and slides from configured edge.
+    /// </summary>
     [Fact]
     public void Toast_AnchorsInsideViewAndSlidesFromConfiguredEdge()
     {
@@ -56,6 +62,9 @@ public sealed class TransientOverlayWidgetTests
         Assert.False(toast.Visible);
     }
 
+    /// <summary>
+    /// Verifies toast fade can remain until manually dismissed.
+    /// </summary>
     [Fact]
     public void Toast_FadeCanRemainUntilManuallyDismissed()
     {
@@ -86,6 +95,9 @@ public sealed class TransientOverlayWidgetTests
         Assert.False(toast.Visible);
     }
 
+    /// <summary>
+    /// Verifies popup resolves projection aware grid source when shown.
+    /// </summary>
     [Fact]
     public void Popup_ResolvesProjectionAwareGridSourceWhenShown()
     {
@@ -130,6 +142,9 @@ public sealed class TransientOverlayWidgetTests
         Assert.Equal(expected, popup.GetPosition());
     }
 
+    /// <summary>
+    /// Verifies popup applies movement and completes after lifetime.
+    /// </summary>
     [Fact]
     public void Popup_AppliesMovementAndCompletesAfterLifetime()
     {

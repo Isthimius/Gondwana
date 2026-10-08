@@ -29,6 +29,12 @@ public sealed class ComboBoxWidget : ContainerWidget
     /// <summary>
     /// Creates a view-level combo box.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="bounds">The widget bounds in view-local pixels.</param>
+    /// <param name="items">The items.</param>
+    /// <param name="dropDownHeight">The drop down height.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public ComboBoxWidget(RenderSurfaceHostBase renderSurfaceHost,
                           View view,
                           Rectangle bounds,
@@ -58,6 +64,12 @@ public sealed class ComboBoxWidget : ContainerWidget
     /// <summary>
     /// Creates a scene-layer combo box.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="bounds">The widget bounds in world pixels.</param>
+    /// <param name="items">The items.</param>
+    /// <param name="dropDownHeight">The drop down height.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public ComboBoxWidget(RenderSurfaceHostBase renderSurfaceHost,
                           SceneLayer sceneLayer,
                           Rectangle bounds,
@@ -134,6 +146,8 @@ public sealed class ComboBoxWidget : ContainerWidget
     /// <summary>
     /// Replaces all available items and clears the current selection.
     /// </summary>
+    /// <param name="items">The items.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ComboBoxWidget SetItems(IEnumerable<string> items)
     {
         DropDown.SetItems(items);
@@ -144,6 +158,8 @@ public sealed class ComboBoxWidget : ContainerWidget
     /// <summary>
     /// Adds an item to the end of the combo box.
     /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ComboBoxWidget AddItem(string item)
     {
         DropDown.AddItem(item);
@@ -153,6 +169,7 @@ public sealed class ComboBoxWidget : ContainerWidget
     /// <summary>
     /// Opens the drop-down list when items are available.
     /// </summary>
+    /// <returns>This instance for fluent chaining.</returns>
     public ComboBoxWidget OpenDropDown()
     {
         if (_isDropDownOpen || Items.Count == 0)
@@ -168,6 +185,7 @@ public sealed class ComboBoxWidget : ContainerWidget
     /// <summary>
     /// Closes the drop-down list.
     /// </summary>
+    /// <returns>This instance for fluent chaining.</returns>
     public ComboBoxWidget CloseDropDown()
     {
         CollapseDropDown(restoreHeaderFocus: true);
@@ -177,6 +195,7 @@ public sealed class ComboBoxWidget : ContainerWidget
     /// <summary>
     /// Toggles the drop-down list.
     /// </summary>
+    /// <returns>This widget for fluent chaining.</returns>
     public ComboBoxWidget ToggleDropDown()
     {
         return IsDropDownOpen ? CloseDropDown() : OpenDropDown();
@@ -185,6 +204,8 @@ public sealed class ComboBoxWidget : ContainerWidget
     /// <summary>
     /// Sets the base Z-order used by the combo-box visuals.
     /// </summary>
+    /// <param name="zOrder">The drawing order relative to other content.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ComboBoxWidget SetComboBoxZOrder(int zOrder)
     {
         Header.SetButtonZOrder(zOrder);
@@ -196,6 +217,8 @@ public sealed class ComboBoxWidget : ContainerWidget
     /// <summary>
     /// Sets the collapsed header text and chevron color.
     /// </summary>
+    /// <param name="color">The color to apply.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ComboBoxWidget SetHeaderTextColor(Color color)
     {
         Header.SetTextColor(color);
@@ -374,6 +397,7 @@ public sealed class ComboBoxWidget : ContainerWidget
             ForceRefresh();
         }
 
+        /// <inheritdoc/>
         protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
         {
             float width = Math.Min(8f, destRectScreen.Width - 4f);

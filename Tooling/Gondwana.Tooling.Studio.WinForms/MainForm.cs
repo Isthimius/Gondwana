@@ -39,6 +39,9 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
     internal Action<Exception> ReportError { get; set; }
     internal Func<string, string?> AssetPassword { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <c>MainForm</c> class.
+    /// </summary>
     public MainForm() : this(loadPlugins: true) { }
 
     internal MainForm(bool loadPlugins)
@@ -286,6 +289,7 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         return true;
     }
 
+    /// <inheritdoc/>
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         base.OnFormClosing(e);
@@ -320,6 +324,7 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         foreach (Control child in control.Controls) ApplyTheme(child);
     }
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing && !_disposed)
@@ -344,10 +349,14 @@ file sealed class DarkMenuRenderer : ToolStripProfessionalRenderer
     private static readonly System.Drawing.Color DarkBg = System.Drawing.Color.FromArgb(37, 37, 38);
     private static readonly System.Drawing.Color DarkHighlight = System.Drawing.Color.FromArgb(62, 62, 64);
 
+    /// <summary>
+    /// Initializes a new instance of the <c>DarkMenuRenderer</c> class.
+    /// </summary>
     public DarkMenuRenderer() : base(new DarkColorTable())
     {
     }
 
+    /// <inheritdoc/>
     protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
     {
         var g = e.Graphics;
@@ -356,6 +365,7 @@ file sealed class DarkMenuRenderer : ToolStripProfessionalRenderer
         g.FillRectangle(brush, bounds);
     }
 
+    /// <inheritdoc/>
     protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
     {
         e.TextColor = System.Drawing.Color.FromArgb(220, 220, 220);
@@ -370,12 +380,20 @@ file sealed class DarkColorTable : ProfessionalColorTable
 {
     private static readonly System.Drawing.Color DarkBg = System.Drawing.Color.FromArgb(37, 37, 38);
 
+    /// <inheritdoc/>
     public override System.Drawing.Color MenuStripGradientBegin => DarkBg;
+    /// <inheritdoc/>
     public override System.Drawing.Color MenuStripGradientEnd => DarkBg;
+    /// <inheritdoc/>
     public override System.Drawing.Color ToolStripDropDownBackground => DarkBg;
+    /// <inheritdoc/>
     public override System.Drawing.Color ImageMarginGradientBegin => DarkBg;
+    /// <inheritdoc/>
     public override System.Drawing.Color ImageMarginGradientMiddle => DarkBg;
+    /// <inheritdoc/>
     public override System.Drawing.Color ImageMarginGradientEnd => DarkBg;
+    /// <inheritdoc/>
     public override System.Drawing.Color MenuBorder => System.Drawing.Color.FromArgb(60, 60, 60);
+    /// <inheritdoc/>
     public override System.Drawing.Color MenuItemBorder => System.Drawing.Color.FromArgb(60, 60, 60);
 }

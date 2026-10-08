@@ -10,7 +10,21 @@ namespace Gondwana.Widgets.Menus;
 // Geometry avoids depending on whether the platform default font contains menu symbols.
 internal sealed class MenuIndicatorDrawing : DirectDrawingMovableBase
 {
-    internal enum Shape { Check, Radio, Arrow }
+    internal enum Shape
+    {
+        /// <summary>
+        /// Draws a check mark.
+        /// </summary>
+        Check,
+        /// <summary>
+        /// Draws a radio selection mark.
+        /// </summary>
+        Radio,
+        /// <summary>
+        /// Draws a submenu arrow.
+        /// </summary>
+        Arrow
+    }
     private readonly Shape _shape;
     private readonly MenuBarTheme _theme;
     private bool _active;
@@ -31,6 +45,7 @@ internal sealed class MenuIndicatorDrawing : DirectDrawingMovableBase
         ForceRefresh();
     }
 
+    /// <inheritdoc/>
     protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
         if (!_active) return;

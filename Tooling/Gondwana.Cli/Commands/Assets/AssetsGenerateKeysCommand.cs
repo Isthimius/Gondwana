@@ -8,35 +8,57 @@ namespace Gondwana.Cli.Commands.Assets;
 
 internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysCommand.Settings>
 {
+    /// <summary>
+    /// Defines command-line settings for AssetsGenerateKeysCommand.
+    /// </summary>
     public sealed class Settings : CommandSettings
     {
+        /// <summary>
+        /// Gets or sets the file.
+        /// </summary>
         [CommandArgument(0, "<file>")]
         [Description("The asset file to generate keys from.")]
         public string File { get; init; } = string.Empty;
 
+        /// <summary>
+        /// Gets or sets the output.
+        /// </summary>
         [CommandOption("-o|--output")]
         [Description("Output .cs file path. If omitted, prints to stdout.")]
         public string? Output { get; init; }
 
+        /// <summary>
+        /// Gets or sets the namespace.
+        /// </summary>
         [CommandOption("-n|--namespace")]
         [Description("C# namespace for the generated class.")]
         public string? Namespace { get; init; }
 
+        /// <summary>
+        /// Gets or sets the class name.
+        /// </summary>
         [CommandOption("-c|--class")]
         [Description("C# class name (default: AssetKeys).")]
         [DefaultValue("AssetKeys")]
         public string ClassName { get; init; } = "AssetKeys";
 
+        /// <summary>
+        /// Gets or sets the password used to open the assets file.
+        /// </summary>
         [CommandOption("-p|--password")]
         [Description("Password required to open a password-protected or encrypted bundle.")]
         public string? Password { get; init; }
 
+        /// <summary>
+        /// Gets or sets whether include loader is enabled.
+        /// </summary>
         [CommandOption("-l|--include-loader")]
         [Description("Include a Load() static method in the generated class that instantiates an AssetsFile for the bundle.")]
         [DefaultValue(false)]
         public bool IncludeLoader { get; init; }
     }
 
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         var path = Path.GetFullPath(settings.File);
@@ -240,10 +262,14 @@ internal sealed class AssetsGenerateKeysCommand : Command<AssetsGenerateKeysComm
     }
 
     /// <summary>Escapes backslashes and double-quotes for use inside a C# regular string literal.</summary>
+    /// <param name="value">The text to escape.</param>
+    /// <returns>The escaped text suitable for a C# string literal.</returns>
     private static string EscapeStringLiteral(string value)
         => value.Replace("\\", "\\\\").Replace("\"", "\\\"");
 
     /// <summary>Escapes characters that are significant inside XML doc-comment text.</summary>
+    /// <param name="value">The text to escape.</param>
+    /// <returns>The text escaped for inclusion in an XML documentation comment.</returns>
     private static string EscapeXmlDoc(string value)
         => value.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
 }

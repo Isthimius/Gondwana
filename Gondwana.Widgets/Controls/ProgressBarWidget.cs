@@ -21,6 +21,12 @@ public sealed class ProgressBarWidget : WidgetBase
     /// <summary>
     /// Creates a view-level progress bar.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="bounds">The widget bounds in view-local pixels.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="orientation">The orientation.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public ProgressBarWidget(RenderSurfaceHostBase renderSurfaceHost,
                              View view,
                              Rectangle bounds,
@@ -42,6 +48,12 @@ public sealed class ProgressBarWidget : WidgetBase
     /// <summary>
     /// Creates a scene-layer progress bar.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="bounds">The widget bounds in world pixels.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="orientation">The orientation.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public ProgressBarWidget(RenderSurfaceHostBase renderSurfaceHost,
                              SceneLayer sceneLayer,
                              Rectangle bounds,
@@ -159,6 +171,8 @@ public sealed class ProgressBarWidget : WidgetBase
     /// <summary>
     /// Sets the progress value and returns this widget for fluent setup.
     /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ProgressBarWidget SetValue(float value)
     {
         Value = value;
@@ -168,6 +182,8 @@ public sealed class ProgressBarWidget : WidgetBase
     /// <summary>
     /// Sets the fill color.
     /// </summary>
+    /// <param name="color">The color to apply.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ProgressBarWidget SetFillColor(Color color)
     {
         Fill.SetColor(color);
@@ -178,6 +194,8 @@ public sealed class ProgressBarWidget : WidgetBase
     /// <summary>
     /// Sets the track color.
     /// </summary>
+    /// <param name="color">The color to apply.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ProgressBarWidget SetTrackColor(Color color)
     {
         Track.SetColor(color);
@@ -188,6 +206,8 @@ public sealed class ProgressBarWidget : WidgetBase
     /// <summary>
     /// Places the track at the requested Z-order and the fill directly above it.
     /// </summary>
+    /// <param name="zOrder">The drawing order relative to other content.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ProgressBarWidget SetProgressZOrder(int zOrder)
     {
         Track.ZOrder = zOrder;

@@ -7,6 +7,11 @@ namespace Gondwana.Cli.Commands.Tilesheets;
 
 internal sealed record TilesheetInspection(TilesheetDefinition? Definition, int? Width, int? Height, IReadOnlyList<string> Errors)
 {
+    /// <summary>
+    /// Inspects a tilesheet definition loaded from a file.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <returns>The resulting tilesheet inspection.</returns>
     public static TilesheetInspection FromFile(string path)
     {
         try
@@ -16,6 +21,13 @@ internal sealed record TilesheetInspection(TilesheetDefinition? Definition, int?
         catch (Exception ex) { return new(null, null, null, [ex.Message]); }
     }
 
+    /// <summary>
+    /// Inspects a tilesheet definition loaded from a stream.
+    /// </summary>
+    /// <param name="stream">The stream supplying the serialized content.</param>
+    /// <param name="baseDirectory">The base directory used to resolve or rebase relative paths.</param>
+    /// <param name="defaultBundle">The default bundle.</param>
+    /// <returns>The resulting tilesheet inspection.</returns>
     public static TilesheetInspection FromStream(Stream stream, string baseDirectory, AssetsFile defaultBundle)
     {
         try { return Inspect(TilesheetDefinitionSerializer.Load(stream), baseDirectory, defaultBundle); }

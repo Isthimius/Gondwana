@@ -71,21 +71,27 @@ public abstract class BlazorRenderSurfaceComponentBase : ComponentBase, IDisposa
     }
 
     /// <summary>Forwards a browser key-down event to registered input adapters.</summary>
+    /// <param name="e">The event data.</param>
     protected void HandleKeyDown(KeyboardEventArgs e) => KeyDown?.Invoke(e);
 
     /// <summary>Forwards a browser key-up event to registered input adapters.</summary>
+    /// <param name="e">The event data.</param>
     protected void HandleKeyUp(KeyboardEventArgs e) => KeyUp?.Invoke(e);
 
     /// <summary>Forwards a browser mouse-move event to registered input adapters.</summary>
+    /// <param name="e">The event data.</param>
     protected void HandleMouseMove(MouseEventArgs e) => MouseMove?.Invoke(e);
 
     /// <summary>Forwards a browser mouse-down event to registered input adapters.</summary>
+    /// <param name="e">The event data.</param>
     protected void HandleMouseDown(MouseEventArgs e) => MouseDown?.Invoke(e);
 
     /// <summary>Forwards a browser mouse-up event to registered input adapters.</summary>
+    /// <param name="e">The event data.</param>
     protected void HandleMouseUp(MouseEventArgs e) => MouseUp?.Invoke(e);
 
     /// <summary>Forwards a browser wheel event to registered input adapters.</summary>
+    /// <param name="e">The event data.</param>
     protected void HandleWheel(WheelEventArgs e) => Wheel?.Invoke(e);
 
     internal readonly record struct CanvasOffset(float Left, float Top);
@@ -104,15 +110,22 @@ public abstract class BlazorRenderSurfaceComponentBase : ComponentBase, IDisposa
     }
 
     /// <summary>Forwards a browser touch-start event to registered input adapters.</summary>
+    /// <param name="e">The event data.</param>
+    /// <returns>A task that represents completion of the operation.</returns>
     protected Task HandleTouchStart(TouchEventArgs e) => ForwardTouch(e, TouchStart);
 
     /// <summary>Forwards a browser touch-move event to registered input adapters.</summary>
+    /// <param name="e">The event data.</param>
+    /// <returns>A task that represents completion of the operation.</returns>
     protected Task HandleTouchMove(TouchEventArgs e) => ForwardTouch(e, TouchMove);
 
     /// <summary>Forwards a browser touch-end event to registered input adapters.</summary>
+    /// <param name="e">The event data.</param>
+    /// <returns>A task that represents completion of the operation.</returns>
     protected Task HandleTouchEnd(TouchEventArgs e) => ForwardTouch(e, TouchEnd);
 
     /// <summary>Forwards a browser touch-cancel event to registered input adapters.</summary>
+    /// <param name="e">The event data.</param>
     protected void HandleTouchCancel(TouchEventArgs e) => TouchCancel?.Invoke(e);
 
     /// <summary>Releases resources owned by the concrete render surface component.</summary>

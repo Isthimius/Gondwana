@@ -9,6 +9,11 @@ public abstract class ZoomEffect : DisplayEffect
     private float _originalZoom;
     private float _clampedTargetZoom;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>ZoomEffect</c> class.
+    /// </summary>
+    /// <param name="targetZoom">The zoom factor to reach at the end of the effect.</param>
+    /// <param name="durationSeconds">The duration in seconds.</param>
     private protected ZoomEffect(float targetZoom, float durationSeconds)
         : base(durationSeconds, EasingKind.Linear)
     {
@@ -25,6 +30,7 @@ public abstract class ZoomEffect : DisplayEffect
 
     internal override bool SupportsTarget(object target) => target is View;
 
+    /// <inheritdoc/>
     private protected override void OnStarting()
     {
         var view = GetTarget<View>();
@@ -35,13 +41,16 @@ public abstract class ZoomEffect : DisplayEffect
 
     // View.Update() advances the existing Viewport zoom animator. The effect
     // manager owns only lifecycle, replacement, and completion notification.
+    /// <inheritdoc/>
     private protected override void ApplyProgress(float progress)
     {
     }
 
+    /// <inheritdoc/>
     private protected override void OnCompleted() =>
         GetTarget<View>().Viewport.SnapZoom(_clampedTargetZoom);
 
+    /// <inheritdoc/>
     private protected override void RestoreOriginalState() =>
         GetTarget<View>().Viewport.SnapZoom(_originalZoom);
 }
@@ -50,6 +59,8 @@ public abstract class ZoomEffect : DisplayEffect
 public sealed class ZoomInEffect : ZoomEffect
 {
     /// <summary>Creates a zoom-in effect.</summary>
+    /// <param name="targetZoom">The zoom factor to reach at the end of the effect.</param>
+    /// <param name="durationSeconds">The duration in seconds.</param>
     public ZoomInEffect(float targetZoom, float durationSeconds)
         : base(targetZoom, durationSeconds)
     {
@@ -60,6 +71,8 @@ public sealed class ZoomInEffect : ZoomEffect
 public sealed class ZoomOutEffect : ZoomEffect
 {
     /// <summary>Creates a zoom-out effect.</summary>
+    /// <param name="targetZoom">The zoom factor to reach at the end of the effect.</param>
+    /// <param name="durationSeconds">The duration in seconds.</param>
     public ZoomOutEffect(float targetZoom, float durationSeconds)
         : base(targetZoom, durationSeconds)
     {

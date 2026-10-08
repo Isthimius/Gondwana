@@ -9,26 +9,44 @@ namespace Gondwana.Cli.Commands;
 
 internal sealed class ServeCommand : AsyncCommand<ServeCommand.Settings>
 {
+    /// <summary>
+    /// Defines command-line settings for ServeCommand.
+    /// </summary>
     public sealed class Settings : ProjectSettings
     {
+        /// <summary>
+        /// Gets or sets the port.
+        /// </summary>
         [CommandOption("--port <PORT>")]
         [Description("Local HTTP port.")]
         [DefaultValue(5000)]
         public int Port { get; init; } = 5000;
 
+        /// <summary>
+        /// Gets or sets whether no open is enabled.
+        /// </summary>
         [CommandOption("--no-open")]
         [Description("Do not launch the browser.")]
         public bool NoOpen { get; init; }
 
+        /// <summary>
+        /// Gets or sets the configuration.
+        /// </summary>
         [CommandOption("-c|--configuration <NAME>")]
         [Description("Configuration of the existing published output.")]
         [DefaultValue("Release")]
         public string Configuration { get; init; } = "Release";
 
+        /// <summary>
+        /// Gets or sets the framework.
+        /// </summary>
         [CommandOption("-f|--framework <TFM>")]
         [Description("Published browser target framework (auto-detected when unambiguous).")]
         public string? Framework { get; init; }
 
+        /// <summary>
+        /// Gets or sets the root.
+        /// </summary>
         [CommandOption("--root <PATH>")]
         [Description("Explicit published wwwroot, for custom publish output paths.")]
         public string? Root { get; init; }
@@ -49,6 +67,7 @@ internal sealed class ServeCommand : AsyncCommand<ServeCommand.Settings>
             ?? throw new InvalidOperationException("No published browser wwwroot found. Run 'gondwana publish blazor' first, or specify --root for custom output.");
     }
 
+    /// <inheritdoc/>
     protected override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try
@@ -107,6 +126,14 @@ internal static class PublishedServer
         return value.TrimEnd('/') + "/";
     }
 
+    /// <summary>
+    /// Runs the command using the supplied settings.
+    /// </summary>
+    /// <param name="root">The root.</param>
+    /// <param name="port">The port.</param>
+    /// <param name="ready">The ready.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>A task that represents completion of the operation.</returns>
     public static async Task Run(string root, int port, Action<string> ready, CancellationToken cancellationToken)
     {
         var basePath = BasePath(root);

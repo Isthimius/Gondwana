@@ -6,26 +6,42 @@ namespace Gondwana.Cli.Commands.Run;
 
 internal sealed class RunBlazorCommand : Command<RunBlazorCommand.Settings>
 {
+    /// <summary>
+    /// Defines command-line settings for RunBlazorCommand.
+    /// </summary>
     public sealed class Settings : CommandSettings
     {
+        /// <summary>
+        /// Gets or sets the project.
+        /// </summary>
         [CommandOption("-p|--project")]
         [Description("Path to the .csproj file or directory containing a single .csproj. Defaults to the current directory.")]
         public string? Project { get; init; }
 
+        /// <summary>
+        /// Gets or sets the configuration.
+        /// </summary>
         [CommandOption("-c|--configuration")]
         [Description("Build configuration. Defaults to 'Debug'.")]
         [DefaultValue("Debug")]
         public string Configuration { get; init; } = "Debug";
 
+        /// <summary>
+        /// Gets or sets the framework.
+        /// </summary>
         [CommandOption("-f|--framework")]
         [Description("Browser target framework. Auto-detected when the project has a single browser target.")]
         public string? Framework { get; init; }
 
+        /// <summary>
+        /// Gets or sets whether skip workload is enabled.
+        /// </summary>
         [CommandOption("--skip-workload")]
         [Description("Skip checking/installing the wasm-tools workload. Use when the environment is already prepared.")]
         public bool SkipWorkload { get; init; }
     }
 
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         if (!ProjectHelper.TryResolveProject(settings.Project, out var csprojPath, out var error))

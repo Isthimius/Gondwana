@@ -4,9 +4,21 @@ namespace Gondwana.Tooling.Assets.WinForms;
 
 internal sealed class AssetRecord
 {
+    /// <summary>
+    /// Gets or sets the asset type.
+    /// </summary>
     public AssetTypes AssetType { get; set; }
+    /// <summary>
+    /// Gets or sets the asset name.
+    /// </summary>
     public string AssetName { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets the size bytes.
+    /// </summary>
     public long SizeBytes { get; set; }
+    /// <summary>
+    /// Gets the display size.
+    /// </summary>
     public string DisplaySize => FormatSize(SizeBytes);
 
     private static string FormatSize(long size)

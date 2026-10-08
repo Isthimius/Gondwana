@@ -9,6 +9,9 @@ using Gondwana.Scenes.GSCN;
 
 namespace Gondwana.Tooling.SceneViewer.WinForms.Tests;
 
+/// <summary>
+/// Contains regression tests for viewer.
+/// </summary>
 public sealed partial class ViewerTests
 {
     private void Pack(string file, AssetTypes type, string entry, string json)
@@ -26,6 +29,11 @@ public sealed partial class ViewerTests
         if (removeLoose) File.Delete(path);
     }
 
+    /// <summary>
+    /// Verifies gani dependencies use scene catalog.
+    /// </summary>
+    /// <param name="packedAnimation">The packed animation value for this test case.</param>
+    /// <param name="packedSheet">The packed sheet value for this test case.</param>
     [Theory]
     [InlineData(false, false)]
     [InlineData(false, true)]
@@ -53,6 +61,10 @@ public sealed partial class ViewerTests
         Assert.Equal(32, TilesheetRegistry.Instance.GetOrNull("sheet")!.SkBitmap.Width);
     }
 
+    /// <summary>
+    /// Verifies scene sheet uses logical identity instead of filename.
+    /// </summary>
+    /// <param name="packed">The packed value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -68,6 +80,9 @@ public sealed partial class ViewerTests
         Assert.NotNull(TilesheetRegistry.Instance.GetOrNull("sheet"));
     }
 
+    /// <summary>
+    /// Verifies loose definitions override packed and unify dependency paths.
+    /// </summary>
     [Fact]
     public void LooseDefinitionsOverridePackedAndUnifyDependencyPaths()
     {
@@ -90,6 +105,11 @@ public sealed partial class ViewerTests
         Assert.True(scene[0]![0, 0]!.TileAnimator.IsCycling);
     }
 
+    /// <summary>
+    /// Verifies duplicate definition identities report every source.
+    /// </summary>
+    /// <param name="animation">The animation value for this test case.</param>
+    /// <param name="packed">The packed value for this test case.</param>
     [Theory]
     [InlineData(false, false)]
     [InlineData(false, true)]
@@ -114,6 +134,9 @@ public sealed partial class ViewerTests
         Assert.Contains(packed ? "z.gaf :: z-entry" : Path.GetFileName(path), error.Message);
     }
 
+    /// <summary>
+    /// Verifies explicit fallback remains relative to containing gani.
+    /// </summary>
     [Fact]
     public void ExplicitFallbackRemainsRelativeToContainingGani()
     {
@@ -151,6 +174,11 @@ public sealed partial class ViewerTests
         else SpriteDefinitionSerializer.Save(Path.Combine(_directory, file), definition);
     }
 
+    /// <summary>
+    /// Verifies sprites resolve frames and only materialize viewed scene.
+    /// </summary>
+    /// <param name="packedSprites">The packed sprites value for this test case.</param>
+    /// <param name="packedSheet">The packed sheet value for this test case.</param>
     [Theory]
     [InlineData(false, false)]
     [InlineData(false, true)]
@@ -177,6 +205,10 @@ public sealed partial class ViewerTests
         Assert.Equal("sheet", sprite.CurrentFrame.Tilesheet.Name);
     }
 
+    /// <summary>
+    /// Verifies loose sprite overrides packed by id or nickname.
+    /// </summary>
+    /// <param name="byNickname">The by nickname value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -194,6 +226,11 @@ public sealed partial class ViewerTests
         Assert.Equal(loose.Position, Assert.Single(SpriteManager.Instance.AllSprites).SceneLayerCoordinates);
     }
 
+    /// <summary>
+    /// Verifies duplicate sprites report sources.
+    /// </summary>
+    /// <param name="packed">The packed value for this test case.</param>
+    /// <param name="byNickname">The by nickname value for this test case.</param>
     [Theory]
     [InlineData(false, false)]
     [InlineData(false, true)]
@@ -215,6 +252,9 @@ public sealed partial class ViewerTests
         Assert.Empty(SpriteManager.Instance.AllSprites);
     }
 
+    /// <summary>
+    /// Verifies distinct and anonymous sprites survive selection without mutating documents.
+    /// </summary>
     [Fact]
     public void DistinctAndAnonymousSpritesSurviveSelectionWithoutMutatingDocuments()
     {
@@ -229,6 +269,9 @@ public sealed partial class ViewerTests
         Assert.Equal(original, File.ReadAllText(Path.Combine(_directory, "a.gspr")));
     }
 
+    /// <summary>
+    /// Verifies invalid current scene layer fails and rolls back sprites.
+    /// </summary>
     [Fact]
     public void InvalidCurrentSceneLayerFailsAndRollsBackSprites()
     {
@@ -242,6 +285,10 @@ public sealed partial class ViewerTests
         Assert.Empty(SpriteManager.Instance.AllSprites);
     }
 
+    /// <summary>
+    /// Verifies catalog selection and diagnostics ignore creation order.
+    /// </summary>
+    /// <param name="reversed">The reversed value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -263,6 +310,9 @@ public sealed partial class ViewerTests
         Assert.Equal($"Multiple packed GTS definitions claim 'sheet':\n{Path.Combine(_directory, "a.gaf")} :: a-entry\n{Path.Combine(_directory, "z.gaf")} :: z-entry", error.Message);
     }
 
+    /// <summary>
+    /// Verifies child directory definitions are not discovered.
+    /// </summary>
     [Fact]
     public void ChildDirectoryDefinitionsAreNotDiscovered()
     {
@@ -275,6 +325,10 @@ public sealed partial class ViewerTests
         Assert.NotNull(TilesheetRegistry.Instance.GetOrNull("sheet"));
     }
 
+    /// <summary>
+    /// Verifies scene explicit sheet fallback works outside content root.
+    /// </summary>
+    /// <param name="packed">The packed value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -301,6 +355,9 @@ public sealed partial class ViewerTests
         Assert.NotNull(TilesheetRegistry.Instance.GetOrNull("sheet"));
     }
 
+    /// <summary>
+    /// Verifies sprite explicit fallback is relative and other scene sources are not opened.
+    /// </summary>
     [Fact]
     public void SpriteExplicitFallbackIsRelativeAndOtherSceneSourcesAreNotOpened()
     {
@@ -325,6 +382,9 @@ public sealed partial class ViewerTests
         Assert.Equal("Player", Assert.Single(SpriteManager.Instance.AllSprites).Nickname);
     }
 
+    /// <summary>
+    /// Verifies missing fallback archive is not created.
+    /// </summary>
     [Fact]
     public void MissingFallbackArchiveIsNotCreated()
     {
@@ -338,6 +398,9 @@ public sealed partial class ViewerTests
         Assert.False(File.Exists(Path.Combine(_directory, "missing.gaf")));
     }
 
+    /// <summary>
+    /// Verifies unreadable adjacent archive identifies its path.
+    /// </summary>
     [Fact]
     public void UnreadableAdjacentArchiveIdentifiesItsPath()
     {
@@ -348,6 +411,9 @@ public sealed partial class ViewerTests
         Assert.Contains(path, error.Message);
     }
 
+    /// <summary>
+    /// Verifies gani tilesheet ambiguity uses shared diagnostics.
+    /// </summary>
     [Fact]
     public void GaniTilesheetAmbiguityUsesSharedDiagnostics()
     {
@@ -364,6 +430,9 @@ public sealed partial class ViewerTests
         Assert.Contains("z.gaf :: arbitrary-sheet-entry", error.Message);
     }
 
+    /// <summary>
+    /// Verifies packed animation fallback still uses local loose tilesheet.
+    /// </summary>
     [Fact]
     public void PackedAnimationFallbackStillUsesLocalLooseTilesheet()
     {
@@ -385,6 +454,9 @@ public sealed partial class ViewerTests
         Assert.True(scene[0]![0, 0]!.TileAnimator.IsCycling);
     }
 
+    /// <summary>
+    /// Verifies sprite only sheet prefers loose over packed.
+    /// </summary>
     [Fact]
     public void SpriteOnlySheetPrefersLooseOverPacked()
     {

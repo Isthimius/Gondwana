@@ -27,6 +27,11 @@ public sealed class ButtonWidget : WidgetBase
     /// <summary>
     /// Initializes a view-level button.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="bounds">The widget bounds in view-local pixels.</param>
+    /// <param name="text">The text to display.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public ButtonWidget(RenderSurfaceHostBase renderSurfaceHost,
                         View view,
                         Rectangle bounds,
@@ -43,6 +48,11 @@ public sealed class ButtonWidget : WidgetBase
     /// <summary>
     /// Initializes a scene-layer button.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="bounds">The widget bounds in world pixels.</param>
+    /// <param name="text">The text to display.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public ButtonWidget(RenderSurfaceHostBase renderSurfaceHost,
                         SceneLayer sceneLayer,
                         Rectangle bounds,
@@ -77,6 +87,8 @@ public sealed class ButtonWidget : WidgetBase
     /// <summary>
     /// Sets the button text.
     /// </summary>
+    /// <param name="text">The text to display.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ButtonWidget SetText(string text)
     {
         Label.SetText(text);
@@ -86,6 +98,10 @@ public sealed class ButtonWidget : WidgetBase
     /// <summary>
     /// Sets the normal, hover, and pressed background colors.
     /// </summary>
+    /// <param name="normal">The color used in the normal state.</param>
+    /// <param name="hover">The color used while the pointer is over the control.</param>
+    /// <param name="pressed">The color used while the control is pressed.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ButtonWidget SetBackgroundColors(Color normal,
                                             Color hover,
                                             Color pressed)
@@ -102,6 +118,8 @@ public sealed class ButtonWidget : WidgetBase
     /// <summary>
     /// Sets the button text color.
     /// </summary>
+    /// <param name="color">The color to apply.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ButtonWidget SetTextColor(Color color)
     {
         Label.SetColors(color, Color.Transparent);
@@ -112,6 +130,8 @@ public sealed class ButtonWidget : WidgetBase
     /// <summary>
     /// Sets the background Z-order and places the label immediately above it.
     /// </summary>
+    /// <param name="zOrder">The drawing order relative to other content.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ButtonWidget SetButtonZOrder(int zOrder)
     {
         Background.ZOrder = zOrder;

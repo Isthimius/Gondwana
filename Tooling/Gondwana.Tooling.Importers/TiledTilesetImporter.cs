@@ -10,11 +10,18 @@ using SkiaSharp;
 
 namespace Gondwana.Tooling.Importers;
 
+/// <summary>
+/// Represents tiled tileset importer.
+/// </summary>
 public sealed class TiledTilesetImporter : ExternalAssetImporter
 {
+    /// <inheritdoc/>
     public override string Id => "tiled.tsx";
+    /// <inheritdoc/>
     public override string DisplayName => "Tiled Tileset (.tsx)";
+    /// <inheritdoc/>
     public override IReadOnlyList<string> SupportedExtensions => [".tsx"];
+    /// <inheritdoc/>
     protected override void BuildPlan(ImportPlan plan, CancellationToken cancellationToken) =>
         ConvertTileset(ReadXml(plan.Request.SourcePath), plan.Request.SourcePath,
             ImportNaming.Sanitize(Path.GetFileNameWithoutExtension(plan.Request.SourcePath)), plan, cancellationToken);

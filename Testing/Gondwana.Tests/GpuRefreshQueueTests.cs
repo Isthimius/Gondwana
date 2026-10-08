@@ -7,9 +7,15 @@ using SkiaSharp;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Represents gpu refresh queue collection.
+/// </summary>
 [CollectionDefinition("GPU refresh queue", DisableParallelization = true)]
 public sealed class GpuRefreshQueueCollection
 {
+    /// <summary>
+    /// The name.
+    /// </summary>
     public const string Name = "GPU refresh queue";
 }
 
@@ -20,12 +26,18 @@ public sealed class GpuRefreshQueueCollection
 [Collection(GpuRefreshQueueCollection.Name)]
 public sealed class GpuRefreshQueueTests
 {
+    /// <summary>
+    /// Initializes a new instance of the <c>GpuRefreshQueueTests</c> class.
+    /// </summary>
     public GpuRefreshQueueTests()
     {
         Engine.Instance.EngineDispatcher.BindToCurrentThread();
         Engine.Instance.EngineDispatcher.Drain();
     }
 
+    /// <summary>
+    /// Verifies bind gpu host clears pre bind queue and rejects future world rects.
+    /// </summary>
     [Fact]
     public void BindGpuHost_ClearsPreBindQueueAndRejectsFutureWorldRects()
     {
@@ -46,6 +58,9 @@ public sealed class GpuRefreshQueueTests
         Assert.False(layer.RefreshQueue.IsDirty);
     }
 
+    /// <summary>
+    /// Verifies disabled queue rejects view rect before doing view conversion.
+    /// </summary>
     [Fact]
     public void DisabledQueue_RejectsViewRectBeforeDoingViewConversion()
     {
@@ -64,6 +79,9 @@ public sealed class GpuRefreshQueueTests
         Assert.False(layer.RefreshQueue.IsDirty);
     }
 
+    /// <summary>
+    /// Verifies bind bitmap host continues accepting dirty regions.
+    /// </summary>
     [Fact]
     public void BindBitmapHost_ContinuesAcceptingDirtyRegions()
     {
@@ -78,6 +96,9 @@ public sealed class GpuRefreshQueueTests
         Assert.True(layer.RefreshQueue.IsDirty);
     }
 
+    /// <summary>
+    /// Verifies rebind from gpu to bitmap reenables dirty region tracking.
+    /// </summary>
     [Fact]
     public void RebindFromGpuToBitmap_ReenablesDirtyRegionTracking()
     {
@@ -98,6 +119,9 @@ public sealed class GpuRefreshQueueTests
         Assert.True(layer.RefreshQueue.IsDirty);
     }
 
+    /// <summary>
+    /// Verifies current frame on gpu host skips dirty bounds calculation.
+    /// </summary>
     [Fact]
     public void CurrentFrame_OnGpuHost_SkipsDirtyBoundsCalculation()
     {
@@ -112,6 +136,9 @@ public sealed class GpuRefreshQueueTests
         Assert.Equal(0, tile.DrawLocationWorldReadCount);
     }
 
+    /// <summary>
+    /// Verifies current frame on bitmap host preserves dirty bounds calculation.
+    /// </summary>
     [Fact]
     public void CurrentFrame_OnBitmapHost_PreservesDirtyBoundsCalculation()
     {
@@ -134,10 +161,15 @@ public sealed class GpuRefreshQueueTests
 
     private sealed class CountingTile(SceneLayer sceneLayer) : Tile
     {
+        /// <summary>
+        /// Gets the draw location world read count.
+        /// </summary>
         public int DrawLocationWorldReadCount { get; private set; }
 
+        /// <inheritdoc/>
         public override bool IsPositionFixed => true;
 
+        /// <inheritdoc/>
         public override Rectangle DrawLocationWorld
         {
             get
@@ -147,14 +179,17 @@ public sealed class GpuRefreshQueueTests
             }
         }
 
+        /// <inheritdoc/>
         public override PointF SceneLayerCoordinates => PointF.Empty;
 
+        /// <inheritdoc/>
         public override SceneLayer SceneLayer { get; } = sceneLayer;
     }
 
     private sealed class TestAdapter(int width, int height)
         : RenderSurfaceAdapterBase(width, height)
     {
+        /// <inheritdoc/>
         public override void Present(
             SKImage bufferImage,
             SKRectI bufferRect,

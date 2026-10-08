@@ -76,6 +76,8 @@ public sealed class MenuHeaderWidget : WidgetBase
     public bool IsOpen => _isOpen;
 
     /// <summary>Changes the displayed header text.</summary>
+    /// <param name="text">The text to display.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public MenuHeaderWidget SetText(string text)
     {
         Text = text ?? throw new ArgumentNullException(nameof(text));
@@ -113,6 +115,7 @@ public sealed class MenuHeaderWidget : WidgetBase
             bounds.Size);
     }
 
+    /// <inheritdoc/>
     protected override void OnPointerEnter(WidgetPointerEventArgs args)
     {
         base.OnPointerEnter(args);
@@ -121,6 +124,7 @@ public sealed class MenuHeaderWidget : WidgetBase
         Hovered?.Invoke(this);
     }
 
+    /// <inheritdoc/>
     protected override void OnPointerLeave(WidgetPointerEventArgs args)
     {
         base.OnPointerLeave(args);
@@ -128,6 +132,7 @@ public sealed class MenuHeaderWidget : WidgetBase
         UpdateVisualState();
     }
 
+    /// <inheritdoc/>
     protected override void OnPointerDown(WidgetPointerEventArgs args)
     {
         base.OnPointerDown(args);
@@ -136,12 +141,14 @@ public sealed class MenuHeaderWidget : WidgetBase
             SetBackgroundColor(_theme.HeaderPressedColor);
     }
 
+    /// <inheritdoc/>
     protected override void OnPointerUp(WidgetPointerEventArgs args)
     {
         base.OnPointerUp(args);
         UpdateVisualState();
     }
 
+    /// <inheritdoc/>
     protected override void OnPointerClick(WidgetPointerEventArgs args)
     {
         base.OnPointerClick(args);
@@ -153,6 +160,7 @@ public sealed class MenuHeaderWidget : WidgetBase
         Invoked?.Invoke(this);
     }
 
+    /// <inheritdoc/>
     protected override void OnKeyboardInput(WidgetKeyboardEventArgs args)
     {
         base.OnKeyboardInput(args);

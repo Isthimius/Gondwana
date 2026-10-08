@@ -14,6 +14,8 @@ public static class BlazorTextBoxInput
     /// Configures a text box to interpret <see cref="BlazorKey"/> values produced by
     /// <see cref="BlazorKeyboardAdapter"/>.
     /// </summary>
+    /// <param name="textBox">The text box to configure.</param>
+    /// <returns>The supplied text box, configured for browser keyboard input.</returns>
     public static TextBoxWidget Configure(TextBoxWidget textBox)
     {
         ArgumentNullException.ThrowIfNull(textBox);
@@ -33,6 +35,7 @@ public static class BlazorTextBoxInput
     /// <summary>
     /// Registers the Blazor key codes needed by editable text boxes with the supplied keyboard poller.
     /// </summary>
+    /// <param name="keyboard">The keyboard poller to monitor.</param>
     public static void StartMonitoring(KeyboardEventPoller keyboard)
     {
         ArgumentNullException.ThrowIfNull(keyboard);
@@ -82,6 +85,8 @@ public static class BlazorTextBoxInput
     /// <summary>
     /// Resolves printable characters from a Blazor widget keyboard event.
     /// </summary>
+    /// <param name="args">The event data.</param>
+    /// <returns>The requested char, or <see langword="null"/> when unavailable.</returns>
     public static char? ResolveCharacter(WidgetKeyboardEventArgs args)
     {
         ArgumentNullException.ThrowIfNull(args);

@@ -4,6 +4,9 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Assets.WinForms;
 
+/// <summary>
+/// Represents main form.
+/// </summary>
 public sealed class MainForm : Form
 {
     private readonly VS2015DarkTheme _theme = new();
@@ -28,6 +31,9 @@ public sealed class MainForm : Form
                 path,
                 StringComparison.OrdinalIgnoreCase));
 
+    /// <summary>
+    /// Initializes a new instance of the <c>MainForm</c> class.
+    /// </summary>
     public MainForm()
     {
         Text = "Gondwana Assets — GAF editor";
@@ -343,6 +349,7 @@ public sealed class MainForm : Form
             MessageBoxIcon.Error);
     }
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing)

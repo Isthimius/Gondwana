@@ -2,6 +2,12 @@ namespace Gondwana.Tooling.Tilesheets.WinForms;
 
 internal static class PasswordPrompt
 {
+    /// <summary>
+    /// Displays the dialog and returns the entered value.
+    /// </summary>
+    /// <param name="owner">The window that owns the dialog.</param>
+    /// <param name="assetsFilePath">The path to the assets file.</param>
+    /// <returns>The requested string, or <see langword="null"/> when unavailable.</returns>
     public static string? Show(
         IWin32Window owner,
         string assetsFilePath)

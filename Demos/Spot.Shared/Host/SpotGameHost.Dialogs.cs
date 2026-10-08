@@ -7,8 +7,15 @@ internal sealed partial class SpotGameRuntime
     private NewGameOptions? _lastNewGameOptions;
     private NewGameDialog? _newGameDialog;
 
+    /// <summary>
+    /// Gets the last new game options.
+    /// </summary>
     public NewGameOptions? LastNewGameOptions => _lastNewGameOptions;
 
+    /// <summary>
+    /// Displays the new-game dialog.
+    /// </summary>
+    /// <param name="newGameOptions">The new game options.</param>
     public void OpenNewGameDialog(NewGameOptions? newGameOptions = null)
     {
         if (Interlocked.CompareExchange(ref _dialogOpen, 1, 0) != 0)

@@ -163,6 +163,8 @@ public partial class Sprite
     /// <summary>
     /// Smoothly resizes the sprite to an absolute pixel size.
     /// </summary>
+    /// <param name="targetSize">The target size.</param>
+    /// <param name="durationSeconds">The duration in seconds.</param>
     public void ResizeTo(Size targetSize, float durationSeconds)
     {
         targetSize = new Size(
@@ -184,6 +186,8 @@ public partial class Sprite
     /// <summary>
     /// Scales the sprite by a factor relative to its current render size.
     /// </summary>
+    /// <param name="factor">The factor.</param>
+    /// <param name="durationSeconds">The duration in seconds.</param>
     public void ScaleBy(float factor, float durationSeconds)
     {
         factor = MathF.Max(0.01f, factor);
@@ -199,6 +203,10 @@ public partial class Sprite
     /// <summary>
     /// Resizes to an absolute target size and then returns to the original size.
     /// </summary>
+    /// <param name="targetSize">The target size.</param>
+    /// <param name="growDurationSeconds">The grow duration seconds.</param>
+    /// <param name="shrinkDurationSeconds">The shrink duration seconds.</param>
+    /// <param name="loop">Whether playback repeats at the end.</param>
     public void PulseTo(
         Size targetSize,
         float growDurationSeconds,
@@ -229,6 +237,10 @@ public partial class Sprite
     /// <summary>
     /// Pulses by a factor relative to the current render size.
     /// </summary>
+    /// <param name="factor">The factor.</param>
+    /// <param name="growDurationSeconds">The grow duration seconds.</param>
+    /// <param name="shrinkDurationSeconds">The shrink duration seconds.</param>
+    /// <param name="loop">Whether playback repeats at the end.</param>
     public void PulseBy(
         float factor,
         float growDurationSeconds,
@@ -250,6 +262,8 @@ public partial class Sprite
     /// <summary>
     /// Stops the current pulse, optionally returning to the original size.
     /// </summary>
+    /// <param name="snapBack">Whether to restore the original position when the effect ends.</param>
+    /// <param name="returnDuration">The return duration.</param>
     public void StopPulse(bool snapBack = true, float returnDuration = 0f)
     {
         Size originalSize = _resizeOriginalStart;

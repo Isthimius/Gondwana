@@ -48,6 +48,8 @@ public sealed class CollisionGroupRegistry
     /// Defines a new collision group with the specified name, or returns the existing group value if already defined.
     /// Each group is assigned a unique bit flag value.
     /// </summary>
+    /// <param name="name">The case-insensitive collision group name.</param>
+    /// <returns>The bit flag assigned to the new or existing group.</returns>
     public int Define(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -67,6 +69,8 @@ public sealed class CollisionGroupRegistry
     /// <summary>
     /// Gets the bit flag value for a previously defined collision group.
     /// </summary>
+    /// <param name="name">The case-insensitive collision group name.</param>
+    /// <returns>The bit flag assigned to the named collision group.</returns>
     public int Get(string name)
     {
         if (!_groups.TryGetValue(name, out var value))
@@ -79,6 +83,8 @@ public sealed class CollisionGroupRegistry
     /// Combines previously defined collision groups into one bit mask.
     /// An empty collection resolves to <see cref="CollisionMasks.None"/>.
     /// </summary>
+    /// <param name="names">The registered collision group names to combine.</param>
+    /// <returns>The bitwise union of the named groups, or zero for an empty collection.</returns>
     public int GetMask(IEnumerable<string> names)
     {
         ArgumentNullException.ThrowIfNull(names);
@@ -93,6 +99,7 @@ public sealed class CollisionGroupRegistry
     /// <summary>
     /// Gets a read-only collection of all defined collision group names.
     /// </summary>
+    /// <returns>The names of the currently defined collision groups.</returns>
     public IReadOnlyCollection<string> GetGroupNames() => _groups.Keys.ToArray();
 
     /// <summary>

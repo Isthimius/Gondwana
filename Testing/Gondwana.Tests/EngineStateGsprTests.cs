@@ -9,12 +9,23 @@ using SkiaSharp;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for engine state gspr.
+/// </summary>
 [Collection("Global engine state")]
 public sealed class EngineStateGsprTests : IDisposable
 {
     private readonly string _directory = Path.Combine(Path.GetTempPath(), "GsprState-" + Guid.NewGuid());
+    /// <summary>
+    /// Initializes a new instance of the <c>EngineStateGsprTests</c> class.
+    /// </summary>
     public EngineStateGsprTests() { Directory.CreateDirectory(_directory); Cleanup(); }
 
+    /// <summary>
+    /// Verifies collection state round trip.
+    /// </summary>
+    /// <param name="external">The external value for this test case.</param>
+    /// <param name="compressed">The compressed value for this test case.</param>
     [Theory]
     [InlineData(false, false)]
     [InlineData(true, false)]
@@ -42,6 +53,10 @@ public sealed class EngineStateGsprTests : IDisposable
         Assert.All(SpriteManager.Instance.AllSprites, sprite => Assert.Same(restored, sprite.SceneLayer));
     }
 
+    /// <summary>
+    /// Verifies complete dependencies restore frames against canonical tilesheets.
+    /// </summary>
+    /// <param name="external">The external value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -81,6 +96,9 @@ public sealed class EngineStateGsprTests : IDisposable
         finally { Cleanup(); TilesheetRegistry.Instance.Clear(); }
     }
 
+    /// <summary>
+    /// Verifies legacy embedded layer is rebound and registered once.
+    /// </summary>
     [Fact]
     public void LegacyEmbeddedLayerIsReboundAndRegisteredOnce()
     {
@@ -98,6 +116,10 @@ public sealed class EngineStateGsprTests : IDisposable
         Assert.Same(layer, sprite.SceneLayer);
     }
 
+    /// <summary>
+    /// Verifies sprite only merge honors overwrite and uses existing layer.
+    /// </summary>
+    /// <param name="overwrite">The overwrite value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -117,6 +139,10 @@ public sealed class EngineStateGsprTests : IDisposable
         Assert.Same(scene, Assert.Single(Scene.GetAllScenes()));
     }
 
+    /// <summary>
+    /// Verifies legacy raw sprite arrays remain readable.
+    /// </summary>
+    /// <param name="references">The references value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -136,6 +162,9 @@ public sealed class EngineStateGsprTests : IDisposable
         Assert.Equal(31, restored.NudgeY);
     }
 
+    /// <summary>
+    /// Verifies duplicate incoming nicknames do not change overwrite policy for other sprites.
+    /// </summary>
     [Fact]
     public void DuplicateIncomingNicknamesDoNotChangeOverwritePolicyForOtherSprites()
     {
@@ -162,5 +191,6 @@ public sealed class EngineStateGsprTests : IDisposable
         foreach (var sprite in SpriteManager.Instance.AllSprites) { SpriteManager.Instance._spriteList.Remove(sprite); sprite.DisposeImmediate(); }
         Scene.ClearAllScenes();
     }
+    /// <inheritdoc/>
     public void Dispose() { Cleanup(); Directory.Delete(_directory, true); }
 }

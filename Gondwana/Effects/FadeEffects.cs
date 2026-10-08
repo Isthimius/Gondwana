@@ -12,6 +12,13 @@ public abstract class FadeEffect : DisplayEffect
     private float _originalOpacity;
     private float _startOpacity;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>FadeEffect</c> class.
+    /// </summary>
+    /// <param name="targetOpacity">The opacity to reach when the effect completes.</param>
+    /// <param name="durationSeconds">The duration in seconds.</param>
+    /// <param name="easing">The easing function applied to progress.</param>
+    /// <param name="startTransparentWhenOpaque">Whether an initially opaque target starts the effect transparent.</param>
     private protected FadeEffect(
         float targetOpacity,
         float durationSeconds,
@@ -28,6 +35,7 @@ public abstract class FadeEffect : DisplayEffect
     internal override bool SupportsTarget(object target) =>
         target is View or SceneLayer;
 
+    /// <inheritdoc/>
     private protected override void OnStarting()
     {
         _originalOpacity = EffectTargetAccess.GetOpacity(Target);
@@ -38,11 +46,13 @@ public abstract class FadeEffect : DisplayEffect
         EffectTargetAccess.SetOpacity(Target, _startOpacity);
     }
 
+    /// <inheritdoc/>
     private protected override void ApplyProgress(float progress) =>
         EffectTargetAccess.SetOpacity(
             Target,
             _startOpacity + (_targetOpacity - _startOpacity) * progress);
 
+    /// <inheritdoc/>
     private protected override void RestoreOriginalState() =>
         EffectTargetAccess.SetOpacity(Target, _originalOpacity);
 }
@@ -51,6 +61,8 @@ public abstract class FadeEffect : DisplayEffect
 public sealed class FadeInEffect : FadeEffect
 {
     /// <summary>Creates a fade-in effect.</summary>
+    /// <param name="durationSeconds">The duration in seconds.</param>
+    /// <param name="easing">The easing function applied to progress.</param>
     public FadeInEffect(
         float durationSeconds,
         EasingKind easing = EasingKind.Linear)
@@ -63,6 +75,8 @@ public sealed class FadeInEffect : FadeEffect
 public sealed class FadeOutEffect : FadeEffect
 {
     /// <summary>Creates a fade-out effect.</summary>
+    /// <param name="durationSeconds">The duration in seconds.</param>
+    /// <param name="easing">The easing function applied to progress.</param>
     public FadeOutEffect(
         float durationSeconds,
         EasingKind easing = EasingKind.Linear)

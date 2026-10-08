@@ -8,11 +8,18 @@ using SkiaSharp;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for tilesheet editor document.
+/// </summary>
 public sealed class TilesheetEditorDocumentTests : IDisposable
 {
     private readonly string _directory = Path.Combine(Path.GetTempPath(), "GtsEditorTests_" + Guid.NewGuid().ToString("N"));
 
+    /// <summary>
+    /// Initializes a new instance of the <c>TilesheetEditorDocumentTests</c> class.
+    /// </summary>
     public TilesheetEditorDocumentTests() => Directory.CreateDirectory(_directory);
+    /// <inheritdoc/>
     public void Dispose() => Directory.Delete(_directory, true);
 
     private string WriteDefinition(bool packed = false)
@@ -49,6 +56,10 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
         return path;
     }
 
+    /// <summary>
+    /// Verifies open inspect save preserves entire model and inheritance.
+    /// </summary>
+    /// <param name="packed">The packed value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -69,6 +80,10 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
         Assert.Equal(TileCollisionType.None, region.Frames[2].CollisionType);
     }
 
+    /// <summary>
+    /// Verifies save as rebases image reference and preserves provenance.
+    /// </summary>
+    /// <param name="packed">The packed value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -87,6 +102,9 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
         Assert.False(document.IsDirty);
     }
 
+    /// <summary>
+    /// Verifies geometry edit retains metadata until explicit prune.
+    /// </summary>
     [Fact]
     public void GeometryEdit_RetainsMetadataUntilExplicitPrune()
     {
@@ -107,6 +125,9 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
         Assert.Empty(document.Validate());
     }
 
+    /// <summary>
+    /// Verifies property adapters edit struct edges and explicit equal overrides.
+    /// </summary>
     [Fact]
     public void PropertyAdapters_EditStructEdgesAndExplicitEqualOverrides()
     {
@@ -132,6 +153,9 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
         Assert.True(document.IsDirty);
     }
 
+    /// <summary>
+    /// Verifies property adapters preserve undefined frame collision type until edited.
+    /// </summary>
     [Fact]
     public void PropertyAdapters_PreserveUndefinedFrameCollisionTypeUntilEdited()
     {
@@ -145,6 +169,9 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
         Assert.Equal(TileCollisionType.Trigger, region.Frames[1].CollisionType);
     }
 
+    /// <summary>
+    /// Verifies invalid save and failed save keep original file and dirty session.
+    /// </summary>
     [Fact]
     public void InvalidSaveAndFailedSave_KeepOriginalFileAndDirtySession()
     {
@@ -165,6 +192,9 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
         Assert.False(document.IsDirty);
     }
 
+    /// <summary>
+    /// Verifies mask disabled serializes null and keeps premultiply alpha.
+    /// </summary>
     [Fact]
     public void MaskDisabled_SerializesNullAndKeepsPremultiplyAlpha()
     {
@@ -177,6 +207,9 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
         Assert.True(loaded.PremultiplyAlpha);
     }
 
+    /// <summary>
+    /// Verifies frame hit test selects other gts regions without changing metadata.
+    /// </summary>
     [Fact]
     public void FrameHitTest_SelectsOtherGtsRegionsWithoutChangingMetadata()
     {
@@ -195,6 +228,9 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
         Assert.Null(FrameGeometry.HitTest(document.Definition, first, new PointF(-1, -1)));
     }
 
+    /// <summary>
+    /// Verifies frame hit test prefers selected region when grids overlap.
+    /// </summary>
     [Fact]
     public void FrameHitTest_PrefersSelectedRegionWhenGridsOverlap()
     {
@@ -209,6 +245,9 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
         Assert.Equal(new Point(2, 2), hit.Value.Frame);
     }
 
+    /// <summary>
+    /// Verifies derived geometry matches runtime slices and collision adjust.
+    /// </summary>
     [Fact]
     public void DerivedGeometry_MatchesRuntimeSlicesAndCollisionAdjust()
     {

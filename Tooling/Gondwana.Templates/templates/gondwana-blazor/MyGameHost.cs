@@ -28,11 +28,13 @@ internal sealed class MyGameHost : BlazorGpuGameHost
 
     // TODO: Run pre-initialization setup here, such as choosing config paths,
     // toggling feature flags, or preparing services before assets begin loading.
+    /// <inheritdoc/>
     protected override void OnInitializing()
     {
     }
 
     // TODO: Load non-tilesheet assets such as audio, fonts, and data files.
+    /// <inheritdoc/>
     protected override void LoadAssets()
     {
         // TODO: Load your tilesheets/sprites here.
@@ -54,27 +56,32 @@ internal sealed class MyGameHost : BlazorGpuGameHost
     }
 
     // TODO: Load tilesheet definitions after other assets are available.
+    /// <inheritdoc/>
     protected override void LoadTilesheets()
     {
     }
 
     // TODO: Load animation cycle definitions after tilesheets are available.
+    /// <inheritdoc/>
     protected override void LoadAnimationCycles()
     {
     }
 
     // TODO: Run after the initial scene and views are created, but before the scene is bound.
+    /// <inheritdoc/>
     protected override void OnSceneGraphCreated()
     {
     }
 
     // TODO: Build and return the initial Scene.
+    /// <inheritdoc/>
     protected override Scene CreateInitialScene()
     {
         return Scene.Empty;
     }
 
     // TODO: Create initial camera/view objects after the Scene has been created.
+    /// <inheritdoc/>
     protected override void CreateInitialViews()
     {
     }
@@ -83,6 +90,7 @@ internal sealed class MyGameHost : BlazorGpuGameHost
     // Override OnSceneBound() if you need post-bind setup before sprites/direct drawings are created.
 
     // TODO: Called after assets are loaded. Build your scene layers and add sprites here.
+    /// <inheritdoc/>
     protected override void CreateSprites()
     {
         // TODO: Create one or more SceneLayers.
@@ -102,6 +110,7 @@ internal sealed class MyGameHost : BlazorGpuGameHost
     }
 
     // TODO: Add direct drawings (UI overlays, particles, etc.) after sprites are created.
+    /// <inheritdoc/>
     protected override void CreateDirectDrawings()
     {
         // TODO: Add direct drawings (non-grid-aligned graphics).
@@ -114,21 +123,25 @@ internal sealed class MyGameHost : BlazorGpuGameHost
     }
 
     // TODO: Run after Engine.Initialize() completes but before the engine starts.
+    /// <inheritdoc/>
     protected override void OnEngineInitialized()
     {
     }
 
     // TODO: Called when the engine starts. Begin gameplay, start timers, or play music here.
+    /// <inheritdoc/>
     protected override void OnEngineStarted()
     {
     }
 
     // TODO: Run after the full host initialization sequence has completed.
+    /// <inheritdoc/>
     protected override void OnInitialized()
     {
     }
 
     // TODO: Unsubscribe from any events you hooked during initialization.
+    /// <inheritdoc/>
     protected override void UnhookEvents()
     {
         // TODO: Unsubscribe from any events you hooked in OnKeyboardAdapterInitialized.
@@ -137,6 +150,7 @@ internal sealed class MyGameHost : BlazorGpuGameHost
     }
 
     // TODO: Run just before the host begins disposing managed resources.
+    /// <inheritdoc/>
     protected override void OnDisposing()
     {
     }
@@ -146,11 +160,13 @@ internal sealed class MyGameHost : BlazorGpuGameHost
     #region BlazorGameHost overrides
 
     // TODO: Configure Blazor-specific platform services after the default setup runs.
+    /// <inheritdoc/>
     protected override void OnConfigurePlatform()
     {
     }
 
     // TODO: Called after keyboard input is initialized. Wire up key event handlers here.
+    /// <inheritdoc/>
     protected override void OnKeyboardAdapterInitialized()
     {
         // TODO: Subscribe to keyboard events.
@@ -159,21 +175,25 @@ internal sealed class MyGameHost : BlazorGpuGameHost
     }
 
     // TODO: Subscribe to mouse events here after the adapter is initialized.
+    /// <inheritdoc/>
     protected override void OnMouseAdapterInitialized()
     {
     }
 
     // TODO: Configure gamepad behavior after the default setup runs.
+    /// <inheritdoc/>
     protected override void OnConfigureGamepads()
     {
     }
 
     // TODO: Subscribe to touch or gesture events here after the adapter is initialized.
+    /// <inheritdoc/>
     protected override void OnTouchAdapterInitialized()
     {
     }
 
     // TODO: Run after Blazor-specific interop resources have been released.
+    /// <inheritdoc/>
     protected override void OnBlazorDisposed()
     {
     }

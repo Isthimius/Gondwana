@@ -177,6 +177,7 @@ public class DirectComposite : IDirectCompositeChild, IDirectCompositeContainer
     /// <summary>
     /// Gets the current composite anchor.
     /// </summary>
+    /// <returns>The sprite position in scene-layer grid coordinates.</returns>
     public Vector2 GetPosition() => new(_anchor.X, _anchor.Y);
 
     /// <summary>

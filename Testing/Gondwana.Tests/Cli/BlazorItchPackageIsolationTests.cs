@@ -3,8 +3,14 @@ using Gondwana.Cli.Commands;
 
 namespace Gondwana.Tests.Cli;
 
+/// <summary>
+/// Contains regression tests for blazor itch package isolation.
+/// </summary>
 public sealed class BlazorItchPackageIsolationTests
 {
+    /// <summary>
+    /// Verifies create blazor itch package base href override does not mutate published index.
+    /// </summary>
     [Fact]
     public void CreateBlazorItchPackage_BaseHrefOverride_DoesNotMutatePublishedIndex()
     {

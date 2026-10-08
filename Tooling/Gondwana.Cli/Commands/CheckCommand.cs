@@ -10,6 +10,11 @@ internal sealed record ProjectDiagnostic(string Label, string Status, string Det
 
 internal static class ProjectHealth
 {
+    /// <summary>
+    /// Checks the project's Gondwana package configuration.
+    /// </summary>
+    /// <param name="project">The project.</param>
+    /// <returns>The diagnostics found in the project's package configuration.</returns>
     public static IReadOnlyList<ProjectDiagnostic> Inspect(ProjectPackages project)
     {
         var results = new List<ProjectDiagnostic>();
@@ -97,6 +102,11 @@ internal static class ProjectHealth
         }
     }
 
+    /// <summary>
+    /// Applies supported fixes to the project's Gondwana package configuration.
+    /// </summary>
+    /// <param name="project">The project.</param>
+    /// <returns>Descriptions of the fixes applied to the project.</returns>
     public static IReadOnlyList<string> Fix(ProjectPackages project)
     {
         project.EnsureEditable();
@@ -110,13 +120,20 @@ internal static class ProjectHealth
 
 internal sealed class CheckCommand : Command<CheckCommand.Settings>
 {
+    /// <summary>
+    /// Defines command-line settings for CheckCommand.
+    /// </summary>
     public sealed class Settings : ProjectSettings
     {
+        /// <summary>
+        /// Gets or sets whether fix is enabled.
+        /// </summary>
         [CommandOption("--fix")]
         [Description("Align older Gondwana packages to an explicit stable core version, then recheck. Does not rewrite source or select optional hosting.")]
         public bool Fix { get; init; }
     }
 
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try

@@ -19,6 +19,9 @@ public sealed class EngineStateGscnTests : IDisposable
         Path.GetTempPath(),
         $"GondwanaEngineStateGscn_{Guid.NewGuid():N}");
 
+    /// <summary>
+    /// Initializes a new instance of the <c>EngineStateGscnTests</c> class.
+    /// </summary>
     public EngineStateGscnTests()
     {
         Directory.CreateDirectory(_tempDir);
@@ -28,6 +31,7 @@ public sealed class EngineStateGscnTests : IDisposable
         TilesheetRegistry.Instance.Clear();
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         SpriteManager.Instance._spriteList.Clear();
@@ -39,6 +43,9 @@ public sealed class EngineStateGscnTests : IDisposable
             Directory.Delete(_tempDir, recursive: true);
     }
 
+    /// <summary>
+    /// Verifies scene empty is not registered as runtime scene.
+    /// </summary>
     [Fact]
     public void SceneEmpty_IsNotRegisteredAsRuntimeScene()
     {
@@ -46,6 +53,9 @@ public sealed class EngineStateGscnTests : IDisposable
         Assert.Empty(Scene.GetAllScenes());
     }
 
+    /// <summary>
+    /// Verifies save to file default embeds inline gscn definition.
+    /// </summary>
     [Fact]
     public void SaveToFile_Default_EmbedsInlineGscnDefinition()
     {
@@ -69,6 +79,9 @@ public sealed class EngineStateGscnTests : IDisposable
         Assert.Null(definition["_sceneLayers"]);
     }
 
+    /// <summary>
+    /// Verifies save to file separate gscn files writes reference and clean definition.
+    /// </summary>
     [Fact]
     public void SaveToFile_SeparateGscnFiles_WritesReferenceAndCleanDefinition()
     {
@@ -99,6 +112,10 @@ public sealed class EngineStateGscnTests : IDisposable
         Assert.Contains("\"Layers\"", gscnJson);
     }
 
+    /// <summary>
+    /// Verifies load from file restores inline or external gscn scene.
+    /// </summary>
+    /// <param name="separateGscnFiles">The separate gscn files value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -135,6 +152,11 @@ public sealed class EngineStateGscnTests : IDisposable
         Assert.Same(restored, restoredLayer.Scene);
     }
 
+    /// <summary>
+    /// Verifies load from file restores gani assignment before gscn materialization.
+    /// </summary>
+    /// <param name="separateGaniFiles">The separate gani files value for this test case.</param>
+    /// <param name="separateGscnFiles">The separate gscn files value for this test case.</param>
     [Theory]
     [InlineData(false, false)]
     [InlineData(false, true)]
@@ -197,6 +219,10 @@ public sealed class EngineStateGscnTests : IDisposable
             restoredTile.CurrentFrame.Tilesheet.Name);
     }
 
+    /// <summary>
+    /// Verifies full state restores sprite against canonical gscn layer.
+    /// </summary>
+    /// <param name="separateGscnFiles">The separate gscn files value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -242,6 +268,10 @@ public sealed class EngineStateGscnTests : IDisposable
         Assert.Same(restoredLayer, restoredSprite.SceneLayer);
     }
 
+    /// <summary>
+    /// Verifies merge from file gscn scene honors overwrite existing.
+    /// </summary>
+    /// <param name="separateGscnFiles">The separate gscn files value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -290,6 +320,9 @@ public sealed class EngineStateGscnTests : IDisposable
         Assert.Equal(2, Assert.Single(replaced.SceneLayers).GridRowCount);
     }
 
+    /// <summary>
+    /// Verifies load from file accepts legacy raw scene entries.
+    /// </summary>
     [Fact]
     public void LoadFromFile_AcceptsLegacyRawSceneEntries()
     {

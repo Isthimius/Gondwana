@@ -3,6 +3,7 @@ namespace Gondwana.Input.Gamepad;
 /// <summary>
 /// Interface to track a collection of <see cref="IGamepadAdapter" /> gamepad adapters.
 /// </summary>
+/// <typeparam name="T">The type of t.</typeparam>
 public interface IGamepadManager<out T> where T : IGamepadAdapter
 {
     /// <summary>

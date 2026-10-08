@@ -413,6 +413,7 @@ public abstract class WidgetBase : DirectComposite
     /// <summary>
     /// Dispatches mouse-wheel input to the widget.
     /// </summary>
+    /// <param name="args">The event data.</param>
     protected internal void DispatchMouseWheel(WidgetMouseWheelEventArgs args)
     {
         ArgumentNullException.ThrowIfNull(args);
@@ -589,6 +590,7 @@ public abstract class WidgetBase : DirectComposite
     /// <summary>
     /// Called when mouse-wheel input is routed to the widget.
     /// </summary>
+    /// <param name="args">The event data.</param>
     protected virtual void OnMouseWheel(WidgetMouseWheelEventArgs args) { }
 
     /// <summary>

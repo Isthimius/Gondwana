@@ -57,6 +57,9 @@ public sealed class AnimationTilesheetSourceDefinition
     /// <summary>
     /// Creates a loose-GTS source reference.
     /// </summary>
+    /// <param name="tilesheet">The tilesheet.</param>
+    /// <param name="gtsPath">The path to the loose GTS tilesheet definition.</param>
+    /// <returns>A reference to the loose definition file.</returns>
     public static AnimationTilesheetSourceDefinition Loose(
         string tilesheet,
         string gtsPath)
@@ -78,6 +81,10 @@ public sealed class AnimationTilesheetSourceDefinition
     /// <summary>
     /// Creates a packed-GTS source reference.
     /// </summary>
+    /// <param name="tilesheet">The tilesheet.</param>
+    /// <param name="assetsFilePath">The path to the assets file.</param>
+    /// <param name="assetEntryName">The entry name inside the assets file.</param>
+    /// <returns>A reference to the packed definition entry.</returns>
     public static AnimationTilesheetSourceDefinition Packed(
         string tilesheet,
         string assetsFilePath,

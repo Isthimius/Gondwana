@@ -16,6 +16,9 @@ namespace Gondwana.Tests;
 [Collection("Global engine state")]
 public sealed class SceneGscnTests
 {
+    /// <summary>
+    /// Verifies runtime scene round trips persistent graph through definition.
+    /// </summary>
     [Fact]
     public void RuntimeScene_RoundTripsPersistentGraphThroughDefinition()
     {
@@ -109,6 +112,10 @@ public sealed class SceneGscnTests
         Assert.True(restoredTile.EnableAnimator);
     }
 
+    /// <summary>
+    /// Verifies runtime scene round trips gani assignment without embedding cycle graph.
+    /// </summary>
+    /// <param name="startAnimation">The start animation value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -171,6 +178,9 @@ public sealed class SceneGscnTests
             restoredTile.TileAnimator.IsCycling);
     }
 
+    /// <summary>
+    /// Verifies definition start animation requires animation key.
+    /// </summary>
     [Fact]
     public void Definition_StartAnimationRequiresAnimationKey()
     {
@@ -204,6 +214,9 @@ public sealed class SceneGscnTests
                 StringComparison.Ordinal));
     }
 
+    /// <summary>
+    /// Verifies definition animation key must resolve when scene is materialized.
+    /// </summary>
     [Fact]
     public void Definition_AnimationKeyMustResolveWhenSceneIsMaterialized()
     {
@@ -240,6 +253,9 @@ public sealed class SceneGscnTests
             StringComparison.Ordinal);
     }
 
+    /// <summary>
+    /// Verifies definition by frame flags override omitted explicit collision defaults.
+    /// </summary>
     [Fact]
     public void Definition_ByFrameFlagsOverrideOmittedExplicitCollisionDefaults()
     {
@@ -292,6 +308,9 @@ public sealed class SceneGscnTests
         Assert.True(tile.CollisionsEnabled);
     }
 
+    /// <summary>
+    /// Verifies definition allows sparse tiles and materializes defaults for omitted cells.
+    /// </summary>
     [Fact]
     public void Definition_AllowsSparseTilesAndMaterializesDefaultsForOmittedCells()
     {
@@ -326,6 +345,9 @@ public sealed class SceneGscnTests
         Assert.False(layer[1, 1]!.Visible);
     }
 
+    /// <summary>
+    /// Verifies save and load stamp loose definition source without mutating original.
+    /// </summary>
     [Fact]
     public void SaveAndLoad_StampLooseDefinitionSourceWithoutMutatingOriginal()
     {
@@ -352,6 +374,9 @@ public sealed class SceneGscnTests
         }
     }
 
+    /// <summary>
+    /// Verifies validator reports duplicate and out of range tile entries.
+    /// </summary>
     [Fact]
     public void Validator_ReportsDuplicateAndOutOfRangeTileEntries()
     {
@@ -379,6 +404,9 @@ public sealed class SceneGscnTests
         Assert.Contains(errors, error => error.Contains("outside the layer grid", StringComparison.OrdinalIgnoreCase));
     }
 
+    /// <summary>
+    /// Verifies definition authoring sources round trip without changing runtime references.
+    /// </summary>
     [Fact]
     public void Definition_AuthoringSourcesRoundTripWithoutChangingRuntimeReferences()
     {
@@ -438,6 +466,9 @@ public sealed class SceneGscnTests
         Assert.Equal("water", tile.AnimationKey);
     }
 
+    /// <summary>
+    /// Verifies authoring sources do not perform filesystem io during runtime materialization.
+    /// </summary>
     [Fact]
     public void AuthoringSources_DoNotPerformFilesystemIoDuringRuntimeMaterialization()
     {
@@ -462,6 +493,9 @@ public sealed class SceneGscnTests
         Assert.NotNull(scene);
     }
 
+    /// <summary>
+    /// Verifies validator reports invalid and duplicate authoring sources.
+    /// </summary>
     [Fact]
     public void Validator_ReportsInvalidAndDuplicateAuthoringSources()
     {
@@ -496,6 +530,9 @@ public sealed class SceneGscnTests
                 StringComparison.OrdinalIgnoreCase));
     }
 
+    /// <summary>
+    /// Verifies json model uses named lists rather than runtime reference graph.
+    /// </summary>
     [Fact]
     public void JsonModel_UsesNamedListsRatherThanRuntimeReferenceGraph()
     {

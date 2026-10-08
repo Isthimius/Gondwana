@@ -2,8 +2,14 @@ using Gondwana.Video;
 
 namespace Gondwana.Tests.Video;
 
+/// <summary>
+/// Contains regression tests for video metadata.
+/// </summary>
 public sealed class VideoMetadataTests
 {
+    /// <summary>
+    /// Verifies reopen invalidates prior completion and resets authoritative values.
+    /// </summary>
     [Fact]
     public void ReopenInvalidatesPriorCompletionAndResetsAuthoritativeValues()
     {

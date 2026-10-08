@@ -6,6 +6,10 @@ namespace Gondwana.Tooling.Tilesheets.Editing;
 internal static class FrameGeometry
 {
     /// <summary>Hit-test the selected region first, then other regions, without changing metadata.</summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <param name="selectedRegion">The selected region.</param>
+    /// <param name="imagePoint">The image point.</param>
+    /// <returns>The requested (tilesheet region definition region, point frame), or <see langword="null"/> when unavailable.</returns>
     public static (TilesheetRegionDefinition Region, Point Frame)? HitTest(
         TilesheetDefinition definition, TilesheetRegionDefinition? selectedRegion, PointF imagePoint)
     {
@@ -41,6 +45,13 @@ internal static class FrameGeometry
     }
 
     // Matches TilesheetRegion.GetTileBounds. Grid counts come directly from the shared validator.
+    /// <summary>
+    /// Computes the frame bounds in image pixels.
+    /// </summary>
+    /// <param name="region">The region.</param>
+    /// <param name="x">The zero-based column in the tile grid.</param>
+    /// <param name="y">The zero-based row in the tile grid.</param>
+    /// <returns>The frame rectangle in tilesheet image pixels.</returns>
     public static Rectangle Bounds(TilesheetRegionDefinition region, int x, int y) => new(
         checked((int)((long)region.Area.X + region.RegionMargin.Left + region.TilePadding.Left +
             x * ((long)region.TileSize.Width + region.TilePadding.Left + region.TilePadding.Right))),
@@ -48,6 +59,13 @@ internal static class FrameGeometry
             y * ((long)region.TileSize.Height + region.TilePadding.Top + region.TilePadding.Bottom))),
         region.TileSize.Width, region.TileSize.Height);
 
+    /// <summary>
+    /// Computes the frame collision bounds in image pixels.
+    /// </summary>
+    /// <param name="region">The region.</param>
+    /// <param name="x">The zero-based column in the tile grid.</param>
+    /// <param name="y">The zero-based row in the tile grid.</param>
+    /// <returns>The collision rectangle in tilesheet image pixels.</returns>
     public static Rectangle CollisionBounds(TilesheetRegionDefinition region, int x, int y)
     {
         var frame = region.Frames.FirstOrDefault(f => f is not null && f.XTile == x && f.YTile == y);

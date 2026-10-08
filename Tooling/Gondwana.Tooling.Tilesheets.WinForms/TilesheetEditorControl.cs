@@ -15,9 +15,15 @@ namespace Gondwana.Tooling.Tilesheets.WinForms;
 /// </summary>
 public sealed class TilesheetEditorControl : UserControl
 {
+    /// <summary>
+    /// Gets the pane names.
+    /// </summary>
     public static IReadOnlyList<string> PaneNames { get; } =
         Array.AsReadOnly(["Image", "Definition", "Region", "Frame", "Validation"]);
 
+    /// <summary>
+    /// Gets the document.
+    /// </summary>
     public TilesheetDocument Document { get; }
     private readonly OverlaySettings _overlaySettings;
     private readonly AssetPackageCatalog _assetPackages;
@@ -37,6 +43,9 @@ public sealed class TilesheetEditorControl : UserControl
     private bool _refreshPending;
     private EditorDockWorkspace _workspace = null!;
     private TilesheetRegionDefinition? SelectedRegion => _regions.SelectedItem as TilesheetRegionDefinition;
+    /// <summary>
+    /// Gets the image size.
+    /// </summary>
     public Size? ImageSize => _viewport.Image?.Size;
 
     /// <summary>
@@ -45,6 +54,10 @@ public sealed class TilesheetEditorControl : UserControl
     /// </summary>
     public Func<IWin32Window, PackedImageSource?>? PackedImagePicker { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <c>TilesheetEditorControl</c> class.
+    /// </summary>
+    /// <param name="document">The document displayed or edited by the control.</param>
     public TilesheetEditorControl(TilesheetDocument document)
         : this(document, overlaySettings: null, assetPackages: null)
     {
@@ -54,6 +67,8 @@ public sealed class TilesheetEditorControl : UserControl
     /// Creates an editor that uses a host-owned asset-package catalog. Studio can
     /// share one catalog across its workspace and all open tilesheet editors.
     /// </summary>
+    /// <param name="document">The document displayed or edited by the control.</param>
+    /// <param name="assetPackages">The asset packages.</param>
     public TilesheetEditorControl(TilesheetDocument document, AssetPackageCatalog assetPackages)
         : this(
             document,
@@ -191,6 +206,10 @@ public sealed class TilesheetEditorControl : UserControl
         UpdateValidation();
     }
 
+    /// <summary>
+    /// Selects a loose image as the tilesheet source.
+    /// </summary>
+    /// <param name="path">The path.</param>
     public void ChooseImage(string? path = null)
     {
         if (path is null)
@@ -203,6 +222,9 @@ public sealed class TilesheetEditorControl : UserControl
         RefreshView();
     }
 
+    /// <summary>
+    /// Selects an image from an assets file as the tilesheet source.
+    /// </summary>
     public void ChoosePackedImage()
     {
         if (PackedImagePicker is null)
@@ -221,6 +243,10 @@ public sealed class TilesheetEditorControl : UserControl
             ChoosePackedImage(source);
     }
 
+    /// <summary>
+    /// Selects an image from an assets file as the tilesheet source.
+    /// </summary>
+    /// <param name="source">The source.</param>
     public void ChoosePackedImage(PackedImageSource source)
     {
         ArgumentNullException.ThrowIfNull(source);
@@ -229,6 +255,9 @@ public sealed class TilesheetEditorControl : UserControl
         RefreshView();
     }
 
+    /// <summary>
+    /// Adds a new region to the tilesheet definition.
+    /// </summary>
     public void AddRegion()
     {
         string name = "default";
@@ -338,6 +367,9 @@ public sealed class TilesheetEditorControl : UserControl
             }
         }
     }
+    /// <summary>
+    /// Refreshes the editor controls from the current document.
+    /// </summary>
     public void RefreshView()
     {
         _refreshing = true;
@@ -426,6 +458,10 @@ public sealed class TilesheetEditorControl : UserControl
                 $"Packed image '{image.AssetEntryName}' is unsupported or corrupt.");
     }
 
+    /// <summary>
+    /// Validates the current document and refreshes the displayed diagnostics.
+    /// </summary>
+    /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
     public IReadOnlyList<string> UpdateValidation()
     {
         var errors = Document.Validate(ImageSize).ToList();
@@ -447,24 +483,42 @@ public sealed class TilesheetEditorControl : UserControl
         return errors;
     }
 
+    /// <summary>
+    /// Shows the named editor pane.
+    /// </summary>
+    /// <param name="paneName">The name of the editor pane.</param>
+    /// <returns><see langword="true"/> if the named pane was found; otherwise, <see langword="false"/>.</returns>
     public bool ShowPane(string paneName) =>
         _workspace.ShowPane(paneName);
 
+    /// <summary>
+    /// Determines whether the named editor pane is visible.
+    /// </summary>
+    /// <param name="paneName">The name of the editor pane.</param>
+    /// <returns><see langword="true"/> if the pane is visible; otherwise, <see langword="false"/>.</returns>
     public bool IsPaneVisible(string paneName) =>
         _workspace.IsPaneVisible(paneName);
 
     /// <summary>Restore the default pane arrangement for this editor type.</summary>
     public void ResetLayout() => _workspace.ResetLayout();
 
+    /// <summary>
+    /// Shows every editor pane.
+    /// </summary>
     public void ShowAllPanes() =>
         _workspace.ShowAllPanes();
 
+    /// <summary>
+    /// Commits pending editor input to the document.
+    /// </summary>
+    /// <returns><see langword="true"/> if the pending edits were committed; otherwise, <see langword="false"/>.</returns>
     public bool CommitEdits()
     {
         _validation.Focus();
         return !_definitionProperties.ContainsFocus && !_regionProperties.ContainsFocus && !_frameProperties.ContainsFocus && ValidateChildren();
     }
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing)

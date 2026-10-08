@@ -9,7 +9,16 @@ namespace Gondwana.Audio.GSND;
 [JsonConverter(typeof(StringEnumConverter))]
 public enum AudioResourceSourceKind
 {
+    /// <summary>
+    /// The resource is loaded from a loose file.
+    /// </summary>
     LooseFile,
+    /// <summary>
+    /// The resource is loaded from an assets file.
+    /// </summary>
     PackedAsset,
+    /// <summary>
+    /// The resource is loaded from a URI.
+    /// </summary>
     Uri
 }

@@ -6,21 +6,34 @@ namespace Gondwana.Cli.Commands.New;
 
 internal sealed class NewWinFormsCommand : Command<NewWinFormsCommand.Settings>
 {
+    /// <summary>
+    /// Defines command-line settings for NewWinFormsCommand.
+    /// </summary>
     public sealed class Settings : CommandSettings
     {
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
         [CommandArgument(0, "<name>")]
         [Description("The name of the new project.")]
         public string Name { get; init; } = string.Empty;
 
+        /// <summary>
+        /// Gets or sets the output.
+        /// </summary>
         [CommandOption("-o|--output")]
         [Description("The directory to place the generated output in. Defaults to a new folder named <name> in the current directory.")]
         public string? Output { get; init; }
 
+        /// <summary>
+        /// Gets or sets the backbuffer.
+        /// </summary>
         [CommandOption("-b|--backbuffer")]
         [Description("The backbuffer type to use for rendering: 'bitmap' (default, CPU-based) or 'gpu' (OpenGL-accelerated).")]
         public string? Backbuffer { get; init; }
     }
 
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(settings.Name))

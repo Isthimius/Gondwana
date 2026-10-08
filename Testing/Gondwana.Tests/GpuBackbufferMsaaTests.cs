@@ -4,22 +4,32 @@ using SkiaSharp;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for gpu backbuffer msaa.
+/// </summary>
 [Collection("Global engine state")]
 public sealed class GpuBackbufferMsaaTests : IDisposable
 {
     private readonly int _originalMsaaSampleCount;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>GpuBackbufferMsaaTests</c> class.
+    /// </summary>
     public GpuBackbufferMsaaTests()
     {
         _originalMsaaSampleCount = Engine.Instance.Configuration.MsaaSampleCount;
         Engine.Instance.Configuration.MsaaSampleCount = 1;
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         Engine.Instance.Configuration.MsaaSampleCount = _originalMsaaSampleCount;
     }
 
+    /// <summary>
+    /// Verifies new backbuffer requires initial gpu surface configuration.
+    /// </summary>
     [Fact]
     public void NewBackbufferRequiresInitialGpuSurfaceConfiguration()
     {
@@ -35,6 +45,9 @@ public sealed class GpuBackbufferMsaaTests : IDisposable
         Assert.False(backbuffer.IsMsaaSurfaceRecreationPending);
     }
 
+    /// <summary>
+    /// Verifies changing msaa after surface configuration requests recreation.
+    /// </summary>
     [Fact]
     public void ChangingMsaaAfterSurfaceConfigurationRequestsRecreation()
     {
@@ -54,6 +67,9 @@ public sealed class GpuBackbufferMsaaTests : IDisposable
         Assert.False(backbuffer.IsMsaaSurfaceRecreationPending);
     }
 
+    /// <summary>
+    /// Verifies engine configuration change propagates and requests recreation.
+    /// </summary>
     [Fact]
     public void EngineConfigurationChangePropagatesAndRequestsRecreation()
     {
@@ -67,6 +83,9 @@ public sealed class GpuBackbufferMsaaTests : IDisposable
         Assert.True(backbuffer.IsMsaaSurfaceRecreationPending);
     }
 
+    /// <summary>
+    /// Verifies reassigning same msaa does not request another recreation.
+    /// </summary>
     [Fact]
     public void ReassigningSameMsaaDoesNotRequestAnotherRecreation()
     {
@@ -79,6 +98,9 @@ public sealed class GpuBackbufferMsaaTests : IDisposable
         Assert.False(backbuffer.IsMsaaSurfaceRecreationPending);
     }
 
+    /// <summary>
+    /// Verifies unsupported fallback can be recorded without retry loop.
+    /// </summary>
     [Fact]
     public void UnsupportedFallbackCanBeRecordedWithoutRetryLoop()
     {
@@ -93,6 +115,9 @@ public sealed class GpuBackbufferMsaaTests : IDisposable
         Assert.False(backbuffer.IsMsaaSurfaceRecreationPending);
     }
 
+    /// <summary>
+    /// Verifies msaa sample count clamps values below one.
+    /// </summary>
     [Fact]
     public void MsaaSampleCountClampsValuesBelowOne()
     {
@@ -114,6 +139,7 @@ public sealed class GpuBackbufferMsaaTests : IDisposable
     private sealed class TestAdapter(int width, int height)
         : RenderSurfaceAdapterBase(width, height)
     {
+        /// <inheritdoc/>
         public override void Present(
             SKImage bufferImage,
             SKRectI bufferRect,

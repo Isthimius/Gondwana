@@ -7,30 +7,49 @@ namespace Gondwana.Cli.Commands.Assets;
 
 internal sealed class AssetsExtractCommand : Command<AssetsExtractCommand.Settings>
 {
+    /// <summary>
+    /// Defines command-line settings for AssetsExtractCommand.
+    /// </summary>
     public sealed class Settings : CommandSettings
     {
+        /// <summary>
+        /// Gets or sets the file.
+        /// </summary>
         [CommandArgument(0, "<file>")]
         [Description("The asset file to extract.")]
         public string File { get; init; } = string.Empty;
 
+        /// <summary>
+        /// Gets or sets the output.
+        /// </summary>
         [CommandArgument(1, "<output>")]
         [Description("The output directory to extract assets into.")]
         public string Output { get; init; } = string.Empty;
 
+        /// <summary>
+        /// Gets or sets the type filter.
+        /// </summary>
         [CommandOption("-t|--type")]
         [Description("Extract only assets of the specified type (e.g. Image, Audio, Svg).")]
         public string? TypeFilter { get; init; }
 
+        /// <summary>
+        /// Gets or sets whether overwrite is enabled.
+        /// </summary>
         [CommandOption("--overwrite")]
         [Description("Overwrite existing files.")]
         [DefaultValue(false)]
         public bool Overwrite { get; init; }
 
+        /// <summary>
+        /// Gets or sets the password used to open the assets file.
+        /// </summary>
         [CommandOption("-p|--password")]
         [Description("Password required to open a password-protected or encrypted bundle.")]
         public string? Password { get; init; }
     }
 
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try

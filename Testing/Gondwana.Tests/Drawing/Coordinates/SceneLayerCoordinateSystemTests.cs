@@ -4,8 +4,14 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Tests.Drawing.Coordinates;
 
+/// <summary>
+/// Contains regression tests for scene layer coordinate system.
+/// </summary>
 public sealed class SceneLayerCoordinateSystemTests
 {
+    /// <summary>
+    /// Verifies coordinate system types preserve oblique right serialized value.
+    /// </summary>
     [Fact]
     public void CoordinateSystemTypes_PreserveObliqueRightSerializedValue()
     {
@@ -13,6 +19,9 @@ public sealed class SceneLayerCoordinateSystemTests
         Assert.Equal(6, (int)CoordinateSystemTypes.ObliqueLeft);
     }
 
+    /// <summary>
+    /// Verifies isometric axial uses tightly packed affine basis.
+    /// </summary>
     [Fact]
     public void IsometricAxial_UsesTightlyPackedAffineBasis()
     {
@@ -31,6 +40,9 @@ public sealed class SceneLayerCoordinateSystemTests
         Assert.Equal(new PointF(64f, 32f), layer.GridToWorldPx(new PointF(0f, 2f)));
     }
 
+    /// <summary>
+    /// Verifies isometric axial world to grid inverts affine basis.
+    /// </summary>
     [Fact]
     public void IsometricAxial_WorldToGrid_InvertsAffineBasis()
     {
@@ -46,6 +58,9 @@ public sealed class SceneLayerCoordinateSystemTests
         Assert.Equal(new PointF(1f, 1.5f), layer.WorldPxToGrid(new PointF(112f, 24f)));
     }
 
+    /// <summary>
+    /// Verifies isometric axial adjacent rows share diamond edge.
+    /// </summary>
     [Fact]
     public void IsometricAxial_AdjacentRowsShareDiamondEdge()
     {
@@ -64,6 +79,11 @@ public sealed class SceneLayerCoordinateSystemTests
         Assert.Equal(first[2], nextRow[3]);
     }
 
+    /// <summary>
+    /// Verifies oblique rows recede in selected direction.
+    /// </summary>
+    /// <param name="coordinateSystem">The coordinate system value for this test case.</param>
+    /// <param name="expectedRowX">The expected row x value for this test case.</param>
     [Theory]
     [InlineData(CoordinateSystemTypes.ObliqueRight, 40f)]
     [InlineData(CoordinateSystemTypes.ObliqueLeft, -40f)]
@@ -83,6 +103,11 @@ public sealed class SceneLayerCoordinateSystemTests
         Assert.Equal(new PointF(expectedRowX, 48f), layer.GridToWorldPx(new PointF(0f, 1f)));
     }
 
+    /// <summary>
+    /// Verifies oblique world to grid inverts selected shear.
+    /// </summary>
+    /// <param name="coordinateSystem">The coordinate system value for this test case.</param>
+    /// <param name="anchorX">The anchor x value for this test case.</param>
     [Theory]
     [InlineData(CoordinateSystemTypes.ObliqueRight, 200f)]
     [InlineData(CoordinateSystemTypes.ObliqueLeft, 40f)]
@@ -103,6 +128,9 @@ public sealed class SceneLayerCoordinateSystemTests
         Assert.Equal(new PointF(3f, 2f), layer.WorldPxToGrid(world));
     }
 
+    /// <summary>
+    /// Verifies oblique left polygon mirrors oblique right.
+    /// </summary>
     [Fact]
     public void ObliqueLeft_PolygonMirrorsObliqueRight()
     {
@@ -142,6 +170,9 @@ public sealed class SceneLayerCoordinateSystemTests
             left[0, 0].OutlinePointsWorld);
     }
 
+    /// <summary>
+    /// Verifies coordinate system type round trips both oblique implementations.
+    /// </summary>
     [Fact]
     public void CoordinateSystemType_RoundTripsBothObliqueImplementations()
     {

@@ -7,8 +7,14 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Scenes.WinForms.Tests;
 
+/// <summary>
+/// Contains regression tests for scene editor.
+/// </summary>
 public sealed class SceneEditorTests
 {
+    /// <summary>
+    /// Verifies transform properties and toolbar compose and clear sparse tile.
+    /// </summary>
     [Fact]
     public void TransformPropertiesAndToolbarComposeAndClearSparseTile() => RunSta(() =>
     {
@@ -38,6 +44,9 @@ public sealed class SceneEditorTests
         Assert.Empty(layer.Tiles);
     });
 
+    /// <summary>
+    /// Verifies effective properties follow frame overrides without changing source.
+    /// </summary>
     [Fact]
     public void EffectivePropertiesFollowFrameOverridesWithoutChangingSource()
     {
@@ -61,6 +70,14 @@ public sealed class SceneEditorTests
         Assert.Equal(new Gondwana.Physics.Collisions.CollisionAdjust(6, 8, 4, 2), adapter.EffectiveCollisionAdjust);
         Assert.Equal(new Spacing(1, 2, 3, 4), region.TilePadding);
     }
+    /// <summary>
+    /// Verifies preview orients artwork without changing source.
+    /// </summary>
+    /// <param name="transform">The transform value for this test case.</param>
+    /// <param name="tl">The tl value for this test case.</param>
+    /// <param name="tr">The tr value for this test case.</param>
+    /// <param name="bl">The bl value for this test case.</param>
+    /// <param name="br">The br value for this test case.</param>
     [Theory]
     [InlineData(TileTransform.Identity, 0, 1, 2, 3)]
     [InlineData(TileTransform.Rotate90, 2, 0, 3, 1)]
@@ -117,6 +134,9 @@ public sealed class SceneEditorTests
         }
         finally { Directory.Delete(root, true); }
     });
+    /// <summary>
+    /// Verifies document save as rebases loose gts and gani references.
+    /// </summary>
     [Fact]
     public void DocumentSaveAsRebasesLooseGtsAndGaniReferences()
     {
@@ -170,6 +190,9 @@ public sealed class SceneEditorTests
         }
     }
 
+    /// <summary>
+    /// Verifies editor uses local docking and creates sparse tile only when edited.
+    /// </summary>
     [Fact]
     public void EditorUsesLocalDockingAndCreatesSparseTileOnlyWhenEdited() =>
         RunSta(() =>

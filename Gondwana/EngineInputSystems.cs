@@ -122,7 +122,7 @@ public sealed class EngineInputSystems
     /// </value>
     /// <remarks>
     /// This property provides access to the keyboard input subsystem. The poller must be
-    /// initialized via <see cref="Initialize"/> with a valid <see cref="IKeyboardAdapter"/>
+    /// initialized via <see cref="Gondwana.Input.Keyboard.KeyboardEventPoller.Initialize"/> with a valid <see cref="IKeyboardAdapter"/>
     /// before use.
     /// </remarks>
     public KeyboardEventPoller? KeyboardEventPoller => KeyboardEventPoller.Instance ?? null;
@@ -136,7 +136,7 @@ public sealed class EngineInputSystems
     /// </value>
     /// <remarks>
     /// This property provides access to the mouse input subsystem. The poller must be
-    /// initialized via <see cref="Initialize"/> with a valid <see cref="IMouseAdapter"/>
+    /// initialized via <see cref="Gondwana.Input.Mouse.MouseEventPoller.Initialize"/> with a valid <see cref="IMouseAdapter"/>
     /// before use.
     /// </remarks>
     public MouseEventPoller? MouseEventPoller => MouseEventPoller.Instance ?? null;

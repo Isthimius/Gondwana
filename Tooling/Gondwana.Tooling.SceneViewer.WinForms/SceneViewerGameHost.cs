@@ -39,6 +39,7 @@ internal sealed class SceneViewerGameHost(
 
     internal event Action? CloseRequested;
 
+    /// <inheritdoc/>
     protected override void LoadTilesheets()
     {
         if (stress is null)
@@ -77,6 +78,7 @@ internal sealed class SceneViewerGameHost(
         _stressTilesheet.DefaultRegion.TileSize = new Size(StressTileSize, StressTileSize);
     }
 
+    /// <inheritdoc/>
     protected override Scene CreateInitialScene()
     {
         if (stress is null)
@@ -115,6 +117,7 @@ internal sealed class SceneViewerGameHost(
         return scene;
     }
 
+    /// <inheritdoc/>
     protected override void OnSceneBound()
     {
         RenderSurface.Host.ViewManager.ConfigureSingleFullView();
@@ -158,6 +161,7 @@ internal sealed class SceneViewerGameHost(
             bounds.Top + (bounds.Height - visible.Height) / 2f));
     }
 
+    /// <inheritdoc/>
     protected override void CreateDirectDrawings()
     {
         if (_view is null)
@@ -182,6 +186,7 @@ internal sealed class SceneViewerGameHost(
         _view.Viewport.TargetRectChanged += OnViewportTargetRectChanged;
     }
 
+    /// <inheritdoc/>
     protected override void OnKeyboardAdapterInitialized()
     {
         var keyboard = Engine.Input.KeyboardEventPoller!;
@@ -191,6 +196,7 @@ internal sealed class SceneViewerGameHost(
             keyboard.StartMonitoringKey((int)key, key.ToString());
     }
 
+    /// <inheritdoc/>
     protected override void OnMouseAdapterInitialized()
     {
         var mouse = Engine.Input.MouseEventPoller!;
@@ -207,6 +213,7 @@ internal sealed class SceneViewerGameHost(
         Engine.BeforeBackgroundTasksExecute += BeforeBackgroundTasksExecute;
     }
 
+    /// <inheritdoc/>
     protected override void ConfigureGamepads() { }
 
     /// <inheritdoc/>
@@ -421,6 +428,7 @@ internal sealed class SceneViewerGameHost(
             height);
     }
 
+    /// <inheritdoc/>
     protected override void OnDisposed()
     {
         _stressTilesheet?.Dispose();

@@ -11,6 +11,10 @@ public sealed class CollisionProfile
     /// <summary>
     /// Initializes a collision profile.
     /// </summary>
+    /// <param name="name">The name.</param>
+    /// <param name="collisionGroup">The name of the collision group assigned to the profile.</param>
+    /// <param name="collidesWith">The names of the groups that this profile can collide with.</param>
+    /// <param name="collidesWithAll">Whether this profile collides with every collision group.</param>
     [JsonConstructor]
     public CollisionProfile(
         string name,
@@ -53,6 +57,8 @@ public sealed class CollisionProfile
     /// <summary>
     /// Resolves this profile's own group through the supplied scene registry.
     /// </summary>
+    /// <param name="groups">The scene registry used to resolve named collision groups.</param>
+    /// <returns>The bit flag of the profile's collision group.</returns>
     public int ResolveCollisionGroup(CollisionGroupRegistry groups)
     {
         ArgumentNullException.ThrowIfNull(groups);
@@ -62,6 +68,8 @@ public sealed class CollisionProfile
     /// <summary>
     /// Resolves this profile's interaction mask through the supplied scene registry.
     /// </summary>
+    /// <param name="groups">The scene registry used to resolve named collision groups.</param>
+    /// <returns>The mask of groups this profile can collide with.</returns>
     public int ResolveCollidesWith(CollisionGroupRegistry groups)
     {
         ArgumentNullException.ThrowIfNull(groups);

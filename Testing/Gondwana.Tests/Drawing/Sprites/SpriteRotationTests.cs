@@ -10,12 +10,18 @@ using SkiaSharp;
 
 namespace Gondwana.Tests.Drawing.Sprites;
 
+/// <summary>
+/// Contains regression tests for sprite rotation.
+/// </summary>
 [Collection("SpriteManager")]
 public sealed class SpriteRotationTests : IDisposable
 {
     private readonly List<Sprite> _sprites = [];
     private readonly List<Scene> _scenes = [];
 
+    /// <summary>
+    /// Verifies rotation expands visual bounds around render center.
+    /// </summary>
     [Fact]
     public void Rotation_ExpandsVisualBoundsAroundRenderCenter()
     {
@@ -32,6 +38,9 @@ public sealed class SpriteRotationTests : IDisposable
         Assert.Equal(unrotated.Top + unrotated.Height / 2f, rotated.Top + rotated.Height / 2f);
     }
 
+    /// <summary>
+    /// Verifies clone sprite preserves rotation.
+    /// </summary>
     [Fact]
     public void CloneSprite_PreservesRotation()
     {
@@ -44,6 +53,9 @@ public sealed class SpriteRotationTests : IDisposable
         Assert.Equal(source.VisualBoundsWorld, clone.VisualBoundsWorld);
     }
 
+    /// <summary>
+    /// Verifies bitmap backbuffer draw rotates sprite around destination center.
+    /// </summary>
     [Fact]
     public void BitmapBackbuffer_Draw_RotatesSpriteAroundDestinationCenter()
     {
@@ -52,6 +64,9 @@ public sealed class SpriteRotationTests : IDisposable
         AssertRotationRendered(backbuffer);
     }
 
+    /// <summary>
+    /// Verifies gpu backbuffer draw rotates sprite around destination center.
+    /// </summary>
     [Fact]
     public void GpuBackbuffer_Draw_RotatesSpriteAroundDestinationCenter()
     {
@@ -60,6 +75,9 @@ public sealed class SpriteRotationTests : IDisposable
         AssertRotationRendered(backbuffer);
     }
 
+    /// <summary>
+    /// Verifies rotation does not change axis aligned collision area.
+    /// </summary>
     [Fact]
     public void Rotation_DoesNotChangeAxisAlignedCollisionArea()
     {
@@ -71,6 +89,7 @@ public sealed class SpriteRotationTests : IDisposable
         Assert.Equal(collisionArea, sprite.CollisionArea);
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         foreach (Sprite sprite in _sprites)

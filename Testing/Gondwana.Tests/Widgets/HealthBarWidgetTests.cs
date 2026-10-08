@@ -7,11 +7,17 @@ using Gondwana.Widgets.Hud;
 
 namespace Gondwana.Tests.Widgets;
 
+/// <summary>
+/// Contains regression tests for health bar widget.
+/// </summary>
 [Collection("SpriteManager")]
 public sealed class HealthBarWidgetTests : IDisposable
 {
     private readonly List<Sprite> _sprites = [];
 
+    /// <summary>
+    /// Verifies constructor starts full and centers bar above sprite.
+    /// </summary>
     [Fact]
     public void Constructor_StartsFullAndCentersBarAboveSprite()
     {
@@ -33,6 +39,9 @@ public sealed class HealthBarWidgetTests : IDisposable
         Assert.Equal(56, bar.FillBoundsWorld.Width);
     }
 
+    /// <summary>
+    /// Verifies value clamps and resizes fill.
+    /// </summary>
     [Fact]
     public void Value_ClampsAndResizesFill()
     {
@@ -57,6 +66,9 @@ public sealed class HealthBarWidgetTests : IDisposable
         Assert.Equal(0f, bar.Value);
     }
 
+    /// <summary>
+    /// Verifies sprite movement repositions bar.
+    /// </summary>
     [Fact]
     public void SpriteMovement_RepositionsBar()
     {
@@ -79,6 +91,7 @@ public sealed class HealthBarWidgetTests : IDisposable
             bar.TrackBoundsWorld.Top);
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         foreach (Sprite sprite in _sprites)

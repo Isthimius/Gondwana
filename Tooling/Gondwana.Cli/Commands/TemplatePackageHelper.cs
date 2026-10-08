@@ -5,8 +5,15 @@ namespace Gondwana.Cli.Commands;
 
 internal static class TemplatePackageHelper
 {
+    /// <summary>
+    /// The package id.
+    /// </summary>
     public const string PackageId = "Gondwana.Templates";
 
+    /// <summary>
+    /// Gets the currently installed Gondwana template package version.
+    /// </summary>
+    /// <returns>The requested string, or <see langword="null"/> when unavailable.</returns>
     public static string? GetInstalledVersion()
     {
         var output = ProcessHelper.Run("dotnet", "new uninstall", out var exitCode);
@@ -77,6 +84,10 @@ internal static class TemplatePackageHelper
         return null;
     }
 
+    /// <summary>
+    /// Ensures that the Gondwana project templates are installed at the requested version.
+    /// </summary>
+    /// <returns>Zero on success, or a nonzero template-installation exit code.</returns>
     public static int EnsureInstalledOrUpdated()
     {
         var installedVersion = GetInstalledVersion();
@@ -85,6 +96,10 @@ internal static class TemplatePackageHelper
             : UpdateInstalledTemplates(installedVersion);
     }
 
+    /// <summary>
+    /// Updates the installed Gondwana project templates.
+    /// </summary>
+    /// <returns>The exit code returned by the template update command.</returns>
     public static int UpdateInstalledTemplates()
     {
         var installedVersion = GetInstalledVersion();

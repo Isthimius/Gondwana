@@ -5,9 +5,15 @@ using Gondwana.Timers;
 
 namespace Gondwana.Tests.Input;
 
+/// <summary>
+/// Contains regression tests for mouse input.
+/// </summary>
 [Collection(InputPollerCollection.Name)]
 public sealed class MouseInputTests : IDisposable
 {
+    /// <summary>
+    /// Verifies poller does not emit phantom zero scroll after real scroll.
+    /// </summary>
     [Fact]
     public void Poller_DoesNotEmitPhantomZeroScrollAfterRealScroll()
     {
@@ -26,6 +32,9 @@ public sealed class MouseInputTests : IDisposable
         Assert.Equal([120], deltas);
     }
 
+    /// <summary>
+    /// Verifies poller emits equal wheel deltas on consecutive polls.
+    /// </summary>
     [Fact]
     public void Poller_EmitsEqualWheelDeltasOnConsecutivePolls()
     {
@@ -42,6 +51,9 @@ public sealed class MouseInputTests : IDisposable
         Assert.Equal([-120, -120], deltas);
     }
 
+    /// <summary>
+    /// Verifies poller advances throttle timestamp after event.
+    /// </summary>
     [Fact]
     public void Poller_AdvancesThrottleTimestampAfterEvent()
     {
@@ -63,6 +75,9 @@ public sealed class MouseInputTests : IDisposable
         Assert.Equal(1, events);
     }
 
+    /// <summary>
+    /// Verifies reset disposes adapter and clears singleton.
+    /// </summary>
     [Fact]
     public void Reset_DisposesAdapterAndClearsSingleton()
     {
@@ -77,20 +92,29 @@ public sealed class MouseInputTests : IDisposable
         Assert.Null(MouseEventPoller.Instance);
     }
 
+    /// <inheritdoc/>
     public void Dispose() => MouseEventPoller.Reset();
 
     private sealed class FakeMouseAdapter : IMouseAdapter, IDisposable
     {
         private int _scrollDelta;
+        /// <inheritdoc/>
         public Point CurrentPosition { get; set; }
+        /// <inheritdoc/>
         public HashSet<MouseButton> PressedButtons { get; } = [];
+        /// <inheritdoc/>
         public KeyboardModifierState CurrentKeyboardModifiers => KeyboardModifierState.None;
+        /// <inheritdoc/>
         public int ScrollDelta
         {
             get => Interlocked.Exchange(ref _scrollDelta, 0);
             set => _scrollDelta = value;
         }
+        /// <summary>
+        /// Gets whether the object is disposed.
+        /// </summary>
         public bool IsDisposed { get; private set; }
+        /// <inheritdoc/>
         public void Dispose() => IsDisposed = true;
     }
 }

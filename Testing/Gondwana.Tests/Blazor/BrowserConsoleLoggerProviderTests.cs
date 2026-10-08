@@ -5,9 +5,15 @@ using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Tests.Blazor;
 
+/// <summary>
+/// Contains regression tests for browser console logger provider.
+/// </summary>
 [Collection("BrowserConsoleLogging")]
 public sealed class BrowserConsoleLoggerProviderTests
 {
+    /// <summary>
+    /// Verifies information writes formatted message to standard output.
+    /// </summary>
     [Fact]
     public void Information_WritesFormattedMessageToStandardOutput()
     {
@@ -33,6 +39,9 @@ public sealed class BrowserConsoleLoggerProviderTests
         }
     }
 
+    /// <summary>
+    /// Verifies warning writes to standard error.
+    /// </summary>
     [Fact]
     public void Warning_WritesToStandardError()
     {
@@ -58,6 +67,9 @@ public sealed class BrowserConsoleLoggerProviderTests
         }
     }
 
+    /// <summary>
+    /// Verifies attach to engine logger persists across set log level and ignores repeated attach.
+    /// </summary>
     [Fact]
     public void AttachToEngineLogger_PersistsAcrossSetLogLevel_AndIgnoresRepeatedAttach()
     {
@@ -153,6 +165,7 @@ public sealed class BrowserConsoleLoggerProviderTests
                 (Dictionary<string, Func<ILoggerProvider>>)PersistentProvidersField.GetValue(null)!,
                 StringComparer.Ordinal);
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             EngineLogger.StopAsyncLogging(flush: true, flushTimeout: TimeSpan.FromSeconds(1));
@@ -176,6 +189,9 @@ public sealed class BrowserConsoleLoggerProviderTests
     }
 }
 
+/// <summary>
+/// Represents browser console logging collection.
+/// </summary>
 [CollectionDefinition("BrowserConsoleLogging", DisableParallelization = true)]
 public sealed class BrowserConsoleLoggingCollection
 {

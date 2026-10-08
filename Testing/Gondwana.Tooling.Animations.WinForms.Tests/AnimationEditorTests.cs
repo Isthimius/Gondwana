@@ -8,6 +8,9 @@ using SkiaSharp;
 
 namespace Gondwana.Tooling.Animations.WinForms.Tests;
 
+/// <summary>
+/// Contains regression tests for animation editor.
+/// </summary>
 public sealed class AnimationEditorTests
 {
     private const BindingFlags PrivateInstance =
@@ -15,6 +18,9 @@ public sealed class AnimationEditorTests
         BindingFlags.Public |
         BindingFlags.NonPublic;
 
+    /// <summary>
+    /// Verifies animation document save round trips complete definition.
+    /// </summary>
     [Fact]
     public void AnimationDocument_SaveRoundTripsCompleteDefinition()
     {
@@ -68,6 +74,9 @@ public sealed class AnimationEditorTests
         }
     }
 
+    /// <summary>
+    /// Verifies editor loads gts source and appends selected frame.
+    /// </summary>
     [Fact]
     public void Editor_LoadsGtsSourceAndAppendsSelectedFrame() =>
         RunSta(() =>
@@ -300,6 +309,9 @@ public sealed class AnimationEditorTests
             }
         });
 
+    /// <summary>
+    /// Verifies persisted loose gts source auto loads when gani is reopened.
+    /// </summary>
     [Fact]
     public void PersistedLooseGtsSource_AutoLoadsWhenGaniIsReopened() =>
         RunSta(() =>
@@ -354,6 +366,9 @@ public sealed class AnimationEditorTests
             }
         });
 
+    /// <summary>
+    /// Verifies legacy gani recovers matching sibling gts and marks document for migration.
+    /// </summary>
     [Fact]
     public void LegacyGani_RecoversMatchingSiblingGtsAndMarksDocumentForMigration() =>
         RunSta(() =>
@@ -415,6 +430,9 @@ public sealed class AnimationEditorTests
             }
         });
 
+    /// <summary>
+    /// Verifies animation document save as rebases loose gts reference.
+    /// </summary>
     [Fact]
     public void AnimationDocument_SaveAsRebasesLooseGtsReference()
     {
@@ -479,6 +497,9 @@ public sealed class AnimationEditorTests
         }
     }
 
+    /// <summary>
+    /// Verifies removing gts source removes dependency but preserves animation frames.
+    /// </summary>
     [Fact]
     public void RemovingGtsSource_RemovesDependencyButPreservesAnimationFrames() =>
         RunSta(() =>
@@ -527,6 +548,9 @@ public sealed class AnimationEditorTests
             }
         });
 
+    /// <summary>
+    /// Verifies duplicate logical tilesheet names are rejected.
+    /// </summary>
     [Fact]
     public void DuplicateLogicalTilesheetNamesAreRejected() =>
         RunSta(() =>
@@ -561,6 +585,9 @@ public sealed class AnimationEditorTests
             }
         });
 
+    /// <summary>
+    /// Verifies preview advance does not pause playback when selecting advanced frame.
+    /// </summary>
     [Fact]
     public void PreviewAdvanceDoesNotPausePlaybackWhenSelectingAdvancedFrame() =>
         RunSta(() =>

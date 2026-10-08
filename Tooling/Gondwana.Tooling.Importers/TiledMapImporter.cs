@@ -9,12 +9,19 @@ using static Gondwana.Tooling.Importers.TiledTilesetImporter;
 
 namespace Gondwana.Tooling.Importers;
 
+/// <summary>
+/// Represents tiled map importer.
+/// </summary>
 public sealed class TiledMapImporter : ExternalAssetImporter
 {
+    /// <inheritdoc/>
     public override string Id => "tiled.tmx";
+    /// <inheritdoc/>
     public override string DisplayName => "Tiled Map (.tmx)";
+    /// <inheritdoc/>
     public override IReadOnlyList<string> SupportedExtensions => [".tmx"];
 
+    /// <inheritdoc/>
     protected override void BuildPlan(ImportPlan plan, CancellationToken token)
     {
         var root = ReadXml(plan.Request.SourcePath);
@@ -138,6 +145,12 @@ public sealed class TiledMapImporter : ExternalAssetImporter
         return result;
     }
 
+    /// <summary>
+    /// Decodes the tile identifiers in a Tiled map layer.
+    /// </summary>
+    /// <param name="data">The data to process.</param>
+    /// <param name="expectedCount">The expected count.</param>
+    /// <returns>The decoded tile identifiers in layer order.</returns>
     public static uint[] DecodeLayer(XElement data, int expectedCount)
     {
         if (expectedCount <= 0 || expectedCount > 16_000_000) throw new InvalidDataException("Invalid or excessive layer size.");

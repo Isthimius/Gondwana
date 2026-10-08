@@ -8,6 +8,9 @@ using Gondwana.Widgets.Controls;
 
 namespace Gondwana.Tests.Widgets;
 
+/// <summary>
+/// Contains regression tests for label widget scrolling.
+/// </summary>
 public sealed class LabelWidgetScrollingTests
 {
     private const string LongText = """
@@ -23,6 +26,9 @@ public sealed class LabelWidgetScrollingTests
         Tenth line of scrollable instructions.
         """;
 
+    /// <summary>
+    /// Verifies default policy preserves traditional non interactive label.
+    /// </summary>
     [Fact]
     public void DefaultPolicyPreservesTraditionalNonInteractiveLabel()
     {
@@ -37,6 +43,9 @@ public sealed class LabelWidgetScrollingTests
         Assert.Equal(0f, label.VerticalScrollOffsetPx);
     }
 
+    /// <summary>
+    /// Verifies auto scrollbar tracks overflow and reserves content width.
+    /// </summary>
     [Fact]
     public void AutoScrollbarTracksOverflowAndReservesContentWidth()
     {
@@ -67,6 +76,9 @@ public sealed class LabelWidgetScrollingTests
         Assert.Equal(0f, label.VerticalScrollOffsetPx);
     }
 
+    /// <summary>
+    /// Verifies mouse wheel scrolls and clamps without taking focus.
+    /// </summary>
     [Fact]
     public void MouseWheelScrollsAndClampsWithoutTakingFocus()
     {
@@ -95,6 +107,9 @@ public sealed class LabelWidgetScrollingTests
         Assert.Equal(0f, label.VerticalScrollOffsetPx);
     }
 
+    /// <summary>
+    /// Verifies track click and thumb drag move through scrollable range.
+    /// </summary>
     [Fact]
     public void TrackClickAndThumbDragMoveThroughScrollableRange()
     {

@@ -4,8 +4,17 @@ internal sealed class InputDialog : Form
 {
     private readonly TextBox _textBox;
 
+    /// <summary>
+    /// Gets the value.
+    /// </summary>
     public string Value => _textBox.Text.Trim();
 
+    /// <summary>
+    /// Initializes a new instance of the <c>InputDialog</c> class.
+    /// </summary>
+    /// <param name="title">The title.</param>
+    /// <param name="prompt">The prompt.</param>
+    /// <param name="initialValue">The initial value.</param>
     public InputDialog(string title, string prompt, string initialValue = "")
     {
         Text = title;
@@ -61,6 +70,14 @@ internal sealed class InputDialog : Form
         DarkTheme.Apply(this);
     }
 
+    /// <summary>
+    /// Displays the dialog and returns the entered value.
+    /// </summary>
+    /// <param name="owner">The window that owns the dialog.</param>
+    /// <param name="title">The title.</param>
+    /// <param name="prompt">The prompt.</param>
+    /// <param name="initialValue">The initial value.</param>
+    /// <returns>The requested string, or <see langword="null"/> when unavailable.</returns>
     public static string? Show(IWin32Window owner, string title, string prompt, string initialValue = "")
     {
         using var dialog = new InputDialog(title, prompt, initialValue);

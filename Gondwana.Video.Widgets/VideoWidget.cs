@@ -20,6 +20,12 @@ public sealed class VideoWidget : DraggableWidgetBase
     private readonly IVideoPlayer _player;
 
     /// <summary>Creates a view/screen-space widget. The default factory creates VlcVideoPlayer.</summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="bounds">The widget bounds in view-local pixels.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="playerFactory">The factory used to create the video player.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public VideoWidget(RenderSurfaceHostBase renderSurfaceHost, View view, Rectangle bounds,
         VideoSource source, Func<IVideoPlayer>? playerFactory = null, string? nickname = null)
         : base(renderSurfaceHost, DirectDrawingMode.View, ValidateBounds(bounds).Location, nickname)
@@ -42,6 +48,12 @@ public sealed class VideoWidget : DraggableWidgetBase
     }
 
     /// <summary>Creates a scene-layer/world-space widget. The default factory creates VlcVideoPlayer.</summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="bounds">The widget bounds in world pixels.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="playerFactory">The factory used to create the video player.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public VideoWidget(RenderSurfaceHostBase renderSurfaceHost, SceneLayer sceneLayer, Rectangle bounds,
         VideoSource source, Func<IVideoPlayer>? playerFactory = null, string? nickname = null)
         : base(renderSurfaceHost, DirectDrawingMode.SceneLayer, ValidateBounds(bounds).Location, nickname)
@@ -64,11 +76,23 @@ public sealed class VideoWidget : DraggableWidgetBase
     }
 
     /// <summary>Creates a view widget transferring player ownership to DirectVideo.</summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="bounds">The widget bounds in view-local pixels.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="player">The media player to use.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public VideoWidget(RenderSurfaceHostBase renderSurfaceHost, View view, Rectangle bounds,
         VideoSource source, IVideoPlayer player, string? nickname = null)
         : this(renderSurfaceHost, view, bounds, source, OwnedPlayerFactory(player), nickname) { }
 
     /// <summary>Creates a scene-layer widget transferring player ownership to DirectVideo.</summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="bounds">The widget bounds in world pixels.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="player">The media player to use.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public VideoWidget(RenderSurfaceHostBase renderSurfaceHost, SceneLayer sceneLayer, Rectangle bounds,
         VideoSource source, IVideoPlayer player, string? nickname = null)
         : this(renderSurfaceHost, sceneLayer, bounds, source, OwnedPlayerFactory(player), nickname) { }
@@ -80,6 +104,8 @@ public sealed class VideoWidget : DraggableWidgetBase
     public Rectangle Bounds => Mode == DirectDrawingMode.View ? Video.ScreenBounds : Video.WorldBounds;
 
     /// <summary>Moves the composite and resizes its video using existing drawing bounds.</summary>
+    /// <param name="bounds">The new bounds in the widget's drawing coordinate space.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public VideoWidget SetBounds(Rectangle bounds)
     {
         ValidateBounds(bounds);
@@ -97,10 +123,13 @@ public sealed class VideoWidget : DraggableWidgetBase
     /// <summary>Stops playback; DirectVideo retains its last consumed frame.</summary>
     public void Stop() => Video.Stop();
     /// <summary>Seeks to a media position.</summary>
+    /// <param name="position">The requested playback position.</param>
     public void Seek(TimeSpan position) => Video.Seek(position);
     /// <summary>Replaces the source and starts playback through DirectVideo.</summary>
+    /// <param name="source">The source.</param>
     public void Open(VideoSource source) => Video.Open(source);
     /// <summary>Replaces a URI/file source and starts playback through DirectVideo.</summary>
+    /// <param name="source">The source.</param>
     public void Open(Uri source) => Video.Open(source);
     /// <summary>Gets or sets playback speed.</summary>
     public double PlaybackRate { get => Video.PlaybackRate; set => Video.PlaybackRate = value; }

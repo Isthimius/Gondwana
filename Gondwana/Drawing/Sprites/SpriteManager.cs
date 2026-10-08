@@ -335,6 +335,7 @@ public sealed class SpriteManager : IDisposable
     /// Resolves retained collision profile names for sprites whose layer has just
     /// become attached to a scene.
     /// </summary>
+    /// <param name="sceneLayer">The scene layer to associate with the sprite or its collision profiles.</param>
     internal void RefreshCollisionProfiles(SceneLayer sceneLayer)
     {
         ArgumentNullException.ThrowIfNull(sceneLayer);

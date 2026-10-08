@@ -6,11 +6,18 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
+/// <summary>
+/// Contains regression tests for dock layout.
+/// </summary>
 public sealed class DockLayoutTests
 {
     private static string Root => (string)AppContext.GetData("Gondwana.Tooling.SettingsRoot")!;
     private static string Layout(string profile, string app = "test-host") => Path.Combine(Root, app, "Docking", profile + ".xml");
 
+    /// <summary>
+    /// Verifies standalone shell restores hidden tool and view resets it.
+    /// </summary>
+    /// <param name="editorType">The editor type value for this test case.</param>
     [Theory]
     [InlineData(typeof(Gondwana.Tooling.Assets.WinForms.AssetEditorControl))]
     [InlineData(typeof(Gondwana.Tooling.Tilesheets.WinForms.TilesheetEditorControl))]
@@ -65,6 +72,9 @@ public sealed class DockLayoutTests
         }
     });
 
+    /// <summary>
+    /// Verifies unwritable preference location does not break authoring or reset.
+    /// </summary>
     [Fact]
     public void UnwritablePreferenceLocationDoesNotBreakAuthoringOrReset() => Sta(() =>
     {
@@ -77,6 +87,11 @@ public sealed class DockLayoutTests
         Panes(editor.Model).Single(p => p.Text == "Validation").Hide();
     });
 
+    /// <summary>
+    /// Verifies editor split tabs sizing visibility recovery and reset survive new instances.
+    /// </summary>
+    /// <param name="kind">The kind value for this test case.</param>
+    /// <param name="count">The count value for this test case.</param>
     [Theory]
     [InlineData("gaf", 2)]
     [InlineData("gts", 5)]
@@ -142,6 +157,9 @@ public sealed class DockLayoutTests
         }
     });
 
+    /// <summary>
+    /// Verifies profiles are isolated and unchanged sibling cannot overwrite latest change.
+    /// </summary>
     [Fact]
     public void ProfilesAreIsolatedAndUnchangedSiblingCannotOverwriteLatestChange() => Sta(() =>
     {
@@ -164,6 +182,11 @@ public sealed class DockLayoutTests
         using (var editor = Editor("gscn")) Assert.False(editor.Model.IsPaneVisible("Validation"));
     });
 
+    /// <summary>
+    /// Verifies bad and stale preferences do not prevent editor startup.
+    /// </summary>
+    /// <param name="fault">The fault value for this test case.</param>
+    /// <param name="kind">The kind value for this test case.</param>
     [Theory]
     [InlineData("malformed", "gscn")]
     [InlineData("malformed", "gspr")]
@@ -193,6 +216,9 @@ public sealed class DockLayoutTests
         Assert.All(Panes(restored.Model), pane => Assert.False(pane.IsHidden));
     });
 
+    /// <summary>
+    /// Verifies studio tools restore without documents and view and reset remain available.
+    /// </summary>
     [Fact]
     public void StudioToolsRestoreWithoutDocumentsAndViewAndResetRemainAvailable() => Sta(() =>
     {
@@ -239,6 +265,10 @@ public sealed class DockLayoutTests
         }
     });
 
+    /// <summary>
+    /// Verifies studio ignores missing plugins and corrupt preferences.
+    /// </summary>
+    /// <param name="corrupt">The corrupt value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -264,6 +294,7 @@ public sealed class DockLayoutTests
             _host.Show();
             Application.DoEvents();
         }
+        /// <inheritdoc/>
         public void Dispose() { Model.Dispose(); _host.Dispose(); }
     }
     private static EditorHost Editor(string kind) => new(kind);

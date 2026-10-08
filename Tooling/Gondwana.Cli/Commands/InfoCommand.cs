@@ -6,6 +6,7 @@ namespace Gondwana.Cli.Commands;
 
 internal sealed class InfoCommand : Command
 {
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, CancellationToken cancellationToken)
     {
         var csproj = FindCsproj(Directory.GetCurrentDirectory());

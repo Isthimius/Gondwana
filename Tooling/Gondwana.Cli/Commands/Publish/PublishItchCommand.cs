@@ -6,38 +6,63 @@ namespace Gondwana.Cli.Commands.Publish;
 
 internal sealed class PublishItchCommand : Command<PublishItchCommand.Settings>
 {
+    /// <summary>
+    /// Defines command-line settings for PublishItchCommand.
+    /// </summary>
     public sealed class Settings : CommandSettings
     {
+        /// <summary>
+        /// Gets or sets the project.
+        /// </summary>
         [CommandOption("-p|--project")]
         [Description("Path to the .csproj file or directory containing a single .csproj. Defaults to the current directory.")]
         public string? Project { get; init; }
 
+        /// <summary>
+        /// Gets or sets the configuration.
+        /// </summary>
         [CommandOption("-c|--configuration")]
         [Description("Build configuration. Defaults to 'Release'.")]
         [DefaultValue("Release")]
         public string Configuration { get; init; } = "Release";
 
+        /// <summary>
+        /// Gets or sets the framework.
+        /// </summary>
         [CommandOption("-f|--framework")]
         [Description("Browser target framework. Auto-detected when the project has a single browser target.")]
         public string? Framework { get; init; }
 
+        /// <summary>
+        /// Gets or sets the output.
+        /// </summary>
         [CommandOption("-o|--output")]
         [Description("Output zip path. Defaults beside the browser publish output as <ProjectName>-itch.zip.")]
         public string? Output { get; init; }
 
+        /// <summary>
+        /// Gets or sets the base href.
+        /// </summary>
         [CommandOption("--base-href")]
         [Description("Override the packaged <base href>, for example ./ or /games/mygame/. No override is applied by default.")]
         public string? BaseHref { get; init; }
 
+        /// <summary>
+        /// Gets or sets whether skip build is enabled.
+        /// </summary>
         [CommandOption("--skip-build")]
         [Description("Skip the dotnet publish step and package an existing Blazor publish output.")]
         public bool SkipBuild { get; init; }
 
+        /// <summary>
+        /// Gets or sets whether skip workload is enabled.
+        /// </summary>
         [CommandOption("--skip-workload")]
         [Description("Skip checking/installing the wasm-tools workload during the publish step.")]
         public bool SkipWorkload { get; init; }
     }
 
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         if (!ProjectHelper.TryResolveProject(settings.Project, out var csprojPath, out var error))

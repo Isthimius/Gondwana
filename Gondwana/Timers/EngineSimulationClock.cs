@@ -9,11 +9,13 @@ internal static class EngineSimulationClock
     private static int _timerDriven;
 
     /// <summary>Gets the current simulation tick, or wall-clock time outside timer-driven mode.</summary>
+    /// <returns>The current simulation timestamp, using the high-resolution clock outside timer-driven updates.</returns>
     internal static long GetCurrentTick() => Volatile.Read(ref _timerDriven) != 0
         ? Interlocked.Read(ref _simulationTick)
         : HighResTimer.GetCurrentTick();
 
     /// <summary>Begins timer-driven operation at the supplied tick.</summary>
+    /// <param name="tick">The timestamp for the current simulation or rendering step.</param>
     internal static void BeginTimerDriven(long tick)
     {
         Interlocked.Exchange(ref _simulationTick, tick);
@@ -21,6 +23,7 @@ internal static class EngineSimulationClock
     }
 
     /// <summary>Advances the timer-driven simulation clock to a scheduled fixed step.</summary>
+    /// <param name="tick">The timestamp for the current simulation or rendering step.</param>
     internal static void SetTimerDrivenTick(long tick) =>
         Interlocked.Exchange(ref _simulationTick, tick);
 

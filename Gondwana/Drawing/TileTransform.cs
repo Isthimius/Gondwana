@@ -28,6 +28,9 @@ public enum TileTransform
 public static class TileTransformGeometry
 {
     /// <summary>Transforms a vector in screen coordinates (positive Y points down).</summary>
+    /// <param name="point">The point.</param>
+    /// <param name="transform">The rotation or reflection applied to the artwork.</param>
+    /// <returns>The vector after rotation or reflection, with positive Y pointing down.</returns>
     public static PointF TransformPoint(PointF point, TileTransform transform) => transform switch
     {
         TileTransform.Identity => point,
@@ -42,6 +45,9 @@ public static class TileTransformGeometry
     };
 
     /// <summary>Gets the dimensions after orientation, swapping axes for quarter turns and diagonal reflections.</summary>
+    /// <param name="size">The size.</param>
+    /// <param name="transform">The rotation or reflection applied to the artwork.</param>
+    /// <returns>The oriented dimensions, with axes swapped when required.</returns>
     public static Size TransformSize(Size size, TileTransform transform)
     {
         var point = TransformPoint(new(size.Width, size.Height), transform);
@@ -49,6 +55,9 @@ public static class TileTransformGeometry
     }
 
     /// <summary>Moves directional edge values with the artwork.</summary>
+    /// <param name="value">The value.</param>
+    /// <param name="transform">The rotation or reflection applied to the artwork.</param>
+    /// <returns>The edge spacing after applying the artwork orientation.</returns>
     public static Spacing TransformSpacing(Spacing value, TileTransform transform) => transform switch
     {
         TileTransform.Identity => value,
@@ -63,6 +72,9 @@ public static class TileTransformGeometry
     };
 
     /// <summary>Moves signed collision insets with the artwork.</summary>
+    /// <param name="value">The value.</param>
+    /// <param name="transform">The rotation or reflection applied to the artwork.</param>
+    /// <returns>The collision insets after applying the artwork orientation.</returns>
     public static CollisionAdjust TransformCollisionAdjust(CollisionAdjust value, TileTransform transform)
     {
         var edges = TransformSpacing(new(value.Left, value.Top, value.Right, value.Bottom), transform);
@@ -70,6 +82,9 @@ public static class TileTransformGeometry
     }
 
     /// <summary>Applies an operation after the current orientation in placement space.</summary>
+    /// <param name="current">The current artwork orientation.</param>
+    /// <param name="operation">The orientation operation to apply after the current transform.</param>
+    /// <returns>The orientation equivalent to applying the current transform followed by the operation.</returns>
     public static TileTransform Compose(TileTransform current, TileTransform operation)
     {
         var x = TransformPoint(TransformPoint(new(1, 0), current), operation);
@@ -81,6 +96,10 @@ public static class TileTransformGeometry
     }
 
     /// <summary>Gets visual bounds around the fixed cell center, with oriented overhang. Half-pixel anchors round down.</summary>
+    /// <param name="cell">The fixed cell rectangle in pixels.</param>
+    /// <param name="sourceOverhang">The untransformed artwork overhang in pixels.</param>
+    /// <param name="transform">The rotation or reflection applied to the artwork.</param>
+    /// <returns>The visual rectangle around the fixed cell center, including transformed overhang.</returns>
     public static Rectangle GetVisualBounds(Rectangle cell, Spacing sourceOverhang, TileTransform transform)
     {
         var size = TransformSize(cell.Size, transform);
@@ -91,6 +110,10 @@ public static class TileTransformGeometry
     }
 
     /// <summary>Maps a normalized source point into an oriented destination rectangle.</summary>
+    /// <param name="normalizedPoint">The source point normalized to the unit rectangle.</param>
+    /// <param name="destination">The destination rectangle.</param>
+    /// <param name="transform">The rotation or reflection applied to the artwork.</param>
+    /// <returns>The oriented point in destination-rectangle coordinates.</returns>
     public static PointF MapToDestination(PointF normalizedPoint, RectangleF destination, TileTransform transform)
     {
         var point = TransformPoint(new(normalizedPoint.X - .5f, normalizedPoint.Y - .5f), transform);

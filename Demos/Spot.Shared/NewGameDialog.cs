@@ -279,6 +279,7 @@ internal sealed class NewGameDialog : DialogBox
         }
     }
 
+    /// <inheritdoc/>
     protected override void ProcessShown()
     {
         base.ProcessShown();
@@ -384,12 +385,14 @@ internal sealed class NewGameDialog : DialogBox
         Close(DialogResult.Cancel);
     }
 
+    /// <inheritdoc/>
     protected override void OnAcceptRequested()
     {
         CaptureOptions();
         Close(DialogResult.OK);
     }
 
+    /// <inheritdoc/>
     protected override void OnClosed(DialogResult result)
     {
         CaptureOptions();
@@ -426,6 +429,7 @@ internal sealed class NewGameDialog : DialogBox
         Options = options;
     }
 
+    /// <inheritdoc/>
     public override void Dispose()
     {
         _startButton.Clicked -= OnStartClicked;

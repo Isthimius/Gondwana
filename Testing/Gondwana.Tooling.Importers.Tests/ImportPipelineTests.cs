@@ -3,26 +3,41 @@ using Gondwana.Drawing.Tilesheets.GTS;
 
 namespace Gondwana.Tooling.Importers.Tests;
 
+/// <summary>
+/// Contains regression tests for import pipeline.
+/// </summary>
 public sealed class ImportPipelineTests : IDisposable
 {
     private readonly string directory = Path.Combine(Path.GetTempPath(), "ImportPipeline-" + Guid.NewGuid().ToString("N"));
     private readonly ExternalImportRequest request;
+    /// <summary>
+    /// Initializes a new instance of the <c>ImportPipelineTests</c> class.
+    /// </summary>
     public ImportPipelineTests()
     {
         Directory.CreateDirectory(directory);
         string source = Path.Combine(directory, "source.txt"); File.WriteAllText(source, "source");
         request = new(source, Path.Combine(directory, "output"));
     }
+    /// <inheritdoc/>
     public void Dispose() => Directory.Delete(directory, true);
     private sealed class Provider(Action<ImportPlan> build) : ExternalAssetImporter
     {
+        /// <inheritdoc/>
         public override string Id => "test";
+        /// <inheritdoc/>
         public override string DisplayName => "Test";
+        /// <inheritdoc/>
         public override IReadOnlyList<string> SupportedExtensions => [".txt"];
+        /// <inheritdoc/>
         protected override void BuildPlan(ImportPlan plan, CancellationToken cancellationToken) => build(plan);
     }
     private static void Add(ImportPlan p, string file, string? key = null) => p.Add(file, "GTS", key, Encoding.UTF8.GetBytes("new"));
 
+    /// <summary>
+    /// Verifies invalid plans never write.
+    /// </summary>
+    /// <param name="code">The code value for this test case.</param>
     [Theory]
     [InlineData("output.duplicate")]
     [InlineData("key.duplicate")]
@@ -47,6 +62,9 @@ public sealed class ImportPipelineTests : IDisposable
         Assert.False(Directory.Exists(request.OutputDirectory));
     }
 
+    /// <summary>
+    /// Verifies existing logical keys are protected even with overwrite.
+    /// </summary>
     [Fact]
     public void ExistingLogicalKeysAreProtectedEvenWithOverwrite()
     {
@@ -57,6 +75,9 @@ public sealed class ImportPipelineTests : IDisposable
         Assert.False(analysis.CanImport);
     }
 
+    /// <summary>
+    /// Verifies source dependency cannot be overwritten.
+    /// </summary>
     [Fact]
     public void SourceDependencyCannotBeOverwritten()
     {
@@ -65,6 +86,9 @@ public sealed class ImportPipelineTests : IDisposable
         Assert.Equal("source", File.ReadAllText(request.SourcePath));
     }
 
+    /// <summary>
+    /// Verifies cancellation before writing does not create output.
+    /// </summary>
     [Fact]
     public void CancellationBeforeWritingDoesNotCreateOutput()
     {
@@ -74,6 +98,9 @@ public sealed class ImportPipelineTests : IDisposable
         Assert.False(Directory.Exists(request.OutputDirectory));
     }
 
+    /// <summary>
+    /// Verifies failed commit restores earlier replacements and removes staging.
+    /// </summary>
     [Fact]
     public void FailedCommitRestoresEarlierReplacementsAndRemovesStaging()
     {

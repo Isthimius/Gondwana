@@ -4,9 +4,16 @@ using SkiaSharp;
 namespace Gondwana.Rendering;
 
 /// <summary>Aspect-preserving mapping between logical Backbuffer ScreenPx and adapter pixels.</summary>
+/// <param name="Scale">The scale from logical backbuffer pixels to adapter pixels.</param>
+/// <param name="DestinationRect">The centered presentation rectangle in adapter pixels.</param>
 public readonly record struct PresentationTransform(float Scale, SKRect DestinationRect)
 {
     /// <summary>Fits the entire logical image inside the adapter, centered on both axes.</summary>
+    /// <param name="bufferWidth">The logical backbuffer width in pixels.</param>
+    /// <param name="bufferHeight">The logical backbuffer height in pixels.</param>
+    /// <param name="adapterWidth">The adapter width in pixels.</param>
+    /// <param name="adapterHeight">The adapter height in pixels.</param>
+    /// <returns>The aspect-preserving scale and centered destination rectangle.</returns>
     public static PresentationTransform Fit(int bufferWidth, int bufferHeight, int adapterWidth, int adapterHeight)
     {
         if (bufferWidth <= 0 || bufferHeight <= 0 || adapterWidth <= 0 || adapterHeight <= 0)
@@ -19,6 +26,9 @@ public readonly record struct PresentationTransform(float Scale, SKRect Destinat
     }
 
     /// <summary>Maps input without clamping margins. False means outside the presented game area.</summary>
+    /// <param name="adapterPx">The adapter px.</param>
+    /// <param name="screenPx">The point in logical backbuffer screen pixels.</param>
+    /// <returns><see langword="true"/> if the operation succeeded; otherwise, <see langword="false"/>.</returns>
     public bool TryAdapterPxToScreenPx(PointF adapterPx, out PointF screenPx)
     {
         screenPx = Scale > 0
@@ -28,6 +38,8 @@ public readonly record struct PresentationTransform(float Scale, SKRect Destinat
     }
 
     /// <summary>Maps logical dirty edges outwards to avoid gaps at fractional presentation scales.</summary>
+    /// <param name="screenRect">The rectangle in logical backbuffer screen pixels.</param>
+    /// <returns>The enclosing adapter-pixel rectangle, rounded outward to cover fractional edges.</returns>
     public Rectangle ScreenRectToAdapterRect(Rectangle screenRect)
         => Scale <= 0 ? Rectangle.Empty : Rectangle.FromLTRB(
             (int)Math.Floor(DestinationRect.Left + screenRect.Left * Scale),

@@ -36,6 +36,8 @@ public sealed class DirectLightLayer : IDisposable
     /// <summary>
     /// Initializes a new light owner for the given render surface and scene layer.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
     public DirectLightLayer(RenderSurfaceHostBase renderSurfaceHost, SceneLayer sceneLayer)
     {
         RenderSurfaceHost = renderSurfaceHost ?? throw new ArgumentNullException(nameof(renderSurfaceHost));
@@ -65,6 +67,11 @@ public sealed class DirectLightLayer : IDisposable
     /// <summary>
     /// Creates a warm, screen-blended torch-style light.
     /// </summary>
+    /// <param name="centerWorldPx">The center in world pixels.</param>
+    /// <param name="radiusWorldPx">The radius in world pixels.</param>
+    /// <param name="color">The color to apply.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
+    /// <returns>The radial light added to the light layer.</returns>
     public DirectRadialLight AddTorchLight(
         PointF centerWorldPx,
         float radiusWorldPx,
@@ -94,6 +101,8 @@ public sealed class DirectLightLayer : IDisposable
     /// <summary>
     /// Removes and disposes a light owned by this layer.
     /// </summary>
+    /// <param name="light">The light.</param>
+    /// <returns><see langword="true"/> if the entry was found and removed; otherwise, <see langword="false"/>.</returns>
     public bool Remove(DirectRadialLight light)
     {
         if (!_lights.Remove(light))

@@ -62,7 +62,7 @@ public struct ScriptedMovement
     /// <summary>
     /// Optional easing function applied to the normalized time value during interpolation.
     /// Only used by <see cref="MovementScriptType.TweenTo"/> to control the acceleration curve.
-    /// If null, linear interpolation is used. See <see cref="EasingFunctions"/> for available easing curves.
+    /// If null, linear interpolation is used. See <see cref="Gondwana.Physics.Movement.Easing.EasingFunctions"/> for available easing curves.
     /// The function should accept a value in [0,1] and return a smoothed value in [0,1].
     /// </summary>
     public Func<float, float>? Easing;

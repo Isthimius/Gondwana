@@ -10,9 +10,17 @@ using SkiaSharp;
 
 namespace Gondwana.Tests.Widgets;
 
+/// <summary>
+/// Contains regression tests for video widget rendering.
+/// </summary>
 [Collection("Effects rendering")]
 public sealed class VideoWidgetRenderingTests
 {
+    /// <summary>
+    /// Verifies registered video renders moves and hides through normal pipeline.
+    /// </summary>
+    /// <param name="gpu">The gpu value for this test case.</param>
+    /// <param name="world">The world value for this test case.</param>
     [Theory]
     [InlineData(false, false)]
     [InlineData(false, true)]
@@ -67,6 +75,7 @@ public sealed class VideoWidgetRenderingTests
 
     private sealed class Adapter() : RenderSurfaceAdapterBase(64, 64)
     {
+        /// <inheritdoc/>
         public override void Present(SKImage image, SKRectI source, SKRect destination) { }
     }
 }

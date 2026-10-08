@@ -454,6 +454,7 @@ public abstract class BackbufferBase : IDisposable
     /// No-op for GL-thread-rendered backbuffers: the adapter always presents the full surface,
     /// so there is no partial-blit dirty region to track.
     /// </summary>
+    /// <param name="area">The area.</param>
     protected internal void AddToBackbufferDirtyRectangle(Rectangle area)
     {
         if (IsGlThreadRendered || area.IsEmpty)

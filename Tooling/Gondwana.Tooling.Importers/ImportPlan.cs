@@ -6,16 +6,37 @@ using Gondwana.Scenes.GSCN;
 namespace Gondwana.Tooling.Importers;
 
 /// <summary>Shared native serialization, validation and conflict analysis.</summary>
+/// <param name="request">The request.</param>
 public sealed class ImportPlan(ExternalImportRequest request)
 {
     internal List<(ExternalImportArtifact Artifact, byte[] Content)> Outputs { get; } = [];
+    /// <summary>
+    /// Gets the dependencies.
+    /// </summary>
     public List<string> Dependencies { get; } = [];
+    /// <summary>
+    /// Gets the diagnostics.
+    /// </summary>
     public List<ExternalImportDiagnostic> Diagnostics { get; } = [];
+    /// <summary>
+    /// Gets the request.
+    /// </summary>
     public ExternalImportRequest Request { get; } = request;
 
+    /// <summary>
+    /// Adds a diagnostic to the import plan.
+    /// </summary>
+    /// <param name="severity">The severity.</param>
+    /// <param name="code">The code.</param>
+    /// <param name="message">The message.</param>
     public void Report(ExternalImportSeverity severity, string code, string message) =>
         Diagnostics.Add(new(severity, code, message, Request.SourcePath));
 
+    /// <summary>
+    /// Adds the supplied entry to the import plan.
+    /// </summary>
+    /// <param name="filename">The filename.</param>
+    /// <param name="definition">The persisted definition to process.</param>
     public void Add(string filename, TilesheetDefinition definition)
     {
         foreach (var error in TilesheetDefinitionValidator.Validate(definition)) Report(ExternalImportSeverity.Error, "native.validation", error);
@@ -23,6 +44,11 @@ public sealed class ImportPlan(ExternalImportRequest request)
         Add(filename, "GTS", definition.Name, Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(definition)));
     }
 
+    /// <summary>
+    /// Adds the supplied entry to the import plan.
+    /// </summary>
+    /// <param name="filename">The filename.</param>
+    /// <param name="definition">The persisted definition to process.</param>
     public void Add(string filename, AnimationDefinition definition)
     {
         foreach (var error in AnimationDefinitionValidator.Validate(definition)) Report(ExternalImportSeverity.Error, "native.validation", error);
@@ -30,6 +56,11 @@ public sealed class ImportPlan(ExternalImportRequest request)
         Add(filename, "GANI", definition.Key, Encoding.UTF8.GetBytes(AnimationDefinitionSerializer.ToJson(definition)));
     }
 
+    /// <summary>
+    /// Adds the supplied entry to the import plan.
+    /// </summary>
+    /// <param name="filename">The filename.</param>
+    /// <param name="definition">The persisted definition to process.</param>
     public void Add(string filename, SceneDefinition definition)
     {
         foreach (var error in SceneDefinitionValidator.Validate(definition)) Report(ExternalImportSeverity.Error, "native.validation", error);
@@ -37,6 +68,13 @@ public sealed class ImportPlan(ExternalImportRequest request)
         Add(filename, "GSCN", definition.ID, Encoding.UTF8.GetBytes(SceneDefinitionSerializer.ToJson(definition)));
     }
 
+    /// <summary>
+    /// Adds the supplied entry to the import plan.
+    /// </summary>
+    /// <param name="filename">The filename.</param>
+    /// <param name="kind">The kind.</param>
+    /// <param name="key">The lookup key for the resource.</param>
+    /// <param name="content">The content.</param>
     public void Add(string filename, string kind, string? key, byte[] content)
     {
         if (filename != Path.GetFileName(filename) || filename is "." or "..")
@@ -104,10 +142,29 @@ public sealed class ImportPlan(ExternalImportRequest request)
 public abstract class ExternalAssetImporter : IExternalAssetImporter
 {
     private static readonly SemaphoreSlim WriteGate = new(1, 1);
+    /// <summary>
+    /// Gets the unique identifier.
+    /// </summary>
     public abstract string Id { get; }
+    /// <summary>
+    /// Gets the display name.
+    /// </summary>
     public abstract string DisplayName { get; }
+    /// <summary>
+    /// Gets the supported extensions.
+    /// </summary>
     public abstract IReadOnlyList<string> SupportedExtensions { get; }
+    /// <summary>
+    /// Checks whether the provider supports the requested import source.
+    /// </summary>
+    /// <param name="sourcePath">The path to the external source file.</param>
+    /// <returns><see langword="true"/> if the provider supports the source; otherwise, <see langword="false"/>.</returns>
     public virtual bool CanImport(string sourcePath) => SupportedExtensions.Contains(Path.GetExtension(sourcePath), StringComparer.OrdinalIgnoreCase);
+    /// <summary>
+    /// Builds the planned output files and diagnostics for an external import.
+    /// </summary>
+    /// <param name="plan">The plan.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
     protected abstract void BuildPlan(ImportPlan plan, CancellationToken cancellationToken);
 
     private (ImportPlan Plan, ExternalImportAnalysis Analysis) Prepare(ExternalImportRequest request, CancellationToken token)
@@ -128,8 +185,20 @@ public abstract class ExternalAssetImporter : IExternalAssetImporter
         return (plan, plan.Analyze(Id));
     }
 
+    /// <summary>
+    /// Analyzes the external source and planned import outputs.
+    /// </summary>
+    /// <param name="request">The request.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The planned import outputs and diagnostics without writing output files.</returns>
     public ExternalImportAnalysis Analyze(ExternalImportRequest request, CancellationToken cancellationToken = default) => Prepare(request, cancellationToken).Analysis;
 
+    /// <summary>
+    /// Imports the external source into Gondwana asset definitions.
+    /// </summary>
+    /// <param name="request">The request.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The generated output paths and diagnostics from the import.</returns>
     public ExternalImportResult Import(ExternalImportRequest request, CancellationToken cancellationToken = default)
     {
         WriteGate.Wait(cancellationToken);

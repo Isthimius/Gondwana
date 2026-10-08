@@ -10,9 +10,16 @@ namespace Gondwana.Tooling.Tilesheets.WinForms.Tests;
 
 // Run all three public controls through the same embedding contract in the
 // existing Windows CI suite. Production editors do not reference one another.
+/// <summary>
+/// Contains regression tests for nested editor docking.
+/// </summary>
 [Collection("WinForms interaction")]
 public sealed class NestedEditorDockingTests
 {
+    /// <summary>
+    /// Verifies panes stay local and hidden contents are disposed with outer document.
+    /// </summary>
+    /// <param name="kind">The kind value for this test case.</param>
     [Theory]
     [InlineData("GTS")]
     [InlineData("GAF")]
@@ -201,6 +208,9 @@ public sealed class NestedEditorDockingTests
         }
     });
 
+    /// <summary>
+    /// Verifies asset filters selection and save work after rearranging panes.
+    /// </summary>
     [Fact]
     public void AssetFiltersSelectionAndSaveWorkAfterRearrangingPanes() => RunSta(() =>
     {

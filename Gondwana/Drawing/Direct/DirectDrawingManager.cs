@@ -17,7 +17,7 @@ namespace Gondwana.Drawing.Direct;
 /// </para>
 /// <para>
 /// Direct drawings are automatically registered when constructed and removed when disposed. The manager
-/// maintains a concurrent dictionary keyed by each drawing's unique <see cref="IDirectDrawable.Id"/>,
+/// maintains a concurrent dictionary keyed by each drawing's unique <see cref="IDrawable.Id"/>,
 /// ensuring thread-safe access during rendering and updates.
 /// </para>
 /// <para>
@@ -101,11 +101,11 @@ public sealed class DirectDrawingManager : IDisposable
     /// <remarks>
     /// <para>
     /// This method performs a case-sensitive ordinal comparison using the drawing's
-    /// <see cref="IDirectDrawable.Nickname"/>. If multiple drawings share the same nickname
+    /// <see cref="IDrawable.Nickname"/>. If multiple drawings share the same nickname
     /// (which should generally be avoided), only one will be returned.
     /// </para>
     /// <para>
-    /// For reliable lookup, consider using the drawing's <see cref="IDirectDrawable.Id"/> instead,
+    /// For reliable lookup, consider using the drawing's <see cref="IDrawable.Id"/> instead,
     /// which is guaranteed to be unique.
     /// </para>
     /// </remarks>
@@ -164,7 +164,7 @@ public sealed class DirectDrawingManager : IDisposable
     /// <summary>
     /// Updates all registered direct drawings using the current engine tick.
     /// </summary>
-    /// <param name="tick">The current tick value from <see cref="HighResTimer"/>.</param>
+    /// <param name="tick">The current tick value from <see cref="Gondwana.Timers.HighResTimer"/>.</param>
     /// <remarks>
     /// <para>
     /// This method is called internally by the engine's main loop each frame. It creates a snapshot
@@ -196,7 +196,7 @@ public sealed class DirectDrawingManager : IDisposable
     /// <remarks>
     /// <para>
     /// This method is called internally by direct drawing constructors to register themselves with the manager.
-    /// If a drawing with the same <see cref="IDirectDrawable.Id"/> already exists, the old instance is
+    /// If a drawing with the same <see cref="IDrawable.Id"/> already exists, the old instance is
     /// disposed and replaced by the new one.
     /// </para>
     /// <para>

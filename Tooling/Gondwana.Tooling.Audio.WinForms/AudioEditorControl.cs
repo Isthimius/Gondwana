@@ -10,6 +10,9 @@ namespace Gondwana.Tooling.Audio.WinForms;
 /// </summary>
 public sealed class AudioEditorControl : UserControl
 {
+    /// <summary>
+    /// Gets the pane names.
+    /// </summary>
     public static IReadOnlyList<string> PaneNames { get; } =
         Array.AsReadOnly(["Audio resources", "Properties", "Validation"]);
 
@@ -39,9 +42,19 @@ public sealed class AudioEditorControl : UserControl
         ScrollBars = ScrollBars.Vertical
     };
 
+    /// <summary>
+    /// Gets the document.
+    /// </summary>
     public AudioDocument Document { get; }
+    /// <summary>
+    /// Gets the definition.
+    /// </summary>
     public AudioDefinition Definition => Document.Definition;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>AudioEditorControl</c> class.
+    /// </summary>
+    /// <param name="document">The document displayed or edited by the control.</param>
     public AudioEditorControl(AudioDocument document)
     {
         Document = document ?? throw new ArgumentNullException(nameof(document));
@@ -75,6 +88,10 @@ public sealed class AudioEditorControl : UserControl
         RefreshView();
     }
 
+    /// <summary>
+    /// Adds loose files.
+    /// </summary>
+    /// <param name="paths">The paths of the source files to add.</param>
     public void AddLooseFiles(IEnumerable<string> paths)
     {
         ArgumentNullException.ThrowIfNull(paths);
@@ -88,6 +105,10 @@ public sealed class AudioEditorControl : UserControl
             SelectResource(last);
     }
 
+    /// <summary>
+    /// Validates the current document and refreshes the displayed diagnostics.
+    /// </summary>
+    /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
     public IReadOnlyList<string> UpdateValidation()
     {
         var errors = Document.Validate();
@@ -97,18 +118,35 @@ public sealed class AudioEditorControl : UserControl
         return errors;
     }
 
+    /// <summary>
+    /// Shows the named editor pane.
+    /// </summary>
+    /// <param name="paneName">The name of the editor pane.</param>
+    /// <returns><see langword="true"/> if the named pane was found; otherwise, <see langword="false"/>.</returns>
     public bool ShowPane(string paneName) =>
         _workspace.ShowPane(paneName);
 
+    /// <summary>
+    /// Determines whether the named editor pane is visible.
+    /// </summary>
+    /// <param name="paneName">The name of the editor pane.</param>
+    /// <returns><see langword="true"/> if the pane is visible; otherwise, <see langword="false"/>.</returns>
     public bool IsPaneVisible(string paneName) =>
         _workspace.IsPaneVisible(paneName);
 
     /// <summary>Restore the default pane arrangement for this editor type.</summary>
     public void ResetLayout() => _workspace.ResetLayout();
 
+    /// <summary>
+    /// Shows every editor pane.
+    /// </summary>
     public void ShowAllPanes() =>
         _workspace.ShowAllPanes();
 
+    /// <summary>
+    /// Commits pending editor input to the document.
+    /// </summary>
+    /// <returns><see langword="true"/> if the pending edits were committed; otherwise, <see langword="false"/>.</returns>
     public bool CommitEdits()
     {
         _validation.Focus();

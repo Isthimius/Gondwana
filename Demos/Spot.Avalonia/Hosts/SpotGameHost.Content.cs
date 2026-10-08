@@ -43,6 +43,7 @@ internal sealed partial class SpotGameHost
         return splash;
     }
 
+    /// <inheritdoc/>
     protected override void LoadAssets()
     {
         if (Engine.Managers.AudioResources.IsBackendConfigured)
@@ -86,6 +87,7 @@ internal sealed partial class SpotGameHost
             _font);
     }
 
+    /// <inheritdoc/>
     protected override void LoadTilesheets()
     {
         using (var stream = RequireAsset(AssetTypes.Image, "spot.png"))

@@ -6,8 +6,14 @@ using SkiaSharp;
 
 namespace Gondwana.Tests.Drawing.Direct;
 
+/// <summary>
+/// Contains regression tests for direct rectangle image fill.
+/// </summary>
 public sealed class DirectRectangleImageFillTests
 {
+    /// <summary>
+    /// Verifies set fill image repeat tiles image across rectangle.
+    /// </summary>
     [Fact]
     public void SetFillImage_RepeatTilesImageAcrossRectangle()
     {
@@ -37,6 +43,9 @@ public sealed class DirectRectangleImageFillTests
         Assert.Equal(SKColors.Blue, result.GetPixel(5, 3));
     }
 
+    /// <summary>
+    /// Verifies set fill image stretch fills rectangle without repeating.
+    /// </summary>
     [Fact]
     public void SetFillImage_StretchFillsRectangleWithoutRepeating()
     {
@@ -66,6 +75,9 @@ public sealed class DirectRectangleImageFillTests
         Assert.Equal(SKColors.Blue, result.GetPixel(7, 2));
     }
 
+    /// <summary>
+    /// Verifies set fill pattern invalid scale preserves existing pattern.
+    /// </summary>
     [Fact]
     public void SetFillPattern_InvalidScalePreservesExistingPattern()
     {
@@ -94,6 +106,9 @@ public sealed class DirectRectangleImageFillTests
         Assert.Equal(SKColors.Red, result.GetPixel(2, 0));
     }
 
+    /// <summary>
+    /// Verifies set fill image image source still renders.
+    /// </summary>
     [Fact]
     public void SetFillImage_ImageSourceStillRenders()
     {

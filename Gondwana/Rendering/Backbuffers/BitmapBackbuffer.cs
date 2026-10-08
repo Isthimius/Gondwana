@@ -34,6 +34,9 @@ public sealed class BitmapBackbuffer : BackbufferBase
     /// Creates a new instance of <see cref="BitmapBackbuffer"/> with the specified dimensions.
     /// This method exists to support reflection-based instantiation in browser/WASM scenarios.
     /// </summary>
+    /// <param name="width">The width.</param>
+    /// <param name="height">The height.</param>
+    /// <returns>The resulting bitmap backbuffer.</returns>
     public static BitmapBackbuffer Create(int width, int height) => new BitmapBackbuffer(width, height);
 
     /// <summary>
@@ -117,7 +120,7 @@ public sealed class BitmapBackbuffer : BackbufferBase
             }
         }
 
-        /// prepare for drawing...
+        // Prepare for drawing.
         lock (_gate)
         {
             if (_disposed) return;

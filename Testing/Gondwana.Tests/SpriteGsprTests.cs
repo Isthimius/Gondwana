@@ -8,9 +8,15 @@ using SkiaSharp;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for sprite gspr.
+/// </summary>
 [Collection("Global engine state")]
 public sealed class SpriteGsprTests
 {
+    /// <summary>
+    /// Verifies collection round trip preserves state and canonical dependencies.
+    /// </summary>
     [Fact]
     public void CollectionRoundTripPreservesStateAndCanonicalDependencies()
     {
@@ -53,6 +59,9 @@ public sealed class SpriteGsprTests
         }
     }
 
+    /// <summary>
+    /// Verifies failed collection removes earlier materialized sprites.
+    /// </summary>
     [Fact]
     public void FailedCollectionRemovesEarlierMaterializedSprites()
     {

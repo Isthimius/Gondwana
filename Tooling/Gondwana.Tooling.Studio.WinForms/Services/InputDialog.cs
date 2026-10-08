@@ -9,6 +9,12 @@ internal static class InputDialog
     /// Shows a modal text-input dialog and returns the entered text, or
     /// <see langword="null"/> if the user cancelled.
     /// </summary>
+    /// <param name="message">The message.</param>
+    /// <param name="title">The title.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <param name="owner">The window that owns the dialog.</param>
+    /// <param name="password">The password used to open the assets file, if required.</param>
+    /// <returns>The requested string, or <see langword="null"/> when unavailable.</returns>
     public static string? Show(string message, string title, string? defaultValue = null, IWin32Window? owner = null, bool password = false)
     {
         using var form = new Form

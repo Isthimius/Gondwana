@@ -124,11 +124,13 @@ internal sealed class HowToPlayDialog : DialogBox
 
     internal LabelWidget InstructionsLabel { get; }
 
+    /// <inheritdoc/>
     protected override void OnAcceptRequested()
     {
         Close(DialogResult.Close);
     }
 
+    /// <inheritdoc/>
     public override void Dispose()
     {
         _closeButton.Clicked -= OnCloseClicked;

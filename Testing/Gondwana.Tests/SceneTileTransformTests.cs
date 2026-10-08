@@ -11,9 +11,21 @@ using SkiaSharp;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for scene tile transform.
+/// </summary>
 [Collection("Global engine state")]
 public sealed class SceneTileTransformTests
 {
+    /// <summary>
+    /// Verifies placement metadata persists without changing source.
+    /// </summary>
+    /// <param name="transform">The transform value for this test case.</param>
+    /// <param name="left">The left value for this test case.</param>
+    /// <param name="top">The top value for this test case.</param>
+    /// <param name="right">The right value for this test case.</param>
+    /// <param name="bottom">The bottom value for this test case.</param>
+    /// <param name="swap">The swap value for this test case.</param>
     [Theory]
     [MemberData(nameof(TileTransformGeometryTests.Orientations), MemberType = typeof(TileTransformGeometryTests))]
     public void PlacementMetadataPersistsWithoutChangingSource(TileTransform transform, int left, int top, int right, int bottom, bool swap)
@@ -56,6 +68,9 @@ public sealed class SceneTileTransformTests
         Assert.Equal(transform, SceneDefinitionSerializer.FromScene(restored).Layers[0].Tiles.Single(t => t.X == 0 && t.Y == 0).Transform);
     }
 
+    /// <summary>
+    /// Verifies omitted transform defaults to identity and invalid values fail validation.
+    /// </summary>
     [Fact]
     public void OmittedTransformDefaultsToIdentityAndInvalidValuesFailValidation()
     {
@@ -65,6 +80,14 @@ public sealed class SceneTileTransformTests
         Assert.Contains(SceneDefinitionValidator.Validate(definition), error => error.Contains("transform"));
     }
 
+    /// <summary>
+    /// Verifies rendering orients four distinct corners and restores canvas.
+    /// </summary>
+    /// <param name="transform">The transform value for this test case.</param>
+    /// <param name="tl">The tl value for this test case.</param>
+    /// <param name="tr">The tr value for this test case.</param>
+    /// <param name="bl">The bl value for this test case.</param>
+    /// <param name="br">The br value for this test case.</param>
     [Theory]
     [InlineData(TileTransform.Identity, 0, 1, 2, 3)]
     [InlineData(TileTransform.Rotate90, 2, 0, 3, 1)]
@@ -99,6 +122,9 @@ public sealed class SceneTileTransformTests
         Assert.Equal(colors[br], pixels.GetPixel(dest.Left + 3 * dest.Width / 4, dest.Top + 3 * dest.Height / 4));
     }
 
+    /// <summary>
+    /// Verifies culling finds rotated visual far outside its cell and serialization rebuilds index.
+    /// </summary>
     [Fact]
     public void CullingFindsRotatedVisualFarOutsideItsCellAndSerializationRebuildsIndex()
     {
@@ -114,6 +140,9 @@ public sealed class SceneTileTransformTests
         layer[0, 0]!.Transform = TileTransform.Identity;
         Assert.Empty(layer.TransformedTiles);
     }
+    /// <summary>
+    /// Verifies transform invalidates old and new bounds.
+    /// </summary>
     [Fact]
     public void TransformInvalidatesOldAndNewBounds()
     {
@@ -131,6 +160,10 @@ public sealed class SceneTileTransformTests
         Assert.Equal(new CollisionAdjust(3, 4, 2, 1), tile.EffectiveCollisionAdjust);
     }
 
+    /// <summary>
+    /// Verifies every projection keeps cell outline and wraps transformed bounds.
+    /// </summary>
+    /// <param name="projection">The projection value for this test case.</param>
     [Theory]
     [MemberData(nameof(SceneLayerWrappingTests.Projections), MemberType = typeof(SceneLayerWrappingTests))]
     public void EveryProjectionKeepsCellOutlineAndWrapsTransformedBounds(CoordinateSystemTypes projection)
@@ -154,6 +187,10 @@ public sealed class SceneTileTransformTests
             draw => ReferenceEquals(draw.Owner, tile) && draw.Offset == offset);
     }
 
+    /// <summary>
+    /// Verifies render query contains exact results and matches fixed tile depth order.
+    /// </summary>
+    /// <param name="projection">The projection value for this test case.</param>
     [Theory]
     [MemberData(nameof(SceneLayerWrappingTests.Projections), MemberType = typeof(SceneLayerWrappingTests))]
     public void RenderQueryContainsExactResultsAndMatchesFixedTileDepthOrder(
@@ -180,6 +217,10 @@ public sealed class SceneTileTransformTests
         Assert.Equal(expectedOrder, render.Tiles);
     }
 
+    /// <summary>
+    /// Verifies streaming render query matches materialized candidate order.
+    /// </summary>
+    /// <param name="projection">The projection value for this test case.</param>
     [Theory]
     [MemberData(nameof(SceneLayerWrappingTests.Projections), MemberType = typeof(SceneLayerWrappingTests))]
     public void StreamingRenderQueryMatchesMaterializedCandidateOrder(
@@ -210,6 +251,10 @@ public sealed class SceneTileTransformTests
         Assert.Equal(materialized.Tiles, streamed);
     }
 
+    /// <summary>
+    /// Verifies non square transformed tiles disable render order guarantee.
+    /// </summary>
+    /// <param name="projection">The projection value for this test case.</param>
     [Theory]
     [MemberData(nameof(SceneLayerWrappingTests.Projections), MemberType = typeof(SceneLayerWrappingTests))]
     public void NonSquareTransformedTilesDisableRenderOrderGuarantee(
@@ -227,6 +272,9 @@ public sealed class SceneTileTransformTests
         Assert.False(render.IsRenderOrdered);
     }
 
+    /// <summary>
+    /// Verifies animator retains orientation while following frame collision metadata.
+    /// </summary>
     [Fact]
     public void AnimatorRetainsOrientationWhileFollowingFrameCollisionMetadata()
     {

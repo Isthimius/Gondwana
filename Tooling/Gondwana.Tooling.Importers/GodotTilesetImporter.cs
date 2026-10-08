@@ -9,12 +9,19 @@ using SkiaSharp;
 
 namespace Gondwana.Tooling.Importers;
 
+/// <summary>
+/// Represents godot tileset importer.
+/// </summary>
 public sealed class GodotTilesetImporter : ExternalAssetImporter
 {
+    /// <inheritdoc/>
     public override string Id => "godot.tileset";
+    /// <inheritdoc/>
     public override string DisplayName => "Godot 3 / 4 TileSet (.tres)";
+    /// <inheritdoc/>
     public override IReadOnlyList<string> SupportedExtensions => [".tres"];
 
+    /// <inheritdoc/>
     protected override void BuildPlan(ImportPlan plan, CancellationToken token)
     {
         var sections = GodotTextResource.Parse(File.ReadAllText(plan.Request.SourcePath));

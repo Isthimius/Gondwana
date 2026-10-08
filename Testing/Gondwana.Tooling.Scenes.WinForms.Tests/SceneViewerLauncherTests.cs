@@ -2,11 +2,20 @@ using Gondwana.Tooling.Scenes.Editing;
 
 namespace Gondwana.Tooling.Scenes.WinForms.Tests;
 
+/// <summary>
+/// Contains regression tests for scene viewer launcher.
+/// </summary>
 public sealed class SceneViewerLauncherTests : IDisposable
 {
     private readonly string _directory = Path.Combine(Path.GetTempPath(), "ViewerLaunchTests", Guid.NewGuid().ToString("N"));
+    /// <summary>
+    /// Initializes a new instance of the <c>SceneViewerLauncherTests</c> class.
+    /// </summary>
     public SceneViewerLauncherTests() => Directory.CreateDirectory(_directory);
 
+    /// <summary>
+    /// Verifies clean saved document launches without save prompt.
+    /// </summary>
     [Fact]
     public void CleanSavedDocumentLaunchesWithoutSavePrompt()
     {
@@ -18,6 +27,11 @@ public sealed class SceneViewerLauncherTests : IDisposable
         Assert.Equal(document.FilePath, launched);
     }
 
+    /// <summary>
+    /// Verifies dirty document launches only after successful save.
+    /// </summary>
+    /// <param name="confirm">The confirm value for this test case.</param>
+    /// <param name="save">The save value for this test case.</param>
     [Theory]
     [InlineData(false, false)]
     [InlineData(true, false)]
@@ -37,6 +51,9 @@ public sealed class SceneViewerLauncherTests : IDisposable
         Assert.Equal(confirm && save, launched);
     }
 
+    /// <summary>
+    /// Verifies new document requires actual saved path.
+    /// </summary>
     [Fact]
     public void NewDocumentRequiresActualSavedPath()
     {
@@ -50,6 +67,9 @@ public sealed class SceneViewerLauncherTests : IDisposable
         }, _ => { }));
     }
 
+    /// <summary>
+    /// Verifies arguments preserve spaces without shell quoting.
+    /// </summary>
     [Fact]
     public void ArgumentsPreserveSpacesWithoutShellQuoting()
     {
@@ -60,6 +80,9 @@ public sealed class SceneViewerLauncherTests : IDisposable
         Assert.Equal(string.Empty, start.Arguments);
     }
 
+    /// <summary>
+    /// Verifies resolves matching repository build and published subfolder.
+    /// </summary>
     [Fact]
     public void ResolvesMatchingRepositoryBuildAndPublishedSubfolder()
     {
@@ -75,5 +98,6 @@ public sealed class SceneViewerLauncherTests : IDisposable
         Assert.Equal(published, SceneViewerLauncher.Locate(editor));
     }
 
+    /// <inheritdoc/>
     public void Dispose() => Directory.Delete(_directory, true);
 }

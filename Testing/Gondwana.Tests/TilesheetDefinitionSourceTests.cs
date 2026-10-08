@@ -64,6 +64,7 @@ public sealed class TilesheetDefinitionSourceTests
     /// <summary>
     /// Verifies that the loose definition file factory rejects null or whitespace file paths.
     /// </summary>
+    /// <param name="path">The path value for this test case.</param>
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -94,6 +95,7 @@ public sealed class TilesheetDefinitionSourceTests
     /// <summary>
     /// Verifies that the packed definition file factory rejects null or whitespace assets file paths.
     /// </summary>
+    /// <param name="assetsPath">The assets path value for this test case.</param>
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -106,6 +108,7 @@ public sealed class TilesheetDefinitionSourceTests
     /// <summary>
     /// Verifies that the packed definition file factory rejects null or whitespace entry names.
     /// </summary>
+    /// <param name="entryName">The entry name value for this test case.</param>
     [Theory]
     [InlineData(null)]
     [InlineData("")]

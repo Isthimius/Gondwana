@@ -6,22 +6,35 @@ namespace Gondwana.Cli.Commands.Run;
 
 internal sealed class RunDesktopCommand : Command<RunDesktopCommand.Settings>
 {
+    /// <summary>
+    /// Defines command-line settings for RunDesktopCommand.
+    /// </summary>
     public sealed class Settings : CommandSettings
     {
+        /// <summary>
+        /// Gets or sets the project.
+        /// </summary>
         [CommandOption("-p|--project")]
         [Description("Path to the .csproj file or directory containing a single .csproj. Defaults to the current directory.")]
         public string? Project { get; init; }
 
+        /// <summary>
+        /// Gets or sets the configuration.
+        /// </summary>
         [CommandOption("-c|--configuration")]
         [Description("Build configuration. Defaults to 'Debug'.")]
         [DefaultValue("Debug")]
         public string Configuration { get; init; } = "Debug";
 
+        /// <summary>
+        /// Gets or sets the framework.
+        /// </summary>
         [CommandOption("-f|--framework")]
         [Description("Target framework to run (e.g. 'net8.0'). Required when the project targets multiple frameworks.")]
         public string? Framework { get; init; }
     }
 
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         var projectPath = settings.Project ?? Directory.GetCurrentDirectory();

@@ -5,6 +5,11 @@ namespace Gondwana.Audio.GSND;
 /// </summary>
 public static class AudioDefinitionValidator
 {
+    /// <summary>
+    /// Checks the definition and collects validation errors.
+    /// </summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
     public static IReadOnlyList<string> Validate(AudioDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);

@@ -29,13 +29,23 @@ public sealed partial class EngineState
     [JsonConverter(typeof(SpriteStateEntryConverter))]
     private sealed class SpriteStateEntry : DefinitionStateEntry
     {
+        /// <summary>
+        /// Gets or sets the path to the loose GSPR sprite definition.
+        /// </summary>
         public string? GsprPath { get; set; }
+        /// <summary>
+        /// Gets or sets the definition.
+        /// </summary>
         public SpriteDefinition? Definition { get; set; }
+        /// <summary>
+        /// Gets or sets the legacy sprites.
+        /// </summary>
         [JsonIgnore] public List<Sprite>? LegacySprites { get; set; }
     }
 
     private sealed class SpriteStateEntryConverter : JsonConverter<SpriteStateEntry>
     {
+        /// <inheritdoc/>
         public override SpriteStateEntry? ReadJson(JsonReader reader, Type objectType,
             SpriteStateEntry? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
@@ -54,7 +64,9 @@ public sealed partial class EngineState
                 Definition = obj.GetValue("Definition", StringComparison.OrdinalIgnoreCase)?.ToObject<SpriteDefinition>(serializer)
             };
         }
+        /// <inheritdoc/>
         public override bool CanWrite => false;
+        /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, SpriteStateEntry? value, JsonSerializer serializer) => throw new NotSupportedException();
     }
 
@@ -102,9 +114,15 @@ public sealed partial class EngineState
     /// </summary>
     private sealed class AudioStateEntry : DefinitionStateEntry
     {
+        /// <summary>
+        /// Gets or sets the path to the loose GSND audio definition.
+        /// </summary>
         [JsonProperty]
         public string? GsndPath { get; set; }
 
+        /// <summary>
+        /// Gets or sets the definition.
+        /// </summary>
         [JsonProperty]
         public AudioDefinition? Definition { get; set; }
     }
@@ -142,6 +160,7 @@ public sealed partial class EngineState
     /// </summary>
     private sealed class SceneStateEntryConverter : JsonConverter<SceneStateEntry>
     {
+        /// <inheritdoc/>
         public override SceneStateEntry? ReadJson(
             JsonReader reader,
             Type objectType,
@@ -185,12 +204,14 @@ public sealed partial class EngineState
             };
         }
 
+        /// <inheritdoc/>
         public override void WriteJson(
             JsonWriter writer,
             SceneStateEntry? value,
             JsonSerializer serializer) =>
             throw new NotSupportedException();
 
+        /// <inheritdoc/>
         public override bool CanWrite => false;
     }
 
@@ -492,16 +513,37 @@ public sealed partial class EngineState
 
     private sealed class EngineStateSnapshot
     {
+        /// <summary>
+        /// Gets or sets the assets-file references included in the saved state.
+        /// </summary>
         [JsonProperty(TypeNameHandling = TypeNameHandling.None, ItemTypeNameHandling = TypeNameHandling.None)]
         public List<AssetsFileStateEntry>? AssetsFiles { get; set; }
+        /// <summary>
+        /// Gets or sets the tilesheet state entries keyed by name.
+        /// </summary>
         [JsonProperty] public Dictionary<string, TilesheetStateEntry>? Tilesheets { get; set; }
+        /// <summary>
+        /// Gets or sets the animation state entries keyed by animation key.
+        /// </summary>
         [JsonProperty] public Dictionary<string, AnimationStateEntry>? Cycles { get; set; }
+        /// <summary>
+        /// Gets or sets the scene state entries.
+        /// </summary>
         [JsonProperty] public List<SceneStateEntry>? Scenes { get; set; }
+        /// <summary>
+        /// Gets or sets the sprite definition or legacy sprite state.
+        /// </summary>
         [JsonProperty] public SpriteStateEntry? Sprites { get; set; }
+        /// <summary>
+        /// Gets or sets the audio definition state.
+        /// </summary>
         [JsonProperty] public AudioStateEntry? Audio { get; set; }
 
         // Legacy compatibility: pre-GSND EngineState files serialized runtime
         // AudioResource objects directly under SoundResources.
+        /// <summary>
+        /// Gets or sets the legacy audio resources retained for backwards-compatible loading.
+        /// </summary>
         [JsonProperty] public Dictionary<string, AudioResource>? SoundResources { get; set; }
     }
 
@@ -812,6 +854,11 @@ public sealed partial class EngineState
     /// Single "apply" path used by both LoadFromFile and MergeFromFile.
     /// DRY: reads snapshot, loads assets, then merges/rehydrates everything in a consistent order.
     /// </summary>
+    /// <param name="snapshot">The deserialized state snapshot to apply.</param>
+    /// <param name="clearExisting">Whether to clear existing state before applying the snapshot.</param>
+    /// <param name="overwriteExisting">Whether incoming entries replace existing entries with the same identities.</param>
+    /// <param name="parts">The state categories to restore.</param>
+    /// <param name="baseDirectory">The directory used to resolve relative definition paths.</param>
     private static void ApplySnapshot(
         EngineStateSnapshot snapshot,
         bool clearExisting,

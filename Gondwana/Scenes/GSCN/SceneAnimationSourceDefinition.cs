@@ -10,7 +10,13 @@ namespace Gondwana.Scenes.GSCN;
 [JsonConverter(typeof(StringEnumConverter))]
 public enum SceneAnimationSourceKind
 {
+    /// <summary>
+    /// The definition is stored in a loose file.
+    /// </summary>
     LooseDefinitionFile,
+    /// <summary>
+    /// The definition is stored in an assets file.
+    /// </summary>
     PackedDefinitionFile
 }
 
@@ -20,12 +26,33 @@ public enum SceneAnimationSourceKind
 /// </summary>
 public sealed class SceneAnimationSourceDefinition
 {
+    /// <summary>
+    /// Gets or sets the lookup key of the referenced animation.
+    /// </summary>
     public string AnimationKey { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets the kind.
+    /// </summary>
     public SceneAnimationSourceKind Kind { get; set; } = SceneAnimationSourceKind.LooseDefinitionFile;
+    /// <summary>
+    /// Gets or sets the path to the loose GANI animation definition.
+    /// </summary>
     public string? GaniPath { get; set; }
+    /// <summary>
+    /// Gets or sets the path to the containing assets file.
+    /// </summary>
     public string? AssetsFilePath { get; set; }
+    /// <summary>
+    /// Gets or sets the entry name inside the assets file.
+    /// </summary>
     public string? AssetEntryName { get; set; }
 
+    /// <summary>
+    /// Creates a reference to a definition stored in a loose file.
+    /// </summary>
+    /// <param name="animationKey">The lookup key of the animation.</param>
+    /// <param name="ganiPath">The path to the loose GANI animation definition.</param>
+    /// <returns>A reference to the loose definition file.</returns>
     public static SceneAnimationSourceDefinition Loose(string animationKey, string ganiPath)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(animationKey);
@@ -38,6 +65,13 @@ public sealed class SceneAnimationSourceDefinition
         };
     }
 
+    /// <summary>
+    /// Creates a reference to a definition stored inside an assets file.
+    /// </summary>
+    /// <param name="animationKey">The lookup key of the animation.</param>
+    /// <param name="assetsFilePath">The path to the assets file.</param>
+    /// <param name="assetEntryName">The entry name inside the assets file.</param>
+    /// <returns>A reference to the packed definition entry.</returns>
     public static SceneAnimationSourceDefinition Packed(
         string animationKey,
         string assetsFilePath,

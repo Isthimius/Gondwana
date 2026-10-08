@@ -8,15 +8,30 @@ public sealed partial class EngineState
     // Keep the historic archive property names, but never deserialize a live archive.
     private sealed class AssetsFileStateEntry
     {
+        /// <summary>
+        /// Gets or sets the file path.
+        /// </summary>
         public string FilePath { get; set; } = string.Empty;
+        /// <summary>
+        /// Gets or sets the password used to open the assets file.
+        /// </summary>
         public string? Password { get; set; }
+        /// <summary>
+        /// Gets or sets whether the assets file uses encryption.
+        /// </summary>
         public bool UseEncryption { get; set; }
     }
 
     private abstract class DefinitionStateEntry
     {
+        /// <summary>
+        /// Gets or sets the path to the containing assets file.
+        /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string? AssetsFilePath { get; set; }
+        /// <summary>
+        /// Gets or sets the entry name inside the assets file.
+        /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string? AssetEntryName { get; set; }
 

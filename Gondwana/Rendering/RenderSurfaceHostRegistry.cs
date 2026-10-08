@@ -38,6 +38,7 @@ public static class RenderSurfaceHostRegistry
     /// Returns a thread-safe point-in-time snapshot of all currently registered
     /// <see cref="RenderSurfaceHostBase"/> instances.
     /// </summary>
+    /// <returns>A snapshot of the currently registered render-surface hosts.</returns>
     internal static RenderSurfaceHostBase[] Snapshot()
     {
         lock (_lock)

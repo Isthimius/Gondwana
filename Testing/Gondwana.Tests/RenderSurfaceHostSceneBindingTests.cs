@@ -10,6 +10,9 @@ namespace Gondwana.Tests;
 /// </summary>
 public sealed class RenderSurfaceHostSceneBindingTests
 {
+    /// <summary>
+    /// Verifies bind when scene belongs to another host throws without changing either host.
+    /// </summary>
     [Fact]
     public void Bind_WhenSceneBelongsToAnotherHost_ThrowsWithoutChangingEitherHost()
     {
@@ -28,6 +31,9 @@ public sealed class RenderSurfaceHostSceneBindingTests
         Assert.Same(Scene.Empty, secondHost.Scene);
     }
 
+    /// <summary>
+    /// Verifies bind when host changes scenes releases previous scene.
+    /// </summary>
     [Fact]
     public void Bind_WhenHostChangesScenes_ReleasesPreviousScene()
     {
@@ -44,6 +50,9 @@ public sealed class RenderSurfaceHostSceneBindingTests
         Assert.Same(firstHost, secondScene.BoundRenderSurfaceHost);
     }
 
+    /// <summary>
+    /// Verifies dispose releases scene binding.
+    /// </summary>
     [Fact]
     public void Dispose_ReleasesSceneBinding()
     {
@@ -56,6 +65,9 @@ public sealed class RenderSurfaceHostSceneBindingTests
         Assert.Null(scene.BoundRenderSurfaceHost);
     }
 
+    /// <summary>
+    /// Verifies scene dispose releases host and restores empty scene.
+    /// </summary>
     [Fact]
     public void SceneDispose_ReleasesHostAndRestoresEmptyScene()
     {
@@ -75,6 +87,7 @@ public sealed class RenderSurfaceHostSceneBindingTests
     private sealed class TestAdapter(int width, int height)
         : RenderSurfaceAdapterBase(width, height)
     {
+        /// <inheritdoc/>
         public override void Present(
             SKImage bufferImage,
             SKRectI bufferRect,

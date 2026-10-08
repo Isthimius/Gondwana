@@ -11,11 +11,18 @@ using Spectre.Console.Cli;
 
 namespace Gondwana.Tests.Cli;
 
+/// <summary>
+/// Contains regression tests for asset and tilesheet command.
+/// </summary>
 [Collection("Global engine state")]
 public sealed class AssetAndTilesheetCommandTests : IDisposable
 {
     private readonly string root = Path.Combine(Path.GetTempPath(), "GondwanaContent_" + Guid.NewGuid().ToString("N"));
+    /// <summary>
+    /// Initializes a new instance of the <c>AssetAndTilesheetCommandTests</c> class.
+    /// </summary>
     public AssetAndTilesheetCommandTests() => Directory.CreateDirectory(root);
+    /// <inheritdoc/>
     public void Dispose() => Directory.Delete(root, recursive: true);
     private static int Run(params string[] args)
     {
@@ -41,6 +48,9 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         return file;
     }
 
+    /// <summary>
+    /// Verifies bundle rejects malformed files and keys and duplicates.
+    /// </summary>
     [Fact]
     public void Bundle_RejectsMalformedFilesAndKeysAndDuplicates()
     {
@@ -54,6 +64,10 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         Assert.False(File.Exists(Path.Combine(root, "missing.assets")));
     }
 
+    /// <summary>
+    /// Verifies unpack rejects unsafe paths before any write.
+    /// </summary>
+    /// <param name="name">The name value for this test case.</param>
     [Theory]
     [InlineData("../escape.txt")]
     [InlineData("..\\escape.txt")]
@@ -69,6 +83,9 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         Assert.False(Directory.Exists(output));
     }
 
+    /// <summary>
+    /// Verifies unpack preserves paths and requires explicit overwrite.
+    /// </summary>
     [Fact]
     public void Unpack_PreservesPaths_AndRequiresExplicitOverwrite()
     {
@@ -86,6 +103,9 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         Assert.Equal("content", File.ReadAllText(target));
     }
 
+    /// <summary>
+    /// Verifies unpack rejects cross type filename collisions.
+    /// </summary>
     [Fact]
     public void Unpack_RejectsCrossTypeFilenameCollisions()
     {
@@ -94,6 +114,9 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         Assert.False(Directory.Exists(output));
     }
 
+    /// <summary>
+    /// Verifies pack alias round trips and encrypted validation requires password.
+    /// </summary>
     [Fact]
     public void PackAlias_RoundTrips_AndEncryptedValidationRequiresPassword()
     {
@@ -122,6 +145,9 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         };
     }
 
+    /// <summary>
+    /// Verifies tilesheet valid and malformed files return appropriate exit codes.
+    /// </summary>
     [Fact]
     public void Tilesheet_ValidAndMalformedFiles_ReturnAppropriateExitCodes()
     {
@@ -138,6 +164,9 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         Assert.Equal(1, Run("gts-validate", path));
     }
 
+    /// <summary>
+    /// Verifies tilesheet reports missing image bounds collision overhang and frame failures.
+    /// </summary>
     [Fact]
     public void Tilesheet_ReportsMissingImageBoundsCollisionOverhangAndFrameFailures()
     {
@@ -164,6 +193,9 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         Assert.Contains(TilesheetInspection.FromFile(path).Errors, e => e.StartsWith("Image:"));
     }
 
+    /// <summary>
+    /// Verifies tilesheet allows negative collision insets and uses runtime padding grid.
+    /// </summary>
     [Fact]
     public void Tilesheet_AllowsNegativeCollisionInsetsAndUsesRuntimePaddingGrid()
     {
@@ -177,6 +209,9 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         Assert.Empty(TilesheetDefinitionValidator.Validate(definition, 32, 32));
     }
 
+    /// <summary>
+    /// Verifies bundle validates packed gts against containing image.
+    /// </summary>
     [Fact]
     public void Bundle_ValidatesPackedGtsAgainstContainingImage()
     {
@@ -195,6 +230,10 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         Assert.Equal(1, Run("validate", Bundle("TilesheetDefinition_bad.gts")));
     }
 
+    /// <summary>
+    /// Verifies tilesheet rejects escaping image and bundle references.
+    /// </summary>
+    /// <param name="reference">The reference value for this test case.</param>
     [Theory]
     [InlineData("../image.png")]
     [InlineData("..\\image.png")]
@@ -221,6 +260,9 @@ public sealed class AssetAndTilesheetCommandTests : IDisposable
         }
     }
 
+    /// <summary>
+    /// Verifies inspection skips payload integrity pass while validation and extraction enforce it.
+    /// </summary>
     [Fact]
     public void Inspection_SkipsPayloadIntegrityPass_WhileValidationAndExtractionEnforceIt()
     {

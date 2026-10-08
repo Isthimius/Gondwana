@@ -75,7 +75,7 @@ public class SynthesizerSampleProvider : ISampleProvider
     /// Gets the wave format of the synthesized audio output.
     /// </summary>
     /// <value>
-    /// A <see cref="NAudio.Wave.WaveFormat"/> configured for stereo (2 channels) IEEE float samples at 44.1 kHz.
+    /// A <see cref="global::NAudio.Wave.WaveFormat"/> configured for stereo (2 channels) IEEE float samples at 44.1 kHz.
     /// </value>
     /// <remarks>
     /// This format is fixed and matches the output format of the MeltySynth synthesizer.

@@ -3,8 +3,16 @@ using NAudio.Wave;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for audio sample provider.
+/// </summary>
 public sealed class AudioSampleProviderTests
 {
+    /// <summary>
+    /// Verifies speed changes frame count and keeps stereo channels aligned.
+    /// </summary>
+    /// <param name="speed">The speed value for this test case.</param>
+    /// <param name="expectedFrames">The expected frames value for this test case.</param>
     [Theory]
     [InlineData(.25f, 32)]
     [InlineData(1f, 8)]
@@ -26,6 +34,9 @@ public sealed class AudioSampleProviderTests
         Assert.Equal(read, provider.Read(buffer, 2, 96));
     }
 
+    /// <summary>
+    /// Verifies reads across chunks retain interpolation and pan respects offset.
+    /// </summary>
     [Fact]
     public void ReadsAcrossChunksRetainInterpolationAndPanRespectsOffset()
     {
@@ -40,8 +51,21 @@ public sealed class AudioSampleProviderTests
 
     private sealed class Samples(float[] samples) : ISampleProvider
     {
+        /// <summary>
+        /// Gets or sets the position.
+        /// </summary>
         public int Position { get; set; }
+        /// <summary>
+        /// Gets the wave format.
+        /// </summary>
         public WaveFormat WaveFormat => WaveFormat.CreateIeeeFloatWaveFormat(44100, 2);
+        /// <summary>
+        /// Reads an Aseprite file.
+        /// </summary>
+        /// <param name="buffer">The buffer value for this test case.</param>
+        /// <param name="offset">The offset value for this test case.</param>
+        /// <param name="count">The count value for this test case.</param>
+        /// <returns>The read.</returns>
         public int Read(float[] buffer, int offset, int count)
         {
             var read = Math.Min(count, samples.Length - Position);

@@ -29,11 +29,23 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     private PointF _offset;
     private readonly Dictionary<SceneLayerDefinition, ProjectionCache> _projections = [];
 
+    /// <summary>
+    /// Gets the zoom.
+    /// </summary>
     public float Zoom { get; private set; } = 1f;
+    /// <summary>
+    /// Gets or sets whether show grid lines is enabled.
+    /// </summary>
     public bool ShowGridLines { get; set; } = true;
 
+    /// <summary>
+    /// Occurs when a tile is selected.
+    /// </summary>
     public event Action<SceneLayerDefinition, int, int>? TileSelected;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>ScenePreviewControl</c> class.
+    /// </summary>
     public ScenePreviewControl()
     {
         DoubleBuffered = true;
@@ -45,6 +57,12 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         Resize += (_, _) => UpdateExtent();
     }
 
+    /// <summary>
+    /// Configures the preview content and its resource resolvers.
+    /// </summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <param name="findTilesheet">The find tilesheet.</param>
+    /// <param name="findAnimation">The find animation.</param>
     public void Configure(
         SceneDefinition definition,
         Func<string, SceneTilesheetSource?> findTilesheet,
@@ -67,6 +85,10 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         UpdateExtent();
     }
 
+    /// <summary>
+    /// Sets the preview zoom factor.
+    /// </summary>
+    /// <param name="zoom">The zoom factor.</param>
     public void SetZoom(float zoom)
     {
         PointF? centerWorld = _worldBounds.IsEmpty || Zoom <= 0
@@ -110,6 +132,9 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     internal void ZoomOut() =>
         SetZoom(Zoom / ZoomStepFactor);
 
+    /// <summary>
+    /// Adjusts the preview zoom to fit its content inside the viewport.
+    /// </summary>
     public void Fit()
     {
         _fitToWindow = true;
@@ -148,12 +173,14 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         return true;
     }
 
+    /// <inheritdoc/>
     protected override void OnHandleCreated(EventArgs e)
     {
         base.OnHandleCreated(e);
         Application.AddMessageFilter(this);
     }
 
+    /// <inheritdoc/>
     protected override void OnHandleDestroyed(EventArgs e)
     {
         Application.RemoveMessageFilter(this);
@@ -197,6 +224,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     [DllImport("user32.dll")]
     private static extern IntPtr WindowFromPoint(Point point);
 
+    /// <inheritdoc/>
     protected override void OnScroll(ScrollEventArgs se)
     {
         base.OnScroll(se);
@@ -204,6 +232,12 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         Invalidate();
     }
 
+    /// <summary>
+    /// Updates the preview to show the selected content.
+    /// </summary>
+    /// <param name="layer">The layer.</param>
+    /// <param name="x">The horizontal coordinate.</param>
+    /// <param name="y">The vertical coordinate.</param>
     public void SetSelection(
         SceneLayerDefinition? layer,
         int x,
@@ -215,6 +249,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         Invalidate();
     }
 
+    /// <inheritdoc/>
     protected override void OnPaint(PaintEventArgs e)
     {
         base.OnPaint(e);
@@ -260,6 +295,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
             new PointF(8, 8));
     }
 
+    /// <inheritdoc/>
     protected override void OnMouseDown(MouseEventArgs e)
     {
         base.OnMouseDown(e);
@@ -657,6 +693,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
                 (ClientSize.Height - size.Height) / 2f));
     }
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing)
@@ -699,6 +736,11 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         {
         }
 
+        /// <summary>
+        /// Creates a new projection layer.
+        /// </summary>
+        /// <param name="definition">The persisted definition to process.</param>
+        /// <returns>The resulting projection layer.</returns>
         public static ProjectionLayer Create(SceneLayerDefinition definition)
         {
             var layer = new ProjectionLayer(

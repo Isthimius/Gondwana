@@ -5,9 +5,18 @@ using ModelContextProtocol.Server;
 
 namespace Gondwana.Mcp.Tools;
 
+/// <summary>
+/// Represents gondwana repository tools.
+/// </summary>
 [McpServerToolType]
 public sealed class GondwanaRepositoryTools
 {
+    /// <summary>
+    /// Retrieves the Gondwana repository identity and current revision.
+    /// </summary>
+    /// <param name="repository">The repository identity.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>A task whose result describes the repository and its current revision.</returns>
     [McpServerTool(
         Name = "get_repository_info",
         Title = "Get Gondwana repository info",
@@ -24,6 +33,14 @@ public sealed class GondwanaRepositoryTools
         CancellationToken cancellationToken = default) =>
         repository.GetRepositoryInfoAsync(cancellationToken);
 
+    /// <summary>
+    /// Lists entries in a Gondwana repository directory.
+    /// </summary>
+    /// <param name="repository">The repository identity.</param>
+    /// <param name="path">The path.</param>
+    /// <param name="ref">The repository branch, tag, or commit to read.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>A task whose result contains the directory entries.</returns>
     [McpServerTool(
         Name = "list_repository",
         Title = "List Gondwana repository path",
@@ -44,6 +61,16 @@ public sealed class GondwanaRepositoryTools
         CancellationToken cancellationToken = default) =>
         repository.ListDirectoryAsync(path, @ref, cancellationToken);
 
+    /// <summary>
+    /// Reads a bounded portion of a Gondwana repository file.
+    /// </summary>
+    /// <param name="repository">The repository identity.</param>
+    /// <param name="path">The path.</param>
+    /// <param name="ref">The repository branch, tag, or commit to read.</param>
+    /// <param name="startLine">The first line to read, using one-based numbering.</param>
+    /// <param name="endLine">The end line.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>A task whose result contains the requested file content and location metadata.</returns>
     [McpServerTool(
         Name = "read_repository_file",
         Title = "Read Gondwana repository file",
@@ -73,6 +100,14 @@ public sealed class GondwanaRepositoryTools
             endLine,
             cancellationToken);
 
+    /// <summary>
+    /// Searches the Gondwana repository source code.
+    /// </summary>
+    /// <param name="repository">The repository identity.</param>
+    /// <param name="query">The search text.</param>
+    /// <param name="maxResults">The maximum number of matching results to return.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>A task whose result contains matching repository files and excerpts.</returns>
     [McpServerTool(
         Name = "search_repository",
         Title = "Search Gondwana source",

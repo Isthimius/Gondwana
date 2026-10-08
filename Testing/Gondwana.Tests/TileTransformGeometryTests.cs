@@ -4,8 +4,15 @@ using Gondwana.Physics.Collisions;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for tile transform geometry.
+/// </summary>
 public sealed class TileTransformGeometryTests
 {
+    /// <summary>
+    /// Enumerates tile orientations for the parameterized geometry tests.
+    /// </summary>
+    /// <returns>The orientation values supplied to each test case.</returns>
     public static IEnumerable<object[]> Orientations()
     {
         yield return [TileTransform.Identity, 1, 2, 3, 4, false];
@@ -18,6 +25,15 @@ public sealed class TileTransformGeometryTests
         yield return [TileTransform.FlipAntiDiagonal, 4, 3, 2, 1, true];
     }
 
+    /// <summary>
+    /// Verifies transforms dimensions and directional metadata.
+    /// </summary>
+    /// <param name="transform">The transform value for this test case.</param>
+    /// <param name="left">The left value for this test case.</param>
+    /// <param name="top">The top value for this test case.</param>
+    /// <param name="right">The right value for this test case.</param>
+    /// <param name="bottom">The bottom value for this test case.</param>
+    /// <param name="swap">The swap value for this test case.</param>
     [Theory]
     [MemberData(nameof(Orientations))]
     public void TransformsDimensionsAndDirectionalMetadata(TileTransform transform, int left, int top, int right, int bottom, bool swap)
@@ -27,6 +43,9 @@ public sealed class TileTransformGeometryTests
         Assert.Equal(swap ? new Size(20, 40) : new Size(40, 20), TileTransformGeometry.TransformSize(new(40, 20), transform));
     }
 
+    /// <summary>
+    /// Verifies composition matches sequential operations and has inverses.
+    /// </summary>
     [Fact]
     public void CompositionMatchesSequentialOperationsAndHasInverses()
     {
@@ -44,6 +63,9 @@ public sealed class TileTransformGeometryTests
         }
     }
 
+    /// <summary>
+    /// Verifies non square cell rotates around its center with oriented overhang.
+    /// </summary>
     [Fact]
     public void NonSquareCellRotatesAroundItsCenterWithOrientedOverhang()
     {

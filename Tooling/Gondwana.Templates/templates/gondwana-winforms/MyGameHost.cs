@@ -33,6 +33,7 @@ internal sealed class MyGameHost : WinFormsGameHost
 
     // TODO: Run pre-initialization setup here, such as choosing config paths,
     // toggling feature flags, or preparing services before assets begin loading.
+    /// <inheritdoc/>
     protected override void OnInitializing()
     {
     }
@@ -40,6 +41,7 @@ internal sealed class MyGameHost : WinFormsGameHost
     #region ConfigurePlatform overrides
 
     // TODO: Configure WinForms-specific platform services after the default setup runs.
+    /// <inheritdoc/>
     protected override void OnConfigurePlatform()
     {
     }
@@ -52,16 +54,19 @@ internal sealed class MyGameHost : WinFormsGameHost
     // Example:
     //   Engine.Input.KeyboardEventPoller!.KeyDown += OnKeyDown;
     //   Engine.Input.KeyboardEventPoller.StartMonitoringKey((int)System.Windows.Forms.Keys.Left);
+    /// <inheritdoc/>
     protected override void OnKeyboardAdapterInitialized()
     {
     }
 
     // TODO: Subscribe to mouse events here after the adapter is initialized.
+    /// <inheritdoc/>
     protected override void OnMouseAdapterInitialized()
     {
     }
 
     // TODO: Attach gamepad behavior here after gamepad support is initialized.
+    /// <inheritdoc/>
     protected override void OnGamepadManagerInitialized()
     {
     }
@@ -73,6 +78,7 @@ internal sealed class MyGameHost : WinFormsGameHost
     // Example:
     //   var tap = new TapGestureRecognizer(Engine.Input.TouchEventPoller!);
     //   tap.Tapped += (_, e) => { /* handle tap at e.Position */ };
+    /// <inheritdoc/>
     protected override void OnTouchAdapterInitialized()
     {
     }
@@ -82,6 +88,7 @@ internal sealed class MyGameHost : WinFormsGameHost
     #region LoadContent overrides
 
     // TODO: Load non-tilesheet assets such as audio, fonts, and data files.
+    /// <inheritdoc/>
     protected override void LoadAssets()
     {
     }
@@ -91,11 +98,13 @@ internal sealed class MyGameHost : WinFormsGameHost
     // Example:
     //   var sheet = new Tilesheet("mySprite", @"assets\my-sprite.png");
     //   sheet.TileSize = new System.Drawing.Size(64, 64);
+    /// <inheritdoc/>
     protected override void LoadTilesheets()
     {
     }
 
     // TODO: Load animation cycle definitions after tilesheets are available.
+    /// <inheritdoc/>
     protected override void LoadAnimationCycles()
     {
     }
@@ -111,17 +120,20 @@ internal sealed class MyGameHost : WinFormsGameHost
     //                  zOrder: 10, parallax: 1f,
     //                  coordinateSystem: CoordinateSystemTypes.Orthogonal);
     //   return scene;
+    /// <inheritdoc/>
     protected override Scene CreateInitialScene()
     {
         return Scene.Empty;
     }
 
     // TODO: Create initial camera/view objects after the Scene has been created.
+    /// <inheritdoc/>
     protected override void CreateInitialViews()
     {
     }
 
     // TODO: Run after the initial scene and views are created, but before the scene is bound.
+    /// <inheritdoc/>
     protected override void OnSceneGraphCreated()
     {
     }
@@ -131,6 +143,7 @@ internal sealed class MyGameHost : WinFormsGameHost
     #region BindScene overrides
 
     // TODO: Run after the current scene has been bound to the render surface.
+    /// <inheritdoc/>
     protected override void OnSceneBound()
     {
     }
@@ -146,11 +159,13 @@ internal sealed class MyGameHost : WinFormsGameHost
     //   var sprite = SpriteManager.Instance.CreateSprite(Scene![0], frame);
     //   sprite.SetPosition(new(0, 0));
     //   sprite.Visible = true;
+    /// <inheritdoc/>
     protected override void CreateSprites()
     {
     }
 
     // TODO: Create direct-drawing primitives such as UI overlays or debug shapes.
+    /// <inheritdoc/>
     protected override void CreateDirectDrawings()
     {
     }
@@ -160,6 +175,7 @@ internal sealed class MyGameHost : WinFormsGameHost
     #region InitializeEngine overrides
 
     // TODO: Run after Engine.Initialize() completes but before the engine starts.
+    /// <inheritdoc/>
     protected override void OnEngineInitialized()
     {
     }
@@ -169,6 +185,7 @@ internal sealed class MyGameHost : WinFormsGameHost
     #region StartEngine overrides
 
     // TODO: Run after the engine has started. Start gameplay, timers, or music here.
+    /// <inheritdoc/>
     protected override void OnEngineStarted()
     {
     }
@@ -176,21 +193,25 @@ internal sealed class MyGameHost : WinFormsGameHost
     #endregion StartEngine overrides
 
     // TODO: Run after the full host initialization sequence has completed.
+    /// <inheritdoc/>
     protected override void OnInitialized()
     {
     }
 
     // TODO: Unsubscribe any events subscribed during initialization to avoid memory leaks.
+    /// <inheritdoc/>
     protected override void UnhookEvents()
     {
     }
 
     // TODO: Run just before the host begins disposing managed resources.
+    /// <inheritdoc/>
     protected override void OnDisposing()
     {
     }
 
     // TODO: Run after disposal is complete.
+    /// <inheritdoc/>
     protected override void OnDisposed()
     {
     }

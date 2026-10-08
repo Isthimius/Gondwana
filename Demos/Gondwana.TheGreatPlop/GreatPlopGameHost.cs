@@ -19,6 +19,7 @@ internal sealed class GreatPlopGameHost : WinFormsGpuGameHost
 
     internal GreatPlopGameHost(WinFormGpuRenderSurfaceControl surface) : base(surface) { }
 
+    /// <inheritdoc/>
     protected override Scene CreateInitialScene()
     {
         var scene = new Scene();
@@ -26,6 +27,7 @@ internal sealed class GreatPlopGameHost : WinFormsGpuGameHost
         return scene;
     }
 
+    /// <inheritdoc/>
     protected override void OnSceneBound()
     {
         RenderSurface.Host.Backbuffer.ClearColor = new SKColor(30, 72, 50);
@@ -34,6 +36,7 @@ internal sealed class GreatPlopGameHost : WinFormsGpuGameHost
         view.Camera.SnapTo(PointF.Empty);
     }
 
+    /// <inheritdoc/>
     protected override void CreateDirectDrawings()
     {
         var view = RenderSurface.Host.ViewManager.Views[0];
@@ -43,6 +46,7 @@ internal sealed class GreatPlopGameHost : WinFormsGpuGameHost
         };
     }
 
+    /// <inheritdoc/>
     protected override void OnKeyboardAdapterInitialized()
     {
         var keyboard = Engine.Input.KeyboardEventPoller!;
@@ -51,6 +55,7 @@ internal sealed class GreatPlopGameHost : WinFormsGpuGameHost
             keyboard.StartMonitoringKey((int)key, key.ToString());
     }
 
+    /// <inheritdoc/>
     protected override void OnMouseAdapterInitialized()
     {
         var mouse = Engine.Input.MouseEventPoller!;
@@ -58,6 +63,7 @@ internal sealed class GreatPlopGameHost : WinFormsGpuGameHost
         mouse.StartMonitoringMouse();
     }
 
+    /// <inheritdoc/>
     protected override void OnEngineInitialized()
     {
         Engine.Configuration.TargetFPS = 60;
@@ -65,6 +71,7 @@ internal sealed class GreatPlopGameHost : WinFormsGpuGameHost
         Engine.BeforeBackgroundTasksExecute += Update;
     }
 
+    /// <inheritdoc/>
     protected override void UnhookEvents()
     {
         if (Engine.Input.KeyboardEventPoller is not null)

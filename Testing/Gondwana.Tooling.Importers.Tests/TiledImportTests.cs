@@ -7,10 +7,17 @@ using SkiaSharp;
 namespace Gondwana.Tooling.Importers.Tests;
 
 // All fixture XML and pixels are purpose-built here; no external tools or artwork.
+/// <summary>
+/// Contains regression tests for tiled import.
+/// </summary>
 public sealed class TiledImportTests : IDisposable
 {
     private readonly string directory = Path.Combine(Path.GetTempPath(), "GondwanaImportTests-" + Guid.NewGuid().ToString("N"));
+    /// <summary>
+    /// Initializes a new instance of the <c>TiledImportTests</c> class.
+    /// </summary>
     public TiledImportTests() => Directory.CreateDirectory(directory);
+    /// <inheritdoc/>
     public void Dispose() => Directory.Delete(directory, true);
 
     private string Tileset()
@@ -29,6 +36,9 @@ public sealed class TiledImportTests : IDisposable
         return path;
     }
 
+    /// <summary>
+    /// Verifies analysis does not write and import round trips geometry timing and paths.
+    /// </summary>
     [Fact]
     public void AnalysisDoesNotWriteAndImportRoundTripsGeometryTimingAndPaths()
     {
@@ -56,6 +66,9 @@ public sealed class TiledImportTests : IDisposable
         Assert.Equal(2, importer.Import(request with { Overwrite = true }).WrittenFiles.Count);
     }
 
+    /// <summary>
+    /// Verifies collection of images produces diagnostic without writes.
+    /// </summary>
     [Fact]
     public void CollectionOfImagesProducesDiagnosticWithoutWrites()
     {
@@ -68,6 +81,9 @@ public sealed class TiledImportTests : IDisposable
         Assert.False(Directory.Exists(request.OutputDirectory));
     }
 
+    /// <summary>
+    /// Verifies empty animation is diagnosed and repeated imports are deterministic.
+    /// </summary>
     [Fact]
     public void EmptyAnimationIsDiagnosedAndRepeatedImportsAreDeterministic()
     {
@@ -84,6 +100,10 @@ public sealed class TiledImportTests : IDisposable
         foreach (var (path, bytes) in first) Assert.Equal(bytes, File.ReadAllBytes(path));
     }
 
+    /// <summary>
+    /// Verifies map imports mixed tilesets empty cells and animation.
+    /// </summary>
+    /// <param name="orientation">The orientation value for this test case.</param>
     [Theory]
     [InlineData("orthogonal")]
     [InlineData("isometric")]
@@ -117,6 +137,10 @@ public sealed class TiledImportTests : IDisposable
         Assert.Contains(result.Analysis.Diagnostics, d => d.Code == "tiled.layer.unsupported");
     }
 
+    /// <summary>
+    /// Verifies decodes base64 layer.
+    /// </summary>
+    /// <param name="compression">The compression value for this test case.</param>
     [Theory]
     [InlineData("")]
     [InlineData("zlib")]
@@ -137,6 +161,9 @@ public sealed class TiledImportTests : IDisposable
         Assert.Equal(new uint[] { 1, 0, 6 }, TiledMapImporter.DecodeLayer(data, 3));
     }
 
+    /// <summary>
+    /// Verifies xml data and transform diagnostics.
+    /// </summary>
     [Fact]
     public void XmlDataAndTransformDiagnostics()
     {
@@ -148,6 +175,10 @@ public sealed class TiledImportTests : IDisposable
         Assert.True(result.Analysis.CanImport);
         Assert.Contains(result.Analysis.Diagnostics, d => d.Code == "tiled.transform.hex" && d.Severity == ExternalImportSeverity.Warning);
     }
+    /// <summary>
+    /// Verifies all eight gid combinations import and round trip.
+    /// </summary>
+    /// <param name="orientation">The orientation value for this test case.</param>
     [Theory]
     [InlineData("orthogonal")]
     [InlineData("isometric")]

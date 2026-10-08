@@ -4,8 +4,14 @@ using ModelContextProtocol.Server;
 
 namespace Gondwana.Tests.GondwanaMcp;
 
+/// <summary>
+/// Contains regression tests for mcp tool metadata.
+/// </summary>
 public sealed class McpToolMetadataTests
 {
+    /// <summary>
+    /// Verifies every tool is explicitly read only non destructive idempotent and closed world.
+    /// </summary>
     [Fact]
     public void EveryTool_IsExplicitlyReadOnlyNonDestructiveIdempotentAndClosedWorld()
     {

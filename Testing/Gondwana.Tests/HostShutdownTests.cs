@@ -3,9 +3,16 @@ using Gondwana.Hosting;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for host shutdown.
+/// </summary>
 [Collection("Global engine state")]
 public sealed class HostShutdownTests
 {
+    /// <summary>
+    /// Verifies dispose waits for rendering before calling resource cleanup hooks.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task Dispose_WaitsForRenderingBeforeCallingResourceCleanupHooks()
     {
@@ -38,10 +45,19 @@ public sealed class HostShutdownTests
 
     private sealed class ShutdownHost : GameHostBase
     {
+        /// <summary>
+        /// Gets the scheduling stopped.
+        /// </summary>
         public TaskCompletionSource SchedulingStopped { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        /// <summary>
+        /// Gets whether cleanup reached is enabled.
+        /// </summary>
         public bool CleanupReached { get; private set; }
+        /// <inheritdoc/>
         protected override void ConfigurePlatform() { }
+        /// <inheritdoc/>
         protected override void StopEngineCore() => SchedulingStopped.SetResult();
+        /// <inheritdoc/>
         protected override void OnDisposing()
         {
             CleanupReached = true;

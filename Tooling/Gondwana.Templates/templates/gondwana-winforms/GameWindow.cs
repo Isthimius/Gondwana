@@ -31,6 +31,7 @@ internal sealed class GameWindow : Form
     }
 
     // Create the host once the form and all controls exist.
+    /// <inheritdoc/>
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
@@ -40,12 +41,14 @@ internal sealed class GameWindow : Form
     // Initialize AFTER the form is visible so SynchronizationContext is available,
     // which the engine requires to marshal callbacks back to the UI thread.
     // Tip: change LogLevel.Warning to LogLevel.Debug to see per-frame engine output.
+    /// <inheritdoc/>
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
         _host!.Initialize(logLevel: LogLevel.Warning);
     }
 
+    /// <inheritdoc/>
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
         _host?.Dispose();

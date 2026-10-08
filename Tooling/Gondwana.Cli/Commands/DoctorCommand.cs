@@ -9,13 +9,20 @@ namespace Gondwana.Cli.Commands;
 
 internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
 {
+    /// <summary>
+    /// Defines command-line settings for DoctorCommand.
+    /// </summary>
     public sealed class Settings : CommandSettings
     {
+        /// <summary>
+        /// Gets or sets whether fix is enabled.
+        /// </summary>
         [CommandOption("--fix")]
         [Description("Automatically fix issues that can be resolved without manual steps.")]
         public bool Fix { get; init; }
     }
 
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         AnsiConsole.MarkupLine("[bold]Gondwana Doctor[/]");
@@ -913,11 +920,35 @@ internal sealed class DoctorCommand : Command<DoctorCommand.Settings>
     }
 }
 
-internal enum CheckStatus { Ok, Warning, Fail, Skip }
+internal enum CheckStatus
+{
+    /// <summary>
+    /// Specifies ok.
+    /// </summary>
+    Ok,
+    /// <summary>
+    /// Specifies warning.
+    /// </summary>
+    Warning,
+    /// <summary>
+    /// Specifies fail.
+    /// </summary>
+    Fail,
+    /// <summary>
+    /// Specifies skip.
+    /// </summary>
+    Skip
+}
 
 internal sealed class CheckResult
 {
+    /// <summary>
+    /// Gets the status.
+    /// </summary>
     public CheckStatus Status { get; }
+    /// <summary>
+    /// Gets the detail.
+    /// </summary>
     public string? Detail { get; }
 
     private CheckResult(CheckStatus status, string? detail)
@@ -926,8 +957,28 @@ internal sealed class CheckResult
         Detail = detail;
     }
 
+    /// <summary>
+    /// Creates a diagnostic result with ok status.
+    /// </summary>
+    /// <param name="detail">The detail.</param>
+    /// <returns>A successful diagnostic result with the supplied detail.</returns>
     public static CheckResult Ok(string? detail = null) => new(CheckStatus.Ok, detail);
+    /// <summary>
+    /// Creates a diagnostic result with warning status.
+    /// </summary>
+    /// <param name="detail">The detail.</param>
+    /// <returns>A warning diagnostic result with the supplied detail.</returns>
     public static CheckResult Warning(string? detail = null) => new(CheckStatus.Warning, detail);
+    /// <summary>
+    /// Creates a diagnostic result with fail status.
+    /// </summary>
+    /// <param name="detail">The detail.</param>
+    /// <returns>A failed diagnostic result with the supplied detail.</returns>
     public static CheckResult Fail(string? detail = null) => new(CheckStatus.Fail, detail);
+    /// <summary>
+    /// Creates a diagnostic result with skip status.
+    /// </summary>
+    /// <param name="detail">The detail.</param>
+    /// <returns>A skipped diagnostic result with the supplied detail.</returns>
     public static CheckResult Skip(string? detail = null) => new(CheckStatus.Skip, detail);
 }

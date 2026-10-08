@@ -5,6 +5,11 @@ namespace Gondwana.Tooling.Importers;
 /// <summary>Portable, deterministic names shared by all format providers.</summary>
 public static class ImportNaming
 {
+    /// <summary>
+    /// Converts a name into a safe output file name.
+    /// </summary>
+    /// <param name="name">The name.</param>
+    /// <returns>The sanitized output name.</returns>
     public static string Sanitize(string name)
     {
         ArgumentNullException.ThrowIfNull(name);
@@ -23,6 +28,12 @@ public static class ImportNaming
         return value;
     }
 
+    /// <summary>
+    /// Builds a relative output path for an imported resource.
+    /// </summary>
+    /// <param name="outputDirectory">The directory receiving the generated files.</param>
+    /// <param name="dependencyPath">The dependency path.</param>
+    /// <returns>The relative path used for the imported output.</returns>
     public static string RelativePath(string outputDirectory, string dependencyPath) =>
         Path.GetRelativePath(Path.GetFullPath(outputDirectory), Path.GetFullPath(dependencyPath)).Replace('\\', '/');
 }

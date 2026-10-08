@@ -31,7 +31,7 @@ public sealed class MouseEventPoller : IDisposable
     /// <param name="mouseEventConfiguration">
     /// Optional configuration for mouse event monitoring. If <c>null</c>, a default configuration
     /// is created with mouse movement tracking enabled and the throttling interval set from
-    /// <see cref="Engine.Configuration.TimeBetweenMouseEvents"/>.
+    /// <see cref="Gondwana.Configuration.EngineConfiguration.TimeBetweenMouseEvents"/>.
     /// </param>
     public static void Initialize(IMouseAdapter adapter, MouseEventConfiguration? mouseEventConfiguration = null)
     {
@@ -215,7 +215,7 @@ public sealed class MouseEventPoller : IDisposable
     /// <param name="timeBetweenEvents">
     /// The minimum time interval in seconds between consecutive mouse events. Use this to throttle
     /// high-frequency mouse input. A value of -1 (default) uses the engine's default time between
-    /// mouse events from <see cref="Engine.Configuration.TimeBetweenMouseEvents"/>. A value of 0
+    /// mouse events from <see cref="Gondwana.Configuration.EngineConfiguration.TimeBetweenMouseEvents"/>. A value of 0
     /// means no throttling.
     /// </param>
     /// <param name="isPaused">

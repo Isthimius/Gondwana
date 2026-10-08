@@ -23,6 +23,9 @@ internal sealed unsafe class VideoDecodeBuffer : IDisposable
         NativeMemory.Clear((void*)Pixels, (nuint)bytes);
     }
 
+    /// <summary>
+    /// Releases the resources owned by this instance.
+    /// </summary>
     public void Dispose()
     {
         if (Pixels == IntPtr.Zero) return;

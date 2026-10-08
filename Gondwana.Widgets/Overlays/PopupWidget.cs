@@ -38,6 +38,11 @@ public sealed class PopupWidget : WidgetBase
     /// <summary>
     /// Initializes a text popup in absolute view/screen coordinates.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="screenBounds">The bounds in screen pixels.</param>
+    /// <param name="text">The text to display.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public PopupWidget(
         RenderSurfaceHostBase renderSurfaceHost,
         View view,
@@ -68,6 +73,11 @@ public sealed class PopupWidget : WidgetBase
     /// <summary>
     /// Initializes a text popup in scene-layer world coordinates.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="worldBounds">The bounds in world pixels.</param>
+    /// <param name="text">The text to display.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public PopupWidget(
         RenderSurfaceHostBase renderSurfaceHost,
         SceneLayer sceneLayer,
@@ -98,6 +108,13 @@ public sealed class PopupWidget : WidgetBase
     /// <summary>
     /// Initializes a text popup whose source is resolved from a tile when shown.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="size">The size.</param>
+    /// <param name="text">The text to display.</param>
+    /// <param name="sourceAnchor">The source anchor.</param>
+    /// <param name="offsetPx">The offset in pixels.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public PopupWidget(
         RenderSurfaceHostBase renderSurfaceHost,
         Tile source,
@@ -119,6 +136,11 @@ public sealed class PopupWidget : WidgetBase
     /// <summary>
     /// Initializes an image popup in absolute view/screen coordinates.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="screenBounds">The bounds in screen pixels.</param>
+    /// <param name="image">The image.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public PopupWidget(
         RenderSurfaceHostBase renderSurfaceHost,
         View view,
@@ -150,6 +172,11 @@ public sealed class PopupWidget : WidgetBase
     /// <summary>
     /// Initializes an image popup in scene-layer world coordinates.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="worldBounds">The bounds in world pixels.</param>
+    /// <param name="image">The image.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public PopupWidget(
         RenderSurfaceHostBase renderSurfaceHost,
         SceneLayer sceneLayer,
@@ -181,6 +208,11 @@ public sealed class PopupWidget : WidgetBase
     /// <summary>
     /// Initializes a bitmap popup in absolute view/screen coordinates.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="screenBounds">The bounds in screen pixels.</param>
+    /// <param name="bitmap">The bitmap.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public PopupWidget(
         RenderSurfaceHostBase renderSurfaceHost,
         View view,
@@ -212,6 +244,11 @@ public sealed class PopupWidget : WidgetBase
     /// <summary>
     /// Initializes a bitmap popup in scene-layer world coordinates.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="worldBounds">The bounds in world pixels.</param>
+    /// <param name="bitmap">The bitmap.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public PopupWidget(
         RenderSurfaceHostBase renderSurfaceHost,
         SceneLayer sceneLayer,
@@ -317,6 +354,7 @@ public sealed class PopupWidget : WidgetBase
     /// <summary>
     /// Shows the popup, resolves its current source, and starts its movement and fades.
     /// </summary>
+    /// <returns>This instance for fluent chaining.</returns>
     public PopupWidget ShowPopup()
     {
         Show();
@@ -326,6 +364,8 @@ public sealed class PopupWidget : WidgetBase
     /// <summary>
     /// Uses a fixed top-left location as the popup source.
     /// </summary>
+    /// <param name="locationPx">The location px.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public PopupWidget SetSourceLocation(Point locationPx)
     {
         SourceTile = null;
@@ -338,6 +378,10 @@ public sealed class PopupWidget : WidgetBase
     /// <summary>
     /// Resolves the popup source from an anchor point on a tile when the popup is shown.
     /// </summary>
+    /// <param name="source">The source.</param>
+    /// <param name="sourceAnchor">The source anchor.</param>
+    /// <param name="offsetPx">The offset in pixels.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public PopupWidget BindTo(
         Tile source,
         WidgetAnchor sourceAnchor = WidgetAnchor.Center,
@@ -371,6 +415,11 @@ public sealed class PopupWidget : WidgetBase
     /// <summary>
     /// Resolves the popup source from a fixed grid cell when the popup is shown.
     /// </summary>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="gridLocation">The grid location.</param>
+    /// <param name="sourceAnchor">The source anchor.</param>
+    /// <param name="offsetPx">The offset in pixels.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public PopupWidget BindTo(
         SceneLayer sceneLayer,
         Point gridLocation,
@@ -390,6 +439,8 @@ public sealed class PopupWidget : WidgetBase
     /// <summary>
     /// Sets the popup text. Throws when this is an image popup.
     /// </summary>
+    /// <param name="text">The text to display.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public PopupWidget SetText(string text)
     {
         if (Text is null)
@@ -402,6 +453,10 @@ public sealed class PopupWidget : WidgetBase
     /// <summary>
     /// Sets the popup font. Throws when this is an image popup.
     /// </summary>
+    /// <param name="typeface">The typeface used to render text.</param>
+    /// <param name="size">The size.</param>
+    /// <param name="minSize">The min size.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public PopupWidget SetFont(
         SKTypeface typeface,
         float size,
@@ -417,6 +472,8 @@ public sealed class PopupWidget : WidgetBase
     /// <summary>
     /// Sets the popup text color. Throws when this is an image popup.
     /// </summary>
+    /// <param name="color">The color to apply.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public PopupWidget SetTextColor(SKColor color)
     {
         if (Text is null)
@@ -429,6 +486,8 @@ public sealed class PopupWidget : WidgetBase
     /// <summary>
     /// Sets the popup Z-order.
     /// </summary>
+    /// <param name="zOrder">The drawing order relative to other content.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public PopupWidget SetPopupZOrder(int zOrder)
     {
         Content.SetZOrder(zOrder);

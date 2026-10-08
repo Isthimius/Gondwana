@@ -10,8 +10,14 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Tests.Drawing.Direct;
 
+/// <summary>
+/// Contains regression tests for direct composite.
+/// </summary>
 public sealed class DirectCompositeTests
 {
+    /// <summary>
+    /// Verifies set position moves nested composite and drawing.
+    /// </summary>
     [Fact]
     public void SetPosition_MovesNestedCompositeAndDrawing()
     {
@@ -61,6 +67,9 @@ public sealed class DirectCompositeTests
             rectangle.GetPosition());
     }
 
+    /// <summary>
+    /// Verifies add when child already has parent throws.
+    /// </summary>
     [Fact]
     public void Add_WhenChildAlreadyHasParent_Throws()
     {
@@ -86,6 +95,9 @@ public sealed class DirectCompositeTests
             () => secondParent.Add(child));
     }
 
+    /// <summary>
+    /// Verifies remove allows child to be reparented.
+    /// </summary>
     [Fact]
     public void Remove_AllowsChildToBeReparented()
     {
@@ -114,6 +126,9 @@ public sealed class DirectCompositeTests
             secondParent.Children);
     }
 
+    /// <summary>
+    /// Verifies add when relationship would create cycle throws.
+    /// </summary>
     [Fact]
     public void Add_WhenRelationshipWouldCreateCycle_Throws()
     {
@@ -135,6 +150,9 @@ public sealed class DirectCompositeTests
             () => child.Add(parent));
     }
 
+    /// <summary>
+    /// Verifies add when view differs throws.
+    /// </summary>
     [Fact]
     public void Add_WhenViewDiffers_Throws()
     {
@@ -186,6 +204,9 @@ public sealed class DirectCompositeTests
             () => composite.Add(second));
     }
 
+    /// <summary>
+    /// Verifies add when scene layer differs throws.
+    /// </summary>
     [Fact]
     public void Add_WhenSceneLayerDiffers_Throws()
     {
@@ -227,6 +248,9 @@ public sealed class DirectCompositeTests
             () => composite.Add(second));
     }
 
+    /// <summary>
+    /// Verifies composite and movable drawing implement composite child contract.
+    /// </summary>
     [Fact]
     public void CompositeAndMovableDrawing_ImplementCompositeChildContract()
     {
@@ -255,6 +279,9 @@ public sealed class DirectCompositeTests
             rectangle);
     }
 
+    /// <summary>
+    /// Verifies add custom composite child uses interface operations.
+    /// </summary>
     [Fact]
     public void Add_CustomCompositeChild_UsesInterfaceOperations()
     {
@@ -312,6 +339,9 @@ public sealed class DirectCompositeTests
             child.FadeDurationSec);
     }
 
+    /// <summary>
+    /// Verifies dispose disposes nested children.
+    /// </summary>
     [Fact]
     public void Dispose_DisposesNestedChildren()
     {
@@ -358,36 +388,68 @@ public sealed class DirectCompositeTests
                 screenBounds.Y);
         }
 
+        /// <summary>
+        /// Occurs when disposal begins.
+        /// </summary>
         public event EventHandler<IDirectDrawable>? Disposing;
 
+        /// <summary>
+        /// Gets the unique identifier.
+        /// </summary>
         public Guid Id { get; } =
             Guid.NewGuid();
 
+        /// <summary>
+        /// Gets the optional lookup name.
+        /// </summary>
         public string? Nickname =>
             nameof(TestCompositeChild);
 
+        /// <summary>
+        /// Gets whether this drawable is visible.
+        /// </summary>
         public bool Visible { get; private set; } =
             true;
 
+        /// <summary>
+        /// Gets the drawing order within the layer.
+        /// </summary>
         public int ZOrder =>
             AppliedZOrder;
 
+        /// <summary>
+        /// Gets the render surface host.
+        /// </summary>
         public RenderSurfaceHostBase RenderSurfaceHost { get; }
 
+        /// <summary>
+        /// Gets the mode.
+        /// </summary>
         public DirectDrawingMode Mode =>
             DirectDrawingMode.View;
 
+        /// <summary>
+        /// Gets the screen bounds.
+        /// </summary>
         public Rectangle ScreenBounds =>
             _screenBounds;
 
+        /// <summary>
+        /// Gets the world bounds.
+        /// </summary>
         public Rectangle WorldBounds =>
             Rectangle.Empty;
 
+        /// <inheritdoc/>
         public SceneLayer? SceneLayer =>
             null;
 
+        /// <inheritdoc/>
         public View? View { get; }
 
+        /// <summary>
+        /// Gets the coordinate space used by the position API.
+        /// </summary>
         public MovementSpace PositionSpace =>
             MovementSpace.Pixel;
 
@@ -401,9 +463,17 @@ public sealed class DirectCompositeTests
 
         internal float FadeDurationSec { get; private set; }
 
+        /// <summary>
+        /// Gets the sprite position in scene-layer grid coordinates.
+        /// </summary>
+        /// <returns>The sprite position in scene-layer grid coordinates.</returns>
         public Vector2 GetPosition() =>
             _position;
 
+        /// <summary>
+        /// Sets the sprite position in scene-layer grid coordinates and invalidates its old and new bounds.
+        /// </summary>
+        /// <param name="position">The position value for this test case.</param>
         public void SetPosition(Vector2 position)
         {
             _position = position;
@@ -415,21 +485,25 @@ public sealed class DirectCompositeTests
                 _screenBounds.Height);
         }
 
+        /// <inheritdoc/>
         public void SetIsVisible(bool visible)
         {
             Visible = visible;
         }
 
+        /// <inheritdoc/>
         public void SetZOrder(int zOrder)
         {
             AppliedZOrder = zOrder;
         }
 
+        /// <inheritdoc/>
         public void SetOpacity(float opacity)
         {
             AppliedOpacity = opacity;
         }
 
+        /// <inheritdoc/>
         public void FadeTo(
             float targetOpacity,
             float durationSec)
@@ -441,6 +515,11 @@ public sealed class DirectCompositeTests
                 durationSec;
         }
 
+        /// <summary>
+        /// Transforms the drawable bounds into screen pixels for the specified view.
+        /// </summary>
+        /// <param name="view">The view value for this test case.</param>
+        /// <returns>The bounds in screen pixels for the supplied view.</returns>
         public RectangleF GetDrawLocationScreen(
             View view)
         {
@@ -451,16 +530,28 @@ public sealed class DirectCompositeTests
                 : RectangleF.Empty;
         }
 
+        /// <summary>
+        /// Draws the current content into the backbuffer at the supplied screen-pixel bounds.
+        /// </summary>
+        /// <param name="backbuffer">The backbuffer value for this test case.</param>
+        /// <param name="destRectScreen">The dest rect screen value for this test case.</param>
         public void Draw(
             BackbufferBase backbuffer,
             RectangleF destRectScreen)
         {
         }
 
+        /// <summary>
+        /// Updates the test adapter state.
+        /// </summary>
+        /// <param name="tick">The tick value for this test case.</param>
         public void Update(long tick)
         {
         }
 
+        /// <summary>
+        /// Releases the resources owned by this instance.
+        /// </summary>
         public void Dispose()
         {
             if (_disposed)

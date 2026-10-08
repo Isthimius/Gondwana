@@ -6,8 +6,14 @@ using SkiaSharp;
 
 namespace Gondwana.Tests.Drawing.Direct;
 
+/// <summary>
+/// Contains regression tests for direct scene layer darkness overlay.
+/// </summary>
 public sealed class DirectSceneLayerDarknessOverlayTests
 {
+    /// <summary>
+    /// Verifies draw with reveal source carves darkness at center.
+    /// </summary>
     [Fact]
     public void Draw_WithRevealSource_CarvesDarknessAtCenter()
     {
@@ -41,6 +47,9 @@ public sealed class DirectSceneLayerDarknessOverlayTests
         Assert.True(center.Red > corner.Red);
     }
 
+    /// <summary>
+    /// Verifies track light when light moves syncs reveal source.
+    /// </summary>
     [Fact]
     public void TrackLight_WhenLightMoves_SyncsRevealSource()
     {
@@ -77,6 +86,9 @@ public sealed class DirectSceneLayerDarknessOverlayTests
         Assert.InRange(reveal.Intensity, 0.399f, 0.401f);
     }
 
+    /// <summary>
+    /// Verifies track light when light is on different scene layer throws.
+    /// </summary>
     [Fact]
     public void TrackLight_WhenLightIsOnDifferentSceneLayer_Throws()
     {
@@ -99,6 +111,9 @@ public sealed class DirectSceneLayerDarknessOverlayTests
         Assert.Throws<ArgumentException>(() => overlay.TrackLight(light));
     }
 
+    /// <summary>
+    /// Verifies track light layer when light is removed removes tracked reveal source.
+    /// </summary>
     [Fact]
     public void TrackLightLayer_WhenLightIsRemoved_RemovesTrackedRevealSource()
     {

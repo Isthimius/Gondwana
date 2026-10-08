@@ -17,6 +17,11 @@ public static class AnimationDefinitionSerializer
         MissingMemberHandling = MissingMemberHandling.Ignore
     };
 
+    /// <summary>
+    /// Loads an animation definition from a loose definition file.
+    /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <returns>The resulting animation definition.</returns>
     public static AnimationDefinition Load(string filePath)
     {
         if (string.IsNullOrWhiteSpace(filePath))
@@ -41,6 +46,11 @@ public static class AnimationDefinitionSerializer
         }
     }
 
+    /// <summary>
+    /// Loads an animation definition from a readable stream.
+    /// </summary>
+    /// <param name="stream">The stream supplying the serialized content. The stream remains open.</param>
+    /// <returns>The resulting animation definition.</returns>
     public static AnimationDefinition Load(Stream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
@@ -52,6 +62,12 @@ public static class AnimationDefinitionSerializer
         return FromJson(reader.ReadToEnd());
     }
 
+    /// <summary>
+    /// Loads an animation definition from an assets-file entry.
+    /// </summary>
+    /// <param name="assetsFile">The assets file containing the requested entry.</param>
+    /// <param name="entryName">The entry name inside the assets file.</param>
+    /// <returns>The resulting animation definition.</returns>
     public static AnimationDefinition Load(AssetsFile assetsFile, string entryName)
     {
         ArgumentNullException.ThrowIfNull(assetsFile);
@@ -75,6 +91,11 @@ public static class AnimationDefinitionSerializer
         return definition;
     }
 
+    /// <summary>
+    /// Saves the supplied definition or runtime content to a definition file.
+    /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <param name="definition">The persisted definition to process.</param>
     public static void Save(string filePath, AnimationDefinition definition)
     {
         if (string.IsNullOrWhiteSpace(filePath))
@@ -91,21 +112,41 @@ public static class AnimationDefinitionSerializer
         File.WriteAllText(fullPath, ToJson(definitionToSave));
     }
 
+    /// <summary>
+    /// Saves the supplied definition or runtime content to a definition file.
+    /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <param name="cycle">The cycle.</param>
     public static void Save(string filePath, Cycle cycle)
     {
         ArgumentNullException.ThrowIfNull(cycle);
         Save(filePath, FromCycle(cycle));
     }
 
+    /// <summary>
+    /// Deserializes a definition from JSON.
+    /// </summary>
+    /// <param name="json">The JSON text to deserialize.</param>
+    /// <returns>The deserialized definition.</returns>
     public static AnimationDefinition FromJson(string json) =>
         FromJson(json, sourceDescription: null);
 
+    /// <summary>
+    /// Serializes the supplied content as JSON.
+    /// </summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <returns>The serialized JSON text.</returns>
     public static string ToJson(AnimationDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);
         return JsonConvert.SerializeObject(definition, Settings);
     }
 
+    /// <summary>
+    /// Captures an animation cycle as a persistable definition.
+    /// </summary>
+    /// <param name="cycle">The cycle.</param>
+    /// <returns>The resulting animation definition.</returns>
     public static AnimationDefinition FromCycle(Cycle cycle)
     {
         ArgumentNullException.ThrowIfNull(cycle);
@@ -129,6 +170,11 @@ public static class AnimationDefinitionSerializer
         };
     }
 
+    /// <summary>
+    /// Serializes the supplied content as JSON.
+    /// </summary>
+    /// <param name="cycle">The cycle.</param>
+    /// <returns>The serialized JSON text.</returns>
     public static string ToJson(Cycle cycle) => ToJson(FromCycle(cycle));
 
     /// <summary>
@@ -137,6 +183,8 @@ public static class AnimationDefinitionSerializer
     /// Referenced next cycles must already be registered unless the definition
     /// transitions to itself.
     /// </summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <returns>The resulting cycle.</returns>
     public static Cycle ToCycle(AnimationDefinition definition)
     {
         var previous = Cycle._cycles.TryGetValue(definition.Key, out var existing)
@@ -163,8 +211,19 @@ public static class AnimationDefinitionSerializer
         }
     }
 
+    /// <summary>
+    /// Loads an animation definition and creates its runtime cycle.
+    /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <returns>The resulting cycle.</returns>
     public static Cycle LoadCycle(string filePath) => ToCycle(Load(filePath));
 
+    /// <summary>
+    /// Loads an animation definition and creates its runtime cycle.
+    /// </summary>
+    /// <param name="assetsFile">The assets file containing the requested entry.</param>
+    /// <param name="entryName">The entry name inside the assets file.</param>
+    /// <returns>The resulting cycle.</returns>
     public static Cycle LoadCycle(AssetsFile assetsFile, string entryName) =>
         ToCycle(Load(assetsFile, entryName));
 

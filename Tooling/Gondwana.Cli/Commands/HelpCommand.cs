@@ -5,6 +5,7 @@ namespace Gondwana.Cli.Commands;
 
 internal sealed class HelpCommand : Command
 {
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, CancellationToken cancellationToken)
     {
         AnsiConsole.MarkupLine("[bold]Gondwana CLI[/] — quick reference\n");

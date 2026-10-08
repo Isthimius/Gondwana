@@ -17,11 +17,13 @@ internal sealed class GameWindow : Form
         Controls.Add(_renderSurface);
         KeyDown += (_, args) => { if (args.KeyCode == Keys.Escape) Close(); };
     }
+    /// <inheritdoc/>
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
         _gameHost = new PongGameHost(_renderSurface);
     }
+    /// <inheritdoc/>
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
@@ -37,6 +39,7 @@ internal sealed class GameWindow : Form
             Close();
         }
     }
+    /// <inheritdoc/>
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
         _gameHost?.Dispose();

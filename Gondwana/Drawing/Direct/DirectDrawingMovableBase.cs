@@ -257,7 +257,7 @@ public abstract class DirectDrawingMovableBase : DirectDrawingBase, IDirectCompo
     /// <remarks>
     /// <para>
     /// Movement is advanced once per engine update using the actual elapsed duration
-    /// calculated from <see cref="_lastTick"/> and <paramref name="tick"/>.
+    /// calculated from <see cref="DirectDrawingBase._lastTick"/> and <paramref name="tick"/>.
     /// </para>
     /// <para>
     /// The base implementation is called afterward to advance inherited behavior,

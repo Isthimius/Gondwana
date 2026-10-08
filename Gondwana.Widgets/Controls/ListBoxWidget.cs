@@ -47,6 +47,11 @@ public sealed class ListBoxWidget : WidgetBase
     /// <summary>
     /// Creates a view-level list box.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="bounds">The widget bounds in view-local pixels.</param>
+    /// <param name="items">The items.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public ListBoxWidget(RenderSurfaceHostBase renderSurfaceHost,
                          View view,
                          Rectangle bounds,
@@ -72,6 +77,11 @@ public sealed class ListBoxWidget : WidgetBase
     /// <summary>
     /// Creates a scene-layer list box.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="bounds">The widget bounds in world pixels.</param>
+    /// <param name="items">The items.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public ListBoxWidget(RenderSurfaceHostBase renderSurfaceHost,
                          SceneLayer sceneLayer,
                          Rectangle bounds,
@@ -219,6 +229,8 @@ public sealed class ListBoxWidget : WidgetBase
     /// <summary>
     /// Replaces all list items and clears selection.
     /// </summary>
+    /// <param name="items">The items.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ListBoxWidget SetItems(IEnumerable<string> items)
     {
         ArgumentNullException.ThrowIfNull(items);
@@ -240,6 +252,8 @@ public sealed class ListBoxWidget : WidgetBase
     /// <summary>
     /// Adds an item to the end of the list.
     /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ListBoxWidget AddItem(string item)
     {
         _items.Add(item ?? string.Empty);
@@ -251,6 +265,8 @@ public sealed class ListBoxWidget : WidgetBase
     /// <summary>
     /// Removes an item by index.
     /// </summary>
+    /// <param name="index">The index.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ListBoxWidget RemoveAt(int index)
     {
         if (index < 0 || index >= _items.Count)
@@ -287,6 +303,7 @@ public sealed class ListBoxWidget : WidgetBase
     /// <summary>
     /// Removes all items and clears selection.
     /// </summary>
+    /// <returns>This instance for fluent chaining.</returns>
     public ListBoxWidget ClearItems()
     {
         bool hadSelection = _selectedIndex >= 0;
@@ -304,6 +321,8 @@ public sealed class ListBoxWidget : WidgetBase
     /// <summary>
     /// Selects the requested item index. Use -1 to clear selection.
     /// </summary>
+    /// <param name="index">The index.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ListBoxWidget SetSelectedIndex(int index)
     {
         if (index < -1 || index >= _items.Count)
@@ -325,6 +344,7 @@ public sealed class ListBoxWidget : WidgetBase
     /// <summary>
     /// Selects the next item when possible.
     /// </summary>
+    /// <returns>This instance for fluent chaining.</returns>
     public ListBoxWidget SelectNext()
     {
         if (_items.Count == 0)
@@ -337,6 +357,7 @@ public sealed class ListBoxWidget : WidgetBase
     /// <summary>
     /// Selects the previous item when possible.
     /// </summary>
+    /// <returns>This instance for fluent chaining.</returns>
     public ListBoxWidget SelectPrevious()
     {
         if (_items.Count == 0)
@@ -349,6 +370,8 @@ public sealed class ListBoxWidget : WidgetBase
     /// <summary>
     /// Sets the base Z-order used by the list-box visuals.
     /// </summary>
+    /// <param name="zOrder">The drawing order relative to other content.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ListBoxWidget SetListBoxZOrder(int zOrder)
     {
         _baseZOrder = zOrder;
@@ -367,6 +390,8 @@ public sealed class ListBoxWidget : WidgetBase
     /// <summary>
     /// Sets the selected-row highlight color.
     /// </summary>
+    /// <param name="color">The color to apply.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ListBoxWidget SetSelectionColor(Color color)
     {
         SelectionHighlight.SetColor(color);

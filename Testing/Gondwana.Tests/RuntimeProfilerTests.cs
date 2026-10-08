@@ -44,6 +44,7 @@ public sealed class RuntimeProfilerTests
     }
 
     /// <summary>Verifies in flight work cannot cross reset or source retirement.</summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task InFlightWorkCannotCrossResetOrSourceRetirement()
     {
@@ -227,6 +228,7 @@ public sealed class RuntimeProfilerTests
     }
 
     /// <summary>Verifies concurrent producers and readers preserve totals and separate sources.</summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task ConcurrentProducersAndReadersPreserveTotalsAndSeparateSources()
     {

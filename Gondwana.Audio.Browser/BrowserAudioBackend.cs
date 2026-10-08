@@ -8,10 +8,15 @@ public sealed class BrowserAudioBackend : IAudioBackend
 {
     private BrowserAudioBackend() { }
 
+    /// <summary>
+    /// Gets the shared instance.
+    /// </summary>
     public static BrowserAudioBackend Instance { get; } = new();
 
+    /// <inheritdoc/>
     public string Name => "Browser Audio";
 
+    /// <inheritdoc/>
     public IAudioPlaybackHandle CreateFromBytes(
         string key,
         byte[] data,
@@ -31,6 +36,7 @@ public sealed class BrowserAudioBackend : IAudioBackend
             playbackSpeed);
     }
 
+    /// <inheritdoc/>
     public IAudioPlaybackHandle CreateFromUri(
         string key,
         string uri,

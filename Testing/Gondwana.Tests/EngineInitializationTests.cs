@@ -3,9 +3,15 @@ using Gondwana.Configuration;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for engine initialization.
+/// </summary>
 [Collection("Global engine state")]
 public sealed class EngineInitializationTests
 {
+    /// <summary>
+    /// Verifies timer driven profiler counts simulation steps and single foreground independently.
+    /// </summary>
     [Fact]
     public void TimerDrivenProfilerCountsSimulationStepsAndSingleForegroundIndependently()
     {
@@ -34,6 +40,9 @@ public sealed class EngineInitializationTests
         }
     }
 
+    /// <summary>
+    /// Verifies profiler collects cycles when legacy cps notifications are disabled.
+    /// </summary>
     [Fact]
     public void ProfilerCollectsCyclesWhenLegacyCpsNotificationsAreDisabled()
     {
@@ -56,6 +65,9 @@ public sealed class EngineInitializationTests
         }
     }
 
+    /// <summary>
+    /// Verifies initialize when initialization throws resets initialization state and signals completion.
+    /// </summary>
     [Fact]
     public void Initialize_WhenInitializationThrows_ResetsInitializationStateAndSignalsCompletion()
     {
@@ -78,6 +90,9 @@ public sealed class EngineInitializationTests
         }
     }
 
+    /// <summary>
+    /// Verifies initialize when previous initialization failed can retry successfully.
+    /// </summary>
     [Fact]
     public void Initialize_WhenPreviousInitializationFailed_CanRetrySuccessfully()
     {
@@ -102,6 +117,9 @@ public sealed class EngineInitializationTests
         }
     }
 
+    /// <summary>
+    /// Verifies initialize with configuration store uses and persists supplied configuration.
+    /// </summary>
     [Fact]
     public void Initialize_WithConfigurationStore_UsesAndPersistsSuppliedConfiguration()
     {
@@ -134,6 +152,9 @@ public sealed class EngineInitializationTests
         }
     }
 
+    /// <summary>
+    /// Verifies initialize legacy metadata signature remains available.
+    /// </summary>
     [Fact]
     public void Initialize_LegacyMetadataSignature_RemainsAvailable()
     {
@@ -155,6 +176,9 @@ public sealed class EngineInitializationTests
         Assert.NotNull(method);
     }
 
+    /// <summary>
+    /// Verifies start when initialization in progress uses configured wait timeout.
+    /// </summary>
     [Fact]
     public void Start_WhenInitializationInProgress_UsesConfiguredWaitTimeout()
     {
@@ -180,6 +204,10 @@ public sealed class EngineInitializationTests
         }
     }
 
+    /// <summary>
+    /// Verifies dispose when called on engine thread does not wait for own cycle task.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task Dispose_WhenCalledOnEngineThread_DoesNotWaitForOwnCycleTask()
     {
@@ -212,6 +240,10 @@ public sealed class EngineInitializationTests
         }
     }
 
+    /// <summary>
+    /// Verifies dispose when called inside cycle on engine thread defers managed cleanup until cycle returns.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task Dispose_WhenCalledInsideCycleOnEngineThread_DefersManagedCleanupUntilCycleReturns()
     {
@@ -250,6 +282,10 @@ public sealed class EngineInitializationTests
         }
     }
 
+    /// <summary>
+    /// Verifies stop and wait when already stopped waits for pending cycle.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task StopAndWait_WhenAlreadyStopped_WaitsForPendingCycle()
     {
@@ -274,6 +310,9 @@ public sealed class EngineInitializationTests
         }
     }
 
+    /// <summary>
+    /// Verifies stop and wait on active engine thread rejects self wait.
+    /// </summary>
     [Fact]
     public void StopAndWait_OnActiveEngineThread_RejectsSelfWait()
     {
@@ -339,22 +378,37 @@ public sealed class EngineInitializationTests
 
     private sealed class TestConfigurationStore : IEngineConfigurationStore
     {
+        /// <inheritdoc/>
         public EngineConfiguration Configuration { get; } = new();
 
+        /// <inheritdoc/>
         public bool AutoSave { get; set; }
 
+        /// <summary>
+        /// Gets the save count.
+        /// </summary>
         public int SaveCount { get; private set; }
 
+        /// <summary>
+        /// Gets the last saved target fps.
+        /// </summary>
         public int LastSavedTargetFps { get; private set; }
 
+        /// <summary>
+        /// Gets whether the object is disposed.
+        /// </summary>
         public bool IsDisposed { get; private set; }
 
+        /// <inheritdoc/>
         public void Save()
         {
             SaveCount++;
             LastSavedTargetFps = Configuration.TargetFPS;
         }
 
+        /// <summary>
+        /// Releases the resources owned by this instance.
+        /// </summary>
         public void Dispose()
         {
             if (IsDisposed)

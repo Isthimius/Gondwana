@@ -48,12 +48,14 @@ internal sealed class PongGameHost : WinFormsGameHost
 
     internal PongGameHost(WinFormBitmapRenderSurfaceControl renderSurface) : base(renderSurface) { }
 
+    /// <inheritdoc/>
     protected override void LoadTilesheets()
     {
         _tilesheet = Engine.Managers.Tilesheets.LoadFromBitmap("gondwana-pong-art", PongArt.CreateBitmap());
         _tilesheet.DefaultRegion.TileSize = new Size(PongArt.FrameSize, PongArt.FrameSize);
     }
 
+    /// <inheritdoc/>
     protected override Scene CreateInitialScene()
     {
         var scene = new Scene();
@@ -62,6 +64,7 @@ internal sealed class PongGameHost : WinFormsGameHost
         return scene;
     }
 
+    /// <inheritdoc/>
     protected override void OnSceneBound()
     {
         RenderSurface.Host.Backbuffer.ClearColor = new SKColor(4, 10, 22);
@@ -70,6 +73,7 @@ internal sealed class PongGameHost : WinFormsGameHost
         view.Camera.SnapTo(PointF.Empty);
     }
 
+    /// <inheritdoc/>
     protected override void CreateSprites()
     {
         _leftPaddle = CreateSprite("left-paddle", PongArt.PaddleFrame, new Size(24, 128),
@@ -81,6 +85,7 @@ internal sealed class PongGameHost : WinFormsGameHost
         _ball.ZOrder = 30;
     }
 
+    /// <inheritdoc/>
     protected override void CreateDirectDrawings()
     {
         var view = RenderSurface.Host.ViewManager.Views[0];
@@ -109,6 +114,7 @@ internal sealed class PongGameHost : WinFormsGameHost
         RefreshHud();
     }
 
+    /// <inheritdoc/>
     protected override void OnKeyboardAdapterInitialized()
     {
         var keyboard = Engine.Input.KeyboardEventPoller!;
@@ -117,6 +123,7 @@ internal sealed class PongGameHost : WinFormsGameHost
             keyboard.StartMonitoringKey((int)key, key.ToString());
     }
 
+    /// <inheritdoc/>
     protected override void OnEngineInitialized()
     {
         Engine.Configuration.TargetFPS = 60;
@@ -124,6 +131,7 @@ internal sealed class PongGameHost : WinFormsGameHost
         Engine.BeforeBackgroundTasksExecute += BeforeBackgroundTasksExecute;
     }
 
+    /// <inheritdoc/>
     protected override void UnhookEvents()
     {
         if (Engine.Input.KeyboardEventPoller is not null)
@@ -298,5 +306,19 @@ internal sealed class PongGameHost : WinFormsGameHost
         _statusText.SetText($"{prompt}\nW/S: Player 1   ↑/↓: Player 2   TAB: {opponent}   R: restart");
     }
 
-    private enum GameState { Ready, Playing, MatchOver }
+    private enum GameState
+    {
+        /// <summary>
+        /// Specifies ready.
+        /// </summary>
+        Ready,
+        /// <summary>
+        /// Specifies playing.
+        /// </summary>
+        Playing,
+        /// <summary>
+        /// Specifies match over.
+        /// </summary>
+        MatchOver
+    }
 }

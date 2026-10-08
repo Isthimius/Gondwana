@@ -261,6 +261,12 @@ public partial class Sprite
     /// Starts a one-shot impact-style jiggle.
     /// Handy for hits, invalid selections, bump feedback, and similar moments.
     /// </summary>
+    /// <param name="intensityX">The intensity x.</param>
+    /// <param name="intensityY">The intensity y.</param>
+    /// <param name="speed">The speed.</param>
+    /// <param name="durationSeconds">The duration in seconds.</param>
+    /// <param name="affectsScale">Whether the effect also changes the drawing scale.</param>
+    /// <param name="scaleIntensity">The scale intensity.</param>
     public void JiggleOnce(
         float intensityX = 2f,
         float intensityY = 2f,

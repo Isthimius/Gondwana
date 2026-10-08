@@ -12,19 +12,32 @@ using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
+/// <summary>
+/// Represents project diagnostics global state collection.
+/// </summary>
 [CollectionDefinition("Project diagnostics global state", DisableParallelization = true)]
 public sealed class ProjectDiagnosticsGlobalStateCollection
 {
 }
 
+/// <summary>
+/// Contains regression tests for project diagnostics.
+/// </summary>
 [Collection("Project diagnostics global state")]
 public sealed class ProjectDiagnosticsTests : IDisposable
 {
     private readonly string _root = Path.Combine(Path.GetTempPath(), "GondwanaDiagnostics-" + Guid.NewGuid().ToString("N"));
+    /// <summary>
+    /// Initializes a new instance of the <c>ProjectDiagnosticsTests</c> class.
+    /// </summary>
     public ProjectDiagnosticsTests() => Directory.CreateDirectory(_root);
+    /// <inheritdoc/>
     public void Dispose() => Directory.Delete(_root, recursive: true);
     private string FilePath(string name) => Path.Combine(_root, name);
 
+    /// <summary>
+    /// Verifies discovers all formats and ignores build directories.
+    /// </summary>
     [Fact]
     public void DiscoversAllFormatsAndIgnoresBuildDirectories()
     {
@@ -43,6 +56,9 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         Assert.DoesNotContain(result.Problems, problem => problem.Property == "Load");
     }
 
+    /// <summary>
+    /// Verifies reports malformed files and continues scanning.
+    /// </summary>
     [Fact]
     public void ReportsMalformedFilesAndContinuesScanning()
     {
@@ -55,6 +71,9 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         Assert.Contains(result.Definitions, d => d.RelativePath == "good.gspr" && d.Loaded);
     }
 
+    /// <summary>
+    /// Verifies resolves actual definition relationships relative to containing file.
+    /// </summary>
     [Fact]
     public void ResolvesActualDefinitionRelationshipsRelativeToContainingFile()
     {
@@ -82,6 +101,9 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         Assert.Contains(references, reference => reference.Value == "../tiles.gts" && reference.ResolvedPath == FilePath("tiles.gts"));
     }
 
+    /// <summary>
+    /// Verifies reports missing malformed and unsupported references.
+    /// </summary>
     [Fact]
     public void ReportsMissingMalformedAndUnsupportedReferences()
     {
@@ -103,6 +125,9 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         Assert.Contains(result.Problems, p => p.Property == "TilesheetSources[2].Kind" && p.Reason.Contains("Unsupported"));
     }
 
+    /// <summary>
+    /// Verifies checks packed entries and media without registering assets.
+    /// </summary>
     [Fact]
     public void ChecksPackedEntriesAndMediaWithoutRegisteringAssets()
     {
@@ -138,6 +163,9 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         Assert.Single(result.Problems, p => p.SourcePath == "sound.gsnd");
     }
 
+    /// <summary>
+    /// Verifies reuses loaded packed archive across references within scan.
+    /// </summary>
     [Fact]
     public void ReusesLoadedPackedArchiveAcrossReferencesWithinScan()
     {
@@ -166,6 +194,9 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         Assert.Contains(result.Problems, p => p.Property == "TilesheetSources[2].AssetsFilePath");
     }
 
+    /// <summary>
+    /// Verifies rescan replaces results and supports cancellation.
+    /// </summary>
     [Fact]
     public void RescanReplacesResultsAndSupportsCancellation()
     {
@@ -179,6 +210,9 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         Assert.Throws<OperationCanceledException>(() => scanner.Scan(_root, new CancellationToken(true)));
     }
 
+    /// <summary>
+    /// Verifies studio discovers deployed plugin and hosts its dock and menu.
+    /// </summary>
     [Fact]
     public void StudioDiscoversDeployedPluginAndHostsItsDockAndMenu() => RunSta(() =>
     {
@@ -196,6 +230,9 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         Assert.Same(studio.Workspace, tool.DockPanel);
     });
 
+    /// <summary>
+    /// Verifies plugin panel menu and lifecycle replace and clear results.
+    /// </summary>
     [Fact]
     public void PluginPanelMenuAndLifecycleReplaceAndClearResults() => RunSta(() =>
     {
@@ -266,8 +303,14 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         private readonly bool _originalExternalFactory = (bool)ExternalFactoryField.GetValue(null)!;
         private readonly EngineLoggingMode _originalMode = EngineLogger.Mode;
 
+        /// <summary>
+        /// Gets the messages.
+        /// </summary>
         public List<string> Messages { get; } = [];
 
+        /// <summary>
+        /// Initializes a new instance of the <c>EngineLoggerCaptureScope</c> class.
+        /// </summary>
         public EngineLoggerCaptureScope()
         {
             EngineLogger.SwitchToSyncAndFlush();
@@ -278,6 +321,7 @@ public sealed class ProjectDiagnosticsTests : IDisposable
                 .Invoke(LoggerCacheField.GetValue(null), null);
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             LoggerFactoryField.SetValue(null, _originalFactory);
@@ -291,12 +335,15 @@ public sealed class ProjectDiagnosticsTests : IDisposable
 
     private sealed class CapturingLoggerFactory(List<string> messages) : ILoggerFactory
     {
+        /// <inheritdoc/>
         public void AddProvider(ILoggerProvider provider)
         {
         }
 
+        /// <inheritdoc/>
         public ILogger CreateLogger(string categoryName) => new CapturingLogger(messages);
 
+        /// <inheritdoc/>
         public void Dispose()
         {
         }
@@ -304,12 +351,15 @@ public sealed class ProjectDiagnosticsTests : IDisposable
 
     private sealed class CapturingLogger(List<string> messages) : ILogger
     {
+        /// <inheritdoc/>
         public IDisposable BeginScope<TState>(TState state)
             where TState : notnull =>
             NoOpScope.Instance;
 
+        /// <inheritdoc/>
         public bool IsEnabled(LogLevel logLevel) => true;
 
+        /// <inheritdoc/>
         public void Log<TState>(
             LogLevel logLevel,
             EventId eventId,
@@ -323,8 +373,12 @@ public sealed class ProjectDiagnosticsTests : IDisposable
 
     private sealed class NoOpScope : IDisposable
     {
+        /// <summary>
+        /// Gets the shared instance.
+        /// </summary>
         public static NoOpScope Instance { get; } = new();
 
+        /// <inheritdoc/>
         public void Dispose()
         {
         }

@@ -6,8 +6,14 @@ using Gondwana.Widgets.Hud;
 
 namespace Gondwana.Tests.Widgets;
 
+/// <summary>
+/// Contains regression tests for profiler widget.
+/// </summary>
 public sealed class ProfilerWidgetTests
 {
+    /// <summary>
+    /// Verifies measurement visibility supports global and source specific overrides.
+    /// </summary>
     [Fact]
     public void MeasurementVisibility_SupportsGlobalAndSourceSpecificOverrides()
     {
@@ -33,6 +39,9 @@ public sealed class ProfilerWidgetTests
         Assert.False(widget.IsMeasurementVisible("Engine", "cycle.cpu.ms"));
     }
 
+    /// <summary>
+    /// Verifies selected mode shows only explicitly selected measurements.
+    /// </summary>
     [Fact]
     public void SelectedMode_ShowsOnlyExplicitlySelectedMeasurements()
     {
@@ -55,6 +64,9 @@ public sealed class ProfilerWidgetTests
         Assert.False(widget.IsMeasurementVisible("Engine", "background.cpu.ms"));
     }
 
+    /// <summary>
+    /// Verifies sample summary uses explicit sample terminology.
+    /// </summary>
     [Fact]
     public void SampleSummary_UsesExplicitSampleTerminology()
     {
@@ -79,6 +91,9 @@ public sealed class ProfilerWidgetTests
             text);
     }
 
+    /// <summary>
+    /// Verifies explicit selection shows unavailable metric without enabling all unavailable rows.
+    /// </summary>
     [Fact]
     public void ExplicitSelection_ShowsUnavailableMetricWithoutEnablingAllUnavailableRows()
     {
@@ -113,6 +128,9 @@ public sealed class ProfilerWidgetTests
         Assert.True(after);
     }
 
+    /// <summary>
+    /// Verifies display options expose bounds refresh and scrollable label.
+    /// </summary>
     [Fact]
     public void DisplayOptions_ExposeBoundsRefreshAndScrollableLabel()
     {
@@ -144,6 +162,9 @@ public sealed class ProfilerWidgetTests
         Assert.Equal(8f, widget.Display.TextBlock.VerticalScrollEndPaddingPx);
     }
 
+    /// <summary>
+    /// Verifies scroll end padding extends the actual text scroll range.
+    /// </summary>
     [Fact]
     public void ScrollEndPaddingExtendsTheActualTextScrollRange()
     {
@@ -165,6 +186,9 @@ public sealed class ProfilerWidgetTests
         Assert.Equal(unpadded + 8f, padded, 3);
     }
 
+    /// <summary>
+    /// Verifies runtime context and additional lines are opt in and composable.
+    /// </summary>
     [Fact]
     public void RuntimeContextAndAdditionalLines_AreOptInAndComposable()
     {
@@ -201,6 +225,9 @@ public sealed class ProfilerWidgetTests
         Assert.Contains("Viewport:", widget.Display.Text);
     }
 
+    /// <summary>
+    /// Verifies runtime context defaults to none.
+    /// </summary>
     [Fact]
     public void RuntimeContext_DefaultsToNone()
     {
@@ -217,6 +244,9 @@ public sealed class ProfilerWidgetTests
         Assert.Equal("Gondwana Runtime Profiler", widget.HeaderText);
     }
 
+    /// <summary>
+    /// Verifies refresh interval rejects excessive display polling.
+    /// </summary>
     [Fact]
     public void RefreshInterval_RejectsExcessiveDisplayPolling()
     {

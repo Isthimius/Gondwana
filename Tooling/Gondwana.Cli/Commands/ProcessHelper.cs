@@ -13,6 +13,9 @@ internal static class ProcessHelper
     /// the URL in the default browser as soon as it appears.
     /// Returns the exit code.
     /// </summary>
+    /// <param name="fileName">The file name.</param>
+    /// <param name="arguments">The arguments.</param>
+    /// <returns>The process exit code.</returns>
     public static int RunLiveAndOpenUrl(string fileName, IEnumerable<string> arguments)
     {
         try
@@ -92,6 +95,10 @@ internal static class ProcessHelper
     /// <summary>
     /// Runs a command and returns its combined stdout+stderr output.
     /// </summary>
+    /// <param name="fileName">The file name.</param>
+    /// <param name="arguments">The arguments.</param>
+    /// <param name="exitCode">When this method returns, contains the command exit code.</param>
+    /// <returns>The captured process output.</returns>
     public static string Run(string fileName, string arguments, out int exitCode)
     {
         try
@@ -148,6 +155,9 @@ internal static class ProcessHelper
     /// Runs a command, streaming output live to the console.
     /// Returns the exit code.
     /// </summary>
+    /// <param name="fileName">The file name.</param>
+    /// <param name="arguments">The arguments.</param>
+    /// <returns>The process exit code.</returns>
     public static int RunLive(string fileName, string arguments)
     {
         try
@@ -177,6 +187,9 @@ internal static class ProcessHelper
     /// Runs a command with individual argument tokens (no shell quoting needed).
     /// Streams output live to the console. Returns the exit code.
     /// </summary>
+    /// <param name="fileName">The file name.</param>
+    /// <param name="arguments">The arguments.</param>
+    /// <returns>The process exit code.</returns>
     public static int RunLive(string fileName, IEnumerable<string> arguments)
     {
         try

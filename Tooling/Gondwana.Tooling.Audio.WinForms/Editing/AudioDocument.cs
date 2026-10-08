@@ -7,10 +7,25 @@ namespace Gondwana.Tooling.Audio.Editing;
 /// </summary>
 public sealed class AudioDocument
 {
+    /// <summary>
+    /// Gets the definition.
+    /// </summary>
     public AudioDefinition Definition { get; }
+    /// <summary>
+    /// Gets the file path.
+    /// </summary>
     public string? FilePath { get; private set; }
+    /// <summary>
+    /// Gets the base directory.
+    /// </summary>
     public string BaseDirectory { get; private set; }
+    /// <summary>
+    /// Gets whether the document contains unsaved changes.
+    /// </summary>
     public bool IsDirty { get; private set; }
+    /// <summary>
+    /// Occurs when the document content changes.
+    /// </summary>
     public event EventHandler? Changed;
 
     private AudioDocument(
@@ -25,6 +40,11 @@ public sealed class AudioDocument
         IsDirty = isDirty;
     }
 
+    /// <summary>
+    /// Opens the supplied file for use by the audio document.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <returns>The resulting audio document.</returns>
     public static AudioDocument Open(string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -37,6 +57,11 @@ public sealed class AudioDocument
             isDirty: false);
     }
 
+    /// <summary>
+    /// Creates a new audio document.
+    /// </summary>
+    /// <param name="directory">The directory.</param>
+    /// <returns>The resulting audio document.</returns>
     public static AudioDocument Create(string directory) =>
         new(
             new AudioDefinition
@@ -47,6 +72,11 @@ public sealed class AudioDocument
             directory,
             isDirty: true);
 
+    /// <summary>
+    /// Adds loose file.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <returns>The audio resource definition added for the loose file.</returns>
     public AudioResourceDefinition AddLooseFile(string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -68,6 +98,12 @@ public sealed class AudioDocument
         return resource;
     }
 
+    /// <summary>
+    /// Adds uri.
+    /// </summary>
+    /// <param name="key">The lookup key for the resource.</param>
+    /// <param name="uri">The URI identifying the media source.</param>
+    /// <returns>The audio resource definition added for the URI.</returns>
     public AudioResourceDefinition AddUri(string key, string uri)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
@@ -86,6 +122,11 @@ public sealed class AudioDocument
         return resource;
     }
 
+    /// <summary>
+    /// Removes the selected audio resource definition from the document.
+    /// </summary>
+    /// <param name="resource">The resource.</param>
+    /// <returns><see langword="true"/> if the entry was found and removed; otherwise, <see langword="false"/>.</returns>
     public bool Remove(AudioResourceDefinition resource)
     {
         if (!Definition.Resources.Remove(resource))
@@ -95,15 +136,27 @@ public sealed class AudioDocument
         return true;
     }
 
+    /// <summary>
+    /// Marks the document as modified and notifies listeners.
+    /// </summary>
     public void MarkChanged()
     {
         IsDirty = true;
         Changed?.Invoke(this, EventArgs.Empty);
     }
 
+    /// <summary>
+    /// Checks the definition and collects validation errors.
+    /// </summary>
+    /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
     public IReadOnlyList<string> Validate() =>
         AudioDefinitionValidator.Validate(Definition);
 
+    /// <summary>
+    /// Saves the current content to the destination file.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <param name="allowInvalid">Whether to save even when validation reports errors.</param>
     public void Save(string path, bool allowInvalid = false)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);

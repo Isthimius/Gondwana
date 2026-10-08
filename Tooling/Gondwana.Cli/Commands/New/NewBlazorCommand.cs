@@ -6,17 +6,27 @@ namespace Gondwana.Cli.Commands.New;
 
 internal sealed class NewBlazorCommand : Command<NewBlazorCommand.Settings>
 {
+    /// <summary>
+    /// Defines command-line settings for NewBlazorCommand.
+    /// </summary>
     public sealed class Settings : CommandSettings
     {
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
         [CommandArgument(0, "<name>")]
         [Description("The name of the new project.")]
         public string Name { get; init; } = string.Empty;
 
+        /// <summary>
+        /// Gets or sets the output.
+        /// </summary>
         [CommandOption("-o|--output")]
         [Description("The directory to place the generated output in. Defaults to a new folder named <name> in the current directory.")]
         public string? Output { get; init; }
     }
 
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(settings.Name))

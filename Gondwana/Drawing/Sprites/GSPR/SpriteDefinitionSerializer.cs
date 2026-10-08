@@ -16,6 +16,11 @@ public static class SpriteDefinitionSerializer
         MissingMemberHandling = MissingMemberHandling.Ignore
     };
 
+    /// <summary>
+    /// Loads a sprite definition from a loose definition file.
+    /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <returns>The resulting sprite definition.</returns>
     public static SpriteDefinition Load(string filePath)
     {
         var path = Path.GetFullPath(filePath);
@@ -25,6 +30,11 @@ public static class SpriteDefinitionSerializer
         return definition;
     }
 
+    /// <summary>
+    /// Loads a sprite definition from a readable stream.
+    /// </summary>
+    /// <param name="stream">The stream supplying the serialized content. The stream remains open.</param>
+    /// <returns>The resulting sprite definition.</returns>
     public static SpriteDefinition Load(Stream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
@@ -32,6 +42,12 @@ public static class SpriteDefinitionSerializer
         return FromJson(reader.ReadToEnd());
     }
 
+    /// <summary>
+    /// Loads a sprite definition from an assets-file entry.
+    /// </summary>
+    /// <param name="assetsFile">The assets file containing the requested entry.</param>
+    /// <param name="entryName">The entry name inside the assets file.</param>
+    /// <returns>The resulting sprite definition.</returns>
     public static SpriteDefinition Load(AssetsFile assetsFile, string entryName)
     {
         ArgumentNullException.ThrowIfNull(assetsFile);
@@ -45,12 +61,22 @@ public static class SpriteDefinitionSerializer
         return definition;
     }
 
+    /// <summary>
+    /// Serializes the supplied content as JSON.
+    /// </summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <returns>The serialized JSON text.</returns>
     public static string ToJson(SpriteDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);
         return JsonConvert.SerializeObject(definition, Settings);
     }
 
+    /// <summary>
+    /// Deserializes a definition from JSON.
+    /// </summary>
+    /// <param name="json">The JSON text to deserialize.</param>
+    /// <returns>The deserialized definition.</returns>
     public static SpriteDefinition FromJson(string json)
     {
         try
@@ -69,6 +95,11 @@ public static class SpriteDefinitionSerializer
         catch (JsonException ex) { throw new InvalidDataException("Failed to deserialize GSPR JSON.", ex); }
     }
 
+    /// <summary>
+    /// Saves the supplied definition or runtime content to a definition file.
+    /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <param name="definition">The persisted definition to process.</param>
     public static void Save(string filePath, SpriteDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);
@@ -80,6 +111,9 @@ public static class SpriteDefinitionSerializer
     }
 
     /// <summary>Clones and rebases authoring locations without changing the source document.</summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <param name="directory">The directory.</param>
+    /// <returns>The resulting sprite definition.</returns>
     public static SpriteDefinition Rebase(SpriteDefinition definition, string directory)
     {
         var clone = FromJson(ToJson(definition));
@@ -101,15 +135,35 @@ public static class SpriteDefinitionSerializer
         return clone;
     }
 
+    /// <summary>
+    /// Saves the supplied definition or runtime content to a definition file.
+    /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <param name="sprites">The sprites.</param>
     public static void Save(string filePath, IEnumerable<Sprite> sprites) => Save(filePath, FromSprites(sprites));
+    /// <summary>
+    /// Saves the supplied definition or runtime content to a definition file.
+    /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <param name="sprite">The sprite.</param>
     public static void Save(string filePath, Sprite sprite) => Save(filePath, FromSprites([sprite]));
 
+    /// <summary>
+    /// Captures the supplied sprites as a persistable sprite definition.
+    /// </summary>
+    /// <param name="sprites">The sprites.</param>
+    /// <returns>The resulting sprite definition.</returns>
     public static SpriteDefinition FromSprites(IEnumerable<Sprite> sprites)
     {
         ArgumentNullException.ThrowIfNull(sprites);
         return new() { Sprites = sprites.Select(FromSprite).ToList(), Source = SpriteDefinitionSource.Generated() };
     }
 
+    /// <summary>
+    /// Captures a sprite's frame, placement, visual settings, and collision settings.
+    /// </summary>
+    /// <param name="sprite">The sprite.</param>
+    /// <returns>The resulting sprite instance definition.</returns>
     public static SpriteInstanceDefinition FromSprite(Sprite sprite)
     {
         ArgumentNullException.ThrowIfNull(sprite);
@@ -140,11 +194,29 @@ public static class SpriteDefinitionSerializer
         };
     }
 
+    /// <summary>
+    /// Loads a sprite definition and creates sprites using registered runtime dependencies.
+    /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <returns>The resulting collection of sprite entries.</returns>
     public static List<Sprite> LoadSprites(string filePath) => ToSprites(Load(filePath));
+    /// <summary>
+    /// Loads a sprite definition and creates sprites using registered runtime dependencies.
+    /// </summary>
+    /// <param name="assetsFile">The assets file containing the requested entry.</param>
+    /// <param name="entryName">The entry name inside the assets file.</param>
+    /// <returns>The resulting collection of sprite entries.</returns>
     public static List<Sprite> LoadSprites(AssetsFile assetsFile, string entryName) => ToSprites(Load(assetsFile, entryName));
+    /// <summary>
+    /// Creates a runtime sprite from its persisted definition.
+    /// </summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <returns>The resulting sprite.</returns>
     public static Sprite ToSprite(SpriteInstanceDefinition definition) => ToSprites(new() { Sprites = [definition] })[0];
 
     /// <summary>Resolves only registered runtime dependencies. Rolls back on any failure.</summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <returns>The resulting collection of sprite entries.</returns>
     public static List<Sprite> ToSprites(SpriteDefinition definition)
         => ToSprites(definition, allowDuplicateNicknames: false);
 

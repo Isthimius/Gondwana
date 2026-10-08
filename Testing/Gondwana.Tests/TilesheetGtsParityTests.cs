@@ -17,11 +17,15 @@ public sealed class TilesheetGtsParityTests : IDisposable
         Path.GetTempPath(),
         $"GondwanaGtsParityTests_{Guid.NewGuid():N}");
 
+    /// <summary>
+    /// Initializes a new instance of the <c>TilesheetGtsParityTests</c> class.
+    /// </summary>
     public TilesheetGtsParityTests()
     {
         Directory.CreateDirectory(_tempDir);
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         AssetsFile.ClearAll();
@@ -30,6 +34,11 @@ public sealed class TilesheetGtsParityTests : IDisposable
             Directory.Delete(_tempDir, recursive: true);
     }
 
+    /// <summary>
+    /// Verifies trailing margin only cancels final padding.
+    /// </summary>
+    /// <param name="trailing">The trailing value for this test case.</param>
+    /// <param name="valid">The valid value for this test case.</param>
     [Theory]
     [InlineData(-2, true)]
     [InlineData(-3, false)]

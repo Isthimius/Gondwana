@@ -21,17 +21,48 @@ public sealed class ExternalImportPanel : UserControl
     private CancellationTokenSource? cancellation;
     private Task<ExternalImportResult>? work;
     private bool importing;
+    /// <summary>
+    /// Gets or sets the host services.
+    /// </summary>
     public IStudioPluginHostServices? HostServices { get; set; }
+    /// <summary>
+    /// Gets or sets the source path.
+    /// </summary>
     public string SourcePath { get => source.Text; set => source.Text = value; }
+    /// <summary>
+    /// Gets or sets the output directory.
+    /// </summary>
     public string OutputDirectory { get => output.Text; set => output.Text = value; }
+    /// <summary>
+    /// Gets or sets whether overwrite is enabled.
+    /// </summary>
     public bool Overwrite { get => overwrite.Checked; set => overwrite.Checked = value; }
+    /// <summary>
+    /// Gets whether the operation can import.
+    /// </summary>
     public bool CanImport => import.Enabled;
+    /// <summary>
+    /// Gets whether the object is busy.
+    /// </summary>
     public bool IsBusy => work is not null;
+    /// <summary>
+    /// Gets the analysis.
+    /// </summary>
     public ExternalImportAnalysis? Analysis { get; private set; }
+    /// <summary>
+    /// Gets the formats.
+    /// </summary>
     public IReadOnlyList<string> Formats => format.Items.Cast<string>().ToArray();
 
+    /// <summary>
+    /// Initializes a new instance of the <c>ExternalImportPanel</c> class.
+    /// </summary>
     public ExternalImportPanel() : this(ExternalImporterRegistry.CreateProviders()) { }
 
+    /// <summary>
+    /// Initializes a new instance of the <c>ExternalImportPanel</c> class.
+    /// </summary>
+    /// <param name="providers">The providers.</param>
     public ExternalImportPanel(IReadOnlyList<IExternalAssetImporter> providers)
     {
         this.providers = providers;
@@ -63,7 +94,13 @@ public sealed class ExternalImportPanel : UserControl
     }
 
     private void InvalidateAnalysis() { Analysis = null; import.Enabled = false; artifacts.Items.Clear(); diagnostics.Clear(); }
+    /// <summary>
+    /// Analyzes the external source and planned import outputs.
+    /// </summary>
     public void Analyze() => Start(false);
+    /// <summary>
+    /// Imports the external source into Gondwana asset definitions.
+    /// </summary>
     public void Import() { if (CanImport) Start(true); }
     private void Start(bool write)
     {
@@ -79,6 +116,9 @@ public sealed class ExternalImportPanel : UserControl
         work = Task.Run(() => write ? provider.Import(request, token) : new ExternalImportResult(provider.Analyze(request, token), []), token);
     }
 
+    /// <summary>
+    /// Processes completed import work and updates the panel.
+    /// </summary>
     public void Poll()
     {
         if (IsDisposed || work is not { IsCompleted: true } completed) return;
@@ -103,6 +143,9 @@ public sealed class ExternalImportPanel : UserControl
         catch (Exception ex) { diagnostics.Text = $"Error: {ex.GetBaseException().Message}"; import.Enabled = false; }
     }
 
+    /// <summary>
+    /// Requests cancellation of the current import operation.
+    /// </summary>
     public void Cancel()
     {
         cancellation?.Cancel(); cancellation?.Dispose(); cancellation = null;
@@ -110,6 +153,7 @@ public sealed class ExternalImportPanel : UserControl
             _ = previous.ContinueWith(t => System.Diagnostics.Trace.TraceError(t.Exception!.ToString()), CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.Default);
         work = null; InvalidateAnalysis(); inputs.Enabled = analyze.Enabled = true;
     }
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing) { timer.Stop(); timer.Dispose(); Cancel(); }

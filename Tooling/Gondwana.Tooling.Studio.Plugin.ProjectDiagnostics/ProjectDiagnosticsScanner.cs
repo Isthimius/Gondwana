@@ -16,6 +16,9 @@ public sealed class ProjectDiagnosticsScanner
         { "bin", "obj", ".git", ".vs", "node_modules" };
 
     /// <summary>Scans synchronously on the caller's thread. The plugin runs this on a worker.</summary>
+    /// <param name="projectPath">The project path.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The project diagnostics collected by the scan.</returns>
     public ProjectScanResult Scan(string projectPath, CancellationToken cancellationToken = default)
     {
         var root = Path.GetFullPath(projectPath);

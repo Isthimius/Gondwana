@@ -34,6 +34,11 @@ public sealed class AnimationDefinitionSource
     [JsonProperty]
     public string? AssetEntryName { get; private init; }
 
+    /// <summary>
+    /// Creates provenance for a definition stored in a loose file.
+    /// </summary>
+    /// <param name="ganiFilePath">The path to the loose GANI animation definition.</param>
+    /// <returns>A source descriptor containing the loose definition file path.</returns>
     public static AnimationDefinitionSource LooseDefinitionFile(string ganiFilePath)
     {
         if (string.IsNullOrWhiteSpace(ganiFilePath))
@@ -46,6 +51,12 @@ public sealed class AnimationDefinitionSource
         };
     }
 
+    /// <summary>
+    /// Creates provenance for a definition stored inside an assets file.
+    /// </summary>
+    /// <param name="assetsFilePath">The path to the assets file.</param>
+    /// <param name="assetEntryName">The entry name inside the assets file.</param>
+    /// <returns>A source descriptor containing the assets file path and entry name.</returns>
     public static AnimationDefinitionSource PackedDefinitionFile(
         string assetsFilePath,
         string assetEntryName)
@@ -64,9 +75,17 @@ public sealed class AnimationDefinitionSource
         };
     }
 
+    /// <summary>
+    /// Creates provenance for a definition generated from runtime state.
+    /// </summary>
+    /// <returns>A source descriptor identifying runtime-generated content.</returns>
     public static AnimationDefinitionSource Generated() =>
         new() { Kind = AnimationDefinitionSourceKind.Generated };
 
+    /// <summary>
+    /// Creates an empty definition-source descriptor.
+    /// </summary>
+    /// <returns>A descriptor with no persisted source.</returns>
     public static AnimationDefinitionSource None() =>
         new() { Kind = AnimationDefinitionSourceKind.None };
 }

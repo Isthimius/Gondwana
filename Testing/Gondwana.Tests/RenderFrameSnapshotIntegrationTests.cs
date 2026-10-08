@@ -11,9 +11,15 @@ using SkiaSharp;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for render frame snapshot integration.
+/// </summary>
 [Collection("Effects rendering")]
 public sealed class RenderFrameSnapshotIntegrationTests
 {
+    /// <summary>
+    /// Verifies bitmap source explicitly reports unsupported gpu stages.
+    /// </summary>
     [Fact]
     public void BitmapSourceExplicitlyReportsUnsupportedGpuStages()
     {
@@ -28,6 +34,9 @@ public sealed class RenderFrameSnapshotIntegrationTests
         Assert.Equal(Gondwana.Diagnostics.TelemetryAvailability.Unsupported, source.Metrics["layers.omitted"].Availability);
     }
 
+    /// <summary>
+    /// Verifies render metric kinds preserve window samples and current state gauges.
+    /// </summary>
     [Fact]
     public void RenderMetricKindsPreserveWindowSamplesAndCurrentStateGauges()
     {
@@ -86,6 +95,9 @@ public sealed class RenderFrameSnapshotIntegrationTests
             metrics["mailbox.dropped.lifetime"].Kind);
     }
 
+    /// <summary>
+    /// Verifies profiler observes build and replay without changing mailbox or legacy subscribers.
+    /// </summary>
     [Fact]
     public void ProfilerObservesBuildAndReplayWithoutChangingMailboxOrLegacySubscribers()
     {
@@ -114,12 +126,18 @@ public sealed class RenderFrameSnapshotIntegrationTests
         Assert.Equal(2, legacy);
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <c>RenderFrameSnapshotIntegrationTests</c> class.
+    /// </summary>
     public RenderFrameSnapshotIntegrationTests()
     {
         Engine.Instance.EngineDispatcher.BindToCurrentThread();
         Engine.Instance.EngineDispatcher.Drain();
     }
 
+    /// <summary>
+    /// Verifies per layer query telemetry uses same unsorted boundary as aggregate query.
+    /// </summary>
     [Fact]
     public void PerLayerQueryTelemetryUsesSameUnsortedBoundaryAsAggregateQuery()
     {
@@ -140,6 +158,9 @@ public sealed class RenderFrameSnapshotIntegrationTests
             source.Metrics["layer.0.query.cpu.ms"].Last);
     }
 
+    /// <summary>
+    /// Verifies clear only gpu render records build without unsampled stages.
+    /// </summary>
     [Fact]
     public void ClearOnlyGpuRenderRecordsBuildWithoutUnsampledStages()
     {
@@ -164,6 +185,9 @@ public sealed class RenderFrameSnapshotIntegrationTests
             source.Metrics["record.cpu.ms"].Availability);
     }
 
+    /// <summary>
+    /// Verifies stale sized frame does not count as successful replay.
+    /// </summary>
     [Fact]
     public void StaleSizedFrameDoesNotCountAsSuccessfulReplay()
     {
@@ -192,6 +216,9 @@ public sealed class RenderFrameSnapshotIntegrationTests
         Assert.Equal(1, source.Metrics["snapshot.commands.approximate"].Count);
     }
 
+    /// <summary>
+    /// Verifies replay matches live composition and survives scene and drawing disposal.
+    /// </summary>
     [Fact]
     public void ReplayMatchesLiveComposition_AndSurvivesSceneAndDrawingDisposal()
     {
@@ -224,6 +251,9 @@ public sealed class RenderFrameSnapshotIntegrationTests
         Assert.Equal(0, host.FrameMailbox.Counters.InUse);
     }
 
+    /// <summary>
+    /// Verifies atlas batched grid tiles match legacy drawing and report batching.
+    /// </summary>
     [Fact]
     public void AtlasBatchedGridTiles_MatchLegacyDrawing_AndReportBatching()
     {
@@ -267,6 +297,9 @@ public sealed class RenderFrameSnapshotIntegrationTests
         Assert.Equal(8, diagnostics.AtlasBatchedTileCount);
     }
 
+    /// <summary>
+    /// Verifies bulk grid recording matches legacy drawing with zoom camera and overhang.
+    /// </summary>
     [Fact]
     public void BulkGridRecording_MatchesLegacyDrawing_WithZoomCameraAndOverhang()
     {
@@ -303,6 +336,9 @@ public sealed class RenderFrameSnapshotIntegrationTests
         Assert.Equal(expected.Pixels, actual.Pixels);
     }
 
+    /// <summary>
+    /// Verifies fractional zoom atlas tiles do not expose background seams.
+    /// </summary>
     [Fact]
     public void FractionalZoomAtlasTiles_DoNotExposeBackgroundSeams()
     {
@@ -332,6 +368,9 @@ public sealed class RenderFrameSnapshotIntegrationTests
         AssertGridInteriorContainsNoBlackPixels(actual, layer, view);
     }
 
+    /// <summary>
+    /// Verifies fractional zoom atlas tiles with transformed exception do not expose background seams.
+    /// </summary>
     [Fact]
     public void FractionalZoomAtlasTiles_WithTransformedException_DoNotExposeBackgroundSeams()
     {
@@ -441,6 +480,9 @@ public sealed class RenderFrameSnapshotIntegrationTests
                 Assert.NotEqual(SKColors.Black, bitmap.GetPixel(x, y));
     }
 
+    /// <summary>
+    /// Verifies empty grid cells are culled unless post draw geometry is needed.
+    /// </summary>
     [Fact]
     public void EmptyGridCells_AreCulledUnlessPostDrawGeometryIsNeeded()
     {
@@ -462,6 +504,9 @@ public sealed class RenderFrameSnapshotIntegrationTests
         Assert.Equal(8, diagnostics.TileCount);
     }
 
+    /// <summary>
+    /// Verifies fixed grid snapshot eligibility invalidates on z order and fog changes.
+    /// </summary>
     [Fact]
     public void FixedGridSnapshotEligibility_InvalidatesOnZOrderAndFogChanges()
     {
@@ -484,6 +529,9 @@ public sealed class RenderFrameSnapshotIntegrationTests
         Assert.True(layer.IsFixedGridSnapshotFastPathEligible);
     }
 
+    /// <summary>
+    /// Verifies direct tile array exposure disables persistent fixed grid fast path.
+    /// </summary>
     [Fact]
     public void DirectTileArrayExposure_DisablesPersistentFixedGridFastPath()
     {
@@ -497,6 +545,9 @@ public sealed class RenderFrameSnapshotIntegrationTests
         Assert.False(layer.IsFixedGridSnapshotFastPathEligible);
     }
 
+    /// <summary>
+    /// Verifies orthogonal fast order falls back when fixed tile z orders differ.
+    /// </summary>
     [Fact]
     public void OrthogonalFastOrder_FallsBackWhenFixedTileZOrdersDiffer()
     {
@@ -521,6 +572,10 @@ public sealed class RenderFrameSnapshotIntegrationTests
         Assert.Same(first, drawables[1]);
     }
 
+    /// <summary>
+    /// Verifies replay does not acquire simulation gate or invoke live callbacks.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task ReplayDoesNotAcquireSimulationGate_OrInvokeLiveCallbacks()
     {
@@ -559,6 +614,9 @@ public sealed class RenderFrameSnapshotIntegrationTests
         finally { release.Set(); await blocker; }
     }
 
+    /// <summary>
+    /// Verifies failed recording releases building slot.
+    /// </summary>
     [Fact]
     public void FailedRecordingReleasesBuildingSlot()
     {
@@ -581,6 +639,7 @@ public sealed class RenderFrameSnapshotIntegrationTests
 
     private sealed class Adapter() : RenderSurfaceAdapterBase(128, 128)
     {
+        /// <inheritdoc/>
         public override void Present(SKImage image, SKRectI source, SKRect destination) { }
     }
 }

@@ -6,12 +6,18 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Tests.Drawing.Sprites;
 
+/// <summary>
+/// Contains regression tests for sprite composition.
+/// </summary>
 [Collection("SpriteManager")]
 public sealed class SpriteCompositionTests : IDisposable
 {
     private readonly List<Sprite> _sprites = new();
     private readonly List<Scene> _scenes = new();
 
+    /// <summary>
+    /// Verifies get position returns composite anchor in grid coordinates.
+    /// </summary>
     [Fact]
     public void GetPosition_ReturnsCompositeAnchorInGridCoordinates()
     {
@@ -32,6 +38,9 @@ public sealed class SpriteCompositionTests : IDisposable
         Assert.Equal(new Vector2(3.5f, 4.5f), composite.GetPosition());
     }
 
+    /// <summary>
+    /// Verifies set position moves children using grid space.
+    /// </summary>
     [Fact]
     public void SetPosition_MovesChildrenUsingGridSpace()
     {
@@ -51,6 +60,9 @@ public sealed class SpriteCompositionTests : IDisposable
         Assert.Equal(new Vector2(8, 9), second.GetPosition());
     }
 
+    /// <summary>
+    /// Verifies add child with offset interprets offset in grid space.
+    /// </summary>
     [Fact]
     public void AddChildWithOffset_InterpretsOffsetInGridSpace()
     {
@@ -69,6 +81,9 @@ public sealed class SpriteCompositionTests : IDisposable
         Assert.Equal(new Vector2(3, 2), child.GetPosition());
     }
 
+    /// <summary>
+    /// Verifies clone sprite to different layer binds movement to destination layer.
+    /// </summary>
     [Fact]
     public void CloneSprite_ToDifferentLayer_BindsMovementToDestinationLayer()
     {
@@ -100,6 +115,9 @@ public sealed class SpriteCompositionTests : IDisposable
         Assert.Equal(new Vector2(1, 0), clone.GetPosition());
     }
 
+    /// <summary>
+    /// Verifies clone sprite when creation callback throws rolls back clone.
+    /// </summary>
     [Fact]
     public void CloneSprite_WhenCreationCallbackThrows_RollsBackClone()
     {
@@ -125,6 +143,7 @@ public sealed class SpriteCompositionTests : IDisposable
         }
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         foreach (Sprite sprite in _sprites)

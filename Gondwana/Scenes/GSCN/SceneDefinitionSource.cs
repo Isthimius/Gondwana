@@ -37,6 +37,8 @@ public sealed class SceneDefinitionSource
     /// <summary>
     /// Creates a source marker for a loose .gscn file.
     /// </summary>
+    /// <param name="gscnFilePath">The gscn file path.</param>
+    /// <returns>A source descriptor containing the loose definition file path.</returns>
     public static SceneDefinitionSource LooseDefinitionFile(string gscnFilePath)
     {
         if (string.IsNullOrWhiteSpace(gscnFilePath))
@@ -52,6 +54,9 @@ public sealed class SceneDefinitionSource
     /// <summary>
     /// Creates a source marker for a packed .gscn entry inside an assets file.
     /// </summary>
+    /// <param name="assetsFilePath">The path to the assets file.</param>
+    /// <param name="assetEntryName">The entry name inside the assets file.</param>
+    /// <returns>A source descriptor containing the assets file path and entry name.</returns>
     public static SceneDefinitionSource PackedDefinitionFile(string assetsFilePath, string assetEntryName)
     {
         if (string.IsNullOrWhiteSpace(assetsFilePath))
@@ -71,6 +76,7 @@ public sealed class SceneDefinitionSource
     /// <summary>
     /// Creates a source marker for a definition generated from runtime state or tooling.
     /// </summary>
+    /// <returns>A source descriptor identifying runtime-generated content.</returns>
     public static SceneDefinitionSource Generated() =>
         new()
         {
@@ -80,6 +86,7 @@ public sealed class SceneDefinitionSource
     /// <summary>
     /// Creates an empty source marker when no provenance is known.
     /// </summary>
+    /// <returns>A descriptor with no persisted source.</returns>
     public static SceneDefinitionSource None() =>
         new()
         {

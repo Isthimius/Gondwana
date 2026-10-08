@@ -196,6 +196,7 @@ public sealed class TypedValueBagTests
     /// <summary>
     /// Verifies that invalid key names throw an <see cref="ArgumentException"/> in bag operations.
     /// </summary>
+    /// <param name="invalidName">The invalid name value for this test case.</param>
     [Theory]
     [InlineData("")]
     [InlineData(" ")]

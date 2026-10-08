@@ -146,7 +146,7 @@ public sealed class GamepadEventPoller
     /// <param name="timeBetweenEvents">
     /// The minimum time interval in seconds between consecutive events for this button.
     /// Use this to throttle rapid button presses. A value of -1 (default) will use the engine's
-    /// default time between gamepad events from <see cref="Engine.Configuration.TimeBetweenGamepadEvents"/>.
+    /// default time between gamepad events from <see cref="Gondwana.Configuration.EngineConfiguration.TimeBetweenGamepadEvents"/>.
     /// A value of 0 means no throttling.
     /// </param>
     /// <param name="isPaused">

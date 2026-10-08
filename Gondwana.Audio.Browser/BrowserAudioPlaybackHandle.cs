@@ -12,6 +12,14 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
     private float _pan;
     private float _playbackSpeed;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>BrowserAudioPlaybackHandle</c> class.
+    /// </summary>
+    /// <param name="key">The lookup key for the resource.</param>
+    /// <param name="uri">The URI identifying the media source.</param>
+    /// <param name="volume">The playback volume.</param>
+    /// <param name="pan">The stereo pan, from -1 (left) to 1 (right).</param>
+    /// <param name="playbackSpeed">The playback speed multiplier.</param>
     public BrowserAudioPlaybackHandle(string key, string uri, float volume, float pan, float playbackSpeed)
     {
         // Each handle owns its JS entry, including during replacement of a manager key.
@@ -22,6 +30,15 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
         BrowserAudioInterop.Load(_key, uri, loop: false, _volume, _pan, _playbackSpeed, OnEnded);
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <c>BrowserAudioPlaybackHandle</c> class.
+    /// </summary>
+    /// <param name="key">The lookup key for the resource.</param>
+    /// <param name="data">The encoded audio bytes.</param>
+    /// <param name="mimeType">The MIME type of the encoded audio data.</param>
+    /// <param name="volume">The playback volume.</param>
+    /// <param name="pan">The stereo pan, from -1 (left) to 1 (right).</param>
+    /// <param name="playbackSpeed">The playback speed multiplier.</param>
     public BrowserAudioPlaybackHandle(string key, byte[] data, string mimeType, float volume, float pan, float playbackSpeed)
     {
         ArgumentNullException.ThrowIfNull(data);
@@ -43,6 +60,7 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
             OnEnded);
     }
 
+    /// <inheritdoc/>
     public event EventHandler? PlaybackCompleted;
 
     private void OnEnded()
@@ -51,6 +69,7 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
             PlaybackCompleted?.Invoke(this, EventArgs.Empty);
     }
 
+    /// <inheritdoc/>
     public AudioPlaybackState State => BrowserAudioInterop.GetState(_key) switch
     {
         1 => AudioPlaybackState.Playing,
@@ -58,12 +77,16 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
         _ => AudioPlaybackState.Stopped
     };
 
+    /// <inheritdoc/>
     public TimeSpan CurrentTime => TimeSpan.FromSeconds(Math.Max(0d, BrowserAudioInterop.GetCurrentTime(_key)));
 
+    /// <inheritdoc/>
     public TimeSpan Duration => TimeSpan.FromSeconds(Math.Max(0d, BrowserAudioInterop.GetDuration(_key)));
 
+    /// <inheritdoc/>
     public string? TemporaryFilePath => null;
 
+    /// <inheritdoc/>
     public bool IsLooping
     {
         get => _isLooping;
@@ -74,6 +97,7 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
         }
     }
 
+    /// <inheritdoc/>
     public float Volume
     {
         get => _volume;
@@ -84,6 +108,7 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
         }
     }
 
+    /// <inheritdoc/>
     public float Pan
     {
         get => _pan;
@@ -94,6 +119,7 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
         }
     }
 
+    /// <inheritdoc/>
     public float PlaybackSpeed
     {
         get => _playbackSpeed;
@@ -104,18 +130,21 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
         }
     }
 
+    /// <inheritdoc/>
     public void Play(bool fromStart = true)
     {
         ThrowIfDisposed();
         BrowserAudioInterop.Play(_key, fromStart);
     }
 
+    /// <inheritdoc/>
     public void Pause()
     {
         ThrowIfDisposed();
         BrowserAudioInterop.Pause(_key);
     }
 
+    /// <inheritdoc/>
     public void Resume()
     {
         ThrowIfDisposed();
@@ -123,6 +152,7 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
             BrowserAudioInterop.Play(_key, fromStart: false);
     }
 
+    /// <inheritdoc/>
     public void Seek(TimeSpan position)
     {
         ThrowIfDisposed();
@@ -130,6 +160,7 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
         BrowserAudioInterop.SetCurrentTime(_key, seconds);
     }
 
+    /// <inheritdoc/>
     public void Stop()
     {
         ThrowIfDisposed();
@@ -141,6 +172,9 @@ internal sealed class BrowserAudioPlaybackHandle : IAudioPlaybackHandle
         ObjectDisposedException.ThrowIf(_disposed, this);
     }
 
+    /// <summary>
+    /// Releases the resources owned by this instance.
+    /// </summary>
     public void Dispose()
     {
         if (_disposed)

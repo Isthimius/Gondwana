@@ -36,6 +36,8 @@ public abstract class RenderSurfaceAdapterBase
     }
 
     /// <summary>Converts adapter input to logical ScreenPx, retaining outside coordinates for capture/leave.</summary>
+    /// <param name="adapterPx">The adapter px.</param>
+    /// <returns>The point in logical backbuffer screen pixels.</returns>
     public Point AdapterPxToScreenPx(PointF adapterPx)
     {
         Presentation.TryAdapterPxToScreenPx(adapterPx, out var screen);
@@ -44,6 +46,9 @@ public abstract class RenderSurfaceAdapterBase
     }
 
     /// <summary>Presents a complete image using the same transform as pointer normalization.</summary>
+    /// <param name="canvas">The canvas.</param>
+    /// <param name="image">The image.</param>
+    /// <param name="clearColor">The clear color.</param>
     public void DrawImage(SKCanvas canvas, SKImage image, SKColor clearColor)
     {
         var state = Volatile.Read(ref _presentation);

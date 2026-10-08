@@ -122,6 +122,10 @@ public sealed class KeyboardEventPoller
     /// Primary API: monitor by platform-agnostic key code.
     /// Platform layers (WinForms, SDL, etc.) are responsible for mapping their key enums/names to key codes.
     /// </summary>
+    /// <param name="keyCode">The key code to query.</param>
+    /// <param name="displayName">The display name.</param>
+    /// <param name="timeBetweenEvents">The time between events.</param>
+    /// <param name="isPaused">Whether event processing starts paused.</param>
     public void StartMonitoringKey(int keyCode, string? displayName = null, double timeBetweenEvents = -1, bool isPaused = false)
     {
         _pendingOps.Enqueue(() =>

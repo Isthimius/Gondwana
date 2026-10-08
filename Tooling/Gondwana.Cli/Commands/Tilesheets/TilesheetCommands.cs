@@ -6,12 +6,16 @@ namespace Gondwana.Cli.Commands.Tilesheets;
 
 internal sealed class TilesheetSettings : CommandSettings
 {
+    /// <summary>
+    /// Gets or sets the file.
+    /// </summary>
     [CommandArgument(0, "<file.gts>")]
     public string File { get; init; } = "";
 }
 
 internal sealed class TilesheetValidateCommand : Command<TilesheetSettings>
 {
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, TilesheetSettings settings, CancellationToken cancellationToken)
     {
         var result = TilesheetInspection.FromFile(settings.File);
@@ -23,6 +27,7 @@ internal sealed class TilesheetValidateCommand : Command<TilesheetSettings>
 
 internal sealed class TilesheetInfoCommand : Command<TilesheetSettings>
 {
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, TilesheetSettings settings, CancellationToken cancellationToken)
     {
         var result = TilesheetInspection.FromFile(settings.File);

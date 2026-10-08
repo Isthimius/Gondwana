@@ -11,7 +11,13 @@ namespace Gondwana.Tooling.Sprites.WinForms;
 /// <summary>The shared standalone and Studio GSPR authoring surface.</summary>
 public sealed class SpriteEditorControl : UserControl
 {
+    /// <summary>
+    /// Gets the pane names.
+    /// </summary>
     public static IReadOnlyList<string> PaneNames { get; } = Array.AsReadOnly(new[] { "Sprites", "Sprite preview", "GSCN scene/layer sources", "GTS frame sources", "Properties", "Validation" });
+    /// <summary>
+    /// Gets the document.
+    /// </summary>
     public SpriteDocument Document { get; }
     private readonly EditorDockWorkspace _workspace = new("gspr");
     private readonly ListBox _sprites = new() { Dock = DockStyle.Fill, DisplayMember = "Nickname" };
@@ -26,8 +32,15 @@ public sealed class SpriteEditorControl : UserControl
     private readonly List<string> _sourceWarnings = [];
     private readonly HashSet<string> _loadedScenePaths = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> _loadedTilesheetPaths = new(StringComparer.OrdinalIgnoreCase);
+    /// <summary>
+    /// Gets the selected sprite.
+    /// </summary>
     public SpriteInstanceDefinition? SelectedSprite => _sprites.SelectedItem as SpriteInstanceDefinition;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>SpriteEditorControl</c> class.
+    /// </summary>
+    /// <param name="document">The document displayed or edited by the control.</param>
     public SpriteEditorControl(SpriteDocument document)
     {
         Document = document;
@@ -119,6 +132,10 @@ public sealed class SpriteEditorControl : UserControl
         { _sourceWarnings.Add(ex.Message); }
     }
 
+    /// <summary>
+    /// Adds scene definition files to the document's source list.
+    /// </summary>
+    /// <param name="paths">The paths of the source files to add.</param>
     public void AddSceneSources(IEnumerable<string> paths)
     {
         foreach (var path in paths) { var scene = LoadScene(path); Document.SetLooseSceneSource(scene.ID, path); }
@@ -139,6 +156,10 @@ public sealed class SpriteEditorControl : UserControl
         root.Expand();
     }
 
+    /// <summary>
+    /// Adds tilesheet definition files to the document's source list.
+    /// </summary>
+    /// <param name="paths">The paths of the source files to add.</param>
     public void AddTilesheetSources(IEnumerable<string> paths)
     {
         foreach (var path in paths) { var source = LoadTilesheet(path); Document.SetLooseTilesheetSource(source.Definition.Name, path); }
@@ -178,6 +199,10 @@ public sealed class SpriteEditorControl : UserControl
         root.Expand();
     }
 
+    /// <summary>
+    /// Selects a sprite and updates the editor selection.
+    /// </summary>
+    /// <param name="sprite">The sprite.</param>
     public void SelectSprite(SpriteInstanceDefinition sprite) { RefreshEntries(); _sprites.SelectedItem = sprite; }
     private void RefreshEntries()
     {
@@ -199,11 +224,19 @@ public sealed class SpriteEditorControl : UserControl
         UpdateValidation();
     }
     private void DocumentChanged(object? sender, EventArgs e) => UpdateValidation();
+    /// <summary>
+    /// Commits pending editor input to the document.
+    /// </summary>
+    /// <returns><see langword="true"/> if the pending edits were committed; otherwise, <see langword="false"/>.</returns>
     public bool CommitEdits()
     {
         _validation.Focus();
         return !_properties.ContainsFocus && ValidateChildren();
     }
+    /// <summary>
+    /// Validates the current document and refreshes the displayed diagnostics.
+    /// </summary>
+    /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
     public IReadOnlyList<string> UpdateValidation()
     {
         var errors = Document.Validate();
@@ -234,10 +267,27 @@ public sealed class SpriteEditorControl : UserControl
         _validation.Lines = lines.ToArray();
         return errors;
     }
+    /// <summary>
+    /// Shows the named editor pane.
+    /// </summary>
+    /// <param name="name">The name.</param>
+    /// <returns><see langword="true"/> if the named pane was found; otherwise, <see langword="false"/>.</returns>
     public bool ShowPane(string name) => _workspace.ShowPane(name);
+    /// <summary>
+    /// Determines whether the named editor pane is visible.
+    /// </summary>
+    /// <param name="name">The name.</param>
+    /// <returns><see langword="true"/> if the pane is visible; otherwise, <see langword="false"/>.</returns>
     public bool IsPaneVisible(string name) => _workspace.IsPaneVisible(name);
+    /// <summary>
+    /// Shows every editor pane.
+    /// </summary>
     public void ShowAllPanes() => _workspace.ShowAllPanes();
+    /// <summary>
+    /// Restores the default editor pane layout.
+    /// </summary>
     public void ResetLayout() => _workspace.ResetLayout();
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing) { Document.Changed -= DocumentChanged; foreach (var source in _sources) source.Dispose(); _thumbnails.Dispose(); }

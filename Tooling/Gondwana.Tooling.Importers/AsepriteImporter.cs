@@ -6,12 +6,19 @@ using SkiaSharp;
 
 namespace Gondwana.Tooling.Importers;
 
+/// <summary>
+/// Represents aseprite importer.
+/// </summary>
 public sealed class AsepriteImporter : ExternalAssetImporter
 {
+    /// <inheritdoc/>
     public override string Id => "aseprite";
+    /// <inheritdoc/>
     public override string DisplayName => "Aseprite (.ase/.aseprite)";
+    /// <inheritdoc/>
     public override IReadOnlyList<string> SupportedExtensions => [".ase", ".aseprite"];
 
+    /// <inheritdoc/>
     protected override void BuildPlan(ImportPlan plan, CancellationToken token)
     {
         using var source = File.OpenRead(plan.Request.SourcePath);
@@ -65,6 +72,13 @@ public sealed class AsepriteImporter : ExternalAssetImporter
         }
     }
 
+    /// <summary>
+    /// Renders an Aseprite frame to a bitmap.
+    /// </summary>
+    /// <param name="sprite">The sprite.</param>
+    /// <param name="frameIndex">The frame index.</param>
+    /// <param name="token">The token.</param>
+    /// <returns>The rendered frame bitmap. The caller owns and must dispose the bitmap.</returns>
     public static SKBitmap RenderFrame(AsepriteFile sprite, int frameIndex, CancellationToken token = default)
     {
         var parents = new int[sprite.Layers.Count];

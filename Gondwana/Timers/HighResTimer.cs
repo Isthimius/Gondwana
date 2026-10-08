@@ -23,15 +23,21 @@ public static class HighResTimer
     /// <summary>
     /// Gets the current tick count using the high-resolution timer.
     /// </summary>
+    /// <returns>The current high-resolution timer timestamp.</returns>
     public static long GetCurrentTick() => Stopwatch.GetTimestamp();
 
     /// <summary>
     /// Returns the elapsed time in seconds between two tick counts.
     /// </summary>
+    /// <param name="start">The starting high-resolution timer timestamp.</param>
+    /// <param name="stop">The ending high-resolution timer timestamp.</param>
+    /// <returns>The elapsed duration between the timestamps, in seconds.</returns>
     public static float GetDuration(long start, long stop) => (float)(stop - start) / TicksPerSecond;
 
     /// <summary>
     /// Returns the elapsed time in seconds since the given start tick.
     /// </summary>
+    /// <param name="start">The starting high-resolution timer timestamp.</param>
+    /// <returns>The elapsed time since the supplied timestamp, in seconds.</returns>
     public static float GetElapsedSince(long start) => GetDuration(start, GetCurrentTick());
 }

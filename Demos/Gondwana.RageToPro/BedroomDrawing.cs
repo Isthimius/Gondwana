@@ -24,6 +24,7 @@ internal sealed class BedroomDrawing : DirectDrawingBase
 
     internal void Invalidate() => ForceRefresh();
 
+    /// <inheritdoc/>
     protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
         SKCanvas c = backbuffer.Canvas;
@@ -124,6 +125,7 @@ internal sealed class BedroomDrawing : DirectDrawingBase
         _text.TextSize = size; _text.Color = color; _text.TextAlign = align; c.DrawText(value, x, y, _text);
     }
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing) { _paint.Dispose(); _text.Dispose(); }

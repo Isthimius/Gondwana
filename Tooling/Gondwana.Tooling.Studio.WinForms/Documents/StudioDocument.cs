@@ -209,6 +209,9 @@ internal sealed class StudioDocument : IDisposable
 
     private void OnChanged(object? sender, EventArgs e) => Changed?.Invoke(this, EventArgs.Empty);
 
+    /// <summary>
+    /// Releases the resources owned by this instance.
+    /// </summary>
     public void Dispose()
     {
         _detach?.Invoke();

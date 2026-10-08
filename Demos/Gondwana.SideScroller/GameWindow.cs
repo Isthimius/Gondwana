@@ -18,6 +18,7 @@ internal sealed class GameWindow : Form
         KeyDown += (_, e) => { if (e.KeyCode == Keys.Escape) Close(); };
     }
 
+    /// <inheritdoc/>
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
@@ -31,6 +32,7 @@ internal sealed class GameWindow : Form
         };
     }
 
+    /// <inheritdoc/>
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
@@ -48,6 +50,7 @@ internal sealed class GameWindow : Form
         }
     }
 
+    /// <inheritdoc/>
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
         _gameHost?.Dispose();

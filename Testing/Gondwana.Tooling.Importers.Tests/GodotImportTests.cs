@@ -4,12 +4,23 @@ using SkiaSharp;
 
 namespace Gondwana.Tooling.Importers.Tests;
 
+/// <summary>
+/// Contains regression tests for godot import.
+/// </summary>
 public sealed class GodotImportTests : IDisposable
 {
     private readonly string directory = Path.Combine(Path.GetTempPath(), "GondwanaGodotTests-" + Guid.NewGuid().ToString("N"));
+    /// <summary>
+    /// Initializes a new instance of the <c>GodotImportTests</c> class.
+    /// </summary>
     public GodotImportTests() => Directory.CreateDirectory(directory);
+    /// <inheritdoc/>
     public void Dispose() => Directory.Delete(directory, true);
 
+    /// <summary>
+    /// Verifies converts atlas sources and mixed animation timing.
+    /// </summary>
+    /// <param name="multiple">The multiple value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -55,6 +66,9 @@ public sealed class GodotImportTests : IDisposable
         Assert.Contains(result.Analysis.Diagnostics, d => d.Code == "godot.sparse");
     }
 
+    /// <summary>
+    /// Verifies parser preserves unknown multiline values.
+    /// </summary>
     [Fact]
     public void ParserPreservesUnknownMultilineValues()
     {
@@ -63,6 +77,12 @@ public sealed class GodotImportTests : IDisposable
         Assert.Equal("\"semi;colon\"", parsed[0].Properties["name"]);
     }
 
+    /// <summary>
+    /// Verifies unsupported tiles are explicitly diagnosed.
+    /// </summary>
+    /// <param name="property">The property value for this test case.</param>
+    /// <param name="code">The code value for this test case.</param>
+    /// <param name="canImport">The can import value for this test case.</param>
     [Theory]
     [InlineData("0:0/1 = 1", "godot.alternative", true)]
     [InlineData("0:0/size_in_atlas = Vector2i(2, 1)", "godot.multicell", false)]
@@ -76,6 +96,9 @@ public sealed class GodotImportTests : IDisposable
         Assert.Contains(analysis.Diagnostics, d => d.Code == code);
     }
 
+    /// <summary>
+    /// Verifies uniform animation and missing project root.
+    /// </summary>
     [Fact]
     public void UniformAnimationAndMissingProjectRoot()
     {
@@ -119,6 +142,10 @@ public sealed class GodotImportTests : IDisposable
         0/autotile/spacing = 1
         """;
 
+    /// <summary>
+    /// Verifies godot3 single tile preserves region and integral float pixels.
+    /// </summary>
+    /// <param name="reference">The reference value for this test case.</param>
     [Theory]
     [InlineData("ExtResource( 1 )")]
     [InlineData("ExtResource(\"1\")")]
@@ -140,6 +167,10 @@ public sealed class GodotImportTests : IDisposable
         Assert.Empty(TilesheetDefinitionValidator.Validate(gts, 32, 24));
     }
 
+    /// <summary>
+    /// Verifies godot3 atlas compensates trailing spacing and warns about selection.
+    /// </summary>
+    /// <param name="mode">The mode value for this test case.</param>
     [Theory]
     [InlineData(1)]
     [InlineData(2)]
@@ -167,6 +198,9 @@ public sealed class GodotImportTests : IDisposable
         Assert.Single(result.Analysis.Diagnostics, d => d.Code == "godot.selection");
     }
 
+    /// <summary>
+    /// Verifies godot3 multiple tiles have stable names and separate textures.
+    /// </summary>
     [Fact]
     public void Godot3MultipleTilesHaveStableNamesAndSeparateTextures()
     {
@@ -181,6 +215,9 @@ public sealed class GodotImportTests : IDisposable
         Assert.Equal(new[] { "../atlas.png", "../second.png" }, definitions.Select(d => d.Image.FilePath));
     }
 
+    /// <summary>
+    /// Verifies godot3 res paths use nearest project and fail without one.
+    /// </summary>
     [Fact]
     public void Godot3ResPathsUseNearestProjectAndFailWithoutOne()
     {
@@ -200,6 +237,12 @@ public sealed class GodotImportTests : IDisposable
         Assert.Equal("../nested/atlas.png", TilesheetDefinitionSerializer.Load(result.WrittenFiles.Single()).Image.FilePath);
     }
 
+    /// <summary>
+    /// Verifies godot3 malformed tiles fail without writing.
+    /// </summary>
+    /// <param name="before">The before value for this test case.</param>
+    /// <param name="after">The after value for this test case.</param>
+    /// <param name="message">The message value for this test case.</param>
     [Theory]
     [InlineData("ExtResource( 1 )", "ExtResource( 99 )", "Unresolved")]
     [InlineData("ExtResource( 1 )", "ExtResource( nope )", "reference")]
@@ -222,6 +265,12 @@ public sealed class GodotImportTests : IDisposable
         Assert.Contains(result.Analysis.Diagnostics, d => d.Message.Contains(message));
     }
 
+    /// <summary>
+    /// Verifies godot3 invalid atlas geometry is rejected.
+    /// </summary>
+    /// <param name="before">The before value for this test case.</param>
+    /// <param name="after">The after value for this test case.</param>
+    /// <param name="message">The message value for this test case.</param>
     [Theory]
     [InlineData("Vector2( 4, 4 )", "Vector2(0, 4)", "positive")]
     [InlineData("Vector2( 4, 4 )", "Vector2(4, -4)", "positive")]
@@ -238,6 +287,12 @@ public sealed class GodotImportTests : IDisposable
         Assert.Contains(analysis.Diagnostics, d => d.Message.Contains(message));
     }
 
+    /// <summary>
+    /// Verifies godot headers are validated.
+    /// </summary>
+    /// <param name="before">The before value for this test case.</param>
+    /// <param name="after">The after value for this test case.</param>
+    /// <param name="code">The code value for this test case.</param>
     [Theory]
     [InlineData("format=2", "format=1", "godot.format")]
     [InlineData("format=2", "format=4", "godot.format")]
@@ -254,6 +309,10 @@ public sealed class GodotImportTests : IDisposable
         Assert.Contains(analysis.Diagnostics, d => d.Code == code);
     }
 
+    /// <summary>
+    /// Verifies godot duplicate resource ids are rejected.
+    /// </summary>
+    /// <param name="id">The id value for this test case.</param>
     [Theory]
     [InlineData("1")]
     [InlineData("\"1\"")]
@@ -265,6 +324,10 @@ public sealed class GodotImportTests : IDisposable
         Assert.Contains(analysis.Diagnostics, d => d.Message.Contains("Duplicate"));
     }
 
+    /// <summary>
+    /// Verifies godot missing or undecodable textures fail.
+    /// </summary>
+    /// <param name="exists">The exists value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -277,6 +340,9 @@ public sealed class GodotImportTests : IDisposable
         Assert.Contains(analysis.Diagnostics, d => d.Message.Contains(exists ? "decode" : "Missing"));
     }
 
+    /// <summary>
+    /// Verifies godot3 metadata warnings are grouped and do not change geometry.
+    /// </summary>
     [Fact]
     public void Godot3MetadataWarningsAreGroupedAndDoNotChangeGeometry()
     {
@@ -301,6 +367,10 @@ public sealed class GodotImportTests : IDisposable
         Assert.Equal(new System.Drawing.Rectangle(3, 4, 8, 6), TilesheetDefinitionSerializer.Load(result.WrittenFiles.Single()).Regions[0].Area);
     }
 
+    /// <summary>
+    /// Verifies parser preserves both godot dialects.
+    /// </summary>
+    /// <param name="value">The value value for this test case.</param>
     [Theory]
     [InlineData("ExtResource( 1 )")]
     [InlineData("ExtResource(\"1\")")]

@@ -10,10 +10,25 @@ internal sealed class SceneAnimationSource : IDisposable
 {
     private readonly List<SceneTilesheetSource> _tilesheets = [];
 
+    /// <summary>
+    /// Gets the file path.
+    /// </summary>
     public string FilePath { get; }
+    /// <summary>
+    /// Gets the base directory.
+    /// </summary>
     public string BaseDirectory { get; }
+    /// <summary>
+    /// Gets the definition.
+    /// </summary>
     public AnimationDefinition Definition { get; }
+    /// <summary>
+    /// Gets the tilesheets.
+    /// </summary>
     public IReadOnlyList<SceneTilesheetSource> Tilesheets => _tilesheets;
+    /// <summary>
+    /// Gets the diagnostics.
+    /// </summary>
     public IReadOnlyList<string> Diagnostics => _diagnostics;
     private readonly List<string> _diagnostics = [];
 
@@ -25,6 +40,11 @@ internal sealed class SceneAnimationSource : IDisposable
         LoadTilesheetDependencies();
     }
 
+    /// <summary>
+    /// Loads scene animation source from the supplied source.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <returns>The resulting scene animation source.</returns>
     public static SceneAnimationSource Load(string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -32,6 +52,10 @@ internal sealed class SceneAnimationSource : IDisposable
         return new(path, AnimationDefinitionSerializer.Load(path));
     }
 
+    /// <summary>
+    /// Gets the first resolvable frame for the animation preview.
+    /// </summary>
+    /// <returns>The first resolvable animation frame, or <see langword="null"/> if none is available.</returns>
     public SceneFrameDefinition? FirstPreviewFrame()
     {
         var frame = Definition.Frames.FirstOrDefault();
@@ -47,6 +71,11 @@ internal sealed class SceneAnimationSource : IDisposable
         };
     }
 
+    /// <summary>
+    /// Finds the tilesheet source registered under the requested logical name.
+    /// </summary>
+    /// <param name="logicalName">The logical name.</param>
+    /// <returns>The requested scene tilesheet source, or <see langword="null"/> when unavailable.</returns>
     public SceneTilesheetSource? FindTilesheet(string logicalName) =>
         _tilesheets.FirstOrDefault(source =>
             string.Equals(source.Definition.Name, logicalName, StringComparison.Ordinal));
@@ -95,6 +124,9 @@ internal sealed class SceneAnimationSource : IDisposable
         }
     }
 
+    /// <summary>
+    /// Releases the resources owned by this instance.
+    /// </summary>
     public void Dispose()
     {
         foreach (var tilesheet in _tilesheets)

@@ -14,6 +14,13 @@ public abstract class SlideEffect : DisplayEffect
     private PointF _startFactor;
     private PointF _targetFactor;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>SlideEffect</c> class.
+    /// </summary>
+    /// <param name="direction">The direction.</param>
+    /// <param name="durationSeconds">The duration in seconds.</param>
+    /// <param name="easing">The easing function applied to progress.</param>
+    /// <param name="isSlideIn">Whether the effect slides content into view rather than out of view.</param>
     private protected SlideEffect(
         EffectDirection direction,
         float durationSeconds,
@@ -36,6 +43,7 @@ public abstract class SlideEffect : DisplayEffect
     internal override bool SupportsTarget(object target) =>
         target is View or SceneLayer;
 
+    /// <inheritdoc/>
     private protected override void OnStarting()
     {
         _originalFactor = EffectTargetAccess.GetOffsetFactor(Target);
@@ -63,6 +71,7 @@ public abstract class SlideEffect : DisplayEffect
             _originalPixels);
     }
 
+    /// <inheritdoc/>
     private protected override void ApplyProgress(float progress)
     {
         var factor = new PointF(
@@ -76,6 +85,7 @@ public abstract class SlideEffect : DisplayEffect
         EffectTargetAccess.SetTransform(Target, factor, pixels);
     }
 
+    /// <inheritdoc/>
     private protected override void RestoreOriginalState() =>
         EffectTargetAccess.SetTransform(Target, _originalFactor, _originalPixels);
 
@@ -100,6 +110,9 @@ public abstract class SlideEffect : DisplayEffect
 public sealed class SlideInEffect : SlideEffect
 {
     /// <summary>Creates a slide-in effect.</summary>
+    /// <param name="direction">The direction.</param>
+    /// <param name="durationSeconds">The duration in seconds.</param>
+    /// <param name="easing">The easing function applied to progress.</param>
     public SlideInEffect(
         EffectDirection direction,
         float durationSeconds,
@@ -113,6 +126,9 @@ public sealed class SlideInEffect : SlideEffect
 public sealed class SlideOutEffect : SlideEffect
 {
     /// <summary>Creates a slide-out effect.</summary>
+    /// <param name="direction">The direction.</param>
+    /// <param name="durationSeconds">The duration in seconds.</param>
+    /// <param name="easing">The easing function applied to progress.</param>
     public SlideOutEffect(
         EffectDirection direction,
         float durationSeconds,

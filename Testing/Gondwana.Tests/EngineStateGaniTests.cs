@@ -17,6 +17,9 @@ public sealed class EngineStateGaniTests : IDisposable
         Path.GetTempPath(),
         $"GondwanaEngineStateGani_{Guid.NewGuid():N}");
 
+    /// <summary>
+    /// Initializes a new instance of the <c>EngineStateGaniTests</c> class.
+    /// </summary>
     public EngineStateGaniTests()
     {
         Directory.CreateDirectory(_tempDir);
@@ -25,6 +28,7 @@ public sealed class EngineStateGaniTests : IDisposable
         AssetsFile.ClearAll();
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         Cycle.ClearAllAnimationCycles();
@@ -35,6 +39,9 @@ public sealed class EngineStateGaniTests : IDisposable
             Directory.Delete(_tempDir, recursive: true);
     }
 
+    /// <summary>
+    /// Verifies save to file default embeds inline gani definition.
+    /// </summary>
     [Fact]
     public void SaveToFile_Default_EmbedsInlineGaniDefinition()
     {
@@ -59,6 +66,9 @@ public sealed class EngineStateGaniTests : IDisposable
         Assert.DoesNotContain("\"$ref\"", definition.ToString());
     }
 
+    /// <summary>
+    /// Verifies save to file separate gani files writes reference and clean definition.
+    /// </summary>
     [Fact]
     public void SaveToFile_SeparateGaniFiles_WritesReferenceAndCleanDefinition()
     {
@@ -91,6 +101,10 @@ public sealed class EngineStateGaniTests : IDisposable
         Assert.Contains("\"Tilesheet\": \"external-sheet\"", ganiJson);
     }
 
+    /// <summary>
+    /// Verifies load from file restores gani after its tilesheets.
+    /// </summary>
+    /// <param name="separateGaniFiles">The separate gani files value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -128,6 +142,10 @@ public sealed class EngineStateGaniTests : IDisposable
         Assert.Same(restored, restored.NextCycle);
     }
 
+    /// <summary>
+    /// Verifies load from file resolves circular next cycle references.
+    /// </summary>
+    /// <param name="separateGaniFiles">The separate gani files value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -163,6 +181,10 @@ public sealed class EngineStateGaniTests : IDisposable
         Assert.Same(restoredIdle, restoredBlink.NextCycle);
     }
 
+    /// <summary>
+    /// Verifies merge from file gani honors overwrite existing.
+    /// </summary>
+    /// <param name="separateGaniFiles">The separate gani files value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

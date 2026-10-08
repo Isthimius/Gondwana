@@ -41,6 +41,11 @@ public sealed class DirectSvg : DirectDrawingMovableBase
     /// <summary>
     /// Initializes a new world-space <see cref="DirectSvg"/>.
     /// </summary>
+    /// <param name="svgResource">The svg resource.</param>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="worldBounds">The bounds in world pixels.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public DirectSvg(SvgResource svgResource,
                      RenderSurfaceHostBase renderSurfaceHost,
                      SceneLayer sceneLayer,
@@ -52,6 +57,11 @@ public sealed class DirectSvg : DirectDrawingMovableBase
     /// <summary>
     /// Initializes a new screen-space <see cref="DirectSvg"/>.
     /// </summary>
+    /// <param name="svgResource">The svg resource.</param>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="screenBounds">The bounds in screen pixels.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public DirectSvg(SvgResource svgResource,
                      RenderSurfaceHostBase renderSurfaceHost,
                      View view,
@@ -63,6 +73,8 @@ public sealed class DirectSvg : DirectDrawingMovableBase
     /// <summary>
     /// Sets the filter quality used when drawing the cached SVG bitmap.
     /// </summary>
+    /// <param name="quality">The image encoding quality, from 0 through 100.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public DirectSvg SetFilterQuality(SKFilterQuality quality)
     {
         _paint.FilterQuality = quality;

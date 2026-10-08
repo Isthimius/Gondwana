@@ -10,6 +10,8 @@ internal static class NativeLibraryProbe
     /// <summary>
     /// Returns true if the native library with the given name can be loaded.
     /// </summary>
+    /// <param name="libraryName">The library name.</param>
+    /// <returns><see langword="true"/> if the source can be loaded; otherwise, <see langword="false"/>.</returns>
     public static bool CanLoad(string libraryName)
     {
         try

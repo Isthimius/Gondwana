@@ -6,19 +6,38 @@ using SkiaSharp;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
+/// <summary>
+/// Contains regression tests for external import.
+/// </summary>
 public sealed class ExternalImportTests
 {
     private sealed class Host(string directory) : IStudioPluginHostServices
     {
+        /// <inheritdoc/>
         public string CurrentWorkingDirectory => directory;
+        /// <summary>
+        /// The refreshes.
+        /// </summary>
         public int Refreshes;
+        /// <summary>
+        /// The opened.
+        /// </summary>
         public List<string> Opened = [];
+        /// <summary>
+        /// The messages.
+        /// </summary>
         public List<string> Messages = [];
+        /// <inheritdoc/>
         public void Log(string message) => Messages.Add(message);
+        /// <inheritdoc/>
         public void RefreshWorkingDirectory() => Refreshes++;
+        /// <inheritdoc/>
         public void OpenDocument(string path) => Opened.Add(path);
     }
 
+    /// <summary>
+    /// Verifies discovers external plugin alongside diagnostics.
+    /// </summary>
     [Fact]
     public void DiscoversExternalPluginAlongsideDiagnostics()
     {
@@ -27,6 +46,9 @@ public sealed class ExternalImportTests
         Assert.Contains(host.Plugins, p => p.Name == "Project Diagnostics");
     }
 
+    /// <summary>
+    /// Verifies panel analysis import overwrite and host services.
+    /// </summary>
     [Fact]
     public void PanelAnalysisImportOverwriteAndHostServices() => RunSta(() =>
     {
@@ -55,6 +77,10 @@ public sealed class ExternalImportTests
     });
 
 
+    /// <summary>
+    /// Verifies auto detect imports both godot generations.
+    /// </summary>
+    /// <param name="format">The format value for this test case.</param>
     [Theory]
     [InlineData(2)]
     [InlineData(3)]
@@ -110,12 +136,23 @@ public sealed class ExternalImportTests
 
     private sealed class DelayedProvider : IExternalAssetImporter, IDisposable
     {
+        /// <inheritdoc/>
         public string Id => "delayed";
+        /// <inheritdoc/>
         public string DisplayName => "Delayed";
+        /// <inheritdoc/>
         public IReadOnlyList<string> SupportedExtensions => [".test"];
+        /// <summary>
+        /// The started,release,finished.
+        /// </summary>
         public readonly ManualResetEventSlim Started = new(), Release = new(), Finished = new();
+        /// <summary>
+        /// The token.
+        /// </summary>
         public CancellationToken Token;
+        /// <inheritdoc/>
         public bool CanImport(string path) => true;
+        /// <inheritdoc/>
         public ExternalImportAnalysis Analyze(ExternalImportRequest request, CancellationToken cancellationToken = default)
         {
             Token = cancellationToken; Started.Set();
@@ -124,10 +161,16 @@ public sealed class ExternalImportTests
             // Deliberately return a stale success to exercise the panel's abandoned-result handling.
             return new(Id, [], [new("GTS", "stale.gts", "stale")], []);
         }
+        /// <inheritdoc/>
         public ExternalImportResult Import(ExternalImportRequest request, CancellationToken cancellationToken = default) => throw new NotSupportedException();
+        /// <inheritdoc/>
         public void Dispose() { Started.Dispose(); Release.Dispose(); Finished.Dispose(); }
     }
 
+    /// <summary>
+    /// Verifies cancel or dispose discards delayed worker completion.
+    /// </summary>
+    /// <param name="dispose">The dispose value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

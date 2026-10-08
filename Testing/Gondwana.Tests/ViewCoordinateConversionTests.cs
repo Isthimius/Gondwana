@@ -9,6 +9,11 @@ namespace Gondwana.Tests.Rendering.Views;
 /// </summary>
 public sealed class ViewCoordinateConversionTests
 {
+    /// <summary>
+    /// Verifies world px to screen px applies conventional zoom.
+    /// </summary>
+    /// <param name="zoom">The zoom value for this test case.</param>
+    /// <param name="expectedScreenDisplacement">The expected screen displacement value for this test case.</param>
     [Theory]
     [InlineData(1f, 100f)]
     [InlineData(2f, 200f)]
@@ -32,6 +37,11 @@ public sealed class ViewCoordinateConversionTests
         AssertClose(0f, screenPx.Y);
     }
 
+    /// <summary>
+    /// Verifies screen px to world px applies inverse zoom.
+    /// </summary>
+    /// <param name="zoom">The zoom value for this test case.</param>
+    /// <param name="expectedWorldDisplacement">The expected world displacement value for this test case.</param>
     [Theory]
     [InlineData(1f, 100f)]
     [InlineData(2f, 50f)]
@@ -55,6 +65,9 @@ public sealed class ViewCoordinateConversionTests
         AssertClose(50f, worldPx.Y);
     }
 
+    /// <summary>
+    /// Verifies world px to screen px returns absolute adapter coordinates.
+    /// </summary>
     [Fact]
     public void WorldPxToScreenPx_ReturnsAbsoluteAdapterCoordinates()
     {
@@ -75,6 +88,9 @@ public sealed class ViewCoordinateConversionTests
         AssertClose(160f, screenPx.Y);
     }
 
+    /// <summary>
+    /// Verifies point conversions round trip with camera offsets zoom and parallax.
+    /// </summary>
     [Fact]
     public void PointConversions_RoundTripWithCameraOffsetsZoomAndParallax()
     {
@@ -104,6 +120,9 @@ public sealed class ViewCoordinateConversionTests
         AssertClose(originalWorldPx, restoredWorldPx);
     }
 
+    /// <summary>
+    /// Verifies world rect to screen rect scales position and size by zoom.
+    /// </summary>
     [Fact]
     public void WorldRectToScreenRect_ScalesPositionAndSizeByZoom()
     {
@@ -123,6 +142,9 @@ public sealed class ViewCoordinateConversionTests
             screenRect);
     }
 
+    /// <summary>
+    /// Verifies rectangle conversions round trip with camera offsets zoom and parallax.
+    /// </summary>
     [Fact]
     public void RectangleConversions_RoundTripWithCameraOffsetsZoomAndParallax()
     {
@@ -153,6 +175,9 @@ public sealed class ViewCoordinateConversionTests
         AssertClose(originalWorldRect, restoredWorldRect);
     }
 
+    /// <summary>
+    /// Verifies zoom around screen point when snapped preserves world point under cursor.
+    /// </summary>
     [Fact]
     public void ZoomAroundScreenPoint_WhenSnapped_PreservesWorldPointUnderCursor()
     {
@@ -188,6 +213,12 @@ public sealed class ViewCoordinateConversionTests
         AssertClose(worldBefore, worldAfter);
     }
 
+    /// <summary>
+    /// Verifies visible world size px uses reciprocal zoom.
+    /// </summary>
+    /// <param name="zoom">The zoom value for this test case.</param>
+    /// <param name="expectedWidth">The expected width value for this test case.</param>
+    /// <param name="expectedHeight">The expected height value for this test case.</param>
     [Theory]
     [InlineData(1f, 800f, 600f)]
     [InlineData(2f, 400f, 300f)]
@@ -207,6 +238,9 @@ public sealed class ViewCoordinateConversionTests
         AssertClose(expectedHeight, viewport.VisibleWorldSizePx.Height);
     }
 
+    /// <summary>
+    /// Verifies render context keeps view transform stable when live state changes.
+    /// </summary>
     [Fact]
     public void RenderContext_KeepsViewTransformStableWhenLiveStateChanges()
     {

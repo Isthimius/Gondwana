@@ -8,6 +8,8 @@ namespace Gondwana.Widgets.Menus;
 public readonly record struct KeyGesture
 {
     /// <summary>Creates a gesture. Letter codes should use uppercase characters.</summary>
+    /// <param name="key">The lookup key for the resource.</param>
+    /// <param name="modifiers">The modifiers.</param>
     public KeyGesture(int key, KeyboardModifierState modifiers = KeyboardModifierState.None)
     {
         if (key <= 0)
@@ -23,10 +25,15 @@ public readonly record struct KeyGesture
     /// <summary>Gets the exact modifier combination.</summary>
     public KeyboardModifierState Modifiers { get; }
     /// <summary>Creates a Control-key gesture.</summary>
+    /// <param name="key">The lookup key for the resource.</param>
+    /// <returns>A key gesture requiring the Control modifier.</returns>
     public static KeyGesture Ctrl(int key) => new(key, KeyboardModifierState.Ctrl);
     /// <summary>Creates a Control-Shift gesture.</summary>
+    /// <param name="key">The lookup key for the resource.</param>
+    /// <returns>A key gesture requiring both Control and Shift modifiers.</returns>
     public static KeyGesture CtrlShift(int key) => new(key, KeyboardModifierState.Ctrl | KeyboardModifierState.Shift);
     /// <summary>Returns a display label such as Ctrl+O or Alt+F4.</summary>
+    /// <returns>The formatted keyboard shortcut text.</returns>
     public override string ToString()
     {
         string key = Key switch

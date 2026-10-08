@@ -14,6 +14,10 @@ public sealed class EarthquakeEffect : DisplayEffect
     private PointF _originalPixels;
 
     /// <summary>Creates a camera-shake effect.</summary>
+    /// <param name="durationSeconds">The duration in seconds.</param>
+    /// <param name="intensityPx">The intensity px.</param>
+    /// <param name="decay">Whether the effect amplitude decreases over its duration.</param>
+    /// <param name="randomSeed">The random seed.</param>
     public EarthquakeEffect(
         float durationSeconds,
         float intensityPx = 8f,
@@ -39,12 +43,14 @@ public sealed class EarthquakeEffect : DisplayEffect
 
     internal override bool SupportsTarget(object target) => target is View;
 
+    /// <inheritdoc/>
     private protected override void OnStarting()
     {
         _originalFactor = EffectTargetAccess.GetOffsetFactor(Target);
         _originalPixels = EffectTargetAccess.GetOffsetPixels(Target);
     }
 
+    /// <inheritdoc/>
     private protected override void ApplyProgress(float progress)
     {
         if (progress >= 1f || IntensityPx <= 0f)
@@ -72,6 +78,7 @@ public sealed class EarthquakeEffect : DisplayEffect
                 _originalPixels.Y + y));
     }
 
+    /// <inheritdoc/>
     private protected override void RestoreOriginalState() =>
         EffectTargetAccess.SetTransform(Target, _originalFactor, _originalPixels);
 }

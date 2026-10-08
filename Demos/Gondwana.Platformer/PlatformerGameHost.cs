@@ -59,6 +59,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
         ((BitmapBackbuffer)renderSurface.Host.Backbuffer).FilterQuality = SKFilterQuality.None;
     }
 
+    /// <inheritdoc/>
     protected override void LoadTilesheets()
     {
         _tilesheet = Engine.Managers.Tilesheets.LoadFromBitmap(
@@ -70,6 +71,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
             PlatformerArt.TileSize);
     }
 
+    /// <inheritdoc/>
     protected override Scene CreateInitialScene()
     {
         var scene = new Scene();
@@ -98,6 +100,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
         return scene;
     }
 
+    /// <inheritdoc/>
     protected override void OnSceneBound()
     {
         RenderSurface.Host.Backbuffer.ClearColor = new SKColor(110, 190, 235);
@@ -107,6 +110,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
         view.Camera.SnapTo(PointF.Empty);
     }
 
+    /// <inheritdoc/>
     protected override void CreateSprites()
     {
         _player = Engine.Managers.Sprites.CreateSprite(
@@ -136,6 +140,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
         SpawnEnemy();
     }
 
+    /// <inheritdoc/>
     protected override void CreateDirectDrawings()
     {
         var view = RenderSurface.Host.ViewManager.Views[0];
@@ -184,6 +189,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
         ShowTemporaryMessage("Collect every sun relic, then reach the red flag.", 4d);
     }
 
+    /// <inheritdoc/>
     protected override void OnKeyboardAdapterInitialized()
     {
         var keyboard = Engine.Input.KeyboardEventPoller!;
@@ -193,6 +199,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
             keyboard.StartMonitoringKey((int)key, key.ToString());
     }
 
+    /// <inheritdoc/>
     protected override void OnEngineInitialized()
     {
         _lastEnemyTick = HighResTimer.GetCurrentTick();
@@ -201,6 +208,7 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
         Engine.AfterBackgroundTasksExecute += AfterBackgroundTasksExecute;
     }
 
+    /// <inheritdoc/>
     protected override void UnhookEvents()
     {
         if (Engine.Input.KeyboardEventPoller is not null)
@@ -657,7 +665,13 @@ internal sealed class PlatformerGameHost : WinFormsGameHost
 
     private enum GameState
     {
+        /// <summary>
+        /// Specifies playing.
+        /// </summary>
         Playing,
+        /// <summary>
+        /// Specifies won.
+        /// </summary>
         Won
     }
 }

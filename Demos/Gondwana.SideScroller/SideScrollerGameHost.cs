@@ -56,12 +56,14 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
         UpdateHud();
     }
 
+    /// <inheritdoc/>
     protected override void LoadTilesheets()
     {
         _tilesheet = Engine.Managers.Tilesheets.LoadFromBitmap("azure-strike", SideScrollerArt.CreateBitmap());
         _tilesheet.DefaultRegion.TileSize = new Size(SideScrollerArt.FrameSize, SideScrollerArt.FrameSize);
     }
 
+    /// <inheritdoc/>
     protected override Scene CreateInitialScene()
     {
         var scene = new Scene();
@@ -75,6 +77,7 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
         return scene;
     }
 
+    /// <inheritdoc/>
     protected override void OnSceneBound()
     {
         RenderSurface.Host.Backbuffer.ClearColor = new SKColor(2, 5, 18);
@@ -83,6 +86,7 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
         view.Camera.SnapTo(PointF.Empty);
     }
 
+    /// <inheritdoc/>
     protected override void CreateSprites()
     {
         _player = CreateSprite("player", SideScrollerArt.Player, new Vector2(5, 9), new Size(76, 58));
@@ -107,6 +111,7 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
         camera.FollowAtX(_player, PlayerCameraHorizontalAnchor, speed: 10f);
     }
 
+    /// <inheritdoc/>
     protected override void CreateDirectDrawings()
     {
         _healthBar = new HealthBarWidget(RenderSurface.Host, _player, PlayerMaxHealth,
@@ -132,6 +137,7 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
         _message.ZOrder = 1100; _message.Visible = false;
     }
 
+    /// <inheritdoc/>
     protected override void OnKeyboardAdapterInitialized()
     {
         var keyboard = Engine.Input.KeyboardEventPoller!;
@@ -139,6 +145,7 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
         foreach (Keys key in MonitoredKeys) keyboard.StartMonitoringKey((int)key, key.ToString());
     }
 
+    /// <inheritdoc/>
     protected override void OnEngineInitialized()
     {
         _lastTick = HighResTimer.GetCurrentTick();
@@ -146,6 +153,7 @@ internal sealed class SideScrollerGameHost : WinFormsGpuGameHost
         Engine.AfterBackgroundTasksExecute += AfterUpdate;
     }
 
+    /// <inheritdoc/>
     protected override void UnhookEvents()
     {
         if (Engine.Input.KeyboardEventPoller is not null) Engine.Input.KeyboardEventPoller.KeyDown -= OnKeyDown;

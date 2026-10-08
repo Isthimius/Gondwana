@@ -28,6 +28,9 @@ internal sealed class MainForm : Form
     private AudioEditorDocument? ActiveEditor =>
         _dock.ActiveDocument as AudioEditorDocument;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>MainForm</c> class.
+    /// </summary>
     public MainForm()
     {
         Text = "Gondwana Audio — GSND editor";
@@ -433,6 +436,7 @@ internal sealed class MainForm : Form
             MessageBoxButtons.OK,
             MessageBoxIcon.Error);
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing)

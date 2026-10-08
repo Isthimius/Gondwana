@@ -19,6 +19,9 @@ using Xunit.Abstractions;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for engine state packed definition.
+/// </summary>
 [Collection("Global engine state")]
 public sealed class EngineStatePackedDefinitionTests : IDisposable
 {
@@ -27,6 +30,10 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
     private string StatePath => Path.Combine(_root, "saves", "state.json");
     private readonly ITestOutputHelper _output;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>EngineStatePackedDefinitionTests</c> class.
+    /// </summary>
+    /// <param name="output">The output value for this test case.</param>
     public EngineStatePackedDefinitionTests(ITestOutputHelper output)
     {
         _output = output;
@@ -50,6 +57,7 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         AssetsFile.ClearAll();
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         Clear();
@@ -133,6 +141,11 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         yield return (JObject)root["Sprites"]!;
     }
 
+    /// <summary>
+    /// Verifies all five formats reload from packages.
+    /// </summary>
+    /// <param name="compressed">The compressed value for this test case.</param>
+    /// <param name="split">The split value for this test case.</param>
     [Theory]
     [InlineData(false, false)]
     [InlineData(true, false)]
@@ -163,6 +176,9 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.All(Entries(Read(StatePath)), entry => Assert.NotNull(entry["AssetEntryName"]));
     }
 
+    /// <summary>
+    /// Verifies relative paths survive moving the tree.
+    /// </summary>
     [Fact]
     public void RelativePathsSurviveMovingTheTree()
     {
@@ -177,6 +193,10 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.Single(SpriteManager.Instance.AllSprites);
     }
 
+    /// <summary>
+    /// Verifies selective saves include required packages.
+    /// </summary>
+    /// <param name="parts">The parts value for this test case.</param>
     [Theory]
     [InlineData(EngineStateParts.Tilesheets)]
     [InlineData(EngineStateParts.Cycles)]
@@ -195,6 +215,10 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         if (parts != EngineStateParts.Sprites) Assert.Empty(SpriteManager.Instance.AllSprites);
     }
 
+    /// <summary>
+    /// Verifies merge honors overwrite for existing cycles.
+    /// </summary>
+    /// <param name="overwrite">The overwrite value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -208,6 +232,9 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.Single(SpriteManager.Instance.AllSprites);
     }
 
+    /// <summary>
+    /// Verifies mutated runtime definitions fall back to current inline state.
+    /// </summary>
     [Fact]
     public void MutatedRuntimeDefinitionsFallBackToCurrentInlineState()
     {
@@ -230,6 +257,11 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.Equal(.8f, AudioResourceManager.Instance.Get("music")!.Volume);
     }
 
+    /// <summary>
+    /// Verifies missing or wrong type entry reports archive and entry.
+    /// </summary>
+    /// <param name="entry">The entry value for this test case.</param>
+    /// <param name="type">The type value for this test case.</param>
     [Theory]
     [InlineData("missing.gani", AssetTypes.AnimationDefinition)]
     [InlineData("wrong.gani", AssetTypes.SceneDefinition)]
@@ -247,6 +279,9 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.Contains(entry, ex.Message);
     }
 
+    /// <summary>
+    /// Verifies missing archive does not create empty package.
+    /// </summary>
     [Fact]
     public void MissingArchiveDoesNotCreateEmptyPackage()
     {
@@ -261,6 +296,10 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.Empty(AssetsFile.AllAssetsFiles);
     }
 
+    /// <summary>
+    /// Verifies conflicting and partial sources fail.
+    /// </summary>
+    /// <param name="entry">The entry value for this test case.</param>
     [Theory]
     [InlineData("{ 'Definition': {}, 'GaniPath': 'walk.gani' }")]
     [InlineData("{ 'GaniPath': 'walk.gani', 'AssetsFilePath': 'game.gaf' }")]
@@ -272,6 +311,10 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.Throws<InvalidDataException>(() => EngineState.LoadFromFile(StatePath));
     }
 
+    /// <summary>
+    /// Verifies stream archive identity controls packed preservation.
+    /// </summary>
+    /// <param name="identified">The identified value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -294,6 +337,9 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.Single(SpriteManager.Instance.AllSprites);
     }
 
+    /// <summary>
+    /// Verifies editing definition before materialization does not preserve its old source.
+    /// </summary>
     [Fact]
     public void EditingDefinitionBeforeMaterializationDoesNotPreserveItsOldSource()
     {
@@ -305,6 +351,9 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.Null(Read(StatePath)["Cycles"]!["walk"]!["AssetsFilePath"]);
     }
 
+    /// <summary>
+    /// Verifies preserve source retains existing loose definitions.
+    /// </summary>
     [Fact]
     public void PreserveSourceRetainsExistingLooseDefinitions()
     {
@@ -327,6 +376,9 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.Single(SpriteManager.Instance.AllSprites);
     }
 
+    /// <summary>
+    /// Verifies legacy archive shape deserializes without registering live assets.
+    /// </summary>
     [Fact]
     public void LegacyArchiveShapeDeserializesWithoutRegisteringLiveAssets()
     {
@@ -347,6 +399,9 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.Single(AssetsFile.AllAssetsFiles);
     }
 
+    /// <summary>
+    /// Verifies missing listed archive still reports the packed entry.
+    /// </summary>
     [Fact]
     public void MissingListedArchiveStillReportsThePackedEntry()
     {
@@ -359,6 +414,9 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.Contains("terrain.gts", ex.Message);
     }
 
+    /// <summary>
+    /// Verifies packed references require exact entry names.
+    /// </summary>
     [Fact]
     public void PackedReferencesRequireExactEntryNames()
     {
@@ -372,6 +430,9 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.Contains("elsewhere/walk.gani", ex.Message);
     }
 
+    /// <summary>
+    /// Verifies anonymous stream audio exports reloadable loose media.
+    /// </summary>
     [Fact]
     public void AnonymousStreamAudioExportsReloadableLooseMedia()
     {
@@ -390,6 +451,9 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.Single(Directory.GetFiles(Path.Combine(_root, "saves", "state.audio"), "*.wav"));
     }
 
+    /// <summary>
+    /// Verifies runtime generated scene identities are saved inline.
+    /// </summary>
     [Fact]
     public void RuntimeGeneratedSceneIdentitiesAreSavedInline()
     {
@@ -403,6 +467,10 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.Equal(scene.ID, entry["Definition"]!["ID"]!.Value<string>());
     }
 
+    /// <summary>
+    /// Verifies save modes produce canonical shapes.
+    /// </summary>
+    /// <param name="mode">The mode value for this test case.</param>
     [Theory]
     [InlineData(DefinitionPersistence.Inline)]
     [InlineData(DefinitionPersistence.Loose)]
@@ -430,6 +498,9 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.Single(SpriteManager.Instance.AllSprites);
     }
 
+    /// <summary>
+    /// Verifies legacy sprite only load does not clear existing archives.
+    /// </summary>
     [Fact]
     public void LegacySpriteOnlyLoadDoesNotClearExistingArchives()
     {
@@ -440,6 +511,9 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.Same(archive, Assert.Single(AssetsFile.AllAssetsFiles));
     }
 
+    /// <summary>
+    /// Verifies encrypted package credentials survive the inert archive record.
+    /// </summary>
     [Fact]
     public void EncryptedPackageCredentialsSurviveTheInertArchiveRecord()
     {
@@ -453,6 +527,9 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.Equal("encrypted", Assert.Single(Scene.GetAllScenes()).ID);
     }
 
+    /// <summary>
+    /// Verifies invalid packed animation reports origin during materialization.
+    /// </summary>
     [Fact]
     public void InvalidPackedAnimationReportsOriginDuringMaterialization()
     {
@@ -470,27 +547,47 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
 
     private sealed class Backend : IAudioBackend
     {
+        /// <inheritdoc/>
         public string Name => "Packed definitions test";
+        /// <inheritdoc/>
         public IAudioPlaybackHandle CreateFromUri(string key, string uri, float volume, float pan, float playbackSpeed) => new Handle();
+        /// <inheritdoc/>
         public IAudioPlaybackHandle CreateFromBytes(string key, byte[] data, string fileNameOrExtension, float volume, float pan, float playbackSpeed) => new Handle();
     }
 
     private sealed class Handle : IAudioPlaybackHandle
     {
+        /// <inheritdoc/>
         public event EventHandler? PlaybackCompleted { add { } remove { } }
+        /// <inheritdoc/>
         public AudioPlaybackState State => AudioPlaybackState.Stopped;
+        /// <inheritdoc/>
         public TimeSpan CurrentTime => TimeSpan.Zero;
+        /// <inheritdoc/>
         public TimeSpan Duration => TimeSpan.Zero;
+        /// <inheritdoc/>
         public bool IsLooping { get; set; }
+        /// <inheritdoc/>
         public float Volume { get; set; }
+        /// <inheritdoc/>
         public float Pan { get; set; }
+        /// <inheritdoc/>
         public float PlaybackSpeed { get; set; }
+        /// <inheritdoc/>
         public string? TemporaryFilePath => null;
+        /// <inheritdoc/>
         public void Play(bool fromStart = true) { }
+        /// <inheritdoc/>
         public void Pause() { }
+        /// <inheritdoc/>
         public void Resume() { }
+        /// <inheritdoc/>
         public void Stop() { }
+        /// <inheritdoc/>
         public void Seek(TimeSpan position) { }
+        /// <summary>
+        /// Releases the resources owned by this instance.
+        /// </summary>
         public void Dispose() { }
     }
 }

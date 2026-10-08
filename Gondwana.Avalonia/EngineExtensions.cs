@@ -16,9 +16,9 @@ public static class EngineExtensions
 {
     /// <summary>
     /// Initializes the Avalonia keyboard adapter for the specified control.
-    /// The adapter listens for key events at the <see cref="Avalonia.Controls.TopLevel"/> level,
+    /// The adapter listens for key events at the <see cref="global::Avalonia.Controls.TopLevel"/> level,
     /// capturing all keyboard input regardless of which child element has focus.
-    /// Key codes correspond to <see cref="Avalonia.Input.Key"/> values cast to <see cref="int"/>.
+    /// Key codes correspond to <see cref="global::Avalonia.Input.Key"/> values cast to <see cref="int"/>.
     /// </summary>
     /// <param name="engine">The engine instance to configure.</param>
     /// <param name="control">The control (or window) to capture keyboard input from.</param>

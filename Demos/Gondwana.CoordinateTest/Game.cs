@@ -16,17 +16,35 @@ using SkiaSharp;
 
 namespace Gondwana.Demos.CoordinateTest;
 
+/// <summary>
+/// Represents game.
+/// </summary>
 public class Game : IDisposable
 {
+    /// <summary>
+    /// Gets the render surface.
+    /// </summary>
     public WinFormGpuRenderSurfaceControl RenderSurface { get; private set; }
 
+    /// <summary>
+    /// Gets the scene.
+    /// </summary>
     public Scene Scene { get; private set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <c>Game</c> class.
+    /// </summary>
+    /// <param name="renderSurface">The render surface.</param>
     public Game(WinFormGpuRenderSurfaceControl renderSurface)
     {
         RenderSurface = renderSurface;
     }
 
+    /// <summary>
+    /// Initializes game.
+    /// </summary>
+    /// <param name="configPath">The config path.</param>
+    /// <param name="autoSaveConfig">The auto save config.</param>
     public void InitializeGame(string? configPath = null, bool? autoSaveConfig = null)
     {
         EngineLogger.SetLogLevel(LogLevel.Trace);
@@ -539,6 +557,10 @@ public class Game : IDisposable
 
     private bool disposedValue;
 
+    /// <summary>
+    /// Releases the resources owned by this instance.
+    /// </summary>
+    /// <param name="disposing">Whether managed resources should also be released.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!disposedValue)
@@ -570,6 +592,9 @@ public class Game : IDisposable
         Dispose(disposing: false);
     }
 
+    /// <summary>
+    /// Releases the resources owned by this instance.
+    /// </summary>
     public void Dispose()
     {
         Dispose(disposing: true);

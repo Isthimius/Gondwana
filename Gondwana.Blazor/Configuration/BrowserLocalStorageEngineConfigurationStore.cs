@@ -14,6 +14,9 @@ namespace Gondwana.Blazor.Configuration;
 /// </remarks>
 public sealed class BrowserLocalStorageEngineConfigurationStore : IEngineConfigurationStore
 {
+    /// <summary>
+    /// The default storage key.
+    /// </summary>
     public const string DefaultStorageKey = "gondwana.configuration";
 
     private readonly IJSInProcessRuntime _jsRuntime;
@@ -23,6 +26,9 @@ public sealed class BrowserLocalStorageEngineConfigurationStore : IEngineConfigu
     /// <summary>
     /// Creates a local-storage-backed configuration store and loads its current value.
     /// </summary>
+    /// <param name="jsRuntime">The JavaScript runtime used for browser interop.</param>
+    /// <param name="storageKey">The browser local-storage key used for the configuration.</param>
+    /// <param name="autoSave">Whether configuration changes are saved automatically.</param>
     public BrowserLocalStorageEngineConfigurationStore(
         IJSRuntime jsRuntime,
         string storageKey = DefaultStorageKey,

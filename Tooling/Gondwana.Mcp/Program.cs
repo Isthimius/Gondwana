@@ -81,6 +81,9 @@ app.MapMcp("/mcp");
 
 app.Run();
 
+/// <summary>
+/// Represents program.
+/// </summary>
 public partial class Program
 {
 }

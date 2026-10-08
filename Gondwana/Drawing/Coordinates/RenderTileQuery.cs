@@ -8,6 +8,8 @@ namespace Gondwana.Drawing.Coordinates;
 /// fringe that is clipped by the renderer. <see cref="IsRenderOrdered"/> means the fixed-grid
 /// stream already matches Gondwana's depth ordering when all returned tiles share Z-order.
 /// </summary>
+/// <param name="Tiles">The conservative list of render candidate tiles.</param>
+/// <param name="IsRenderOrdered">Whether the candidate list already follows projection depth order.</param>
 internal readonly record struct RenderTileCandidates(
     List<SceneLayerTile> Tiles,
     bool IsRenderOrdered);
@@ -44,6 +46,12 @@ internal static class RenderTileQuery
     /// Visits conservative render candidates in projection depth order without materializing
     /// an intermediate tile list. Returning false from <paramref name="visitor"/> stops traversal.
     /// </summary>
+    /// <param name="coordinates">The layer coordinate-system implementation.</param>
+    /// <param name="layer">The scene layer whose geometry is queried.</param>
+    /// <param name="worldPixelRange">The query or dirty rectangle in world pixels.</param>
+    /// <param name="includeOverhang">Whether to include tile visuals extending beyond their grid cells.</param>
+    /// <param name="visitor">The callback invoked for each candidate; returning false stops traversal.</param>
+    /// <returns>True if traversal completed; false if the visitor stopped traversal early.</returns>
     internal static bool VisitCandidates(
         ISceneLayerCoordinates coordinates,
         SceneLayer layer,

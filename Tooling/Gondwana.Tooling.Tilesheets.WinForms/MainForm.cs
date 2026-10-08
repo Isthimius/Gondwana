@@ -23,6 +23,9 @@ internal sealed class MainForm : Form
     private EditorDocument? ActiveEditor =>
         _dock.ActiveDocument as EditorDocument;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>MainForm</c> class.
+    /// </summary>
     public MainForm()
     {
         Text = "Gondwana Tilesheets — GTS editor";
@@ -373,6 +376,7 @@ internal sealed class MainForm : Form
             MessageBoxButtons.OK,
             MessageBoxIcon.Error);
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing)

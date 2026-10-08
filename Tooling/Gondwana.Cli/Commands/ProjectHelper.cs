@@ -7,6 +7,13 @@ namespace Gondwana.Cli.Commands;
 
 internal static class ProjectHelper
 {
+    /// <summary>
+    /// Attempts to locate the project file from the command-line option or working directory.
+    /// </summary>
+    /// <param name="projectOption">The project option.</param>
+    /// <param name="csprojPath">When this method returns, contains the csproj path.</param>
+    /// <param name="error">When this method returns, contains the error.</param>
+    /// <returns><see langword="true"/> if the operation succeeded; otherwise, <see langword="false"/>.</returns>
     public static bool TryResolveProject(string? projectOption, out string? csprojPath, out string? error)
     {
         var projectPath = projectOption ?? Directory.GetCurrentDirectory();
@@ -45,6 +52,11 @@ internal static class ProjectHelper
         return false;
     }
 
+    /// <summary>
+    /// Reads the target frameworks declared by a project.
+    /// </summary>
+    /// <param name="csprojPath">The path to the C# project file.</param>
+    /// <returns>The target framework names declared by the project.</returns>
     public static IReadOnlyList<string> GetTargetFrameworks(string csprojPath)
     {
         try
@@ -62,6 +74,11 @@ internal static class ProjectHelper
         }
     }
 
+    /// <summary>
+    /// Checks whether the project uses the Blazor WebAssembly SDK.
+    /// </summary>
+    /// <param name="csprojPath">The path to the C# project file.</param>
+    /// <returns><see langword="true"/> if the project uses the Blazor WebAssembly SDK; otherwise, <see langword="false"/>.</returns>
     public static bool IsBlazorWebAssemblyProject(string csprojPath)
     {
         try
@@ -93,6 +110,10 @@ internal static class ProjectHelper
         }
     }
 
+    /// <summary>
+    /// Checks whether the current directory contains a Blazor WebAssembly project.
+    /// </summary>
+    /// <returns><see langword="true"/> if the current project uses the Blazor WebAssembly SDK; otherwise, <see langword="false"/>.</returns>
     public static bool IsCurrentDirectoryBlazorWebAssemblyProject()
     {
         try
@@ -106,6 +127,14 @@ internal static class ProjectHelper
         }
     }
 
+    /// <summary>
+    /// Attempts to select a target framework for browser publishing.
+    /// </summary>
+    /// <param name="csprojPath">The path to the C# project file.</param>
+    /// <param name="requestedFramework">The requested framework.</param>
+    /// <param name="framework">When this method returns, contains the framework.</param>
+    /// <param name="error">When this method returns, contains the error.</param>
+    /// <returns><see langword="true"/> if the operation succeeded; otherwise, <see langword="false"/>.</returns>
     public static bool TryResolveBrowserFramework(string csprojPath, string? requestedFramework, out string? framework, out string? error)
     {
         var frameworks = GetTargetFrameworks(csprojPath);
@@ -154,6 +183,14 @@ internal static class ProjectHelper
         return false;
     }
 
+    /// <summary>
+    /// Attempts to select a target framework for desktop publishing.
+    /// </summary>
+    /// <param name="csprojPath">The path to the C# project file.</param>
+    /// <param name="requestedFramework">The requested framework.</param>
+    /// <param name="framework">When this method returns, contains the framework.</param>
+    /// <param name="error">When this method returns, contains the error.</param>
+    /// <returns><see langword="true"/> if the operation succeeded; otherwise, <see langword="false"/>.</returns>
     public static bool TryResolveDesktopFramework(string csprojPath, string? requestedFramework, out string? framework, out string? error)
     {
         if (!string.IsNullOrWhiteSpace(requestedFramework))
@@ -193,6 +230,14 @@ internal static class ProjectHelper
         return true;
     }
 
+    /// <summary>
+    /// Attempts to find the output directory for a published project.
+    /// </summary>
+    /// <param name="csprojPath">The path to the C# project file.</param>
+    /// <param name="configuration">The build configuration.</param>
+    /// <param name="framework">The target framework to build or publish.</param>
+    /// <param name="runtime">The runtime.</param>
+    /// <returns>The requested string, or <see langword="null"/> when unavailable.</returns>
     public static string? TryLocatePublishDirectory(string csprojPath, string configuration, string framework, string? runtime)
     {
         var projectDir = Path.GetDirectoryName(csprojPath)!;
@@ -215,6 +260,12 @@ internal static class ProjectHelper
             .FirstOrDefault();
     }
 
+    /// <summary>
+    /// Packages the contents of a directory into a ZIP archive.
+    /// </summary>
+    /// <param name="sourceDirectory">The source directory.</param>
+    /// <param name="zipPath">The zip path.</param>
+    /// <returns>The path of the generated ZIP archive.</returns>
     public static string CreateZipFromDirectoryContents(string sourceDirectory, string zipPath)
     {
         var fullSource = Path.GetFullPath(sourceDirectory);
@@ -234,6 +285,13 @@ internal static class ProjectHelper
         return fullZip;
     }
 
+    /// <summary>
+    /// Attempts to read the installed version of a .NET workload.
+    /// </summary>
+    /// <param name="workloadId">The workload id.</param>
+    /// <param name="version">When this method returns, contains the version.</param>
+    /// <param name="error">When this method returns, contains the error.</param>
+    /// <returns><see langword="true"/> if the operation succeeded; otherwise, <see langword="false"/>.</returns>
     public static bool TryGetInstalledWorkloadVersion(string workloadId, out string? version, out string? error)
     {
         var output = ProcessHelper.Run("dotnet", "workload list", out int exitCode);
@@ -249,6 +307,11 @@ internal static class ProjectHelper
         return true;
     }
 
+    /// <summary>
+    /// Checks or installs the WebAssembly tools required for publishing.
+    /// </summary>
+    /// <param name="skipWorkload">Whether to skip workload installation checks.</param>
+    /// <returns>Zero on success, or a nonzero command exit code on failure.</returns>
     public static int EnsureBlazorWasmToolsInstalled(bool skipWorkload)
     {
         if (skipWorkload)
@@ -274,6 +337,16 @@ internal static class ProjectHelper
         return workloadExit;
     }
 
+    /// <summary>
+    /// Publishes the selected Blazor project and resolves its web output directory.
+    /// </summary>
+    /// <param name="csprojPath">The path to the C# project file.</param>
+    /// <param name="configuration">The build configuration.</param>
+    /// <param name="framework">The target framework to build or publish.</param>
+    /// <param name="skipWorkload">Whether to skip workload installation checks.</param>
+    /// <param name="baseHref">The base URL path for the published browser application.</param>
+    /// <param name="wwwroot">When this method returns, contains the wwwroot.</param>
+    /// <returns>Zero on success, or a nonzero command exit code on failure.</returns>
     public static int PublishBlazorProject(
         string csprojPath,
         string configuration,
@@ -306,6 +379,17 @@ internal static class ProjectHelper
         return 0;
     }
 
+    /// <summary>
+    /// Attempts to locate or build the Blazor publish output.
+    /// </summary>
+    /// <param name="csprojPath">The path to the C# project file.</param>
+    /// <param name="configuration">The build configuration.</param>
+    /// <param name="framework">The target framework to build or publish.</param>
+    /// <param name="skipBuild">Whether to use existing build output.</param>
+    /// <param name="skipWorkload">Whether to skip workload installation checks.</param>
+    /// <param name="baseHref">The base URL path for the published browser application.</param>
+    /// <param name="exitCode">When this method returns, contains the command exit code.</param>
+    /// <returns>The requested string, or <see langword="null"/> when unavailable.</returns>
     public static string? TryGetBlazorPublishRoot(
         string csprojPath,
         string configuration,
@@ -335,6 +419,18 @@ internal static class ProjectHelper
         return existing;
     }
 
+    /// <summary>
+    /// Creates a browser ZIP package from the Blazor publish output.
+    /// </summary>
+    /// <param name="csprojPath">The path to the C# project file.</param>
+    /// <param name="configuration">The build configuration.</param>
+    /// <param name="framework">The target framework to build or publish.</param>
+    /// <param name="skipBuild">Whether to use existing build output.</param>
+    /// <param name="skipWorkload">Whether to skip workload installation checks.</param>
+    /// <param name="baseHref">The base URL path for the published browser application.</param>
+    /// <param name="outputPath">The output path.</param>
+    /// <param name="exitCode">When this method returns, contains the command exit code.</param>
+    /// <returns>The generated package path, or null if publishing or packaging failed.</returns>
     public static string? CreateBlazorItchPackage(
         string csprojPath,
         string configuration,
@@ -376,6 +472,11 @@ internal static class ProjectHelper
         return Path.GetFullPath(zipPath);
     }
 
+    /// <summary>
+    /// Normalizes a browser application base path.
+    /// </summary>
+    /// <param name="baseHref">The base URL path for the published browser application.</param>
+    /// <returns>The normalized base URL path.</returns>
     public static string NormalizeBaseHref(string baseHref)
     {
         var normalized = baseHref.Trim();
@@ -387,6 +488,13 @@ internal static class ProjectHelper
             : normalized + "/";
     }
 
+    /// <summary>
+    /// Attempts to update the published application's base URL.
+    /// </summary>
+    /// <param name="wwwroot">The wwwroot.</param>
+    /// <param name="baseHref">The base URL path for the published browser application.</param>
+    /// <param name="error">When this method returns, contains the error.</param>
+    /// <returns><see langword="true"/> if the operation succeeded; otherwise, <see langword="false"/>.</returns>
     public static bool TryApplyBlazorBaseHref(string wwwroot, string? baseHref, out string? error)
     {
         error = null;
@@ -409,6 +517,11 @@ internal static class ProjectHelper
         return true;
     }
 
+    /// <summary>
+    /// Copies directory contents recursively to the destination.
+    /// </summary>
+    /// <param name="sourceDirectory">The source directory.</param>
+    /// <param name="destinationDirectory">The destination directory.</param>
     public static void MirrorDirectory(string sourceDirectory, string destinationDirectory)
     {
         var source = Path.GetFullPath(sourceDirectory);

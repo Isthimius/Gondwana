@@ -46,12 +46,15 @@ public sealed class BlazorGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, ID
     /// <summary>
     /// Returns whether the engine has requested a new scene frame since the previous consume.
     /// </summary>
+    /// <returns>True if a pending frame request was consumed; otherwise, false.</returns>
     internal bool ConsumeFrameRequest() =>
         !_disposed && Interlocked.Exchange(ref _pendingFrame, 0) != 0;
 
     /// <summary>
     /// Updates the adapter's logical canvas dimensions for the active WebGL paint callback.
     /// </summary>
+    /// <param name="width">The paint surface width in pixels.</param>
+    /// <param name="height">The paint surface height in pixels.</param>
     internal void BeginPaint(int width, int height)
     {
         if (!_disposed)
@@ -62,6 +65,9 @@ public sealed class BlazorGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, ID
     /// Not used by the WebGL path. GPU rendering and presentation both occur in the
     /// <c>SKGLView</c> paint callback.
     /// </summary>
+    /// <param name="bufferImage">The rendered image to present.</param>
+    /// <param name="bufferRect">The source rectangle within the rendered image.</param>
+    /// <param name="destRect">The destination rectangle on the render surface.</param>
     public override void Present(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)
     {
         bufferImage.Dispose();

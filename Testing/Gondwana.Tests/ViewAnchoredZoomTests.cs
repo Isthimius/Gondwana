@@ -4,8 +4,14 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Tests.Rendering.Views;
 
+/// <summary>
+/// Contains regression tests for view anchored zoom.
+/// </summary>
 public sealed class ViewAnchoredZoomTests
 {
+    /// <summary>
+    /// Verifies zoom around screen point when animated preserves world anchor every update.
+    /// </summary>
     [Fact]
     public void ZoomAroundScreenPoint_WhenAnimated_PreservesWorldAnchorEveryUpdate()
     {
@@ -49,6 +55,9 @@ public sealed class ViewAnchoredZoomTests
         Assert.False(viewport.IsZoomAnimating);
     }
 
+    /// <summary>
+    /// Verifies zoom around screen point when retargeted preserves anchor without wobble.
+    /// </summary>
     [Fact]
     public void ZoomAroundScreenPoint_WhenRetargeted_PreservesAnchorWithoutWobble()
     {

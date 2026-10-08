@@ -7,8 +7,16 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for wrapped camera.
+/// </summary>
 public sealed class WrappedCameraTests
 {
+    /// <summary>
+    /// Verifies camera clamps only non wrapped axes.
+    /// </summary>
+    /// <param name="horizontal">The horizontal value for this test case.</param>
+    /// <param name="vertical">The vertical value for this test case.</param>
     [Theory]
     [InlineData(false, false)]
     [InlineData(true, false)]
@@ -25,6 +33,9 @@ public sealed class WrappedCameraTests
         Assert.Equal(new PointF(horizontal ? 200 : 96, vertical ? -30 : 0), camera.PositionPx);
     }
 
+    /// <summary>
+    /// Verifies camera follows nearest image across canonicalization.
+    /// </summary>
     [Fact]
     public void Camera_FollowsNearestImage_AcrossCanonicalization()
     {
@@ -42,6 +53,9 @@ public sealed class WrappedCameraTests
         Assert.Equal(113, camera.PositionPx.X);
     }
 
+    /// <summary>
+    /// Verifies camera follow centered x selects wrapped image by tracked axis.
+    /// </summary>
     [Fact]
     public void Camera_FollowCenteredX_SelectsWrappedImageByTrackedAxis()
     {
@@ -59,10 +73,22 @@ public sealed class WrappedCameraTests
 
     private sealed class TestMovable(SceneLayer sceneLayer, MovementSpace positionSpace, Vector2 position) : IMovableOnSceneLayer
     {
+        /// <summary>
+        /// Gets the coordinate space used by the position API.
+        /// </summary>
         public MovementSpace PositionSpace { get; } = positionSpace;
+        /// <inheritdoc/>
         public SceneLayer SceneLayer { get; } = sceneLayer;
         private Vector2 Position { get; set; } = position;
+        /// <summary>
+        /// Gets the sprite position in scene-layer grid coordinates.
+        /// </summary>
+        /// <returns>The sprite position in scene-layer grid coordinates.</returns>
         public Vector2 GetPosition() => Position;
+        /// <summary>
+        /// Sets the sprite position in scene-layer grid coordinates and invalidates its old and new bounds.
+        /// </summary>
+        /// <param name="pos">The pos value for this test case.</param>
         public void SetPosition(Vector2 pos) => Position = pos;
     }
 }

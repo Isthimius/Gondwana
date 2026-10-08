@@ -111,6 +111,8 @@ public sealed class MenuItemWidget : WidgetBase
     internal bool CanInvoke => !_disposed && _isEnabled && _owner.CanInvoke;
 
     /// <summary>Enables or disables the item.</summary>
+    /// <param name="enabled">Whether the feature is enabled.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public MenuItemWidget SetEnabled(bool enabled)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -122,6 +124,8 @@ public sealed class MenuItemWidget : WidgetBase
     }
 
     /// <summary>Changes state without invoking callbacks. Checking a radio item clears its group peers.</summary>
+    /// <param name="isChecked">Whether the control starts or becomes checked.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public MenuItemWidget SetChecked(bool isChecked)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);

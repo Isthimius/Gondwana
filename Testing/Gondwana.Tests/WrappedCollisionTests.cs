@@ -4,8 +4,18 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for wrapped collision.
+/// </summary>
 public sealed class WrappedCollisionTests
 {
+    /// <summary>
+    /// Verifies resolver uses translated bounds and reports canonical collider.
+    /// </summary>
+    /// <param name="x">The x value for this test case.</param>
+    /// <param name="y">The y value for this test case.</param>
+    /// <param name="trigger">The trigger value for this test case.</param>
+    /// <param name="isStatic">The is static value for this test case.</param>
     [Theory]
     [InlineData(126, 10, false, true)]
     [InlineData(10, 126, false, true)]
@@ -39,6 +49,9 @@ public sealed class WrappedCollisionTests
         else Assert.NotEqual(before, mover.CollisionArea);
     }
 
+    /// <summary>
+    /// Verifies frame overhang and collision adjust are applied before translation.
+    /// </summary>
     [Fact]
     public void FrameOverhangAndCollisionAdjust_AreAppliedBeforeTranslation()
     {
@@ -66,14 +79,25 @@ public sealed class WrappedCollisionTests
     private sealed class Collider(Rectangle bounds, bool isStatic) : ICollider, ICollisionMovableEntity
     {
         private Rectangle _bounds = bounds;
+        /// <inheritdoc/>
         public Aabb BoundsWorldPx => Aabb.FromRectangle(_bounds);
+        /// <inheritdoc/>
         public ICollisionEntity Owner => this;
+        /// <inheritdoc/>
         public bool IsStatic => isStatic;
+        /// <inheritdoc/>
         public int CollisionGroup { get; set; } = 1;
+        /// <inheritdoc/>
         public int CollidesWith { get; set; } = 1;
+        /// <inheritdoc/>
         public CollisionResponseType ResponseType { get; set; } = CollisionResponseType.Solid;
+        /// <summary>
+        /// Gets the collision area.
+        /// </summary>
         public Rectangle CollisionArea => _bounds;
+        /// <inheritdoc/>
         public void TranslateWorldPx(int dx, int dy) => _bounds.Offset(dx, dy);
+        /// <inheritdoc/>
         public void CancelVelocityComponent(bool cancelX, bool cancelY) { }
     }
 }

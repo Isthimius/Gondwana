@@ -36,6 +36,11 @@ public sealed class CollisionProfileRegistry
     /// <summary>
     /// Defines or replaces a named profile.
     /// </summary>
+    /// <param name="name">The case-insensitive collision profile name.</param>
+    /// <param name="collisionGroup">The name of the collision group assigned to the profile.</param>
+    /// <param name="collidesWith">The names of the groups that this profile can collide with.</param>
+    /// <param name="collidesWithAll">Whether this profile collides with every collision group.</param>
+    /// <returns>The profile registered under the supplied name.</returns>
     public CollisionProfile Define(
         string name,
         string collisionGroup,
@@ -55,6 +60,8 @@ public sealed class CollisionProfileRegistry
     /// <summary>
     /// Gets a previously defined profile.
     /// </summary>
+    /// <param name="name">The case-insensitive collision profile name.</param>
+    /// <returns>The collision profile registered under the supplied name.</returns>
     public CollisionProfile Get(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -69,6 +76,9 @@ public sealed class CollisionProfileRegistry
     /// <summary>
     /// Attempts to get a previously defined profile.
     /// </summary>
+    /// <param name="name">The case-insensitive collision profile name.</param>
+    /// <param name="profile">When this method returns, contains the profile.</param>
+    /// <returns><see langword="true"/> if the profile was found; otherwise, <see langword="false"/>.</returns>
     public bool TryGet(string name, out CollisionProfile? profile)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -83,6 +93,7 @@ public sealed class CollisionProfileRegistry
     /// <summary>
     /// Gets the names of all defined profiles.
     /// </summary>
+    /// <returns>The names of the currently defined collision profiles.</returns>
     public IReadOnlyCollection<string> GetProfileNames() => _profiles.Keys.ToArray();
 
     private void EnsureStandardProfiles()

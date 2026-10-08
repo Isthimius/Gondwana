@@ -4,8 +4,14 @@ using SkiaSharp;
 
 namespace Gondwana.Tooling.SceneViewer.WinForms.Tests;
 
+/// <summary>
+/// Contains regression tests for camera.
+/// </summary>
 public sealed class CameraTests
 {
+    /// <summary>
+    /// Verifies movement lerps toward and away from requested velocity.
+    /// </summary>
     [Fact]
     public void MovementLerpsTowardAndAwayFromRequestedVelocity()
     {
@@ -44,6 +50,9 @@ public sealed class CameraTests
         Assert.Equal(1f, view.Viewport.Zoom);
     }
 
+    /// <summary>
+    /// Verifies diagonal target speed is normalized and opposite directions cancel.
+    /// </summary>
     [Fact]
     public void DiagonalTargetSpeedIsNormalizedAndOppositeDirectionsCancel()
     {
@@ -70,6 +79,7 @@ public sealed class CameraTests
 
     private sealed class Adapter() : RenderSurfaceAdapterBase(640, 480)
     {
+        /// <inheritdoc/>
         public override void Present(SKImage image, SKRectI source, SKRect dest) => image.Dispose();
     }
 }

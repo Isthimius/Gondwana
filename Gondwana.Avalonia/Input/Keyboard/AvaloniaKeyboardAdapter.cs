@@ -115,6 +115,7 @@ public sealed class AvaloniaKeyboardAdapter : IKeyboardAdapter, IDisposable
     /// (an <see cref="Key"/> value cast to <see cref="int"/>) is currently pressed.
     /// </summary>
     /// <param name="keyCode">An <see cref="Key"/> value cast to <see cref="int"/>.</param>
+    /// <returns><see langword="true"/> if the key is currently pressed; otherwise, <see langword="false"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsDown(int keyCode)
     {

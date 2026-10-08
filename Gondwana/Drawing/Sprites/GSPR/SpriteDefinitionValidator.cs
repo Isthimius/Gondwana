@@ -3,6 +3,11 @@ namespace Gondwana.Drawing.Sprites.GSPR;
 /// <summary>Non-mutating structural validation; authoring paths are never opened.</summary>
 public static class SpriteDefinitionValidator
 {
+    /// <summary>
+    /// Checks the definition and collects validation errors.
+    /// </summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
     public static IReadOnlyList<string> Validate(SpriteDefinition definition) => Validate(definition, false);
 
     internal static IReadOnlyList<string> Validate(SpriteDefinition definition, bool allowDuplicateNicknames)

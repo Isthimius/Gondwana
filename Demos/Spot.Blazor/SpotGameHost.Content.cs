@@ -42,6 +42,7 @@ internal sealed partial class SpotGameHost
         return splash;
     }
 
+    /// <inheritdoc/>
     protected override void LoadAssets()
     {
         _music = LoadAudio("music", "sounovamusic-puzzle-amp-casual-game-music-460543.mp3");
@@ -77,6 +78,7 @@ internal sealed partial class SpotGameHost
             _font);
     }
 
+    /// <inheritdoc/>
     protected override void LoadTilesheets()
     {
         using (var stream = RequireAsset(AssetTypes.Image, "spot.png"))

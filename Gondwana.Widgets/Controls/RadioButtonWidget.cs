@@ -68,6 +68,13 @@ public sealed class RadioButtonWidget : WidgetBase
     /// <summary>
     /// Creates a view-level radio button.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="bounds">The widget bounds in view-local pixels.</param>
+    /// <param name="text">The text to display.</param>
+    /// <param name="group">The group.</param>
+    /// <param name="isSelected">Whether the item is selected.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public RadioButtonWidget(RenderSurfaceHostBase renderSurfaceHost,
                              View view,
                              Rectangle bounds,
@@ -97,6 +104,13 @@ public sealed class RadioButtonWidget : WidgetBase
     /// <summary>
     /// Creates a scene-layer radio button.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="bounds">The widget bounds in world pixels.</param>
+    /// <param name="text">The text to display.</param>
+    /// <param name="group">The group.</param>
+    /// <param name="isSelected">Whether the item is selected.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public RadioButtonWidget(RenderSurfaceHostBase renderSurfaceHost,
                              SceneLayer sceneLayer,
                              Rectangle bounds,
@@ -167,6 +181,8 @@ public sealed class RadioButtonWidget : WidgetBase
     /// <summary>
     /// Sets the selection state.
     /// </summary>
+    /// <param name="isSelected">Whether the item is selected.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public RadioButtonWidget SetSelected(bool isSelected)
     {
         if (isSelected && Group is not null)
@@ -182,6 +198,7 @@ public sealed class RadioButtonWidget : WidgetBase
     /// <summary>
     /// Selects this button and clears any other selection in its group.
     /// </summary>
+    /// <returns>This widget for fluent chaining.</returns>
     public RadioButtonWidget Select()
     {
         return SetSelected(true);
@@ -190,6 +207,8 @@ public sealed class RadioButtonWidget : WidgetBase
     /// <summary>
     /// Changes the label text.
     /// </summary>
+    /// <param name="text">The text to display.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public RadioButtonWidget SetText(string text)
     {
         Label.SetText(text ?? string.Empty);
@@ -199,6 +218,10 @@ public sealed class RadioButtonWidget : WidgetBase
     /// <summary>
     /// Sets the normal, hover, and selected-dot colors.
     /// </summary>
+    /// <param name="normal">The color used in the normal state.</param>
+    /// <param name="hover">The color used while the pointer is over the control.</param>
+    /// <param name="dot">The dot.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public RadioButtonWidget SetColors(Color normal,
                                        Color hover,
                                        Color dot)
@@ -216,6 +239,8 @@ public sealed class RadioButtonWidget : WidgetBase
     /// <summary>
     /// Sets the label text color.
     /// </summary>
+    /// <param name="color">The color to apply.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public RadioButtonWidget SetTextColor(SKColor color)
     {
         Label.SetColors(color, SKColors.Transparent);
@@ -225,6 +250,8 @@ public sealed class RadioButtonWidget : WidgetBase
     /// <summary>
     /// Sets the base Z-order used by the radio-button visuals.
     /// </summary>
+    /// <param name="zOrder">The drawing order relative to other content.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public RadioButtonWidget SetRadioButtonZOrder(int zOrder)
     {
         Ring.ZOrder = zOrder;

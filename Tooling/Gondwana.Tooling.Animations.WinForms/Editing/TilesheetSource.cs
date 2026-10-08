@@ -10,10 +10,25 @@ namespace Gondwana.Tooling.Animations.Editing;
 /// </summary>
 internal sealed class TilesheetSource : IDisposable
 {
+    /// <summary>
+    /// Gets the file path.
+    /// </summary>
     public string FilePath { get; }
+    /// <summary>
+    /// Gets the base directory.
+    /// </summary>
     public string BaseDirectory { get; }
+    /// <summary>
+    /// Gets the definition.
+    /// </summary>
     public TilesheetDefinition Definition { get; }
+    /// <summary>
+    /// Gets the image.
+    /// </summary>
     public Bitmap? Image { get; private set; }
+    /// <summary>
+    /// Gets the preview warning.
+    /// </summary>
     public string? PreviewWarning { get; private set; }
 
     private TilesheetSource(
@@ -26,6 +41,11 @@ internal sealed class TilesheetSource : IDisposable
         LoadPreviewImage();
     }
 
+    /// <summary>
+    /// Loads tilesheet source from the supplied source.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <returns>The resulting tilesheet source.</returns>
     public static TilesheetSource Load(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -37,6 +57,13 @@ internal sealed class TilesheetSource : IDisposable
             TilesheetDefinitionSerializer.Load(path));
     }
 
+    /// <summary>
+    /// Creates a frame definition for the selected tilesheet region and grid coordinates.
+    /// </summary>
+    /// <param name="region">The region.</param>
+    /// <param name="x">The zero-based column in the tile grid.</param>
+    /// <param name="y">The zero-based row in the tile grid.</param>
+    /// <returns>The resulting animation frame definition.</returns>
     public AnimationFrameDefinition CreateFrame(
         TilesheetRegionDefinition region,
         int x,
@@ -49,6 +76,13 @@ internal sealed class TilesheetSource : IDisposable
             YTile = y
         };
 
+    /// <summary>
+    /// Attempts to resolve a frame to its tilesheet region and image-pixel bounds.
+    /// </summary>
+    /// <param name="frame">The frame.</param>
+    /// <param name="region">When this method returns, contains the region.</param>
+    /// <param name="bounds">When this method returns, contains the bounds.</param>
+    /// <returns><see langword="true"/> if the operation succeeded; otherwise, <see langword="false"/>.</returns>
     public bool TryResolve(
         AnimationFrameDefinition frame,
         out TilesheetRegionDefinition? region,
@@ -87,6 +121,13 @@ internal sealed class TilesheetSource : IDisposable
         return true;
     }
 
+    /// <summary>
+    /// Computes a frame's pixel bounds within the tilesheet image.
+    /// </summary>
+    /// <param name="region">The region.</param>
+    /// <param name="x">The zero-based column in the tile grid.</param>
+    /// <param name="y">The zero-based row in the tile grid.</param>
+    /// <returns>The frame rectangle in tilesheet image pixels.</returns>
     public static Rectangle FrameBounds(
         TilesheetRegionDefinition region,
         int x,
@@ -182,6 +223,9 @@ internal sealed class TilesheetSource : IDisposable
         }
     }
 
+    /// <summary>
+    /// Releases the resources owned by this instance.
+    /// </summary>
     public void Dispose()
     {
         Image?.Dispose();

@@ -29,6 +29,7 @@ internal sealed class AssetTypeMap
     /// <summary>
     /// Built-in extension → <see cref="AssetTypes"/> defaults, used when no JSON config file is found.
     /// </summary>
+    /// <returns>The default extension-to-asset-type mappings.</returns>
     private static AssetTypeMap BuildDefault()
     {
         var map = new Dictionary<string, AssetTypes>(StringComparer.OrdinalIgnoreCase);
@@ -65,6 +66,9 @@ internal sealed class AssetTypeMap
     /// Returns <see langword="null"/> and sets <paramref name="error"/> only when an explicit path is
     /// provided but cannot be read or parsed.
     /// </summary>
+    /// <param name="explicitPath">The explicit path.</param>
+    /// <param name="error">When this method returns, contains the error.</param>
+    /// <returns>The resulting asset type map, or <see langword="null"/> when unavailable.</returns>
     public static AssetTypeMap? Load(string? explicitPath, out string? error)
     {
         // If the caller explicitly specified a file, it must exist and parse cleanly.
@@ -148,6 +152,9 @@ internal sealed class AssetTypeMap
     /// Returns the <see cref="AssetTypes"/> for the given file, or <paramref name="fallback"/> if
     /// the extension is not present in the map.
     /// </summary>
+    /// <param name="filePath">The path of the file to process.</param>
+    /// <param name="fallback">The fallback.</param>
+    /// <returns>The asset type inferred from the file name and configured mappings.</returns>
     public AssetTypes Infer(string filePath, AssetTypes fallback)
     {
         var ext = Path.GetExtension(filePath).TrimStart('.').ToLowerInvariant();

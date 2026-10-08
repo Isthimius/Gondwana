@@ -4,10 +4,21 @@ using System.Text.RegularExpressions;
 namespace Gondwana.Tooling.Importers;
 
 /// <summary>Purpose-built text resource reader. Unknown values remain raw text.</summary>
+/// <param name="Kind">The kind.</param>
+/// <param name="Attributes">The attributes.</param>
+/// <param name="Properties">The properties.</param>
 public sealed record GodotResourceSection(string Kind, IReadOnlyDictionary<string, string> Attributes, Dictionary<string, string> Properties);
 
+/// <summary>
+/// Represents godot text resource.
+/// </summary>
 public static class GodotTextResource
 {
+    /// <summary>
+    /// Parses a Godot text resource.
+    /// </summary>
+    /// <param name="text">The text to display.</param>
+    /// <returns>The sections parsed from the Godot text resource.</returns>
     public static IReadOnlyList<GodotResourceSection> Parse(string text)
     {
         var sections = new List<GodotResourceSection>();

@@ -17,6 +17,11 @@ public static class TilesheetDefinitionSerializer
         MissingMemberHandling = MissingMemberHandling.Ignore
     };
 
+    /// <summary>
+    /// Loads a tilesheet definition from a loose definition file.
+    /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <returns>The resulting tilesheet definition.</returns>
     public static TilesheetDefinition Load(string filePath)
     {
         if (string.IsNullOrWhiteSpace(filePath))
@@ -41,6 +46,11 @@ public static class TilesheetDefinitionSerializer
         }
     }
 
+    /// <summary>
+    /// Loads a tilesheet definition from a readable stream.
+    /// </summary>
+    /// <param name="stream">The stream supplying the serialized content. The stream remains open.</param>
+    /// <returns>The resulting tilesheet definition.</returns>
     public static TilesheetDefinition Load(Stream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
@@ -52,6 +62,11 @@ public static class TilesheetDefinitionSerializer
         return FromJson(reader.ReadToEnd());
     }
 
+    /// <summary>
+    /// Saves the supplied definition or runtime content to a definition file.
+    /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <param name="definition">The persisted definition to process.</param>
     public static void Save(string filePath, TilesheetDefinition definition)
     {
         if (string.IsNullOrWhiteSpace(filePath))
@@ -68,15 +83,32 @@ public static class TilesheetDefinitionSerializer
         File.WriteAllText(fullPath, ToJson(definitionToSave));
     }
 
+    /// <summary>
+    /// Deserializes a definition from JSON.
+    /// </summary>
+    /// <param name="json">The JSON text to deserialize.</param>
+    /// <returns>The deserialized definition.</returns>
     public static TilesheetDefinition FromJson(string json) =>
         FromJson(json, sourceDescription: null);
 
+    /// <summary>
+    /// Serializes the supplied content as JSON.
+    /// </summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <returns>The serialized JSON text.</returns>
     public static string ToJson(TilesheetDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);
         return JsonConvert.SerializeObject(definition, Settings);
     }
 
+    /// <summary>
+    /// Captures a tilesheet and its regions as a persistable definition.
+    /// </summary>
+    /// <param name="tilesheet">The tilesheet.</param>
+    /// <param name="baseDirectory">The base directory used to resolve or rebase relative paths.</param>
+    /// <param name="makePathsRelative">Whether to store resource paths relative to the base directory.</param>
+    /// <returns>The resulting tilesheet definition.</returns>
     public static TilesheetDefinition FromTilesheet(
         Tilesheet tilesheet,
         string? baseDirectory = null,
@@ -139,6 +171,13 @@ public static class TilesheetDefinitionSerializer
         Save(fullPath, definition);
     }
 
+    /// <summary>
+    /// Serializes the supplied content as JSON.
+    /// </summary>
+    /// <param name="tilesheet">The tilesheet.</param>
+    /// <param name="baseDirectory">The base directory used to resolve or rebase relative paths.</param>
+    /// <param name="makePathsRelative">Whether to store resource paths relative to the base directory.</param>
+    /// <returns>The serialized JSON text.</returns>
     public static string ToJson(
         Tilesheet tilesheet,
         string? baseDirectory = null,

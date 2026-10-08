@@ -9,9 +9,17 @@ using SkiaSharp;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for sprite gspr persistence.
+/// </summary>
 [Collection("Global engine state")]
 public sealed class SpriteGsprPersistenceTests
 {
+    /// <summary>
+    /// Verifies collision and visual parity ignore creation size default.
+    /// </summary>
+    /// <param name="byFrame">The by frame value for this test case.</param>
+    /// <param name="enabled">The enabled value for this test case.</param>
     [Theory]
     [InlineData(false, false)]
     [InlineData(false, true)]
@@ -55,6 +63,10 @@ public sealed class SpriteGsprPersistenceTests
         }
     }
 
+    /// <summary>
+    /// Verifies empty render size uses sprite creation default.
+    /// </summary>
+    /// <param name="sizeNewSpritesToSceneLayer">The size new sprites to scene layer value for this test case.</param>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
@@ -83,6 +95,10 @@ public sealed class SpriteGsprPersistenceTests
         }
     }
 
+    /// <summary>
+    /// Verifies missing runtime dependencies fail clearly.
+    /// </summary>
+    /// <param name="missing">The missing value for this test case.</param>
     [Theory]
     [InlineData("scene")]
     [InlineData("layer")]
@@ -111,6 +127,10 @@ public sealed class SpriteGsprPersistenceTests
         Assert.Equal(before, SpriteManager.Instance.AllSprites);
     }
 
+    /// <summary>
+    /// Verifies invalid definitions are rejected without mutation.
+    /// </summary>
+    /// <param name="invalid">The invalid value for this test case.</param>
     [Theory]
     [InlineData("scene")]
     [InlineData("layer")]
@@ -146,6 +166,10 @@ public sealed class SpriteGsprPersistenceTests
         Assert.Equal(before, SpriteDefinitionSerializer.ToJson(definition));
     }
 
+    /// <summary>
+    /// Verifies malformed json fails cleanly.
+    /// </summary>
+    /// <param name="json">The json value for this test case.</param>
     [Theory]
     [InlineData("null")]
     [InlineData("{")]
@@ -155,6 +179,9 @@ public sealed class SpriteGsprPersistenceTests
     [InlineData("{\"SceneSources\":[null]}")]
     public void MalformedJsonFailsCleanly(string json) => Assert.Throws<InvalidDataException>(() => SpriteDefinitionSerializer.FromJson(json));
 
+    /// <summary>
+    /// Verifies throwing creation callback rolls back whole incoming collection.
+    /// </summary>
     [Fact]
     public void ThrowingCreationCallbackRollsBackWholeIncomingCollection()
     {
@@ -174,6 +201,9 @@ public sealed class SpriteGsprPersistenceTests
         finally { SpriteManager.Instance.SpriteCreated -= FailSecond; }
     }
 
+    /// <summary>
+    /// Verifies loose packed stream and save as preserve collection and portable metadata.
+    /// </summary>
     [Fact]
     public void LoosePackedStreamAndSaveAsPreserveCollectionAndPortableMetadata()
     {

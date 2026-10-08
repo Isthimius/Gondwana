@@ -7,9 +7,15 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for collision profile.
+/// </summary>
 [Collection("SpriteManager")]
 public sealed class CollisionProfileTests
 {
+    /// <summary>
+    /// Verifies get mask combines registered groups and empty means none.
+    /// </summary>
     [Fact]
     public void GetMask_CombinesRegisteredGroupsAndEmptyMeansNone()
     {
@@ -21,6 +27,9 @@ public sealed class CollisionProfileTests
             groups.GetMask(["Actors", "Projectiles"]));
     }
 
+    /// <summary>
+    /// Verifies scene layer default profile applies to every fixed tile.
+    /// </summary>
     [Fact]
     public void SceneLayer_DefaultProfileAppliesToEveryFixedTile()
     {
@@ -46,6 +55,9 @@ public sealed class CollisionProfileTests
         }
     }
 
+    /// <summary>
+    /// Verifies custom profile resolves names through scene collision groups.
+    /// </summary>
     [Fact]
     public void CustomProfile_ResolvesNamesThroughSceneCollisionGroups()
     {
@@ -62,6 +74,9 @@ public sealed class CollisionProfileTests
             profile.ResolveCollidesWith(scene.CollisionGroups));
     }
 
+    /// <summary>
+    /// Verifies attach collider applies state configured before collider exists.
+    /// </summary>
     [Fact]
     public void AttachCollider_AppliesStateConfiguredBeforeColliderExists()
     {
@@ -86,6 +101,9 @@ public sealed class CollisionProfileTests
         Assert.DoesNotContain(collider, layer.ColliderRegistry.DynamicColliders);
     }
 
+    /// <summary>
+    /// Verifies sprite profile resolves when existing layer is attached to scene.
+    /// </summary>
     [Fact]
     public void SpriteProfile_ResolvesWhenExistingLayerIsAttachedToScene()
     {
@@ -121,6 +139,9 @@ public sealed class CollisionProfileTests
         }
     }
 
+    /// <summary>
+    /// Verifies scene add layer ignores unexpected null sprite entries.
+    /// </summary>
     [Fact]
     public void SceneAddLayer_IgnoresUnexpectedNullSpriteEntries()
     {
@@ -147,9 +168,13 @@ public sealed class CollisionProfileTests
             _sceneLayer = sceneLayer;
         }
 
+        /// <inheritdoc/>
         public override bool IsPositionFixed => false;
+        /// <inheritdoc/>
         public override Rectangle DrawLocationWorld => new(0, 0, 16, 16);
+        /// <inheritdoc/>
         public override PointF SceneLayerCoordinates => PointF.Empty;
+        /// <inheritdoc/>
         public override SceneLayer SceneLayer => _sceneLayer;
 
         internal void AttachTestCollider()

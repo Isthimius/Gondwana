@@ -18,8 +18,17 @@ namespace Gondwana.Drawing.Sprites;
 [JsonObject(IsReference = true)]
 public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntity, IDisposable
 {
+    /// <summary>
+    /// Occurs when the sprite position changes.
+    /// </summary>
     public event Action<SpriteMovedEventArgs>? SpriteMoved;
+    /// <summary>
+    /// Occurs when the sprite visual bounds change.
+    /// </summary>
     public event Action<Sprite>? VisualBoundsChanged;
+    /// <summary>
+    /// Occurs when disposal begins.
+    /// </summary>
     public event Action<Sprite>? Disposing;
 
     [JsonIgnore]
@@ -94,6 +103,11 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         _sceneLayer = SceneLayer.Empty;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <c>Sprite</c> class.
+    /// </summary>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="frame">The frame.</param>
     protected internal Sprite(SceneLayer sceneLayer, Frame frame)
         : this(
             sceneLayer,
@@ -102,6 +116,12 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <c>Sprite</c> class.
+    /// </summary>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="frame">The frame.</param>
+    /// <param name="collisionProfileName">The name of the scene collision profile to apply.</param>
     protected internal Sprite(
         SceneLayer sceneLayer,
         Frame frame,
@@ -145,6 +165,8 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     /// <summary>
     /// Copy constructor used by <see cref="SpriteManager.CloneSprite(Sprite)"/>.
     /// </summary>
+    /// <param name="sprite">The sprite whose state is copied.</param>
+    /// <param name="sceneLayer">The scene layer to associate with the sprite or its collision profiles.</param>
     internal Sprite(Sprite sprite, SceneLayer sceneLayer)
     {
         ArgumentNullException.ThrowIfNull(sprite);
@@ -227,6 +249,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     /// <summary>
     /// Rebinds a deserialized sprite to the canonical SceneLayer materialized by EngineState.
     /// </summary>
+    /// <param name="sceneLayer">The scene layer to associate with the sprite or its collision profiles.</param>
     internal void RebindSceneLayerAfterDeserialization(SceneLayer sceneLayer)
     {
         ArgumentNullException.ThrowIfNull(sceneLayer);
@@ -264,11 +287,22 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         _sceneLayer.RefreshQueue.AddWorldRect(VisualBoundsWorld);
     }
 
+    /// <summary>
+    /// Gets the coordinate space used by the position API.
+    /// </summary>
     public MovementSpace PositionSpace => MovementSpace.Grid;
 
+    /// <summary>
+    /// Gets the sprite position in scene-layer grid coordinates.
+    /// </summary>
+    /// <returns>The sprite position in scene-layer grid coordinates.</returns>
     public Vector2 GetPosition() =>
         new(_sceneLayerCoordinates.X, _sceneLayerCoordinates.Y);
 
+    /// <summary>
+    /// Sets the sprite position in scene-layer grid coordinates and invalidates its old and new bounds.
+    /// </summary>
+    /// <param name="pos">The new position in scene-layer grid coordinates.</param>
     public void SetPosition(Vector2 pos)
     {
         PointF oldCoord = _sceneLayerCoordinates;
@@ -325,6 +359,8 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     /// <summary>
     /// Gets the axis-aligned screen-pixel bounds enclosing the rotated sprite.
     /// </summary>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <returns>The bounds in screen pixels for the supplied view.</returns>
     public RectangleF GetVisualBoundsScreen(View view) =>
         GetRotatedBounds(GetDrawLocationScreen(view), Rotation);
 
@@ -362,6 +398,8 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
     /// Applies a world-pixel translation without rebuilding the absolute position
     /// from an integer rectangle, preserving fractional coordinates on the other axis.
     /// </summary>
+    /// <param name="dx">The horizontal displacement in world pixels.</param>
+    /// <param name="dy">The vertical displacement in world pixels.</param>
     public void TranslateWorldPx(int dx, int dy)
     {
         if (dx == 0 && dy == 0)
@@ -384,14 +422,23 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         SetPosition(GetPosition() + sceneDelta);
     }
 
+    /// <summary>
+    /// Clears the requested horizontal and vertical velocity components.
+    /// </summary>
+    /// <param name="cancelX">Whether to clear the horizontal velocity component.</param>
+    /// <param name="cancelY">Whether to clear the vertical velocity component.</param>
     public void CancelVelocityComponent(bool cancelX, bool cancelY)
     {
         Movement.ZeroVelocityComponent(cancelX, cancelY);
     }
 
+    /// <summary>
+    /// Gets the controller that manages sprite movement.
+    /// </summary>
     [JsonIgnore]
     public MovementController Movement { get; private set; } = null!;
 
+    /// <inheritdoc/>
     [JsonProperty]
     public override Frame CurrentFrame
     {
@@ -404,6 +451,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         }
     }
 
+    /// <inheritdoc/>
     [JsonProperty]
     public override bool Visible
     {
@@ -415,6 +463,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         }
     }
 
+    /// <summary>
+    /// Gets or sets the horiz align.
+    /// </summary>
     [JsonProperty]
     public HorizontalAlignment HorizAlign
     {
@@ -434,6 +485,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         }
     }
 
+    /// <summary>
+    /// Gets or sets the vert align.
+    /// </summary>
     [JsonProperty]
     public VerticalAlignment VertAlign
     {
@@ -453,6 +507,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         }
     }
 
+    /// <summary>
+    /// Gets or sets the nudge x.
+    /// </summary>
     [JsonProperty]
     public int NudgeX
     {
@@ -472,6 +529,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         }
     }
 
+    /// <summary>
+    /// Gets or sets the nudge y.
+    /// </summary>
     [JsonProperty]
     public int NudgeY
     {
@@ -491,6 +551,9 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         }
     }
 
+    /// <summary>
+    /// Gets or sets the render size.
+    /// </summary>
     [JsonProperty]
     public Size RenderSize
     {
@@ -510,6 +573,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         }
     }
 
+    /// <inheritdoc/>
     [JsonIgnore]
     public override Rectangle DrawLocationWorld
     {
@@ -547,15 +611,19 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
         }
     }
 
+    /// <inheritdoc/>
     [JsonIgnore]
     public override bool IsPositionFixed => false;
 
+    /// <inheritdoc/>
     [JsonIgnore]
     public override PointF SceneLayerCoordinates => _sceneLayerCoordinates;
 
+    /// <inheritdoc/>
     [JsonIgnore]
     public override SceneLayer SceneLayer => _sceneLayer;
 
+    /// <inheritdoc/>
     [JsonProperty]
     public override int ZOrder
     {
@@ -597,6 +665,7 @@ public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntit
             worldRectPx.Location);
     }
 
+    /// <inheritdoc/>
     public override void Dispose()
     {
         _pendingDispose = true;

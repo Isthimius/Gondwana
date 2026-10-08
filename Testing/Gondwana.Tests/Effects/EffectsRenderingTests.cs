@@ -8,21 +8,33 @@ using SkiaSharp;
 
 namespace Gondwana.Tests.Effects;
 
+/// <summary>
+/// Contains regression tests for effects rendering.
+/// </summary>
 [Collection("Effects rendering")]
 public sealed class EffectsRenderingTests
 {
+    /// <summary>
+    /// Initializes a new instance of the <c>EffectsRenderingTests</c> class.
+    /// </summary>
     public EffectsRenderingTests()
     {
         Engine.Instance.EngineDispatcher.BindToCurrentThread();
         Engine.Instance.EngineDispatcher.Drain();
     }
 
+    /// <summary>
+    /// Verifies bitmap path composites view opacity.
+    /// </summary>
     [Fact]
     public void BitmapPath_CompositesViewOpacity()
     {
         AssertViewOpacityIsComposited<BitmapBackbuffer>();
     }
 
+    /// <summary>
+    /// Verifies gpu full frame path composites view opacity.
+    /// </summary>
     [Fact]
     public void GpuFullFramePath_CompositesViewOpacity()
     {
@@ -31,12 +43,18 @@ public sealed class EffectsRenderingTests
         AssertViewOpacityIsComposited<GpuBackbuffer>();
     }
 
+    /// <summary>
+    /// Verifies bitmap path composites scene layer opacity.
+    /// </summary>
     [Fact]
     public void BitmapPath_CompositesSceneLayerOpacity()
     {
         AssertSceneLayerOpacityIsComposited<BitmapBackbuffer>();
     }
 
+    /// <summary>
+    /// Verifies gpu full frame path composites scene layer opacity.
+    /// </summary>
     [Fact]
     public void GpuFullFramePath_CompositesSceneLayerOpacity()
     {
@@ -114,6 +132,7 @@ public sealed class EffectsRenderingTests
     private sealed class TestAdapter(int width, int height)
         : RenderSurfaceAdapterBase(width, height)
     {
+        /// <inheritdoc/>
         public override void Present(
             SKImage bufferImage,
             SKRectI bufferRect,
@@ -123,5 +142,8 @@ public sealed class EffectsRenderingTests
     }
 }
 
+/// <summary>
+/// Represents effects rendering collection.
+/// </summary>
 [CollectionDefinition("Effects rendering", DisableParallelization = true)]
 public sealed class EffectsRenderingCollection;

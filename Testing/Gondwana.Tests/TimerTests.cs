@@ -48,6 +48,7 @@ public sealed class TimerTests : IDisposable
     /// <summary>
     /// Verifies that timer lengths must be finite, positive, and representable as high-resolution ticks.
     /// </summary>
+    /// <param name="length">The length value for this test case.</param>
     [Theory]
     [InlineData(0)]
     [InlineData(-0.01)]

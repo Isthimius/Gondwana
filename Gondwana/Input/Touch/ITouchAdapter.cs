@@ -15,6 +15,7 @@ public interface ITouchAdapter
     /// on the default empty implementation; the poller will still discover active contacts
     /// from <see cref="ActiveTouches"/>.
     /// </summary>
+    /// <returns>The newly begun touch contacts, consumed from the pending collection.</returns>
     IReadOnlyList<TouchPoint> ConsumeBeganTouches() => Array.Empty<TouchPoint>();
 
     /// <summary>

@@ -6,8 +6,14 @@ using Gondwana.Video;
 
 namespace Gondwana.Tests.Video;
 
+/// <summary>
+/// Contains regression tests for video source.
+/// </summary>
 public sealed class VideoSourceTests
 {
+    /// <summary>
+    /// Verifies gaf source opens fresh owned streams through direct video.
+    /// </summary>
     [Fact]
     public void GafSourceOpensFreshOwnedStreamsThroughDirectVideo()
     {
@@ -37,6 +43,10 @@ public sealed class VideoSourceTests
         finally { File.Delete(path); }
     }
 
+    /// <summary>
+    /// Verifies stream ownership is explicit.
+    /// </summary>
+    /// <param name="leaveOpen">The leave open value for this test case.</param>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
@@ -49,6 +59,9 @@ public sealed class VideoSourceTests
         Assert.Equal(leaveOpen, stream.CanRead);
     }
 
+    /// <summary>
+    /// Verifies missing asset fails clearly and failed construction unsubscribes player.
+    /// </summary>
     [Fact]
     public void MissingAssetFailsClearlyAndFailedConstructionUnsubscribesPlayer()
     {

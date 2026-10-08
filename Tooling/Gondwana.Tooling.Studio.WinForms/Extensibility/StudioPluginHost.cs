@@ -19,6 +19,7 @@ public sealed class StudioPluginHost : CoreHost
     /// <summary>
     /// Returns panels contributed by WinForms-compatible plugins.
     /// </summary>
+    /// <returns>The available plugin panels paired with their plugin names.</returns>
     public IEnumerable<(string pluginName, Control panel)> GetPluginPanels()
         => GetPersistentPluginPanels().Select(entry => (entry.Name, entry.Panel));
 
@@ -44,6 +45,7 @@ public sealed class StudioPluginHost : CoreHost
     /// <summary>
     /// Returns menu items contributed by WinForms-compatible plugins.
     /// </summary>
+    /// <returns>The menu items contributed by the loaded plugins.</returns>
     public IEnumerable<ToolStripMenuItem> GetPluginMenuItems()
     {
         var result = new List<ToolStripMenuItem>();

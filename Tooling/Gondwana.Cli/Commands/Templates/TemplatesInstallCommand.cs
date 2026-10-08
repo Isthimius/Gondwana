@@ -4,6 +4,7 @@ namespace Gondwana.Cli.Commands.Templates;
 
 internal sealed class TemplatesInstallCommand : Command
 {
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, CancellationToken cancellationToken)
     {
         return TemplatePackageHelper.EnsureInstalledOrUpdated();

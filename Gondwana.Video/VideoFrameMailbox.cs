@@ -63,6 +63,9 @@ internal sealed class VideoFrameMailbox : IDisposable
         }
     }
 
+    /// <summary>
+    /// Releases the resources owned by this instance.
+    /// </summary>
     public void Dispose()
     {
         lock (_gate) { _disposed = true; _pending = false; _pixels = []; }

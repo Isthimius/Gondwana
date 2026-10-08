@@ -4,8 +4,15 @@ using WinPlugin = Gondwana.Tooling.Studio.WinForms.Extensibility.IStudioPlugin;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
+/// <summary>
+/// Contains regression tests for plugin host.
+/// </summary>
 public sealed class PluginHostTests
 {
+    /// <summary>
+    /// Verifies discovery shares both contracts and isolates lifecycle failures.
+    /// </summary>
+    /// <param name="failOnClose">The fail on close value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -44,6 +51,9 @@ public sealed class PluginHostTests
         Assert.Contains(messages, message => message.Contains("Failed to instantiate") && message.Contains(nameof(ThrowingConstructorPlugin)));
     }
 
+    /// <summary>
+    /// Verifies absent plugins are optional.
+    /// </summary>
     [Fact]
     public void AbsentPluginsAreOptional()
     {
@@ -55,28 +65,68 @@ public sealed class PluginHostTests
     }
 }
 
+/// <summary>
+/// Represents contract fixture plugin.
+/// </summary>
 public sealed class ContractFixturePlugin : WinPlugin
 {
+    /// <summary>
+    /// Gets the name.
+    /// </summary>
     public string Name => "Contract fixture";
+    /// <summary>
+    /// Gets the project path.
+    /// </summary>
     public string? ProjectPath { get; private set; }
+    /// <summary>
+    /// Updates the plugin for the newly opened project.
+    /// </summary>
+    /// <param name="projectPath">The project path value for this test case.</param>
     public void OnProjectOpened(string projectPath)
     {
         if (projectPath == "throw") throw new InvalidOperationException("Expected fixture failure");
         ProjectPath = projectPath;
     }
+    /// <summary>
+    /// Clears plugin state associated with the closed project.
+    /// </summary>
     public void OnProjectClosed()
     {
         if (ProjectPath == "throw-on-close") throw new InvalidOperationException("Expected close failure");
         ProjectPath = null;
     }
+    /// <summary>
+    /// Creates the plugin's dockable user interface.
+    /// </summary>
+    /// <returns>The resulting control, or <see langword="null"/> when unavailable.</returns>
     public Control? CreatePanel() => ProjectPath == "throw-contribution" ? throw new InvalidOperationException("Expected panel failure") : null;
+    /// <summary>
+    /// Creates the menu item that opens the plugin panel.
+    /// </summary>
+    /// <returns>The resulting tool strip menu item, or <see langword="null"/> when unavailable.</returns>
     public ToolStripMenuItem? CreateMenuItem() => ProjectPath == "throw-contribution" ? throw new InvalidOperationException("Expected menu failure") : null;
 }
 
+/// <summary>
+/// Represents throwing constructor plugin.
+/// </summary>
 public sealed class ThrowingConstructorPlugin : CorePlugin
 {
+    /// <summary>
+    /// Initializes a new instance of the <c>ThrowingConstructorPlugin</c> class.
+    /// </summary>
     public ThrowingConstructorPlugin() => throw new InvalidOperationException("Expected constructor failure");
+    /// <summary>
+    /// Gets the name.
+    /// </summary>
     public string Name => "Constructor fixture";
+    /// <summary>
+    /// Updates the plugin for the newly opened project.
+    /// </summary>
+    /// <param name="projectPath">The project path value for this test case.</param>
     public void OnProjectOpened(string projectPath) { }
+    /// <summary>
+    /// Clears plugin state associated with the closed project.
+    /// </summary>
     public void OnProjectClosed() { }
 }

@@ -9,16 +9,46 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
 {
     private const float ZoomStepFactor = 1.25f;
     private int _zoomWheelDelta;
+    /// <summary>
+    /// Gets or sets the image.
+    /// </summary>
     public Bitmap? Image { get; set; }
+    /// <summary>
+    /// Gets or sets the definition.
+    /// </summary>
     public TilesheetDefinition? Definition { get; set; }
+    /// <summary>
+    /// Gets or sets the selected region.
+    /// </summary>
     public TilesheetRegionDefinition? SelectedRegion { get; set; }
+    /// <summary>
+    /// Gets or sets the selected frame.
+    /// </summary>
     public Point? SelectedFrame { get; set; }
+    /// <summary>
+    /// Gets the overlays.
+    /// </summary>
     public HashSet<string> Overlays { get; } = Enum.GetNames<OverlayKind>().ToHashSet();
+    /// <summary>
+    /// Gets or sets the colors.
+    /// </summary>
     public OverlaySettings Colors { get; set; } = OverlaySettings.Default;
+    /// <summary>
+    /// Occurs when a frame is selected.
+    /// </summary>
     public event Action<TilesheetRegionDefinition, Point>? FrameSelected;
+    /// <summary>
+    /// Gets the zoom.
+    /// </summary>
     public float Zoom { get; private set; } = 1;
+    /// <summary>
+    /// Gets or sets the message.
+    /// </summary>
     public string Message { get; set; } = "Choose a loose image to preview.";
 
+    /// <summary>
+    /// Initializes a new instance of the <c>ImageViewport</c> class.
+    /// </summary>
     public ImageViewport()
     {
         DoubleBuffered = true;
@@ -28,6 +58,10 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
         ResizeRedraw = true;
     }
 
+    /// <summary>
+    /// Sets the preview zoom factor.
+    /// </summary>
+    /// <param name="zoom">The zoom factor.</param>
     public void SetZoom(float zoom)
     {
         var center = new PointF((ClientSize.Width / 2f - AutoScrollPosition.X) / Zoom,
@@ -46,12 +80,14 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
 
     internal void ZoomOut() => SetZoom(Zoom / ZoomStepFactor);
 
+    /// <inheritdoc/>
     protected override void OnHandleCreated(EventArgs e)
     {
         base.OnHandleCreated(e);
         Application.AddMessageFilter(this);
     }
 
+    /// <inheritdoc/>
     protected override void OnHandleDestroyed(EventArgs e)
     {
         Application.RemoveMessageFilter(this);
@@ -114,6 +150,9 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
     [DllImport("user32.dll")]
     private static extern IntPtr WindowFromPoint(Point point);
 
+    /// <summary>
+    /// Adjusts the preview zoom to fit its content inside the viewport.
+    /// </summary>
     public void Fit()
     {
         if (Image is null)
@@ -123,12 +162,18 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
         AutoScrollPosition = Point.Empty;
     }
 
+    /// <summary>
+    /// Recomputes the scrollable extent from the image size and zoom.
+    /// </summary>
     public void UpdateExtent()
     {
         AutoScrollMinSize = Image is null ? Size.Empty : new Size((int)Math.Ceiling(Image.Width * Zoom), (int)Math.Ceiling(Image.Height * Zoom));
         Invalidate();
     }
 
+    /// <summary>
+    /// Scrolls the viewport to reveal the selected frame.
+    /// </summary>
     public void RevealSelectedFrame()
     {
         if (SelectedRegion is not { } region || SelectedFrame is not { } frame)
@@ -157,12 +202,14 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
         AutoScrollPosition = new Point((int)Math.Clamp(currentX, 0, int.MaxValue), (int)Math.Clamp(currentY, 0, int.MaxValue));
     }
 
+    /// <inheritdoc/>
     protected override void OnScroll(ScrollEventArgs se)
     {
         base.OnScroll(se);
         Invalidate();
     }
 
+    /// <inheritdoc/>
     protected override void OnMouseDown(MouseEventArgs e)
     {
         base.OnMouseDown(e);
@@ -176,6 +223,7 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
             FrameSelected?.Invoke(hit.Region, hit.Frame);
     }
 
+    /// <inheritdoc/>
     protected override void OnPaint(PaintEventArgs e)
     {
         base.OnPaint(e);

@@ -7,6 +7,7 @@ namespace Gondwana.Scenes;
 // both the historical {$id,$values} envelope and a plain rectangular array.
 internal sealed class SceneLayerTileArrayConverter : JsonConverter<SceneLayerTile[,]>
 {
+    /// <inheritdoc/>
     public override SceneLayerTile[,] ReadJson(JsonReader reader, Type objectType, SceneLayerTile[,]? existingValue,
         bool hasExistingValue, JsonSerializer serializer)
     {
@@ -26,7 +27,9 @@ internal sealed class SceneLayerTileArrayConverter : JsonConverter<SceneLayerTil
         return result;
     }
 
+    /// <inheritdoc/>
     public override bool CanWrite => false;
+    /// <inheritdoc/>
     public override void WriteJson(JsonWriter writer, SceneLayerTile[,]? value, JsonSerializer serializer) =>
         throw new NotSupportedException();
 }

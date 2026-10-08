@@ -52,6 +52,8 @@ public sealed class AvaloniaGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, 
     /// Called from <see cref="AvaloniaGpuRenderSurfaceControl"/> on each
     /// <c>OnOpenGlRender</c> before scene rendering begins.
     /// </summary>
+    /// <param name="physW">The physical surface width in pixels.</param>
+    /// <param name="physH">The physical surface height in pixels.</param>
     internal void UpdateDimensions(int physW, int physH)
     {
         if (!_disposed)
@@ -63,6 +65,7 @@ public sealed class AvaloniaGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, 
     /// After this call, every <c>Engine.AfterFrameRender</c> event posts
     /// <paramref name="requestRepaint"/> to the UI thread.
     /// </summary>
+    /// <param name="requestRepaint">The callback that requests a UI repaint.</param>
     internal void AttachToEngine(Action requestRepaint)
     {
         _afterFrameRenderHandler = () =>
@@ -76,6 +79,9 @@ public sealed class AvaloniaGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, 
     /// <summary>
     /// Not used in the GL-thread path.  The image is disposed immediately to avoid a leak.
     /// </summary>
+    /// <param name="bufferImage">The rendered image to present.</param>
+    /// <param name="bufferRect">The source rectangle within the rendered image.</param>
+    /// <param name="destRect">The destination rectangle on the render surface.</param>
     public override void Present(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)
     {
         bufferImage.Dispose();

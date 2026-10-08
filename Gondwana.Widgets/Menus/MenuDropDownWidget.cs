@@ -83,6 +83,15 @@ public sealed class MenuDropDownWidget : ContainerWidget
     public int SelectedIndex => _selectedIndex;
 
     /// <summary>Adds a command, preserving fluent construction. Gesture text overrides display-only shortcutText.</summary>
+    /// <param name="text">The text to display.</param>
+    /// <param name="action">The action.</param>
+    /// <param name="shortcutText">The shortcut text.</param>
+    /// <param name="enabled">Whether the feature is enabled.</param>
+    /// <param name="key">The lookup key for the resource.</param>
+    /// <param name="shortcut">The shortcut text displayed alongside the item.</param>
+    /// <param name="mnemonic">The keyboard mnemonic used to activate the item.</param>
+    /// <param name="icon">The icon.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public MenuDropDownWidget AddItem(string text, Action? action = null,
         string? shortcutText = null, bool enabled = true, string? key = null,
         KeyGesture? shortcut = null, char? mnemonic = null, SKImage? icon = null)
@@ -92,6 +101,15 @@ public sealed class MenuDropDownWidget : ContainerWidget
     }
 
     /// <summary>Adds a check item. Invocation toggles state before passing the resulting value to the callback.</summary>
+    /// <param name="text">The text to display.</param>
+    /// <param name="action">The action.</param>
+    /// <param name="isChecked">Whether the control starts or becomes checked.</param>
+    /// <param name="enabled">Whether the feature is enabled.</param>
+    /// <param name="key">The lookup key for the resource.</param>
+    /// <param name="shortcut">The shortcut text displayed alongside the item.</param>
+    /// <param name="mnemonic">The keyboard mnemonic used to activate the item.</param>
+    /// <param name="icon">The icon.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public MenuDropDownWidget AddCheckItem(string text, Action<bool>? action = null,
         bool isChecked = false, bool enabled = true, string? key = null,
         KeyGesture? shortcut = null, char? mnemonic = null, SKImage? icon = null)
@@ -102,6 +120,16 @@ public sealed class MenuDropDownWidget : ContainerWidget
     }
 
     /// <summary>Adds a radio command. Group names are scoped to this dropdown; the last checked item wins.</summary>
+    /// <param name="text">The text to display.</param>
+    /// <param name="action">The action.</param>
+    /// <param name="group">The group.</param>
+    /// <param name="isChecked">Whether the control starts or becomes checked.</param>
+    /// <param name="enabled">Whether the feature is enabled.</param>
+    /// <param name="key">The lookup key for the resource.</param>
+    /// <param name="shortcut">The shortcut text displayed alongside the item.</param>
+    /// <param name="mnemonic">The keyboard mnemonic used to activate the item.</param>
+    /// <param name="icon">The icon.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public MenuDropDownWidget AddRadioItem(string text, Action? action, string group,
         bool isChecked = false, bool enabled = true, string? key = null,
         KeyGesture? shortcut = null, char? mnemonic = null, SKImage? icon = null)
@@ -113,6 +141,13 @@ public sealed class MenuDropDownWidget : ContainerWidget
     }
 
     /// <summary>Adds an owned submenu. Submenus may themselves contain submenus to any depth.</summary>
+    /// <param name="text">The text to display.</param>
+    /// <param name="configure">The configure.</param>
+    /// <param name="enabled">Whether the feature is enabled.</param>
+    /// <param name="key">The lookup key for the resource.</param>
+    /// <param name="mnemonic">The keyboard mnemonic used to activate the item.</param>
+    /// <param name="icon">The icon.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public MenuDropDownWidget AddSubMenu(string text, Action<MenuDropDownWidget> configure,
         bool enabled = true, string? key = null, char? mnemonic = null, SKImage? icon = null)
     {
@@ -255,6 +290,7 @@ public sealed class MenuDropDownWidget : ContainerWidget
     }
 
     /// <summary>Adds a visual separator.</summary>
+    /// <returns>This instance for fluent chaining.</returns>
     public MenuDropDownWidget AddSeparator()
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -279,6 +315,8 @@ public sealed class MenuDropDownWidget : ContainerWidget
     }
 
     /// <summary>Sets a fixed minimum width for this dropdown.</summary>
+    /// <param name="width">The width.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public MenuDropDownWidget SetWidth(int width)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);

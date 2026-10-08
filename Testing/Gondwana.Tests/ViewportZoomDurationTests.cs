@@ -2,8 +2,14 @@ using Gondwana.Rendering.Views;
 
 namespace Gondwana.Tests.Rendering.Views;
 
+/// <summary>
+/// Contains regression tests for viewport zoom duration.
+/// </summary>
 public sealed class ViewportZoomDurationTests
 {
+    /// <summary>
+    /// Verifies zoom to over duration snaps to target when duration elapses.
+    /// </summary>
     [Fact]
     public void ZoomToOverDuration_SnapsToTargetWhenDurationElapses()
     {
@@ -24,6 +30,9 @@ public sealed class ViewportZoomDurationTests
         Assert.False(viewport.IsZoomAnimating);
     }
 
+    /// <summary>
+    /// Verifies zoom to over duration when frame exceeds remaining time snaps to target.
+    /// </summary>
     [Fact]
     public void ZoomToOverDuration_WhenFrameExceedsRemainingTime_SnapsToTarget()
     {

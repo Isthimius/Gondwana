@@ -8,10 +8,25 @@ namespace Gondwana.Tooling.Animations.Editing;
 /// </summary>
 public sealed class AnimationDocument
 {
+    /// <summary>
+    /// Gets the definition.
+    /// </summary>
     public AnimationDefinition Definition { get; }
+    /// <summary>
+    /// Gets the file path.
+    /// </summary>
     public string? FilePath { get; private set; }
+    /// <summary>
+    /// Gets the base directory.
+    /// </summary>
     public string BaseDirectory { get; private set; }
+    /// <summary>
+    /// Gets whether the document contains unsaved changes.
+    /// </summary>
     public bool IsDirty { get; private set; }
+    /// <summary>
+    /// Occurs when the document content changes.
+    /// </summary>
     public event EventHandler? Changed;
 
     private AnimationDocument(
@@ -26,6 +41,11 @@ public sealed class AnimationDocument
         IsDirty = isDirty;
     }
 
+    /// <summary>
+    /// Opens the supplied file for use by the animation document.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <returns>The resulting animation document.</returns>
     public static AnimationDocument Open(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -39,6 +59,11 @@ public sealed class AnimationDocument
             isDirty: false);
     }
 
+    /// <summary>
+    /// Creates a new animation document.
+    /// </summary>
+    /// <param name="directory">The directory.</param>
+    /// <returns>The resulting animation document.</returns>
     public static AnimationDocument Create(string directory) =>
         new(
             new AnimationDefinition
@@ -52,15 +77,28 @@ public sealed class AnimationDocument
             directory,
             isDirty: true);
 
+    /// <summary>
+    /// Marks the document as modified and notifies listeners.
+    /// </summary>
     public void MarkChanged()
     {
         IsDirty = true;
         Changed?.Invoke(this, EventArgs.Empty);
     }
 
+    /// <summary>
+    /// Checks the definition and collects validation errors.
+    /// </summary>
+    /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
     public IReadOnlyList<string> Validate() =>
         AnimationDefinitionValidator.Validate(Definition);
 
+    /// <summary>
+    /// Adds or updates a tilesheet reference to a loose GTS file.
+    /// </summary>
+    /// <param name="tilesheet">The tilesheet.</param>
+    /// <param name="gtsPath">The path to the loose GTS tilesheet definition.</param>
+    /// <returns><see langword="true"/> if the source reference changed; otherwise, <see langword="false"/>.</returns>
     public bool SetLooseTilesheetSource(
         string tilesheet,
         string gtsPath)
@@ -109,6 +147,11 @@ public sealed class AnimationDocument
         return true;
     }
 
+    /// <summary>
+    /// Removes the named tilesheet source from the document.
+    /// </summary>
+    /// <param name="tilesheet">The tilesheet.</param>
+    /// <returns><see langword="true"/> if the entry was found and removed; otherwise, <see langword="false"/>.</returns>
     public bool RemoveTilesheetSource(string tilesheet)
     {
         int removed = Definition.TilesheetSources.RemoveAll(source =>
@@ -124,6 +167,11 @@ public sealed class AnimationDocument
         return true;
     }
 
+    /// <summary>
+    /// Resolves a document-relative resource path to an absolute path.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <returns>The absolute path of the referenced resource.</returns>
     public string ResolveReferencePath(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -134,6 +182,11 @@ public sealed class AnimationDocument
             : Path.GetFullPath(path, BaseDirectory);
     }
 
+    /// <summary>
+    /// Saves the current content to the destination file.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <param name="allowInvalid">Whether to save even when validation reports errors.</param>
     public void Save(string path, bool allowInvalid = false)
     {
         if (string.IsNullOrWhiteSpace(path))

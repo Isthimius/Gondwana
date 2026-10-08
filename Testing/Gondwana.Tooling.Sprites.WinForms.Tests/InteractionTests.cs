@@ -10,8 +10,14 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Sprites.WinForms.Tests;
 
+/// <summary>
+/// Contains regression tests for interaction.
+/// </summary>
 public sealed class InteractionTests
 {
+    /// <summary>
+    /// Verifies source trees assign selected entry and preview responds to properties.
+    /// </summary>
     [Fact]
     public void SourceTreesAssignSelectedEntryAndPreviewRespondsToProperties() => Sta(directory =>
     {
@@ -88,6 +94,9 @@ public sealed class InteractionTests
         Assert.Empty(editor.UpdateValidation());
     });
 
+    /// <summary>
+    /// Verifies collection editing save as and preview do not pollute runtime.
+    /// </summary>
     [Fact]
     public void CollectionEditingSaveAsAndPreviewDoNotPolluteRuntime() => Sta(directory =>
     {
@@ -128,6 +137,9 @@ public sealed class InteractionTests
         Assert.Equal(sheets, TilesheetRegistry.Instance.GetAll());
     });
 
+    /// <summary>
+    /// Verifies dock persistence recovery isolation and disposal.
+    /// </summary>
     [Fact]
     public void DockPersistenceRecoveryIsolationAndDisposal() => Sta(directory =>
     {

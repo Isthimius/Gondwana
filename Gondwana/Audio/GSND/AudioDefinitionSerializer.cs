@@ -16,6 +16,11 @@ public static class AudioDefinitionSerializer
         MissingMemberHandling = MissingMemberHandling.Ignore
     };
 
+    /// <summary>
+    /// Loads an audio definition from a loose definition file.
+    /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <returns>The resulting audio definition.</returns>
     public static AudioDefinition Load(string filePath)
     {
         if (string.IsNullOrWhiteSpace(filePath))
@@ -38,6 +43,11 @@ public static class AudioDefinitionSerializer
         }
     }
 
+    /// <summary>
+    /// Loads an audio definition from a readable stream.
+    /// </summary>
+    /// <param name="stream">The stream supplying the serialized content. The stream remains open.</param>
+    /// <returns>The resulting audio definition.</returns>
     public static AudioDefinition Load(Stream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
@@ -48,6 +58,12 @@ public static class AudioDefinitionSerializer
         return FromJson(reader.ReadToEnd());
     }
 
+    /// <summary>
+    /// Loads an audio definition from an assets-file entry.
+    /// </summary>
+    /// <param name="assetsFile">The assets file containing the requested entry.</param>
+    /// <param name="entryName">The entry name inside the assets file.</param>
+    /// <returns>The resulting audio definition.</returns>
     public static AudioDefinition Load(AssetsFile assetsFile, string entryName)
     {
         ArgumentNullException.ThrowIfNull(assetsFile);
@@ -69,6 +85,11 @@ public static class AudioDefinitionSerializer
         return definition;
     }
 
+    /// <summary>
+    /// Saves the supplied definition or runtime content to a definition file.
+    /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <param name="definition">The persisted definition to process.</param>
     public static void Save(string filePath, AudioDefinition definition)
     {
         if (string.IsNullOrWhiteSpace(filePath))
@@ -88,21 +109,43 @@ public static class AudioDefinitionSerializer
         File.WriteAllText(fullPath, ToJson(clone));
     }
 
+    /// <summary>
+    /// Saves the supplied definition or runtime content to a definition file.
+    /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <param name="manager">The manager.</param>
     public static void Save(string filePath, AudioResourceManager manager)
     {
         ArgumentNullException.ThrowIfNull(manager);
         Save(filePath, FromManager(manager));
     }
 
+    /// <summary>
+    /// Serializes the supplied content as JSON.
+    /// </summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <returns>The serialized JSON text.</returns>
     public static string ToJson(AudioDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);
         return JsonConvert.SerializeObject(definition, Settings);
     }
 
+    /// <summary>
+    /// Deserializes a definition from JSON.
+    /// </summary>
+    /// <param name="json">The JSON text to deserialize.</param>
+    /// <returns>The deserialized definition.</returns>
     public static AudioDefinition FromJson(string json) =>
         FromJson(json, sourceDescription: null);
 
+    /// <summary>
+    /// Captures the registered audio resources as a persistable audio definition.
+    /// </summary>
+    /// <param name="manager">The manager.</param>
+    /// <param name="baseDirectory">The base directory used to resolve or rebase relative paths.</param>
+    /// <param name="makePathsRelative">Whether to store resource paths relative to the base directory.</param>
+    /// <returns>The resulting audio definition.</returns>
     public static AudioDefinition FromManager(
         AudioResourceManager manager,
         string? baseDirectory = null,
@@ -125,6 +168,11 @@ public static class AudioDefinitionSerializer
         return definition;
     }
 
+    /// <summary>
+    /// Captures an audio resource and its source as a persistable definition.
+    /// </summary>
+    /// <param name="resource">The resource.</param>
+    /// <returns>The resulting audio resource definition.</returns>
     public static AudioResourceDefinition FromResource(AudioResource resource)
     {
         ArgumentNullException.ThrowIfNull(resource);
@@ -164,6 +212,13 @@ public static class AudioDefinitionSerializer
         return definition;
     }
 
+    /// <summary>
+    /// Loads the audio definition into the shared audio resource manager.
+    /// </summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <param name="overwriteExisting">Whether to replace resources already registered under the same keys.</param>
+    /// <param name="baseDirectory">The base directory used to resolve or rebase relative paths.</param>
+    /// <returns>The audio resources loaded or reused by the definition.</returns>
     public static IReadOnlyList<AudioResource> LoadIntoManager(
         AudioDefinition definition,
         bool overwriteExisting = true,
@@ -235,6 +290,12 @@ public static class AudioDefinitionSerializer
         return loaded;
     }
 
+    /// <summary>
+    /// Loads the audio definition into the shared audio resource manager.
+    /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <param name="overwriteExisting">Whether to replace resources already registered under the same keys.</param>
+    /// <returns>The audio resources loaded or reused by the definition.</returns>
     public static IReadOnlyList<AudioResource> LoadIntoManager(
         string filePath,
         bool overwriteExisting = true) =>

@@ -28,12 +28,33 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
 
     #region fields
 
+    /// <summary>
+    /// The z order.
+    /// </summary>
     protected internal int zOrder = 0;
+    /// <summary>
+    /// The visible.
+    /// </summary>
     protected internal bool visible;
+    /// <summary>
+    /// The frame.
+    /// </summary>
     protected internal Frame frame;
+    /// <summary>
+    /// The enable fog.
+    /// </summary>
     protected internal bool enableFog = false;
+    /// <summary>
+    /// The animator.
+    /// </summary>
     protected internal Animator? animator;
+    /// <summary>
+    /// The pause animation.
+    /// </summary>
     protected bool pauseAnimation;
+    /// <summary>
+    /// The collider.
+    /// </summary>
     protected ICollider? _collider;
 
     private CollisionAdjust _adjustCollisionArea = CollisionAdjust.None;
@@ -52,21 +73,42 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
 
     #region abstract properties
 
+    /// <summary>
+    /// Gets whether the tile occupies a fixed position in its layer.
+    /// </summary>
     public abstract bool IsPositionFixed { get; }
+    /// <summary>
+    /// Gets the tile drawing bounds in world pixels.
+    /// </summary>
     public abstract Rectangle DrawLocationWorld { get; }
+    /// <summary>
+    /// Gets the position in scene-layer grid coordinates.
+    /// </summary>
     public abstract PointF SceneLayerCoordinates { get; }
+    /// <summary>
+    /// Gets the scene layer that owns this tile.
+    /// </summary>
     public abstract SceneLayer SceneLayer { get; }
 
     #endregion abstract properties
 
     #region IDrawable members
 
+    /// <summary>
+    /// Gets the unique identifier.
+    /// </summary>
     [JsonProperty]
     public Guid Id { get; internal set; } = Guid.NewGuid();
 
+    /// <summary>
+    /// Gets or sets the optional lookup name.
+    /// </summary>
     [JsonProperty]
     public string? Nickname { get; set; }
 
+    /// <summary>
+    /// Gets or sets whether this drawable is visible.
+    /// </summary>
     [JsonProperty]
     public virtual bool Visible
     {
@@ -78,6 +120,9 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
         }
     }
 
+    /// <summary>
+    /// Gets or sets the drawing order within the layer.
+    /// </summary>
     [JsonProperty]
     public virtual int ZOrder
     {
@@ -89,17 +134,35 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
         }
     }
 
+    /// <summary>
+    /// Transforms the drawable bounds into screen pixels for the specified view.
+    /// </summary>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <returns>The bounds in screen pixels for the supplied view.</returns>
     public virtual RectangleF GetDrawLocationScreen(View view) =>
         view.WorldRectToScreenRect(SceneLayer, DrawLocationWorld);
 
+    /// <summary>
+    /// Transforms the collision bounds into screen pixels for the specified view.
+    /// </summary>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <returns>The bounds in screen pixels for the supplied view.</returns>
     public virtual RectangleF GetCollisionAreaScreen(View view) =>
         view.WorldRectToScreenRect(SceneLayer, CollisionArea);
 
+    /// <summary>
+    /// Draws the current content into the backbuffer at the supplied screen-pixel bounds.
+    /// </summary>
+    /// <param name="backbuffer">The backbuffer receiving the drawing commands.</param>
+    /// <param name="destRectScreen">The destination rectangle in screen pixels.</param>
     public virtual void Draw(BackbufferBase backbuffer, RectangleF destRectScreen) =>
         backbuffer.DrawTileFrame(this, destRectScreen);
 
     #endregion IDrawable members
 
+    /// <summary>
+    /// Gets the current frame's visual overhang beyond its tile bounds.
+    /// </summary>
     [JsonIgnore]
     public virtual Spacing Overhang => frame.Overhang;
 
@@ -147,12 +210,21 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
         }
     }
 
+    /// <summary>
+    /// Gets the animator associated with this tile.
+    /// </summary>
     [JsonIgnore]
     public virtual Animator TileAnimator => animator!;
 
+    /// <summary>
+    /// Gets or sets whether animation is paused.
+    /// </summary>
     [JsonIgnore]
     public virtual bool PauseAnimation { get; set; }
 
+    /// <summary>
+    /// Gets the collision shape associated with this tile.
+    /// </summary>
     [JsonIgnore]
     public virtual ICollider? Collider => _collider;
 
@@ -163,6 +235,9 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
     public virtual Rectangle CollisionArea =>
         AdjustCollisionArea.ApplyTo(DrawLocationWorld);
 
+    /// <summary>
+    /// Gets or sets whether scene-layer fog applies to this tile.
+    /// </summary>
     [JsonProperty]
     public virtual bool EnableFog
     {
@@ -174,6 +249,9 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
         }
     }
 
+    /// <summary>
+    /// Gets the tile outline vertices in world pixels.
+    /// </summary>
     [JsonIgnore]
     public virtual Point[] OutlinePointsWorld =>
         SceneLayer.CoordinateSystem.GetPolygonPts(this, false);
@@ -255,6 +333,9 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
         private set => _collisionProfileName = value;
     }
 
+    /// <summary>
+    /// Gets or sets whether this tile participates in collision detection.
+    /// </summary>
     [JsonProperty]
     public bool CollisionsEnabled
     {
@@ -280,6 +361,9 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
         }
     }
 
+    /// <summary>
+    /// Gets the custom typed values associated with this object.
+    /// </summary>
     [JsonIgnore]
     public TypedValueBag ValueBag { get; } = new();
 
@@ -288,6 +372,7 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
     /// yet been attached to a scene, the name is retained and resolved later when
     /// the collider is attached or the profile is reapplied.
     /// </summary>
+    /// <param name="profileName">The name of the scene collision profile.</param>
     public void SetCollisionProfile(string profileName)
     {
         if (string.IsNullOrWhiteSpace(profileName))
@@ -314,6 +399,7 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
     /// <summary>
     /// Copies collision behavior, profile, and effective frame metadata from another tile.
     /// </summary>
+    /// <param name="source">The source.</param>
     protected void CopyCollisionSettingsFrom(Tile source)
     {
         ArgumentNullException.ThrowIfNull(source);
@@ -414,6 +500,7 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
     /// Attaches this tile's collider and applies any collision state that was set
     /// before the collider became available.
     /// </summary>
+    /// <param name="collider">The collider.</param>
     protected void AttachCollider(ICollider collider)
     {
         ArgumentNullException.ThrowIfNull(collider);
@@ -441,6 +528,11 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
 
     #region IComparable<Tile> Members
 
+    /// <summary>
+    /// Compares this tile with another tile using their render ordering.
+    /// </summary>
+    /// <param name="tile">The tile.</param>
+    /// <returns>A negative value, zero, or a positive value when this tile sorts before, with, or after the other tile. A null tile sorts after this instance.</returns>
     public int CompareTo(Tile? tile)
     {
         if (tile is null)
@@ -505,6 +597,9 @@ public abstract class Tile : IDrawable, ICollisionEntity, IComparable<Tile>, IDi
 
     #region IDisposable Members
 
+    /// <summary>
+    /// Releases the resources owned by this instance.
+    /// </summary>
     public virtual void Dispose()
     {
         if (TilesAnimating.IndexOf(this) != -1)

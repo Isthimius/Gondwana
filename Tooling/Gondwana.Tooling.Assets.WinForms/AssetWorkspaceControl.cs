@@ -6,6 +6,9 @@ namespace Gondwana.Tooling.Assets.WinForms;
 /// </summary>
 public sealed class AssetWorkspaceControl : UserControl
 {
+    /// <summary>
+    /// The asset file filter.
+    /// </summary>
     public const string AssetFileFilter =
         "Asset Files (*.gaf;*.zip)|*.gaf;*.zip|All Files (*.*)|*.*";
 
@@ -22,10 +25,20 @@ public sealed class AssetWorkspaceControl : UserControl
         ShowNodeToolTips = true
     };
 
+    /// <summary>
+    /// Gets the working directory.
+    /// </summary>
     public string WorkingDirectory { get; private set; }
 
+    /// <summary>
+    /// Occurs when open asset file requested.
+    /// </summary>
     public event Action<string>? OpenAssetFileRequested;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>AssetWorkspaceControl</c> class.
+    /// </summary>
+    /// <param name="initialDirectory">The initial directory shown by the picker or workspace.</param>
     public AssetWorkspaceControl(string? initialDirectory = null)
     {
         WorkingDirectory = Path.GetFullPath(
@@ -98,6 +111,10 @@ public sealed class AssetWorkspaceControl : UserControl
         RefreshDirectory();
     }
 
+    /// <summary>
+    /// Displays a folder picker and updates the working directory.
+    /// </summary>
+    /// <param name="owner">The window that owns the dialog.</param>
     public void ChooseDirectory(IWin32Window? owner = null)
     {
         using var dialog = new FolderBrowserDialog
@@ -113,6 +130,10 @@ public sealed class AssetWorkspaceControl : UserControl
         SetWorkingDirectory(dialog.SelectedPath);
     }
 
+    /// <summary>
+    /// Sets working directory.
+    /// </summary>
+    /// <param name="path">The path.</param>
     public void SetWorkingDirectory(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -124,6 +145,9 @@ public sealed class AssetWorkspaceControl : UserControl
         RefreshDirectory();
     }
 
+    /// <summary>
+    /// Refreshes the displayed contents of the working directory.
+    /// </summary>
     public void RefreshDirectory()
     {
         _tree.BeginUpdate();

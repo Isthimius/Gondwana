@@ -407,6 +407,8 @@ public sealed class ImageInstanceLayer : DirectDrawingMovableBase
     /// <summary>
     /// Renders all image instances to the backbuffer.
     /// </summary>
+    /// <param name="backbuffer">The backbuffer receiving the drawing commands.</param>
+    /// <param name="destRectScreen">The destination rectangle in screen pixels.</param>
     protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
         var canvas = backbuffer.Canvas;
@@ -458,6 +460,7 @@ public sealed class ImageInstanceLayer : DirectDrawingMovableBase
     /// <summary>
     /// Disposes managed resources.
     /// </summary>
+    /// <param name="disposing">Whether managed resources should also be released.</param>
     protected override void Dispose(bool disposing)
     {
         if (disposing)

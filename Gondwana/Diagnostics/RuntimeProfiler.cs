@@ -254,6 +254,9 @@ public sealed class RuntimeProfiler : IDisposable
     private sealed class Request(RuntimeProfiler owner) : IDisposable
     {
         private RuntimeProfiler? _owner = owner;
+        /// <summary>
+        /// Releases the resources owned by this instance.
+        /// </summary>
         public void Dispose() => Interlocked.Exchange(ref _owner, null)?.Stop();
     }
 

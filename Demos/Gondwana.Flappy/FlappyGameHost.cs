@@ -58,6 +58,7 @@ internal sealed class FlappyGameHost : WinFormsGameHost
     {
     }
 
+    /// <inheritdoc/>
     protected override void LoadTilesheets()
     {
         _tilesheet = Engine.Managers.Tilesheets.LoadFromBitmap(
@@ -69,6 +70,7 @@ internal sealed class FlappyGameHost : WinFormsGameHost
             FlappyArt.FrameSize);
     }
 
+    /// <inheritdoc/>
     protected override Scene CreateInitialScene()
     {
         var scene = new Scene();
@@ -95,6 +97,7 @@ internal sealed class FlappyGameHost : WinFormsGameHost
         return scene;
     }
 
+    /// <inheritdoc/>
     protected override void OnSceneBound()
     {
         RenderSurface.Host.Backbuffer.ClearColor = new SKColor(105, 197, 226);
@@ -104,6 +107,7 @@ internal sealed class FlappyGameHost : WinFormsGameHost
         view.Camera.SnapTo(PointF.Empty);
     }
 
+    /// <inheritdoc/>
     protected override void CreateSprites()
     {
         _bird = Engine.Managers.Sprites.CreateSprite(
@@ -133,6 +137,7 @@ internal sealed class FlappyGameHost : WinFormsGameHost
         ResetWorld();
     }
 
+    /// <inheritdoc/>
     protected override void CreateDirectDrawings()
     {
         var view = RenderSurface.Host.ViewManager.Views[0];
@@ -170,6 +175,7 @@ internal sealed class FlappyGameHost : WinFormsGameHost
         RefreshHud();
     }
 
+    /// <inheritdoc/>
     protected override void OnKeyboardAdapterInitialized()
     {
         var keyboard = Engine.Input.KeyboardEventPoller!;
@@ -178,6 +184,7 @@ internal sealed class FlappyGameHost : WinFormsGameHost
         keyboard.StartMonitoringKey((int)Keys.R, Keys.R.ToString());
     }
 
+    /// <inheritdoc/>
     protected override void OnEngineInitialized()
     {
         Engine.Configuration.TargetFPS = 60;
@@ -186,6 +193,7 @@ internal sealed class FlappyGameHost : WinFormsGameHost
         Engine.AfterBackgroundTasksExecute += AfterBackgroundTasksExecute;
     }
 
+    /// <inheritdoc/>
     protected override void UnhookEvents()
     {
         if (Engine.Input.KeyboardEventPoller is not null)
@@ -451,8 +459,17 @@ internal sealed class FlappyGameHost : WinFormsGameHost
 
     private enum GameState
     {
+        /// <summary>
+        /// Specifies ready.
+        /// </summary>
         Ready,
+        /// <summary>
+        /// Specifies playing.
+        /// </summary>
         Playing,
+        /// <summary>
+        /// Specifies game over.
+        /// </summary>
         GameOver
     }
 }

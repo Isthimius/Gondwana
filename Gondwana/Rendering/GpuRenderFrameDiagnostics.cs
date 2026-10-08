@@ -3,6 +3,16 @@ namespace Gondwana.Rendering;
 /// <summary>
 /// Captures the measured work performed for one scene layer during a full-frame GPU render.
 /// </summary>
+/// <param name="LayerIndex">The layer index.</param>
+/// <param name="LayerId">The layer id.</param>
+/// <param name="ZOrder">The drawing order relative to other content.</param>
+/// <param name="DrawableCount">The drawable count.</param>
+/// <param name="TileCount">The tile count.</param>
+/// <param name="TransformedTileCount">The transformed tile count.</param>
+/// <param name="TileWidth">The tile width.</param>
+/// <param name="TileHeight">The tile height.</param>
+/// <param name="QueryAndSortMilliseconds">The query and sort milliseconds.</param>
+/// <param name="DrawMilliseconds">The draw milliseconds.</param>
 public sealed record GpuLayerRenderDiagnostics(
     int LayerIndex,
     string LayerId,
@@ -18,6 +28,13 @@ public sealed record GpuLayerRenderDiagnostics(
 /// <summary>
 /// Captures measured scene-render work for one full-frame GPU render.
 /// </summary>
+/// <param name="TotalRenderMilliseconds">The total render milliseconds.</param>
+/// <param name="QueryAndSortMilliseconds">The query and sort milliseconds.</param>
+/// <param name="DrawMilliseconds">The draw milliseconds.</param>
+/// <param name="OverlayMilliseconds">The overlay milliseconds.</param>
+/// <param name="DrawableCount">The drawable count.</param>
+/// <param name="TileCount">The tile count.</param>
+/// <param name="Layers">The layers.</param>
 public sealed record GpuRenderFrameDiagnostics(
     double TotalRenderMilliseconds,
     double QueryAndSortMilliseconds,
@@ -44,6 +61,8 @@ public sealed record GpuRenderFrameDiagnostics(
 /// <summary>
 /// Captures time spent waiting for and holding the shared live render-state synchronization gate.
 /// </summary>
+/// <param name="LockWaitMilliseconds">The lock wait milliseconds.</param>
+/// <param name="LockHeldMilliseconds">The lock held milliseconds.</param>
 public sealed record GpuRenderSynchronizationDiagnostics(
     double LockWaitMilliseconds,
     double LockHeldMilliseconds)

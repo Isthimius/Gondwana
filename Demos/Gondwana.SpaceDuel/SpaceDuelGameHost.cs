@@ -79,6 +79,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
         UpdateHud(force: true);
     }
 
+    /// <inheritdoc/>
     protected override void LoadTilesheets()
     {
         _shipTilesheet = Engine.Managers.Tilesheets.LoadFromBitmap(
@@ -98,6 +99,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
             SpaceDuelArt.EffectsFrameSize);
     }
 
+    /// <inheritdoc/>
     protected override Scene CreateInitialScene()
     {
         var scene = new Scene();
@@ -121,6 +123,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
         return scene;
     }
 
+    /// <inheritdoc/>
     protected override void OnSceneBound()
     {
         RenderSurface.Host.Backbuffer.ClearColor = new SKColor(2, 7, 19);
@@ -130,6 +133,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
         view.Camera.SnapTo(PointF.Empty);
     }
 
+    /// <inheritdoc/>
     protected override void CreateSprites()
     {
         _player = CreateShip(
@@ -171,6 +175,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
             .FollowCentered(_player.Sprite, speed: 8f);
     }
 
+    /// <inheritdoc/>
     protected override void CreateDirectDrawings()
     {
         foreach (ShipState ship in _ships)
@@ -314,6 +319,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
 
     private static string FormatRate(double? rate) => rate?.ToString("0.0") ?? "n/a";
 
+    /// <inheritdoc/>
     protected override void OnKeyboardAdapterInitialized()
     {
         var keyboard = Engine.Input.KeyboardEventPoller!;
@@ -323,6 +329,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
             keyboard.StartMonitoringKey((int)key, key.ToString());
     }
 
+    /// <inheritdoc/>
     protected override void OnEngineInitialized()
     {
         _lastUpdateTick = HighResTimer.GetCurrentTick();
@@ -331,6 +338,7 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
         Engine.AfterBackgroundTasksExecute += AfterBackgroundTasksExecute;
     }
 
+    /// <inheritdoc/>
     protected override void UnhookEvents()
     {
         if (Engine.Input.KeyboardEventPoller is not null)
@@ -953,9 +961,21 @@ internal sealed class SpaceDuelGameHost : WinFormsGpuGameHost
 
     private enum GameState
     {
+        /// <summary>
+        /// Specifies starting.
+        /// </summary>
         Starting,
+        /// <summary>
+        /// Specifies playing.
+        /// </summary>
         Playing,
+        /// <summary>
+        /// Specifies won.
+        /// </summary>
         Won,
+        /// <summary>
+        /// Specifies lost.
+        /// </summary>
         Lost
     }
 }

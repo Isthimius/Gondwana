@@ -91,6 +91,9 @@ public sealed class FontManager : IDisposable
     /// Loads a font from an embedded resource in the calling assembly and stores it under the given key.
     /// If the key already exists, the old font is disposed and replaced.
     /// </summary>
+    /// <param name="key">The lookup key for the resource.</param>
+    /// <param name="resourceName">The resource name.</param>
+    /// <returns>The resulting sk typeface.</returns>
     public SKTypeface LoadFromResource(string key, string resourceName)
     {
         return LoadFromResource(key, Assembly.GetCallingAssembly(), resourceName);
@@ -118,6 +121,9 @@ public sealed class FontManager : IDisposable
     /// <summary>
     /// Tries to get a font by key.
     /// </summary>
+    /// <param name="key">The lookup key for the resource.</param>
+    /// <param name="typeface">The typeface used to render text.</param>
+    /// <returns><see langword="true"/> if the player was found; otherwise, <see langword="false"/>.</returns>
     public bool TryGet(string key, out SKTypeface? typeface)
     {
         ThrowIfDisposed();
@@ -154,6 +160,8 @@ public sealed class FontManager : IDisposable
     /// <summary>
     /// Returns true if a font exists for the given key.
     /// </summary>
+    /// <param name="key">The lookup key for the resource.</param>
+    /// <returns><see langword="true"/> if a player is registered for the key; otherwise, <see langword="false"/>.</returns>
     public bool Contains(string key)
     {
         ThrowIfDisposed();

@@ -91,6 +91,7 @@ public sealed class Viewport
     /// <summary>
     /// Instantly sets the zoom level, raising the ZoomChanged event.
     /// </summary>
+    /// <param name="zoom">The zoom factor.</param>
     public void SnapZoom(float zoom)
     {
         _zoomTarget = null;
@@ -106,6 +107,8 @@ public sealed class Viewport
     /// Smoothly animates the zoom toward a target level using an exponential
     /// lerp rate in "per second" units. Values &lt;= 0 snap immediately.
     /// </summary>
+    /// <param name="targetZoom">The zoom factor to reach at the end of the effect.</param>
+    /// <param name="lerpPerSecond">The lerp per second.</param>
     public void ZoomTo(float targetZoom, float lerpPerSecond)
     {
         if (lerpPerSecond <= 0f)
@@ -125,6 +128,8 @@ public sealed class Viewport
     /// Smoothly animates the zoom using exponential easing and snaps exactly to
     /// the target when the requested duration has elapsed. Values &lt;= 0 snap.
     /// </summary>
+    /// <param name="targetZoom">The zoom factor to reach at the end of the effect.</param>
+    /// <param name="durationSeconds">The duration in seconds.</param>
     public void ZoomToOverDuration(float targetZoom, float durationSeconds)
     {
         if (durationSeconds <= 0f)
@@ -147,6 +152,7 @@ public sealed class Viewport
     /// Updates any in-progress zoom animation. Should be called once per frame
     /// with the elapsed time in seconds.
     /// </summary>
+    /// <param name="dtSeconds">The elapsed update time in seconds.</param>
     internal void UpdateZoom(float dtSeconds)
     {
         if (_zoomTarget is null)

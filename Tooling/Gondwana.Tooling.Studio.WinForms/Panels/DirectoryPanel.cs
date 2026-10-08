@@ -14,10 +14,23 @@ public sealed class DirectoryPanel : UserControl
         BackColor = Color.FromArgb(30, 30, 30),
         ForeColor = Color.Gainsboro
     };
+    /// <summary>
+    /// Gets the working directory.
+    /// </summary>
     public string WorkingDirectory { get; private set; } = Environment.CurrentDirectory;
+    /// <summary>
+    /// Occurs when file activated.
+    /// </summary>
     public event Action<string>? FileActivated;
+    /// <summary>
+    /// Occurs when choose directory requested.
+    /// </summary>
     public event Action? ChooseDirectoryRequested;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>DirectoryPanel</c> class.
+    /// </summary>
+    /// <param name="log">The log.</param>
     public DirectoryPanel(Action<string> log)
     {
         _log = log;
@@ -39,12 +52,19 @@ public sealed class DirectoryPanel : UserControl
         };
     }
 
+    /// <summary>
+    /// Sets directory.
+    /// </summary>
+    /// <param name="path">The path.</param>
     public void SetDirectory(string path)
     {
         WorkingDirectory = Path.GetFullPath(path);
         RefreshDirectory();
     }
 
+    /// <summary>
+    /// Refreshes the displayed contents of the working directory.
+    /// </summary>
     public void RefreshDirectory()
     {
         Tree.BeginUpdate();

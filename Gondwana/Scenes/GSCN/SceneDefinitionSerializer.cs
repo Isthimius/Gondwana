@@ -22,6 +22,8 @@ public static class SceneDefinitionSerializer
     /// <summary>
     /// Loads a loose GSCN definition file.
     /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <returns>The resulting scene definition.</returns>
     public static SceneDefinition Load(string filePath)
     {
         if (string.IsNullOrWhiteSpace(filePath))
@@ -47,6 +49,8 @@ public static class SceneDefinitionSerializer
     /// <summary>
     /// Loads a GSCN definition from a readable stream.
     /// </summary>
+    /// <param name="stream">The stream supplying the serialized content. The stream remains open.</param>
+    /// <returns>The resulting scene definition.</returns>
     public static SceneDefinition Load(Stream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
@@ -61,6 +65,9 @@ public static class SceneDefinitionSerializer
     /// <summary>
     /// Loads a GSCN definition stored in an assets file.
     /// </summary>
+    /// <param name="assetsFile">The assets file containing the requested entry.</param>
+    /// <param name="entryName">The entry name inside the assets file.</param>
+    /// <returns>The resulting scene definition.</returns>
     public static SceneDefinition Load(AssetsFile assetsFile, string entryName)
     {
         ArgumentNullException.ThrowIfNull(assetsFile);
@@ -87,6 +94,8 @@ public static class SceneDefinitionSerializer
     /// <summary>
     /// Saves a GSCN definition to a file.
     /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <param name="definition">The persisted definition to process.</param>
     public static void Save(string filePath, SceneDefinition definition)
     {
         if (string.IsNullOrWhiteSpace(filePath))
@@ -106,6 +115,8 @@ public static class SceneDefinitionSerializer
     /// <summary>
     /// Converts and saves a runtime scene as a GSCN file.
     /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <param name="scene">The scene.</param>
     public static void Save(string filePath, Scene scene)
     {
         ArgumentNullException.ThrowIfNull(scene);
@@ -115,12 +126,16 @@ public static class SceneDefinitionSerializer
     /// <summary>
     /// Deserializes a GSCN definition from JSON.
     /// </summary>
+    /// <param name="json">The JSON text to deserialize.</param>
+    /// <returns>The deserialized definition.</returns>
     public static SceneDefinition FromJson(string json) =>
         FromJson(json, sourceDescription: null);
 
     /// <summary>
     /// Serializes a GSCN definition to JSON.
     /// </summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <returns>The serialized JSON text.</returns>
     public static string ToJson(SceneDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);
@@ -130,6 +145,8 @@ public static class SceneDefinitionSerializer
     /// <summary>
     /// Converts a runtime scene to the clean GSCN definition model.
     /// </summary>
+    /// <param name="scene">The scene.</param>
+    /// <returns>The resulting scene definition.</returns>
     public static SceneDefinition FromScene(Scene scene)
     {
         ArgumentNullException.ThrowIfNull(scene);
@@ -163,6 +180,8 @@ public static class SceneDefinitionSerializer
     /// <summary>
     /// Serializes a runtime scene directly to GSCN JSON.
     /// </summary>
+    /// <param name="scene">The scene.</param>
+    /// <returns>The serialized JSON text.</returns>
     public static string ToJson(Scene scene) => ToJson(FromScene(scene));
 
     /// <summary>
@@ -170,6 +189,8 @@ public static class SceneDefinitionSerializer
     /// Referenced tilesheets must already be registered in <see cref="TilesheetRegistry"/>,
     /// and referenced animation keys must already exist in the GANI/cycle registry.
     /// </summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <returns>The resulting scene.</returns>
     public static Scene ToScene(SceneDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);
@@ -219,11 +240,16 @@ public static class SceneDefinitionSerializer
     /// <summary>
     /// Loads a loose GSCN file and materializes a runtime scene.
     /// </summary>
+    /// <param name="filePath">The path of the definition file.</param>
+    /// <returns>The resulting scene.</returns>
     public static Scene LoadScene(string filePath) => ToScene(Load(filePath));
 
     /// <summary>
     /// Loads a packed GSCN definition and materializes a runtime scene.
     /// </summary>
+    /// <param name="assetsFile">The assets file containing the requested entry.</param>
+    /// <param name="entryName">The entry name inside the assets file.</param>
+    /// <returns>The resulting scene.</returns>
     public static Scene LoadScene(AssetsFile assetsFile, string entryName) =>
         ToScene(Load(assetsFile, entryName));
 

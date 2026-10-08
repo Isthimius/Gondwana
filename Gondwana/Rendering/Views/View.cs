@@ -138,6 +138,7 @@ public sealed class View
     /// <summary>
     /// Advances camera and zoom state for this view.
     /// </summary>
+    /// <param name="dtSeconds">The elapsed update time in seconds.</param>
     internal void Update(float dtSeconds)
     {
         if (_zoomAnchorLayer is { } anchorLayer)
@@ -364,6 +365,9 @@ public sealed class View
     /// Inverse of:
     ///     screen = offset + (world - camera * p) * zoom
     /// </summary>
+    /// <param name="layer">The layer.</param>
+    /// <param name="screenRect">The rectangle in logical backbuffer screen pixels.</param>
+    /// <returns>The rectangle in the specified layer's world-pixel coordinate space.</returns>
     public RectangleF ScreenRectToWorldRect(SceneLayer layer, RectangleF screenRect)
     {
         if (layer is null)

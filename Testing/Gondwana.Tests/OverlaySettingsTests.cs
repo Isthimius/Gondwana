@@ -3,13 +3,23 @@ using Gondwana.Tooling.Tilesheets.Editing;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for overlay settings.
+/// </summary>
 public sealed class OverlaySettingsTests : IDisposable
 {
     private readonly string _directory = Path.Combine(Path.GetTempPath(), "OverlaySettings_" + Guid.NewGuid().ToString("N"));
     private string SettingsPath => Path.Combine(_directory, "tool.settings.json");
+    /// <summary>
+    /// Initializes a new instance of the <c>OverlaySettingsTests</c> class.
+    /// </summary>
     public OverlaySettingsTests() => Directory.CreateDirectory(_directory);
+    /// <inheritdoc/>
     public void Dispose() => Directory.Delete(_directory, true);
 
+    /// <summary>
+    /// Verifies every color round trips through settings file.
+    /// </summary>
     [Fact]
     public void EveryColor_RoundTripsThroughSettingsFile()
     {
@@ -28,6 +38,10 @@ public sealed class OverlaySettingsTests : IDisposable
         Assert.Empty(Directory.GetFiles(_directory, "*.tmp"));
     }
 
+    /// <summary>
+    /// Verifies invalid file uses defaults and reports warning.
+    /// </summary>
+    /// <param name="json">The json value for this test case.</param>
     [Theory]
     [InlineData("not JSON")]
     [InlineData("null")]
@@ -41,6 +55,9 @@ public sealed class OverlaySettingsTests : IDisposable
         Assert.Equal(json, File.ReadAllText(SettingsPath));
     }
 
+    /// <summary>
+    /// Verifies invalid color does not discard other valid colors.
+    /// </summary>
     [Fact]
     public void InvalidColor_DoesNotDiscardOtherValidColors()
     {
@@ -51,6 +68,9 @@ public sealed class OverlaySettingsTests : IDisposable
         Assert.NotNull(settings.Warning);
     }
 
+    /// <summary>
+    /// Verifies failed save does not change current colors or notify documents.
+    /// </summary>
     [Fact]
     public void FailedSave_DoesNotChangeCurrentColorsOrNotifyDocuments()
     {

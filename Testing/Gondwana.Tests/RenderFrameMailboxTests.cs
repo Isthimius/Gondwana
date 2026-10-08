@@ -3,6 +3,9 @@ using SkiaSharp;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for render frame mailbox.
+/// </summary>
 public sealed class RenderFrameMailboxTests
 {
     private static RenderFrameSnapshot Frame(long sequence)
@@ -19,6 +22,9 @@ public sealed class RenderFrameMailboxTests
         return slot;
     }
 
+    /// <summary>
+    /// Verifies latest wins and recycles replaced frames.
+    /// </summary>
     [Fact]
     public void LatestWins_AndRecyclesReplacedFrames()
     {
@@ -33,6 +39,9 @@ public sealed class RenderFrameMailboxTests
         Assert.Equal(0, mailbox.Counters.InUse);
     }
 
+    /// <summary>
+    /// Verifies stalled consumer cannot be recycled storage remains bounded.
+    /// </summary>
     [Fact]
     public void StalledConsumerCannotBeRecycled_StorageRemainsBounded()
     {
@@ -56,6 +65,9 @@ public sealed class RenderFrameMailboxTests
         Assert.Equal(0, mailbox.Counters.InUse);
     }
 
+    /// <summary>
+    /// Verifies closing retains active consumer and rejects further production.
+    /// </summary>
     [Fact]
     public void ClosingRetainsActiveConsumer_AndRejectsFurtherProduction()
     {
@@ -77,6 +89,10 @@ public sealed class RenderFrameMailboxTests
         Assert.Equal(0, mailbox.Counters.InUse);
     }
 
+    /// <summary>
+    /// Verifies concurrent producer consumer observe complete monotonic frames.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task ConcurrentProducerConsumer_ObserveCompleteMonotonicFrames()
     {
@@ -123,6 +139,9 @@ public sealed class RenderFrameMailboxTests
         Assert.Equal(0, mailbox.Counters.InUse);
     }
 
+    /// <summary>
+    /// Verifies recording retains image and copies mutable paint and bitmap.
+    /// </summary>
     [Fact]
     public void RecordingRetainsImageAndCopiesMutablePaintAndBitmap()
     {

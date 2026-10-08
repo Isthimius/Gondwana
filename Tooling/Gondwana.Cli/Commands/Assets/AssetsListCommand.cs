@@ -7,21 +7,34 @@ namespace Gondwana.Cli.Commands.Assets;
 
 internal sealed class AssetsListCommand : Command<AssetsListCommand.Settings>
 {
+    /// <summary>
+    /// Defines command-line settings for AssetsListCommand.
+    /// </summary>
     public sealed class Settings : CommandSettings
     {
+        /// <summary>
+        /// Gets or sets the file.
+        /// </summary>
         [CommandArgument(0, "<file>")]
         [Description("The asset file to inspect.")]
         public string File { get; init; } = string.Empty;
 
+        /// <summary>
+        /// Gets or sets the type filter.
+        /// </summary>
         [CommandOption("-t|--type")]
         [Description("Filter by asset type (e.g. Image, Audio, Video, Font, Cursor, Svg, Misc).")]
         public string? TypeFilter { get; init; }
 
+        /// <summary>
+        /// Gets or sets the password used to open the assets file.
+        /// </summary>
         [CommandOption("-p|--password")]
         [Description("Password required to open a password-protected or encrypted bundle.")]
         public string? Password { get; init; }
     }
 
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken) => Display(settings, summary: false);
 
     internal static int Display(Settings settings, bool summary)

@@ -50,6 +50,9 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
 
     private sealed class BenchmarkFactAttribute : FactAttribute
     {
+        /// <summary>
+        /// Initializes a new instance of the <c>BenchmarkFactAttribute</c> class.
+        /// </summary>
         public BenchmarkFactAttribute()
         {
             if (Environment.GetEnvironmentVariable("GONDWANA_TELEMETRY_BENCH") != "1")
@@ -58,6 +61,7 @@ public sealed class RuntimeTelemetryOverheadTests(ITestOutputHelper output)
     }
 
     /// <summary>Measures native stress-scene work after warmup with collection disabled, collecting, or displayed.</summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [BenchmarkFact]
     public async Task MeasureNativeViewer()
     {

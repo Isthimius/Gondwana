@@ -14,8 +14,10 @@ public interface IMovable
     MovementSpace PositionSpace { get; }
 
     /// <summary>Get the current position in the mover's <see cref="PositionSpace"/>.</summary>
+    /// <returns>The sprite position in scene-layer grid coordinates.</returns>
     Vector2 GetPosition();
 
     /// <summary>Set the position in the mover's <see cref="PositionSpace"/>.</summary>
+    /// <param name="pos">The new position in scene-layer grid coordinates.</param>
     void SetPosition(Vector2 pos);
 }

@@ -9,6 +9,9 @@ namespace Gondwana.Tests;
 /// </summary>
 public sealed class SceneSerializationTests
 {
+    /// <summary>
+    /// Verifies scene graph serializes clean ownership shape and round trips.
+    /// </summary>
     [Fact]
     public void SceneGraph_SerializesCleanOwnershipShape_AndRoundTrips()
     {
@@ -46,6 +49,9 @@ public sealed class SceneSerializationTests
         Assert.False(restoredTile.Visible);
     }
 
+    /// <summary>
+    /// Verifies scene graph still reads legacy underscore layer collection name.
+    /// </summary>
     [Fact]
     public void SceneGraph_StillReadsLegacyUnderscoreLayerCollectionName()
     {

@@ -11,6 +11,7 @@ public sealed class BlazorExternalUriLauncher : IExternalUriLauncher
     private readonly IJSRuntime _jsRuntime;
 
     /// <summary>Creates a browser URI launcher backed by the supplied JavaScript runtime.</summary>
+    /// <param name="jsRuntime">The JavaScript runtime used for browser interop.</param>
     public BlazorExternalUriLauncher(IJSRuntime jsRuntime)
     {
         _jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));

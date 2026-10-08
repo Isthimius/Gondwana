@@ -5,9 +5,15 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for avalonia snapshot lifecycle.
+/// </summary>
 [Collection("Effects rendering")]
 public sealed class AvaloniaSnapshotLifecycleTests
 {
+    /// <summary>
+    /// Verifies context teardown preserves host and producer until permanent disposal.
+    /// </summary>
     [Fact]
     public void ContextTeardownPreservesHostAndProducer_UntilPermanentDisposal()
     {
@@ -31,6 +37,9 @@ public sealed class AvaloniaSnapshotLifecycleTests
         control.Deinitialize(); // permanent shutdown and deinit are order-independent
     }
 
+    /// <summary>
+    /// Verifies release context leaves no old surface but preserves logical configuration.
+    /// </summary>
     [Fact]
     public void ReleaseContextLeavesNoOldSurface_ButPreservesLogicalConfiguration()
     {

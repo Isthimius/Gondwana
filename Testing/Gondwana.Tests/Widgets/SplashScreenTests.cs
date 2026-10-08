@@ -5,8 +5,14 @@ using SkiaSharp;
 
 namespace Gondwana.Tests.Widgets;
 
+/// <summary>
+/// Contains regression tests for splash screen.
+/// </summary>
 public sealed class SplashScreenTests
 {
+    /// <summary>
+    /// Verifies viewport resize updates full screen image bounds.
+    /// </summary>
     [Fact]
     public void ViewportResize_UpdatesFullScreenImageBounds()
     {
@@ -33,6 +39,9 @@ public sealed class SplashScreenTests
         Assert.Equal(resizedBounds, splash.Image.ScreenBounds);
     }
 
+    /// <summary>
+    /// Verifies initial bounds use viewport origin.
+    /// </summary>
     [Fact]
     public void InitialBounds_UseViewportOrigin()
     {

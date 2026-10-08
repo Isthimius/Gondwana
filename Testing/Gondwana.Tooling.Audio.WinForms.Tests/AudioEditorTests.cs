@@ -5,8 +5,14 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Audio.WinForms.Tests;
 
+/// <summary>
+/// Contains regression tests for audio editor.
+/// </summary>
 public sealed class AudioEditorTests
 {
+    /// <summary>
+    /// Verifies document save as rebases loose audio references.
+    /// </summary>
     [Fact]
     public void DocumentSaveAsRebasesLooseAudioReferences()
     {
@@ -53,6 +59,9 @@ public sealed class AudioEditorTests
         }
     }
 
+    /// <summary>
+    /// Verifies editor uses local docking and adds loose files.
+    /// </summary>
     [Fact]
     public void EditorUsesLocalDockingAndAddsLooseFiles() => RunSta(() =>
     {

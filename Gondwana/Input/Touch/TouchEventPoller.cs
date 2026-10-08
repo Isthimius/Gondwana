@@ -256,7 +256,7 @@ public sealed class TouchEventPoller : ITouchInput, IDisposable
     /// <param name="timeBetweenEvents">
     /// The minimum time interval in seconds between consecutive touch movement events. Touch
     /// beginnings, endings, and cancellations are never throttled. Use the
-    /// default time between touch events from <see cref="Engine.Configuration.TimeBetweenTouchEvents"/>
+    /// default time between touch events from <see cref="Gondwana.Configuration.EngineConfiguration.TimeBetweenTouchEvents"/>
     /// when a value less than zero is supplied. A value of 0 means no throttling.
     /// </param>
     /// <param name="isPaused">

@@ -59,6 +59,7 @@ internal sealed class VideoWindow : Form
                 $"stretch={_host?.Video?.Stretch} drag={_host?.Video?.IsDragEnabled} error={player.LastError?.Message}";
         };
     }
+    /// <inheritdoc/>
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
@@ -66,6 +67,7 @@ internal sealed class VideoWindow : Form
         _host.Initialize();
         _statusTimer.Start();
     }
+    /// <inheritdoc/>
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
         _statusTimer.Dispose();
@@ -79,8 +81,11 @@ internal sealed class VideoHost(WinFormGpuRenderSurfaceControl surface, VideoSou
     internal VlcVideoPlayer? Player { get; private set; }
     internal VideoWidget? Video { get; private set; }
     private readonly List<WidgetBase> _controls = [];
+    /// <inheritdoc/>
     protected override Scene CreateInitialScene() => Scene.Empty;
+    /// <inheritdoc/>
     protected override void CreateInitialViews() => RenderSurface.Host.ViewManager.ConfigureSingleFullView();
+    /// <inheritdoc/>
     protected override void OnKeyboardAdapterInitialized()
     {
         // Monitoring is a host policy; VideoWidget assigns no keys or commands.
@@ -90,6 +95,7 @@ internal sealed class VideoHost(WinFormGpuRenderSurfaceControl surface, VideoSou
         foreach (var key in new[] { Keys.Space, Keys.Enter, Keys.Escape })
             keyboard.StartMonitoringKey((int)key);
     }
+    /// <inheritdoc/>
     protected override void CreateDirectDrawings()
     {
         var host = RenderSurface.Host;
@@ -142,6 +148,7 @@ internal sealed class VideoHost(WinFormGpuRenderSurfaceControl surface, VideoSou
         Add("Dispose", _ => DisposeVideo());
     }
     internal void DisposeVideo() { Video?.Dispose(); Video = null; Player = null; }
+    /// <inheritdoc/>
     protected override void OnDisposing()
     {
         foreach (var control in _controls) control.Dispose();

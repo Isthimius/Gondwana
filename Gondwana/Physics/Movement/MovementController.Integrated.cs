@@ -65,6 +65,7 @@ public sealed partial class MovementController
     /// <summary>
     /// handle physics-based (velocity/acceleration, damping) movement step over dt seconds
     /// </summary>
+    /// <param name="dt">The integrated movement step in seconds.</param>
     private void Step(float dt)
     {
         // integrate kinematics in the mover's own space
@@ -130,7 +131,7 @@ public sealed partial class MovementController
     /// <summary>
     /// Limits the current velocity to the maximum speed, if specified.
     /// </summary>
-    /// <remarks>If <see cref="MaxSpeed"/> is not set, the method does nothing. If the current velocity
+    /// <remarks>If <see cref="MovementState.MaxSpeed"/> is not set, the method does nothing. If the current velocity
     /// exceeds the  maximum speed, it is scaled down proportionally to ensure its magnitude does not exceed the
     /// maximum.</remarks>
     private void ClampVelocity()

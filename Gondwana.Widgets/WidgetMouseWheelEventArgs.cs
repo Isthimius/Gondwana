@@ -9,6 +9,11 @@ namespace Gondwana.Widgets;
 public sealed class WidgetMouseWheelEventArgs : WidgetEventArgs
 {
     /// <summary>Initializes a new wheel event.</summary>
+    /// <param name="widget">The widget.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="screenPositionPx">The screen position px.</param>
+    /// <param name="delta">The delta.</param>
+    /// <param name="tick">The current engine tick.</param>
     public WidgetMouseWheelEventArgs(WidgetBase widget, View view, PointF screenPositionPx, int delta, long tick = 0)
         : base(widget, tick)
     {

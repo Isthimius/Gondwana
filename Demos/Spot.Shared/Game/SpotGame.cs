@@ -249,6 +249,9 @@ internal class SpotGame : IDisposable
 
     #endregion player turn logic
 
+    /// <summary>
+    /// Releases the resources owned by this instance.
+    /// </summary>
     public void Dispose()
     {
         GameStarted = null;

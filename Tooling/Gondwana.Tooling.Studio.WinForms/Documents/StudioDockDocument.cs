@@ -27,6 +27,7 @@ internal sealed class StudioDockDocument : DockContent
 
     private void DocumentChanged(object? sender, EventArgs e) => UpdateCaption();
 
+    /// <inheritdoc/>
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         base.OnFormClosing(e);
@@ -34,6 +35,7 @@ internal sealed class StudioDockDocument : DockContent
             e.Cancel = !_confirmClose(this);
     }
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing)

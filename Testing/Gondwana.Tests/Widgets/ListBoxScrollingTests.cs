@@ -10,8 +10,14 @@ using Gondwana.Widgets.Controls;
 
 namespace Gondwana.Tests.Widgets;
 
+/// <summary>
+/// Contains regression tests for list box scrolling.
+/// </summary>
 public sealed class ListBoxScrollingTests
 {
+    /// <summary>
+    /// Verifies visibility and content width follow policy and item changes.
+    /// </summary>
     [Fact]
     public void VisibilityAndContentWidthFollowPolicyAndItemChanges()
     {
@@ -42,6 +48,12 @@ public sealed class ListBoxScrollingTests
         Assert.Equal(0, list.TopIndex);
     }
 
+    /// <summary>
+    /// Verifies hide show restores only required visuals.
+    /// </summary>
+    /// <param name="policy">The policy value for this test case.</param>
+    /// <param name="count">The count value for this test case.</param>
+    /// <param name="expected">The expected value for this test case.</param>
     [Theory]
     [InlineData(ScrollBarVisibility.Auto, 3, false)]
     [InlineData(ScrollBarVisibility.Auto, 20, true)]
@@ -64,6 +76,9 @@ public sealed class ListBoxScrollingTests
         Assert.False(list.SelectionHighlight.Visible);
     }
 
+    /// <summary>
+    /// Verifies thumb size position and z order follow list state and movement.
+    /// </summary>
     [Fact]
     public void ThumbSizePositionAndZOrderFollowListStateAndMovement()
     {
@@ -95,6 +110,10 @@ public sealed class ListBoxScrollingTests
         Assert.Equal(list.VerticalScrollBarTrack.ScreenBounds.Bottom, list.VerticalScrollBarThumb.ScreenBounds.Bottom);
     }
 
+    /// <summary>
+    /// Verifies routed wheel over content track or thumb clamps without changing selection.
+    /// </summary>
+    /// <param name="x">The x value for this test case.</param>
     [Theory]
     [InlineData(30)]
     [InlineData(202)]
@@ -127,6 +146,9 @@ public sealed class ListBoxScrollingTests
         Assert.Equal(0, list.TopIndex);
     }
 
+    /// <summary>
+    /// Verifies wheel uses topmost eligible widget and does not steal focus.
+    /// </summary>
     [Fact]
     public void WheelUsesTopmostEligibleWidgetAndDoesNotStealFocus()
     {
@@ -152,6 +174,9 @@ public sealed class ListBoxScrollingTests
         Assert.Equal(3, upper.TopIndex);
     }
 
+    /// <summary>
+    /// Verifies track pages and captured drag reaches both ends without committing.
+    /// </summary>
     [Fact]
     public void TrackPagesAndCapturedDragReachesBothEndsWithoutCommitting()
     {
@@ -187,6 +212,9 @@ public sealed class ListBoxScrollingTests
         Assert.Equal(1, commits);
     }
 
+    /// <summary>
+    /// Verifies keyboard scrolls selection back into view after wheel or direct scrolling.
+    /// </summary>
     [Fact]
     public void KeyboardScrollsSelectionBackIntoViewAfterWheelOrDirectScrolling()
     {
@@ -213,6 +241,11 @@ public sealed class ListBoxScrollingTests
         Assert.Equal(1, list.TopIndex);
     }
 
+    /// <summary>
+    /// Verifies combo box inherits scrolling and preserves commit and focus behavior.
+    /// </summary>
+    /// <param name="count">The count value for this test case.</param>
+    /// <param name="scrollbar">The scrollbar value for this test case.</param>
     [Theory]
     [InlineData(3, false)]
     [InlineData(20, true)]
@@ -244,6 +277,9 @@ public sealed class ListBoxScrollingTests
         Assert.False(combo.IsDropDownOpen);
     }
 
+    /// <summary>
+    /// Verifies hidden or disabled list releases captured thumb.
+    /// </summary>
     [Fact]
     public void HiddenOrDisabledListReleasesCapturedThumb()
     {
@@ -267,6 +303,10 @@ public sealed class ListBoxScrollingTests
         Assert.Equal(0, list.TopIndex);
     }
 
+    /// <summary>
+    /// Verifies scene layer thumb drag uses view scale and wrapped instance offset.
+    /// </summary>
+    /// <param name="zoom">The zoom value for this test case.</param>
     [Theory]
     [InlineData(0.5f)]
     [InlineData(2f)]
@@ -298,6 +338,9 @@ public sealed class ListBoxScrollingTests
         Pointer("DispatchPointerUp", grab);
     }
 
+    /// <summary>
+    /// Verifies oversized rows remain inside list bounds.
+    /// </summary>
     [Fact]
     public void OversizedRowsRemainInsideListBounds()
     {

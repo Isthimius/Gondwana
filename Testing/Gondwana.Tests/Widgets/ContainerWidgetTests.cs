@@ -10,8 +10,14 @@ using Gondwana.Widgets;
 
 namespace Gondwana.Tests.Widgets;
 
+/// <summary>
+/// Contains regression tests for container widget.
+/// </summary>
 public sealed class ContainerWidgetTests
 {
+    /// <summary>
+    /// Verifies set position moves child widget.
+    /// </summary>
     [Fact]
     public void SetPosition_MovesChildWidget()
     {
@@ -53,6 +59,9 @@ public sealed class ContainerWidgetTests
             child.GetPosition());
     }
 
+    /// <summary>
+    /// Verifies show hide activate propagate to child widget.
+    /// </summary>
     [Fact]
     public void ShowHideActivate_PropagateToChildWidget()
     {
@@ -99,6 +108,9 @@ public sealed class ContainerWidgetTests
         Assert.True(hidden);
     }
 
+    /// <summary>
+    /// Verifies dispose disposes child widget.
+    /// </summary>
     [Fact]
     public void Dispose_DisposesChildWidget()
     {
@@ -133,6 +145,9 @@ public sealed class ContainerWidgetTests
         Assert.True(disposed);
     }
 
+    /// <summary>
+    /// Verifies unhandled child keyboard input bubbles to container.
+    /// </summary>
     [Fact]
     public void UnhandledChildKeyboardInput_BubblesToContainer()
     {
@@ -165,6 +180,9 @@ public sealed class ContainerWidgetTests
             parent.LastKeyboardKey);
     }
 
+    /// <summary>
+    /// Verifies scene layer widget is hittable through each non overlapping view.
+    /// </summary>
     [Fact]
     public void SceneLayerWidget_IsHittableThroughEachNonOverlappingView()
     {
@@ -248,6 +266,7 @@ public sealed class ContainerWidgetTests
                 offset);
         }
 
+        /// <inheritdoc/>
         protected override void OnKeyboardInput(
             WidgetKeyboardEventArgs args)
         {

@@ -784,6 +784,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// pixel anchor for that tile. Rectangular and oblique systems use the top-left
     /// corner of the image bounds; isometric systems use the diamond's top vertex.
     /// </summary>
+    /// <param name="grid">The position in scene-layer grid coordinates.</param>
+    /// <returns>The corresponding position in world pixels.</returns>
     public PointF GridToWorldPx(PointF grid) => CoordinateSystem.GetAnchorPixelAtSceneLayerCoordinates(this, grid);
 
     /// <summary>
@@ -791,6 +793,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// This uses the layer's active coordinate system (square, iso, hex, etc.)
     /// and returns fractional grid values when the point lies between tiles.
     /// </summary>
+    /// <param name="worldPx">The position in world pixels.</param>
+    /// <returns>The corresponding position in layer grid coordinates.</returns>
     public PointF WorldPxToGrid(PointF worldPx) => CoordinateSystem.GetSceneLayerCoordinatesAtPixel(this, worldPx);
 
     /// <summary>
@@ -798,6 +802,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// direction would move off the layer and wrapping is not enabled. The
     /// meaning of N,S,E,W depends on the active coordinate system.
     /// </summary>
+    /// <param name="tile">The tile.</param>
+    /// <param name="direction">The direction.</param>
+    /// <returns>The requested scene layer tile, or <see langword="null"/> when unavailable.</returns>
     public SceneLayerTile? GetAdjacentTile(SceneLayerTile tile, CardinalDirections direction) => CoordinateSystem.GetAdjacentSceneLayerTile(tile, direction);
 
     /// <summary>
@@ -805,6 +812,8 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// Disabled axes are unchanged. Negative values use floor modulo; fractions are preserved.
     /// Invalid periodic geometry is rejected when wrapping is first used, after configuration.
     /// </summary>
+    /// <param name="grid">The position in scene-layer grid coordinates.</param>
+    /// <returns>The equivalent grid position within the layer's wrapping period.</returns>
     public PointF WrapGrid(PointF grid)
     {
         if (!WrapHorizontally && !WrapVertically)
@@ -823,6 +832,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// Resolves a virtual grid cell to its canonical tile. Only enabled axes wrap;
     /// an out-of-range disabled axis returns null. The ordinary indexer never wraps.
     /// </summary>
+    /// <param name="column">The column.</param>
+    /// <param name="row">The row.</param>
+    /// <returns>The requested scene layer tile, or <see langword="null"/> when unavailable.</returns>
     public SceneLayerTile? ResolveWrappedTile(int column, int row)
     {
         if (WrapHorizontally || WrapVertically)
@@ -840,6 +852,9 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// </summary>
     /// <remarks>Invalid repeat geometry or more than one million candidate instances throws
     /// InvalidOperationException. Non-wrapped content yields only the zero translation.</remarks>
+    /// <param name="contentBounds">The content bounds.</param>
+    /// <param name="queryBounds">The query bounds.</param>
+    /// <returns>The world-pixel offsets for visible wrapped instances.</returns>
     public IEnumerable<PointF> GetWrappedOffsets(RectangleF contentBounds, RectangleF queryBounds)
     {
         if (WrapHorizontally || WrapVertically)
@@ -856,6 +871,7 @@ public class SceneLayer : IEnumerable<SceneLayerTile>, IDisposable
     /// extreme grid tiles. Works for square, iso, hex, and any other supported
     /// projection.
     /// </summary>
+    /// <returns>The bounds of the layer in world pixels.</returns>
     public virtual RectangleF GetLayerBoundsPx()
     {
         if (GridColumnCount == 0 || GridRowCount == 0)

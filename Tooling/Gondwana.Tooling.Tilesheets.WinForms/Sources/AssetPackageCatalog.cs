@@ -17,6 +17,11 @@ public sealed class AssetPackageCatalog : IDisposable
     /// </summary>
     public Func<string, string?>? PasswordProvider { get; set; }
 
+    /// <summary>
+    /// Lists the image entries available in an assets file.
+    /// </summary>
+    /// <param name="assetsFilePath">The path to the assets file.</param>
+    /// <returns>The image entries available in the assets file.</returns>
     public IReadOnlyList<PackedImageSource> GetImages(string assetsFilePath)
     {
         var fullPath = NormalizeExistingPath(assetsFilePath);
@@ -29,6 +34,11 @@ public sealed class AssetPackageCatalog : IDisposable
             .ToArray();
     }
 
+    /// <summary>
+    /// Opens a readable stream for a packed image.
+    /// </summary>
+    /// <param name="source">The source.</param>
+    /// <returns>A readable stream for the packed image. The caller must dispose the stream.</returns>
     public Stream OpenImage(PackedImageSource source)
     {
         ArgumentNullException.ThrowIfNull(source);
@@ -57,6 +67,11 @@ public sealed class AssetPackageCatalog : IDisposable
                 $"Image asset '{source.AssetEntryName}' could not be read from '{fullPath}'.");
     }
 
+    /// <summary>
+    /// Checks whether the specified image exists in its assets file.
+    /// </summary>
+    /// <param name="source">The source.</param>
+    /// <returns><see langword="true"/> if the packed image exists; otherwise, <see langword="false"/>.</returns>
     public bool ContainsImage(PackedImageSource source)
     {
         try
@@ -76,6 +91,10 @@ public sealed class AssetPackageCatalog : IDisposable
         }
     }
 
+    /// <summary>
+    /// Removes cached catalog information for the specified assets file.
+    /// </summary>
+    /// <param name="assetsFilePath">The path to the assets file.</param>
     public void Invalidate(string assetsFilePath)
     {
         var fullPath = Path.GetFullPath(assetsFilePath);
@@ -83,6 +102,9 @@ public sealed class AssetPackageCatalog : IDisposable
             package.Dispose();
     }
 
+    /// <summary>
+    /// Clears the stored entries and resets the current state.
+    /// </summary>
     public void Clear()
     {
         foreach (var package in _packages.Values)
@@ -155,5 +177,8 @@ public sealed class AssetPackageCatalog : IDisposable
         return fullPath;
     }
 
+    /// <summary>
+    /// Releases the resources owned by this instance.
+    /// </summary>
     public void Dispose() => Clear();
 }

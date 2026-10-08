@@ -394,6 +394,7 @@ public abstract class RenderSurfaceHostBase : IDisposable
     /// Renders all visible scene layers for every configured view onto the backbuffer.
     /// Called as part of DoForegroundTasks().
     /// </summary>
+    /// <param name="tick">The timestamp for the current simulation or rendering step.</param>
     internal abstract void RenderToBackbuffer(long tick);
 
     /// <summary>

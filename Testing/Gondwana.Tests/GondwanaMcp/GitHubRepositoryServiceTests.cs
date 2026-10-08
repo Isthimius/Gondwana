@@ -6,8 +6,15 @@ using Microsoft.Extensions.Options;
 
 namespace Gondwana.Tests.GondwanaMcp;
 
+/// <summary>
+/// Contains regression tests for git hub repository service.
+/// </summary>
 public sealed class GitHubRepositoryServiceTests
 {
+    /// <summary>
+    /// Verifies read file returns bounded line range and continuation.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task ReadFile_ReturnsBoundedLineRangeAndContinuation()
     {
@@ -50,6 +57,10 @@ public sealed class GitHubRepositoryServiceTests
         Assert.Equal("two\nthree", result.Content);
     }
 
+    /// <summary>
+    /// Verifies list directory rejects traversal before calling git hub.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task ListDirectory_RejectsTraversalBeforeCallingGitHub()
     {
@@ -72,6 +83,10 @@ public sealed class GitHubRepositoryServiceTests
         Assert.False(called);
     }
 
+    /// <summary>
+    /// Verifies search code filters unexpected repository from git hub response.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task SearchCode_FiltersUnexpectedRepositoryFromGitHubResponse()
     {
@@ -124,6 +139,10 @@ public sealed class GitHubRepositoryServiceTests
         Assert.Equal("Gondwana/Engine.cs", result.Matches[0].Path);
     }
 
+    /// <summary>
+    /// Verifies search code without server token does not call git hub.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task SearchCode_WithoutServerTokenDoesNotCallGitHub()
     {

@@ -11,6 +11,7 @@ internal sealed class ViewerContentCatalog
     internal sealed record Source(string Path, string? Entry = null)
     {
         internal bool Packed => Entry is not null;
+        /// <inheritdoc/>
         public override string ToString() => Packed ? $"{Path} :: {Entry}" : Path;
     }
 

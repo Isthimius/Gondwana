@@ -4,8 +4,14 @@ using Gondwana.Widgets.Menus;
 
 namespace Gondwana.Tests.Widgets;
 
+/// <summary>
+/// Contains regression tests for menu bar widget.
+/// </summary>
 public sealed class MenuBarWidgetTests
 {
+    /// <summary>
+    /// Verifies add menu builds headers and dropdown items.
+    /// </summary>
     [Fact]
     public void AddMenu_BuildsHeadersAndDropdownItems()
     {
@@ -27,6 +33,9 @@ public sealed class MenuBarWidgetTests
     }
 
 
+    /// <summary>
+    /// Verifies closed menu bar does not capture the entire view.
+    /// </summary>
     [Fact]
     public void ClosedMenuBar_DoesNotCaptureTheEntireView()
     {
@@ -43,6 +52,9 @@ public sealed class MenuBarWidgetTests
         Assert.True(menuBar.HitTest(view, new Point(10, 10)));
     }
 
+    /// <summary>
+    /// Verifies open menu at closes previously open menu.
+    /// </summary>
     [Fact]
     public void OpenMenuAt_ClosesPreviouslyOpenMenu()
     {
@@ -66,6 +78,9 @@ public sealed class MenuBarWidgetTests
         Assert.Equal(1, menuBar.OpenMenuIndex);
     }
 
+    /// <summary>
+    /// Verifies invoking item closes menu and runs command.
+    /// </summary>
     [Fact]
     public void InvokingItem_ClosesMenuAndRunsCommand()
     {
@@ -88,6 +103,9 @@ public sealed class MenuBarWidgetTests
         Assert.False(menuBar.Menus[0].DropDown.IsOpen);
     }
 
+    /// <summary>
+    /// Verifies disabled item does not run command.
+    /// </summary>
     [Fact]
     public void DisabledItem_DoesNotRunCommand()
     {

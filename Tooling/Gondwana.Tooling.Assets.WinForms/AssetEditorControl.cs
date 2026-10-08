@@ -12,6 +12,9 @@ namespace Gondwana.Tooling.Assets.WinForms;
 /// </summary>
 public sealed class AssetEditorControl : UserControl
 {
+    /// <summary>
+    /// Gets the pane names.
+    /// </summary>
     public static IReadOnlyList<string> PaneNames { get; } =
         Array.AsReadOnly(["Assets", "Status"]);
 
@@ -22,6 +25,9 @@ public sealed class AssetEditorControl : UserControl
 
     /// <summary>Dirty state for edits made through this editor.</summary>
     public bool IsDirty { get; private set; }
+    /// <summary>
+    /// Occurs when the document content changes.
+    /// </summary>
     public event EventHandler? Changed;
 
     /// <summary>Optional host routing for toolbar Save / Save As commands.</summary>
@@ -49,9 +55,19 @@ public sealed class AssetEditorControl : UserControl
     private readonly ToolStripButton _deleteButton;
     private EditorDockWorkspace _workspace = null!;
 
+    /// <summary>
+    /// Gets the assets file.
+    /// </summary>
     public AssetsFile AssetsFile => _assetsFile;
+    /// <summary>
+    /// Gets the file path.
+    /// </summary>
     public string FilePath => Path.GetFullPath(_assetsFile.FilePath);
 
+    /// <summary>
+    /// Initializes a new instance of the <c>AssetEditorControl</c> class.
+    /// </summary>
+    /// <param name="assetsFile">The assets file containing the requested entry.</param>
     public AssetEditorControl(AssetsFile assetsFile)
     {
         _assetsFile = assetsFile ?? throw new ArgumentNullException(nameof(assetsFile));
@@ -174,18 +190,34 @@ public sealed class AssetEditorControl : UserControl
         return button;
     }
 
+    /// <summary>
+    /// Shows the named editor pane.
+    /// </summary>
+    /// <param name="paneName">The name of the editor pane.</param>
+    /// <returns><see langword="true"/> if the named pane was found; otherwise, <see langword="false"/>.</returns>
     public bool ShowPane(string paneName) =>
         _workspace.ShowPane(paneName);
 
+    /// <summary>
+    /// Determines whether the named editor pane is visible.
+    /// </summary>
+    /// <param name="paneName">The name of the editor pane.</param>
+    /// <returns><see langword="true"/> if the pane is visible; otherwise, <see langword="false"/>.</returns>
     public bool IsPaneVisible(string paneName) =>
         _workspace.IsPaneVisible(paneName);
 
     /// <summary>Restore the default pane arrangement for this editor type.</summary>
     public void ResetLayout() => _workspace.ResetLayout();
 
+    /// <summary>
+    /// Shows every editor pane.
+    /// </summary>
     public void ShowAllPanes() =>
         _workspace.ShowAllPanes();
 
+    /// <summary>
+    /// Saves the current content to the destination file.
+    /// </summary>
     public void Save()
     {
         if (SaveRequested is { } save) { save(false); return; }
@@ -199,6 +231,9 @@ public sealed class AssetEditorControl : UserControl
         }
     }
 
+    /// <summary>
+    /// Saves as.
+    /// </summary>
     public void SaveAs()
     {
         if (SaveRequested is { } save) { save(true); return; }
@@ -281,6 +316,7 @@ public sealed class AssetEditorControl : UserControl
     /// its save-copy behavior. The caller still owns the originally supplied file;
     /// the editor owns any replacement created here. Encryption is preserved.
     /// </summary>
+    /// <param name="destination">The destination rectangle.</param>
     public void SaveTo(string destination)
     {
         destination = Path.GetFullPath(destination);
@@ -316,6 +352,7 @@ public sealed class AssetEditorControl : UserControl
         SetStatus($"Saved: {FilePath}");
     }
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing)
@@ -508,6 +545,9 @@ public sealed class AssetEditorControl : UserControl
         }
     }
 
+    /// <summary>
+    /// Refreshes entries.
+    /// </summary>
     public void RefreshEntries()
     {
         _records.Clear();

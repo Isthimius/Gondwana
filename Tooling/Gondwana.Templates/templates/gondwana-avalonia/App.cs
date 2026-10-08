@@ -5,6 +5,7 @@ namespace MyGame;
 
 internal sealed class App : Application
 {
+    /// <inheritdoc/>
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

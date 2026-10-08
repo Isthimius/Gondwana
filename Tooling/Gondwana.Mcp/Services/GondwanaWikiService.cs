@@ -10,6 +10,9 @@ using Microsoft.Extensions.Options;
 
 namespace Gondwana.Mcp.Services;
 
+/// <summary>
+/// Represents gondwana wiki service.
+/// </summary>
 public sealed class GondwanaWikiService
 {
     private const string PagesCacheKey = "gondwana-wiki-pages";
@@ -18,6 +21,12 @@ public sealed class GondwanaWikiService
     private readonly IMemoryCache _cache;
     private readonly GondwanaMcpOptions _options;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>GondwanaWikiService</c> class.
+    /// </summary>
+    /// <param name="httpClient">The http client.</param>
+    /// <param name="cache">The cache.</param>
+    /// <param name="options">The options.</param>
     public GondwanaWikiService(
         HttpClient httpClient,
         IMemoryCache cache,
@@ -30,6 +39,11 @@ public sealed class GondwanaWikiService
         _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Gondwana-MCP/1.0");
     }
 
+    /// <summary>
+    /// Lists the available Gondwana wiki pages.
+    /// </summary>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>A task whose result contains the available wiki pages.</returns>
     public async Task<WikiPageListResult> ListPagesAsync(
         CancellationToken cancellationToken = default)
     {
@@ -39,6 +53,12 @@ public sealed class GondwanaWikiService
         return new WikiPageListResult(pages.Count, pages);
     }
 
+    /// <summary>
+    /// Reads the Markdown content of a Gondwana wiki page.
+    /// </summary>
+    /// <param name="page">The page.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>A task whose result contains the wiki page title, URL, and Markdown.</returns>
     public async Task<WikiPageResult> ReadPageAsync(
         string page,
         CancellationToken cancellationToken = default)
@@ -69,6 +89,13 @@ public sealed class GondwanaWikiService
         return result;
     }
 
+    /// <summary>
+    /// Searches Gondwana wiki titles and content.
+    /// </summary>
+    /// <param name="query">The search text.</param>
+    /// <param name="maxResults">The maximum number of matching results to return.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>A task whose result contains matching wiki pages and excerpts.</returns>
     public async Task<WikiSearchResult> SearchAsync(
         string query,
         int maxResults = 10,

@@ -33,6 +33,9 @@ internal readonly struct TilesheetRegionSlice
     /// <summary>
     /// Initializes a new cached tilesheet slice.
     /// </summary>
+    /// <param name="bmp">The bmp.</param>
+    /// <param name="img">The img.</param>
+    /// <param name="collisionAdjust">The adjustment applied to the frame's collision bounds.</param>
     public TilesheetRegionSlice(
         SKBitmap bmp,
         SKImage img,
@@ -46,6 +49,8 @@ internal readonly struct TilesheetRegionSlice
     /// <summary>
     /// Returns a cache entry that reuses the image resources with updated collision metadata.
     /// </summary>
+    /// <param name="collisionAdjust">The adjustment applied to the frame's collision bounds.</param>
+    /// <returns>A frame slice with the supplied collision adjustment.</returns>
     public readonly TilesheetRegionSlice WithCollisionAdjust(CollisionAdjust collisionAdjust) =>
         new(Bitmap, Image, collisionAdjust);
 }

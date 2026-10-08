@@ -11,8 +11,15 @@ public sealed class ProjectDiagnosticsPlugin : IStudioPlugin
     private Task<ProjectScanResult>? _scan;
     private string? _projectPath;
 
+    /// <summary>
+    /// Gets the name.
+    /// </summary>
     public string Name => "Project Diagnostics";
 
+    /// <summary>
+    /// Updates the plugin for the newly opened project.
+    /// </summary>
+    /// <param name="projectPath">The project path.</param>
     public void OnProjectOpened(string projectPath)
     {
         OnProjectClosed();
@@ -20,6 +27,9 @@ public sealed class ProjectDiagnosticsPlugin : IStudioPlugin
         Rescan();
     }
 
+    /// <summary>
+    /// Clears plugin state associated with the closed project.
+    /// </summary>
     public void OnProjectClosed()
     {
         CancelScan();
@@ -27,6 +37,10 @@ public sealed class ProjectDiagnosticsPlugin : IStudioPlugin
         _panel?.Clear("No working directory.");
     }
 
+    /// <summary>
+    /// Creates the plugin's dockable user interface.
+    /// </summary>
+    /// <returns>The resulting control.</returns>
     public Control CreatePanel()
     {
         if (_panel is not null) return _panel;
@@ -35,6 +49,10 @@ public sealed class ProjectDiagnosticsPlugin : IStudioPlugin
         return _panel;
     }
 
+    /// <summary>
+    /// Creates the menu item that opens the plugin panel.
+    /// </summary>
+    /// <returns>The resulting tool strip menu item.</returns>
     public ToolStripMenuItem CreateMenuItem()
     {
         var root = new ToolStripMenuItem(Name);

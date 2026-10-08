@@ -31,14 +31,23 @@ public sealed class EffectsManager : IDisposable
     }
 
     /// <summary>Starts an effect targeting a View owned by this render surface.</summary>
+    /// <typeparam name="TEffect">The type of effect.</typeparam>
+    /// <param name="target">The target.</param>
+    /// <param name="effect">The effect.</param>
+    /// <returns>The supplied effect, registered with this manager and started on the target.</returns>
     public TEffect Run<TEffect>(View target, TEffect effect)
         where TEffect : DisplayEffect => RunCore(target, effect);
 
     /// <summary>Starts an effect targeting a SceneLayer in the currently bound Scene.</summary>
+    /// <typeparam name="TEffect">The type of effect.</typeparam>
+    /// <param name="target">The target.</param>
+    /// <param name="effect">The effect.</param>
+    /// <returns>The supplied effect, registered with this manager and started on the target.</returns>
     public TEffect Run<TEffect>(SceneLayer target, TEffect effect)
         where TEffect : DisplayEffect => RunCore(target, effect);
 
     /// <summary>Cancels a running effect and restores its original presentation state.</summary>
+    /// <param name="effect">The effect.</param>
     public void Cancel(DisplayEffect effect)
     {
         ArgumentNullException.ThrowIfNull(effect);

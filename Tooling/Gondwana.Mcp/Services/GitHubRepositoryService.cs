@@ -8,6 +8,9 @@ using Microsoft.Extensions.Options;
 
 namespace Gondwana.Mcp.Services;
 
+/// <summary>
+/// Represents git hub repository service.
+/// </summary>
 public sealed class GitHubRepositoryService
 {
     private const string GitHubApiVersion = "2022-11-28";
@@ -15,6 +18,11 @@ public sealed class GitHubRepositoryService
     private readonly HttpClient _httpClient;
     private readonly GondwanaMcpOptions _options;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>GitHubRepositoryService</c> class.
+    /// </summary>
+    /// <param name="httpClient">The http client.</param>
+    /// <param name="options">The options.</param>
     public GitHubRepositoryService(
         HttpClient httpClient,
         IOptions<GondwanaMcpOptions> options)
@@ -35,9 +43,17 @@ public sealed class GitHubRepositoryService
         }
     }
 
+    /// <summary>
+    /// Gets whether the object has authenticated search.
+    /// </summary>
     public bool HasAuthenticatedSearch =>
         !string.IsNullOrWhiteSpace(_options.GitHubToken);
 
+    /// <summary>
+    /// Retrieves the Gondwana repository identity and current revision.
+    /// </summary>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>A task whose result describes the repository and its current revision.</returns>
     public async Task<RepositoryInfoResult> GetRepositoryInfoAsync(
         CancellationToken cancellationToken = default)
     {
@@ -80,6 +96,13 @@ public sealed class GitHubRepositoryService
             repositoryUrl);
     }
 
+    /// <summary>
+    /// Lists entries in a Gondwana repository directory.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <param name="ref">The repository branch, tag, or commit to read.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>A task whose result contains the directory entries.</returns>
     public async Task<DirectoryListingResult> ListDirectoryAsync(
         string? path = null,
         string? @ref = null,
@@ -118,6 +141,15 @@ public sealed class GitHubRepositoryService
             entries);
     }
 
+    /// <summary>
+    /// Reads a bounded portion of a Gondwana repository file.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <param name="ref">The repository branch, tag, or commit to read.</param>
+    /// <param name="startLine">The first line to read, using one-based numbering.</param>
+    /// <param name="endLine">The end line.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>A task whose result contains the requested file content and location metadata.</returns>
     public async Task<FileReadResult> ReadFileAsync(
         string path,
         string? @ref = null,
@@ -239,6 +271,13 @@ public sealed class GitHubRepositoryService
             content);
     }
 
+    /// <summary>
+    /// Searches the Gondwana repository source code.
+    /// </summary>
+    /// <param name="query">The search text.</param>
+    /// <param name="maxResults">The maximum number of matching results to return.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>A task whose result contains matching repository files and excerpts.</returns>
     public async Task<CodeSearchResult> SearchCodeAsync(
         string query,
         int maxResults = 10,

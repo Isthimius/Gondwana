@@ -193,6 +193,7 @@ public sealed class SplashScreen : WidgetBase
     /// the fade-out animation completes.
     /// </para>
     /// </remarks>
+    /// <param name="onSplashCompleted">The on splash completed.</param>
     public static SplashScreen? TryCreate(Stream imageStream,
                                           RenderSurfaceHostBase host,
                                           View view,

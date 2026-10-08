@@ -7,46 +7,74 @@ namespace Gondwana.Cli.Commands.Assets;
 
 internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
 {
+    /// <summary>
+    /// Defines command-line settings for AssetsPackCommand.
+    /// </summary>
     public sealed class Settings : CommandSettings
     {
+        /// <summary>
+        /// Gets or sets the source.
+        /// </summary>
         [CommandArgument(0, "<source>")]
         [Description("The source directory containing files to pack.")]
         public string Source { get; init; } = string.Empty;
 
+        /// <summary>
+        /// Gets or sets the output.
+        /// </summary>
         [CommandArgument(1, "<output>")]
         [Description("The output asset file path (e.g. game.assets or game.gaf).")]
         public string Output { get; init; } = string.Empty;
 
+        /// <summary>
+        /// Gets or sets the default type.
+        /// </summary>
         [CommandOption("-t|--type")]
         [Description("Default asset type for files whose type cannot be inferred (default: Misc).")]
         [DefaultValue("Misc")]
         public string DefaultType { get; init; } = "Misc";
 
+        /// <summary>
+        /// Gets or sets whether recurse is enabled.
+        /// </summary>
         [CommandOption("-r|--recurse")]
         [Description("Recurse into subdirectories (default: true).")]
         [DefaultValue(true)]
         public bool Recurse { get; init; } = true;
 
+        /// <summary>
+        /// Gets or sets whether append is enabled.
+        /// </summary>
         [CommandOption("-a|--append")]
         [Description("Append to an existing bundle instead of overwriting it (default: false).")]
         [DefaultValue(false)]
         public bool Append { get; init; } = false;
 
+        /// <summary>
+        /// Gets or sets the type map path.
+        /// </summary>
         [CommandOption("-m|--type-map")]
         [Description("Path to a JSON file that maps asset types to file extensions. " +
                      "Defaults to 'gondwana-asset-types.json' in the current directory or next to the executable.")]
         public string? TypeMapPath { get; init; }
 
+        /// <summary>
+        /// Gets or sets the password used to open the assets file.
+        /// </summary>
         [CommandOption("-p|--password")]
         [Description("Password to protect the bundle. Required when --encrypt is specified.")]
         public string? Password { get; init; }
 
+        /// <summary>
+        /// Gets or sets whether encrypt is enabled.
+        /// </summary>
         [CommandOption("-e|--encrypt")]
         [Description("Encrypt the bundle using AES-256. Requires --password <value> to be specified.")]
         [DefaultValue(false)]
         public bool Encrypt { get; init; }
     }
 
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         var source = Path.GetFullPath(settings.Source);

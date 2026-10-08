@@ -8,9 +8,18 @@ using SkiaSharp;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for wrapped rendering.
+/// </summary>
 [Collection("Effects rendering")]
 public sealed class WrappedRenderingTests
 {
+    /// <summary>
+    /// Verifies render repeats layer drawings refreshes all copies and keeps view ui fixed.
+    /// </summary>
+    /// <param name="gpu">The gpu value for this test case.</param>
+    /// <param name="horizontal">The horizontal value for this test case.</param>
+    /// <param name="vertical">The vertical value for this test case.</param>
     [Theory]
     [InlineData(false, true, false)]
     [InlineData(false, false, true)]
@@ -63,6 +72,9 @@ public sealed class WrappedRenderingTests
         host.Backbuffer.BeginFrame();
     }
 
+    /// <summary>
+    /// Verifies widget hit tests wrapped copies and keeps canonical owner.
+    /// </summary>
     [Fact]
     public void Widget_HitTestsWrappedCopies_AndKeepsCanonicalOwner()
     {
@@ -78,6 +90,10 @@ public sealed class WrappedRenderingTests
 
     }
 
+    /// <summary>
+    /// Verifies pointer capture retains selected instance and does not click another copy.
+    /// </summary>
+    /// <param name="drag">The drag value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -106,6 +122,9 @@ public sealed class WrappedRenderingTests
         Assert.Equal(0, clicks);
     }
 
+    /// <summary>
+    /// Verifies fog and collision debug are translated with tile instances.
+    /// </summary>
     [Fact]
     public void FogAndCollisionDebug_AreTranslatedWithTileInstances()
     {
@@ -138,6 +157,7 @@ public sealed class WrappedRenderingTests
 
     private sealed class Adapter() : RenderSurfaceAdapterBase(128, 128)
     {
+        /// <inheritdoc/>
         public override void Present(SKImage image, SKRectI source, SKRect destination) { }
     }
 }

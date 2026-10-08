@@ -6,6 +6,10 @@ namespace Gondwana.Drawing.Tilesheets.GTS;
 public static class TilesheetDefinitionValidator
 {
     /// <summary>Checks region layouts and frame metadata, optionally against known image dimensions.</summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <param name="imageWidth">The image width.</param>
+    /// <param name="imageHeight">The image height.</param>
+    /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
     public static IReadOnlyList<string> Validate(TilesheetDefinition definition, int? imageWidth = null, int? imageHeight = null)
     {
         ArgumentNullException.ThrowIfNull(definition);
@@ -50,6 +54,8 @@ public static class TilesheetDefinitionValidator
     }
 
     /// <summary>Computes grid dimensions using the runtime's padding and margin convention.</summary>
+    /// <param name="region">The region.</param>
+    /// <returns>The number of columns and rows that fit within the region.</returns>
     public static (long Columns, long Rows) GridSize(TilesheetRegionDefinition region)
     {
         long width = (long)region.TileSize.Width + region.TilePadding.Left + region.TilePadding.Right;

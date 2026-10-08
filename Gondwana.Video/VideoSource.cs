@@ -10,6 +10,8 @@ public sealed class VideoSource
     internal void Open(IVideoPlayer player) => _open(player);
 
     /// <summary>Creates a reusable URI source.</summary>
+    /// <param name="source">The source.</param>
+    /// <returns>The resulting video source.</returns>
     public static VideoSource FromUri(Uri source)
     {
         ArgumentNullException.ThrowIfNull(source);
@@ -19,6 +21,9 @@ public sealed class VideoSource
     /// <summary>Creates a stream source. Ownership transfers to the player on successful Open
     /// unless leaveOpen is true. Do not reuse an owned source after replacement/disposal.
     /// A borrowed stream must remain open and exclusively available to the player.</summary>
+    /// <param name="source">The source.</param>
+    /// <param name="leaveOpen">Whether to leave the supplied stream open after use.</param>
+    /// <returns>The resulting video source.</returns>
     public static VideoSource FromStream(Stream source, bool leaveOpen = false)
     {
         ArgumentNullException.ThrowIfNull(source);
@@ -28,6 +33,9 @@ public sealed class VideoSource
 
     /// <summary>Creates a reusable GAF source. The archive must remain open until Open is called.
     /// Each Open obtains a fresh asset stream owned by the player; no temporary file is created.</summary>
+    /// <param name="assets">The assets.</param>
+    /// <param name="name">The name.</param>
+    /// <returns>The resulting video source.</returns>
     public static VideoSource FromAsset(AssetsFile assets, string name)
     {
         ArgumentNullException.ThrowIfNull(assets);

@@ -1,9 +1,15 @@
 namespace Gondwana.Demos.CoordinateTest;
 
+/// <summary>
+/// Represents game window.
+/// </summary>
 public partial class GameWindow : Form
 {
     private Game? _game;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>GameWindow</c> class.
+    /// </summary>
     public GameWindow()
     {
         InitializeComponent();
@@ -13,7 +19,7 @@ public partial class GameWindow : Form
 
         // Borderless + maximized, but still respect the taskbar
         this.FormBorderStyle = FormBorderStyle.None;
-        this.StartPosition = FormStartPosition.Manual; // we’ll set bounds ourselves in Shown
+        this.StartPosition = FormStartPosition.Manual; // weï¿½ll set bounds ourselves in Shown
         this.MaximizeBox = true;
 
         // Optional: allow ESC to close (handy for borderless windows while testing)
@@ -29,12 +35,14 @@ public partial class GameWindow : Form
     }
 
     // create the Game (and thereby start the engine) once the form & controls are ready
+    /// <inheritdoc/>
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
         _game = new Game(renderSurface);
     }
 
+    /// <inheritdoc/>
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
@@ -43,7 +51,7 @@ public partial class GameWindow : Form
         var screen = Screen.FromHandle(this.Handle);
         this.Bounds = screen.Bounds;
 
-        // Optional but good practice for a “real” full screen feel
+        // Optional but good practice for a ï¿½realï¿½ full screen feel
         this.FormBorderStyle = FormBorderStyle.None;
         this.WindowState = FormWindowState.Normal; // force apply bounds first
         this.WindowState = FormWindowState.Maximized;
@@ -51,6 +59,7 @@ public partial class GameWindow : Form
         _game!.InitializeGame();    // this calls Engine.Initialize + Start(SynchronizationContext.Current!)
     }
 
+    /// <inheritdoc/>
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
         // Clean shutdown

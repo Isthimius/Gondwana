@@ -16,6 +16,8 @@ public static class SceneDefinitionValidator
     /// <summary>
     /// Validates structural scene, layer, tile, frame, and collision-profile metadata.
     /// </summary>
+    /// <param name="definition">The persisted definition to process.</param>
+    /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
     public static IReadOnlyList<string> Validate(SceneDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);

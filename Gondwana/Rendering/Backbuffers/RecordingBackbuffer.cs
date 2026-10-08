@@ -138,7 +138,9 @@ internal sealed class RecordingBackbuffer : BackbufferBase
 
     internal RecordingBackbuffer() : base(1, 1) { }
 
+    /// <inheritdoc/>
     public override SKCanvas Canvas => _canvas ?? throw new InvalidOperationException("No recording is active.");
+    /// <inheritdoc/>
     public override bool IsGlThreadRendered => true;
 
     internal void Start(BackbufferBase source)
@@ -822,17 +824,22 @@ internal sealed class RecordingBackbuffer : BackbufferBase
         _pendingCount = 0;
     }
 
+    /// <inheritdoc/>
     protected internal override void BeginFrame() { }
+    /// <inheritdoc/>
     protected internal override void EndFrame() { }
+    /// <inheritdoc/>
     protected internal override SKImage Snapshot() =>
         throw new NotSupportedException("A recording has commands, not pixels. Read pixels on the GL thread after replay.");
 
+    /// <inheritdoc/>
     protected internal override void DrawTileFrame(Tile tile, RectangleF destRectScreen)
     {
         var image = tile.CurrentFrame.SkImage;
         if (image is not null) Canvas.DrawImage(image, destRectScreen.ToSKRect());
     }
 
+    /// <inheritdoc/>
     public override void Dispose()
     {
         Cancel();

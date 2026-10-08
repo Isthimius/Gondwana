@@ -12,6 +12,9 @@ public sealed class EditorInteractionTests
 {
     private const BindingFlags PrivateInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
+    /// <summary>
+    /// Verifies ctrl wheel uses one point two five zoom steps and preserves ordinary scrolling.
+    /// </summary>
     [Fact]
     public void CtrlWheel_UsesOnePointTwoFiveZoomStepsAndPreservesOrdinaryScrolling() => RunSta(() =>
     {
@@ -38,6 +41,9 @@ public sealed class EditorInteractionTests
         Assert.Equal(16f, viewport.Zoom);
     });
 
+    /// <summary>
+    /// Verifies toolbar zoom buttons use one point two five zoom steps.
+    /// </summary>
     [Fact]
     public void ToolbarZoomButtons_UseOnePointTwoFiveZoomSteps() => RunSta(() =>
     {
@@ -57,6 +63,10 @@ public sealed class EditorInteractionTests
         Assert.Equal(.8f, viewport.Zoom, 3);
     });
 
+    /// <summary>
+    /// Verifies loaded zelda definition click selects frames in other regions.
+    /// </summary>
+    /// <param name="name">The name value for this test case.</param>
     [Theory]
     [InlineData("forest")]
     [InlineData("ganon")]
@@ -87,6 +97,10 @@ public sealed class EditorInteractionTests
         Assert.False(document.IsDirty);
     });
 
+    /// <summary>
+    /// Verifies inspector commits text numbers and collision overrides and keeps selected property.
+    /// </summary>
+    /// <param name="fromImage">The from image value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -143,6 +157,9 @@ public sealed class EditorInteractionTests
         finally { File.Delete(output); }
     });
 
+    /// <summary>
+    /// Verifies packed gaf image can be previewed and saved as reference.
+    /// </summary>
     [Fact]
     public void PackedGafImage_CanBePreviewedAndSavedAsReference() => RunSta(() =>
     {
@@ -186,6 +203,9 @@ public sealed class EditorInteractionTests
         }
     });
 
+    /// <summary>
+    /// Verifies asset package catalog requires exact packed image name.
+    /// </summary>
     [Fact]
     public void AssetPackageCatalog_RequiresExactPackedImageName()
     {
@@ -242,6 +262,9 @@ public sealed class EditorInteractionTests
         }
     }
 
+    /// <summary>
+    /// Verifies overlay colors update open documents and legend without dirtying gts.
+    /// </summary>
     [Fact]
     public void OverlayColors_UpdateOpenDocumentsAndLegendWithoutDirtyingGts() => RunSta(() =>
     {

@@ -87,6 +87,11 @@ public sealed class ToastWidget : WidgetBase
     /// <summary>
     /// Initializes a toast with explicit target bounds in absolute screen pixels.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="targetBounds">The target bounds.</param>
+    /// <param name="text">The text to display.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public ToastWidget(
         RenderSurfaceHostBase renderSurfaceHost,
         View view,
@@ -146,6 +151,13 @@ public sealed class ToastWidget : WidgetBase
     /// <summary>
     /// Initializes a toast positioned from a standard anchor inside the view.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="size">The size.</param>
+    /// <param name="text">The text to display.</param>
+    /// <param name="targetAnchor">The target anchor.</param>
+    /// <param name="marginPx">The margin px.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public ToastWidget(
         RenderSurfaceHostBase renderSurfaceHost,
         View view,
@@ -255,6 +267,7 @@ public sealed class ToastWidget : WidgetBase
     /// <summary>
     /// Shows the toast and begins its entrance transition.
     /// </summary>
+    /// <returns>This instance for fluent chaining.</returns>
     public ToastWidget ShowToast()
     {
         Show();
@@ -288,6 +301,8 @@ public sealed class ToastWidget : WidgetBase
     /// <summary>
     /// Changes the target bounds used the next time the toast is shown.
     /// </summary>
+    /// <param name="targetBounds">The target bounds.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ToastWidget SetTargetBounds(Rectangle targetBounds)
     {
         ValidateBounds(targetBounds);
@@ -303,6 +318,8 @@ public sealed class ToastWidget : WidgetBase
     /// <summary>
     /// Sets the toast message.
     /// </summary>
+    /// <param name="text">The text to display.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ToastWidget SetText(string text)
     {
         Label.SetText(text);
@@ -312,6 +329,8 @@ public sealed class ToastWidget : WidgetBase
     /// <summary>
     /// Sets the background Z-order and places the label immediately above it.
     /// </summary>
+    /// <param name="zOrder">The drawing order relative to other content.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ToastWidget SetToastZOrder(int zOrder)
     {
         Background.ZOrder = zOrder;

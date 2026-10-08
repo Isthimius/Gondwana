@@ -6,50 +6,84 @@ namespace Gondwana.Cli.Commands.Deploy;
 
 internal sealed class DeployBlazorCommand : Command<DeployBlazorCommand.Settings>
 {
+    /// <summary>
+    /// Defines command-line settings for DeployBlazorCommand.
+    /// </summary>
     public sealed class Settings : CommandSettings
     {
+        /// <summary>
+        /// Gets or sets the project.
+        /// </summary>
         [CommandOption("-p|--project")]
         [Description("Path to the .csproj file or directory containing a single .csproj. Defaults to the current directory.")]
         public string? Project { get; init; }
 
+        /// <summary>
+        /// Gets or sets the configuration.
+        /// </summary>
         [CommandOption("-c|--configuration")]
         [Description("Build configuration. Defaults to 'Release'.")]
         [DefaultValue("Release")]
         public string Configuration { get; init; } = "Release";
 
+        /// <summary>
+        /// Gets or sets the framework.
+        /// </summary>
         [CommandOption("-f|--framework")]
         [Description("Browser target framework. Auto-detected when the project has a single browser target.")]
         public string? Framework { get; init; }
 
+        /// <summary>
+        /// Gets or sets the base href.
+        /// </summary>
         [CommandOption("--base-href")]
         [Description("Override the deployed <base href> for the public URL path, for example /games/mygame/ or ./.")]
         public string? BaseHref { get; init; }
 
+        /// <summary>
+        /// Gets or sets the web root.
+        /// </summary>
         [CommandOption("--web-root")]
         [Description("Local destination directory for the published wwwroot contents.")]
         public string? WebRoot { get; init; }
 
+        /// <summary>
+        /// Gets or sets the remote host.
+        /// </summary>
         [CommandOption("--remote-host")]
         [Description("SSH remote in the form user@host, used with --remote-path.")]
         public string? RemoteHost { get; init; }
 
+        /// <summary>
+        /// Gets or sets the remote path.
+        /// </summary>
         [CommandOption("--remote-path")]
         [Description("Remote destination path, used with --remote-host.")]
         public string? RemotePath { get; init; }
 
+        /// <summary>
+        /// Gets or sets whether skip build is enabled.
+        /// </summary>
         [CommandOption("--skip-build")]
         [Description("Skip the dotnet publish step and deploy an existing publish output.")]
         public bool SkipBuild { get; init; }
 
+        /// <summary>
+        /// Gets or sets whether skip workload is enabled.
+        /// </summary>
         [CommandOption("--skip-workload")]
         [Description("Skip checking/installing the wasm-tools workload during the publish step.")]
         public bool SkipWorkload { get; init; }
 
+        /// <summary>
+        /// Gets or sets whether no mirror is enabled.
+        /// </summary>
         [CommandOption("--no-mirror")]
         [Description("Do not remove stale files from the destination (no mirroring). By default the destination is mirrored (stale files are deleted).")]
         public bool NoMirror { get; init; }
     }
 
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         var useLocal = !string.IsNullOrWhiteSpace(settings.WebRoot);

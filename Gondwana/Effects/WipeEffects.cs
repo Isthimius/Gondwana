@@ -13,6 +13,13 @@ public abstract class WipeEffect : DisplayEffect
     private float _startReveal;
     private float _targetReveal;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>WipeEffect</c> class.
+    /// </summary>
+    /// <param name="direction">The direction.</param>
+    /// <param name="durationSeconds">The duration in seconds.</param>
+    /// <param name="easing">The easing function applied to progress.</param>
+    /// <param name="isFill">Whether the effect fills the reveal area rather than clearing it.</param>
     private protected WipeEffect(
         EffectDirection direction,
         float durationSeconds,
@@ -35,6 +42,7 @@ public abstract class WipeEffect : DisplayEffect
     internal override bool SupportsTarget(object target) =>
         target is View or SceneLayer;
 
+    /// <inheritdoc/>
     private protected override void OnStarting()
     {
         _originalReveal = EffectTargetAccess.GetReveal(Target);
@@ -54,12 +62,14 @@ public abstract class WipeEffect : DisplayEffect
         EffectTargetAccess.SetReveal(Target, _startReveal, Direction);
     }
 
+    /// <inheritdoc/>
     private protected override void ApplyProgress(float progress) =>
         EffectTargetAccess.SetReveal(
             Target,
             _startReveal + (_targetReveal - _startReveal) * progress,
             Direction);
 
+    /// <inheritdoc/>
     private protected override void RestoreOriginalState() =>
         EffectTargetAccess.SetReveal(Target, _originalReveal, _originalDirection);
 }
@@ -68,6 +78,9 @@ public abstract class WipeEffect : DisplayEffect
 public sealed class FillEffect : WipeEffect
 {
     /// <summary>Creates a directional fill effect.</summary>
+    /// <param name="direction">The direction.</param>
+    /// <param name="durationSeconds">The duration in seconds.</param>
+    /// <param name="easing">The easing function applied to progress.</param>
     public FillEffect(
         EffectDirection direction,
         float durationSeconds,
@@ -81,6 +94,9 @@ public sealed class FillEffect : WipeEffect
 public sealed class EraseEffect : WipeEffect
 {
     /// <summary>Creates a directional erase effect.</summary>
+    /// <param name="direction">The direction.</param>
+    /// <param name="durationSeconds">The duration in seconds.</param>
+    /// <param name="easing">The easing function applied to progress.</param>
     public EraseEffect(
         EffectDirection direction,
         float durationSeconds,

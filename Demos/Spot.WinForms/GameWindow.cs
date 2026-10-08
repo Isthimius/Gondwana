@@ -50,6 +50,7 @@ internal partial class GameWindow : Form
     }
 
     // create the Game (and thereby start the engine) once the form & controls are ready
+    /// <inheritdoc/>
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
@@ -65,6 +66,7 @@ internal partial class GameWindow : Form
         };
     }
 
+    /// <inheritdoc/>
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
@@ -114,6 +116,7 @@ internal partial class GameWindow : Form
         }
     }
 
+    /// <inheritdoc/>
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
         // Clean shutdown
@@ -325,6 +328,12 @@ internal partial class GameWindow : Form
 
     private sealed class WinFormsExternalUriLauncher : IExternalUriLauncher
     {
+        /// <summary>
+        /// Opens the URI using the operating system's registered application.
+        /// </summary>
+        /// <param name="uri">The URI identifying the media source.</param>
+        /// <param name="cancellationToken">The token used to cancel the operation.</param>
+        /// <returns>A task that represents completion of the operation.</returns>
         public ValueTask OpenAsync(Uri uri, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();

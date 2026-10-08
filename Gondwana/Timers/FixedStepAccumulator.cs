@@ -12,6 +12,7 @@ internal sealed class FixedStepAccumulator
     internal long SimulationTick { get; private set; }
 
     /// <summary>Resets both the driver and simulation clocks to <paramref name="tick"/>.</summary>
+    /// <param name="tick">The timestamp for the current simulation or rendering step.</param>
     internal void Reset(long tick)
     {
         _lastDriverTick = tick;
@@ -24,6 +25,10 @@ internal sealed class FixedStepAccumulator
     /// Excess backlog is discarded after <paramref name="maxSteps"/> steps to prevent a spiral
     /// of death after throttling or tab suspension.
     /// </summary>
+    /// <param name="driverTick">The current driver timestamp in high-resolution timer ticks.</param>
+    /// <param name="updatesPerSecond">The target number of simulation updates per second.</param>
+    /// <param name="maxSteps">The maximum number of steps emitted in this batch.</param>
+    /// <returns>The bounded batch of fixed simulation steps now due.</returns>
     internal FixedStepBatch Advance(long driverTick, int updatesPerSecond, int maxSteps)
     {
         if (updatesPerSecond <= 0)
@@ -58,9 +63,14 @@ internal sealed class FixedStepAccumulator
 }
 
 /// <summary>Describes one bounded batch of fixed simulation steps.</summary>
+/// <param name="FirstStepTick">The timestamp of the first simulation step in the batch.</param>
+/// <param name="StepTicks">The interval between consecutive simulation steps, in timer ticks.</param>
+/// <param name="StepCount">The number of simulation steps in the batch.</param>
 internal readonly record struct FixedStepBatch(long FirstStepTick, long StepTicks, int StepCount)
 {
     /// <summary>Gets the absolute simulation tick for the zero-based step index.</summary>
+    /// <param name="index">The zero-based index of the step in this batch.</param>
+    /// <returns>The timer timestamp of the requested step.</returns>
     internal long GetStepTick(int index)
     {
         if ((uint)index >= (uint)StepCount)

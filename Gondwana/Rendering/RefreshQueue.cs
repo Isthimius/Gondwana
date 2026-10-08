@@ -42,6 +42,7 @@ internal sealed class RefreshQueue
     /// Returns a thread-safe point-in-time copy of the current dirty rectangles.
     /// Safe to call from any thread, including the GL paint thread.
     /// </summary>
+    /// <returns>A snapshot of the queued dirty rectangles in world pixels.</returns>
     internal Rectangle[] SnapshotWorldRects()
     {
         lock (_syncRoot) return _worldRects.ToArray();
@@ -52,6 +53,7 @@ internal sealed class RefreshQueue
     /// Optionally cascades a notification to listeners (e.g., other hosts).
     /// ***** IMPORTANT: must ALWAYS be in WORLD pixels. *****
     /// </summary>
+    /// <param name="worldPixelRange">The query or dirty rectangle in world pixels.</param>
     internal void AddWorldRect(Rectangle worldPixelRange)
     {
         if (!_isEnabled() || worldPixelRange.IsEmpty)

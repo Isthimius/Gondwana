@@ -9,10 +9,14 @@ using Xunit.Abstractions;
 namespace Gondwana.Tooling.SceneViewer.WinForms.Tests;
 
 /// <summary>Opt-in hardware check: GONDWANA_GPU_TESTS=1 dotnet test --filter DesktopGpuSnapshotTests.</summary>
+/// <param name="output">The output value for this test case.</param>
 public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
 {
     private sealed class HardwareFactAttribute : FactAttribute
     {
+        /// <summary>
+        /// Initializes a new instance of the <c>HardwareFactAttribute</c> class.
+        /// </summary>
         public HardwareFactAttribute()
         {
             if (Environment.GetEnvironmentVariable("GONDWANA_GPU_TESTS") != "1")
@@ -20,6 +24,10 @@ public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
         }
     }
 
+    /// <summary>
+    /// Verifies native replay across multisampling, resizing, and context replacement.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [HardwareFact]
     public async Task NativeReplaySurvivesMsaaResizeAndContextReplacement()
     {
@@ -77,6 +85,10 @@ public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
         buffer.Dispose();
     }
 
+    /// <summary>
+    /// Verifies replay callbacks after Avalonia context deinitialization.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [HardwareFact]
     public async Task AvaloniaCallbacksReplayAfterContextDeinitialization()
     {
@@ -144,6 +156,7 @@ public sealed class DesktopGpuSnapshotTests(ITestOutputHelper output)
 
     private sealed class Adapter() : RenderSurfaceAdapterBase(128, 128)
     {
+        /// <inheritdoc/>
         public override void Present(SKImage image, SKRectI source, SKRect destination) { }
     }
 }

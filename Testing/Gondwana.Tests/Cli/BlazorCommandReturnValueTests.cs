@@ -6,10 +6,16 @@ using Spectre.Console.Cli;
 
 namespace Gondwana.Tests.Cli;
 
+/// <summary>
+/// Contains regression tests for blazor command return value.
+/// </summary>
 public sealed class BlazorCommandReturnValueTests
 {
     private static readonly object PathLock = new();
 
+    /// <summary>
+    /// Verifies publish blazor command returns zero when publish succeeds.
+    /// </summary>
     [Fact]
     public void PublishBlazorCommand_ReturnsZero_WhenPublishSucceeds()
     {
@@ -29,6 +35,9 @@ public sealed class BlazorCommandReturnValueTests
         Assert.True(File.Exists(Path.Combine(wwwroot!, "index.html")));
     }
 
+    /// <summary>
+    /// Verifies project helper resolves browser framework from project target.
+    /// </summary>
     [Fact]
     public void ProjectHelper_ResolvesBrowserFramework_FromProjectTarget()
     {
@@ -41,6 +50,9 @@ public sealed class BlazorCommandReturnValueTests
         Assert.Equal("net8.0-browser", framework);
     }
 
+    /// <summary>
+    /// Verifies project helper applies base href to published index.
+    /// </summary>
     [Fact]
     public void ProjectHelper_AppliesBaseHref_ToPublishedIndex()
     {
@@ -55,6 +67,9 @@ public sealed class BlazorCommandReturnValueTests
         Assert.Contains("<base href=\"/games/mygame/\"", File.ReadAllText(Path.Combine(wwwroot!, "index.html")));
     }
 
+    /// <summary>
+    /// Verifies publish itch command returns zero when package succeeds.
+    /// </summary>
     [Fact]
     public void PublishItchCommand_ReturnsZero_WhenPackageSucceeds()
     {
@@ -81,6 +96,9 @@ public sealed class BlazorCommandReturnValueTests
         Assert.Contains("<base href=\"./\"", reader.ReadToEnd());
     }
 
+    /// <summary>
+    /// Verifies deploy blazor command returns zero when local deploy succeeds.
+    /// </summary>
     [Fact]
     public void DeployBlazorCommand_ReturnsZero_WhenLocalDeploySucceeds()
     {
@@ -102,6 +120,9 @@ public sealed class BlazorCommandReturnValueTests
         Assert.Contains("<base href=\"/mygame/\"", File.ReadAllText(Path.Combine(webRoot, "index.html")));
     }
 
+    /// <summary>
+    /// Verifies deploy itch command returns zero when upload succeeds.
+    /// </summary>
     [Fact]
     public void DeployItchCommand_ReturnsZero_WhenUploadSucceeds()
     {
@@ -149,12 +170,27 @@ public sealed class BlazorCommandReturnValueTests
             Environment.SetEnvironmentVariable("FAKE_BUTLER_LOG", ButlerLogPath);
         }
 
+        /// <summary>
+        /// Gets the root directory.
+        /// </summary>
         public string RootDirectory { get; }
 
+        /// <summary>
+        /// Gets the butler log path.
+        /// </summary>
         public string ButlerLogPath { get; }
 
+        /// <summary>
+        /// Creates a new cli command fixture.
+        /// </summary>
+        /// <param name="includeButler">The include butler value for this test case.</param>
+        /// <returns>The resulting cli command fixture.</returns>
         public static CliCommandFixture Create(bool includeButler = false) => new(includeButler);
 
+        /// <summary>
+        /// Creates published blazor project.
+        /// </summary>
+        /// <returns>The resulting string.</returns>
         public string CreatePublishedBlazorProject()
         {
             var projectDirectory = Path.Combine(_workspaceDirectory, "Game");
@@ -180,6 +216,10 @@ public sealed class BlazorCommandReturnValueTests
             return projectPath;
         }
 
+        /// <summary>
+        /// Creates buildable blazor project.
+        /// </summary>
+        /// <returns>The resulting string.</returns>
         public string CreateBuildableBlazorProject()
         {
             var projectDirectory = Path.Combine(_workspaceDirectory, "BuildableGame");
@@ -254,6 +294,12 @@ public sealed class BlazorCommandReturnValueTests
             return projectPath;
         }
 
+        /// <summary>
+        /// Runs the command using the supplied settings.
+        /// </summary>
+        /// <param name="configure">The configure value for this test case.</param>
+        /// <param name="args">The args value for this test case.</param>
+        /// <returns>The run.</returns>
         public int Run(Action<IConfigurator> configure, params string[] args)
         {
             var app = new CommandApp();
@@ -261,6 +307,7 @@ public sealed class BlazorCommandReturnValueTests
             return app.Run(args);
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             Environment.SetEnvironmentVariable("PATH", _originalPath);

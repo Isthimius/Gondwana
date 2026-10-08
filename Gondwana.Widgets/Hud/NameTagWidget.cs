@@ -21,6 +21,12 @@ public sealed class NameTagWidget : WidgetBase
     /// <summary>
     /// Creates a name tag that follows <paramref name="target"/>.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="target">The target.</param>
+    /// <param name="text">The text to display.</param>
+    /// <param name="size">The size.</param>
+    /// <param name="offsetPx">The offset in pixels.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public NameTagWidget(RenderSurfaceHostBase renderSurfaceHost,
                          Sprite target,
                          string text,
@@ -135,6 +141,8 @@ public sealed class NameTagWidget : WidgetBase
     /// <summary>
     /// Changes the displayed name.
     /// </summary>
+    /// <param name="text">The text to display.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public NameTagWidget SetText(string text)
     {
         _text = text ?? string.Empty;
@@ -145,6 +153,8 @@ public sealed class NameTagWidget : WidgetBase
     /// <summary>
     /// Sets the name-tag text color.
     /// </summary>
+    /// <param name="color">The color to apply.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public NameTagWidget SetTextColor(SKColor color)
     {
         TextBlock.SetColors(color, SKColors.Transparent);
@@ -154,6 +164,8 @@ public sealed class NameTagWidget : WidgetBase
     /// <summary>
     /// Sets the background color.
     /// </summary>
+    /// <param name="color">The color to apply.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public NameTagWidget SetBackgroundColor(Color color)
     {
         Background.SetColor(color);
@@ -164,6 +176,8 @@ public sealed class NameTagWidget : WidgetBase
     /// <summary>
     /// Shows or hides the background while preserving the text.
     /// </summary>
+    /// <param name="visible">Whether the content is visible.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public NameTagWidget ShowBackground(bool visible = true)
     {
         _backgroundVisible = visible;
@@ -174,6 +188,8 @@ public sealed class NameTagWidget : WidgetBase
     /// <summary>
     /// Sets the base Z-order used by the name-tag visuals.
     /// </summary>
+    /// <param name="zOrder">The drawing order relative to other content.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public NameTagWidget SetNameTagZOrder(int zOrder)
     {
         Background.ZOrder = zOrder;

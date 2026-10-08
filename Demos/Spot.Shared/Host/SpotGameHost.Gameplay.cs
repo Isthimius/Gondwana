@@ -12,9 +12,21 @@ internal sealed partial class SpotGameRuntime
 
     internal SpotGame SpotGame { get; private set; } = null!;
 
+    /// <summary>
+    /// Gets whether music enabled is enabled.
+    /// </summary>
     public bool MusicEnabled { get; private set; } = true;
+    /// <summary>
+    /// Gets whether sound effects enabled is enabled.
+    /// </summary>
     public bool SoundEffectsEnabled { get; private set; } = true;
+    /// <summary>
+    /// Gets whether jiggle enabled is enabled.
+    /// </summary>
     public bool JiggleEnabled { get; private set; } = true;
+    /// <summary>
+    /// Gets whether clouds enabled is enabled.
+    /// </summary>
     public bool CloudsEnabled { get; private set; } = true;
 
     internal void SetMusicEnabled(bool enabled)

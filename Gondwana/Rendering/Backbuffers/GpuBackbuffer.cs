@@ -240,6 +240,8 @@ public class GpuBackbuffer : BackbufferBase
     /// <summary>
     /// Queues an explicit logical resolution change for the next owning GL callback.
     /// </summary>
+    /// <param name="width">The width.</param>
+    /// <param name="height">The height.</param>
     protected internal override void RequestResize(int width, int height)
         => Interlocked.Exchange(ref _requestedResolution, new(width, height));
 
@@ -248,6 +250,8 @@ public class GpuBackbuffer : BackbufferBase
     /// Adapter dimensions are deliberately absent: window resize never reallocates this surface.
     /// Returns true when a new surface needs its first complete frame.
     /// </summary>
+    /// <param name="context">The context.</param>
+    /// <returns><see langword="true"/> if initialization succeeded; otherwise, <see langword="false"/>.</returns>
     public bool EnsureInitialized(GRContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
@@ -319,6 +323,7 @@ public class GpuBackbuffer : BackbufferBase
     /// the same <c>PaintSurface</c> call).
     /// </remarks>
     /// <exception cref="ObjectDisposedException">Thrown if the backbuffer has been disposed.</exception>
+    /// <returns>An image snapshot of the current backbuffer.</returns>
     protected internal override SKImage Snapshot()
     {
         if (_disposed || _surface is null)
@@ -339,6 +344,7 @@ public class GpuBackbuffer : BackbufferBase
     /// Returns the number of frames recorded since the last call and atomically resets the
     /// counter to zero.  Called by the engine's CPS sampler on the background thread.
     /// </summary>
+    /// <returns>The number of frames recorded since the previous call.</returns>
     internal long ConsumeFrameCount() => Interlocked.Exchange(ref _frameCount, 0);
 
     // ── Surface creation helpers ─────────────────────────────────────────────

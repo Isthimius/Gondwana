@@ -82,12 +82,14 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
     {
     }
 
+    /// <inheritdoc/>
     protected override void LoadTilesheets()
     {
         string assetsDirectory = Path.Combine(AppContext.BaseDirectory, "assets");
         GameArt.Load(Engine.Managers.Tilesheets, assetsDirectory);
     }
 
+    /// <inheritdoc/>
     protected override Scene CreateInitialScene()
     {
         var scene = new Scene();
@@ -118,6 +120,7 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
         return scene;
     }
 
+    /// <inheritdoc/>
     protected override void OnSceneBound()
     {
         RenderSurface.Host.Backbuffer.ClearColor = new SKColor(18, 24, 27);
@@ -127,6 +130,7 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
         camera.SnapTo(PointF.Empty);
     }
 
+    /// <inheritdoc/>
     protected override void CreateSprites()
     {
         CreateWorldSprites();
@@ -136,6 +140,7 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
         camera.CenterOnGrid(_actorLayer, (int)OverworldSpawn.X, (int)OverworldSpawn.Y);
     }
 
+    /// <inheritdoc/>
     protected override void CreateDirectDrawings()
     {
         CreateHealthBars();
@@ -143,6 +148,7 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
         EnterTitleMode();
     }
 
+    /// <inheritdoc/>
     protected override void OnKeyboardAdapterInitialized()
     {
         var keyboard = Engine.Input.KeyboardEventPoller!;
@@ -152,6 +158,7 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
             keyboard.StartMonitoringKey((int)key, key.ToString());
     }
 
+    /// <inheritdoc/>
     protected override void OnEngineInitialized()
     {
         //Engine.Configuration.TargetFPS = 60;
@@ -162,6 +169,7 @@ internal sealed partial class ZeldaGameHost : WinFormsGpuGameHost
         Engine.AfterBackgroundTasksExecute += AfterBackgroundTasksExecute;
     }
 
+    /// <inheritdoc/>
     protected override void UnhookEvents()
     {
         if (Engine.Input.KeyboardEventPoller is not null)

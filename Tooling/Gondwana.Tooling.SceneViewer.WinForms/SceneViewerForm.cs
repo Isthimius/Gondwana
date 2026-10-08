@@ -31,6 +31,7 @@ internal sealed class SceneViewerForm : Form
         Controls.Add(_surface);
     }
 
+    /// <inheritdoc/>
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
@@ -56,6 +57,7 @@ internal sealed class SceneViewerForm : Form
         BeginInvoke(Close);
     }
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing)

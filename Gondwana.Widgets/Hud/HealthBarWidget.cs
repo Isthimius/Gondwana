@@ -190,6 +190,8 @@ public sealed class HealthBarWidget : WidgetBase
     /// <summary>
     /// Sets the current health and returns this widget for fluent setup.
     /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public HealthBarWidget SetValue(float value)
     {
         Value = value;
@@ -199,6 +201,8 @@ public sealed class HealthBarWidget : WidgetBase
     /// <summary>
     /// Sets the fill color and returns this widget.
     /// </summary>
+    /// <param name="color">The color to apply.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public HealthBarWidget SetFillColor(Color color)
     {
         _fill.SetColor(color);

@@ -29,6 +29,7 @@ internal sealed class GameWindow : Window
     }
 
     // Create the host once the window is fully loaded.
+    /// <inheritdoc/>
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
@@ -37,6 +38,7 @@ internal sealed class GameWindow : Window
         _host.Initialize(logLevel: LogLevel.Warning);
     }
 
+    /// <inheritdoc/>
     protected override void OnClosed(EventArgs e)
     {
         _host?.Dispose();

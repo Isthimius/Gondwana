@@ -4,8 +4,14 @@ using Gondwana.Rendering.Backbuffers;
 
 namespace Gondwana.Tests.Drawing.Direct;
 
+/// <summary>
+/// Contains regression tests for direct drawing movable base.
+/// </summary>
 public sealed class DirectDrawingMovableBaseTests
 {
+    /// <summary>
+    /// Verifies update before movement initialization does not throw.
+    /// </summary>
     [Fact]
     public void Update_BeforeMovementInitialization_DoesNotThrow()
     {
@@ -30,6 +36,7 @@ public sealed class DirectDrawingMovableBaseTests
         {
         }
 
+        /// <inheritdoc/>
         protected override void OnDraw(
             BackbufferBase backbuffer,
             System.Drawing.RectangleF destRectScreen)

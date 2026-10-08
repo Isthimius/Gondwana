@@ -8,6 +8,7 @@ namespace Gondwana.Tooling.WinForms;
 internal sealed class PersistentDockContent(string persistenceId) : DockContent
 {
     internal string PersistenceId { get; } = persistenceId;
+    /// <inheritdoc/>
     protected override string GetPersistString() => PersistenceId;
 }
 
@@ -156,6 +157,9 @@ internal sealed class DockLayoutPersistence : IDisposable
 
     private static bool Equal(byte[] a, byte[]? b) => b is not null && a.AsSpan().SequenceEqual(b);
 
+    /// <summary>
+    /// Releases the resources owned by this instance.
+    /// </summary>
     public void Dispose()
     {
         if (_disposed) return;

@@ -18,6 +18,12 @@ public sealed class StackPanelWidget : ContainerWidget
     /// Creates a stack panel in the supplied drawing mode.
     /// The first child establishes the view or scene-layer target.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="mode">The mode.</param>
+    /// <param name="anchor">The anchor.</param>
+    /// <param name="orientation">The orientation.</param>
+    /// <param name="spacing">The spacing.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public StackPanelWidget(RenderSurfaceHostBase renderSurfaceHost,
                             DirectDrawingMode mode,
                             PointF anchor = default,
@@ -75,6 +81,8 @@ public sealed class StackPanelWidget : ContainerWidget
     /// <summary>
     /// Adds a child widget and immediately recalculates layout.
     /// </summary>
+    /// <param name="widget">The widget.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public StackPanelWidget AddWidget(WidgetBase widget)
     {
         ArgumentNullException.ThrowIfNull(widget);
@@ -85,6 +93,9 @@ public sealed class StackPanelWidget : ContainerWidget
     /// <summary>
     /// Removes a child widget and immediately recalculates layout.
     /// </summary>
+    /// <param name="widget">The widget.</param>
+    /// <param name="dispose">Whether to dispose the removed resource.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public StackPanelWidget RemoveWidget(WidgetBase widget, bool dispose = false)
     {
         ArgumentNullException.ThrowIfNull(widget);
@@ -98,6 +109,7 @@ public sealed class StackPanelWidget : ContainerWidget
     /// <summary>
     /// Recalculates every child offset from the current orientation and spacing.
     /// </summary>
+    /// <returns>This instance for fluent chaining.</returns>
     public StackPanelWidget Relayout()
     {
         WidgetBase[] widgets = ChildWidgets.ToArray();

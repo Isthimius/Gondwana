@@ -5,10 +5,22 @@ using Gondwana.Drawing.Tilesheets.GTS;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for spot asset package.
+/// </summary>
 public sealed class SpotAssetPackageTests
 {
     private static string PackagePath => Path.Combine(AppContext.BaseDirectory, "assets", "spot.gaf");
 
+    /// <summary>
+    /// Verifies packaged definitions preserve every gameplay frame.
+    /// </summary>
+    /// <param name="name">The name value for this test case.</param>
+    /// <param name="sheetName">The sheet name value for this test case.</param>
+    /// <param name="width">The width value for this test case.</param>
+    /// <param name="height">The height value for this test case.</param>
+    /// <param name="columns">The columns value for this test case.</param>
+    /// <param name="rows">The rows value for this test case.</param>
     [Theory]
     [InlineData("spot_defaults", "spots", 93, 96, 1, 5)]
     [InlineData("spot_selected", "selected", 64, 64, 5, 1)]
@@ -53,6 +65,11 @@ public sealed class SpotAssetPackageTests
         }
     }
 
+    /// <summary>
+    /// Verifies package contains supporting runtime assets.
+    /// </summary>
+    /// <param name="type">The type value for this test case.</param>
+    /// <param name="name">The name value for this test case.</param>
     [Theory]
     [InlineData(AssetTypes.Image, "spot.png")]
     [InlineData(AssetTypes.Image, "clouds.png")]

@@ -11,8 +11,16 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
+/// <summary>
+/// Contains regression tests for composition.
+/// </summary>
 public sealed class CompositionTests
 {
+    /// <summary>
+    /// Verifies real editors save rekey recover panes and dispose.
+    /// </summary>
+    /// <param name="format">The format value for this test case.</param>
+    /// <param name="editorType">The editor type value for this test case.</param>
     [Theory]
     [InlineData("gaf", typeof(AssetEditorControl))]
     [InlineData("gts", typeof(TilesheetEditorControl))]
@@ -102,6 +110,9 @@ public sealed class CompositionTests
         Assert.Equal(model.PaneNames.Count, Assert.Single(Descendants(reopened.Document.Editor).OfType<DockPanel>()).Contents.Count);
     });
 
+    /// <summary>
+    /// Verifies mixed documents close cancel save and shutdown are transactional.
+    /// </summary>
     [Fact]
     public void MixedDocuments_CloseCancelSaveAndShutdownAreTransactional() => RunSta(directory =>
     {
@@ -132,6 +143,9 @@ public sealed class CompositionTests
         Assert.All(documents, doc => Assert.True(doc.Document.Editor.IsDisposed));
     });
 
+    /// <summary>
+    /// Verifies encrypted asset toolbar save as adopts path without registering runtime assets.
+    /// </summary>
     [Fact]
     public void EncryptedAssetToolbarSaveAsAdoptsPathWithoutRegisteringRuntimeAssets() => RunSta(directory =>
     {
@@ -168,6 +182,9 @@ public sealed class CompositionTests
         Assert.Equal(registry, AssetsFile.AllAssetsFiles);
     });
 
+    /// <summary>
+    /// Verifies cancelled or failed saves keep document open and path unchanged.
+    /// </summary>
     [Fact]
     public void CancelledOrFailedSavesKeepDocumentOpenAndPathUnchanged() => RunSta(directory =>
     {
@@ -195,6 +212,9 @@ public sealed class CompositionTests
         Assert.Same(document, studio.OpenDocument(destination));
     });
 
+    /// <summary>
+    /// Verifies view tracks active editor and restores global tools.
+    /// </summary>
     [Fact]
     public void ViewTracksActiveEditorAndRestoresGlobalTools() => RunSta(directory =>
     {
@@ -219,6 +239,9 @@ public sealed class CompositionTests
         Assert.False(output.IsHidden);
     });
 
+    /// <summary>
+    /// Verifies selected project folder persists and missing folder falls back.
+    /// </summary>
     [Fact]
     public void SelectedProjectFolderPersistsAndMissingFolderFallsBack() => RunSta(directory =>
     {
@@ -234,6 +257,11 @@ public sealed class CompositionTests
         Assert.Equal(Path.GetFullPath(Environment.CurrentDirectory), fallback.Browser.WorkingDirectory);
     });
 
+    /// <summary>
+    /// Verifies dispatch uses current formats.
+    /// </summary>
+    /// <param name="extension">The extension value for this test case.</param>
+    /// <param name="format">The format value for this test case.</param>
     [Theory]
     [InlineData(".gaf", "gaf")]
     [InlineData(".zip", "gaf")]
@@ -246,6 +274,9 @@ public sealed class CompositionTests
     public void DispatchUsesCurrentFormats(string extension, string? format) =>
         Assert.Equal(format, StudioDocument.FormatFor("test" + extension));
 
+    /// <summary>
+    /// Verifies browser is lazy and handles missing directories.
+    /// </summary>
     [Fact]
     public void BrowserIsLazyAndHandlesMissingDirectories() => RunSta(directory =>
     {

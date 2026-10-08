@@ -114,6 +114,9 @@ public sealed class Camera
     /// <see cref="SceneLayer"/>. The tile's visual center is placed at the
     /// center of the view.
     /// </summary>
+    /// <param name="layer">The layer.</param>
+    /// <param name="col">The col.</param>
+    /// <param name="row">The row.</param>
     public void CenterOnGrid(SceneLayer layer, int col, int row)
     {
         // Anchor (top-left of tile)
@@ -155,6 +158,10 @@ public sealed class Camera
     /// Smoothly pans the camera until the specified grid tile is centered in
     /// the view. Uses the given follow speed for the motion.
     /// </summary>
+    /// <param name="layer">The layer.</param>
+    /// <param name="col">The col.</param>
+    /// <param name="row">The row.</param>
+    /// <param name="speed">The speed.</param>
     public void AnimateCenterOnGrid(SceneLayer layer, int col, int row, float speed)
     {
         // Compute world center of the tile and reuse PanCenterTo.
@@ -327,6 +334,7 @@ public sealed class Camera
     /// This adds the offset to the current camera position without changing
     /// any follow or pan targets.
     /// </summary>
+    /// <param name="deltaPx">The delta px.</param>
     public void PanBy(PointF deltaPx)
     {
         SnapTo(new PointF(PositionPx.X + deltaPx.X,
@@ -416,6 +424,9 @@ public sealed class Camera
     /// stays centered in the view. Supports both grid-space and pixel-space
     /// movement, using the current coordinate system for the layer.
     /// </summary>
+    /// <param name="target">The target.</param>
+    /// <param name="speed">The speed.</param>
+    /// <param name="hard">Whether the light uses a hard edge.</param>
     public void FollowCentered(IMovableOnSceneLayer target, float speed = -1f, bool hard = false)
     {
         FollowAt(target, new PointF(0.5f, 0.5f), speed, hard);
@@ -462,6 +473,9 @@ public sealed class Camera
     /// Smoothly follows an IMovable target, centering it horizontally only.
     /// Vertical camera position is left unchanged.
     /// </summary>
+    /// <param name="target">The target.</param>
+    /// <param name="speed">The speed.</param>
+    /// <param name="hard">Whether the light uses a hard edge.</param>
     public void FollowCenteredX(IMovableOnSceneLayer target, float speed = -1f, bool hard = false)
     {
         FollowAtX(target, 0.5f, speed, hard);
@@ -521,6 +535,9 @@ public sealed class Camera
     /// Smoothly follows an IMovable target, centering it vertically only.
     /// Horizontal camera position is left unchanged.
     /// </summary>
+    /// <param name="target">The target.</param>
+    /// <param name="speed">The speed.</param>
+    /// <param name="hard">Whether the light uses a hard edge.</param>
     public void FollowCenteredY(IMovableOnSceneLayer target, float speed = -1f, bool hard = false)
     {
         FollowAtY(target, 0.5f, speed, hard);
@@ -795,6 +812,9 @@ public sealed class Camera
     /// Computes the world-space center point of a tile at the given grid
     /// position within a SceneLayer.
     /// </summary>
+    /// <param name="layer">The scene layer whose geometry is queried.</param>
+    /// <param name="gridPos">The tile position in layer grid coordinates.</param>
+    /// <returns>The center of the selected tile in world pixels.</returns>
     private static PointF GetCenteredTile(SceneLayer layer, Vector2 gridPos)
     {
         var anchor = layer.GridToWorldPx(new PointF(gridPos.X, gridPos.Y));

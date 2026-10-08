@@ -5,13 +5,23 @@ using Spectre.Console.Cli;
 
 namespace Gondwana.Tests.Cli;
 
+/// <summary>
+/// Contains regression tests for published server.
+/// </summary>
 [Collection("Global engine state")]
 public sealed class PublishedServerTests : IDisposable
 {
     private readonly string root = Path.Combine(Path.GetTempPath(), "GondwanaServe_" + Guid.NewGuid().ToString("N"));
+    /// <summary>
+    /// Initializes a new instance of the <c>PublishedServerTests</c> class.
+    /// </summary>
     public PublishedServerTests() => Directory.CreateDirectory(root);
+    /// <inheritdoc/>
     public void Dispose() => Directory.Delete(root, recursive: true);
 
+    /// <summary>
+    /// Verifies discovery requires published output and supports runtime subdirectory.
+    /// </summary>
     [Fact]
     public void Discovery_RequiresPublishedOutput_AndSupportsRuntimeSubdirectory()
     {
@@ -33,6 +43,10 @@ public sealed class PublishedServerTests : IDisposable
         Assert.Equal(published, ServeCommand.ResolveRoot(new() { Root = published }));
     }
 
+    /// <summary>
+    /// Verifies server sends isolation and mime headers handles head and base path stops cleanly.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task Server_SendsIsolationAndMimeHeaders_HandlesHeadAndBasePath_StopsCleanly()
     {

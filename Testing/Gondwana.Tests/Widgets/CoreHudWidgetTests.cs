@@ -7,8 +7,14 @@ using Gondwana.Widgets.Layout;
 
 namespace Gondwana.Tests.Widgets;
 
+/// <summary>
+/// Contains regression tests for core hud widget.
+/// </summary>
 public sealed class CoreHudWidgetTests
 {
+    /// <summary>
+    /// Verifies label widget exposes text and screen bounds.
+    /// </summary>
     [Fact]
     public void LabelWidget_ExposesTextAndScreenBounds()
     {
@@ -27,6 +33,9 @@ public sealed class CoreHudWidgetTests
         Assert.Equal(new Rectangle(10, 20, 120, 30), label.Bounds);
     }
 
+    /// <summary>
+    /// Verifies progress bar widget fills proportionally in both orientations.
+    /// </summary>
     [Fact]
     public void ProgressBarWidget_FillsProportionallyInBothOrientations()
     {
@@ -50,6 +59,9 @@ public sealed class CoreHudWidgetTests
         Assert.Equal(progress.TrackBounds.Bottom - progress.Padding, progress.FillBounds.Bottom);
     }
 
+    /// <summary>
+    /// Verifies stack panel widget spaces children vertically and horizontally.
+    /// </summary>
     [Fact]
     public void StackPanelWidget_SpacesChildrenVerticallyAndHorizontally()
     {
@@ -79,6 +91,9 @@ public sealed class CoreHudWidgetTests
         Assert.Equal(new SizeF(185, 20), stack.ContentSize);
     }
 
+    /// <summary>
+    /// Verifies panel widget moves child with panel anchor.
+    /// </summary>
     [Fact]
     public void PanelWidget_MovesChildWithPanelAnchor()
     {
@@ -102,6 +117,9 @@ public sealed class CoreHudWidgetTests
         Assert.Equal(new Point(100, 200), panel.Bounds.Location);
     }
 
+    /// <summary>
+    /// Verifies label widget size and padding use layout invalidating apis.
+    /// </summary>
     [Fact]
     public void LabelWidget_SizeAndPaddingUseLayoutInvalidatingApis()
     {
@@ -122,6 +140,9 @@ public sealed class CoreHudWidgetTests
         Assert.Equal(4f, label.TextBlock.VerticalPadding);
     }
 
+    /// <summary>
+    /// Verifies panel widget set panel z order preserves composite child internal z order.
+    /// </summary>
     [Fact]
     public void PanelWidget_SetPanelZOrder_PreservesCompositeChildInternalZOrder()
     {

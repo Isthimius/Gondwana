@@ -6,8 +6,15 @@ internal sealed class AssetTypePickerForm : Form
 {
     private readonly ComboBox _comboBox;
 
+    /// <summary>
+    /// Gets the selected type.
+    /// </summary>
     public AssetTypes SelectedType => (AssetTypes)_comboBox.SelectedItem!;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>AssetTypePickerForm</c> class.
+    /// </summary>
+    /// <param name="filePaths">The file paths.</param>
     public AssetTypePickerForm(IEnumerable<string> filePaths)
     {
         var fileNames = filePaths

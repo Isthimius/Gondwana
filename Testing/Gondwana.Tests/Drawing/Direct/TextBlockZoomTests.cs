@@ -9,6 +9,10 @@ namespace Gondwana.Tests.Drawing.Direct;
 /// </summary>
 public sealed class TextBlockZoomTests
 {
+    /// <summary>
+    /// Verifies resolve text scale scene layer mode uses viewport zoom.
+    /// </summary>
+    /// <param name="viewportZoom">The viewport zoom value for this test case.</param>
     [Theory]
     [InlineData(0.5f)]
     [InlineData(1f)]
@@ -24,6 +28,10 @@ public sealed class TextBlockZoomTests
         Assert.Equal(viewportZoom, scale);
     }
 
+    /// <summary>
+    /// Verifies resolve text scale view mode remains screen sized.
+    /// </summary>
+    /// <param name="viewportZoom">The viewport zoom value for this test case.</param>
     [Theory]
     [InlineData(0.5f)]
     [InlineData(1f)]
@@ -39,6 +47,10 @@ public sealed class TextBlockZoomTests
         Assert.Equal(1f, scale);
     }
 
+    /// <summary>
+    /// Verifies resolve text scale invalid scene layer zoom falls back to one.
+    /// </summary>
+    /// <param name="viewportZoom">The viewport zoom value for this test case.</param>
     [Theory]
     [InlineData(0f)]
     [InlineData(-1f)]

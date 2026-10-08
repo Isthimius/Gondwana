@@ -4,8 +4,14 @@ using Gondwana.Scenes;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for scene layer tile collision.
+/// </summary>
 public sealed class SceneLayerTileCollisionTests
 {
+    /// <summary>
+    /// Verifies layer tile can configure and register its public collider.
+    /// </summary>
     [Fact]
     public void LayerTile_CanConfigureAndRegisterItsPublicCollider()
     {

@@ -8,6 +8,9 @@ using SkiaSharp;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for tilesheet collision type.
+/// </summary>
 [Collection("SpriteManager")]
 public sealed class TilesheetCollisionTypeTests : IDisposable
 {
@@ -15,17 +18,24 @@ public sealed class TilesheetCollisionTypeTests : IDisposable
         Path.GetTempPath(),
         $"GondwanaCollisionTypeTests_{Guid.NewGuid():N}");
 
+    /// <summary>
+    /// Initializes a new instance of the <c>TilesheetCollisionTypeTests</c> class.
+    /// </summary>
     public TilesheetCollisionTypeTests()
     {
         Directory.CreateDirectory(_tempDir);
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         if (Directory.Exists(_tempDir))
             Directory.Delete(_tempDir, recursive: true);
     }
 
+    /// <summary>
+    /// Verifies region collision type updates inherited frames and preserves overrides.
+    /// </summary>
     [Fact]
     public void RegionCollisionType_UpdatesInheritedFramesAndPreservesOverrides()
     {
@@ -54,6 +64,9 @@ public sealed class TilesheetCollisionTypeTests : IDisposable
         Assert.Equal(TileCollisionType.None, triggerFrame.CollisionType);
     }
 
+    /// <summary>
+    /// Verifies tile collision type can remain static or follow frames.
+    /// </summary>
     [Fact]
     public void TileCollisionType_CanRemainStaticOrFollowFrames()
     {
@@ -99,6 +112,9 @@ public sealed class TilesheetCollisionTypeTests : IDisposable
         }
     }
 
+    /// <summary>
+    /// Verifies gts round trip preserves inherited and explicit collision types.
+    /// </summary>
     [Fact]
     public void Gts_RoundTripPreservesInheritedAndExplicitCollisionTypes()
     {

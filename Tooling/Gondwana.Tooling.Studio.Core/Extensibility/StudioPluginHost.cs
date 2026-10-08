@@ -22,6 +22,8 @@ public class StudioPluginHost
     public StudioPluginHost(Action<string> log) : this(log, []) { }
 
     /// <summary>Creates a host sharing the core contract and the supplied platform contracts.</summary>
+    /// <param name="log">The log.</param>
+    /// <param name="sharedContracts">The shared contracts.</param>
     public StudioPluginHost(Action<string> log, params Assembly[] sharedContracts)
     {
         _log = log;
@@ -33,6 +35,7 @@ public class StudioPluginHost
         _plugins.Where(p => p.Enabled).Select(p => p.Instance).ToArray();
 
     /// <summary>Attaches optional services to already discovered plugins on the UI thread.</summary>
+    /// <param name="services">The services.</param>
     public void AttachHostServices(IStudioPluginHostServices services)
     {
         ArgumentNullException.ThrowIfNull(services);
@@ -49,6 +52,7 @@ public class StudioPluginHost
         => DiscoverAndLoad(Path.Combine(AppContext.BaseDirectory, "plugins"));
 
     /// <summary>Discovers plugins in an explicit directory, useful for hosts and integration tests.</summary>
+    /// <param name="pluginDir">The plugin dir.</param>
     public void DiscoverAndLoad(string pluginDir)
     {
         pluginDir = Path.GetFullPath(pluginDir);
@@ -64,6 +68,7 @@ public class StudioPluginHost
     }
 
     /// <summary>Notifies all enabled plugins that a project was opened.</summary>
+    /// <param name="projectPath">The project path.</param>
     public void NotifyProjectOpened(string projectPath)
     {
         foreach (var plugin in _plugins.Where(p => p.Enabled))
@@ -100,14 +105,19 @@ public class StudioPluginHost
     /// <typeparamref name="TPlugin"/>. Used by platform-specific subclasses to retrieve
     /// plugins that provide UI contributions.
     /// </summary>
+    /// <typeparam name="TPlugin">The type of plugin.</typeparam>
+    /// <returns>The loaded plugins assignable to the requested plugin type.</returns>
     protected IEnumerable<TPlugin> GetPluginsAs<TPlugin>() where TPlugin : class
         => _plugins.Where(p => p.Enabled && p.Instance is TPlugin)
                    .Select(p => (TPlugin)p.Instance);
 
     /// <summary>Writes a plugin-related message to the configured log sink.</summary>
+    /// <param name="message">The message.</param>
     protected void Log(string message) => _log(message);
 
     /// <summary>Disables a plugin that threw during a lifecycle call.</summary>
+    /// <param name="plugin">The plugin.</param>
+    /// <param name="reason">The reason.</param>
     protected void DisablePlugin(LoadedPlugin plugin, string reason)
     {
         plugin.Enabled = false;
@@ -170,6 +180,8 @@ public class StudioPluginHost
         }
 
         /// <summary>Load.</summary>
+        /// <param name="assemblyName">The assembly name.</param>
+        /// <returns>The resulting assembly, or <see langword="null"/> when unavailable.</returns>
         protected override Assembly? Load(AssemblyName assemblyName)
         {
             // Contracts must have host identity even when a plugin ships private copies.
@@ -181,6 +193,8 @@ public class StudioPluginHost
         }
 
         /// <summary>LoadUnmanagedDll.</summary>
+        /// <param name="unmanagedDllName">The unmanaged dll name.</param>
+        /// <returns>The native-library handle, or zero when the library cannot be resolved.</returns>
         protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
         {
             var path = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
@@ -192,6 +206,9 @@ public class StudioPluginHost
     protected sealed class LoadedPlugin
     {
         /// <summary>LoadedPlugin.</summary>
+        /// <param name="instance">The instance.</param>
+        /// <param name="loadContext">The load context.</param>
+        /// <param name="sourcePath">The path to the external source file.</param>
         public LoadedPlugin(IStudioPlugin instance, AssemblyLoadContext loadContext, string sourcePath)
         {
             Instance = instance;

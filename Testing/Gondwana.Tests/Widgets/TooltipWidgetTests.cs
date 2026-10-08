@@ -7,6 +7,9 @@ namespace Gondwana.Tests.Widgets;
 /// <summary>Verifies reusable tooltip positioning and lifecycle behavior.</summary>
 public sealed class TooltipWidgetTests
 {
+    /// <summary>
+    /// Verifies tooltip clamps to view and does not intercept input.
+    /// </summary>
     [Fact]
     public void TooltipClampsToViewAndDoesNotInterceptInput()
     {

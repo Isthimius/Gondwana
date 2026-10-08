@@ -15,6 +15,9 @@ using Gondwana.Scenes;
 
 namespace Slider
 {
+    /// <summary>
+    /// Represents puzzle.
+    /// </summary>
     public class Puzzle : IDisposable
     {
         #region private / internal fields
@@ -42,6 +45,14 @@ namespace Slider
 
         #region constructors / destructor
 
+        /// <summary>
+        /// Initializes a new instance of the <c>Puzzle</c> class.
+        /// </summary>
+        /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+        /// <param name="imgFile">The img file.</param>
+        /// <param name="columns">The columns.</param>
+        /// <param name="rows">The rows.</param>
+        /// <param name="size">The size.</param>
         public Puzzle(RenderSurfaceHost<BitmapBackbuffer> renderSurfaceHost, string imgFile, int columns, int rows, Size size)
         {
             tilesheet = TilesheetRegistry.Instance.LoadFromImageFile("picture", imgFile);
@@ -98,42 +109,66 @@ namespace Slider
 
         #region public properties
 
+        /// <summary>
+        /// Gets the number of tile columns in the region.
+        /// </summary>
         public int Columns
         {
             get { return numColumns; }
         }
 
+        /// <summary>
+        /// Gets the number of tile rows in the region.
+        /// </summary>
         public int Rows
         {
             get { return numRows; }
         }
 
+        /// <summary>
+        /// Gets the original bitmap size.
+        /// </summary>
         public Size OriginalBitmapSize
         {
             get { return originalSize; }
         }
 
+        /// <summary>
+        /// Gets the adjusted bitmap size.
+        /// </summary>
         public Size AdjustedBitmapSize
         {
             get { return adjustedSize; }
         }
 
+        /// <summary>
+        /// Gets the open space.
+        /// </summary>
         public Point OpenSpace
         {
             get { return openSpace; }
         }
 
+        /// <summary>
+        /// Gets or sets whether show grid lines is enabled.
+        /// </summary>
         public bool ShowGridLines
         {
             get { return matrixes[0].ShowGridLines; }
             set { matrixes[0].ShowGridLines = value; }
         }
 
+        /// <summary>
+        /// Gets the total pieces.
+        /// </summary>
         public int TotalPieces
         {
             get { return SpriteManager.Instance.AllSprites.Count; }
         }
 
+        /// <summary>
+        /// Gets the total pieces correct.
+        /// </summary>
         public int TotalPiecesCorrect
         {
             get
@@ -156,6 +191,12 @@ namespace Slider
 
         #region public methods
 
+        /// <summary>
+        /// Slides the selected puzzle piece toward the empty cell when the move is legal.
+        /// </summary>
+        /// <param name="sprite">The sprite.</param>
+        /// <param name="slideTime">The slide time.</param>
+        /// <returns><see langword="true"/> if the piece was moved; otherwise, <see langword="false"/>.</returns>
         public bool SlidePiece(Sprite sprite, float slideTime)
         {
             if (FindSpritesAdjToOpenSpace().IndexOf(sprite) == -1)
@@ -182,6 +223,11 @@ namespace Slider
         private int _moveNumber;
         private Sprite _lastMoved;
 
+        /// <summary>
+        /// Shuffles the puzzle by making legal moves.
+        /// </summary>
+        /// <param name="totalMoves">The total moves.</param>
+        /// <param name="slideTime">The slide time.</param>
         public void Shuffle(int totalMoves, float slideTime)
         {
             _isShuffling = true;
@@ -215,6 +261,12 @@ namespace Slider
                 _isShuffling = false;
         }
 
+        /// <summary>
+        /// Gets grid coordinates.
+        /// </summary>
+        /// <param name="pxlX">The pxl x.</param>
+        /// <param name="pxlY">The pxl y.</param>
+        /// <returns>The puzzle cell coordinates corresponding to the supplied pixel position.</returns>
         public PointF GetGridCoordinates(int pxlX, int pxlY)
         {
             var view = _renderSurfaceHost.ViewManager.Views[0];
@@ -304,6 +356,9 @@ namespace Slider
 
         #region IDisposable Members
 
+        /// <summary>
+        /// Releases the resources owned by this instance.
+        /// </summary>
         public void Dispose()
         {
             GC.SuppressFinalize(this);

@@ -88,6 +88,7 @@ internal sealed class EditorDockWorkspace : UserControl
         }
     }
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing)

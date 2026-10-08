@@ -9,6 +9,9 @@ using static Gondwana.Drawing.Direct.TextBlock;
 
 namespace Gondwana.Demos.ParticleTest;
 
+/// <summary>
+/// Represents form1.
+/// </summary>
 public partial class Form1 : Form
 {
     private ParticleSurface? _particleSurface;
@@ -16,6 +19,9 @@ public partial class Form1 : Form
     private IDisposable? _profilerRequest;
     private double _lastProfilerSnapshotEnd;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>Form1</c> class.
+    /// </summary>
     public Form1()
     {
         InitializeComponent();

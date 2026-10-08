@@ -5,11 +5,18 @@ using Spectre.Console.Cli;
 
 namespace Gondwana.Tests.Cli;
 
+/// <summary>
+/// Contains regression tests for project development.
+/// </summary>
 [Collection("Global engine state")]
 public sealed class ProjectDevelopmentTests : IDisposable
 {
     private readonly string root = Path.Combine(Path.GetTempPath(), "GondwanaCli_" + Guid.NewGuid().ToString("N"));
+    /// <summary>
+    /// Initializes a new instance of the <c>ProjectDevelopmentTests</c> class.
+    /// </summary>
     public ProjectDevelopmentTests() => Directory.CreateDirectory(root);
+    /// <inheritdoc/>
     public void Dispose() => Directory.Delete(root, recursive: true);
 
     private string Project(string items = "<PackageReference Include=\"Gondwana\" Version=\"2.5.2\" />", string properties = "")
@@ -26,6 +33,10 @@ public sealed class ProjectDevelopmentTests : IDisposable
         return app.Run(args);
     }
 
+    /// <summary>
+    /// Verifies doctor explains app local video runtime without claiming system probe validates it.
+    /// </summary>
+    /// <param name="package">The package value for this test case.</param>
     [Theory]
     [InlineData("Gondwana.Video")]
     [InlineData("Gondwana.Video.Widgets")]
@@ -45,6 +56,11 @@ public sealed class ProjectDevelopmentTests : IDisposable
         finally { Directory.SetCurrentDirectory(previous); }
     }
 
+    /// <summary>
+    /// Verifies video widgets feature is desktop only.
+    /// </summary>
+    /// <param name="host">The host value for this test case.</param>
+    /// <param name="supported">The supported value for this test case.</param>
     [Theory]
     [InlineData("WinForms", true)]
     [InlineData("Avalonia", true)]
@@ -60,6 +76,9 @@ public sealed class ProjectDevelopmentTests : IDisposable
             Assert.Equal(before, File.ReadAllBytes(path));
     }
 
+    /// <summary>
+    /// Verifies resolution accepts file or directory rejects missing and ambiguous.
+    /// </summary>
     [Fact]
     public void Resolution_AcceptsFileOrDirectory_RejectsMissingAndAmbiguous()
     {
@@ -73,6 +92,9 @@ public sealed class ProjectDevelopmentTests : IDisposable
         Assert.False(ProjectHelper.TryResolveProject(Path.Combine(root, "missing"), out _, out _));
     }
 
+    /// <summary>
+    /// Verifies check detects version mismatch and fix rechecks.
+    /// </summary>
     [Fact]
     public void Check_DetectsVersionMismatch_AndFixRechecks()
     {
@@ -83,6 +105,9 @@ public sealed class ProjectDevelopmentTests : IDisposable
         Assert.All(new ProjectPackages(path).Packages, p => Assert.Equal("2.6.0", p.Version));
     }
 
+    /// <summary>
+    /// Verifies check fix refuses to downgrade or select optional hosting.
+    /// </summary>
     [Fact]
     public void CheckFix_RefusesToDowngradeOrSelectOptionalHosting()
     {
@@ -92,6 +117,9 @@ public sealed class ProjectDevelopmentTests : IDisposable
         Assert.Equal(before, File.ReadAllBytes(path));
     }
 
+    /// <summary>
+    /// Verifies upgrade dry run leaves all bytes unchanged then updates only family.
+    /// </summary>
     [Fact]
     public void Upgrade_DryRunLeavesAllBytesUnchanged_ThenUpdatesOnlyFamily()
     {
@@ -111,6 +139,9 @@ public sealed class ProjectDevelopmentTests : IDisposable
         Assert.Equal(updated, File.ReadAllBytes(path));
     }
 
+    /// <summary>
+    /// Verifies upgrade updates shared property without replacing references.
+    /// </summary>
     [Fact]
     public void Upgrade_UpdatesSharedProperty_WithoutReplacingReferences()
     {
@@ -120,6 +151,9 @@ public sealed class ProjectDevelopmentTests : IDisposable
         Assert.Contains("Version=\"$(GondwanaVersion)\"", File.ReadAllText(path));
     }
 
+    /// <summary>
+    /// Verifies upgrade respects central versions and only referenced packages.
+    /// </summary>
     [Fact]
     public void Upgrade_RespectsCentralVersions_AndOnlyReferencedPackages()
     {
@@ -139,6 +173,11 @@ public sealed class ProjectDevelopmentTests : IDisposable
         Assert.All(XDocument.Load(path).Descendants("PackageReference"), p => Assert.Null(p.Attribute("Version")));
     }
 
+    /// <summary>
+    /// Verifies upgrade rejects ambiguity without mutation.
+    /// </summary>
+    /// <param name="items">The items value for this test case.</param>
+    /// <param name="properties">The properties value for this test case.</param>
     [Theory]
     [InlineData("<PackageReference Include=\"Gondwana\" Version=\"2.*\" />", "")]
     [InlineData("<PackageReference Include=\"Gondwana\" Version=\"2.5.2\" Condition=\"'$(X)' == 'true'\" />", "")]
@@ -152,6 +191,9 @@ public sealed class ProjectDevelopmentTests : IDisposable
         Assert.Equal(before, File.ReadAllBytes(path));
     }
 
+    /// <summary>
+    /// Verifies add is idempotent and uses existing family version.
+    /// </summary>
     [Fact]
     public void Add_IsIdempotent_AndUsesExistingFamilyVersion()
     {
@@ -175,6 +217,9 @@ public sealed class ProjectDevelopmentTests : IDisposable
         Assert.Equal(afterAudio, File.ReadAllBytes(path));
     }
 
+    /// <summary>
+    /// Verifies add fails without gondwana.
+    /// </summary>
     [Fact]
     public void Add_FailsWithoutGondwana()
     {
@@ -182,6 +227,10 @@ public sealed class ProjectDevelopmentTests : IDisposable
         Assert.Equal(1, Run("add", "widgets", "-p", path));
     }
 
+    /// <summary>
+    /// Verifies add hosting uses actual adapter.
+    /// </summary>
+    /// <param name="host">The host value for this test case.</param>
     [Theory]
     [InlineData("WinForms")]
     [InlineData("Avalonia")]
@@ -213,6 +262,10 @@ public sealed class ProjectDevelopmentTests : IDisposable
             Assert.Equal(1, Run("add", "video", "-p", path));
     }
 
+    /// <summary>
+    /// Verifies add audio and midi win forms adapter does not override incompatible targets.
+    /// </summary>
+    /// <param name="targets">The targets value for this test case.</param>
     [Theory]
     [InlineData("net8.0;net8.0-windows")]
     [InlineData("net8.0")]
@@ -227,6 +280,11 @@ public sealed class ProjectDevelopmentTests : IDisposable
         Assert.Equal(before, File.ReadAllBytes(path));
     }
 
+    /// <summary>
+    /// Verifies add audio and midi respect desktop targets.
+    /// </summary>
+    /// <param name="target">The target value for this test case.</param>
+    /// <param name="supported">The supported value for this test case.</param>
     [Theory]
     [InlineData("net8.0-windows", true)]
     [InlineData("net8.0-windows10.0.19041.0", true)]
@@ -249,6 +307,10 @@ public sealed class ProjectDevelopmentTests : IDisposable
         Assert.Equal(target, XDocument.Load(path).Descendants("TargetFrameworks").Single().Value);
     }
 
+    /// <summary>
+    /// Verifies latest version uses common stable intersection.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task LatestVersion_UsesCommonStableIntersection()
     {
@@ -257,6 +319,10 @@ public sealed class ProjectDevelopmentTests : IDisposable
         await Assert.ThrowsAsync<InvalidOperationException>(() => PackageVersions.LatestCommonStable(["Gondwana"], _ => Task.FromResult(new[] { "3.0.0-beta" })));
     }
 
+    /// <summary>
+    /// Verifies asset scan reports unreadable directory and continues with siblings.
+    /// </summary>
+    /// <param name="denied">The denied value for this test case.</param>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]

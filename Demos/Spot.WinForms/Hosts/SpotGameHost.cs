@@ -26,6 +26,7 @@ internal sealed partial class SpotGameHost : WinFormsGpuGameHost
         return AssetsFile.Load(stream, register: false);
     }
 
+    /// <inheritdoc/>
     protected override void OnDisposed()
     {
         _assets.Dispose();
@@ -59,6 +60,7 @@ internal sealed partial class SpotGameHost : WinFormsGpuGameHost
 
     internal void SetCloudsEnabled(bool enabled) => _runtime.SetCloudsEnabled(enabled);
 
+    /// <inheritdoc/>
     protected override Scene CreateInitialScene()
     {
         Logging.EngineLogger.SetLogLevel(LogLevel.Information);
@@ -124,12 +126,16 @@ internal sealed partial class SpotGameHost : WinFormsGpuGameHost
 
     private static string FormatRate(double? rate) => rate?.ToString("0.0") ?? "n/a";
 
+    /// <inheritdoc/>
     protected override void OnSceneGraphCreated() => _runtime.OnSceneGraphCreated();
 
+    /// <inheritdoc/>
     protected override void OnMouseAdapterInitialized() => _runtime.OnMouseAdapterInitialized();
 
+    /// <inheritdoc/>
     protected override void OnKeyboardAdapterInitialized() => _runtime.OnKeyboardAdapterInitialized();
 
+    /// <inheritdoc/>
     protected override void UnhookEvents()
     {
         Engine.AfterBackgroundTasksExecute -= LogRuntimeProfilerSample;
@@ -138,12 +144,14 @@ internal sealed partial class SpotGameHost : WinFormsGpuGameHost
         _runtime.UnhookEvents();
     }
 
+    /// <inheritdoc/>
     protected override void CreateDirectDrawings()
     {
         // Deliberately empty: startup presentation is created in BeginPostSplashStartup()
         // so it does not appear beneath the Gondwana splash.
     }
 
+    /// <inheritdoc/>
     protected override void OnEngineStarted()
     {
         // Deliberately empty: startup music begins in BeginPostSplashStartup()

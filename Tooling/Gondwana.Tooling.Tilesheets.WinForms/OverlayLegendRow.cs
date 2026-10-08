@@ -9,6 +9,14 @@ internal sealed class OverlayLegendRow : UserControl
     private readonly OverlayKind _kind;
     private readonly Panel _swatch;
 
+    /// <summary>
+    /// Initializes a new instance of the <c>OverlayLegendRow</c> class.
+    /// </summary>
+    /// <param name="kind">The kind.</param>
+    /// <param name="label">The label.</param>
+    /// <param name="settings">The settings.</param>
+    /// <param name="visibilityChanged">The visibility changed.</param>
+    /// <param name="chooseColor">The choose color.</param>
     public OverlayLegendRow(OverlayKind kind, string label, OverlaySettings settings, Action<bool> visibilityChanged, Action chooseColor)
     {
         _kind = kind;
@@ -47,6 +55,7 @@ internal sealed class OverlayLegendRow : UserControl
 
     private void SettingsChanged(object? sender, EventArgs e) => _swatch.Invalidate();
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing) _settings.Changed -= SettingsChanged;

@@ -5,15 +5,27 @@ using Gondwana.Timers;
 
 namespace Gondwana.Tests.Input;
 
+/// <summary>
+/// Represents input poller collection.
+/// </summary>
 [CollectionDefinition("Input poller singleton", DisableParallelization = true)]
 public sealed class InputPollerCollection
 {
+    /// <summary>
+    /// The name.
+    /// </summary>
     public const string Name = "Input poller singleton";
 }
 
+/// <summary>
+/// Contains regression tests for touch input.
+/// </summary>
 [Collection(InputPollerCollection.Name)]
 public sealed class TouchInputTests : IDisposable
 {
+    /// <summary>
+    /// Verifies poller preserves contact that begins and ends between polls.
+    /// </summary>
     [Fact]
     public void Poller_PreservesContactThatBeginsAndEndsBetweenPolls()
     {
@@ -32,6 +44,9 @@ public sealed class TouchInputTests : IDisposable
         Assert.Empty(poller.ActiveTouches);
     }
 
+    /// <summary>
+    /// Verifies poller throttles only movement.
+    /// </summary>
     [Fact]
     public void Poller_ThrottlesOnlyMovement()
     {
@@ -57,6 +72,9 @@ public sealed class TouchInputTests : IDisposable
         Assert.Equal(1, ended);
     }
 
+    /// <summary>
+    /// Verifies poller pause suppresses events and resume starts fresh contact.
+    /// </summary>
     [Fact]
     public void Poller_PauseSuppressesEventsAndResumeStartsFreshContact()
     {
@@ -77,6 +95,9 @@ public sealed class TouchInputTests : IDisposable
         Assert.Equal(1, began);
     }
 
+    /// <summary>
+    /// Verifies poller normalizes discovered contact to began phase.
+    /// </summary>
     [Fact]
     public void Poller_NormalizesDiscoveredContactToBeganPhase()
     {
@@ -91,6 +112,9 @@ public sealed class TouchInputTests : IDisposable
         Assert.Equal(TouchPhase.Began, phase);
     }
 
+    /// <summary>
+    /// Verifies short fast contact is tap but not swipe.
+    /// </summary>
     [Fact]
     public void ShortFastContact_IsTapButNotSwipe()
     {
@@ -111,6 +135,9 @@ public sealed class TouchInputTests : IDisposable
         Assert.Equal(0, swipes);
     }
 
+    /// <summary>
+    /// Verifies poller arbitrates overlapping tap and swipe thresholds in favor of swipe.
+    /// </summary>
     [Fact]
     public void Poller_ArbitratesOverlappingTapAndSwipeThresholdsInFavorOfSwipe()
     {
@@ -135,6 +162,9 @@ public sealed class TouchInputTests : IDisposable
         Assert.Equal(1, swipes);
     }
 
+    /// <summary>
+    /// Verifies tap uses final position even without movement event.
+    /// </summary>
     [Fact]
     public void Tap_UsesFinalPositionEvenWithoutMovementEvent()
     {
@@ -149,6 +179,9 @@ public sealed class TouchInputTests : IDisposable
         Assert.Equal(0, taps);
     }
 
+    /// <summary>
+    /// Verifies multi touch cancels tap and swipe candidates.
+    /// </summary>
     [Fact]
     public void MultiTouch_CancelsTapAndSwipeCandidates()
     {
@@ -167,6 +200,9 @@ public sealed class TouchInputTests : IDisposable
         Assert.Equal(0, gestures);
     }
 
+    /// <summary>
+    /// Verifies pinch reports lifecycle center ids and scale.
+    /// </summary>
     [Fact]
     public void Pinch_ReportsLifecycleCenterIdsAndScale()
     {
@@ -192,6 +228,9 @@ public sealed class TouchInputTests : IDisposable
         Assert.Equal(2.0, events[1].TotalScale, 6);
     }
 
+    /// <summary>
+    /// Verifies reset disposes adapter and clears singleton.
+    /// </summary>
     [Fact]
     public void Reset_DisposesAdapterAndClearsSingleton()
     {
@@ -204,6 +243,7 @@ public sealed class TouchInputTests : IDisposable
         Assert.Null(TouchEventPoller.Instance);
     }
 
+    /// <inheritdoc/>
     public void Dispose() => TouchEventPoller.Reset();
 
     private sealed class FakeTouchAdapter : ITouchAdapter, IDisposable
@@ -212,9 +252,18 @@ public sealed class TouchInputTests : IDisposable
         private readonly Queue<TouchPoint> _began = new();
         private readonly Queue<TouchPoint> _ended = new();
 
+        /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ActiveTouches => _active.Values.ToArray();
+        /// <summary>
+        /// Gets whether the object is disposed.
+        /// </summary>
         public bool IsDisposed { get; private set; }
 
+        /// <summary>
+        /// Begins a simulated touch contact.
+        /// </summary>
+        /// <param name="id">The id value for this test case.</param>
+        /// <param name="position">The position value for this test case.</param>
         public void Begin(int id, Point position)
         {
             var point = new TouchPoint(id, position, TouchPhase.Began);
@@ -222,17 +271,30 @@ public sealed class TouchInputTests : IDisposable
             _began.Enqueue(point);
         }
 
+        /// <summary>
+        /// Moves a simulated touch contact.
+        /// </summary>
+        /// <param name="id">The id value for this test case.</param>
+        /// <param name="position">The position value for this test case.</param>
         public void Move(int id, Point position)
             => _active[id] = new TouchPoint(id, position, TouchPhase.Moved);
 
+        /// <summary>
+        /// Ends a simulated touch contact.
+        /// </summary>
+        /// <param name="id">The id value for this test case.</param>
+        /// <param name="position">The position value for this test case.</param>
         public void End(int id, Point position)
         {
             _active.Remove(id);
             _ended.Enqueue(new TouchPoint(id, position, TouchPhase.Ended));
         }
 
+        /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ConsumeBeganTouches() => Drain(_began);
+        /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ConsumeEndedTouches() => Drain(_ended);
+        /// <inheritdoc/>
         public void Dispose() => IsDisposed = true;
 
         private static IReadOnlyList<TouchPoint> Drain(Queue<TouchPoint> queue)
@@ -245,18 +307,30 @@ public sealed class TouchInputTests : IDisposable
 
     private sealed class SnapshotOnlyTouchAdapter(params TouchPoint[] points) : ITouchAdapter
     {
+        /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ActiveTouches { get; } = points;
+        /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ConsumeEndedTouches() => Array.Empty<TouchPoint>();
     }
 
     private sealed class FakeTouchInput : ITouchInput
     {
         private readonly Dictionary<int, TouchPoint> _active = new();
+        /// <inheritdoc/>
         public IReadOnlyList<TouchPoint> ActiveTouches => _active.Values.ToArray();
+        /// <inheritdoc/>
         public event EventHandler<TouchEventArgs>? TouchBegan;
+        /// <inheritdoc/>
         public event EventHandler<TouchEventArgs>? TouchMoved;
+        /// <inheritdoc/>
         public event EventHandler<TouchEventArgs>? TouchEnded;
 
+        /// <summary>
+        /// Begins a simulated touch contact.
+        /// </summary>
+        /// <param name="id">The id value for this test case.</param>
+        /// <param name="position">The position value for this test case.</param>
+        /// <param name="tick">The tick value for this test case.</param>
         public void Begin(int id, Point position, long tick)
         {
             var point = new TouchPoint(id, position, TouchPhase.Began);
@@ -264,6 +338,12 @@ public sealed class TouchInputTests : IDisposable
             TouchBegan?.Invoke(this, new TouchEventArgs(point, tick));
         }
 
+        /// <summary>
+        /// Moves a simulated touch contact.
+        /// </summary>
+        /// <param name="id">The id value for this test case.</param>
+        /// <param name="position">The position value for this test case.</param>
+        /// <param name="tick">The tick value for this test case.</param>
         public void Move(int id, Point position, long tick)
         {
             var point = new TouchPoint(id, position, TouchPhase.Moved);
@@ -271,6 +351,12 @@ public sealed class TouchInputTests : IDisposable
             TouchMoved?.Invoke(this, new TouchEventArgs(point, tick));
         }
 
+        /// <summary>
+        /// Ends a simulated touch contact.
+        /// </summary>
+        /// <param name="id">The id value for this test case.</param>
+        /// <param name="position">The position value for this test case.</param>
+        /// <param name="tick">The tick value for this test case.</param>
         public void End(int id, Point position, long tick)
         {
             _active.Remove(id);

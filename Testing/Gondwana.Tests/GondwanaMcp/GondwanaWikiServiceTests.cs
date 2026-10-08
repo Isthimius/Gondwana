@@ -5,8 +5,15 @@ using Microsoft.Extensions.Options;
 
 namespace Gondwana.Tests.GondwanaMcp;
 
+/// <summary>
+/// Contains regression tests for gondwana wiki service.
+/// </summary>
 public sealed class GondwanaWikiServiceTests
 {
+    /// <summary>
+    /// Verifies list pages only discovers configured gondwana wiki.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task ListPages_OnlyDiscoversConfiguredGondwanaWiki()
     {
@@ -36,6 +43,10 @@ public sealed class GondwanaWikiServiceTests
         Assert.DoesNotContain(result.Pages, page => page.Slug == "Secret");
     }
 
+    /// <summary>
+    /// Verifies read page foreign wiki url is reduced to gondwana slug.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task ReadPage_ForeignWikiUrlIsReducedToGondwanaSlug()
     {
@@ -68,6 +79,10 @@ public sealed class GondwanaWikiServiceTests
         Assert.Contains("Gondwana collision documentation", result.Markdown);
     }
 
+    /// <summary>
+    /// Verifies search wiki searches markdown and ranks matches.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task SearchWiki_SearchesMarkdownAndRanksMatches()
     {

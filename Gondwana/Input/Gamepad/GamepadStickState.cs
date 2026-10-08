@@ -101,11 +101,15 @@ public readonly struct GamepadStickState
     /// <summary>
     /// Returns true if the stick is pushed beyond the threshold.
     /// </summary>
+    /// <param name="threshold">The threshold used for the comparison.</param>
+    /// <returns><see langword="true"/> if the control is currently engaged; otherwise, <see langword="false"/>.</returns>
     public bool IsEngaged(float threshold = 0.15f) => Magnitude >= threshold;
 
     /// <summary>
     /// Returns the primary stick direction(s) based on angle and threshold.
     /// </summary>
+    /// <param name="threshold">The threshold used for the comparison.</param>
+    /// <returns>The stick direction after applying the deadzone.</returns>
     public StickDirection Direction(float threshold = 0.15f)
     {
         if (!IsEngaged(threshold)) return StickDirection.None;
@@ -122,6 +126,8 @@ public readonly struct GamepadStickState
     /// <summary>
     /// Returns a new stick state with a deadzone applied.
     /// </summary>
+    /// <param name="threshold">The threshold used for the comparison.</param>
+    /// <returns>A stick state using the requested deadzone.</returns>
     public GamepadStickState WithDeadzone(float threshold = 0.15f)
     {
         return IsEngaged(threshold) ? this : new GamepadStickState(0, 0, RawX, RawY);

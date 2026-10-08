@@ -124,7 +124,17 @@ public class DirectRectangle : DirectDrawingMovableBase
     private SKColor _pulseBorderFrom, _pulseBorderTo;
     private float _pulseBorderPeriodSec = 1f;
 
-    private enum PulseWave { Sine, Triangle }
+    private enum PulseWave
+    {
+        /// <summary>
+        /// Uses a sine wave for pulsing.
+        /// </summary>
+        Sine,
+        /// <summary>
+        /// Uses a triangle wave for pulsing.
+        /// </summary>
+        Triangle
+    }
     private PulseWave _pulseFillWave = PulseWave.Sine;
     private PulseWave _pulseBorderWave = PulseWave.Sine;
 

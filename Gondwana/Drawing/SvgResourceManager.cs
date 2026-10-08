@@ -76,21 +76,27 @@ public sealed class SvgResourceManager : IDisposable
     /// <summary>
     /// Determines whether a resource key is loaded.
     /// </summary>
+    /// <param name="key">The lookup key for the resource.</param>
+    /// <returns><see langword="true"/> if a player is registered for the key; otherwise, <see langword="false"/>.</returns>
     public bool Contains(string key) => _svgResources.ContainsKey(key);
 
     /// <summary>
     /// Gets a resource by key or null when not found.
     /// </summary>
+    /// <param name="key">The lookup key for the resource.</param>
+    /// <returns>The registered browser player, or <see langword="null"/> if the key is absent.</returns>
     public SvgResource? Get(string key) => _svgResources.TryGetValue(key, out var resource) ? resource : null;
 
     /// <summary>
     /// Gets all loaded resources.
     /// </summary>
+    /// <returns>The available .</returns>
     public Dictionary<string, SvgResource> GetAll() => _svgResources.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
     /// <summary>
     /// Unloads a resource by key.
     /// </summary>
+    /// <param name="key">The lookup key for the resource.</param>
     public void Unload(string key)
     {
         if (_svgResources.TryRemove(key, out var resource))

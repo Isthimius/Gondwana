@@ -15,6 +15,9 @@ public sealed class SceneEditorControl : UserControl
 {
     private const int SourceFrameThumbnailSize = 32;
 
+    /// <summary>
+    /// Gets the pane names.
+    /// </summary>
     public static IReadOnlyList<string> PaneNames { get; } =
         Array.AsReadOnly(
         [
@@ -93,12 +96,22 @@ public sealed class SceneEditorControl : UserControl
     private bool _syncingTileCoordinates;
     private bool _refreshPending;
 
+    /// <summary>
+    /// Gets the document.
+    /// </summary>
     public SceneDocument Document { get; }
+    /// <summary>
+    /// Gets the definition.
+    /// </summary>
     public SceneDefinition Definition => Document.Definition;
 
     /// <summary>Uses the containing application's normal save workflow.</summary>
     public Func<bool>? SaveRequested { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <c>SceneEditorControl</c> class.
+    /// </summary>
+    /// <param name="document">The document displayed or edited by the control.</param>
     public SceneEditorControl(SceneDocument document)
     {
         Document = document ?? throw new ArgumentNullException(nameof(document));
@@ -147,6 +160,10 @@ public sealed class SceneEditorControl : UserControl
         RefreshView();
     }
 
+    /// <summary>
+    /// Adds tilesheet definition files to the document's source list.
+    /// </summary>
+    /// <param name="paths">The paths of the source files to add.</param>
     public void AddTilesheetSources(IEnumerable<string> paths)
     {
         ArgumentNullException.ThrowIfNull(paths);
@@ -178,6 +195,10 @@ public sealed class SceneEditorControl : UserControl
             SelectTilesheetRoot(last);
     }
 
+    /// <summary>
+    /// Adds animation definition files to the document's source list.
+    /// </summary>
+    /// <param name="paths">The paths of the source files to add.</param>
     public void AddAnimationSources(IEnumerable<string> paths)
     {
         ArgumentNullException.ThrowIfNull(paths);
@@ -209,6 +230,10 @@ public sealed class SceneEditorControl : UserControl
             SelectAnimation(last);
     }
 
+    /// <summary>
+    /// Validates the current document and refreshes the displayed diagnostics.
+    /// </summary>
+    /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
     public IReadOnlyList<string> UpdateValidation()
     {
         var errors = Document.Validate();
@@ -270,6 +295,10 @@ public sealed class SceneEditorControl : UserControl
         return errors;
     }
 
+    /// <summary>
+    /// Commits pending editor input to the document.
+    /// </summary>
+    /// <returns><see langword="true"/> if the pending edits were committed; otherwise, <see langword="false"/>.</returns>
     public bool CommitEdits()
     {
         _validation.Focus();
@@ -278,6 +307,11 @@ public sealed class SceneEditorControl : UserControl
                ValidateChildren();
     }
 
+    /// <summary>
+    /// Shows the named editor pane.
+    /// </summary>
+    /// <param name="paneName">The name of the editor pane.</param>
+    /// <returns><see langword="true"/> if the named pane was found; otherwise, <see langword="false"/>.</returns>
     public bool ShowPane(string paneName)
     {
         if (!_panes.TryGetValue(paneName, out var pane) ||
@@ -291,6 +325,11 @@ public sealed class SceneEditorControl : UserControl
         return true;
     }
 
+    /// <summary>
+    /// Determines whether the named editor pane is visible.
+    /// </summary>
+    /// <param name="paneName">The name of the editor pane.</param>
+    /// <returns><see langword="true"/> if the pane is visible; otherwise, <see langword="false"/>.</returns>
     public bool IsPaneVisible(string paneName) =>
         _panes.TryGetValue(paneName, out var pane) &&
         !pane.IsDisposed &&
@@ -299,6 +338,9 @@ public sealed class SceneEditorControl : UserControl
     /// <summary>Restore the default pane arrangement for this editor type.</summary>
     public void ResetLayout() => _workspace.ResetLayout();
 
+    /// <summary>
+    /// Shows every editor pane.
+    /// </summary>
     public void ShowAllPanes()
     {
         foreach (var pane in _panes.Values)
@@ -1428,6 +1470,7 @@ public sealed class SceneEditorControl : UserControl
             MessageBoxButtons.OK,
             MessageBoxIcon.Error);
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing)

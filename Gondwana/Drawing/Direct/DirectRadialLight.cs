@@ -18,7 +18,7 @@ namespace Gondwana.Drawing.Direct;
 /// in Gondwana's existing dirty-rectangle selection path.
 /// </para>
 /// <para>
-/// The important contract is its bounds: <see cref="WorldBounds"/> is the full world-space area that
+/// The important contract is its bounds: <see cref="DirectDrawingBase.WorldBounds"/> is the full world-space area that
 /// may be affected by the light. When a light moves or changes radius, both the old and new bounds
 /// are marked dirty by the inherited <see cref="DirectDrawingBase.WorldBounds"/> setter.
 /// </para>
@@ -108,7 +108,7 @@ public sealed class DirectRadialLight : DirectDrawingBase
     /// Gets the light radius in world pixels.
     /// </summary>
     /// <remarks>
-    /// Changing the radius changes <see cref="WorldBounds"/>, which dirties the old and new light areas.
+    /// Changing the radius changes <see cref="DirectDrawingBase.WorldBounds"/>, which dirties the old and new light areas.
     /// </remarks>
     public float RadiusWorldPx
     {
@@ -301,6 +301,8 @@ public sealed class DirectRadialLight : DirectDrawingBase
     /// <summary>
     /// Moves the light center and returns this instance for chaining.
     /// </summary>
+    /// <param name="centerWorldPx">The center in world pixels.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public DirectRadialLight MoveTo(PointF centerWorldPx)
     {
         CenterWorldPx = centerWorldPx;
@@ -310,6 +312,8 @@ public sealed class DirectRadialLight : DirectDrawingBase
     /// <summary>
     /// Sets the light radius and returns this instance for chaining.
     /// </summary>
+    /// <param name="radiusWorldPx">The radius in world pixels.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public DirectRadialLight SetRadius(float radiusWorldPx)
     {
         RadiusWorldPx = radiusWorldPx;
@@ -319,6 +323,8 @@ public sealed class DirectRadialLight : DirectDrawingBase
     /// <summary>
     /// Sets the light intensity and returns this instance for chaining.
     /// </summary>
+    /// <param name="intensity">The intensity.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public DirectRadialLight SetIntensity(float intensity)
     {
         Intensity = intensity;

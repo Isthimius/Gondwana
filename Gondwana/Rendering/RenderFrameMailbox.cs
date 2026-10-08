@@ -7,7 +7,29 @@ namespace Gondwana.Rendering;
 /// </summary>
 internal sealed class RenderFrameMailbox : IDisposable
 {
-    internal enum State { Free, Building, Published, Rendering, Releasing }
+    internal enum State
+    {
+        /// <summary>
+        /// The slot is available for a new frame.
+        /// </summary>
+        Free,
+        /// <summary>
+        /// The producer is constructing the frame.
+        /// </summary>
+        Building,
+        /// <summary>
+        /// The completed frame is waiting for a renderer.
+        /// </summary>
+        Published,
+        /// <summary>
+        /// The renderer owns the frame.
+        /// </summary>
+        Rendering,
+        /// <summary>
+        /// The slot is releasing its frame resources.
+        /// </summary>
+        Releasing
+    }
 
     internal sealed class Slot
     {
@@ -128,6 +150,9 @@ internal sealed class RenderFrameMailbox : IDisposable
         }
     }
 
+    /// <summary>
+    /// Releases the resources owned by this instance.
+    /// </summary>
     public void Dispose()
     {
         Slot? retired;

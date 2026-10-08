@@ -47,6 +47,7 @@ internal sealed class GameWindow : Window
         Content = _gpuRenderSurface;
     }
 
+    /// <inheritdoc/>
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
@@ -72,6 +73,7 @@ internal sealed class GameWindow : Window
         }
     }
 
+    /// <inheritdoc/>
     protected override void OnClosed(EventArgs e)
     {
         _howToPlayDialog?.Dispose();
@@ -290,6 +292,12 @@ internal sealed class GameWindow : Window
 
     private sealed class AvaloniaExternalUriLauncher : IExternalUriLauncher
     {
+        /// <summary>
+        /// Opens the URI using the desktop launcher.
+        /// </summary>
+        /// <param name="uri">The URI identifying the media source.</param>
+        /// <param name="cancellationToken">The token used to cancel the operation.</param>
+        /// <returns>A task that represents completion of the operation.</returns>
         public ValueTask OpenAsync(Uri uri, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();

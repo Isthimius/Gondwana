@@ -31,6 +31,10 @@ public abstract class DraggableContainerWidget : ContainerWidget
     /// <summary>
     /// Initializes a new instance of the <see cref="DraggableContainerWidget"/> class.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="mode">The mode.</param>
+    /// <param name="anchor">The anchor.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     protected DraggableContainerWidget(RenderSurfaceHostBase renderSurfaceHost,
                                        DirectDrawingMode mode,
                                        PointF anchor = default,
@@ -120,6 +124,8 @@ public abstract class DraggableContainerWidget : ContainerWidget
     /// <summary>
     /// Determines whether a pointer-down event may begin drag tracking.
     /// </summary>
+    /// <param name="args">The event data.</param>
+    /// <returns><see langword="true"/> if the pointer event can begin a drag; otherwise, <see langword="false"/>.</returns>
     protected virtual bool CanStartDrag(WidgetPointerEventArgs args)
     {
         return _dragBehavior.CanStartDrag(args);
@@ -128,6 +134,9 @@ public abstract class DraggableContainerWidget : ContainerWidget
     /// <summary>
     /// Converts total screen movement into this widget's coordinate space.
     /// </summary>
+    /// <param name="totalScreenDeltaPx">The total screen delta px.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <returns>The drag displacement converted into the widget position coordinate space.</returns>
     protected virtual Vector2 ConvertScreenDeltaToPositionDelta(Vector2 totalScreenDeltaPx, View view)
     {
         return _dragBehavior.ConvertScreenDeltaToPositionDelta(totalScreenDeltaPx, view);
@@ -136,6 +145,8 @@ public abstract class DraggableContainerWidget : ContainerWidget
     /// <summary>
     /// Constrains a proposed anchor position before it is applied.
     /// </summary>
+    /// <param name="proposedPositionPx">The proposed position px.</param>
+    /// <returns>The proposed position after applying the drag constraints.</returns>
     protected virtual Vector2 ConstrainDragPosition(Vector2 proposedPositionPx)
     {
         return proposedPositionPx;
@@ -144,6 +155,7 @@ public abstract class DraggableContainerWidget : ContainerWidget
     /// <summary>
     /// Called when dragging begins.
     /// </summary>
+    /// <param name="args">The event data.</param>
     protected virtual void OnDragStarted(WidgetDragEventArgs args)
     {
     }
@@ -151,6 +163,7 @@ public abstract class DraggableContainerWidget : ContainerWidget
     /// <summary>
     /// Called after the container moves during dragging.
     /// </summary>
+    /// <param name="args">The event data.</param>
     protected virtual void OnDragged(WidgetDragEventArgs args)
     {
     }
@@ -158,6 +171,7 @@ public abstract class DraggableContainerWidget : ContainerWidget
     /// <summary>
     /// Called when dragging ends.
     /// </summary>
+    /// <param name="args">The event data.</param>
     protected virtual void OnDragEnded(WidgetDragEventArgs args)
     {
     }

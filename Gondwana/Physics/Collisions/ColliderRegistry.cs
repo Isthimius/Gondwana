@@ -12,6 +12,11 @@ public sealed class ColliderRegistry
     /// Queries canonical colliders with translated bounds for every overlapping wrapped instance.
     /// Collision masks and the ignored collider apply to canonical identities.
     /// </summary>
+    /// <param name="area">The area.</param>
+    /// <param name="layerMask">The layer mask.</param>
+    /// <param name="collidesWithMask">The collides with mask.</param>
+    /// <param name="results">The results.</param>
+    /// <param name="ignore">The ignore.</param>
     public void QueryInstances(in Aabb area, int layerMask, int collidesWithMask,
         List<ColliderInstance> results, ICollider? ignore = null)
     {

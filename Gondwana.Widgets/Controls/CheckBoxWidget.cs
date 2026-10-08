@@ -30,6 +30,12 @@ public sealed class CheckBoxWidget : WidgetBase
     /// <summary>
     /// Creates a view-level checkbox.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="bounds">The widget bounds in view-local pixels.</param>
+    /// <param name="text">The text to display.</param>
+    /// <param name="isChecked">Whether the control starts or becomes checked.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public CheckBoxWidget(RenderSurfaceHostBase renderSurfaceHost,
                           View view,
                           Rectangle bounds,
@@ -58,6 +64,12 @@ public sealed class CheckBoxWidget : WidgetBase
     /// <summary>
     /// Creates a scene-layer checkbox.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="bounds">The widget bounds in world pixels.</param>
+    /// <param name="text">The text to display.</param>
+    /// <param name="isChecked">Whether the control starts or becomes checked.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public CheckBoxWidget(RenderSurfaceHostBase renderSurfaceHost,
                           SceneLayer sceneLayer,
                           Rectangle bounds,
@@ -123,6 +135,8 @@ public sealed class CheckBoxWidget : WidgetBase
     /// <summary>
     /// Sets the checkbox state.
     /// </summary>
+    /// <param name="isChecked">Whether the control starts or becomes checked.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public CheckBoxWidget SetChecked(bool isChecked)
     {
         if (_isChecked == isChecked)
@@ -137,6 +151,7 @@ public sealed class CheckBoxWidget : WidgetBase
     /// <summary>
     /// Toggles the checkbox state.
     /// </summary>
+    /// <returns>This widget for fluent chaining.</returns>
     public CheckBoxWidget Toggle()
     {
         return SetChecked(!IsChecked);
@@ -145,6 +160,8 @@ public sealed class CheckBoxWidget : WidgetBase
     /// <summary>
     /// Changes the checkbox label text.
     /// </summary>
+    /// <param name="text">The text to display.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public CheckBoxWidget SetText(string text)
     {
         Label.SetText(text ?? string.Empty);
@@ -154,6 +171,10 @@ public sealed class CheckBoxWidget : WidgetBase
     /// <summary>
     /// Sets the normal, hover, and checked-mark colors.
     /// </summary>
+    /// <param name="normal">The color used in the normal state.</param>
+    /// <param name="hover">The color used while the pointer is over the control.</param>
+    /// <param name="mark">The color used for the selection mark.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public CheckBoxWidget SetColors(Color normal,
                                     Color hover,
                                     Color mark)
@@ -171,6 +192,8 @@ public sealed class CheckBoxWidget : WidgetBase
     /// <summary>
     /// Sets the label text color.
     /// </summary>
+    /// <param name="color">The color to apply.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public CheckBoxWidget SetTextColor(SKColor color)
     {
         Label.SetColors(color, SKColors.Transparent);
@@ -180,6 +203,8 @@ public sealed class CheckBoxWidget : WidgetBase
     /// <summary>
     /// Sets the base Z-order used by the checkbox visuals.
     /// </summary>
+    /// <param name="zOrder">The drawing order relative to other content.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public CheckBoxWidget SetCheckBoxZOrder(int zOrder)
     {
         Box.ZOrder = zOrder;

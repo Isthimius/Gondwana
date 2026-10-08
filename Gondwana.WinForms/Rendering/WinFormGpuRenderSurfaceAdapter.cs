@@ -102,6 +102,8 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     /// Initializes an adapter whose physical GL control may be kept at a non-zero minimum size
     /// while a separate control supplies the actual presentation dimensions.
     /// </summary>
+    /// <param name="gl">The OpenGL control providing the rendering context.</param>
+    /// <param name="presentationControl">The control whose client size determines presentation dimensions.</param>
     internal WinFormGpuRenderSurfaceAdapter(SKGLControl gl, Control presentationControl)
         : base(
             Math.Max(1, presentationControl.ClientSize.Width),
@@ -159,6 +161,9 @@ public sealed class WinFormGpuRenderSurfaceAdapter : RenderSurfaceAdapterBase, I
     /// Not used in the GL-thread path.  Rendering is driven by <see cref="SetHost"/> and
     /// <c>SKGLControl.PaintSurface</c>.  The image is disposed immediately to avoid a leak.
     /// </summary>
+    /// <param name="bufferImage">The rendered image to present.</param>
+    /// <param name="bufferRect">The source rectangle within the rendered image.</param>
+    /// <param name="destRect">The destination rectangle on the render surface.</param>
     public override void Present(SKImage bufferImage, SKRectI bufferRect, SKRect destRect)
     {
         bufferImage.Dispose();

@@ -31,6 +31,12 @@ public sealed class ConversationBox : WidgetBase
     /// <summary>
     /// Creates a view-level conversation box.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="bounds">The widget bounds in view-local pixels.</param>
+    /// <param name="speaker">The speaker.</param>
+    /// <param name="text">The text to display.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public ConversationBox(RenderSurfaceHostBase renderSurfaceHost,
                            View view,
                            Rectangle bounds,
@@ -60,6 +66,12 @@ public sealed class ConversationBox : WidgetBase
     /// <summary>
     /// Creates a scene-layer conversation box.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="bounds">The widget bounds in world pixels.</param>
+    /// <param name="speaker">The speaker.</param>
+    /// <param name="text">The text to display.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public ConversationBox(RenderSurfaceHostBase renderSurfaceHost,
                            SceneLayer sceneLayer,
                            Rectangle bounds,
@@ -138,6 +150,9 @@ public sealed class ConversationBox : WidgetBase
     /// <summary>
     /// Changes the speaker and body text together.
     /// </summary>
+    /// <param name="speaker">The speaker.</param>
+    /// <param name="text">The text to display.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ConversationBox SetConversation(string speaker, string text)
     {
         SetSpeaker(speaker);
@@ -148,6 +163,8 @@ public sealed class ConversationBox : WidgetBase
     /// <summary>
     /// Changes the speaker name.
     /// </summary>
+    /// <param name="speaker">The speaker.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ConversationBox SetSpeaker(string speaker)
     {
         _speaker = speaker ?? string.Empty;
@@ -158,6 +175,8 @@ public sealed class ConversationBox : WidgetBase
     /// <summary>
     /// Changes the conversation body text.
     /// </summary>
+    /// <param name="text">The text to display.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ConversationBox SetText(string text)
     {
         _text = text ?? string.Empty;
@@ -168,6 +187,8 @@ public sealed class ConversationBox : WidgetBase
     /// <summary>
     /// Shows or hides the continue indicator.
     /// </summary>
+    /// <param name="visible">Whether the content is visible.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ConversationBox ShowContinueIndicator(bool visible = true)
     {
         _continueIndicatorVisible = visible;
@@ -178,6 +199,9 @@ public sealed class ConversationBox : WidgetBase
     /// <summary>
     /// Sets the speaker and body text colors.
     /// </summary>
+    /// <param name="speakerColor">The speaker color.</param>
+    /// <param name="bodyColor">The body color.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ConversationBox SetTextColors(SKColor speakerColor, SKColor bodyColor)
     {
         SpeakerText.SetColors(speakerColor, SKColors.Transparent);
@@ -188,6 +212,9 @@ public sealed class ConversationBox : WidgetBase
     /// <summary>
     /// Sets the panel fill and border colors.
     /// </summary>
+    /// <param name="fill">The fill.</param>
+    /// <param name="border">The border.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ConversationBox SetPanelColors(Color fill, Color border)
     {
         Panel.SetColor(fill)
@@ -199,6 +226,8 @@ public sealed class ConversationBox : WidgetBase
     /// <summary>
     /// Sets the base Z-order used by the conversation visuals.
     /// </summary>
+    /// <param name="zOrder">The drawing order relative to other content.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public ConversationBox SetConversationZOrder(int zOrder)
     {
         Panel.ZOrder = zOrder;

@@ -18,6 +18,11 @@ public sealed class PanelWidget : ContainerWidget
     /// <summary>
     /// Creates a view-level panel.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="bounds">The widget bounds in view-local pixels.</param>
+    /// <param name="backgroundColor">The background color.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public PanelWidget(RenderSurfaceHostBase renderSurfaceHost,
                        View view,
                        Rectangle bounds,
@@ -38,6 +43,11 @@ public sealed class PanelWidget : ContainerWidget
     /// <summary>
     /// Creates a scene-layer panel.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="bounds">The widget bounds in world pixels.</param>
+    /// <param name="backgroundColor">The background color.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     public PanelWidget(RenderSurfaceHostBase renderSurfaceHost,
                        SceneLayer sceneLayer,
                        Rectangle bounds,
@@ -87,6 +97,9 @@ public sealed class PanelWidget : ContainerWidget
     /// <summary>
     /// Adds a child widget at the supplied local offset from the panel's upper-left corner.
     /// </summary>
+    /// <param name="widget">The widget.</param>
+    /// <param name="offsetPx">The offset in pixels.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public PanelWidget AddWidget(WidgetBase widget, Point? offsetPx = null)
     {
         ArgumentNullException.ThrowIfNull(widget);
@@ -102,6 +115,9 @@ public sealed class PanelWidget : ContainerWidget
     /// <summary>
     /// Removes a child widget without disposing it unless requested.
     /// </summary>
+    /// <param name="widget">The widget.</param>
+    /// <param name="dispose">Whether to dispose the removed resource.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public PanelWidget RemoveWidget(WidgetBase widget, bool dispose = false)
     {
         RemoveChild(widget, dispose);
@@ -111,6 +127,8 @@ public sealed class PanelWidget : ContainerWidget
     /// <summary>
     /// Sets the solid background color.
     /// </summary>
+    /// <param name="color">The color to apply.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public PanelWidget SetBackgroundColor(Color color)
     {
         Background.SetColor(color);
@@ -121,6 +139,8 @@ public sealed class PanelWidget : ContainerWidget
     /// <summary>
     /// Sets the panel border color.
     /// </summary>
+    /// <param name="color">The color to apply.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public PanelWidget SetBorderColor(Color color)
     {
         Background.SetBorderColor(color);
@@ -131,6 +151,8 @@ public sealed class PanelWidget : ContainerWidget
     /// <summary>
     /// Sets the panel border width.
     /// </summary>
+    /// <param name="width">The width.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public PanelWidget SetStrokeWidth(float width)
     {
         Background.SetStrokeWidth(width);
@@ -141,6 +163,8 @@ public sealed class PanelWidget : ContainerWidget
     /// <summary>
     /// Sets the panel corner radius.
     /// </summary>
+    /// <param name="radius">The radius.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public PanelWidget SetCornerRadius(float radius)
     {
         Background.SetCornerRadius(radius);
@@ -151,6 +175,12 @@ public sealed class PanelWidget : ContainerWidget
     /// <summary>
     /// Uses a bitmap as the panel background.
     /// </summary>
+    /// <param name="bitmap">The bitmap.</param>
+    /// <param name="mode">The mode.</param>
+    /// <param name="scale">The scale.</param>
+    /// <param name="offsetPx">The offset in pixels.</param>
+    /// <param name="filterQuality">The filter quality.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public PanelWidget SetBackgroundImage(SKBitmap bitmap,
                                           DirectRectangle.ImageFillMode mode = DirectRectangle.ImageFillMode.Stretch,
                                           float scale = 1f,
@@ -164,6 +194,12 @@ public sealed class PanelWidget : ContainerWidget
     /// <summary>
     /// Uses an image as the panel background.
     /// </summary>
+    /// <param name="image">The image.</param>
+    /// <param name="mode">The mode.</param>
+    /// <param name="scale">The scale.</param>
+    /// <param name="offsetPx">The offset in pixels.</param>
+    /// <param name="filterQuality">The filter quality.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public PanelWidget SetBackgroundImage(SKImage image,
                                           DirectRectangle.ImageFillMode mode = DirectRectangle.ImageFillMode.Stretch,
                                           float scale = 1f,
@@ -177,6 +213,7 @@ public sealed class PanelWidget : ContainerWidget
     /// <summary>
     /// Clears an image background and returns to the configured solid fill.
     /// </summary>
+    /// <returns>This instance for fluent chaining.</returns>
     public PanelWidget ClearBackgroundImage()
     {
         Background.ClearFillImage();
@@ -186,6 +223,8 @@ public sealed class PanelWidget : ContainerWidget
     /// <summary>
     /// Places the background at the requested Z-order and child widgets immediately above it.
     /// </summary>
+    /// <param name="zOrder">The drawing order relative to other content.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public PanelWidget SetPanelZOrder(int zOrder)
     {
         _panelZOrder = zOrder;

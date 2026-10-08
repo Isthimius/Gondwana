@@ -7,8 +7,15 @@ using SkiaSharp;
 
 namespace Gondwana.Tests.Drawing.Direct;
 
+/// <summary>
+/// Contains regression tests for direct video.
+/// </summary>
 public sealed class DirectVideoTests
 {
+    /// <summary>
+    /// Verifies decoder frames are not visible until update and reopen clears old frame.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task DecoderFramesAreNotVisibleUntilUpdateAndReopenClearsOldFrame()
     {
@@ -35,6 +42,9 @@ public sealed class DirectVideoTests
         Assert.Equal(0, player.FrameSubscribers);
     }
 
+    /// <summary>
+    /// Verifies scene layer mode and fades use normal lifecycle.
+    /// </summary>
     [Fact]
     public void SceneLayerModeAndFadesUseNormalLifecycle()
     {
@@ -62,6 +72,14 @@ public sealed class DirectVideoTests
         video.Stop(); Assert.False(player.IsPlaying);
     }
 
+    /// <summary>
+    /// Verifies stretch preserves expected placement.
+    /// </summary>
+    /// <param name="mode">The mode value for this test case.</param>
+    /// <param name="left">The left value for this test case.</param>
+    /// <param name="top">The top value for this test case.</param>
+    /// <param name="right">The right value for this test case.</param>
+    /// <param name="bottom">The bottom value for this test case.</param>
     [Theory]
     [InlineData(StretchMode.Fill, 10, 20, 110, 120)]
     [InlineData(StretchMode.None, 10, 20, 210, 120)]
@@ -72,6 +90,9 @@ public sealed class DirectVideoTests
         Assert.Equal(new SKRect(left, top, right, bottom), DirectVideo.ComputeDestRect(new RectangleF(10, 20, 100, 100), 200, 100, mode));
     }
 
+    /// <summary>
+    /// Verifies uniform to fill clips to bounds.
+    /// </summary>
     [Fact]
     public void UniformToFillClipsToBounds()
     {
@@ -101,6 +122,9 @@ public sealed class DirectVideoTests
         return bitmap.GetPixel(0, 0);
     }
 
+    /// <summary>
+    /// Verifies opacity uses base property and is applied only once.
+    /// </summary>
     [Fact]
     public void OpacityUsesBasePropertyAndIsAppliedOnlyOnce()
     {
@@ -131,25 +155,55 @@ public sealed class DirectVideoTests
 internal sealed class FakeVideoPlayer : IVideoPlayer
 {
     private Stream? _ownedStream;
+    /// <summary>
+    /// Gets the stream.
+    /// </summary>
     public Stream? Stream { get; private set; }
+    /// <summary>
+    /// Gets the dispose count.
+    /// </summary>
     public int DisposeCount { get; private set; }
+    /// <summary>
+    /// Gets the open count.
+    /// </summary>
     public int OpenCount { get; private set; }
+    /// <summary>
+    /// Gets the frame subscribers.
+    /// </summary>
     public int FrameSubscribers => FrameReady?.GetInvocationList().Length ?? 0;
+    /// <summary>
+    /// Gets the rate.
+    /// </summary>
     public double Rate { get; private set; }
+    /// <inheritdoc/>
     public bool Loop { get; set; }
+    /// <inheritdoc/>
     public bool IsPlaying { get; private set; }
+    /// <inheritdoc/>
     public VideoMetadata Metadata { get; set; } = VideoMetadata.Unavailable;
+    /// <inheritdoc/>
     public TimeSpan Duration => Metadata.Duration;
+    /// <inheritdoc/>
     public TimeSpan Position { get; private set; }
+    /// <inheritdoc/>
     public (int width, int height) NaturalSize { get; private set; }
+    /// <inheritdoc/>
     public bool HasAudio => Metadata.HasAudio;
+    /// <inheritdoc/>
     public event EventHandler? Started;
+    /// <inheritdoc/>
     public event EventHandler? Paused;
+    /// <inheritdoc/>
     public event EventHandler? Stopped;
+    /// <inheritdoc/>
     public event EventHandler? Ended;
+    /// <inheritdoc/>
     public event EventHandler<VideoStateChangedEventArgs>? StateChanged;
+    /// <inheritdoc/>
     public event EventHandler<VideoFrameReadyEventArgs>? FrameReady;
+    /// <inheritdoc/>
     public void Open(Uri source) { _ownedStream?.Dispose(); _ownedStream = null; OpenCount++; StateChanged?.Invoke(this, new("MediaOpened")); }
+    /// <inheritdoc/>
     public void Open(Stream source, bool leaveOpen = false)
     {
         _ownedStream?.Dispose();
@@ -158,14 +212,36 @@ internal sealed class FakeVideoPlayer : IVideoPlayer
         OpenCount++;
         StateChanged?.Invoke(this, new("MediaOpened"));
     }
+    /// <inheritdoc/>
     public void Play() { IsPlaying = true; Started?.Invoke(this, EventArgs.Empty); }
+    /// <inheritdoc/>
     public void Pause() { IsPlaying = false; Paused?.Invoke(this, EventArgs.Empty); }
+    /// <inheritdoc/>
     public void Stop() { IsPlaying = false; Stopped?.Invoke(this, EventArgs.Empty); }
+    /// <inheritdoc/>
     public void Seek(TimeSpan position) => Position = position;
+    /// <inheritdoc/>
     public void SetRate(double rate) => Rate = rate;
+    /// <summary>
+    /// Raises the simulated video-ended event.
+    /// </summary>
     public void EmitEnded() => Ended?.Invoke(this, EventArgs.Empty);
+    /// <summary>
+    /// Raises a simulated playback-state change.
+    /// </summary>
+    /// <param name="state">The state value for this test case.</param>
     public void EmitState(string state) => StateChanged?.Invoke(this, new(state));
+    /// <summary>
+    /// Releases the resources owned by this instance.
+    /// </summary>
     public void Dispose() { DisposeCount++; _ownedStream?.Dispose(); }
+    /// <summary>
+    /// Publishes a simulated video frame.
+    /// </summary>
+    /// <param name="pixels">The pixels value for this test case.</param>
+    /// <param name="width">The width value for this test case.</param>
+    /// <param name="height">The height value for this test case.</param>
+    /// <param name="stride">The stride value for this test case.</param>
     public void Emit(byte[] pixels, int width, int height, int stride)
     {
         NaturalSize = (width, height);

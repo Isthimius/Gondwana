@@ -7,8 +7,14 @@ using Gondwana.Timers;
 
 namespace Gondwana.Tests.Effects;
 
+/// <summary>
+/// Contains regression tests for effects manager.
+/// </summary>
 public sealed class EffectsManagerTests
 {
+    /// <summary>
+    /// Verifies fade out view advances and completes.
+    /// </summary>
     [Fact]
     public void FadeOut_View_AdvancesAndCompletes()
     {
@@ -33,6 +39,9 @@ public sealed class EffectsManagerTests
         Assert.Empty(host.Effects.ActiveEffects);
     }
 
+    /// <summary>
+    /// Verifies update first call warms tick without skipping effect.
+    /// </summary>
     [Fact]
     public void Update_FirstCallWarmsTickWithoutSkippingEffect()
     {
@@ -52,6 +61,9 @@ public sealed class EffectsManagerTests
         Assert.Equal(0.5f, view.EffectOpacity, 3);
     }
 
+    /// <summary>
+    /// Verifies fade out scene layer does not change view opacity.
+    /// </summary>
     [Fact]
     public void FadeOut_SceneLayer_DoesNotChangeViewOpacity()
     {
@@ -64,6 +76,9 @@ public sealed class EffectsManagerTests
         Assert.Equal(0.75f, layer.EffectOpacity, 3);
     }
 
+    /// <summary>
+    /// Verifies run replaces effect on same target and channel.
+    /// </summary>
     [Fact]
     public void Run_ReplacesEffectOnSameTargetAndChannel()
     {
@@ -83,6 +98,9 @@ public sealed class EffectsManagerTests
         Assert.Equal(0.875f, view.EffectOpacity, 3);
     }
 
+    /// <summary>
+    /// Verifies compatible channels compose on one target.
+    /// </summary>
     [Fact]
     public void CompatibleChannels_ComposeOnOneTarget()
     {
@@ -104,6 +122,9 @@ public sealed class EffectsManagerTests
         Assert.Equal(0.5f, view.EffectOffsetFactor.X, 3);
     }
 
+    /// <summary>
+    /// Verifies cancel restores state from before effect.
+    /// </summary>
     [Fact]
     public void Cancel_RestoresStateFromBeforeEffect()
     {
@@ -123,6 +144,9 @@ public sealed class EffectsManagerTests
         Assert.Empty(host.Effects.ActiveEffects);
     }
 
+    /// <summary>
+    /// Verifies slide changes presentation coordinates without changing world state.
+    /// </summary>
     [Fact]
     public void Slide_ChangesPresentationCoordinatesWithoutChangingWorldState()
     {
@@ -147,6 +171,9 @@ public sealed class EffectsManagerTests
         Assert.Equal(Point.Empty, layer.OriginPx);
     }
 
+    /// <summary>
+    /// Verifies fill and erase update reveal state.
+    /// </summary>
     [Fact]
     public void FillAndErase_UpdateRevealState()
     {
@@ -169,6 +196,9 @@ public sealed class EffectsManagerTests
         Assert.Equal(EffectDirection.FromTopToBottom, layer.EffectRevealDirection);
     }
 
+    /// <summary>
+    /// Verifies earthquake is view only and resets its offset at completion.
+    /// </summary>
     [Fact]
     public void Earthquake_IsViewOnlyAndResetsItsOffsetAtCompletion()
     {
@@ -189,6 +219,9 @@ public sealed class EffectsManagerTests
         Assert.Equal(PointF.Empty, view.EffectOffsetPx);
     }
 
+    /// <summary>
+    /// Verifies zoom delegates animation to viewport without advancing it twice.
+    /// </summary>
     [Fact]
     public void Zoom_DelegatesAnimationToViewportWithoutAdvancingItTwice()
     {
@@ -213,6 +246,9 @@ public sealed class EffectsManagerTests
         Assert.False(view.Viewport.IsZoomAnimating);
     }
 
+    /// <summary>
+    /// Verifies run rejects target owned by another host.
+    /// </summary>
     [Fact]
     public void Run_RejectsTargetOwnedByAnotherHost()
     {
@@ -223,6 +259,14 @@ public sealed class EffectsManagerTests
             host.Effects.Run(otherView, new FadeOutEffect(1f)));
     }
 
+    /// <summary>
+    /// Verifies reveal geometry uses requested direction.
+    /// </summary>
+    /// <param name="direction">The direction value for this test case.</param>
+    /// <param name="x">The x value for this test case.</param>
+    /// <param name="y">The y value for this test case.</param>
+    /// <param name="width">The width value for this test case.</param>
+    /// <param name="height">The height value for this test case.</param>
     [Theory]
     [InlineData(EffectDirection.FromLeftToRight, 0f, 0f, 25f, 50f)]
     [InlineData(EffectDirection.FromRightToLeft, 75f, 0f, 25f, 50f)]

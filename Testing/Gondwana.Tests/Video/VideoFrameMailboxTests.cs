@@ -4,8 +4,14 @@ using SkiaSharp;
 
 namespace Gondwana.Tests.Video;
 
+/// <summary>
+/// Contains regression tests for video frame mailbox.
+/// </summary>
 public sealed class VideoFrameMailboxTests
 {
+    /// <summary>
+    /// Verifies bgrx padded rows preserve colors and ignore unused alpha.
+    /// </summary>
     [Fact]
     public void BgrxPaddedRowsPreserveColorsAndIgnoreUnusedAlpha()
     {
@@ -31,6 +37,9 @@ public sealed class VideoFrameMailboxTests
         finally { bitmap?.Dispose(); }
     }
 
+    /// <summary>
+    /// Verifies latest frame wins and dimension changes recreate bitmap.
+    /// </summary>
     [Fact]
     public void LatestFrameWinsAndDimensionChangesRecreateBitmap()
     {
@@ -58,6 +67,10 @@ public sealed class VideoFrameMailboxTests
         finally { bitmap?.Dispose(); }
     }
 
+    /// <summary>
+    /// Verifies concurrent producer consumer and dispose do not tear frames.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task ConcurrentProducerConsumerAndDisposeDoNotTearFrames()
     {
@@ -91,6 +104,11 @@ public sealed class VideoFrameMailboxTests
         finally { bitmap?.Dispose(); }
     }
 
+    /// <summary>
+    /// Verifies decode buffer uses source dimensions aligned storage and idempotent cleanup.
+    /// </summary>
+    /// <param name="width">The width value for this test case.</param>
+    /// <param name="height">The height value for this test case.</param>
     [Theory]
     [InlineData(640, 480)]
     [InlineData(1920, 1080)]
@@ -110,6 +128,9 @@ public sealed class VideoFrameMailboxTests
 
     }
 
+    /// <summary>
+    /// Verifies reset drops pending frame and invalid stride is rejected.
+    /// </summary>
     [Fact]
     public void ResetDropsPendingFrameAndInvalidStrideIsRejected()
     {

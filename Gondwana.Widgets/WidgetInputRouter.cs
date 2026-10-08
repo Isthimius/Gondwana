@@ -842,6 +842,7 @@ public sealed class WidgetInputRouter : IDisposable
         /// </summary>
         /// <param name="widget">The widget that was hit.</param>
         /// <param name="view">The view in which the widget was hit.</param>
+        /// <param name="instanceOffset">The instance offset.</param>
         public WidgetHit(WidgetBase widget,
                          View view,
                          PointF instanceOffset)
@@ -851,6 +852,9 @@ public sealed class WidgetInputRouter : IDisposable
             InstanceOffset = instanceOffset;
         }
 
+        /// <summary>
+        /// Gets or sets the wrapped-instance offset in world pixels.
+        /// </summary>
         public PointF InstanceOffset { get; }
 
         /// <summary>
@@ -873,6 +877,7 @@ public sealed class WidgetInputRouter : IDisposable
         /// <param name="view">The view associated with the captured pointer event.</param>
         /// <param name="button">The button associated with the captured pointer.</param>
         /// <param name="lastPosition">The last known pointer position.</param>
+        /// <param name="instanceOffset">The instance offset.</param>
         public PointerCapture(WidgetBase widget,
                               View view,
                               WidgetPointerButtonEnum button,
@@ -908,6 +913,9 @@ public sealed class WidgetInputRouter : IDisposable
         /// The last known pointer position, in pixels.
         /// </value>
         public Point LastPosition { get; set; }
+        /// <summary>
+        /// Gets or sets the wrapped-instance offset in world pixels.
+        /// </summary>
         public PointF InstanceOffset { get; }
     }
 }

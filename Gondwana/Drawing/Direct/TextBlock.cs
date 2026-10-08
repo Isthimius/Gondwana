@@ -132,6 +132,12 @@ public class TextBlock : DirectDrawingMovableBase
     /// Creates a new <see cref="TextBlock"/> bound to a render surface and rectangle.
     /// </summary>
     /// <param name="renderSurfaceHost">The target render surface host responsible for drawing.</param>
+    /// <param name="mode">The coordinate space in which the text block is drawn.</param>
+    /// <param name="sceneLayer">The scene layer used for world-space drawing, or null for view drawing.</param>
+    /// <param name="view">The view used for view-local drawing, or null for scene-layer drawing.</param>
+    /// <param name="screenBounds">The bounds in view-local pixels for view drawing.</param>
+    /// <param name="worldBounds">The bounds in world pixels for scene-layer drawing.</param>
+    /// <param name="nickname">An optional name identifying the text block.</param>
     private TextBlock(RenderSurfaceHostBase renderSurfaceHost,
                      DirectDrawingMode mode,
                      SceneLayer? sceneLayer,

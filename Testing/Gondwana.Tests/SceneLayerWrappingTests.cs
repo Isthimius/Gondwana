@@ -7,10 +7,21 @@ using Newtonsoft.Json;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for scene layer wrapping.
+/// </summary>
 public sealed class SceneLayerWrappingTests
 {
+    /// <summary>
+    /// Gets the projections.
+    /// </summary>
     public static IEnumerable<object[]> Projections => Enum.GetValues<CoordinateSystemTypes>().Select(p => new object[] { p });
 
+    /// <summary>
+    /// Verifies lookup only enabled axes wrap and indexer never wraps.
+    /// </summary>
+    /// <param name="horizontal">The horizontal value for this test case.</param>
+    /// <param name="vertical">The vertical value for this test case.</param>
     [Theory]
     [InlineData(false, false)]
     [InlineData(true, false)]
@@ -31,6 +42,10 @@ public sealed class SceneLayerWrappingTests
         Assert.Same(horizontal ? layer[3, 0] : null, layer.GetAdjacentTile(layer[0, 0]!, CardinalDirections.W));
     }
 
+    /// <summary>
+    /// Verifies repeat vectors match virtual anchors and rendering keeps canonical identity.
+    /// </summary>
+    /// <param name="projection">The projection value for this test case.</param>
     [Theory]
     [MemberData(nameof(Projections))]
     public void RepeatVectors_MatchVirtualAnchors_AndRenderingKeepsCanonicalIdentity(CoordinateSystemTypes projection)
@@ -56,6 +71,11 @@ public sealed class SceneLayerWrappingTests
         Assert.Contains(draws, d => ReferenceEquals(d.Owner, layer[0, 0]) && d.Offset == target);
     }
 
+    /// <summary>
+    /// Verifies stagger validation is deferred until use and disabled axis is allowed.
+    /// </summary>
+    /// <param name="projection">The projection value for this test case.</param>
+    /// <param name="horizontal">The horizontal value for this test case.</param>
     [Theory]
     [InlineData(CoordinateSystemTypes.HexAxialFlatTop, true)]
     [InlineData(CoordinateSystemTypes.HexAxialPointedTop, false)]
@@ -74,6 +94,11 @@ public sealed class SceneLayerWrappingTests
         Assert.Equal(new PointF(2, 2), layer.WrapGrid(new(-1, -1)));
     }
 
+    /// <summary>
+    /// Verifies serialized flags round trip and old true fields become operational.
+    /// </summary>
+    /// <param name="horizontal">The horizontal value for this test case.</param>
+    /// <param name="vertical">The vertical value for this test case.</param>
     [Theory]
     [InlineData(false, false)]
     [InlineData(true, false)]
@@ -100,6 +125,9 @@ public sealed class SceneLayerWrappingTests
         Assert.Same(restored, restored[2, 3]!.SceneLayer);
     }
 
+    /// <summary>
+    /// Verifies large view repeats more than nine copies and sorts translated bounds.
+    /// </summary>
     [Fact]
     public void LargeView_RepeatsMoreThanNineCopies_AndSortsTranslatedBounds()
     {
@@ -113,6 +141,11 @@ public sealed class SceneLayerWrappingTests
         Assert.Throws<InvalidOperationException>(() => layer.GetWrappedOffsets(new(0, 0, 16, 16), new(0, 0, 1e9f, 1e9f)).ToArray());
     }
 
+    /// <summary>
+    /// Verifies collision queries use translated tile bounds.
+    /// </summary>
+    /// <param name="x">The x value for this test case.</param>
+    /// <param name="y">The y value for this test case.</param>
     [Theory]
     [InlineData(125, 10)]
     [InlineData(10, 125)]

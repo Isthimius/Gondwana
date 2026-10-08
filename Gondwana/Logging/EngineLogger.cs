@@ -93,6 +93,7 @@ public static partial class EngineLogger
     /// On browser/WASM platforms, only Debug logging is used (no Console logger).
     /// On other platforms, both Debug and Console logging are configured.
     /// </summary>
+    /// <returns>The current logger factory, creating one when needed.</returns>
     private static ILoggerFactory GetOrCreateLoggerFactory()
     {
         if (_loggerFactory != null)
@@ -125,6 +126,7 @@ public static partial class EngineLogger
     /// <summary>
     /// Optionally call during startup. If not called and Mode==Asynchronous, the worker auto-starts on first log.
     /// </summary>
+    /// <param name="capacity">The capacity.</param>
     public static void StartAsyncLogging(int capacity = DefaultCapacity)
     {
         if (capacity <= 0)
@@ -141,6 +143,8 @@ public static partial class EngineLogger
     /// <summary>
     /// Stops background logging. If flush=true, tries to drain queued messages first.
     /// </summary>
+    /// <param name="flush">Whether to flush the pending work before returning.</param>
+    /// <param name="flushTimeout">The flush timeout.</param>
     public static void StopAsyncLogging(bool flush = true, TimeSpan? flushTimeout = null)
     {
         Channel<LogEvent>? ch;
@@ -179,6 +183,7 @@ public static partial class EngineLogger
     /// <summary>
     /// Convenience: switches to sync mode and flushes any queued async logs first (best-effort).
     /// </summary>
+    /// <param name="flushTimeout">The flush timeout.</param>
     public static void SwitchToSyncAndFlush(TimeSpan? flushTimeout = null)
     {
         if (_mode == EngineLoggingMode.Asynchronous)
@@ -190,6 +195,7 @@ public static partial class EngineLogger
     /// <summary>
     /// Convenience: switches to async mode (auto-starts worker).
     /// </summary>
+    /// <param name="capacity">The capacity.</param>
     public static void SwitchToAsync(int? capacity = null)
     {
         lock (_asyncGate)
@@ -225,6 +231,8 @@ public static partial class EngineLogger
     /// Registers a provider factory that is reapplied whenever Gondwana rebuilds its logger factory.
     /// Intended for platform packages whose logging sink must survive runtime log-level changes.
     /// </summary>
+    /// <param name="key">The stable key identifying the persistent logging provider.</param>
+    /// <param name="providerFactory">The factory used to recreate the provider when logging is reconfigured.</param>
     internal static void RegisterPersistentProvider(
         string key,
         Func<ILoggerProvider> providerFactory)

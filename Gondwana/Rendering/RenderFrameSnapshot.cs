@@ -30,5 +30,8 @@ internal sealed class RenderFrameSnapshot : IDisposable
 
     internal void Replay(SKCanvas canvas) => canvas.DrawPicture(_commands);
 
+    /// <summary>
+    /// Releases the resources owned by this instance.
+    /// </summary>
     public void Dispose() => _commands.Dispose();
 }

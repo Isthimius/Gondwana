@@ -7,10 +7,14 @@ using Xunit.Abstractions;
 namespace Gondwana.Tooling.SceneViewer.WinForms.Tests;
 
 /// <summary>Opt-in, process-isolated Scene Viewer run using the actual Engine and platform paint loop.</summary>
+/// <param name="output">The output value for this test case.</param>
 public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
 {
     private sealed class DogfoodFactAttribute : FactAttribute
     {
+        /// <summary>
+        /// Initializes a new instance of the <c>DogfoodFactAttribute</c> class.
+        /// </summary>
         public DogfoodFactAttribute()
         {
             if (Environment.GetEnvironmentVariable("GONDWANA_VIEWER_DOGFOOD") != "1")
@@ -18,6 +22,10 @@ public sealed class SceneViewerSnapshotDogfoodTests(ITestOutputHelper output)
         }
     }
 
+    /// <summary>
+    /// Verifies the island scene in running and paused states.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [DogfoodFact]
     public async Task IslandRunningAndPaused()
     {

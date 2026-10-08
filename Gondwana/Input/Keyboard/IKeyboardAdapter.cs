@@ -12,6 +12,8 @@ public interface IKeyboardAdapter
     /// Key codes should be stable integers agreed upon by the adapter and the engine.
     /// For WinForms, this should be the Windows Virtual-Key code (0..255).
     /// </summary>
+    /// <param name="keyCode">The key code to query.</param>
+    /// <returns><see langword="true"/> if the key is currently pressed; otherwise, <see langword="false"/>.</returns>
     bool IsDown(int keyCode);
 
     /// <summary>

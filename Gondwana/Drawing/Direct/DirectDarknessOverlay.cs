@@ -205,6 +205,10 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     /// <summary>
     /// Adds a new manually controlled reveal source in world-space.
     /// </summary>
+    /// <param name="centerWorldPx">The center in world pixels.</param>
+    /// <param name="radiusWorldPx">The radius in world pixels.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
+    /// <returns>The reveal source added to this overlay.</returns>
     public RevealSource AddRevealSource(PointF centerWorldPx, float radiusWorldPx, string? nickname = null)
     {
         var source = new RevealSource(this, centerWorldPx, radiusWorldPx, nickname);
@@ -231,6 +235,7 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     /// <paramref name="trackIntensity"/> settings unchanged. To change those settings, call
     /// <see cref="UntrackLight"/> and then call <see cref="TrackLight"/> again.
     /// </remarks>
+    /// <returns>The reveal source linked to the supplied light.</returns>
     public RevealSource TrackLight(DirectRadialLight light,
                                    float radiusScale = 1f,
                                    float intensityScale = 1f,
@@ -270,6 +275,10 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     /// the original tracking options in place.
     /// </para>
     /// </remarks>
+    /// <param name="lightLayer">The light layer.</param>
+    /// <param name="radiusScale">The multiplier applied to the reveal radius.</param>
+    /// <param name="intensityScale">The multiplier applied to the reveal intensity.</param>
+    /// <param name="trackIntensity">Whether reveal intensity follows the light intensity.</param>
     public void TrackLightLayer(DirectLightLayer lightLayer,
                                 float radiusScale = 1f,
                                 float intensityScale = 1f,
@@ -299,6 +308,8 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     /// <summary>
     /// Stops tracking a specific light and removes its reveal source.
     /// </summary>
+    /// <param name="light">The light.</param>
+    /// <returns><see langword="true"/> if the light was being tracked and was removed; otherwise, <see langword="false"/>.</returns>
     public bool UntrackLight(DirectRadialLight light)
     {
         var tracked = _trackedLightReveals.FirstOrDefault(t => ReferenceEquals(t.Light, light));
@@ -312,6 +323,8 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     /// <summary>
     /// Removes a reveal source from this overlay.
     /// </summary>
+    /// <param name="source">The source.</param>
+    /// <returns><see langword="true"/> if the entry was found and removed; otherwise, <see langword="false"/>.</returns>
     public bool RemoveRevealSource(RevealSource source)
     {
         if (source is null)
@@ -354,6 +367,8 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     /// <summary>
     /// Fluent helper to set the darkness tint.
     /// </summary>
+    /// <param name="color">The color to apply.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public DirectDarknessOverlay SetDarknessColor(Color color)
     {
         DarknessColor = color;
@@ -363,6 +378,8 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     /// <summary>
     /// Fluent helper to set the darkness opacity.
     /// </summary>
+    /// <param name="opacity">The opacity, from zero (transparent) to one (opaque).</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public DirectDarknessOverlay SetDarknessOpacity(byte opacity)
     {
         DarknessOpacity = opacity;
@@ -372,6 +389,8 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     /// <summary>
     /// Fluent helper to set the fully-revealed radius ratio.
     /// </summary>
+    /// <param name="ratio">The ratio.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public DirectDarknessOverlay SetInnerClearRadiusRatio(float ratio)
     {
         InnerClearRadiusRatio = ratio;
@@ -381,6 +400,8 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     /// <summary>
     /// Fluent helper to set the midpoint radius ratio.
     /// </summary>
+    /// <param name="ratio">The ratio.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public DirectDarknessOverlay SetMidpointRadiusRatio(float ratio)
     {
         MidpointRadiusRatio = ratio;
@@ -390,6 +411,8 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
     /// <summary>
     /// Fluent helper to set the midpoint reveal strength.
     /// </summary>
+    /// <param name="strength">The strength.</param>
+    /// <returns>This instance for fluent chaining.</returns>
     public DirectDarknessOverlay SetMidpointStrength(float strength)
     {
         MidpointStrength = strength;
@@ -551,10 +574,25 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
         float intensityScale,
         bool trackIntensity)
     {
+        /// <summary>
+        /// Gets the light.
+        /// </summary>
         public DirectRadialLight Light { get; } = light;
+        /// <summary>
+        /// Gets the source.
+        /// </summary>
         public RevealSource Source { get; } = source;
+        /// <summary>
+        /// Gets the multiplier applied to the reveal radius.
+        /// </summary>
         public float RadiusScale { get; } = radiusScale;
+        /// <summary>
+        /// Gets the multiplier applied to the reveal intensity.
+        /// </summary>
         public float IntensityScale { get; } = intensityScale;
+        /// <summary>
+        /// Gets whether the reveal intensity follows the light intensity.
+        /// </summary>
         public bool TrackIntensity { get; } = trackIntensity;
     }
 
@@ -564,9 +602,21 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
         float intensityScale,
         bool trackIntensity)
     {
+        /// <summary>
+        /// Gets the light layer.
+        /// </summary>
         public DirectLightLayer LightLayer { get; } = lightLayer;
+        /// <summary>
+        /// Gets the multiplier applied to the reveal radius.
+        /// </summary>
         public float RadiusScale { get; } = radiusScale;
+        /// <summary>
+        /// Gets the multiplier applied to the reveal intensity.
+        /// </summary>
         public float IntensityScale { get; } = intensityScale;
+        /// <summary>
+        /// Gets whether the reveal intensity follows the light intensity.
+        /// </summary>
         public bool TrackIntensity { get; } = trackIntensity;
     }
 
@@ -666,6 +716,7 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
         /// <summary>
         /// Moves the reveal source to a new world-space position.
         /// </summary>
+        /// <param name="centerWorldPx">The center in world pixels.</param>
         public void MoveTo(PointF centerWorldPx)
         {
             CenterWorldPx = centerWorldPx;
@@ -674,6 +725,7 @@ public sealed class DirectDarknessOverlay : DirectDrawingBase
         /// <summary>
         /// Sets the reveal radius in world-space pixels.
         /// </summary>
+        /// <param name="radiusWorldPx">The radius in world pixels.</param>
         public void SetRadius(float radiusWorldPx)
         {
             RadiusWorldPx = radiusWorldPx;

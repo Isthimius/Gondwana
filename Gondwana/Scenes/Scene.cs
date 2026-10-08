@@ -344,6 +344,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     /// <exception cref="InvalidOperationException">
     /// Thrown when the scene is already bound to a different host.
     /// </exception>
+    /// <param name="host">The render-surface host to bind or unbind.</param>
     internal void BindRenderSurfaceHost(RenderSurfaceHostBase host)
     {
         ArgumentNullException.ThrowIfNull(host);
@@ -379,6 +380,7 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     /// Releases this scene when it is currently owned by the specified host.
     /// Calls from any other host are ignored.
     /// </summary>
+    /// <param name="host">The render-surface host to bind or unbind.</param>
     internal void UnbindRenderSurfaceHost(RenderSurfaceHostBase host)
     {
         ArgumentNullException.ThrowIfNull(host);

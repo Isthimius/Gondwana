@@ -8,6 +8,9 @@ namespace Gondwana.Cli.Commands;
 
 internal class ProjectSettings : CommandSettings
 {
+    /// <summary>
+    /// Gets or sets the project.
+    /// </summary>
     [CommandOption("-p|--project <PATH>")]
     [Description("Project file or directory (default: current directory).")]
     public string? Project { get; init; }
@@ -15,18 +18,32 @@ internal class ProjectSettings : CommandSettings
 
 internal static class ProjectCommand
 {
+    /// <summary>
+    /// Loads project packages from the supplied source.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <returns>The resulting project packages.</returns>
     public static ProjectPackages Load(string? path)
     {
         if (!ProjectHelper.TryResolveProject(path, out var project, out var error)) throw new InvalidOperationException(error);
         return new ProjectPackages(project!);
     }
 
+    /// <summary>
+    /// Writes the command error and returns a failure exit code.
+    /// </summary>
+    /// <param name="ex">The ex.</param>
+    /// <returns>A nonzero command exit code.</returns>
     public static int Fail(Exception ex)
     {
         AnsiConsole.MarkupLine($"[red]Fail:[/] {Markup.Escape(ex.Message)}");
         return 1;
     }
 
+    /// <summary>
+    /// Writes the applied project changes to the console.
+    /// </summary>
+    /// <param name="changes">The changes.</param>
     public static void PrintChanges(IReadOnlyList<string> changes)
     {
         foreach (var change in changes) AnsiConsole.WriteLine(change);
@@ -36,13 +53,20 @@ internal static class ProjectCommand
 
 internal sealed class AddCommand : Command<AddCommand.Settings>
 {
+    /// <summary>
+    /// Defines command-line settings for AddCommand.
+    /// </summary>
     public sealed class Settings : ProjectSettings
     {
+        /// <summary>
+        /// Gets or sets the feature.
+        /// </summary>
         [CommandArgument(0, "<feature>")]
         [Description("widgets, audio, midi, gamepad, video, video-widgets, or hosting. Audio selects Browser for Blazor or NAudio for Windows; MIDI requires Windows. Cross-platform desktop audio requires explicit backend selection.")]
         public string Feature { get; init; } = "";
     }
 
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try
@@ -59,17 +83,27 @@ internal sealed class AddCommand : Command<AddCommand.Settings>
 
 internal sealed class UpgradeCommand : AsyncCommand<UpgradeCommand.Settings>
 {
+    /// <summary>
+    /// Defines command-line settings for UpgradeCommand.
+    /// </summary>
     public sealed class Settings : ProjectSettings
     {
+        /// <summary>
+        /// Gets or sets the version.
+        /// </summary>
         [CommandOption("--version <VERSION>")]
         [Description("Exact version, including prerelease if explicitly desired. Defaults to latest common stable version on nuget.org.")]
         public string? Version { get; init; }
 
+        /// <summary>
+        /// Gets or sets whether dry run is enabled.
+        /// </summary>
         [CommandOption("--dry-run")]
         [Description("Print all changes without writing files.")]
         public bool DryRun { get; init; }
     }
 
+    /// <inheritdoc/>
     protected override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try
@@ -98,6 +132,11 @@ internal sealed class UpgradeCommand : AsyncCommand<UpgradeCommand.Settings>
 
 internal static class PackageVersions
 {
+    /// <summary>
+    /// Parses a stable package version, excluding prerelease versions.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The requested version, or <see langword="null"/> when unavailable.</returns>
     public static Version? StableNumber(string value)
     {
         if (value.Contains('-') || !Version.TryParse(value.Split('+')[0], out var version)) return null;
@@ -105,6 +144,12 @@ internal static class PackageVersions
     }
 
     // Network seam: tests supply a deterministic package index.
+    /// <summary>
+    /// Finds the newest stable version available for every requested package.
+    /// </summary>
+    /// <param name="names">The names.</param>
+    /// <param name="getVersions">The get versions.</param>
+    /// <returns>A task whose result is the newest stable version shared by all requested packages.</returns>
     public static async Task<string> LatestCommonStable(IEnumerable<string> names, Func<string, Task<string[]>> getVersions)
     {
         HashSet<string>? common = null;

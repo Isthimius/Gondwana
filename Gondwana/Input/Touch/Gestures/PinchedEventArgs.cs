@@ -63,6 +63,12 @@ public sealed class PinchedEventArgs : EventArgs
     /// <summary>
     /// Initializes complete pinch lifecycle data.
     /// </summary>
+    /// <param name="phase">The phase.</param>
+    /// <param name="touchIds">The touch ids.</param>
+    /// <param name="center">The center.</param>
+    /// <param name="startingDistance">The starting distance.</param>
+    /// <param name="previousDistance">The previous distance.</param>
+    /// <param name="currentDistance">The current distance.</param>
     public PinchedEventArgs(
         PinchPhase phase,
         IReadOnlyList<int> touchIds,

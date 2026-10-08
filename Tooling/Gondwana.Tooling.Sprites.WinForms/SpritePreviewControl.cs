@@ -12,6 +12,9 @@ internal sealed class SpritePreviewControl : UserControl
 {
     private readonly PreviewCanvas _canvas = new();
     internal float Zoom => _canvas.Zoom;
+    /// <summary>
+    /// Initializes a new instance of the <c>SpritePreviewControl</c> class.
+    /// </summary>
     public SpritePreviewControl()
     {
         Dock = DockStyle.Fill;
@@ -28,6 +31,12 @@ internal sealed class SpritePreviewControl : UserControl
         Controls.Add(_canvas);
         Controls.Add(bar);
     }
+    /// <summary>
+    /// Updates the preview to show the selected content.
+    /// </summary>
+    /// <param name="entry">The entry.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="layer">The layer.</param>
     public void SetSelection(SpriteInstanceDefinition? entry, SpriteTilesheetSource? source, SceneLayerDefinition? layer) => _canvas.SetSelection(entry, source, layer);
 
     private sealed class PreviewCanvas : UserControl
@@ -40,7 +49,13 @@ internal sealed class SpritePreviewControl : UserControl
         private PointF _origin;
         private RectangleF _extent;
         private bool _fit;
+        /// <summary>
+        /// Gets the zoom.
+        /// </summary>
         public float Zoom { get; private set; } = 1;
+        /// <summary>
+        /// Initializes a new instance of the <c>PreviewCanvas</c> class.
+        /// </summary>
         public PreviewCanvas()
         {
             Dock = DockStyle.Fill;
@@ -49,6 +64,12 @@ internal sealed class SpritePreviewControl : UserControl
             BackColor = Color.FromArgb(24, 24, 24);
             Resize += (_, _) => { if (_fit) Fit(); };
         }
+        /// <summary>
+        /// Updates the preview to show the selected content.
+        /// </summary>
+        /// <param name="entry">The entry.</param>
+        /// <param name="source">The source.</param>
+        /// <param name="layer">The layer.</param>
         public void SetSelection(SpriteInstanceDefinition? entry, SpriteTilesheetSource? source, SceneLayerDefinition? layer)
         {
             _projection?.Dispose();
@@ -97,6 +118,10 @@ internal sealed class SpritePreviewControl : UserControl
                 Math.Max(Math.Max(corners.Max(point => point.Y), _anchor.Y), _origin.Y) + 8);
             if (_fit) Fit(); else SetZoom(Zoom);
         }
+        /// <summary>
+        /// Sets the preview zoom factor.
+        /// </summary>
+        /// <param name="zoom">The zoom factor.</param>
         public void SetZoom(float zoom)
         {
             _fit = false;
@@ -104,6 +129,9 @@ internal sealed class SpritePreviewControl : UserControl
             AutoScrollMinSize = new Size((int)Math.Ceiling(_extent.Width * Zoom + 80), (int)Math.Ceiling(_extent.Height * Zoom + 80));
             Invalidate();
         }
+        /// <summary>
+        /// Adjusts the preview zoom to fit its content inside the viewport.
+        /// </summary>
         public void Fit()
         {
             SetZoom(Math.Min(Math.Max(1, ClientSize.Width - 80) / Math.Max(1, _extent.Width),
@@ -111,11 +139,13 @@ internal sealed class SpritePreviewControl : UserControl
             _fit = true;
             AutoScrollPosition = Point.Empty;
         }
+        /// <inheritdoc/>
         protected override void OnMouseWheel(MouseEventArgs e)
         {
             if ((ModifierKeys & Keys.Control) != 0) SetZoom(Zoom * MathF.Pow(1.25f, e.Delta / 120f));
             else base.OnMouseWheel(e);
         }
+        /// <inheritdoc/>
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
@@ -154,10 +184,15 @@ internal sealed class SpritePreviewControl : UserControl
                 if (collision.Width > 0 && collision.Height > 0) g.DrawRectangle(Pens.LimeGreen, collision);
             }
         }
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing) { if (disposing) _projection?.Dispose(); base.Dispose(disposing); }
     }
     private sealed class ProjectionLayer : SceneLayer
     {
+        /// <summary>
+        /// Initializes a new instance of the <c>ProjectionLayer</c> class.
+        /// </summary>
+        /// <param name="layer">The layer.</param>
         public ProjectionLayer(SceneLayerDefinition layer) : base(1, 1, Math.Max(1, layer.TileWidth), Math.Max(1, layer.TileHeight), 1f, layer.CoordinateSystemType) { OriginPx = layer.OriginPx; }
     }
 }

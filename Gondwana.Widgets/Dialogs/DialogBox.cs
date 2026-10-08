@@ -16,11 +16,26 @@ namespace Gondwana.Widgets.Dialogs;
 /// </summary>
 public abstract class DialogBox : DraggableContainerWidget
 {
+    /// <summary>
+    /// The default title bar height.
+    /// </summary>
     protected const int DefaultTitleBarHeight = 36;
+    /// <summary>
+    /// The default close button size.
+    /// </summary>
     protected const int DefaultCloseButtonSize = 28;
 
+    /// <summary>
+    /// The default panel color.
+    /// </summary>
     protected readonly static Color DefaultPanelColor = Color.FromArgb(245, 36, 36, 44);
+    /// <summary>
+    /// The default panel border color.
+    /// </summary>
     protected readonly static Color DefaultPanelBorderColor = Color.FromArgb(255, 140, 140, 155);
+    /// <summary>
+    /// The default title bar color.
+    /// </summary>
     protected readonly static Color DefaultTitleBarColor = Color.FromArgb(255, 57, 57, 72);
 
     private const int DialogZOrderStart = 100_000;
@@ -41,6 +56,12 @@ public abstract class DialogBox : DraggableContainerWidget
     /// <summary>
     /// Initializes a view-level dialog.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="view">The view used for presentation and coordinate conversion.</param>
+    /// <param name="bounds">The widget bounds in view-local pixels.</param>
+    /// <param name="title">The title.</param>
+    /// <param name="showCloseButton">Whether the dialog displays a close button.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     protected DialogBox(RenderSurfaceHostBase renderSurfaceHost,
                         View view,
                         Rectangle bounds,
@@ -75,6 +96,12 @@ public abstract class DialogBox : DraggableContainerWidget
     /// <summary>
     /// Initializes a scene-layer dialog.
     /// </summary>
+    /// <param name="renderSurfaceHost">The render-surface host that owns the drawing.</param>
+    /// <param name="sceneLayer">The scene layer that owns the content.</param>
+    /// <param name="bounds">The widget bounds in world pixels.</param>
+    /// <param name="title">The title.</param>
+    /// <param name="showCloseButton">Whether the dialog displays a close button.</param>
+    /// <param name="nickname">An optional name used to identify the object.</param>
     protected DialogBox(RenderSurfaceHostBase renderSurfaceHost,
                         SceneLayer sceneLayer,
                         Rectangle bounds,
@@ -173,6 +200,7 @@ public abstract class DialogBox : DraggableContainerWidget
     /// <summary>
     /// Closes the dialog with the specified result.
     /// </summary>
+    /// <param name="result">The result.</param>
     public void Close(DialogResult result = DialogResult.Close)
     {
         if (IsClosed)
@@ -193,6 +221,7 @@ public abstract class DialogBox : DraggableContainerWidget
     /// <summary>
     /// Called after the dialog closes.
     /// </summary>
+    /// <param name="result">The result.</param>
     protected virtual void OnClosed(DialogResult result)
     {
     }

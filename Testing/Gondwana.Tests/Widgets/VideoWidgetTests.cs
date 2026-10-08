@@ -16,11 +16,18 @@ using SkiaSharp;
 
 namespace Gondwana.Tests.Widgets;
 
+/// <summary>
+/// Contains regression tests for video widget.
+/// </summary>
 public sealed class VideoWidgetTests
 {
     private static readonly Rectangle InitialBounds = new(10, 20, 100, 60);
     private static VideoSource Source => VideoSource.FromUri(new Uri("file:///intro.mp4"));
 
+    /// <summary>
+    /// Verifies construction and bounds use the owned video.
+    /// </summary>
+    /// <param name="world">The world value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -56,6 +63,9 @@ public sealed class VideoWidgetTests
         Assert.Equal(new Rectangle(60, 70, 50, 25), widget.Bounds);
     }
 
+    /// <summary>
+    /// Verifies show hide focus and disposal use the existing router without changing playback.
+    /// </summary>
     [Fact]
     public void ShowHideFocusAndDisposalUseTheExistingRouterWithoutChangingPlayback()
     {
@@ -101,6 +111,10 @@ public sealed class VideoWidgetTests
         Assert.Empty(widget.Children);
     }
 
+    /// <summary>
+    /// Verifies router drag moves video and suppresses only the drag click.
+    /// </summary>
+    /// <param name="world">The world value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -146,6 +160,9 @@ public sealed class VideoWidgetTests
         Assert.True(widget.IsPlaying); // the wrapper assigns no click playback behavior
     }
 
+    /// <summary>
+    /// Verifies pointer and keyboard events use normal dispatch without playback commands.
+    /// </summary>
     [Fact]
     public void PointerAndKeyboardEventsUseNormalDispatchWithoutPlaybackCommands()
     {
@@ -179,6 +196,9 @@ public sealed class VideoWidgetTests
         Assert.True(widget.IsPlaying);
     }
 
+    /// <summary>
+    /// Verifies playback and events delegate to authoritative player.
+    /// </summary>
     [Fact]
     public void PlaybackAndEventsDelegateToAuthoritativePlayer()
     {
@@ -217,6 +237,9 @@ public sealed class VideoWidgetTests
         Assert.True(widget.IsPlaying);
     }
 
+    /// <summary>
+    /// Verifies composite opacity fade and z order apply to video pixels.
+    /// </summary>
     [Fact]
     public void CompositeOpacityFadeAndZOrderApplyToVideoPixels()
     {
@@ -244,6 +267,10 @@ public sealed class VideoWidgetTests
         Assert.True(widget.Visible);
     }
 
+    /// <summary>
+    /// Verifies stream ownership flows through video source.
+    /// </summary>
+    /// <param name="leaveOpen">The leave open value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -261,6 +288,9 @@ public sealed class VideoWidgetTests
         Assert.Equal(1, player.DisposeCount);
     }
 
+    /// <summary>
+    /// Verifies gaf source uses fresh streams and failed construction cleans up.
+    /// </summary>
     [Fact]
     public void GafSourceUsesFreshStreamsAndFailedConstructionCleansUp()
     {
@@ -292,6 +322,10 @@ public sealed class VideoWidgetTests
         finally { File.Delete(path); }
     }
 
+    /// <summary>
+    /// Verifies factory failures leave no registered composite.
+    /// </summary>
+    /// <param name="world">The world value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -306,6 +340,9 @@ public sealed class VideoWidgetTests
         Assert.DoesNotContain(DirectDrawingManager.Instance.DirectDrawings, d => ReferenceEquals(d.RenderSurfaceHost, host));
     }
 
+    /// <summary>
+    /// Verifies scene layer widget hits wrapped copies.
+    /// </summary>
     [Fact]
     public void SceneLayerWidgetHitsWrappedCopies()
     {

@@ -7,6 +7,7 @@ internal sealed class TestHttpMessageHandler(
     Func<HttpRequestMessage, HttpResponseMessage> responder)
     : HttpMessageHandler
 {
+    /// <inheritdoc/>
     protected override Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken) =>

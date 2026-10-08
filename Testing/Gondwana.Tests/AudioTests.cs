@@ -5,20 +5,30 @@ using Newtonsoft.Json;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for audio.
+/// </summary>
 [Collection("Global engine state")]
 public sealed class AudioTests : IDisposable
 {
     private readonly AudioResourceManager manager = AudioResourceManager.Instance;
     private readonly Backend backend = new();
 
+    /// <summary>
+    /// Initializes a new instance of the <c>AudioTests</c> class.
+    /// </summary>
     public AudioTests()
     {
         manager.Clear();
         manager.ConfigureBackend(backend);
     }
 
+    /// <inheritdoc/>
     public void Dispose() => manager.Clear();
 
+    /// <summary>
+    /// Verifies portable controls and completion are forwarded.
+    /// </summary>
     [Fact]
     public void PortableControlsAndCompletionAreForwarded()
     {
@@ -54,6 +64,9 @@ public sealed class AudioTests : IDisposable
         Assert.Throws<ObjectDisposedException>(() => sound.Play());
     }
 
+    /// <summary>
+    /// Verifies uri clone and json restore retain source and settings.
+    /// </summary>
     [Fact]
     public void UriCloneAndJsonRestoreRetainSourceAndSettings()
     {
@@ -77,6 +90,9 @@ public sealed class AudioTests : IDisposable
         Assert.True(loaded.IsLooping);
     }
 
+    /// <summary>
+    /// Verifies failed replacement preserves resource and unload notifies once.
+    /// </summary>
     [Fact]
     public void FailedReplacementPreservesResourceAndUnloadNotifiesOnce()
     {
@@ -99,6 +115,9 @@ public sealed class AudioTests : IDisposable
         manager.ConfigureBackend(new Backend());
     }
 
+    /// <summary>
+    /// Verifies file clone retains persisted source.
+    /// </summary>
     [Fact]
     public void FileCloneRetainsPersistedSource()
     {
@@ -117,6 +136,9 @@ public sealed class AudioTests : IDisposable
         finally { File.Delete(path); }
     }
 
+    /// <summary>
+    /// Verifies asset clone and reload keep asset identity.
+    /// </summary>
     [Fact]
     public void AssetCloneAndReloadKeepAssetIdentity()
     {
@@ -133,6 +155,9 @@ public sealed class AudioTests : IDisposable
         Assert.Equal(new byte[] { 1, 2, 3 }, manager.Get("copy")!.OriginalBytes);
     }
 
+    /// <summary>
+    /// Verifies existing clr signatures remain callable.
+    /// </summary>
     [Fact]
     public void ExistingClrSignaturesRemainCallable()
     {
@@ -151,6 +176,9 @@ public sealed class AudioTests : IDisposable
         Assert.Equal(2f, clone("legacy", "copy", null, null)!.PlaybackSpeed);
     }
 
+    /// <summary>
+    /// Verifies non overwriting engine state merge applies playback speed.
+    /// </summary>
     [Fact]
     public void NonOverwritingEngineStateMergeAppliesPlaybackSpeed()
     {
@@ -168,6 +196,9 @@ public sealed class AudioTests : IDisposable
         finally { File.Delete(path); }
     }
 
+    /// <summary>
+    /// Verifies invalid uri after backend creation releases handle and preserves existing resource.
+    /// </summary>
     [Fact]
     public void InvalidUriAfterBackendCreationReleasesHandleAndPreservesExistingResource()
     {
@@ -179,6 +210,10 @@ public sealed class AudioTests : IDisposable
         Assert.Equal(0, backend.Handles[1].CompletionSubscribers);
     }
 
+    /// <summary>
+    /// Verifies failed resource construction releases handle.
+    /// </summary>
+    /// <param name="uri">The uri value for this test case.</param>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
@@ -196,6 +231,9 @@ public sealed class AudioTests : IDisposable
         Assert.False(manager.Contains("broken"));
     }
 
+    /// <summary>
+    /// Verifies failed registration releases the new handle.
+    /// </summary>
     [Fact]
     public void FailedRegistrationReleasesTheNewHandle()
     {
@@ -208,6 +246,10 @@ public sealed class AudioTests : IDisposable
         Assert.False(manager.Contains("music"));
     }
 
+    /// <summary>
+    /// Verifies concurrent asset loads skip existing resource without disposing first result.
+    /// </summary>
+    /// <returns>A task that represents completion of the operation.</returns>
     [Fact]
     public async Task ConcurrentAssetLoads_SkipExistingResourceWithoutDisposingFirstResult()
     {
@@ -249,6 +291,9 @@ public sealed class AudioTests : IDisposable
         }
     }
 
+    /// <summary>
+    /// Verifies gsnd round trip and materialization preserve loose source and settings.
+    /// </summary>
     [Fact]
     public void GsndRoundTripAndMaterializationPreserveLooseSourceAndSettings()
     {
@@ -297,6 +342,9 @@ public sealed class AudioTests : IDisposable
         }
     }
 
+    /// <summary>
+    /// Verifies gsnd round trip materializes packed audio from loaded gaf.
+    /// </summary>
     [Fact]
     public void GsndRoundTripMaterializesPackedAudioFromLoadedGaf()
     {
@@ -345,6 +393,10 @@ public sealed class AudioTests : IDisposable
         }
     }
 
+    /// <summary>
+    /// Verifies engine state audio round trips through inline or external gsnd.
+    /// </summary>
+    /// <param name="separateGsndFile">The separate gsnd file value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -393,6 +445,9 @@ public sealed class AudioTests : IDisposable
         }
     }
 
+    /// <summary>
+    /// Verifies gsnd validation rejects duplicate keys and invalid source.
+    /// </summary>
     [Fact]
     public void GsndValidationRejectsDuplicateKeysAndInvalidSource()
     {
@@ -422,10 +477,23 @@ public sealed class AudioTests : IDisposable
 
     private sealed class Backend : IAudioBackend
     {
+        /// <inheritdoc/>
         public string Name => "Test";
+        /// <summary>
+        /// Gets or sets whether fail is enabled.
+        /// </summary>
         public bool Fail { get; set; }
+        /// <summary>
+        /// Gets or sets whether fail during setup is enabled.
+        /// </summary>
         public bool FailDuringSetup { get; set; }
+        /// <summary>
+        /// Gets or sets the before create.
+        /// </summary>
         public Action? BeforeCreate { get; set; }
+        /// <summary>
+        /// Gets the handles.
+        /// </summary>
         public List<Handle> Handles { get; } = [];
         private Handle Create()
         {
@@ -435,19 +503,30 @@ public sealed class AudioTests : IDisposable
             Handles.Add(handle);
             return handle;
         }
+        /// <inheritdoc/>
         public IAudioPlaybackHandle CreateFromUri(string key, string uri, float volume, float pan, float playbackSpeed) => Create();
+        /// <inheritdoc/>
         public IAudioPlaybackHandle CreateFromBytes(string key, byte[] data, string fileNameOrExtension, float volume, float pan, float playbackSpeed) => Create();
     }
 
     private sealed class Handle : IAudioPlaybackHandle
     {
+        /// <inheritdoc/>
         public event EventHandler? PlaybackCompleted;
+        /// <inheritdoc/>
         public AudioPlaybackState State { get; private set; }
+        /// <inheritdoc/>
         public TimeSpan CurrentTime { get; private set; }
+        /// <inheritdoc/>
         public TimeSpan Duration => TimeSpan.FromSeconds(10);
+        /// <inheritdoc/>
         public bool IsLooping { get; set; }
+        /// <summary>
+        /// Gets or sets whether fail during setup is enabled.
+        /// </summary>
         public bool FailDuringSetup { get; set; }
         private float volume;
+        /// <inheritdoc/>
         public float Volume
         {
             get => volume;
@@ -457,17 +536,37 @@ public sealed class AudioTests : IDisposable
                 volume = value;
             }
         }
+        /// <summary>
+        /// Gets the completion subscribers.
+        /// </summary>
         public int CompletionSubscribers => PlaybackCompleted?.GetInvocationList().Length ?? 0;
+        /// <inheritdoc/>
         public float Pan { get; set; }
+        /// <inheritdoc/>
         public float PlaybackSpeed { get; set; }
+        /// <inheritdoc/>
         public string? TemporaryFilePath => null;
+        /// <summary>
+        /// Gets whether disposed is enabled.
+        /// </summary>
         public bool Disposed { get; private set; }
+        /// <inheritdoc/>
         public void Play(bool fromStart = true) { if (fromStart) CurrentTime = TimeSpan.Zero; State = AudioPlaybackState.Playing; }
+        /// <inheritdoc/>
         public void Pause() => State = AudioPlaybackState.Paused;
+        /// <inheritdoc/>
         public void Resume() => State = AudioPlaybackState.Playing;
+        /// <inheritdoc/>
         public void Stop() => State = AudioPlaybackState.Stopped;
+        /// <inheritdoc/>
         public void Seek(TimeSpan position) => CurrentTime = position;
+        /// <summary>
+        /// Simulates playback completion for the test.
+        /// </summary>
         public void Complete() { State = AudioPlaybackState.Stopped; PlaybackCompleted?.Invoke(this, EventArgs.Empty); }
+        /// <summary>
+        /// Releases the resources owned by this instance.
+        /// </summary>
         public void Dispose() => Disposed = true;
     }
 }

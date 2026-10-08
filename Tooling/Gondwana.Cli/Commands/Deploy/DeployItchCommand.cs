@@ -6,42 +6,70 @@ namespace Gondwana.Cli.Commands.Deploy;
 
 internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
 {
+    /// <summary>
+    /// Defines command-line settings for DeployItchCommand.
+    /// </summary>
     public sealed class Settings : CommandSettings
     {
+        /// <summary>
+        /// Gets or sets the project.
+        /// </summary>
         [CommandOption("-p|--project")]
         [Description("Path to the .csproj file or directory containing a single .csproj. Defaults to the current directory.")]
         public string? Project { get; init; }
 
+        /// <summary>
+        /// Gets or sets the itch game.
+        /// </summary>
         [CommandOption("--itch-game")]
         [Description("The itch.io game slug in the form 'user/game'.")]
         public string? ItchGame { get; init; }
 
+        /// <summary>
+        /// Gets or sets the itch channel.
+        /// </summary>
         [CommandOption("--itch-channel")]
         [Description("The itch.io release channel name. Defaults to 'html5'.")]
         [DefaultValue("html5")]
         public string ItchChannel { get; init; } = "html5";
 
+        /// <summary>
+        /// Gets or sets the configuration.
+        /// </summary>
         [CommandOption("-c|--configuration")]
         [Description("Build configuration. Defaults to 'Release'.")]
         [DefaultValue("Release")]
         public string Configuration { get; init; } = "Release";
 
+        /// <summary>
+        /// Gets or sets the framework.
+        /// </summary>
         [CommandOption("-f|--framework")]
         [Description("Browser target framework. Auto-detected when the project has a single browser target.")]
         public string? Framework { get; init; }
 
+        /// <summary>
+        /// Gets or sets the base href.
+        /// </summary>
         [CommandOption("--base-href")]
         [Description("Override the packaged <base href>. No itch.io-specific value is assumed automatically.")]
         public string? BaseHref { get; init; }
 
+        /// <summary>
+        /// Gets or sets whether skip build is enabled.
+        /// </summary>
         [CommandOption("--skip-build")]
         [Description("Skip the dotnet publish step and deploy an existing Blazor publish output.")]
         public bool SkipBuild { get; init; }
 
+        /// <summary>
+        /// Gets or sets whether skip workload is enabled.
+        /// </summary>
         [CommandOption("--skip-workload")]
         [Description("Skip checking/installing the wasm-tools workload during the publish step.")]
         public bool SkipWorkload { get; init; }
 
+        /// <inheritdoc/>
         public override ValidationResult Validate()
         {
             if (string.IsNullOrWhiteSpace(ItchGame))
@@ -54,6 +82,7 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
         }
     }
 
+    /// <inheritdoc/>
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         if (!ProjectHelper.TryResolveProject(settings.Project, out var csprojPath, out var error))

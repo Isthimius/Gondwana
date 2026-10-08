@@ -3,8 +3,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Gondwana.Tests;
 
+/// <summary>
+/// Contains regression tests for game host base compatibility.
+/// </summary>
 public sealed class GameHostBaseCompatibilityTests
 {
+    /// <summary>
+    /// Verifies initialize legacy metadata signature remains available.
+    /// </summary>
     [Fact]
     public void Initialize_LegacyMetadataSignature_RemainsAvailable()
     {
@@ -19,6 +25,9 @@ public sealed class GameHostBaseCompatibilityTests
         Assert.NotNull(method);
     }
 
+    /// <summary>
+    /// Verifies legacy initialize engine overload remains available to derived hosts.
+    /// </summary>
     [Fact]
     public void LegacyInitializeEngineOverload_RemainsAvailableToDerivedHosts()
     {
@@ -29,9 +38,15 @@ public sealed class GameHostBaseCompatibilityTests
 
     private sealed class LegacyInitializeEngineHost : GameHostBase
     {
+        /// <summary>
+        /// Checks that the legacy engine initialization call remains source-compatible.
+        /// </summary>
+        /// <param name="configPath">The config path value for this test case.</param>
+        /// <param name="autoSaveConfig">The auto save config value for this test case.</param>
         public void CompileLegacyInitializeEngineCall(string? configPath, bool? autoSaveConfig)
             => InitializeEngine(configPath, autoSaveConfig);
 
+        /// <inheritdoc/>
         protected override void ConfigurePlatform()
         {
         }

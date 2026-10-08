@@ -8,9 +8,15 @@ internal sealed class AnimationPropertyAdapter
 {
     private readonly AnimationDocument _document;
 
+    /// <summary>
+    /// Gets or sets the selected frame index.
+    /// </summary>
     [Browsable(false)]
     public int SelectedFrameIndex { get; set; } = -1;
 
+    /// <summary>
+    /// Gets or sets the duration seconds.
+    /// </summary>
     [Category("Selected frame")]
     [Description("Display duration in seconds. Clear to use Throttle time. Select a frame in the frame list first.")]
     public double? DurationSeconds
@@ -27,11 +33,18 @@ internal sealed class AnimationPropertyAdapter
         }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <c>AnimationPropertyAdapter</c> class.
+    /// </summary>
+    /// <param name="document">The document displayed or edited by the control.</param>
     public AnimationPropertyAdapter(AnimationDocument document)
     {
         _document = document;
     }
 
+    /// <summary>
+    /// Gets or sets the key.
+    /// </summary>
     [Category("Animation")]
     [DisplayName("Key")]
     [Description("Global cycle key used by Animator.StartAnimation and SetCurrentCycle.")]
@@ -44,6 +57,9 @@ internal sealed class AnimationPropertyAdapter
             v => _document.Definition.Key = v);
     }
 
+    /// <summary>
+    /// Gets or sets the throttle time.
+    /// </summary>
     [Category("Playback")]
     [DisplayName("Throttle time")]
     [Description("Seconds between frame transitions.")]
@@ -56,6 +72,9 @@ internal sealed class AnimationPropertyAdapter
             v => _document.Definition.ThrottleTime = v);
     }
 
+    /// <summary>
+    /// Gets or sets the cycle type.
+    /// </summary>
     [Category("Playback")]
     [DisplayName("Cycle type")]
     public CycleType CycleType
@@ -67,6 +86,9 @@ internal sealed class AnimationPropertyAdapter
             v => _document.Definition.CycleType = v);
     }
 
+    /// <summary>
+    /// Gets or sets whether hide tile on cycle end is enabled.
+    /// </summary>
     [Category("Playback")]
     [DisplayName("Hide tile on cycle end")]
     public bool HideTileOnCycleEnd
@@ -78,6 +100,9 @@ internal sealed class AnimationPropertyAdapter
             v => _document.Definition.HideTileOnCycleEnd = v);
     }
 
+    /// <summary>
+    /// Gets or sets the next cycle key.
+    /// </summary>
     [Category("Playback")]
     [DisplayName("Next cycle key")]
     [Description("Optional cycle key to transition to when this cycle completes. Empty means self.")]
@@ -103,6 +128,9 @@ internal sealed class AnimationPropertyAdapter
         }
     }
 
+    /// <summary>
+    /// Gets the source kind.
+    /// </summary>
     [Category("Source")]
     [DisplayName("Source kind")]
     [ReadOnly(true)]

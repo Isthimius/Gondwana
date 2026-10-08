@@ -382,7 +382,7 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// <para>
     /// Draws each particle as either a Skia circle or a textured quad (if a sprite
     /// is provided). Alpha fades with age. Uses additive blending
-    /// (<see cref="SkiaSharp.SKBlendMode.Plus"/>) by default for bright/glowy effects.
+    /// (<see cref="global::SkiaSharp.SKBlendMode.Plus"/>) by default for bright/glowy effects.
     /// </para>
     /// <para>
     /// Do not call this directly. Once the system is registered with
@@ -402,6 +402,8 @@ public sealed partial class ParticleSurface : DirectDrawingMovableBase
     /// particles.Invalidate();       // mark dirty so the manager re-renders
     /// </code>
     /// </example>
+    /// <param name="backbuffer">The backbuffer receiving the drawing commands.</param>
+    /// <param name="destRectScreen">The destination rectangle in screen pixels.</param>
     protected override void OnDraw(BackbufferBase backbuffer, RectangleF destRectScreen)
     {
         var canvas = backbuffer.Canvas;

@@ -74,7 +74,7 @@ public static class EngineExtensions
 
     /// <summary>
     /// Initializes the Blazor touch adapter for the specified render surface component and
-    /// registers it with <see cref="TouchEventPoller"/>, enabling touch input on Blazor WASM.
+    /// registers it with <see cref="Gondwana.Input.Touch.TouchEventPoller"/>, enabling touch input on Blazor WASM.
     /// </summary>
     /// <param name="engine">The engine instance to configure.</param>
     /// <param name="component">The render surface component to capture touch input from.</param>
