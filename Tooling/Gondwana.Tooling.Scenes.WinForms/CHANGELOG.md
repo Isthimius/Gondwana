@@ -7,7 +7,7 @@ All notable changes to Gondwana.Tooling.Scenes.WinForms are documented here.
 ### Added
 - Standalone and hostable WinForms editor for GSCN scene definitions.
 
-# [Unreleased]
+# v2.6.1 - October 08, 2026
 
 
 
@@ -18,3 +18,8 @@ All notable changes to Gondwana.Tooling.Scenes.WinForms are documented here.
 
 ## Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+
+
+## Other Changes
+- Add xml comments to public and protected memebers

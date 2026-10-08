@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 - Allow authoring hosts to load detached asset packages without registering runtime assets; clean up packages after failed loads.
 
 
-# [Unreleased]
+# v2.6.1 - October 08, 2026
 
 
 
@@ -35,6 +35,7 @@ All notable changes to this project will be documented in this file.
 ## Refactoring
 - Use MenuBarWidget and GPU-only rendering ([#401](https://github.com/Isthimius/Gondwana/pull/401))
 - Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))
+- Decouple gamepad discovery and polling cadence ([#441](https://github.com/Isthimius/Gondwana/pull/441))
 
 
 
@@ -46,6 +47,11 @@ All notable changes to this project will be documented in this file.
 ## Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
 - Expose MSAA in frame diagnostics ([#404](https://github.com/Isthimius/Gondwana/pull/404))
+
+
+
+## Other Changes
+- Add xml comments to public and protected memebers
 
 # v2.6.0 - September 17, 2026
 

@@ -2,12 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-# [Unreleased]
+# [v2.6.1] - 2026-10-08
 
 ## Gondwana
 
 ### Added
-- Add opt-in runtime telemetry with independent collection requests, bounded detached history, and an in-game ProfilerWidget now dogfooded by the saved-scene Scene Viewer F3 diagnostics overlay ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 - Add GSCN format and EngineState integration ([#372](https://github.com/Isthimius/Gondwana/pull/372))
 - Add GANI format and EngineState integration ([#373](https://github.com/Isthimius/Gondwana/pull/373))
 - Compose the standalone WinForms authoring editors ([#383](https://github.com/Isthimius/Gondwana/pull/383))
@@ -17,10 +16,6 @@ All notable changes to this project will be documented in this file.
 - Add scrollable labels and Spot help ([#405](https://github.com/Isthimius/Gondwana/pull/405))
 - Add asynchronous browser console logging ([#408](https://github.com/Isthimius/Gondwana/pull/408))
 - Native scene tile transforms, GSCN tooling and Tiled import ([#417](https://github.com/Isthimius/Gondwana/pull/417))
-- Add configurable normalized camera follow anchors ([#431](https://github.com/Isthimius/Gondwana/pull/431))
-
-### Deprecated
-- Mark the legacy CPS/FPS properties, event, and sampling configuration as warning-only obsolete under `GOND0001`; migrate Gondwana-owned consumers to `Engine.Profiler` ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 
 
 
@@ -32,6 +27,7 @@ All notable changes to this project will be documented in this file.
 ### Refactoring
 - Use MenuBarWidget and GPU-only rendering ([#401](https://github.com/Isthimius/Gondwana/pull/401))
 - Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))
+- Decouple gamepad discovery and polling cadence ([#441](https://github.com/Isthimius/Gondwana/pull/441))
 
 
 
@@ -44,6 +40,11 @@ All notable changes to this project will be documented in this file.
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
 - Expose MSAA in frame diagnostics ([#404](https://github.com/Isthimius/Gondwana/pull/404))
 
+
+
+### Other Changes
+- Add xml comments to public and protected memebers
+
 ## Gondwana.Audio.Browser
 
 ### Refactoring
@@ -54,10 +55,20 @@ All notable changes to this project will be documented in this file.
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
 
+
+
+### Other Changes
+- Add xml comments to public and protected memebers
+
 ## Gondwana.Audio.Midi
 
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+
+
+### Other Changes
+- Add xml comments to public and protected memebers
 
 ## Gondwana.Audio.NAudio
 
@@ -68,6 +79,11 @@ All notable changes to this project will be documented in this file.
 
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+
+
+### Other Changes
+- Add xml comments to public and protected memebers
 
 ## Gondwana.Avalonia.Hosting
 
@@ -88,6 +104,11 @@ All notable changes to this project will be documented in this file.
 
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+
+
+### Other Changes
+- Add xml comments to public and protected memebers
 
 ## Gondwana.Blazor.Hosting
 
@@ -111,6 +132,11 @@ All notable changes to this project will be documented in this file.
 
 ## Gondwana.Input.SDL2
 
+### Refactoring
+- Decouple gamepad discovery and polling cadence ([#441](https://github.com/Isthimius/Gondwana/pull/441))
+
+
+
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
 
@@ -119,17 +145,26 @@ All notable changes to this project will be documented in this file.
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
 
+
+
+### Other Changes
+- Add xml comments to public and protected memebers
+
+## Gondwana.Video.Widgets
+
+### Other Changes
+- Add xml comments to public and protected memebers
+
 ## Gondwana.Widgets
 
 ### Added
-- Add runtime ProfilerWidget with configurable source/measurement visibility, optional Scene/View/backbuffer/config/MSAA context, application-defined extension lines, hover definitions, and an in-widget Metrics selector; add reusable TooltipWidget ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 - Add scrollable list boxes with mouse wheel support ([#403](https://github.com/Isthimius/Gondwana/pull/403))
 - Add scrollable labels and Spot help ([#405](https://github.com/Isthimius/Gondwana/pull/405))
+- Add tab control widget ([#433](https://github.com/Isthimius/Gondwana/pull/433))
 
 
 
 ### Fixed
-- Allow scrollable diagnostic/log labels to expose trailing scroll padding so the final line can move clear of the clip edge ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 - Add initial TextBox key repeat delay ([#411](https://github.com/Isthimius/Gondwana/pull/411))
 
 
@@ -143,15 +178,35 @@ All notable changes to this project will be documented in this file.
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
 
+
+
+### Other Changes
+- Add xml comments to public and protected memebers
+
 ## Gondwana.WinForms
+
+### Refactoring
+- Decouple gamepad discovery and polling cadence ([#441](https://github.com/Isthimius/Gondwana/pull/441))
+
+
 
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+
+
+### Other Changes
+- Add xml comments to public and protected memebers
 
 ## Gondwana.WinForms.Hosting
 
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+## Tooling / Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics
+
+### Other Changes
+- Add xml comments to public and protected memebers
 
 ## Tooling / Gondwana.Cli
 
@@ -163,15 +218,30 @@ All notable changes to this project will be documented in this file.
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
 
+
+
+### Other Changes
+- Add xml comments to public and protected memebers
+
 ## Tooling / Gondwana.Mcp
 
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
 
+
+
+### Other Changes
+- Add xml comments to public and protected memebers
+
 ## Tooling / Gondwana.Templates
 
 ### Refactoring
 - Share game core and rebuild Blazor host ([#407](https://github.com/Isthimius/Gondwana/pull/407))
+
+
+
+### Other Changes
+- Add xml comments to public and protected memebers
 
 ## Tooling / Gondwana.Tooling.Assets.WinForms
 
@@ -189,6 +259,11 @@ All notable changes to this project will be documented in this file.
 
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+
+
+### Other Changes
+- Add xml comments to public and protected memebers
 
 ## Tooling / Gondwana.Tooling.Animations.WinForms
 
@@ -211,6 +286,11 @@ All notable changes to this project will be documented in this file.
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
 
+
+
+### Other Changes
+- Add xml comments to public and protected memebers
+
 ## Tooling / Gondwana.Tooling.Audio.WinForms
 
 ### Fixed
@@ -221,11 +301,21 @@ All notable changes to this project will be documented in this file.
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
 
+
+
+### Other Changes
+- Add xml comments to public and protected memebers
+
 ## Tooling / Gondwana.Tooling.Studio.Core
 
 ### Added
 - Compose the standalone WinForms authoring editors ([#383](https://github.com/Isthimius/Gondwana/pull/383))
 - Add external asset import pipeline for tmx/tsx, Godot assets, Aesprite ([#390](https://github.com/Isthimius/Gondwana/pull/390))
+
+
+
+### Other Changes
+- Add xml comments to public and protected memebers
 
 ## Tooling / Gondwana.Tooling.Studio.WinForms
 
@@ -245,11 +335,10 @@ All notable changes to this project will be documented in this file.
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
 
-## Tooling / Gondwana.Tooling.SceneViewer.WinForms
 
-### Added
-- Dogfood ProfilerWidget for the Scene Viewer F3 diagnostics overlay, including generic runtime context, curated default measurements, an explicit GPU FPS label, hover help, and runtime metric selection ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
-- Discover Scene Viewer local definitions and sprites with loose-over-packed precedence ([#438](https://github.com/Isthimius/Gondwana/pull/438))
+
+### Other Changes
+- Add xml comments to public and protected memebers
 
 ## Tooling / Gondwana.Tooling.Scenes.WinForms
 
@@ -261,10 +350,25 @@ All notable changes to this project will be documented in this file.
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
 
+
+
+### Other Changes
+- Add xml comments to public and protected memebers
+
+## Tooling / Gondwana.Tooling.SceneViewer.WinForms
+
+### Other Changes
+- Add xml comments to public and protected memebers
+
 ## Tooling / Gondwana.Tooling.Sprites.WinForms
 
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+
+
+### Other Changes
+- Add xml comments to public and protected memebers
 
 ## Tooling / Gondwana.Tooling.Tilesheets.WinForms
 
@@ -281,6 +385,11 @@ All notable changes to this project will be documented in this file.
 
 ### Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+
+
+### Other Changes
+- Add xml comments to public and protected memebers
 
 ## Build / Repository
 
@@ -320,6 +429,8 @@ All notable changes to this project will be documented in this file.
 - Fix note formatting in README.md ([#400](https://github.com/Isthimius/Gondwana/pull/400))
 - Update README with new discussion link ([#399](https://github.com/Isthimius/Gondwana/pull/399))
 - Add image to README for Gondwana Studio
+
+Full Changelog: https://github.com/Isthimius/Gondwana/compare/v2.6.0...v2.6.1
 
 # [v2.6.0] - 2026-09-17
 

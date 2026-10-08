@@ -3,20 +3,18 @@
 All notable changes to this project will be documented in this file.
 
 
-# [Unreleased]
+# v2.6.1 - October 08, 2026
 
 
 
 ## Added
-- Add runtime ProfilerWidget with configurable source/measurement visibility, optional Scene/View/backbuffer/config/MSAA context, application-defined extension lines, hover definitions, and an in-widget Metrics selector ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
-- Add reusable non-interactive TooltipWidget for view-level contextual help ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 - Add scrollable list boxes with mouse wheel support ([#403](https://github.com/Isthimius/Gondwana/pull/403))
 - Add scrollable labels and Spot help ([#405](https://github.com/Isthimius/Gondwana/pull/405))
+- Add tab control widget ([#433](https://github.com/Isthimius/Gondwana/pull/433))
 
 
 
 ## Fixed
-- Allow scrollable diagnostic/log labels to expose trailing scroll padding so the final line can move clear of the clip edge ([#440](https://github.com/Isthimius/Gondwana/pull/440)).
 - Add initial TextBox key repeat delay ([#411](https://github.com/Isthimius/Gondwana/pull/411))
 
 
@@ -29,6 +27,11 @@ All notable changes to this project will be documented in this file.
 
 ## Maintenance
 - Add formatting and analyzer enforcement ([#398](https://github.com/Isthimius/Gondwana/pull/398))
+
+
+
+## Other Changes
+- Add xml comments to public and protected memebers
 
 # v2.6.0 - September 17, 2026
 

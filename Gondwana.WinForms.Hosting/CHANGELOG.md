@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 
-# [Unreleased]
+# v2.6.1 - October 08, 2026
 
 
 
