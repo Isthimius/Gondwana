@@ -137,7 +137,7 @@ The content model is the same either way.
 
 ## Where to read next
 
-- [[Studio & Desktop Tools]]
+- [[Studio & Desktop Tools|Studio-and-Desktop-Tools]]
 - [[Gondwana Studio]]
 - [[External Asset Importing]]
 - [[.gscn Files|GSCN-Files]]
