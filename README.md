@@ -12,9 +12,9 @@
 
 **Gondwana** is a code-first, cross-platform 2D and 2.5D game and rendering engine for C# and .NET 8. It gives developers fine-grained control over rendering, timing, movement, input, collision detection, scene composition, and game architecture without requiring an editor to own the project.
 
-Gondwana targets Windows, Linux, macOS, and WebAssembly through SkiaSharp-based rendering, with integrations for WinForms, Avalonia, and Blazor. Its layered worlds support multiple views, parallax, stable z-ordering, particles, pixel overhang, multiple grid projections, game UI widgets, audio, video, gamepad input, and reusable content definitions.
+Gondwana targets Windows, Linux, macOS, and WebAssembly through SkiaSharp-based rendering, with integrations for WinForms, Avalonia, and Blazor. It supports CPU bitmap and GPU-backed rendering, including OpenGL on desktop and a dedicated WebGL path for Blazor/WebAssembly. Layered worlds support multiple views, parallax, stable z-ordering, particles, multiple grid projections, game UI widgets, audio, video, gamepad input, and reusable content definitions.
 
-Game behavior remains ordinary C#. **Gondwana Studio** and the standalone authoring tools provide optional visual workflows for assets, tilesheets, animations, sounds, scenes, and sprites, while the official **Gondwana Game Engine** plugin provides ChatGPT and Codex with engine-aware access to current public source, tests, and documentation.
+Game behavior remains ordinary C#. **Gondwana Studio** and the standalone authoring tools provide optional visual workflows for assets, tilesheets, animations, sounds, scenes, and sprites without requiring those tools to own the application or runtime architecture.
 
 The engine carries forward the predictability of classic rendering systems—explicit composition, stable ordering, understandable timing, and direct access to the pipeline—inside a modern, modular .NET architecture.
 
@@ -24,7 +24,7 @@ The engine carries forward the predictability of classic rendering systems—exp
 
 ### [Spot!](Demos/Spot.WinForms)
 
-Spot! is Gondwana's primary playable showcase.
+[▶ Play Spot! in your browser](https://isthimius.itch.io/spot) · [View source](Demos/Spot.Shared)
 
 <p>
   <img width="49%" alt="Spot gameplay showing the game board and HUD" src="https://github.com/user-attachments/assets/c29ddd87-fb82-46dc-ad5e-6388c11ba50d" />
@@ -49,7 +49,7 @@ For a guided introduction, see **[Make Your First Game in 30 Minutes with Gondwa
 
 ## Choose Your Workflow
 
-Gondwana supports code-first development, optional visual authoring, and engine-aware AI assistance. These workflows can be used independently or together.
+Gondwana supports code-first development and optional visual authoring. These workflows can be used independently or together.
 
 ### 💻 Code First
 
@@ -79,16 +79,6 @@ These are Gondwana content formats rather than Studio-specific project files. Ap
 Studio and the standalone editors share the same underlying authoring controls and definition models.
 
 See **[Gondwana Studio](Tooling/Gondwana.Tooling.Studio.WinForms)** for details.
-
-### 🤖 ChatGPT and Codex
-
-The official **Gondwana Game Engine** plugin gives ChatGPT and Codex access to current public Gondwana source, tests, and documentation.
-
-You can use it to ask engine-specific questions or give Codex implementation tasks grounded in the current engine rather than relying solely on model training data or examples from unrelated game engines.
-
-See **[Using Gondwana with ChatGPT and Codex](https://github.com/Isthimius/Gondwana/wiki/Using-Gondwana-with-ChatGPT-and-Codex)**.
-
-<img width="725px" alt="Gondwana ChatGPT plugin" src="https://github.com/user-attachments/assets/6464afec-eb3f-4402-932c-a3179ab229b8" />
 
 ---
 
@@ -120,7 +110,6 @@ It is a good fit when you value:
 - Cross-platform desktop and WebAssembly targets
 - A reusable foundation for custom 2D and 2.5D games
 - Modular packages that can be adopted independently
-- Engine-aware AI assistance grounded in current project material
 
 Gondwana is an engine and framework rather than an all-encompassing visual game-making suite. Runtime behavior and application structure remain under the developer's control.
 
@@ -129,6 +118,7 @@ Gondwana is an engine and framework rather than an all-encompassing visual game-
 ## ✨ Features
 
 - **Cross-platform SkiaSharp rendering** through CPU bitmap and GPU-backed surfaces
+- **Project and deployment CLI** for scaffolding, environment checks, package upgrades, asset workflows, desktop/WebAssembly publishing, and deployment to static web hosts and itch.io
 - **Backbuffer abstraction** through `BitmapBackbuffer` and `GpuBackbuffer`
 - **WinForms, Avalonia, and Blazor adapters**, with ready-to-use hosts for Windows, Linux, macOS, and WebAssembly
 - **View-centric layered scenes** with multiple cameras, viewports, parallax, stable z-ordering, and world-space dirty-region tracking
@@ -256,11 +246,30 @@ Gondwana's development tooling is optional and is not required by the engine at 
 | **Gondwana Studio** | [`Tooling/Gondwana.Tooling.Studio.WinForms`](Tooling/Gondwana.Tooling.Studio.WinForms) | Integrated Windows authoring environment for GAF, GTS, GANI, GSND, GSCN, and GSPR content |
 | **Standalone editors** | `Tooling/Gondwana.Tooling.*.WinForms` | Individual authoring utilities for assets, tilesheets, animations, sounds, scenes, and sprites, using the same reusable controls hosted by Studio |
 | **Gondwana.Templates** | `dotnet new install Gondwana.Templates` | Project templates for `gondwana-winforms`, `gondwana-avalonia`, and `gondwana-blazor` |
-| **Gondwana.Cli** | `dotnet tool install --global Gondwana.Cli` | The `gondwana` CLI for creating projects, checking an environment with `gondwana doctor`, and packing or inspecting asset files |
+| **Gondwana.Cli** | `dotnet tool install --global Gondwana.Cli` | The `gondwana` CLI for creating, checking, upgrading, running, publishing, and deploying Gondwana projects; managing and validating assets; and one-command Blazor/WebAssembly deployment to static web hosts or itch.io |
 | **Gondwana Game Engine plugin** | ChatGPT / Codex Plugin Directory | Engine-aware AI assistance using the current public Gondwana source, tests, and wiki |
 | **Gondwana.Mcp** | [`Tooling/Gondwana.Mcp`](Tooling/Gondwana.Mcp) | Read-only MCP service that powers the official Gondwana AI integration |
 
 > **Platform note:** Gondwana Studio and the standalone authoring editors currently use WinForms and therefore run on Windows. Gondwana games themselves can target Windows, Linux, macOS, and WebAssembly through the appropriate platform adapters.
+
+### Publish and deploy from the CLI
+
+Blazor/WebAssembly games can be published and deployed directly from the command line:
+
+```console
+gondwana publish blazor
+gondwana deploy itch
+```
+
+Static web-host deployment is also supported.
+
+### ChatGPT and Codex
+
+The official **Gondwana Game Engine** plugin gives ChatGPT and Codex access to current public Gondwana source, tests, and documentation.
+
+You can use it to ask engine-specific questions or give Codex implementation tasks grounded in the current engine rather than relying solely on model training data or examples from unrelated game engines.
+
+See **[Using Gondwana with ChatGPT and Codex](https://github.com/Isthimius/Gondwana/wiki/Using-Gondwana-with-ChatGPT-and-Codex)**.
 
 ---
 
