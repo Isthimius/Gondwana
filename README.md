@@ -136,7 +136,7 @@ Gondwana is an engine and framework rather than an all-encompassing visual game-
 - **Native desktop video playback** through LibVLCSharp, including `DirectVideo` rendering and optional interactive `VideoWidget` integration
 - **First-class authoring formats** for packaged assets (GAF), tilesheets (GTS), animations (GANI), sounds (GSND), scenes (GSCN), and sprites (GSPR)
 - **Gondwana Studio** for integrated multi-document authoring, visual previews, validation, dependency-aware workflows, reusable docked editors, and persistent layouts
-- **AI-assisted development** through the official Gondwana Game Engine plugin for ChatGPT and Codex, grounded in the current source, tests, and documentation
+- **Engine-aware AI integration** through the official Gondwana Game Engine plugin for ChatGPT and Codex, grounded in current source, tests, and documentation
 
 ---
 
