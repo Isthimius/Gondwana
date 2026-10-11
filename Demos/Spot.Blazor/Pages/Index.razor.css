@@ -1,17 +1,21 @@
 .page-shell {
-    width: 100vw;
+    width: 100%;
     height: 100vh;
+    height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: auto;
+    overflow: hidden;
     background: #222;
 }
 
 .game-wrapper {
     position: relative;
-    width: 769px;
-    height: 801px;
+    /* Fit both viewport dimensions while retaining Spot's normal aspect ratio. */
+    width: min(769px, 100vw, calc(100vh * 769 / 801));
+    width: min(769px, 100vw, calc(100dvh * 769 / 801));
+    height: auto;
+    aspect-ratio: 769 / 801;
     flex: 0 0 auto;
     overflow: hidden;
     background: cornflowerblue;
