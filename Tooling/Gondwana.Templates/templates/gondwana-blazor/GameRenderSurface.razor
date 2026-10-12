@@ -5,12 +5,14 @@
 @inject ILogger<GameRenderSurface> Logger
 @inject IJSRuntime JsRuntime
 
-<div class="render-surface-container">
+@* Update the logical dimensions below to match your game. They control both
+   browser fitting and Gondwana's one-time logical resolution. *@
+<div class="render-surface-container" style="@PresentationStyle">
     <BlazorGpuRenderSurfaceComponent @ref="_renderSurface" />
 
     @if (_loading)
     {
-        <div class="startup-loader startup-loader-overlay">
+        <div class="startup-loader startup-loader-overlay" role="status" aria-live="polite">
             <div class="startup-card">
                 <div class="startup-mark">G</div>
                 <h1 class="startup-title">MyGame</h1>
@@ -23,23 +25,60 @@
             </div>
         </div>
     }
+    else if (_errorMessage is not null)
+    {
+        <div class="startup-loader startup-loader-overlay" role="alert">
+            <div class="startup-card">
+                <div class="startup-mark">G</div>
+                <h1 class="startup-title">MyGame</h1>
+                <div class="startup-message">@_errorMessage</div>
+                <div class="startup-powered">Powered by Gondwana</div>
+            </div>
+        </div>
+    }
 </div>
 
 @code {
+    private const int LogicalWidth = 800;
+    private const int LogicalHeight = 600;
+
+    // CSS fits within the viewport without upscaling above the desktop game size.
+    // The first declaration is a fallback for browsers without dynamic viewport units.
+    private static readonly string PresentationStyle =
+        $"width: min({LogicalWidth}px, 100vw, calc(100vh * {LogicalWidth} / {LogicalHeight})); " +
+        $"width: min({LogicalWidth}px, 100vw, calc(100dvh * {LogicalWidth} / {LogicalHeight})); " +
+        $"aspect-ratio: {LogicalWidth} / {LogicalHeight};";
+
     private BlazorGpuRenderSurfaceComponent? _renderSurface;
     private MyGameHost? _host;
     private bool _loading = true;
+    private string? _errorMessage;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && _renderSurface is not null)
+        if (!firstRender || _renderSurface is null)
+            return Task.CompletedTask;
+
+        try
         {
             _host = new MyGameHost(_renderSurface, JsRuntime);
             _host.Initialize(logLevel: LogLevel.Warning);
+            _host.ConfigureLogicalResolution(LogicalWidth, LogicalHeight);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to initialize MyGame");
+            _host?.Dispose();
+            _host = null;
+            _errorMessage = "Unable to initialize the game. Check the browser console and reload.";
+        }
+        finally
+        {
             _loading = false;
             StateHasChanged();
-            await Task.CompletedTask;
         }
+
+        return Task.CompletedTask;
     }
 
     public void Dispose()
