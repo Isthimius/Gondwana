@@ -68,7 +68,17 @@
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to initialize MyGame");
-            _host?.Dispose();
+            if (_host is not null)
+            {
+                try
+                {
+                    _host.Dispose();
+                }
+                catch (Exception disposeException)
+                {
+                    Logger.LogWarning(disposeException, "Failed to clean up MyGame after initialization failure");
+                }
+            }
             _host = null;
             _errorMessage = "Unable to initialize the game. Check the browser console and reload.";
         }
