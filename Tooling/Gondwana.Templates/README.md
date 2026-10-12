@@ -100,10 +100,32 @@ This scaffolds a Blazor WebAssembly project using Gondwana's GPU-backed WebGL re
 - `Program.cs` — Blazor WebAssembly entry point with audio module import
 - `App.razor` — Root Blazor Router component
 - `Pages/Index.razor` — Main page (routed to "/") containing the game
-- `GameRenderSurface.razor` — Blazor component wrapping `BlazorGpuRenderSurfaceComponent`
+- `GameRenderSurface.razor` — responsive GPU canvas, stable logical-resolution setup, and loading/error overlay; change `LogicalWidth`/`LogicalHeight` here
 - `MyGameHost.cs` — `BlazorGpuGameHost` subclass with `// TODO` stubs for loading assets and building the scene
-- `wwwroot/index.html` — HTML host page with loading indicator
+- `wwwroot/index.html` — pre-WASM HTML loading indicator
+- `wwwroot/css/startup.css` — responsive layout plus shared pre-WASM and Blazor loader styles
 - `assets/README.txt` — instructions for adding sprites and other assets
+
+### Responsive presentation and loading
+
+The scaffold defaults to an **800×600 logical game size**, configurable via
+`LogicalWidth` and `LogicalHeight` in `GameRenderSurface.razor`. The
+component keeps those values together for browser sizing and the one-time
+`ConfigureLogicalResolution` call. CSS fits the entire canvas into phone,
+landscape, and desktop viewports without upscaling beyond the desktop size.
+It includes a `100vh` fallback and `100dvh` for changing mobile browser chrome.
+Once the logical size has been established, browser resize/rotation uses the
+existing presentation and pointer/touch coordinate transforms without changing
+game-space dimensions. To customize the fit behavior, edit `PresentationStyle`;
+omit `ConfigureLogicalResolution` for applications needing variable resolution.
+
+The `index.html` loader appears **before** .NET/WebAssembly starts. A matching
+`GameRenderSurface.razor` overlay covers application initialization; an
+initialization failure shows an error instead of a permanent loading animation.
+Both phases use `wwwroot/css/startup.css` loaded before Blazor. Customize the
+game title and mark in `index.html` and `GameRenderSurface.razor`, and adjust
+the colors/animation in the stylesheet. These HTML/CSS screens are separate
+from an in-engine `SplashScreen`.
 
 The Blazor template intentionally uses WebGL as the default and expected browser rendering backend. Gondwana retains the CPU bitmap Blazor renderer as a compatibility and diagnostic path, but it is not exposed as a normal template option.
 

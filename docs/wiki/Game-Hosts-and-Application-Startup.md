@@ -96,6 +96,23 @@ Scene, tile, sprite, camera, and gameplay code should generally remain independe
 
 See [[GL Rendering Path]], [[WebGL Rendering Path]], and [[Bitmap Rendering Path]].
 
+### Responsive Blazor presentation
+
+For a browser game with fixed logical coordinates, call
+`host.ConfigureLogicalResolution(width, height)` after host initialization.
+The Blazor host waits for the first real canvas size rather than its initial
+1×1 WebGL placeholder, establishes `RenderScale` once, and automatically
+cleans up its resize handler. Later browser resizing adjusts presentation and
+mouse/touch coordinate transforms rather than resizing the game backbuffer.
+The call is optional for games with dynamic logical dimensions.
+
+Use aspect-preserving browser CSS separately. The `gondwana-blazor` template
+demonstrates a `Fit` layout capped at desktop size (`LogicalWidth`/
+`LogicalHeight` in `GameRenderSurface.razor`). The template also ships a
+pre-WebAssembly HTML loader and a matching Razor overlay for initialization,
+both sharing `wwwroot/css/startup.css`. Those screens are separate from
+the in-engine `SplashScreen`.
+
 ---
 
 ## A typical WinForms host

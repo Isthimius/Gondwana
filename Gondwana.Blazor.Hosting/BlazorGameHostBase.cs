@@ -22,6 +22,38 @@ public abstract class BlazorGameHostBase : GameHostBase
     private readonly IJSRuntime _jsRuntime;
     private DotNetObjectReference<BlazorGameHostBase>? _dotNetRef;
     private IJSObjectReference? _module;
+    private BlazorLogicalResolutionBinding? _logicalResolution;
+
+    /// <summary>
+    /// Establishes a minimum logical game size from the first usable Blazor canvas dimensions.
+    /// </summary>
+    /// <param name="logicalWidth">The requested logical width in pixels.</param>
+    /// <param name="logicalHeight">The requested logical height in pixels.</param>
+    /// <remarks>
+    /// Call after the engine is initialized. The first real canvas size (not the initial
+    /// 1x1 placeholder) establishes RenderScale once. Later browser resizes use the
+    /// existing presentation/input transform, without resizing the backbuffer.
+    /// Browser layout and aspect fitting remain the application's CSS responsibility.
+    /// Omit this call to keep the engine's normal render-scale behavior.
+    /// </remarks>
+    /// <exception cref="ArgumentOutOfRangeException">A logical size is not positive.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the engine is not initialized or logical resolution was already configured.
+    /// </exception>
+    public void ConfigureLogicalResolution(int logicalWidth, int logicalHeight)
+    {
+        EnsureNotDisposed();
+        if (!Engine.IsInitialized)
+            throw new InvalidOperationException("Logical resolution can only be configured after engine initialization.");
+        if (_logicalResolution is not null)
+            throw new InvalidOperationException("Logical resolution is already configured for this host.");
+
+        _logicalResolution = new BlazorLogicalResolutionBinding(
+            RenderSurfaceHost.RenderSurfaceAdapter,
+            logicalWidth,
+            logicalHeight,
+            scale => Engine.Configuration.RenderScale = scale);
+    }
 
     /// <summary>
     /// Initializes a new instance of <see cref="BlazorGameHostBase"/>.
@@ -173,6 +205,9 @@ public abstract class BlazorGameHostBase : GameHostBase
     /// <inheritdoc/>
     protected sealed override void OnDisposed()
     {
+        _logicalResolution?.Dispose();
+        _logicalResolution = null;
+
         _dotNetRef?.Dispose();
         _dotNetRef = null;
 

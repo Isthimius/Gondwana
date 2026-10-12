@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { putImageData, presentBitmap, getCanvasOffset } from '../Gondwana.Blazor/wwwroot/gondwana-blazor.js';
 
 function canvas() {
@@ -45,4 +46,18 @@ test('touch origin is read again when the canvas moves or the page scrolls', () 
     assert.deepEqual(getCanvasOffset(element), { left: 125, top: -40 });
     document.getElementById = () => element;
     assert.deepEqual(getCanvasOffset('webgl'), { left: 125, top: -40 });
+});
+
+test('generated Blazor template shares pre-WASM styles and keeps a viewport-fit surface', () => {
+    const dir = new URL('../Tooling/Gondwana.Templates/templates/gondwana-blazor/', import.meta.url);
+    const html = readFileSync(new URL('wwwroot/index.html', dir), 'utf8');
+    const css = readFileSync(new URL('wwwroot/css/startup.css', dir), 'utf8');
+    const surface = readFileSync(new URL('GameRenderSurface.razor', dir), 'utf8');
+
+    assert.match(html, /href="css\/startup\.css"/);
+    assert.match(css, /height:\s*100dvh;/);
+    assert.match(css, /\.render-surface-container\s*\{/);
+    assert.match(surface, /ConfigureLogicalResolution\(LogicalWidth, LogicalHeight\)/);
+    assert.match(surface, /aspect-ratio:/);
+    assert.match(surface, /100dvh/);
 });
