@@ -517,9 +517,19 @@ gondwana deploy itch --itch-game user/mygame --base-href ./
 | `--skip-workload` | | `false` | Skip checking/installing `wasm-tools` during the publish step. |
 
 Prerequisites:
-- `butler` on `PATH`
-- `butler login` already completed
-- the itch.io game already exists
+- `butler` installed (on `PATH` or in the standard itch.io installation location)
+- an existing itch.io game matching `--itch-game`
+
+Butler manages authentication; `gondwana deploy itch` does not run a separate
+login step. For local use, run `butler login` once. Butler stores credentials
+and also prompts for login if `butler push` requires it. Later deployments
+normally need no additional login. For CI/CD, supply `BUTLER_API_KEY` as a
+secret environment variable; never print or commit the key. See
+[Butler's authentication guide](https://itch.io/docs/butler/login.html).
+
+If an upload fails, check Butler's output for the cause. For authentication
+failures, retry `butler login` locally or verify the CI secret; other
+failures may have unrelated causes.
 
 On success, the command prints the game URL as a plain line (machine-friendly).
 

@@ -641,7 +641,9 @@ Publishes/packages the selected browser target unless `--skip-build` is used, th
 | `--skip-build` | | `false` | Upload existing published output without publishing first. |
 | `--skip-workload` | | `false` | Skip checking/installing `wasm-tools` during publish. |
 
-Prerequisites: `butler` on `PATH`, `butler login` completed, and the itch.io game already created.
+Prerequisites: Butler installed (on `PATH` or in its standard itch.io installation location) and an existing itch.io game. Butler handles authentication: run `butler login` once for local use, or let Butler prompt if a push needs login. `gondwana deploy itch` does not invoke login separately. For CI/CD, provide `BUTLER_API_KEY` through a protected secret; do not print or commit the key. See [Butler authentication](https://itch.io/docs/butler/login.html).
+
+If an upload fails, inspect Butler's output. For authentication failures, run `butler login` locally or verify the CI secret.
 
 **Examples**
 

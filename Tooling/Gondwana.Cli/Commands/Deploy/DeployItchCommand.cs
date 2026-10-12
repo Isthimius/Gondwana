@@ -146,6 +146,7 @@ internal sealed class DeployItchCommand : Command<DeployItchCommand.Settings>
             if (pushExit != 0)
             {
                 AnsiConsole.MarkupLine("[red]butler push failed.[/]");
+                AnsiConsole.MarkupLine("[dim]Check butler's output above. If authentication is the problem, run 'butler login' locally or set BUTLER_API_KEY in CI before retrying.[/]");
                 return pushExit;
             }
         }
