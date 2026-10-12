@@ -54,6 +54,4 @@
 		<Using Include="Xunit" />
 	</ItemGroup>
 
-    <!-- Test the actual shared Spot package and GTS definitions. -->
-    <Import Project="../../Demos/Spot.Shared/Spot.Assets.targets" />
 </Project>
