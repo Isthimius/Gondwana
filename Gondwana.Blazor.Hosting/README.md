@@ -35,6 +35,8 @@ public class MyGameHost : BlazorGpuGameHost
 Then in your Blazor page's `OnAfterRenderAsync`:
 
 ```csharp
+@inject IJSRuntime JS
+
 @code {
     private BlazorGpuRenderSurfaceComponent _surface = null!;
     private MyGameHost? _host;
