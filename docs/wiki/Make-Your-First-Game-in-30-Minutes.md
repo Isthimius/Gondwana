@@ -44,6 +44,7 @@ Concepts covered:
 
 ## Prerequisites
 
+- Windows (this guide uses WinForms)
 - .NET 8 SDK
 - Visual Studio 2022 **or** the .NET CLI
 - An image for your sprite's Tilesheet. For this guide you can use [Spot defaults tilesheet](images/spot_defaults.png).
@@ -213,6 +214,7 @@ Initialize                             🔒sealed
         → OnMouseAdapterInitialized    ↪ virtual
         → OnGamepadManagerInitialized  ↪ virtual
         → OnTouchAdapterInitialized    ↪ virtual
+        → OnInputConfigured             ↪ virtual
   → LoadContent                        🔒sealed
         → LoadAssets                   ↪ virtual
         → LoadTilesheets               ↪ virtual
@@ -257,10 +259,11 @@ using System.Drawing;
 using System.Windows.Forms;
 using Gondwana;
 using Gondwana.Drawing;
+using Gondwana.Drawing.Coordinates;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Input.Keyboard;
-using Gondwana.Movement.Easing;
+using Gondwana.Physics.Movement.Easing;
 using Gondwana.Scenes;
 using Gondwana.WinForms.Hosting;
 using Gondwana.WinForms.Input.Keyboard;
@@ -350,7 +353,7 @@ protected override void CreateSprites()
 
 The sprite uses frame `(0, 0)` from the tilesheet. Since this guide uses a single image, this is the only frame we need.
 
-Also note that the Sprite's RenderSize `(93, 96)` is different from the Tilesheet's TileSize `(56, 56)`. The engine automatically handles the size scaling.
+Also note that the tilesheet's `TileSize` is `(93, 96)`, while the sprite's `RenderSize` is `(56, 56)`. Gondwana scales the source frame to the sprite's render size.
 
 ---
 
