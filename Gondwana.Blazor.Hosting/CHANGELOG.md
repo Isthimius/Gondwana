@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
+## Added
+- Add one-time, lifecycle-managed Blazor host logical-resolution configuration based on the first usable canvas dimensions.
+
 # v2.6.1 - October 08, 2026
 
 

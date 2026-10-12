@@ -296,9 +296,9 @@ The scaffolded project contains:
 - `Program.cs` — Blazor WebAssembly entry point that imports the Gondwana browser audio module (`/gondwana-audio.js`)
 - `App.razor` — root Blazor app component
 - `Pages/Index.razor` — the default page hosting the game canvas
-- `GameRenderSurface.razor` — thin Blazor component wrapping `BlazorGpuRenderSurfaceComponent`
+- `GameRenderSurface.razor` — responsive GPU canvas with logical-resolution configuration and loading/error overlays
 - `MyGameHost.cs` — `BlazorGpuGameHost` subclass with `// TODO` stubs for assets, scene setup, and input
-- `wwwroot/index.html` — the Blazor host page
+- `wwwroot/index.html` — pre-WASM loading page styled by `wwwroot/css/startup.css`
 - `assets/README.txt` — instructions for adding sprites and other assets
 
 The generated Blazor project uses WebGL as the normal rendering path. Gondwana retains its CPU bitmap Blazor renderer as a compatibility/diagnostic path, but the CLI does not expose it as a normal project option.
