@@ -143,9 +143,32 @@ public sealed class BlazorCommandReturnValueTests
         Assert.Contains("user/game:html5", File.ReadAllText(fixture.ButlerLogPath));
     }
 
+    /// <summary>
+    /// Verifies deploy itch preserves a failed Butler upload's exit code.
+    /// </summary>
+    [Fact]
+    public void DeployItchCommand_ReturnsButlerExitCode_WhenUploadFails()
+    {
+        using var fixture = CliCommandFixture.Create(includeButler: true);
+        var projectPath = fixture.CreatePublishedBlazorProject();
+        Environment.SetEnvironmentVariable("FAKE_BUTLER_PUSH_EXIT", "19");
+
+        var exitCode = fixture.Run(config => config.AddCommand<DeployItchCommand>("deploy-itch"),
+            "deploy-itch",
+            "--project", projectPath,
+            "--configuration", "Release",
+            "--framework", "net8.0-browser",
+            "--skip-build",
+            "--itch-game", "user/game");
+
+        Assert.Equal(19, exitCode);
+        Assert.Contains("push", File.ReadAllText(fixture.ButlerLogPath));
+    }
+
     private sealed class CliCommandFixture : IDisposable
     {
         private readonly string _originalPath;
+        private readonly string? _originalButlerPushExit;
         private readonly string _toolsDirectory;
         private readonly string _workspaceDirectory;
         private readonly bool _lockTaken;
@@ -166,8 +189,10 @@ public sealed class BlazorCommandReturnValueTests
                 CreateFakeButler();
 
             _originalPath = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
+            _originalButlerPushExit = Environment.GetEnvironmentVariable("FAKE_BUTLER_PUSH_EXIT");
             Environment.SetEnvironmentVariable("PATH", _toolsDirectory + Path.PathSeparator + _originalPath);
             Environment.SetEnvironmentVariable("FAKE_BUTLER_LOG", ButlerLogPath);
+            Environment.SetEnvironmentVariable("FAKE_BUTLER_PUSH_EXIT", null);
         }
 
         /// <summary>
@@ -312,6 +337,7 @@ public sealed class BlazorCommandReturnValueTests
         {
             Environment.SetEnvironmentVariable("PATH", _originalPath);
             Environment.SetEnvironmentVariable("FAKE_BUTLER_LOG", null);
+            Environment.SetEnvironmentVariable("FAKE_BUTLER_PUSH_EXIT", _originalButlerPushExit);
 
             try
             {
@@ -341,6 +367,7 @@ public sealed class BlazorCommandReturnValueTests
                     )
                     if "%1"=="push" (
                       echo %*>"%FAKE_BUTLER_LOG%"
+                      if defined FAKE_BUTLER_PUSH_EXIT exit /b %FAKE_BUTLER_PUSH_EXIT%
                       exit /b 0
                     )
                     exit /b 0
@@ -361,7 +388,7 @@ public sealed class BlazorCommandReturnValueTests
 
                     if [ "$1" = "push" ]; then
                       printf '%s\n' "$@" > "$FAKE_BUTLER_LOG"
-                      exit 0
+                      exit "${FAKE_BUTLER_PUSH_EXIT:-0}"
                     fi
 
                     exit 0
