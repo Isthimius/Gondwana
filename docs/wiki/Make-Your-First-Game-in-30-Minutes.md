@@ -15,7 +15,7 @@ The completed example mirrors the structure of the **Spot** demo included in thi
 - [Step 3 — Add your sprite](#step-3--add-your-sprite)
 - [Step 4 — Confirm the generated GPU host](#step-4--confirm-the-generated-gpu-host)
 - [Step 5 — Understand the host lifecycle](#step-5--understand-the-host-lifecycle)
-- [Step 6 — Fill in `WandererHost.cs`](#step-6--fill-in-gamehostcs)
+- [Step 6 — Fill in `WandererHost.cs`](#step-6--fill-in-wandererhostcs)
 - [Step 7 — Run it](#step-7--run-it)
 - [What the Spot Demo adds](#what-the-spot-demo-adds)
 - [Key mental model](#key-mental-model)
@@ -489,7 +489,7 @@ Spot (`Demos/Spot.WinForms/`) is a direct extension of everything you just built
 | Background music | Assets loaded from the packed `.gaf` via `Engine.Managers.AudioResources.LoadFromStream()` and played after the splash |
 | Sprite animations | `sprite.StartJiggle()`, `sprite.PulseBy()`, `sprite.ResizeTo()` |
 
-Read `Demos/Spot.WinForms/Hosts/SpotWandererHost.cs` and `SpotGameHost.Content.cs` for the WinForms host and assets. Gameplay and presentation live in `Demos/Spot.Shared/Host/` (`SpotGameHost.Input.cs`, `SpotGameHost.Gameplay.cs`, `SpotGameHost.Presentation.cs`, `SpotGameHost.Particles.cs`, and `SpotGameHost.Hud.cs`).
+Read `Demos/Spot.WinForms/Hosts/SpotGameHost.cs` and `SpotGameHost.Content.cs` for the WinForms host and assets. Gameplay and presentation live in `Demos/Spot.Shared/Host/` (`SpotGameHost.Input.cs`, `SpotGameHost.Gameplay.cs`, `SpotGameHost.Presentation.cs`, `SpotGameHost.Particles.cs`, and `SpotGameHost.Hud.cs`).
 
 ---
 
