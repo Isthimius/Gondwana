@@ -1,5 +1,6 @@
 using System.Drawing;
 using Gondwana.Input.Keyboard;
+using Gondwana.Input.Touch;
 using Gondwana.Input.Touch.Gestures;
 using Gondwana.Widgets;
 
@@ -8,6 +9,7 @@ namespace Gondwana.Demos.Spot;
 internal sealed partial class SpotGameRuntime
 {
     private bool _handleHumanInput;
+    private readonly HashSet<int> _boardTouchContacts = [];
 
     internal void OnMouseAdapterInitialized()
     {
@@ -34,6 +36,8 @@ internal sealed partial class SpotGameRuntime
         if (Engine.Input.TouchEventPoller is null)
             return;
 
+        Engine.Input.TouchEventPoller.TouchBegan += TouchEventPoller_TouchBegan;
+        Engine.Input.TouchEventPoller.TouchEnded += TouchEventPoller_TouchEnded;
         Engine.Input.TouchEventPoller.TouchEvent += TouchEventPoller_TouchEvent;
         Engine.Input.TouchEventPoller.StartMonitoringTouch();
     }
@@ -51,7 +55,13 @@ internal sealed partial class SpotGameRuntime
             Engine.Input.KeyboardEventPoller.KeyDown -= KeyboardEventPoller_KeyDown;
 
         if (Engine.Input.TouchEventPoller is not null)
+        {
+            Engine.Input.TouchEventPoller.TouchBegan -= TouchEventPoller_TouchBegan;
+            Engine.Input.TouchEventPoller.TouchEnded -= TouchEventPoller_TouchEnded;
             Engine.Input.TouchEventPoller.TouchEvent -= TouchEventPoller_TouchEvent;
+        }
+
+        _boardTouchContacts.Clear();
 
         UnhookSpotGameEvents();
     }
@@ -77,33 +87,48 @@ internal sealed partial class SpotGameRuntime
 
     private void TouchEventPoller_TouchEvent(GestureEventArgs args)
     {
-        if (args.IsTap)
+        if (args.IsTap && _boardTouchContacts.Contains(args.Tap!.TouchId))
             HandleBoardPress(args.Tap!.Position);
+    }
+
+    private void TouchEventPoller_TouchBegan(object? sender, TouchEventArgs args)
+    {
+        // This runs before widget routing. Keep ownership even if a widget hides on press.
+        if (CanHandleBoardPress(args.Touch.Position))
+            _boardTouchContacts.Add(args.Touch.Id);
+    }
+
+    private void TouchEventPoller_TouchEnded(object? sender, TouchEventArgs args)
+        => _boardTouchContacts.Remove(args.Touch.Id);
+
+    private bool CanHandleBoardPress(Point screenPos)
+    {
+        if (Volatile.Read(ref _dialogOpen) != 0)
+            return false;
+
+        if (!_handleHumanInput)
+            return false;
+
+        if (Scene is null || ActiveScene.SceneLayers.Count == 0)
+            return false;
+
+        if (SurfaceHost.ViewManager.Views.Count == 0)
+            return false;
+
+        var view = SurfaceHost.ViewManager.Views[0];
+
+        // Widgets own presses over their bounds, including menu dropdowns and dialogs.
+        return !Engine.Managers.DirectDrawings.DirectDrawings.OfType<WidgetBase>().Any(widget =>
+            ReferenceEquals(widget.RenderSurfaceHost, SurfaceHost) && widget.HitTest(view, screenPos));
     }
 
     private void HandleBoardPress(Point screenPos)
     {
-        if (Volatile.Read(ref _dialogOpen) != 0)
-            return;
-
-        if (!_handleHumanInput)
-            return;
-
-        if (Scene is null || ActiveScene.SceneLayers.Count == 0)
-            return;
-
-        if (SurfaceHost.ViewManager.Views.Count == 0)
+        if (!CanHandleBoardPress(screenPos))
             return;
 
         var view = SurfaceHost.ViewManager.Views[0];
         var layer = ActiveScene.SceneLayers[0];
-
-        // Widgets own presses over their bounds, including menu dropdowns and dialogs.
-        // A tap is recognized before the widget router dispatches its release/click.
-        if (Engine.Managers.DirectDrawings.DirectDrawings.OfType<WidgetBase>().Any(widget =>
-                ReferenceEquals(widget.RenderSurfaceHost, SurfaceHost) && widget.HitTest(view, screenPos)))
-            return;
-
         var selectedCoord = view.ScreenPxToGrid(layer, screenPos);
 
         if (selectedCoord.X >= 0 && selectedCoord.X < layer.GridColumnCount &&

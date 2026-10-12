@@ -42,7 +42,6 @@ public sealed class SpotBoardInputTests : IDisposable
         TouchEventPoller.Initialize(_touch, new TouchEventConfiguration());
         MouseEventPoller.Initialize(_mouse);
         _router = new WidgetInputRouter(_host, null, MouseEventPoller.Instance, TouchEventPoller.Instance);
-        _router.Start();
 
         _runtime = new SpotGameRuntime(_host, 0, () => _router);
         _scene = _runtime.CreateInitialScene();
@@ -68,6 +67,7 @@ public sealed class SpotBoardInputTests : IDisposable
         _runtime.OnMouseAdapterInitialized();
         MouseEventPoller.Instance!.StartMonitoringMouse(timeBetweenEvents: 0);
         _runtime.OnTouchAdapterInitialized();
+        _router.Start();
     }
 
     /// <summary>Verifies taps select exactly once and choose a valid clone destination after resizing.</summary>
@@ -120,6 +120,22 @@ public sealed class SpotBoardInputTests : IDisposable
         Tap(position);
 
         Assert.Equal(1, clicks);
+        Assert.Null(_runtime.SpotGame.SelectedCell);
+    }
+
+    /// <summary>Verifies a widget hiding during touch-down cannot pass the completed tap to the board.</summary>
+    [Fact]
+    public void WidgetHidingOnTouchDownStillBlocksBoardTap()
+    {
+        var position = CellPosition(0, 0);
+        using var button = new ButtonWidget(_host, _host.ViewManager.Views[0],
+            new Rectangle(position.X - 20, position.Y - 20, 40, 40), "Overlay");
+        button.PointerDown += _ => button.Hide();
+        button.Show();
+
+        Tap(position);
+
+        Assert.False(button.Visible);
         Assert.Null(_runtime.SpotGame.SelectedCell);
     }
 
