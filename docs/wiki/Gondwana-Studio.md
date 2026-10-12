@@ -151,7 +151,7 @@ The deprecated Avalonia Studio prototype and its duplicate editor stack have bee
 
 ## Where to read next
 
-- [[Studio & Desktop Tools]]
+- [[Studio & Desktop Tools|Studio-and-Desktop-Tools]]
 - [[Standalone Desktop Tools]]
 - [[External Asset Importing]]
 - [[.gscn Files|GSCN-Files]]
