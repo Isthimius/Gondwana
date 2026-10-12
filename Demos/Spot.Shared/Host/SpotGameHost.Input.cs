@@ -44,7 +44,8 @@ internal sealed partial class SpotGameRuntime
         _newGameDialog = null;
         Interlocked.Exchange(ref _dialogOpen, 0);
 
-        _boardInputRouter?.UnhandledPrimaryAction -= WidgetInputRouter_UnhandledPrimaryAction;
+        if (_boardInputRouter is not null)
+            _boardInputRouter.UnhandledPrimaryAction -= WidgetInputRouter_UnhandledPrimaryAction;
         _boardInputRouter = null;
 
         if (Engine.Input.KeyboardEventPoller is not null)
