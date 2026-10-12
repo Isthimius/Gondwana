@@ -37,7 +37,15 @@ internal sealed class BlazorLogicalResolutionBinding : IDisposable
 
         // Subscribe first so a paint between subscription and the size check is not missed.
         _adapter.Resized += OnResized;
-        TryEstablish(_adapter.Width, _adapter.Height);
+        try
+        {
+            TryEstablish(_adapter.Width, _adapter.Height);
+        }
+        catch
+        {
+            _adapter.Resized -= OnResized;
+            throw;
+        }
     }
 
     /// <summary>Responds to a pending canvas resize.</summary>
