@@ -37,10 +37,14 @@ public abstract class BlazorGameHostBase : GameHostBase
     /// Omit this call to keep the engine's normal render-scale behavior.
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException">A logical size is not positive.</exception>
-    /// <exception cref="InvalidOperationException">Logical resolution was already configured.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the engine is not initialized or logical resolution was already configured.
+    /// </exception>
     public void ConfigureLogicalResolution(int logicalWidth, int logicalHeight)
     {
         EnsureNotDisposed();
+        if (!Engine.IsInitialized)
+            throw new InvalidOperationException("Logical resolution can only be configured after engine initialization.");
         if (_logicalResolution is not null)
             throw new InvalidOperationException("Logical resolution is already configured for this host.");
 
