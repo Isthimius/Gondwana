@@ -8,6 +8,8 @@ All notable changes to Gondwana.Tooling.Audio.WinForms are documented here.
 - Add the standalone, hostable WinForms GSND audio-definition editor.
 - Add editor-local docking for resources, properties, and validation.
 
+# [Unreleased]
+
 # v2.6.1 - October 08, 2026
 
 

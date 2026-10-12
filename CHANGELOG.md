@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+# [Unreleased]
+
+## Build / Repository
+
+### Other Changes
+- Revise README for clarity and updated features
+- Update AI integration description in README
+
 # [v2.6.1] - 2026-10-08
 
 ## Gondwana

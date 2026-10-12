@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 - Allow authoring hosts to load detached asset packages without registering runtime assets; clean up packages after failed loads.
 
 
+# [Unreleased]
+
 # v2.6.1 - October 08, 2026
 
 

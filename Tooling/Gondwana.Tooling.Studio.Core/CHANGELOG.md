@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 
 - Retain plugin infrastructure and shell Output state while removing obsolete duplicate editor models and services with the deprecated Avalonia Studio prototype.
 
+# [Unreleased]
+
 # v2.6.1 - October 08, 2026
 
 

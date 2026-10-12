@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+# [Unreleased]
+
+
+
+## Fixed
+- Fit browser game to available viewport ([#444](https://github.com/Isthimius/Gondwana/pull/444))
+
 # v2.6.1 - October 08, 2026
 
 
