@@ -92,6 +92,10 @@ The host also selects the rendering path used by that application surface:
 - WinForms and Avalonia provide bitmap and GPU hosts.
 - Blazor uses `BlazorGameHost` for the Canvas 2D/bitmap compatibility path and `BlazorGpuGameHost` for WebGL/GPU rendering.
 
+Scene, tile, sprite, camera, and gameplay code should generally remain independent of that choice.
+
+See [[GL Rendering Path]], [[WebGL Rendering Path]], and [[Bitmap Rendering Path]].
+
 ### Responsive Blazor presentation
 
 For a browser game with fixed logical coordinates, call
@@ -108,10 +112,6 @@ demonstrates a `Fit` layout capped at desktop size (`LogicalWidth`/
 pre-WebAssembly HTML loader and a matching Razor overlay for initialization,
 both sharing `wwwroot/css/startup.css`. Those screens are separate from
 the in-engine `SplashScreen`.
-
-Scene, tile, sprite, camera, and gameplay code should generally remain independent of that choice.
-
-See [[GL Rendering Path]], [[WebGL Rendering Path]], and [[Bitmap Rendering Path]].
 
 ---
 
