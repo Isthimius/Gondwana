@@ -248,10 +248,10 @@ Cycle()
        → IEnginePlugin.OnPreFrameRender
        → DoForegroundTasks
             → BeforeFrameRender
+            → RenderSurfaceHost.Effects.Update
             → DirectDrawingManager.UpdateAll
-            → RenderSurfaceHost.RenderToBackbuffer (CPU-backed surfaces)
-            → RenderSurfaceHost.RenderBackbufferPostScene (CPU-backed surfaces, if scene was drawn)
-            → IEnginePlugin.OnPostRenderCanvas (CPU-backed surfaces, if scene was drawn)
+            → RenderSurfaceHost.ProduceRenderFrameSnapshot (desktop GPU surfaces; includes RenderBackbufferPostScene and IEnginePlugin.OnPostRenderCanvas if scene was drawn)
+            → RenderSurfaceHost.RenderToBackbuffer (CPU-backed surfaces; includes RenderBackbufferPostScene and IEnginePlugin.OnPostRenderCanvas if scene was drawn)
             → PresentBackbufferToAdapter (CPU-backed surfaces)
             → AfterFrameRender
             → Timer.RaiseTimerEvents(PostCycle)
