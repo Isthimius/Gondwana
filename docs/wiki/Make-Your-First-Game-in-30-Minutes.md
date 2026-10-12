@@ -15,7 +15,7 @@ The completed example mirrors the structure of the **Spot** demo included in thi
 - [Step 3 — Add your sprite](#step-3--add-your-sprite)
 - [Step 4 — Confirm the generated GPU host](#step-4--confirm-the-generated-gpu-host)
 - [Step 5 — Understand the host lifecycle](#step-5--understand-the-host-lifecycle)
-- [Step 6 — Fill in `GameHost.cs`](#step-6--fill-in-gamehostcs)
+- [Step 6 — Fill in `WandererHost.cs`](#step-6--fill-in-gamehostcs)
 - [Step 7 — Run it](#step-7--run-it)
 - [What the Spot Demo adds](#what-the-spot-demo-adds)
 - [Key mental model](#key-mental-model)
@@ -37,7 +37,7 @@ Concepts covered:
 | Tilesheets & sprites | `LoadTilesheets` and `CreateSprites` |
 | Scene & scene layer | `CreateInitialScene` |
 | Keyboard input | `OnKeyboardAdapterInitialized` and `OnKeyDown` |
-| Scripted movement | `MoveTo` and `ScriptedMovementStopped` |
+| Scripted movement | `MoveTo` and its `OnComplete` callback |
 | Clean shutdown | Generated `GameWindow.cs` |
 
 ---
@@ -92,20 +92,20 @@ The CLI creates the startup shell for you:
 | `Wanderer.csproj` | Gondwana package references and asset content examples |
 | `Program.cs` | Standard `[STAThread]` WinForms entry point |
 | `GameWindow.cs` | WinForms window and render surface wiring |
-| `GameHost.cs` | Your generated `WandererGameHost` class with override stubs |
+| `WandererHost.cs` | Your generated `WandererHost` class with override stubs |
 | `assets/README.txt` | Notes for adding game assets |
 
 Because this guide uses `--backbuffer gpu`, the generated host should use:
 
 ```csharp
-internal sealed class WandererGameHost : WinFormsGpuGameHost
+internal sealed class WandererHost : WinFormsGpuGameHost
 {
-    internal WandererGameHost(WinFormGpuRenderSurfaceControl renderSurface)
+    internal WandererHost(WinFormGpuRenderSurfaceControl renderSurface)
         : base(renderSurface) { }
 }
 ```
 
-If your generated host instead uses `WinFormsBitmapGameHost` and `WinFormBitmapRenderSurfaceControl`, you generated the bitmap path. Re-run the scaffold command with:
+If your generated host instead uses `WinFormsGameHost` and `WinFormBitmapRenderSurfaceControl`, you generated the bitmap path. Re-run the scaffold command with:
 
 ```bash
 gondwana new winforms Wanderer --backbuffer gpu
@@ -139,15 +139,16 @@ Then make sure the file is included as content in `Wanderer.csproj`:
 
 ## Step 4 — Confirm the generated GPU host
 
-Open `GameHost.cs`.
+Open `WandererHost.cs`.
 
 The updated WinForms template gives you a host with many override stubs already in place. For the GPU path, the important part is the base class and constructor:
 
 ```csharp
-internal sealed class WandererGameHost : WinFormsGpuGameHost
+internal sealed class WandererHost : WinFormsGpuGameHost
 {
-    internal WandererGameHost(WinFormGpuRenderSurfaceControl renderSurface)
+    internal WandererHost(WinFormGpuRenderSurfaceControl renderSurface)
         : base(renderSurface) { }
+}
 ```
 
 That is the GPU path.
@@ -198,39 +199,39 @@ OnFormClosed
   → dispose the game host
 ```
 
-`MyGameHost` initialization internally follows the sequence shown here:
+`WandererHost` initialization internally follows the sequence shown here:
 
 ```text
-`🔒sealed` — fixed framework step; subclasses cannot override it.
+`fixed` — a non-overridable framework step (non-virtual or sealed in the platform host).
 `↪ virtual` — extension point; subclasses may override it.
 
-Initialize                             🔒sealed
+Initialize                             fixed
   → OnInitializing                     ↪ virtual
-  → ConfigureLogging                   🔒sealed
-  → ConfigurePlatform                  🔒sealed
+  → ConfigureLogging                   fixed
+  → ConfigurePlatform                  fixed
         → OnConfigurePlatform          ↪ virtual
-  → ConfigureInput                     🔒sealed
+  → ConfigureInput                     fixed
         → OnKeyboardAdapterInitialized ↪ virtual
         → OnMouseAdapterInitialized    ↪ virtual
         → OnGamepadManagerInitialized  ↪ virtual
         → OnTouchAdapterInitialized    ↪ virtual
-        → OnInputConfigured             ↪ virtual
-  → LoadContent                        🔒sealed
+        → OnInputConfigured             fixed (platform host)
+  → LoadContent                        fixed
         → LoadAssets                   ↪ virtual
         → LoadTilesheets               ↪ virtual
         → LoadAnimationCycles          ↪ virtual
-  → CreateSceneGraph                   🔒sealed
+  → CreateSceneGraph                   fixed
         → CreateInitialScene           ↪ virtual
         → CreateInitialViews           ↪ virtual
         → OnSceneGraphCreated          ↪ virtual
-  → BindScene                          🔒sealed
+  → BindScene                          fixed
         → OnSceneBound                 ↪ virtual
-  → InitializeSceneObjects             🔒sealed
+  → InitializeSceneObjects             fixed
         → CreateSprites                ↪ virtual
         → CreateDirectDrawings         ↪ virtual
-  → InitializeEngine                   🔒sealed
+  → InitializeEngine                   fixed
         → OnEngineInitialized          ↪ virtual
-  → StartEngine                        🔒sealed
+  → StartEngine                        fixed
         → OnEngineStarted              ↪ virtual
   → OnInitialized                      ↪ virtual
 ```
@@ -248,11 +249,11 @@ Everything else can stay empty (or removed).
 
 ---
 
-## Step 6 — Fill in `GameHost.cs`
+## Step 6 — Fill in `WandererHost.cs`
 
-Open `GameHost.cs`.
+Open `WandererHost.cs`.
 
-The scaffolded file already includes several `using` statements. Add any of these that are missing:
+The generated host already includes several `using` statements. Add any of these that are missing:
 
 ```csharp
 using System.Drawing;
@@ -288,7 +289,7 @@ private bool      _isMoving        = false;
 
 ### Step 6a — Load the tilesheet
 
-A `Tilesheet` is an image atlas. `TileSize` tells Gondwana how large one frame is. A single-frame image is the simplest possible case. For this guide, you can place [spot_defaults.png](images/spot_defaults.png) in your `assets\` directory.
+A `Tilesheet` is an image atlas. Its `DefaultRegion.TileSize` specifies the size of each frame. The supplied [spot_defaults.png](images/spot_defaults.png) contains five 93×96 frames stacked vertically. Place it in your `assets\` directory.
 
 Fill in `LoadTilesheets`:
 
@@ -296,11 +297,11 @@ Fill in `LoadTilesheets`:
 protected override void LoadTilesheets()
 {
     _bubbleTilesheet = Engine.Managers.Tilesheets.LoadFromImageFile("bubble", @"assets\spot_defaults.png");
-    _bubbleTilesheet.TileSize = new Size(93, 96);
+    _bubbleTilesheet.DefaultRegion.TileSize = new Size(93, 96);
 }
 ```
 
-If you use a different sprite size, change `TileSize` to match your PNG.
+If you substitute another image, set `DefaultRegion.TileSize` to the dimensions of one frame in that image (not necessarily the entire PNG).
 
 ---
 
@@ -351,15 +352,15 @@ protected override void CreateSprites()
 }
 ```
 
-The sprite uses frame `(0, 0)` from the tilesheet. Since this guide uses a single image, this is the only frame we need.
+The sprite uses frame `(0, 0)`—the first, blue bubble—from the five-frame tilesheet.
 
-Also note that the tilesheet's `TileSize` is `(93, 96)`, while the sprite's `RenderSize` is `(56, 56)`. Gondwana scales the source frame to the sprite's render size.
+Also note that the tilesheet's `DefaultRegion.TileSize` is `(93, 96)`, while the sprite's `RenderSize` is `(56, 56)`. Gondwana scales the source frame to the sprite's render size.
 
 ---
 
 ### Step 6d — Move the sprite with arrow keys
 
-Gondwana's keyboard adapter fires events on the engine thread. Override `OnKeyboardAdapterInitialized` to subscribe after the adapter is ready, then explicitly tell it which keys to watch.
+Gondwana's keyboard event poller raises monitored-key events during the engine cycle. Override `OnKeyboardAdapterInitialized` to subscribe after the adapter is ready, then explicitly tell the poller which keys to watch.
 
 ```csharp
 protected override void OnKeyboardAdapterInitialized()
@@ -441,7 +442,7 @@ The `_isMoving` guard prevents stacking movement commands while the current anim
 
 ### Step 6e — Unhook events
 
-This method override is used to unsubscribe explicitly from events when the Engine is disposed.
+The host calls this hook during disposal, before it disposes the Engine. Unsubscribe from events registered during initialization.
 
 ```csharp
 protected override void UnhookEvents()
@@ -469,7 +470,7 @@ dotnet run
 
 You should see an 8×8 grid with a bubble in the top-left corner. Arrow keys glide it across the grid.
 
-> **Tip:** press `F5` in Visual Studio to get a debugger-attached run. Gondwana logs at `LogLevel.Warning` by default; bump it to `LogLevel.Debug` in `Initialize()` if you want more engine output.
+> **Tip:** press `F5` in Visual Studio to get a debugger-attached run. The generated `GameWindow.cs` passes `LogLevel.Warning` to `_host.Initialize(logLevel: ...)`; change that argument to `LogLevel.Debug` for more engine output.
 
 ---
 
@@ -483,12 +484,12 @@ Spot (`Demos/Spot.WinForms/`) is a direct extension of everything you just built
 | Clone / Jump moves | `MovementType` enum + distance logic in `SpotGameField.GetMovementType()` |
 | Cell capture | `SpotGameField.CaptureAdjacentCells()` run after each move lands |
 | AI opponent | `SpotGameField.GetBestMovesForPlayer()` + a `Gondwana.Timers.Timer` for the delay |
-| Particle effects | `ParticleEmitter` / `ParticleSurface` configured in `CreateDirectDrawings()` |
-| Score HUD | `TextBlock` + `DirectRectangle` created in `CreateDirectDrawings()` |
-| Background music | `Engine.Managers.AudioResources.LoadFromFile()` + `audioResource.Play()` |
+| Particle effects | `ParticleEmitter` / `ParticleSurface` created by `SpotGameRuntime` during post-splash/gameplay setup |
+| Score HUD | `TextBlock` + `DirectRectangle` created by `SpotGameRuntime.CreateTextBlockFields()` when a new game starts |
+| Background music | Assets loaded from the packed `.gaf` via `Engine.Managers.AudioResources.LoadFromStream()` and played after the splash |
 | Sprite animations | `sprite.StartJiggle()`, `sprite.PulseBy()`, `sprite.ResizeTo()` |
 
-Read `Demos/Spot.WinForms/Hosts/SpotGameHost.cs` together with the focused `SpotGameHost.Content.cs`, `SpotGameHost.Input.cs`, `SpotGameHost.Gameplay.cs`, and presentation partials for a working example of these systems in the full Spot demo.
+Read `Demos/Spot.WinForms/Hosts/SpotWandererHost.cs` and `SpotGameHost.Content.cs` for the WinForms host and assets. Gameplay and presentation live in `Demos/Spot.Shared/Host/` (`SpotGameHost.Input.cs`, `SpotGameHost.Gameplay.cs`, `SpotGameHost.Presentation.cs`, `SpotGameHost.Particles.cs`, and `SpotGameHost.Hud.cs`).
 
 ---
 
@@ -517,7 +518,7 @@ WinFormGpuRenderSurfaceControl
 
 The gameplay model is the same whether Gondwana is using the GPU backbuffer path or the bitmap backbuffer path: scenes contain layers, layers contain tiles and sprites, and input changes game state. The difference is presentation. This guide renders through the GPU-backed surface, but the game code itself would look the same when using a bitmap render surface.
 
-On bitmap backbuffers, Gondwana’s dirty-region queue helps optimize presentation because that path is CPU-bound. On the GPU path, presentation is handed off to the GPU-backed Skia surface. Either way, the first-game developer experience is the same: build the scene, move the sprite, and let the selected host present the frame.
+On bitmap backbuffers, Gondwana's dirty-region queue limits CPU redraws. On this desktop GPU path, the engine records a `RenderFrameSnapshot` during foreground work and the GL callback replays the newest completed snapshot. The gameplay example is the same on either path.
 
 ---
 
