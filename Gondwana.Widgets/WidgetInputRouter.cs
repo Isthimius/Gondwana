@@ -530,6 +530,7 @@ public sealed class WidgetInputRouter : IDisposable
             return;
 
         WidgetHit? hit = HitTest(touch.Position);
+        _unhandledTouchContacts.Remove(touch.Id);
 
         if (hit is null)
         {
