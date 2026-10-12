@@ -116,6 +116,9 @@ internal sealed partial class SpotGameHost : BlazorGpuGameHost
     protected override void OnKeyboardAdapterInitialized() => _runtime.OnKeyboardAdapterInitialized();
 
     /// <inheritdoc/>
+    protected override void OnTouchAdapterInitialized() => _runtime.OnTouchAdapterInitialized();
+
+    /// <inheritdoc/>
     protected override void UnhookEvents()
     {
         Engine.AfterBackgroundTasksExecute -= LogMsaaAfterFirstPresentation;

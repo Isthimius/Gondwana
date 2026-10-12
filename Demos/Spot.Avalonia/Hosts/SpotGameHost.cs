@@ -81,6 +81,9 @@ internal sealed partial class SpotGameHost : AvaloniaGpuGameHost
     protected override void OnKeyboardAdapterInitialized() => _runtime.OnKeyboardAdapterInitialized();
 
     /// <inheritdoc/>
+    protected override void OnTouchAdapterInitialized() => _runtime.OnTouchAdapterInitialized();
+
+    /// <inheritdoc/>
     protected override void UnhookEvents() => _runtime.UnhookEvents();
 
     /// <inheritdoc/>

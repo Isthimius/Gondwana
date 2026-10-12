@@ -20,8 +20,8 @@ internal sealed class HowToPlayDialog : DialogBox
 
         TAKING A TURN
 
-        1. Click one of your spots to select it.
-        2. Click an empty destination up to two squares away, horizontally, vertically, or diagonally.
+        1. Click or tap one of your spots to select it.
+        2. Click or tap an empty destination up to two squares away, horizontally, vertically, or diagonally.
         3. Every opposing spot immediately adjacent to the destination becomes yours.
 
         MOVES
@@ -30,7 +30,7 @@ internal sealed class HowToPlayDialog : DialogBox
 
         Jump - Move two squares. Your spot moves to the destination, leaving its original square empty.
 
-        Click a selected spot again to deselect it. If a player has no legal move, that turn is skipped automatically.
+        Click or tap a selected spot again to deselect it. If a player has no legal move, that turn is skipped automatically.
 
         WINNING
 
@@ -38,7 +38,7 @@ internal sealed class HowToPlayDialog : DialogBox
 
         CONTROLS
 
-        Left mouse button - Select a spot or choose its destination.
+        Left mouse button or single-finger tap - Select a spot or choose its destination.
 
         Tab - Show or hide the score display.
 

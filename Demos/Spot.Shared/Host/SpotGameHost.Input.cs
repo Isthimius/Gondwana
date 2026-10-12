@@ -1,4 +1,7 @@
+using System.Drawing;
 using Gondwana.Input.Keyboard;
+using Gondwana.Input.Touch.Gestures;
+using Gondwana.Widgets;
 
 namespace Gondwana.Demos.Spot;
 
@@ -25,6 +28,16 @@ internal sealed partial class SpotGameRuntime
         _configurePlatformKeyboardInput?.Invoke(Engine.Input.KeyboardEventPoller);
     }
 
+    /// <summary>Connects recognized touch taps to the board's selection and move handling.</summary>
+    internal void OnTouchAdapterInitialized()
+    {
+        if (Engine.Input.TouchEventPoller is null)
+            return;
+
+        Engine.Input.TouchEventPoller.TouchEvent += TouchEventPoller_TouchEvent;
+        Engine.Input.TouchEventPoller.StartMonitoringTouch();
+    }
+
     internal void UnhookEvents()
     {
         _newGameDialog?.Dispose();
@@ -36,6 +49,9 @@ internal sealed partial class SpotGameRuntime
 
         if (Engine.Input.KeyboardEventPoller is not null)
             Engine.Input.KeyboardEventPoller.KeyDown -= KeyboardEventPoller_KeyDown;
+
+        if (Engine.Input.TouchEventPoller is not null)
+            Engine.Input.TouchEventPoller.TouchEvent -= TouchEventPoller_TouchEvent;
 
         UnhookSpotGameEvents();
     }
@@ -55,6 +71,18 @@ internal sealed partial class SpotGameRuntime
 
     private void MouseEventPoller_MouseEvent(Gondwana.Input.Mouse.MouseEventArgs args)
     {
+        if (args.LeftButtonJustPressed)
+            HandleBoardPress(args.CurrentPosition);
+    }
+
+    private void TouchEventPoller_TouchEvent(GestureEventArgs args)
+    {
+        if (args.IsTap)
+            HandleBoardPress(args.Tap!.Position);
+    }
+
+    private void HandleBoardPress(Point screenPos)
+    {
         if (Volatile.Read(ref _dialogOpen) != 0)
             return;
 
@@ -70,20 +98,21 @@ internal sealed partial class SpotGameRuntime
         var view = SurfaceHost.ViewManager.Views[0];
         var layer = ActiveScene.SceneLayers[0];
 
-        var screenPos = args.CurrentPosition;
+        // Widgets own presses over their bounds, including menu dropdowns and dialogs.
+        // A tap is recognized before the widget router dispatches its release/click.
+        if (Engine.Managers.DirectDrawings.DirectDrawings.OfType<WidgetBase>().Any(widget =>
+                ReferenceEquals(widget.RenderSurfaceHost, SurfaceHost) && widget.HitTest(view, screenPos)))
+            return;
 
-        if (args.LeftButtonJustPressed)
+        var selectedCoord = view.ScreenPxToGrid(layer, screenPos);
+
+        if (selectedCoord.X >= 0 && selectedCoord.X < layer.GridColumnCount &&
+            selectedCoord.Y >= 0 && selectedCoord.Y < layer.GridRowCount)
         {
-            var selectedCoord = view.ScreenPxToGrid(layer, screenPos);
+            var cell = SpotGame.SpotGameField.GetCell((int)selectedCoord.X, (int)selectedCoord.Y);
 
-            if (selectedCoord.X >= 0 && selectedCoord.X < layer.GridColumnCount &&
-                selectedCoord.Y >= 0 && selectedCoord.Y < layer.GridRowCount)
-            {
-                var cell = SpotGame.SpotGameField.GetCell((int)selectedCoord.X, (int)selectedCoord.Y);
-
-                if (SpotGame.AttemptSelectCell(cell, out var playerMovement) && playerMovement != null)
-                    SpotGame.ExecuteMove(playerMovement.Value);
-            }
+            if (SpotGame.AttemptSelectCell(cell, out var playerMovement) && playerMovement != null)
+                SpotGame.ExecuteMove(playerMovement.Value);
         }
     }
 }
