@@ -1,5 +1,4 @@
 using System.Drawing;
-using Gondwana.Demos.Spot;
 using Gondwana.Demos.Spot.Game;
 using Gondwana.Drawing.Direct;
 using Gondwana.Drawing.Tilesheets;
@@ -13,7 +12,7 @@ using Gondwana.Widgets;
 using Gondwana.Widgets.Controls;
 using SkiaSharp;
 
-namespace Gondwana.Tests;
+namespace Gondwana.Demos.Spot.Tests;
 
 /// <summary>Exercises Spot's actual board input through the mouse and touch pollers.</summary>
 [Collection("Global engine state")]

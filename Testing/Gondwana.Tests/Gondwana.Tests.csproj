@@ -29,7 +29,6 @@
 		<ProjectReference Include="..\..\Gondwana.Hosting\Gondwana.Hosting.csproj" />
 		<ProjectReference Include="..\..\Gondwana.Blazor\Gondwana.Blazor.csproj" />
 		<ProjectReference Include="..\..\Gondwana.Avalonia\Gondwana.Avalonia.csproj" />
-		<ProjectReference Include="..\..\Demos\Spot.Shared\Spot.Shared.csproj" />
 		<ProjectReference Include="..\..\Tooling\Gondwana.Cli\Gondwana.Cli.csproj" />
 		<ProjectReference Include="..\..\Tooling\Gondwana.Mcp\Gondwana.Mcp.csproj" />
 	</ItemGroup>
@@ -55,6 +54,4 @@
 		<Using Include="Xunit" />
 	</ItemGroup>
 
-    <!-- Test the actual shared Spot package and GTS definitions. -->
-    <Import Project="../../Demos/Spot.Shared/Spot.Assets.targets" />
 </Project>

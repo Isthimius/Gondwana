@@ -3,7 +3,7 @@ using Gondwana.Assets;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Tilesheets.GTS;
 
-namespace Gondwana.Tests;
+namespace Gondwana.Demos.Spot.Tests;
 
 /// <summary>
 /// Contains regression tests for spot asset package.
