@@ -389,26 +389,26 @@ The background cycle rate and rendered frame rate are tracked separately.
 When the configured frame interval has elapsed, or when rendering is unbounded, the foreground pass:
 
 1. Raises pre-render events and plugin hooks.
-2. Updates DirectDrawing state.
-3. Renders each registered surface to its backbuffer.
-4. Presents each completed backbuffer through its platform adapter.
-5. Raises post-render and post-cycle timer events.
+2. Updates surface effects and DirectDrawing state.
+3. Produces a `RenderFrameSnapshot` for desktop GPU surfaces, where applicable.
+4. Renders and presents non-GL (bitmap) backbuffers on the engine thread.
+5. Raises post-render events and post-cycle timer events.
 
-GPU surfaces whose rendering must occur on a platform GL thread are coordinated through their platform-specific render path rather than forced through the standard CPU presentation loop.
+Desktop GPU presentation runs separately: the platform GL callback replays the newest completed snapshot, rather than presenting each produced frame synchronously. Browser WebGL instead renders a due Scene frame in its `SKGLView` paint callback while the WebGL context is current.
 
 ## 4. Sample Performance
 
 The engine periodically calculates:
 
 - Gross engine cycles per second
-- Presented frames per second
-- GPU-rendered frame counts
+- Engine foreground frames per second (production rate, not necessarily GPU presentations)
+- GPU-presented frame counts, when GPU backbuffers are used
 
 ## Desktop and WebAssembly Differences
 
 Desktop hosts normally run the engine cycle on a background task.
 
-Single-threaded WebAssembly environments instead use timer-driven startup. The Blazor host calls `Engine.Tick()` from the platform timer, allowing the same engine cycle to run without creating an unsupported background thread.
+Single-threaded WebAssembly environments instead use `Engine.StartTimerDriven()` and browser animation callbacks: the bitmap host ticks from its JavaScript `requestAnimationFrame` loop, while the WebGL host ticks inside `SKGLView`'s paint callback. Each `Engine.Tick()` can run zero or more fixed-step simulation updates (up to the configured cap) and at most one foreground render; it does not simply run one desktop-style `Cycle()`.
 
 ---
 
@@ -429,9 +429,9 @@ This avoids repainting the entire surface when only a small portion of the scene
 
 ## GPU Backbuffers
 
-GPU-backed Skia surfaces use a full-viewport rendering path better suited to GPU synchronization and platform GL constraints.
+GPU-backed Skia surfaces use a full-viewport rendering path better suited to GPU synchronization and platform GL constraints. Desktop GPU hosts record draw commands in a CPU-side `RenderFrameSnapshot`; a later platform GL callback replays the latest completed snapshot. Browser WebGL renders synchronously inside its paint callback when a Scene frame is due.
 
-The GPU path does not imitate the bitmap dirty-rectangle pipeline merely for architectural symmetry. Each backbuffer type is allowed to use the strategy appropriate to its actual rendering hardware.
+The GPU path does not use bitmap dirty-rectangle presentation. Each backbuffer type uses the strategy appropriate to its rendering hardware.
 
 ## World-Space First
 

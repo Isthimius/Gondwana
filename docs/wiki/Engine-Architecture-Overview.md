@@ -36,13 +36,15 @@ The script is idempotent — safe to re-run at any time. It ends with `gondwana 
 
 ## 2. Understand the Host/Lifecycle Contract
 
-**`Gondwana.Hosting/GameHostBase.cs`** — The abstract base class for all games. Only ~260 lines, well-documented, and shows the exact lifecycle of a game:
+**`Gondwana.Hosting/GameHostBase.cs`** — The platform-neutral host lifecycle base class, showing the order in which game and platform setup occurs:
 
 ```
 Initialize()
-  → ConfigureLogging → InitializeEngine → ConfigurePlatform → ConfigureInput
-  → LoadContent → CreateSceneGraph → BindScene → InitializeSceneObjects
-  → StartEngine
+  → OnInitializing → ConfigureLogging → ConfigurePlatform → ConfigureInput
+  → InitializeGameContent
+       → LoadContent → CreateSceneGraph → BindScene → OnSceneBound
+       → InitializeSceneObjects
+  → InitializeEngine → StartEngine → OnInitialized
 ```
 
 A thorough explanation of the engine lifecycle is available at [[Gondwana Engine Lifecycle]]. This tells you *every extension point* a game author can use as part of their particular implementation.
@@ -59,7 +61,7 @@ A thorough explanation of the engine lifecycle is available at [[Gondwana Engine
 
 ## 5. Understand the Rendering Model (3 files, in order)
 
-1. **`Gondwana/Rendering/RefreshQueue.cs`** (~95 lines) — The core dirty-region mechanism. Everything that changes enqueues a world-pixel rectangle here. Short, well-commented, and critical to understand.
+1. **`Gondwana/Rendering/RefreshQueue.cs`** — The bitmap rendering path's dirty-region tracking. Scene changes can enqueue world-pixel rectangles here; GPU backbuffers instead redraw the full view.
 
 2. **`Gondwana/Rendering/Views/View.cs`** — `View` = Camera + Viewport. Read the coordinate-conversion methods (`ScreenPxToWorldPx`, `WorldPxToScreenPx`, `WorldRectToScreenRect`, etc.) — this is the math that connects world-space to screen-space. Understanding this file means understanding the rendering model.
 
@@ -98,7 +100,7 @@ GameHostBase
        └─ Timers / Collisions / Animations
 ```
 
-**The key insight:** state changes call `RefreshQueue.AddWorldRect()` → the engine's render pass picks it up → `View` transforms the world rect to screen-space → the platform host repaints only that screen region.
+**Rendering distinction:** bitmap surfaces use `RefreshQueue` dirty regions, transformed by each `View`, to redraw affected screen areas. Desktop GPU surfaces instead record a `RenderFrameSnapshot` during the engine's foreground phase and replay the newest snapshot in the platform GL callback. Browser WebGL renders a due Scene frame synchronously in its `SKGLView` paint callback. GPU rendering does not use bitmap dirty-region presentation.
 
 ---
 
