@@ -101,6 +101,49 @@ widgetInputRouter.Start();
 
 An input poller can be `null` when that input source is not available.
 
+### Mouse clicks and touch taps on gameplay
+
+Subscribe to `WidgetInputRouter.UnhandledPrimaryAction` when a game needs
+the same board/sprite selection behavior for a left mouse press and a
+single-finger tap. This event only fires inside a view **when no widget has
+claimed the input**. Widget hit testing and the original touch ownership are
+handled centrally: a widget that hides on touch-down does not leak that tap
+into the game. A mouse action fires on press; a touch action fires only after
+a completed recognized tap. Drags, cancellations, swipes, and multi-touch do
+not count.
+
+```csharp
+private WidgetInputRouter? _gameInput;
+
+protected override void OnSceneGraphCreated()
+{
+    _gameInput = WidgetInputRouter;
+    if (_gameInput is not null)
+        _gameInput.UnhandledPrimaryAction += OnPrimaryAction;
+}
+
+private void OnPrimaryAction(PrimaryPointerActionEventArgs e)
+{
+    // e.View, e.ScreenPositionPx, e.IsTouch, e.PointerId
+    var grid = e.View.ScreenPxToGrid(mySceneLayer, e.ScreenPositionPx);
+    SelectGameCell(grid); // Game-specific behavior
+}
+
+protected override void UnhookEvents()
+{
+    if (_gameInput is not null)
+        _gameInput.UnhandledPrimaryAction -= OnPrimaryAction;
+    _gameInput = null;
+}
+```
+
+Keep the router reference for cleanup: `GameHostBase.Dispose()` disposes
+its router before calling `UnhookEvents()`. The event **does not
+automatically select sprites**; games use the logical position and reported
+view to hit-test tiles, sprites, or objects. Game-specific rules such as
+turn ownership or modal state remain the game's responsibility. WinForms
+only receives mouse input unless an additional touch adapter is supplied.
+
 ---
 
 ## Why Widgets Exist

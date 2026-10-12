@@ -42,6 +42,20 @@ protected override void OnTouchAdapterInitialized()
 
 ---
 
+# Gameplay primary actions (mouse or tap)
+
+For a game that treats a left mouse press and a single-finger touch tap
+as the same action (selecting a sprite or board cell), use
+`WidgetInputRouter.UnhandledPrimaryAction` rather than subscribing to
+mouse and touch pollers separately. This gives widgets first refusal and
+preserves contact ownership when a widget hides on touch-down. It also
+provides the logical screen position and view for coordinate conversion.
+The event does not automatically hit-test game sprites.
+
+See [[Widgets Overview|Widgets-Overview]] for the callback/cleanup pattern.
+
+---
+
 # The Basic Pattern
 
 Touch input can be consumed at two levels:
