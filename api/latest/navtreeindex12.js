@@ -1,5 +1,7 @@
 var NAVTREEINDEX12 =
 {
+"classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a613e609cc33fc8f587251d5f51133759":[1,0,0,10,3,5,0],
+"classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a6da93940e80c048aa682cdcca5f69d97":[0,0,0,11,4,5,10],
 "classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a6da93940e80c048aa682cdcca5f69d97":[1,0,0,10,3,5,10],
 "classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a741302b23df78e86aded0c55b56665aa":[0,0,0,11,4,5,6],
 "classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a741302b23df78e86aded0c55b56665aa":[1,0,0,10,3,5,6],
@@ -247,7 +249,5 @@ var NAVTREEINDEX12 =
 "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html":[1,0,0,13,4],
 "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a78783cfbc2578e9269179221138bada4":[0,0,0,14,4,4],
 "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a78783cfbc2578e9269179221138bada4":[1,0,0,13,4,4],
-"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a832f3cb246dbe37104bd3cb0196755f6":[0,0,0,14,4,2],
-"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a832f3cb246dbe37104bd3cb0196755f6":[1,0,0,13,4,2],
-"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a8a0ca745aff5ce1f6e339b257b69f7bb":[0,0,0,14,4,5]
+"classGondwana_1_1Rendering_1_1RenderSurfaceAdapterResizedEventArgs.html#a832f3cb246dbe37104bd3cb0196755f6":[0,0,0,14,4,2]
 };

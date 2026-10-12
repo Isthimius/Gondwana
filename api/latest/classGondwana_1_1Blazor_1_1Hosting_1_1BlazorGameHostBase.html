@@ -115,6 +115,8 @@ Inheritance diagram for Gondwana.Blazor.Hosting.BlazorGameHostBase:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a2a9924e067b9b17c154c6883beb5063a" id="r_a2a9924e067b9b17c154c6883beb5063a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2a9924e067b9b17c154c6883beb5063a">ConfigureLogicalResolution</a> (int logicalWidth, int logicalHeight)</td></tr>
+<tr class="memdesc:a2a9924e067b9b17c154c6883beb5063a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Establishes a minimum logical game size from the first usable <a class="el" href="namespaceGondwana_1_1Blazor.html">Blazor</a> canvas dimensions.  <br /></td></tr>
 <tr class="memitem:aeaf838a8b3f9956d59d89ed99a81515e" id="r_aeaf838a8b3f9956d59d89ed99a81515e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeaf838a8b3f9956d59d89ed99a81515e">OnAnimationFrame</a> ()</td></tr>
 <tr class="memdesc:aeaf838a8b3f9956d59d89ed99a81515e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances the timer-driven bitmap path from <a class="el" href="namespaceGondwana.html">Gondwana</a>'s browser animation loop.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classGondwana_1_1Hosting_1_1GameHostBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classGondwana_1_1Hosting_1_1GameHostBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html">Gondwana.Hosting.GameHostBase</a></td></tr>
@@ -292,7 +294,7 @@ Properties</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00031">31</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00063">63</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -324,7 +326,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a4939bab4a421dd31905b5e526f4c7c1b">Gondwana.Hosting.GameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00095">95</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00127">127</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -388,7 +390,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a7d2c359977e59989638bd7d801a4a95a">Gondwana.Hosting.GameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00082">82</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00114">114</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -419,7 +421,47 @@ Properties</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a160493972b5095bc4d3b573b8379b45a">Gondwana.Hosting.GameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00068">68</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00100">100</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+
+</div>
+</div>
+<a id="a2a9924e067b9b17c154c6883beb5063a" name="a2a9924e067b9b17c154c6883beb5063a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a9924e067b9b17c154c6883beb5063a">&#9670;&#160;</a></span>ConfigureLogicalResolution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Gondwana.Blazor.Hosting.BlazorGameHostBase.ConfigureLogicalResolution </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>logicalWidth</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>logicalHeight</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Establishes a minimum logical game size from the first usable <a class="el" href="namespaceGondwana_1_1Blazor.html">Blazor</a> canvas dimensions. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">logicalWidth</td><td>The requested logical width in pixels.</td></tr>
+    <tr><td class="paramname">logicalHeight</td><td>The requested logical height in pixels.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Call after the engine is initialized. The first real canvas size (not the initial 1x1 placeholder) establishes RenderScale once. Later browser resizes use the existing presentation/input transform, without resizing the backbuffer. Browser layout and aspect fitting remain the application's CSS responsibility. Omit this call to keep the engine's normal render-scale behavior. </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ArgumentOutOfRangeException</td><td>A logical size is not positive.</td></tr>
+    <tr><td class="paramname">InvalidOperationException</td><td>Thrown when the engine is not initialized or logical resolution was already configured. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00043">43</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -450,7 +492,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#ab89e68f670b31dbc7968ad85a2191442">Gondwana.Hosting.GameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00075">75</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00107">107</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -479,7 +521,7 @@ Properties</h2></td></tr>
 
 <p></p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00059">59</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00091">91</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -510,7 +552,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#afabc3777509a50b9ab4a3628561fbcdd">Gondwana.Hosting.GameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00088">88</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00120">120</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -542,7 +584,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a119fef1a169827b3fde332cb8d43807c">Gondwana.Hosting.GameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00105">105</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00137">137</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -563,7 +605,7 @@ Properties</h2></td></tr>
 
 <p>Advances the timer-driven bitmap path from <a class="el" href="namespaceGondwana.html">Gondwana</a>'s browser animation loop. </p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00151">151</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00183">183</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -592,7 +634,7 @@ Properties</h2></td></tr>
 
 <p>Runs after <a class="el" href="namespaceGondwana_1_1Blazor.html">Blazor</a> interop resources have been released. </p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00214">214</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00249">249</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -621,7 +663,7 @@ Properties</h2></td></tr>
 
 <p>Provides a hook for configuring browser gamepad support. </p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00204">204</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00239">239</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -650,7 +692,7 @@ Properties</h2></td></tr>
 
 <p>Provides a hook for configuring additional <a class="el" href="namespaceGondwana_1_1Blazor.html">Blazor</a> platform settings. </p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00189">189</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00224">224</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -681,7 +723,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a5455d7dbc4323016f0139d406436b0c6">Gondwana.Hosting.GameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00174">174</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00206">206</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -712,7 +754,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a1414fa93f4ce9d54abea8ce7f5ea1522">Gondwana.Hosting.GameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00167">167</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00199">199</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -741,7 +783,7 @@ Properties</h2></td></tr>
 
 <p>Called after the <a class="el" href="namespaceGondwana_1_1Blazor.html">Blazor</a> keyboard adapter is initialized. </p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00194">194</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00229">229</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -770,7 +812,7 @@ Properties</h2></td></tr>
 
 <p>Called after the <a class="el" href="namespaceGondwana_1_1Blazor.html">Blazor</a> mouse adapter is initialized. </p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00199">199</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00234">234</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -799,7 +841,7 @@ Properties</h2></td></tr>
 
 <p>Called after the <a class="el" href="namespaceGondwana_1_1Blazor.html">Blazor</a> touch adapter is initialized. </p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00209">209</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00244">244</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -836,7 +878,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a33aefd7ff2427402e075af995563d111">Gondwana.Hosting.GameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00122">122</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00154">154</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -867,7 +909,7 @@ Properties</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classGondwana_1_1Hosting_1_1GameHostBase.html#a01d0076d5fdd803e7169d35890eb362a">Gondwana.Hosting.GameHostBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00158">158</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00190">190</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -894,7 +936,7 @@ Properties</h2></td></tr>
 
 <p>Gets the concrete <a class="el" href="namespaceGondwana_1_1Blazor.html">Blazor</a> component that supplies DOM input events. </p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00037">37</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00069">69</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -921,7 +963,7 @@ Properties</h2></td></tr>
 <p>Gets a value indicating whether the render surface itself supplies the browser animation callback that drives the timer-driven engine. </p>
 <p>The bitmap path returns <code>false</code> and uses <a class="el" href="namespaceGondwana.html">Gondwana</a>'s JavaScript animation loop. The WebGL path returns <code>true</code> because <code>SKGLView</code> owns the browser <code>requestAnimationFrame</code> loop and calls <a class="el" href="classGondwana_1_1Engine.html#a00078dddd49aef40c79cbbf1493da5f4" title="Advances the timer-driven engine by one externally presented frame.">Gondwana.Engine.Tick</a> from its paint callback. </p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00052">52</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00084">84</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>
@@ -947,7 +989,7 @@ Properties</h2></td></tr>
 
 <p>Gets the render-surface host used for scene binding and widget input. </p>
 
-<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00040">40</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BlazorGameHostBase_8cs_source.html#l00072">72</a> of file <a class="el" href="BlazorGameHostBase_8cs_source.html">BlazorGameHostBase.cs</a>.</p>
 
 </div>
 </div>

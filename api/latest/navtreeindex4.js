@@ -1,5 +1,7 @@
 var NAVTREEINDEX4 =
 {
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#a9ebc1045c4b1f39cd5a9d61dea79a9d9":[1,0,0,6,2,3,21],
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#a9ec8b0b9d0cea1735e079b6db3129e9e":[0,0,0,6,3,3,6],
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#a9ec8b0b9d0cea1735e079b6db3129e9e":[1,0,0,6,2,3,6],
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#aaa962bdb7eda09fcc72a9a7e59b40507":[0,0,0,6,3,3,12],
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#aaa962bdb7eda09fcc72a9a7e59b40507":[1,0,0,6,2,3,12],
@@ -247,7 +249,5 @@ var NAVTREEINDEX4 =
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a4b75b7d1eab84f13b84724152d8db064":[1,0,0,6,2,9,14],
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a57d1d1d64c4621e321d5449189c02a84":[0,0,0,6,3,9,18],
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a57d1d1d64c4621e321d5449189c02a84":[1,0,0,6,2,9,18],
-"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a5dbeec51b841519e3b6d4a9729e9a716":[0,0,0,6,3,9,3],
-"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a5dbeec51b841519e3b6d4a9729e9a716":[1,0,0,6,2,9,3],
-"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a6317cc56116124af62fd849f601193a2":[0,0,0,6,3,9,2]
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a5dbeec51b841519e3b6d4a9729e9a716":[0,0,0,6,3,9,3]
 };

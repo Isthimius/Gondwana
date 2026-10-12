@@ -1,5 +1,7 @@
 var NAVTREEINDEX11 =
 {
+"classGondwana_1_1Input_1_1Gamepad_1_1SDL2_1_1SdlGamepadManager.html#ae65132ef4ca5796cc02867214fdf416b":[1,0,0,10,0,0,1,1],
+"classGondwana_1_1Input_1_1InputEventConfigurationBase.html":[0,0,0,11,5],
 "classGondwana_1_1Input_1_1InputEventConfigurationBase.html":[1,0,0,10,4],
 "classGondwana_1_1Input_1_1InputEventConfigurationBase.html#a2963d70aa9cc5e0d335eecc21ecf15d2":[0,0,0,11,5,1],
 "classGondwana_1_1Input_1_1InputEventConfigurationBase.html#a2963d70aa9cc5e0d335eecc21ecf15d2":[1,0,0,10,4,1],
@@ -247,7 +249,5 @@ var NAVTREEINDEX11 =
 "classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a40b89d6865fa7cf877482104f619bbb2":[1,0,0,10,3,5,11],
 "classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a4463d1b4fab1dd7050ca2d85c64ceea5":[0,0,0,11,4,5,12],
 "classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a4463d1b4fab1dd7050ca2d85c64ceea5":[1,0,0,10,3,5,12],
-"classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a613e609cc33fc8f587251d5f51133759":[0,0,0,11,4,5,0],
-"classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a613e609cc33fc8f587251d5f51133759":[1,0,0,10,3,5,0],
-"classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a6da93940e80c048aa682cdcca5f69d97":[0,0,0,11,4,5,10]
+"classGondwana_1_1Input_1_1Touch_1_1TouchEventPoller.html#a613e609cc33fc8f587251d5f51133759":[0,0,0,11,4,5,0]
 };

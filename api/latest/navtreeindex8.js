@@ -1,5 +1,7 @@
 var NAVTREEINDEX8 =
 {
+"classGondwana_1_1Drawing_1_1SvgResourceManager.html#a7255edd238fd072fd30ca43d2d75ab77":[1,0,0,6,8,5],
+"classGondwana_1_1Drawing_1_1SvgResourceManager.html#a725d4adee224bfc7c4aad946379b6c4f":[0,0,0,6,9,3],
 "classGondwana_1_1Drawing_1_1SvgResourceManager.html#a725d4adee224bfc7c4aad946379b6c4f":[1,0,0,6,8,3],
 "classGondwana_1_1Drawing_1_1SvgResourceManager.html#a843cdc9419bc5c5d5a8315314ea67441":[0,0,0,6,9,1],
 "classGondwana_1_1Drawing_1_1SvgResourceManager.html#a843cdc9419bc5c5d5a8315314ea67441":[1,0,0,6,8,1],
@@ -247,7 +249,5 @@ var NAVTREEINDEX8 =
 "classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a7b03e481043457c107cc4a615e242f40":[1,0,0,6,4,2,11],
 "classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a7c877739b31c4ea9c00b5cb0eee137a5":[0,0,0,6,5,2,18],
 "classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a7c877739b31c4ea9c00b5cb0eee137a5":[1,0,0,6,4,2,18],
-"classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a83104cce2dcaf023028cf5850ef63b53":[0,0,0,6,5,2,7],
-"classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a83104cce2dcaf023028cf5850ef63b53":[1,0,0,6,4,2,7],
-"classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a88f6068af0a9127725375b6aa8660a05":[0,0,0,6,5,2,6]
+"classGondwana_1_1Drawing_1_1Tilesheets_1_1TilesheetRegion.html#a83104cce2dcaf023028cf5850ef63b53":[0,0,0,6,5,2,7]
 };

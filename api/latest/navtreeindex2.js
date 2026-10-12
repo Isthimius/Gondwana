@@ -1,8 +1,10 @@
 var NAVTREEINDEX2 =
 {
-"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#af042d53e1d872cdc1590d4a3792e39b7":[1,0,0,3,1,1,18],
-"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#af1c9eb47d132c8e0f8f84545c6b773e7":[0,0,0,3,1,1,13],
-"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#af1c9eb47d132c8e0f8f84545c6b773e7":[1,0,0,3,1,1,13],
+"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#aeaf838a8b3f9956d59d89ed99a81515e":[1,0,0,3,1,1,10],
+"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#af042d53e1d872cdc1590d4a3792e39b7":[0,0,0,3,1,1,19],
+"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#af042d53e1d872cdc1590d4a3792e39b7":[1,0,0,3,1,1,19],
+"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#af1c9eb47d132c8e0f8f84545c6b773e7":[0,0,0,3,1,1,14],
+"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#af1c9eb47d132c8e0f8f84545c6b773e7":[1,0,0,3,1,1,14],
 "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGpuGameHost.html":[0,0,0,3,1,2],
 "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGpuGameHost.html":[1,0,0,3,1,2],
 "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGpuGameHost.html#a36eeccdafa734838182e857485c7f355":[0,0,0,3,1,2,1],
@@ -247,7 +249,5 @@ var NAVTREEINDEX2 =
 "classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#ae3def773ec340fb7c56adb4d3ba6bc68":[1,0,0,19,0],
 "classGondwana_1_1Diagnostics_1_1RuntimeProfiler.html":[0,0,0,5,0],
 "classGondwana_1_1Diagnostics_1_1RuntimeProfiler.html":[1,0,0,5,0],
-"classGondwana_1_1Diagnostics_1_1RuntimeProfiler.html#a1d68c59ac5cf5faa28e532cda468d437":[0,0,0,5,0,4],
-"classGondwana_1_1Diagnostics_1_1RuntimeProfiler.html#a1d68c59ac5cf5faa28e532cda468d437":[1,0,0,5,0,4],
-"classGondwana_1_1Diagnostics_1_1RuntimeProfiler.html#a222e42145fe66fad5cd5165b02846cf2":[0,0,0,5,0,8]
+"classGondwana_1_1Diagnostics_1_1RuntimeProfiler.html#a1d68c59ac5cf5faa28e532cda468d437":[0,0,0,5,0,4]
 };
