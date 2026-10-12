@@ -5,7 +5,6 @@
 @using Gondwana.Blazor
 @using Gondwana.Blazor.Configuration
 @using Gondwana.Blazor.Rendering
-@using Gondwana.Rendering
 @using Gondwana.Widgets.Dialogs
 @using Gondwana.Widgets.Menus
 @using Microsoft.Extensions.Logging
@@ -136,25 +135,8 @@
         _gameHost.Engine.Configuration.VSync = false;
         _gameHost.Engine.Configuration.MsaaSampleCount = GpuMsaaSampleCount;
 
-        // Keep the full board and widgets in their regular logical coordinate space.
-        // Later canvas resizes use Gondwana's existing presentation/input transform.
-        _renderSurface!.Adapter.Resized += ConfigureLogicalResolution;
-        ConfigureLogicalResolution(_renderSurface.Adapter.Width, _renderSurface.Adapter.Height);
-    }
-
-    private void ConfigureLogicalResolution(RenderSurfaceAdapterResizedEventArgs args)
-        => ConfigureLogicalResolution(args.NewWidth, args.NewHeight);
-
-    private void ConfigureLogicalResolution(int width, int height)
-    {
-        // The WebGL adapter starts at 1 x 1 until its first paint supplies a real size.
-        if (_gameHost is null || width <= 1 || height <= 1)
-            return;
-
-        // Canvas dimensions are rounded to whole pixels. Use the larger scale so
-        // rounding cannot make either logical dimension smaller than the full game.
-        _gameHost.Engine.Configuration.RenderScale = Math.Max(769f / width, 801f / height);
-        _renderSurface!.Adapter.Resized -= ConfigureLogicalResolution;
+        // Hosting manages the first usable canvas size and subsequent presentation-only resizes.
+        _gameHost.ConfigureLogicalResolution(769, 801);
     }
 
     private void ApplyLoadedSettings()
@@ -362,9 +344,6 @@
 
     public void Dispose()
     {
-        if (_renderSurface is not null)
-            _renderSurface.Adapter.Resized -= ConfigureLogicalResolution;
-
         _howToPlayDialog?.Dispose();
         _howToPlayDialog = null;
 
