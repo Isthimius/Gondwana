@@ -2,7 +2,7 @@ This document explains how a Gondwana game starts, runs, raises events, and shut
 
 This document covers the public runtime events exposed by the core `Gondwana` package and the lifecycle hooks in `Gondwana.Hosting` / `IEnginePlugin` that frame them.
 
-> **Version note:** This page reflects the 2.5.0 hosting refactor, where `GameHostBase` owns the lifecycle order and derived hosts customize behavior through narrower virtual hooks.
+> **Version note:** `GameHostBase` adopted this hosting model in 2.5.0. The descriptions below reflect the current runtime, including desktop GPU snapshots and browser timer-driven scheduling.
 
 ---
 
@@ -51,12 +51,12 @@ In 2.5.0, the hosting design is intentionally stricter:
 | Area | Normal startup | Timer-driven startup |
 | --- | --- | --- |
 | `GameHostBase.Initialize()` | Calling thread, usually the UI thread | Calling thread, usually the UI thread |
-| `Engine.Initialize()` | Calling thread unless `UiDispatcher` is already assigned | Calling thread unless `UiDispatcher` is already assigned |
+| `Engine.Initialize()` | Calling thread (its public initialization events may be posted to `UiDispatcher`) | Calling thread (its public initialization events may be posted to `UiDispatcher`) |
 | Main `Cycle()` loop | Engine background thread | Calling thread that invokes `Tick()` |
 | Input poller events | Engine thread | Same thread as `Tick()` |
 | `BeforeBackgroundTasksExecute` / `AfterBackgroundTasksExecute` | Engine thread | Same thread as `Tick()` |
 | `BeforeFrameRender` / `AfterFrameRender` | Engine thread | Same thread as `Tick()` |
-| `RenderBackbufferPostScene` / `IEnginePlugin.OnPostRenderCanvas` | Engine thread (CPU surfaces); GL thread (GPU surfaces) | Engine/tick thread (CPU); GL thread (GPU) |
+| `RenderBackbufferPostScene` / `IEnginePlugin.OnPostRenderCanvas` | Engine thread (bitmap and desktop GPU snapshot recording) | Tick thread (bitmap); `SKGLView` paint callback (browser WebGL) |
 | `CPSCalculated` *(legacy, obsolete `GOND0001`)* | Posted to `UiDispatcher` | Posted to `UiDispatcher` |
 | `Disposing` / `Disposed` on `Engine` | Posted to `UiDispatcher` when available | Posted to `UiDispatcher` when available |
 
@@ -71,7 +71,7 @@ The standard `GameHostBase` flow uses the first case.
 
 ### Platform note
 
-Avalonia hosting is desktop-only: Windows, macOS, and Linux. Browser/WASM hosting belongs to Blazor, which uses timer-driven mode and a JavaScript `requestAnimationFrame` loop.
+Avalonia hosting is desktop-only: Windows, macOS, and Linux. Browser/WASM hosting belongs to Blazor and uses timer-driven mode. Bitmap Blazor is driven by Gondwana's JavaScript `requestAnimationFrame` loop; Blazor WebGL is driven by the `SKGLView` paint callback.
 
 ---
 
@@ -91,6 +91,7 @@ Initialize()
        → ConfigureMouse
        → ConfigureGamepads
        → ConfigureTouch
+       → OnInputConfigured
   → InitializeGameContent
        → LoadContent
             → LoadAssets
@@ -194,7 +195,7 @@ The default `StartEngineCore(syncContext)` calls:
 Engine.Instance.Start(syncContext);
 ```
 
-Platform hosts may override `StartEngineCore` when the engine must use a different start mechanism. Blazor WebAssembly is the main example: it uses `Engine.StartTimerDriven(syncContext)` and then drives `Engine.Tick()` from JavaScript `requestAnimationFrame`.
+Platform hosts may override `StartEngineCore` when the engine must use a different start mechanism. Blazor WebAssembly uses `Engine.StartTimerDriven(syncContext)`. Its bitmap path drives `Engine.Tick()` from Gondwana's JavaScript `requestAnimationFrame` callback; the WebGL path calls `Engine.Tick()` within the `SKGLView` paint callback.
 
 ### `Engine.Start(SynchronizationContext)`
 
@@ -222,9 +223,9 @@ Use timer-driven mode for single-threaded environments such as WebAssembly.
 
 ## 6. What happens every engine cycle
 
-The `Cycle()` method is the heart of Gondwana. In normal mode it runs on the engine thread; in timer-driven mode it runs wherever `Tick()` is called.
+The desktop `Cycle()` method runs on the engine thread. Timer-driven `Tick()` instead accumulates elapsed time into zero or more fixed simulation steps (bounded by `MaxTimerDrivenSimulationSteps`) and renders at most once per tick when a frame is due. A browser paint can therefore render without a background update, or advance several simulation steps before a single foreground render.
 
-### Per-cycle order
+### Desktop per-cycle order
 
 ```text
 Cycle()
@@ -314,7 +315,7 @@ These hooks track foreground production cadence, not completed GPU presentation:
 
 A `RenderSurfaceHost<TBackbuffer>` sits between a scene, a `ViewManager`, a backbuffer, and a platform adapter.
 
-Desktop GPU render events now run during Engine snapshot recording, using CPU resources and a recording canvas. GL consumes immutable commands independently; intermediate frames may be dropped. Bitmap dirty-region behavior and synchronous WebGL are unchanged. See [[GL Rendering Path]] for callback migration.
+Desktop GPU render events run during engine snapshot recording, using CPU resources and a recording canvas. The later platform GL callback replays the latest completed commands; intermediate snapshots may be dropped. Browser WebGL instead renders a due Scene frame synchronously in its `SKGLView` paint callback. Bitmap dirty-region behavior is unchanged. See [[GL Rendering Path]] for callback details.
 
 Typical bitmap render-surface flow:
 
@@ -618,17 +619,20 @@ Engine Thread (normal mode)
        └─ plugins post-cycle
 
 Browser / WASM Timer-Driven Mode
-  └─ JavaScript requestAnimationFrame
-       └─ BlazorGameHost.OnAnimationFrame()
-            └─ Engine.Tick()
-                 └─ Cycle()
+  ├─ Bitmap: JavaScript requestAnimationFrame
+  │    └─ BlazorGameHost.OnAnimationFrame() → Engine.Tick()
+  └─ WebGL: SKGLView paint callback → Engine.Tick()
+       (both: zero or more fixed simulation steps, at most one render)
 
-GL Thread (GPU surfaces only)
-  └─ PaintSurface (driven by SKGLControl)
-       ├─ GlRenderAndSnapshot
-       │    ├─ RenderToBackbuffer → RenderBackbufferPostScene
-       │    └─ Snapshot
-       └─ blit to window surface
+Desktop GPU
+  ├─ Engine foreground phase
+  │    └─ Record/publish RenderFrameSnapshot (CPU SKPicture commands)
+  └─ Platform GL paint callback
+       └─ Replay latest completed snapshot to GPU backbuffer
+
+Browser WebGL
+  └─ SKGLView paint callback
+       └─ Render a due Scene frame synchronously with WebGL context current
 
 Shutdown
   └─ GameHostBase.Dispose()
