@@ -123,6 +123,26 @@ public sealed class PrimaryPointerRoutingTests : IDisposable
         Assert.Empty(_actions);
     }
 
+    /// <summary>Reused touch IDs after poller reset cannot inherit gameplay ownership.</summary>
+    [Fact]
+    public void ReusedContactIdAfterTouchPauseRemainsWidgetOwned()
+    {
+        _touch.Begin(1, new Point(30, 30));
+        TouchEventPoller.Instance!.PollForEvents(_tick++);
+
+        TouchEventPoller.Instance.StopMonitoringTouch();
+        _touch.End(1, new Point(30, 30));
+        TouchEventPoller.Instance.PollForEvents(_tick++);
+        TouchEventPoller.Instance.StartMonitoringTouch();
+
+        using var button = Button(new Rectangle(10, 10, 120, 50));
+        button.PointerDown += _ => button.Hide();
+
+        Tap(new Point(30, 30));
+
+        Assert.Empty(_actions);
+    }
+
     /// <summary>Gameplay input is never delivered outside the host's viewports.</summary>
     [Fact]
     public void PressesOutsideViewAreIgnored()

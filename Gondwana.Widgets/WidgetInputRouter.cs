@@ -522,6 +522,10 @@ public sealed class WidgetInputRouter : IDisposable
 
         TouchPoint touch = args.Touch;
 
+        // A poller pause/reset may discard TouchEnded. IDs can be reused after
+        // resuming, so never carry gameplay eligibility into a new contact.
+        _unhandledTouchContacts.Remove(touch.Id);
+
         if (_touchCaptures.ContainsKey(touch.Id))
             return;
 
