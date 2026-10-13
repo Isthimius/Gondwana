@@ -65,6 +65,7 @@ var hierarchy =
       [ "Gondwana.Rendering.RenderSurfaceHostBindEventArgs", "classGondwana_1_1Rendering_1_1RenderSurfaceHostBindEventArgs.html", null ],
       [ "Gondwana.Video.VideoFrameReadyEventArgs", "classGondwana_1_1Video_1_1VideoFrameReadyEventArgs.html", null ],
       [ "Gondwana.Video.VideoStateChangedEventArgs", "classGondwana_1_1Video_1_1VideoStateChangedEventArgs.html", null ],
+      [ "Gondwana.Widgets.PrimaryPointerActionEventArgs", "classGondwana_1_1Widgets_1_1PrimaryPointerActionEventArgs.html", null ],
       [ "Gondwana.Widgets.WidgetEventArgs", "classGondwana_1_1Widgets_1_1WidgetEventArgs.html", [
         [ "Gondwana.Widgets.WidgetDragEventArgs", "classGondwana_1_1Widgets_1_1WidgetDragEventArgs.html", null ],
         [ "Gondwana.Widgets.WidgetKeyboardEventArgs", "classGondwana_1_1Widgets_1_1WidgetKeyboardEventArgs.html", null ],

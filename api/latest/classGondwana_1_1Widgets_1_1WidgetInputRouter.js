@@ -9,5 +9,6 @@ var classGondwana_1_1Widgets_1_1WidgetInputRouter =
     [ "Start", "classGondwana_1_1Widgets_1_1WidgetInputRouter.html#a49686e358147015b3e1877d7e7b072a8", null ],
     [ "Stop", "classGondwana_1_1Widgets_1_1WidgetInputRouter.html#aac1e7884ec022ceba7c7a5be84228c48", null ],
     [ "Unregister", "classGondwana_1_1Widgets_1_1WidgetInputRouter.html#a10a51c28bf60036aec8db9023bc5321a", null ],
-    [ "FocusedWidget", "classGondwana_1_1Widgets_1_1WidgetInputRouter.html#a6c6c74c7820be9dc1b50ec747bbbd183", null ]
+    [ "FocusedWidget", "classGondwana_1_1Widgets_1_1WidgetInputRouter.html#a6c6c74c7820be9dc1b50ec747bbbd183", null ],
+    [ "UnhandledPrimaryAction", "classGondwana_1_1Widgets_1_1WidgetInputRouter.html#ac173bcac0ccc10954af3c97ae352561e", null ]
 ];
