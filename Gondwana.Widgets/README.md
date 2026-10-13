@@ -10,6 +10,8 @@ and backbuffers using the same engine-driven drawing pipeline as the rest of the
 
 ## Features
 
+- Unified gameplay primary-pointer actions (left mouse press / single-finger tap) with widget capture respected
+
 - Reusable in-game UI widgets for Gondwana projects
 - DirectDrawing-friendly controls and overlays
 - Common controls including labels, buttons, check boxes, radio buttons, list boxes, combo boxes, tabbed containers, and editable text boxes

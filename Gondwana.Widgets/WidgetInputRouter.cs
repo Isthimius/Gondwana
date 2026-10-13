@@ -4,6 +4,7 @@ using Gondwana.Drawing.Direct;
 using Gondwana.Input.Keyboard;
 using Gondwana.Input.Mouse;
 using Gondwana.Input.Touch;
+using Gondwana.Input.Touch.Gestures;
 using Gondwana.Rendering;
 using Gondwana.Rendering.Views;
 
@@ -29,6 +30,8 @@ public sealed class WidgetInputRouter : IDisposable
     private readonly object _syncRoot = new();
     private readonly List<WidgetBase> _widgets = [];
     private readonly Dictionary<int, PointerCapture> _touchCaptures = [];
+    private readonly HashSet<int> _unhandledTouchContacts = [];
+    private readonly Dictionary<int, TappedEventArgs> _pendingTaps = [];
 
     private readonly RenderSurfaceHostBase _renderSurfaceHost;
     private readonly KeyboardEventPoller? _keyboardEventPoller;
@@ -68,6 +71,17 @@ public sealed class WidgetInputRouter : IDisposable
     /// The focused widget, or <see langword="null"/> if no widget currently has focus.
     /// </value>
     public WidgetBase? FocusedWidget => _focusedWidget;
+
+    /// <summary>
+    /// Occurs when a primary gameplay action was not claimed by a widget.
+    /// Mouse left-button presses fire on press; touch fires only for a recognized
+    /// single-finger tap whose contact began outside widgets.
+    /// </summary>
+    /// <remarks>
+    /// Positions are logical screen pixels belonging to <see cref="PrimaryPointerActionEventArgs.View"/>.
+    /// The game chooses how to hit-test sprites, tiles, or other objects.
+    /// </remarks>
+    public event Action<PrimaryPointerActionEventArgs>? UnhandledPrimaryAction;
 
     /// <summary>
     /// Registers a widget so that it can receive routed input.
@@ -169,6 +183,7 @@ public sealed class WidgetInputRouter : IDisposable
             _touchEventPoller.TouchBegan += OnTouchBegan;
             _touchEventPoller.TouchMoved += OnTouchMoved;
             _touchEventPoller.TouchEnded += OnTouchEnded;
+            _touchEventPoller.TouchEvent += OnTouchGesture;
         }
 
         WidgetInputRouterRegistry.Attach(
@@ -201,12 +216,15 @@ public sealed class WidgetInputRouter : IDisposable
             _touchEventPoller.TouchBegan -= OnTouchBegan;
             _touchEventPoller.TouchMoved -= OnTouchMoved;
             _touchEventPoller.TouchEnded -= OnTouchEnded;
+            _touchEventPoller.TouchEvent -= OnTouchGesture;
         }
 
         ClearFocus();
 
         _mouseCapture = null;
         _touchCaptures.Clear();
+        _unhandledTouchContacts.Clear();
+        _pendingTaps.Clear();
         _hoveredHit = null;
         _isStarted = false;
     }
@@ -323,6 +341,14 @@ public sealed class WidgetInputRouter : IDisposable
             {
                 ProcessMouseDown(initialHit, currentPosition, mouseButton, args.Tick);
             }
+        }
+
+        // A widget hit or an existing pointer capture takes precedence over gameplay.
+        if (args.LeftButtonJustPressed && initialHit is null && _mouseCapture is null &&
+            GetTopmostViewAt(currentPosition) is View gameplayView)
+        {
+            UnhandledPrimaryAction?.Invoke(new PrimaryPointerActionEventArgs(
+                gameplayView, currentPosition, isTouch: false, MousePointerId));
         }
 
         if (args.PreviousPosition != currentPosition)
@@ -498,13 +524,21 @@ public sealed class WidgetInputRouter : IDisposable
 
         TouchPoint touch = args.Touch;
 
-        if (_touchCaptures.ContainsKey(touch.Id))
-            return;
+        // A poller pause/reset may discard TouchEnded. IDs can be reused after
+        // resuming, so treat every emitted TouchBegan as a new logical contact
+        // boundary and reset both gameplay eligibility and widget capture for the ID.
+        _unhandledTouchContacts.Remove(touch.Id);
+        _touchCaptures.Remove(touch.Id);
+        _pendingTaps.Remove(touch.Id);
 
         WidgetHit? hit = HitTest(touch.Position);
 
         if (hit is null)
+        {
+            if (GetTopmostViewAt(touch.Position) is not null)
+                _unhandledTouchContacts.Add(touch.Id);
             return;
+        }
 
         FocusFromPointer(hit.Widget);
 
@@ -566,6 +600,26 @@ public sealed class WidgetInputRouter : IDisposable
 
         TouchPoint touch = args.Touch;
 
+        // The poller's tap recognizer dispatches the gesture during TouchEnded,
+        // before the router clears this contact's eligibility.
+        bool wasUnhandled = _unhandledTouchContacts.Remove(touch.Id);
+        bool hasPendingTap = _pendingTaps.Remove(touch.Id, out TappedEventArgs? tap);
+
+        if (hasPendingTap && wasUnhandled && tap is not null && touch.Phase != TouchPhase.Cancelled)
+        {
+            View? releaseView = GetTopmostViewAt(touch.Position);
+            View? tapView = GetTopmostViewAt(tap.Position);
+
+            if (releaseView is not null &&
+                releaseView == tapView &&
+                HitTest(touch.Position) is null &&
+                HitTest(tap.Position) is null)
+            {
+                UnhandledPrimaryAction?.Invoke(new PrimaryPointerActionEventArgs(
+                    releaseView, tap.Position, isTouch: true, tap.TouchId));
+            }
+        }
+
         if (!_touchCaptures.Remove(touch.Id, out PointerCapture? capture))
             return;
 
@@ -590,6 +644,18 @@ public sealed class WidgetInputRouter : IDisposable
                                                              touch.Id,
                                                              clickCount: 1, instanceOffset: capture.InstanceOffset));
         }
+    }
+
+    private void OnTouchGesture(GestureEventArgs args)
+    {
+        if (!_isStarted || _disposed || !args.IsTap || args.Tap is null)
+            return;
+
+        var tap = args.Tap;
+        if (!_unhandledTouchContacts.Contains(tap.TouchId))
+            return;
+
+        _pendingTaps[tap.TouchId] = tap;
     }
 
     private WidgetHit? HitTest(Point screenPositionPx)

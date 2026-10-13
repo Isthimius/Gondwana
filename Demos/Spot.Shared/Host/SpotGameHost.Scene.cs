@@ -34,5 +34,6 @@ internal sealed partial class SpotGameRuntime
 
         SpotGame = new SpotGame();
         HookSpotGameEvents();
+        HookBoardInput();
     }
 }
