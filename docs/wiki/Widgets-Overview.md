@@ -122,6 +122,13 @@ protected override void OnSceneGraphCreated()
         _gameInput.UnhandledPrimaryAction += OnPrimaryAction;
 }
 
+protected override void OnTouchAdapterInitialized()
+{
+    // GameHostBase starts mouse monitoring automatically, but touch monitoring
+    // must be started explicitly for touch taps to reach UnhandledPrimaryAction.
+    Engine.Input.TouchEventPoller?.StartMonitoringTouch();
+}
+
 private void OnPrimaryAction(PrimaryPointerActionEventArgs e)
 {
     // e.View, e.ScreenPositionPx, e.IsTouch, e.PointerId
@@ -138,7 +145,10 @@ protected override void UnhookEvents()
 ```
 
 Keep the router reference for cleanup: `GameHostBase.Dispose()` disposes
-its router before calling `UnhookEvents()`. The event **does not
+its router before calling `UnhookEvents()`. Note that `GameHostBase.InitializeWidgetInput`
+starts mouse monitoring only; hosts targeting touch devices must also override
+`OnTouchAdapterInitialized()` and call `StartMonitoringTouch()` on `TouchEventPoller`
+so that touch events are polled. The event **does not
 automatically select sprites**; games use the logical position and reported
 view to hit-test tiles, sprites, or objects. Game-specific rules such as
 turn ownership or modal state remain the game's responsibility. WinForms

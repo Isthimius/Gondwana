@@ -31,6 +31,7 @@ public sealed class WidgetInputRouter : IDisposable
     private readonly List<WidgetBase> _widgets = [];
     private readonly Dictionary<int, PointerCapture> _touchCaptures = [];
     private readonly HashSet<int> _unhandledTouchContacts = [];
+    private readonly Dictionary<int, TappedEventArgs> _pendingTaps = [];
 
     private readonly RenderSurfaceHostBase _renderSurfaceHost;
     private readonly KeyboardEventPoller? _keyboardEventPoller;
@@ -223,6 +224,7 @@ public sealed class WidgetInputRouter : IDisposable
         _mouseCapture = null;
         _touchCaptures.Clear();
         _unhandledTouchContacts.Clear();
+        _pendingTaps.Clear();
         _hoveredHit = null;
         _isStarted = false;
     }
@@ -523,14 +525,13 @@ public sealed class WidgetInputRouter : IDisposable
         TouchPoint touch = args.Touch;
 
         // A poller pause/reset may discard TouchEnded. IDs can be reused after
-        // resuming, so never carry gameplay eligibility into a new contact.
+        // resuming, so treat every emitted TouchBegan as a new logical contact
+        // boundary and reset both gameplay eligibility and widget capture for the ID.
         _unhandledTouchContacts.Remove(touch.Id);
-
-        if (_touchCaptures.ContainsKey(touch.Id))
-            return;
+        _touchCaptures.Remove(touch.Id);
+        _pendingTaps.Remove(touch.Id);
 
         WidgetHit? hit = HitTest(touch.Position);
-        _unhandledTouchContacts.Remove(touch.Id);
 
         if (hit is null)
         {
@@ -601,7 +602,23 @@ public sealed class WidgetInputRouter : IDisposable
 
         // The poller's tap recognizer dispatches the gesture during TouchEnded,
         // before the router clears this contact's eligibility.
-        _unhandledTouchContacts.Remove(touch.Id);
+        bool wasUnhandled = _unhandledTouchContacts.Remove(touch.Id);
+        bool hasPendingTap = _pendingTaps.Remove(touch.Id, out TappedEventArgs? tap);
+
+        if (hasPendingTap && wasUnhandled && tap is not null && touch.Phase != TouchPhase.Cancelled)
+        {
+            View? releaseView = GetTopmostViewAt(touch.Position);
+            View? tapView = GetTopmostViewAt(tap.Position);
+
+            if (releaseView is not null &&
+                releaseView == tapView &&
+                HitTest(touch.Position) is null &&
+                HitTest(tap.Position) is null)
+            {
+                UnhandledPrimaryAction?.Invoke(new PrimaryPointerActionEventArgs(
+                    releaseView, tap.Position, isTouch: true, tap.TouchId));
+            }
+        }
 
         if (!_touchCaptures.Remove(touch.Id, out PointerCapture? capture))
             return;
@@ -635,15 +652,10 @@ public sealed class WidgetInputRouter : IDisposable
             return;
 
         var tap = args.Tap;
-        if (!_unhandledTouchContacts.Contains(tap.TouchId) ||
-            HitTest(tap.Position) is not null ||
-            GetTopmostViewAt(tap.Position) is not View gameplayView)
-        {
+        if (!_unhandledTouchContacts.Contains(tap.TouchId))
             return;
-        }
 
-        UnhandledPrimaryAction?.Invoke(new PrimaryPointerActionEventArgs(
-            gameplayView, tap.Position, isTouch: true, tap.TouchId));
+        _pendingTaps[tap.TouchId] = tap;
     }
 
     private WidgetHit? HitTest(Point screenPositionPx)

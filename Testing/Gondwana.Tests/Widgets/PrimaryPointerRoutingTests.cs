@@ -143,6 +143,59 @@ public sealed class PrimaryPointerRoutingTests : IDisposable
         Assert.Empty(_actions);
     }
 
+    /// <summary>Reused touch IDs after poller reset do not retain stale widget capture.</summary>
+    [Fact]
+    public void ReusedContactIdAfterTouchPauseAllowsGameplayTap()
+    {
+        using var button = Button(new Rectangle(10, 10, 120, 50));
+
+        _touch.Begin(1, new Point(30, 30));
+        TouchEventPoller.Instance!.PollForEvents(_tick++);
+
+        TouchEventPoller.Instance.StopMonitoringTouch();
+        _touch.End(1, new Point(30, 30));
+        TouchEventPoller.Instance.PollForEvents(_tick++);
+        TouchEventPoller.Instance.StartMonitoringTouch();
+
+        Tap(new Point(200, 200), 1);
+
+        Assert.Single(_actions);
+        Assert.Same(_view, _actions[0].View);
+        Assert.Equal(new Point(200, 200), _actions[0].ScreenPositionPx);
+        Assert.True(_actions[0].IsTouch);
+        Assert.Equal(1, _actions[0].PointerId);
+    }
+
+    /// <summary>A tap starting outside a widget but ending over it is blocked on release.</summary>
+    [Fact]
+    public void TapCrossingWidgetEdgeOnReleaseDoesNotProduceGameplayAction()
+    {
+        using var button = Button(new Rectangle(10, 10, 120, 50));
+
+        _touch.Begin(1, new Point(5, 20));
+        _touch.End(1, new Point(15, 20));
+        TouchEventPoller.Instance!.PollForEvents(_tick++);
+
+        Assert.Empty(_actions);
+    }
+
+    /// <summary>A short qualifying tap remaining outside widgets produces a gameplay action.</summary>
+    [Fact]
+    public void TapMovingWithinThresholdOutsideWidgetsProducesGameplayAction()
+    {
+        using var button = Button(new Rectangle(10, 10, 120, 50));
+
+        _touch.Begin(1, new Point(200, 200));
+        _touch.End(1, new Point(205, 205));
+        TouchEventPoller.Instance!.PollForEvents(_tick++);
+
+        Assert.Single(_actions);
+        Assert.Same(_view, _actions[0].View);
+        Assert.Equal(new Point(200, 200), _actions[0].ScreenPositionPx);
+        Assert.True(_actions[0].IsTouch);
+        Assert.Equal(1, _actions[0].PointerId);
+    }
+
     /// <summary>Gameplay input is never delivered outside the host's viewports.</summary>
     [Fact]
     public void PressesOutsideViewAreIgnored()
