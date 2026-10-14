@@ -88,9 +88,13 @@ internal sealed class DefinitionSelectionBar<T> : ToolStrip where T : class
         if (definitions.Count <= 1) return Enumerable.Range(0, definitions.Count).ToArray();
         using var dialog = new Form
         {
-            Text = "Import definitions", StartPosition = FormStartPosition.CenterParent,
-            ClientSize = new Size(460, 340), MinimumSize = new Size(360, 240),
-            MinimizeBox = false, MaximizeBox = false, ShowInTaskbar = false
+            Text = "Import definitions",
+            StartPosition = FormStartPosition.CenterParent,
+            ClientSize = new Size(460, 340),
+            MinimumSize = new Size(360, 240),
+            MinimizeBox = false,
+            MaximizeBox = false,
+            ShowInTaskbar = false
         };
         var list = new CheckedListBox { Dock = DockStyle.Fill, CheckOnClick = true };
         foreach (var member in definitions) list.Items.Add(_name(member), true);
