@@ -7,6 +7,9 @@ namespace Gondwana.Audio.GSND;
 /// </summary>
 public sealed class AudioDefinition
 {
+    /// <summary>Gets or sets the stable, case-sensitive logical identity within the document.</summary>
+    public string Key { get; set; } = string.Empty;
+
     [Newtonsoft.Json.JsonIgnore]
     internal DefinitionLoadStamp? LoadStamp { get; set; }
 

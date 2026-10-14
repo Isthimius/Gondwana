@@ -1,5 +1,10 @@
 `EngineState` is Gondwana's snapshot-and-restore mechanism for engine-managed runtime content.
 
+## Multi-definition documents
+
+PreserveSource now records `DefinitionIdentity` beside a loose definition path or packed `AssetsFilePath` / `AssetEntryName`. Baselines compare each logical member independently. Historical state references without that field remain singleton-only and fail clearly if their source now contains multiple definitions. When separately authored audio or sprite groups are preserved, optional `AudioGroups` / `SpriteGroups` arrays retain independent member references; legacy `Audio` / `Sprites` entries remain readable. An edited group falls back to its current inline definition without discarding other groups. No content relocation is performed.
+
+
 It can capture selected portions of the engine's live registries, serialize them to JSON, and later either:
 
 - restore them as replacement state

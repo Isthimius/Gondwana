@@ -56,7 +56,7 @@ public sealed class TiledImportTests : IDisposable
         Assert.Equal(1, gts.Regions[0].TilePadding.Right);
         Assert.Equal((2L, 1L), TilesheetDefinitionValidator.GridSize(gts.Regions[0]));
         Assert.Empty(TilesheetDefinitionValidator.Validate(gts, 7, 4));
-        var gani = AnimationDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain-tile-0.gani"));
+        var gani = AnimationDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain-animations.gani"));
         Assert.Equal(new double?[] { 0.1, 0.25 }, gani.Frames.Select(f => f.DurationSeconds));
         Assert.Equal(new[] { 1, 0 }, gani.Frames.Select(f => f.XTile));
         Assert.Equal("terrain.gts", gani.TilesheetSources[0].GtsPath);

@@ -113,6 +113,13 @@ public sealed class TilesheetEditorControl : UserControl
         _workspace.Place(frame, () => frame.Show(region.Pane, DockAlignment.Bottom, .5));
         _workspace.Place(validation, () => validation.Show(image.Pane, DockAlignment.Bottom, .24));
         _workspace.InitializeLayout();
+        var definitionBar = new DefinitionSelectionBar<TilesheetDefinition>(
+            () => Document.Definitions, () => Document.SelectedDefinition, definition => definition.Name,
+            Document.SelectDefinition, () => Document.AddDefinition(), () => Document.DuplicateDefinition(),
+            () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, RefreshView);
+        Controls.Add(definitionBar);
+        Document.Changed += definitionBar.RefreshMembers;
+        definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
         DarkTheme.Apply(this);
         _viewport.FrameSelected += (region, p) =>
         {

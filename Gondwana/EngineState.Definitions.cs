@@ -1,3 +1,7 @@
+using Gondwana.Audio;
+using Gondwana.Audio.GSND;
+using Gondwana.Drawing.Sprites;
+using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Assets;
 using Newtonsoft.Json;
 
@@ -24,6 +28,10 @@ public sealed partial class EngineState
 
     private abstract class DefinitionStateEntry
     {
+        /// <summary>Gets or sets the logical member identity; absent in legacy singleton references.</summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string? DefinitionIdentity { get; set; }
+
         /// <summary>
         /// Gets or sets the path to the containing assets file.
         /// </summary>
@@ -51,6 +59,10 @@ public sealed partial class EngineState
 
     private static IEnumerable<DefinitionStateEntry> PackedEntries(EngineStateSnapshot snapshot, EngineStateParts parts)
     {
+        if (parts.HasFlag(EngineStateParts.Audio) && snapshot.AudioGroups is not null)
+            foreach (var entry in snapshot.AudioGroups) if (entry.AssetsFilePath is not null) yield return entry;
+        if (parts.HasFlag(EngineStateParts.Sprites) && snapshot.SpriteGroups is not null)
+            foreach (var entry in snapshot.SpriteGroups) if (entry.AssetsFilePath is not null) yield return entry;
         if (parts.HasFlag(EngineStateParts.Tilesheets) && snapshot.Tilesheets is not null)
             foreach (var entry in snapshot.Tilesheets.Values)
                 if (entry?.AssetsFilePath is not null) yield return entry;
@@ -68,6 +80,18 @@ public sealed partial class EngineState
 
     private static void ValidateSelectedSources(EngineStateSnapshot snapshot, EngineStateParts parts)
     {
+        if (parts.HasFlag(EngineStateParts.Audio) && snapshot.AudioGroups is not null)
+        {
+            if (snapshot.Audio is not null) throw new InvalidDataException("Audio and AudioGroups cannot both be present.");
+            foreach (var entry in snapshot.AudioGroups)
+                (entry ?? throw new InvalidDataException("AudioGroups contains null.")).Validate(entry.GsndPath, entry.Definition);
+        }
+        if (parts.HasFlag(EngineStateParts.Sprites) && snapshot.SpriteGroups is not null)
+        {
+            if (snapshot.Sprites is not null) throw new InvalidDataException("Sprites and SpriteGroups cannot both be present.");
+            foreach (var entry in snapshot.SpriteGroups)
+                (entry ?? throw new InvalidDataException("SpriteGroups contains null.")).Validate(entry.GsprPath, entry.Definition, entry.LegacySprites);
+        }
         if (parts.HasFlag(EngineStateParts.Tilesheets) && snapshot.Tilesheets is not null)
             foreach (var entry in snapshot.Tilesheets.Values)
                 entry?.Validate(entry.GtsPath, entry.Definition);
@@ -89,6 +113,7 @@ public sealed partial class EngineState
         loosePath = null;
         if (persistence != DefinitionPersistence.PreserveSource || provenance is null || !provenance.Matches(definition))
             return false;
+        entry.DefinitionIdentity = provenance.DefinitionIdentity;
         if (provenance.AssetsFilePath is { } archivePath)
         {
             entry.AssetsFilePath = MakeRelativePath(archivePath, baseDirectory);
@@ -143,5 +168,33 @@ public sealed partial class EngineState
         {
             throw new InvalidDataException($"Cannot load packed definition '{entry.AssetEntryName}' from GAF '{path}'.", ex);
         }
+    }
+
+    private static List<AudioStateEntry>? CaptureAudioGroups(string? baseDirectory)
+    {
+        var groups = AudioResourceManager.Instance.GetAll().Values.GroupBy(resource => resource.DefinitionProvenance).ToList();
+        if (groups.Count <= 1) return null;
+        return groups.Select(group =>
+        {
+            var definition = AudioDefinitionSerializer.FromResources(group);
+            var entry = new AudioStateEntry();
+            if (TryPreserve(entry, group.Key, definition, DefinitionPersistence.PreserveSource, baseDirectory, out var path)) entry.GsndPath = path;
+            else entry.Definition = definition;
+            return entry;
+        }).ToList();
+    }
+
+    private static List<SpriteStateEntry>? CaptureSpriteGroups(string? baseDirectory)
+    {
+        var groups = SpriteManager.Instance.AllSprites.GroupBy(sprite => sprite.DefinitionProvenance).ToList();
+        if (groups.Count <= 1) return null;
+        return groups.Select(group =>
+        {
+            var definition = SpriteDefinitionSerializer.FromSprites(group);
+            var entry = new SpriteStateEntry();
+            if (TryPreserve(entry, group.Key, definition, DefinitionPersistence.PreserveSource, baseDirectory, out var path)) entry.GsprPath = path;
+            else entry.Definition = definition;
+            return entry;
+        }).ToList();
     }
 }

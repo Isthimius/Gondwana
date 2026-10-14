@@ -11,6 +11,10 @@ namespace Gondwana.Audio;
 [JsonObject(IsReference = true)]
 public class AudioResource : IDisposable
 {
+    /// <summary>Gets or sets the logical definition group that materialized this object.</summary>
+    [JsonIgnore]
+    internal DefinitionProvenance? DefinitionProvenance { get; set; }
+
     /// <summary>
     /// Minimum allowed playback speed multiplier. Values below this are clamped.
     /// </summary>

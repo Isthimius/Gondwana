@@ -44,11 +44,12 @@ internal sealed class SceneTilesheetSource : IDisposable
     /// </summary>
     /// <param name="path">The path.</param>
     /// <returns>The resulting scene tilesheet source.</returns>
-    public static SceneTilesheetSource Load(string path)
+    /// <param name="identity">The logical member identity; null requires a singleton.</param>
+    public static SceneTilesheetSource LoadMember(string path, string? identity)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         path = Path.GetFullPath(path);
-        return new(path, TilesheetDefinitionSerializer.Load(path));
+        return new(path, TilesheetDefinitionSerializer.Load(path, identity));
     }
 
     /// <summary>
@@ -202,5 +203,28 @@ internal sealed class SceneTilesheetSource : IDisposable
     {
         Image?.Dispose();
         Image = null;
+    }
+
+    /// <summary>Loads a singleton source document.</summary>
+    /// <param name="path">The physical document path.</param>
+    /// <returns>The source.</returns>
+    public static SceneTilesheetSource Load(string path) => LoadMember(path, null);
+
+    /// <summary>Loads every member for authoring source selection.</summary>
+    /// <param name="path">The physical document path.</param>
+    /// <returns>All logical sources.</returns>
+    public static IReadOnlyList<SceneTilesheetSource> LoadAll(string path) =>
+        TilesheetDefinitionSerializer.LoadAll(path).Select(definition => new SceneTilesheetSource(Path.GetFullPath(path), definition)).ToList();
+
+    /// <summary>Loads one logical source from a packed definition document.</summary>
+    /// <param name="archivePath">The containing archive path.</param>
+    /// <param name="entry">The physical entry name.</param>
+    /// <param name="identity">The logical member identity.</param>
+    /// <returns>The selected source.</returns>
+    public static SceneTilesheetSource LoadPacked(string archivePath, string entry, string identity)
+    {
+        archivePath = Path.GetFullPath(archivePath);
+        using var archive = Gondwana.Assets.AssetsFile.LoadOrCreate(archivePath, null, false, register: false);
+        return new(archivePath, TilesheetDefinitionSerializer.Load(archive, entry, identity));
     }
 }

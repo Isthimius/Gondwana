@@ -34,6 +34,26 @@ internal sealed record TilesheetInspection(TilesheetDefinition? Definition, int?
         catch (Exception ex) { return new(null, null, null, [ex.Message]); }
     }
 
+    /// <summary>Inspects every logical tilesheet in a physical file.</summary>
+    /// <param name="path">The document path.</param>
+    /// <returns>One inspection per member, or a document-level load error.</returns>
+    public static IReadOnlyList<TilesheetInspection> AllFromFile(string path)
+    {
+        try { return TilesheetDefinitionSerializer.LoadAll(path).Select(definition => Inspect(definition, Path.GetDirectoryName(Path.GetFullPath(path))!, null)).ToList(); }
+        catch (Exception ex) { return [new(null, null, null, [ex.Message])]; }
+    }
+
+    /// <summary>Inspects every logical tilesheet in a typed archive entry.</summary>
+    /// <param name="stream">The readable document stream.</param>
+    /// <param name="baseDirectory">The archive directory.</param>
+    /// <param name="defaultBundle">The containing archive.</param>
+    /// <returns>One inspection per member, or a document-level load error.</returns>
+    public static IReadOnlyList<TilesheetInspection> AllFromStream(Stream stream, string baseDirectory, AssetsFile defaultBundle)
+    {
+        try { return TilesheetDefinitionSerializer.LoadAll(stream).Select(definition => Inspect(definition, baseDirectory, defaultBundle)).ToList(); }
+        catch (Exception ex) { return [new(null, null, null, [ex.Message])]; }
+    }
+
     private static TilesheetInspection Inspect(TilesheetDefinition definition, string baseDirectory, AssetsFile? defaultBundle)
     {
         var errors = new List<string>();

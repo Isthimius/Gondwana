@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace Gondwana.Drawing.Sprites.GSPR;
 
 /// <summary>Clean GSPR persistence and explicit runtime materialization.</summary>
-public static class SpriteDefinitionSerializer
+public static partial class SpriteDefinitionSerializer
 {
     private static readonly JsonSerializerSettings Settings = new()
     {
@@ -23,11 +23,7 @@ public static class SpriteDefinitionSerializer
     /// <returns>The resulting sprite definition.</returns>
     public static SpriteDefinition Load(string filePath)
     {
-        var path = Path.GetFullPath(filePath);
-        var definition = FromJson(File.ReadAllText(path));
-        definition.Source = SpriteDefinitionSource.LooseDefinitionFile(path);
-        definition.LoadStamp = new(definition, filePath: Path.GetFullPath(path));
-        return definition;
+        return DefinitionDocumentJson.Select(LoadAll(filePath), definition => definition.Key);
     }
 
     /// <summary>
@@ -37,9 +33,7 @@ public static class SpriteDefinitionSerializer
     /// <returns>The resulting sprite definition.</returns>
     public static SpriteDefinition Load(Stream stream)
     {
-        ArgumentNullException.ThrowIfNull(stream);
-        using var reader = new StreamReader(stream, leaveOpen: true);
-        return FromJson(reader.ReadToEnd());
+        return DefinitionDocumentJson.Select(LoadAll(stream), definition => definition.Key);
     }
 
     /// <summary>
@@ -50,15 +44,7 @@ public static class SpriteDefinitionSerializer
     /// <returns>The resulting sprite definition.</returns>
     public static SpriteDefinition Load(AssetsFile assetsFile, string entryName)
     {
-        ArgumentNullException.ThrowIfNull(assetsFile);
-        using var stream = assetsFile.Get(AssetTypes.SpriteDefinition, entryName)
-            ?? throw new FileNotFoundException($"GSPR asset entry not found: {entryName}");
-        var definition = Load(stream);
-        definition.Source = string.IsNullOrWhiteSpace(assetsFile.SourcePath)
-            ? SpriteDefinitionSource.None()
-            : SpriteDefinitionSource.PackedDefinitionFile(assetsFile.SourcePath, entryName);
-        definition.LoadStamp = new(definition, assetsFilePath: assetsFile.SourcePath, entryName: entryName);
-        return definition;
+        return DefinitionDocumentJson.Select(LoadAll(assetsFile, entryName), definition => definition.Key);
     }
 
     /// <summary>
@@ -77,7 +63,10 @@ public static class SpriteDefinitionSerializer
     /// </summary>
     /// <param name="json">The JSON text to deserialize.</param>
     /// <returns>The deserialized definition.</returns>
-    public static SpriteDefinition FromJson(string json)
+    public static SpriteDefinition FromJson(string json) =>
+        DefinitionDocumentJson.Select(FromDocumentJson(json).Definitions, definition => definition.Key);
+
+    private static SpriteDefinition ParseDefinition(string json)
     {
         try
         {
@@ -103,11 +92,7 @@ public static class SpriteDefinitionSerializer
     public static void Save(string filePath, SpriteDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);
-        var path = Path.GetFullPath(filePath);
-        var directory = Path.GetDirectoryName(path)!;
-        var clone = Rebase(definition, directory);
-        Directory.CreateDirectory(directory);
-        File.WriteAllText(path, ToJson(clone));
+        SaveAll(filePath, [definition]);
     }
 
     /// <summary>Clones and rebases authoring locations without changing the source document.</summary>
@@ -264,6 +249,7 @@ public static class SpriteDefinitionSerializer
                 !string.IsNullOrWhiteSpace(sprite.Nickname))
                 ? definition.LoadStamp?.Materialized(definition, () => FromSprites(created))
                 : null;
+            foreach (var sprite in created) sprite.DefinitionProvenance = SpriteManager.Instance.DefinitionProvenance;
             return created;
         }
         catch

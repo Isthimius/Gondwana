@@ -64,7 +64,7 @@ public sealed class TiledMapImporter : ExternalAssetImporter
             tilesets.Add((first, set));
             scene.TilesheetSources.Add(SceneTilesheetSourceDefinition.Loose(set.Name, set.GtsFilename));
             foreach (var (id, animation) in set.Animations)
-                scene.AnimationSources.Add(SceneAnimationSourceDefinition.Loose(animation.Key, $"{basename}-tile-{id}.gani"));
+                scene.AnimationSources.Add(SceneAnimationSourceDefinition.Loose(animation.Key, $"{basename}-animations.gani"));
         }
         tilesets.Sort((a, b) => a.First.CompareTo(b.First));
         for (int i = 1; i < tilesets.Count; i++)

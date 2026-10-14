@@ -9,7 +9,7 @@ namespace Gondwana.Scenes.GSCN;
 /// <summary>
 /// Provides loading, saving, conversion, and materialization helpers for Gondwana scene (.gscn) files.
 /// </summary>
-public static class SceneDefinitionSerializer
+public static partial class SceneDefinitionSerializer
 {
     private static readonly JsonSerializerSettings Settings = new()
     {
@@ -26,24 +26,7 @@ public static class SceneDefinitionSerializer
     /// <returns>The resulting scene definition.</returns>
     public static SceneDefinition Load(string filePath)
     {
-        if (string.IsNullOrWhiteSpace(filePath))
-            throw new ArgumentException("GSCN file path must be a non-empty string.", nameof(filePath));
-
-        var fullPath = Path.GetFullPath(filePath);
-        if (!File.Exists(fullPath))
-            throw new FileNotFoundException($"GSCN file not found: {fullPath}", fullPath);
-
-        try
-        {
-            var definition = FromJson(File.ReadAllText(fullPath), fullPath);
-            ApplyDefaultSource(definition, SceneDefinitionSource.LooseDefinitionFile(fullPath));
-            definition.LoadStamp = new(definition, filePath: fullPath);
-            return definition;
-        }
-        catch (JsonException ex)
-        {
-            throw new InvalidDataException($"Failed to deserialize GSCN file: {fullPath}", ex);
-        }
+        return DefinitionDocumentJson.Select(LoadAll(filePath), definition => definition.ID);
     }
 
     /// <summary>
@@ -53,13 +36,7 @@ public static class SceneDefinitionSerializer
     /// <returns>The resulting scene definition.</returns>
     public static SceneDefinition Load(Stream stream)
     {
-        ArgumentNullException.ThrowIfNull(stream);
-
-        if (!stream.CanRead)
-            throw new ArgumentException("Stream must be readable.", nameof(stream));
-
-        using var reader = new StreamReader(stream, leaveOpen: true);
-        return FromJson(reader.ReadToEnd());
+        return DefinitionDocumentJson.Select(LoadAll(stream), definition => definition.ID);
     }
 
     /// <summary>
@@ -70,25 +47,7 @@ public static class SceneDefinitionSerializer
     /// <returns>The resulting scene definition.</returns>
     public static SceneDefinition Load(AssetsFile assetsFile, string entryName)
     {
-        ArgumentNullException.ThrowIfNull(assetsFile);
-
-        if (string.IsNullOrWhiteSpace(entryName))
-            throw new ArgumentException("GSCN asset entry name must be a non-empty string.", nameof(entryName));
-
-        using var stream = assetsFile.Get(AssetTypes.SceneDefinition, entryName)
-            ?? throw new FileNotFoundException($"GSCN asset entry not found: {entryName}", entryName);
-
-        var definition = Load(stream);
-        definition.Source = SceneDefinitionSource.None();
-        if (!string.IsNullOrWhiteSpace(assetsFile.SourcePath))
-        {
-            definition.Source = SceneDefinitionSource.PackedDefinitionFile(
-                assetsFile.SourcePath,
-                entryName);
-        }
-
-        definition.LoadStamp = new(definition, assetsFilePath: assetsFile.SourcePath, entryName: entryName);
-        return definition;
+        return DefinitionDocumentJson.Select(LoadAll(assetsFile, entryName), definition => definition.ID);
     }
 
     /// <summary>
@@ -98,18 +57,8 @@ public static class SceneDefinitionSerializer
     /// <param name="definition">The persisted definition to process.</param>
     public static void Save(string filePath, SceneDefinition definition)
     {
-        if (string.IsNullOrWhiteSpace(filePath))
-            throw new ArgumentException("GSCN file path must be a non-empty string.", nameof(filePath));
-
         ArgumentNullException.ThrowIfNull(definition);
-
-        var fullPath = Path.GetFullPath(filePath);
-        var directory = Path.GetDirectoryName(fullPath);
-        if (!string.IsNullOrWhiteSpace(directory))
-            Directory.CreateDirectory(directory);
-
-        var definitionToSave = CreateDefinitionForSaving(definition, fullPath);
-        File.WriteAllText(fullPath, ToJson(definitionToSave));
+        SaveAll(filePath, [definition]);
     }
 
     /// <summary>
@@ -129,7 +78,7 @@ public static class SceneDefinitionSerializer
     /// <param name="json">The JSON text to deserialize.</param>
     /// <returns>The deserialized definition.</returns>
     public static SceneDefinition FromJson(string json) =>
-        FromJson(json, sourceDescription: null);
+        DefinitionDocumentJson.Select(FromDocumentJson(json).Definitions, definition => definition.ID);
 
     /// <summary>
     /// Serializes a GSCN definition to JSON.
@@ -253,7 +202,7 @@ public static class SceneDefinitionSerializer
     public static Scene LoadScene(AssetsFile assetsFile, string entryName) =>
         ToScene(Load(assetsFile, entryName));
 
-    private static SceneDefinition FromJson(string json, string? sourceDescription)
+    private static SceneDefinition ParseDefinition(string json, string? sourceDescription)
     {
         if (string.IsNullOrWhiteSpace(json))
             throw new ArgumentException("GSCN JSON content must be a non-empty string.", nameof(json));

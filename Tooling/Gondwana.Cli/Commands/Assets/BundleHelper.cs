@@ -51,7 +51,7 @@ internal static class BundleHelper
         foreach (var entry in bundle.GetAllEntries().Where(e => e.AssetType == AssetTypes.TilesheetDefinition).OrderBy(e => e.AssetName, StringComparer.Ordinal))
         {
             using var stream = bundle[entry.AssetType, entry.AssetName]!;
-            errors.AddRange(TilesheetInspection.FromStream(stream, Path.GetDirectoryName(Path.GetFullPath(path))!, bundle).Errors.Select(e => $"{entry.AssetName}: {e}"));
+            errors.AddRange(TilesheetInspection.AllFromStream(stream, Path.GetDirectoryName(Path.GetFullPath(path))!, bundle).SelectMany(result => result.Errors.Select(e => $"{entry.AssetName} :: {result.Definition?.Name}: {e}")));
         }
         return errors;
     }

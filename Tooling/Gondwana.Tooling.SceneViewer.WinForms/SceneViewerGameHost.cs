@@ -18,7 +18,8 @@ namespace Gondwana.Tooling.SceneViewer.WinForms;
 internal sealed class SceneViewerGameHost(
     WinFormGpuRenderSurfaceControl surface,
     string? scenePath,
-    SceneViewerStressOptions? stress = null)
+    SceneViewerStressOptions? stress = null,
+    string? sceneId = null)
     : WinFormsGpuGameHost(surface)
 {
     private const int StressTileSize = 16;
@@ -82,7 +83,7 @@ internal sealed class SceneViewerGameHost(
     protected override Scene CreateInitialScene()
     {
         if (stress is null)
-            return new ViewerSceneLoader().Load(scenePath!);
+            return new ViewerSceneLoader().Load(scenePath!, sceneId);
 
         if (_stressTilesheet is null)
             throw new InvalidOperationException("Stress tilesheet was not initialized.");

@@ -19,7 +19,11 @@ internal static class TilesheetFactory
 
     internal static Tilesheet FromAssetsFile(AssetsFile assetsFile, string entryName) => new(assetsFile, entryName);
 
-    internal static Tilesheet FromDefinitionFile(string gtsPath)
+    /// <summary>Materializes a logical member from a loose tilesheet document.</summary>
+    /// <param name="gtsPath">The document path.</param>
+    /// <param name="name">The member name, or null for a singleton.</param>
+    /// <returns>The materialized tilesheet.</returns>
+    internal static Tilesheet FromDefinitionFile(string gtsPath, string? name = null)
     {
         if (string.IsNullOrWhiteSpace(gtsPath))
             throw new ArgumentException("GTS path must be a non-empty string.", nameof(gtsPath));
@@ -28,10 +32,15 @@ internal static class TilesheetFactory
         if (!File.Exists(fullPath))
             throw new FileNotFoundException($"GTS file not found: {fullPath}", fullPath);
 
-        var definition = TilesheetDefinitionSerializer.Load(fullPath);
+        var definition = TilesheetDefinitionSerializer.Load(fullPath, name);
         return FromDefinition(definition, Path.GetDirectoryName(fullPath));
     }
 
+    /// <summary>Materializes a tilesheet and disposes incomplete content on failure.</summary>
+    /// <param name="definition">The logical definition.</param>
+    /// <param name="baseDirectory">The directory for relative resources.</param>
+    /// <param name="defaultAssetsFile">The archive for implicit packed image sources.</param>
+    /// <returns>The materialized tilesheet.</returns>
     internal static Tilesheet FromDefinition(TilesheetDefinition definition,
                                              string? baseDirectory = null,
                                              AssetsFile? defaultAssetsFile = null)
@@ -44,61 +53,74 @@ internal static class TilesheetFactory
             baseDirectory,
             defaultAssetsFile);
 
-        foreach (var region in definition.Regions)
+        try
         {
-            var runtimeRegion = tilesheet.AddRegion(
-                region.Name,
-                region.Area,
-                region.TileSize,
-                region.TilePadding,
-                region.RegionMargin,
-                region.Overhang,
-                region.CollisionAdjust,
-                region.CollisionType);
-
-            // A missing frame value inherits the region default. A present value is
-            // an explicit override, even when it currently equals that default.
-            foreach (var frame in region.Frames ?? [])
+            foreach (var region in definition.Regions)
             {
-                if (frame.CollisionAdjust is { } adjust)
-                {
-                    runtimeRegion.SetFrameCollisionAdjust(
-                        frame.XTile,
-                        frame.YTile,
-                        adjust);
-                }
+                var runtimeRegion = tilesheet.AddRegion(
+                    region.Name,
+                    region.Area,
+                    region.TileSize,
+                    region.TilePadding,
+                    region.RegionMargin,
+                    region.Overhang,
+                    region.CollisionAdjust,
+                    region.CollisionType);
 
-                if (frame.CollisionType is { } collisionType)
+                // A missing frame value inherits the region default. A present value is
+                // an explicit override, even when it currently equals that default.
+                foreach (var frame in region.Frames ?? [])
                 {
-                    runtimeRegion.SetFrameCollisionType(
-                        frame.XTile,
-                        frame.YTile,
-                        collisionType);
+                    if (frame.CollisionAdjust is { } adjust)
+                    {
+                        runtimeRegion.SetFrameCollisionAdjust(
+                            frame.XTile,
+                            frame.YTile,
+                            adjust);
+                    }
+
+                    if (frame.CollisionType is { } collisionType)
+                    {
+                        runtimeRegion.SetFrameCollisionType(
+                            frame.XTile,
+                            frame.YTile,
+                            collisionType);
+                    }
                 }
             }
-        }
 
-        if (definition.Mask is not null)
-        {
-            tilesheet.ApplyMask(
-                new SKColor(
-                    definition.Mask.Red,
-                    definition.Mask.Green,
-                    definition.Mask.Blue,
-                    definition.Mask.Alpha),
-                definition.Mask.Tolerance);
-        }
-        else if (definition.PremultiplyAlpha)
-        {
-            tilesheet.ApplyPremultiplyAlpha();
-        }
+            if (definition.Mask is not null)
+            {
+                tilesheet.ApplyMask(
+                    new SKColor(
+                        definition.Mask.Red,
+                        definition.Mask.Green,
+                        definition.Mask.Blue,
+                        definition.Mask.Alpha),
+                    definition.Mask.Tolerance);
+            }
+            else if (definition.PremultiplyAlpha)
+            {
+                tilesheet.ApplyPremultiplyAlpha();
+            }
 
-        tilesheet.DefinitionProvenance = definition.LoadStamp?.Materialized(definition,
-            () => TilesheetDefinitionSerializer.FromTilesheet(tilesheet));
-        return tilesheet;
+            tilesheet.DefinitionProvenance = definition.LoadStamp?.Materialized(definition,
+                () => TilesheetDefinitionSerializer.FromTilesheet(tilesheet));
+            return tilesheet;
+        }
+        catch
+        {
+            tilesheet.Dispose();
+            throw;
+        }
     }
 
-    internal static Tilesheet FromDefinitionAsset(AssetsFile assetsFile, string gtsEntryName)
+    /// <summary>Materializes a logical member from a typed archive document.</summary>
+    /// <param name="assetsFile">The containing archive.</param>
+    /// <param name="gtsEntryName">The physical document entry.</param>
+    /// <param name="name">The member name, or null for a singleton.</param>
+    /// <returns>The materialized tilesheet.</returns>
+    internal static Tilesheet FromDefinitionAsset(AssetsFile assetsFile, string gtsEntryName, string? name = null)
     {
         ArgumentNullException.ThrowIfNull(assetsFile);
 
@@ -109,25 +131,7 @@ internal static class TilesheetFactory
                 nameof(gtsEntryName));
         }
 
-        using var stream = assetsFile.Get(AssetTypes.TilesheetDefinition, gtsEntryName);
-
-        if (stream is null)
-        {
-            throw new InvalidOperationException(
-                $"Tilesheet definition asset '{gtsEntryName}' could not be found in AssetsFile '{assetsFile.SourcePath}'.");
-        }
-
-        var definition = TilesheetDefinitionSerializer.Load(stream);
-
-        definition.Source = TilesheetDefinitionSource.None();
-        if (!string.IsNullOrWhiteSpace(assetsFile.SourcePath))
-        {
-            definition.Source = TilesheetDefinitionSource.PackedDefinitionFile(
-                assetsFile.SourcePath,
-                gtsEntryName);
-        }
-
-        definition.LoadStamp = new(definition, assetsFilePath: assetsFile.SourcePath, entryName: gtsEntryName);
+        var definition = TilesheetDefinitionSerializer.Load(assetsFile, gtsEntryName, name);
 
         var baseDirectory = string.IsNullOrWhiteSpace(assetsFile.SourcePath)
             ? null

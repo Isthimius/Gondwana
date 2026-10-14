@@ -1,5 +1,64 @@
 # GSND Files
 
+## Definition documents and logical members
+
+One physical `.gsnd` file contains a document object with a `Definitions` array.
+Every member has a unique, non-empty, case-sensitive `Key`. The document location
+(loose path, or GAF path plus typed entry name) is independent of that logical identity.
+
+```json
+{
+  "Definitions": [
+    { "Key": "first" },
+    { "Key": "second" }
+  ]
+}
+```
+
+This illustrates the envelope and identities; supply the normal format-specific fields
+shown below for complete definitions. The same envelope is stored as the bytes of a
+single `AssetTypes.AudioDefinition` GAF entry. GAF remains a typed binary container;
+loading or saving a document does not create entries for individual members.
+
+```csharp
+var selected = AudioDefinitionSerializer.Load("content.gsnd", "second");
+var definitions = AudioDefinitionSerializer.LoadAll("content.gsnd");
+var document = AudioDefinitionSerializer.LoadDocument("content.gsnd");
+AudioDefinitionSerializer.SaveDocument("copy.gsnd", document);
+AudioDefinitionSerializer.SaveAll("copy.gsnd", definitions);
+
+var packed = AudioDefinitionSerializer.Load(assetsFile, "content.gsnd", "second");
+var packedMembers = AudioDefinitionSerializer.LoadAll(assetsFile, "content.gsnd");
+```
+
+`LoadDocument`, `LoadAll`, and member-selecting `Load` also accept readable streams and
+leave them open. Anonymous streams do not claim physical-source provenance.
+`ValidateDocument` reports structural and per-member validation errors, qualified by
+logical identity. Parsing rejects null member lists, null members, duplicate identities,
+and mixed singleton/envelope objects. Authoring drafts may be structurally valid but
+incomplete; runtime materialization runs the format validator.
+
+Existing singleton JSON without an envelope continues to load. `Load(path)` and other
+singleton convenience APIs require exactly one member and fail clearly on empty or
+multi-member documents. `Save(path, definition)` writes a canonical one-member envelope.
+`ToJson(definition)` retains the single-definition JSON projection for existing callers;
+use `ToDocumentJson(document)` for canonical document JSON. Singleton JSON examples
+below remain supported and can also be placed inside the envelope.
+
+The editor's **Definition** toolbar selects, adds, duplicates, removes, and renames roots.
+Saving writes every member, and Save As rebases references for every member without
+modifying unrelated content. At least one member remains in an editable session.
+
+Legacy roots without `Key` infer it from the filename or packed entry basename.
+Anonymous legacy JSON uses `audio`; canonical document members must explicitly provide a key.
+
+Use `AudioDefinitionSerializer.LoadAllIntoManager` to materialize every member.
+
+Load-all operations roll back newly created runtime content if a member fails.
+Physical/member separation supports future packaging work; content relocation is not implemented here.
+
+
+
 `.gsnd` is Gondwana's standalone audio-definition format.
 
 A GSND file describes **which audio resources exist, where their media comes from,
@@ -14,7 +73,7 @@ embedded in EngineState, or loaded into the runtime registry.
 
 ## What a GSND definition contains
 
-The root type is:
+Each logical member of `AudioDefinitionDocument.Definitions` has type:
 
 ```csharp
 Gondwana.Audio.GSND.AudioDefinition

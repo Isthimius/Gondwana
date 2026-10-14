@@ -10,7 +10,7 @@ public sealed class SceneDocument
     /// <summary>
     /// Gets the definition.
     /// </summary>
-    public SceneDefinition Definition { get; }
+    public SceneDefinition Definition { get; private set; }
     /// <summary>
     /// Gets the file path.
     /// </summary>
@@ -34,6 +34,7 @@ public sealed class SceneDocument
         string baseDirectory,
         bool isDirty)
     {
+        _definitions = [definition];
         Definition = definition;
         FilePath = filePath;
         BaseDirectory = Path.GetFullPath(baseDirectory);
@@ -47,13 +48,12 @@ public sealed class SceneDocument
     /// <returns>The resulting scene document.</returns>
     public static SceneDocument Open(string path)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(path);
         path = Path.GetFullPath(path);
-        return new(
-            SceneDefinitionSerializer.Load(path),
-            path,
-            Path.GetDirectoryName(path)!,
-            isDirty: false);
+        var definitions = SceneDefinitionSerializer.LoadAll(path).ToList();
+        if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
+        var document = new SceneDocument(definitions[0], path, Path.GetDirectoryName(path)!, false);
+        document._definitions = definitions;
+        return document;
     }
 
     /// <summary>
@@ -292,7 +292,7 @@ public sealed class SceneDocument
     /// </summary>
     /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
     public IReadOnlyList<string> Validate() =>
-        SceneDefinitionValidator.Validate(Definition);
+        SceneDefinitionSerializer.ValidateDocument(new SceneDefinitionDocument { Definitions = _definitions });
 
     /// <summary>
     /// Saves the current content to the destination file.
@@ -302,44 +302,45 @@ public sealed class SceneDocument
     public void Save(string path, bool allowInvalid = false)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
-
-        var errors = Validate();
-        if (errors.Count > 0 && !allowInvalid)
-            throw new InvalidOperationException(string.Join(Environment.NewLine, errors));
-
+        var errors = SceneDefinitionSerializer.ValidateDocument(new() { Definitions = _definitions });
+        if (!allowInvalid && errors.Count > 0) throw new InvalidOperationException(string.Join(Environment.NewLine, errors));
+        // Identity ambiguity is never allowed, even when saving an incomplete authoring draft.
+        if (_definitions.Any(member => string.IsNullOrWhiteSpace(member.ID)) ||
+            _definitions.Select(member => member.ID).Distinct(StringComparer.Ordinal).Count() != _definitions.Count)
+            throw new InvalidDataException("Every definition needs a unique, non-empty logical identity.");
         path = Path.GetFullPath(path);
-        string directory = Path.GetDirectoryName(path)!;
+        var directory = Path.GetDirectoryName(path)!;
         Directory.CreateDirectory(directory);
-
-        var snapshot = SceneDefinitionSerializer.FromJson(
-            SceneDefinitionSerializer.ToJson(Definition));
-
-        RebaseSources(snapshot, BaseDirectory, directory);
-
-        var temporary = Path.Combine(
-            directory,
-            $".{Path.GetFileName(path)}.{Guid.NewGuid():N}.tmp");
-
+        var snapshots = _definitions.Select(member =>
+        {
+            var clone = SceneDefinitionSerializer.FromJson(SceneDefinitionSerializer.ToJson(member));
+            clone.Source = SceneDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gscn"));
+            return clone;
+        }).ToList();
+        var temporary = Path.Combine(directory, $".{Path.GetFileName(path)}.{Guid.NewGuid():N}.tmp");
         try
         {
-            SceneDefinitionSerializer.Save(temporary, snapshot);
+            SceneDefinitionSerializer.SaveAll(temporary, snapshots);
             File.Move(temporary, path, overwrite: true);
         }
-        finally
+        finally { if (File.Exists(temporary)) File.Delete(temporary); }
+        var saved = SceneDefinitionSerializer.LoadAll(path);
+        for (int i = 0; i < _definitions.Count; i++)
         {
-            if (File.Exists(temporary))
-                File.Delete(temporary);
+            var member = _definitions[i];
+            var persisted = saved[i];
+            for (int j = 0; j < member.TilesheetSources.Count; j++)
+            {
+                member.TilesheetSources[j].GtsPath = persisted.TilesheetSources[j].GtsPath;
+                member.TilesheetSources[j].AssetsFilePath = persisted.TilesheetSources[j].AssetsFilePath;
+            }
+            for (int j = 0; j < member.AnimationSources.Count; j++)
+            {
+                member.AnimationSources[j].GaniPath = persisted.AnimationSources[j].GaniPath;
+                member.AnimationSources[j].AssetsFilePath = persisted.AnimationSources[j].AssetsFilePath;
+            }
+            member.Source = SceneDefinitionSource.LooseDefinitionFile(path);
         }
-
-        var saved = SceneDefinitionSerializer.Load(path);
-        Definition.ID = saved.ID;
-        Definition.CollisionGroups = saved.CollisionGroups;
-        Definition.CollisionProfiles = saved.CollisionProfiles;
-        Definition.TilesheetSources = saved.TilesheetSources;
-        Definition.AnimationSources = saved.AnimationSources;
-        Definition.Layers = saved.Layers;
-        Definition.Source = saved.Source;
-
         FilePath = path;
         BaseDirectory = directory;
         IsDirty = false;
@@ -354,52 +355,6 @@ public sealed class SceneDocument
         while (Definition.Layers.Any(layer =>
             string.Equals(layer.ID, candidate, StringComparison.Ordinal)));
         return candidate;
-    }
-
-    private static void RebaseSources(
-        SceneDefinition definition,
-        string oldBaseDirectory,
-        string newBaseDirectory)
-    {
-        foreach (var source in definition.TilesheetSources)
-        {
-            switch (source.Kind)
-            {
-                case SceneTilesheetSourceKind.LooseDefinitionFile
-                    when !string.IsNullOrWhiteSpace(source.GtsPath):
-                    source.GtsPath = MakeReferencePath(
-                        ResolveReferencePath(source.GtsPath, oldBaseDirectory),
-                        newBaseDirectory);
-                    break;
-
-                case SceneTilesheetSourceKind.PackedDefinitionFile
-                    when !string.IsNullOrWhiteSpace(source.AssetsFilePath):
-                    source.AssetsFilePath = MakeReferencePath(
-                        ResolveReferencePath(source.AssetsFilePath, oldBaseDirectory),
-                        newBaseDirectory);
-                    break;
-            }
-        }
-
-        foreach (var source in definition.AnimationSources)
-        {
-            switch (source.Kind)
-            {
-                case SceneAnimationSourceKind.LooseDefinitionFile
-                    when !string.IsNullOrWhiteSpace(source.GaniPath):
-                    source.GaniPath = MakeReferencePath(
-                        ResolveReferencePath(source.GaniPath, oldBaseDirectory),
-                        newBaseDirectory);
-                    break;
-
-                case SceneAnimationSourceKind.PackedDefinitionFile
-                    when !string.IsNullOrWhiteSpace(source.AssetsFilePath):
-                    source.AssetsFilePath = MakeReferencePath(
-                        ResolveReferencePath(source.AssetsFilePath, oldBaseDirectory),
-                        newBaseDirectory);
-                    break;
-            }
-        }
     }
 
     private static string ResolveReferencePath(
@@ -424,5 +379,76 @@ public sealed class SceneDocument
         }
 
         return Path.GetRelativePath(fullBase, fullPath);
+    }
+
+    private List<SceneDefinition> _definitions;
+
+    /// <summary>Gets all logical definitions owned by this physical document.</summary>
+    public IReadOnlyList<SceneDefinition> Definitions => _definitions.AsReadOnly();
+
+    /// <summary>Gets the current logical definition without reconstructing its metadata.</summary>
+    public SceneDefinition SelectedDefinition => Definition;
+
+    /// <summary>Selects an existing member without changing the physical document's dirty state.</summary>
+    /// <param name="definition">The member to select.</param>
+    public void SelectDefinition(SceneDefinition definition)
+    {
+        if (!_definitions.Contains(definition)) throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
+        Definition = definition;
+        Changed?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>Adds and selects a new logical definition with a unique default identity.</summary>
+    /// <returns>The new member.</returns>
+    public SceneDefinition AddDefinition()
+    {
+        var definition = Create(BaseDirectory).Definition;
+        definition.ID = UniqueDefinitionIdentity("scene");
+        _definitions.Add(definition);
+        Definition = definition;
+        MarkChanged();
+        return definition;
+    }
+
+    /// <summary>Duplicates and selects the current definition with a unique identity.</summary>
+    /// <returns>The new independent member.</returns>
+    public SceneDefinition DuplicateDefinition()
+    {
+        var definition = SceneDefinitionSerializer.FromJson(SceneDefinitionSerializer.ToJson(Definition));
+        definition.Source = Definition.Source;
+        definition.ID = UniqueDefinitionIdentity(Definition.ID + "-copy");
+        _definitions.Add(definition);
+        Definition = definition;
+        MarkChanged();
+        return definition;
+    }
+
+    /// <summary>Removes a member while retaining at least one editable definition.</summary>
+    /// <param name="definition">The member to remove.</param>
+    /// <returns>Whether the member was removed.</returns>
+    public bool RemoveDefinition(SceneDefinition definition)
+    {
+        if (_definitions.Count == 1 || !_definitions.Remove(definition)) return false;
+        if (ReferenceEquals(Definition, definition)) Definition = _definitions[0];
+        MarkChanged();
+        return true;
+    }
+
+    /// <summary>Renames the selected member, rejecting empty or duplicate identities.</summary>
+    /// <param name="identity">The new case-sensitive logical identity.</param>
+    public void RenameDefinition(string identity)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(identity);
+        if (_definitions.Any(member => !ReferenceEquals(member, Definition) && member.ID == identity))
+            throw new InvalidDataException($"Duplicate definition identity '{identity}'.");
+        Definition.ID = identity;
+        MarkChanged();
+    }
+
+    private string UniqueDefinitionIdentity(string basis)
+    {
+        var candidate = basis;
+        for (int i = 2; _definitions.Any(member => member.ID == candidate); i++) candidate = basis + "-" + i;
+        return candidate;
     }
 }

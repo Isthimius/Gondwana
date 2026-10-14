@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using System.Text;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
@@ -10,6 +11,7 @@ namespace Gondwana.Tooling.Importers;
 public sealed class ImportPlan(ExternalImportRequest request)
 {
     internal List<(ExternalImportArtifact Artifact, byte[] Content)> Outputs { get; } = [];
+    private readonly HashSet<string> _logicalKeys = new(StringComparer.Ordinal);
     /// <summary>
     /// Gets the dependencies.
     /// </summary>
@@ -41,7 +43,7 @@ public sealed class ImportPlan(ExternalImportRequest request)
     {
         foreach (var error in TilesheetDefinitionValidator.Validate(definition)) Report(ExternalImportSeverity.Error, "native.validation", error);
         definition.Source = TilesheetDefinitionSource.Generated();
-        Add(filename, "GTS", definition.Name, Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(definition)));
+        AddNative(filename, "GTS", definition.Name, Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = [definition] })));
     }
 
     /// <summary>
@@ -53,7 +55,7 @@ public sealed class ImportPlan(ExternalImportRequest request)
     {
         foreach (var error in AnimationDefinitionValidator.Validate(definition)) Report(ExternalImportSeverity.Error, "native.validation", error);
         definition.Source = AnimationDefinitionSource.Generated();
-        Add(filename, "GANI", definition.Key, Encoding.UTF8.GetBytes(AnimationDefinitionSerializer.ToJson(definition)));
+        AddNative(filename, "GANI", definition.Key, Encoding.UTF8.GetBytes(AnimationDefinitionSerializer.ToDocumentJson(new() { Definitions = [definition] })));
     }
 
     /// <summary>
@@ -65,7 +67,7 @@ public sealed class ImportPlan(ExternalImportRequest request)
     {
         foreach (var error in SceneDefinitionValidator.Validate(definition)) Report(ExternalImportSeverity.Error, "native.validation", error);
         definition.Source = SceneDefinitionSource.Generated();
-        Add(filename, "GSCN", definition.ID, Encoding.UTF8.GetBytes(SceneDefinitionSerializer.ToJson(definition)));
+        AddNative(filename, "GSCN", definition.ID, Encoding.UTF8.GetBytes(SceneDefinitionSerializer.ToDocumentJson(new() { Definitions = [definition] })));
     }
 
     /// <summary>
@@ -76,10 +78,27 @@ public sealed class ImportPlan(ExternalImportRequest request)
     /// <param name="key">The lookup key for the resource.</param>
     /// <param name="content">The content.</param>
     public void Add(string filename, string kind, string? key, byte[] content)
+        => AddOutput(filename, kind, key, content, false);
+
+    private void AddNative(string filename, string kind, string key, byte[] content) => AddOutput(filename, kind, key, content, true);
+
+    private void AddOutput(string filename, string kind, string? key, byte[] content, bool groupDefinitions)
     {
         if (filename != Path.GetFileName(filename) || filename is "." or "..")
             throw new InvalidDataException("Generated output must be a filename within the output directory.");
-        Outputs.Add((new(kind, Path.Combine(Path.GetFullPath(Request.OutputDirectory), filename), key), content));
+        var outputPath = Path.Combine(Path.GetFullPath(Request.OutputDirectory), filename);
+        if (key is not null && !_logicalKeys.Add(kind + ":" + key))
+            Report(ExternalImportSeverity.Error, "key.duplicate", $"Duplicate {kind} key: {key}");
+        int existing = Outputs.FindIndex(output => string.Equals(output.Artifact.OutputPath, outputPath, StringComparison.OrdinalIgnoreCase));
+        if (groupDefinitions && existing >= 0 && Outputs[existing].Artifact.Kind == kind)
+        {
+            var document = JObject.Parse(Encoding.UTF8.GetString(Outputs[existing].Content));
+            var members = (JArray)document["Definitions"]!;
+            foreach (var member in (JArray)JObject.Parse(Encoding.UTF8.GetString(content))["Definitions"]!) members.Add(member);
+            Outputs[existing] = (Outputs[existing].Artifact, Encoding.UTF8.GetBytes(document.ToString()));
+            return;
+        }
+        Outputs.Add((new(kind, outputPath, key), content));
     }
 
     internal ExternalImportAnalysis Analyze(string providerId)
@@ -106,22 +125,21 @@ public sealed class ImportPlan(ExternalImportRequest request)
     {
         if (!Directory.Exists(Request.OutputDirectory)) return;
         var plannedPaths = Outputs.Select(o => o.Artifact.OutputPath).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        var plannedKeys = Outputs.Where(o => o.Artifact.LogicalKey is not null)
-            .Select(o => o.Artifact.Kind + ":" + o.Artifact.LogicalKey).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var plannedKeys = _logicalKeys;
         try
         {
             foreach (string file in Directory.EnumerateFiles(Request.OutputDirectory).OrderBy(p => p, StringComparer.Ordinal))
             {
                 if (plannedPaths.Contains(Path.GetFullPath(file))) continue;
-                string? key;
+                IEnumerable<string> existingKeys;
                 try
                 {
-                    key = Path.GetExtension(file).ToLowerInvariant() switch
+                    existingKeys = Path.GetExtension(file).ToLowerInvariant() switch
                     {
-                        ".gts" => "GTS:" + TilesheetDefinitionSerializer.Load(file).Name,
-                        ".gani" => "GANI:" + AnimationDefinitionSerializer.Load(file).Key,
-                        ".gscn" => "GSCN:" + SceneDefinitionSerializer.Load(file).ID,
-                        _ => null
+                        ".gts" => TilesheetDefinitionSerializer.LoadAll(file).Select(member => "GTS:" + member.Name),
+                        ".gani" => AnimationDefinitionSerializer.LoadAll(file).Select(member => "GANI:" + member.Key),
+                        ".gscn" => SceneDefinitionSerializer.LoadAll(file).Select(member => "GSCN:" + member.ID),
+                        _ => []
                     };
                 }
                 catch (Exception ex) when (ex is IOException or InvalidDataException or UnauthorizedAccessException or ArgumentException)
@@ -129,8 +147,9 @@ public sealed class ImportPlan(ExternalImportRequest request)
                     Report(ExternalImportSeverity.Warning, "key.unchecked", $"Cannot inspect existing native keys in {file}: {ex.Message}");
                     continue;
                 }
-                if (key is not null && plannedKeys.Contains(key))
-                    Report(ExternalImportSeverity.Error, "key.exists", $"Logical key {key} already exists in {file}.");
+                foreach (var key in existingKeys)
+                    if (plannedKeys.Contains(key))
+                        Report(ExternalImportSeverity.Error, "key.exists", $"Logical key {key} already exists in {file}.");
             }
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)

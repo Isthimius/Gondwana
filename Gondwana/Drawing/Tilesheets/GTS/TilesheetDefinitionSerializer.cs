@@ -7,7 +7,7 @@ namespace Gondwana.Drawing.Tilesheets.GTS;
 /// <summary>
 /// Provides loading and saving helpers for Gondwana tilesheet definition (.gts) files.
 /// </summary>
-public static class TilesheetDefinitionSerializer
+public static partial class TilesheetDefinitionSerializer
 {
     private static readonly JsonSerializerSettings Settings = new()
     {
@@ -24,26 +24,7 @@ public static class TilesheetDefinitionSerializer
     /// <returns>The resulting tilesheet definition.</returns>
     public static TilesheetDefinition Load(string filePath)
     {
-        if (string.IsNullOrWhiteSpace(filePath))
-            throw new ArgumentException("GTS file path must be a non-empty string.", nameof(filePath));
-
-        var fullPath = Path.GetFullPath(filePath);
-        if (!File.Exists(fullPath))
-            throw new FileNotFoundException($"GTS file not found: {fullPath}", fullPath);
-
-        try
-        {
-            var definition = FromJson(File.ReadAllText(fullPath), fullPath);
-            ApplyDefaultSource(
-                definition,
-                TilesheetDefinitionSource.LooseDefinitionFile(fullPath));
-            definition.LoadStamp = new(definition, filePath: fullPath);
-            return definition;
-        }
-        catch (JsonException ex)
-        {
-            throw new InvalidDataException($"Failed to deserialize GTS file: {fullPath}", ex);
-        }
+        return DefinitionDocumentJson.Select(LoadAll(filePath), definition => definition.Name);
     }
 
     /// <summary>
@@ -53,13 +34,7 @@ public static class TilesheetDefinitionSerializer
     /// <returns>The resulting tilesheet definition.</returns>
     public static TilesheetDefinition Load(Stream stream)
     {
-        ArgumentNullException.ThrowIfNull(stream);
-
-        if (!stream.CanRead)
-            throw new ArgumentException("Stream must be readable.", nameof(stream));
-
-        using var reader = new StreamReader(stream, leaveOpen: true);
-        return FromJson(reader.ReadToEnd());
+        return DefinitionDocumentJson.Select(LoadAll(stream), definition => definition.Name);
     }
 
     /// <summary>
@@ -69,18 +44,8 @@ public static class TilesheetDefinitionSerializer
     /// <param name="definition">The persisted definition to process.</param>
     public static void Save(string filePath, TilesheetDefinition definition)
     {
-        if (string.IsNullOrWhiteSpace(filePath))
-            throw new ArgumentException("GTS file path must be a non-empty string.", nameof(filePath));
-
         ArgumentNullException.ThrowIfNull(definition);
-
-        var fullPath = Path.GetFullPath(filePath);
-        var directory = Path.GetDirectoryName(fullPath);
-        if (!string.IsNullOrWhiteSpace(directory))
-            Directory.CreateDirectory(directory);
-
-        var definitionToSave = CreateDefinitionForSaving(definition, fullPath);
-        File.WriteAllText(fullPath, ToJson(definitionToSave));
+        SaveAll(filePath, [definition]);
     }
 
     /// <summary>
@@ -89,7 +54,7 @@ public static class TilesheetDefinitionSerializer
     /// <param name="json">The JSON text to deserialize.</param>
     /// <returns>The deserialized definition.</returns>
     public static TilesheetDefinition FromJson(string json) =>
-        FromJson(json, sourceDescription: null);
+        DefinitionDocumentJson.Select(FromDocumentJson(json).Definitions, definition => definition.Name);
 
     /// <summary>
     /// Serializes the supplied content as JSON.
@@ -190,7 +155,7 @@ public static class TilesheetDefinitionSerializer
                 makePathsRelative));
     }
 
-    private static TilesheetDefinition FromJson(
+    private static TilesheetDefinition ParseDefinition(
         string json,
         string? sourceDescription)
     {

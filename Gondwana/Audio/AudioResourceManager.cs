@@ -384,10 +384,58 @@ public sealed class AudioResourceManager : IDisposable
         }
     }
 
+    private HashSet<AudioResource>? _retainedDefinitionResources;
+
     private void ReplaceExisting(string key)
     {
         if (_soundResources.TryGetValue(key, out var existing))
-            existing.Dispose();
+        {
+            if (_retainedDefinitionResources?.Contains(existing) == true)
+                _soundResources.TryRemove(key, out _);
+            else
+                existing.Dispose();
+        }
+    }
+
+    /// <summary>Runs a document load while retaining replaced resources until every member succeeds.</summary>
+    /// <typeparam name="T">The load result type.</typeparam>
+    /// <param name="load">The synchronous definition load.</param>
+    /// <returns>The committed load result.</returns>
+    internal T LoadDefinitionDocument<T>(Func<T> load)
+    {
+        lock (_backendLock)
+        {
+            if (_retainedDefinitionResources is not null)
+                throw new InvalidOperationException("A definition document load is already in progress.");
+            var previous = GetAll();
+            var settings = previous.Values.ToDictionary(resource => resource,
+                resource => (resource.Volume, resource.Pan, resource.PlaybackSpeed, resource.IsLooping));
+            var provenance = DefinitionProvenance;
+            _retainedDefinitionResources = previous.Values.ToHashSet();
+            T result;
+            try { result = load(); }
+            catch
+            {
+                foreach (var resource in _soundResources.Values.ToArray())
+                    if (!_retainedDefinitionResources.Contains(resource)) resource.Dispose();
+                _soundResources.Clear();
+                foreach (var pair in previous) _soundResources[pair.Key] = pair.Value;
+                foreach (var pair in settings)
+                {
+                    pair.Key.Volume = pair.Value.Volume;
+                    pair.Key.Pan = pair.Value.Pan;
+                    pair.Key.PlaybackSpeed = pair.Value.PlaybackSpeed;
+                    pair.Key.IsLooping = pair.Value.IsLooping;
+                }
+                DefinitionProvenance = provenance;
+                throw;
+            }
+            finally { _retainedDefinitionResources = null; }
+            foreach (var pair in previous)
+                if (!_soundResources.TryGetValue(pair.Key, out var current) || !ReferenceEquals(current, pair.Value))
+                    pair.Value.Dispose();
+            return result;
+        }
     }
 
     private static void ValidateSettings(string key, float volume, float pan, float speed)
@@ -425,8 +473,7 @@ public sealed class AudioResourceManager : IDisposable
     {
         lock (_backendLock)
         {
-            if (_soundResources.TryGetValue(key, out var resource))
-                resource.Dispose();
+            ReplaceExisting(key);
         }
     }
 

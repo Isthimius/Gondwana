@@ -456,4 +456,59 @@ public sealed class TilesheetRegistry : IDisposable
     }
 
     #endregion public shims to TilesheetFactory
+
+    /// <summary>Loads and registers one selected logical tilesheet.</summary>
+    /// <param name="gtsPath">The physical GTS path.</param>
+    /// <param name="tilesheetName">The logical tilesheet name.</param>
+    /// <returns>The registered tilesheet.</returns>
+    public Tilesheet LoadFromDefinitionFile(string gtsPath, string tilesheetName)
+    {
+        var sheet = TilesheetFactory.FromDefinitionFile(gtsPath, tilesheetName);
+        Register(sheet);
+        return sheet;
+    }
+
+    /// <summary>Creates all tilesheets before committing them to the registry.</summary>
+    /// <param name="gtsPath">The physical GTS path.</param>
+    /// <returns>The registered tilesheets in document order.</returns>
+    public IReadOnlyList<Tilesheet> LoadAllFromDefinitionFile(string gtsPath) =>
+        LoadAllDefinitions(TilesheetDefinitionSerializer.LoadDocument(gtsPath), Path.GetDirectoryName(Path.GetFullPath(gtsPath)), null);
+
+    /// <summary>Loads and registers one selected logical tilesheet.</summary>
+    /// <param name="assetsFile">The archive.</param>
+    /// <param name="gtsEntryName">The physical entry name.</param>
+    /// <param name="tilesheetName">The logical tilesheet name.</param>
+    /// <returns>The registered tilesheet.</returns>
+    public Tilesheet LoadFromDefinitionAsset(AssetsFile assetsFile, string gtsEntryName, string tilesheetName)
+    {
+        var sheet = TilesheetFactory.FromDefinitionAsset(assetsFile, gtsEntryName, tilesheetName);
+        Register(sheet);
+        return sheet;
+    }
+
+    /// <summary>Creates all tilesheets before committing them to the registry.</summary>
+    /// <param name="assetsFile">The archive.</param>
+    /// <param name="gtsEntryName">The physical entry name.</param>
+    /// <returns>The registered tilesheets in document order.</returns>
+    public IReadOnlyList<Tilesheet> LoadAllFromDefinitionAsset(AssetsFile assetsFile, string gtsEntryName) =>
+        LoadAllDefinitions(TilesheetDefinitionSerializer.LoadDocument(assetsFile, gtsEntryName), string.IsNullOrWhiteSpace(assetsFile.SourcePath) ? null : Path.GetDirectoryName(Path.GetFullPath(assetsFile.SourcePath)), assetsFile);
+
+    private IReadOnlyList<Tilesheet> LoadAllDefinitions(TilesheetDefinitionDocument document, string? directory, AssetsFile? archive)
+    {
+        var errors = TilesheetDefinitionSerializer.ValidateDocument(document);
+        if (errors.Count != 0) throw new InvalidDataException(string.Join(Environment.NewLine, errors));
+        var created = new List<Tilesheet>();
+        try
+        {
+            foreach (var definition in document.Definitions)
+                created.Add(TilesheetFactory.FromDefinition(definition, directory, archive));
+        }
+        catch
+        {
+            foreach (var sheet in created) sheet.Dispose();
+            throw;
+        }
+        foreach (var sheet in created) Register(sheet);
+        return created;
+    }
 }

@@ -156,6 +156,19 @@ public sealed class SceneEditorControl : UserControl
         RecoverLegacyLooseSources();
         Document.Changed += DocumentChanged;
 
+        var definitionBar = new DefinitionSelectionBar<SceneDefinition>(
+            () => Document.Definitions, () => Document.SelectedDefinition, definition => definition.ID,
+            Document.SelectDefinition, () => Document.AddDefinition(), () => Document.DuplicateDefinition(),
+            () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, () =>
+            {
+                foreach (var source in _tilesheetSources) source.Dispose();
+                foreach (var source in _animationSources) source.Dispose();
+                _tilesheetSources.Clear(); _animationSources.Clear(); _sourceDiagnostics.Clear();
+                LoadDeclaredSources(); RefreshView();
+            });
+        Controls.Add(definitionBar);
+        Document.Changed += definitionBar.RefreshMembers;
+        definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
         DarkTheme.Apply(this);
         RefreshView();
     }
@@ -170,22 +183,22 @@ public sealed class SceneEditorControl : UserControl
 
         SceneTilesheetSource? last = null;
         foreach (var path in paths)
-        {
-            var source = SceneTilesheetSource.Load(path);
-            var existing = FindTilesheet(source.Definition.Name);
-            if (existing is not null)
+            foreach (var source in SceneTilesheetSource.LoadAll(path))
             {
-                _tilesheetSources.Remove(existing);
-                existing.Dispose();
+                var existing = FindTilesheet(source.Definition.Name);
+                if (existing is not null)
+                {
+                    _tilesheetSources.Remove(existing);
+                    existing.Dispose();
+                }
+
+                Document.SetLooseTilesheetSource(
+                    source.Definition.Name,
+                    source.FilePath);
+
+                _tilesheetSources.Add(source);
+                last = source;
             }
-
-            Document.SetLooseTilesheetSource(
-                source.Definition.Name,
-                source.FilePath);
-
-            _tilesheetSources.Add(source);
-            last = source;
-        }
 
         RefreshSourceTree();
         RefreshPreview();
@@ -205,22 +218,22 @@ public sealed class SceneEditorControl : UserControl
 
         SceneAnimationSource? last = null;
         foreach (var path in paths)
-        {
-            var source = SceneAnimationSource.Load(path);
-            var existing = FindAnimation(source.Definition.Key);
-            if (existing is not null)
+            foreach (var source in SceneAnimationSource.LoadAll(path))
             {
-                _animationSources.Remove(existing);
-                existing.Dispose();
+                var existing = FindAnimation(source.Definition.Key);
+                if (existing is not null)
+                {
+                    _animationSources.Remove(existing);
+                    existing.Dispose();
+                }
+
+                Document.SetLooseAnimationSource(
+                    source.Definition.Key,
+                    source.FilePath);
+
+                _animationSources.Add(source);
+                last = source;
             }
-
-            Document.SetLooseAnimationSource(
-                source.Definition.Key,
-                source.FilePath);
-
-            _animationSources.Add(source);
-            last = source;
-        }
 
         RefreshAnimationList();
         RefreshPreview();
@@ -474,7 +487,7 @@ public sealed class SceneEditorControl : UserControl
                     "View Scene — saved content", MessageBoxButtons.OKCancel,
                     MessageBoxIcon.Question) == DialogResult.OK,
                 () => SaveRequested?.Invoke() ?? false,
-                SceneViewerLauncher.Launch);
+                path => SceneViewerLauncher.Launch(path, Document.SelectedDefinition.ID));
         }
         catch (Exception ex)
         {
@@ -621,15 +634,18 @@ public sealed class SceneEditorControl : UserControl
             if (source.Kind != SceneTilesheetSourceKind.LooseDefinitionFile ||
                 string.IsNullOrWhiteSpace(source.GtsPath))
             {
-                _sourceDiagnostics.Add(
-                    $"INFO: GTS '{source.Tilesheet}' uses a packed source; its metadata is preserved but this editor does not preview packed GTS entries yet.");
+                try
+                {
+                    _tilesheetSources.Add(SceneTilesheetSource.LoadPacked(Document.ResolveReferencePath(source.AssetsFilePath!), source.AssetEntryName!, source.Tilesheet));
+                }
+                catch (Exception ex) { _sourceDiagnostics.Add(ex.Message); }
                 continue;
             }
 
             try
             {
-                var loaded = SceneTilesheetSource.Load(
-                    Document.ResolveReferencePath(source.GtsPath));
+                var loaded = SceneTilesheetSource.LoadMember(
+                    Document.ResolveReferencePath(source.GtsPath), source.Tilesheet);
 
                 if (!string.Equals(
                         loaded.Definition.Name,
@@ -654,15 +670,18 @@ public sealed class SceneEditorControl : UserControl
             if (source.Kind != SceneAnimationSourceKind.LooseDefinitionFile ||
                 string.IsNullOrWhiteSpace(source.GaniPath))
             {
-                _sourceDiagnostics.Add(
-                    $"INFO: GANI '{source.AnimationKey}' uses a packed source; its metadata is preserved but this editor does not preview packed GANI entries yet.");
+                try
+                {
+                    _animationSources.Add(SceneAnimationSource.LoadPacked(Document.ResolveReferencePath(source.AssetsFilePath!), source.AssetEntryName!, source.AnimationKey));
+                }
+                catch (Exception ex) { _sourceDiagnostics.Add(ex.Message); }
                 continue;
             }
 
             try
             {
-                var loaded = SceneAnimationSource.Load(
-                    Document.ResolveReferencePath(source.GaniPath));
+                var loaded = SceneAnimationSource.LoadMember(
+                    Document.ResolveReferencePath(source.GaniPath), source.AnimationKey);
 
                 if (!string.Equals(
                         loaded.Definition.Key,
@@ -728,16 +747,18 @@ public sealed class SceneEditorControl : UserControl
         {
             try
             {
-                var loaded = SceneTilesheetSource.Load(path);
-                if (!required.Contains(loaded.Definition.Name))
+                foreach (var loaded in SceneTilesheetSource.LoadAll(path))
                 {
-                    loaded.Dispose();
-                    continue;
-                }
+                    if (!required.Contains(loaded.Definition.Name))
+                    {
+                        loaded.Dispose();
+                        continue;
+                    }
 
-                if (!candidates.TryGetValue(loaded.Definition.Name, out var list))
-                    candidates[loaded.Definition.Name] = list = [];
-                list.Add(loaded);
+                    if (!candidates.TryGetValue(loaded.Definition.Name, out var list))
+                        candidates[loaded.Definition.Name] = list = [];
+                    list.Add(loaded);
+                }
             }
             catch (Exception ex) when (IsAuthoringException(ex))
             {
@@ -779,16 +800,18 @@ public sealed class SceneEditorControl : UserControl
         {
             try
             {
-                var loaded = SceneAnimationSource.Load(path);
-                if (!required.Contains(loaded.Definition.Key))
+                foreach (var loaded in SceneAnimationSource.LoadAll(path))
                 {
-                    loaded.Dispose();
-                    continue;
-                }
+                    if (!required.Contains(loaded.Definition.Key))
+                    {
+                        loaded.Dispose();
+                        continue;
+                    }
 
-                if (!candidates.TryGetValue(loaded.Definition.Key, out var list))
-                    candidates[loaded.Definition.Key] = list = [];
-                list.Add(loaded);
+                    if (!candidates.TryGetValue(loaded.Definition.Key, out var list))
+                        candidates[loaded.Definition.Key] = list = [];
+                    list.Add(loaded);
+                }
             }
             catch (Exception ex) when (IsAuthoringException(ex))
             {

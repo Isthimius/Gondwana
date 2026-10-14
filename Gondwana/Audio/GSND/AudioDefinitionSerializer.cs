@@ -6,7 +6,7 @@ namespace Gondwana.Audio.GSND;
 /// <summary>
 /// Provides loading, saving, conversion, and materialization helpers for Gondwana audio (.gsnd) files.
 /// </summary>
-public static class AudioDefinitionSerializer
+public static partial class AudioDefinitionSerializer
 {
     private static readonly JsonSerializerSettings Settings = new()
     {
@@ -23,24 +23,7 @@ public static class AudioDefinitionSerializer
     /// <returns>The resulting audio definition.</returns>
     public static AudioDefinition Load(string filePath)
     {
-        if (string.IsNullOrWhiteSpace(filePath))
-            throw new ArgumentException("GSND file path must be a non-empty string.", nameof(filePath));
-
-        var fullPath = Path.GetFullPath(filePath);
-        if (!File.Exists(fullPath))
-            throw new FileNotFoundException($"GSND file not found: {fullPath}", fullPath);
-
-        try
-        {
-            var definition = FromJson(File.ReadAllText(fullPath), fullPath);
-            ApplyDefaultSource(definition, AudioDefinitionSource.LooseDefinitionFile(fullPath));
-            definition.LoadStamp = new(definition, filePath: fullPath);
-            return definition;
-        }
-        catch (JsonException ex)
-        {
-            throw new InvalidDataException($"Failed to deserialize GSND file: {fullPath}", ex);
-        }
+        return DefinitionDocumentJson.Select(LoadAll(filePath), definition => definition.Key);
     }
 
     /// <summary>
@@ -50,12 +33,7 @@ public static class AudioDefinitionSerializer
     /// <returns>The resulting audio definition.</returns>
     public static AudioDefinition Load(Stream stream)
     {
-        ArgumentNullException.ThrowIfNull(stream);
-        if (!stream.CanRead)
-            throw new ArgumentException("Stream must be readable.", nameof(stream));
-
-        using var reader = new StreamReader(stream, leaveOpen: true);
-        return FromJson(reader.ReadToEnd());
+        return DefinitionDocumentJson.Select(LoadAll(stream), definition => definition.Key);
     }
 
     /// <summary>
@@ -66,23 +44,7 @@ public static class AudioDefinitionSerializer
     /// <returns>The resulting audio definition.</returns>
     public static AudioDefinition Load(AssetsFile assetsFile, string entryName)
     {
-        ArgumentNullException.ThrowIfNull(assetsFile);
-        ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
-
-        using var stream = assetsFile.Get(AssetTypes.AudioDefinition, entryName)
-            ?? throw new FileNotFoundException($"GSND asset entry not found: {entryName}", entryName);
-
-        var definition = Load(stream);
-        definition.Source = AudioDefinitionSource.None();
-        if (!string.IsNullOrWhiteSpace(assetsFile.SourcePath))
-        {
-            definition.Source = AudioDefinitionSource.PackedDefinitionFile(
-                assetsFile.SourcePath,
-                entryName);
-        }
-
-        definition.LoadStamp = new(definition, assetsFilePath: assetsFile.SourcePath, entryName: entryName);
-        return definition;
+        return DefinitionDocumentJson.Select(LoadAll(assetsFile, entryName), definition => definition.Key);
     }
 
     /// <summary>
@@ -92,21 +54,8 @@ public static class AudioDefinitionSerializer
     /// <param name="definition">The persisted definition to process.</param>
     public static void Save(string filePath, AudioDefinition definition)
     {
-        if (string.IsNullOrWhiteSpace(filePath))
-            throw new ArgumentException("GSND file path must be a non-empty string.", nameof(filePath));
-
         ArgumentNullException.ThrowIfNull(definition);
-
-        var fullPath = Path.GetFullPath(filePath);
-        var directory = Path.GetDirectoryName(fullPath) ?? string.Empty;
-        if (!string.IsNullOrWhiteSpace(directory))
-            Directory.CreateDirectory(directory);
-
-        var clone = FromJson(ToJson(definition));
-        RebaseReferences(clone, GetReferenceBaseDirectory(definition.Source), directory);
-        clone.Source = AudioDefinitionSource.LooseDefinitionFile(fullPath);
-
-        File.WriteAllText(fullPath, ToJson(clone));
+        SaveAll(filePath, [definition]);
     }
 
     /// <summary>
@@ -137,7 +86,7 @@ public static class AudioDefinitionSerializer
     /// <param name="json">The JSON text to deserialize.</param>
     /// <returns>The deserialized definition.</returns>
     public static AudioDefinition FromJson(string json) =>
-        FromJson(json, sourceDescription: null);
+        DefinitionDocumentJson.Select(FromDocumentJson(json).Definitions, definition => definition.Key);
 
     /// <summary>
     /// Captures the registered audio resources as a persistable audio definition.
@@ -283,6 +232,10 @@ public static class AudioDefinitionSerializer
             loaded.Add(resource);
         }
 
+        var groupProvenance = !skippedExisting
+            ? definition.LoadStamp?.Materialized(definition, () => FromResources(loaded)) : null;
+        if (!skippedExisting)
+            foreach (var resource in loaded) resource.DefinitionProvenance = groupProvenance;
         manager.DefinitionProvenance = !skippedExisting && manager.GetAll().Count == loaded.Count
             ? definition.LoadStamp?.Materialized(definition,
                 () => FromManager(manager))
@@ -353,7 +306,7 @@ public static class AudioDefinitionSerializer
         resource.IsLooping = definition.IsLooping;
     }
 
-    private static AudioDefinition FromJson(
+    private static AudioDefinition ParseDefinition(
         string json,
         string? sourceDescription)
     {

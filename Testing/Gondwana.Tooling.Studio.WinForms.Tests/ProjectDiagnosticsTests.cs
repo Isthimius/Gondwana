@@ -121,8 +121,8 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         Assert.True(Assert.Single(result.Definitions).Loaded);
         Assert.Equal(3, result.Definitions[0].References.Count);
         Assert.All(result.Definitions[0].References, reference => Assert.NotNull(reference.Problem));
-        Assert.Contains(result.Problems, p => p.Property == "TilesheetSources[0].GtsPath" && p.Reason.Contains("not found"));
-        Assert.Contains(result.Problems, p => p.Property == "TilesheetSources[2].Kind" && p.Reason.Contains("Unsupported"));
+        Assert.Contains(result.Problems, p => p.Property.EndsWith(" :: TilesheetSources[0].GtsPath", StringComparison.Ordinal) && p.Reason.Contains("not found"));
+        Assert.Contains(result.Problems, p => p.Property.EndsWith(" :: TilesheetSources[2].Kind", StringComparison.Ordinal) && p.Reason.Contains("Unsupported"));
     }
 
     /// <summary>
@@ -139,6 +139,7 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         }
         AnimationDefinitionSerializer.Save(FilePath("walk.gani"), new AnimationDefinition
         {
+            Key = "walk",
             TilesheetSources =
             [
                 AnimationTilesheetSourceDefinition.Packed("tiles", "assets.gaf", "tiles"),
@@ -178,6 +179,7 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         }
         AnimationDefinitionSerializer.Save(FilePath("walk.gani"), new AnimationDefinition
         {
+            Key = "walk",
             TilesheetSources =
             [
                 AnimationTilesheetSourceDefinition.Packed("tiles-1", "assets.gaf", "tiles-1"),
@@ -191,7 +193,7 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         var result = new ProjectDiagnosticsScanner().Scan(_root);
 
         Assert.Equal(1, logging.Messages.Count(message => message == "Loading assets file."));
-        Assert.Contains(result.Problems, p => p.Property == "TilesheetSources[2].AssetsFilePath");
+        Assert.Contains(result.Problems, p => p.Property.EndsWith(" :: TilesheetSources[2].AssetsFilePath", StringComparison.Ordinal));
     }
 
     /// <summary>
@@ -382,5 +384,20 @@ public sealed class ProjectDiagnosticsTests : IDisposable
         public void Dispose()
         {
         }
+    }
+
+    /// <summary>Every member is inspected while a shared physical document is discovered only once.</summary>
+    [Fact]
+    public void SharedDocumentReportsEveryMember()
+    {
+        AnimationDefinitionSerializer.SaveAll(FilePath("shared.gani"),
+        [
+            new AnimationDefinition { Key = "walk", TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("terrain", "missing-a.gts")] },
+            new AnimationDefinition { Key = "run", TilesheetSources = [AnimationTilesheetSourceDefinition.Loose("terrain", "missing-b.gts")] }
+        ]);
+        var result = new ProjectDiagnosticsScanner().Scan(_root);
+        Assert.Single(result.Definitions);
+        Assert.Contains(result.Problems, problem => problem.Property.StartsWith("walk :: TilesheetSources[0]", StringComparison.Ordinal));
+        Assert.Contains(result.Problems, problem => problem.Property.StartsWith("run :: TilesheetSources[0]", StringComparison.Ordinal));
     }
 }

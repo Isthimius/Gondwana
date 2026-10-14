@@ -77,6 +77,7 @@ public sealed class ProjectDiagnosticsScanner
         var references = new List<DefinitionReference>();
         var format = Path.GetExtension(path).ToLowerInvariant();
         var loaded = false;
+        var member = string.Empty;
         try
         {
             switch (format)
@@ -87,75 +88,90 @@ public sealed class ProjectDiagnosticsScanner
                     loaded = true;
                     break;
                 case ".gts":
-                    var tilesheet = TilesheetDefinitionSerializer.Load(path);
-                    loaded = true;
-                    Validate(TilesheetDefinitionValidator.Validate(tilesheet));
-                    var image = tilesheet.Image;
-                    if (image is not null)
+                    foreach (var tilesheet in TilesheetDefinitionSerializer.LoadAll(path))
                     {
-                        if (!string.IsNullOrWhiteSpace(image.FilePath)) Reference("Image.FilePath", image.FilePath);
-                        if (!string.IsNullOrWhiteSpace(image.AssetsFilePath) || !string.IsNullOrWhiteSpace(image.AssetEntryName))
-                            Reference("Image.AssetsFilePath", image.AssetsFilePath, image.AssetEntryName, AssetTypes.Image);
+                        member = tilesheet.Name;
+                        loaded = true;
+                        Validate(TilesheetDefinitionValidator.Validate(tilesheet));
+                        var image = tilesheet.Image;
+                        if (image is not null)
+                        {
+                            if (!string.IsNullOrWhiteSpace(image.FilePath)) Reference("Image.FilePath", image.FilePath);
+                            if (!string.IsNullOrWhiteSpace(image.AssetsFilePath) || !string.IsNullOrWhiteSpace(image.AssetEntryName))
+                                Reference("Image.AssetsFilePath", image.AssetsFilePath, image.AssetEntryName, AssetTypes.Image);
+                        }
                     }
                     break;
                 case ".gani":
-                    var animation = AnimationDefinitionSerializer.Load(path);
-                    loaded = true;
-                    Validate(AnimationDefinitionValidator.Validate(animation));
-                    for (int i = 0; i < animation.TilesheetSources.Count; i++)
+                    foreach (var animation in AnimationDefinitionSerializer.LoadAll(path))
                     {
-                        var source = animation.TilesheetSources[i];
-                        Source($"TilesheetSources[{i}]", (int)source.Kind, source.GtsPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.TilesheetDefinition, "GtsPath");
+                        member = animation.Key;
+                        loaded = true;
+                        Validate(AnimationDefinitionValidator.Validate(animation));
+                        for (int i = 0; i < animation.TilesheetSources.Count; i++)
+                        {
+                            var source = animation.TilesheetSources[i];
+                            Source($"TilesheetSources[{i}]", (int)source.Kind, source.GtsPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.TilesheetDefinition, "GtsPath");
+                        }
                     }
                     break;
                 case ".gscn":
-                    var scene = SceneDefinitionSerializer.Load(path);
-                    loaded = true;
-                    Validate(SceneDefinitionValidator.Validate(scene));
-                    for (int i = 0; i < scene.TilesheetSources.Count; i++)
+                    foreach (var scene in SceneDefinitionSerializer.LoadAll(path))
                     {
-                        var source = scene.TilesheetSources[i];
-                        Source($"TilesheetSources[{i}]", (int)source.Kind, source.GtsPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.TilesheetDefinition, "GtsPath");
-                    }
-                    for (int i = 0; i < scene.AnimationSources.Count; i++)
-                    {
-                        var source = scene.AnimationSources[i];
-                        Source($"AnimationSources[{i}]", (int)source.Kind, source.GaniPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.AnimationDefinition, "GaniPath");
+                        member = scene.ID;
+                        loaded = true;
+                        Validate(SceneDefinitionValidator.Validate(scene));
+                        for (int i = 0; i < scene.TilesheetSources.Count; i++)
+                        {
+                            var source = scene.TilesheetSources[i];
+                            Source($"TilesheetSources[{i}]", (int)source.Kind, source.GtsPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.TilesheetDefinition, "GtsPath");
+                        }
+                        for (int i = 0; i < scene.AnimationSources.Count; i++)
+                        {
+                            var source = scene.AnimationSources[i];
+                            Source($"AnimationSources[{i}]", (int)source.Kind, source.GaniPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.AnimationDefinition, "GaniPath");
+                        }
                     }
                     break;
                 case ".gspr":
-                    var sprites = SpriteDefinitionSerializer.Load(path);
-                    loaded = true;
-                    Validate(SpriteDefinitionValidator.Validate(sprites));
-                    for (int i = 0; i < sprites.TilesheetSources.Count; i++)
+                    foreach (var sprites in SpriteDefinitionSerializer.LoadAll(path))
                     {
-                        var source = sprites.TilesheetSources[i];
-                        Source($"TilesheetSources[{i}]", (int)source.Kind, source.GtsPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.TilesheetDefinition, "GtsPath");
-                    }
-                    for (int i = 0; i < sprites.SceneSources.Count; i++)
-                    {
-                        var source = sprites.SceneSources[i];
-                        Source($"SceneSources[{i}]", (int)source.Kind, source.GscnPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.SceneDefinition, "GscnPath");
+                        member = sprites.Key;
+                        loaded = true;
+                        Validate(SpriteDefinitionValidator.Validate(sprites));
+                        for (int i = 0; i < sprites.TilesheetSources.Count; i++)
+                        {
+                            var source = sprites.TilesheetSources[i];
+                            Source($"TilesheetSources[{i}]", (int)source.Kind, source.GtsPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.TilesheetDefinition, "GtsPath");
+                        }
+                        for (int i = 0; i < sprites.SceneSources.Count; i++)
+                        {
+                            var source = sprites.SceneSources[i];
+                            Source($"SceneSources[{i}]", (int)source.Kind, source.GscnPath, source.AssetsFilePath, source.AssetEntryName, AssetTypes.SceneDefinition, "GscnPath");
+                        }
                     }
                     break;
                 case ".gsnd":
-                    var audio = AudioDefinitionSerializer.Load(path);
-                    loaded = true;
-                    Validate(AudioDefinitionValidator.Validate(audio));
-                    for (int i = 0; i < audio.Resources.Count; i++)
+                    foreach (var audio in AudioDefinitionSerializer.LoadAll(path))
                     {
-                        var resource = audio.Resources[i];
-                        var property = $"Resources[{i}]";
-                        switch (resource.SourceKind)
+                        member = audio.Key;
+                        loaded = true;
+                        Validate(AudioDefinitionValidator.Validate(audio));
+                        for (int i = 0; i < audio.Resources.Count; i++)
                         {
-                            case AudioResourceSourceKind.LooseFile: Reference(property + ".FilePath", resource.FilePath); break;
-                            case AudioResourceSourceKind.PackedAsset: Reference(property + ".AssetsFilePath", resource.AssetsFilePath, resource.AssetEntryName, AssetTypes.Audio); break;
-                            case AudioResourceSourceKind.Uri:
-                                // The public validator accepts both relative and absolute URIs.
-                                // Their resolution belongs to the audio backend, not the project filesystem.
-                                references.Add(new(property + ".SourceUri", resource.SourceUri ?? "", null, null));
-                                break;
-                            default: Unsupported(property, (int)resource.SourceKind); break;
+                            var resource = audio.Resources[i];
+                            var property = $"Resources[{i}]";
+                            switch (resource.SourceKind)
+                            {
+                                case AudioResourceSourceKind.LooseFile: Reference(property + ".FilePath", resource.FilePath); break;
+                                case AudioResourceSourceKind.PackedAsset: Reference(property + ".AssetsFilePath", resource.AssetsFilePath, resource.AssetEntryName, AssetTypes.Audio); break;
+                                case AudioResourceSourceKind.Uri:
+                                    // The public validator accepts both relative and absolute URIs.
+                                    // Their resolution belongs to the audio backend, not the project filesystem.
+                                    references.Add(new(member + " :: " + property + ".SourceUri", resource.SourceUri ?? "", null, null));
+                                    break;
+                                default: Unsupported(property, (int)resource.SourceKind); break;
+                            }
                         }
                     }
                     break;
@@ -169,11 +185,12 @@ public sealed class ProjectDiagnosticsScanner
 
         void Validate(IReadOnlyList<string> errors)
         {
-            foreach (var error in errors) problems.Add(new(relative, "Validation", error));
+            foreach (var error in errors) problems.Add(new(relative, member + " :: Validation", error));
         }
 
         void Unsupported(string property, int kind)
         {
+            property = member + " :: " + property;
             var reason = $"Unsupported source kind: {kind}.";
             references.Add(new(property + ".Kind", kind.ToString(), null, reason));
             problems.Add(new(relative, property + ".Kind", reason));
@@ -189,6 +206,7 @@ public sealed class ProjectDiagnosticsScanner
 
         void Reference(string property, string? value, string? entry = null, AssetTypes? assetType = null)
         {
+            property = member + " :: " + property;
             token.ThrowIfCancellationRequested();
             string? resolved = null;
             string? error = null;

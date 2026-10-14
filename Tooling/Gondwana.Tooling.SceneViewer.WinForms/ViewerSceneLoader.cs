@@ -18,9 +18,13 @@ internal sealed class ViewerSceneLoader
     private readonly Dictionary<string, Cycle> _cycles = new(StringComparer.Ordinal);
     private ViewerContentCatalog _catalog = null!;
 
-    internal Scene Load(string path)
+    /// <summary>Loads a scene member and resolves its explicitly identified dependencies.</summary>
+    /// <param name="path">The physical scene document path.</param>
+    /// <param name="sceneId">The logical scene identity, or null for singleton compatibility.</param>
+    /// <returns>The materialized scene.</returns>
+    internal Scene Load(string path, string? sceneId = null)
     {
-        var definition = SceneDefinitionSerializer.Load(path);
+        var definition = SceneDefinitionSerializer.Load(path, sceneId);
         Validate(SceneDefinitionValidator.Validate(definition), "GSCN");
         var directory = Path.GetDirectoryName(Path.GetFullPath(path))!;
         _catalog = new ViewerContentCatalog(directory, Archive);
@@ -43,8 +47,8 @@ internal sealed class ViewerSceneLoader
                 var entry = selected?.Entry ?? source.AssetEntryName;
                 description = selected?.ToString() ?? description;
                 var animation = packed
-                    ? AnimationDefinitionSerializer.Load(Archive(location), entry!)
-                    : AnimationDefinitionSerializer.Load(location);
+                    ? AnimationDefinitionSerializer.Load(Archive(location), entry!, source.AnimationKey)
+                    : AnimationDefinitionSerializer.Load(location, source.AnimationKey);
                 Validate(AnimationDefinitionValidator.Validate(animation), "GANI");
                 if (!string.Equals(animation.Key, source.AnimationKey, StringComparison.Ordinal))
                     throw new InvalidDataException($"Expected animation key '{source.AnimationKey}', found '{animation.Key}'.");
@@ -112,28 +116,9 @@ internal sealed class ViewerSceneLoader
             if (!string.IsNullOrWhiteSpace(definition.NextCycleKey) && !_animations.ContainsKey(definition.NextCycleKey))
                 throw new InvalidDataException($"Animation '{definition.Key}' references '{definition.NextCycleKey}', which has no explicit GANI source in the scene.");
         }
-        foreach (var definition in _animations.Values)
-        {
-            // Register through the public serializer before wiring cross-cycle links.
-            // This also supports mutual NextCycleKey references without advancing frames.
-            var next = definition.NextCycleKey;
-            try
-            {
-                definition.NextCycleKey = null;
-                _cycles.Add(definition.Key, AnimationDefinitionSerializer.ToCycle(definition));
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidDataException($"Animation '{definition.Key}' could not be registered: {ex.Message}", ex);
-            }
-            finally
-            {
-                definition.NextCycleKey = next;
-            }
-        }
-        foreach (var definition in _animations.Values)
-            if (!string.IsNullOrWhiteSpace(definition.NextCycleKey))
-                _cycles[definition.Key].NextCycle = _cycles[definition.NextCycleKey];
+        foreach (var cycle in AnimationDefinitionSerializer.ToAllCycles(
+            new AnimationDefinitionDocument { Definitions = _animations.Values.ToList() }))
+            _cycles.Add(cycle.CycleKey, cycle);
     }
 
     private void LoadTilesheet(
@@ -170,17 +155,17 @@ internal sealed class ViewerSceneLoader
             {
                 using var stream = Archive(location).Get(AssetTypes.TilesheetDefinition, entry!)
                     ?? throw new FileNotFoundException($"GTS entry '{entry}' was not found in '{location}'.");
-                definition = TilesheetDefinitionSerializer.Load(stream);
+                definition = TilesheetDefinitionSerializer.Load(Archive(location), entry!, name);
             }
             else
             {
-                definition = TilesheetDefinitionSerializer.Load(location);
+                definition = TilesheetDefinitionSerializer.Load(location, name);
             }
             Validate(TilesheetDefinitionValidator.Validate(definition), "GTS");
             if (!string.Equals(definition.Name, name, StringComparison.Ordinal))
                 throw new InvalidDataException($"Expected tilesheet '{name}', found '{definition.Name}'.");
             var sheet = packed
-                ? TilesheetRegistry.Instance.LoadFromDefinitionAsset(Archive(location), entry!)
+                ? TilesheetRegistry.Instance.LoadFromDefinitionAsset(Archive(location), entry!, name)
                 : TilesheetRegistry.Instance.LoadFromDefinition(definition, Path.GetDirectoryName(location));
             Validate(TilesheetDefinitionValidator.Validate(definition, sheet.SkBitmap.Width, sheet.SkBitmap.Height), "GTS");
             _tilesheets.Add(name, identity);

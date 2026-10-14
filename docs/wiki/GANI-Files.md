@@ -1,5 +1,62 @@
 GANI is Gondwana's portable definition format for reusable tile animations.
 
+## Definition documents and logical members
+
+One physical `.gani` file contains a document object with a `Definitions` array.
+Every member has a unique, non-empty, case-sensitive `Key`. The document location
+(loose path, or GAF path plus typed entry name) is independent of that logical identity.
+
+```json
+{
+  "Definitions": [
+    { "Key": "first" },
+    { "Key": "second" }
+  ]
+}
+```
+
+This illustrates the envelope and identities; supply the normal format-specific fields
+shown below for complete definitions. The same envelope is stored as the bytes of a
+single `AssetTypes.AnimationDefinition` GAF entry. GAF remains a typed binary container;
+loading or saving a document does not create entries for individual members.
+
+```csharp
+var selected = AnimationDefinitionSerializer.Load("content.gani", "second");
+var definitions = AnimationDefinitionSerializer.LoadAll("content.gani");
+var document = AnimationDefinitionSerializer.LoadDocument("content.gani");
+AnimationDefinitionSerializer.SaveDocument("copy.gani", document);
+AnimationDefinitionSerializer.SaveAll("copy.gani", definitions);
+
+var packed = AnimationDefinitionSerializer.Load(assetsFile, "content.gani", "second");
+var packedMembers = AnimationDefinitionSerializer.LoadAll(assetsFile, "content.gani");
+```
+
+`LoadDocument`, `LoadAll`, and member-selecting `Load` also accept readable streams and
+leave them open. Anonymous streams do not claim physical-source provenance.
+`ValidateDocument` reports structural and per-member validation errors, qualified by
+logical identity. Parsing rejects null member lists, null members, duplicate identities,
+and mixed singleton/envelope objects. Authoring drafts may be structurally valid but
+incomplete; runtime materialization runs the format validator.
+
+Existing singleton JSON without an envelope continues to load. `Load(path)` and other
+singleton convenience APIs require exactly one member and fail clearly on empty or
+multi-member documents. `Save(path, definition)` writes a canonical one-member envelope.
+`ToJson(definition)` retains the single-definition JSON projection for existing callers;
+use `ToDocumentJson(document)` for canonical document JSON. Singleton JSON examples
+below remain supported and can also be placed inside the envelope.
+
+The editor's **Definition** toolbar selects, adds, duplicates, removes, and renames roots.
+Saving writes every member, and Save As rebases references for every member without
+modifying unrelated content. At least one member remains in an editable session.
+
+Use `AnimationDefinitionSerializer.LoadAllCycles` to materialize every member.
+All cycles are created before next-cycle links are wired, including mutual references.
+
+Load-all operations roll back newly created runtime content if a member fails.
+Physical/member separation supports future packaging work; content relocation is not implemented here.
+
+
+
 Each frame may specify `DurationSeconds`, a finite positive display duration.
 Omitting it (or using null) retains the cycle's `ThrottleTime`. Timing belongs
 to a sequence occurrence, so the same image can appear twice with different

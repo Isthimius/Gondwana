@@ -35,7 +35,7 @@ internal static class Program
                         Environment.CurrentDirectory);
                 }
 
-                form = new SceneViewerForm(path);
+                form = new SceneViewerForm(path, args.Length == 4 ? args[3] : null);
             }
 
             using (form)

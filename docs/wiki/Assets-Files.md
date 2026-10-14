@@ -1,5 +1,10 @@
 Gondwana asset files provide a simple way to bundle game resources into a single container instead of distributing every image, sound, definition, and other resource as a separate loose file.
 
+## Multi-definition documents
+
+A typed GTS, GANI, GSCN, GSND, or GSPR entry stores one definition **document**. Its `Definitions` array may contain multiple logical members. The archive entry name identifies the physical document, and Name (GTS), Key (GANI/GSND/GSPR), or ID (GSCN) identifies the member. Existing singleton entries remain readable. `AssetsFile` storage, adding, and extraction semantics are unchanged; no reference relocation is performed.
+
+
 An `AssetsFile` is intentionally not a complicated virtual filesystem or content database.
 
 At its core, it is a collection of **typed, named binary assets**:
