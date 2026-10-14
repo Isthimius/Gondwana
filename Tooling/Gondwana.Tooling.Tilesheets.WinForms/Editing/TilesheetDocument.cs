@@ -203,7 +203,7 @@ public sealed class TilesheetDocument
     public void Save(string path, Size? imageSize = null, bool allowInvalid = false)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
-        var errors = TilesheetDefinitionSerializer.ValidateDocument(new() { Definitions = _definitions });
+        var errors = Validate(imageSize);
         if (!allowInvalid && errors.Count > 0) throw new InvalidOperationException(string.Join(Environment.NewLine, errors));
         // Identity ambiguity is never allowed, even when saving an incomplete authoring draft.
         if (_definitions.Any(member => string.IsNullOrWhiteSpace(member.Name)) ||
