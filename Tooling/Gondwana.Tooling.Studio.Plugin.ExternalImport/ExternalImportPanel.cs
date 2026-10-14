@@ -84,7 +84,7 @@ public sealed class ExternalImportPanel : UserControl
         chooseOutput.Click += (_, _) => { using var dialog = new FolderBrowserDialog { SelectedPath = OutputDirectory }; if (dialog.ShowDialog(this) == DialogResult.OK) OutputDirectory = dialog.SelectedPath; };
         Row("Format", format); Row("Source", source, chooseSource); Row("Output directory", output, chooseOutput); Row("", overwrite);
         var buttons = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true }; buttons.Controls.AddRange([analyze, import, cancel]);
-        artifacts.Columns.Add("Type", 70); artifacts.Columns.Add("Proposed output", 500);
+        artifacts.Columns.Add("Type", 70); artifacts.Columns.Add("Proposed output", 400); artifacts.Columns.Add("Logical definitions", 300);
         var body = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 2, ColumnCount = 1 };
         body.RowStyles.Add(new(SizeType.Percent, 45)); body.RowStyles.Add(new(SizeType.Percent, 55)); body.Controls.Add(artifacts); body.Controls.Add(diagnostics);
         Controls.Add(body); Controls.Add(buttons); Controls.Add(inputs);
@@ -127,7 +127,7 @@ public sealed class ExternalImportPanel : UserControl
         try
         {
             var result = completed.GetAwaiter().GetResult(); Analysis = result.Analysis;
-            foreach (var artifact in Analysis.Artifacts) artifacts.Items.Add(new ListViewItem([artifact.Kind, artifact.OutputPath]));
+            foreach (var artifact in Analysis.Artifacts) artifacts.Items.Add(new ListViewItem([artifact.Kind, artifact.OutputPath, string.Join(", ", artifact.LogicalKeys)]));
             diagnostics.Text = string.Join(Environment.NewLine, Analysis.Diagnostics.Select(d => $"{d.Severity}: {d.Message}"));
             import.Enabled = !importing && Analysis.CanImport;
             if (importing && result.WrittenFiles.Count > 0)

@@ -127,7 +127,7 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                     if (x >= grid.Columns || y >= grid.Rows) throw new InvalidDataException($"Animation frame {frame} of {coord} cannot map to the GTS grid.");
                     gani.Frames.Add(new() { Tilesheet = name, XTile = x, YTile = y, DurationSeconds = Number(Get(p, $"{coord}/animation_frame_{frame}/duration", "1")) / speed });
                 }
-                plan.Add($"{file}-tile-{xy[0]}-{xy[1]}.gani", gani);
+                plan.Add($"{file}-animations.gani", gani);
             }
         }
     }

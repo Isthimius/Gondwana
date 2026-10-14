@@ -1,8 +1,9 @@
 using System.Text;
+using Gondwana.Audio.GSND;
 using Gondwana.Drawing.Animation.GANI;
+using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
-using Newtonsoft.Json.Linq;
 
 namespace Gondwana.Tooling.Importers;
 
@@ -10,8 +11,9 @@ namespace Gondwana.Tooling.Importers;
 /// <param name="request">The request.</param>
 public sealed class ImportPlan(ExternalImportRequest request)
 {
+    /// <summary>Gets validated output snapshots used by the staging transaction.</summary>
     internal List<(ExternalImportArtifact Artifact, byte[] Content)> Outputs { get; } = [];
-    private readonly HashSet<string> _logicalKeys = new(StringComparer.Ordinal);
+    private readonly List<PlannedOutput> _planned = [];
     /// <summary>
     /// Gets the dependencies.
     /// </summary>
@@ -34,82 +36,164 @@ public sealed class ImportPlan(ExternalImportRequest request)
     public void Report(ExternalImportSeverity severity, string code, string message) =>
         Diagnostics.Add(new(severity, code, message, Request.SourcePath));
 
-    /// <summary>
-    /// Adds the supplied entry to the import plan.
-    /// </summary>
-    /// <param name="filename">The filename.</param>
-    /// <param name="definition">The persisted definition to process.</param>
+    /// <summary>Adds a typed member to the document at the provider-chosen filename.</summary>
+    /// <param name="filename">The output filename; matching filenames and types form one document.</param>
+    /// <param name="definition">The generated member. The plan owns it until analysis completes.</param>
     public void Add(string filename, TilesheetDefinition definition)
     {
-        foreach (var error in TilesheetDefinitionValidator.Validate(definition)) Report(ExternalImportSeverity.Error, "native.validation", error);
+        ArgumentNullException.ThrowIfNull(definition);
         definition.Source = TilesheetDefinitionSource.Generated();
-        AddNative(filename, "GTS", definition.Name, Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = [definition] })));
+        AddNative(filename, "GTS", definition, member => member.Name,
+            members => TilesheetDefinitionSerializer.ValidateDocument(new() { Definitions = members }),
+            members => TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = members }));
     }
 
-    /// <summary>
-    /// Adds the supplied entry to the import plan.
-    /// </summary>
-    /// <param name="filename">The filename.</param>
-    /// <param name="definition">The persisted definition to process.</param>
+    /// <summary>Adds a typed member to the document at the provider-chosen filename.</summary>
+    /// <param name="filename">The output filename; matching filenames and types form one document.</param>
+    /// <param name="definition">The generated member. The plan owns it until analysis completes.</param>
     public void Add(string filename, AnimationDefinition definition)
     {
-        foreach (var error in AnimationDefinitionValidator.Validate(definition)) Report(ExternalImportSeverity.Error, "native.validation", error);
+        ArgumentNullException.ThrowIfNull(definition);
         definition.Source = AnimationDefinitionSource.Generated();
-        AddNative(filename, "GANI", definition.Key, Encoding.UTF8.GetBytes(AnimationDefinitionSerializer.ToDocumentJson(new() { Definitions = [definition] })));
+        AddNative(filename, "GANI", definition, member => member.Key,
+            members => AnimationDefinitionSerializer.ValidateDocument(new() { Definitions = members }),
+            members => AnimationDefinitionSerializer.ToDocumentJson(new() { Definitions = members }));
     }
 
-    /// <summary>
-    /// Adds the supplied entry to the import plan.
-    /// </summary>
-    /// <param name="filename">The filename.</param>
-    /// <param name="definition">The persisted definition to process.</param>
+    /// <summary>Adds a typed member to the document at the provider-chosen filename.</summary>
+    /// <param name="filename">The output filename; matching filenames and types form one document.</param>
+    /// <param name="definition">The generated member. The plan owns it until analysis completes.</param>
     public void Add(string filename, SceneDefinition definition)
     {
-        foreach (var error in SceneDefinitionValidator.Validate(definition)) Report(ExternalImportSeverity.Error, "native.validation", error);
+        ArgumentNullException.ThrowIfNull(definition);
         definition.Source = SceneDefinitionSource.Generated();
-        AddNative(filename, "GSCN", definition.ID, Encoding.UTF8.GetBytes(SceneDefinitionSerializer.ToDocumentJson(new() { Definitions = [definition] })));
+        AddNative(filename, "GSCN", definition, member => member.ID,
+            members => SceneDefinitionSerializer.ValidateDocument(new() { Definitions = members }),
+            members => SceneDefinitionSerializer.ToDocumentJson(new() { Definitions = members }));
     }
 
-    /// <summary>
-    /// Adds the supplied entry to the import plan.
-    /// </summary>
-    /// <param name="filename">The filename.</param>
-    /// <param name="kind">The kind.</param>
-    /// <param name="key">The lookup key for the resource.</param>
-    /// <param name="content">The content.</param>
-    public void Add(string filename, string kind, string? key, byte[] content)
-        => AddOutput(filename, kind, key, content, false);
-
-    private void AddNative(string filename, string kind, string key, byte[] content) => AddOutput(filename, kind, key, content, true);
-
-    private void AddOutput(string filename, string kind, string? key, byte[] content, bool groupDefinitions)
+    /// <summary>Adds a typed member to the document at the provider-chosen filename.</summary>
+    /// <param name="filename">The output filename; matching filenames and types form one document.</param>
+    /// <param name="definition">The generated member. The plan owns it until analysis completes.</param>
+    public void Add(string filename, SpriteDefinition definition)
     {
-        if (filename != Path.GetFileName(filename) || filename is "." or "..")
-            throw new InvalidDataException("Generated output must be a filename within the output directory.");
-        var outputPath = Path.Combine(Path.GetFullPath(Request.OutputDirectory), filename);
-        if (key is not null && !_logicalKeys.Add(kind + ":" + key))
-            Report(ExternalImportSeverity.Error, "key.duplicate", $"Duplicate {kind} key: {key}");
-        int existing = Outputs.FindIndex(output => string.Equals(output.Artifact.OutputPath, outputPath, StringComparison.OrdinalIgnoreCase));
-        if (groupDefinitions && existing >= 0 && Outputs[existing].Artifact.Kind == kind)
-        {
-            var document = JObject.Parse(Encoding.UTF8.GetString(Outputs[existing].Content));
-            var members = (JArray)document["Definitions"]!;
-            foreach (var member in (JArray)JObject.Parse(Encoding.UTF8.GetString(content))["Definitions"]!) members.Add(member);
-            Outputs[existing] = (Outputs[existing].Artifact, Encoding.UTF8.GetBytes(document.ToString()));
-            return;
-        }
-        Outputs.Add((new(kind, outputPath, key), content));
+        ArgumentNullException.ThrowIfNull(definition);
+        definition.Source = SpriteDefinitionSource.Generated();
+        AddNative(filename, "GSPR", definition, member => member.Key,
+            members => SpriteDefinitionSerializer.ValidateDocument(new() { Definitions = members }),
+            members => SpriteDefinitionSerializer.ToDocumentJson(new() { Definitions = members }));
     }
 
-    internal ExternalImportAnalysis Analyze(string providerId)
+    /// <summary>Adds a typed member to the document at the provider-chosen filename.</summary>
+    /// <param name="filename">The output filename; matching filenames and types form one document.</param>
+    /// <param name="definition">The generated member. The plan owns it until analysis completes.</param>
+    public void Add(string filename, AudioDefinition definition)
+    {
+        ArgumentNullException.ThrowIfNull(definition);
+        definition.Source = AudioDefinitionSource.Generated();
+        AddNative(filename, "GSND", definition, member => member.Key,
+            members => AudioDefinitionSerializer.ValidateDocument(new() { Definitions = members }),
+            members => AudioDefinitionSerializer.ToDocumentJson(new() { Definitions = members }));
+    }
+
+    /// <summary>Adds a raw artifact without native-document grouping or serialization.</summary>
+    /// <param name="filename">The output filename.</param>
+    /// <param name="kind">The artifact kind.</param>
+    /// <param name="key">An optional legacy logical key.</param>
+    /// <param name="content">The raw output bytes.</param>
+    public void Add(string filename, string kind, string? key, byte[] content) =>
+        _planned.Add(new RawOutput(OutputPath(filename), kind, key, content));
+
+    private string OutputPath(string filename)
+    {
+        if (string.IsNullOrWhiteSpace(filename) || filename != Path.GetFileName(filename) || filename is "." or "..")
+            throw new InvalidDataException("Generated output must be a filename within the output directory.");
+        return Path.Combine(Path.GetFullPath(Request.OutputDirectory), filename);
+    }
+
+    private void AddNative<T>(string filename, string kind, T definition, Func<T, string> identity,
+        Func<List<T>, IReadOnlyList<string>> validate, Func<List<T>, string> serialize)
+    {
+        var path = OutputPath(filename);
+        var group = _planned.OfType<NativeOutput<T>>().FirstOrDefault(output =>
+            string.Equals(output.Path, path, StringComparison.OrdinalIgnoreCase));
+        if (group is null)
+        {
+            group = new NativeOutput<T>(path, kind, identity, validate, serialize);
+            _planned.Add(group);
+        }
+        group.Members.Add(definition);
+    }
+
+    private abstract class PlannedOutput(string path, string kind)
+    {
+        /// <summary>Gets the physical output path.</summary>
+        public string Path { get; } = path;
+        /// <summary>Gets the native format or raw artifact kind.</summary>
+        public string Kind { get; } = kind;
+        /// <summary>Gets all logical identities in member order.</summary>
+        public abstract IReadOnlyList<string> Identities { get; }
+        /// <summary>Validates the complete output.</summary>
+        /// <returns>Validation diagnostics.</returns>
+        public abstract IReadOnlyList<string> Validate();
+        /// <summary>Serializes the completed output once.</summary>
+        /// <returns>The bytes to stage.</returns>
+        public abstract byte[] Serialize();
+    }
+
+    private sealed class RawOutput(string path, string kind, string? key, byte[] content) : PlannedOutput(path, kind)
+    {
+        /// <inheritdoc/>
+        public override IReadOnlyList<string> Identities => key is null ? [] : [key];
+        /// <inheritdoc/>
+        public override IReadOnlyList<string> Validate() => [];
+        /// <inheritdoc/>
+        public override byte[] Serialize() => content;
+    }
+
+    private sealed class NativeOutput<T>(string path, string kind, Func<T, string> identity,
+        Func<List<T>, IReadOnlyList<string>> validate, Func<List<T>, string> serialize) : PlannedOutput(path, kind)
+    {
+        /// <summary>Gets the provider-owned typed members.</summary>
+        public List<T> Members { get; } = [];
+        /// <inheritdoc/>
+        public override IReadOnlyList<string> Identities => Members.Select(identity).ToArray();
+        /// <inheritdoc/>
+        public override IReadOnlyList<string> Validate() => validate(Members);
+        /// <inheritdoc/>
+        public override byte[] Serialize() => Encoding.UTF8.GetBytes(serialize(Members));
+    }
+
+    /// <summary>Validates completed documents and produces immutable output byte snapshots.</summary>
+    /// <param name="providerId">The provider identifier.</param>
+    /// <param name="token">The cancellation token.</param>
+    /// <returns>Physical output and logical member analysis.</returns>
+    internal ExternalImportAnalysis Analyze(string providerId, CancellationToken token)
     {
         var paths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var (artifact, _) in Outputs)
+        var keys = new HashSet<string>(StringComparer.Ordinal);
+        Outputs.Clear();
+        foreach (var output in _planned)
         {
+            token.ThrowIfCancellationRequested();
+            var identities = Array.AsReadOnly(output.Identities.ToArray());
+            var artifact = new ExternalImportArtifact(output.Kind, output.Path, identities.FirstOrDefault()) { LogicalKeys = identities };
+            byte[] content = [];
+            try
+            {
+                var errors = output.Validate();
+                foreach (var error in errors) Report(ExternalImportSeverity.Error, "native.validation", $"{output.Path}: {error}");
+                if (errors.Count == 0) content = output.Serialize();
+            }
+            catch (Exception ex) when (ex is InvalidDataException or ArgumentException or Newtonsoft.Json.JsonException)
+            {
+                Report(ExternalImportSeverity.Error, "native.validation", $"{output.Path}: {ex.Message}");
+            }
+            Outputs.Add((artifact, content));
             if (!paths.Add(artifact.OutputPath)) Report(ExternalImportSeverity.Error, "output.duplicate", $"Duplicate output: {artifact.OutputPath}");
-            if (artifact.LogicalKey is { } key && !keys.Add(artifact.Kind + ":" + key))
-                Report(ExternalImportSeverity.Error, "key.duplicate", $"Duplicate {artifact.Kind} key: {key}");
+            foreach (var key in artifact.LogicalKeys)
+                if (!keys.Add(artifact.Kind + ":" + key))
+                    Report(ExternalImportSeverity.Error, "key.duplicate", $"{artifact.OutputPath}: Duplicate {artifact.Kind} key: {key}");
             if (Directory.Exists(artifact.OutputPath) || (File.Exists(artifact.OutputPath) && !Request.Overwrite))
                 Report(ExternalImportSeverity.Error, "output.exists", $"Output already exists: {artifact.OutputPath}. Enable overwrite to replace generated files.");
             if (Dependencies.Append(Path.GetFullPath(Request.SourcePath)).Any(p => string.Equals(Path.GetFullPath(p), artifact.OutputPath, StringComparison.OrdinalIgnoreCase)))
@@ -117,19 +201,20 @@ public sealed class ImportPlan(ExternalImportRequest request)
         }
         foreach (var dependency in Dependencies.Distinct(StringComparer.OrdinalIgnoreCase))
             if (!File.Exists(dependency)) Report(ExternalImportSeverity.Error, "dependency.missing", $"Missing source dependency: {dependency}");
-        CheckExistingKeys();
+        CheckExistingKeys(keys, token);
+        token.ThrowIfCancellationRequested();
         return new(providerId, Dependencies.Distinct(StringComparer.OrdinalIgnoreCase).ToArray(), Outputs.Select(x => x.Artifact).ToArray(), Diagnostics.ToArray());
     }
 
-    private void CheckExistingKeys()
+    private void CheckExistingKeys(HashSet<string> plannedKeys, CancellationToken token)
     {
         if (!Directory.Exists(Request.OutputDirectory)) return;
         var plannedPaths = Outputs.Select(o => o.Artifact.OutputPath).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        var plannedKeys = _logicalKeys;
         try
         {
             foreach (string file in Directory.EnumerateFiles(Request.OutputDirectory).OrderBy(p => p, StringComparer.Ordinal))
             {
+                token.ThrowIfCancellationRequested();
                 if (plannedPaths.Contains(Path.GetFullPath(file))) continue;
                 IEnumerable<string> existingKeys;
                 try
@@ -139,6 +224,8 @@ public sealed class ImportPlan(ExternalImportRequest request)
                         ".gts" => TilesheetDefinitionSerializer.LoadAll(file).Select(member => "GTS:" + member.Name),
                         ".gani" => AnimationDefinitionSerializer.LoadAll(file).Select(member => "GANI:" + member.Key),
                         ".gscn" => SceneDefinitionSerializer.LoadAll(file).Select(member => "GSCN:" + member.ID),
+                        ".gspr" => SpriteDefinitionSerializer.LoadAll(file).Select(member => "GSPR:" + member.Key),
+                        ".gsnd" => AudioDefinitionSerializer.LoadAll(file).Select(member => "GSND:" + member.Key),
                         _ => []
                     };
                 }
@@ -201,7 +288,7 @@ public abstract class ExternalAssetImporter : IExternalAssetImporter
         {
             plan.Report(ExternalImportSeverity.Error, "source.invalid", ex.Message);
         }
-        return (plan, plan.Analyze(Id));
+        return (plan, plan.Analyze(Id, token));
     }
 
     /// <summary>

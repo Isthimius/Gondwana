@@ -40,6 +40,10 @@ public sealed class GodotImportTests : IDisposable
             0:0/animation_speed = 2.0
             0:0/animation_frame_0/duration = 1.0
             0:0/animation_frame_1/duration = 3.0
+            1:0/0 = 0
+            1:0/animation_speed = 2.0
+            1:0/animation_frame_0/duration = 1.0
+            1:0/animation_frame_1/duration = 3.0
             metadata/new_field = {"unknown": [1, 2, 3]}
             """;
         string text = "[gd_resource type=\"TileSet\" format=3]\n[ext_resource type=\"Texture2D\" path=\"res://atlas.png\" id=\"1\"]\n" +
@@ -53,8 +57,11 @@ public sealed class GodotImportTests : IDisposable
         var result = new GodotTilesetImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
         Assert.Equal(multiple ? 4 : 2, result.WrittenFiles.Count);
-        string file = multiple ? "terrain-source-2-tile-0-0.gani" : "terrain-tile-0-0.gani";
-        var gani = AnimationDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, file));
+        string file = multiple ? "terrain-source-2-animations.gani" : "terrain-animations.gani";
+        var members = AnimationDefinitionSerializer.LoadAll(Path.Combine(request.OutputDirectory, file));
+        Assert.Equal(2, members.Count);
+        Assert.Equal(members.Select(member => member.Key), result.Analysis.Artifacts.Single(artifact => Path.GetFileName(artifact.OutputPath) == file).LogicalKeys);
+        var gani = members[0];
         Assert.Equal(new double?[] { 0.5, 1.5 }, gani.Frames.Select(f => f.DurationSeconds));
         Assert.Equal(new[] { 0, 1 }, gani.Frames.Select(f => f.XTile));
         Assert.Empty(AnimationDefinitionValidator.Validate(gani));
@@ -107,7 +114,7 @@ public sealed class GodotImportTests : IDisposable
         File.WriteAllText(source, File.ReadAllText(source).Replace("duration = 3.0", "duration = 1.0"));
         var request = new ExternalImportRequest(source, Path.Combine(directory, "output"), true);
         Assert.True(new GodotTilesetImporter().Import(request).Analysis.CanImport);
-        Assert.All(AnimationDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain-tile-0-0.gani")).Frames, f => Assert.Equal(0.5, f.DurationSeconds));
+        Assert.All(AnimationDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain-animations.gani"), "terrain.tile.0.0").Frames, f => Assert.Equal(0.5, f.DurationSeconds));
         File.Delete(Path.Combine(directory, "project.godot"));
         var analysis = new GodotTilesetImporter().Analyze(request);
         Assert.False(analysis.CanImport);

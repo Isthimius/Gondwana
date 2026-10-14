@@ -43,8 +43,13 @@ public sealed record ExternalImportRequest(
 /// </summary>
 /// <param name="Kind">The kind.</param>
 /// <param name="OutputPath">The output path.</param>
-/// <param name="LogicalKey">The logical key.</param>
-public sealed record ExternalImportArtifact(string Kind, string OutputPath, string? LogicalKey);
+/// <param name="LogicalKey">The first logical member identity for legacy callers, or null for an unkeyed artifact.</param>
+public sealed record ExternalImportArtifact(string Kind, string OutputPath, string? LogicalKey)
+{
+    /// <summary>Gets every logical member identity in document order, independently of the physical output path.</summary>
+    /// <remarks>Legacy construction defaults to the single LogicalKey, when supplied.</remarks>
+    public IReadOnlyList<string> LogicalKeys { get; init; } = LogicalKey is null ? [] : [LogicalKey];
+}
 
 /// <summary>
 /// Represents external import analysis.

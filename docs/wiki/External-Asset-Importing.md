@@ -11,7 +11,7 @@ Godot, Tiled and Aseprite do not need to be installed.
 Build the External Import plugin, start Studio, and use its **External Asset
 Importer** panel (recover hidden panels through **View**). Choose Auto-detect or
 a format, a source file, and an output directory. The directory defaults to the
-current Studio working directory. **Analyze** lists proposed files and diagnostics
+current Studio working directory. **Analyze** lists proposed files, their logical member identities, and diagnostics
 without writing anything. **Import** is enabled only after successful analysis.
 Changing inputs invalidates the analysis. Work runs in a cancellable background
 task; completion is presented on Studio's UI thread.
@@ -64,7 +64,7 @@ Multiple IDs produce `terrain-tile-0.gts`, `terrain-tile-3.gts`, with logical na
 override these deterministic names.
 
 TSX uses its sanitized tileset name as the logical name and source basename for
-files; animated tile 17 produces `terrain-tile-17.gani` and `terrain.tile.17`.
+files; animated tiles share `terrain-animations.gani`, with keys such as `terrain.tile.17`.
 Embedded TMX tilesets use map basename plus firstgid for filenames.
 
 Definition dependencies use paths relative to the output directory whenever
@@ -73,6 +73,16 @@ keep or copy those images when moving imported content. No staging paths are
 serialized. Godot `res://` paths resolve from the nearest ancestor containing
 `project.godot`; an absent project root produces an actionable error.
 
+## Generated documents and grouping
+
+A physical native output file contains a `Definitions` document. Each member has its own logical identity (`Name` for GTS, `Key` for GANI/GSPR/GSND, and `ID` for GSCN). The Studio preview lists all identities beside the single output path. The shared pipeline collects typed members, validates complete documents using the core serializers, and serializes each document once before transactional staging.
+
+Grouping is chosen by each provider's output filenames. Aseprite groups tags from a sprite into one GANI document. Tiled groups tile animations from a tileset into `<tileset-basename>-animations.gani`; TMX scene references retain each animation key while sharing that path. Godot 4 groups animations per atlas source into `<source-basename>-animations.gani`. Existing GTS outputs remain per atlas/texture or Godot tile/source, and TMX produces one GSCN per map. The pipeline also accepts grouped GSPR, GSND, and scene or tilesheet collections from providers; the current external converters do not invent sprite, audio, or scene-collection features.
+
+The plan assigns generated-source provenance to all native members and retains each serializer's existing persistence rules (GSPR and GSND load provenance is not serialized). Cross-definition references retain logical selectors and output-relative paths. Duplicate identities within or across generated documents of the same type are errors, as are conflicts with any member of other native documents directly in the output directory.
+
+External conversion creates complete output documents. Overwrite replaces a destination file in full; it never appends to an existing `Definitions` collection. Use an editor's **Import definition…** command to combine existing native definitions interactively. External conversion does not relocate existing referenced resources or change GAF packaging.
+
 ## Aseprite layout and playback
 
 Every rendered frame retains the full canvas size. The atlas uses deterministic
@@ -80,7 +90,7 @@ rows bounded to approximately 4096 pixels; each populated row gets a GTS region,
 so an incomplete final row introduces no phantom frames. Total decoded canvas
 pixels are limited to 64 million and atlas dimensions to 16384 pixels.
 
-Tags produce sanitized GANI filenames/keys. Forward and reverse loops use
+Tags produce sanitized animation keys in one `<sprite-basename>.gani` document. Forward and reverse loops use
 Repeating; ping-pong and reverse ping-pong use PingPong with the appropriate
 sequence order. Positive repeat counts expand to a finite Simple sequence (up to
 100000 frame occurrences); ping-pong repeats count directional passes. Untagged

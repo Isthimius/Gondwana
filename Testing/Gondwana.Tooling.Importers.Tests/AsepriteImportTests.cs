@@ -103,6 +103,7 @@ public sealed class AsepriteImportTests
             var path = Assert.Single(Directory.GetFiles(request.OutputDirectory, "*.gani"));
             var members = AnimationDefinitionSerializer.LoadAll(path);
             Assert.Equal(2, members.Count);
+            Assert.Equal(members.Select(member => member.Key), Assert.Single(result.Analysis.Artifacts, artifact => artifact.Kind == "GANI").LogicalKeys);
             Assert.Equal(2, members.Select(member => member.Key).Distinct().Count());
             Assert.All(members, member => Assert.Empty(AnimationDefinitionValidator.Validate(member)));
         }

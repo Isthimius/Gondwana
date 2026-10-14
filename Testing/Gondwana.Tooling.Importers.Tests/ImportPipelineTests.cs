@@ -6,7 +6,7 @@ namespace Gondwana.Tooling.Importers.Tests;
 /// <summary>
 /// Contains regression tests for import pipeline.
 /// </summary>
-public sealed class ImportPipelineTests : IDisposable
+public sealed partial class ImportPipelineTests : IDisposable
 {
     private readonly string directory = Path.Combine(Path.GetTempPath(), "ImportPipeline-" + Guid.NewGuid().ToString("N"));
     private readonly ExternalImportRequest request;
