@@ -1,3 +1,4 @@
+using Gondwana.Tooling.Editing;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Animation.GANI;
 
@@ -313,6 +314,34 @@ public sealed class AnimationDocument
             throw new InvalidDataException($"Duplicate definition identity '{identity}'.");
         Definition.Key = identity;
         MarkChanged();
+    }
+
+    /// <summary>Imports selected members without replacing existing definitions or copying resources.</summary>
+    /// <param name="path">A same-format source file; legacy singletons are supported.</param>
+    /// <param name="select">Selects source indices. Omit to import all; return null or an empty list to cancel.</param>
+    /// <returns>The number imported. The first imported member becomes selected.</returns>
+    public int ImportDefinitions(string path, Func<IReadOnlyList<AnimationDefinition>, IReadOnlyList<int>?>? select = null)
+    {
+        path = Path.GetFullPath(path);
+        if (!string.Equals(Path.GetExtension(path), ".gani", StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException("Choose a .gani definition document.", nameof(path));
+        var sourceDirectory = Path.GetDirectoryName(path)!;
+        string? Rebase(string? value) => DefinitionImport.Rebase(value, sourceDirectory, BaseDirectory);
+        var imported = DefinitionImport.Prepare(path, Definitions, AnimationDefinitionSerializer.LoadAll, select, member =>
+        {
+            var clone = AnimationDefinitionSerializer.FromJson(AnimationDefinitionSerializer.ToJson(member));
+            foreach (var source in clone.TilesheetSources ?? [])
+            {
+                source.GtsPath = Rebase(source.GtsPath);
+                source.AssetsFilePath = Rebase(source.AssetsFilePath);
+            }
+            return clone;
+        }, member => member.Key, (member, identity) => member.Key = identity, "animation");
+        if (imported.Count == 0) return 0;
+        _definitions.AddRange(imported);
+        Definition = imported[0];
+        MarkChanged();
+        return imported.Count;
     }
 
     private string UniqueDefinitionIdentity(string basis)

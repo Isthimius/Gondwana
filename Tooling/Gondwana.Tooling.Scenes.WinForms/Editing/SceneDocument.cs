@@ -1,3 +1,4 @@
+using Gondwana.Tooling.Editing;
 using Gondwana.Scenes.GSCN;
 
 namespace Gondwana.Tooling.Scenes.Editing;
@@ -443,6 +444,39 @@ public sealed class SceneDocument
             throw new InvalidDataException($"Duplicate definition identity '{identity}'.");
         Definition.ID = identity;
         MarkChanged();
+    }
+
+    /// <summary>Imports selected members without replacing existing definitions or copying resources.</summary>
+    /// <param name="path">A same-format source file; legacy singletons are supported.</param>
+    /// <param name="select">Selects source indices. Omit to import all; return null or an empty list to cancel.</param>
+    /// <returns>The number imported. The first imported member becomes selected.</returns>
+    public int ImportDefinitions(string path, Func<IReadOnlyList<SceneDefinition>, IReadOnlyList<int>?>? select = null)
+    {
+        path = Path.GetFullPath(path);
+        if (!string.Equals(Path.GetExtension(path), ".gscn", StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException("Choose a .gscn definition document.", nameof(path));
+        var sourceDirectory = Path.GetDirectoryName(path)!;
+        string? Rebase(string? value) => DefinitionImport.Rebase(value, sourceDirectory, BaseDirectory);
+        var imported = DefinitionImport.Prepare(path, Definitions, SceneDefinitionSerializer.LoadAll, select, member =>
+        {
+            var clone = SceneDefinitionSerializer.FromJson(SceneDefinitionSerializer.ToJson(member));
+            foreach (var source in clone.TilesheetSources ?? [])
+            {
+                source.GtsPath = Rebase(source.GtsPath);
+                source.AssetsFilePath = Rebase(source.AssetsFilePath);
+            }
+            foreach (var source in clone.AnimationSources ?? [])
+            {
+                source.GaniPath = Rebase(source.GaniPath);
+                source.AssetsFilePath = Rebase(source.AssetsFilePath);
+            }
+            return clone;
+        }, member => member.ID, (member, identity) => member.ID = identity, "scene");
+        if (imported.Count == 0) return 0;
+        _definitions.AddRange(imported);
+        Definition = imported[0];
+        MarkChanged();
+        return imported.Count;
     }
 
     private string UniqueDefinitionIdentity(string basis)

@@ -165,7 +165,7 @@ public sealed class SceneEditorControl : UserControl
                 foreach (var source in _animationSources) source.Dispose();
                 _tilesheetSources.Clear(); _animationSources.Clear(); _sourceDiagnostics.Clear();
                 LoadDeclaredSources(); RefreshView();
-            });
+            }, "gscn", (path, select) => Document.ImportDefinitions(path, select));
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;

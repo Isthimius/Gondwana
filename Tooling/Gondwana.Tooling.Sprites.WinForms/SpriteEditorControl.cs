@@ -94,7 +94,7 @@ public sealed class SpriteEditorControl : UserControl
                 _sources.Clear(); _sceneDefinitions.Clear(); _sourceWarnings.Clear();
                 _loadedScenePaths.Clear(); _loadedTilesheetPaths.Clear(); _scenes.Nodes.Clear(); _frames.Nodes.Clear();
                 LoadSources(); RefreshEntries();
-            });
+            }, "gspr", (path, select) => Document.ImportDefinitions(path, select));
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;

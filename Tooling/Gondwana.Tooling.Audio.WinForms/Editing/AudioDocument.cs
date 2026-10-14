@@ -1,3 +1,4 @@
+using Gondwana.Tooling.Editing;
 using Gondwana.Audio.GSND;
 
 namespace Gondwana.Tooling.Audio.Editing;
@@ -298,6 +299,34 @@ public sealed class AudioDocument
             throw new InvalidDataException($"Duplicate definition identity '{identity}'.");
         Definition.Key = identity;
         MarkChanged();
+    }
+
+    /// <summary>Imports selected members without replacing existing definitions or copying resources.</summary>
+    /// <param name="path">A same-format source file; legacy singletons are supported.</param>
+    /// <param name="select">Selects source indices. Omit to import all; return null or an empty list to cancel.</param>
+    /// <returns>The number imported. The first imported member becomes selected.</returns>
+    public int ImportDefinitions(string path, Func<IReadOnlyList<AudioDefinition>, IReadOnlyList<int>?>? select = null)
+    {
+        path = Path.GetFullPath(path);
+        if (!string.Equals(Path.GetExtension(path), ".gsnd", StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException("Choose a .gsnd definition document.", nameof(path));
+        var sourceDirectory = Path.GetDirectoryName(path)!;
+        string? Rebase(string? value) => DefinitionImport.Rebase(value, sourceDirectory, BaseDirectory);
+        var imported = DefinitionImport.Prepare(path, Definitions, AudioDefinitionSerializer.LoadAll, select, member =>
+        {
+            var clone = AudioDefinitionSerializer.FromJson(AudioDefinitionSerializer.ToJson(member));
+            foreach (var resource in clone.Resources ?? [])
+            {
+                resource.FilePath = Rebase(resource.FilePath);
+                resource.AssetsFilePath = Rebase(resource.AssetsFilePath);
+            }
+            return clone;
+        }, member => member.Key, (member, identity) => member.Key = identity, "audio");
+        if (imported.Count == 0) return 0;
+        _definitions.AddRange(imported);
+        Definition = imported[0];
+        MarkChanged();
+        return imported.Count;
     }
 
     private string UniqueDefinitionIdentity(string basis)

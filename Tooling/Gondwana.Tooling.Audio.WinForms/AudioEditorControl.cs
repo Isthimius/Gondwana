@@ -87,7 +87,7 @@ public sealed class AudioEditorControl : UserControl
         var definitionBar = new DefinitionSelectionBar<AudioDefinition>(
             () => Document.Definitions, () => Document.SelectedDefinition, definition => definition.Key,
             Document.SelectDefinition, () => Document.AddDefinition(), () => Document.DuplicateDefinition(),
-            () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, RefreshView);
+            () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, RefreshView, "gsnd", (path, select) => Document.ImportDefinitions(path, select));
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;

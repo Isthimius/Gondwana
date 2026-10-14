@@ -1,3 +1,4 @@
+using Gondwana.Tooling.Editing;
 using Gondwana.Drawing.Sprites.GSPR;
 
 namespace Gondwana.Tooling.Sprites.Editing;
@@ -259,6 +260,39 @@ public sealed class SpriteDocument
             throw new InvalidDataException($"Duplicate definition identity '{identity}'.");
         Definition.Key = identity;
         MarkChanged();
+    }
+
+    /// <summary>Imports selected members without replacing existing definitions or copying resources.</summary>
+    /// <param name="path">A same-format source file; legacy singletons are supported.</param>
+    /// <param name="select">Selects source indices. Omit to import all; return null or an empty list to cancel.</param>
+    /// <returns>The number imported. The first imported member becomes selected.</returns>
+    public int ImportDefinitions(string path, Func<IReadOnlyList<SpriteDefinition>, IReadOnlyList<int>?>? select = null)
+    {
+        path = Path.GetFullPath(path);
+        if (!string.Equals(Path.GetExtension(path), ".gspr", StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException("Choose a .gspr definition document.", nameof(path));
+        var sourceDirectory = Path.GetDirectoryName(path)!;
+        string? Rebase(string? value) => DefinitionImport.Rebase(value, sourceDirectory, BaseDirectory);
+        var imported = DefinitionImport.Prepare(path, Definitions, SpriteDefinitionSerializer.LoadAll, select, member =>
+        {
+            var clone = SpriteDefinitionSerializer.FromJson(SpriteDefinitionSerializer.ToJson(member));
+            foreach (var source in clone.TilesheetSources ?? [])
+            {
+                source.GtsPath = Rebase(source.GtsPath);
+                source.AssetsFilePath = Rebase(source.AssetsFilePath);
+            }
+            foreach (var source in clone.SceneSources ?? [])
+            {
+                source.GscnPath = Rebase(source.GscnPath);
+                source.AssetsFilePath = Rebase(source.AssetsFilePath);
+            }
+            return clone;
+        }, member => member.Key, (member, identity) => member.Key = identity, "sprites");
+        if (imported.Count == 0) return 0;
+        _definitions.AddRange(imported);
+        Definition = imported[0];
+        MarkChanged();
+        return imported.Count;
     }
 
     private string UniqueDefinitionIdentity(string basis)

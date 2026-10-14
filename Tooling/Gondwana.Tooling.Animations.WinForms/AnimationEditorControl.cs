@@ -210,7 +210,7 @@ public sealed class AnimationEditorControl : UserControl
                 _sources.Clear();
                 LoadDefinitionTilesheetSources();
                 RefreshView();
-            });
+            }, "gani", (path, select) => Document.ImportDefinitions(path, select));
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
