@@ -1,6 +1,6 @@
-using Gondwana.Tooling.Editing;
 using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Animation.GANI;
+using Gondwana.Tooling.Editing;
 
 namespace Gondwana.Tooling.Animations.Editing;
 

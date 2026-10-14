@@ -440,24 +440,4 @@ public static partial class SceneDefinitionSerializer
             definition.XTile,
             definition.YTile);
     }
-
-    private static void ApplyDefaultSource(
-        SceneDefinition definition,
-        SceneDefinitionSource source)
-    {
-        if (definition.Source.Kind == SceneDefinitionSourceKind.None)
-            definition.Source = source;
-    }
-
-    private static SceneDefinition CreateDefinitionForSaving(
-        SceneDefinition definition,
-        string fullPath)
-    {
-        if (definition.Source.Kind != SceneDefinitionSourceKind.None)
-            return definition;
-
-        var clone = FromJson(ToJson(definition));
-        clone.Source = SceneDefinitionSource.LooseDefinitionFile(fullPath);
-        return clone;
-    }
 }

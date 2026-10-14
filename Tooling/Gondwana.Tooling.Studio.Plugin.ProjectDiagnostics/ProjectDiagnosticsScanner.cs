@@ -77,7 +77,7 @@ public sealed class ProjectDiagnosticsScanner
         var references = new List<DefinitionReference>();
         var format = Path.GetExtension(path).ToLowerInvariant();
         var loaded = false;
-        var member = string.Empty;
+        string? member;
         try
         {
             switch (format)

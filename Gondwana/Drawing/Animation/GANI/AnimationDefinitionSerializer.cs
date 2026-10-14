@@ -325,24 +325,4 @@ public static partial class AnimationDefinitionSerializer
             definition.XTile,
             definition.YTile);
     }
-
-    private static void ApplyDefaultSource(
-        AnimationDefinition definition,
-        AnimationDefinitionSource source)
-    {
-        if (definition.Source.Kind == AnimationDefinitionSourceKind.None)
-            definition.Source = source;
-    }
-
-    private static AnimationDefinition CreateDefinitionForSaving(
-        AnimationDefinition definition,
-        string fullPath)
-    {
-        if (definition.Source.Kind != AnimationDefinitionSourceKind.None)
-            return definition;
-
-        var clone = FromJson(ToJson(definition));
-        clone.Source = AnimationDefinitionSource.LooseDefinitionFile(fullPath);
-        return clone;
-    }
 }

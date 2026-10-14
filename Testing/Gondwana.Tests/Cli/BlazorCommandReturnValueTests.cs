@@ -1,10 +1,7 @@
 using System.IO.Compression;
-using System.Text.RegularExpressions;
-using System.Diagnostics;
 using Gondwana.Cli.Commands;
 using Gondwana.Cli.Commands.Deploy;
 using Gondwana.Cli.Commands.Publish;
-using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace Gondwana.Tests.Cli;

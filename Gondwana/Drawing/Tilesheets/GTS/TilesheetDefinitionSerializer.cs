@@ -317,18 +317,6 @@ public static partial class TilesheetDefinitionSerializer
             definition.Source = source;
     }
 
-    private static TilesheetDefinition CreateDefinitionForSaving(
-        TilesheetDefinition definition,
-        string fullPath)
-    {
-        if (definition.Source.Kind != TilesheetDefinitionSourceKind.None)
-            return definition;
-
-        var clone = FromJson(ToJson(definition));
-        clone.Source = TilesheetDefinitionSource.LooseDefinitionFile(fullPath);
-        return clone;
-    }
-
     private static string NormalizePath(
         string path,
         string? baseDirectory,

@@ -1,5 +1,5 @@
-using Gondwana.Tooling.Editing;
 using Gondwana.Drawing.Sprites.GSPR;
+using Gondwana.Tooling.Editing;
 
 namespace Gondwana.Tooling.Sprites.Editing;
 

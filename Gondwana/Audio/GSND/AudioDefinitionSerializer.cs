@@ -342,14 +342,6 @@ public static partial class AudioDefinitionSerializer
         }
     }
 
-    private static void ApplyDefaultSource(
-        AudioDefinition definition,
-        AudioDefinitionSource source)
-    {
-        if (definition.Source.Kind == AudioDefinitionSourceKind.None)
-            definition.Source = source;
-    }
-
     private static string? GetReferenceBaseDirectory(AudioDefinitionSource source)
     {
         return source.Kind switch
