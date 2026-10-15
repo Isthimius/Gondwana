@@ -5,6 +5,7 @@ using Spectre.Console.Cli;
 
 namespace Gondwana.Cli.Commands.Assets;
 
+/// <summary>Exports complete native documents with references rebased to their loose destinations.</summary>
 internal sealed class AssetsExtractCommand : Command<AssetsExtractCommand.Settings>
 {
     /// <summary>
@@ -32,6 +33,11 @@ internal sealed class AssetsExtractCommand : Command<AssetsExtractCommand.Settin
         [CommandOption("-t|--type")]
         [Description("Extract only assets of the specified type (e.g. Image, Audio, Svg).")]
         public string? TypeFilter { get; init; }
+
+        /// <summary>Gets the exact entry name to export, optionally qualified by type.</summary>
+        [CommandOption("--entry")]
+        [Description("Export one exact entry name. Use --type when the name occurs in multiple asset types.")]
+        public string? Entry { get; init; }
 
         /// <summary>
         /// Gets or sets whether overwrite is enabled.
@@ -61,7 +67,7 @@ internal sealed class AssetsExtractCommand : Command<AssetsExtractCommand.Settin
                     throw new ArgumentException("Unknown asset type: " + settings.TypeFilter);
                 type = parsed;
             }
-            var count = BundleHelper.Extract(settings.File, settings.Output, settings.Password, type, settings.Overwrite);
+            var count = SemanticUnpackPlan.Create(settings.File, settings.Output, settings.Password, type, settings.Entry, settings.Overwrite, cancellationToken).Commit();
             AnsiConsole.WriteLine($"Extracted {count} asset(s) to {Path.GetFullPath(settings.Output)}.");
             return 0;
         }

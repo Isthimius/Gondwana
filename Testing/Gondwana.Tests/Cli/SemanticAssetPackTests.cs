@@ -19,7 +19,7 @@ namespace Gondwana.Tests.Cli;
 
 /// <summary>Tests semantic packing through the CLI and Core after removing loose sources.</summary>
 [Collection("Global engine state")]
-public sealed class SemanticAssetPackTests : IDisposable
+public sealed partial class SemanticAssetPackTests : IDisposable
 {
     private readonly string _root = Path.Combine(Path.GetTempPath(), "SemanticPack-" + Guid.NewGuid());
     private string Source => Path.Combine(_root, "source");
@@ -51,6 +51,8 @@ public sealed class SemanticAssetPackTests : IDisposable
         var app = new CommandApp();
         app.Configure(config =>
         {
+            config.AddCommand<AssetsExtractCommand>("unpack");
+            config.AddCommand<AssetsExtractCommand>("extract");
             config.AddCommand<AssetsPackCommand>("pack");
             config.AddBranch("assets", branch => branch.AddCommand<AssetsPackCommand>("pack"));
         });
@@ -490,10 +492,12 @@ public sealed class SemanticAssetPackTests : IDisposable
         public string Name => "Semantic pack test";
         /// <summary>Gets the media bytes supplied by Core.</summary>
         public List<byte[]> Loaded { get; } = [];
+        /// <summary>Gets the format hints passed to the backend.</summary>
+        public List<string> Formats { get; } = [];
         /// <inheritdoc/>
         public IAudioPlaybackHandle CreateFromUri(string key, string uri, float volume, float pan, float playbackSpeed) => new Handle();
         /// <inheritdoc/>
-        public IAudioPlaybackHandle CreateFromBytes(string key, byte[] data, string fileNameOrExtension, float volume, float pan, float playbackSpeed) { Loaded.Add(data); return new Handle(); }
+        public IAudioPlaybackHandle CreateFromBytes(string key, byte[] data, string fileNameOrExtension, float volume, float pan, float playbackSpeed) { Loaded.Add(data); Formats.Add(fileNameOrExtension); return new Handle(); }
     }
 
     private sealed class Handle : IAudioPlaybackHandle

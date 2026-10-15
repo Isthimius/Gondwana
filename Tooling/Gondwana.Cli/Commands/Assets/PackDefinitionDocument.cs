@@ -80,6 +80,7 @@ internal sealed class PackDefinitionDocument
             AudioDefinitionDocument document => DefinitionReferenceRelocator.Relocate(document, source, destination, mappings),
             _ => throw new InvalidOperationException("Unknown native document.")
         };
+        Validate(destination.ToString());
         var json = _document switch
         {
             TilesheetDefinitionDocument document => TilesheetDefinitionSerializer.ToDocumentJson(document),
