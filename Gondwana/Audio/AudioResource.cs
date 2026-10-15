@@ -239,6 +239,15 @@ public class AudioResource : IDisposable
     /// </summary>
     public void Stop() => Playback.Stop();
 
+    /// <summary>Retains the actual loose source separately from a backend media format hint.</summary>
+    /// <param name="filePath">The loose resource path.</param>
+    internal void SetSourceFilePath(string filePath)
+    {
+        SourceFilePath = filePath;
+        AssetIdentifier = null;
+        SourceUri = null;
+    }
+
     internal void SetSourceUri(string uri)
     {
         SourceUri = uri;
@@ -291,7 +300,7 @@ public class AudioResource : IDisposable
         }
         else if (!string.IsNullOrWhiteSpace(SourceFilePath))
         {
-            loaded = manager.LoadFromFile(Key, SourceFilePath, Volume, Pan, PlaybackSpeed);
+            loaded = manager.LoadFromFile(Key, SourceFilePath, SourceExtension, Volume, Pan, PlaybackSpeed);
         }
         else if (!string.IsNullOrWhiteSpace(SourceUri))
         {

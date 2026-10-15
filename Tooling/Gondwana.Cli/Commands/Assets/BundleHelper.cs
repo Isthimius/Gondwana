@@ -57,7 +57,7 @@ internal static class BundleHelper
     }
 
     /// <summary>
-    /// Extracts matching asset entries into the output directory.
+    /// Semantically exports matching entries, with staged writes and rollback of replaced files.
     /// </summary>
     /// <param name="path">The path.</param>
     /// <param name="output">The output.</param>
@@ -67,34 +67,7 @@ internal static class BundleHelper
     /// <returns>The number of entries extracted.</returns>
     public static int Extract(string path, string output, string? password, AssetTypes? type, bool overwrite)
     {
-        using var bundle = Open(path, password);
-        var entries = bundle.GetAllEntries().Where(e => type is null || e.AssetType == type).OrderBy(e => e.AssetName, StringComparer.Ordinal).ToArray();
-        var targets = entries.Select(e => SafeFilePath.Resolve(output, e.AssetName)).ToArray();
-        if (targets.Distinct(StringComparer.OrdinalIgnoreCase).Count() != targets.Length)
-            throw new InvalidDataException("Multiple asset types map to the same output filename. Extract one --type at a time.");
-        foreach (var target in targets)
-        {
-            if (Directory.Exists(target)) throw new IOException($"Destination is a directory: {target}");
-            if (File.Exists(target) && !overwrite) throw new IOException($"File exists: {target}. Use --overwrite to replace it.");
-            for (var parent = Path.GetDirectoryName(target); parent is not null; parent = Path.GetDirectoryName(parent))
-            {
-                if (File.Exists(parent)) throw new IOException($"Destination parent is a file: {parent}");
-                if (string.Equals(parent, Path.GetFullPath(output), StringComparison.OrdinalIgnoreCase)) break;
-            }
-            if (targets.Any(other => other.StartsWith(target + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)))
-                throw new InvalidDataException($"Bundle contains a file/directory name collision: {target}");
-        }
-        // Preflight every destination before creating any file. Recheck link ancestry
-        // immediately before each write; existing directory links are never followed.
-        for (var i = 0; i < entries.Length; i++)
-        {
-            var destination = SafeFilePath.Resolve(output, entries[i].AssetName);
-            Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
-            using var source = bundle[entries[i].AssetType, entries[i].AssetName] ?? throw new InvalidDataException($"Unreadable entry: {entries[i].AssetName}");
-            using var target = new FileStream(destination, overwrite ? FileMode.Create : FileMode.CreateNew, FileAccess.Write);
-            source.CopyTo(target);
-        }
-        return entries.Length;
+        return SemanticUnpackPlan.Create(path, output, password, type, null, overwrite, default).Commit();
     }
 }
 
@@ -119,7 +92,7 @@ internal static class SafeFilePath
     }
 
     /// <summary>
-    /// Resolves an asset entry name beneath the supplied root directory.
+    /// Resolves an asset entry beneath the root, rejecting symbolic links and junctions anywhere in its ancestry.
     /// </summary>
     /// <param name="root">The root.</param>
     /// <param name="name">The name.</param>
@@ -136,7 +109,7 @@ internal static class SafeFilePath
             if ((File.Exists(current) || Directory.Exists(current)) && (File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0)
                 throw new IOException($"Refusing to follow symbolic link or junction: {current}");
             if (new FileInfo(current).LinkTarget is not null) throw new IOException($"Refusing symbolic link: {current}");
-            if (string.Equals(current, fullRoot, OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)) break;
+
         }
         return destination;
     }

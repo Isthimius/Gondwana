@@ -670,4 +670,29 @@ By default dependencies must be in the planned package. Use `--allow-external` o
 
 `--append` analyzes the final inventory, including existing entries. An incoming file replaces its entire matching typed entry, never appends members to an existing document. Omitted loose dependencies under the source root can resolve to matching existing typed entries. Retained documents are checked against replacements, so removing a referenced member fails. Unaffected entry contents are preserved; existing AES encryption is retained.
 
-Packing validates before writing, builds a temporary sibling archive, and replaces the destination only after successful writing and validation. Failure or cancellation leaves an existing output intact. The output itself is excluded when inside the source directory. Without `--append`, a nonempty invocation replaces the package completely; an empty input leaves it unchanged. Input files are not modified. `assets unpack` remains byte extraction and does not reverse reference transformations.
+Packing validates before writing, builds a temporary sibling archive, and replaces the destination only after successful writing and validation. Failure or cancellation leaves an existing output intact. The output itself is excluded when inside the source directory. Without `--append`, a nonempty invocation replaces the package completely; an empty input leaves it unchanged. Input files are not modified. `assets unpack` performs the corresponding semantic export described below.
+
+### Semantic unpack and selective export
+
+`gondwana assets unpack game.gaf Extracted` exports native definition documents with references transformed for their new locations. `assets extract` is an alias for the same operation. Ordinary image, audio, and other leaf entries retain their original bytes. Every member of a native document stays in the file named by its physical entry, in the original order; logical names and keys do not become filenames.
+
+```sh
+# Export everything, converting included dependencies to relative loose paths
+gondwana assets unpack game.gaf Extracted
+# Export tilesheets; images remain referenced in game.gaf
+gondwana assets unpack game.gaf ExportedSheets --type TilesheetDefinition
+# Export one exact typed document, including all its logical members
+gondwana assets extract game.gaf ExportedScene --type SceneDefinition --entry Scenes/level.gscn
+# Permit replacement of existing output files
+gondwana assets unpack game.gaf Extracted --overwrite --password secret
+```
+
+`--entry` matches an exact GAF entry name, case-insensitively; it does not match basenames. If the name occurs in several types, supply `--type`. No match is an error. A type filter without matches exports nothing.
+
+When both a definition and its dependency are selected, the dependency becomes a loose reference relative to the exported document. For example, `Tilesheets/terrain.gts` can reference `../Images/terrain.png`. Dependencies not selected remain packed in the original archive, with its path rebased relative to the new document. This includes GTS images whose source archive was previously implicit. References to external loose files or other GAFs retain their original targets and are rebased. URI audio is unchanged; audio format hints are retained, including for extensionless exported files.
+
+The archive is validated and the selected documents' immediate dependency targets and logical members are checked before writing. External archives use the supplied password. Export does not download URIs or recursively export/audit external dependency graphs. Core applications must still load required archives and register dependent tilesheets, animation cycles, and scenes in their usual order; exporting does not change runtime initialization requirements.
+
+All destinations are checked before staging. Unsafe paths, symlink/junction ancestry, case-insensitive destination collisions, file/directory conflicts, and attempts to overwrite the source GAF are rejected. Existing output requires `--overwrite`. Prepared files are staged, and replaced files are backed up during the multi-file commit. On an ordinary failure or cancellation, completed writes are rolled back and transaction files are cleaned up. If rollback fails, the error identifies retained recovery files.
+
+Multi-file export is **not globally atomic**: a crash, power loss, disk failure, or concurrent filesystem modification can interrupt commit or recovery. Do not modify the output tree concurrently. Archive contents are buffered during preflight, and binary media are not decoded. A complete self-contained export works without the original GAF; a partial export must retain any archives/resources still referenced. Export is a copy operation and never rewrites the source GAF or project-wide inbound references.

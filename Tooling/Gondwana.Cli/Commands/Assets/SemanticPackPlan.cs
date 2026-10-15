@@ -17,6 +17,7 @@ internal sealed partial class SemanticPackPlan
     private readonly List<Entry> _external = [];
     private readonly Dictionary<string, Dictionary<AssetsFileEntry, byte[]>> _externalArchives = new(Paths);
     private bool _encrypt;
+    private bool _resolveLooseFromInventory = true;
 
     private sealed class Entry(AssetLocation location, AssetLocation destination, byte[] bytes, PackDefinitionDocument? document)
     {
@@ -176,7 +177,7 @@ internal sealed partial class SemanticPackPlan
         if (found is null && _entries.Values.Any(entry => Paths.Equals(entry.Location.Path, location.Path) &&
             StringComparer.OrdinalIgnoreCase.Equals(entry.Location.AssetEntryName, location.AssetEntryName) && entry.Location.AssetType != location.AssetType))
             throw new InvalidDataException($"{label}: dependency {location} was inventoried under an incompatible asset type.");
-        if (found is null && location.AssetEntryName is null)
+        if (found is null && location.AssetEntryName is null && _resolveLooseFromInventory)
         {
             // A loose source omitted from this invocation may already be a typed entry during append.
             var relative = Path.GetRelativePath(_source, location.Path).Replace('\\', '/');

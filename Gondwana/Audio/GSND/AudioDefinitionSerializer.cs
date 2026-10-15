@@ -209,6 +209,7 @@ public static partial class AudioDefinitionSerializer
                     manager.LoadFromFile(
                         resourceDefinition.Key,
                         ResolveReferencePath(resourceDefinition.FilePath!, baseDirectory),
+                        resourceDefinition.SourceExtension,
                         resourceDefinition.Volume,
                         resourceDefinition.Pan,
                         resourceDefinition.PlaybackSpeed),

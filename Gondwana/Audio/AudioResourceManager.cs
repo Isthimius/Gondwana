@@ -90,9 +90,22 @@ public sealed class AudioResourceManager : IDisposable
         float volume = 1.0f,
         float pan = 0.0f,
         float playbackSpeed = 1.0f)
+        => LoadFromFile(key, filePath, null, volume, pan, playbackSpeed);
+
+    /// <summary>Loads a loose file with an optional explicit media format while retaining its physical source.</summary>
+    /// <param name="key">The resource key.</param>
+    /// <param name="filePath">The actual loose file path.</param>
+    /// <param name="sourceExtension">An optional format hint, including for extensionless exported audio.</param>
+    /// <param name="volume">Initial volume.</param>
+    /// <param name="pan">Initial stereo pan.</param>
+    /// <param name="playbackSpeed">Initial playback speed.</param>
+    /// <returns>The resource with its loose source and media format retained.</returns>
+    internal AudioResource LoadFromFile(string key, string filePath, string? sourceExtension, float volume, float pan, float playbackSpeed)
     {
         var bytes = File.ReadAllBytes(filePath);
-        return LoadFromBytes(key, bytes, filePath, volume, pan, playbackSpeed);
+        var resource = LoadFromBytes(key, bytes, string.IsNullOrWhiteSpace(sourceExtension) ? filePath : sourceExtension, volume, pan, playbackSpeed);
+        resource.SetSourceFilePath(filePath);
+        return resource;
     }
 
     /// <summary>
