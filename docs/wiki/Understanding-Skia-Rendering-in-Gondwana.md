@@ -1656,9 +1656,9 @@ flowchart TD
     BitmapReset --> BitmapHooks
 ```
 
-### Dirty rectangles are always screen-space
+### World invalidation versus Backbuffer dirty bounds
 
-`BackbufferBase.DirtyRectangle` is explicitly an adapter/control screen-pixel rectangle.
+`SceneLayer.RefreshQueue` stores world-pixel rectangles. In contrast, `BackbufferBase.DirtyRectangle` is specifically a **logical Backbuffer `ScreenPx`** rectangle, not an adapter/control pixel rectangle.
 
 This is an important contract:
 
@@ -1677,9 +1677,9 @@ At a high level:
 5. Clear the affected screen regions.
 6. Re-enqueue corresponding world regions for overlapping background layers when necessary.
 7. Render drawables found in each dirty world rectangle.
-8. Accumulate adapter dirty screen bounds.
+8. Accumulate logical Backbuffer dirty screen bounds.
 9. Clear the consumed queues.
-10. Snapshot and present the dirty adapter rectangle.
+10. Snapshot and present the dirty logical Backbuffer rectangle using the adapter's `PresentationTransform`.
 
 ### GPU full-frame sequence
 
@@ -2192,8 +2192,7 @@ Related wiki topics:
 - [[Backbuffers]]
   - [[GL Rendering Path]]
   - [[Bitmap Rendering Path]]
-- [[Refresh Queues]]
-- [[Dirty Rectangles]]
+- [[Dirty Regions and Refresh Queues]]
 - [[Parallax and Multi-View Rendering]]
 - [[DirectDrawing]]
 

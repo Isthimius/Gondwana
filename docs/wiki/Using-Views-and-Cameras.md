@@ -60,8 +60,7 @@ For those lower-level topics, see:
 
 - [[Understanding Skia Rendering in Gondwana]]
 - [[Backbuffers]]
-- [[Dirty Rectangles]]
-- [[Refresh Queues]]
+- [[Dirty Regions and Refresh Queues]]
 
 ---
 
@@ -2695,8 +2694,7 @@ Related wiki pages:
 - [[Understanding Skia Rendering in Gondwana]]
 - [[Parallax and Multi-View Rendering]]
 - [[DirectDrawing]]
-- [[Dirty Rectangles]]
-- [[Refresh Queues]]
+- [[Dirty Regions and Refresh Queues]]
 
 ---
 

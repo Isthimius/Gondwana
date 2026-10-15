@@ -53,8 +53,7 @@ Use these for ownership, coordinate semantics, scene composition, asset/frame be
 Relevant pages include:
 
 - **Backbuffers**
-  - **Refresh Queues**
-  - **Dirty Rectangles**
+  - **Dirty Regions and Refresh Queues**
 - **Rendering Pipeline**
   - **GL Rendering Path**
   - **Bitmap Rendering Path**
