@@ -172,6 +172,9 @@ internal sealed partial class SemanticPackPlan
         _cancellation.ThrowIfCancellationRequested();
         var found = _entries.Values.FirstOrDefault(entry => Same(entry.Location, location));
         if (found is null && location.AssetEntryName is not null) found = FindPacked(location);
+        if (found is null && _entries.Values.Any(entry => Paths.Equals(entry.Location.Path, location.Path) &&
+            StringComparer.OrdinalIgnoreCase.Equals(entry.Location.AssetEntryName, location.AssetEntryName) && entry.Location.AssetType != location.AssetType))
+            throw new InvalidDataException($"{label}: dependency {location} was inventoried under an incompatible asset type.");
         if (found is null && location.AssetEntryName is null)
         {
             // A loose source omitted from this invocation may already be a typed entry during append.
@@ -181,9 +184,6 @@ internal sealed partial class SemanticPackPlan
         }
         if (found is null)
         {
-            if (_entries.Values.Any(entry => Paths.Equals(entry.Location.Path, location.Path) &&
-                StringComparer.OrdinalIgnoreCase.Equals(entry.Location.AssetEntryName, location.AssetEntryName) && entry.Location.AssetType != location.AssetType))
-                throw new InvalidDataException($"{label}: dependency {location} was inventoried under an incompatible asset type.");
             if (location.AssetEntryName is not null && Paths.Equals(location.Path, _output))
                 throw new InvalidDataException($"{label}: missing destination entry {location} (member '{identity}').");
             if (!File.Exists(location.Path))
