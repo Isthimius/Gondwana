@@ -97,9 +97,12 @@ public sealed class SpriteAnimationGsprTests
         foreach (var name in new[] { "first", "second" })
             definition.Sprites.Add(new()
             {
-                Nickname = name, SceneId = scene.ID, SceneLayerId = layer.ID,
+                Nickname = name,
+                SceneId = scene.ID,
+                SceneLayerId = layer.ID,
                 Frame = new() { Tilesheet = sheet.Name, RegionName = sheet.DefaultRegion.Name },
-                AnimationKey = key, StartAnimation = true
+                AnimationKey = key,
+                StartAnimation = true
             });
         definition.Sprites[1].AnimationKey = "missing-" + Guid.NewGuid();
         var before = SpriteManager.Instance.AllSprites.ToArray();
