@@ -40,7 +40,8 @@ internal sealed partial class SemanticPackPlan
                         source => Physical(owner, AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName, (int)source.Kind, label + " :: Tilesheet '" + source.Tilesheet + "'"),
                         (key, location) => location.AssetEntryName is null ? AnimationTilesheetSourceDefinition.Loose(key, location.Path) :
                             AnimationTilesheetSourceDefinition.Packed(key, location.Path, location.AssetEntryName));
-                    if (!string.IsNullOrWhiteSpace(animation.NextCycleKey))
+                    if (!string.IsNullOrWhiteSpace(animation.NextCycleKey) &&
+                        !StringComparer.OrdinalIgnoreCase.Equals(animation.NextCycleKey, animation.Key))
                         Logical(AssetTypes.AnimationDefinition, animation.NextCycleKey, label + " :: NextCycleKey");
                     break;
                 case SceneDefinition scene:
