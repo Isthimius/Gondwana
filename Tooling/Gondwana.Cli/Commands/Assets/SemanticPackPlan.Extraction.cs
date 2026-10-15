@@ -36,6 +36,10 @@ internal sealed partial class SemanticPackPlan
             entry.Document?.Validate(entry.Location.ToString());
             plan.Analyze(entry);
         }
+        var targets = new HashSet<string>(destinations.Values, Paths);
+        foreach (var dependency in plan._external)
+            if (targets.Contains(dependency.Location.Path))
+                throw new InvalidDataException($"Export destination would overwrite an external dependency: {dependency.Location.Path}.");
         var result = new Dictionary<AssetsFileEntry, byte[]>();
         foreach (var key in destinations.Keys)
         {
