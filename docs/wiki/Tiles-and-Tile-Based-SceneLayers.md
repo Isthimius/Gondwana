@@ -410,7 +410,7 @@ GPU rendering uses full-frame redraws, but the game-level tile model stays the s
 
 This is why game code should change tile properties through the engine APIs rather than drawing directly into a platform surface and expecting Gondwana to infer what changed.
 
-See [[Refresh Queues]], [[Dirty Rectangles]], and [[Rendering Pipeline]].
+See [[Dirty Regions and Refresh Queues]] and [[Rendering Pipeline]].
 
 ---
 

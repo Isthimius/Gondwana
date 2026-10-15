@@ -538,7 +538,7 @@ Instrumentation should make the engine easier to understand without quietly beco
 - [Logging](https://github.com/Isthimius/Gondwana/wiki/Logging)
 - [Gondwana Engine Lifecycle](https://github.com/Isthimius/Gondwana/wiki/Gondwana-Engine-Lifecycle)
 - [Performance Tuning](https://github.com/Isthimius/Gondwana/wiki/Performance-Tuning)
-- [Refresh Queues](https://github.com/Isthimius/Gondwana/wiki/Refresh-Queues)
+- [Dirty Regions and Refresh Queues](https://github.com/Isthimius/Gondwana/wiki/Dirty-Regions-and-Refresh-Queues)
 - [Bitmap Rendering Path](https://github.com/Isthimius/Gondwana/wiki/Bitmap-Rendering-Path)
 - [GL Rendering Path](https://github.com/Isthimius/Gondwana/wiki/GL-Rendering-Path)
 - [WebGL Rendering Path](https://github.com/Isthimius/Gondwana/wiki/WebGL-Rendering-Path)

@@ -498,8 +498,7 @@ Performance tuning works best when it remains boring and methodical. Guessing is
 ## Where to read next
 
 - **Debugging and Instrumentation**
-- **Refresh Queues**
-- **Dirty Rectangles**
+- **Dirty Regions and Refresh Queues**
 - **Bitmap Rendering Path**
 - **GL Rendering Path**
 - **WebGL Rendering Path**

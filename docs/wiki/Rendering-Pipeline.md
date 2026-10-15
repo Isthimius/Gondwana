@@ -188,7 +188,7 @@ For bitmap paths, Gondwana marks the complete Backbuffer dirty when post-scene h
 
 ---
 
-## RefreshQueues and dirty rectangles
+## Dirty regions and refresh queues
 
 RefreshQueues answer **what world content changed**. They are a bitmap-rendering optimization.
 
@@ -196,7 +196,7 @@ The Backbuffer dirty rectangle answers **what logical Backbuffer pixels must be 
 
 GPU paths intentionally skip both mechanisms for scene rendering/presentation. Viewport clipping still applies, but clipping a View is not the same thing as dirty-region optimization.
 
-See [[Refresh Queues]] and [[Dirty Rectangles]].
+See [[Dirty Regions and Refresh Queues]].
 
 ---
 
@@ -225,8 +225,7 @@ The Scene/View model above those differences remains shared.
 - [[Bitmap Rendering Path]]
 - [[GL Rendering Path]]
 - [[WebGL Rendering Path]]
-- [[Refresh Queues]]
-- [[Dirty Rectangles]]
+- [[Dirty Regions and Refresh Queues]]
 - [[Coordinate Spaces]]
 - [[Understanding Skia Rendering in Gondwana]]
 

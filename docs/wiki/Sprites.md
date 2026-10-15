@@ -991,7 +991,7 @@ If you remember only one distinction, remember this one:
 - [[MovementController]] — follow, scripted, and integrated movement
 - [[DirectDrawing]] — engine-managed visuals that are not sprites or layer tiles
 - [[Rendering Order and Z-Order]] — layer, drawable, view, and overlay ordering
-- [[Refresh Queues]] — bitmap dirty-region invalidation
+- [[Dirty Regions and Refresh Queues]] — bitmap dirty-region invalidation
 - [[Serialization and EngineState]] — saving and restoring engine registries
 
 Relevant source files:

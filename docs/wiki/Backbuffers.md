@@ -263,8 +263,7 @@ Keeping those responsibilities separate is what allows Gondwana to use the same 
 - [[Bitmap Rendering Path]]
 - [[GL Rendering Path]]
 - [[WebGL Rendering Path]]
-- [[Refresh Queues]]
-- [[Dirty Rectangles]]
+- [[Dirty Regions and Refresh Queues]]
 - [[Coordinate Spaces]]
 
 Relevant source files:
