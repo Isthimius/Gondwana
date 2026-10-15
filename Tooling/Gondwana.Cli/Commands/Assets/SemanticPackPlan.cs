@@ -13,7 +13,7 @@ internal sealed partial class SemanticPackPlan
     private readonly bool _allowExternal;
     private readonly CancellationToken _cancellation;
     private readonly Dictionary<AssetsFileEntry, Entry> _entries = new();
-    private readonly List<Entry> _incoming = [];
+    private readonly HashSet<Entry> _incoming = [];
     private readonly List<Entry> _external = [];
     private bool _encrypt;
 
