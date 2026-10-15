@@ -2,7 +2,7 @@ Gondwana asset files provide a simple way to bundle game resources into a single
 
 ## Multi-definition documents
 
-A typed GTS, GANI, GSCN, GSND, or GSPR entry stores one definition **document**. Its `Definitions` array may contain multiple logical members. The archive entry name identifies the physical document, and Name (GTS), Key (GANI/GSND/GSPR), or ID (GSCN) identifies the member. Existing singleton entries remain readable. `AssetsFile` storage, adding, and extraction semantics are unchanged; no reference relocation is performed.
+A typed GTS, GANI, GSCN, GSND, or GSPR entry stores one definition **document**. Its `Definitions` array may contain multiple logical members. The archive entry name identifies the physical document, and Name (GTS), Key (GANI/GSND/GSPR), or ID (GSCN) identifies the member. Existing singleton entries remain readable. `AssetsFile` storage, adding, and extraction semantics are unchanged; those low-level operations do not relocate references. The CLI semantic packing workflow described below performs reference transformation before adding entries.
 
 
 An `AssetsFile` is intentionally not a complicated virtual filesystem or content database.
@@ -659,3 +659,15 @@ That separation keeps asset packaging independent from rendering, audio, tileshe
 - [`Gondwana/Drawing/SvgResourceManager.cs`](https://isthimius.github.io/Gondwana/api/latest/SvgResourceManager_8cs_source.html)
 - [`Tooling/Gondwana.Cli/Commands/Assets/`](https://github.com/Isthimius/Gondwana/tree/master/Tooling/Gondwana.Cli/Commands/Assets)
 - [`Tooling/Gondwana.Assets.WinForms/`](https://github.com/Isthimius/Gondwana/tree/master/Tooling/Gondwana.Assets.WinForms)
+
+### Semantic packing
+
+`gondwana assets pack` (also `gondwana pack`) automatically recognizes `.gts`, `.gani`, `.gscn`, `.gspr`, and `.gsnd` as their corresponding definition asset types. It reads every member through the Core serializers and writes one canonical document per input file. It does not split members or change their logical identities.
+
+Before writing, packing resolves image/audio resources and GTS/GANI/GSCN dependencies across the complete inventory. Explicit authoring sources select a physical document and logical member. When source metadata is absent, a unique matching logical member in the final inventory supplies it; ambiguous matches fail. Physical references are transformed through `DefinitionReferenceRelocator`. `NextCycleKey` remains a logical reference; cycle relationships are allowed. URI audio resources remain unchanged.
+
+By default dependencies must be in the planned package. Use `--allow-external` only when deliberately retaining existing loose files or external GAF dependencies. Explicit external targets must exist, and referenced typed entries and logical members are checked. This option does not search for unspecified external dependencies or recursively package external documents. External GAFs use the supplied password. External paths are rebased relative to the final output where possible. Binary media are not decoded during preflight.
+
+`--append` analyzes the final inventory, including existing entries. An incoming file replaces its entire matching typed entry, never appends members to an existing document. Omitted loose dependencies under the source root can resolve to matching existing typed entries. Retained documents are checked against replacements, so removing a referenced member fails. Unaffected entry contents are preserved; existing AES encryption is retained.
+
+Packing validates before writing, builds a temporary sibling archive, and replaces the destination only after successful writing and validation. Failure or cancellation leaves an existing output intact. The output itself is excluded when inside the source directory. Without `--append`, a nonempty invocation replaces the package completely; an empty input leaves it unchanged. Input files are not modified. `assets unpack` remains byte extraction and does not reverse reference transformations.

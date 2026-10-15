@@ -21,16 +21,25 @@ internal sealed class AssetTypeMap
 {
     private static readonly string DefaultConfigFileName = "gondwana-asset-types.json";
 
-    // extension (lower-case, no dot) → AssetTypes
+    // extension (lower-case, no dot) â†’ AssetTypes
     private readonly Dictionary<string, AssetTypes> _map;
+
+    private static readonly Dictionary<string, AssetTypes> NativeTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["gts"] = AssetTypes.TilesheetDefinition,
+        ["gani"] = AssetTypes.AnimationDefinition,
+        ["gscn"] = AssetTypes.SceneDefinition,
+        ["gspr"] = AssetTypes.SpriteDefinition,
+        ["gsnd"] = AssetTypes.AudioDefinition
+    };
 
     private AssetTypeMap(Dictionary<string, AssetTypes> map) => _map = map;
 
     /// <summary>
-    /// Built-in extension → <see cref="AssetTypes"/> defaults, used when no JSON config file is found.
+    /// Built-in extension â†’ <see cref="AssetTypes"/> defaults, overlaid by the selected configuration file.
     /// </summary>
     /// <returns>The default extension-to-asset-type mappings.</returns>
-    private static AssetTypeMap BuildDefault()
+    internal static AssetTypeMap BuildDefault()
     {
         var map = new Dictionary<string, AssetTypes>(StringComparer.OrdinalIgnoreCase);
 
@@ -52,6 +61,7 @@ internal sealed class AssetTypeMap
         foreach (var ext in new[] { "svg" })
             map[ext] = AssetTypes.Svg;
 
+        foreach (var pair in NativeTypes) map[pair.Key] = pair.Value;
         return new AssetTypeMap(map);
     }
 
@@ -63,8 +73,8 @@ internal sealed class AssetTypeMap
     ///   <item><c>gondwana-asset-types.json</c> next to the running executable (the shipped default).</item>
     ///   <item>Built-in defaults (when no file is found anywhere).</item>
     /// </list>
-    /// Returns <see langword="null"/> and sets <paramref name="error"/> only when an explicit path is
-    /// provided but cannot be read or parsed.
+    /// Overlays the selected file on built-in defaults. Returns null and sets the error when
+    /// the selected configuration cannot be read or contains invalid/conflicting mappings.
     /// </summary>
     /// <param name="explicitPath">The explicit path.</param>
     /// <param name="error">When this method returns, contains the error.</param>
@@ -81,7 +91,7 @@ internal sealed class AssetTypeMap
             Path.Combine(Directory.GetCurrentDirectory(), DefaultConfigFileName),
         };
 
-        var exeDir = Path.GetDirectoryName(Environment.ProcessPath ?? string.Empty);
+        var exeDir = Path.GetDirectoryName(typeof(AssetTypeMap).Assembly.Location);
         if (!string.IsNullOrWhiteSpace(exeDir))
             candidates.Add(Path.Combine(exeDir, DefaultConfigFileName));
 
@@ -93,7 +103,7 @@ internal sealed class AssetTypeMap
             return ParseFile(candidate, out error);
         }
 
-        // No config file found anywhere — use built-in defaults silently.
+        // No config file found anywhere â€” use built-in defaults silently.
         error = null;
         return BuildDefault();
     }
@@ -104,34 +114,32 @@ internal sealed class AssetTypeMap
         {
             var json = File.ReadAllText(path);
 
-            // Deserialize as Dictionary<string, string[]>; keys are AssetTypes names.
-            var raw = JsonSerializer.Deserialize<Dictionary<string, string[]>>(json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            if (raw is null)
+            using var document = JsonDocument.Parse(json);
+            if (document.RootElement.ValueKind != JsonValueKind.Object)
+                throw new InvalidDataException("Type map must be a JSON object.");
+            var configured = new Dictionary<string, AssetTypes>(StringComparer.OrdinalIgnoreCase);
+            var types = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var property in document.RootElement.EnumerateObject())
             {
-                error = $"The file '{path}' is empty or not valid JSON.";
-                return null;
-            }
-
-            var map = new Dictionary<string, AssetTypes>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var (typeName, extensions) in raw)
-            {
-                if (!Enum.TryParse<AssetTypes>(typeName, ignoreCase: true, out var assetType))
+                if (!types.Add(property.Name) || !Enum.GetNames<AssetTypes>().Contains(property.Name, StringComparer.OrdinalIgnoreCase))
+                    throw new InvalidDataException($"Unknown or duplicate asset type '{property.Name}'.");
+                var type = Enum.Parse<AssetTypes>(property.Name, true);
+                if (property.Value.ValueKind != JsonValueKind.Array)
+                    throw new InvalidDataException($"Asset type '{property.Name}' requires an extension array.");
+                foreach (var token in property.Value.EnumerateArray())
                 {
-                    error = $"Unknown asset type '{typeName}' in '{path}'. " +
-                            $"Valid types: {string.Join(", ", Enum.GetNames<AssetTypes>())}.";
-                    return null;
-                }
-
-                foreach (var ext in extensions)
-                {
-                    var normalised = ext.TrimStart('.').ToLowerInvariant();
-                    if (!string.IsNullOrWhiteSpace(normalised))
-                        map[normalised] = assetType;
+                    if (token.ValueKind != JsonValueKind.String) throw new InvalidDataException("Extensions must be strings.");
+                    var extension = token.GetString()!.Trim().TrimStart('.');
+                    if (extension.Length == 0 || extension.Any(character => !char.IsAsciiLetterOrDigit(character)))
+                        throw new InvalidDataException($"Invalid extension '{token.GetString()}'.");
+                    if (!configured.TryAdd(extension, type))
+                        throw new InvalidDataException($"Duplicate/conflicting extension '{extension}'.");
+                    if (NativeTypes.TryGetValue(extension, out var native) && type != native)
+                        throw new InvalidDataException($"Native extension '.{extension}' must map to {native}, not {type}.");
                 }
             }
+            var map = BuildDefault()._map;
+            foreach (var pair in configured) map[pair.Key] = pair.Value;
 
             error = null;
             return new AssetTypeMap(map);

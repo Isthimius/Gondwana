@@ -5,6 +5,7 @@ using Spectre.Console.Cli;
 
 namespace Gondwana.Cli.Commands.Assets;
 
+/// <summary>Packs typed assets and semantically relocated definition documents in one transaction.</summary>
 internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
 {
     /// <summary>
@@ -50,6 +51,11 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
         [DefaultValue(false)]
         public bool Append { get; init; } = false;
 
+        /// <summary>Gets whether verified dependencies outside the final package are allowed.</summary>
+        [CommandOption("--allow-external")]
+        [Description("Allow existing explicit external loose/GAF dependencies; missing and ambiguous references still fail.")]
+        public bool AllowExternal { get; init; }
+
         /// <summary>
         /// Gets or sets the type map path.
         /// </summary>
@@ -92,7 +98,7 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
             return 1;
         }
 
-        if (!Enum.TryParse<AssetTypes>(settings.DefaultType, ignoreCase: true, out var defaultType))
+        if (!Enum.TryParse<AssetTypes>(settings.DefaultType, ignoreCase: true, out var defaultType) || !Enum.IsDefined(defaultType))
         {
             AnsiConsole.MarkupLine($"[red]Invalid asset type '{Markup.Escape(settings.DefaultType)}'. Valid types: {string.Join(", ", Enum.GetNames<AssetTypes>())}[/]");
             return 1;
@@ -105,82 +111,22 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
             return 1;
         }
 
-        var searchOption = settings.Recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-        var files = Directory.GetFiles(source, "*", searchOption);
-
-        if (files.Length == 0)
-        {
-            AnsiConsole.MarkupLine($"[yellow]No files found in {Markup.Escape(source)}.[/]");
-            return 0;
-        }
-
-        // Default: overwrite (delete any existing bundle so stale entries are not retained).
-        // With --append: load the existing bundle and merge new files into it.
-        if (!settings.Append && File.Exists(output))
-            File.Delete(output);
-
-        var assetFile = AssetsFile.LoadOrCreate(output, settings.Password, settings.Encrypt);
-        int packed = 0;
-        int skipped = 0;
-
-        AnsiConsole.Status().Start("Packing assets...", ctx =>
-        {
-            ctx.Spinner(Spinner.Known.Dots);
-
-            foreach (var file in files)
-            {
-                ctx.Status($"Packing {Markup.Escape(Path.GetFileName(file))}...");
-
-                var assetType = typeMap.Infer(file, defaultType);
-                var assetName = Path.GetRelativePath(source, file).Replace('\\', '/');
-
-                try
-                {
-                    assetFile.Add(assetType, file, assetName);
-                    packed++;
-                }
-                catch (Exception ex)
-                {
-                    AnsiConsole.MarkupLine($"  [yellow]Skipped {Markup.Escape(Path.GetFileName(file))}: {Markup.Escape(ex.Message)}[/]");
-                    skipped++;
-                }
-            }
-        });
-
         try
         {
-            var outputDirectory = Path.GetDirectoryName(output);
-            if (!string.IsNullOrEmpty(outputDirectory))
-                Directory.CreateDirectory(outputDirectory);
-
-            assetFile.Save();
+            var plan = SemanticPackPlan.Create(settings, typeMap, defaultType, cancellationToken);
+            int packed = plan.Commit();
+            AnsiConsole.MarkupLine($"[green]Packed {packed} asset(s) into {Markup.Escape(output)}.[/]");
+            return 0;
         }
-        catch (IOException ex)
+        catch (OperationCanceledException)
         {
-            AnsiConsole.MarkupLine($"[red]Failed to save assets to {Markup.Escape(output)}: {Markup.Escape(ex.Message)}[/]");
+            AnsiConsole.MarkupLine("[yellow]Packing canceled; the destination was not changed.[/]");
             return 1;
         }
-        catch (UnauthorizedAccessException ex)
+        catch (Exception ex)
         {
-            AnsiConsole.MarkupLine($"[red]Failed to save assets to {Markup.Escape(output)}: {Markup.Escape(ex.Message)}[/]");
+            AnsiConsole.MarkupLine($"[red]Packing failed: {Markup.Escape(ex.Message)}[/]");
             return 1;
         }
-        finally
-        {
-            assetFile.Dispose();
-        }
-        AnsiConsole.MarkupLine($"[green]Packed {packed} asset(s) into {Markup.Escape(output)}.[/]");
-
-        if (!string.IsNullOrEmpty(settings.Password))
-        {
-            var protection = settings.Encrypt ? "AES-256 encrypted" : "password-protected";
-            AnsiConsole.MarkupLine($"[dim]Bundle is {protection}.[/]");
-        }
-
-        if (skipped > 0)
-            AnsiConsole.MarkupLine($"[yellow]{skipped} file(s) skipped.[/]");
-
-        return 0;
     }
 }
-
