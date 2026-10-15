@@ -432,7 +432,7 @@ public sealed class TilesheetRegistry : IDisposable
     /// Creates a new tilesheet from a tilesheet definition object and registers it in the registry.
     /// </summary>
     /// <param name="definition">The tilesheet definition containing configuration and metadata.</param>
-    /// <param name="baseDirectory">The optional base directory for resolving relative paths in the definition. If <see langword="null"/>, the current directory is used.</param>
+    /// <param name="baseDirectory">The optional dependency base. If null, the actual load location or authoring source is used, falling back to the current directory for anonymous definitions.</param>
     /// <returns>The newly created and registered <see cref="Tilesheet"/>.</returns>
     public Tilesheet LoadFromDefinition(TilesheetDefinition definition, string? baseDirectory = null)
     {

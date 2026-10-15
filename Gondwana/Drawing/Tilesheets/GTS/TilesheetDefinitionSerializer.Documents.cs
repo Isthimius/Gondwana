@@ -1,5 +1,4 @@
 using Gondwana.Assets;
-using Newtonsoft.Json;
 
 namespace Gondwana.Drawing.Tilesheets.GTS;
 
@@ -14,14 +13,14 @@ public static partial class TilesheetDefinitionSerializer
         Definitions = DefinitionDocumentJson.Read<TilesheetDefinition>(json, json => ParseDefinition(json, null), definition => definition.Name)
     };
 
-    /// <summary>Serializes a complete document with a Definitions envelope.</summary>
+    /// <summary>Serializes a complete document, omitting redundant physical self-origin paths.</summary>
     /// <param name="document">The complete document.</param>
     /// <returns>Canonical document JSON.</returns>
     public static string ToDocumentJson(TilesheetDefinitionDocument document)
     {
         ArgumentNullException.ThrowIfNull(document);
         DefinitionDocumentJson.Check(document.Definitions, definition => definition.Name);
-        return JsonConvert.SerializeObject(document, Settings);
+        return DefinitionDocumentPersistence.Serialize(document, Settings);
     }
 
     /// <summary>Loads every logical definition from a physical file.</summary>
@@ -34,7 +33,8 @@ public static partial class TilesheetDefinitionSerializer
         var document = FromDocumentJson(File.ReadAllText(path), path);
         foreach (var definition in document.Definitions)
         {
-            ApplyDefaultSource(definition, TilesheetDefinitionSource.LooseDefinitionFile(path));
+            if (definition.Source.Kind != TilesheetDefinitionSourceKind.Generated)
+                definition.Source = TilesheetDefinitionSource.LooseDefinitionFile(path);
             definition.LoadStamp = new(definition, filePath: path, definitionIdentity: definition.Name);
         }
         return document;
@@ -97,7 +97,7 @@ public static partial class TilesheetDefinitionSerializer
         SaveAll(filePath, document.Definitions);
     }
 
-    /// <summary>Saves all supplied definitions in one canonical document.</summary>
+    /// <summary>Atomically saves all definitions, using the final destination for portable dependency paths.</summary>
     /// <param name="filePath">The destination physical path.</param>
     /// <param name="definitions">All logical definitions to persist.</param>
     public static void SaveAll(string filePath, IEnumerable<TilesheetDefinition> definitions)
@@ -109,19 +109,23 @@ public static partial class TilesheetDefinitionSerializer
         DefinitionDocumentJson.Check(members, definition => definition.Name, allowUnnamedSingleton: true);
         var saved = members.Select(definition => PrepareDocumentMember(definition, path)).ToList();
         var json = ToDocumentJson(new() { Definitions = saved });
-        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-        File.WriteAllText(path, json);
+        DefinitionDocumentPersistence.WriteAtomic(path, json);
     }
 
     private static TilesheetDefinition PrepareDocumentMember(TilesheetDefinition definition, string path)
     {
         var clone = ParseDefinition(ToJson(definition), null);
-        var oldDirectory = definition.LoadStamp?.ReferenceBaseDirectory;
+        var origin = definition.Source.GtsFilePath ?? definition.Source.AssetsFilePath;
+        var oldDirectory = definition.LoadStamp?.ReferenceBaseDirectory ??
+            (string.IsNullOrWhiteSpace(origin) || !Path.IsPathFullyQualified(origin) ? null : Path.GetDirectoryName(origin));
         var newDirectory = Path.GetDirectoryName(path)!;
         string? RebasePath(string? value) => string.IsNullOrWhiteSpace(value) || (oldDirectory is null && !Path.IsPathRooted(value)) ? value :
             Path.GetRelativePath(newDirectory, oldDirectory is null ? Path.GetFullPath(value) : Path.GetFullPath(value, oldDirectory));
         if (clone.Image is { } image)
         {
+            if (string.IsNullOrWhiteSpace(image.FilePath) && string.IsNullOrWhiteSpace(image.AssetsFilePath) &&
+                !string.IsNullOrWhiteSpace(image.AssetEntryName))
+                image.AssetsFilePath = definition.LoadStamp?.AssetsFilePath ?? definition.Source.AssetsFilePath;
             image.FilePath = RebasePath(image.FilePath);
             image.AssetsFilePath = RebasePath(image.AssetsFilePath);
         }

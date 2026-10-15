@@ -166,7 +166,7 @@ public static partial class AudioDefinitionSerializer
     /// </summary>
     /// <param name="definition">The persisted definition to process.</param>
     /// <param name="overwriteExisting">Whether to replace resources already registered under the same keys.</param>
-    /// <param name="baseDirectory">The base directory used to resolve or rebase relative paths.</param>
+    /// <param name="baseDirectory">An explicit dependency base, or null to use the actual load location followed by authoring source metadata.</param>
     /// <returns>The audio resources loaded or reused by the definition.</returns>
     public static IReadOnlyList<AudioResource> LoadIntoManager(
         AudioDefinition definition,
@@ -183,7 +183,7 @@ public static partial class AudioDefinitionSerializer
                 string.Join(Environment.NewLine, errors.Select(error => "- " + error)));
         }
 
-        baseDirectory ??= GetReferenceBaseDirectory(definition.Source);
+        baseDirectory ??= definition.LoadStamp?.ReferenceBaseDirectory ?? GetReferenceBaseDirectory(definition.Source);
         var manager = AudioResourceManager.Instance;
         var loaded = new List<AudioResource>();
         bool skippedExisting = false;

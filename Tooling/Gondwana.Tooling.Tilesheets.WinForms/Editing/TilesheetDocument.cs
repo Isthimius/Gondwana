@@ -220,17 +220,11 @@ public sealed class TilesheetDocument
                 clone.Image.FilePath = Rebase(clone.Image.FilePath, directory);
                 clone.Image.AssetsFilePath = Rebase(clone.Image.AssetsFilePath, directory);
             }
-            if (clone.Source.Kind == TilesheetDefinitionSourceKind.None)
+            if (clone.Source.Kind != TilesheetDefinitionSourceKind.Generated)
                 clone.Source = TilesheetDefinitionSource.LooseDefinitionFile(path);
             return clone;
         }).ToList();
-        var temporary = Path.Combine(directory, $".{Path.GetFileName(path)}.{Guid.NewGuid():N}.tmp");
-        try
-        {
-            TilesheetDefinitionSerializer.SaveAll(temporary, snapshots);
-            File.Move(temporary, path, overwrite: true);
-        }
-        finally { if (File.Exists(temporary)) File.Delete(temporary); }
+        TilesheetDefinitionSerializer.SaveAll(path, snapshots);
         var saved = TilesheetDefinitionSerializer.LoadAll(path);
         for (int i = 0; i < _definitions.Count; i++)
         {

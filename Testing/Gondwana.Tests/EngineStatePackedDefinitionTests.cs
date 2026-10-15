@@ -124,6 +124,52 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         AudioDefinitionSerializer.LoadIntoManager(AudioDefinitionSerializer.Load(other, "audio.gsnd"));
     }
 
+    /// <summary>Relocated packed documents acquire member-specific loose provenance only after save and reload.</summary>
+    [Fact]
+    public void RelocatedDocumentReloadPreservesItsNewPhysicalSource()
+    {
+        CreatePackage();
+        Clear();
+        var archive = AssetsFile.LoadOrCreate(ArchivePath);
+        var document = TilesheetDefinitionSerializer.LoadDocument(archive, "terrain.gts");
+        var destination = Path.Combine(_root, "relocated", "terrain.gts");
+        var relocated = DefinitionReferenceRelocator.Relocate(document,
+            new AssetLocation(AssetTypes.TilesheetDefinition, ArchivePath, "terrain.gts"),
+            new AssetLocation(AssetTypes.TilesheetDefinition, destination), []);
+        Assert.Null(relocated.Definitions[0].LoadStamp);
+        TilesheetDefinitionSerializer.SaveDocument(destination, relocated);
+        var reloaded = TilesheetDefinitionSerializer.Load(destination);
+        // No explicit base directory: use the loaded document, never the process working directory.
+        TilesheetRegistry.Instance.LoadFromDefinition(reloaded);
+        new EngineState().SaveToFile(StatePath, Preserve(parts: EngineStateParts.Tilesheets));
+        var entry = Read(StatePath)["Tilesheets"]!["terrain"]!;
+        Assert.Equal(destination, Path.GetFullPath((string)entry["GtsPath"]!, Path.GetDirectoryName(StatePath)!));
+        Assert.Equal("terrain", (string?)entry["DefinitionIdentity"]);
+        Clear();
+        EngineState.LoadFromFile(StatePath, parts: EngineStateParts.Tilesheets);
+        Assert.NotNull(TilesheetRegistry.Instance.GetOrNull("terrain"));
+    }
+
+    /// <summary>Save As makes an implicit packed image reference explicit before removing self-origin metadata.</summary>
+    [Fact]
+    public void PackedTilesheetSaveAsPreservesImplicitImage()
+    {
+        CreatePackage();
+        Clear();
+        var archive = AssetsFile.LoadOrCreate(ArchivePath);
+        var definition = TilesheetDefinitionSerializer.Load(archive, "terrain.gts");
+        // The direct materializer also resolves the implicit archive from the actual load stamp.
+        var sheet = TilesheetRegistry.Instance.LoadFromDefinition(definition);
+        Assert.NotNull(sheet);
+        var destination = Path.Combine(_root, "loose", "terrain.gts");
+        TilesheetDefinitionSerializer.Save(destination, definition);
+        var loaded = TilesheetDefinitionSerializer.Load(destination);
+        Assert.Equal(ArchivePath, Path.GetFullPath(loaded.Image.AssetsFilePath!, Path.GetDirectoryName(destination)!));
+        Assert.Equal("terrain.png", loaded.Image.AssetEntryName);
+        Assert.DoesNotContain("GtsFilePath", File.ReadAllText(destination));
+        Assert.Null(definition.Image.AssetsFilePath);
+    }
+
     private static JObject Read(string path, bool compressed = false)
     {
         using var stream = File.OpenRead(path);

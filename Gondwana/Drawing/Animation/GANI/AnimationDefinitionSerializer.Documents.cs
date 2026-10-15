@@ -1,5 +1,4 @@
 using Gondwana.Assets;
-using Newtonsoft.Json;
 
 namespace Gondwana.Drawing.Animation.GANI;
 
@@ -18,14 +17,14 @@ public static partial class AnimationDefinitionSerializer
             identityComparer: StringComparer.OrdinalIgnoreCase)
     };
 
-    /// <summary>Serializes a complete document with a Definitions envelope.</summary>
+    /// <summary>Serializes a complete document, omitting redundant physical self-origin paths.</summary>
     /// <param name="document">The complete document.</param>
     /// <returns>Canonical document JSON.</returns>
     public static string ToDocumentJson(AnimationDefinitionDocument document)
     {
         ArgumentNullException.ThrowIfNull(document);
         DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase);
-        return JsonConvert.SerializeObject(document, Settings);
+        return DefinitionDocumentPersistence.Serialize(document, Settings);
     }
 
     /// <summary>Loads every logical definition from a physical file.</summary>
@@ -101,7 +100,7 @@ public static partial class AnimationDefinitionSerializer
         SaveAll(filePath, document.Definitions);
     }
 
-    /// <summary>Saves all supplied definitions in one canonical document.</summary>
+    /// <summary>Atomically saves all definitions, using the final destination for portable dependency paths.</summary>
     /// <param name="filePath">The destination physical path.</param>
     /// <param name="definitions">All logical definitions to persist.</param>
     public static void SaveAll(string filePath, IEnumerable<AnimationDefinition> definitions)
@@ -113,8 +112,7 @@ public static partial class AnimationDefinitionSerializer
         DefinitionDocumentJson.Check(members, definition => definition.Key, allowUnnamedSingleton: true, identityComparer: StringComparer.OrdinalIgnoreCase);
         var saved = members.Select(definition => PrepareDocumentMember(definition, path)).ToList();
         var json = ToDocumentJson(new() { Definitions = saved });
-        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-        File.WriteAllText(path, json);
+        DefinitionDocumentPersistence.WriteAtomic(path, json);
     }
 
     private static AnimationDefinition PrepareDocumentMember(AnimationDefinition definition, string path)
@@ -122,7 +120,7 @@ public static partial class AnimationDefinitionSerializer
         var clone = ParseDefinition(ToJson(definition), null);
         var origin = definition.Source.GaniFilePath ?? definition.Source.AssetsFilePath;
         var oldDirectory = definition.LoadStamp?.ReferenceBaseDirectory ??
-            (string.IsNullOrWhiteSpace(origin) ? null : Path.GetDirectoryName(Path.GetFullPath(origin)));
+            (string.IsNullOrWhiteSpace(origin) || !Path.IsPathFullyQualified(origin) ? null : Path.GetDirectoryName(origin));
         var newDirectory = Path.GetDirectoryName(path)!;
         string? RebasePath(string? value) => string.IsNullOrWhiteSpace(value) || (oldDirectory is null && !Path.IsPathRooted(value)) ? value :
             Path.GetRelativePath(newDirectory, oldDirectory is null ? Path.GetFullPath(value) : Path.GetFullPath(value, oldDirectory));

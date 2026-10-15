@@ -38,7 +38,7 @@ internal static class TilesheetFactory
 
     /// <summary>Materializes a tilesheet and disposes incomplete content on failure.</summary>
     /// <param name="definition">The logical definition.</param>
-    /// <param name="baseDirectory">The directory for relative resources.</param>
+    /// <param name="baseDirectory">An explicit dependency base, or null to use the actual load location followed by authoring source metadata.</param>
     /// <param name="defaultAssetsFile">The archive for implicit packed image sources.</param>
     /// <returns>The materialized tilesheet.</returns>
     internal static Tilesheet FromDefinition(TilesheetDefinition definition,
@@ -46,6 +46,14 @@ internal static class TilesheetFactory
                                              AssetsFile? defaultAssetsFile = null)
     {
         ArgumentNullException.ThrowIfNull(definition);
+        var origin = definition.Source.GtsFilePath ?? definition.Source.AssetsFilePath;
+        baseDirectory ??= definition.LoadStamp?.ReferenceBaseDirectory ??
+            (string.IsNullOrWhiteSpace(origin) || !Path.IsPathFullyQualified(origin) ? null : Path.GetDirectoryName(origin));
+        var archivePath = definition.LoadStamp?.AssetsFilePath ?? definition.Source.AssetsFilePath;
+        if (defaultAssetsFile is null && !string.IsNullOrWhiteSpace(archivePath) &&
+            string.IsNullOrWhiteSpace(definition.Image?.FilePath) && string.IsNullOrWhiteSpace(definition.Image?.AssetsFilePath) &&
+            !string.IsNullOrWhiteSpace(definition.Image?.AssetEntryName))
+            defaultAssetsFile = LoadExistingAssetsFile(ResolvePath(archivePath, baseDirectory));
 
         var tilesheet = CreateTilesheet(
             definition,

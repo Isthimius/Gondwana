@@ -318,13 +318,7 @@ public sealed class SceneDocument
             clone.Source = SceneDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gscn"));
             return clone;
         }).ToList();
-        var temporary = Path.Combine(directory, $".{Path.GetFileName(path)}.{Guid.NewGuid():N}.tmp");
-        try
-        {
-            SceneDefinitionSerializer.SaveAll(temporary, snapshots);
-            File.Move(temporary, path, overwrite: true);
-        }
-        finally { if (File.Exists(temporary)) File.Delete(temporary); }
+        SceneDefinitionSerializer.SaveAll(path, snapshots);
         var saved = SceneDefinitionSerializer.LoadAll(path);
         for (int i = 0; i < _definitions.Count; i++)
         {

@@ -204,13 +204,7 @@ public sealed class AnimationDocument
             clone.Source = AnimationDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gani"));
             return clone;
         }).ToList();
-        var temporary = Path.Combine(directory, $".{Path.GetFileName(path)}.{Guid.NewGuid():N}.tmp");
-        try
-        {
-            AnimationDefinitionSerializer.SaveAll(temporary, snapshots);
-            File.Move(temporary, path, overwrite: true);
-        }
-        finally { if (File.Exists(temporary)) File.Delete(temporary); }
+        AnimationDefinitionSerializer.SaveAll(path, snapshots);
         var saved = AnimationDefinitionSerializer.LoadAll(path);
         for (int i = 0; i < _definitions.Count; i++)
         {
