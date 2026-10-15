@@ -253,17 +253,25 @@ public sealed class SemanticAssetPackTests : IDisposable
             sheet.Image.AssetsFilePath = "game.gaf";
             sheet.Image.AssetEntryName = "art.png";
             Image("art.png");
+
             using var image = File.OpenRead(Path.Combine(Source, "art.png"));
             archive.Add(AssetTypes.Image, "art.png", image);
+
             using var tiles = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(sheet)));
             archive.Add(AssetTypes.TilesheetDefinition, "tiles.gts", tiles);
-            using var animation = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(AnimationDefinitionSerializer.ToJson(new AnimationDefinition
-            {
-                Key = "walk", ThrottleTime = .2, Frames = [new() { Tilesheet = "terrain" }]
-            })));
+
+            using var animation = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(
+                AnimationDefinitionSerializer.ToJson(new AnimationDefinition
+                {
+                    Key = "walk",
+                    ThrottleTime = .2,
+                    Frames = [new() { Tilesheet = "terrain" }]
+                })));
+
             archive.Add(AssetTypes.AnimationDefinition, "walk.gani", animation);
             archive.Save();
         }
+
         File.Delete(Path.Combine(Source, "art.png"));
         File.WriteAllText(Path.Combine(Source, "keep.txt"), "first append");
         Assert.Equal(0, Run("pack", Source, Output, "--append"));
