@@ -196,8 +196,11 @@ public sealed class SpriteEditorControl : UserControl
     private void LoadAnimation(string path, string key)
     {
         var fullPath = Path.GetFullPath(path);
-        if (!_loadedAnimationPaths.Add(fullPath + " :: " + key)) return;
-        AddAnimationDefinition(AnimationDefinitionSerializer.Load(path, key));
+        var memberPath = fullPath + " :: " + key;
+        if (_loadedAnimationPaths.Contains(memberPath)) return;
+        var definition = AnimationDefinitionSerializer.Load(path, key);
+        _loadedAnimationPaths.Add(memberPath);
+        AddAnimationDefinition(definition);
     }
 
     private void AddAnimationDefinition(AnimationDefinition definition)
@@ -335,7 +338,7 @@ public sealed class SpriteEditorControl : UserControl
         var lines = errors.Select(error => "ERROR: " + error).ToList();
         if (errors.Count == 0) lines.Add("VALID: GSPR structural validation passed.");
         lines.AddRange(_sourceWarnings.Select(warning => "WARNING: " + warning));
-        foreach (var path in _loadedScenePaths.Concat(_loadedTilesheetPaths).Concat(_loadedAnimationPaths))
+        foreach (var path in _loadedScenePaths.Concat(_loadedTilesheetPaths))
             if (!File.Exists(path)) lines.Add($"WARNING: Loaded authoring source no longer exists: {path}");
         lines.AddRange(_sources.Where(source => source.PreviewWarning is not null)
             .Select(source => $"WARNING: GTS '{source.Definition.Name}': {source.PreviewWarning}"));
