@@ -408,6 +408,55 @@ public sealed class SemanticAssetPackTests : IDisposable
         Assert.Equal(before, File.ReadAllBytes(Output));
     }
 
+    /// <summary>Distinct typed dependencies and normalized path aliases share one per-plan archive cache.</summary>
+    /// <param name="protection">Zero for none, one for password, two for AES.</param>
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    public void PackedExternalDependenciesShareArchiveContents(int protection)
+    {
+        var external = Path.Combine(_root, "external.gaf");
+        var password = protection == 0 ? null : "test-password";
+        using (var archive = AssetsFile.LoadOrCreate(external, password, protection == 2, register: false))
+        {
+            foreach (var (type, name) in new[] { (AssetTypes.Image, "first.png"), (AssetTypes.Image, "second.png"), (AssetTypes.Audio, "first.png") })
+            {
+                using var stream = new MemoryStream([(byte)type, 2, 3]);
+                archive.Add(type, name, stream);
+            }
+            archive.Save();
+        }
+        var sheets = new[] { Sheet("first", "unused"), Sheet("second", "unused") };
+        for (int i = 0; i < sheets.Length; i++)
+        {
+            sheets[i].Image.FilePath = null;
+            sheets[i].Image.AssetsFilePath = i == 0 ? "../external.gaf" : "../source/../external.gaf";
+            sheets[i].Image.AssetEntryName = i == 0 ? "FIRST.PNG" : "second.png";
+        }
+        File.WriteAllText(Path.Combine(Source, "tiles.gts"), TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = sheets.ToList() }));
+        File.WriteAllText(Path.Combine(Source, "sounds.gsnd"), AudioDefinitionSerializer.ToJson(new AudioDefinition
+        {
+            Key = "sounds",
+            Resources = [new() { Key = "sound", SourceKind = AudioResourceSourceKind.PackedAsset, AssetsFilePath = "../external.gaf", AssetEntryName = "first.png" }]
+        }));
+
+        var plan = SemanticPackPlan.Create(new() { Source = Source, Output = Output, Password = password, AllowExternal = true },
+            AssetTypeMap.BuildDefault(), AssetTypes.Misc, default);
+        var cache = Assert.IsType<Dictionary<string, Dictionary<AssetsFileEntry, byte[]>>>(typeof(SemanticPackPlan)
+            .GetField("_externalArchives", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.GetValue(plan));
+        var contents = Assert.Single(cache);
+        Assert.Equal(external, contents.Key);
+        Assert.Equal(3, contents.Value.Count);
+        Assert.Equal(new byte[] { (byte)AssetTypes.Image, 2, 3 }, contents.Value[new() { AssetType = AssetTypes.Image, AssetName = "FIRST.PNG" }]);
+        Assert.Equal(new byte[] { (byte)AssetTypes.Audio, 2, 3 }, contents.Value[new() { AssetType = AssetTypes.Audio, AssetName = "first.png" }]);
+        Assert.Equal(2, plan.Commit());
+        using var packed = AssetsFile.LoadOrCreate(Output, password, false, register: false);
+        Assert.Equal(2, TilesheetDefinitionSerializer.LoadAll(packed, "tiles.gts").Count);
+        Assert.Single(AudioDefinitionSerializer.Load(packed, "sounds.gsnd").Resources);
+        Assert.Equal(2, packed.GetAllEntries().Count());
+    }
+
     /// <summary>Nested document paths resolve against their containing directory and load without loose resources.</summary>
     [Fact]
     public void NestedRelativeDependenciesRemainUsable()

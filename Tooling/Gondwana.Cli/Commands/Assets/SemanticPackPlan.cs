@@ -15,6 +15,7 @@ internal sealed partial class SemanticPackPlan
     private readonly Dictionary<AssetsFileEntry, Entry> _entries = new();
     private readonly HashSet<Entry> _incoming = [];
     private readonly List<Entry> _external = [];
+    private readonly Dictionary<string, Dictionary<AssetsFileEntry, byte[]>> _externalArchives = new(Paths);
     private bool _encrypt;
 
     private sealed class Entry(AssetLocation location, AssetLocation destination, byte[] bytes, PackDefinitionDocument? document)
@@ -197,13 +198,23 @@ internal sealed partial class SemanticPackPlan
                 if (location.AssetEntryName is null) bytes = File.ReadAllBytes(location.Path);
                 else
                 {
-                    using var archive = AssetsFile.LoadOrCreate(location.Path, _password, false, register: false);
-                    if (!archive.GetAllEntries().Any(key => key.AssetType == location.AssetType && StringComparer.OrdinalIgnoreCase.Equals(key.AssetName, location.AssetEntryName)))
+                    if (!_externalArchives.TryGetValue(location.Path, out var contents))
+                    {
+                        using var archive = AssetsFile.LoadOrCreate(location.Path, _password, false, register: false);
+                        contents = new();
+                        foreach (var key in archive.GetAllEntries())
+                        {
+                            _cancellation.ThrowIfCancellationRequested();
+                            using var stream = archive.Get(key.AssetType, key.AssetName)!;
+                            using var buffer = new MemoryStream();
+                            stream.CopyTo(buffer);
+                            contents.Add(key, buffer.ToArray());
+                        }
+                        _externalArchives.Add(location.Path, contents);
+                    }
+                    if (!contents.TryGetValue(new AssetsFileEntry { AssetType = location.AssetType, AssetName = location.AssetEntryName }, out var data))
                         throw new InvalidDataException($"{label}: missing external typed entry {location}.");
-                    using var stream = archive.Get(location.AssetType, location.AssetEntryName)!;
-                    using var buffer = new MemoryStream();
-                    stream.CopyTo(buffer);
-                    bytes = buffer.ToArray();
+                    bytes = data;
                 }
                 found = ReadEntry(location, location, bytes);
                 found.Document?.Validate(label);
