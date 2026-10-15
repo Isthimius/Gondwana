@@ -66,7 +66,10 @@ public sealed class SpriteEditorControl : UserControl
         {
             using var dialog = new OpenFileDialog { Filter = "Gondwana animations|*.gani", Multiselect = true };
             if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
                 TryLoad(() => AddAnimationSources(dialog.FileNames));
+                UpdateValidation();
+            }
         });
         toolbar.Controls.Add(new Label { Text = "Animation:", AutoSize = true, Margin = new Padding(8, 8, 4, 0) });
         toolbar.Controls.Add(_animationPicker);
