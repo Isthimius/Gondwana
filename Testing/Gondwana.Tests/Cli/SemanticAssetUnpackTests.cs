@@ -187,6 +187,33 @@ public sealed partial class SemanticAssetPackTests
         Assert.Equal(before, File.ReadAllBytes(Output));
     }
 
+    /// <summary>Source files and parent directories reached through links cannot be overwritten by extraction.</summary>
+    /// <param name="linkedFile">Whether the source archive itself is a symbolic link.</param>
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void UnpackRejectsLinkedSourceAncestry(bool linkedFile)
+    {
+        Archive((AssetTypes.Misc, "game.gaf", [4]));
+        var before = File.ReadAllBytes(Output);
+        var outputDirectory = Path.GetDirectoryName(Output)!;
+        string source;
+        if (linkedFile)
+        {
+            source = Path.Combine(_root, "source-link.gaf");
+            File.CreateSymbolicLink(source, Output);
+        }
+        else
+        {
+            var linkedDirectory = Path.Combine(_root, "output-link");
+            Directory.CreateSymbolicLink(linkedDirectory, outputDirectory);
+            source = Path.Combine(linkedDirectory, Path.GetFileName(Output));
+        }
+
+        Assert.Throws<IOException>(() => SemanticUnpackPlan.Create(source, outputDirectory, null, null, null, true, default));
+        Assert.Equal(before, File.ReadAllBytes(Output));
+    }
+
     /// <summary>A late commit failure restores earlier overwritten files and removes transaction artifacts.</summary>
     [Fact]
     public void UnpackRollbackRestoresEarlierFiles()

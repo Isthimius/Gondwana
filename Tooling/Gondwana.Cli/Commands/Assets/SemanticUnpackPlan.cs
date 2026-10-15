@@ -33,6 +33,7 @@ internal sealed class SemanticUnpackPlan
     {
         cancellation.ThrowIfCancellationRequested();
         var plan = new SemanticUnpackPlan(Path.GetFullPath(path), Path.GetFullPath(output), overwrite, cancellation);
+        RejectLinkedSourceAncestry(plan._source);
         using var archive = BundleHelper.Open(plan._source, password);
         var selected = archive.GetAllEntries().Where(key => (type is null || key.AssetType == type) &&
             (entryName is null || StringComparer.OrdinalIgnoreCase.Equals(key.AssetName, entryName)))
@@ -54,6 +55,17 @@ internal sealed class SemanticUnpackPlan
         var contents = SemanticPackPlan.PrepareExtraction(archive, plan._source, destinations, password, cancellation);
         foreach (var key in selected) plan._files.Add((key.AssetName, destinations[key], contents[key]));
         return plan;
+    }
+
+    private static void RejectLinkedSourceAncestry(string source)
+    {
+        for (var current = source; current is not null; current = Path.GetDirectoryName(current))
+        {
+            if ((File.Exists(current) || Directory.Exists(current)) &&
+                (File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0 ||
+                new FileInfo(current).LinkTarget is not null)
+                throw new IOException($"Source GAF path contains a symbolic link or junction: {current}.");
+        }
     }
 
     private string CheckDestination(string name)
