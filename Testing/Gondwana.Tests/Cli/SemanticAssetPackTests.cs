@@ -241,6 +241,48 @@ public sealed class SemanticAssetPackTests : IDisposable
         Assert.Contains(zip.Cast<ZipEntry>(), entry => entry.AESKeySize > 0);
     }
 
+    /// <summary>Inferred sources between retained documents survive moving the archive and appending again.</summary>
+    [Fact]
+    public void AppendInferredRetainedSourcesRemainRelativeAfterMovingArchive()
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(Output)!);
+        using (var archive = AssetsFile.LoadOrCreate(Output, null, false, register: false))
+        {
+            var sheet = Sheet("terrain", "unused");
+            sheet.Image.FilePath = null;
+            sheet.Image.AssetsFilePath = "game.gaf";
+            sheet.Image.AssetEntryName = "art.png";
+            Image("art.png");
+            using var image = File.OpenRead(Path.Combine(Source, "art.png"));
+            archive.Add(AssetTypes.Image, "art.png", image);
+            using var tiles = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(sheet)));
+            archive.Add(AssetTypes.TilesheetDefinition, "tiles.gts", tiles);
+            using var animation = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(AnimationDefinitionSerializer.ToJson(new AnimationDefinition
+            {
+                Key = "walk", ThrottleTime = .2, Frames = [new() { Tilesheet = "terrain" }]
+            })));
+            archive.Add(AssetTypes.AnimationDefinition, "walk.gani", animation);
+            archive.Save();
+        }
+        File.Delete(Path.Combine(Source, "art.png"));
+        File.WriteAllText(Path.Combine(Source, "keep.txt"), "first append");
+        Assert.Equal(0, Run("pack", Source, Output, "--append"));
+        using (var archive = AssetsFile.LoadOrCreate(Output, null, false, register: false))
+        {
+            var source = Assert.Single(AnimationDefinitionSerializer.Load(archive, "walk.gani").TilesheetSources);
+            Assert.Equal("game.gaf", source.AssetsFilePath);
+            Assert.Equal("tiles.gts", source.AssetEntryName);
+        }
+        var moved = Path.Combine(Directory.CreateDirectory(Path.Combine(_root, "moved")).FullName, "game.gaf");
+        File.Move(Output, moved);
+        File.WriteAllText(Path.Combine(Source, "keep.txt"), "second append");
+        Assert.Equal(0, Run("pack", Source, moved, "--append"));
+        using var movedArchive = AssetsFile.LoadOrCreate(moved, null, false, register: false);
+        var movedSource = Assert.Single(AnimationDefinitionSerializer.Load(movedArchive, "walk.gani").TilesheetSources);
+        Assert.Equal("game.gaf", movedSource.AssetsFilePath);
+        Assert.Equal("terrain", TilesheetDefinitionSerializer.Load(movedArchive, movedSource.AssetEntryName!).Name);
+    }
+
     /// <summary>Failed preflight and ambiguous inference preserve the existing archive byte for byte.</summary>
     [Fact]
     public void MissingAndAmbiguousDependenciesLeaveOutputIntact()
