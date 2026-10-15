@@ -1,8 +1,10 @@
 var namespaceGondwana_1_1Assets =
 [
+    [ "AssetLocation", "classGondwana_1_1Assets_1_1AssetLocation.html", "classGondwana_1_1Assets_1_1AssetLocation" ],
     [ "AssetsFile", "classGondwana_1_1Assets_1_1AssetsFile.html", "classGondwana_1_1Assets_1_1AssetsFile" ],
     [ "AssetsFileEntry", "classGondwana_1_1Assets_1_1AssetsFileEntry.html", "classGondwana_1_1Assets_1_1AssetsFileEntry" ],
     [ "AssetsFileIdentifier", "classGondwana_1_1Assets_1_1AssetsFileIdentifier.html", "classGondwana_1_1Assets_1_1AssetsFileIdentifier" ],
+    [ "ReferenceRelocation", "classGondwana_1_1Assets_1_1ReferenceRelocation.html", "classGondwana_1_1Assets_1_1ReferenceRelocation" ],
     [ "AssetTypes", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1", [
       [ "Image", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1abe53a0541a6d36f6ecb879fa2c584b08", null ],
       [ "Audio", "namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1ab22f0418e8ac915eb66f829d262d14a2", null ],

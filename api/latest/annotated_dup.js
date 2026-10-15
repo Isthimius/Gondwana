@@ -2,9 +2,11 @@ var annotated_dup =
 [
     [ "Gondwana", "namespaceGondwana.html", [
       [ "Assets", "namespaceGondwana_1_1Assets.html", [
+        [ "AssetLocation", "classGondwana_1_1Assets_1_1AssetLocation.html", "classGondwana_1_1Assets_1_1AssetLocation" ],
         [ "AssetsFile", "classGondwana_1_1Assets_1_1AssetsFile.html", "classGondwana_1_1Assets_1_1AssetsFile" ],
         [ "AssetsFileEntry", "classGondwana_1_1Assets_1_1AssetsFileEntry.html", "classGondwana_1_1Assets_1_1AssetsFileEntry" ],
-        [ "AssetsFileIdentifier", "classGondwana_1_1Assets_1_1AssetsFileIdentifier.html", "classGondwana_1_1Assets_1_1AssetsFileIdentifier" ]
+        [ "AssetsFileIdentifier", "classGondwana_1_1Assets_1_1AssetsFileIdentifier.html", "classGondwana_1_1Assets_1_1AssetsFileIdentifier" ],
+        [ "ReferenceRelocation", "classGondwana_1_1Assets_1_1ReferenceRelocation.html", "classGondwana_1_1Assets_1_1ReferenceRelocation" ]
       ] ],
       [ "Audio", "namespaceGondwana_1_1Audio.html", [
         [ "Browser", "namespaceGondwana_1_1Audio_1_1Browser.html", [

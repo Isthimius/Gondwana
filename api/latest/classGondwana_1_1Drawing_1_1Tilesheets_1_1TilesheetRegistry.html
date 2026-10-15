@@ -402,7 +402,7 @@ Properties</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">definition</td><td>The tilesheet definition containing configuration and metadata.</td></tr>
-    <tr><td class="paramname">baseDirectory</td><td>The optional base directory for resolving relative paths in the definition. If <code>null</code>, the current directory is used.</td></tr>
+    <tr><td class="paramname">baseDirectory</td><td>The optional dependency base. If null, the actual load location or authoring source is used, falling back to the current directory for anonymous definitions.</td></tr>
   </table>
   </dd>
 </dl>

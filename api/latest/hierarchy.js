@@ -6,6 +6,7 @@ var hierarchy =
     [ "Gondwana.Drawing.Animation.GANI.AnimationDefinitionSource", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinitionSource.html", null ],
     [ "Gondwana.Drawing.Animation.GANI.AnimationFrameDefinition", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationFrameDefinition.html", null ],
     [ "Gondwana.Drawing.Animation.GANI.AnimationTilesheetSourceDefinition", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationTilesheetSourceDefinition.html", null ],
+    [ "Gondwana.Assets.AssetLocation", "classGondwana_1_1Assets_1_1AssetLocation.html", null ],
     [ "Gondwana.Assets.AssetsFileIdentifier", "classGondwana_1_1Assets_1_1AssetsFileIdentifier.html", null ],
     [ "Gondwana.Audio.GSND.AudioDefinition", "classGondwana_1_1Audio_1_1GSND_1_1AudioDefinition.html", null ],
     [ "Gondwana.Audio.GSND.AudioDefinitionDocument", "classGondwana_1_1Audio_1_1GSND_1_1AudioDefinitionDocument.html", null ],
@@ -323,6 +324,7 @@ var hierarchy =
     [ "Gondwana.Drawing.Direct.Particles.ParticleEmitter", "classGondwana_1_1Drawing_1_1Direct_1_1Particles_1_1ParticleEmitter.html", null ],
     [ "Gondwana.Widgets.Hud.ProfilerWidgetExtensionContext", "classGondwana_1_1Widgets_1_1Hud_1_1ProfilerWidgetExtensionContext.html", null ],
     [ "Gondwana.Widgets.Controls.RadioButtonGroup", "classGondwana_1_1Widgets_1_1Controls_1_1RadioButtonGroup.html", null ],
+    [ "Gondwana.Assets.ReferenceRelocation", "classGondwana_1_1Assets_1_1ReferenceRelocation.html", null ],
     [ "Gondwana.Rendering.RenderSurfaceAdapterBase", "classGondwana_1_1Rendering_1_1RenderSurfaceAdapterBase.html", [
       [ "Gondwana.Avalonia.Rendering.AvaloniaBitmapRenderSurfaceAdapter", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaBitmapRenderSurfaceAdapter.html", null ],
       [ "Gondwana.Avalonia.Rendering.AvaloniaGpuRenderSurfaceAdapter", "classGondwana_1_1Avalonia_1_1Rendering_1_1AvaloniaGpuRenderSurfaceAdapter.html", null ],
