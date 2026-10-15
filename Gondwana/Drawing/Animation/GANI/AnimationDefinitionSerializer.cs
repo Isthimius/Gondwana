@@ -24,7 +24,7 @@ public static partial class AnimationDefinitionSerializer
     /// <returns>The resulting animation definition.</returns>
     public static AnimationDefinition Load(string filePath)
     {
-        return DefinitionDocumentJson.Select(LoadAll(filePath), definition => definition.Key);
+        return DefinitionDocumentJson.Select(LoadAll(filePath), definition => definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase);
     }
 
     /// <summary>
@@ -34,7 +34,7 @@ public static partial class AnimationDefinitionSerializer
     /// <returns>The resulting animation definition.</returns>
     public static AnimationDefinition Load(Stream stream)
     {
-        return DefinitionDocumentJson.Select(LoadAll(stream), definition => definition.Key);
+        return DefinitionDocumentJson.Select(LoadAll(stream), definition => definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase);
     }
 
     /// <summary>
@@ -45,7 +45,7 @@ public static partial class AnimationDefinitionSerializer
     /// <returns>The resulting animation definition.</returns>
     public static AnimationDefinition Load(AssetsFile assetsFile, string entryName)
     {
-        return DefinitionDocumentJson.Select(LoadAll(assetsFile, entryName), definition => definition.Key);
+        return DefinitionDocumentJson.Select(LoadAll(assetsFile, entryName), definition => definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase);
     }
 
     /// <summary>
@@ -76,7 +76,7 @@ public static partial class AnimationDefinitionSerializer
     /// <param name="json">The JSON text to deserialize.</param>
     /// <returns>The deserialized definition.</returns>
     public static AnimationDefinition FromJson(string json) =>
-        DefinitionDocumentJson.Select(FromDocumentJson(json).Definitions, definition => definition.Key);
+        DefinitionDocumentJson.Select(FromDocumentJson(json).Definitions, definition => definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
     /// Serializes the supplied content as JSON.
@@ -215,7 +215,7 @@ public static partial class AnimationDefinitionSerializer
             string.Equals(
                 definition.NextCycleKey,
                 cycle.CycleKey,
-                StringComparison.Ordinal))
+                StringComparison.OrdinalIgnoreCase))
         {
             cycle.NextCycle = cycle;
             CaptureProvenance(cycle, definition);

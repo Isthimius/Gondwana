@@ -686,7 +686,7 @@ public sealed class SceneEditorControl : UserControl
                 if (!string.Equals(
                         loaded.Definition.Key,
                         source.AnimationKey,
-                        StringComparison.Ordinal))
+                        StringComparison.OrdinalIgnoreCase))
                 {
                     _sourceDiagnostics.Add(
                         $"WARNING: GANI source '{source.AnimationKey}' resolves to definition '{loaded.Definition.Key}'.");
@@ -723,10 +723,10 @@ public sealed class SceneEditorControl : UserControl
             .Select(tile => tile.AnimationKey)
             .Where(key => !string.IsNullOrWhiteSpace(key))
             .Cast<string>()
-            .Distinct(StringComparer.Ordinal)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
             .Where(key =>
                 Definition.AnimationSources.All(source =>
-                    !string.Equals(source.AnimationKey, key, StringComparison.Ordinal)))
+                    !string.Equals(source.AnimationKey, key, StringComparison.OrdinalIgnoreCase)))
             .ToList();
 
         if (requiredTilesheets.Count > 0)
@@ -791,7 +791,7 @@ public sealed class SceneEditorControl : UserControl
 
     private void RecoverAnimations(IReadOnlyCollection<string> required)
     {
-        var candidates = new Dictionary<string, List<SceneAnimationSource>>(StringComparer.Ordinal);
+        var candidates = new Dictionary<string, List<SceneAnimationSource>>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var path in Directory.EnumerateFiles(
                      Document.BaseDirectory,
@@ -802,7 +802,7 @@ public sealed class SceneEditorControl : UserControl
             {
                 foreach (var loaded in SceneAnimationSource.LoadAll(path))
                 {
-                    if (!required.Contains(loaded.Definition.Key))
+                    if (!required.Contains(loaded.Definition.Key, StringComparer.OrdinalIgnoreCase))
                     {
                         loaded.Dispose();
                         continue;
@@ -1407,7 +1407,7 @@ public sealed class SceneEditorControl : UserControl
             string.Equals(
                 source.Definition.Key,
                 key,
-                StringComparison.Ordinal));
+                StringComparison.OrdinalIgnoreCase));
 
     private void SelectLayerNode(SceneLayerDefinition layer)
     {

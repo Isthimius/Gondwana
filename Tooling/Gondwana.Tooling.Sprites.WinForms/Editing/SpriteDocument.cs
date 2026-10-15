@@ -131,7 +131,7 @@ public sealed class SpriteDocument
     /// <summary>Adds or updates the authoring source for a registered GANI animation.</summary>
     public void SetLooseAnimationSource(string key, string path)
     {
-        Definition.AnimationSources.RemoveAll(source => source.AnimationKey == key);
+        Definition.AnimationSources.RemoveAll(source => string.Equals(source.AnimationKey, key, StringComparison.OrdinalIgnoreCase));
         Definition.AnimationSources.Add(SpriteAnimationSourceDefinition.Loose(
             key, Path.GetRelativePath(BaseDirectory, Path.GetFullPath(path))));
         MarkChanged();

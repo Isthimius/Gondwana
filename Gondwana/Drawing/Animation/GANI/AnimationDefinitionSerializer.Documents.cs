@@ -11,7 +11,11 @@ public static partial class AnimationDefinitionSerializer
     /// <returns>The complete definition document.</returns>
     public static AnimationDefinitionDocument FromDocumentJson(string json, string? sourceIdentity = null) => new()
     {
-        Definitions = DefinitionDocumentJson.Read<AnimationDefinition>(json, json => ParseDefinition(json, null), definition => definition.Key)
+        Definitions = DefinitionDocumentJson.Read<AnimationDefinition>(
+            json,
+            json => ParseDefinition(json, null),
+            definition => definition.Key,
+            identityComparer: StringComparer.OrdinalIgnoreCase)
     };
 
     /// <summary>Serializes a complete document with a Definitions envelope.</summary>
@@ -20,7 +24,7 @@ public static partial class AnimationDefinitionSerializer
     public static string ToDocumentJson(AnimationDefinitionDocument document)
     {
         ArgumentNullException.ThrowIfNull(document);
-        DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key);
+        DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase);
         return JsonConvert.SerializeObject(document, Settings);
     }
 
@@ -80,7 +84,7 @@ public static partial class AnimationDefinitionSerializer
     {
         ArgumentNullException.ThrowIfNull(document);
         var errors = new List<string>();
-        try { DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key); }
+        try { DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase); }
         catch (InvalidDataException ex) { errors.Add(ex.Message); }
         foreach (var definition in document.Definitions ?? [])
             if (definition is not null)
@@ -106,7 +110,7 @@ public static partial class AnimationDefinitionSerializer
         ArgumentNullException.ThrowIfNull(definitions);
         var path = Path.GetFullPath(filePath);
         var members = definitions.ToList();
-        DefinitionDocumentJson.Check(members, definition => definition.Key, allowUnnamedSingleton: true);
+        DefinitionDocumentJson.Check(members, definition => definition.Key, allowUnnamedSingleton: true, identityComparer: StringComparer.OrdinalIgnoreCase);
         var saved = members.Select(definition => PrepareDocumentMember(definition, path)).ToList();
         var json = ToDocumentJson(new() { Definitions = saved });
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
@@ -136,24 +140,24 @@ public static partial class AnimationDefinitionSerializer
     /// <returns>All definitions.</returns>
     public static IReadOnlyList<AnimationDefinition> LoadAll(string filePath) => LoadDocument(filePath).Definitions;
 
-    /// <summary>Loads a logical member by its case-sensitive Key.</summary>
+    /// <summary>Loads a logical member by its case-insensitive Key.</summary>
     /// <param name="filePath">The document path.</param>
     /// <param name="key">The logical member identity; null requires a singleton.</param>
     /// <returns>The selected definition.</returns>
     public static AnimationDefinition Load(string filePath, string? key) =>
-        DefinitionDocumentJson.Select(LoadAll(filePath), definition => definition.Key, key);
+        DefinitionDocumentJson.Select(LoadAll(filePath), definition => definition.Key, key, StringComparer.OrdinalIgnoreCase);
 
     /// <summary>Loads all logical definitions in document order.</summary>
     /// <param name="stream">The readable stream, left open.</param>
     /// <returns>All definitions.</returns>
     public static IReadOnlyList<AnimationDefinition> LoadAll(Stream stream) => LoadDocument(stream).Definitions;
 
-    /// <summary>Loads a logical member by its case-sensitive Key.</summary>
+    /// <summary>Loads a logical member by its case-insensitive Key.</summary>
     /// <param name="stream">The readable stream, left open.</param>
     /// <param name="key">The logical member identity; null requires a singleton.</param>
     /// <returns>The selected definition.</returns>
     public static AnimationDefinition Load(Stream stream, string? key) =>
-        DefinitionDocumentJson.Select(LoadAll(stream), definition => definition.Key, key);
+        DefinitionDocumentJson.Select(LoadAll(stream), definition => definition.Key, key, StringComparer.OrdinalIgnoreCase);
 
     /// <summary>Loads all logical definitions in document order.</summary>
     /// <param name="assetsFile">The archive.</param>
@@ -161,13 +165,13 @@ public static partial class AnimationDefinitionSerializer
     /// <returns>All definitions.</returns>
     public static IReadOnlyList<AnimationDefinition> LoadAll(AssetsFile assetsFile, string entryName) => LoadDocument(assetsFile, entryName).Definitions;
 
-    /// <summary>Loads a logical member by its case-sensitive Key.</summary>
+    /// <summary>Loads a logical member by its case-insensitive Key.</summary>
     /// <param name="assetsFile">The archive.</param>
     /// <param name="entryName">The document entry name.</param>
     /// <param name="key">The logical member identity; null requires a singleton.</param>
     /// <returns>The selected definition.</returns>
     public static AnimationDefinition Load(AssetsFile assetsFile, string entryName, string? key) =>
-        DefinitionDocumentJson.Select(LoadAll(assetsFile, entryName), definition => definition.Key, key);
+        DefinitionDocumentJson.Select(LoadAll(assetsFile, entryName), definition => definition.Key, key, StringComparer.OrdinalIgnoreCase);
 
     /// <summary>Materializes the selected logical definition using registered dependencies.</summary>
     /// <param name="filePath">The document path.</param>
@@ -201,7 +205,7 @@ public static partial class AnimationDefinitionSerializer
         var errors = ValidateDocument(document);
         if (errors.Count != 0) throw new InvalidDataException(string.Join(Environment.NewLine, errors));
         var created = new List<Cycle>();
-        var previous = new Dictionary<string, Cycle>(Cycle._cycles, StringComparer.Ordinal);
+        var previous = new Dictionary<string, Cycle>(Cycle._cycles, StringComparer.OrdinalIgnoreCase);
         try
         {
             foreach (var definition in document.Definitions) created.Add(MaterializeCycle(definition));

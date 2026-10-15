@@ -58,7 +58,7 @@ public static class SpriteDefinitionValidator
             if (string.IsNullOrWhiteSpace(source.SceneId) || !scenes.Add(source.SceneId)) errors.Add("Invalid or duplicate SceneSources identity.");
             ValidateSource(source.Kind == SpriteSceneSourceKind.LooseDefinitionFile, Enum.IsDefined(source.Kind), source.GscnPath, source.AssetsFilePath, source.AssetEntryName, "SceneSources", errors);
         }
-        var animations = new HashSet<string>(StringComparer.Ordinal);
+        var animations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var source in definition.AnimationSources ?? [])
         {
             if (source is null) { errors.Add("Null AnimationSources entry."); continue; }

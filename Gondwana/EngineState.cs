@@ -733,7 +733,7 @@ public sealed partial class EngineState
         string engineStatePath,
         DefinitionPersistence persistence)
     {
-        var result = new Dictionary<string, AnimationStateEntry>(StringComparer.Ordinal);
+        var result = new Dictionary<string, AnimationStateEntry>(StringComparer.OrdinalIgnoreCase);
         var usedFileNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         // Work from a stable registry snapshot in case definitions are changed while
@@ -1304,11 +1304,14 @@ public sealed partial class EngineState
 
         var definitions = new List<AnimationDefinition>();
         var sourceEntries = new Dictionary<AnimationDefinition, AnimationStateEntry>();
+        var incomingKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var (key, entry) in animations)
         {
             if (entry is null)
                 continue;
+            if (!incomingKeys.Add(key))
+                throw new InvalidDataException($"Duplicate GANI animation key '{key}'.");
 
             if (!overwriteExisting && Cycle._cycles.ContainsKey(key))
                 continue;
@@ -1338,7 +1341,7 @@ public sealed partial class EngineState
             {
                 definition.Key = key;
             }
-            else if (!string.Equals(definition.Key, key, StringComparison.Ordinal))
+            else if (!string.Equals(definition.Key, key, StringComparison.OrdinalIgnoreCase))
             {
                 throw DefinitionError(entry, baseDirectory, new InvalidDataException(
                     $"Animation state entry '{key}' contains definition key '{definition.Key}'."));
@@ -1352,7 +1355,7 @@ public sealed partial class EngineState
         // materialization allows circular transitions such as idle -> blink -> idle.
         var availableKeys = new HashSet<string>(
             Cycle._cycles.Keys,
-            StringComparer.Ordinal);
+            StringComparer.OrdinalIgnoreCase);
 
         foreach (var definition in definitions)
             availableKeys.Add(definition.Key);
@@ -1363,7 +1366,7 @@ public sealed partial class EngineState
                 !string.Equals(
                     definition.NextCycleKey,
                     definition.Key,
-                    StringComparison.Ordinal) &&
+                    StringComparison.OrdinalIgnoreCase) &&
                 !availableKeys.Contains(definition.NextCycleKey))
             {
                 throw DefinitionError(sourceEntries[definition], baseDirectory, new InvalidDataException(

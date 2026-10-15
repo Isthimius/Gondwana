@@ -199,7 +199,7 @@ public class Cycle : ICloneable, IDisposable
 
     #region static members
 
-    internal static readonly Dictionary<string, Cycle> _cycles = new();
+    internal static readonly Dictionary<string, Cycle> _cycles = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
     /// Gets the total number of animation cycles currently registered

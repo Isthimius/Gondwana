@@ -467,6 +467,25 @@ public sealed class SceneGscnTests
     }
 
     /// <summary>
+    /// Verifies animation source identities are unique regardless of key casing.
+    /// </summary>
+    [Fact]
+    public void Validator_RejectsAnimationSourcesThatDifferOnlyByCase()
+    {
+        var definition = new SceneDefinition
+        {
+            AnimationSources =
+            [
+                SceneAnimationSourceDefinition.Loose("idle", "idle.gani"),
+                SceneAnimationSourceDefinition.Loose("IDLE", "another.gani")
+            ]
+        };
+
+        Assert.Contains(SceneDefinitionValidator.Validate(definition),
+            error => error.Contains("duplicate source for animation", StringComparison.Ordinal));
+    }
+
+    /// <summary>
     /// Verifies authoring sources do not perform filesystem io during runtime materialization.
     /// </summary>
     [Fact]

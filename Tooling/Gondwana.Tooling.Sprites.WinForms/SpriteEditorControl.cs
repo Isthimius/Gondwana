@@ -12,6 +12,11 @@ namespace Gondwana.Tooling.Sprites.WinForms;
 /// <summary>The shared standalone and Studio GSPR authoring surface.</summary>
 public sealed class SpriteEditorControl : UserControl
 {
+    private sealed record AnimationChoice(string? Key)
+    {
+        public override string ToString() => Key ?? "(none)";
+    }
+
     /// <summary>
     /// Gets the pane names.
     /// </summary>
@@ -78,8 +83,8 @@ public sealed class SpriteEditorControl : UserControl
         _animationPicker.SelectedIndexChanged += (_, _) =>
         {
             if (_syncingAnimationPicker || SelectedSprite is not { } entry ||
-                _animationPicker.SelectedItem is not string selected) return;
-            string? key = selected == "(none)" ? null : selected;
+                _animationPicker.SelectedItem is not AnimationChoice selected) return;
+            string? key = selected.Key;
             if (entry.AnimationKey == key) return;
             entry.AnimationKey = key;
             if (key is null) entry.StartAnimation = false;
@@ -210,7 +215,7 @@ public sealed class SpriteEditorControl : UserControl
 
     private void AddAnimationDefinition(AnimationDefinition definition)
     {
-        if (_animationDefinitions.Any(existing => existing.Key == definition.Key))
+        if (_animationDefinitions.Any(existing => string.Equals(existing.Key, definition.Key, StringComparison.OrdinalIgnoreCase)))
         {
             _sourceWarnings.Add($"Duplicate GANI source for '{definition.Key}'.");
             return;
@@ -306,13 +311,21 @@ public sealed class SpriteEditorControl : UserControl
         try
         {
             _animationPicker.Items.Clear();
-            _animationPicker.Items.Add("(none)");
-            foreach (var key in _animationDefinitions.Select(a => a.Key).Distinct(StringComparer.Ordinal).OrderBy(k => k, StringComparer.Ordinal))
-                _animationPicker.Items.Add(key);
+            var noAnimation = new AnimationChoice(null);
+            _animationPicker.Items.Add(noAnimation);
+            foreach (var key in _animationDefinitions.Select(a => a.Key).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(k => k, StringComparer.OrdinalIgnoreCase))
+                _animationPicker.Items.Add(new AnimationChoice(key));
             var current = SelectedSprite?.AnimationKey;
-            if (!string.IsNullOrWhiteSpace(current) && !_animationPicker.Items.Contains(current))
-                _animationPicker.Items.Add(current);
-            _animationPicker.SelectedItem = string.IsNullOrWhiteSpace(current) ? "(none)" : current;
+            var selectedChoice = string.IsNullOrWhiteSpace(current)
+                ? noAnimation
+                : _animationPicker.Items.Cast<AnimationChoice>().FirstOrDefault(choice =>
+                    choice.Key is not null && string.Equals(choice.Key, current, StringComparison.OrdinalIgnoreCase));
+            if (!string.IsNullOrWhiteSpace(current) && selectedChoice is null)
+            {
+                selectedChoice = new AnimationChoice(current);
+                _animationPicker.Items.Add(selectedChoice);
+            }
+            _animationPicker.SelectedItem = selectedChoice;
         }
         finally { _syncingAnimationPicker = false; }
         _properties.SelectedObject = SelectedSprite is { } selected ? new SpriteProperties(selected) : null;
@@ -350,7 +363,7 @@ public sealed class SpriteEditorControl : UserControl
         foreach (var entry in Document.Definition.Sprites)
         {
             if (!string.IsNullOrWhiteSpace(entry.AnimationKey) &&
-                !_animationDefinitions.Any(animation => animation.Key == entry.AnimationKey))
+                !_animationDefinitions.Any(animation => string.Equals(animation.Key, entry.AnimationKey, StringComparison.OrdinalIgnoreCase)))
                 lines.Add($"WARNING: Sprite '{entry.Nickname}': GANI animation '{entry.AnimationKey}' has no loaded authoring source.");
             var scenes = _sceneDefinitions.Where(scene => scene.ID == entry.SceneId).ToList();
             if (scenes.Count != 1) lines.Add($"WARNING: Sprite '{entry.Nickname}': Scene source missing or ambiguous.");

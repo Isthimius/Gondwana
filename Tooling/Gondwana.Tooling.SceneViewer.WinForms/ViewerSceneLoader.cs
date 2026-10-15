@@ -14,8 +14,8 @@ internal sealed class ViewerSceneLoader
 {
     private readonly Dictionary<string, (string Path, string? Entry)> _tilesheets = new(StringComparer.Ordinal);
     private readonly Dictionary<string, AssetsFile> _archives = new(StringComparer.OrdinalIgnoreCase);
-    private readonly Dictionary<string, AnimationDefinition> _animations = new(StringComparer.Ordinal);
-    private readonly Dictionary<string, Cycle> _cycles = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, AnimationDefinition> _animations = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, Cycle> _cycles = new(StringComparer.OrdinalIgnoreCase);
     private ViewerContentCatalog _catalog = null!;
 
     /// <summary>Loads a scene member and resolves its explicitly identified dependencies.</summary>
@@ -50,7 +50,7 @@ internal sealed class ViewerSceneLoader
                     ? AnimationDefinitionSerializer.Load(Archive(location), entry!, source.AnimationKey)
                     : AnimationDefinitionSerializer.Load(location, source.AnimationKey);
                 Validate(AnimationDefinitionValidator.Validate(animation), "GANI");
-                if (!string.Equals(animation.Key, source.AnimationKey, StringComparison.Ordinal))
+                if (!string.Equals(animation.Key, source.AnimationKey, StringComparison.OrdinalIgnoreCase))
                     throw new InvalidDataException($"Expected animation key '{source.AnimationKey}', found '{animation.Key}'.");
                 _animations.Add(animation.Key, animation);
                 foreach (var sheet in animation.TilesheetSources)

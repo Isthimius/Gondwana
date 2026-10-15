@@ -129,4 +129,20 @@ public sealed class SpriteAnimationGsprTests
         Assert.Contains(SpriteDefinitionValidator.Validate(definition),
             error => error.Contains("StartAnimation requires AnimationKey", StringComparison.Ordinal));
     }
+
+    [Fact]
+    public void AnimationSourcesRejectKeysThatDifferOnlyByCase()
+    {
+        var definition = new SpriteDefinition
+        {
+            AnimationSources =
+            [
+                SpriteAnimationSourceDefinition.Loose("idle", "idle.gani"),
+                SpriteAnimationSourceDefinition.Loose("IDLE", "another.gani")
+            ]
+        };
+
+        Assert.Contains(SpriteDefinitionValidator.Validate(definition),
+            error => error.Contains("duplicate AnimationSources identity", StringComparison.Ordinal));
+    }
 }
