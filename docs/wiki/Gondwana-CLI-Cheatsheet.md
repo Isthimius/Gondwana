@@ -216,6 +216,19 @@ When multiple `.csproj` files are present, the command lists them, warns, and us
 
 ---
 
+
+### Semantic packing
+
+`gondwana assets pack` (also `gondwana pack`) automatically recognizes `.gts`, `.gani`, `.gscn`, `.gspr`, and `.gsnd` as their corresponding definition asset types. It reads every member through the Core serializers and writes one canonical document per input file. It does not split members or change their logical identities.
+
+Before writing, packing resolves image/audio resources and GTS/GANI/GSCN dependencies across the complete inventory. Explicit authoring sources select a physical document and logical member. When source metadata is absent, a unique matching logical member in the final inventory supplies it; ambiguous matches fail. Physical references are transformed through `DefinitionReferenceRelocator`. `NextCycleKey` remains a logical reference; cycle relationships are allowed. URI audio resources remain unchanged.
+
+By default dependencies must be in the planned package. Use `--allow-external` only when deliberately retaining existing loose files or external GAF dependencies. Explicit external targets must exist, and referenced typed entries and logical members are checked. This option does not search for unspecified external dependencies or recursively package external documents. External GAFs use the supplied password. External paths are rebased relative to the final output where possible. Binary media are not decoded during preflight.
+
+`--append` analyzes the final inventory, including existing entries. An incoming file replaces its entire matching typed entry, never appends members to an existing document. Omitted loose dependencies under the source root can resolve to matching existing typed entries. Retained documents are checked against replacements, so removing a referenced member fails. Unaffected entry contents are preserved; existing AES encryption is retained.
+
+Packing validates before writing, builds a temporary sibling archive, and replaces the destination only after successful writing and validation. Failure or cancellation leaves an existing output intact. The output itself is excluded when inside the source directory. Without `--append`, a nonempty invocation replaces the package completely; an empty input leaves it unchanged. Input files are not modified. `assets unpack` remains byte extraction and does not reverse reference transformations.
+
 ### `gondwana assets pack <source> <output>`
 
 | Argument / Option | Short | Default | Description |
@@ -224,7 +237,8 @@ When multiple `.csproj` files are present, the command lists them, warns, and us
 | `<output>` | | | **Required.** Output bundle path, such as `game.assets` or `game.gaf`. |
 | `--type <name>` | `-t` | `Misc` | Default type for files whose type cannot be inferred from the extension. |
 | `--recurse` | `-r` | `true` | Recurse into subdirectories. |
-| `--append` | `-a` | `false` | Append to an existing bundle. Without this option the output is replaced so stale entries do not survive a rerun. |
+| `--append` | `-a` | `false` | Retain existing entries; replace matching typed documents in full. Nonempty packing without this option replaces the output. |
+| `--allow-external` | | `false` | Permit verified explicit loose/external-GAF dependencies outside the package. |
 | `--type-map <file>` | `-m` | *(built-in defaults)* | Optional JSON type-map file. Resolution order: this option → CWD config → executable config → built-in defaults. |
 | `--password <value>` | `-p` | *(none)* | Password-protect the bundle. Required with `--encrypt`. |
 | `--encrypt` | `-e` | `false` | Encrypt the bundle with AES-256. Requires `--password`. |
@@ -725,6 +739,8 @@ The `--type-map` option is optional. When omitted, `assets pack` and the top-lev
 3. `gondwana-asset-types.json` beside the `gondwana` executable
 4. Built-in defaults
 
+The selected configuration overlays built-in defaults: omitted extensions retain their mappings. Explicit non-native overrides are supported; `--type` applies only to unknown extensions. Native extensions are reserved for `TilesheetDefinition` (`gts`), `AnimationDefinition` (`gani`), `SceneDefinition` (`gscn`), `SpriteDefinition` (`gspr`), and `AudioDefinition` (`gsnd`). Unknown enum names, malformed values, duplicate extensions/type keys, and conflicting native mappings fail clearly.
+
 Example `gondwana-asset-types.json`:
 
 ```json
@@ -738,7 +754,7 @@ Example `gondwana-asset-types.json`:
 }
 ```
 
-Valid type names match the `AssetTypes` enum: `Image`, `Audio`, `Video`, `Font`, `Cursor`, `Svg`, and `Misc`.
+Valid type names match the `AssetTypes` enum: `Image`, `Audio`, `Video`, `Font`, `Cursor`, `Svg`, `Misc`, `TilesheetDefinition`, `AnimationDefinition`, `SceneDefinition`, `SpriteDefinition`, and `AudioDefinition`.
 
 ---
 
