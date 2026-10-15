@@ -12,6 +12,7 @@ namespace Gondwana.Tests;
 /// <summary>
 /// Verifies region, frame, tile, cache-facing, and GTS collision-adjust behavior.
 /// </summary>
+[Collection("SpriteManager")]
 public sealed class TilesheetCollisionAdjustTests : IDisposable
 {
     private readonly string _tempDir = Path.Combine(
@@ -144,19 +145,27 @@ public sealed class TilesheetCollisionAdjustTests : IDisposable
         region.SetFrameCollisionAdjust(1, 0, secondAdjust);
 
         using var layer = new SceneLayer(1, 1, 16, 16);
-        using var sprite = new Sprite(layer, tilesheet.GetFrame(0, 0));
+        var sprite = new Sprite(layer, tilesheet.GetFrame(0, 0));
 
-        Assert.Equal(firstAdjust, sprite.AdjustCollisionArea);
-        Assert.False(sprite.AdjustCollisionAreaByFrame);
+        try
+        {
+            Assert.Equal(firstAdjust, sprite.AdjustCollisionArea);
+            Assert.False(sprite.AdjustCollisionAreaByFrame);
 
-        sprite.CurrentFrame = tilesheet.GetFrame(1, 0);
-        Assert.Equal(firstAdjust, sprite.AdjustCollisionArea);
+            sprite.CurrentFrame = tilesheet.GetFrame(1, 0);
+            Assert.Equal(firstAdjust, sprite.AdjustCollisionArea);
 
-        sprite.AdjustCollisionAreaByFrame = true;
-        Assert.Equal(secondAdjust, sprite.AdjustCollisionArea);
+            sprite.AdjustCollisionAreaByFrame = true;
+            Assert.Equal(secondAdjust, sprite.AdjustCollisionArea);
 
-        sprite.CurrentFrame = tilesheet.GetFrame(0, 0);
-        Assert.Equal(firstAdjust, sprite.AdjustCollisionArea);
+            sprite.CurrentFrame = tilesheet.GetFrame(0, 0);
+            Assert.Equal(firstAdjust, sprite.AdjustCollisionArea);
+        }
+        finally
+        {
+            if (SpriteManager.Instance._spriteList.Remove(sprite))
+                sprite.DisposeImmediate();
+        }
     }
 
     /// <summary>
