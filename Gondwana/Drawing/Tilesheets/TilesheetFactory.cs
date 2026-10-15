@@ -53,7 +53,7 @@ internal static class TilesheetFactory
         if (defaultAssetsFile is null && !string.IsNullOrWhiteSpace(archivePath) &&
             string.IsNullOrWhiteSpace(definition.Image?.FilePath) && string.IsNullOrWhiteSpace(definition.Image?.AssetsFilePath) &&
             !string.IsNullOrWhiteSpace(definition.Image?.AssetEntryName))
-            defaultAssetsFile = LoadExistingAssetsFile(archivePath);
+            defaultAssetsFile = LoadExistingAssetsFile(ResolvePath(archivePath, baseDirectory));
 
         var tilesheet = CreateTilesheet(
             definition,
