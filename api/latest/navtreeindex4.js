@@ -1,5 +1,15 @@
 var NAVTREEINDEX4 =
 {
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#a651f9e6caa064f13703299787d2087a7":[1,0,0,6,2,3,18],
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#a65297d9dfe74e2b65e6854e94aac26da":[0,0,0,6,3,3,7],
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#a65297d9dfe74e2b65e6854e94aac26da":[1,0,0,6,2,3,7],
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#a6e1f85fd7549347457e06502bc749a28":[0,0,0,6,3,3,14],
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#a6e1f85fd7549347457e06502bc749a28":[1,0,0,6,2,3,14],
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#a79fb34985e2d5b910ccbfc6799e8b17c":[0,0,0,6,3,3,13],
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#a79fb34985e2d5b910ccbfc6799e8b17c":[1,0,0,6,2,3,13],
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#a8e2b6b889c71336c9057e6167a931955":[0,0,0,6,3,3,9],
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#a8e2b6b889c71336c9057e6167a931955":[1,0,0,6,2,3,9],
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#a9ebc1045c4b1f39cd5a9d61dea79a9d9":[0,0,0,6,3,3,21],
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#a9ebc1045c4b1f39cd5a9d61dea79a9d9":[1,0,0,6,2,3,21],
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#a9ec8b0b9d0cea1735e079b6db3129e9e":[0,0,0,6,3,3,6],
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectDarknessOverlay.html#a9ec8b0b9d0cea1735e079b6db3129e9e":[1,0,0,6,2,3,6],
@@ -239,15 +249,5 @@ var NAVTREEINDEX4 =
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a2d0e32ce95dfb20eda0241d88fd50868":[1,0,0,6,2,9,9],
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a3a6ae0a25a5e11f4a6247466c4c51f15":[0,0,0,6,3,9,11],
 "classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a3a6ae0a25a5e11f4a6247466c4c51f15":[1,0,0,6,2,9,11],
-"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a3bb54a27f9f7161f2fe2be3781174faf":[0,0,0,6,3,9,16],
-"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a3bb54a27f9f7161f2fe2be3781174faf":[1,0,0,6,2,9,16],
-"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a42aa93a7e2e72587335f073c7dcf0a30":[0,0,0,6,3,9,19],
-"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a42aa93a7e2e72587335f073c7dcf0a30":[1,0,0,6,2,9,19],
-"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a4b06dcb832586d77a5126c05508f51cd":[0,0,0,6,3,9,8],
-"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a4b06dcb832586d77a5126c05508f51cd":[1,0,0,6,2,9,8],
-"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a4b75b7d1eab84f13b84724152d8db064":[0,0,0,6,3,9,14],
-"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a4b75b7d1eab84f13b84724152d8db064":[1,0,0,6,2,9,14],
-"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a57d1d1d64c4621e321d5449189c02a84":[0,0,0,6,3,9,18],
-"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a57d1d1d64c4621e321d5449189c02a84":[1,0,0,6,2,9,18],
-"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a5dbeec51b841519e3b6d4a9729e9a716":[0,0,0,6,3,9,3]
+"classGondwana_1_1Drawing_1_1Direct_1_1DirectRadialLight.html#a3bb54a27f9f7161f2fe2be3781174faf":[0,0,0,6,3,9,16]
 };

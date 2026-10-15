@@ -1,6 +1,7 @@
 var namespaceGondwana_1_1Audio_1_1GSND =
 [
     [ "AudioDefinition", "classGondwana_1_1Audio_1_1GSND_1_1AudioDefinition.html", "classGondwana_1_1Audio_1_1GSND_1_1AudioDefinition" ],
+    [ "AudioDefinitionDocument", "classGondwana_1_1Audio_1_1GSND_1_1AudioDefinitionDocument.html", "classGondwana_1_1Audio_1_1GSND_1_1AudioDefinitionDocument" ],
     [ "AudioDefinitionSource", "classGondwana_1_1Audio_1_1GSND_1_1AudioDefinitionSource.html", "classGondwana_1_1Audio_1_1GSND_1_1AudioDefinitionSource" ],
     [ "AudioResourceDefinition", "classGondwana_1_1Audio_1_1GSND_1_1AudioResourceDefinition.html", "classGondwana_1_1Audio_1_1GSND_1_1AudioResourceDefinition" ],
     [ "AudioDefinitionSourceKind", "namespaceGondwana_1_1Audio_1_1GSND.html#ac6269f8c685110e0e184a7e67ceed6ed", [

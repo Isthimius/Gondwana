@@ -1,6 +1,7 @@
 var namespaceGondwana_1_1Drawing_1_1Animation_1_1GANI =
 [
     [ "AnimationDefinition", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinition.html", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinition" ],
+    [ "AnimationDefinitionDocument", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinitionDocument.html", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinitionDocument" ],
     [ "AnimationDefinitionSource", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinitionSource.html", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinitionSource" ],
     [ "AnimationFrameDefinition", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationFrameDefinition.html", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationFrameDefinition" ],
     [ "AnimationTilesheetSourceDefinition", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationTilesheetSourceDefinition.html", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationTilesheetSourceDefinition" ],

@@ -14,6 +14,7 @@ var annotated_dup =
         ] ],
         [ "GSND", "namespaceGondwana_1_1Audio_1_1GSND.html", [
           [ "AudioDefinition", "classGondwana_1_1Audio_1_1GSND_1_1AudioDefinition.html", "classGondwana_1_1Audio_1_1GSND_1_1AudioDefinition" ],
+          [ "AudioDefinitionDocument", "classGondwana_1_1Audio_1_1GSND_1_1AudioDefinitionDocument.html", "classGondwana_1_1Audio_1_1GSND_1_1AudioDefinitionDocument" ],
           [ "AudioDefinitionSource", "classGondwana_1_1Audio_1_1GSND_1_1AudioDefinitionSource.html", "classGondwana_1_1Audio_1_1GSND_1_1AudioDefinitionSource" ],
           [ "AudioResourceDefinition", "classGondwana_1_1Audio_1_1GSND_1_1AudioResourceDefinition.html", "classGondwana_1_1Audio_1_1GSND_1_1AudioResourceDefinition" ]
         ] ],
@@ -98,6 +99,7 @@ var annotated_dup =
         [ "Animation", "namespaceGondwana_1_1Drawing_1_1Animation.html", [
           [ "GANI", "namespaceGondwana_1_1Drawing_1_1Animation_1_1GANI.html", [
             [ "AnimationDefinition", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinition.html", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinition" ],
+            [ "AnimationDefinitionDocument", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinitionDocument.html", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinitionDocument" ],
             [ "AnimationDefinitionSource", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinitionSource.html", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationDefinitionSource" ],
             [ "AnimationFrameDefinition", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationFrameDefinition.html", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationFrameDefinition" ],
             [ "AnimationTilesheetSourceDefinition", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationTilesheetSourceDefinition.html", "classGondwana_1_1Drawing_1_1Animation_1_1GANI_1_1AnimationTilesheetSourceDefinition" ]
@@ -140,6 +142,7 @@ var annotated_dup =
         [ "Sprites", "namespaceGondwana_1_1Drawing_1_1Sprites.html", [
           [ "GSPR", "namespaceGondwana_1_1Drawing_1_1Sprites_1_1GSPR.html", [
             [ "SpriteDefinition", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinition.html", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinition" ],
+            [ "SpriteDefinitionDocument", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinitionDocument.html", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinitionDocument" ],
             [ "SpriteDefinitionSource", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinitionSource.html", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinitionSource" ],
             [ "SpriteFrameDefinition", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteFrameDefinition.html", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteFrameDefinition" ],
             [ "SpriteInstanceDefinition", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition" ],
@@ -154,6 +157,7 @@ var annotated_dup =
         [ "Tilesheets", "namespaceGondwana_1_1Drawing_1_1Tilesheets.html", [
           [ "GTS", "namespaceGondwana_1_1Drawing_1_1Tilesheets_1_1GTS.html", [
             [ "TilesheetDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinition.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinition" ],
+            [ "TilesheetDefinitionDocument", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionDocument.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionDocument" ],
             [ "TilesheetDefinitionSource", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetDefinitionSource" ],
             [ "TilesheetFrameDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetFrameDefinition.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetFrameDefinition" ],
             [ "TilesheetImageDefinition", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetImageDefinition.html", "classGondwana_1_1Drawing_1_1Tilesheets_1_1GTS_1_1TilesheetImageDefinition" ],
@@ -290,6 +294,7 @@ var annotated_dup =
           [ "SceneAnimationSourceDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition" ],
           [ "SceneCollisionProfileDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneCollisionProfileDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneCollisionProfileDefinition" ],
           [ "SceneDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinition" ],
+          [ "SceneDefinitionDocument", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinitionDocument.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinitionDocument" ],
           [ "SceneDefinitionSource", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinitionSource.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinitionSource" ],
           [ "SceneFrameDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneFrameDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneFrameDefinition" ],
           [ "SceneLayerDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerDefinition" ],

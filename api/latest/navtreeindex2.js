@@ -1,5 +1,11 @@
 var NAVTREEINDEX2 =
 {
+"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#ad17dbb0044aa6e3cbef26cf36a3fc3c1":[1,0,0,3,1,1,1],
+"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#ae3aadf6bfbe7fb8c7d38d754f6210b52":[0,0,0,3,1,1,22],
+"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#ae3aadf6bfbe7fb8c7d38d754f6210b52":[1,0,0,3,1,1,22],
+"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#aea0b6a49597184902c42ab00a6ece9ec":[0,0,0,3,1,1,9],
+"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#aea0b6a49597184902c42ab00a6ece9ec":[1,0,0,3,1,1,9],
+"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#aeaf838a8b3f9956d59d89ed99a81515e":[0,0,0,3,1,1,10],
 "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#aeaf838a8b3f9956d59d89ed99a81515e":[1,0,0,3,1,1,10],
 "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#af042d53e1d872cdc1590d4a3792e39b7":[0,0,0,3,1,1,19],
 "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#af042d53e1d872cdc1590d4a3792e39b7":[1,0,0,3,1,1,19],
@@ -243,11 +249,5 @@ var NAVTREEINDEX2 =
 "classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#a87024aaee82908677db8284e0392ba3b":[1,0,0,19,2],
 "classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#a89ac609fc26ace2c12b4316c24aa9e6c":[0,0,0,21,7],
 "classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#a89ac609fc26ace2c12b4316c24aa9e6c":[1,0,0,19,7],
-"classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#a950f6a3a313494c672cb52c4ce16c4ee":[0,0,0,21,5],
-"classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#a950f6a3a313494c672cb52c4ce16c4ee":[1,0,0,19,5],
-"classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#ae3def773ec340fb7c56adb4d3ba6bc68":[0,0,0,21,0],
-"classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#ae3def773ec340fb7c56adb4d3ba6bc68":[1,0,0,19,0],
-"classGondwana_1_1Diagnostics_1_1RuntimeProfiler.html":[0,0,0,5,0],
-"classGondwana_1_1Diagnostics_1_1RuntimeProfiler.html":[1,0,0,5,0],
-"classGondwana_1_1Diagnostics_1_1RuntimeProfiler.html#a1d68c59ac5cf5faa28e532cda468d437":[0,0,0,5,0,4]
+"classGondwana_1_1CyclesPerSecondCalculatedEventArgs.html#a950f6a3a313494c672cb52c4ce16c4ee":[0,0,0,21,5]
 };

@@ -1,6 +1,7 @@
 var namespaceGondwana_1_1Drawing_1_1Sprites_1_1GSPR =
 [
     [ "SpriteDefinition", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinition.html", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinition" ],
+    [ "SpriteDefinitionDocument", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinitionDocument.html", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinitionDocument" ],
     [ "SpriteDefinitionSource", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinitionSource.html", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinitionSource" ],
     [ "SpriteFrameDefinition", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteFrameDefinition.html", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteFrameDefinition" ],
     [ "SpriteInstanceDefinition", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition" ],

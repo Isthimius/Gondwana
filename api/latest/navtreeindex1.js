@@ -1,8 +1,14 @@
 var NAVTREEINDEX1 =
 {
-"classGondwana_1_1Audio_1_1GSND_1_1AudioResourceDefinition.html#abbd9216545413210eb200676a10982b9":[1,0,0,1,1,2,2],
-"classGondwana_1_1Audio_1_1GSND_1_1AudioResourceDefinition.html#ad900b3ecb9976d1a444775cbac2ed193":[0,0,0,1,1,2,6],
-"classGondwana_1_1Audio_1_1GSND_1_1AudioResourceDefinition.html#ad900b3ecb9976d1a444775cbac2ed193":[1,0,0,1,1,2,6],
+"classGondwana_1_1Audio_1_1GSND_1_1AudioResourceDefinition.html#a8bca329e05eb10bb85b1171e3e4cf185":[1,0,0,1,1,3,1],
+"classGondwana_1_1Audio_1_1GSND_1_1AudioResourceDefinition.html#a8cfa866d6a74ca259c78cae449791ea8":[0,0,0,1,1,3,7],
+"classGondwana_1_1Audio_1_1GSND_1_1AudioResourceDefinition.html#a8cfa866d6a74ca259c78cae449791ea8":[1,0,0,1,1,3,7],
+"classGondwana_1_1Audio_1_1GSND_1_1AudioResourceDefinition.html#a9a1709e70847120a30f587c2055206ad":[0,0,0,1,1,3,8],
+"classGondwana_1_1Audio_1_1GSND_1_1AudioResourceDefinition.html#a9a1709e70847120a30f587c2055206ad":[1,0,0,1,1,3,8],
+"classGondwana_1_1Audio_1_1GSND_1_1AudioResourceDefinition.html#abbd9216545413210eb200676a10982b9":[0,0,0,1,1,3,2],
+"classGondwana_1_1Audio_1_1GSND_1_1AudioResourceDefinition.html#abbd9216545413210eb200676a10982b9":[1,0,0,1,1,3,2],
+"classGondwana_1_1Audio_1_1GSND_1_1AudioResourceDefinition.html#ad900b3ecb9976d1a444775cbac2ed193":[0,0,0,1,1,3,6],
+"classGondwana_1_1Audio_1_1GSND_1_1AudioResourceDefinition.html#ad900b3ecb9976d1a444775cbac2ed193":[1,0,0,1,1,3,6],
 "classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider.html":[0,0,0,1,2,0],
 "classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider.html":[1,0,0,1,2,0],
 "classGondwana_1_1Audio_1_1Midi_1_1SynthesizerSampleProvider.html#a28d7dc5c88b95c607ad8fbac0195018c":[0,0,0,1,2,0,3],
@@ -243,11 +249,5 @@ var NAVTREEINDEX1 =
 "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#abddb33965cdcc6ef7ad758ecfc2dcc19":[1,0,0,3,1,1,20],
 "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#ac8205eddbe1c3b7d9efff97f319a1132":[0,0,0,3,1,1,13],
 "classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#ac8205eddbe1c3b7d9efff97f319a1132":[1,0,0,3,1,1,13],
-"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#ad17dbb0044aa6e3cbef26cf36a3fc3c1":[0,0,0,3,1,1,1],
-"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#ad17dbb0044aa6e3cbef26cf36a3fc3c1":[1,0,0,3,1,1,1],
-"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#ae3aadf6bfbe7fb8c7d38d754f6210b52":[0,0,0,3,1,1,22],
-"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#ae3aadf6bfbe7fb8c7d38d754f6210b52":[1,0,0,3,1,1,22],
-"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#aea0b6a49597184902c42ab00a6ece9ec":[0,0,0,3,1,1,9],
-"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#aea0b6a49597184902c42ab00a6ece9ec":[1,0,0,3,1,1,9],
-"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#aeaf838a8b3f9956d59d89ed99a81515e":[0,0,0,3,1,1,10]
+"classGondwana_1_1Blazor_1_1Hosting_1_1BlazorGameHostBase.html#ad17dbb0044aa6e3cbef26cf36a3fc3c1":[0,0,0,3,1,1,1]
 };

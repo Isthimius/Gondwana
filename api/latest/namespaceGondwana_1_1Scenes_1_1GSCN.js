@@ -3,6 +3,7 @@ var namespaceGondwana_1_1Scenes_1_1GSCN =
     [ "SceneAnimationSourceDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneAnimationSourceDefinition" ],
     [ "SceneCollisionProfileDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneCollisionProfileDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneCollisionProfileDefinition" ],
     [ "SceneDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinition" ],
+    [ "SceneDefinitionDocument", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinitionDocument.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinitionDocument" ],
     [ "SceneDefinitionSource", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinitionSource.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneDefinitionSource" ],
     [ "SceneFrameDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneFrameDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneFrameDefinition" ],
     [ "SceneLayerDefinition", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerDefinition.html", "classGondwana_1_1Scenes_1_1GSCN_1_1SceneLayerDefinition" ],

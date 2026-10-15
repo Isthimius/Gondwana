@@ -136,6 +136,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a191ee100b6336cf259c2761c68707510"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new tilesheet from a tilesheet definition object and registers it in the registry.  <br /></td></tr>
 <tr class="memitem:a9ba63d5d1418a8cfe17d3c87d3b8bf17" id="r_a9ba63d5d1418a8cfe17d3c87d3b8bf17"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9ba63d5d1418a8cfe17d3c87d3b8bf17">LoadFromDefinitionAsset</a> (<a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html">AssetsFile</a> assetsFile, string gtsEntryName)</td></tr>
 <tr class="memdesc:a9ba63d5d1418a8cfe17d3c87d3b8bf17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new tilesheet from a <a class="el" href="namespaceGondwana_1_1Drawing_1_1Tilesheets_1_1GTS.html">GTS</a> definition stored as an entry in an assets file and registers it in the registry.  <br /></td></tr>
+<tr class="memitem:a376046a3429339e8226d96c616935535" id="r_a376046a3429339e8226d96c616935535"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a376046a3429339e8226d96c616935535">LoadFromDefinitionFile</a> (string gtsPath, string tilesheetName)</td></tr>
+<tr class="memdesc:a376046a3429339e8226d96c616935535"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads and registers one selected logical tilesheet.  <br /></td></tr>
+<tr class="memitem:a7a6776f5aa22953483d11e3e87de4bb0" id="r_a7a6776f5aa22953483d11e3e87de4bb0"><td class="memItemLeft" align="right" valign="top">IReadOnlyList&lt; <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a6776f5aa22953483d11e3e87de4bb0">LoadAllFromDefinitionFile</a> (string gtsPath)</td></tr>
+<tr class="memdesc:a7a6776f5aa22953483d11e3e87de4bb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates all tilesheets before committing them to the registry.  <br /></td></tr>
+<tr class="memitem:aa0bcf55f652c68c77949c85ef455f7cd" id="r_aa0bcf55f652c68c77949c85ef455f7cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa0bcf55f652c68c77949c85ef455f7cd">LoadFromDefinitionAsset</a> (<a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html">AssetsFile</a> assetsFile, string gtsEntryName, string tilesheetName)</td></tr>
+<tr class="memdesc:aa0bcf55f652c68c77949c85ef455f7cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads and registers one selected logical tilesheet.  <br /></td></tr>
+<tr class="memitem:a16e8b91e07637441857930ad3f26d6b5" id="r_a16e8b91e07637441857930ad3f26d6b5"><td class="memItemLeft" align="right" valign="top">IReadOnlyList&lt; <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a16e8b91e07637441857930ad3f26d6b5">LoadAllFromDefinitionAsset</a> (<a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html">AssetsFile</a> assetsFile, string gtsEntryName)</td></tr>
+<tr class="memdesc:a16e8b91e07637441857930ad3f26d6b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates all tilesheets before committing them to the registry.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-properties" class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
@@ -248,6 +256,63 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a id="a16e8b91e07637441857930ad3f26d6b5" name="a16e8b91e07637441857930ad3f26d6b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16e8b91e07637441857930ad3f26d6b5">&#9670;&#160;</a></span>LoadAllFromDefinitionAsset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IReadOnlyList&lt; <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a> &gt; Gondwana.Drawing.Tilesheets.TilesheetRegistry.LoadAllFromDefinitionAsset </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html">AssetsFile</a></td>          <td class="paramname"><span class="paramname"><em>assetsFile</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string</td>          <td class="paramname"><span class="paramname"><em>gtsEntryName</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates all tilesheets before committing them to the registry. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">assetsFile</td><td>The archive.</td></tr>
+    <tr><td class="paramname">gtsEntryName</td><td>The physical entry name.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The registered tilesheets in document order.</dd></dl>
+
+</div>
+</div>
+<a id="a7a6776f5aa22953483d11e3e87de4bb0" name="a7a6776f5aa22953483d11e3e87de4bb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a6776f5aa22953483d11e3e87de4bb0">&#9670;&#160;</a></span>LoadAllFromDefinitionFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IReadOnlyList&lt; <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a> &gt; Gondwana.Drawing.Tilesheets.TilesheetRegistry.LoadAllFromDefinitionFile </td>
+          <td>(</td>
+          <td class="paramtype">string</td>          <td class="paramname"><span class="paramname"><em>gtsPath</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates all tilesheets before committing them to the registry. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gtsPath</td><td>The physical <a class="el" href="namespaceGondwana_1_1Drawing_1_1Tilesheets_1_1GTS.html">GTS</a> path.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The registered tilesheets in document order.</dd></dl>
+
+</div>
+</div>
 <a id="a93f19ca0c219ca9af20bfc6b7d4e2e49" name="a93f19ca0c219ca9af20bfc6b7d4e2e49"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a93f19ca0c219ca9af20bfc6b7d4e2e49">&#9670;&#160;</a></span>LoadFromAssetsFile()</h2>
 
@@ -348,7 +413,7 @@ Properties</h2></td></tr>
 </div>
 </div>
 <a id="a9ba63d5d1418a8cfe17d3c87d3b8bf17" name="a9ba63d5d1418a8cfe17d3c87d3b8bf17"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9ba63d5d1418a8cfe17d3c87d3b8bf17">&#9670;&#160;</a></span>LoadFromDefinitionAsset()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ba63d5d1418a8cfe17d3c87d3b8bf17">&#9670;&#160;</a></span>LoadFromDefinitionAsset() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -380,8 +445,47 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a id="aa0bcf55f652c68c77949c85ef455f7cd" name="aa0bcf55f652c68c77949c85ef455f7cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0bcf55f652c68c77949c85ef455f7cd">&#9670;&#160;</a></span>LoadFromDefinitionAsset() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a> Gondwana.Drawing.Tilesheets.TilesheetRegistry.LoadFromDefinitionAsset </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGondwana_1_1Assets_1_1AssetsFile.html">AssetsFile</a></td>          <td class="paramname"><span class="paramname"><em>assetsFile</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string</td>          <td class="paramname"><span class="paramname"><em>gtsEntryName</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string</td>          <td class="paramname"><span class="paramname"><em>tilesheetName</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Loads and registers one selected logical tilesheet. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">assetsFile</td><td>The archive.</td></tr>
+    <tr><td class="paramname">gtsEntryName</td><td>The physical entry name.</td></tr>
+    <tr><td class="paramname">tilesheetName</td><td>The logical tilesheet name.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The registered tilesheet.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00482">482</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+
+</div>
+</div>
 <a id="a1e86c11f8b05c078f454436a3a875de6" name="a1e86c11f8b05c078f454436a3a875de6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1e86c11f8b05c078f454436a3a875de6">&#9670;&#160;</a></span>LoadFromDefinitionFile()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e86c11f8b05c078f454436a3a875de6">&#9670;&#160;</a></span>LoadFromDefinitionFile() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -405,6 +509,39 @@ Properties</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>The newly created and registered <a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html" title="Represents a tilesheet image and metadata for rendering tiles.">Tilesheet</a>.</dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00424">424</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
+
+</div>
+</div>
+<a id="a376046a3429339e8226d96c616935535" name="a376046a3429339e8226d96c616935535"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a376046a3429339e8226d96c616935535">&#9670;&#160;</a></span>LoadFromDefinitionFile() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGondwana_1_1Drawing_1_1Tilesheets_1_1Tilesheet.html">Tilesheet</a> Gondwana.Drawing.Tilesheets.TilesheetRegistry.LoadFromDefinitionFile </td>
+          <td>(</td>
+          <td class="paramtype">string</td>          <td class="paramname"><span class="paramname"><em>gtsPath</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string</td>          <td class="paramname"><span class="paramname"><em>tilesheetName</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Loads and registers one selected logical tilesheet. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gtsPath</td><td>The physical <a class="el" href="namespaceGondwana_1_1Drawing_1_1Tilesheets_1_1GTS.html">GTS</a> path.</td></tr>
+    <tr><td class="paramname">tilesheetName</td><td>The logical tilesheet name.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The registered tilesheet.</dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="TilesheetRegistry_8cs_source.html#l00464">464</a> of file <a class="el" href="TilesheetRegistry_8cs_source.html">TilesheetRegistry.cs</a>.</p>
 
 </div>
 </div>
