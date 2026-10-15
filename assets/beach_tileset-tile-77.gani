@@ -1,46 +1,94 @@
 {
-  "Key": "beach_tileset.tile.77",
-  "ThrottleTime": 0.0,
-  "CycleType": "Repeating",
-  "HideTileOnCycleEnd": false,
-  "TilesheetSources": [
+  "Definitions": [
     {
-      "Tilesheet": "beach_tileset",
-      "Kind": "LooseDefinitionFile",
-      "GtsPath": "beach_tileset.gts"
+      "Key": "beach_tileset.tile.77",
+      "ThrottleTime": 0.0,
+      "CycleType": "Repeating",
+      "HideTileOnCycleEnd": false,
+      "TilesheetSources": [
+        {
+          "Tilesheet": "beach_tileset",
+          "Kind": "LooseDefinitionFile",
+          "GtsPath": "beach_tileset.gts"
+        }
+      ],
+      "Frames": [
+        {
+          "DurationSeconds": 0.25,
+          "Tilesheet": "beach_tileset",
+          "RegionName": "default",
+          "XTile": 5,
+          "YTile": 2
+        },
+        {
+          "DurationSeconds": 0.25,
+          "Tilesheet": "beach_tileset",
+          "RegionName": "default",
+          "XTile": 14,
+          "YTile": 2
+        },
+        {
+          "DurationSeconds": 0.25,
+          "Tilesheet": "beach_tileset",
+          "RegionName": "default",
+          "XTile": 23,
+          "YTile": 2
+        },
+        {
+          "DurationSeconds": 0.25,
+          "Tilesheet": "beach_tileset",
+          "RegionName": "default",
+          "XTile": 32,
+          "YTile": 2
+        }
+      ],
+      "Source": {
+        "Kind": 1,
+        "GaniFilePath": "X:\\github\\isthimius\\Gondwana\\assets\\.beach_tileset-tile-77.gani.5366a0d060164b2ba224e1977cecfb0c.tmp"
+      }
+    },
+    {
+      "Key": "animation",
+      "ThrottleTime": 0.1,
+      "CycleType": "Repeating",
+      "HideTileOnCycleEnd": false,
+      "TilesheetSources": [
+        {
+          "Tilesheet": "rooster",
+          "Kind": "LooseDefinitionFile",
+          "GtsPath": "rooster.gts"
+        }
+      ],
+      "Frames": [
+        {
+          "Tilesheet": "rooster",
+          "RegionName": "default",
+          "XTile": 0,
+          "YTile": 0
+        },
+        {
+          "Tilesheet": "rooster",
+          "RegionName": "default",
+          "XTile": 1,
+          "YTile": 0
+        },
+        {
+          "Tilesheet": "rooster",
+          "RegionName": "default",
+          "XTile": 2,
+          "YTile": 0
+        },
+        {
+          "Tilesheet": "rooster",
+          "RegionName": "default",
+          "XTile": 3,
+          "YTile": 0
+        }
+      ],
+      "Source": {
+        "Kind": 1,
+        "GaniFilePath": "X:\\github\\isthimius\\Gondwana\\assets\\.beach_tileset-tile-77.gani.5366a0d060164b2ba224e1977cecfb0c.tmp"
+      }
     }
-  ],
-  "Frames": [
-    {
-      "DurationSeconds": 0.25,
-      "Tilesheet": "beach_tileset",
-      "RegionName": "default",
-      "XTile": 5,
-      "YTile": 2
-    },
-    {
-      "DurationSeconds": 0.25,
-      "Tilesheet": "beach_tileset",
-      "RegionName": "default",
-      "XTile": 14,
-      "YTile": 2
-    },
-    {
-      "DurationSeconds": 0.25,
-      "Tilesheet": "beach_tileset",
-      "RegionName": "default",
-      "XTile": 23,
-      "YTile": 2
-    },
-    {
-      "DurationSeconds": 0.25,
-      "Tilesheet": "beach_tileset",
-      "RegionName": "default",
-      "XTile": 32,
-      "YTile": 2
-    }
-  ],
-  "Source": {
-    "Kind": 3
-  }
+  ]
 }

@@ -99,7 +99,8 @@ internal sealed class SceneAnimationSource : IDisposable
                     ? Path.GetFullPath(source.GtsPath)
                     : Path.GetFullPath(source.GtsPath, BaseDirectory);
 
-                var loaded = SceneTilesheetSource.Load(path);
+                // A GTS document can contain multiple tilesheets; select the logical member.
+                var loaded = SceneTilesheetSource.LoadMember(path, source.Tilesheet);
                 if (!string.Equals(
                         loaded.Definition.Name,
                         source.Tilesheet,
