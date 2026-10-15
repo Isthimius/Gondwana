@@ -69,6 +69,7 @@ public class Cycle : ICloneable, IDisposable
         _throttleTime = fromCycle._throttleTime;
         NextCycle = this;
         CycleKey = fromCycle.CycleKey;
+        HideTileOnCycleEnd = fromCycle.HideTileOnCycleEnd;
     }
 
     [OnDeserialized()]

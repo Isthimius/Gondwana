@@ -30,6 +30,10 @@ public sealed class SpriteInstanceDefinition
     /// Gets or sets the frame.
     /// </summary>
     public SpriteFrameDefinition? Frame { get; set; }
+    /// <summary>The logical key of the registered animation cycle assigned to this sprite, if any.</summary>
+    public string? AnimationKey { get; set; }
+    /// <summary>Whether the assigned animation should begin playing when materialized.</summary>
+    public bool StartAnimation { get; set; }
     /// <summary>
     /// Gets or sets whether this drawable is visible.
     /// </summary>

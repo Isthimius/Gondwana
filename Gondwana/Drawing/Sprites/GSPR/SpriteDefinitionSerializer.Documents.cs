@@ -133,6 +133,11 @@ public static partial class SpriteDefinitionSerializer
             source.GscnPath = RebasePath(source.GscnPath);
             source.AssetsFilePath = RebasePath(source.AssetsFilePath);
         }
+        foreach (var source in clone.AnimationSources)
+        {
+            source.GaniPath = RebasePath(source.GaniPath);
+            source.AssetsFilePath = RebasePath(source.AssetsFilePath);
+        }
         clone.Source = SpriteDefinitionSource.LooseDefinitionFile(path);
         return clone;
     }

@@ -1,5 +1,6 @@
 using System.Numerics;
 using Gondwana.Assets;
+using Gondwana.Drawing.Animation;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Scenes;
 using Newtonsoft.Json;
@@ -75,9 +76,11 @@ public static partial class SpriteDefinitionSerializer
             definition.Sprites ??= [];
             definition.TilesheetSources ??= [];
             definition.SceneSources ??= [];
+            definition.AnimationSources ??= [];
             if (definition.Sprites.Any(sprite => sprite is null) ||
                 definition.TilesheetSources.Any(source => source is null) ||
-                definition.SceneSources.Any(source => source is null))
+                definition.SceneSources.Any(source => source is null) ||
+                definition.AnimationSources.Any(source => source is null))
                 throw new InvalidDataException("GSPR collections cannot contain null entries.");
             return definition;
         }
@@ -115,6 +118,11 @@ public static partial class SpriteDefinitionSerializer
         foreach (var source in clone.SceneSources)
         {
             source.GscnPath = RebasePath(source.GscnPath);
+            source.AssetsFilePath = RebasePath(source.AssetsFilePath);
+        }
+        foreach (var source in clone.AnimationSources)
+        {
+            source.GaniPath = RebasePath(source.GaniPath);
             source.AssetsFilePath = RebasePath(source.AssetsFilePath);
         }
         return clone;
@@ -161,6 +169,8 @@ public static partial class SpriteDefinitionSerializer
             SceneLayerId = sprite.SceneLayer.ID,
             Position = sprite.SceneLayerCoordinates,
             Frame = frame.Tilesheet is null ? null : new() { Tilesheet = frame.Tilesheet.Name, RegionName = frame.RegionName, XTile = frame.XTile, YTile = frame.YTile },
+            AnimationKey = sprite.TileAnimator.CurrentCycle?.CycleKey,
+            StartAnimation = sprite.TileAnimator.IsCycling,
             Visible = sprite.Visible,
             ZOrder = sprite.ZOrder,
             Rotation = sprite.Rotation,
@@ -244,6 +254,15 @@ public static partial class SpriteDefinitionSerializer
                 sprite.AdjustCollisionAreaByFrame = entry.AdjustCollisionAreaByFrame;
                 sprite.CollisionTypeByFrame = entry.CollisionTypeByFrame;
                 sprite.CollisionsEnabled = entry.CollisionsEnabled;
+                if (!string.IsNullOrWhiteSpace(entry.AnimationKey))
+                {
+                    // Cycle.GetAnimationCycle returns a per-sprite clone with independent playback state.
+                    var cycle = Cycle.GetAnimationCycle(entry.AnimationKey)
+                        ?? throw new InvalidDataException(
+                            $"Sprite '{entry.Nickname}': animation '{entry.AnimationKey}' is not registered.");
+                    sprite.TileAnimator.CurrentCycle = cycle;
+                    if (entry.StartAnimation) sprite.TileAnimator.StartAnimation();
+                }
             }
             SpriteManager.Instance.DefinitionProvenance = definition.Sprites.All(sprite => sprite.Id != Guid.Empty &&
                 !string.IsNullOrWhiteSpace(sprite.Nickname))
