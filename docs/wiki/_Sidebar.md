@@ -67,8 +67,7 @@
 
 - [[Rendering Order and Z-Order]]
 - [[Backbuffers]]
-  - [[Refresh Queues]]
-  - [[Dirty Rectangles]]
+  - [[Dirty Regions and Refresh Queues]]
 - [[Rendering Pipeline]]
   - [[GL Rendering Path]]
   - [[WebGL Rendering Path]]

@@ -1598,5 +1598,4 @@ Related topics:
 
 - [[DirectDrawing]]
 - [[Using Views and Cameras]]
-- [[Dirty Rectangles]]
-- [[Refresh Queues]]
+- [[Dirty Regions and Refresh Queues]]

@@ -359,8 +359,7 @@ On desktop this normally runs from Gondwana's engine thread. In Blazor bitmap mo
 
 - [[Rendering Pipeline]]
 - [[Backbuffers]]
-- [[Refresh Queues]]
-- [[Dirty Rectangles]]
+- [[Dirty Regions and Refresh Queues]]
 - [[GL Rendering Path]]
 - [[WebGL Rendering Path]]
 
