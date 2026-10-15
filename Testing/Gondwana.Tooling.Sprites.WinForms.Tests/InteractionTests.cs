@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Sprites;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Tilesheets.GTS;
@@ -92,6 +93,36 @@ public sealed class InteractionTests
         zoom.SelectedIndex = 5;
         Assert.True(preview.Zoom > 0);
         Assert.Empty(editor.UpdateValidation());
+    });
+
+    /// <summary>
+    /// Verifies GANI sources and sprite assignments match animation keys without regard to case.
+    /// </summary>
+    [Fact]
+    public void AnimationSourcesResolveCaseInsensitiveKeys() => Sta(directory =>
+    {
+        var gani = Path.Combine(directory, "idle.gani");
+        AnimationDefinitionSerializer.SaveAll(gani, [new AnimationDefinition { Key = "idle" }, new AnimationDefinition { Key = "(none)" }]);
+        var document = SpriteDocument.Create(directory);
+        var entry = document.AddSprite();
+        entry.AnimationKey = "IDLE";
+        using var host = new Form { ShowInTaskbar = false, Opacity = 0, Size = new Size(1200, 800) };
+        using var editor = new SpriteEditorControl(document);
+        host.Controls.Add(editor); host.Show(); Application.DoEvents();
+        editor.AddAnimationSources([gani]);
+        editor.SelectSprite(entry);
+
+        var picker = Descendants(editor).OfType<ComboBox>().Single(combo =>
+            combo.Items.Cast<object>().Any(item => string.Equals(item?.ToString(), "idle", StringComparison.OrdinalIgnoreCase)));
+        Assert.Equal("idle", picker.SelectedItem?.ToString());
+        Assert.Single(picker.Items.Cast<object>(), item =>
+            string.Equals(item?.ToString(), "idle", StringComparison.OrdinalIgnoreCase));
+        Assert.Equal(2, picker.Items.Cast<object>().Count(item =>
+            string.Equals(item?.ToString(), "(none)", StringComparison.OrdinalIgnoreCase)));
+        picker.SelectedItem = picker.Items.Cast<object>().Last(item => item?.ToString() == "(none)");
+        Assert.Equal("(none)", entry.AnimationKey);
+        Assert.DoesNotContain(editor.UpdateValidation(), line =>
+            line.Contains("GANI animation 'IDLE' has no loaded authoring source.", StringComparison.Ordinal));
     });
 
     /// <summary>

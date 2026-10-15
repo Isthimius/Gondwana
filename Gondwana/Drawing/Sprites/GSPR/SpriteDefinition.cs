@@ -24,6 +24,9 @@ public sealed class SpriteDefinition
     /// </summary>
     public List<SpriteSceneSourceDefinition> SceneSources { get; set; } = [];
 
+    /// <summary>Optional authoring locations for GANI definitions referenced by sprite animation keys.</summary>
+    public List<SpriteAnimationSourceDefinition> AnimationSources { get; set; } = [];
+
     /// <summary>Load provenance; never persisted as an absolute content dependency.</summary>
     [JsonIgnore]
     public SpriteDefinitionSource Source { get; set; } = SpriteDefinitionSource.None();

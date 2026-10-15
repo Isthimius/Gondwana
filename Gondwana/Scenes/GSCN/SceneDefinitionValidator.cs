@@ -216,7 +216,7 @@ public static class SceneDefinitionValidator
         List<string> errors)
     {
         definition.AnimationSources ??= [];
-        var keys = new HashSet<string>(StringComparer.Ordinal);
+        var keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         for (int i = 0; i < definition.AnimationSources.Count; i++)
         {

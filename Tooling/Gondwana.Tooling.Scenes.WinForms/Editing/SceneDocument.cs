@@ -217,7 +217,7 @@ public sealed class SceneDocument
         string persisted = MakeReferencePath(fullPath, BaseDirectory);
 
         var existing = Definition.AnimationSources.FirstOrDefault(source =>
-            string.Equals(source.AnimationKey, animationKey, StringComparison.Ordinal));
+            string.Equals(source.AnimationKey, animationKey, StringComparison.OrdinalIgnoreCase));
 
         if (existing is not null &&
             existing.Kind == SceneAnimationSourceKind.LooseDefinitionFile &&
@@ -231,7 +231,7 @@ public sealed class SceneDocument
         }
 
         Definition.AnimationSources.RemoveAll(source =>
-            string.Equals(source.AnimationKey, animationKey, StringComparison.Ordinal));
+            string.Equals(source.AnimationKey, animationKey, StringComparison.OrdinalIgnoreCase));
         Definition.AnimationSources.Add(
             SceneAnimationSourceDefinition.Loose(animationKey, persisted));
         MarkChanged();
@@ -261,7 +261,7 @@ public sealed class SceneDocument
     public bool RemoveAnimationSource(string animationKey)
     {
         int removed = Definition.AnimationSources.RemoveAll(source =>
-            string.Equals(source.AnimationKey, animationKey, StringComparison.Ordinal));
+            string.Equals(source.AnimationKey, animationKey, StringComparison.OrdinalIgnoreCase));
         if (removed == 0)
             return false;
         MarkChanged();

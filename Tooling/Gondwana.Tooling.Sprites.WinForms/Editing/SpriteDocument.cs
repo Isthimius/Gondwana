@@ -128,6 +128,15 @@ public sealed class SpriteDocument
         MarkChanged();
     }
 
+    /// <summary>Adds or updates the authoring source for a registered GANI animation.</summary>
+    public void SetLooseAnimationSource(string key, string path)
+    {
+        Definition.AnimationSources.RemoveAll(source => string.Equals(source.AnimationKey, key, StringComparison.OrdinalIgnoreCase));
+        Definition.AnimationSources.Add(SpriteAnimationSourceDefinition.Loose(
+            key, Path.GetRelativePath(BaseDirectory, Path.GetFullPath(path))));
+        MarkChanged();
+    }
+
     /// <summary>
     /// Resolves a document-relative resource path to an absolute path.
     /// </summary>
@@ -188,6 +197,11 @@ public sealed class SpriteDocument
             {
                 member.SceneSources[j].GscnPath = persisted.SceneSources[j].GscnPath;
                 member.SceneSources[j].AssetsFilePath = persisted.SceneSources[j].AssetsFilePath;
+            }
+            for (int j = 0; j < member.AnimationSources.Count; j++)
+            {
+                member.AnimationSources[j].GaniPath = persisted.AnimationSources[j].GaniPath;
+                member.AnimationSources[j].AssetsFilePath = persisted.AnimationSources[j].AssetsFilePath;
             }
             member.Source = SpriteDefinitionSource.LooseDefinitionFile(path);
         }
@@ -284,6 +298,11 @@ public sealed class SpriteDocument
             foreach (var source in clone.SceneSources ?? [])
             {
                 source.GscnPath = Rebase(source.GscnPath);
+                source.AssetsFilePath = Rebase(source.AssetsFilePath);
+            }
+            foreach (var source in clone.AnimationSources ?? [])
+            {
+                source.GaniPath = Rebase(source.GaniPath);
                 source.AssetsFilePath = Rebase(source.AssetsFilePath);
             }
             return clone;

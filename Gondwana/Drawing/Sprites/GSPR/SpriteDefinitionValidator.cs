@@ -33,6 +33,10 @@ public static class SpriteDefinitionValidator
                 if (string.IsNullOrWhiteSpace(frame.RegionName)) errors.Add($"{label}: Frame RegionName is required.");
                 if (frame.XTile < 0 || frame.YTile < 0) errors.Add($"{label}: Frame coordinates must be nonnegative.");
             }
+            if (sprite.AnimationKey is not null && string.IsNullOrWhiteSpace(sprite.AnimationKey))
+                errors.Add($"{label}: AnimationKey cannot be empty or whitespace.");
+            if (sprite.StartAnimation && string.IsNullOrWhiteSpace(sprite.AnimationKey))
+                errors.Add($"{label}: StartAnimation requires AnimationKey.");
             if (!float.IsFinite(sprite.Position.X) || !float.IsFinite(sprite.Position.Y)) errors.Add($"{label}: Position must be finite.");
             if (!float.IsFinite(sprite.Rotation)) errors.Add($"{label}: Rotation must be finite.");
             if (sprite.RenderSize.Width < 0 || sprite.RenderSize.Height < 0) errors.Add($"{label}: RenderSize must be nonnegative.");
@@ -53,6 +57,16 @@ public static class SpriteDefinitionValidator
             if (source is null) { errors.Add("Null SceneSources entry."); continue; }
             if (string.IsNullOrWhiteSpace(source.SceneId) || !scenes.Add(source.SceneId)) errors.Add("Invalid or duplicate SceneSources identity.");
             ValidateSource(source.Kind == SpriteSceneSourceKind.LooseDefinitionFile, Enum.IsDefined(source.Kind), source.GscnPath, source.AssetsFilePath, source.AssetEntryName, "SceneSources", errors);
+        }
+        var animations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var source in definition.AnimationSources ?? [])
+        {
+            if (source is null) { errors.Add("Null AnimationSources entry."); continue; }
+            if (string.IsNullOrWhiteSpace(source.AnimationKey) || !animations.Add(source.AnimationKey))
+                errors.Add("Invalid or duplicate AnimationSources identity.");
+            ValidateSource(source.Kind == SpriteAnimationSourceKind.LooseDefinitionFile,
+                Enum.IsDefined(source.Kind), source.GaniPath, source.AssetsFilePath, source.AssetEntryName,
+                "AnimationSources", errors);
         }
         return errors;
     }

@@ -197,6 +197,31 @@ public sealed class AnimationGaniTests : IDisposable
     }
 
     /// <summary>
+    /// Verifies animation keys resolve without regard to case and reject case-only duplicates.
+    /// </summary>
+    [Fact]
+    public void DefinitionKeysAreCaseInsensitive()
+    {
+        var document = new AnimationDefinitionDocument
+        {
+            Definitions = [new() { Key = "idle" }, new() { Key = "Idle" }]
+        };
+
+        Assert.Throws<InvalidDataException>(() => AnimationDefinitionSerializer.ToDocumentJson(document));
+
+        var json = AnimationDefinitionSerializer.ToDocumentJson(new AnimationDefinitionDocument
+        {
+            Definitions = [new() { Key = "idle" }]
+        });
+        using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json));
+        Assert.Equal("idle", AnimationDefinitionSerializer.Load(stream, "IDLE").Key);
+
+        var sheet = CreateTilesheet();
+        using var cycle = new Cycle(new FrameSequence([sheet.GetFrame(0, 0)]), 0.1, "actor.idle");
+        Assert.Equal("actor.idle", Cycle.GetAnimationCycle("ACTOR.IDLE")!.CycleKey);
+    }
+
+    /// <summary>
     /// Verifies save and load stamp loose definition source without mutating original.
     /// </summary>
     [Fact]

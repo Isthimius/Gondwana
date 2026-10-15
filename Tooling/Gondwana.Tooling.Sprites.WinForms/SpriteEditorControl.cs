@@ -1,4 +1,5 @@
 using Gondwana.Assets;
+using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
@@ -11,6 +12,11 @@ namespace Gondwana.Tooling.Sprites.WinForms;
 /// <summary>The shared standalone and Studio GSPR authoring surface.</summary>
 public sealed class SpriteEditorControl : UserControl
 {
+    private sealed record AnimationChoice(string? Key)
+    {
+        public override string ToString() => Key ?? "(none)";
+    }
+
     /// <summary>
     /// Gets the pane names.
     /// </summary>
@@ -29,9 +35,13 @@ public sealed class SpriteEditorControl : UserControl
     private readonly List<SpriteTilesheetSource> _sources = [];
     private readonly ImageList _thumbnails = new() { ImageSize = new Size(32, 32), ColorDepth = ColorDepth.Depth32Bit };
     private readonly List<SceneDefinition> _sceneDefinitions = [];
+    private readonly List<AnimationDefinition> _animationDefinitions = [];
+    private readonly ComboBox _animationPicker = new() { Width = 165, DropDownStyle = ComboBoxStyle.DropDownList };
+    private bool _syncingAnimationPicker;
     private readonly List<string> _sourceWarnings = [];
     private readonly HashSet<string> _loadedScenePaths = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> _loadedTilesheetPaths = new(StringComparer.OrdinalIgnoreCase);
+    private readonly HashSet<string> _loadedAnimationPaths = new(StringComparer.OrdinalIgnoreCase);
     /// <summary>
     /// Gets the selected sprite.
     /// </summary>
@@ -57,6 +67,30 @@ public sealed class SpriteEditorControl : UserControl
         Button("Add", () => SelectSprite(Document.AddSprite()));
         Button("Duplicate", () => { if (SelectedSprite is { } entry) SelectSprite(Document.DuplicateSprite(entry)); });
         Button("Remove", () => { if (SelectedSprite is { } entry) { Document.RemoveSprite(entry); RefreshEntries(); } });
+        Button("Add GANI…", () =>
+        {
+            using var dialog = new OpenFileDialog { Filter = "Gondwana animations|*.gani", Multiselect = true };
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                TryLoad(() => AddAnimationSources(dialog.FileNames));
+                UpdateValidation();
+            }
+        });
+        toolbar.AutoSize = true;
+        toolbar.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+        toolbar.Controls.Add(new Label { Text = "Animation:", AutoSize = true, Margin = new Padding(8, 8, 4, 0) });
+        toolbar.Controls.Add(_animationPicker);
+        _animationPicker.SelectedIndexChanged += (_, _) =>
+        {
+            if (_syncingAnimationPicker || SelectedSprite is not { } entry ||
+                _animationPicker.SelectedItem is not AnimationChoice selected) return;
+            string? key = selected.Key;
+            if (entry.AnimationKey == key) return;
+            entry.AnimationKey = key;
+            if (key is null) entry.StartAnimation = false;
+            Document.MarkChanged();
+            RefreshSelection();
+        };
         var sprites = _workspace.AddPane("sprites", PaneNames[0], _sprites, toolbar);
         var preview = _workspace.AddPane("sprite-preview", PaneNames[1], _preview);
         var scenes = _workspace.AddPane("scene-sources", PaneNames[2], _scenes, SourceToolbar("Add GSCN…", "GSCN|*.gscn", AddSceneSources));
@@ -91,8 +125,9 @@ public sealed class SpriteEditorControl : UserControl
             () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, () =>
             {
                 foreach (var source in _sources) source.Dispose();
-                _sources.Clear(); _sceneDefinitions.Clear(); _sourceWarnings.Clear();
-                _loadedScenePaths.Clear(); _loadedTilesheetPaths.Clear(); _scenes.Nodes.Clear(); _frames.Nodes.Clear();
+                _sources.Clear(); _sceneDefinitions.Clear(); _animationDefinitions.Clear(); _sourceWarnings.Clear();
+                _loadedScenePaths.Clear(); _loadedTilesheetPaths.Clear(); _loadedAnimationPaths.Clear();
+                _scenes.Nodes.Clear(); _frames.Nodes.Clear();
                 LoadSources(); RefreshEntries();
             }, "gspr", (path, select) => Document.ImportDefinitions(path, select));
         Controls.Add(definitionBar);
@@ -118,6 +153,17 @@ public sealed class SpriteEditorControl : UserControl
 
     private void LoadSources()
     {
+        foreach (var source in Document.Definition.AnimationSources)
+        {
+            if (source.Kind == SpriteAnimationSourceKind.LooseDefinitionFile && source.GaniPath is { } path)
+                TryLoad(() => LoadAnimation(Document.ResolveReferencePath(path), source.AnimationKey));
+            else if (source.AssetsFilePath is { } archivePath && source.AssetEntryName is { } entry)
+                TryLoad(() =>
+                {
+                    using var archive = AssetsFile.LoadOrCreate(Document.ResolveReferencePath(archivePath), null, false, register: false);
+                    AddAnimationDefinition(AnimationDefinitionSerializer.Load(archive, entry, source.AnimationKey));
+                });
+        }
         foreach (var source in Document.Definition.SceneSources)
         {
             if (source.Kind == SpriteSceneSourceKind.LooseDefinitionFile && source.GscnPath is { } path)
@@ -143,6 +189,38 @@ public sealed class SpriteEditorControl : UserControl
         try { action(); }
         catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or UnauthorizedAccessException)
         { _sourceWarnings.Add(ex.Message); }
+    }
+
+    /// <summary>Adds GANI definitions as authoring sources for sprite animation keys.</summary>
+    public void AddAnimationSources(IEnumerable<string> paths)
+    {
+        foreach (var path in paths)
+            foreach (var member in AnimationDefinitionSerializer.LoadAll(path))
+            {
+                LoadAnimation(path, member.Key);
+                Document.SetLooseAnimationSource(member.Key, path);
+            }
+        RefreshSelection();
+    }
+
+    private void LoadAnimation(string path, string key)
+    {
+        var fullPath = Path.GetFullPath(path);
+        var memberPath = fullPath + " :: " + key;
+        if (_loadedAnimationPaths.Contains(memberPath)) return;
+        var definition = AnimationDefinitionSerializer.Load(path, key);
+        _loadedAnimationPaths.Add(memberPath);
+        AddAnimationDefinition(definition);
+    }
+
+    private void AddAnimationDefinition(AnimationDefinition definition)
+    {
+        if (_animationDefinitions.Any(existing => string.Equals(existing.Key, definition.Key, StringComparison.OrdinalIgnoreCase)))
+        {
+            _sourceWarnings.Add($"Duplicate GANI source for '{definition.Key}'.");
+            return;
+        }
+        _animationDefinitions.Add(definition);
     }
 
     /// <summary>
@@ -229,6 +307,27 @@ public sealed class SpriteEditorControl : UserControl
     }
     private void RefreshSelection()
     {
+        _syncingAnimationPicker = true;
+        try
+        {
+            _animationPicker.Items.Clear();
+            var noAnimation = new AnimationChoice(null);
+            _animationPicker.Items.Add(noAnimation);
+            foreach (var key in _animationDefinitions.Select(a => a.Key).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(k => k, StringComparer.OrdinalIgnoreCase))
+                _animationPicker.Items.Add(new AnimationChoice(key));
+            var current = SelectedSprite?.AnimationKey;
+            var selectedChoice = string.IsNullOrWhiteSpace(current)
+                ? noAnimation
+                : _animationPicker.Items.Cast<AnimationChoice>().FirstOrDefault(choice =>
+                    choice.Key is not null && string.Equals(choice.Key, current, StringComparison.OrdinalIgnoreCase));
+            if (!string.IsNullOrWhiteSpace(current) && selectedChoice is null)
+            {
+                selectedChoice = new AnimationChoice(current);
+                _animationPicker.Items.Add(selectedChoice);
+            }
+            _animationPicker.SelectedItem = selectedChoice;
+        }
+        finally { _syncingAnimationPicker = false; }
         _properties.SelectedObject = SelectedSprite is { } selected ? new SpriteProperties(selected) : null;
         var entry = SelectedSprite;
         var matches = _sources.Where(source => source.Definition.Name == entry?.Frame?.Tilesheet).ToList();
@@ -263,6 +362,9 @@ public sealed class SpriteEditorControl : UserControl
             .Select(source => $"WARNING: GTS '{source.Definition.Name}': {source.PreviewWarning}"));
         foreach (var entry in Document.Definition.Sprites)
         {
+            if (!string.IsNullOrWhiteSpace(entry.AnimationKey) &&
+                !_animationDefinitions.Any(animation => string.Equals(animation.Key, entry.AnimationKey, StringComparison.OrdinalIgnoreCase)))
+                lines.Add($"WARNING: Sprite '{entry.Nickname}': GANI animation '{entry.AnimationKey}' has no loaded authoring source.");
             var scenes = _sceneDefinitions.Where(scene => scene.ID == entry.SceneId).ToList();
             if (scenes.Count != 1) lines.Add($"WARNING: Sprite '{entry.Nickname}': Scene source missing or ambiguous.");
             else if (!scenes[0].Layers.Any(layer => layer.ID == entry.SceneLayerId)) lines.Add($"WARNING: Sprite '{entry.Nickname}': SceneLayer not found.");

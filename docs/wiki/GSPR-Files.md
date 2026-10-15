@@ -76,7 +76,25 @@ Physical/member separation supports future packaging work; content relocation is
 
 Each entry retains Id, Nickname, SceneId, SceneLayerId, fractional grid Position, logical Frame, visibility, ZOrder, rotation, alignment, nudges, RenderSize, fog and collision settings. A frame references Tilesheet, RegionName, XTile, and YTile. Null Frame represents the existing unassigned-frame Sprite state.
 
-Scene and layer identities bind to canonical runtime objects. Neither scenes nor tilesheets are embedded below sprites. Animator playback, movement commands, velocity, jiggle, pulse/resize timers, event handlers, ValueBag, refresh queues, colliders, CompositeSprite graphs, and manager defaults are not serialized.
+Scene and layer identities bind to canonical runtime objects. Neither scenes nor tilesheets are embedded below sprites. Animator playback position and timers, movement commands, velocity, jiggle, pulse/resize timers, event handlers, ValueBag, refresh queues, colliders, CompositeSprite graphs, and manager defaults are not serialized.
+
+## Animation assignments
+
+A sprite entry can declare `AnimationKey` and `StartAnimation`, just as a scene tile can.
+`AnimationKey` identifies a registered GANI/Cycle by logical key; `StartAnimation`
+determines whether that cycle begins playing when the sprite is materialized.
+Sprites already own an animator, so GSPR does not need `EnableAnimator`.
+
+GSPR stores no runtime `Animator` object or playback position. Materialization
+uses `Cycle.GetAnimationCycle(key)` to obtain a per-sprite clone, and requires the
+GANI cycle to be registered first. Missing keys fail explicitly and roll back newly
+created sprites. Older GSPR definitions without these fields keep their prior behavior.
+
+`AnimationSources` optionally records loose GANI paths or typed GAF entries for
+standalone/Studio authoring. Like GTS and GSCN source metadata, it does not load
+cycles at runtime. In the sprite editor, **Add GANI…** makes the keys discoverable,
+and the Animation selector or properties assign a key; `StartAnimation` is
+editable independently.
 
 ## Definition and runtime boundary
 
@@ -101,7 +119,7 @@ Validation rejects duplicate supplied GUIDs and nonempty nicknames, missing scen
 
 ## Shared authoring sources
 
-GTS and GSCN source locations live once at document level. Logical runtime IDs remain on entries. Loose sources hold relative GtsPath or GscnPath; packed sources hold AssetsFilePath and AssetEntryName. These declarations tell authoring tools where definitions can be found. Runtime materialization never opens these paths.
+GTS, GSCN, and GANI source locations live once at document level. Logical runtime IDs remain on entries. Loose sources hold relative GtsPath or GscnPath; packed sources hold AssetsFilePath and AssetEntryName. These declarations tell authoring tools where definitions can be found. Runtime materialization never opens these paths.
 
 Save As rebases source paths relative to the destination. Runtime provenance distinguishes generated, loose and packed definitions, and is not written into portable JSON.
 

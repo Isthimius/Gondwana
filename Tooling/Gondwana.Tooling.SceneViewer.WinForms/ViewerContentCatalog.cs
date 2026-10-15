@@ -19,7 +19,7 @@ internal sealed class ViewerContentCatalog
     internal sealed record SelectedSprite(SpriteDocument Document, SpriteInstanceDefinition Sprite);
 
     private readonly Dictionary<string, List<Source>> _sheets = new(StringComparer.Ordinal);
-    private readonly Dictionary<string, List<Source>> _animations = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, List<Source>> _animations = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<SpriteDocument> _sprites = [];
 
     internal ViewerContentCatalog(string directory, Func<string, AssetsFile> archive)

@@ -13,7 +13,7 @@ internal static class DefinitionDocumentJson
     /// <param name="identity">The logical identity accessor.</param>
     /// <param name="legacy">Optional legacy normalization.</param>
     /// <returns>All members in document order.</returns>
-    internal static List<T> Read<T>(string json, Func<string, T> read, Func<T, string> identity, Action<T>? legacy = null) where T : class
+    internal static List<T> Read<T>(string json, Func<string, T> read, Func<T, string> identity, Action<T>? legacy = null, StringComparer? identityComparer = null) where T : class
     {
         try
         {
@@ -37,7 +37,7 @@ internal static class DefinitionDocumentJson
                     throw new InvalidDataException($"Definitions[{definitions.Count}] must be a non-null definition object.");
                 definitions.Add(read(member.ToString()));
             }
-            Check(definitions, identity);
+            Check(definitions, identity, identityComparer: identityComparer);
             return definitions;
         }
         catch (JsonException ex) { throw new InvalidDataException("Failed to deserialize definition document.", ex); }
@@ -48,10 +48,10 @@ internal static class DefinitionDocumentJson
     /// <param name="definitions">The members.</param>
     /// <param name="identity">The identity accessor.</param>
     /// <param name="allowUnnamedSingleton">Whether historical singleton data may omit its identity.</param>
-    internal static void Check<T>(IReadOnlyList<T>? definitions, Func<T, string> identity, bool allowUnnamedSingleton = false) where T : class
+    internal static void Check<T>(IReadOnlyList<T>? definitions, Func<T, string> identity, bool allowUnnamedSingleton = false, StringComparer? identityComparer = null) where T : class
     {
         if (definitions is null) throw new InvalidDataException("Definitions must not be null.");
-        var identities = new HashSet<string>(StringComparer.Ordinal);
+        var identities = new HashSet<string>(identityComparer ?? StringComparer.Ordinal);
         for (int i = 0; i < definitions.Count; i++)
         {
             var member = definitions[i] ?? throw new InvalidDataException($"Definitions[{i}] must not be null.");
@@ -68,7 +68,7 @@ internal static class DefinitionDocumentJson
     /// <param name="identity">The identity accessor.</param>
     /// <param name="key">The requested identity, or null for singleton compatibility.</param>
     /// <returns>The selected member.</returns>
-    internal static T Select<T>(IReadOnlyList<T> definitions, Func<T, string> identity, string? key = null)
+    internal static T Select<T>(IReadOnlyList<T> definitions, Func<T, string> identity, string? key = null, StringComparer? identityComparer = null)
     {
         if (key is null)
         {
@@ -78,7 +78,7 @@ internal static class DefinitionDocumentJson
         }
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
         foreach (var member in definitions)
-            if (string.Equals(identity(member), key, StringComparison.Ordinal)) return member;
+            if ((identityComparer ?? StringComparer.Ordinal).Equals(identity(member), key)) return member;
         throw new InvalidDataException($"Definition '{key}' was not found in the document.");
     }
 }

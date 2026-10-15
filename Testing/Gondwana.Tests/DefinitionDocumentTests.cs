@@ -82,7 +82,7 @@ public sealed class DefinitionDocumentTests : IDisposable
     private static JObject Member(Format format, string key) => new() { [format.Identity] = key };
     private static string Envelope(params JObject[] members) => new JObject { ["Definitions"] = new JArray(members) }.ToString();
 
-    /// <summary>Verifies legacy, canonical, selector, singleton, ordinal identity, and malformed-document contracts.</summary>
+    /// <summary>Verifies legacy, canonical, selector, singleton, identity, and malformed-document contracts.</summary>
     /// <param name="extension">The native format.</param>
     [Theory]
     [InlineData("gts")]
@@ -107,7 +107,10 @@ public sealed class DefinitionDocumentTests : IDisposable
         Assert.Contains("missing", Assert.Throws<InvalidDataException>(() => format.Stream(stream, "missing")).Message);
         Assert.Contains("LoadAll", Assert.Throws<InvalidDataException>(() => format.Singleton(json)).Message);
         Assert.Throws<InvalidDataException>(() => format.Singleton("{\"Definitions\":[]}"));
-        Assert.Equal(2, format.Parse(Envelope(first, Member(format, "FIRST"))).Length);
+        if (extension == "gani")
+            Assert.Throws<InvalidDataException>(() => format.Parse(Envelope(first, Member(format, "FIRST"))));
+        else
+            Assert.Equal(2, format.Parse(Envelope(first, Member(format, "FIRST"))).Length);
         foreach (var malformed in new[] { "null", "[]", "{\"Definitions\":null}", "{\"Definitions\":[null]}", "{\"Definitions\":{}}", "{\"Definitions\":[{}]}", "{\"Definitions\":[],\"Key\":\"mixed\"}", Envelope(first, first) })
             Assert.Throws<InvalidDataException>(() => format.Parse(malformed));
     }
