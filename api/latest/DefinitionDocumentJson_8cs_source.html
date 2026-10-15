@@ -105,7 +105,7 @@ $(function(){initNavTree('DefinitionDocumentJson_8cs_source.html','',''); });
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">internal</span> <span class="keyword">static</span> <span class="keyword">class </span>DefinitionDocumentJson</div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>{</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">internal</span> <span class="keyword">static</span> List&lt;T&gt; Read&lt;T&gt;(<span class="keywordtype">string</span> json, Func&lt;string, T&gt; read, Func&lt;T, string&gt; identity, Action&lt;T&gt;? legacy = <span class="keyword">null</span>) where T : class</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">internal</span> <span class="keyword">static</span> List&lt;T&gt; Read&lt;T&gt;(<span class="keywordtype">string</span> json, Func&lt;string, T&gt; read, Func&lt;T, string&gt; identity, Action&lt;T&gt;? legacy = <span class="keyword">null</span>, StringComparer? identityComparer = <span class="keyword">null</span>) where T : class</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    {</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keywordflow">try</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        {</div>
@@ -129,16 +129,16 @@ $(function(){initNavTree('DefinitionDocumentJson_8cs_source.html','',''); });
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                    <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;Definitions[{definitions.Count}] must be a non-null definition object.&quot;</span>);</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                definitions.Add(read(member.ToString()));</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            }</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            Check(definitions, identity);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            Check(definitions, identity, identityComparer: identityComparer);</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="keywordflow">return</span> definitions;</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        }</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">catch</span> (JsonException ex) { <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException(<span class="stringliteral">&quot;Failed to deserialize definition document.&quot;</span>, ex); }</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    }</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span></div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">internal</span> <span class="keyword">static</span> <span class="keywordtype">void</span> Check&lt;T&gt;(IReadOnlyList&lt;T&gt;? definitions, Func&lt;T, string&gt; identity, <span class="keywordtype">bool</span> allowUnnamedSingleton = <span class="keyword">false</span>) where T : class</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">internal</span> <span class="keyword">static</span> <span class="keywordtype">void</span> Check&lt;T&gt;(IReadOnlyList&lt;T&gt;? definitions, Func&lt;T, string&gt; identity, <span class="keywordtype">bool</span> allowUnnamedSingleton = <span class="keyword">false</span>, StringComparer? identityComparer = <span class="keyword">null</span>) where T : class</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    {</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">if</span> (definitions is <span class="keyword">null</span>) <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException(<span class="stringliteral">&quot;Definitions must not be null.&quot;</span>);</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        var identities = <span class="keyword">new</span> HashSet&lt;string&gt;(StringComparer.Ordinal);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        var identities = <span class="keyword">new</span> HashSet&lt;string&gt;(identityComparer ?? StringComparer.Ordinal);</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; definitions.Count; i++)</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        {</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            var member = definitions[i] ?? <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;Definitions[{i}] must not be null.&quot;</span>);</div>
@@ -149,7 +149,7 @@ $(function(){initNavTree('DefinitionDocumentJson_8cs_source.html','',''); });
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        }</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    }</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span></div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keyword">internal</span> <span class="keyword">static</span> T Select&lt;T&gt;(IReadOnlyList&lt;T&gt; definitions, Func&lt;T, string&gt; identity, <span class="keywordtype">string</span>? key = <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keyword">internal</span> <span class="keyword">static</span> T Select&lt;T&gt;(IReadOnlyList&lt;T&gt; definitions, Func&lt;T, string&gt; identity, <span class="keywordtype">string</span>? key = <span class="keyword">null</span>, StringComparer? identityComparer = <span class="keyword">null</span>)</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    {</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">if</span> (key is <span class="keyword">null</span>)</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        {</div>
@@ -159,7 +159,7 @@ $(function(){initNavTree('DefinitionDocumentJson_8cs_source.html','',''); });
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        }</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        ArgumentException.ThrowIfNullOrWhiteSpace(key);</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keywordflow">foreach</span> (var member <span class="keywordflow">in</span> definitions)</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            <span class="keywordflow">if</span> (<span class="keywordtype">string</span>.Equals(identity(member), key, StringComparison.Ordinal)) <span class="keywordflow">return</span> member;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            <span class="keywordflow">if</span> ((identityComparer ?? StringComparer.Ordinal).Equals(identity(member), key)) <span class="keywordflow">return</span> member;</div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;Definition &#39;{key}&#39; was not found in the document.&quot;</span>);</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    }</div>
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}</div>

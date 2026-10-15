@@ -347,6 +347,7 @@ var hierarchy =
     [ "global.SkiaSharpViews.Blazor.SKGLView", null, [
       [ "Gondwana.Blazor.Rendering.BlazorSkiaGlView", "classGondwana_1_1Blazor_1_1Rendering_1_1BlazorSkiaGlView.html", null ]
     ] ],
+    [ "Gondwana.Drawing.Sprites.GSPR.SpriteAnimationSourceDefinition", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteAnimationSourceDefinition.html", null ],
     [ "Gondwana.Drawing.Sprites.GSPR.SpriteDefinition", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinition.html", null ],
     [ "Gondwana.Drawing.Sprites.GSPR.SpriteDefinitionDocument", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinitionDocument.html", null ],
     [ "Gondwana.Drawing.Sprites.GSPR.SpriteDefinitionSource", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteDefinitionSource.html", null ],

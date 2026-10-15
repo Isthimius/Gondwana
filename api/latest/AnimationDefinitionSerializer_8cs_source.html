@@ -116,17 +116,17 @@ $(function(){initNavTree('AnimationDefinitionSerializer_8cs_source.html','','');
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span></div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">public</span> <span class="keyword">static</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a530dd6d4d3b54c01a3ad040f8de79586">AnimationDefinition</a> Load(<span class="keywordtype">string</span> filePath)</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    {</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordflow">return</span> DefinitionDocumentJson.Select(LoadAll(filePath), definition =&gt; definition.Key);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordflow">return</span> DefinitionDocumentJson.Select(LoadAll(filePath), definition =&gt; definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase);</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    }</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span></div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">public</span> <span class="keyword">static</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a530dd6d4d3b54c01a3ad040f8de79586">AnimationDefinition</a> Load(Stream stream)</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    {</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">return</span> DefinitionDocumentJson.Select(LoadAll(stream), definition =&gt; definition.Key);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">return</span> DefinitionDocumentJson.Select(LoadAll(stream), definition =&gt; definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase);</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    }</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span></div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">public</span> <span class="keyword">static</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a530dd6d4d3b54c01a3ad040f8de79586">AnimationDefinition</a> Load(AssetsFile assetsFile, <span class="keywordtype">string</span> entryName)</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    {</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">return</span> DefinitionDocumentJson.Select(LoadAll(assetsFile, entryName), definition =&gt; definition.Key);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">return</span> DefinitionDocumentJson.Select(LoadAll(assetsFile, entryName), definition =&gt; definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase);</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    }</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span></div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keywordtype">void</span> Save(<span class="keywordtype">string</span> filePath, <a class="code hl_enumvalue" href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a530dd6d4d3b54c01a3ad040f8de79586">AnimationDefinition</a> definition)</div>
@@ -142,7 +142,7 @@ $(function(){initNavTree('AnimationDefinitionSerializer_8cs_source.html','','');
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    }</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span></div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">public</span> <span class="keyword">static</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a530dd6d4d3b54c01a3ad040f8de79586">AnimationDefinition</a> FromJson(<span class="keywordtype">string</span> json) =&gt;</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        DefinitionDocumentJson.Select(FromDocumentJson(json).Definitions, definition =&gt; definition.Key);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        DefinitionDocumentJson.Select(FromDocumentJson(json).Definitions, definition =&gt; definition.Key, identityComparer: StringComparer.OrdinalIgnoreCase);</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span></div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keywordtype">string</span> ToJson(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a530dd6d4d3b54c01a3ad040f8de79586">AnimationDefinition</a> definition)</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    {</div>
@@ -247,7 +247,7 @@ $(function(){initNavTree('AnimationDefinitionSerializer_8cs_source.html','','');
 <div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>            <span class="keywordtype">string</span>.Equals(</div>
 <div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>                definition.NextCycleKey,</div>
 <div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>                cycle.CycleKey,</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>                StringComparison.Ordinal))</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>                StringComparison.OrdinalIgnoreCase))</div>
 <div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        {</div>
 <div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            cycle.NextCycle = cycle;</div>
 <div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>            CaptureProvenance(cycle, definition);</div>

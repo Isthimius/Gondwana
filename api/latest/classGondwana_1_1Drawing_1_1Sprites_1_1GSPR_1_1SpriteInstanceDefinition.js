@@ -2,6 +2,7 @@ var classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition =
 [
     [ "AdjustCollisionArea", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a0d071ccaa32b1d6842af148679e5e7e8", null ],
     [ "AdjustCollisionAreaByFrame", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a17e8a14f928d8938d742592bc402dc41", null ],
+    [ "AnimationKey", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#af1d6435883ea089ff3a24367192dd836", null ],
     [ "CollisionProfileName", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a95401d9928e6cadc31486563551428b7", null ],
     [ "CollisionsEnabled", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a1be202a878db140b911195bf87108ebd", null ],
     [ "CollisionType", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a0ae1648dd18ac8affcf0cd145735db71", null ],
@@ -18,6 +19,7 @@ var classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition =
     [ "Rotation", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#ac114acc6ba43140a6b059f031aa92e0b", null ],
     [ "SceneId", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a9bfbfcdd10c518221ae24e9b9c308fa8", null ],
     [ "SceneLayerId", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a12c496fe91f29c14cdd5e32b06c08409", null ],
+    [ "StartAnimation", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a7a9d30b6d94adcdae81883b7dfa813b2", null ],
     [ "VertAlign", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a2f265cd91523791753978c7116abd268", null ],
     [ "Visible", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#a9795283c181871a78c6c4ae34ba8ef83", null ],
     [ "ZOrder", "classGondwana_1_1Drawing_1_1Sprites_1_1GSPR_1_1SpriteInstanceDefinition.html#ad3cfe2ed072980b0fdd3bd86a066f01b", null ]
