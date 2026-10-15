@@ -71,6 +71,8 @@ public sealed class SpriteEditorControl : UserControl
                 UpdateValidation();
             }
         });
+        toolbar.AutoSize = true;
+        toolbar.AutoSizeMode = AutoSizeMode.GrowAndShrink;
         toolbar.Controls.Add(new Label { Text = "Animation:", AutoSize = true, Margin = new Padding(8, 8, 4, 0) });
         toolbar.Controls.Add(_animationPicker);
         _animationPicker.SelectedIndexChanged += (_, _) =>
