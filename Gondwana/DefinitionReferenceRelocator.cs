@@ -215,7 +215,8 @@ public static class DefinitionReferenceRelocator
                     {
                         if (packed && string.IsNullOrWhiteSpace(resource.SourceExtension))
                         {
-                            resource.SourceExtension = Path.GetExtension(resource.FilePath ?? resource.AssetEntryName);
+                            resource.SourceExtension = Path.GetExtension(
+                                string.IsNullOrWhiteSpace(resource.FilePath) ? resource.AssetEntryName : resource.FilePath);
                             if (string.IsNullOrWhiteSpace(resource.SourceExtension) && string.IsNullOrWhiteSpace(Path.GetExtension(entry)))
                                 throw new InvalidDataException($"Audio '{member.Key}' :: Resource '{resource.Key}': cannot infer packed audio format; specify SourceExtension.");
                         }
