@@ -15,6 +15,14 @@ internal sealed class SpriteProperties(SpriteInstanceDefinition entry)
     /// Gets the frame.
     /// </summary>
     public string Frame => entry.Frame is { } frame ? $"{frame.Tilesheet} / {frame.RegionName} ({frame.XTile}, {frame.YTile})" : "Unassigned";
+
+    /// <summary>Logical key of the assigned animation cycle (GANI).</summary>
+    [Category("Animation")]
+    public string? AnimationKey { get => entry.AnimationKey; set => entry.AnimationKey = string.IsNullOrWhiteSpace(value) ? null : value; }
+
+    /// <summary>Starts the selected animation when the sprite is instantiated.</summary>
+    [Category("Animation")]
+    public bool StartAnimation { get => entry.StartAnimation; set => entry.StartAnimation = value; }
     /// <summary>
     /// Gets or sets the optional lookup name.
     /// </summary>

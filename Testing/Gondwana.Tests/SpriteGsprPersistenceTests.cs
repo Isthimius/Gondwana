@@ -143,6 +143,8 @@ public sealed class SpriteGsprPersistenceTests
     [InlineData("nickname")]
     [InlineData("null")]
     [InlineData("sources")]
+    [InlineData("animation")]
+    [InlineData("animationSource")]
     public void InvalidDefinitionsAreRejectedWithoutMutation(string invalid)
     {
         var entry = Valid();
@@ -160,6 +162,8 @@ public sealed class SpriteGsprPersistenceTests
             case "nickname": var sameName = Valid(); sameName.Nickname = entry.Nickname; definition.Sprites.Add(sameName); break;
             case "null": definition.Sprites.Add(null!); break;
             case "sources": definition.SceneSources.Add(new()); break;
+            case "animation": entry.StartAnimation = true; break;
+            case "animationSource": definition.AnimationSources.Add(new()); break;
         }
         var before = SpriteDefinitionSerializer.ToJson(definition);
         Assert.NotEmpty(SpriteDefinitionValidator.Validate(definition));
@@ -177,6 +181,7 @@ public sealed class SpriteGsprPersistenceTests
     [InlineData("{\"Sprites\":[null]}")]
     [InlineData("{\"TilesheetSources\":[null]}")]
     [InlineData("{\"SceneSources\":[null]}")]
+    [InlineData("{\"AnimationSources\":[null]}")]
     public void MalformedJsonFailsCleanly(string json) => Assert.Throws<InvalidDataException>(() => SpriteDefinitionSerializer.FromJson(json));
 
     /// <summary>
@@ -214,6 +219,7 @@ public sealed class SpriteGsprPersistenceTests
             var definition = new SpriteDefinition { Sprites = [Valid(), Valid()] };
             definition.TilesheetSources.Add(SpriteTilesheetSourceDefinition.Loose("actors", "actors.gts"));
             definition.SceneSources.Add(SpriteSceneSourceDefinition.Packed("level", "content.gaf", "level.gscn"));
+            definition.AnimationSources.Add(SpriteAnimationSourceDefinition.Loose("player.idle", "animations/idle.gani"));
             var path = Path.Combine(directory, "actors.gspr");
             SpriteDefinitionSerializer.Save(path, definition);
             var loaded = SpriteDefinitionSerializer.Load(path);
@@ -225,6 +231,9 @@ public sealed class SpriteGsprPersistenceTests
             Assert.Equal(Path.Combine(directory, "actors.gts"), Path.GetFullPath(Assert.Single(rebased.TilesheetSources).GtsPath!, Path.GetDirectoryName(moved)!));
             Assert.Equal("level.gscn", Assert.Single(rebased.SceneSources).AssetEntryName);
             Assert.Equal("actors.gts", loaded.TilesheetSources[0].GtsPath);
+            Assert.Equal(Path.Combine(directory, "animations", "idle.gani"),
+                Path.GetFullPath(Assert.Single(rebased.AnimationSources).GaniPath!, Path.GetDirectoryName(moved)!));
+            Assert.Equal("animations/idle.gani", loaded.AnimationSources[0].GaniPath);
             using var archive = AssetsFile.LoadOrCreate(Path.Combine(directory, "packed.gaf"), null, false, register: false);
             using var input = File.OpenRead(path);
             archive.Add(AssetTypes.SpriteDefinition, "actors.gspr", input);
