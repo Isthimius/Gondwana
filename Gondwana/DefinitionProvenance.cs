@@ -51,6 +51,9 @@ internal sealed class DefinitionLoadStamp
     private readonly string? _entryName;
     private readonly string? _definitionIdentity;
 
+    /// <summary>Gets the actual containing archive path, if loaded from a named archive.</summary>
+    internal string? AssetsFilePath => _assetsFilePath;
+
     /// <summary>Gets the actual physical source directory independently of editable authoring metadata.</summary>
     internal string? ReferenceBaseDirectory => _filePath is not null ? Path.GetDirectoryName(_filePath) :
         _assetsFilePath is not null ? Path.GetDirectoryName(_assetsFilePath) : null;

@@ -1,5 +1,4 @@
 using Gondwana.Assets;
-using Newtonsoft.Json;
 
 namespace Gondwana.Drawing.Sprites.GSPR;
 
@@ -14,14 +13,14 @@ public static partial class SpriteDefinitionSerializer
         Definitions = DefinitionDocumentJson.Read<SpriteDefinition>(json, ParseDefinition, definition => definition.Key, definition => { if (string.IsNullOrWhiteSpace(definition.Key)) definition.Key = Path.GetFileNameWithoutExtension(sourceIdentity) is { Length: > 0 } inferred ? inferred : "sprite"; })
     };
 
-    /// <summary>Serializes a complete document with a Definitions envelope.</summary>
+    /// <summary>Serializes a complete document, omitting redundant physical self-origin paths.</summary>
     /// <param name="document">The complete document.</param>
     /// <returns>Canonical document JSON.</returns>
     public static string ToDocumentJson(SpriteDefinitionDocument document)
     {
         ArgumentNullException.ThrowIfNull(document);
         DefinitionDocumentJson.Check(document.Definitions, definition => definition.Key);
-        return JsonConvert.SerializeObject(document, Settings);
+        return DefinitionDocumentPersistence.Serialize(document, Settings);
     }
 
     /// <summary>Loads every logical definition from a physical file.</summary>
@@ -97,7 +96,7 @@ public static partial class SpriteDefinitionSerializer
         SaveAll(filePath, document.Definitions);
     }
 
-    /// <summary>Saves all supplied definitions in one canonical document.</summary>
+    /// <summary>Atomically saves all definitions, using the final destination for portable dependency paths.</summary>
     /// <param name="filePath">The destination physical path.</param>
     /// <param name="definitions">All logical definitions to persist.</param>
     public static void SaveAll(string filePath, IEnumerable<SpriteDefinition> definitions)
@@ -109,8 +108,7 @@ public static partial class SpriteDefinitionSerializer
         DefinitionDocumentJson.Check(members, definition => definition.Key, allowUnnamedSingleton: true);
         var saved = members.Select(definition => PrepareDocumentMember(definition, path)).ToList();
         var json = ToDocumentJson(new() { Definitions = saved });
-        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-        File.WriteAllText(path, json);
+        DefinitionDocumentPersistence.WriteAtomic(path, json);
     }
 
     private static SpriteDefinition PrepareDocumentMember(SpriteDefinition definition, string path)
@@ -119,7 +117,7 @@ public static partial class SpriteDefinitionSerializer
         if (string.IsNullOrWhiteSpace(clone.Key)) clone.Key = Path.GetFileNameWithoutExtension(path);
         var origin = definition.Source.GsprFilePath ?? definition.Source.AssetsFilePath;
         var oldDirectory = definition.LoadStamp?.ReferenceBaseDirectory ??
-            (string.IsNullOrWhiteSpace(origin) ? null : Path.GetDirectoryName(Path.GetFullPath(origin)));
+            (string.IsNullOrWhiteSpace(origin) || !Path.IsPathFullyQualified(origin) ? null : Path.GetDirectoryName(origin));
         var newDirectory = Path.GetDirectoryName(path)!;
         string? RebasePath(string? value) => string.IsNullOrWhiteSpace(value) || (oldDirectory is null && !Path.IsPathRooted(value)) ? value :
             Path.GetRelativePath(newDirectory, oldDirectory is null ? Path.GetFullPath(value) : Path.GetFullPath(value, oldDirectory));

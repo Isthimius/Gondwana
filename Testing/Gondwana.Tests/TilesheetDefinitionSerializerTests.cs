@@ -149,10 +149,10 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
     }
 
     /// <summary>
-    /// Verifies that saving a definition preserves an existing loose definition file source in the serialized JSON.
+    /// Verifies that saving omits stale loose self-origin metadata and reload reconstructs the actual location.
     /// </summary>
     [Fact]
-    public void SaveDefinition_WithSourceLooseDefinitionFile_PreservesSourceInSavedJson()
+    public void SaveDefinition_WithSourceLooseDefinitionFile_ReconstructsSourceOnReload()
     {
         var original = new TilesheetDefinition
         {
@@ -164,9 +164,9 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
         TilesheetDefinitionSerializer.Save(path, original);
 
         var loaded = TilesheetDefinitionSerializer.Load(path);
-        // The serialized JSON preserves the original Source; ApplyDefaultSource won't overwrite.
+        Assert.DoesNotContain("GtsFilePath", File.ReadAllText(path));
         Assert.Equal(TilesheetDefinitionSourceKind.LooseDefinitionFile, loaded.Source.Kind);
-        Assert.Equal("/original/location.gts", loaded.Source.GtsFilePath);
+        Assert.Equal(Path.GetFullPath(path), loaded.Source.GtsFilePath);
     }
 
     /// <summary>
@@ -189,10 +189,10 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
     }
 
     /// <summary>
-    /// Verifies that saving a definition preserves a packed definition file source in the serialized JSON.
+    /// Verifies that saving a packed definition as a loose document reconstructs its new location.
     /// </summary>
     [Fact]
-    public void SaveDefinition_WithSourcePackedDefinitionFile_PreservesPackedInSavedJson()
+    public void SaveDefinition_WithSourcePackedDefinitionFile_ReconstructsLooseSourceOnReload()
     {
         var original = new TilesheetDefinition
         {
@@ -204,9 +204,11 @@ public sealed class TilesheetDefinitionSerializerTests : IDisposable
         TilesheetDefinitionSerializer.Save(path, original);
 
         var loaded = TilesheetDefinitionSerializer.Load(path);
-        Assert.Equal(TilesheetDefinitionSourceKind.PackedDefinitionFile, loaded.Source.Kind);
-        Assert.Equal("/data/assets.gaf", loaded.Source.AssetsFilePath);
-        Assert.Equal("sheet.gts", loaded.Source.AssetEntryName);
+        Assert.DoesNotContain("/data/assets.gaf", File.ReadAllText(path));
+        Assert.Equal(TilesheetDefinitionSourceKind.LooseDefinitionFile, loaded.Source.Kind);
+        Assert.Equal(Path.GetFullPath(path), loaded.Source.GtsFilePath);
+        Assert.Null(loaded.Source.AssetsFilePath);
+        Assert.Null(loaded.Source.AssetEntryName);
     }
 
     /// <summary>

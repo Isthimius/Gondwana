@@ -176,13 +176,7 @@ public sealed class AudioDocument
             clone.Source = AudioDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gsnd"));
             return clone;
         }).ToList();
-        var temporary = Path.Combine(directory, $".{Path.GetFileName(path)}.{Guid.NewGuid():N}.tmp");
-        try
-        {
-            AudioDefinitionSerializer.SaveAll(temporary, snapshots);
-            File.Move(temporary, path, overwrite: true);
-        }
-        finally { if (File.Exists(temporary)) File.Delete(temporary); }
+        AudioDefinitionSerializer.SaveAll(path, snapshots);
         var saved = AudioDefinitionSerializer.LoadAll(path);
         for (int i = 0; i < _definitions.Count; i++)
         {

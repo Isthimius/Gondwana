@@ -176,13 +176,7 @@ public sealed class SpriteDocument
             clone.Source = SpriteDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gspr"));
             return clone;
         }).ToList();
-        var temporary = Path.Combine(directory, $".{Path.GetFileName(path)}.{Guid.NewGuid():N}.tmp");
-        try
-        {
-            SpriteDefinitionSerializer.SaveAll(temporary, snapshots);
-            File.Move(temporary, path, overwrite: true);
-        }
-        finally { if (File.Exists(temporary)) File.Delete(temporary); }
+        SpriteDefinitionSerializer.SaveAll(path, snapshots);
         var saved = SpriteDefinitionSerializer.LoadAll(path);
         for (int i = 0; i < _definitions.Count; i++)
         {

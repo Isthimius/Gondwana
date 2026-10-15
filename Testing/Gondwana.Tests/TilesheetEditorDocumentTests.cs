@@ -81,24 +81,25 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
     }
 
     /// <summary>
-    /// Verifies save as rebases image reference and preserves provenance.
+    /// Verifies Save As rebases dependencies and reconstructs provenance from the final destination.
     /// </summary>
     /// <param name="packed">The packed value for this test case.</param>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void SaveAs_RebasesImageReferenceAndPreservesProvenance(bool packed)
+    public void SaveAs_RebasesImageReferenceAndReconstructsProvenance(bool packed)
     {
         var document = TilesheetDocument.Open(WriteDefinition(packed));
         string destination = Path.Combine(_directory, "nested", "new.gts");
         document.Save(destination);
         var loaded = TilesheetDocument.Open(destination);
         if (packed)
-            Assert.Equal("../images.gaf", loaded.Definition.Image.AssetsFilePath);
+            Assert.Equal(Path.Combine(_directory, "images.gaf"), Path.GetFullPath(loaded.Definition.Image.AssetsFilePath!, loaded.BaseDirectory));
         else
             Assert.Equal(Path.Combine(_directory, "different-image.png"), loaded.ResolveImagePath());
-        Assert.Equal("provenance.gaf", loaded.Definition.Source.AssetsFilePath);
-        Assert.Equal("original.gts", loaded.Definition.Source.AssetEntryName);
+        Assert.Equal(destination, loaded.Definition.Source.GtsFilePath);
+        Assert.Null(loaded.Definition.Source.AssetsFilePath);
+        Assert.Null(loaded.Definition.Source.AssetEntryName);
         Assert.False(document.IsDirty);
     }
 
