@@ -110,7 +110,7 @@ public sealed class TiledTilesetImporter : ExternalAssetImporter
             }
             if (gani.Frames.Count == 0) throw new InvalidDataException($"Animation for tile {id} has no frames.");
             if (!animations.TryAdd(id, gani)) throw new InvalidDataException($"Duplicate animated tile ID {id}.");
-            plan.Add($"{filename}-tile-{id}.gani", gani);
+            plan.Add($"{filename}-animations.gani", gani);
         }
         return new(name, gts, columns, count, new(width, height), animations);
     }

@@ -9,15 +9,20 @@ internal sealed record SceneViewerStressOptions(
 internal static class SceneViewerArguments
 {
     internal const string Usage =
-        "Usage: Gondwana.Tooling.SceneViewer.WinForms.exe --scene <file.gscn> " +
+        "Usage: Gondwana.Tooling.SceneViewer.WinForms.exe --scene <file.gscn> [--scene-id <id>] " +
         "or --stress <tile-count> [--projection <coordinate-system>]";
 
-    // The OS has already removed command-line quoting from args.
+    /// <summary>Parses a scene document path and validates an optional member selector.</summary>
+    /// <param name="args">Argument tokens with operating-system quoting removed.</param>
+    /// <param name="baseDirectory">The base for relative document paths.</param>
+    /// <returns>The normalized document path, or null when no arguments were supplied.</returns>
     internal static string? Parse(string[] args, string baseDirectory)
     {
         if (args.Length == 0)
             return null;
-        if (args.Length != 2 || args[0] != "--scene" || string.IsNullOrWhiteSpace(args[1]))
+        if (args.Length is not 2 and not 4 || args[0] != "--scene" || string.IsNullOrWhiteSpace(args[1]))
+            throw new ArgumentException(Usage);
+        if (args.Length == 4 && (args[2] != "--scene-id" || string.IsNullOrWhiteSpace(args[3])))
             throw new ArgumentException(Usage);
         return Normalize(args[1], baseDirectory);
     }

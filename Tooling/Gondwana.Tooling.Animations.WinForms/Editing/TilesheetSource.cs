@@ -46,7 +46,8 @@ internal sealed class TilesheetSource : IDisposable
     /// </summary>
     /// <param name="path">The path.</param>
     /// <returns>The resulting tilesheet source.</returns>
-    public static TilesheetSource Load(string path)
+    /// <param name="identity">The logical member identity; null requires a singleton.</param>
+    public static TilesheetSource LoadMember(string path, string? identity)
     {
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("GTS path must be a non-empty string.", nameof(path));
@@ -54,7 +55,7 @@ internal sealed class TilesheetSource : IDisposable
         path = Path.GetFullPath(path);
         return new TilesheetSource(
             path,
-            TilesheetDefinitionSerializer.Load(path));
+            TilesheetDefinitionSerializer.Load(path, identity));
     }
 
     /// <summary>
@@ -231,7 +232,31 @@ internal sealed class TilesheetSource : IDisposable
         Image?.Dispose();
         Image = null;
     }
+
+    /// <summary>Loads a singleton source document.</summary>
+    /// <param name="path">The physical document path.</param>
+    /// <returns>The source.</returns>
+    public static TilesheetSource Load(string path) => LoadMember(path, null);
+
+    /// <summary>Loads every member for authoring source selection.</summary>
+    /// <param name="path">The physical document path.</param>
+    /// <returns>All logical sources.</returns>
+    public static IReadOnlyList<TilesheetSource> LoadAll(string path) =>
+        TilesheetDefinitionSerializer.LoadAll(path).Select(definition => new TilesheetSource(Path.GetFullPath(path), definition)).ToList();
+
+    /// <summary>Loads one logical source from a packed definition document.</summary>
+    /// <param name="archivePath">The containing archive path.</param>
+    /// <param name="entry">The physical entry name.</param>
+    /// <param name="identity">The logical member identity.</param>
+    /// <returns>The selected source.</returns>
+    public static TilesheetSource LoadPacked(string archivePath, string entry, string identity)
+    {
+        archivePath = Path.GetFullPath(archivePath);
+        using var archive = Gondwana.Assets.AssetsFile.LoadOrCreate(archivePath, null, false, register: false);
+        return new(archivePath, TilesheetDefinitionSerializer.Load(archive, entry, identity));
+    }
 }
+
 
 internal readonly record struct FramePreview(
     Bitmap Image,

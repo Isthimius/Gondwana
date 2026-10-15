@@ -19,4 +19,8 @@
     <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="../Shared/WinForms/DefinitionImport.cs" Link="Editing/DefinitionImport.cs" />
+    <Compile Include="..\Shared\WinForms\DefinitionSelectionBar.cs" Link="Docking\DefinitionSelectionBar.cs" />
+  </ItemGroup>
 </Project>

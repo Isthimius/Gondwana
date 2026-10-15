@@ -517,8 +517,11 @@ public class Scene : IEnumerable<SceneLayer>, IDisposable
     /// </remarks>
     public void RemoveAllLayers()
     {
-        // raise "remove" event for each SceneLayer
-        foreach (SceneLayer sceneLayer in this)
+        // Iterate a snapshot to avoid mutating the collection while raising
+        // removal events. Event handlers may call back into RemoveLayer which
+        // would otherwise modify _sceneLayers during enumeration and cause
+        // an ArgumentOutOfRangeException.
+        foreach (var sceneLayer in _sceneLayers.ToArray())
             OnSceneLayerRemoved(sceneLayer);
 
         _sceneLayers.Clear();

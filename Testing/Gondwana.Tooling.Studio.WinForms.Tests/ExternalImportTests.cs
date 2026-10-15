@@ -159,7 +159,7 @@ public sealed class ExternalImportTests
             if (!Release.Wait(TimeSpan.FromSeconds(10), CancellationToken.None)) throw new TimeoutException();
             Finished.Set();
             // Deliberately return a stale success to exercise the panel's abandoned-result handling.
-            return new(Id, [], [new("GTS", "stale.gts", "stale")], []);
+            return new(Id, [], [new("GTS", "stale.gts", "stale") { LogicalKeys = ["stale", "second"] }], []);
         }
         /// <inheritdoc/>
         public ExternalImportResult Import(ExternalImportRequest request, CancellationToken cancellationToken = default) => throw new NotSupportedException();
@@ -185,6 +185,23 @@ public sealed class ExternalImportTests
         panel.Poll();
         Assert.Null(panel.Analysis); Assert.False(panel.IsBusy); Assert.False(panel.CanImport);
     });
+    /// <summary>Shows all logical identities beside a single physical document in the preview.</summary>
+    [Fact]
+    public void PreviewShowsEveryLogicalMember() => RunSta(() =>
+    {
+        using var provider = new DelayedProvider();
+        provider.Release.Set();
+        using var panel = new ExternalImportPanel([provider]) { SourcePath = "input.test", OutputDirectory = Path.GetTempPath() };
+        panel.Analyze();
+        Wait(panel);
+        static IEnumerable<Control> Descendants(Control parent) => parent.Controls.Cast<Control>()
+            .SelectMany(child => new[] { child }.Concat(Descendants(child)));
+        var list = Assert.Single(Descendants(panel).OfType<ListView>());
+        Assert.Single(list.Items.Cast<ListViewItem>());
+        Assert.Equal("stale.gts", list.Items[0].SubItems[1].Text);
+        Assert.Equal("stale, second", list.Items[0].SubItems[2].Text);
+    });
+
     private static void RunSta(Action action)
     {
         Exception? error = null;

@@ -545,6 +545,170 @@ public sealed class EngineStatePackedDefinitionTests : IDisposable
         Assert.NotNull(ex.InnerException);
     }
 
+    /// <summary>Preserves selected members from shared documents for every format, both loose and packed.</summary>
+    /// <param name="packed">Whether the documents reside in a GAF.</param>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void MultiDefinitionMembersRoundTripThroughState(bool packed)
+    {
+        CreatePackage();
+        var archive = Assert.Single(AssetsFile.AllAssetsFiles);
+        var entries = new[]
+        {
+            (AssetTypes.TilesheetDefinition, "terrain.gts", "Name", "terrain"),
+            (AssetTypes.AnimationDefinition, "walk.gani", "Key", "walk"),
+            (AssetTypes.SceneDefinition, "level.gscn", "ID", "level"),
+            (AssetTypes.AudioDefinition, "audio.gsnd", "Key", "audio"),
+            (AssetTypes.SpriteDefinition, "actors.gspr", "Key", "actors")
+        };
+        foreach (var (type, entry, identity, key) in entries)
+        {
+            using var input = archive.Get(type, entry)!;
+            using var reader = new StreamReader(input);
+            var member = JObject.Parse(reader.ReadToEnd());
+            member[identity] = key;
+            if (!packed && type == AssetTypes.TilesheetDefinition) member["Image"]!["AssetsFilePath"] = ArchivePath;
+            var other = (JObject)member.DeepClone();
+            other[identity] = key + "-other";
+            var json = new JObject { ["Definitions"] = new JArray(member, other) }.ToString();
+            Add(archive, type, entry, json);
+            File.WriteAllText(Path.Combine(_root, "assets", entry), json);
+        }
+        archive.Save();
+        Clear();
+        archive = AssetsFile.LoadOrCreate(ArchivePath);
+        string FileFor(string entry) => Path.Combine(_root, "assets", entry);
+        if (packed) TilesheetRegistry.Instance.LoadFromDefinitionAsset(archive, "terrain.gts", "terrain");
+        else TilesheetRegistry.Instance.LoadFromDefinitionFile(FileFor("terrain.gts"), "terrain");
+        if (packed) AnimationDefinitionSerializer.LoadCycle(archive, "walk.gani", "walk");
+        else AnimationDefinitionSerializer.LoadCycle(FileFor("walk.gani"), "walk");
+        if (packed) SceneDefinitionSerializer.LoadScene(archive, "level.gscn", "level");
+        else SceneDefinitionSerializer.LoadScene(FileFor("level.gscn"), "level");
+        if (packed) AudioDefinitionSerializer.LoadIntoManager(archive, "audio.gsnd", "audio");
+        else AudioDefinitionSerializer.LoadIntoManager(FileFor("audio.gsnd"), "audio");
+        if (packed) SpriteDefinitionSerializer.LoadSprites(archive, "actors.gspr", "actors");
+        else SpriteDefinitionSerializer.LoadSprites(FileFor("actors.gspr"), "actors");
+        new EngineState().SaveToFile(StatePath, Preserve());
+        var root = Read(StatePath);
+        foreach (var entry in Entries(root)) Assert.False(string.IsNullOrWhiteSpace((string?)entry["DefinitionIdentity"]));
+        Clear();
+        EngineState.LoadFromFile(StatePath);
+        Assert.Equal("terrain", Assert.Single(TilesheetRegistry.Instance.GetAll()).Key);
+        Assert.Equal("walk", Assert.Single(Cycle.GetAnimationCycles()).CycleKey);
+        Assert.Equal("level", Assert.Single(Scene.GetAllScenes()).ID);
+        Assert.Equal("music", Assert.Single(AudioResourceManager.Instance.GetAll()).Key);
+        Assert.Equal("actor", Assert.Single(SpriteManager.Instance.AllSprites).Nickname);
+        // An old state reference cannot silently pick the first member after its source becomes a document.
+        foreach (var entry in Entries(root)) entry.Remove("DefinitionIdentity");
+        File.WriteAllText(StatePath, root.ToString());
+        Clear();
+        var error = Assert.Throws<InvalidDataException>(() => EngineState.LoadFromFile(StatePath));
+        Assert.Contains("Specify a logical identity", error.ToString());
+    }
+
+    /// <summary>Audio groups keep independent physical/member provenance, and a failing batch restores prior resources.</summary>
+    [Fact]
+    public void AudioGroupsPreserveMembersAndRollback()
+    {
+        var path = Path.Combine(_root, "assets", "groups.gsnd");
+        AudioDefinitionSerializer.SaveAll(path,
+        [
+            new AudioDefinition { Key = "music", Resources = [new() { Key = "a", SourceKind = AudioResourceSourceKind.Uri, SourceUri = "a.ogg" }] },
+            new AudioDefinition { Key = "effects", Resources = [new() { Key = "b", SourceKind = AudioResourceSourceKind.Uri, SourceUri = "b.ogg" }] }
+        ]);
+        Assert.Equal(2, AudioDefinitionSerializer.LoadAllIntoManager(path).Count);
+        new EngineState().SaveToFile(StatePath, Preserve(parts: EngineStateParts.Audio));
+        var root = Read(StatePath);
+        Assert.Equal(2, root["AudioGroups"]!["$values"]!.Count());
+        Clear();
+        EngineState.LoadFromFile(StatePath, parts: EngineStateParts.Audio);
+        Assert.Equal(2, AudioResourceManager.Instance.GetAll().Count);
+        var original = AudioResourceManager.Instance.Get("a");
+        var failing = AudioDefinitionSerializer.LoadDocument(path);
+        failing.Definitions[1].Resources[0].SourceKind = AudioResourceSourceKind.LooseFile;
+        failing.Definitions[1].Resources[0].FilePath = "missing.wav";
+        Assert.Throws<FileNotFoundException>(() => AudioDefinitionSerializer.LoadDocumentIntoManager(failing));
+        Assert.Same(original, AudioResourceManager.Instance.Get("a"));
+        Assert.Equal(2, AudioResourceManager.Instance.GetAll().Count);
+    }
+
+    /// <summary>Sprites loaded from separate roots remain separately preservable through EngineState.</summary>
+    [Fact]
+    public void SpriteGroupsPreserveMembers()
+    {
+        CreatePackage();
+        var path = Path.Combine(_root, "assets", "groups.gspr");
+        var first = SpriteDefinitionSerializer.FromSprites(SpriteManager.Instance.AllSprites);
+        first.Key = "player";
+        var second = SpriteDefinitionSerializer.FromJson(SpriteDefinitionSerializer.ToJson(first));
+        second.Key = "enemies";
+        second.Sprites[0].Id = Guid.NewGuid();
+        second.Sprites[0].Nickname = "enemy";
+        SpriteDefinitionSerializer.SaveAll(path, [first, second]);
+        foreach (var sprite in SpriteManager.Instance.AllSprites)
+        {
+            SpriteManager.Instance._spriteList.Remove(sprite);
+            sprite.DisposeImmediate();
+        }
+        Assert.Equal(2, SpriteDefinitionSerializer.LoadAllSprites(path).Count);
+        new EngineState().SaveToFile(StatePath, Preserve());
+        Assert.Equal(2, Read(StatePath)["SpriteGroups"]!["$values"]!.Count());
+        Clear();
+        EngineState.LoadFromFile(StatePath);
+        Assert.Equal(2, SpriteManager.Instance.AllSprites.Count);
+    }
+
+    /// <summary>Loads shared runtime documents and restores existing cycles when linking fails.</summary>
+    /// <param name="packed">Whether the documents are packed into a GAF.</param>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void RuntimeDocumentsLoadAllAndRollback(bool packed)
+    {
+        CreatePackage();
+        var archive = Assert.Single(AssetsFile.AllAssetsFiles);
+        var sheet = TilesheetDefinitionSerializer.Load(archive, "terrain.gts");
+        sheet.Image.AssetsFilePath = ArchivePath;
+        var otherSheet = TilesheetDefinitionSerializer.FromJson(TilesheetDefinitionSerializer.ToJson(sheet));
+        otherSheet.Name = "other";
+        var sheets = new TilesheetDefinitionDocument { Definitions = [sheet, otherSheet] };
+        var animation = AnimationDefinitionSerializer.Load(archive, "walk.gani");
+        var otherAnimation = AnimationDefinitionSerializer.FromJson(AnimationDefinitionSerializer.ToJson(animation));
+        otherAnimation.Key = "run";
+        animation.NextCycleKey = "run";
+        otherAnimation.NextCycleKey = "walk";
+        var animations = new AnimationDefinitionDocument { Definitions = [animation, otherAnimation] };
+        var scene = SceneDefinitionSerializer.Load(archive, "level.gscn");
+        var otherScene = SceneDefinitionSerializer.FromJson(SceneDefinitionSerializer.ToJson(scene));
+        otherScene.ID = "dungeon";
+        var scenes = new SceneDefinitionDocument { Definitions = [scene, otherScene] };
+        string PathFor(string extension) => Path.Combine(_root, "assets", "shared." + extension);
+        TilesheetDefinitionSerializer.SaveDocument(PathFor("gts"), sheets);
+        AnimationDefinitionSerializer.SaveDocument(PathFor("gani"), animations);
+        SceneDefinitionSerializer.SaveDocument(PathFor("gscn"), scenes);
+        Add(archive, AssetTypes.TilesheetDefinition, "shared.gts", TilesheetDefinitionSerializer.ToDocumentJson(sheets));
+        Add(archive, AssetTypes.AnimationDefinition, "shared.gani", AnimationDefinitionSerializer.ToDocumentJson(animations));
+        Add(archive, AssetTypes.SceneDefinition, "shared.gscn", SceneDefinitionSerializer.ToDocumentJson(scenes));
+        archive.Save();
+        Clear();
+        archive = AssetsFile.LoadOrCreate(ArchivePath);
+        Assert.Equal(2, packed ? TilesheetRegistry.Instance.LoadAllFromDefinitionAsset(archive, "shared.gts").Count : TilesheetRegistry.Instance.LoadAllFromDefinitionFile(PathFor("gts")).Count);
+        var cycles = packed ? AnimationDefinitionSerializer.LoadAllCycles(archive, "shared.gani") : AnimationDefinitionSerializer.LoadAllCycles(PathFor("gani"));
+        Assert.Same(cycles[1], cycles[0].NextCycle);
+        Assert.Same(cycles[0], cycles[1].NextCycle);
+        Assert.Equal(2, packed ? SceneDefinitionSerializer.LoadAllScenes(archive, "shared.gscn").Count : SceneDefinitionSerializer.LoadAllScenes(PathFor("gscn")).Count);
+        animations.Definitions[1].NextCycleKey = "missing";
+        Assert.ThrowsAny<Exception>(() => AnimationDefinitionSerializer.ToAllCycles(animations));
+        Assert.Same(cycles[0], Cycle._cycles["walk"]);
+        Assert.Same(cycles[1], Cycle._cycles["run"]);
+        otherSheet.Image.AssetEntryName = "missing.png";
+        TilesheetDefinitionSerializer.SaveDocument(PathFor("gts"), sheets);
+        var previous = TilesheetRegistry.Instance.GetAll().ToArray();
+        Assert.ThrowsAny<Exception>(() => TilesheetRegistry.Instance.LoadAllFromDefinitionFile(PathFor("gts")));
+        Assert.Equal(previous, TilesheetRegistry.Instance.GetAll().ToArray());
+    }
+
     private sealed class Backend : IAudioBackend
     {
         /// <inheritdoc/>

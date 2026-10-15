@@ -6,12 +6,17 @@ internal sealed class SceneViewerForm : Form
 {
     private readonly WinFormGpuRenderSurfaceControl _surface = new() { Dock = DockStyle.Fill };
     private readonly string? _scenePath;
+    private readonly string? _sceneId;
     private readonly SceneViewerStressOptions? _stress;
     private SceneViewerGameHost? _host;
 
-    internal SceneViewerForm(string scenePath)
+    /// <summary>Creates a viewer for a saved scene member.</summary>
+    /// <param name="scenePath">The physical document path.</param>
+    /// <param name="sceneId">The logical member identity, or null for a singleton.</param>
+    internal SceneViewerForm(string scenePath, string? sceneId = null)
     {
         _scenePath = scenePath;
+        _sceneId = sceneId;
         Text = $"Gondwana Scene Viewer — {Path.GetFileName(scenePath)}";
         Initialize();
     }
@@ -37,7 +42,7 @@ internal sealed class SceneViewerForm : Form
         base.OnShown(e);
         try
         {
-            _host = new SceneViewerGameHost(_surface, _scenePath, _stress);
+            _host = new SceneViewerGameHost(_surface, _scenePath, _stress, _sceneId);
             _host.CloseRequested += OnCloseRequested;
             _host.InitializeWithConfigurationStore(new SceneViewerGameHost.ViewerConfiguration());
             _surface.Focus();

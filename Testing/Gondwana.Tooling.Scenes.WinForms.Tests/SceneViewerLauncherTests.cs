@@ -8,6 +8,15 @@ namespace Gondwana.Tooling.Scenes.WinForms.Tests;
 public sealed class SceneViewerLauncherTests : IDisposable
 {
     private readonly string _directory = Path.Combine(Path.GetTempPath(), "ViewerLaunchTests", Guid.NewGuid().ToString("N"));
+    /// <summary>Passes physical document and logical member as separate argument tokens.</summary>
+    [Fact]
+    public void LaunchArgumentsIncludeSceneIdentity()
+    {
+        var path = Path.Combine(_directory, "shared scenes.gscn");
+        var start = SceneViewerLauncher.CreateStartInfo("viewer.exe", path, "dungeon one");
+        Assert.Equal(new[] { "--scene", path, "--scene-id", "dungeon one" }, start.ArgumentList);
+    }
+
     /// <summary>
     /// Initializes a new instance of the <c>SceneViewerLauncherTests</c> class.
     /// </summary>

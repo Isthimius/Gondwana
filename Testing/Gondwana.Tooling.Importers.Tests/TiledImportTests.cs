@@ -56,7 +56,7 @@ public sealed class TiledImportTests : IDisposable
         Assert.Equal(1, gts.Regions[0].TilePadding.Right);
         Assert.Equal((2L, 1L), TilesheetDefinitionValidator.GridSize(gts.Regions[0]));
         Assert.Empty(TilesheetDefinitionValidator.Validate(gts, 7, 4));
-        var gani = AnimationDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain-tile-0.gani"));
+        var gani = AnimationDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain-animations.gani"));
         Assert.Equal(new double?[] { 0.1, 0.25 }, gani.Frames.Select(f => f.DurationSeconds));
         Assert.Equal(new[] { 1, 0 }, gani.Frames.Select(f => f.XTile));
         Assert.Equal("terrain.gts", gani.TilesheetSources[0].GtsPath);
@@ -64,6 +64,30 @@ public sealed class TiledImportTests : IDisposable
         Assert.False(importer.Analyze(request).CanImport);
         Assert.Empty(importer.Import(request).WrittenFiles);
         Assert.Equal(2, importer.Import(request with { Overwrite = true }).WrittenFiles.Count);
+    }
+
+    /// <summary>Multiple tile animations share a document while map sources retain each logical selector.</summary>
+    [Fact]
+    public void MultipleTileAnimationsShareOneDocument()
+    {
+        string tileset = Tileset();
+        File.WriteAllText(tileset, File.ReadAllText(tileset).Replace("</tileset>",
+            "<tile id='1'><animation><frame tileid='0' duration='100'/><frame tileid='1' duration='200'/></animation></tile></tileset>"));
+        string map = Path.Combine(directory, "level.tmx");
+        File.WriteAllText(map, "<map orientation='orthogonal' width='2' height='1' tilewidth='2' tileheight='2'><tileset firstgid='1' source='terrain.tsx'/><layer><data encoding='csv'>1,2</data></layer></map>");
+        var request = new ExternalImportRequest(map, Path.Combine(directory, "output"));
+        var result = new TiledMapImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        var artifact = Assert.Single(result.Analysis.Artifacts, item => item.Kind == "GANI");
+        Assert.Equal(new[] { "terrain.tile.0", "terrain.tile.1" }, artifact.LogicalKeys);
+        Assert.Equal(2, AnimationDefinitionSerializer.LoadAll(artifact.OutputPath).Count);
+        var scene = SceneDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "level.gscn"));
+        Assert.Equal(2, scene.AnimationSources.Count);
+        Assert.All(scene.AnimationSources, source =>
+        {
+            Assert.Equal("terrain-animations.gani", source.GaniPath);
+            Assert.Equal(source.AnimationKey, AnimationDefinitionSerializer.Load(artifact.OutputPath, source.AnimationKey).Key);
+        });
     }
 
     /// <summary>

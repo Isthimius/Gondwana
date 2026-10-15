@@ -58,24 +58,27 @@ internal sealed class ViewerContentCatalog
             if (type == AssetTypes.TilesheetDefinition)
             {
                 using var stream = archive?.Get(type, source.Entry!);
-                var definition = archive is null ? TilesheetDefinitionSerializer.Load(source.Path) :
-                    TilesheetDefinitionSerializer.Load(stream ?? throw new InvalidDataException("Missing GTS entry."));
-                AddIdentity(_sheets, definition.Name, source);
+                var definitions = archive is null ? TilesheetDefinitionSerializer.LoadAll(source.Path) :
+                    TilesheetDefinitionSerializer.LoadAll(archive, source.Entry!);
+                foreach (var definition in definitions) AddIdentity(_sheets, definition.Name, source);
             }
             else if (type == AssetTypes.AnimationDefinition)
             {
-                var definition = archive is null ? AnimationDefinitionSerializer.Load(source.Path) :
-                    AnimationDefinitionSerializer.Load(archive, source.Entry!);
-                AddIdentity(_animations, definition.Key, source);
+                var definitions = archive is null ? AnimationDefinitionSerializer.LoadAll(source.Path) :
+                    AnimationDefinitionSerializer.LoadAll(archive, source.Entry!);
+                foreach (var definition in definitions) AddIdentity(_animations, definition.Key, source);
             }
             else
             {
-                var definition = archive is null ? SpriteDefinitionSerializer.Load(source.Path) :
-                    SpriteDefinitionSerializer.Load(archive, source.Entry!);
-                var errors = SpriteDefinitionValidator.Validate(definition);
-                if (errors.Count > 0)
-                    throw new InvalidDataException(string.Join("\n", errors));
-                _sprites.Add(new(source, definition));
+                var definitions = archive is null ? SpriteDefinitionSerializer.LoadAll(source.Path) :
+                    SpriteDefinitionSerializer.LoadAll(archive, source.Entry!);
+                foreach (var definition in definitions)
+                {
+                    var errors = SpriteDefinitionValidator.Validate(definition);
+                    if (errors.Count > 0)
+                        throw new InvalidDataException(string.Join("\n", errors));
+                    _sprites.Add(new(source, definition));
+                }
             }
         }
         catch (Exception ex)

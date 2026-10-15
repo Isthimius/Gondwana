@@ -85,6 +85,19 @@ public sealed class SpriteEditorControl : UserControl
         Document.Changed += DocumentChanged;
         LoadSources();
         RefreshEntries();
+        var definitionBar = new DefinitionSelectionBar<SpriteDefinition>(
+            () => Document.Definitions, () => Document.SelectedDefinition, definition => definition.Key,
+            Document.SelectDefinition, () => Document.AddDefinition(), () => Document.DuplicateDefinition(),
+            () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, () =>
+            {
+                foreach (var source in _sources) source.Dispose();
+                _sources.Clear(); _sceneDefinitions.Clear(); _sourceWarnings.Clear();
+                _loadedScenePaths.Clear(); _loadedTilesheetPaths.Clear(); _scenes.Nodes.Clear(); _frames.Nodes.Clear();
+                LoadSources(); RefreshEntries();
+            }, "gspr", (path, select) => Document.ImportDefinitions(path, select));
+        Controls.Add(definitionBar);
+        Document.Changed += definitionBar.RefreshMembers;
+        definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
         DarkTheme.Apply(this);
     }
 
@@ -108,20 +121,20 @@ public sealed class SpriteEditorControl : UserControl
         foreach (var source in Document.Definition.SceneSources)
         {
             if (source.Kind == SpriteSceneSourceKind.LooseDefinitionFile && source.GscnPath is { } path)
-                TryLoad(() => LoadScene(Document.ResolveReferencePath(path)));
+                TryLoad(() => LoadScene(Document.ResolveReferencePath(path), source.SceneId));
             else if (source.AssetsFilePath is { } archivePath && source.AssetEntryName is { } entry)
                 TryLoad(() =>
                 {
                     using var archive = AssetsFile.LoadOrCreate(Document.ResolveReferencePath(archivePath), null, false, register: false);
-                    AddSceneDefinition(SceneDefinitionSerializer.Load(archive, entry));
+                    AddSceneDefinition(SceneDefinitionSerializer.Load(archive, entry, source.SceneId));
                 });
         }
         foreach (var source in Document.Definition.TilesheetSources)
         {
             if (source.Kind == SpriteTilesheetSourceKind.LooseDefinitionFile && source.GtsPath is { } path)
-                TryLoad(() => LoadTilesheet(Document.ResolveReferencePath(path)));
+                TryLoad(() => LoadTilesheet(Document.ResolveReferencePath(path), source.Tilesheet));
             else if (source.AssetsFilePath is { } archivePath && source.AssetEntryName is { } entry)
-                TryLoad(() => AddTilesheetDefinition(SpriteTilesheetSource.Load(Document.ResolveReferencePath(archivePath), entry)));
+                TryLoad(() => AddTilesheetDefinition(SpriteTilesheetSource.LoadPacked(Document.ResolveReferencePath(archivePath), entry, source.Tilesheet)));
         }
     }
 
@@ -138,13 +151,13 @@ public sealed class SpriteEditorControl : UserControl
     /// <param name="paths">The paths of the source files to add.</param>
     public void AddSceneSources(IEnumerable<string> paths)
     {
-        foreach (var path in paths) { var scene = LoadScene(path); Document.SetLooseSceneSource(scene.ID, path); }
+        foreach (var path in paths) foreach (var member in SceneDefinitionSerializer.LoadAll(path)) { var scene = LoadScene(path, member.ID); Document.SetLooseSceneSource(scene.ID, path); }
         RefreshSelection();
     }
-    private SceneDefinition LoadScene(string path)
+    private SceneDefinition LoadScene(string path, string? identity = null)
     {
-        var scene = SceneDefinitionSerializer.Load(path);
-        if (!_loadedScenePaths.Add(Path.GetFullPath(path))) return scene;
+        var scene = SceneDefinitionSerializer.Load(path, identity);
+        if (!_loadedScenePaths.Add(Path.GetFullPath(path) + " :: " + scene.ID)) return scene;
         AddSceneDefinition(scene);
         return scene;
     }
@@ -162,15 +175,16 @@ public sealed class SpriteEditorControl : UserControl
     /// <param name="paths">The paths of the source files to add.</param>
     public void AddTilesheetSources(IEnumerable<string> paths)
     {
-        foreach (var path in paths) { var source = LoadTilesheet(path); Document.SetLooseTilesheetSource(source.Definition.Name, path); }
+        foreach (var path in paths) foreach (var member in TilesheetDefinitionSerializer.LoadAll(path)) { var source = LoadTilesheet(path, member.Name); Document.SetLooseTilesheetSource(source.Definition.Name, path); }
         RefreshSelection();
     }
-    private SpriteTilesheetSource LoadTilesheet(string path)
+    private SpriteTilesheetSource LoadTilesheet(string path, string? identity = null)
     {
         var fullPath = Path.GetFullPath(path);
-        if (_loadedTilesheetPaths.Contains(fullPath)) return _sources.First(source => source.FilePath.Equals(fullPath, StringComparison.OrdinalIgnoreCase));
-        var source = SpriteTilesheetSource.Load(path);
-        _loadedTilesheetPaths.Add(fullPath);
+        var memberPath = fullPath + " :: " + identity;
+        if (_loadedTilesheetPaths.Contains(memberPath)) return _sources.First(source => source.FilePath.Equals(fullPath, StringComparison.OrdinalIgnoreCase) && source.Definition.Name == identity);
+        var source = SpriteTilesheetSource.LoadMember(path, identity);
+        _loadedTilesheetPaths.Add(memberPath);
         AddTilesheetDefinition(source);
         return source;
     }

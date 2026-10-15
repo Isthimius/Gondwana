@@ -68,7 +68,7 @@ public sealed class AsepriteImporter : ExternalAssetImporter
             };
             foreach (int index in sequence)
                 gani.Frames.Add(new() { Tilesheet = name, RegionName = $"row-{index / columns}", XTile = index % columns, YTile = 0, DurationSeconds = sprite.Frames[index].DurationMilliseconds / 1000.0 });
-            plan.Add(name + "-" + key + ".gani", gani);
+            plan.Add(name + ".gani", gani);
         }
     }
 

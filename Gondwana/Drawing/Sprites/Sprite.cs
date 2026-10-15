@@ -18,6 +18,10 @@ namespace Gondwana.Drawing.Sprites;
 [JsonObject(IsReference = true)]
 public partial class Sprite : Tile, IMovableOnSceneLayer, ICollisionMovableEntity, IDisposable
 {
+    /// <summary>Gets or sets the logical definition group that materialized this object.</summary>
+    [JsonIgnore]
+    internal DefinitionProvenance? DefinitionProvenance { get; set; }
+
     /// <summary>
     /// Occurs when the sprite position changes.
     /// </summary>

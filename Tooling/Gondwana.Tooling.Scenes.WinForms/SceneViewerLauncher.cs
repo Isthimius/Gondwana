@@ -6,17 +6,30 @@ internal static class SceneViewerLauncher
 {
     internal const string Component = "Gondwana.Tooling.SceneViewer.WinForms";
 
-    internal static void Launch(string scenePath)
+    /// <summary>Opens a saved scene document in the viewer.</summary>
+    /// <param name="scenePath">The physical document path.</param>
+    /// <param name="sceneId">The logical member identity, or null for a singleton.</param>
+    internal static void Launch(string scenePath, string? sceneId = null)
     {
-        using var process = Process.Start(CreateStartInfo(Locate(AppContext.BaseDirectory), scenePath))
+        using var process = Process.Start(CreateStartInfo(Locate(AppContext.BaseDirectory), scenePath, sceneId))
             ?? throw new InvalidOperationException("The Scene Viewer process could not be started.");
     }
 
-    internal static ProcessStartInfo CreateStartInfo(string executable, string scenePath)
+    /// <summary>Builds a viewer command with separate document and member arguments.</summary>
+    /// <param name="executable">The viewer executable.</param>
+    /// <param name="scenePath">The physical document path.</param>
+    /// <param name="sceneId">The logical member identity, or null for a singleton.</param>
+    /// <returns>The process start information.</returns>
+    internal static ProcessStartInfo CreateStartInfo(string executable, string scenePath, string? sceneId = null)
     {
         var start = new ProcessStartInfo(executable) { UseShellExecute = false };
         start.ArgumentList.Add("--scene");
         start.ArgumentList.Add(Path.GetFullPath(scenePath));
+        if (sceneId is not null)
+        {
+            start.ArgumentList.Add("--scene-id");
+            start.ArgumentList.Add(sceneId);
+        }
         return start;
     }
 

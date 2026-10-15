@@ -16,4 +16,8 @@
     <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
     <ProjectReference Include="..\..\Gondwana\Gondwana.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../Shared/WinForms/DefinitionImport.cs" Link="Editing/DefinitionImport.cs" />
+    <Compile Include="..\Shared\WinForms\DefinitionSelectionBar.cs" Link="Docking\DefinitionSelectionBar.cs" />
+  </ItemGroup>
 </Project>

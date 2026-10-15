@@ -64,11 +64,13 @@ internal static class ProjectHealth
                 if (extension == ".gts")
                 {
                     sheets++;
-                    var inspection = TilesheetInspection.FromFile(file);
-                    // Packed definitions can validly omit AssetsFilePath and receive
-                    // their containing bundle at runtime. Loose project scans lack it.
-                    var packedOnly = inspection.Definition?.Image is { FilePath: null, AssetsFilePath: null, AssetEntryName: not null };
-                    foreach (var error in inspection.Errors) Report(label, packedOnly && error.StartsWith("Image:") ? "Warning" : "Fail", error);
+                    foreach (var inspection in TilesheetInspection.AllFromFile(file))
+                    {
+                        // Packed definitions can validly omit AssetsFilePath and receive
+                        // their containing bundle at runtime. Loose project scans lack it.
+                        var packedOnly = inspection.Definition?.Image is { FilePath: null, AssetsFilePath: null, AssetEntryName: not null };
+                        foreach (var error in inspection.Errors) Report(label + " :: " + inspection.Definition?.Name, packedOnly && error.StartsWith("Image:") ? "Warning" : "Fail", error);
+                    }
                 }
                 else
                 {

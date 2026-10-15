@@ -201,6 +201,19 @@ public sealed class AnimationEditorControl : UserControl
 
         Document.Changed += DocumentChanged;
 
+        var definitionBar = new DefinitionSelectionBar<AnimationDefinition>(
+            () => Document.Definitions, () => Document.SelectedDefinition, definition => definition.Key,
+            Document.SelectDefinition, () => Document.AddDefinition(), () => Document.DuplicateDefinition(),
+            () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, () =>
+            {
+                foreach (var source in _sources) source.Dispose();
+                _sources.Clear();
+                LoadDefinitionTilesheetSources();
+                RefreshView();
+            }, "gani", (path, select) => Document.ImportDefinitions(path, select));
+        Controls.Add(definitionBar);
+        Document.Changed += definitionBar.RefreshMembers;
+        definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
         DarkTheme.Apply(this);
         RefreshView();
     }
@@ -241,8 +254,15 @@ public sealed class AnimationEditorControl : UserControl
         string? expectedTilesheet = null)
     {
         path = Path.GetFullPath(path);
+        if (expectedTilesheet is null)
+        {
+            bool changed = false;
+            foreach (var definition in TilesheetDefinitionSerializer.LoadAll(path))
+                changed |= AddTilesheetSourceCore(path, persistReference, definition.Name);
+            return changed;
+        }
 
-        if (_sources.Any(source =>
+        if (_sources.Any(source => source.Definition.Name == expectedTilesheet &&
                 string.Equals(
                     source.FilePath,
                     path,
@@ -251,7 +271,7 @@ public sealed class AnimationEditorControl : UserControl
             return false;
         }
 
-        var loaded = TilesheetSource.Load(path);
+        var loaded = TilesheetSource.LoadMember(path, expectedTilesheet);
 
         if (!string.IsNullOrWhiteSpace(expectedTilesheet) &&
             !string.Equals(
@@ -325,10 +345,12 @@ public sealed class AnimationEditorControl : UserControl
                     break;
 
                 case AnimationTilesheetSourceKind.PackedDefinitionFile:
-                    _sourceDiagnostics.Add(
-                        $"INFO: Tilesheet '{sourceReference.Tilesheet}' is recorded as packed GTS entry " +
-                        $"'{sourceReference.AssetEntryName}' in '{sourceReference.AssetsFilePath}'. " +
-                        "Packed GTS authoring sources are preserved but are not previewed by this editor yet.");
+                    try
+                    {
+                        _sources.Add(TilesheetSource.LoadPacked(Document.ResolveReferencePath(sourceReference.AssetsFilePath!),
+                            sourceReference.AssetEntryName!, sourceReference.Tilesheet));
+                    }
+                    catch (Exception ex) { _sourceDiagnostics.Add(ex.Message); }
                     break;
             }
         }
@@ -402,7 +424,7 @@ public sealed class AnimationEditorControl : UserControl
                 try
                 {
                     var definition =
-                        TilesheetDefinitionSerializer.Load(path);
+                        TilesheetDefinitionSerializer.Load(path, tilesheet);
 
                     if (string.Equals(
                             definition.Name,

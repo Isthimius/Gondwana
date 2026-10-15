@@ -1,8 +1,76 @@
 # GSPR sprite definitions
 
-`.gspr` means **Gondwana Sprite**. Each file is a collection-oriented authoring document containing zero or more sprite entries. Empty documents support a new editor session. Developers choose grouping: `player.gspr`, `actors.gspr`, or `projectiles.gspr` have no special engine meaning.
+## Import into an open document
 
-`SpriteDefinition` is the root, with `Sprites`, `TilesheetSources`, and `SceneSources` collections. Each `SpriteInstanceDefinition` holds stable authored state. It is not a runtime object graph, scene, prefab, ECS archetype, or gameplay save system.
+Choose **Import definition…** in the **Definition** toolbar and browse to an existing file of the same format. Legacy singleton files import directly. For a multi-definition file, check the members to import; **Select all** and **Select none** adjust the selection. Canceling or importing no members leaves the current document unchanged.
+
+Imported members are independent copies appended to the current document. Existing names are retained when available; conflicts receive `-2`, `-3`, and subsequent suffixes. The first imported member becomes active and the destination becomes dirty. Save and Save As retain both existing and imported members; the source file is never changed.
+
+Relative filesystem references, including GAF paths, are rebased to keep pointing at their original resources. Archive entry names and logical dependency selectors are retained. Resources are not copied or moved. Import does not rewrite logical references when a root name conflicts, or resolve collisions among inner sprite IDs, resource keys, or scene layer IDs. Review those relationships before runtime materialization. Incomplete authoring drafts can be imported and saved using the existing draft workflow; malformed document envelopes and duplicate source root identities are rejected.
+
+
+## Definition documents and logical members
+
+One physical `.gspr` file contains a document object with a `Definitions` array.
+Every member has a unique, non-empty, case-sensitive `Key`. The document location
+(loose path, or GAF path plus typed entry name) is independent of that logical identity.
+
+```json
+{
+  "Definitions": [
+    { "Key": "first" },
+    { "Key": "second" }
+  ]
+}
+```
+
+This illustrates the envelope and identities; supply the normal format-specific fields
+shown below for complete definitions. The same envelope is stored as the bytes of a
+single `AssetTypes.SpriteDefinition` GAF entry. GAF remains a typed binary container;
+loading or saving a document does not create entries for individual members.
+
+```csharp
+var selected = SpriteDefinitionSerializer.Load("content.gspr", "second");
+var definitions = SpriteDefinitionSerializer.LoadAll("content.gspr");
+var document = SpriteDefinitionSerializer.LoadDocument("content.gspr");
+SpriteDefinitionSerializer.SaveDocument("copy.gspr", document);
+SpriteDefinitionSerializer.SaveAll("copy.gspr", definitions);
+
+var packed = SpriteDefinitionSerializer.Load(assetsFile, "content.gspr", "second");
+var packedMembers = SpriteDefinitionSerializer.LoadAll(assetsFile, "content.gspr");
+```
+
+`LoadDocument`, `LoadAll`, and member-selecting `Load` also accept readable streams and
+leave them open. Anonymous streams do not claim physical-source provenance.
+`ValidateDocument` reports structural and per-member validation errors, qualified by
+logical identity. Parsing rejects null member lists, null members, duplicate identities,
+and mixed singleton/envelope objects. Authoring drafts may be structurally valid but
+incomplete; runtime materialization runs the format validator.
+
+Existing singleton JSON without an envelope continues to load. `Load(path)` and other
+singleton convenience APIs require exactly one member and fail clearly on empty or
+multi-member documents. `Save(path, definition)` writes a canonical one-member envelope.
+`ToJson(definition)` retains the single-definition JSON projection for existing callers;
+use `ToDocumentJson(document)` for canonical document JSON. Singleton JSON examples
+below remain supported and can also be placed inside the envelope.
+
+The editor's **Definition** toolbar selects, adds, duplicates, removes, and renames roots.
+Saving writes every member, and Save As rebases references for every member without
+modifying unrelated content. At least one member remains in an editable session.
+
+Legacy roots without `Key` infer it from the filename or packed entry basename.
+Anonymous legacy JSON uses `sprite`; canonical document members must explicitly provide a key.
+
+Use `SpriteDefinitionSerializer.LoadAllSprites` to materialize every member.
+
+Load-all operations roll back newly created runtime content if a member fails.
+Physical/member separation supports future packaging work; content relocation is not implemented here.
+
+
+
+`.gspr` means **Gondwana Sprite**. Each file contains named sprite definitions, each with its own collection of sprite entries. An empty sprite collection supports a new editor session. Developers choose grouping: `player.gspr`, `actors.gspr`, or `projectiles.gspr` have no special engine meaning.
+
+`SpriteDefinitionDocument` is the document root. Each contained `SpriteDefinition` has a stable `Key`, with `Sprites`, `TilesheetSources`, and `SceneSources` collections. Each `SpriteInstanceDefinition` holds stable authored state. It is not a runtime object graph, scene, prefab, ECS archetype, or gameplay save system.
 
 ## Persistent state
 

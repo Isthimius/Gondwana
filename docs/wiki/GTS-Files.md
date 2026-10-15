@@ -1,5 +1,71 @@
 A `.gts` file is a **Gondwana Tilesheet definition**. It stores the information Gondwana needs to reconstruct a [`Tilesheet`](Tilesheets): the image source, regions, frame geometry, rendering metadata, and collision metadata.
 
+## Definition documents and logical members
+
+## Import into an open document
+
+Choose **Import definition…** in the **Definition** toolbar and browse to an existing file of the same format. Legacy singleton files import directly. For a multi-definition file, check the members to import; **Select all** and **Select none** adjust the selection. Canceling or importing no members leaves the current document unchanged.
+
+Imported members are independent copies appended to the current document. Existing names are retained when available; conflicts receive `-2`, `-3`, and subsequent suffixes. The first imported member becomes active and the destination becomes dirty. Save and Save As retain both existing and imported members; the source file is never changed.
+
+Relative filesystem references, including GAF paths, are rebased to keep pointing at their original resources. Archive entry names and logical dependency selectors are retained. Resources are not copied or moved. Import does not rewrite logical references when a root name conflicts, or resolve collisions among inner sprite IDs, resource keys, or scene layer IDs. Review those relationships before runtime materialization. Incomplete authoring drafts can be imported and saved using the existing draft workflow; malformed document envelopes and duplicate source root identities are rejected.
+
+
+One physical `.gts` file contains a document object with a `Definitions` array.
+Every member has a unique, non-empty, case-sensitive `Name`. The document location
+(loose path, or GAF path plus typed entry name) is independent of that logical identity.
+
+```json
+{
+  "Definitions": [
+    { "Name": "first" },
+    { "Name": "second" }
+  ]
+}
+```
+
+This illustrates the envelope and identities; supply the normal format-specific fields
+shown below for complete definitions. The same envelope is stored as the bytes of a
+single `AssetTypes.TilesheetDefinition` GAF entry. GAF remains a typed binary container;
+loading or saving a document does not create entries for individual members.
+
+```csharp
+var selected = TilesheetDefinitionSerializer.Load("content.gts", "second");
+var definitions = TilesheetDefinitionSerializer.LoadAll("content.gts");
+var document = TilesheetDefinitionSerializer.LoadDocument("content.gts");
+TilesheetDefinitionSerializer.SaveDocument("copy.gts", document);
+TilesheetDefinitionSerializer.SaveAll("copy.gts", definitions);
+
+var packed = TilesheetDefinitionSerializer.Load(assetsFile, "content.gts", "second");
+var packedMembers = TilesheetDefinitionSerializer.LoadAll(assetsFile, "content.gts");
+```
+
+`LoadDocument`, `LoadAll`, and member-selecting `Load` also accept readable streams and
+leave them open. Anonymous streams do not claim physical-source provenance.
+`ValidateDocument` reports structural and per-member validation errors, qualified by
+logical identity. Parsing rejects null member lists, null members, duplicate identities,
+and mixed singleton/envelope objects. Authoring drafts may be structurally valid but
+incomplete; runtime materialization runs the format validator.
+
+Existing singleton JSON without an envelope continues to load. `Load(path)` and other
+singleton convenience APIs require exactly one member and fail clearly on empty or
+multi-member documents. `Save(path, definition)` writes a canonical one-member envelope.
+`ToJson(definition)` retains the single-definition JSON projection for existing callers;
+use `ToDocumentJson(document)` for canonical document JSON. Singleton JSON examples
+below remain supported and can also be placed inside the envelope.
+
+The editor's **Definition** toolbar selects, adds, duplicates, removes, and renames roots.
+Saving writes every member, and Save As rebases references for every member without
+modifying unrelated content. At least one member remains in an editable session.
+
+Runtime loading uses `TilesheetRegistry.Instance.LoadFromDefinitionFile(path, name)`
+and `LoadAllFromDefinitionFile(path)`, with corresponding packed `...Asset` methods.
+
+Load-all operations roll back newly created runtime content if a member fails.
+Physical/member separation supports future packaging work; content relocation is not implemented here.
+
+
+
 The image pixels are normally stored somewhere else. A `.gts` file points to a loose image file or to an image entry inside an [`AssetsFile`](Assets-Files).
 
 > A `.gts` file is a recipe, not the cake. It describes how to rebuild a tilesheet; it is not ordinarily an image container.

@@ -38,6 +38,15 @@ public sealed partial class ViewerTests : IDisposable
         Assert.Null(SceneViewerArguments.Parse([], _directory));
     }
 
+    /// <summary>Accepts an explicit logical scene identity and rejects empty selectors.</summary>
+    [Fact]
+    public void ArgumentsAcceptSceneMember()
+    {
+        File.WriteAllText(ScenePath, "{}");
+        Assert.Equal(ScenePath, SceneViewerArguments.Parse(["--scene", ScenePath, "--scene-id", "dungeon"], _directory));
+        Assert.Throws<ArgumentException>(() => SceneViewerArguments.Parse(["--scene", ScenePath, "--scene-id", ""], _directory));
+    }
+
     /// <summary>
     /// Verifies stress arguments parse tile count and projection.
     /// </summary>
@@ -117,6 +126,31 @@ public sealed partial class ViewerTests : IDisposable
         Assert.True(scene[0]![1, 0]!.TileAnimator.IsCycling);
         Assert.Equal("walk", scene[0]![0, 0]!.TileAnimator.CurrentCycle.CycleKey);
         Assert.Equal(TileTransform.FlipHorizontal, scene[0]![1, 0]!.Transform);
+    }
+
+    /// <summary>Resolves the named scene and dependencies even when they are not first in shared documents.</summary>
+    [Fact]
+    public void SharedDocumentsResolveLogicalMembers()
+    {
+        WriteContent();
+        var sheetPath = Path.Combine(_directory, "sheet.gts");
+        var sheet = TilesheetDefinitionSerializer.Load(sheetPath);
+        var unusedSheet = TilesheetDefinitionSerializer.FromJson(TilesheetDefinitionSerializer.ToJson(sheet));
+        unusedSheet.Name = "unused";
+        TilesheetDefinitionSerializer.SaveAll(sheetPath, [unusedSheet, sheet]);
+        var animationPath = Path.Combine(_directory, "animation.gani");
+        var animation = AnimationDefinitionSerializer.Load(animationPath);
+        var unusedAnimation = AnimationDefinitionSerializer.FromJson(AnimationDefinitionSerializer.ToJson(animation));
+        unusedAnimation.Key = "unused";
+        AnimationDefinitionSerializer.SaveAll(animationPath, [unusedAnimation, animation]);
+        var definition = SceneDefinitionSerializer.Load(ScenePath);
+        var unusedScene = SceneDefinitionSerializer.FromJson(SceneDefinitionSerializer.ToJson(definition));
+        unusedScene.ID = "unused";
+        SceneDefinitionSerializer.SaveAll(ScenePath, [unusedScene, definition]);
+        using var scene = new ViewerSceneLoader().Load(ScenePath, "viewer-test");
+        Assert.Equal("viewer-test", scene.ID);
+        Assert.Equal("walk", scene[0]![0, 0]!.TileAnimator.CurrentCycle.CycleKey);
+        Assert.False(TilesheetRegistry.Instance.TryGet("unused", out _));
     }
 
     /// <summary>
