@@ -115,6 +115,37 @@ public sealed partial class SemanticAssetPackTests
         Assert.Equal("images/art.png", imageReference.AssetEntryName);
     }
 
+    /// <summary>Reused definitions retain external dependencies even when the same source is imported.</summary>
+    [Fact]
+    public void EditorImportReuseReportsRetainedExternalDependency()
+    {
+        Image("art.png");
+        Directory.CreateDirectory(Path.GetDirectoryName(Output)!);
+        var physicalImage = Path.Combine(Path.GetDirectoryName(Output)!, "art.png");
+        File.Copy(Path.Combine(Source, "art.png"), physicalImage);
+        using var destination = AssetsFile.LoadOrCreate(Output, null, false, register: false);
+        using (var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(Sheet("terrain", "art.png")))))
+            destination.Add(AssetTypes.TilesheetDefinition, "terrain.gts", stream);
+        var animationPath = Path.Combine(Source, "walk.gani");
+        AnimationDefinitionSerializer.Save(animationPath, new AnimationDefinition
+        {
+            Key = "walk",
+            ThrottleTime = .2,
+            Frames = [new() { Tilesheet = "terrain" }]
+        });
+
+        var plan = AssetImportPlan.Create(destination,
+        [
+            new(physicalImage, AssetTypes.Image, "art.png"),
+            new(animationPath, AssetTypes.AnimationDefinition, "walk.gani")
+        ], false);
+
+        Assert.Contains(plan.Preview, line => line.StartsWith("External:") && line.Contains("art.png", StringComparison.Ordinal));
+        Assert.Equal(2, plan.Apply());
+        Assert.Equal("art.png", TilesheetDefinitionSerializer.Load(destination, "terrain.gts").Image.FilePath);
+        Assert.False(File.Exists(Output));
+    }
+
     /// <summary>Prepared transactions reject stale previews, preserve current bytes on failure, and honor cancellation.</summary>
     [Fact]
     public void EditorImportRollbackAndStalePlan()

@@ -176,6 +176,7 @@ internal sealed partial class SemanticPackPlan
         var found = _entries.Values.FirstOrDefault(entry => Same(entry.Location, location));
         if (found is null) found = FindImportAlias(location);
         if (found is null && location.AssetEntryName is not null) found = FindPacked(location);
+        if (_validateReusedTargets && found is not null && _incoming.Contains(found)) found = null;
         if (found is null && _entries.Values.Any(entry => Paths.Equals(entry.Location.Path, location.Path) &&
             StringComparer.OrdinalIgnoreCase.Equals(entry.Location.AssetEntryName, location.AssetEntryName) && entry.Location.AssetType != location.AssetType))
             throw new InvalidDataException($"{label}: dependency {location} was inventoried under an incompatible asset type.");

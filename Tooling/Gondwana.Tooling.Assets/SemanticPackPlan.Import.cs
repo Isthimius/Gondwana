@@ -5,6 +5,7 @@ namespace Gondwana.Tooling.Assets;
 internal sealed partial class SemanticPackPlan
 {
     private bool _importDependencies;
+    private bool _validateReusedTargets;
     private HashSet<string>? _importPreview;
     private readonly Queue<Entry> _importQueue = new();
     private readonly Queue<Entry> _reuseQueue = new();
@@ -51,6 +52,7 @@ internal sealed partial class SemanticPackPlan
             entry.Document?.Validate(entry.Location.ToString());
             // Reuse validates existing references without importing or changing their targets.
             plan._importDependencies = incoming && dependencies;
+            plan._validateReusedTargets = !incoming;
             plan.Analyze(entry);
         }
         plan._importDependencies = dependencies;
