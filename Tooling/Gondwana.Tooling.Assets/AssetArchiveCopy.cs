@@ -15,11 +15,12 @@ public static class AssetArchiveCopy
         destination = Path.GetFullPath(destination);
         DefinitionReferenceDiscovery.CheckPath(destination);
         if (File.Exists(destination) || Directory.Exists(destination)) throw new IOException($"Copy destination exists: {destination}.");
+        var sourcePath = Path.GetFullPath(source.SourcePath!);
         var contents = AssetImportPlan.Snapshot(source);
-        var mappings = contents.Keys.Select(key => new ReferenceRelocation(new(key.AssetType, source.SourcePath!, key.AssetName), new(key.AssetType, destination, key.AssetName))).ToArray();
+        var mappings = contents.Keys.Select(key => new ReferenceRelocation(new(key.AssetType, sourcePath, key.AssetName), new(key.AssetType, destination, key.AssetName))).ToArray();
         var transformed = contents.ToDictionary(pair => pair.Key, pair =>
             PackDefinitionDocument.Read(pair.Key.AssetType, pair.Value, pair.Key.AssetName)?.Relocate(
-                new(pair.Key.AssetType, source.SourcePath!, pair.Key.AssetName), new(pair.Key.AssetType, destination, pair.Key.AssetName), mappings, false) ?? pair.Value);
+                new(pair.Key.AssetType, sourcePath, pair.Key.AssetName), new(pair.Key.AssetType, destination, pair.Key.AssetName), mappings, false) ?? pair.Value);
         var temporary = Path.Combine(Path.GetDirectoryName(destination)!, ".gondwana-copy-" + Guid.NewGuid().ToString("N") + ".tmp");
         try
         {

@@ -7,6 +7,26 @@ namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
 public sealed partial class CompositionTests
 {
+    /// <summary>ZIP packages use the same format detection for opening and whole-archive relocation.</summary>
+    [Fact]
+    public void AssetRelocationRecognizesStudioZipPackages() => RunSta(directory =>
+    {
+        var source = Path.Combine(directory, "package.ZIP");
+        var target = Path.Combine(directory, "renamed.zip");
+        using (var archive = AssetsFile.LoadOrCreate(source, null, false, register: false))
+        {
+            using var bytes = new MemoryStream([1, 2]);
+            archive.Add(AssetTypes.Misc, "data", bytes);
+            archive.Save();
+        }
+        Assert.Equal("gaf", Documents.StudioDocument.FormatFor(source));
+        Assert.True(AssetArchiveFormat.IsArchive(source));
+        AssetRelocationPlan.MoveArchive(source, target, directory).Commit();
+        using var studio = Host(directory);
+        Assert.IsType<AssetEditorControl>(studio.OpenDocument(target).Document.Editor);
+        Assert.False(File.Exists(source));
+    });
+
     /// <summary>Both hosts protect dirty state and refresh the same borrowed instance after a semantic rename.</summary>
     /// <param name="hosted">Whether Studio hosts the shared editor.</param>
     [Theory]

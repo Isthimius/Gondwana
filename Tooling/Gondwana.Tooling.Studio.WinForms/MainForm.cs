@@ -118,7 +118,7 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         using var dialog = new OpenFileDialog { Title = "Move / rename content (save and close documents first)", Filter = "All content|*.*", InitialDirectory = Browser.WorkingDirectory };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         var path = Path.GetFullPath(dialog.FileName);
-        bool archive = Path.GetExtension(path).Equals(".gaf", StringComparison.OrdinalIgnoreCase);
+        bool archive = AssetArchiveFormat.IsArchive(path);
         AssetMoveDialog.Show(this, new AssetLocation(AssetImportPlan.InferType(path), path), Browser.WorkingDirectory, plan =>
         {
             ValidateRelocation(plan, null);

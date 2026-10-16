@@ -22,6 +22,7 @@ public sealed partial class AssetRelocationPlan
         var id = Guid.NewGuid().ToString("N");
         var directory = Directory.Exists(Scope) ? Scope : Path.GetDirectoryName(Scope)!;
         var manifest = Path.Combine(directory, $".gondwana-relocate-{id}.json");
+        var completedManifest = manifest + ".completed";
         var recovery = new List<RecoveryFile>();
         var created = new List<string>();
         var touched = new HashSet<string>(DefinitionReferenceDiscovery.Paths);
@@ -104,7 +105,9 @@ public sealed partial class AssetRelocationPlan
             }
             cancellation.ThrowIfCancellationRequested();
             VerifyWrites();
-            File.WriteAllText(manifest, JsonSerializer.Serialize(new { State = "Completed", Files = recovery }, new JsonSerializerOptions { WriteIndented = true }));
+            File.WriteAllText(completedManifest, JsonSerializer.Serialize(new { State = "Completed", Files = recovery }, new JsonSerializerOptions { WriteIndented = true }));
+            checkpoint?.Invoke("complete-manifest", 0);
+            File.Replace(completedManifest, manifest, destinationBackupFileName: null);
             completed = true;
         }
         catch (Exception original)
@@ -140,6 +143,7 @@ public sealed partial class AssetRelocationPlan
                         File.Delete(item.Staged + ".final");
                         File.Delete(item.Backup);
                     }
+                    File.Delete(completedManifest);
                     File.Delete(manifest);
                     foreach (var folder in created.AsEnumerable().Reverse())
                         if (Directory.Exists(folder) && !Directory.EnumerateFileSystemEntries(folder).Any()) Directory.Delete(folder);

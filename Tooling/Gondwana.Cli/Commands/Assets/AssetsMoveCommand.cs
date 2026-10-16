@@ -64,6 +64,7 @@ internal sealed class AssetsMoveCommand : Command<AssetsMoveCommand.Settings>
             }
             else
             {
+                if (settings.SourceEntry is null && AssetArchiveFormat.IsArchive(settings.Source)) throw new ArgumentException("Archive files require --archive.");
                 if (settings.SourceEntry is not null && settings.Type is null) throw new ArgumentException("Packed sources require --type.");
                 var type = settings.Type is null ? AssetImportPlan.InferType(settings.Source) : Enum.Parse<AssetTypes>(settings.Type, ignoreCase: true);
                 plan = AssetRelocationPlan.Create(settings.Scope, [new(new(type, Path.GetFullPath(settings.Source), settings.SourceEntry),

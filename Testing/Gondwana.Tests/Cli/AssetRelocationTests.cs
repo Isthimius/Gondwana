@@ -14,6 +14,111 @@ namespace Gondwana.Tests.Cli;
 
 public sealed partial class SemanticAssetPackTests
 {
+    /// <summary>Relative archive source paths are resolved before constructing relocation endpoints.</summary>
+    [Fact]
+    public void RelocationCopyAcceptsRelativeArchiveSourcePath()
+    {
+        Image("art.png");
+        var relative = "relative-copy-" + Guid.NewGuid().ToString("N") + ".gaf";
+        try
+        {
+            using var archive = AssetsFile.LoadOrCreate(relative, null, false, register: false);
+            Assert.False(Path.IsPathFullyQualified(archive.SourcePath));
+            using var bytes = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(Sheet("terrain", Path.Combine(Source, "art.png")))));
+            archive.Add(AssetTypes.TilesheetDefinition, "tiles.gts", bytes);
+            archive.Save();
+            var original = File.ReadAllBytes(relative);
+            Directory.CreateDirectory(Path.GetDirectoryName(Output)!);
+            AssetArchiveCopy.Save(archive, Output, null, false);
+            Assert.Equal(original, File.ReadAllBytes(relative));
+            var copy = AssetsFile.LoadOrCreate(Output);
+            Assert.Equal("terrain", TilesheetRegistry.Instance.LoadFromDefinitionAsset(copy, "tiles.gts").Name);
+        }
+        finally { File.Delete(relative); }
+    }
+
+    /// <summary>Completion staging leaves the prepared recovery record intact until atomic publication.</summary>
+    [Fact]
+    public void RelocationCompletionManifestFailureRetainsPreparedRecordAndRollsBack()
+    {
+        var source = Path.Combine(Source, "original.bin");
+        var target = Path.Combine(Source, "renamed.bin");
+        File.WriteAllBytes(source, [1, 2]);
+        var plan = AssetRelocationPlan.Create(Source, [new(new(AssetTypes.Misc, source), new(AssetTypes.Misc, target))]);
+        Assert.Throws<IOException>(() => plan.CommitCore((phase, _) =>
+        {
+            if (phase != "complete-manifest") return;
+            var manifest = Assert.Single(Directory.GetFiles(Source, ".gondwana-relocate-*.json"));
+            using var prepared = System.Text.Json.JsonDocument.Parse(File.ReadAllText(manifest));
+            using var completed = System.Text.Json.JsonDocument.Parse(File.ReadAllText(manifest + ".completed"));
+            Assert.Equal("Prepared", prepared.RootElement.GetProperty("State").GetString());
+            Assert.Equal("Completed", completed.RootElement.GetProperty("State").GetString());
+            throw new IOException("Completion publication interrupted");
+        }, default));
+        Assert.Equal(new byte[] { 1, 2 }, File.ReadAllBytes(source));
+        Assert.False(File.Exists(target));
+        Assert.Empty(Directory.GetFiles(Source, ".gondwana-relocate-*"));
+    }
+
+    /// <summary>GAF and ZIP archives cannot bypass reference updates as loose resources.</summary>
+    /// <param name="extension">Supported archive extension.</param>
+    [Theory]
+    [InlineData(".gaf")]
+    [InlineData(".ZIP")]
+    public void RelocationArchivesRequireWholeArchivePath(string extension)
+    {
+        var source = Path.Combine(Source, "package" + extension);
+        using (var archive = AssetsFile.LoadOrCreate(source, null, false, register: false)) archive.Save();
+        Assert.True(AssetArchiveFormat.IsArchive(source));
+        var target = Path.Combine(Source, "moved" + extension);
+        Assert.Throws<InvalidDataException>(() => AssetRelocationPlan.Create(Source,
+            [new(new(AssetTypes.Misc, source), new(AssetTypes.Misc, target))]));
+        Assert.True(File.Exists(source));
+        Assert.False(File.Exists(target));
+        AssetRelocationPlan.MoveArchive(source, target, Source).Commit();
+        Assert.False(File.Exists(source));
+        AssetsFile.Validate(target);
+    }
+
+    /// <summary>Case conflicts and file/directory conflicts are rejected even before destinations exist.</summary>
+    /// <param name="first">First planned relative destination.</param>
+    /// <param name="second">Conflicting planned relative destination.</param>
+    [Theory]
+    [InlineData("A.bin", "a.bin")]
+    [InlineData("Dir/one.bin", "dir/two.bin")]
+    [InlineData("folder", "folder/child.bin")]
+    public void RelocationRejectsPlannedPathCollisions(string first, string second)
+    {
+        var one = Path.Combine(Source, "one.bin");
+        var two = Path.Combine(Source, "two.bin");
+        File.WriteAllBytes(one, [1]);
+        File.WriteAllBytes(two, [2]);
+        Assert.Throws<InvalidDataException>(() => AssetRelocationPlan.Create(Source,
+            [new(new(AssetTypes.Misc, one), new(AssetTypes.Misc, Path.Combine(Source, first))),
+             new(new(AssetTypes.Misc, two), new(AssetTypes.Misc, Path.Combine(Source, second)))]));
+        Assert.Equal(new byte[] { 1 }, File.ReadAllBytes(one));
+        Assert.Equal(new byte[] { 2 }, File.ReadAllBytes(two));
+        Assert.Equal(2, Directory.GetFiles(Source).Length);
+    }
+
+    /// <summary>Directory scopes accept trailing separators and root paths without bypassing ancestry checks.</summary>
+    [Fact]
+    public void RelocationDirectoryScopesNormalizeSeparatorsAndAcceptRoots()
+    {
+        var source = Path.Combine(Source, "one.bin");
+        var target = Path.Combine(Source, "two.bin");
+        File.WriteAllBytes(source, [1]);
+        var plan = AssetRelocationPlan.Create(Source + Path.DirectorySeparatorChar,
+            [new(new(AssetTypes.Misc, source), new(AssetTypes.Misc, target))]);
+        Assert.Equal(Source, plan.Scope);
+        plan.Commit();
+        Assert.True(File.Exists(target));
+        var root = Path.GetPathRoot(Source)!;
+        DefinitionReferenceDiscovery.CheckPath(root);
+        Assert.Equal(Path.Combine(root, "safe.bin"), SafeFilePath.Resolve(root, "safe.bin"));
+        Assert.Throws<InvalidDataException>(() => SafeFilePath.Resolve(root, "../escape.bin"));
+    }
+
     /// <summary>Explicit endpoints join discovery before logical references in a limited archive scope are resolved.</summary>
     [Fact]
     public void RelocationIncludesExplicitSourceBeforeResolvingLogicalSelectors()
@@ -279,23 +384,27 @@ public sealed partial class SemanticAssetPackTests
     }
 
     /// <summary>Whole encrypted GAF moves preserve internal entries, external inbound references, and binary bytes.</summary>
-    [Fact]
-    public void RelocationMovesWholeEncryptedArchive()
+    /// <param name="extension">Package extension recognized during directory discovery.</param>
+    [Theory]
+    [InlineData(".gaf")]
+    [InlineData(".zip")]
+    public void RelocationMovesWholeEncryptedArchive(string extension)
     {
         Content(true, false);
-        Assert.Equal(0, Run("pack", Source, Output, "--password", "secret", "--encrypt"));
+        var originalArchive = Path.ChangeExtension(Output, extension);
+        Assert.Equal(0, Run("pack", Source, originalArchive, "--password", "secret", "--encrypt"));
         var inbound = Path.Combine(Source, "inbound.gani");
         AnimationDefinitionSerializer.Save(inbound, new AnimationDefinition
         {
             Key = "external",
             ThrottleTime = .2,
             Frames = [new() { Tilesheet = "terrain0" }],
-            TilesheetSources = [AnimationTilesheetSourceDefinition.Packed("terrain0", Output, "tiles.gts")]
+            TilesheetSources = [AnimationTilesheetSourceDefinition.Packed("terrain0", originalArchive, "tiles.gts")]
         });
-        var moved = Path.Combine(_root, "elsewhere", "renamed.gaf");
-        var plan = AssetRelocationPlan.MoveArchive(Output, moved, _root, _ => "secret");
+        var moved = Path.Combine(_root, "elsewhere", "renamed" + extension);
+        var plan = AssetRelocationPlan.MoveArchive(originalArchive, moved, _root, _ => "secret");
         plan.Commit();
-        Assert.False(File.Exists(Output));
+        Assert.False(File.Exists(originalArchive));
         var source = AnimationDefinitionSerializer.Load(inbound).TilesheetSources[0];
         Assert.Equal(moved, Path.GetFullPath(source.AssetsFilePath!, Path.GetDirectoryName(inbound)!));
         Directory.Delete(Source, true);

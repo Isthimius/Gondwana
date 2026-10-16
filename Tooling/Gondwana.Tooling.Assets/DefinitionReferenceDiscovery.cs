@@ -54,7 +54,7 @@ public sealed class DefinitionReferenceDiscovery
 
     private DefinitionReferenceDiscovery(string scope, Func<string, string?>? credentials, CancellationToken cancellation)
     {
-        Scope = Path.GetFullPath(scope);
+        Scope = Path.TrimEndingDirectorySeparator(Path.GetFullPath(scope));
         _credentials = credentials ?? (_ => null);
         _cancellation = cancellation;
         _scopeFiles = Enumerate(Scope).ToArray();
@@ -103,7 +103,11 @@ public sealed class DefinitionReferenceDiscovery
     /// <param name="path">Absolute physical path.</param>
     internal static void CheckPath(string path)
     {
-        SafeFilePath.Resolve(Path.GetDirectoryName(path)!, Path.GetFileName(path));
+        path = Path.TrimEndingDirectorySeparator(Path.GetFullPath(path));
+        if (Path.GetDirectoryName(path) is { } root)
+            SafeFilePath.Resolve(root, Path.GetFileName(path));
+        else if ((File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0 || new DirectoryInfo(path).LinkTarget is not null)
+            throw new IOException($"Refusing symbolic link or junction root: {path}.");
         for (var current = path; current is not null; current = Path.GetDirectoryName(current))
         {
             if (current != path && File.Exists(current)) throw new IOException($"Parent is a file: {current}.");
@@ -131,7 +135,7 @@ public sealed class DefinitionReferenceDiscovery
                 if (Excluded.Contains(Path.GetFileName(path))) continue;
                 CheckPath(path); // Reject links rather than silently producing an incomplete inventory.
                 if (Directory.Exists(path)) pending.Push(path);
-                else if (Path.GetExtension(path).Equals(".gaf", StringComparison.OrdinalIgnoreCase) || Native(AssetImportPlan.InferType(path))) yield return path;
+                else if (AssetArchiveFormat.IsArchive(path) || Native(AssetImportPlan.InferType(path))) yield return path;
             }
     }
 
@@ -151,7 +155,7 @@ public sealed class DefinitionReferenceDiscovery
     /// <param name="archive">Whether the endpoint explicitly identifies an archive, regardless of extension.</param>
     internal void Include(string path, bool archive = false)
     {
-        if (archive || Path.GetExtension(path).Equals(".gaf", StringComparison.OrdinalIgnoreCase))
+        if (archive || AssetArchiveFormat.IsArchive(path))
         {
             ReadArchive(path);
             foreach (var content in Contents.Values.Where(c => Paths.Equals(c.Location.Path, path))) Included.Add(Key(content.Location));
