@@ -77,10 +77,12 @@ internal sealed class InputDialog : Form
     /// <param name="title">The title.</param>
     /// <param name="prompt">The prompt.</param>
     /// <param name="initialValue">The initial value.</param>
+    /// <param name="password">Whether to mask credential input.</param>
     /// <returns>The requested string, or <see langword="null"/> when unavailable.</returns>
-    public static string? Show(IWin32Window owner, string title, string prompt, string initialValue = "")
+    public static string? Show(IWin32Window owner, string title, string prompt, string initialValue = "", bool password = false)
     {
         using var dialog = new InputDialog(title, prompt, initialValue);
+        dialog._textBox.UseSystemPasswordChar = password;
         return dialog.ShowDialog(owner) == DialogResult.OK
             ? dialog.Value
             : null;

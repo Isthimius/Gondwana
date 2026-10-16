@@ -34,9 +34,11 @@ internal sealed class StudioDocument : IDisposable
     private Action? _release;
     internal event EventHandler? Changed;
 
-    internal static string? FormatFor(string path) => System.IO.Path.GetExtension(path).ToLowerInvariant() switch
+    /// <summary>Identifies the authoring format using shared package recognition.</summary>
+    /// <param name="path">Physical document path.</param>
+    /// <returns>The supported editor format, or null.</returns>
+    internal static string? FormatFor(string path) => Gondwana.Tooling.Assets.AssetArchiveFormat.IsArchive(path) ? "gaf" : System.IO.Path.GetExtension(path).ToLowerInvariant() switch
     {
-        ".gaf" or ".zip" => "gaf",
         ".gts" => "gts",
         ".gani" => "gani",
         ".gsnd" => "gsnd",
