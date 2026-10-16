@@ -715,4 +715,43 @@ Only explicit physical dependencies are followed recursively; the importer does 
 
 The UI-independent `Gondwana.Tooling.Assets` library reuses the CLI dependency analysis, document serializers, and Phase 1 relocation. It buffers a snapshot and all prepared additions before applying them. A stale preview is rejected if archive contents changed. Cancellation or an ordinary multi-entry write failure removes attempted additions, preserving unrelated edits. Apply on the editor thread; this does not provide concurrent-writer synchronization or recovery from process termination/out-of-memory failure.
 
-Export, Rename, Delete, and Save As retain their existing behavior. Whole-GAF Save As relocation and inbound-reference updates are not implemented here: use the intended final archive path for semantic import. Copying a GAF to another path with the existing Save As operation can still leave references to its former location; that separate limitation is not addressed by Add / Import.
+Add / Import remains copy behavior. Reference-aware Move and portable Save As are described below; Delete remains unchanged.
+
+## Reference-aware rename and move
+
+`Gondwana.Tooling.Assets.AssetRelocationPlan` coordinates true moves. It uses the existing typed dependency handlers for discovery and Core's `DefinitionReferenceRelocator` for all rewrites. `DefinitionReferenceDiscovery.Scan(scope, credentials)` exposes referring document, member, exact typed target, logical selector, and format-specific reference path; `FindInbound(location)` can be reused independently.
+
+A scope is either one GAF or a directory inspected recursively. Directory scans inspect all five native definition formats and `.gaf` archives, excluding `bin`, `obj`, `.git`, `.vs`, and `node_modules`. Explicit source documents and source/destination archives are also inspected. Known external dependencies are validated but their inbound references are not claimed as scanned. Unreadable archives, wrong passwords, malformed documents, missing dependencies, ambiguous logical selectors, and links/junctions cause preflight failure. Each archive has its own credential; there is no shared-password assumption. Logical-only sources must have a unique candidate in the inspected inventory. No basename matching or arbitrary C# rewriting occurs. `NextCycleKey` and URI audio remain unchanged.
+
+Supported operations include loose-file rename/move, loose-to-GAF, GAF-to-loose, cross-GAF moves, packed entry rename/path changes, and whole-GAF moves/renames. Native documents retain every logical member, order, names/keys/IDs, and non-location metadata. One document remains one file or typed entry. Inbound references follow exact physical mappings and moved documents rebase outbound references, including references to resources that stay external. Whole-GAF moves map all entries, preserve encryption and untouched binary bytes, and rebase both internal and external references. Case-only changes, swaps/overlapping source-destination identities, and overwriting existing destinations are rejected.
+
+### CLI preview and commit
+
+Preview is the default. Add `--commit` only after reviewing the scope and saving/closing editors:
+
+```console
+gondwana assets move Content/terrain.gts Content/World/world.gts --scope Content
+gondwana assets move Content/terrain.gts Content/game.gaf --destination-entry Tiles/terrain.gts --scope Content --commit
+gondwana assets move Content/game.gaf Content/terrain.gts --type TilesheetDefinition --source-entry Tiles/terrain.gts --scope Content --commit
+gondwana assets move Content/a.gaf Content/b.gaf --type TilesheetDefinition --source-entry Tiles/terrain.gts --destination-entry World/terrain.gts --scope Content --commit
+gondwana assets move Content/game.gaf Content/game.gaf --type Image --source-entry Images/old.png --destination-entry Images/new.png --scope Content --commit
+gondwana assets move Content/game.gaf Content/Packages/game.gaf --archive --scope Content --commit
+```
+
+Packed sources require `--type`; loose types default to standard extension inference. `--credentials passwords.json` accepts a JSON object mapping **absolute archive paths** to their individual passwords. Protect that file as a secret; the CLI never prints its contents. Newly created destination GAFs use their specified credential and enable encryption when one is provided. Whole-GAF moves preserve the original archive configuration.
+
+### Studio and standalone editor
+
+The shared GAF editor's **Rename / Move…** command asks for a destination file/GAF, an optional typed entry name (empty means loose), and an explicit scope. Studio suggests its working directory; standalone suggests its workspace directory. Other required archive passwords are requested separately. The preview lists moves, inbound member references, rebased documents, affected files, and source retirement. Confirming **Move** writes the transaction to disk; this differs from Add/Import, which leaves unsaved edits.
+
+Save the current GAF first and close other authoring documents. Both hosts reject conflicting open models, and the shared editor checks that its current bytes match disk before moving. It refreshes its borrowed archive after a successful entry move. Studio's **File → Move / rename content…** handles closed loose files and whole GAFs, with all other authoring documents closed; its workspace and package catalog refresh afterward. Reopen relocated documents at their new paths. Other applications and CLI sessions cannot be inspected: save/close those editors yourself before committing.
+
+**Save As / Copy is not Move.** Copies keep the original and do not rewrite its inbound references. Their own outgoing references are now rebased using the final destination path, including same-GAF references. Studio retains its path-adoption routing; standalone Save As retains save-copy behavior. Choose a new destination: copying over an existing file is rejected.
+
+### Transactions and recovery
+
+Planning is side-effect-free and snapshots every inspected physical file. Before commit, scope inventory and bytes are checked again; changes require a new plan. Changed loose files and archives are staged beside their final destinations, with independent original backups. Destinations and reference updates are installed before source retirement. Archives temporarily retain moved-out source entries until all destination/reference writes have succeeded; retirement then installs their final contents. Committed bytes are checked against the validated prepared graph. Ordinary exceptions and cancellation restore previously touched files, including failures during later archive installs or source retirement. Sources are never removed by discovery or staging.
+
+This is **not** a globally atomic filesystem transaction across process crashes or power loss. Do not run concurrent writers during a commit. Interrupted commits retain `.gondwana-relocate-<id>.json` in the scope directory (or beside a single-archive scope), plus sibling `.old`, `.new`, and optional `.new.final` files. Stop writers before manual recovery. For a `Prepared` manifest, restore every `Existed: true` target from its listed backup and remove targets marked `Existed: false`; keep backups until every restoration succeeds. A `Completed` manifest means the move succeeded and leftover staging/backups can be removed. Staging abandoned before a manifest exists has not installed any writes. Rollback failures retain the manifest/backups and report their location. Filesystem corruption or lost backup data requires external backup recovery.
+
+General reference-aware Delete, logical renaming, and project-wide code rewriting remain outside this feature.

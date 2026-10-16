@@ -757,3 +757,9 @@ Assets:
 ## License
 
 MIT
+
+## Reference-aware moves
+
+`gondwana assets move <source> <destination> --scope <directory-or-gaf>` previews a true move. Add `--commit` to execute. Use `--source-entry`, `--destination-entry`, and `--type` for packed endpoints; use `--archive` for a whole-GAF move. Each archive may use its own password from `--credentials <json-file>` (absolute archive path to password). Missing/ambiguous dependencies, incomplete scans, collisions, and stale plans fail without retiring originals. Save and close affected editors before committing.
+
+See [Assets Files — reference-aware moves](https://github.com/Isthimius/Gondwana/wiki/Assets-Files#reference-aware-rename-and-move) for all storage transitions, scope boundaries, encryption, rollback and interrupted-commit recovery. Outside-scope references and arbitrary C# are not rewritten. Existing pack/unpack semantics are unchanged.

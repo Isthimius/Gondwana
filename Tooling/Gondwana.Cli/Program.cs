@@ -38,6 +38,7 @@ app.Configure(config =>
     config.AddBranch("assets", branch =>
     {
         branch.SetDescription("Pack, inspect, validate, and unpack asset bundles.");
+        branch.AddCommand<AssetsMoveCommand>("move").WithDescription("Preview or commit a scoped reference-aware move/rename; use --scope and --commit.");
         branch.AddCommand<AssetsPackCommand>("pack").WithDescription("Pack a directory into a bundle (also available as gondwana pack).");
         branch.AddCommand<AssetsListCommand>("list").WithDescription("List bundle entries and byte sizes.");
         branch.AddCommand<AssetsInspectCommand>("inspect").WithDescription("Show bundle summary and entries.");

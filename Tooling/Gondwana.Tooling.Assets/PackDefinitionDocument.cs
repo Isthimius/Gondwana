@@ -68,16 +68,17 @@ internal sealed class PackDefinitionDocument
     /// <param name="source">The actual input location.</param>
     /// <param name="destination">The final archive location, never a staging filename.</param>
     /// <param name="mappings">Resolved dependency mappings.</param>
+    /// <param name="requireAllMappings">Whether mappings unused by this document are rejected.</param>
     /// <returns>The canonical document bytes.</returns>
-    internal byte[] Relocate(AssetLocation source, AssetLocation destination, IEnumerable<ReferenceRelocation> mappings)
+    internal byte[] Relocate(AssetLocation source, AssetLocation destination, IEnumerable<ReferenceRelocation> mappings, bool requireAllMappings = true)
     {
         _document = _document switch
         {
-            TilesheetDefinitionDocument document => DefinitionReferenceRelocator.Relocate(document, source, destination, mappings),
-            AnimationDefinitionDocument document => DefinitionReferenceRelocator.Relocate(document, source, destination, mappings),
-            SceneDefinitionDocument document => DefinitionReferenceRelocator.Relocate(document, source, destination, mappings),
-            SpriteDefinitionDocument document => DefinitionReferenceRelocator.Relocate(document, source, destination, mappings),
-            AudioDefinitionDocument document => DefinitionReferenceRelocator.Relocate(document, source, destination, mappings),
+            TilesheetDefinitionDocument document => DefinitionReferenceRelocator.Relocate(document, source, destination, mappings, requireAllMappings),
+            AnimationDefinitionDocument document => DefinitionReferenceRelocator.Relocate(document, source, destination, mappings, requireAllMappings),
+            SceneDefinitionDocument document => DefinitionReferenceRelocator.Relocate(document, source, destination, mappings, requireAllMappings),
+            SpriteDefinitionDocument document => DefinitionReferenceRelocator.Relocate(document, source, destination, mappings, requireAllMappings),
+            AudioDefinitionDocument document => DefinitionReferenceRelocator.Relocate(document, source, destination, mappings, requireAllMappings),
             _ => throw new InvalidOperationException("Unknown native document.")
         };
         Validate(destination.ToString());

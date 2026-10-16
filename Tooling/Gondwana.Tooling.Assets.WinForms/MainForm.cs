@@ -330,6 +330,12 @@ public sealed class MainForm : Form
             IsDocumentOpen);
 
         _documents.Add(editor);
+        editor.Editor.RelocationScope = () => _workspaceControl.WorkingDirectory;
+        editor.Editor.ValidateRelocation = _ =>
+        {
+            if (_documents.Any(document => document != editor))
+                throw new InvalidOperationException("Save and close other open archives before moving content.");
+        };
         editor.FormClosed += (_, _) =>
             _documents.Remove(editor);
 

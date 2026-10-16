@@ -15,6 +15,7 @@ internal sealed partial class SemanticPackPlan
         string PackedPath(AssetLocation location) => Path.GetRelativePath(Path.GetDirectoryName(owner.Location.Path)!, location.Path);
         foreach (var (identity, member) in owner.Document.Members())
         {
+            _referenceMember = identity;
             _cancellation.ThrowIfCancellationRequested();
             var label = $"{owner.Location} :: member '{identity}'";
             switch (member)
@@ -27,14 +28,15 @@ internal sealed partial class SemanticPackPlan
                         break;
                     }
                 case AudioDefinition audio:
-                    foreach (var resource in audio.Resources)
+                    for (int resourceIndex = 0; resourceIndex < audio.Resources.Count; resourceIndex++)
                     {
+                        var resource = audio.Resources[resourceIndex];
                         if (resource.SourceKind == AudioResourceSourceKind.Uri)
                         {
                             _importPreview?.Add($"External URI (unchanged): {resource.SourceUri}");
                             continue;
                         }
-                        var resourceLabel = label + $" :: audio '{resource.Key}'";
+                        var resourceLabel = label + $" :: Resources[{resourceIndex}] audio '{resource.Key}'";
                         var source = Physical(owner, AssetTypes.Audio, resource.FilePath, resource.AssetsFilePath, resource.AssetEntryName, (int)resource.SourceKind, resourceLabel);
                         Map(owner, source, Resolve(source, null, resourceLabel).Destination);
                     }
@@ -45,7 +47,7 @@ internal sealed partial class SemanticPackPlan
                         source => Physical(owner, AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName, (int)source.Kind, label + " :: Tilesheet '" + source.Tilesheet + "'"),
                         (key, location) => location.AssetEntryName is null ? AnimationTilesheetSourceDefinition.Loose(key, location.Path) :
                             AnimationTilesheetSourceDefinition.Packed(key, PackedPath(location), location.AssetEntryName));
-                    if (!string.IsNullOrWhiteSpace(animation.NextCycleKey) &&
+                    if (_referenceResolver is null && !string.IsNullOrWhiteSpace(animation.NextCycleKey) &&
                         !StringComparer.OrdinalIgnoreCase.Equals(animation.NextCycleKey, animation.Key))
                         Logical(AssetTypes.AnimationDefinition, animation.NextCycleKey, label + " :: NextCycleKey");
                     break;
@@ -99,12 +101,14 @@ internal sealed partial class SemanticPackPlan
     {
         var comparer = Identities(type);
         var resolved = new Dictionary<string, Entry>(comparer);
-        foreach (var source in sources)
+        for (int sourceIndex = 0; sourceIndex < sources.Count; sourceIndex++)
         {
+            var source = sources[sourceIndex];
             var key = identity(source);
             if (resolved.ContainsKey(key)) throw new InvalidDataException($"{label}: duplicate/conflicting {type} source '{key}'.");
             var location = physical(source);
-            var target = Resolve(location, key, label + $" :: {type} '{key}'");
+            var collection = type == AssetTypes.TilesheetDefinition ? "TilesheetSources" : type == AssetTypes.AnimationDefinition ? "AnimationSources" : "SceneSources";
+            var target = Resolve(location, key, label + $" :: {collection}[{sourceIndex}] {type} '{key}'");
             resolved.Add(key, target);
             Map(owner, location, target.Destination);
         }

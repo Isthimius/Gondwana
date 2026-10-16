@@ -157,6 +157,7 @@ internal sealed partial class SemanticPackPlan
 
     private Entry Logical(AssetTypes type, string identity, string label)
     {
+        if (_referenceResolver is not null) return _referenceResolver(null, type, identity, label);
         var candidates = _entries.Values.Where(entry => entry.Location.AssetType == type && Contains(entry, identity)).ToArray();
         if (candidates.Length != 1)
             throw new InvalidDataException($"{label}: logical {type} '{identity}' has {candidates.Length} matching documents in the final inventory. Specify an explicit source. {string.Join("; ", candidates.Select(entry => entry.Location))}");
@@ -172,6 +173,7 @@ internal sealed partial class SemanticPackPlan
 
     private Entry Resolve(AssetLocation location, string? identity, string label)
     {
+        if (_referenceResolver is not null) return _referenceResolver(location, location.AssetType, identity, label);
         _cancellation.ThrowIfCancellationRequested();
         var found = _entries.Values.FirstOrDefault(entry => Same(entry.Location, location));
         if (found is null && !_validateReusedTargets) found = FindImportAlias(location);

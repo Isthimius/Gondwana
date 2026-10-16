@@ -175,4 +175,10 @@ Only explicit physical dependencies are followed recursively; the importer does 
 
 The UI-independent `Gondwana.Tooling.Assets` library reuses the CLI dependency analysis, document serializers, and Phase 1 relocation. It buffers a snapshot and all prepared additions before applying them. A stale preview is rejected if archive contents changed. Cancellation or an ordinary multi-entry write failure removes attempted additions, preserving unrelated edits. Apply on the editor thread; this does not provide concurrent-writer synchronization or recovery from process termination/out-of-memory failure.
 
-Export, Rename, Delete, and Save As retain their existing behavior. Whole-GAF Save As relocation and inbound-reference updates are not implemented here: use the intended final archive path for semantic import. Copying a GAF to another path with the existing Save As operation can still leave references to its former location; that separate limitation is not addressed by Add / Import.
+Add / Import remains copy behavior. Reference-aware Move and portable Save As are described below; Delete remains unchanged.
+
+## Reference-aware content moves
+
+Use **File → Move / rename content…** for closed loose files and whole GAFs. Use the hosted GAF editor’s **Rename / Move…** for packed entries. Studio suggests its working directory as the discovery scope, but you must review it. Save/close other authoring documents first. The shared transaction updates only inspected Gondwana references, refreshes the workspace and package catalog, and preserves logical member identities. Reopen moved documents at their new paths. Save As remains a copy, with portable outbound references and no inbound updates.
+
+See [Assets Files — reference-aware moves](https://github.com/Isthimius/Gondwana/wiki/Assets-Files#reference-aware-rename-and-move) for all storage transitions, scope boundaries, encryption, rollback and interrupted-commit recovery. Outside-scope references and arbitrary C# are not rewritten. Existing pack/unpack semantics are unchanged.

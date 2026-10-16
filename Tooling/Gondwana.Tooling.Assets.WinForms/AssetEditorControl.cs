@@ -38,6 +38,10 @@ public sealed class AssetEditorControl : UserControl
 
     /// <summary>Allows a host to prevent Save As from colliding with another open document.</summary>
     public Func<string, bool> IsDocumentOpen { get; set; } = _ => false;
+    /// <summary>Suggested directory or archive scope for semantic moves; the user reviews it.</summary>
+    public Func<string>? RelocationScope { get; set; }
+    /// <summary>Allows a host to require other in-scope documents to be saved and closed.</summary>
+    public Action<AssetRelocationPlan>? ValidateRelocation { get; set; }
     private readonly BindingList<AssetRecord> _records = new();
 
     private readonly DataGridView _grid;
@@ -87,7 +91,7 @@ public sealed class AssetEditorControl : UserControl
         fileTools.Items.Add(new ToolStripSeparator());
         _addButton = AddButton(fileTools, "Add / Import", (_, _) => AddAsset());
         _replaceButton = AddButton(fileTools, "Replace", (_, _) => ReplaceSelectedAsset());
-        _renameButton = AddButton(fileTools, "Rename", (_, _) => RenameSelectedAsset());
+        _renameButton = AddButton(fileTools, "Rename / Move…", (_, _) => RenameSelectedAsset());
         _exportButton = AddButton(fileTools, "Export", (_, _) => ExportSelectedAsset());
         _deleteButton = AddButton(fileTools, "Delete", (_, _) => DeleteSelectedAsset());
 
@@ -286,15 +290,7 @@ public sealed class AssetEditorControl : UserControl
                 }
             }
 
-            using var copy = AssetsFile.LoadOrCreate(destination, password, encrypt);
-            foreach (var entry in _assetsFile.GetAllEntries())
-            {
-                using var stream = _assetsFile[entry.AssetType, entry.AssetName];
-                if (stream is not null)
-                    copy.Add(entry.AssetType, entry.AssetName, stream);
-            }
-
-            copy.Save();
+            AssetArchiveCopy.Save(_assetsFile, destination, password, encrypt);
             WorkspaceChanged();
             SetStatus($"Saved copy: {destination}");
         }
@@ -316,7 +312,7 @@ public sealed class AssetEditorControl : UserControl
     /// its save-copy behavior. The caller still owns the originally supplied file;
     /// the editor owns any replacement created here. Encryption is preserved.
     /// </summary>
-    /// <param name="destination">The destination rectangle.</param>
+    /// <param name="destination">The final archive path. A different path creates a copy and must not exist.</param>
     public void SaveTo(string destination)
     {
         destination = Path.GetFullPath(destination);
@@ -324,27 +320,14 @@ public sealed class AssetEditorControl : UserControl
             _assetsFile.Save();
         else
         {
-            string temporary = Path.Combine(Path.GetDirectoryName(destination)!, ".gondwana-" + Guid.NewGuid() + ".gaf");
-            try
-            {
-                using (var copy = AssetsFile.LoadOrCreate(temporary, _assetsFile.Password, _assetsFile.UseEncryption, register: false))
-                {
-                    foreach (var entry in _assetsFile.GetAllEntries())
-                    {
-                        using var stream = _assetsFile[entry.AssetType, entry.AssetName];
-                        if (stream is not null) copy.Add(entry.AssetType, entry.AssetName, stream);
-                    }
-                    copy.Save();
-                }
-                File.Move(temporary, destination, overwrite: true);
-                var replacement = AssetsFile.LoadOrCreate(destination, _assetsFile.Password, _assetsFile.UseEncryption,
-                    register: AssetsFile.AllAssetsFiles.Contains(_assetsFile));
-                _ownedSavedCopy?.Dispose();
-                _ownedSavedCopy = replacement;
-                _assetsFile = replacement;
-            }
-            finally { if (File.Exists(temporary)) File.Delete(temporary); }
+            AssetArchiveCopy.Save(_assetsFile, destination, _assetsFile.Password, _assetsFile.UseEncryption);
+            var replacement = AssetsFile.LoadOrCreate(destination, _assetsFile.Password, _assetsFile.UseEncryption,
+                register: AssetsFile.AllAssetsFiles.Contains(_assetsFile));
+            _ownedSavedCopy?.Dispose();
+            _ownedSavedCopy = replacement;
+            _assetsFile = replacement;
         }
+
         IsDirty = false;
         RefreshEntries();
         Changed?.Invoke(this, EventArgs.Empty);
@@ -440,43 +423,52 @@ public sealed class AssetEditorControl : UserControl
         }
     }
 
+    /// <summary>Commits a reviewed entry move after protecting dirty/open documents, then refreshes the borrowed archive.</summary>
+    /// <param name="plan">Prepared move transaction.</param>
+    public void ApplyRelocation(AssetRelocationPlan plan)
+    {
+        ValidateRelocation?.Invoke(plan);
+        if (IsDirty) throw new InvalidOperationException("Save this archive before moving resources.");
+        if (plan.RetiredFiles.Contains(FilePath, StringComparer.OrdinalIgnoreCase))
+            throw new InvalidOperationException("Close this archive and use the workspace or CLI to move the whole GAF.");
+        foreach (var path in plan.AffectedFiles)
+            if (!string.Equals(path, FilePath, StringComparison.OrdinalIgnoreCase) && IsDocumentOpen(path))
+                throw new InvalidOperationException($"Save and close affected document before moving: {path}");
+        using (var disk = AssetsFile.LoadOrCreate(FilePath, _assetsFile.Password, _assetsFile.UseEncryption, register: false))
+        {
+            var current = AssetImportPlan.Snapshot(_assetsFile);
+            var saved = AssetImportPlan.Snapshot(disk);
+            if (current.Count != saved.Count || current.Any(p => !saved.TryGetValue(p.Key, out var bytes) || !bytes.AsSpan().SequenceEqual(p.Value)))
+                throw new InvalidOperationException("The open archive differs from disk. Save or reopen it before moving.");
+        }
+        plan.Commit();
+        using (var disk = AssetsFile.LoadOrCreate(FilePath, _assetsFile.Password, _assetsFile.UseEncryption, register: false))
+        {
+            foreach (var key in _assetsFile.GetAllEntries().ToArray()) _assetsFile.Remove(key.AssetType, key.AssetName);
+            foreach (var pair in AssetImportPlan.Snapshot(disk))
+            {
+                using var stream = new MemoryStream(pair.Value, writable: false);
+                _assetsFile.Add(pair.Key.AssetType, pair.Key.AssetName, stream);
+            }
+        }
+        RefreshEntries();
+        Changed?.Invoke(this, EventArgs.Empty);
+        WorkspaceChanged();
+        SetStatus("Move committed. In-scope references updated.");
+    }
+
     private void RenameSelectedAsset()
     {
         var selected = GetSelectedRecord();
-        if (selected is null)
-            return;
-
-        var newName = InputDialog.Show(this, "Rename Asset", "Enter new asset name:", selected.AssetName);
-        if (string.IsNullOrWhiteSpace(newName) ||
-            string.Equals(newName, selected.AssetName, StringComparison.OrdinalIgnoreCase))
+        if (selected is null) return;
+        if (IsDirty)
         {
+            MessageBox.Show(this, "Save this archive before moving resources.", "Save required");
             return;
         }
-
-        try
-        {
-            using var stream = _assetsFile[selected.AssetType, selected.AssetName];
-            if (stream is null)
-            {
-                MessageBox.Show(
-                    this,
-                    "The selected asset could not be read.",
-                    "Read Failed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-                return;
-            }
-
-            _assetsFile.Add(selected.AssetType, newName, stream);
-            _assetsFile.Remove(selected.AssetType, selected.AssetName);
-            MarkChanged();
-            RefreshEntries();
-            SetStatus($"Renamed '{selected.AssetName}' to '{newName}'.");
-        }
-        catch (Exception ex)
-        {
-            ShowError("Failed to rename asset.", ex);
-        }
+        AssetMoveDialog.Show(this, new(selected.AssetType, FilePath, selected.AssetName),
+            RelocationScope?.Invoke() ?? Path.GetDirectoryName(FilePath)!, ApplyRelocation,
+            knownPasswords: new Dictionary<string, string?> { [FilePath] = _assetsFile.Password });
     }
 
     private void ExportSelectedAsset()

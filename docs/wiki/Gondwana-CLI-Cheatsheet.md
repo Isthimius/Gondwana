@@ -788,3 +788,9 @@ Valid type names match the `AssetTypes` enum: `Image`, `Audio`, `Video`, `Font`,
 ## Where to read next
 
 - [Gondwana.CLI README](https://github.com/Isthimius/Gondwana/tree/master/Tooling/Gondwana.Cli)
+
+## Reference-aware moves
+
+Preview a loose rename: `gondwana assets move Content/terrain.gts Content/world.gts --scope Content`. Move a packed entry: `gondwana assets move Content/a.gaf Content/b.gaf --type TilesheetDefinition --source-entry terrain.gts --destination-entry Tiles/terrain.gts --scope Content --commit`. Move a whole archive: `gondwana assets move Content/a.gaf Content/moved/a.gaf --archive --scope Content --commit`. Omit `--commit` to preview. Use `--credentials passwords.json` for a per-archive absolute-path/password map.
+
+See [Assets Files — reference-aware moves](https://github.com/Isthimius/Gondwana/wiki/Assets-Files#reference-aware-rename-and-move) for all storage transitions, scope boundaries, encryption, rollback and interrupted-commit recovery. Outside-scope references and arbitrary C# are not rewritten. Existing pack/unpack semantics are unchanged.

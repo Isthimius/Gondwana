@@ -1,3 +1,5 @@
+using Gondwana.Assets;
+using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Assets.WinForms;
 using Gondwana.Tooling.Studio.ViewModels;
 using Gondwana.Tooling.Studio.WinForms.Documents;
@@ -101,6 +103,7 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         file.DropDownItems.Add(create);
         Add(file, "&Open…", Keys.Control | Keys.O, OpenFiles);
         Add(file, "Open working &directory…", Keys.None, ChooseDirectory);
+        Add(file, "Move / rename content…", Keys.None, MoveContent);
         file.DropDownItems.Add(new ToolStripSeparator());
         Add(file, "&Save", Keys.Control | Keys.S, () => { if (ActiveDocument is { } doc) SaveDocument(doc); });
         Add(file, "Save &As…", Keys.Control | Keys.Shift | Keys.S, () => { if (ActiveDocument is { } doc) SaveDocument(doc, saveAs: true); });
@@ -108,6 +111,32 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         Add(file, "E&xit", Keys.Alt | Keys.F4, Close);
         menu.Items.AddRange([file, _view, new ToolStripMenuItem("&Plugins") { Name = "PluginsMenu" }]);
         return menu;
+    }
+
+    private void MoveContent()
+    {
+        using var dialog = new OpenFileDialog { Title = "Move / rename content (save and close documents first)", Filter = "All content|*.*", InitialDirectory = Browser.WorkingDirectory };
+        if (dialog.ShowDialog(this) != DialogResult.OK) return;
+        var path = Path.GetFullPath(dialog.FileName);
+        bool archive = Path.GetExtension(path).Equals(".gaf", StringComparison.OrdinalIgnoreCase);
+        AssetMoveDialog.Show(this, new AssetLocation(AssetImportPlan.InferType(path), path), Browser.WorkingDirectory, plan =>
+        {
+            ValidateRelocation(plan, null);
+            plan.Commit();
+            _packages.Clear();
+            Browser.RefreshDirectory();
+            _output.Log("Move committed within scope: " + plan.Scope);
+        }, wholeArchive: archive);
+    }
+
+    /// <summary>Protects authoritative editor state before a filesystem relocation.</summary>
+    /// <param name="plan">Reviewed relocation.</param>
+    /// <param name="currentArchive">Optional clean shared archive editor allowed to refresh itself.</param>
+    internal void ValidateRelocation(AssetRelocationPlan plan, string? currentArchive)
+    {
+        foreach (var document in _documents)
+            if (currentArchive is null || !string.Equals(document.Document.Path(), currentArchive, StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("Save and close other authoring documents before moving content. This prevents overwriting models or missing unsaved references.");
     }
 
     private static ToolStripMenuItem Add(ToolStripMenuItem menu, string label, Keys shortcut, Action action)
@@ -216,7 +245,9 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         {
             assets.SaveRequested = saveAs => SaveDocument(document, saveAs);
             assets.IsDocumentOpen = path => _paths.ContainsKey(Path.GetFullPath(path));
-            assets.WorkspaceChanged = Browser.RefreshDirectory;
+            assets.RelocationScope = () => Browser.WorkingDirectory;
+            assets.ValidateRelocation = plan => ValidateRelocation(plan, assets.FilePath);
+            assets.WorkspaceChanged = () => { _packages.Clear(); Browser.RefreshDirectory(); };
         }
         document.Disposed += (_, _) =>
         {
