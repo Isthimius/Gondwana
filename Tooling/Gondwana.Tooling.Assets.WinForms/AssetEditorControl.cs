@@ -364,6 +364,23 @@ public sealed class AssetEditorControl : UserControl
         base.Dispose(disposing);
     }
 
+    /// <summary>Applies a reviewed plan to the current borrowed archive and marks successful additions dirty once.</summary>
+    /// <param name="plan">The prepared plan for this archive instance.</param>
+    /// <param name="cancellation">Cancellation token.</param>
+    /// <returns>The number of new entries.</returns>
+    public int ApplyImport(AssetImportPlan plan, CancellationToken cancellation = default)
+    {
+        ArgumentNullException.ThrowIfNull(plan);
+        if (!plan.Targets(_assetsFile)) throw new InvalidOperationException("The import plan belongs to another archive.");
+        int count = plan.Apply(cancellation);
+        if (count > 0)
+        {
+            MarkChanged();
+            RefreshEntries();
+        }
+        return count;
+    }
+
     private void AddAsset()
     {
         using var dialog = new OpenFileDialog
@@ -382,25 +399,11 @@ public sealed class AssetEditorControl : UserControl
 
         try
         {
-            var imported = 0;
-            foreach (var file in dialog.FileNames)
-            {
-                var customName = InputDialog.Show(
-                    this,
-                    "Asset Name",
-                    $"Enter asset name for '{Path.GetFileName(file)}' (leave as-is to keep original file name):",
-                    Path.GetFileName(file));
-
-                if (string.IsNullOrWhiteSpace(customName))
-                    continue;
-
-                _assetsFile.Add(typePicker.SelectedType, file, customName);
-                MarkChanged();
-                imported++;
-            }
-
-            RefreshEntries();
-            SetStatus($"Imported {imported} asset(s).");
+            var plan = AssetImportPlan.Create(_assetsFile, typePicker.Sources, typePicker.ImportDependencies);
+            using var preview = new AssetImportPreviewForm(plan);
+            if (preview.ShowDialog(this) != DialogResult.OK) return;
+            var imported = ApplyImport(plan);
+            SetStatus($"Imported {imported} asset(s). Save to persist the changes.");
         }
         catch (Exception ex)
         {

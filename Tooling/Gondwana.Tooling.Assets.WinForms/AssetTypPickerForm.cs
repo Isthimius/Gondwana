@@ -2,128 +2,54 @@ using Gondwana.Assets;
 
 namespace Gondwana.Tooling.Assets.WinForms;
 
+/// <summary>Reviews per-file types and destination names, and selects a dependency policy.</summary>
 internal sealed class AssetTypePickerForm : Form
 {
-    private readonly ComboBox _comboBox;
+    private readonly DataGridView _files = new() { Dock = DockStyle.Fill, AllowUserToAddRows = false, AllowUserToDeleteRows = false, AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill, RowHeadersVisible = false };
+    /// <summary>Gets whether known dependencies will be copied recursively.</summary>
+    public bool ImportDependencies { get; private set; }
+    /// <summary>Gets reviewed source files, types, and exact entry names.</summary>
+    public IReadOnlyList<AssetImportSource> Sources => _files.Rows.Cast<DataGridViewRow>().Select(row =>
+        new AssetImportSource((string)row.Tag!, (AssetTypes)row.Cells[1].Value, Convert.ToString(row.Cells[2].Value) ?? string.Empty)).ToArray();
 
-    /// <summary>
-    /// Gets the selected type.
-    /// </summary>
-    public AssetTypes SelectedType => (AssetTypes)_comboBox.SelectedItem!;
-
-    /// <summary>
-    /// Initializes a new instance of the <c>AssetTypePickerForm</c> class.
-    /// </summary>
-    /// <param name="filePaths">The file paths.</param>
+    /// <summary>Creates a mixed-type file review dialog.</summary>
+    /// <param name="filePaths">Selected loose files.</param>
     public AssetTypePickerForm(IEnumerable<string> filePaths)
     {
-        var fileNames = filePaths
-            .Select(Path.GetFileName)
-            .Where(name => !string.IsNullOrWhiteSpace(name))
-            .ToArray();
-
-        Text = fileNames.Length == 1
-            ? $"Select Asset Type — {fileNames[0]}"
-            : "Select Asset Type";
-        FormBorderStyle = FormBorderStyle.FixedDialog;
+        Text = "Review asset import";
+        Size = new Size(850, 430);
         StartPosition = FormStartPosition.CenterParent;
-        MinimizeBox = false;
-        MaximizeBox = false;
         ShowInTaskbar = false;
-        AutoSize = true;
-        AutoSizeMode = AutoSizeMode.GrowAndShrink;
-        MinimumSize = new Size(440, 0);
-        Padding = new Padding(12);
-
-        var layout = new TableLayoutPanel
+        MinimizeBox = false;
+        _files.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Source file", ReadOnly = true });
+        _files.Columns.Add(new DataGridViewComboBoxColumn { HeaderText = "Asset type", DataSource = Enum.GetValues<AssetTypes>() });
+        _files.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Destination entry" });
+        foreach (var file in filePaths)
         {
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            ColumnCount = 1,
-            RowCount = 4,
-            Dock = DockStyle.Fill,
-            Margin = new Padding(0)
-        };
-
-        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 400));
-
-        var fileListHeight = fileNames.Length <= 1
-            ? 32
-            : Math.Min(120, 32 + ((fileNames.Length - 1) * 18));
-
-        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, fileListHeight));
-        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-
-        var label = new Label
-        {
-            AutoSize = true,
-            MaximumSize = new Size(400, 0),
-            Text = fileNames.Length == 1
-                ? "Choose the asset type for this file:"
-                : $"Choose one asset type for all {fileNames.Length} selected files:",
-            Margin = new Padding(0, 0, 0, 6)
-        };
-
-        var files = new ListBox
-        {
-            Dock = DockStyle.Fill,
-            Height = fileListHeight,
-            IntegralHeight = false,
-            HorizontalScrollbar = true,
-            Margin = new Padding(0, 0, 0, 10)
-        };
-        files.Items.AddRange(fileNames);
-
-        _comboBox = new ComboBox
-        {
-            Dock = DockStyle.Fill,
-            DropDownStyle = ComboBoxStyle.DropDownList,
-            Margin = new Padding(0, 0, 0, 12)
-        };
-
-        foreach (var value in Enum.GetValues<AssetTypes>())
-            _comboBox.Items.Add(value);
-        _comboBox.SelectedIndex = 0;
-
-        var buttons = new FlowLayoutPanel
-        {
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            Dock = DockStyle.Fill,
-            FlowDirection = FlowDirection.RightToLeft,
-            WrapContents = false,
-            Margin = new Padding(0)
-        };
-
-        var cancelButton = new Button
-        {
-            Text = "Cancel",
-            AutoSize = true,
-            DialogResult = DialogResult.Cancel,
-            Margin = new Padding(6, 0, 0, 0)
-        };
-
-        var okButton = new Button
-        {
-            Text = "OK",
-            AutoSize = true,
-            DialogResult = DialogResult.OK,
-            Margin = new Padding(0)
-        };
-
-        buttons.Controls.Add(cancelButton);
-        buttons.Controls.Add(okButton);
-
-        layout.Controls.Add(label, 0, 0);
-        layout.Controls.Add(files, 0, 1);
-        layout.Controls.Add(_comboBox, 0, 2);
-        layout.Controls.Add(buttons, 0, 3);
-        Controls.Add(layout);
-
-        AcceptButton = okButton;
-        CancelButton = cancelButton;
+            var type = AssetImportPlan.InferType(file);
+            var row = _files.Rows[_files.Rows.Add(file, type, Path.GetFileName(file))];
+            row.Tag = file;
+            row.Cells[1].ReadOnly = type is AssetTypes.TilesheetDefinition or AssetTypes.AnimationDefinition or AssetTypes.SceneDefinition or AssetTypes.SpriteDefinition or AssetTypes.AudioDefinition;
+        }
+        var description = new Label { Dock = DockStyle.Top, Height = 64, Text = "Review types and entry names. Native definition types are fixed.\nImport dependencies copies known referenced files recursively. Keep external preserves their locations.\nThe next step previews all changes. Original files are never moved or changed.", Padding = new Padding(8) };
+        var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 46, FlowDirection = FlowDirection.RightToLeft };
+        var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, AutoSize = true };
+        var external = new Button { Text = "Keep external references", AutoSize = true };
+        var dependencies = new Button { Text = "Import dependencies", AutoSize = true };
+        external.Click += (_, _) => Complete(false);
+        dependencies.Click += (_, _) => Complete(true);
+        buttons.Controls.AddRange([cancel, external, dependencies]);
+        Controls.Add(_files);
+        Controls.Add(description);
+        Controls.Add(buttons);
+        CancelButton = cancel;
         DarkTheme.Apply(this);
+    }
+
+    private void Complete(bool dependencies)
+    {
+        _files.EndEdit();
+        ImportDependencies = dependencies;
+        DialogResult = DialogResult.OK;
     }
 }

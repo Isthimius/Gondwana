@@ -1,7 +1,7 @@
 using Gondwana.Assets;
 using ICSharpCode.SharpZipLib.Zip;
 
-namespace Gondwana.Cli.Commands.Assets;
+namespace Gondwana.Tooling.Assets;
 
 /// <summary>Preflights a final typed inventory and commits a package only after all dependencies resolve.</summary>
 internal sealed partial class SemanticPackPlan
@@ -51,7 +51,7 @@ internal sealed partial class SemanticPackPlan
     /// <param name="fallback">The type used only for unknown extensions.</param>
     /// <param name="cancellation">Cancellation checked throughout planning and before committing.</param>
     /// <returns>A fully prepared pack transaction.</returns>
-    internal static SemanticPackPlan Create(AssetsPackCommand.Settings settings, AssetTypeMap map, AssetTypes fallback, CancellationToken cancellation)
+    internal static SemanticPackPlan Create(IPackSettings settings, AssetTypeMap map, AssetTypes fallback, CancellationToken cancellation)
     {
         var plan = new SemanticPackPlan(Path.GetFullPath(settings.Source), Path.GetFullPath(settings.Output),
             settings.Password, settings.Encrypt, settings.AllowExternal, cancellation);
@@ -160,6 +160,7 @@ internal sealed partial class SemanticPackPlan
         var candidates = _entries.Values.Where(entry => entry.Location.AssetType == type && Contains(entry, identity)).ToArray();
         if (candidates.Length != 1)
             throw new InvalidDataException($"{label}: logical {type} '{identity}' has {candidates.Length} matching documents in the final inventory. Specify an explicit source. {string.Join("; ", candidates.Select(entry => entry.Location))}");
+        TrackReuse(candidates[0]);
         return candidates[0];
     }
 
@@ -224,6 +225,8 @@ internal sealed partial class SemanticPackPlan
         }
         if (identity is not null && !Contains(found, identity))
             throw new InvalidDataException($"{label}: {location} does not contain logical member '{identity}'.");
+        if (_importDependencies && _external.Contains(found)) found = ImportDependency(found);
+        TrackReuse(found);
         return found;
     }
 

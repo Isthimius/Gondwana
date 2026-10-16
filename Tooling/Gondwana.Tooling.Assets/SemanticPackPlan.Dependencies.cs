@@ -5,7 +5,7 @@ using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
 
-namespace Gondwana.Cli.Commands.Assets;
+namespace Gondwana.Tooling.Assets;
 
 internal sealed partial class SemanticPackPlan
 {
@@ -29,7 +29,11 @@ internal sealed partial class SemanticPackPlan
                 case AudioDefinition audio:
                     foreach (var resource in audio.Resources)
                     {
-                        if (resource.SourceKind == AudioResourceSourceKind.Uri) continue;
+                        if (resource.SourceKind == AudioResourceSourceKind.Uri)
+                        {
+                            _importPreview?.Add($"External URI (unchanged): {resource.SourceUri}");
+                            continue;
+                        }
                         var resourceLabel = label + $" :: audio '{resource.Key}'";
                         var source = Physical(owner, AssetTypes.Audio, resource.FilePath, resource.AssetsFilePath, resource.AssetEntryName, (int)resource.SourceKind, resourceLabel);
                         Map(owner, source, Resolve(source, null, resourceLabel).Destination);

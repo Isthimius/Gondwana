@@ -1,4 +1,5 @@
 using Gondwana.Assets;
+using Gondwana.Tooling.Assets;
 
 namespace Gondwana.Cli.Commands.Assets;
 

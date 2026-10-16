@@ -11,6 +11,7 @@ using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes;
 using Gondwana.Scenes.GSCN;
+using Gondwana.Tooling.Assets;
 using ICSharpCode.SharpZipLib.Zip;
 using SkiaSharp;
 using Spectre.Console.Cli;
@@ -353,7 +354,7 @@ public sealed partial class SemanticAssetPackTests : IDisposable
         Assert.Equal(0, Run("pack", Source, Output));
         var original = File.ReadAllBytes(Output);
         using var cancellation = new CancellationTokenSource();
-        var plan = SemanticPackPlan.Create(new() { Source = Source, Output = Output }, AssetTypeMap.BuildDefault(), AssetTypes.Misc, cancellation.Token);
+        var plan = SemanticPackPlan.Create(new AssetsPackCommand.Settings() { Source = Source, Output = Output }, AssetTypeMap.BuildDefault(), AssetTypes.Misc, cancellation.Token);
         cancellation.Cancel();
         Assert.Throws<OperationCanceledException>(() => plan.Commit());
         Assert.Equal(original, File.ReadAllBytes(Output));
@@ -381,7 +382,7 @@ public sealed partial class SemanticAssetPackTests : IDisposable
         File.WriteAllText(Path.Combine(Source, "keep.txt"), "original");
         Assert.Equal(0, Run("pack", Source, Output));
         var original = File.ReadAllBytes(Output);
-        var plan = SemanticPackPlan.Create(new() { Source = Source, Output = Output }, AssetTypeMap.BuildDefault(), AssetTypes.Misc, default);
+        var plan = SemanticPackPlan.Create(new AssetsPackCommand.Settings() { Source = Source, Output = Output }, AssetTypeMap.BuildDefault(), AssetTypes.Misc, default);
         using (var locked = File.Open(Output, FileMode.Open, FileAccess.Read, FileShare.Read))
             Assert.True(Record.Exception(() => plan.Commit()) is IOException or UnauthorizedAccessException);
         Assert.Equal(original, File.ReadAllBytes(Output));
@@ -451,7 +452,7 @@ public sealed partial class SemanticAssetPackTests : IDisposable
             Resources = [new() { Key = "sound", SourceKind = AudioResourceSourceKind.PackedAsset, AssetsFilePath = "../external.gaf", AssetEntryName = "first.png" }]
         }));
 
-        var plan = SemanticPackPlan.Create(new() { Source = Source, Output = Output, Password = password, AllowExternal = true },
+        var plan = SemanticPackPlan.Create(new AssetsPackCommand.Settings() { Source = Source, Output = Output, Password = password, AllowExternal = true },
             AssetTypeMap.BuildDefault(), AssetTypes.Misc, default);
         var cache = Assert.IsType<Dictionary<string, Dictionary<AssetsFileEntry, byte[]>>>(typeof(SemanticPackPlan)
             .GetField("_externalArchives", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.GetValue(plan));

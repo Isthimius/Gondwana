@@ -14,7 +14,7 @@ namespace Gondwana.Tooling.Studio.WinForms.Tests;
 /// <summary>
 /// Contains regression tests for composition.
 /// </summary>
-public sealed class CompositionTests
+public sealed partial class CompositionTests
 {
     /// <summary>
     /// Verifies real editors save rekey recover panes and dispose.
