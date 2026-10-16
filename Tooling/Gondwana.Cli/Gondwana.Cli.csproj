@@ -52,4 +52,5 @@
         </Content>
     </ItemGroup>
 
+  <ItemGroup><ProjectReference Include="../Gondwana.Tooling.Assets/Gondwana.Tooling.Assets.csproj" /></ItemGroup>
 </Project>

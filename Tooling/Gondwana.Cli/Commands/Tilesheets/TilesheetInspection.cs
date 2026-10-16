@@ -1,6 +1,6 @@
 using Gondwana.Assets;
-using Gondwana.Cli.Commands.Assets;
 using Gondwana.Drawing.Tilesheets.GTS;
+using Gondwana.Tooling.Assets;
 using SkiaSharp;
 
 namespace Gondwana.Cli.Commands.Tilesheets;

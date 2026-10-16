@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Net;
 using System.Text.RegularExpressions;
-using Gondwana.Cli.Commands.Assets;
+using Gondwana.Tooling.Assets;
 using Spectre.Console;
 using Spectre.Console.Cli;
 

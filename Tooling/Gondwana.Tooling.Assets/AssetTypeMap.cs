@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Gondwana.Assets;
 
-namespace Gondwana.Cli.Commands.Assets;
+namespace Gondwana.Tooling.Assets;
 
 /// <summary>
 /// Loads and queries an extension-to-<see cref="AssetTypes"/> mapping from a JSON file.

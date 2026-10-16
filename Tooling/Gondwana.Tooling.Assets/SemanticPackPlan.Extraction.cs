@@ -1,6 +1,6 @@
 using Gondwana.Assets;
 
-namespace Gondwana.Cli.Commands.Assets;
+namespace Gondwana.Tooling.Assets;
 
 internal sealed partial class SemanticPackPlan
 {

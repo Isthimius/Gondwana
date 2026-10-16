@@ -1,7 +1,7 @@
 using Gondwana.Assets;
 using ICSharpCode.SharpZipLib.Zip;
 
-namespace Gondwana.Cli.Commands.Assets;
+namespace Gondwana.Tooling.Assets;
 
 /// <summary>Preflights a final typed inventory and commits a package only after all dependencies resolve.</summary>
 internal sealed partial class SemanticPackPlan
@@ -51,7 +51,7 @@ internal sealed partial class SemanticPackPlan
     /// <param name="fallback">The type used only for unknown extensions.</param>
     /// <param name="cancellation">Cancellation checked throughout planning and before committing.</param>
     /// <returns>A fully prepared pack transaction.</returns>
-    internal static SemanticPackPlan Create(AssetsPackCommand.Settings settings, AssetTypeMap map, AssetTypes fallback, CancellationToken cancellation)
+    internal static SemanticPackPlan Create(IPackSettings settings, AssetTypeMap map, AssetTypes fallback, CancellationToken cancellation)
     {
         var plan = new SemanticPackPlan(Path.GetFullPath(settings.Source), Path.GetFullPath(settings.Output),
             settings.Password, settings.Encrypt, settings.AllowExternal, cancellation);
@@ -160,6 +160,7 @@ internal sealed partial class SemanticPackPlan
         var candidates = _entries.Values.Where(entry => entry.Location.AssetType == type && Contains(entry, identity)).ToArray();
         if (candidates.Length != 1)
             throw new InvalidDataException($"{label}: logical {type} '{identity}' has {candidates.Length} matching documents in the final inventory. Specify an explicit source. {string.Join("; ", candidates.Select(entry => entry.Location))}");
+        TrackReuse(candidates[0]);
         return candidates[0];
     }
 
@@ -173,7 +174,9 @@ internal sealed partial class SemanticPackPlan
     {
         _cancellation.ThrowIfCancellationRequested();
         var found = _entries.Values.FirstOrDefault(entry => Same(entry.Location, location));
+        if (found is null && !_validateReusedTargets) found = FindImportAlias(location);
         if (found is null && location.AssetEntryName is not null) found = FindPacked(location);
+        if (_validateReusedTargets && found is not null && _incoming.Contains(found)) found = null;
         if (found is null && _entries.Values.Any(entry => Paths.Equals(entry.Location.Path, location.Path) &&
             StringComparer.OrdinalIgnoreCase.Equals(entry.Location.AssetEntryName, location.AssetEntryName) && entry.Location.AssetType != location.AssetType))
             throw new InvalidDataException($"{label}: dependency {location} was inventoried under an incompatible asset type.");
@@ -224,6 +227,8 @@ internal sealed partial class SemanticPackPlan
         }
         if (identity is not null && !Contains(found, identity))
             throw new InvalidDataException($"{label}: {location} does not contain logical member '{identity}'.");
+        if (_importDependencies && _external.Contains(found)) found = ImportDependency(found);
+        TrackReuse(found);
         return found;
     }
 

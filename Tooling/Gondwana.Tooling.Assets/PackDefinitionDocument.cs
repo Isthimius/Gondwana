@@ -6,7 +6,7 @@ using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
 
-namespace Gondwana.Cli.Commands.Assets;
+namespace Gondwana.Tooling.Assets;
 
 /// <summary>Typed access to native documents; serialization and relocation remain owned by Core.</summary>
 internal sealed class PackDefinitionDocument

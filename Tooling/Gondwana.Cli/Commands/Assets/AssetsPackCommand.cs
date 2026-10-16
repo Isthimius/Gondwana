@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using Gondwana.Assets;
+using Gondwana.Tooling.Assets;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -11,7 +12,7 @@ internal sealed class AssetsPackCommand : Command<AssetsPackCommand.Settings>
     /// <summary>
     /// Defines command-line settings for AssetsPackCommand.
     /// </summary>
-    public sealed class Settings : CommandSettings
+    public sealed class Settings : CommandSettings, IPackSettings
     {
         /// <summary>
         /// Gets or sets the source.
