@@ -9,6 +9,7 @@ internal sealed partial class SemanticPackPlan
     private readonly Queue<Entry> _importQueue = new();
     private readonly Queue<Entry> _reuseQueue = new();
     private readonly HashSet<Entry> _reuseChecked = [];
+    private readonly List<(AssetLocation Source, Entry Entry)> _importAliases = [];
 
     /// <summary>Prepares additions using the existing typed dependency analysis and Phase 1 relocation.</summary>
     /// <param name="archive">The current destination archive.</param>
@@ -36,7 +37,8 @@ internal sealed partial class SemanticPackPlan
             if (inferred is AssetTypes.TilesheetDefinition or AssetTypes.AnimationDefinition or AssetTypes.SceneDefinition or AssetTypes.SpriteDefinition or AssetTypes.AudioDefinition && inferred != source.AssetType)
                 throw new InvalidDataException($"Native file '{source.FilePath}' requires type {inferred}.");
             var location = new AssetLocation(source.AssetType, Path.GetFullPath(source.FilePath));
-            if (plan._entries.Values.Any(entry => Same(entry.Location, location)))
+            if (plan._entries.Values.Any(entry => Same(entry.Location, location)) ||
+                plan._importAliases.Any(alias => Same(alias.Source, location)))
                 throw new InvalidDataException($"Source selected more than once: {location}.");
             var entry = ReadEntry(location, new(source.AssetType, plan._output, source.EntryName), File.ReadAllBytes(location.Path));
             plan.AddImport(entry);
@@ -84,6 +86,7 @@ internal sealed partial class SemanticPackPlan
             if (entry.Document is null && existing.Document is null && existing.Bytes.AsSpan().SequenceEqual(entry.Bytes))
             {
                 _importPreview!.Add($"Reuse identical bytes: {existing.Destination}");
+                _importAliases.Add((entry.Location, existing));
                 return existing;
             }
             throw new InvalidDataException($"Destination conflict: {entry.Destination}. Existing content will not be replaced. Choose another entry name or explicitly reference the existing packed definition.");
@@ -93,6 +96,14 @@ internal sealed partial class SemanticPackPlan
         _importQueue.Enqueue(entry);
         _importPreview!.Add($"Add: {entry.Destination.AssetType} / {entry.Destination.AssetEntryName}");
         return entry;
+    }
+
+    private Entry? FindImportAlias(AssetLocation location)
+    {
+        foreach (var alias in _importAliases)
+            if (Same(alias.Source, location))
+                return alias.Entry;
+        return null;
     }
 
     private Entry ImportDependency(Entry source)

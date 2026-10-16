@@ -86,6 +86,35 @@ public sealed partial class SemanticAssetPackTests
         Assert.False(File.Exists(Output));
     }
 
+    /// <summary>Selected loose leaves reused at custom packed names resolve under either dependency policy.</summary>
+    /// <param name="dependencies">Whether to import external dependencies.</param>
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void EditorImportResolvesSelectedLeafReusedAtCustomDestination(bool dependencies)
+    {
+        Image("art.png");
+        Directory.CreateDirectory(Path.GetDirectoryName(Output)!);
+        using var destination = AssetsFile.LoadOrCreate(Output, null, false, register: false);
+        using (var image = File.OpenRead(Path.Combine(Source, "art.png")))
+            destination.Add(AssetTypes.Image, "images/art.png", image);
+        var path = Path.Combine(Source, "sheet.gts");
+        TilesheetDefinitionSerializer.Save(path, Sheet("terrain", "art.png"));
+
+        var plan = AssetImportPlan.Create(destination,
+        [
+            new(path, AssetTypes.TilesheetDefinition, "sheet.gts"),
+            new(Path.Combine(Source, "art.png"), AssetTypes.Image, "images/art.png")
+        ], dependencies);
+
+        Assert.Contains(plan.Preview, line => line.StartsWith("Reuse identical"));
+        Assert.Equal(1, plan.AdditionCount);
+        Assert.Equal(1, plan.Apply());
+        var imageReference = TilesheetDefinitionSerializer.Load(destination, "sheet.gts").Image!;
+        Assert.Equal(Output, imageReference.AssetsFilePath);
+        Assert.Equal("images/art.png", imageReference.AssetEntryName);
+    }
+
     /// <summary>Prepared transactions reject stale previews, preserve current bytes on failure, and honor cancellation.</summary>
     [Fact]
     public void EditorImportRollbackAndStalePlan()
