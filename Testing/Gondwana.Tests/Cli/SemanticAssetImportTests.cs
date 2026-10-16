@@ -111,7 +111,7 @@ public sealed partial class SemanticAssetPackTests
         Assert.Equal(1, plan.AdditionCount);
         Assert.Equal(1, plan.Apply());
         var imageReference = TilesheetDefinitionSerializer.Load(destination, "sheet.gts").Image!;
-        Assert.Equal(Output, imageReference.AssetsFilePath);
+        Assert.Equal(Path.GetFullPath(Output), Path.GetFullPath(imageReference.AssetsFilePath!, Path.GetDirectoryName(destination.SourcePath!)!));
         Assert.Equal("images/art.png", imageReference.AssetEntryName);
     }
 
@@ -144,6 +144,45 @@ public sealed partial class SemanticAssetPackTests
         Assert.Equal(2, plan.Apply());
         Assert.Equal("art.png", TilesheetDefinitionSerializer.Load(destination, "terrain.gts").Image.FilePath);
         Assert.False(File.Exists(Output));
+    }
+
+    /// <summary>Aliases for selected reused leaves do not hide unchanged definitions' actual loose dependencies.</summary>
+    /// <param name="dependencies">Whether to import external dependencies.</param>
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void EditorImportReuseReportsExternalDependencyDespiteSelectedAlias(bool dependencies)
+    {
+        Image("art.png");
+        Directory.CreateDirectory(Path.GetDirectoryName(Output)!);
+        var physicalImage = Path.Combine(Source, "art.png");
+        using var destination = AssetsFile.LoadOrCreate(Output, null, false, register: false);
+        using (var image = File.OpenRead(physicalImage)) destination.Add(AssetTypes.Image, "images/custom.png", image);
+        var sheetBytes = System.Text.Encoding.UTF8.GetBytes(TilesheetDefinitionSerializer.ToJson(
+            Sheet("terrain", Path.GetRelativePath(Path.GetDirectoryName(Output)!, physicalImage))));
+        using (var stream = new MemoryStream(sheetBytes)) destination.Add(AssetTypes.TilesheetDefinition, "terrain.gts", stream);
+        var animationPath = Path.Combine(Source, "walk.gani");
+        AnimationDefinitionSerializer.Save(animationPath, new AnimationDefinition
+        {
+            Key = "walk",
+            ThrottleTime = .2,
+            Frames = [new() { Tilesheet = "terrain" }]
+        });
+
+        var plan = AssetImportPlan.Create(destination,
+        [
+            new(physicalImage, AssetTypes.Image, "images/custom.png"),
+            new(animationPath, AssetTypes.AnimationDefinition, "walk.gani")
+        ], dependencies);
+
+        Assert.Contains(plan.Preview, line => line.StartsWith("Reuse identical"));
+        Assert.Contains(plan.Preview, line => line.StartsWith("External:") && line.Contains(physicalImage, StringComparison.Ordinal));
+        Assert.Equal(1, plan.Apply());
+        using var stored = destination.Get(AssetTypes.TilesheetDefinition, "terrain.gts")!;
+        using var buffer = new MemoryStream();
+        stored.CopyTo(buffer);
+        Assert.Equal(sheetBytes, buffer.ToArray());
+        Assert.Equal("terrain.gts", AnimationDefinitionSerializer.Load(destination, "walk.gani").TilesheetSources[0].AssetEntryName);
     }
 
     /// <summary>Prepared transactions reject stale previews, preserve current bytes on failure, and honor cancellation.</summary>

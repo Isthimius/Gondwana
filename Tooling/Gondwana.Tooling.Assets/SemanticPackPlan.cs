@@ -174,7 +174,7 @@ internal sealed partial class SemanticPackPlan
     {
         _cancellation.ThrowIfCancellationRequested();
         var found = _entries.Values.FirstOrDefault(entry => Same(entry.Location, location));
-        if (found is null) found = FindImportAlias(location);
+        if (found is null && !_validateReusedTargets) found = FindImportAlias(location);
         if (found is null && location.AssetEntryName is not null) found = FindPacked(location);
         if (_validateReusedTargets && found is not null && _incoming.Contains(found)) found = null;
         if (found is null && _entries.Values.Any(entry => Paths.Equals(entry.Location.Path, location.Path) &&
