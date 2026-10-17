@@ -14,6 +14,11 @@ internal sealed class PackDefinitionDocument
     private object _document;
     private PackDefinitionDocument(object document) => _document = document;
 
+    /// <summary>Recognizes the native document types supported by the shared format handlers.</summary>
+    /// <param name="type">Typed physical resource classification.</param>
+    /// <returns>Whether the resource contains a native definition document.</returns>
+    internal static bool IsNative(AssetTypes type) => type is AssetTypes.TilesheetDefinition or AssetTypes.AnimationDefinition or AssetTypes.SceneDefinition or AssetTypes.SpriteDefinition or AssetTypes.AudioDefinition;
+
     /// <summary>Reads a native document or returns null for a binary asset.</summary>
     /// <param name="type">The planned asset type.</param>
     /// <param name="bytes">The original document bytes.</param>
@@ -21,7 +26,7 @@ internal sealed class PackDefinitionDocument
     /// <returns>A complete typed document, or null for binary content.</returns>
     internal static PackDefinitionDocument? Read(AssetTypes type, byte[] bytes, string identity)
     {
-        if (type is not (AssetTypes.TilesheetDefinition or AssetTypes.AnimationDefinition or AssetTypes.SceneDefinition or AssetTypes.SpriteDefinition or AssetTypes.AudioDefinition)) return null;
+        if (!IsNative(type)) return null;
         using var reader = new StreamReader(new MemoryStream(bytes), Encoding.UTF8, detectEncodingFromByteOrderMarks: true);
         var json = reader.ReadToEnd();
         object document = type switch

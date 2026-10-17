@@ -1,4 +1,4 @@
-using System.Text.Json;
+using System.ComponentModel;
 using Gondwana.Assets;
 using Gondwana.Tooling.Assets;
 using Spectre.Console;
@@ -17,24 +17,31 @@ internal sealed class AssetsDeleteCommand : Command<AssetsDeleteCommand.Settings
         public string Source { get; init; } = "";
         /// <summary>Gets the explicit directory or single-archive scope.</summary>
         [CommandOption("--scope")]
+        [Description("Required recursive directory or single GAF/ZIP search scope.")]
         public string Scope { get; init; } = "";
         /// <summary>Gets an exact typed packed entry, or null for a loose file.</summary>
         [CommandOption("--source-entry")]
+        [Description("Exact typed source entry; omit for loose storage.")]
         public string? SourceEntry { get; init; }
         /// <summary>Gets the asset type; required for packed entries.</summary>
         [CommandOption("--type")]
+        [Description("AssetTypes value; required for packed sources.")]
         public string? Type { get; init; }
         /// <summary>Gets whether the entire archive and all its entries are selected.</summary>
         [CommandOption("--archive")]
+        [Description("Operate on the whole GAF/ZIP, not an entry.")]
         public bool Archive { get; init; }
         /// <summary>Gets permission to execute rather than preview.</summary>
         [CommandOption("--commit")]
+        [Description("Execute the reviewed operation; omitted means preview only.")]
         public bool Commit { get; init; }
         /// <summary>Gets explicit permission to break the reviewed surviving relationships.</summary>
         [CommandOption("--force")]
+        [Description("Delete only: authorize reviewed broken references; does not bypass incomplete discovery.")]
         public bool Force { get; init; }
         /// <summary>Gets a JSON object mapping absolute archive paths to individual passwords.</summary>
         [CommandOption("--credentials")]
+        [Description("JSON object of absolute GAF/ZIP paths to passwords; never printed.")]
         public string? Credentials { get; init; }
     }
 
@@ -44,13 +51,7 @@ internal sealed class AssetsDeleteCommand : Command<AssetsDeleteCommand.Settings
         try
         {
             if (string.IsNullOrWhiteSpace(settings.Scope)) throw new ArgumentException("An explicit --scope directory or archive is required.");
-            var credentials = new Dictionary<string, string>(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
-            if (settings.Credentials is not null)
-                foreach (var pair in JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(settings.Credentials)) ?? throw new InvalidDataException("Invalid credential map."))
-                {
-                    if (!Path.IsPathFullyQualified(pair.Key)) throw new InvalidDataException("Credential keys must be absolute archive paths.");
-                    credentials.Add(Path.GetFullPath(pair.Key), pair.Value);
-                }
+            var credentials = AssetCommandCredentials.Load(settings.Credentials);
             AssetDeletionPlan plan;
             if (settings.Archive)
             {

@@ -1,5 +1,23 @@
 Gondwana asset files provide a simple way to bundle game resources into a single container instead of distributing every image, sound, definition, and other resource as a separate loose file.
 
+## Physical content and operations
+
+A loose file is one physical resource. A GAF/ZIP is a typed container whose entry identity combines `AssetTypes` and the entry name. A native definition entry or loose definition file is a document containing one or more logical members: GTS `Name`, GANI `Key`, GSCN `ID`, and GSPR/GSND `Key`. Renaming a file or entry does not rename those members. A selector such as `AnimationKey` chooses a member, not a filename.
+
+| Operation | Source retained? | Reference behavior | Persistence |
+| --- | --- | --- | --- |
+| Add / Import | Yes | Rebase imported documents; optionally copy dependencies | Unsaved editor changes until Save |
+| Pack | Yes | Relocate included dependencies into typed entries | Writes the output GAF |
+| Unpack / Export | Yes | Rebase copies; omitted dependencies remain packed | Writes loose copies |
+| Save As / Copy | Yes | Rebase copied content's outbound references only | Writes a new archive |
+| Rename / Move | No, after successful commit | Update discovered inbound references and rebase outbound references | Reviewed disk transaction |
+| Delete | No, after successful commit | Block surviving inbound references unless explicitly forced | Reviewed disk transaction |
+| Replace | Yes, replacement input retained | Same typed entry identity; no automatic dependency repair | Unsaved editor changes until Save |
+
+Replace is a low-level byte replacement, not a relocation or a guarantee that dependent definitions remain valid. Review member identities and dependencies before using it on native documents.
+
+This page owns the workflow overview. [Reference Relocation](Reference-Relocation) owns physical reference semantics, safety guarantees, and deferred capabilities. [CLI Cheatsheet](Gondwana-CLI-Cheatsheet) documents command syntax; [Studio](Gondwana-Studio) and [Studio & Desktop Tools](Studio-and-Desktop-Tools) describe authoring. Individual format pages own serialization and runtime loading details.
+
 ## Multi-definition documents
 
 A typed GTS, GANI, GSCN, GSND, or GSPR entry stores one definition **document**. Its `Definitions` array may contain multiple logical members. The archive entry name identifies the physical document, and Name (GTS), Key (GANI/GSND/GSPR), or ID (GSCN) identifies the member. Existing singleton entries remain readable. `AssetsFile` storage, adding, and extraction semantics are unchanged; those low-level operations do not relocate references. The CLI semantic packing workflow described below performs reference transformation before adding entries.
@@ -697,6 +715,10 @@ All destinations are checked before staging. Unsafe paths, symlink/junction ance
 
 Multi-file export is **not globally atomic**: a crash, power loss, disk failure, or concurrent filesystem modification can interrupt commit or recovery. Do not modify the output tree concurrently. Archive contents are buffered during preflight, and binary media are not decoded. A complete self-contained export works without the original GAF; a partial export must retain any archives/resources still referenced. Export is a copy operation and never rewrites the source GAF or project-wide inbound references.
 
+### Export in the Assets editor
+
+**Export** (also double-clicking an entry) exports one complete typed entry to the chosen loose filename. Native definitions use the same semantic export planner as CLI unpack: all members survive, outgoing references are rebased, and dependencies not exported remain in their original archives. Leaf resources keep their bytes. Save a dirty archive before exporting native definitions so retained packed dependencies exist in the saved source. Export leaves the source archive and dirty state unchanged and does not require a subsequent Save. A partial export still needs its referenced archives.
+
 ## Semantic GAF Add / Import
 
 The standalone Assets editor and Studio use the same `AssetEditorControl` workflow:
@@ -713,9 +735,9 @@ Existing entries are resolved against the current in-memory archive, including u
 
 Only explicit physical dependencies are followed recursively; the importer does not scan neighboring folders or arbitrary project code to guess missing source metadata. Include the relevant files in the selection or author explicit sources. Referenced external archives use the destination password when opening is required; archives requiring a different password are not supported by this workflow. URI resources are not downloaded.
 
-The UI-independent `Gondwana.Tooling.Assets` library reuses the CLI dependency analysis, document serializers, and Phase 1 relocation. It buffers a snapshot and all prepared additions before applying them. A stale preview is rejected if archive contents changed. Cancellation or an ordinary multi-entry write failure removes attempted additions, preserving unrelated edits. Apply on the editor thread; this does not provide concurrent-writer synchronization or recovery from process termination/out-of-memory failure.
+The UI-independent `Gondwana.Tooling.Assets` library owns the dependency analysis shared by CLI and editors and uses Core document serializers and relocation. It buffers a snapshot and all prepared additions before applying them. A stale preview is rejected if archive contents changed. Cancellation or an ordinary multi-entry write failure removes attempted additions, preserving unrelated edits. Apply on the editor thread; this does not provide concurrent-writer synchronization or recovery from process termination/out-of-memory failure.
 
-Add / Import remains copy behavior. Reference-aware Move and portable Save As are described below; Delete remains unchanged.
+Add / Import remains copy behavior. Reference-aware Move and portable Save As are described below; Delete reviews surviving inbound references as described below.
 
 ## Reference-aware rename and move
 
@@ -750,9 +772,7 @@ Save the current GAF first and close other authoring documents. Both hosts rejec
 
 ### Transactions and recovery
 
-Planning is side-effect-free and snapshots every inspected physical file. Before commit, scope inventory and bytes are checked again; changes require a new plan. Changed loose files and archives are staged beside their final destinations, with independent original backups. Destinations and reference updates are installed before source retirement. Archives temporarily retain moved-out source entries until all destination/reference writes have succeeded; retirement then installs their final contents. Committed bytes are checked against the validated prepared graph. Ordinary exceptions and cancellation restore previously touched files, including failures during later archive installs or source retirement. Sources are never removed by discovery or staging.
-
-This is **not** a globally atomic filesystem transaction across process crashes or power loss. Do not run concurrent writers during a commit. Interrupted commits retain `.gondwana-relocate-<id>.json` in the scope directory (or beside a single-archive scope), plus sibling `.old`, `.new`, and optional `.new.final` files. Stop writers before manual recovery. For a `Prepared` manifest, restore every `Existed: true` target from its listed backup and remove targets marked `Existed: false`; keep backups until every restoration succeeds. The `Completed` record is staged beside the `Prepared` manifest and atomically replaces it; the only recovery record is never truncated. A `Completed` manifest means the move succeeded and leftover staging/backups can be removed. Staging abandoned before a manifest exists has not installed any writes. Rollback failures retain the manifest/backups and report their location. Filesystem corruption or lost backup data requires external backup recovery.
+See [Reference Relocation — transactions and recovery](Reference-Relocation#transactions-and-recovery) for shared move/delete staging, snapshot checks, rollback, and manual Prepared/Completed recovery instructions.
 
 Logical renaming and project-wide code rewriting remain outside this feature. Reference-aware deletion is described below.
 
@@ -798,4 +818,4 @@ Deletion and relocation share the same narrow file transaction implementation. A
 
 For force, the original graph is fully validated and only reviewed targets are removed. Surviving bytes are unchanged and verified against the snapshot, so only the explicitly listed edges may become dangling. No unrelated definitions are reserialized.
 
-The same `.gondwana-relocate-<id>.json` recovery manifest and sibling backups described above are used for deletion. `Completed` atomically replaces `Prepared`; a crash is not globally atomic. Stop concurrent writers before committing or performing manual recovery. Follow the existing Prepared/Completed recovery instructions; do not discard backups until restoration or successful completion is verified.
+The same `.gondwana-relocate-<id>.json` recovery manifest and sibling backups described in [Reference Relocation](Reference-Relocation#transactions-and-recovery) are used for deletion. `Completed` atomically replaces `Prepared`; a crash is not globally atomic. Stop concurrent writers before committing or performing manual recovery. Follow the existing Prepared/Completed recovery instructions; do not discard backups until restoration or successful completion is verified.

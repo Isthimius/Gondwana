@@ -98,7 +98,7 @@ public sealed class DefinitionReferenceDiscovery
     /// <summary>Recognizes the five native definition types.</summary>
     /// <param name="type">Asset type.</param>
     /// <returns>Whether the type contains a native document.</returns>
-    internal static bool Native(AssetTypes type) => type is AssetTypes.TilesheetDefinition or AssetTypes.AnimationDefinition or AssetTypes.SceneDefinition or AssetTypes.SpriteDefinition or AssetTypes.AudioDefinition;
+    internal static bool Native(AssetTypes type) => PackDefinitionDocument.IsNative(type);
     /// <summary>Rejects unsafe names, links, parent-file collisions, and case collisions.</summary>
     /// <param name="path">Absolute physical path.</param>
     internal static void CheckPath(string path)

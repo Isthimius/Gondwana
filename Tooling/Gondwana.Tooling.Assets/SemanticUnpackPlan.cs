@@ -1,7 +1,6 @@
 using Gondwana.Assets;
-using Gondwana.Tooling.Assets;
 
-namespace Gondwana.Cli.Commands.Assets;
+namespace Gondwana.Tooling.Assets;
 
 /// <summary>Prepares semantic exports and commits staged files with rollback of replaced output.</summary>
 internal sealed class SemanticUnpackPlan
@@ -35,26 +34,56 @@ internal sealed class SemanticUnpackPlan
         cancellation.ThrowIfCancellationRequested();
         var plan = new SemanticUnpackPlan(Path.GetFullPath(path), Path.GetFullPath(output), overwrite, cancellation);
         RejectLinkedSourceAncestry(plan._source);
-        using var archive = BundleHelper.Open(plan._source, password);
+        AssetsFile.Validate(plan._source, password, true);
+        using var archive = AssetsFile.LoadOrCreate(plan._source, password, encrypt: false, register: false);
+        foreach (var item in archive.GetAllEntries()) SafeFilePath.ValidateRelative(item.AssetName);
         var selected = archive.GetAllEntries().Where(key => (type is null || key.AssetType == type) &&
             (entryName is null || StringComparer.OrdinalIgnoreCase.Equals(key.AssetName, entryName)))
             .OrderBy(key => key.AssetName, StringComparer.Ordinal).ThenBy(key => key.AssetType).ToArray();
         if (entryName is not null && selected.Length != 1)
             throw new InvalidDataException($"Entry '{entryName}' has {selected.Length} exact typed matches. Specify --type for an ambiguous name; basename matching is not supported.");
         var destinations = selected.ToDictionary(key => key, key => SafeFilePath.Resolve(plan._output, key.AssetName));
-        var targets = destinations.Values.ToArray();
-        if (targets.Distinct(StringComparer.OrdinalIgnoreCase).Count() != targets.Length)
-            throw new InvalidDataException("Selected asset entries collide at the same output filename. Select one --type or --entry.");
+        SafeFilePath.ValidateDestinations(destinations.Values.Select(path => (path, false)));
         foreach (var pair in destinations)
         {
             cancellation.ThrowIfCancellationRequested();
             plan.CheckDestination(pair.Key.AssetName);
-            if (targets.Any(other => other.StartsWith(pair.Value + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)))
-                throw new InvalidDataException($"Selected entries contain a file/directory conflict: {pair.Value}.");
         }
         if (selected.Length == 0) return plan;
         var contents = SemanticPackPlan.PrepareExtraction(archive, plan._source, destinations, password, cancellation);
         foreach (var key in selected) plan._files.Add((key.AssetName, destinations[key], contents[key]));
+        return plan;
+    }
+
+    /// <summary>Prepares one entry from a borrowed archive for export to an explicit filename.</summary>
+    /// <param name="archive">Current archive; ownership remains with the caller.</param>
+    /// <param name="entry">Exact typed entry to export.</param>
+    /// <param name="destination">Final loose filename.</param>
+    /// <param name="overwrite">Whether an existing file may be replaced.</param>
+    /// <param name="cancellation">Cancellation token.</param>
+    /// <returns>A prepared copy transaction; unselected dependencies remain packed.</returns>
+    internal static SemanticUnpackPlan CreateEntry(AssetsFile archive, AssetsFileEntry entry, string destination,
+        bool overwrite, CancellationToken cancellation = default)
+    {
+        cancellation.ThrowIfCancellationRequested();
+        var source = Path.GetFullPath(archive.SourcePath ?? throw new InvalidOperationException("The archive needs a physical source path."));
+        RejectLinkedSourceAncestry(source);
+        destination = Path.GetFullPath(destination);
+        var plan = new SemanticUnpackPlan(source, Path.GetDirectoryName(destination)!, overwrite, cancellation);
+        var name = Path.GetFileName(destination);
+        plan.CheckDestination(name);
+        if (!archive.GetAllEntries().Contains(entry)) throw new InvalidDataException($"Entry not found: {entry}.");
+        if (!PackDefinitionDocument.IsNative(entry.AssetType))
+        {
+            using var stream = archive[entry.AssetType, entry.AssetName] ?? throw new InvalidDataException($"Entry not readable: {entry}.");
+            using var bytes = new MemoryStream();
+            stream.CopyTo(bytes);
+            plan._files.Add((name, destination, bytes.ToArray()));
+            return plan;
+        }
+        var destinations = new Dictionary<AssetsFileEntry, string> { [entry] = destination };
+        var contents = SemanticPackPlan.PrepareExtraction(archive, source, destinations, archive.Password, cancellation);
+        plan._files.Add((name, destination, contents[entry]));
         return plan;
     }
 

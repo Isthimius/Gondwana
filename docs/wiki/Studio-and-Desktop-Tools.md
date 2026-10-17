@@ -106,6 +106,20 @@ The import pipeline is headless beneath the Studio plugin, so foreign-format kno
 
 See [[External Asset Importing]] for the supported conversion matrix and format-specific limits.
 
+## Import into an open document
+
+Choose **Import definition…** in the **Definition** toolbar and browse to an existing file of the same format. Legacy singleton files import directly. For a multi-definition file, check the members to import; **Select all** and **Select none** adjust the selection. Canceling or importing no members leaves the current document unchanged.
+
+Imported members are independent copies appended to the current document. Existing names are retained when available; conflicts receive `-2`, `-3`, and subsequent suffixes. The first imported member becomes active and the destination becomes dirty. Save and Save As retain both existing and imported members; the source file is never changed.
+
+Relative filesystem references, including GAF paths, are rebased to keep pointing at their original resources. Archive entry names and logical dependency selectors are retained. Resources are not copied or moved. Import does not rewrite logical references when a root name conflicts, or resolve collisions among inner sprite IDs, resource keys, or scene layer IDs. Review those relationships before runtime materialization. Incomplete authoring drafts can be imported and saved using the existing draft workflow; malformed document envelopes and duplicate source root identities are rejected.
+
+## Asset management
+
+The Assets editor hosted by Studio is the same control used standalone. Add / Import creates unsaved archive changes; Export writes a copy immediately; Rename / Move and Delete review a scope and commit to disk immediately. Save As copies and rebases outgoing references without changing inbound references to the original.
+
+See [Assets Files](Assets-Files) for the workflow overview and [Reference Relocation](Reference-Relocation#shared-tooling-and-safety) for discovery, transactions, credentials, and intentional limitations. CLI adapters use those same shared planners, rather than UI code.
+
 ## Runtime boundary
 
 Studio and the desktop tools edit the same files that the engine can load without those applications being present:

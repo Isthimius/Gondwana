@@ -85,6 +85,41 @@ public sealed partial class CompositionTests
         document?.Close();
     });
 
+    /// <summary>Export shares host behavior and preserves dirty leaf edits while refusing unsaved native exports.</summary>
+    /// <param name="hosted">Whether Studio hosts the shared control.</param>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void AssetExportPreservesOwnershipAndDirtyState(bool hosted) => RunSta(directory =>
+    {
+        var path = Path.Combine(directory, "game.gaf");
+        using (var initial = AssetsFile.LoadOrCreate(path, null, false, register: false)) initial.Save();
+        using var studio = Host(directory);
+        using var borrowed = AssetsFile.LoadOrCreate(path, null, false, register: false);
+        var document = hosted ? studio.OpenDocument(path) : null;
+        using var standalone = hosted ? null : new AssetEditorControl(borrowed);
+        var editor = hosted ? Assert.IsType<AssetEditorControl>(document!.Document.Editor) : standalone!;
+        using (var bytes = new MemoryStream([9])) editor.AssetsFile.Add(AssetTypes.Misc, "unsaved", bytes);
+        editor.MarkChanged();
+        int changes = 0;
+        editor.Changed += (_, _) => changes++;
+        var destination = Path.Combine(directory, "export.bin");
+        var leaf = new AssetsFileEntry { AssetType = AssetTypes.Misc, AssetName = "unsaved" };
+        using var canceled = new CancellationTokenSource();
+        canceled.Cancel();
+        Assert.Throws<OperationCanceledException>(() => editor.ExportAsset(leaf, destination, false, canceled.Token));
+        Assert.False(File.Exists(destination));
+        Assert.Throws<InvalidOperationException>(() => editor.ExportAsset(
+            new AssetsFileEntry { AssetType = AssetTypes.TilesheetDefinition, AssetName = "draft.gts" }, destination, false));
+        editor.ExportAsset(leaf, destination, false);
+        Assert.Equal(new byte[] { 9 }, File.ReadAllBytes(destination));
+        Assert.True(editor.IsDirty);
+        Assert.Equal(0, changes);
+        Assert.Single(editor.AssetsFile.GetAllEntries());
+        editor.SaveTo(path);
+        document?.Close();
+    });
+
     /// <summary>Mixed selections infer each native and leaf type independently while allowing unknown-type corrections.</summary>
     [Fact]
     public void AssetImportPickerSupportsMixedSelections() => RunSta(directory =>

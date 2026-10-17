@@ -74,24 +74,6 @@ public sealed partial class AssetRelocationPlan
         return plan;
     }
 
-    private void ValidateDestinationPaths()
-    {
-        var paths = new Dictionary<string, (string Spelling, bool File, bool Archive)>(StringComparer.OrdinalIgnoreCase);
-        foreach (var destination in _mappings.Select(m => m.Destination))
-        {
-            bool file = true;
-            for (string? path = destination.Path; path is not null; path = Path.GetDirectoryName(path))
-            {
-                bool archive = file && destination.AssetEntryName is not null;
-                if (paths.TryGetValue(path, out var prior) &&
-                    (prior.Spelling != path || prior.File != file || (file && !(prior.Archive && archive))))
-                    throw new InvalidDataException($"Conflicting planned destination path or directory prefix: {path} (already planned as {prior.Spelling}).");
-                paths[path] = (path, file, archive);
-                file = false;
-            }
-        }
-    }
-
     private static void EnsureNewFile(string path)
     {
         DefinitionReferenceDiscovery.CheckPath(path);
@@ -100,7 +82,7 @@ public sealed partial class AssetRelocationPlan
 
     private void Prepare(Func<string, string?>? credentials, CancellationToken cancellation)
     {
-        ValidateDestinationPaths();
+        SafeFilePath.ValidateDestinations(_mappings.Select(m => (m.Destination.Path, m.Destination.AssetEntryName is not null)));
         var sourceKeys = new HashSet<string>();
         var destinationKeys = new HashSet<string>();
         foreach (var mapping in _mappings)

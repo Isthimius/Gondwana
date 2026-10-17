@@ -35,7 +35,7 @@ internal sealed partial class SemanticPackPlan
             cancellation.ThrowIfCancellationRequested();
             if (!Enum.IsDefined(source.AssetType)) throw new InvalidDataException("Unknown asset type.");
             var inferred = AssetImportPlan.InferType(source.FilePath);
-            if (inferred is AssetTypes.TilesheetDefinition or AssetTypes.AnimationDefinition or AssetTypes.SceneDefinition or AssetTypes.SpriteDefinition or AssetTypes.AudioDefinition && inferred != source.AssetType)
+            if (PackDefinitionDocument.IsNative(inferred) && inferred != source.AssetType)
                 throw new InvalidDataException($"Native file '{source.FilePath}' requires type {inferred}.");
             var location = new AssetLocation(source.AssetType, Path.GetFullPath(source.FilePath));
             if (plan._entries.Values.Any(entry => Same(entry.Location, location)) ||

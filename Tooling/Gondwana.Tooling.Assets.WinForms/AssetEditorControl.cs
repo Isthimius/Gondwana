@@ -496,11 +496,29 @@ public sealed class AssetEditorControl : UserControl
             knownPasswords: new Dictionary<string, string?> { [FilePath] = _assetsFile.Password });
     }
 
+    /// <summary>Exports a copy without changing archive ownership, dirty state, or notifications.</summary>
+    /// <param name="entry">Exact typed entry.</param>
+    /// <param name="destination">Final loose destination filename.</param>
+    /// <param name="overwrite">Whether replacement of an existing loose file was authorized.</param>
+    /// <param name="cancellation">Cancellation token.</param>
+    internal void ExportAsset(AssetsFileEntry entry, string destination, bool overwrite, CancellationToken cancellation = default)
+    {
+        if (IsDirty && PackDefinitionDocument.IsNative(entry.AssetType))
+            throw new InvalidOperationException("Save this archive before exporting a definition. Dependencies left packed must resolve from the saved archive.");
+        SemanticUnpackPlan.CreateEntry(_assetsFile, entry, destination, overwrite, cancellation).Commit();
+    }
+
     private void ExportSelectedAsset()
     {
         var selected = GetSelectedRecord();
         if (selected is null)
             return;
+
+        if (IsDirty && PackDefinitionDocument.IsNative(selected.AssetType))
+        {
+            MessageBox.Show(this, "Save this archive before exporting a definition. Dependencies left packed must resolve from the saved archive.", "Save required");
+            return;
+        }
 
         using var dialog = new SaveFileDialog
         {
@@ -514,20 +532,8 @@ public sealed class AssetEditorControl : UserControl
 
         try
         {
-            using var stream = _assetsFile[selected.AssetType, selected.AssetName];
-            if (stream is null)
-            {
-                MessageBox.Show(
-                    this,
-                    "The selected asset could not be read.",
-                    "Read Failed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-                return;
-            }
-
-            using var fileStream = File.Create(dialog.FileName);
-            stream.CopyTo(fileStream);
+            ExportAsset(new AssetsFileEntry { AssetType = selected.AssetType, AssetName = selected.AssetName },
+                dialog.FileName, overwrite: true);
             SetStatus($"Exported: {selected.AssetName}");
         }
         catch (Exception ex)

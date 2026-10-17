@@ -3,17 +3,79 @@ using System.Text;
 using Gondwana.Assets;
 using Gondwana.Audio;
 using Gondwana.Audio.GSND;
-using Gondwana.Cli.Commands.Assets;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
+using Gondwana.Tooling.Assets;
 
 namespace Gondwana.Tests.Cli;
 
 public sealed partial class SemanticAssetPackTests
 {
+    /// <summary>Single-entry editor exports share CLI rebasing and leave the borrowed archive untouched.</summary>
+    [Fact]
+    public void SelectedEntryExportRebasesPackedDependenciesAndPreservesSource()
+    {
+        Content(true, false);
+        Assert.Equal(0, Run("pack", Source, Output));
+        var original = File.ReadAllBytes(Output);
+        using var archive = AssetsFile.LoadOrCreate(Output, null, false, register: false);
+        var entry = archive.GetAllEntries().First(e => e.AssetType == AssetTypes.TilesheetDefinition);
+        var destination = Path.Combine(Export, "renamed.gts");
+        var plan = SemanticUnpackPlan.CreateEntry(archive, entry, destination, false);
+        Assert.False(File.Exists(destination));
+        Assert.Equal(1, plan.Commit());
+        Assert.Equal(original, File.ReadAllBytes(Output));
+        Directory.Move(Source, Source + "-unavailable");
+        var definitions = TilesheetDefinitionSerializer.LoadAll(destination);
+        Assert.NotEmpty(definitions);
+        foreach (var definition in definitions)
+            TilesheetRegistry.Instance.LoadFromDefinitionFile(destination, definition.Name);
+        Assert.NotEmpty(archive.GetAllEntries());
+    }
+
+    /// <summary>Leaf export uses current in-memory bytes and cancellation performs no writes.</summary>
+    [Fact]
+    public void SelectedLeafExportUsesBorrowedStateAndHonorsCancellation()
+    {
+        Archive((AssetTypes.Misc, "leaf.bin", [1]));
+        var original = File.ReadAllBytes(Output);
+        using var archive = AssetsFile.LoadOrCreate(Output, null, false, register: false);
+        using var bytes = new MemoryStream(new byte[] { 2, 3 });
+        archive.Add(AssetTypes.Misc, "leaf.bin", bytes);
+        using (var draft = new MemoryStream(Encoding.UTF8.GetBytes("incomplete unrelated authoring draft")))
+            archive.Add(AssetTypes.SceneDefinition, "draft.gscn", draft);
+        var entry = archive.GetAllEntries().Single(e => e.AssetType == AssetTypes.Misc);
+        using var cancellation = new CancellationTokenSource();
+        var destination = Path.Combine(Export, "copy.bin");
+        var canceled = SemanticUnpackPlan.CreateEntry(archive, entry, destination, false, cancellation.Token);
+        cancellation.Cancel();
+        Assert.Throws<OperationCanceledException>(() => canceled.Commit());
+        Assert.False(File.Exists(destination));
+        SemanticUnpackPlan.CreateEntry(archive, entry, destination, false).Commit();
+        Assert.Equal(new byte[] { 2, 3 }, File.ReadAllBytes(destination));
+        Assert.Equal(original, File.ReadAllBytes(Output));
+    }
+
+    /// <summary>Export and relocation reject differently spelled shared directory prefixes before writing.</summary>
+    [Fact]
+    public void UnpackRejectsPlannedDirectoryCaseCollision()
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(Output)!);
+        // AssetsFile.Save normalizes entry casing; external ZIP producers need not do so.
+        using (var archive = System.IO.Compression.ZipFile.Open(Output, System.IO.Compression.ZipArchiveMode.Create))
+            foreach (var name in new[] { "Misc_Images/a.bin", "Misc_images/b.bin" })
+            {
+                using var stream = archive.CreateEntry(name).Open();
+                stream.WriteByte(1);
+            }
+        var error = Assert.Throws<InvalidDataException>(() => SemanticUnpackPlan.Create(Output, Export, null, null, null, false, default));
+        Assert.Contains("directory prefix", error.Message);
+        Assert.False(Directory.Exists(Export));
+    }
+
     private string Export => Path.Combine(_root, "export");
 
     /// <summary>All formats survive semantic pack/export and Core materialization without either original source.</summary>
@@ -189,7 +251,7 @@ public sealed partial class SemanticAssetPackTests
 
     /// <summary>Source files and parent directories reached through links cannot be overwritten by extraction.</summary>
     /// <param name="linkedFile">Whether the source archive itself is a symbolic link.</param>
-    [Theory]
+    [SymbolicLinkTheory]
     [InlineData(true)]
     [InlineData(false)]
     public void UnpackRejectsLinkedSourceAncestry(bool linkedFile)

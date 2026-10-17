@@ -3,6 +3,26 @@ namespace Gondwana.Tooling.Assets;
 /// <summary>Validates portable entry names and contained extraction destinations.</summary>
 internal static class SafeFilePath
 {
+    /// <summary>Rejects conflicting planned filenames and directory spellings on every platform.</summary>
+    /// <param name="destinations">Absolute physical paths and whether multiple entries may share that archive.</param>
+    internal static void ValidateDestinations(IEnumerable<(string Path, bool Archive)> destinations)
+    {
+        var paths = new Dictionary<string, (string Spelling, bool File, bool Archive)>(StringComparer.OrdinalIgnoreCase);
+        foreach (var destination in destinations)
+        {
+            bool file = true;
+            for (string? path = destination.Path; path is not null; path = Path.GetDirectoryName(path))
+            {
+                bool archive = file && destination.Archive;
+                if (paths.TryGetValue(path, out var prior) &&
+                    (prior.Spelling != path || prior.File != file || (file && !(prior.Archive && archive))))
+                    throw new InvalidDataException($"Conflicting planned destination path or directory prefix: {path} (already planned as {prior.Spelling}).");
+                paths[path] = (path, file, archive);
+                file = false;
+            }
+        }
+    }
+
     /// <summary>
     /// Rejects asset entry names that are not safe relative paths.
     /// </summary>

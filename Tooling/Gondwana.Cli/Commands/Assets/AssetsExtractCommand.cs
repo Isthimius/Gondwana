@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using Gondwana.Assets;
+using Gondwana.Tooling.Assets;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
