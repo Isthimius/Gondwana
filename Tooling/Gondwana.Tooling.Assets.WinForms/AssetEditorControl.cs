@@ -38,10 +38,12 @@ public sealed class AssetEditorControl : UserControl
 
     /// <summary>Allows a host to prevent Save As from colliding with another open document.</summary>
     public Func<string, bool> IsDocumentOpen { get; set; } = _ => false;
-    /// <summary>Suggested directory or archive scope for semantic moves; the user reviews it.</summary>
+    /// <summary>Suggested directory or archive scope for semantic moves and deletions; the user reviews it.</summary>
     public Func<string>? RelocationScope { get; set; }
     /// <summary>Allows a host to require other in-scope documents to be saved and closed.</summary>
     public Action<AssetRelocationPlan>? ValidateRelocation { get; set; }
+    /// <summary>Allows the host to protect other open authoring documents before deletion.</summary>
+    public Action<AssetDeletionPlan>? ValidateDeletion { get; set; }
     private readonly BindingList<AssetRecord> _records = new();
 
     private readonly DataGridView _grid;
@@ -428,20 +430,43 @@ public sealed class AssetEditorControl : UserControl
     public void ApplyRelocation(AssetRelocationPlan plan)
     {
         ValidateRelocation?.Invoke(plan);
-        if (IsDirty) throw new InvalidOperationException("Save this archive before moving resources.");
-        if (plan.RetiredFiles.Contains(FilePath, StringComparer.OrdinalIgnoreCase))
-            throw new InvalidOperationException("Close this archive and use the workspace or CLI to move the whole GAF.");
-        foreach (var path in plan.AffectedFiles)
+        ValidateDiskOperation(plan.AffectedFiles, plan.RetiredFiles);
+        plan.Commit();
+        RefreshAfterDiskOperation("Move committed. In-scope references updated.");
+    }
+
+    /// <summary>Applies a reviewed safe or explicitly forced deletion and refreshes the same borrowed archive.</summary>
+    /// <param name="plan">Prepared deletion transaction.</param>
+    /// <param name="force">Explicit permission to break the listed surviving references.</param>
+    /// <param name="cancellation">Cancellation token, honored through transaction retirement.</param>
+    public void ApplyDeletion(AssetDeletionPlan plan, bool force = false, CancellationToken cancellation = default)
+    {
+        cancellation.ThrowIfCancellationRequested();
+        ValidateDeletion?.Invoke(plan);
+        ValidateDiskOperation(plan.AffectedFiles, plan.RetiredFiles);
+        plan.Commit(force, cancellation);
+        RefreshAfterDiskOperation("Deletion committed. Only selected resources were removed.");
+    }
+
+    private void ValidateDiskOperation(IReadOnlyList<string> affectedFiles, IReadOnlyList<string> retiredFiles)
+    {
+        if (IsDirty) throw new InvalidOperationException("Save this archive before modifying resources.");
+        if (retiredFiles.Contains(FilePath, StringComparer.OrdinalIgnoreCase))
+            throw new InvalidOperationException("Close this archive and use the workspace or CLI to remove or move the whole GAF.");
+        foreach (var path in affectedFiles)
             if (!string.Equals(path, FilePath, StringComparison.OrdinalIgnoreCase) && IsDocumentOpen(path))
-                throw new InvalidOperationException($"Save and close affected document before moving: {path}");
+                throw new InvalidOperationException($"Save and close affected document before modifying: {path}");
         using (var disk = AssetsFile.LoadOrCreate(FilePath, _assetsFile.Password, _assetsFile.UseEncryption, register: false))
         {
             var current = AssetImportPlan.Snapshot(_assetsFile);
             var saved = AssetImportPlan.Snapshot(disk);
             if (current.Count != saved.Count || current.Any(p => !saved.TryGetValue(p.Key, out var bytes) || !bytes.AsSpan().SequenceEqual(p.Value)))
-                throw new InvalidOperationException("The open archive differs from disk. Save or reopen it before moving.");
+                throw new InvalidOperationException("The open archive differs from disk. Save or reopen it before modifying.");
         }
-        plan.Commit();
+    }
+
+    private void RefreshAfterDiskOperation(string status)
+    {
         using (var disk = AssetsFile.LoadOrCreate(FilePath, _assetsFile.Password, _assetsFile.UseEncryption, register: false))
         {
             foreach (var key in _assetsFile.GetAllEntries().ToArray()) _assetsFile.Remove(key.AssetType, key.AssetName);
@@ -454,7 +479,7 @@ public sealed class AssetEditorControl : UserControl
         RefreshEntries();
         Changed?.Invoke(this, EventArgs.Empty);
         WorkspaceChanged();
-        SetStatus("Move committed. In-scope references updated.");
+        SetStatus(status);
     }
 
     private void RenameSelectedAsset()
@@ -514,30 +539,15 @@ public sealed class AssetEditorControl : UserControl
     private void DeleteSelectedAsset()
     {
         var selected = GetSelectedRecord();
-        if (selected is null)
-            return;
-
-        if (MessageBox.Show(
-                this,
-                $"Delete '{selected.AssetName}'?",
-                "Confirm Delete",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning) != DialogResult.Yes)
+        if (selected is null) return;
+        if (IsDirty)
         {
+            MessageBox.Show(this, "Save this archive before deleting resources.", "Save required");
             return;
         }
-
-        try
-        {
-            _assetsFile.Remove(selected.AssetType, selected.AssetName);
-            MarkChanged();
-            RefreshEntries();
-            SetStatus($"Deleted: {selected.AssetName}");
-        }
-        catch (Exception ex)
-        {
-            ShowError("Failed to delete asset.", ex);
-        }
+        AssetDeleteDialog.Show(this, [new(selected.AssetType, FilePath, selected.AssetName)], [],
+            RelocationScope?.Invoke() ?? Path.GetDirectoryName(FilePath)!, (plan, force) => ApplyDeletion(plan, force),
+            new Dictionary<string, string?> { [FilePath] = _assetsFile.Password });
     }
 
     /// <summary>

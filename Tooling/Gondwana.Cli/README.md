@@ -763,3 +763,9 @@ MIT
 `gondwana assets move <source> <destination> --scope <directory-or-gaf>` previews a true move. Add `--commit` to execute. Use `--source-entry`, `--destination-entry`, and `--type` for packed endpoints; use `--archive` for a whole-GAF move. Each archive may use its own password from `--credentials <json-file>` (absolute archive path to password). Missing/ambiguous dependencies, incomplete scans, collisions, and stale plans fail without retiring originals. Save and close affected editors before committing.
 
 See [Assets Files — reference-aware moves](https://github.com/Isthimius/Gondwana/wiki/Assets-Files#reference-aware-rename-and-move) for all storage transitions, scope boundaries, encryption, rollback and interrupted-commit recovery. Outside-scope references and arbitrary C# are not rewritten. Existing pack/unpack semantics are unchanged.
+
+## Reference-aware deletion
+
+`gondwana assets delete <source> --scope <directory-or-archive>` previews deletion. Add `--commit` to execute; add `--force` only to authorize the listed surviving references becoming invalid. Force alone never writes. Use `--source-entry` with `--type` for packed entries, or `--archive` for whole GAF/ZIP deletion. Per-archive credentials use the same `--credentials` JSON format as moves. Exit codes: 0 success, 2 blocked by surviving references, 1 invalid input/incomplete discovery or execution failure. No dependent resources are automatically deleted.
+
+See [Assets Files — reference-aware deletion](https://github.com/Isthimius/Gondwana/wiki/Assets-Files#reference-aware-deletion) for scope, credentials, batching, force semantics, and recovery guarantees.

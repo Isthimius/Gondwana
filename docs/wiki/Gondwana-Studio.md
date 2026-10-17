@@ -175,10 +175,16 @@ Only explicit physical dependencies are followed recursively; the importer does 
 
 The UI-independent `Gondwana.Tooling.Assets` library reuses the CLI dependency analysis, document serializers, and Phase 1 relocation. It buffers a snapshot and all prepared additions before applying them. A stale preview is rejected if archive contents changed. Cancellation or an ordinary multi-entry write failure removes attempted additions, preserving unrelated edits. Apply on the editor thread; this does not provide concurrent-writer synchronization or recovery from process termination/out-of-memory failure.
 
-Add / Import remains copy behavior. Reference-aware Move and portable Save As are described below; Delete remains unchanged.
+Add / Import remains copy behavior. Reference-aware Move, portable Save As, and reference-aware Delete are described below.
 
 ## Reference-aware content moves
 
 Use **File → Move / rename content…** for closed loose files and whole GAFs. Use the hosted GAF editor’s **Rename / Move…** for packed entries. Studio suggests its working directory as the discovery scope, but you must review it. Save/close other authoring documents first. The shared transaction updates only inspected Gondwana references, refreshes the workspace and package catalog, and preserves logical member identities. Reopen moved documents at their new paths. Save As remains a copy, with portable outbound references and no inbound updates.
 
 See [Assets Files — reference-aware moves](https://github.com/Isthimius/Gondwana/wiki/Assets-Files#reference-aware-rename-and-move) for all storage transitions, scope boundaries, encryption, rollback and interrupted-commit recovery. Outside-scope references and arbitrary C# are not rewritten. Existing pack/unpack semantics are unchanged.
+
+## Reference-aware deletion
+
+Use the shared GAF editor’s **Delete** for typed entries, or **File → Delete content…** for a batch of closed loose files and whole GAF/ZIP archives. Review the suggested working-directory scope and inbound references. Safe deletion blocks surviving references; **Delete anyway…** requires separate authorization to leave them dangling without deleting dependents. Save the current GAF and close other authoring models; whole-archive deletion requires closing that archive too. Successful operations commit to disk, refresh the workspace and package catalog, and preserve the borrowed editor instance for entry deletions.
+
+See [Assets Files — reference-aware deletion](https://github.com/Isthimius/Gondwana/wiki/Assets-Files#reference-aware-deletion) for scope, credentials, batching, force semantics, and recovery guarantees.

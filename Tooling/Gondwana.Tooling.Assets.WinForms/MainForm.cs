@@ -331,11 +331,13 @@ public sealed class MainForm : Form
 
         _documents.Add(editor);
         editor.Editor.RelocationScope = () => _workspaceControl.WorkingDirectory;
-        editor.Editor.ValidateRelocation = _ =>
+        void ValidateContentOperation()
         {
             if (_documents.Any(document => document != editor))
-                throw new InvalidOperationException("Save and close other open archives before moving content.");
-        };
+                throw new InvalidOperationException("Save and close other open archives before moving or deleting content.");
+        }
+        editor.Editor.ValidateRelocation = _ => ValidateContentOperation();
+        editor.Editor.ValidateDeletion = _ => ValidateContentOperation();
         editor.FormClosed += (_, _) =>
             _documents.Remove(editor);
 

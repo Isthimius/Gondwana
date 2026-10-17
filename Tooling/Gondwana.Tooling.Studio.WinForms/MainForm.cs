@@ -104,6 +104,7 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         Add(file, "&Open…", Keys.Control | Keys.O, OpenFiles);
         Add(file, "Open working &directory…", Keys.None, ChooseDirectory);
         Add(file, "Move / rename content…", Keys.None, MoveContent);
+        Add(file, "Delete content…", Keys.None, DeleteContent);
         file.DropDownItems.Add(new ToolStripSeparator());
         Add(file, "&Save", Keys.Control | Keys.S, () => { if (ActiveDocument is { } doc) SaveDocument(doc); });
         Add(file, "Save &As…", Keys.Control | Keys.Shift | Keys.S, () => { if (ActiveDocument is { } doc) SaveDocument(doc, saveAs: true); });
@@ -129,14 +130,38 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         }, wholeArchive: archive);
     }
 
+    private void DeleteContent()
+    {
+        using var dialog = new OpenFileDialog { Title = "Delete content (save and close documents first)", Filter = "All content|*.*", Multiselect = true, InitialDirectory = Browser.WorkingDirectory };
+        if (dialog.ShowDialog(this) != DialogResult.OK) return;
+        var paths = dialog.FileNames.Select(Path.GetFullPath).ToArray();
+        var archives = paths.Where(AssetArchiveFormat.IsArchive).ToArray();
+        var targets = paths.Except(archives).Select(path => new AssetLocation(AssetImportPlan.InferType(path), path)).ToArray();
+        AssetDeleteDialog.Show(this, targets, archives, Browser.WorkingDirectory, (plan, force) =>
+        {
+            ValidateDeletion(plan, null);
+            plan.Commit(force);
+            _packages.Clear();
+            Browser.RefreshDirectory();
+            _output.Log("Deletion committed within scope: " + plan.Scope);
+        });
+    }
+
+    /// <summary>Protects open editor models before reference-aware deletion.</summary>
+    /// <param name="plan">Reviewed deletion.</param>
+    /// <param name="currentArchive">Optional clean archive allowed to refresh itself.</param>
+    internal void ValidateDeletion(AssetDeletionPlan plan, string? currentArchive) => ValidateContentOperation(currentArchive);
+
     /// <summary>Protects authoritative editor state before a filesystem relocation.</summary>
     /// <param name="plan">Reviewed relocation.</param>
     /// <param name="currentArchive">Optional clean shared archive editor allowed to refresh itself.</param>
-    internal void ValidateRelocation(AssetRelocationPlan plan, string? currentArchive)
+    internal void ValidateRelocation(AssetRelocationPlan plan, string? currentArchive) => ValidateContentOperation(currentArchive);
+
+    private void ValidateContentOperation(string? currentArchive)
     {
         foreach (var document in _documents)
             if (currentArchive is null || !string.Equals(document.Document.Path(), currentArchive, StringComparison.OrdinalIgnoreCase))
-                throw new InvalidOperationException("Save and close other authoring documents before moving content. This prevents overwriting models or missing unsaved references.");
+                throw new InvalidOperationException("Save and close other authoring documents before moving or deleting content. This prevents overwriting models or missing unsaved references.");
     }
 
     private static ToolStripMenuItem Add(ToolStripMenuItem menu, string label, Keys shortcut, Action action)
@@ -247,6 +272,7 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
             assets.IsDocumentOpen = path => _paths.ContainsKey(Path.GetFullPath(path));
             assets.RelocationScope = () => Browser.WorkingDirectory;
             assets.ValidateRelocation = plan => ValidateRelocation(plan, assets.FilePath);
+            assets.ValidateDeletion = plan => ValidateDeletion(plan, assets.FilePath);
             assets.WorkspaceChanged = () => { _packages.Clear(); Browser.RefreshDirectory(); };
         }
         document.Disposed += (_, _) =>

@@ -794,3 +794,16 @@ Valid type names match the `AssetTypes` enum: `Image`, `Audio`, `Video`, `Font`,
 Preview a loose rename: `gondwana assets move Content/terrain.gts Content/world.gts --scope Content`. Move a packed entry: `gondwana assets move Content/a.gaf Content/b.gaf --type TilesheetDefinition --source-entry terrain.gts --destination-entry Tiles/terrain.gts --scope Content --commit`. Move a whole archive: `gondwana assets move Content/a.gaf Content/moved/a.gaf --archive --scope Content --commit`. Omit `--commit` to preview. Use `--credentials passwords.json` for a per-archive absolute-path/password map.
 
 See [Assets Files — reference-aware moves](https://github.com/Isthimius/Gondwana/wiki/Assets-Files#reference-aware-rename-and-move) for all storage transitions, scope boundaries, encryption, rollback and interrupted-commit recovery. Outside-scope references and arbitrary C# are not rewritten. Existing pack/unpack semantics are unchanged.
+
+## Reference-aware delete
+
+```console
+gondwana assets delete Content/unused.png --scope Content
+gondwana assets delete Content/unused.png --scope Content --commit
+gondwana assets delete Content/game.gaf --source-entry Images/art.png --type Image --scope Content --commit --force
+gondwana assets delete Content/game.zip --archive --scope Content --commit --credentials passwords.json
+```
+
+Preview is the default. Safe deletion refuses known surviving references; `--force --commit` deliberately leaves them dangling without cascading deletion. Force cannot bypass incomplete scans or invalid content. Exit codes: 0 success, 2 blocked, 1 error.
+
+See [Assets Files — reference-aware deletion](https://github.com/Isthimius/Gondwana/wiki/Assets-Files#reference-aware-deletion) for scope, credentials, batching, force semantics, and recovery guarantees.
