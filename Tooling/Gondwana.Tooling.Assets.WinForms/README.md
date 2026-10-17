@@ -70,7 +70,7 @@ as callbacks instead of being hard-wired to `MainForm`.
 - **Rename** copies the selected asset to the new name and removes the old entry.
 - **Export** writes the selected asset back to a normal file. Double-clicking a
   grid row performs the same export operation.
-- **Delete** removes the selected asset after confirmation.
+- **Delete** reviews inbound references before committing removal; surviving references block deletion unless explicitly authorized.
 - **Refresh** rebuilds that document's grid from its currently loaded asset file and
   reapplies the current type and search filters.
 - **Save** persists the active asset file. **Save As** writes a complete copy to
@@ -242,10 +242,16 @@ Only explicit physical dependencies are followed recursively; the importer does 
 
 The UI-independent `Gondwana.Tooling.Assets` library reuses the CLI dependency analysis, document serializers, and Phase 1 relocation. It buffers a snapshot and all prepared additions before applying them. A stale preview is rejected if archive contents changed. Cancellation or an ordinary multi-entry write failure removes attempted additions, preserving unrelated edits. Apply on the editor thread; this does not provide concurrent-writer synchronization or recovery from process termination/out-of-memory failure.
 
-Add / Import remains copy behavior. Reference-aware Move and portable Save As are described below; Delete remains unchanged.
+Add / Import remains copy behavior. Reference-aware Move, portable Save As, and reference-aware Delete are described below.
 
 ## Reference-aware Rename / Move
 
 Use **Rename / Move…** for packed entry renames, moves within or between GAFs, or moves to loose storage. Review the explicit search scope, destination, per-archive credentials, and affected-document preview before confirming. Save the current archive and close other editors first. Successful moves are committed to disk and refresh the same borrowed archive; ordinary failure/cancellation rolls back the operation. Save As now rebases outbound references for the copied archive while preserving the original and its inbound references; choose a new destination.
 
 See [Assets Files — reference-aware moves](https://github.com/Isthimius/Gondwana/wiki/Assets-Files#reference-aware-rename-and-move) for all storage transitions, scope boundaries, encryption, rollback and interrupted-commit recovery. Outside-scope references and arbitrary C# are not rewritten. Existing pack/unpack semantics are unchanged.
+
+## Reference-aware Delete
+
+**Delete** reviews the explicit scope and all direct surviving references before touching an entry. Referenced entries are blocked by default. **Delete anyway…** requires a second confirmation to leave precisely the listed references dangling; dependents remain unchanged. Save the current archive and close other authoring editors first. Success commits to disk and refreshes the same borrowed archive, leaving it clean; canceled or blocked operations do not change dirty state. Removing the last entry retains the archive.
+
+See [Assets Files — reference-aware deletion](https://github.com/Isthimius/Gondwana/wiki/Assets-Files#reference-aware-deletion) for scope, credentials, batching, force semantics, and recovery guarantees.

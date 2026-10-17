@@ -754,4 +754,48 @@ Planning is side-effect-free and snapshots every inspected physical file. Before
 
 This is **not** a globally atomic filesystem transaction across process crashes or power loss. Do not run concurrent writers during a commit. Interrupted commits retain `.gondwana-relocate-<id>.json` in the scope directory (or beside a single-archive scope), plus sibling `.old`, `.new`, and optional `.new.final` files. Stop writers before manual recovery. For a `Prepared` manifest, restore every `Existed: true` target from its listed backup and remove targets marked `Existed: false`; keep backups until every restoration succeeds. The `Completed` record is staged beside the `Prepared` manifest and atomically replaces it; the only recovery record is never truncated. A `Completed` manifest means the move succeeded and leftover staging/backups can be removed. Staging abandoned before a manifest exists has not installed any writes. Rollback failures retain the manifest/backups and report their location. Filesystem corruption or lost backup data requires external backup recovery.
 
-General reference-aware Delete, logical renaming, and project-wide code rewriting remain outside this feature.
+Logical renaming and project-wide code rewriting remain outside this feature. Reference-aware deletion is described below.
+
+
+## Reference-aware deletion
+
+`Gondwana.Tooling.Assets.AssetDeletionPlan.Create(scope, targets, wholeArchives, credentials)` reviews a physical deletion batch without changing content. It reuses `DefinitionReferenceDiscovery` and the same typed matching as moves: all eight dependency relationships, every logical member, loose and packed sources, and GAF/ZIP packages. A native definition document is deleted as a whole file or typed entry; this does not delete individual logical members.
+
+The plan reports `InboundReferences`, `InternalReferences`, `BlockingReferences`, `ForceRequired`, `AffectedFiles`, `RetiredFiles`, and a complete `Preview`. A reference is internal only when its owning physical document is also explicitly selected for deletion. All other discovered inbound references block safe deletion. Deleting a whole archive includes every typed entry, so references among those entries are internal, while references from surviving loose documents and other archives block deletion. Selecting a dependency never automatically selects its dependents.
+
+`Commit()` refuses surviving references. `Commit(force: true)` explicitly authorizes leaving the reviewed relationships dangling: surviving documents retain their exact bytes, and no repair, placeholder, cascading deletion, or orphan cleanup occurs. Force cannot bypass malformed content, missing dependencies, incomplete inspection, wrong credentials, unsafe paths, or changed snapshots. Existing unrelated invalid relationships must be resolved before preparing a plan, even if force is intended. After a forced deletion, further operations in that scope may be blocked until the deliberate dangling references are resolved.
+
+### Scope and credentials
+
+Use an explicit recursive directory/project scope or a single archive. Target documents and complete target archives are included even when outside that scope. The preview lists inspected physical files; external dependencies may be validated without scanning their inbound references. References outside the declared/included scope and arbitrary application code are **unknown**, not guaranteed absent. Discovery uses the same exclusions, link/junction protections, exact typed identities, logical selectors, and per-archive credentials as moves. URI-backed audio and `NextCycleKey` are not physical deletion edges.
+
+### CLI
+
+```console
+# Preview only; a blocked safe review returns exit code 2
+gondwana assets delete Content/terrain.gts --scope Content
+# Delete a loose unreferenced resource
+gondwana assets delete Content/unused.png --scope Content --commit
+# Review/delete an exact typed entry
+gondwana assets delete Content/game.gaf --source-entry Images/terrain.png --type Image --scope Content --commit
+# Deliberately break the listed surviving relationships
+gondwana assets delete Content/game.gaf --source-entry Images/terrain.png --type Image --scope Content --commit --force
+# Explicit whole-package deletion, including all member entries
+gondwana assets delete Content/game.zip --archive --scope Content --commit --credentials passwords.json
+```
+
+The CLI handles one physical file, typed entry, or whole archive per invocation; the shared API supports batches. `--force` without `--commit` never mutates content. Exit codes are 0 for a successful preview/commit, 2 for a safe deletion blocked by surviving references, and 1 for invalid input, incomplete discovery, cancellation, or execution failure. Packed entries require `--type`; whole packages require `--archive`. The credential file maps absolute archive paths to individual passwords, as for moves.
+
+### Editors and Studio
+
+The shared GAF editor's **Delete** command asks for a search scope and displays direct references with their owning document, logical member, selector, and field. A blocked deletion offers **Delete anyway…**, followed by a separate confirmation explicitly authorizing all listed broken relationships. Canceling or refusing confirmation leaves archive contents, dirty state, and notifications unchanged.
+
+Studio's **File → Delete content…** selects one or several closed loose files and/or whole GAF/ZIP archives. Studio suggests its working directory; standalone suggests its workspace directory. Both use the same planner and executor. Save the current archive and close all other authoring documents first. Whole-archive deletion requires closing that archive too. A successful packed deletion refreshes the same borrowed archive instance, workspace, and Studio package catalog. It is committed to disk immediately and leaves the editor clean, just like Move; it is not an unsaved Add/Import operation. External applications cannot be inspected, so save/close those editors yourself.
+
+### Transactions and recovery
+
+Deletion and relocation share the same narrow file transaction implementation. All inspected bytes and scope inventory are rechecked before installation. Packed deletions stage validated replacement archives retaining every unselected entry's bytes, name, type, password, and encryption. Loose files and whole archives are backed up before retirement; multi-target operations roll back all touched resources on ordinary exceptions or cancellation, including after earlier targets have been removed. Deleting the last entry retains the empty archive unless the archive itself was explicitly selected.
+
+For force, the original graph is fully validated and only reviewed targets are removed. Surviving bytes are unchanged and verified against the snapshot, so only the explicitly listed edges may become dangling. No unrelated definitions are reserialized.
+
+The same `.gondwana-relocate-<id>.json` recovery manifest and sibling backups described above are used for deletion. `Completed` atomically replaces `Prepared`; a crash is not globally atomic. Stop concurrent writers before committing or performing manual recovery. Follow the existing Prepared/Completed recovery instructions; do not discard backups until restoration or successful completion is verified.
