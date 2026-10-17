@@ -93,7 +93,7 @@ See **[Gondwana Studio](Tooling/Gondwana.Tooling.Studio.WinForms)** for details.
 - 📜 **[Release History](https://github.com/Isthimius/Gondwana/blob/master/CHANGELOG.md)**
 - ✅ **[Latest CI Run](https://github.com/Isthimius/Gondwana/actions/workflows/ci-master.yml)**
 - 💬 **[Discussions](https://github.com/Isthimius/Gondwana/discussions)**
-- 📣 **[What’s New in Gondwana 2.6](https://github.com/Isthimius/Gondwana/discussions/366)**
+- 📣 **[What’s New in Gondwana 2.6.1](https://github.com/Isthimius/Gondwana/discussions/473)**
 
 ---
 
