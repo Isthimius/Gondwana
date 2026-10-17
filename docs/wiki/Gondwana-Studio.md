@@ -173,7 +173,7 @@ Existing entries are resolved against the current in-memory archive, including u
 
 Only explicit physical dependencies are followed recursively; the importer does not scan neighboring folders or arbitrary project code to guess missing source metadata. Include the relevant files in the selection or author explicit sources. Referenced external archives use the destination password when opening is required; archives requiring a different password are not supported by this workflow. URI resources are not downloaded.
 
-The UI-independent `Gondwana.Tooling.Assets` library reuses the CLI dependency analysis, document serializers, and Phase 1 relocation. It buffers a snapshot and all prepared additions before applying them. A stale preview is rejected if archive contents changed. Cancellation or an ordinary multi-entry write failure removes attempted additions, preserving unrelated edits. Apply on the editor thread; this does not provide concurrent-writer synchronization or recovery from process termination/out-of-memory failure.
+The UI-independent `Gondwana.Tooling.Assets` library owns the dependency analysis shared by CLI and editors, using Core document serializers and relocation. It buffers a snapshot and all prepared additions before applying them. A stale preview is rejected if archive contents changed. Cancellation or an ordinary multi-entry write failure removes attempted additions, preserving unrelated edits. Apply on the editor thread; this does not provide concurrent-writer synchronization or recovery from process termination/out-of-memory failure.
 
 Add / Import remains copy behavior. Reference-aware Move, portable Save As, and reference-aware Delete are described below.
 
@@ -188,3 +188,11 @@ See [Assets Files — reference-aware moves](https://github.com/Isthimius/Gondwa
 Use the shared GAF editor’s **Delete** for typed entries, or **File → Delete content…** for a batch of closed loose files and whole GAF/ZIP archives. Review the suggested working-directory scope and inbound references. Safe deletion blocks surviving references; **Delete anyway…** requires separate authorization to leave them dangling without deleting dependents. Save the current GAF and close other authoring models; whole-archive deletion requires closing that archive too. Successful operations commit to disk, refresh the workspace and package catalog, and preserve the borrowed editor instance for entry deletions.
 
 See [Assets Files — reference-aware deletion](https://github.com/Isthimius/Gondwana/wiki/Assets-Files#reference-aware-deletion) for scope, credentials, batching, force semantics, and recovery guarantees.
+
+## Export and operation persistence
+
+The hosted Assets editor's **Export** writes one complete entry as a loose copy using the same semantic planner as CLI unpack. Definitions preserve all members and rebase their outbound references; dependencies not exported remain packed. Save a dirty source archive first when exporting a native definition. Export does not change the archive, mark it dirty, or rewrite inbound references.
+
+Add / Import and Replace are unsaved archive edits. Move/Delete are reviewed disk transactions and refresh the current archive/workspace after success. Save As is a copy with outbound rebasing; Studio adopts the new path through its normal Save routing and retains the original file. Replace remains a same-identity byte operation without dependency repair.
+
+See [Reference Relocation](Reference-Relocation#shared-tooling-and-safety) for shared architecture, scan scope, credentials, recovery, and deferred capabilities; [Assets Files](Assets-Files) owns the overall workflow model.

@@ -15,6 +15,7 @@
 <summary><strong>Core Concepts</strong></summary>
 
 - [[Assets Files]]
+- [[Reference Relocation]]
 - [[Tilesheets]]
   - [[.gts Files|GTS-Files]]
 - [[Scenes and SceneLayers]]

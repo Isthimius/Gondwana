@@ -807,3 +807,22 @@ gondwana assets delete Content/game.zip --archive --scope Content --commit --cre
 Preview is the default. Safe deletion refuses known surviving references; `--force --commit` deliberately leaves them dangling without cascading deletion. Force cannot bypass incomplete scans or invalid content. Exit codes: 0 success, 2 blocked, 1 error.
 
 See [Assets Files — reference-aware deletion](https://github.com/Isthimius/Gondwana/wiki/Assets-Files#reference-aware-deletion) for scope, credentials, batching, force semantics, and recovery guarantees.
+
+## Asset command safety options
+
+These options authorize different operations; none is a universal validation bypass:
+
+| Option | Commands | Meaning |
+| --- | --- | --- |
+| `--commit` | move, delete | Execute a plan; without it these commands only preview |
+| `--force` | delete | Permit the listed surviving references to become dangling; still requires `--commit` to write |
+| `--overwrite` | unpack/extract | Replace existing loose output files with rollback protection |
+| `--append` | pack | Retain existing entries, replacing entire incoming typed entries after dependency validation |
+| `--allow-external` | pack | Permit validated external dependencies; does not permit missing/ambiguous targets |
+| `--archive` | move, delete | Select a whole GAF/ZIP rather than a typed entry |
+
+Pack and unpack write on invocation; they do not use move/delete's preview/commit switches. Move rejects existing destinations rather than accepting an overwrite switch. Packed entry identity includes its type and full entry name; `.gaf` and `.zip` packages follow the same archive rules. Logical member names never substitute for physical entry selectors.
+
+Move/delete use per-archive `--credentials` maps. Pack/unpack use `--password`; it is also used for external archives they inspect. Move returns 0 on success and 1 on failure. Delete additionally returns 2 when surviving references block a safe preview/commit. Force does not bypass incomplete discovery, invalid paths, missing credentials, or stale plans.
+
+See [Reference Relocation](https://github.com/Isthimius/Gondwana/wiki/Reference-Relocation#shared-tooling-and-safety) for scope, manual crash recovery, open-document restrictions, and deliberate limitations.

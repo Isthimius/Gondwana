@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Text.Json;
 using Gondwana.Assets;
 using Gondwana.Tooling.Assets;
 using Spectre.Console;
@@ -21,21 +20,27 @@ internal sealed class AssetsMoveCommand : Command<AssetsMoveCommand.Settings>
         public string Destination { get; init; } = "";
         /// <summary>Gets the explicit directory or single-GAF discovery scope.</summary>
         [CommandOption("--scope")]
+        [Description("Required recursive directory or single GAF/ZIP search scope.")]
         public string Scope { get; init; } = "";
         /// <summary>Gets the source packed entry, or null for loose storage.</summary>
         [CommandOption("--source-entry")]
+        [Description("Exact typed source entry; omit for loose storage.")]
         public string? SourceEntry { get; init; }
         /// <summary>Gets the destination packed entry, or null for loose storage.</summary>
         [CommandOption("--destination-entry")]
+        [Description("Exact destination entry; omit for loose storage.")]
         public string? DestinationEntry { get; init; }
         /// <summary>Gets the exact type, required for packed sources.</summary>
         [CommandOption("--type")]
+        [Description("AssetTypes value; required for packed sources.")]
         public string? Type { get; init; }
         /// <summary>Gets whether to move the complete GAF.</summary>
         [CommandOption("--archive")]
+        [Description("Operate on the whole GAF/ZIP, not an entry.")]
         public bool Archive { get; init; }
         /// <summary>Gets whether to execute; omitted means preview only.</summary>
         [CommandOption("--commit")]
+        [Description("Execute the reviewed operation; omitted means preview only.")]
         public bool Commit { get; init; }
         /// <summary>Gets an optional JSON object mapping absolute archive paths to their passwords.</summary>
         [CommandOption("--credentials")]
@@ -49,13 +54,7 @@ internal sealed class AssetsMoveCommand : Command<AssetsMoveCommand.Settings>
         try
         {
             if (string.IsNullOrWhiteSpace(settings.Scope)) throw new ArgumentException("An explicit --scope directory or GAF is required.");
-            var credentials = new Dictionary<string, string>(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
-            if (settings.Credentials is not null)
-                foreach (var pair in JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(settings.Credentials)) ?? throw new InvalidDataException("Invalid credential map."))
-                {
-                    if (!Path.IsPathFullyQualified(pair.Key)) throw new InvalidDataException("Credential keys must be absolute archive paths.");
-                    credentials.Add(Path.GetFullPath(pair.Key), pair.Value);
-                }
+            var credentials = AssetCommandCredentials.Load(settings.Credentials);
             AssetRelocationPlan plan;
             if (settings.Archive)
             {

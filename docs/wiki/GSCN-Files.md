@@ -2,15 +2,6 @@ A `.gscn` file is a **Gondwana Scene definition**. It stores the persistent thre
 
 ## Definition documents and logical members
 
-## Import into an open document
-
-Choose **Import definition…** in the **Definition** toolbar and browse to an existing file of the same format. Legacy singleton files import directly. For a multi-definition file, check the members to import; **Select all** and **Select none** adjust the selection. Canceling or importing no members leaves the current document unchanged.
-
-Imported members are independent copies appended to the current document. Existing names are retained when available; conflicts receive `-2`, `-3`, and subsequent suffixes. The first imported member becomes active and the destination becomes dirty. Save and Save As retain both existing and imported members; the source file is never changed.
-
-Relative filesystem references, including GAF paths, are rebased to keep pointing at their original resources. Archive entry names and logical dependency selectors are retained. Resources are not copied or moved. Import does not rewrite logical references when a root name conflicts, or resolve collisions among inner sprite IDs, resource keys, or scene layer IDs. Review those relationships before runtime materialization. Incomplete authoring drafts can be imported and saved using the existing draft workflow; malformed document envelopes and duplicate source root identities are rejected.
-
-
 One physical `.gscn` file contains a document object with a `Definitions` array.
 Every member has a unique, non-empty, case-sensitive `ID`. The document location
 (loose path, or GAF path plus typed entry name) is independent of that logical identity.
@@ -61,9 +52,9 @@ modifying unrelated content. At least one member remains in an editable session.
 Use `SceneDefinitionSerializer.LoadAllScenes` to materialize every member.
 
 Load-all operations roll back newly created runtime content if a member fails.
-Physical/member separation supports future packaging work; content relocation is not implemented here.
+For physical packaging, export, move, and deletion workflows, see [Assets Files](Assets-Files). These operations preserve logical member identities; [Reference Relocation](Reference-Relocation) describes scope and safety guarantees.
 
-
+The shared [Import definition workflow](Studio-and-Desktop-Tools#import-into-an-open-document) appends independent members to an open document without changing the source file.
 
 The format is designed to be usable by both the runtime and scene-editing tooling.
 

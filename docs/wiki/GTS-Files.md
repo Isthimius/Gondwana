@@ -2,15 +2,6 @@ A `.gts` file is a **Gondwana Tilesheet definition**. It stores the information 
 
 ## Definition documents and logical members
 
-## Import into an open document
-
-Choose **Import definition…** in the **Definition** toolbar and browse to an existing file of the same format. Legacy singleton files import directly. For a multi-definition file, check the members to import; **Select all** and **Select none** adjust the selection. Canceling or importing no members leaves the current document unchanged.
-
-Imported members are independent copies appended to the current document. Existing names are retained when available; conflicts receive `-2`, `-3`, and subsequent suffixes. The first imported member becomes active and the destination becomes dirty. Save and Save As retain both existing and imported members; the source file is never changed.
-
-Relative filesystem references, including GAF paths, are rebased to keep pointing at their original resources. Archive entry names and logical dependency selectors are retained. Resources are not copied or moved. Import does not rewrite logical references when a root name conflicts, or resolve collisions among inner sprite IDs, resource keys, or scene layer IDs. Review those relationships before runtime materialization. Incomplete authoring drafts can be imported and saved using the existing draft workflow; malformed document envelopes and duplicate source root identities are rejected.
-
-
 One physical `.gts` file contains a document object with a `Definitions` array.
 Every member has a unique, non-empty, case-sensitive `Name`. The document location
 (loose path, or GAF path plus typed entry name) is independent of that logical identity.
@@ -62,9 +53,9 @@ Runtime loading uses `TilesheetRegistry.Instance.LoadFromDefinitionFile(path, na
 and `LoadAllFromDefinitionFile(path)`, with corresponding packed `...Asset` methods.
 
 Load-all operations roll back newly created runtime content if a member fails.
-Physical/member separation supports future packaging work; content relocation is not implemented here.
+For physical packaging, export, move, and deletion workflows, see [Assets Files](Assets-Files). These operations preserve logical member identities; [Reference Relocation](Reference-Relocation) describes scope and safety guarantees.
 
-
+The shared [Import definition workflow](Studio-and-Desktop-Tools#import-into-an-open-document) appends independent members to an open document without changing the source file.
 
 The image pixels are normally stored somewhere else. A `.gts` file points to a loose image file or to an image entry inside an [`AssetsFile`](Assets-Files).
 
@@ -539,7 +530,6 @@ for a final padding interval without permitting frame pixels beyond the region.
 For example, three 16-pixel tiles separated by 2-pixel gaps fit a 52-pixel region
 using right padding 2 and right margin -2. Runtime and Studio validation enforce
 these bounds; there is no separate tile-separation property.
-
 
 ## Preserving definition origins in EngineState
 

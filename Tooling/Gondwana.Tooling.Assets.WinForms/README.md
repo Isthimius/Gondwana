@@ -66,10 +66,9 @@ as callbacks instead of being hard-wired to `MainForm`.
   The **Search** box filters the current list by asset name as you type.
 - **Add / Import** reviews each file's inferred type and entry name, offers dependency import or external-reference preservation, and previews the prepared changes before applying them.
 - **Replace** keeps the selected asset's type and name while replacing its stored
-  contents from another file.
-- **Rename** copies the selected asset to the new name and removes the old entry.
-- **Export** writes the selected asset back to a normal file. Double-clicking a
-  grid row performs the same export operation.
+  contents from another file. This is byte replacement, not semantic import; it does not validate inbound relationships or repair removed logical members.
+- **Rename / Move…** reviews the search scope and inbound/outbound reference updates, then commits a recoverable disk transaction.
+- **Export** writes one complete entry to a loose file. Native documents are rebased through the shared semantic export planner; omitted dependencies stay packed. Save a dirty archive before exporting native definitions. Double-clicking a row performs the same export. The source archive and dirty state are unchanged.
 - **Delete** reviews inbound references before committing removal; surviving references block deletion unless explicitly authorized.
 - **Refresh** rebuilds that document's grid from its currently loaded asset file and
   reapplies the current type and search filters.
@@ -106,10 +105,8 @@ A few behaviors are worth noting:
   enumerated.
 - **Save As** copies every entry from the currently open asset file into the new
   destination; it does not merely copy the container file on disk.
-- Importing, replacing, renaming, and deleting modify the in-memory `AssetsFile`
-  owned by that document. Use **Save** to persist those changes to its current file.
-- Closing a document does not currently provide dirty-state tracking or a save prompt,
-  matching the pre-docking editor's save semantics.
+- Add / Import and Replace modify the current in-memory archive; use **Save** to persist them. Rename / Move and Delete commit to disk after review, then refresh the borrowed archive and leave it clean. Save the archive and close other authoring documents before those operations.
+- The shared control exposes `IsDirty` and `Changed`; document hosts own close/save routing. Save pending changes before closing the standalone editor.
 
 ## Current scope
 
@@ -240,7 +237,7 @@ Existing entries are resolved against the current in-memory archive, including u
 
 Only explicit physical dependencies are followed recursively; the importer does not scan neighboring folders or arbitrary project code to guess missing source metadata. Include the relevant files in the selection or author explicit sources. Referenced external archives use the destination password when opening is required; archives requiring a different password are not supported by this workflow. URI resources are not downloaded.
 
-The UI-independent `Gondwana.Tooling.Assets` library reuses the CLI dependency analysis, document serializers, and Phase 1 relocation. It buffers a snapshot and all prepared additions before applying them. A stale preview is rejected if archive contents changed. Cancellation or an ordinary multi-entry write failure removes attempted additions, preserving unrelated edits. Apply on the editor thread; this does not provide concurrent-writer synchronization or recovery from process termination/out-of-memory failure.
+The UI-independent `Gondwana.Tooling.Assets` library owns the dependency analysis shared by CLI and editors, using Core document serializers and relocation. It buffers a snapshot and all prepared additions before applying them. A stale preview is rejected if archive contents changed. Cancellation or an ordinary multi-entry write failure removes attempted additions, preserving unrelated edits. Apply on the editor thread; this does not provide concurrent-writer synchronization or recovery from process termination/out-of-memory failure.
 
 Add / Import remains copy behavior. Reference-aware Move, portable Save As, and reference-aware Delete are described below.
 
@@ -255,3 +252,7 @@ See [Assets Files — reference-aware moves](https://github.com/Isthimius/Gondwa
 **Delete** reviews the explicit scope and all direct surviving references before touching an entry. Referenced entries are blocked by default. **Delete anyway…** requires a second confirmation to leave precisely the listed references dangling; dependents remain unchanged. Save the current archive and close other authoring editors first. Success commits to disk and refreshes the same borrowed archive, leaving it clean; canceled or blocked operations do not change dirty state. Removing the last entry retains the archive.
 
 See [Assets Files — reference-aware deletion](https://github.com/Isthimius/Gondwana/wiki/Assets-Files#reference-aware-deletion) for scope, credentials, batching, force semantics, and recovery guarantees.
+
+## Workflow and safety reference
+
+[Assets Files](https://github.com/Isthimius/Gondwana/wiki/Assets-Files) describes physical files, typed entries, logical members, and copy versus move. [Reference Relocation](https://github.com/Isthimius/Gondwana/wiki/Reference-Relocation#shared-tooling-and-safety) owns the shared scope, credentials, rollback/recovery guarantees, and deferred capabilities. Move and Delete share scope terminology, per-archive credential prompts, and a read-only preview whose default action is Cancel; forced Delete retains its separate consequence confirmation.

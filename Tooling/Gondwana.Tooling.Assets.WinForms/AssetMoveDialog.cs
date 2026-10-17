@@ -25,34 +25,15 @@ public static class AssetMoveDialog
             if (entry is null) return false;
             if (entry.Length == 0) entry = null;
         }
-        var selectedScope = InputDialog.Show(owner, "Search scope", "Directory to scan recursively, or one GAF. References outside this scope and game code will NOT be updated:", scope);
+        var selectedScope = InputDialog.Show(owner, "Search scope", "Directory to inspect recursively, or one GAF/ZIP. References outside the inspected scope and game code are UNKNOWN:", scope);
         if (string.IsNullOrWhiteSpace(selectedScope)) return false;
-        var passwords = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
-        if (knownPasswords is not null) foreach (var pair in knownPasswords) passwords.Add(pair.Key, pair.Value);
-        string? Credential(string path)
-        {
-            if (passwords.TryGetValue(path, out var password)) return password;
-            password = InputDialog.Show(owner, "Archive credential", $"Password for {path} (empty for none):", password: true);
-            if (password is null) throw new OperationCanceledException();
-            passwords[path] = string.IsNullOrEmpty(password) ? null : password;
-            return passwords[path];
-        }
+        var credential = AssetOperationDialog.Credentials(owner, knownPasswords);
         try
         {
             var plan = wholeArchive
-                ? AssetRelocationPlan.MoveArchive(source.Path, destination, selectedScope, Credential)
-                : AssetRelocationPlan.Create(selectedScope, [new(source, new(source.AssetType, Path.GetFullPath(destination), entry))], Credential);
-            using var preview = new Form { Text = "Move preview — changes will be saved to disk", Size = new Size(950, 550), StartPosition = FormStartPosition.CenterParent };
-            var text = new TextBox { Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Both, WordWrap = false, Text = string.Join(Environment.NewLine, plan.Preview) };
-            var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 45, FlowDirection = FlowDirection.RightToLeft };
-            var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel };
-            var commit = new Button { Text = "Move", DialogResult = DialogResult.OK };
-            buttons.Controls.AddRange([cancel, commit]);
-            preview.Controls.Add(text);
-            preview.Controls.Add(buttons);
-            preview.CancelButton = cancel;
-            DarkTheme.Apply(preview);
-            if (preview.ShowDialog(owner) != DialogResult.OK) return false;
+                ? AssetRelocationPlan.MoveArchive(source.Path, destination, selectedScope, credential)
+                : AssetRelocationPlan.Create(selectedScope, [new(source, new(source.AssetType, Path.GetFullPath(destination), entry))], credential);
+            if (!AssetOperationDialog.Review(owner, "Move preview — changes will be saved to disk", plan.Preview, "Move")) return false;
             execute(plan);
             return true;
         }
