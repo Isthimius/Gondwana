@@ -290,9 +290,61 @@ public sealed partial class CompositionTests
         var folder = root.Nodes.Cast<TreeNode>().Single(node => node.Tag is DirectoryInfo);
         Assert.Null(Assert.Single(folder.Nodes.Cast<TreeNode>()).Tag);
         folder.Expand();
-        Assert.IsType<string>(Assert.Single(folder.Nodes.Cast<TreeNode>()).Tag);
+        Assert.Equal(7, folder.Nodes.Count);
+        Assert.IsType<string>(Assert.Single(folder.Nodes[1].Nodes.Cast<TreeNode>()).Tag);
         studio.SetWorkingDirectory(Path.Combine(directory, "missing"));
         Assert.Contains("Cannot read directory", studio.Browser.Tree.Nodes[0].Nodes[0].Text);
+    });
+
+    /// <summary>All files are grouped, icons distinguish formats, and menu actions target the clicked file.</summary>
+    [Fact]
+    public void BrowserGroupsFilesAndRoutesContextMenuActions() => RunSta(directory =>
+    {
+        foreach (var name in new[] { "asset.GAF", "package.zip", "tiles.GTS", "animation.gani", "scene.gscn", "sprite.gspr", "sound.gsnd", "notes.txt", "README" })
+            File.WriteAllText(Path.Combine(directory, name), "{}");
+        using var studio = Host(directory);
+        var browser = studio.Browser;
+        var root = browser.Tree.Nodes[0];
+        Assert.Equal(new[] { "Assets (.gaf)", "Tilesheets (.gts)", "Animations (.gani)", "Scenes (.gscn)", "Sprites (.gspr)", "Sound (.gsnd)", "Misc" },
+            root.Nodes.Cast<TreeNode>().Select(node => node.Text));
+        Assert.Equal(7, root.Nodes.Cast<TreeNode>().Select(node => node.ImageKey).Distinct().Count());
+        Assert.Equal(9, root.Nodes.Cast<TreeNode>().Sum(node => node.Nodes.Count));
+        Assert.False(browser.PrepareFileMenu(root));
+        foreach (TreeNode group in root.Nodes)
+        {
+            Assert.False(browser.PrepareFileMenu(group));
+            foreach (TreeNode file in group.Nodes)
+            {
+                Assert.Equal(group.ImageKey, file.ImageKey);
+                Assert.Equal(file.ImageKey, file.SelectedImageKey);
+                Assert.True(browser.Tree.ImageList!.Images.ContainsKey(file.ImageKey));
+                Assert.True(browser.PrepareFileMenu(file));
+                Assert.Same(file, browser.Tree.SelectedNode);
+                // Available reflects intended visibility even while the menu itself is hidden.
+                Assert.Equal(group.Text != "Misc", browser.FileMenu.Items[0].Available);
+                Assert.Equal(!file.Text.EndsWith(".gaf", StringComparison.OrdinalIgnoreCase), browser.FileMenu.Items[1].Available);
+            }
+        }
+        string? externalPath = null;
+        browser.OpenExternal = path => externalPath = path;
+        var misc = root.Nodes[6].Nodes[0];
+        browser.PrepareFileMenu(misc);
+        browser.FileMenu.Items[1].PerformClick();
+        Assert.Equal(misc.Tag, externalPath);
+
+        // Use a separate panel to observe activation without opening a deliberately empty fixture.
+        using var panel = new Panels.DirectoryPanel(_ => { });
+        panel.SetDirectory(directory);
+        string? activatedPath = null;
+        panel.FileActivated += path => activatedPath = path;
+        var tiles = panel.Tree.Nodes[0].Nodes[1].Nodes[0];
+        panel.PrepareFileMenu(tiles);
+        panel.FileMenu.Items[0].PerformClick();
+        Assert.Equal(tiles.Tag, activatedPath);
+        File.Delete((string)tiles.Tag!);
+        panel.RefreshDirectory();
+        Assert.Empty(panel.Tree.Nodes[0].Nodes[1].Nodes.Cast<TreeNode>());
+        Assert.Equal(7, panel.Tree.Nodes[0].Nodes.Count);
     });
 
     private static MainForm Host(string directory)
