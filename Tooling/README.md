@@ -1,121 +1,126 @@
-# Tooling
+# Gondwana Tooling
 
-This folder contains Gondwana's developer tools, standalone content-authoring
-utilities, the Studio shell, shared tooling UI infrastructure, and repository
-automation scripts.
+This directory contains Gondwana's content-authoring applications, the Studio
+shell, runtime scene previewer, asset-management infrastructure, developer
+utilities, plugins, and repository maintenance scripts.
 
-The standalone WinForms authoring tools are deliberately reusable: their primary
-editor surfaces are hostable controls that can also be composed into Gondwana
-Studio rather than reimplemented there.
+**Gondwana is code-first:** games do not need Studio or any of these authoring
+applications to run. Native definition formats are owned by the engine; tools
+edit those formats rather than introducing Studio-specific equivalents.
 
-## Content-authoring tools
+## Where to start
 
-- [`Gondwana.Tooling.Assets.WinForms`](./Gondwana.Tooling.Assets.WinForms/)  
-  WinForms editor for Gondwana asset containers (`.gaf` / `.zip`), including
-  import, export, replacement, renaming, filtering, and Save As.  
-  See: [`Gondwana.Tooling.Assets.WinForms/README.md`](./Gondwana.Tooling.Assets.WinForms/README.md)
+| Goal | Start with |
+| --- | --- |
+| Edit multiple Gondwana asset types in one application | [Gondwana Studio](./Gondwana.Tooling.Studio.WinForms/README.md) |
+| Edit one asset type without launching Studio | [Standalone content editors](#standalone-content-editors) |
+| See how a saved scene actually renders in the engine | [Scene Viewer](./Gondwana.Tooling.SceneViewer.WinForms/README.md) |
+| Pack, inspect, publish, or deploy from the command line | [Gondwana CLI](./Gondwana.Cli/README.md) |
+| Create a new game project | [Project templates](./Gondwana.Templates/README.md) |
 
-- [`Gondwana.Tooling.Tilesheets.WinForms`](./Gondwana.Tooling.Tilesheets.WinForms/)  
-  WinForms editor for Gondwana `.gts` tilesheet definitions, regions, frames,
-  collision metadata, and image-backed preview.  
-  See: [`Gondwana.Tooling.Tilesheets.WinForms/README.md`](./Gondwana.Tooling.Tilesheets.WinForms/README.md)
+## Content authoring
 
-- [`Gondwana.Tooling.Animations.WinForms`](./Gondwana.Tooling.Animations.WinForms/)  
-  WinForms editor for Gondwana `.gani` animation definitions, with GTS-backed
-  frame browsing, dependency metadata, and preview.  
-  See: [`Gondwana.Tooling.Animations.WinForms/README.md`](./Gondwana.Tooling.Animations.WinForms/README.md)
+### Gondwana Studio
 
-- [`Gondwana.Tooling.Audio.WinForms`](./Gondwana.Tooling.Audio.WinForms/)  
-  WinForms editor for Gondwana `.gsnd` sound definitions, including source
-  metadata and portable playback settings.  
-  See: [`Gondwana.Tooling.Audio.WinForms/README.md`](./Gondwana.Tooling.Audio.WinForms/README.md)
+[**Gondwana.Tooling.Studio.WinForms**](./Gondwana.Tooling.Studio.WinForms/README.md)
+is the Windows authoring shell. It opens GAF/ZIP, GTS, GANI, GSND, GSCN, and
+GSPR documents side by side, with a working-directory browser, Output,
+document commands, and optional plugins.
 
-- [`Gondwana.Tooling.Scenes.WinForms`](./Gondwana.Tooling.Scenes.WinForms/)  
-  WinForms editor for Gondwana `.gscn` scene definitions, including SceneLayer
-  editing, GTS/GANI dependency browsing, sparse tile editing, and
-  definition-driven preview.  
-  See: [`Gondwana.Tooling.Scenes.WinForms/README.md`](./Gondwana.Tooling.Scenes.WinForms/README.md)
+Studio **hosts the same six editor controls** used by the standalone WinForms
+applications. It does not maintain a separate implementation of each editor or
+require an Engine, GameHost, or Studio-specific project format.
 
-## Developer and integration tools
+### Standalone content editors
 
-- [`Gondwana.Cli`](./Gondwana.Cli/)  
-  The `gondwana` command-line tool for project scaffolding, health checks,
-  package management, asset/tilesheet tasks, and publish/deploy workflows.  
-  See: [`Gondwana.Cli/README.md`](./Gondwana.Cli/README.md)
+Each application below can run independently; its reusable primary editor
+control is also hosted in Studio.
 
-- [`Gondwana.Mcp`](./Gondwana.Mcp/)  
-  Read-only Model Context Protocol server that exposes the official Gondwana
-  repository and wiki to MCP-capable AI clients.  
-  See: [`Gondwana.Mcp/README.md`](./Gondwana.Mcp/README.md)
+| Format | Standalone editor | Purpose |
+| --- | --- | --- |
+| GAF / ZIP | [Assets](./Gondwana.Tooling.Assets.WinForms/README.md) | Package management; semantic import/export, reference-aware move/delete, entries, and encryption |
+| GTS | [Tilesheets](./Gondwana.Tooling.Tilesheets.WinForms/README.md) | Image-backed tilesheets, frames, regions, and collision metadata |
+| GANI | [Animations](./Gondwana.Tooling.Animations.WinForms/README.md) | Animation cycles, frame sequences, GTS dependencies, and preview |
+| GSCN | [Scenes](./Gondwana.Tooling.Scenes.WinForms/README.md) | Scenes, layers, sparse tile placements, GTS/GANI sources, and authoring preview |
+| GSPR | [Sprites](./Gondwana.Tooling.Sprites.WinForms/README.md) | Sprite collections, scene/layer and frame assignments, properties, and preview |
+| GSND | [Audio](./Gondwana.Tooling.Audio.WinForms/README.md) | Sound definitions, audio source references, and playback settings |
 
-- [`Gondwana.Templates`](./Gondwana.Templates/)  
-  `dotnet new` templates for creating Gondwana WinForms, Avalonia, and Blazor
-  starter projects.  
-  See: [`Gondwana.Templates/README.md`](./Gondwana.Templates/README.md)
+All five native definition formats (GTS, GANI, GSCN, GSPR, and GSND) support
+multi-definition documents. For editor capabilities and known preview limitations,
+follow the editor links above.
 
-## Gondwana Studio
+### Runtime scene preview
 
-Studio composes the six standalone authoring controls in one WinForms shell:
+[**Gondwana.Tooling.SceneViewer.WinForms**](./Gondwana.Tooling.SceneViewer.WinForms/README.md)
+loads a saved GSCN into a real GPU-backed Gondwana Engine host. It is separate
+from the GSCN editor's lightweight, definition-driven preview. Scene Viewer
+provides camera movement and zoom, animation pause, and F3 runtime diagnostics;
+it is a viewer, not a scene editor.
 
-- [`Gondwana.Tooling.Studio.Core`](./Gondwana.Tooling.Studio.Core/)  
-  UI-independent plugin infrastructure and shell Output state.
+## Asset workflows and Studio plugins
 
-- [`Gondwana.Tooling.Studio.WinForms`](./Gondwana.Tooling.Studio.WinForms/)  
-  Combined Windows authoring shell for GAF/ZIP, GTS, GANI, GSND, GSCN, and GSPR.
-  See its [embedding and architecture documentation](./Gondwana.Tooling.Studio.WinForms/README.md).
+### Shared asset-management implementation
 
-The newer standalone GAF/GTS/GANI/GSND/GSCN/GSPR editors are the authoritative
-format-specific authoring surfaces. Studio hosts them directly as individual
-outer documents; each reusable UserControl owns its nested docking workspace.
-Working directory and Output are global tools. View restores global and active
-editor panes through the existing editor APIs. Layouts persist per editor type
-and entry application. No GameHost is needed for editing.
-EngineState project composition remains out of scope. The deprecated Avalonia
-Studio prototype and its duplicate editor stack have been retired.
+[**Gondwana.Tooling.Assets**](./Gondwana.Tooling.Assets/) contains UI-independent
+asset workflows shared by CLI and the Assets editor, including semantic
+pack/unpack preparation, import, scoped reference discovery, relocation, and
+deletion. Studio uses the hosted Assets editor rather than a parallel workflow.
 
-## Shared tooling infrastructure
+See [Assets Files](../docs/wiki/Assets-Files.md) and
+[Reference Relocation](../docs/wiki/Reference-Relocation.md) for the physical-file,
+typed-entry, logical-member, and reference-safety contracts.
 
-- [`Shared`](./Shared/)  
-  Source-linked tooling infrastructure shared by standalone editors. The current
-  WinForms helper provides the editor-local DockPanelSuite workspace used for
-  nested, non-persistent docking.
+### External asset importing
 
-## Repository scripts
+[**Gondwana.Tooling.Importers**](./Gondwana.Tooling.Importers/) is the
+UI-independent conversion pipeline for supported Godot, Tiled, and Aseprite
+content.
 
-- [`scripts`](./scripts/)  
-  PowerShell helpers for setup, changelog generation, publishing, deployment,
-  release workflows, and other repository maintenance.  
-  See: [`scripts/README.md`](./scripts/README.md)
+[**External Asset Importer plugin**](./Gondwana.Tooling.Studio.Plugin.ExternalImport/README.md)
+provides Studio's Analyze / Import interface, using that same pipeline to
+produce native GTS, GANI, and GSCN content. See the
+[format support matrix](../docs/wiki/External-Asset-Importing.md).
 
-## Runtime boundary
+### Project diagnostics
 
-These projects are development tooling. Gondwana games do not require the
-authoring applications or Studio at runtime. File formats such as GAF, GTS, GANI,
-GSND, GSCN, and GSPR are defined by the engine/runtime projects; the tools edit those
-formats rather than introducing editor-only equivalents.
+[**Project Diagnostics plugin**](./Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics/README.md)
+adds an optional, read-only Studio report of authored files, explicit
+references, and validation or missing-resource problems. It is not the
+runtime inspector or a replacement for the asset-operation dependency planner.
 
-## Dock layout preferences
+Plugins are optional. Studio's six built-in editors do not depend on them.
+Follow each plugin's README for deployment and lifecycle requirements.
 
-DockPanelSuite layouts are saved per user under
+## Command-line tools and project setup
+
+| Project | Purpose |
+| --- | --- |
+| [Gondwana.Cli](./Gondwana.Cli/README.md) | `gondwana` CLI: scaffolding, diagnostics, asset workflows, publish/deploy, and related tasks |
+| [Gondwana.Templates](./Gondwana.Templates/README.md) | `dotnet new` templates for WinForms, Avalonia, and Blazor games |
+| [Gondwana.Mcp](./Gondwana.Mcp/README.md) | Read-only MCP server exposing the official repository and wiki to compatible AI clients |
+
+## Shared infrastructure and maintenance
+
+| Project or directory | Purpose |
+| --- | --- |
+| [Gondwana.Tooling.Studio.Core](./Gondwana.Tooling.Studio.Core/) | UI-independent Studio plugin contracts and shell Output state |
+| [Shared](./Shared/) | Source-linked reusable WinForms tooling infrastructure, including nested dock workspaces |
+| [scripts](./scripts/README.md) | PowerShell helpers for setup, changelogs, publishing, deployment, releases, and maintenance |
+
+## Workspace and dock-layout preferences
+
+Studio and the standalone editors have independent per-user docking profiles.
+Within each application, the outer tool-window arrangement and the six editor
+types (GAF, GTS, GANI, GSND, GSCN, GSPR) retain their own layouts.
+
+Profiles are stored under
 `%LOCALAPPDATA%/Hidden Worlds Games/Gondwana/Tooling/<entry-application>/Docking/`.
-Outer tool windows and each editor type (GAF, GTS, GANI, GSND, GSCN, GSPR) have separate
-profiles. Dock locations, tabs, splits, relative sizes, and hidden-pane visibility
-survive restart. Studio and the standalone executables use independent profiles.
-New documents use their editor type's last saved arrangement, regardless of file path.
+Tabs, split proportions, and hidden-pane visibility persist across launches.
+Use **View → Reset application layout**, **View → Reset active editor layout**,
+or an editor's **Show all … panes** command to recover a workspace.
 
-Use **View → Reset application layout** to restore the outer tool arrangement, or
-**View → Reset active editor layout** to restore the active editor type's defaults.
-Individual View commands and **Show all … panes** recover hidden panes without resetting.
-Reset does not change document data. Open sibling editors keep their current layouts;
-the next newly opened editor uses the reset profile until another layout is changed.
-
-These are UI preferences only: no Gondwana content files or EngineState are modified,
-no source-document paths or unsaved content are stored, and documents are never reopened
-on startup. Missing or corrupt preferences fall back to defaults without a dialog.
-Available plugin tools in Studio use stable plugin identities; missing plugins are ignored.
-Changes are saved after a short settling interval and flushed on disposal.
-
-
-### Sprite authoring
-
-[Gondwana.Tooling.Sprites.WinForms](Gondwana.Tooling.Sprites.WinForms/README.md) edits collection-oriented GSPR files. The standalone shell and Studio share SpriteEditorControl, with GSCN/GTS sources, property editing, preview, validation, and independently scoped persisted layouts.
+These preferences never alter Gondwana asset files and do not save source-document
+paths or unsaved changes. **Open documents are not restored on startup.**
+Missing or invalid preferences fall back to defaults. For detailed ownership,
+pane recovery, and plugin behavior, see the
+[Studio documentation](./Gondwana.Tooling.Studio.WinForms/README.md).
