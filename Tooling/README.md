@@ -45,8 +45,8 @@ control is also hosted in Studio.
 | GSPR | [Sprites](./Gondwana.Tooling.Sprites.WinForms/README.md) | Sprite collections, scene/layer and frame assignments, properties, and preview |
 | GSND | [Audio](./Gondwana.Tooling.Audio.WinForms/README.md) | Sound definitions, audio source references, and playback settings |
 
-All six native definition formats support multi-definition documents where
-applicable. For individual editor capabilities and known preview limitations,
+All five native definition formats (GTS, GANI, GSCN, GSPR, and GSND) support
+multi-definition documents. For editor capabilities and known preview limitations,
 follow the editor links above.
 
 ### Runtime scene preview
