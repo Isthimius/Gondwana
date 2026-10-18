@@ -306,8 +306,9 @@ See [Versioned API documentation](api-docs/README.md) for the stable `/api/`, de
 
 ## Wiki synchronization
 
-`wiki-sync/sync.py` is shared by the event-driven `wiki-sync.yml` and the weekly
-`wiki-reconcile-weekly.yml`. It uses Git and the GitHub CLI on Ubuntu runners.
+[`wiki-sync/`](wiki-sync/README.md) contains the shared Python synchronization
+utility, checkpoint, and tests used by the event-driven `wiki-sync.yml` and
+weekly `wiki-reconcile-weekly.yml` workflows.
 See [Wiki synchronization and recovery](../../docs/wiki/README.md) for editing,
 manual directional sync, checkpoints, conflicts, tokens, PRs, and release exclusions.
 The imported Wiki articles remain byte-for-byte copies; migration infrastructure
