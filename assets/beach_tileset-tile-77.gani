@@ -41,11 +41,7 @@
           "XTile": 32,
           "YTile": 2
         }
-      ],
-      "Source": {
-        "Kind": 1,
-        "GaniFilePath": "X:\\github\\isthimius\\Gondwana\\assets\\.beach_tileset-tile-77.gani.5366a0d060164b2ba224e1977cecfb0c.tmp"
-      }
+      ]
     },
     {
       "Key": "animation",
@@ -84,11 +80,46 @@
           "XTile": 3,
           "YTile": 0
         }
+      ]
+    },
+    {
+      "Key": "animation-copy",
+      "ThrottleTime": 0.1,
+      "CycleType": "Repeating",
+      "HideTileOnCycleEnd": false,
+      "TilesheetSources": [
+        {
+          "Tilesheet": "rooster",
+          "Kind": "LooseDefinitionFile",
+          "GtsPath": "rooster.gts"
+        }
       ],
-      "Source": {
-        "Kind": 1,
-        "GaniFilePath": "X:\\github\\isthimius\\Gondwana\\assets\\.beach_tileset-tile-77.gani.5366a0d060164b2ba224e1977cecfb0c.tmp"
-      }
+      "Frames": [
+        {
+          "Tilesheet": "rooster",
+          "RegionName": "default",
+          "XTile": 0,
+          "YTile": 0
+        },
+        {
+          "Tilesheet": "rooster",
+          "RegionName": "default",
+          "XTile": 1,
+          "YTile": 0
+        },
+        {
+          "Tilesheet": "rooster",
+          "RegionName": "default",
+          "XTile": 2,
+          "YTile": 0
+        },
+        {
+          "Tilesheet": "rooster",
+          "RegionName": "default",
+          "XTile": 3,
+          "YTile": 0
+        }
+      ]
     }
   ]
 }

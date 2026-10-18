@@ -23,6 +23,7 @@ public sealed class DirectoryPanel : UserControl
         ("gsnd", "Sound (.gsnd)", "♪", Color.Teal),
         ("misc", "Misc", "?", Color.SlateGray)
     ];
+
     internal TreeView Tree { get; } = new()
     {
         Dock = DockStyle.Fill,
@@ -31,14 +32,17 @@ public sealed class DirectoryPanel : UserControl
         BackColor = Color.FromArgb(30, 30, 30),
         ForeColor = Color.Gainsboro
     };
+
     /// <summary>
     /// Gets the working directory.
     /// </summary>
     public string WorkingDirectory { get; private set; } = Environment.CurrentDirectory;
+
     /// <summary>
     /// Occurs when file activated.
     /// </summary>
     public event Action<string>? FileActivated;
+
     /// <summary>
     /// Occurs when choose directory requested.
     /// </summary>
@@ -109,27 +113,40 @@ public sealed class DirectoryPanel : UserControl
     public void RefreshDirectory()
     {
         Tree.BeginUpdate();
+
         try
         {
             _fileMenu.Close();
             _menuPath = null;
             Tree.Nodes.Clear();
-            var root = new TreeNode(WorkingDirectory) { Tag = new DirectoryInfo(WorkingDirectory), ImageKey = "directory", SelectedImageKey = "directory" };
+
+            var root = new TreeNode(WorkingDirectory)
+            {
+                Tag = new DirectoryInfo(WorkingDirectory),
+                ImageKey = "directory",
+                SelectedImageKey = "directory"
+            };
+
             Tree.Nodes.Add(root);
             FillDirectory(root, WorkingDirectory);
             root.Expand();
         }
-        finally { Tree.EndUpdate(); }
+        finally
+        {
+            Tree.EndUpdate();
+        }
     }
 
     private void FillDirectory(TreeNode parent, string path)
     {
         parent.Nodes.Clear();
+
         try
         {
             var groups = Categories.ToDictionary(category => category.Key,
                 category => new TreeNode(category.Label) { ImageKey = category.Key, SelectedImageKey = category.Key });
             parent.Nodes.AddRange(Categories.Select(category => groups[category.Key]).ToArray());
+
             foreach (var directory in new DirectoryInfo(path).EnumerateDirectories().OrderBy(item => item.Name))
             {
                 if ((directory.Attributes & FileAttributes.ReparsePoint) != 0) continue;
@@ -137,15 +154,21 @@ public sealed class DirectoryPanel : UserControl
                 node.Nodes.Add("Expand to load…");
                 parent.Nodes.Add(node);
             }
+
             foreach (var file in Directory.EnumerateFiles(path).OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase))
             {
                 var key = StudioDocument.FormatFor(file) ?? "misc";
                 groups[key].Nodes.Add(new TreeNode(Path.GetFileName(file))
                 {
-                    Tag = file, ToolTipText = file, ImageKey = key, SelectedImageKey = key
+                    Tag = file,
+                    ToolTipText = file,
+                    ImageKey = key,
+                    SelectedImageKey = key
                 });
             }
-            foreach (var group in groups.Values) group.Expand();
+
+            foreach (var group in groups.Values)
+                group.Expand();
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
@@ -176,6 +199,7 @@ public sealed class DirectoryPanel : UserControl
         using var background = new SolidBrush(color);
         using var font = new Font("Segoe UI", 8, FontStyle.Bold, GraphicsUnit.Point);
         using var alignment = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+
         graphics.FillRectangle(background, 1, 1, 14, 14);
         graphics.DrawString(glyph, font, Brushes.White, new RectangleF(0, 0, 16, 16), alignment);
         _images.Images.Add(key, bitmap);
