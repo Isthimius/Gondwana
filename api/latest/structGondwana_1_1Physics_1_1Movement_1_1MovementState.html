@@ -113,7 +113,7 @@ Properties</h2></td></tr>
 <tr class="memitem:ae71ec103c425b02074fb13643f6a99c8" id="r_ae71ec103c425b02074fb13643f6a99c8"><td class="memItemLeft" align="right" valign="top">float?&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae71ec103c425b02074fb13643f6a99c8">MaxSpeed</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:ae71ec103c425b02074fb13643f6a99c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max speed in current MotionSpace units per second (null = no cap).  <br /></td></tr>
 <tr class="memitem:ac8855e7bd31cf6a4e7b047cdd750d082" id="r_ac8855e7bd31cf6a4e7b047cdd750d082"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8855e7bd31cf6a4e7b047cdd750d082">LinearDamping</a><code> [get, set]</code></td></tr>
-<tr class="memdesc:ac8855e7bd31cf6a4e7b047cdd750d082"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linear damping per second in [0..1]. 0 = no damping. Apply as v *= (1 - LinearDamping * dt) in the controller. Only affects integrated movement (not scripted).  <br /></td></tr>
+<tr class="memdesc:ac8855e7bd31cf6a4e7b047cdd750d082"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-negative linear damping coefficient per second (0 = no damping). During integrated movement, velocity decays as v *= exp(-LinearDamping * dt), where dt is elapsed time in seconds. Damping also affects scripted MoveToward movement, but does not affect tween movement.  <br /></td></tr>
 <tr class="memitem:afa202fe5395f81f2b599c14c4ab9834a" id="r_afa202fe5395f81f2b599c14c4ab9834a"><td class="memItemLeft" align="right" valign="top">readonly bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afa202fe5395f81f2b599c14c4ab9834a">HasMotion</a><code> [get]</code></td></tr>
 <tr class="memdesc:afa202fe5395f81f2b599c14c4ab9834a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a value indicating whether the object is in motion.  <br /></td></tr>
 </table>
@@ -170,7 +170,7 @@ Properties</h2></td></tr>
 
 <p>Gets a value indicating whether the object is in motion. </p>
 
-<p class="definition">Definition at line <a class="el" href="MovementState_8cs_source.html#l00046">46</a> of file <a class="el" href="MovementState_8cs_source.html">MovementState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MovementState_8cs_source.html#l00047">47</a> of file <a class="el" href="MovementState_8cs_source.html">MovementState.cs</a>.</p>
 
 </div>
 </div>
@@ -194,9 +194,9 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Linear damping per second in [0..1]. 0 = no damping. Apply as v *= (1 - LinearDamping * dt) in the controller. Only affects integrated movement (not scripted). </p>
+<p>Non-negative linear damping coefficient per second (0 = no damping). During integrated movement, velocity decays as v *= exp(-LinearDamping * dt), where dt is elapsed time in seconds. Damping also affects scripted MoveToward movement, but does not affect tween movement. </p>
 
-<p class="definition">Definition at line <a class="el" href="MovementState_8cs_source.html#l00041">41</a> of file <a class="el" href="MovementState_8cs_source.html">MovementState.cs</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MovementState_8cs_source.html#l00042">42</a> of file <a class="el" href="MovementState_8cs_source.html">MovementState.cs</a>.</p>
 
 </div>
 </div>
