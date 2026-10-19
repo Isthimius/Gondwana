@@ -12,7 +12,14 @@ dotnet run --project Tooling/Gondwana.Tooling.Studio.WinForms --configuration Re
 ```
 
 Choose **File > Open working directory…** to browse authoring files. Directories
-expand lazily. Double-click files or use **File > Open…**; opening a path already
+expand lazily, with files grouped under **Assets (.gaf)**, **Tilesheets (.gts)**,
+**Animations (.gani)**, **Scenes (.gscn)**, **Sprites (.gspr)**, **Sound (.gsnd)**,
+and **Misc** in each directory. Each type has a distinct placeholder icon;
+ZIP asset containers share the Assets group. Empty groups remain visible.
+Right-click a file for **Open** in the built-in editor (except Misc), or
+**Open External** to choose an application using Windows' Open with dialog
+(except `.gaf`). External opening uses the saved file on disk.
+Double-click supported files or use **File > Open…**; opening a path already
 in the workspace activates its existing document. **File > New** offers all six
 formats. GAF creation asks for a destination and optional password protection.
 
