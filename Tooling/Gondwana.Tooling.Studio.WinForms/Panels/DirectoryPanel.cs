@@ -13,10 +13,12 @@ public sealed class DirectoryPanel : UserControl
     private readonly ContextMenuStrip _fileMenu = new();
     private string? _menuPath;
     private CancellationTokenSource _archiveRefresh = new();
+    private readonly CancellationTokenSource _lifetime = new();
     private readonly SemaphoreSlim _archiveGate = new(1, 1);
     private readonly SynchronizationContext _uiContext = new WindowsFormsSynchronizationContext();
     internal Task PendingArchiveLoads { get; private set; } = Task.CompletedTask;
     internal Action<string> OpenExternal { get; set; }
+    internal Action<string>? ArchiveOpened { get; set; }
 
     // Keep labels and placeholder icons together so artwork can be replaced easily.
     private static readonly (string Key, string Label, string Glyph, Color Color)[] Categories =
@@ -209,8 +211,10 @@ public sealed class DirectoryPanel : UserControl
                     {
                         var entries = await Task.Run(() =>
                         {
-                            // Passive browsing must not block an editor save, replacement or deletion.
+                            // Sharing flags alone cannot coexist with an exclusive writer on Windows.
+                            // Studio saves use RunWithoutArchiveReadsAsync to drain this handle first.
                             using var stream = new FileStream(archivePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+                            ArchiveOpened?.Invoke(archivePath);
                             using var archive = AssetsFile.Load(stream, register: false);
                             return archive.GetAllEntries()
                                 .OrderBy(entry => entry.AssetName, StringComparer.OrdinalIgnoreCase)
@@ -277,6 +281,24 @@ public sealed class DirectoryPanel : UserControl
         await completion.Task.ConfigureAwait(false);
     }
 
+    internal async Task RunWithoutArchiveReadsAsync(Action action)
+    {
+        // Called on the UI thread. Cancel obsolete scans, but wait asynchronously for the
+        // actual reader to dispose its handle; cancellation alone does not close that handle.
+        _archiveRefresh.Cancel();
+        var cancellationToken = _lifetime.Token;
+        await _archiveGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await OnUiAsync(() =>
+            {
+                try { action(); }
+                finally { RefreshDirectory(); }
+            }, cancellationToken).ConfigureAwait(false);
+        }
+        finally { _archiveGate.Release(); }
+    }
+
     internal bool PrepareFileMenu(TreeNode node)
     {
         _fileMenu.Close();
@@ -333,6 +355,8 @@ public sealed class DirectoryPanel : UserControl
         {
             _archiveRefresh.Cancel();
             _archiveRefresh.Dispose();
+            _lifetime.Cancel();
+            _lifetime.Dispose();
             _fileMenu.Dispose();
             Tree.ImageList = null;
             _images.Dispose();

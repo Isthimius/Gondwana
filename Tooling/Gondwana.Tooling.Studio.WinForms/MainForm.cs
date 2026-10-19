@@ -31,6 +31,9 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
     private readonly DockLayoutPersistence _layout;
     private readonly ProjectFolderStore _projectFolder = new();
     private bool _disposed;
+    private bool _shutdownPending;
+    private bool _shutdownApproved;
+    private readonly Dictionary<StudioDockDocument, Task<bool>> _saves = new();
     internal DockPanel Workspace { get; }
     internal DirectoryPanel Browser { get; }
     internal IReadOnlyList<StudioDockDocument> Documents => _documents;
@@ -106,8 +109,8 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         Add(file, "Move / rename content…", Keys.None, MoveContent);
         Add(file, "Delete content…", Keys.None, DeleteContent);
         file.DropDownItems.Add(new ToolStripSeparator());
-        Add(file, "&Save", Keys.Control | Keys.S, () => { if (ActiveDocument is { } doc) SaveDocument(doc); });
-        Add(file, "Save &As…", Keys.Control | Keys.Shift | Keys.S, () => { if (ActiveDocument is { } doc) SaveDocument(doc, saveAs: true); });
+        Add(file, "&Save", Keys.Control | Keys.S, async () => { if (ActiveDocument is { } doc) await SaveDocument(doc); });
+        Add(file, "Save &As…", Keys.Control | Keys.Shift | Keys.S, async () => { if (ActiveDocument is { } doc) await SaveDocument(doc, saveAs: true); });
         Add(file, "&Close", Keys.Control | Keys.W, () => ActiveDocument?.Close());
         Add(file, "E&xit", Keys.Alt | Keys.F4, Close);
         menu.Items.AddRange([file, _view, new ToolStripMenuItem("&Plugins") { Name = "PluginsMenu" }]);
@@ -235,7 +238,7 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         return ShowDocument(model);
     }
 
-    private void TryNew(string format)
+    private async void TryNew(string format)
     {
         try
         {
@@ -247,7 +250,7 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
             string? password = encrypt ? InputDialog.Show("Password:", "New asset file", owner: this, password: true) : null;
             if (encrypt && string.IsNullOrWhiteSpace(password)) return;
             var document = NewDocument(format, dialog.FileName, password, encrypt);
-            SaveDocument(document);
+            await SaveDocument(document);
         }
         catch (Exception ex) { ReportError(ex); }
     }
@@ -263,12 +266,13 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
     {
         var document = new StudioDockDocument(model, ConfirmClose);
         if (model.Editor is Gondwana.Tooling.Scenes.WinForms.SceneEditorControl sceneEditor)
-            sceneEditor.SaveRequested = () => SaveDocument(document);
+            // Loose-definition saves complete synchronously; only asset saves await readers.
+            sceneEditor.SaveRequested = () => SaveDocument(document).GetAwaiter().GetResult();
         _documents.Add(document);
         if (model.Path() is { } path) _paths.Add(Path.GetFullPath(path), document);
         if (model.Editor is AssetEditorControl assets)
         {
-            assets.SaveRequested = saveAs => SaveDocument(document, saveAs);
+            assets.SaveRequested = async saveAs => await SaveDocument(document, saveAs);
             assets.IsDocumentOpen = path => _paths.ContainsKey(Path.GetFullPath(path));
             assets.RelocationScope = () => Browser.WorkingDirectory;
             assets.ValidateRelocation = plan => ValidateRelocation(plan, assets.FilePath);
@@ -278,6 +282,7 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         document.Disposed += (_, _) =>
         {
             _documents.Remove(document);
+            _saves.Remove(document);
             foreach (var key in _paths.Where(pair => pair.Value == document).Select(pair => pair.Key).ToArray()) _paths.Remove(key);
         };
         document.Show(Workspace, DockState.Document);
@@ -286,7 +291,13 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         return document;
     }
 
-    internal bool SaveDocument(StudioDockDocument document, bool saveAs = false, string? destination = null)
+    internal Task<bool> SaveDocument(StudioDockDocument document, bool saveAs = false, string? destination = null)
+    {
+        if (_saves.TryGetValue(document, out var pending) && !pending.IsCompleted) return pending;
+        return _saves[document] = SaveDocumentCore(document, saveAs, destination);
+    }
+
+    private async Task<bool> SaveDocumentCore(StudioDockDocument document, bool saveAs, string? destination)
     {
         try
         {
@@ -301,15 +312,33 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
                 throw new InvalidOperationException("That destination is already open in another document. Close it before overwriting it.");
             var errors = model.Validate();
             if (errors.Count > 0 && !AllowInvalidSave(errors)) return false;
-            model.Save(destination, errors.Count > 0);
-            foreach (var key in _paths.Where(pair => pair.Value == document).Select(pair => pair.Key).ToArray()) _paths.Remove(key);
-            _paths.Add(Path.GetFullPath(model.Path()!), document);
-            document.UpdateCaption();
-            _packages.Invalidate(destination);
-            Browser.RefreshDirectory();
-            _output.Log($"Saved {destination}");
+            void Save()
+            {
+                if (document.IsDisposed || IsDisposed) throw new OperationCanceledException();
+                // Another document may have opened this destination while we awaited the reader.
+                if (_paths.TryGetValue(destination, out var owner) && owner != document)
+                    throw new InvalidOperationException("That destination is already open in another document. Close it before overwriting it.");
+                model.Save(destination, errors.Count > 0);
+                foreach (var key in _paths.Where(pair => pair.Value == document).Select(pair => pair.Key).ToArray()) _paths.Remove(key);
+                _paths.Add(Path.GetFullPath(model.Path()!), document);
+                document.UpdateCaption();
+                _packages.Invalidate(destination);
+                _output.Log($"Saved {destination}");
+            }
+            if (model.Kind == "asset")
+            {
+                document.Enabled = false;
+                try { await Browser.RunWithoutArchiveReadsAsync(Save); }
+                finally { if (!document.IsDisposed) document.Enabled = true; }
+            }
+            else
+            {
+                Save();
+                Browser.RefreshDirectory();
+            }
             return true;
         }
+        catch (OperationCanceledException) { return false; }
         catch (Exception ex) { ReportError(ex); return false; }
     }
 
@@ -326,22 +355,24 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         return dialog.ShowDialog(this) == DialogResult.OK ? dialog.FileName : null;
     }
 
-    internal bool ConfirmClose(StudioDockDocument document)
+    internal async Task<bool> ConfirmClose(StudioDockDocument document)
     {
+        if (_saves.TryGetValue(document, out var pending) && !pending.IsCompleted)
+            return await pending;
         if (!document.Document.CommitEdits()) return false;
         if (!document.Document.Dirty()) return true;
         return AskSave(document.Document) switch
         {
             DialogResult.No => true,
-            DialogResult.Yes => SaveDocument(document),
+            DialogResult.Yes => await SaveDocument(document),
             _ => false
         };
     }
 
-    internal bool ApproveShutdown()
+    internal async Task<bool> ApproveShutdown()
     {
         foreach (var document in _documents.ToArray())
-            if (!ConfirmClose(document)) return false;
+            if (!await ConfirmClose(document)) return false;
         foreach (var document in _documents) document.CloseApproved = true;
         return true;
     }
@@ -350,7 +381,31 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         base.OnFormClosing(e);
-        if (!e.Cancel) e.Cancel = !ApproveShutdown();
+        if (e.Cancel || _shutdownApproved) return;
+        if (_shutdownPending) { e.Cancel = true; return; }
+        var approval = ApproveShutdown();
+        if (approval.IsCompleted) { e.Cancel = !approval.GetAwaiter().GetResult(); return; }
+        e.Cancel = true;
+        _shutdownPending = true;
+        Enabled = false;
+        FinishShutdownAsync(approval);
+    }
+
+    private async void FinishShutdownAsync(Task<bool> approval)
+    {
+        try
+        {
+            if (await approval && !IsDisposed)
+            {
+                _shutdownApproved = true;
+                Close();
+            }
+        }
+        finally
+        {
+            _shutdownPending = false;
+            if (!IsDisposed) Enabled = true;
+        }
     }
 
     private DockContent AddTool(string id, string title, Control control, DockState state)

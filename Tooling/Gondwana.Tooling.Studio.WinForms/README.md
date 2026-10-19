@@ -31,6 +31,12 @@ archives are logged and skipped without password prompts. No files are extracted
 or changed. Scans use detached `AssetsFile` instances, disposed after each archive;
 the existing loader buffers one archive's payloads at a time, so large archives
 may take time to appear. Navigating or refreshing discards stale scan results.
+Studio GAF saves cancel obsolete scans and asynchronously wait for the active
+archive reader to release its handle before writing. The affected document is
+temporarily disabled, duplicate save requests share the pending save, and
+save-on-close/shutdown waits for success. The UI continues processing messages;
+no synchronous wait or change to GAF serialization is involved. Browsing refreshes
+after the write attempt.
 
 Right-click a file for **Open** in the built-in editor (except Misc), or
 **Open External** to choose an application using Windows' Open with dialog

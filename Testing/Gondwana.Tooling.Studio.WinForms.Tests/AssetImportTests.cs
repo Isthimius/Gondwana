@@ -75,7 +75,11 @@ public sealed partial class CompositionTests
         Assert.Equal(diskBefore, File.ReadAllBytes(path));
         Assert.Equal("new resource", File.ReadAllText(source));
         Assert.Equal(4, archive.GetAllEntries().Count());
-        if (hosted) editor.SaveRequested!(false);
+        if (hosted)
+        {
+            editor.SaveRequested!(false);
+            Assert.True(AwaitUi(studio.SaveDocument(document!)));
+        }
         else editor.SaveTo(path);
         Assert.False(editor.IsDirty);
         using var saved = AssetsFile.LoadOrCreate(path, "secret", true, register: false);

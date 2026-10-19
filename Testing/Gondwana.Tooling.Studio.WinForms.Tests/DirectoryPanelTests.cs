@@ -175,6 +175,95 @@ public sealed partial class CompositionTests
         archive.Save();
     }
 
+    private static T AwaitUi<T>(Task<T> task)
+    {
+        var context = SynchronizationContext.Current;
+        var timeout = Stopwatch.StartNew();
+        while (!task.IsCompleted && timeout.Elapsed < TimeSpan.FromSeconds(20))
+        {
+            Application.DoEvents();
+            Thread.Sleep(1);
+        }
+        SynchronizationContext.SetSynchronizationContext(context);
+        Assert.True(task.IsCompleted, "UI operation timed out.");
+        return task.GetAwaiter().GetResult();
+    }
+
+    [Theory]
+    [InlineData("save")]
+    [InlineData("saveAs")]
+    [InlineData("close")]
+    [InlineData("shutdown")]
+    public void GafSaveWaitsAsynchronouslyForActiveArchiveReader(string command) => RunSta(directory =>
+    {
+        var path = Path.Combine(directory, "active.gaf");
+        using (var initial = AssetsFile.LoadOrCreate(path, null, false, register: false))
+        {
+            initial.Add(AssetTypes.Misc, "existing.bin", new MemoryStream([1]));
+            initial.Save();
+        }
+        using var studio = Host(directory);
+        WaitForArchives(studio.Browser);
+        var document = studio.OpenDocument(path);
+        var editor = Assert.IsType<Gondwana.Tooling.Assets.WinForms.AssetEditorControl>(document.Document.Editor);
+        editor.AssetsFile.Add(AssetTypes.Misc, "changed.bin", new MemoryStream([2, 3]));
+        editor.MarkChanged();
+        using var opened = new ManualResetEventSlim();
+        using var release = new ManualResetEventSlim();
+        studio.Browser.ArchiveOpened = _ =>
+        {
+            opened.Set();
+            Assert.True(release.Wait(TimeSpan.FromSeconds(15)), "Test did not release the archive reader.");
+        };
+        studio.Browser.RefreshDirectory();
+        Assert.True(opened.Wait(TimeSpan.FromSeconds(10)));
+        try
+        {
+            // Prove the live read handle conflicts with the exact sharing mode used by Save.
+            Assert.Throws<IOException>(() => File.Open(path, FileMode.Open, FileAccess.Write, FileShare.None));
+            var destination = command == "saveAs" ? Path.Combine(directory, "copy.gaf") : path;
+            studio.AskSave = _ => DialogResult.Yes;
+            if (command == "close") document.Close();
+            if (command == "shutdown") studio.Close();
+            var save = studio.SaveDocument(document, command == "saveAs", destination);
+            Assert.False(save.IsCompleted);
+            bool uiResponded = false;
+            studio.BeginInvoke(() => uiResponded = true);
+            Application.DoEvents();
+            Assert.True(uiResponded);
+            Assert.False(save.IsCompleted);
+            Assert.True(document.Document.Dirty());
+            Assert.False(document.Enabled);
+            Assert.Same(save, studio.SaveDocument(document));
+            studio.Browser.ArchiveOpened = null;
+            release.Set();
+            Assert.True(AwaitUi(save));
+            if (command is "close" or "shutdown")
+            {
+                var timeout = Stopwatch.StartNew();
+                while (!document.IsDisposed && timeout.Elapsed < TimeSpan.FromSeconds(10)) Application.DoEvents();
+                Assert.True(document.IsDisposed);
+                if (command == "shutdown") Assert.True(studio.IsDisposed);
+            }
+            else
+            {
+                Assert.True(document.Enabled);
+                Assert.False(document.Document.Dirty());
+                Assert.Equal(destination, document.Document.Path());
+            }
+            using var saved = AssetsFile.LoadOrCreate(destination, null, false, register: false);
+            Assert.Equal(2, saved.GetAllEntries().Count());
+            using var changed = saved[AssetTypes.Misc, "changed.bin"];
+            Assert.Equal(2, changed!.ReadByte());
+            if (!studio.IsDisposed) WaitForArchives(studio.Browser);
+        }
+        finally
+        {
+            studio.Browser.ArchiveOpened = null;
+            release.Set();
+        }
+    });
+
     private static void DoubleClickNode(DirectoryPanel panel, TreeNode node) =>
         typeof(TreeView).GetMethod("OnNodeMouseDoubleClick", BindingFlags.Instance | BindingFlags.NonPublic)!
             .Invoke(panel.Tree, [new TreeNodeMouseClickEventArgs(node, MouseButtons.Left, 2, 0, 0)]);

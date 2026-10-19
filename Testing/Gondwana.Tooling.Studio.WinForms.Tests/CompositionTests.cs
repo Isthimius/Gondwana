@@ -53,7 +53,7 @@ public sealed partial class CompositionTests
                 entry.SceneLayerId = "actors";
             }
         }
-        Assert.True(studio.SaveDocument(document, destination: firstPath));
+        Assert.True(AwaitUi(studio.SaveDocument(document, destination: firstPath)));
         Assert.False(model.Dirty());
         Assert.Equal("first." + format, document.Text);
         switch (model.Editor)
@@ -85,7 +85,7 @@ public sealed partial class CompositionTests
         Assert.True(model.IsPaneVisible(target.Text));
 
         var secondPath = Path.Combine(directory, "second." + format);
-        Assert.True(studio.SaveDocument(document, saveAs: true, destination: secondPath));
+        Assert.True(AwaitUi(studio.SaveDocument(document, saveAs: true, destination: secondPath)));
         Assert.Equal(secondPath, model.Path());
         Assert.Equal("second." + format, document.Text);
         Assert.Same(document, studio.OpenDocument(secondPath));
@@ -93,7 +93,7 @@ public sealed partial class CompositionTests
         Assert.NotSame(document, oldFile);
         Exception? collision = null;
         studio.ReportError = ex => collision = ex;
-        Assert.False(studio.SaveDocument(oldFile, saveAs: true, destination: secondPath));
+        Assert.False(AwaitUi(studio.SaveDocument(oldFile, saveAs: true, destination: secondPath)));
         Assert.IsType<InvalidOperationException>(collision);
         Assert.Equal(firstPath, oldFile.Document.Path());
         oldFile.Close();
@@ -124,7 +124,7 @@ public sealed partial class CompositionTests
         var documents = studio.Documents.ToArray();
         int prompts = 0;
         studio.AskSave = _ => ++prompts == 2 ? DialogResult.Cancel : DialogResult.No;
-        Assert.False(studio.ApproveShutdown());
+        Assert.False(AwaitUi(studio.ApproveShutdown()));
         Assert.All(documents, doc => Assert.False(doc.CloseApproved));
         Assert.All(documents, doc => Assert.False(doc.IsDisposed));
         studio.AskSave = _ => DialogResult.Cancel;
@@ -165,6 +165,7 @@ public sealed partial class CompositionTests
         studio.SavePath = _ => destination;
         editor.MarkChanged();
         editor.SaveRequested!(true);
+        AwaitUi(studio.SaveDocument(document));
         Assert.Equal(destination, editor.FilePath);
         Assert.False(editor.IsDirty);
         Assert.Same(document, studio.OpenDocument(destination));
@@ -197,18 +198,18 @@ public sealed partial class CompositionTests
         Assert.Null(document.Document.Path());
         var destination = Path.Combine(directory, "animation.gani");
         studio.AllowInvalidSave = _ => false;
-        Assert.False(studio.SaveDocument(document, destination: destination));
+        Assert.False(AwaitUi(studio.SaveDocument(document, destination: destination)));
         Assert.False(File.Exists(destination));
         studio.AllowInvalidSave = _ => true;
         Exception? failure = null;
         studio.ReportError = ex => failure = ex;
         var blocked = Path.Combine(directory, "not-a-directory");
         File.WriteAllText(blocked, "occupied");
-        Assert.False(studio.SaveDocument(document, destination: Path.Combine(blocked, "animation.gani")));
+        Assert.False(AwaitUi(studio.SaveDocument(document, destination: Path.Combine(blocked, "animation.gani"))));
         Assert.NotNull(failure);
         Assert.Null(document.Document.Path());
         Assert.True(document.Document.Dirty());
-        Assert.True(studio.SaveDocument(document, destination: destination));
+        Assert.True(AwaitUi(studio.SaveDocument(document, destination: destination)));
         Assert.Same(document, studio.OpenDocument(destination));
     });
 

@@ -6,9 +6,10 @@ internal sealed class StudioDockDocument : DockContent
 {
     internal StudioDocument Document { get; }
     internal bool CloseApproved { get; set; }
-    private readonly Func<StudioDockDocument, bool> _confirmClose;
+    private readonly Func<StudioDockDocument, Task<bool>> _confirmClose;
+    private bool _closePending;
 
-    internal StudioDockDocument(StudioDocument document, Func<StudioDockDocument, bool> confirmClose)
+    internal StudioDockDocument(StudioDocument document, Func<StudioDockDocument, Task<bool>> confirmClose)
     {
         Document = document;
         _confirmClose = confirmClose;
@@ -31,8 +32,26 @@ internal sealed class StudioDockDocument : DockContent
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         base.OnFormClosing(e);
-        if (!e.Cancel && !CloseApproved)
-            e.Cancel = !_confirmClose(this);
+        if (e.Cancel || CloseApproved) return;
+        if (_closePending) { e.Cancel = true; return; }
+        var approval = _confirmClose(this);
+        if (approval.IsCompleted) { e.Cancel = !approval.GetAwaiter().GetResult(); return; }
+        e.Cancel = true;
+        _closePending = true;
+        FinishCloseAsync(approval);
+    }
+
+    private async void FinishCloseAsync(Task<bool> approval)
+    {
+        try
+        {
+            if (await approval && !IsDisposed)
+            {
+                CloseApproved = true;
+                Close();
+            }
+        }
+        finally { _closePending = false; }
     }
 
     /// <inheritdoc/>
