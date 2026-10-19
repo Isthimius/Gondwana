@@ -271,6 +271,13 @@ For example:
 ]
 ```
 
+When projecting a runtime scene, `FromScene()` discovers GTS and GANI source locations
+from the referenced registered objects' provenance. It records a loose or packed source
+only when the live dependency still matches the source baseline. Generated or modified
+dependencies retain their logical references without a potentially stale physical path.
+`Save(path, scene)` rebases discovered paths relative to the saved GSCN; a direct
+`FromScene()` result may contain absolute paths until written.
+
 These values are for **authoring and tooling only**. `ToScene()` still resolves
 frames through the registered tilesheet name and animations through the registered
 cycle key; it performs no filesystem loading from these collections.
