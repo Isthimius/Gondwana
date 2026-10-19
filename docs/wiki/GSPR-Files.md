@@ -113,7 +113,7 @@ Validation rejects duplicate supplied GUIDs and nonempty nicknames, missing scen
 `SpriteDefinitionSerializer.FromSprites()` discovers GTS, GSCN, and GANI source
 locations for referenced runtime sprites where provenance is known and still matches
 the current definitions. It uses the registered animation definition (rather than
-per-sprite animation clones) to resolve GANI provenance. Generated or modified
+per-sprite animation clones) to resolve GANI provenance, including indirect\n`NextCycle` transitions with cycle-safe deduplication. Generated or modified
 dependencies retain logical keys only; `Save(path, sprites)` rebases discoverable
 source paths to the destination.
 
