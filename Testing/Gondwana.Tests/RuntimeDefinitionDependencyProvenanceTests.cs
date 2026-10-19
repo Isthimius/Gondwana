@@ -150,6 +150,84 @@ public sealed class RuntimeDefinitionDependencyProvenanceTests : IDisposable
         }
     }
 
+    [Fact]
+    public void FromScene_ExportsIndirectNextCycleSourceAndDeduplicatesLoops()
+    {
+        using var sheet = NewSheet();
+        var firstKey = $"scene.first.{Guid.NewGuid():N}";
+        var nextKey = $"scene.next.{Guid.NewGuid():N}";
+        var firstPath = Path.Combine(Path.GetTempPath(), $"first-{Guid.NewGuid():N}.gani");
+        var nextArchive = Path.Combine(Path.GetTempPath(), $"next-{Guid.NewGuid():N}.gaf");
+
+        using var first = new Cycle(new FrameSequence([sheet.GetFrame(0, 0)]), 0.1, firstKey);
+        using var next = new Cycle(new FrameSequence([sheet.GetFrame(1, 0)]), 0.1, nextKey);
+        first.NextCycle = next;
+        next.NextCycle = first; // An intentional cycle must not recurse indefinitely.
+        first.DefinitionProvenance = DefinitionProvenance.Capture(
+            firstPath, null, null, () => AnimationDefinitionSerializer.FromCycle(first), firstKey);
+        next.DefinitionProvenance = DefinitionProvenance.Capture(
+            null, nextArchive, "next-cycle", () => AnimationDefinitionSerializer.FromCycle(next), nextKey);
+
+        using var scene = new Scene();
+        var layer = scene.AddLayer(2, 1, 16, 16);
+        foreach (var tile in new[] { layer[0, 0]!, layer[1, 0]! })
+        {
+            tile.CurrentFrame = sheet.GetFrame(0, 0);
+            tile.EnableAnimator = true;
+            tile.TileAnimator.SetCurrentCycle(firstKey);
+        }
+
+        var definition = SceneDefinitionSerializer.FromScene(scene);
+        Assert.Equal(2, definition.AnimationSources.Count);
+        Assert.Equal(firstPath,
+            Assert.Single(definition.AnimationSources, source => source.AnimationKey == firstKey).GaniPath);
+        var indirect = Assert.Single(definition.AnimationSources, source => source.AnimationKey == nextKey);
+        Assert.Equal(SceneAnimationSourceKind.PackedDefinitionFile, indirect.Kind);
+        Assert.Equal(nextArchive, indirect.AssetsFilePath);
+        Assert.Equal("next-cycle", indirect.AssetEntryName);
+        Assert.DoesNotContain(definition.Layers.SelectMany(layer => layer.Tiles),
+            tile => tile.AnimationKey == nextKey);
+    }
+
+    [Fact]
+    public void FromSprites_ExportsIndirectNextCycleSource()
+    {
+        using var sheet = NewSheet();
+        var firstKey = $"sprites.first.{Guid.NewGuid():N}";
+        var nextKey = $"sprites.next.{Guid.NewGuid():N}";
+        var firstPath = Path.Combine(Path.GetTempPath(), $"sprite-first-{Guid.NewGuid():N}.gani");
+        var nextPath = Path.Combine(Path.GetTempPath(), $"sprite-next-{Guid.NewGuid():N}.gani");
+
+        using var first = new Cycle(new FrameSequence([sheet.GetFrame(0, 0)]), 0.1, firstKey);
+        using var next = new Cycle(new FrameSequence([sheet.GetFrame(1, 0)]), 0.1, nextKey);
+        first.NextCycle = next;
+        first.DefinitionProvenance = DefinitionProvenance.Capture(
+            firstPath, null, null, () => AnimationDefinitionSerializer.FromCycle(first), firstKey);
+        next.DefinitionProvenance = DefinitionProvenance.Capture(
+            nextPath, null, null, () => AnimationDefinitionSerializer.FromCycle(next), nextKey);
+
+        using var scene = new Scene();
+        var layer = scene.AddLayer(1, 1, 16, 16);
+        var sprite = SpriteManager.Instance.CreateSprite(layer, sheet.GetFrame(0, 0),
+            $"sprite-{Guid.NewGuid():N}");
+        try
+        {
+            sprite.TileAnimator.SetCurrentCycle(firstKey);
+            var definition = SpriteDefinitionSerializer.FromSprites([sprite]);
+            Assert.Equal(2, definition.AnimationSources.Count);
+            Assert.Equal(firstPath,
+                Assert.Single(definition.AnimationSources, source => source.AnimationKey == firstKey).GaniPath);
+            Assert.Equal(nextPath,
+                Assert.Single(definition.AnimationSources, source => source.AnimationKey == nextKey).GaniPath);
+            Assert.Equal(firstKey, Assert.Single(definition.Sprites).AnimationKey);
+        }
+        finally
+        {
+            SpriteManager.Instance._spriteList.Remove(sprite);
+            sprite.DisposeImmediate();
+        }
+    }
+
     private Tilesheet NewSheet()
     {
         var sheet = TilesheetRegistry.Instance.LoadFromBitmap(
