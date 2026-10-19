@@ -34,9 +34,9 @@ public struct MovementState
     public float? MaxSpeed { get; internal set; }
 
     /// <summary>
-    /// Linear damping per second in [0..1]. 0 = no damping.
-    /// Apply as v *= (1 - LinearDamping * dt) in the controller.
-    /// Only affects integrated movement (not scripted).
+    /// Non-negative linear damping coefficient per second (0 = no damping).
+    /// During integrated movement, velocity decays as v *= exp(-LinearDamping * dt),
+    /// where dt is elapsed time in seconds. Does not affect scripted movement.
     /// </summary>
     public float LinearDamping { get; internal set; }
 
