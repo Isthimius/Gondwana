@@ -140,13 +140,15 @@ public static partial class SceneDefinitionSerializer
                     definition.TilesheetSources.Add(SceneTilesheetSourceDefinition.Packed(name, archive, entry));
             }
 
-            if (tile.AnimationKey is { Length: > 0 } key && animations.Add(key))
+            if (tile.AnimationKey is { Length: > 0 } key)
             {
-                var source = DefinitionDependencyProvenance.ForAnimation(key);
-                if (source?.FilePath is { } loose)
-                    definition.AnimationSources.Add(SceneAnimationSourceDefinition.Loose(key, loose));
-                else if (source?.AssetsFilePath is { } archive && source.AssetEntryName is { } entry)
-                    definition.AnimationSources.Add(SceneAnimationSourceDefinition.Packed(key, archive, entry));
+                foreach (var (animationKey, source) in DefinitionDependencyProvenance.ForAnimationChain(key, animations))
+                {
+                    if (source.FilePath is { } loose)
+                        definition.AnimationSources.Add(SceneAnimationSourceDefinition.Loose(animationKey, loose));
+                    else if (source.AssetsFilePath is { } archive && source.AssetEntryName is { } entry)
+                        definition.AnimationSources.Add(SceneAnimationSourceDefinition.Packed(animationKey, archive, entry));
+                }
             }
         }
 
