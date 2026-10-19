@@ -15,8 +15,10 @@ namespace Gondwana.Tests;
 /// Ensures runtime-to-definition capture carries only valid, known physical dependency sources.
 /// </summary>
 [Collection("Global engine state")]
-public sealed class RuntimeDefinitionDependencyProvenanceTests
+public sealed class RuntimeDefinitionDependencyProvenanceTests : IDisposable
 {
+    private readonly List<string> _images = [];
+
     [Fact]
     public void FromScene_CapturesDistinctLooseAndPackedSourcesAndRebasesOnSave()
     {
@@ -148,12 +150,23 @@ public sealed class RuntimeDefinitionDependencyProvenanceTests
         }
     }
 
-    private static Tilesheet NewSheet()
+    private Tilesheet NewSheet()
     {
         var sheet = TilesheetRegistry.Instance.LoadFromBitmap(
             $"source.{Guid.NewGuid():N}", new SKBitmap(32, 16));
         sheet.DefaultRegion.TileSize = new Size(16, 16);
+        // FromTilesheet requires an actual image source, even when definition
+        // provenance itself is simulated by these tests.
+        var imagePath = Path.Combine(Path.GetTempPath(), $"GondwanaSource_{Guid.NewGuid():N}.png");
+        sheet.PersistImageToFile(imagePath);
+        _images.Add(imagePath);
         return sheet;
+    }
+
+    public void Dispose()
+    {
+        foreach (var image in _images)
+            if (File.Exists(image)) File.Delete(image);
     }
 
     private static DefinitionProvenance CaptureSheet(
