@@ -4,11 +4,127 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
+## Gondwana
+
+### Added
+- Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
+- Persist sprite animation assignments and preserve Cycle clone flags ([#453](https://github.com/Isthimius/Gondwana/pull/453))
+- Support portable reference relocation and atomic persistence ([#455](https://github.com/Isthimius/Gondwana/pull/455))
+- Add semantic asset unpack and selective export ([#458](https://github.com/Isthimius/Gondwana/pull/458))
+
+
+
+### Fixed
+- Handle touch taps on the game board ([#445](https://github.com/Isthimius/Gondwana/pull/445))
+
+## Tooling / Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics
+
+### Added
+- Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
+
+## Tooling / Gondwana.Cli
+
+### Added
+- Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
+- Pack semantic dependencies in native definitions ([#456](https://github.com/Isthimius/Gondwana/pull/456))
+- Add semantic asset unpack and selective export ([#458](https://github.com/Isthimius/Gondwana/pull/458))
+- Add semantic asset imports and packing support ([#459](https://github.com/Isthimius/Gondwana/pull/459))
+- Add reference-aware asset moves and renames ([#460](https://github.com/Isthimius/Gondwana/pull/460))
+- Add reference-aware asset deletion ([#461](https://github.com/Isthimius/Gondwana/pull/461))
+
+
+
+### Fixed
+- Improve Butler authentication guidance for itch deployments ([#446](https://github.com/Isthimius/Gondwana/pull/446))
+
+
+
+### Refactoring
+- Consolidate asset tooling workflows and docs ([#462](https://github.com/Isthimius/Gondwana/pull/462))
+
+## Tooling / Gondwana.Tooling.Assets.WinForms
+
+### Added
+- Add semantic asset imports and packing support ([#459](https://github.com/Isthimius/Gondwana/pull/459))
+- Add reference-aware asset moves and renames ([#460](https://github.com/Isthimius/Gondwana/pull/460))
+- Add reference-aware asset deletion ([#461](https://github.com/Isthimius/Gondwana/pull/461))
+
+
+
+### Refactoring
+- Consolidate asset tooling workflows and docs ([#462](https://github.com/Isthimius/Gondwana/pull/462))
+
+## Tooling / Gondwana.Tooling.Animations.WinForms
+
+### Added
+- Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
+- Support portable reference relocation and atomic persistence ([#455](https://github.com/Isthimius/Gondwana/pull/455))
+
+## Tooling / Gondwana.Tooling.Audio.WinForms
+
+### Added
+- Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
+- Support portable reference relocation and atomic persistence ([#455](https://github.com/Isthimius/Gondwana/pull/455))
+
+## Tooling / Gondwana.Tooling.Studio.WinForms
+
+### Added
+- Add reference-aware asset moves and renames ([#460](https://github.com/Isthimius/Gondwana/pull/460))
+- Add reference-aware asset deletion ([#461](https://github.com/Isthimius/Gondwana/pull/461))
+- Group working-directory files and add context menus ([#477](https://github.com/Isthimius/Gondwana/pull/477))
+
+## Tooling / Gondwana.Tooling.Scenes.WinForms
+
+### Added
+- Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
+- Persist sprite animation assignments and preserve Cycle clone flags ([#453](https://github.com/Isthimius/Gondwana/pull/453))
+- Support portable reference relocation and atomic persistence ([#455](https://github.com/Isthimius/Gondwana/pull/455))
+
+
+
+### Fixed
+- Resolve GANI preview tilesheets by member identity ([#454](https://github.com/Isthimius/Gondwana/pull/454))
+
+## Tooling / Gondwana.Tooling.SceneViewer.WinForms
+
+### Added
+- Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
+- Persist sprite animation assignments and preserve Cycle clone flags ([#453](https://github.com/Isthimius/Gondwana/pull/453))
+
+## Tooling / Gondwana.Tooling.Sprites.WinForms
+
+### Added
+- Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
+- Persist sprite animation assignments and preserve Cycle clone flags ([#453](https://github.com/Isthimius/Gondwana/pull/453))
+- Support portable reference relocation and atomic persistence ([#455](https://github.com/Isthimius/Gondwana/pull/455))
+
+## Tooling / Gondwana.Tooling.Tilesheets.WinForms
+
+### Added
+- Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
+- Support portable reference relocation and atomic persistence ([#455](https://github.com/Isthimius/Gondwana/pull/455))
+
 ## Build / Repository
+
+### Added
+- Add semantic asset imports and packing support ([#459](https://github.com/Isthimius/Gondwana/pull/459))
+
+
+
+### Fixed
+- Handle touch taps on the game board ([#445](https://github.com/Isthimius/Gondwana/pull/445))
+
+
+
+### Documentation
+- Add Wiki sync utility README ([#475](https://github.com/Isthimius/Gondwana/pull/475))
+
+
 
 ### Other Changes
 - Revise README for clarity and updated features
 - Update AI integration description in README
+- Update release note link for Gondwana 2.6.1
 
 # [v2.6.1] - 2026-10-08
 

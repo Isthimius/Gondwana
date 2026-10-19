@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
+
+
+## Added
+- Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
+- Persist sprite animation assignments and preserve Cycle clone flags ([#453](https://github.com/Isthimius/Gondwana/pull/453))
+- Support portable reference relocation and atomic persistence ([#455](https://github.com/Isthimius/Gondwana/pull/455))
+
 # v2.6.1 - October 08, 2026
 
 

@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
+
+
+## Added
+- Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
+- Pack semantic dependencies in native definitions ([#456](https://github.com/Isthimius/Gondwana/pull/456))
+- Add semantic asset unpack and selective export ([#458](https://github.com/Isthimius/Gondwana/pull/458))
+- Add semantic asset imports and packing support ([#459](https://github.com/Isthimius/Gondwana/pull/459))
+- Add reference-aware asset moves and renames ([#460](https://github.com/Isthimius/Gondwana/pull/460))
+- Add reference-aware asset deletion ([#461](https://github.com/Isthimius/Gondwana/pull/461))
+
+
+
+## Fixed
+- Improve Butler authentication guidance for itch deployments ([#446](https://github.com/Isthimius/Gondwana/pull/446))
+
+
+
+## Refactoring
+- Consolidate asset tooling workflows and docs ([#462](https://github.com/Isthimius/Gondwana/pull/462))
+
 # v2.6.1 - October 08, 2026
 
 

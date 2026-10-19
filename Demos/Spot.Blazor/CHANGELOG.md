@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ## Fixed
 - Fit browser game to available viewport ([#444](https://github.com/Isthimius/Gondwana/pull/444))
+- Handle touch taps on the game board ([#445](https://github.com/Isthimius/Gondwana/pull/445))
 
 # v2.6.1 - October 08, 2026
 

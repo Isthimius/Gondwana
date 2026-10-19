@@ -5,9 +5,6 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
-## Added
-- Expose widget-aware unhandled primary gameplay actions for mouse presses and recognized touch taps.
-
 # v2.6.1 - October 08, 2026
 
 

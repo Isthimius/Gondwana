@@ -4,15 +4,6 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
-## Added
-- Fit generated WebGL canvases into mobile and desktop viewports without cropping logical game content.
-
-## Fixed
-- Display an initialization error state instead of an indefinitely running loader on failure.
-
-## Maintenance
-- Share startup loader CSS across pre-WASM HTML and the Blazor application overlay.
-
 # v2.6.1 - October 08, 2026
 
 

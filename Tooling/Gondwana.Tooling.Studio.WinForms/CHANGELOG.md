@@ -13,6 +13,13 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
+
+
+## Added
+- Add reference-aware asset moves and renames ([#460](https://github.com/Isthimius/Gondwana/pull/460))
+- Add reference-aware asset deletion ([#461](https://github.com/Isthimius/Gondwana/pull/461))
+- Group working-directory files and add context menus ([#477](https://github.com/Isthimius/Gondwana/pull/477))
+
 # v2.6.1 - October 08, 2026
 
 

@@ -12,6 +12,18 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
+
+
+## Added
+- Add semantic asset imports and packing support ([#459](https://github.com/Isthimius/Gondwana/pull/459))
+- Add reference-aware asset moves and renames ([#460](https://github.com/Isthimius/Gondwana/pull/460))
+- Add reference-aware asset deletion ([#461](https://github.com/Isthimius/Gondwana/pull/461))
+
+
+
+## Refactoring
+- Consolidate asset tooling workflows and docs ([#462](https://github.com/Isthimius/Gondwana/pull/462))
+
 # v2.6.1 - October 08, 2026
 
 
