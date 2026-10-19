@@ -110,6 +110,14 @@ Validation rejects duplicate supplied GUIDs and nonempty nicknames, missing scen
 
 ## Shared authoring sources
 
+`SpriteDefinitionSerializer.FromSprites()` records GTS, GSCN, and GANI source
+locations for referenced runtime dependencies when their definitions match the
+recorded provenance. Animation sources are collected from registered cycles,
+including `NextCycle` transitions, rather than per-sprite playback clones.
+Dependencies without matching provenance retain logical references without
+physical source paths. `Save(path, sprites)` stores source paths relative to
+the destination GSPR.
+
 GTS, GSCN, and GANI source locations live once at document level. Logical runtime IDs remain on entries. Loose sources hold relative GtsPath or GscnPath; packed sources hold AssetsFilePath and AssetEntryName. These declarations tell authoring tools where definitions can be found. Runtime materialization never opens these paths.
 
 Save As rebases source paths relative to the destination. Runtime provenance distinguishes generated, loose and packed definitions, and is not written into portable JSON.

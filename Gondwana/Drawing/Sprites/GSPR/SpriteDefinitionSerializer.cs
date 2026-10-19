@@ -149,7 +149,49 @@ public static partial class SpriteDefinitionSerializer
     public static SpriteDefinition FromSprites(IEnumerable<Sprite> sprites)
     {
         ArgumentNullException.ThrowIfNull(sprites);
-        return new() { Sprites = sprites.Select(FromSprite).ToList(), Source = SpriteDefinitionSource.Generated() };
+        var instances = sprites.ToList();
+        var definition = new SpriteDefinition
+        {
+            Sprites = instances.Select(FromSprite).ToList(),
+            Source = SpriteDefinitionSource.Generated()
+        };
+
+        var tilesheets = new HashSet<string>(StringComparer.Ordinal);
+        var scenes = new HashSet<string>(StringComparer.Ordinal);
+        var animations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var sprite in instances)
+        {
+            if (sprite.CurrentFrame.Tilesheet is { } sheet && tilesheets.Add(sheet.Name))
+            {
+                var source = DefinitionDependencyProvenance.ForTilesheet(sheet);
+                if (source?.FilePath is { } loose)
+                    definition.TilesheetSources.Add(SpriteTilesheetSourceDefinition.Loose(sheet.Name, loose));
+                else if (source?.AssetsFilePath is { } archive && source.AssetEntryName is { } entry)
+                    definition.TilesheetSources.Add(SpriteTilesheetSourceDefinition.Packed(sheet.Name, archive, entry));
+            }
+
+            if (sprite.SceneLayer.Scene is { } scene && scenes.Add(scene.ID))
+            {
+                var source = DefinitionDependencyProvenance.ForScene(scene);
+                if (source?.FilePath is { } loose)
+                    definition.SceneSources.Add(SpriteSceneSourceDefinition.Loose(scene.ID, loose));
+                else if (source?.AssetsFilePath is { } archive && source.AssetEntryName is { } entry)
+                    definition.SceneSources.Add(SpriteSceneSourceDefinition.Packed(scene.ID, archive, entry));
+            }
+
+            if (sprite.TileAnimator.CurrentCycle?.CycleKey is { Length: > 0 } key)
+            {
+                foreach (var (animationKey, source) in DefinitionDependencyProvenance.ForAnimationChain(key, animations))
+                {
+                    if (source.FilePath is { } loose)
+                        definition.AnimationSources.Add(SpriteAnimationSourceDefinition.Loose(animationKey, loose));
+                    else if (source.AssetsFilePath is { } archive && source.AssetEntryName is { } entry)
+                        definition.AnimationSources.Add(SpriteAnimationSourceDefinition.Packed(animationKey, archive, entry));
+                }
+            }
+        }
+
+        return definition;
     }
 
     /// <summary>

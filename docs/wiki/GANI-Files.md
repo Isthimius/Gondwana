@@ -188,6 +188,11 @@ For authoring tools, GANI can also record where that logical tilesheet definitio
 ]
 ```
 
+`AnimationDefinitionSerializer.FromCycle()` records a GTS source location for each
+distinct referenced tilesheet whose runtime definition matches its recorded
+provenance. Tilesheets without matching provenance are referenced by logical name
+only. `Save(path, cycle)` stores source paths relative to the destination GANI file.
+
 These source entries are **authoring/dependency metadata**. They help editors reopen the correct GTS definitions, but runtime materialization does not load those files. `AnimationDefinitionSerializer.ToCycle(...)` still resolves frame references through `TilesheetRegistry`.
 
 Relative source paths are interpreted from the containing GANI file.
