@@ -98,7 +98,7 @@ public static partial class AnimationDefinitionSerializer
     {
         ArgumentNullException.ThrowIfNull(cycle);
 
-        return new AnimationDefinition
+        var definition = new AnimationDefinition
         {
             Key = cycle.CycleKey,
             ThrottleTime = cycle.ThrottleTime,
@@ -115,6 +115,20 @@ public static partial class AnimationDefinitionSerializer
                 .ToList(),
             Source = AnimationDefinitionSource.Generated()
         };
+
+        foreach (var name in definition.Frames.Select(frame => frame.Tilesheet)
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .Distinct(StringComparer.Ordinal))
+        {
+            var source = DefinitionDependencyProvenance.ForTilesheet(
+                TilesheetRegistry.Instance.GetOrNull(name));
+            if (source?.FilePath is { } loose)
+                definition.TilesheetSources.Add(AnimationTilesheetSourceDefinition.Loose(name, loose));
+            else if (source?.AssetsFilePath is { } archive && source.AssetEntryName is { } entry)
+                definition.TilesheetSources.Add(AnimationTilesheetSourceDefinition.Packed(name, archive, entry));
+        }
+
+        return definition;
     }
 
     /// <summary>
