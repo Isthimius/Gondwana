@@ -272,7 +272,9 @@ For example:
 ```
 
 When projecting a runtime scene, `FromScene()` discovers GTS and GANI source locations
-from the referenced registered objects' provenance. It records a loose or packed source
+from the referenced registered objects' provenance, including unassigned animations
+reachable through each registered animation's `NextCycle` chain. Cycles and
+duplicate keys terminate traversal safely. It records a loose or packed source
 only when the live dependency still matches the source baseline. Generated or modified
 dependencies retain their logical references without a potentially stale physical path.
 `Save(path, scene)` rebases discovered paths relative to the saved GSCN; a direct
