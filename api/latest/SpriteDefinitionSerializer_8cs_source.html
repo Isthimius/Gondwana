@@ -198,126 +198,168 @@ $(function(){initNavTree('SpriteDefinitionSerializer_8cs_source.html','',''); })
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keyword">public</span> <span class="keyword">static</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a16a8098599916ee5dbf52c4972f241d3">SpriteDefinition</a> FromSprites(IEnumerable&lt;Sprite&gt; sprites)</div>
 <div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    {</div>
 <div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        ArgumentNullException.ThrowIfNull(sprites);</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="keywordflow">return</span> <span class="keyword">new</span>() { <a class="code hl_enumvalue" href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575a0c8651846cd269d069a6a93ddbfaedbf">Sprites</a> = sprites.Select(FromSprite).ToList(), Source = SpriteDefinitionSource.Generated() };</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    }</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span></div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keyword">public</span> <span class="keyword">static</span> SpriteInstanceDefinition FromSprite(Sprite sprite)</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    {</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        ArgumentNullException.ThrowIfNull(sprite);</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        var frame = sprite.CurrentFrame;</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        <span class="keywordflow">return</span> <span class="keyword">new</span>()</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        {</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>            Id = sprite.Id,</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>            Nickname = sprite.Nickname,</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>            SceneId = sprite.SceneLayer.Scene?.ID ?? <span class="keywordtype">string</span>.Empty,</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>            SceneLayerId = sprite.SceneLayer.ID,</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>            Position = sprite.SceneLayerCoordinates,</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>            Frame = frame.Tilesheet is <span class="keyword">null</span> ? null : <span class="keyword">new</span>() { Tilesheet = frame.Tilesheet.Name, RegionName = frame.RegionName, XTile = frame.XTile, YTile = frame.YTile },</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>            AnimationKey = sprite.TileAnimator.CurrentCycle?.CycleKey,</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>            StartAnimation = sprite.TileAnimator.IsCycling,</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>            Visible = sprite.Visible,</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>            ZOrder = sprite.ZOrder,</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>            Rotation = sprite.Rotation,</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>            HorizAlign = sprite.HorizAlign,</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>            VertAlign = sprite.VertAlign,</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>            NudgeX = sprite.NudgeX,</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>            NudgeY = sprite.NudgeY,</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>            RenderSize = sprite.RenderSize,</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>            EnableFog = sprite.EnableFog,</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>            AdjustCollisionArea = sprite.AdjustCollisionArea,</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            AdjustCollisionAreaByFrame = sprite.AdjustCollisionAreaByFrame,</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>            CollisionType = sprite.CollisionType,</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>            CollisionTypeByFrame = sprite.CollisionTypeByFrame,</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>            CollisionProfileName = sprite.CollisionProfileName,</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>            CollisionsEnabled = sprite.CollisionsEnabled</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        };</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    }</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span></div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keyword">public</span> <span class="keyword">static</span> List&lt;Sprite&gt; LoadSprites(<span class="keywordtype">string</span> filePath) =&gt; ToSprites(Load(filePath));</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <span class="keyword">public</span> <span class="keyword">static</span> List&lt;Sprite&gt; LoadSprites(AssetsFile assetsFile, <span class="keywordtype">string</span> entryName) =&gt; ToSprites(Load(assetsFile, entryName));</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="keyword">public</span> <span class="keyword">static</span> Sprite ToSprite(SpriteInstanceDefinition definition) =&gt; ToSprites(<span class="keyword">new</span>() { <a class="code hl_enumvalue" href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575a0c8651846cd269d069a6a93ddbfaedbf">Sprites</a> = [definition] })[0];</div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span></div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="keyword">public</span> <span class="keyword">static</span> List&lt;Sprite&gt; ToSprites(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a16a8098599916ee5dbf52c4972f241d3">SpriteDefinition</a> definition)</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        =&gt; ToSprites(definition, allowDuplicateNicknames: <span class="keyword">false</span>);</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="comment">// EngineState retains its historical last-incoming-nickname-wins merge contract.</span></div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="keyword">internal</span> <span class="keyword">static</span> List&lt;Sprite&gt; ToSprites(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a16a8098599916ee5dbf52c4972f241d3">SpriteDefinition</a> definition, <span class="keywordtype">bool</span> allowDuplicateNicknames)</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    {</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        var errors = SpriteDefinitionValidator.Validate(definition, allowDuplicateNicknames);</div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        <span class="keywordflow">if</span> (errors.Count != 0) <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException(<span class="stringliteral">&quot;Invalid GSPR definition:\n&quot;</span> + <span class="keywordtype">string</span>.Join(<span class="stringliteral">&quot;\n&quot;</span>, errors));</div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        var created = <span class="keyword">new</span> List&lt;Sprite&gt;();</div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="keywordflow">try</span></div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        {</div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>            <span class="keywordflow">foreach</span> (var entry <span class="keywordflow">in</span> definition.Sprites)</div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>            {</div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>                var scenes = <a class="code hl_enumvalue" href="namespaceGondwana_1_1Widgets_1_1Hud.html#aa54c6ede40bfda28c589c2ff03d4bd93a9ead0d38e06ec253ca0ecbf6ea56e59b">Scene</a>._allScenes.Where(scene =&gt; scene.ID == entry.SceneId).Take(2).ToArray();</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>                <span class="keywordflow">if</span> (scenes.Length != 1)</div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>                    <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;Sprite &#39;{entry.Nickname}&#39;: Scene &#39;{entry.SceneId}&#39; is missing or ambiguous.&quot;</span>);</div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>                var scene = scenes[0];</div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>                var layers = scene.SceneLayers.Where(layer =&gt; layer.ID == entry.SceneLayerId).Take(2).ToArray();</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>                <span class="keywordflow">if</span> (layers.Length != 1)</div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>                    <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;Sprite &#39;{entry.Nickname}&#39;: SceneLayer &#39;{entry.SceneLayerId}&#39; is missing or ambiguous.&quot;</span>);</div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>                var layer = layers[0];</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>                var frame = entry.Frame is <span class="keyword">null</span> ? default : ResolveFrame(entry.Frame);</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>                <span class="keywordflow">if</span> (!<span class="keywordtype">string</span>.IsNullOrWhiteSpace(entry.CollisionProfileName) &amp;&amp; !scene.CollisionProfiles.GetProfileNames().Contains(entry.CollisionProfileName))</div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>                    <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;Sprite &#39;{entry.Nickname}&#39;: collision profile &#39;{entry.CollisionProfileName}&#39; does not exist.&quot;</span>);</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>                var sprite = SpriteManager.Instance.CreateSprite(layer, frame, entry.Nickname, entry.CollisionProfileName);</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>                created.Add(sprite);</div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>                <span class="keywordflow">if</span> (entry.Id != Guid.Empty) sprite.Id = entry.Id;</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>                sprite.SetPosition(<span class="keyword">new</span> Vector2(entry.Position.X, entry.Position.Y));</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>                sprite.Visible = entry.Visible;</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>                sprite.ZOrder = entry.ZOrder;</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>                sprite.Rotation = entry.Rotation;</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>                sprite.HorizAlign = entry.HorizAlign;</div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>                sprite.VertAlign = entry.VertAlign;</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>                sprite.NudgeX = entry.NudgeX;</div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>                sprite.NudgeY = entry.NudgeY;</div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>                <span class="keywordflow">if</span> (!entry.RenderSize.IsEmpty) sprite.RenderSize = entry.RenderSize;</div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>                sprite.EnableFog = entry.EnableFog;</div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>                sprite.AdjustCollisionArea = entry.AdjustCollisionArea;</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>                sprite.CollisionType = entry.CollisionType;</div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>                sprite.AdjustCollisionAreaByFrame = entry.AdjustCollisionAreaByFrame;</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>                sprite.CollisionTypeByFrame = entry.CollisionTypeByFrame;</div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>                sprite.CollisionsEnabled = entry.CollisionsEnabled;</div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>                <span class="keywordflow">if</span> (!<span class="keywordtype">string</span>.IsNullOrWhiteSpace(entry.AnimationKey))</div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>                {</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>                    <span class="comment">// Cycle.GetAnimationCycle returns a per-sprite clone with independent playback state.</span></div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>                    var cycle = Cycle.GetAnimationCycle(entry.AnimationKey)</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>                        ?? <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException(</div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>                            $<span class="stringliteral">&quot;Sprite &#39;{entry.Nickname}&#39;: animation &#39;{entry.AnimationKey}&#39; is not registered.&quot;</span>);</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>                    sprite.TileAnimator.CurrentCycle = cycle;</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>                    <span class="keywordflow">if</span> (entry.StartAnimation) sprite.TileAnimator.StartAnimation();</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>                }</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>            }</div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>            SpriteManager.Instance.DefinitionProvenance = definition.Sprites.All(sprite =&gt; sprite.Id != Guid.Empty &amp;&amp;</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>                !<span class="keywordtype">string</span>.IsNullOrWhiteSpace(sprite.Nickname))</div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>                ? definition.LoadStamp?.Materialized(definition, () =&gt; FromSprites(created))</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>                : <span class="keyword">null</span>;</div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>            <span class="keywordflow">foreach</span> (var sprite <span class="keywordflow">in</span> created) sprite.DefinitionProvenance = SpriteManager.Instance.DefinitionProvenance;</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>            <span class="keywordflow">return</span> created;</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        }</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        <span class="keywordflow">catch</span></div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        {</div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>            <span class="keywordflow">foreach</span> (var sprite <span class="keywordflow">in</span> created)</div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>            {</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>                SpriteManager.Instance._spriteList.Remove(sprite);</div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>                sprite.DisposeImmediate();</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>            }</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>            <span class="keywordflow">throw</span>;</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>        }</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    }</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span> </div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>    <span class="keyword">private</span> <span class="keyword">static</span> Frame ResolveFrame(SpriteFrameDefinition definition)</div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    {</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>        var sheet = TilesheetRegistry.Instance.GetOrNull(definition.Tilesheet)</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>            ?? <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;GSPR tilesheet &#39;{definition.Tilesheet}&#39; is not registered.&quot;</span>);</div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>        var region = sheet.GetRegion(definition.RegionName)</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>            ?? <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;GSPR region &#39;{definition.RegionName}&#39; is missing on &#39;{definition.Tilesheet}&#39;.&quot;</span>);</div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>        <span class="keywordflow">if</span> (definition.XTile &gt;= region.Columns || definition.YTile &gt;= region.Rows)</div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;GSPR frame ({definition.XTile}, {definition.YTile}) is outside region &#39;{definition.RegionName}&#39;.&quot;</span>);</div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        <span class="keywordflow">return</span> sheet.GetFrame(definition.RegionName, definition.XTile, definition.YTile);</div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    }</div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>}</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        var instances = sprites.ToList();</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        var definition = <span class="keyword">new</span> <a class="code hl_enumvalue" href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a16a8098599916ee5dbf52c4972f241d3">SpriteDefinition</a></div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        {</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>            <a class="code hl_enumvalue" href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575a0c8651846cd269d069a6a93ddbfaedbf">Sprites</a> = instances.Select(FromSprite).ToList(),</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>            Source = SpriteDefinitionSource.Generated()</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        };</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        var tilesheets = <span class="keyword">new</span> HashSet&lt;string&gt;(StringComparer.Ordinal);</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        var scenes = <span class="keyword">new</span> HashSet&lt;string&gt;(StringComparer.Ordinal);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        var animations = <span class="keyword">new</span> HashSet&lt;string&gt;(StringComparer.OrdinalIgnoreCase);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        <span class="keywordflow">foreach</span> (var sprite <span class="keywordflow">in</span> instances)</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        {</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>            <span class="keywordflow">if</span> (sprite.CurrentFrame.Tilesheet is { } sheet &amp;&amp; tilesheets.Add(sheet.Name))</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>            {</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>                var source = DefinitionDependencyProvenance.ForTilesheet(sheet);</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>                <span class="keywordflow">if</span> (source?.FilePath is { } loose)</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>                    definition.TilesheetSources.Add(SpriteTilesheetSourceDefinition.Loose(sheet.Name, loose));</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>                <span class="keywordflow">else</span> <span class="keywordflow">if</span> (source?.AssetsFilePath is { } archive &amp;&amp; source.AssetEntryName is { } entry)</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>                    definition.TilesheetSources.Add(SpriteTilesheetSourceDefinition.Packed(sheet.Name, archive, entry));</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>            }</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>            <span class="keywordflow">if</span> (sprite.SceneLayer.Scene is { } scene &amp;&amp; scenes.Add(scene.ID))</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>            {</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>                var source = DefinitionDependencyProvenance.ForScene(scene);</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>                <span class="keywordflow">if</span> (source?.FilePath is { } loose)</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>                    definition.SceneSources.Add(SpriteSceneSourceDefinition.Loose(scene.ID, loose));</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>                <span class="keywordflow">else</span> <span class="keywordflow">if</span> (source?.AssetsFilePath is { } archive &amp;&amp; source.AssetEntryName is { } entry)</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>                    definition.SceneSources.Add(SpriteSceneSourceDefinition.Packed(scene.ID, archive, entry));</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>            }</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>            <span class="keywordflow">if</span> (sprite.TileAnimator.CurrentCycle?.CycleKey is { Length: &gt; 0 } key)</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>            {</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>                <span class="keywordflow">foreach</span> (var (animationKey, source) in DefinitionDependencyProvenance.ForAnimationChain(key, animations))</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>                {</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>                    <span class="keywordflow">if</span> (source.FilePath is { } loose)</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>                        definition.AnimationSources.Add(SpriteAnimationSourceDefinition.Loose(animationKey, loose));</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>                    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (source.AssetsFilePath is { } archive &amp;&amp; source.AssetEntryName is { } entry)</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                        definition.AnimationSources.Add(SpriteAnimationSourceDefinition.Packed(animationKey, archive, entry));</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                }</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>            }</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        }</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="keywordflow">return</span> definition;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    }</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span></div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <span class="keyword">public</span> <span class="keyword">static</span> SpriteInstanceDefinition FromSprite(Sprite sprite)</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    {</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        ArgumentNullException.ThrowIfNull(sprite);</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        var frame = sprite.CurrentFrame;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="keywordflow">return</span> <span class="keyword">new</span>()</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        {</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            Id = sprite.Id,</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>            Nickname = sprite.Nickname,</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>            SceneId = sprite.SceneLayer.Scene?.ID ?? <span class="keywordtype">string</span>.Empty,</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>            SceneLayerId = sprite.SceneLayer.ID,</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>            Position = sprite.SceneLayerCoordinates,</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>            Frame = frame.Tilesheet is <span class="keyword">null</span> ? null : <span class="keyword">new</span>() { Tilesheet = frame.Tilesheet.Name, RegionName = frame.RegionName, XTile = frame.XTile, YTile = frame.YTile },</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>            AnimationKey = sprite.TileAnimator.CurrentCycle?.CycleKey,</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>            StartAnimation = sprite.TileAnimator.IsCycling,</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>            Visible = sprite.Visible,</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>            ZOrder = sprite.ZOrder,</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>            Rotation = sprite.Rotation,</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>            HorizAlign = sprite.HorizAlign,</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            VertAlign = sprite.VertAlign,</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>            NudgeX = sprite.NudgeX,</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>            NudgeY = sprite.NudgeY,</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>            RenderSize = sprite.RenderSize,</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>            EnableFog = sprite.EnableFog,</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>            AdjustCollisionArea = sprite.AdjustCollisionArea,</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>            AdjustCollisionAreaByFrame = sprite.AdjustCollisionAreaByFrame,</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>            CollisionType = sprite.CollisionType,</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>            CollisionTypeByFrame = sprite.CollisionTypeByFrame,</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>            CollisionProfileName = sprite.CollisionProfileName,</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>            CollisionsEnabled = sprite.CollisionsEnabled</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        };</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    }</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span></div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    <span class="keyword">public</span> <span class="keyword">static</span> List&lt;Sprite&gt; LoadSprites(<span class="keywordtype">string</span> filePath) =&gt; ToSprites(Load(filePath));</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    <span class="keyword">public</span> <span class="keyword">static</span> List&lt;Sprite&gt; LoadSprites(AssetsFile assetsFile, <span class="keywordtype">string</span> entryName) =&gt; ToSprites(Load(assetsFile, entryName));</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    <span class="keyword">public</span> <span class="keyword">static</span> Sprite ToSprite(SpriteInstanceDefinition definition) =&gt; ToSprites(<span class="keyword">new</span>() { <a class="code hl_enumvalue" href="namespaceGondwana.html#a41a5393997f1467717cf9a6ca9281575a0c8651846cd269d069a6a93ddbfaedbf">Sprites</a> = [definition] })[0];</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span></div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    <span class="keyword">public</span> <span class="keyword">static</span> List&lt;Sprite&gt; ToSprites(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a16a8098599916ee5dbf52c4972f241d3">SpriteDefinition</a> definition)</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        =&gt; ToSprites(definition, allowDuplicateNicknames: <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span> </div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    <span class="comment">// EngineState retains its historical last-incoming-nickname-wins merge contract.</span></div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    <span class="keyword">internal</span> <span class="keyword">static</span> List&lt;Sprite&gt; ToSprites(<a class="code hl_enumvalue" href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a16a8098599916ee5dbf52c4972f241d3">SpriteDefinition</a> definition, <span class="keywordtype">bool</span> allowDuplicateNicknames)</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    {</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        var errors = SpriteDefinitionValidator.Validate(definition, allowDuplicateNicknames);</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        <span class="keywordflow">if</span> (errors.Count != 0) <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException(<span class="stringliteral">&quot;Invalid GSPR definition:\n&quot;</span> + <span class="keywordtype">string</span>.Join(<span class="stringliteral">&quot;\n&quot;</span>, errors));</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        var created = <span class="keyword">new</span> List&lt;Sprite&gt;();</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        <span class="keywordflow">try</span></div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>        {</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>            <span class="keywordflow">foreach</span> (var entry <span class="keywordflow">in</span> definition.Sprites)</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>            {</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>                var scenes = <a class="code hl_enumvalue" href="namespaceGondwana_1_1Widgets_1_1Hud.html#aa54c6ede40bfda28c589c2ff03d4bd93a9ead0d38e06ec253ca0ecbf6ea56e59b">Scene</a>._allScenes.Where(scene =&gt; scene.ID == entry.SceneId).Take(2).ToArray();</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>                <span class="keywordflow">if</span> (scenes.Length != 1)</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>                    <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;Sprite &#39;{entry.Nickname}&#39;: Scene &#39;{entry.SceneId}&#39; is missing or ambiguous.&quot;</span>);</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>                var scene = scenes[0];</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>                var layers = scene.SceneLayers.Where(layer =&gt; layer.ID == entry.SceneLayerId).Take(2).ToArray();</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>                <span class="keywordflow">if</span> (layers.Length != 1)</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>                    <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;Sprite &#39;{entry.Nickname}&#39;: SceneLayer &#39;{entry.SceneLayerId}&#39; is missing or ambiguous.&quot;</span>);</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>                var layer = layers[0];</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>                var frame = entry.Frame is <span class="keyword">null</span> ? default : ResolveFrame(entry.Frame);</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>                <span class="keywordflow">if</span> (!<span class="keywordtype">string</span>.IsNullOrWhiteSpace(entry.CollisionProfileName) &amp;&amp; !scene.CollisionProfiles.GetProfileNames().Contains(entry.CollisionProfileName))</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>                    <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;Sprite &#39;{entry.Nickname}&#39;: collision profile &#39;{entry.CollisionProfileName}&#39; does not exist.&quot;</span>);</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>                var sprite = SpriteManager.Instance.CreateSprite(layer, frame, entry.Nickname, entry.CollisionProfileName);</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>                created.Add(sprite);</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>                <span class="keywordflow">if</span> (entry.Id != Guid.Empty) sprite.Id = entry.Id;</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>                sprite.SetPosition(<span class="keyword">new</span> Vector2(entry.Position.X, entry.Position.Y));</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>                sprite.Visible = entry.Visible;</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>                sprite.ZOrder = entry.ZOrder;</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>                sprite.Rotation = entry.Rotation;</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>                sprite.HorizAlign = entry.HorizAlign;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>                sprite.VertAlign = entry.VertAlign;</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>                sprite.NudgeX = entry.NudgeX;</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>                sprite.NudgeY = entry.NudgeY;</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>                <span class="keywordflow">if</span> (!entry.RenderSize.IsEmpty) sprite.RenderSize = entry.RenderSize;</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>                sprite.EnableFog = entry.EnableFog;</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>                sprite.AdjustCollisionArea = entry.AdjustCollisionArea;</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>                sprite.CollisionType = entry.CollisionType;</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>                sprite.AdjustCollisionAreaByFrame = entry.AdjustCollisionAreaByFrame;</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>                sprite.CollisionTypeByFrame = entry.CollisionTypeByFrame;</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>                sprite.CollisionsEnabled = entry.CollisionsEnabled;</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>                <span class="keywordflow">if</span> (!<span class="keywordtype">string</span>.IsNullOrWhiteSpace(entry.AnimationKey))</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>                {</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>                    <span class="comment">// Cycle.GetAnimationCycle returns a per-sprite clone with independent playback state.</span></div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>                    var cycle = Cycle.GetAnimationCycle(entry.AnimationKey)</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>                        ?? <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException(</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>                            $<span class="stringliteral">&quot;Sprite &#39;{entry.Nickname}&#39;: animation &#39;{entry.AnimationKey}&#39; is not registered.&quot;</span>);</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>                    sprite.TileAnimator.CurrentCycle = cycle;</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>                    <span class="keywordflow">if</span> (entry.StartAnimation) sprite.TileAnimator.StartAnimation();</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>                }</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>            }</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>            SpriteManager.Instance.DefinitionProvenance = definition.Sprites.All(sprite =&gt; sprite.Id != Guid.Empty &amp;&amp;</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>                !<span class="keywordtype">string</span>.IsNullOrWhiteSpace(sprite.Nickname))</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>                ? definition.LoadStamp?.Materialized(definition, () =&gt; FromSprites(created))</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>                : <span class="keyword">null</span>;</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>            <span class="keywordflow">foreach</span> (var sprite <span class="keywordflow">in</span> created) sprite.DefinitionProvenance = SpriteManager.Instance.DefinitionProvenance;</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>            <span class="keywordflow">return</span> created;</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>        }</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>        <span class="keywordflow">catch</span></div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>        {</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>            <span class="keywordflow">foreach</span> (var sprite <span class="keywordflow">in</span> created)</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>            {</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>                SpriteManager.Instance._spriteList.Remove(sprite);</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>                sprite.DisposeImmediate();</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>            }</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>            <span class="keywordflow">throw</span>;</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>        }</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    }</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span> </div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>    <span class="keyword">private</span> <span class="keyword">static</span> Frame ResolveFrame(SpriteFrameDefinition definition)</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    {</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>        var sheet = TilesheetRegistry.Instance.GetOrNull(definition.Tilesheet)</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>            ?? <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;GSPR tilesheet &#39;{definition.Tilesheet}&#39; is not registered.&quot;</span>);</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>        var region = sheet.GetRegion(definition.RegionName)</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>            ?? <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;GSPR region &#39;{definition.RegionName}&#39; is missing on &#39;{definition.Tilesheet}&#39;.&quot;</span>);</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        <span class="keywordflow">if</span> (definition.XTile &gt;= region.Columns || definition.YTile &gt;= region.Rows)</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> InvalidDataException($<span class="stringliteral">&quot;GSPR frame ({definition.XTile}, {definition.YTile}) is outside region &#39;{definition.RegionName}&#39;.&quot;</span>);</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>        <span class="keywordflow">return</span> sheet.GetFrame(definition.RegionName, definition.XTile, definition.YTile);</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>    }</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>}</div>
 <div class="ttc" id="anamespaceGondwana_1_1Assets_html"><div class="ttname"><a href="namespaceGondwana_1_1Assets.html">Gondwana.Assets</a></div><div class="ttdef"><b>Definition</b> <a href="AssetLocation_8cs_source.html#l00001">AssetLocation.cs:1</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Assets_html_ad9ccdf6978e9837ddaa40da0e669cdb1a16a8098599916ee5dbf52c4972f241d3"><div class="ttname"><a href="namespaceGondwana_1_1Assets.html#ad9ccdf6978e9837ddaa40da0e669cdb1a16a8098599916ee5dbf52c4972f241d3">Gondwana.Assets.AssetTypes.SpriteDefinition</a></div><div class="ttdeci">@ SpriteDefinition</div><div class="ttdoc">Gondwana sprite collection definition (.gspr).</div><div class="ttdef"><b>Definition</b> <a href="AssetTypes_8cs_source.html#l00065">AssetTypes.cs:65</a></div></div>
 <div class="ttc" id="anamespaceGondwana_1_1Drawing_1_1Animation_html"><div class="ttname"><a href="namespaceGondwana_1_1Drawing_1_1Animation.html">Gondwana.Drawing.Animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animator_8cs_source.html#l00003">Animator.cs:3</a></div></div>
