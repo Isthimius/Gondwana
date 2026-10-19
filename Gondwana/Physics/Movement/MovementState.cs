@@ -36,7 +36,8 @@ public struct MovementState
     /// <summary>
     /// Non-negative linear damping coefficient per second (0 = no damping).
     /// During integrated movement, velocity decays as v *= exp(-LinearDamping * dt),
-    /// where dt is elapsed time in seconds. Does not affect scripted movement.
+    /// where dt is elapsed time in seconds. Damping also affects scripted MoveToward movement,
+    /// but does not affect tween movement.
     /// </summary>
     public float LinearDamping { get; internal set; }
 
