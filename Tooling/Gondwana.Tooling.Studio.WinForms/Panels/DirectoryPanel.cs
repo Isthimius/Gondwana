@@ -1,5 +1,7 @@
 using System.Runtime.InteropServices;
+using Gondwana.Assets;
 using Gondwana.Tooling.Studio.WinForms.Documents;
+using ICSharpCode.SharpZipLib;
 
 namespace Gondwana.Tooling.Studio.WinForms.Panels;
 
@@ -10,7 +12,13 @@ public sealed class DirectoryPanel : UserControl
     private readonly ImageList _images = new() { ImageSize = new Size(16, 16), ColorDepth = ColorDepth.Depth32Bit };
     private readonly ContextMenuStrip _fileMenu = new();
     private string? _menuPath;
+    private CancellationTokenSource _archiveRefresh = new();
+    private readonly CancellationTokenSource _lifetime = new();
+    private readonly SemaphoreSlim _archiveGate = new(1, 1);
+    private readonly SynchronizationContext _uiContext = new WindowsFormsSynchronizationContext();
+    internal Task PendingArchiveLoads { get; private set; } = Task.CompletedTask;
     internal Action<string> OpenExternal { get; set; }
+    internal Action<string>? ArchiveOpened { get; set; }
 
     // Keep labels and placeholder icons together so artwork can be replaced easily.
     private static readonly (string Key, string Label, string Glyph, Color Color)[] Categories =
@@ -116,6 +124,9 @@ public sealed class DirectoryPanel : UserControl
 
         try
         {
+            _archiveRefresh.Cancel();
+            _archiveRefresh.Dispose();
+            _archiveRefresh = new CancellationTokenSource();
             _fileMenu.Close();
             _menuPath = null;
             Tree.Nodes.Clear();
@@ -155,7 +166,8 @@ public sealed class DirectoryPanel : UserControl
                 parent.Nodes.Add(node);
             }
 
-            foreach (var file in Directory.EnumerateFiles(path).OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase))
+            var files = Directory.EnumerateFiles(path).OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase).ToArray();
+            foreach (var file in files)
             {
                 var key = StudioDocument.FormatFor(file) ?? "misc";
                 groups[key].Nodes.Add(new TreeNode(Path.GetFileName(file))
@@ -169,6 +181,11 @@ public sealed class DirectoryPanel : UserControl
 
             foreach (var group in groups.Values)
                 group.Expand();
+
+            var scan = FillPackedEntriesAsync(groups,
+                files.Where(file => Path.GetExtension(file).Equals(".gaf", StringComparison.OrdinalIgnoreCase)).ToArray(),
+                _archiveRefresh.Token);
+            PendingArchiveLoads = PendingArchiveLoads.IsCompleted ? scan : Task.WhenAll(PendingArchiveLoads, scan);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
@@ -176,6 +193,110 @@ public sealed class DirectoryPanel : UserControl
             parent.Nodes.Add("Cannot read directory: " + ex.Message);
             _log($"Cannot read {path}: {ex.Message}");
         }
+    }
+
+    private async Task FillPackedEntriesAsync(Dictionary<string, TreeNode> groups, string[] archives, CancellationToken cancellationToken)
+    {
+        try
+        {
+            // Serialize scans across expanded folders and refreshes. AssetsFile buffers payloads;
+            // only one archive is loaded at a time, off the UI thread, without runtime registration.
+            await _archiveGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+            try
+            {
+                foreach (var archivePath in archives)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    try
+                    {
+                        var entries = await Task.Run(() =>
+                        {
+                            // Sharing flags alone cannot coexist with an exclusive writer on Windows.
+                            // Studio saves use RunWithoutArchiveReadsAsync to drain this handle first.
+                            using var stream = new FileStream(archivePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+                            ArchiveOpened?.Invoke(archivePath);
+                            using var archive = AssetsFile.Load(stream, register: false);
+                            return archive.GetAllEntries()
+                                .OrderBy(entry => entry.AssetName, StringComparer.OrdinalIgnoreCase)
+                                .ThenBy(entry => entry.AssetType)
+                                .Select(entry => new PackedAssetNodeIdentity(Path.GetFullPath(archivePath), entry.AssetType, entry.AssetName))
+                                .ToArray();
+                        }, cancellationToken).ConfigureAwait(false);
+                        await OnUiAsync(() =>
+                        {
+                            Tree.BeginUpdate();
+                            try
+                            {
+                                foreach (var entry in entries)
+                                {
+                                    var key = entry.AssetType switch
+                                    {
+                                        AssetTypes.TilesheetDefinition => "gts",
+                                        AssetTypes.AnimationDefinition => "gani",
+                                        AssetTypes.SceneDefinition => "gscn",
+                                        AssetTypes.SpriteDefinition => "gspr",
+                                        AssetTypes.AudioDefinition => "gsnd",
+                                        _ => "misc"
+                                    };
+                                    groups[key].Nodes.Add(new TreeNode($"{entry.EntryName} ({Path.GetFileName(entry.ArchivePath)})")
+                                    {
+                                        Tag = entry,
+                                        ToolTipText = $"Archive: {entry.ArchivePath}\nEntry: {entry.EntryName}\nAsset type: {entry.AssetType}",
+                                        ImageKey = key,
+                                        SelectedImageKey = key
+                                    });
+                                    groups[key].Expand();
+                                }
+                            }
+                            finally { Tree.EndUpdate(); }
+                        }, cancellationToken).ConfigureAwait(false);
+                    }
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or SharpZipBaseException)
+                    {
+                        if (!cancellationToken.IsCancellationRequested)
+                            await OnUiAsync(() => _log($"Cannot browse archive {archivePath}: {ex.Message}"), cancellationToken).ConfigureAwait(false);
+                    }
+                }
+            }
+            finally { _archiveGate.Release(); }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
+    }
+
+    private async Task OnUiAsync(Action action, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var registration = cancellationToken.Register(() => completion.TrySetCanceled(cancellationToken));
+        _uiContext.Post(_ =>
+        {
+            if (cancellationToken.IsCancellationRequested) return;
+            try
+            {
+                action();
+                completion.TrySetResult();
+            }
+            catch (Exception ex) { completion.TrySetException(ex); }
+        }, null);
+        await completion.Task.ConfigureAwait(false);
+    }
+
+    internal async Task RunWithoutArchiveReadsAsync(Action action)
+    {
+        // Called on the UI thread. Cancel obsolete scans, but wait asynchronously for the
+        // actual reader to dispose its handle; cancellation alone does not close that handle.
+        _archiveRefresh.Cancel();
+        var cancellationToken = _lifetime.Token;
+        await _archiveGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await OnUiAsync(() =>
+            {
+                try { action(); }
+                finally { RefreshDirectory(); }
+            }, cancellationToken).ConfigureAwait(false);
+        }
+        finally { _archiveGate.Release(); }
     }
 
     internal bool PrepareFileMenu(TreeNode node)
@@ -230,8 +351,12 @@ public sealed class DirectoryPanel : UserControl
     /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
+        if (disposing && !IsDisposed)
         {
+            _archiveRefresh.Cancel();
+            _archiveRefresh.Dispose();
+            _lifetime.Cancel();
+            _lifetime.Dispose();
             _fileMenu.Dispose();
             Tree.ImageList = null;
             _images.Dispose();

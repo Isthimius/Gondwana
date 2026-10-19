@@ -16,6 +16,28 @@ expand lazily, with files grouped under **Assets (.gaf)**, **Tilesheets (.gts)**
 **Animations (.gani)**, **Scenes (.gscn)**, **Sprites (.gspr)**, **Sound (.gsnd)**,
 and **Misc** in each directory. Each type has a distinct placeholder icon;
 ZIP asset containers share the Assets group. Empty groups remain visible.
+Entries inside each `.gaf` in the displayed directory are loaded in the background
+and appended after loose files, grouped by stored asset type (the five native
+definition types use their existing groups; other types use Misc). Labels retain
+the full internal entry name followed by `(archive.gaf)`, and tooltips show the
+absolute archive path, entry name, and type. Identical loose and packed names,
+including entries from different archives, remain separate.
+
+Packed entries are browsing-only: they have no Open or Open External command and
+double-click does not open them. Packed previews/resolution and document editing
+are deferred to subsequent integration steps. Refresh rereads archive contents;
+subdirectories are scanned only when expanded. Unreadable, corrupt, or protected
+archives are logged and skipped without password prompts. No files are extracted
+or changed. Scans use detached `AssetsFile` instances, disposed after each archive;
+the existing loader buffers one archive's payloads at a time, so large archives
+may take time to appear. Navigating or refreshing discards stale scan results.
+Studio GAF saves cancel obsolete scans and asynchronously wait for the active
+archive reader to release its handle before writing. The affected document is
+temporarily disabled, duplicate save requests share the pending save, and
+save-on-close/shutdown waits for success. The UI continues processing messages;
+no synchronous wait or change to GAF serialization is involved. Browsing refreshes
+after the write attempt.
+
 Right-click a file for **Open** in the built-in editor (except Misc), or
 **Open External** to choose an application using Windows' Open with dialog
 (except `.gaf`). External opening uses the saved file on disk.
