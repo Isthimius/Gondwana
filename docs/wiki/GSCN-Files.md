@@ -273,11 +273,11 @@ For example:
 
 `SceneDefinitionSerializer.FromScene()` records GTS and GANI source locations for
 referenced runtime dependencies when their definitions match the recorded provenance.
-Animation sources include registered cycles reachable through \g\u0060NextCycle\g\u0060 transitions,
+Animation sources include registered cycles reachable through `NextCycle` transitions,
 with duplicate and circular references handled once per key. Dependencies without
 matching provenance retain their logical references without a physical source path.
-\g\u0060Save(path, scene)\g\u0060 stores source paths relative to the destination GSCN; a direct
-\g\u0060FromScene()\g\u0060 result may contain absolute paths.
+`Save(path, scene)` stores source paths relative to the destination GSCN; a direct
+`FromScene()` result may contain absolute paths.
 
 These values are for **authoring and tooling only**. `ToScene()` still resolves
 frames through the registered tilesheet name and animations through the registered
