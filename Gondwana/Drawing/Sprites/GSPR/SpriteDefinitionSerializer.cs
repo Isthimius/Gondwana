@@ -179,13 +179,15 @@ public static partial class SpriteDefinitionSerializer
                     definition.SceneSources.Add(SpriteSceneSourceDefinition.Packed(scene.ID, archive, entry));
             }
 
-            if (sprite.TileAnimator.CurrentCycle?.CycleKey is { Length: > 0 } key && animations.Add(key))
+            if (sprite.TileAnimator.CurrentCycle?.CycleKey is { Length: > 0 } key)
             {
-                var source = DefinitionDependencyProvenance.ForAnimation(key);
-                if (source?.FilePath is { } loose)
-                    definition.AnimationSources.Add(SpriteAnimationSourceDefinition.Loose(key, loose));
-                else if (source?.AssetsFilePath is { } archive && source.AssetEntryName is { } entry)
-                    definition.AnimationSources.Add(SpriteAnimationSourceDefinition.Packed(key, archive, entry));
+                foreach (var (animationKey, source) in DefinitionDependencyProvenance.ForAnimationChain(key, animations))
+                {
+                    if (source.FilePath is { } loose)
+                        definition.AnimationSources.Add(SpriteAnimationSourceDefinition.Loose(animationKey, loose));
+                    else if (source.AssetsFilePath is { } archive && source.AssetEntryName is { } entry)
+                        definition.AnimationSources.Add(SpriteAnimationSourceDefinition.Packed(animationKey, archive, entry));
+                }
             }
         }
 
