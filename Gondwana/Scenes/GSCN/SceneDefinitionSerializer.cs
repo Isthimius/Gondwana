@@ -123,6 +123,33 @@ public static partial class SceneDefinitionSerializer
         foreach (var layer in scene.SceneLayers)
             definition.Layers.Add(CreateLayerDefinition(layer));
 
+        // Authoring dependencies are optional: only record physical sources known to
+        // reproduce the current registered definitions. Generated or edited sources
+        // remain logical references and must be provided by the caller on restore.
+        var tilesheets = new HashSet<string>(StringComparer.Ordinal);
+        var animations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var tile in definition.Layers.SelectMany(layer => layer.Tiles))
+        {
+            if (tile.Frame?.Tilesheet is { Length: > 0 } name && tilesheets.Add(name))
+            {
+                var source = DefinitionDependencyProvenance.ForTilesheet(
+                    TilesheetRegistry.Instance.GetOrNull(name));
+                if (source?.FilePath is { } loose)
+                    definition.TilesheetSources.Add(SceneTilesheetSourceDefinition.Loose(name, loose));
+                else if (source?.AssetsFilePath is { } archive && source.AssetEntryName is { } entry)
+                    definition.TilesheetSources.Add(SceneTilesheetSourceDefinition.Packed(name, archive, entry));
+            }
+
+            if (tile.AnimationKey is { Length: > 0 } key && animations.Add(key))
+            {
+                var source = DefinitionDependencyProvenance.ForAnimation(key);
+                if (source?.FilePath is { } loose)
+                    definition.AnimationSources.Add(SceneAnimationSourceDefinition.Loose(key, loose));
+                else if (source?.AssetsFilePath is { } archive && source.AssetEntryName is { } entry)
+                    definition.AnimationSources.Add(SceneAnimationSourceDefinition.Packed(key, archive, entry));
+            }
+        }
+
         return definition;
     }
 
