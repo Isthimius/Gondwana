@@ -282,7 +282,7 @@ public sealed class AnimationEditorTests
                         .Any(item => item.Text == "Add GTS…"));
 
                 Assert.Equal(
-                    ["Add GTS…", "Remove"],
+                    ["Reload sources", "Add GTS…", "Remove"],
                     sourceToolbar.Items
                         .Cast<ToolStripItem>()
                         .Select(item => item.Text)
@@ -541,6 +541,62 @@ public sealed class AnimationEditorTests
                 Assert.Equal(
                     "test-sheet",
                     document.Definition.Frames[0].Tilesheet);
+            }
+            finally
+            {
+                Directory.Delete(directory, recursive: true);
+            }
+        });
+
+    /// <summary>
+    /// Verifies reloading sources does not recover a removed legacy reference.
+    /// </summary>
+    [Fact]
+    public void ReloadSources_DoesNotRecoverRemovedLegacyReference() =>
+        RunSta(() =>
+        {
+            string directory = CreateTempDirectory();
+
+            try
+            {
+                string gtsPath = CreateGts(directory);
+                var document = AnimationDocument.Create(directory);
+                document.Definition.Frames.Add(
+                    new AnimationFrameDefinition
+                    {
+                        Tilesheet = "test-sheet",
+                        RegionName = "walk",
+                        XTile = 0,
+                        YTile = 0
+                    });
+
+                using var editor =
+                    new AnimationEditorControl(document);
+
+                editor.AddTilesheetSource(gtsPath);
+
+                var tree = Field<TreeView>(
+                    editor,
+                    "_sourceTree");
+                tree.SelectedNode = tree.Nodes[0];
+
+                editor.GetType()
+                    .GetMethod(
+                        "RemoveSelectedSource",
+                        PrivateInstance)!
+                    .Invoke(editor, null);
+
+                string ganiPath =
+                    Path.Combine(directory, "legacy.gani");
+                document.Save(ganiPath, allowInvalid: true);
+
+                Assert.Empty(document.Definition.TilesheetSources);
+                Assert.False(document.IsDirty);
+
+                editor.ReloadSources();
+
+                Assert.Empty(document.Definition.TilesheetSources);
+                Assert.False(document.IsDirty);
             }
             finally
             {

@@ -123,8 +123,12 @@ AnimationSources
 
 Those collections locate the corresponding GTS/GANI authoring files. Loose
 paths are stored relative to the GSCN whenever possible and are rebased by
-**Save As**. Packed GAF source metadata is preserved, although the initial
-editor does not preview packed GTS/GANI definition entries.
+**Save As**. Packed GTS/GANI dependencies and their packed images are previewed
+through the [shared authoring resolver](../Gondwana.Tooling.Assets/README.md).
+An animation's explicit tilesheet source is respected even if the scene declares
+a different source with the same logical name. Missing packed dependencies produce
+warnings instead of falling back to loose duplicates. **Reload sources** refreshes
+the loaded definitions and images without changing source metadata or dirty state.
 
 For older GSCN files that have logical references but no authoring-source
 metadata, the editor performs conservative same-directory recovery:

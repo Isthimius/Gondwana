@@ -22,4 +22,10 @@
     <Compile Include="../Shared/WinForms/DefinitionImport.cs" Link="Editing/DefinitionImport.cs" />
     <Compile Include="..\Shared\WinForms\DefinitionSelectionBar.cs" Link="Docking\DefinitionSelectionBar.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Gondwana.Tooling.Assets/Gondwana.Tooling.Assets.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../Shared/WinForms/AuthoringPreviewImage.cs" Link="Authoring/AuthoringPreviewImage.cs" />
+  </ItemGroup>
 </Project>

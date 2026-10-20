@@ -10,6 +10,8 @@ public sealed class AssetPackageCatalog : IDisposable
 {
     private readonly Dictionary<string, AssetsFile> _packages =
         new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, (long Length, DateTime Modified)> _stamps = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, Exception> _failures = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
     /// Optional host callback used when a package cannot be opened without a password.
@@ -42,29 +44,34 @@ public sealed class AssetPackageCatalog : IDisposable
     public Stream OpenImage(PackedImageSource source)
     {
         ArgumentNullException.ThrowIfNull(source);
+        return OpenAsset(source.AssetsFilePath, AssetTypes.Image, source.AssetEntryName);
+    }
 
-        var fullPath = NormalizeExistingPath(source.AssetsFilePath);
+    /// <summary>Opens an exact typed entry. No basename or different-type fallback is permitted.</summary>
+    public Stream OpenAsset(string archivePath, AssetTypes type, string entryName)
+    {
+        var fullPath = NormalizeExistingPath(archivePath);
         var package = GetPackage(fullPath);
 
         // AssetsFile.Get intentionally falls back to base-name matching when an
         // exact name is absent. Persistent GTS references must not use that fallback:
         // "forest.png" must never silently resolve to "forest.jpg".
         var exactEntry = package.GetAllEntries().FirstOrDefault(entry =>
-            entry.AssetType == AssetTypes.Image &&
+            entry.AssetType == type &&
             string.Equals(
                 entry.AssetName,
-                source.AssetEntryName,
+                entryName,
                 StringComparison.OrdinalIgnoreCase));
 
         if (exactEntry is null)
         {
             throw new InvalidDataException(
-                $"Image asset '{source.AssetEntryName}' was not found in '{fullPath}'.");
+                $"{type} asset '{entryName}' was not found in '{fullPath}' with the expected type.");
         }
 
-        return package.Get(AssetTypes.Image, exactEntry.AssetName)
+        return package.Get(type, exactEntry.AssetName)
             ?? throw new InvalidDataException(
-                $"Image asset '{source.AssetEntryName}' could not be read from '{fullPath}'.");
+                $"{type} asset '{entryName}' could not be read from '{fullPath}'.");
     }
 
     /// <summary>
@@ -100,6 +107,8 @@ public sealed class AssetPackageCatalog : IDisposable
         var fullPath = Path.GetFullPath(assetsFilePath);
         if (_packages.Remove(fullPath, out var package))
             package.Dispose();
+        _stamps.Remove(fullPath);
+        _failures.Remove(fullPath);
     }
 
     /// <summary>
@@ -111,10 +120,19 @@ public sealed class AssetPackageCatalog : IDisposable
             package.Dispose();
 
         _packages.Clear();
+        _stamps.Clear();
+        _failures.Clear();
     }
 
     private AssetsFile GetPackage(string fullPath)
     {
+        var info = new FileInfo(fullPath);
+        var stamp = (info.Length, info.LastWriteTimeUtc);
+        if (_stamps.TryGetValue(fullPath, out var previous) && previous != stamp)
+            Invalidate(fullPath);
+        _stamps[fullPath] = stamp;
+        if (_failures.TryGetValue(fullPath, out var failure))
+            throw new InvalidDataException($"Could not open asset package '{fullPath}': {failure.Message}", failure);
         if (_packages.TryGetValue(fullPath, out var existing))
             return existing;
 
@@ -123,7 +141,8 @@ public sealed class AssetPackageCatalog : IDisposable
 
         try
         {
-            package = AssetsFile.LoadOrCreate(fullPath, password: null, encrypt: false, register: false);
+            using var stream = File.OpenRead(fullPath);
+            package = AssetsFile.Load(stream, password: null, register: false, sourcePath: fullPath);
             _ = package.GetAllEntries().ToList();
         }
         catch (Exception ex)
@@ -137,23 +156,24 @@ public sealed class AssetPackageCatalog : IDisposable
         {
             var password = PasswordProvider?.Invoke(fullPath);
             if (password is null)
+            {
+                _failures[fullPath] = firstFailure!;
                 throw new InvalidDataException(
-                    $"Could not open asset package '{fullPath}'.",
+                    $"Could not open asset package '{fullPath}' (corrupt, unreadable, or password-protected): {firstFailure?.Message}",
                     firstFailure);
+            }
 
             try
             {
-                package = AssetsFile.LoadOrCreate(
-                    fullPath,
-                    password,
-                    encrypt: true,
-                    register: false);
+                using var stream = File.OpenRead(fullPath);
+                package = AssetsFile.Load(stream, password, register: false, sourcePath: fullPath);
                 _ = package.GetAllEntries().ToList();
             }
-            catch
+            catch (Exception ex)
             {
                 package?.Dispose();
-                throw;
+                _failures[fullPath] = ex;
+                throw new InvalidDataException($"Could not open asset package '{fullPath}' with the supplied password: {ex.Message}", ex);
             }
         }
 

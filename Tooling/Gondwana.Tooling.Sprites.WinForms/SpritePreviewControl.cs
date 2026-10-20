@@ -37,11 +37,13 @@ internal sealed class SpritePreviewControl : UserControl
     /// <param name="entry">The entry.</param>
     /// <param name="source">The source.</param>
     /// <param name="layer">The layer.</param>
-    public void SetSelection(SpriteInstanceDefinition? entry, SpriteTilesheetSource? source, SceneLayerDefinition? layer) => _canvas.SetSelection(entry, source, layer);
+    /// <param name="frame">Optional resolved animation frame for preview only.</param>
+    public void SetSelection(SpriteInstanceDefinition? entry, SpriteTilesheetSource? source, SceneLayerDefinition? layer, SpriteFrameDefinition? frame = null) => _canvas.SetSelection(entry, source, layer, frame);
 
     private sealed class PreviewCanvas : UserControl
     {
         private SpriteInstanceDefinition? _entry;
+        private SpriteFrameDefinition? _frame;
         private SpriteTilesheetSource? _source;
         private ProjectionLayer? _projection;
         private Rectangle _bounds;
@@ -70,11 +72,13 @@ internal sealed class SpritePreviewControl : UserControl
         /// <param name="entry">The entry.</param>
         /// <param name="source">The source.</param>
         /// <param name="layer">The layer.</param>
-        public void SetSelection(SpriteInstanceDefinition? entry, SpriteTilesheetSource? source, SceneLayerDefinition? layer)
+        /// <param name="previewFrame">The frame resolved for preview without changing the sprite.</param>
+        public void SetSelection(SpriteInstanceDefinition? entry, SpriteTilesheetSource? source, SceneLayerDefinition? layer, SpriteFrameDefinition? previewFrame)
         {
             _projection?.Dispose();
             _projection = layer is null ? null : new ProjectionLayer(layer);
             _entry = entry;
+            _frame = previewFrame ?? entry?.Frame;
             _source = source;
             if (entry is not null && (!float.IsFinite(entry.Position.X) || !float.IsFinite(entry.Position.Y) ||
                 !float.IsFinite(entry.Rotation) || entry.RenderSize.Width < 0 || entry.RenderSize.Height < 0))
@@ -87,7 +91,7 @@ internal sealed class SpritePreviewControl : UserControl
             _anchor = entry is null || _projection is null ? Point.Empty : Point.Round(_projection.GridToWorldPx(entry.Position));
             _origin = _projection?.GridToWorldPx(PointF.Empty) ?? PointF.Empty;
             Size frameSize = Size.Empty;
-            if (entry?.Frame is { } frame && source?.TryResolve(frame, out var region, out _) == true && region is not null)
+            if (_frame is { } frame && source?.TryResolve(frame, out var region, out _) == true && region is not null)
                 frameSize = region.TileSize;
             var sceneLayerSize = _projection is null ? Size.Empty : new Size(_projection.TileWidth, _projection.TileHeight);
             var size = entry is null
@@ -163,7 +167,7 @@ internal sealed class SpritePreviewControl : UserControl
             g.RotateTransform(_entry.Rotation);
             g.TranslateTransform(-_bounds.X - _bounds.Width / 2f, -_bounds.Y - _bounds.Height / 2f);
             g.InterpolationMode = InterpolationMode.NearestNeighbor;
-            if (_entry.Visible && _entry.Frame is { } frame && _source?.Image is { } image &&
+            if (_entry.Visible && _frame is { } frame && _source?.Image is { } image &&
                 _source.TryResolve(frame, out _, out var bounds) &&
                 bounds.Width > 0 && bounds.Height > 0 && bounds.X >= 0 && bounds.Y >= 0 &&
                 bounds.Right <= image.Width && bounds.Bottom <= image.Height)
@@ -174,7 +178,7 @@ internal sealed class SpritePreviewControl : UserControl
             if (_entry.CollisionsEnabled)
             {
                 var adjust = _entry.AdjustCollisionArea;
-                if (_entry.AdjustCollisionAreaByFrame && _entry.Frame is { } collisionFrame &&
+                if (_entry.AdjustCollisionAreaByFrame && _frame is { } collisionFrame &&
                     _source is not null && _source.TryResolve(collisionFrame, out var region, out _) && region is not null)
                 {
                     adjust = region.Frames.FirstOrDefault(frame => frame.XTile == collisionFrame.XTile && frame.YTile == collisionFrame.YTile)?.CollisionAdjust

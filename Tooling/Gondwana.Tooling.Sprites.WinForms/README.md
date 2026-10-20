@@ -24,6 +24,13 @@ Use Add GSCN in the source pane or the File menu. Expand the scene and double-cl
 
 GTS data and images belong to the editor. They are not registered with TilesheetRegistry. Loading GSCN reads definitions without materializing a runtime scene. Runtime GSPR materialization never reads authoring dependency paths; the game must load its dependencies first.
 
+Explicit packed GTS, GSCN and GANI sources use the [shared authoring resolver](../Gondwana.Tooling.Assets/README.md),
+including packed GTS images and GANI tilesheet dependencies. Packed entries and
+logical members are selected exactly, without substituting loose duplicates.
+Sprites with a starting animation display its first frame from that animation's
+declared sources. **Reload sources** refreshes dependencies without changing the
+sprite definitions, assignments, or dirty state.
+
 ## Preview and validation
 
 The preview displays the selected frame at its authored size, alignment, nudges and rotation, with a logical anchor and collision bounds. When a source layer is available, projection uses its tile dimensions and coordinate system through Gondwana's public coordinate conversion. Missing source images leave a bounds preview.

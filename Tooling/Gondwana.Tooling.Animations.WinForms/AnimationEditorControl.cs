@@ -2,6 +2,7 @@ using System.Drawing.Drawing2D;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Animations.Editing;
+using Gondwana.Tooling.Tilesheets.Sources;
 using Gondwana.Tooling.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -99,6 +100,8 @@ public sealed class AnimationEditorControl : UserControl
     /// Gets the document.
     /// </summary>
     public AnimationDocument Document { get; }
+    private readonly AssetPackageCatalog _packages;
+    private readonly bool _ownsPackages;
 
     /// <summary>
     /// Gets the definition.
@@ -113,12 +116,19 @@ public sealed class AnimationEditorControl : UserControl
     {
     }
 
+    /// <summary>Creates an editor with its own authoring package catalog.</summary>
+    /// <param name="document">The document to edit.</param>
+    public AnimationEditorControl(AnimationDocument document) : this(document, null) { }
+
     /// <summary>
     /// Initializes a new instance of the <c>AnimationEditorControl</c> class.
     /// </summary>
     /// <param name="document">The document displayed or edited by the control.</param>
-    public AnimationEditorControl(AnimationDocument document)
+    /// <param name="packages">Optional shared authoring package catalog.</param>
+    public AnimationEditorControl(AnimationDocument document, AssetPackageCatalog? packages)
     {
+        _packages = packages ?? new AssetPackageCatalog();
+        _ownsPackages = packages is null;
         Document = document ?? throw new ArgumentNullException(nameof(document));
         _propertyAdapter = new AnimationPropertyAdapter(Document);
 
@@ -271,7 +281,7 @@ public sealed class AnimationEditorControl : UserControl
             return false;
         }
 
-        var loaded = TilesheetSource.LoadMember(path, expectedTilesheet);
+        var loaded = TilesheetSource.LoadMember(path, expectedTilesheet, _packages);
 
         if (!string.IsNullOrWhiteSpace(expectedTilesheet) &&
             !string.Equals(
@@ -325,18 +335,28 @@ public sealed class AnimationEditorControl : UserControl
         _preview.Invalidate();
     }
 
-    private void LoadDefinitionTilesheetSources()
+    /// <summary>Reloads dependencies and preview images without changing the document.</summary>
+    public void ReloadSources()
+    {
+        _packages.Clear();
+        _preview.ClearSourceFrame();
+        foreach (var source in _sources) source.Dispose();
+        _sources.Clear();
+        LoadDefinitionTilesheetSources(recoverLegacySources: false);
+        RefreshView();
+    }
+
+    private void LoadDefinitionTilesheetSources(bool recoverLegacySources = true)
     {
         _sourceDiagnostics.Clear();
-        Definition.TilesheetSources ??= [];
 
         var explicitTilesheets = new HashSet<string>(
-            Definition.TilesheetSources
+            (Definition.TilesheetSources ?? [])
                 .Where(source => !string.IsNullOrWhiteSpace(source.Tilesheet))
                 .Select(source => source.Tilesheet),
             StringComparer.Ordinal);
 
-        foreach (var sourceReference in Definition.TilesheetSources.ToList())
+        foreach (var sourceReference in (Definition.TilesheetSources ?? []).ToList())
         {
             switch (sourceReference.Kind)
             {
@@ -348,25 +368,28 @@ public sealed class AnimationEditorControl : UserControl
                     try
                     {
                         _sources.Add(TilesheetSource.LoadPacked(Document.ResolveReferencePath(sourceReference.AssetsFilePath!),
-                            sourceReference.AssetEntryName!, sourceReference.Tilesheet));
+                            sourceReference.AssetEntryName!, sourceReference.Tilesheet, _packages));
                     }
                     catch (Exception ex) { _sourceDiagnostics.Add(ex.Message); }
                     break;
             }
         }
 
-        foreach (var tilesheet in Definition.Frames
-                     .Select(frame => frame.Tilesheet)
-                     .Where(name => !string.IsNullOrWhiteSpace(name))
-                     .Distinct(StringComparer.Ordinal))
+        if (recoverLegacySources)
         {
-            if (FindSource(tilesheet) is not null ||
-                explicitTilesheets.Contains(tilesheet))
+            foreach (var tilesheet in Definition.Frames
+                         .Select(frame => frame.Tilesheet)
+                         .Where(name => !string.IsNullOrWhiteSpace(name))
+                         .Distinct(StringComparer.Ordinal))
             {
-                continue;
-            }
+                if (FindSource(tilesheet) is not null ||
+                    explicitTilesheets.Contains(tilesheet))
+                {
+                    continue;
+                }
 
-            TryRecoverLegacyLooseSource(tilesheet);
+                TryRecoverLegacyLooseSource(tilesheet);
+            }
         }
     }
 
@@ -606,6 +629,7 @@ public sealed class AnimationEditorControl : UserControl
             GripStyle = ToolStripGripStyle.Hidden
         };
 
+        bar.Items.Add("Reload sources", null, (_, _) => ReloadSources());
         bar.Items.Add("Add GTS…", null, (_, _) => ChooseTilesheetSources());
         bar.Items.Add("Remove", null, (_, _) => RemoveSelectedSource());
         return bar;
@@ -1246,6 +1270,7 @@ public sealed class AnimationEditorControl : UserControl
             _sourceFrameImages.Dispose();
         }
 
+        if (disposing && _ownsPackages) _packages.Dispose();
         base.Dispose(disposing);
     }
 }

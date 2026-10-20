@@ -588,6 +588,11 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         SceneFrameDefinition frame,
         string? animationKey)
     {
+        var animation = string.IsNullOrWhiteSpace(animationKey) ? null : _findAnimation?.Invoke(animationKey);
+        // An animation's explicit source belongs to that animation, even when the
+        // scene declares a different archive/loose source with the same logical name.
+        if (animation?.Definition.TilesheetSources.Any(source => source.Tilesheet == frame.Tilesheet) == true)
+            return animation.FindTilesheet(frame.Tilesheet);
         var source = _findTilesheet?.Invoke(frame.Tilesheet);
         if (source is not null)
             return source;

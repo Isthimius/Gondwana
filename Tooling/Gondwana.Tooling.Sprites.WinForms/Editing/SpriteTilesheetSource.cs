@@ -1,20 +1,23 @@
 using Gondwana.Assets;
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets.GTS;
-using Gondwana.SkiaSharp;
-using SkiaSharp;
+using Gondwana.Tooling.Assets;
+using Gondwana.Tooling.Tilesheets.Sources;
+using Gondwana.Tooling.WinForms;
 
 namespace Gondwana.Tooling.Sprites.Editing;
 
 /// <summary>
-/// Loose GTS definition loaded for GSCN authoring and definition-driven preview.
+/// Loose or packed GTS definition loaded for sprite authoring and definition-driven preview.
 /// </summary>
 internal sealed class SpriteTilesheetSource : IDisposable
 {
     /// <summary>
     /// Gets the file path.
     /// </summary>
-    public string FilePath { get; }
+    public string FilePath => Resource.Path;
+    /// <summary>The complete physical source identity, separate from the logical member name.</summary>
+    public AuthoringResource Resource { get; }
     /// <summary>
     /// Gets the base directory.
     /// </summary>
@@ -32,12 +35,13 @@ internal sealed class SpriteTilesheetSource : IDisposable
     /// </summary>
     public string? PreviewWarning { get; private set; }
 
-    private SpriteTilesheetSource(string filePath, TilesheetDefinition definition)
+    private SpriteTilesheetSource(AuthoringResource resource, TilesheetDefinition definition, AssetPackageCatalog? packages = null)
     {
-        FilePath = filePath;
-        BaseDirectory = Path.GetDirectoryName(filePath)!;
+        Resource = resource;
+        BaseDirectory = resource.BaseDirectory;
         Definition = definition;
-        LoadPreviewImage();
+        using var owned = packages is null ? new AssetPackageCatalog() : null;
+        LoadPreviewImage(packages ?? owned!, resource.ArchivePath);
     }
 
     /// <summary>
@@ -46,11 +50,12 @@ internal sealed class SpriteTilesheetSource : IDisposable
     /// <param name="path">The path.</param>
     /// <returns>The resulting sprite tilesheet source.</returns>
     /// <param name="identity">The logical member identity; null requires a singleton.</param>
-    public static SpriteTilesheetSource LoadMember(string path, string? identity)
+    /// <param name="packages">Optional shared authoring package catalog.</param>
+    public static SpriteTilesheetSource LoadMember(string path, string? identity, AssetPackageCatalog? packages = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         path = Path.GetFullPath(path);
-        return new(path, TilesheetDefinitionSerializer.Load(path, identity));
+        return LoadResource(new AuthoringResource(path, Gondwana.Assets.AssetTypes.TilesheetDefinition), identity, packages);
     }
 
     /// <summary>
@@ -59,14 +64,8 @@ internal sealed class SpriteTilesheetSource : IDisposable
     /// <param name="archivePath">The archive path.</param>
     /// <param name="entry">The entry.</param>
     /// <returns>The resulting sprite tilesheet source.</returns>
-    public static SpriteTilesheetSource Load(string archivePath, string entry)
-    {
-        archivePath = Path.GetFullPath(archivePath);
-        using var archive = AssetsFile.LoadOrCreate(archivePath, null, false, register: false);
-        using var stream = archive.Get(AssetTypes.TilesheetDefinition, entry)
-            ?? throw new FileNotFoundException($"Packed GTS entry not found: {entry}");
-        return new(archivePath, TilesheetDefinitionSerializer.Load(stream));
-    }
+    public static SpriteTilesheetSource Load(string archivePath, string entry) =>
+        LoadResource(new AuthoringResource(Path.GetFullPath(archivePath), AssetTypes.TilesheetDefinition, entry), null);
 
     /// <summary>
     /// Creates a frame definition for the selected tilesheet region and grid coordinates.
@@ -152,7 +151,7 @@ internal sealed class SpriteTilesheetSource : IDisposable
             region.TileSize.Width,
             region.TileSize.Height);
 
-    private void LoadPreviewImage()
+    private void LoadPreviewImage(AssetPackageCatalog packages, string? archivePath)
     {
         var image = Definition.Image;
         if (image is null)
@@ -161,43 +160,9 @@ internal sealed class SpriteTilesheetSource : IDisposable
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(image.FilePath))
-        {
-            PreviewWarning = "Packed GTS image sources can be referenced but are not previewed yet.";
-            return;
-        }
-
         try
         {
-            string path = Path.IsPathRooted(image.FilePath)
-                ? image.FilePath
-                : Path.GetFullPath(image.FilePath, BaseDirectory);
-
-            using var decoded = SKBitmap.Decode(path)
-                ?? throw new InvalidDataException("Unsupported or corrupt image.");
-
-            using var rgba = new SKBitmap(
-                new SKImageInfo(
-                    decoded.Width,
-                    decoded.Height,
-                    SKColorType.Bgra8888,
-                    SKAlphaType.Unpremul));
-
-            using var pixels = decoded.PeekPixels();
-            if (!pixels.ReadPixels(rgba.Info, rgba.GetPixels(), rgba.RowBytes, 0, 0))
-                throw new InvalidDataException("Could not decode image pixels.");
-
-            if (Definition.Mask is { } mask)
-            {
-                rgba.ApplyAlphaMask(
-                    new SKColor(mask.Red, mask.Green, mask.Blue, mask.Alpha),
-                    mask.Tolerance);
-            }
-
-            using var encoded = rgba.Encode(SKEncodedImageFormat.Png, 100);
-            using var stream = encoded.AsStream();
-            using var bitmap = new Bitmap(stream);
-            Image = new Bitmap(bitmap);
+            Image = AuthoringPreviewImage.Load(Definition, BaseDirectory, packages, archivePath);
         }
         catch (Exception ex) when (
             ex is IOException or
@@ -229,18 +194,23 @@ internal sealed class SpriteTilesheetSource : IDisposable
     /// <summary>Loads every member for authoring source selection.</summary>
     /// <param name="path">The physical document path.</param>
     /// <returns>All logical sources.</returns>
-    public static IReadOnlyList<SpriteTilesheetSource> LoadAll(string path) =>
-        TilesheetDefinitionSerializer.LoadAll(path).Select(definition => new SpriteTilesheetSource(Path.GetFullPath(path), definition)).ToList();
+    /// <param name="packages">Optional shared authoring package catalog.</param>
+    public static IReadOnlyList<SpriteTilesheetSource> LoadAll(string path, AssetPackageCatalog? packages = null) =>
+        TilesheetDefinitionSerializer.LoadAll(path).Select(definition => new SpriteTilesheetSource(new AuthoringResource(Path.GetFullPath(path), Gondwana.Assets.AssetTypes.TilesheetDefinition), definition, packages)).ToList();
 
     /// <summary>Loads one logical source from a packed definition document.</summary>
     /// <param name="archivePath">The containing archive path.</param>
     /// <param name="entry">The physical entry name.</param>
     /// <param name="identity">The logical member identity.</param>
     /// <returns>The selected source.</returns>
-    public static SpriteTilesheetSource LoadPacked(string archivePath, string entry, string identity)
+    /// <param name="packages">Optional shared authoring package catalog.</param>
+    public static SpriteTilesheetSource LoadPacked(string archivePath, string entry, string identity, AssetPackageCatalog? packages = null) =>
+        LoadResource(new AuthoringResource(Path.GetFullPath(archivePath), Gondwana.Assets.AssetTypes.TilesheetDefinition, entry), identity, packages);
+
+    internal static SpriteTilesheetSource LoadResource(AuthoringResource resource, string? identity, AssetPackageCatalog? packages = null)
     {
-        archivePath = Path.GetFullPath(archivePath);
-        using var archive = Gondwana.Assets.AssetsFile.LoadOrCreate(archivePath, null, false, register: false);
-        return new(archivePath, TilesheetDefinitionSerializer.Load(archive, entry, identity));
+        using var owned = packages is null ? new AssetPackageCatalog() : null;
+        packages ??= owned!;
+        return new(resource, new AuthoringResourceResolver(packages).LoadTilesheet(resource, identity), packages);
     }
 }

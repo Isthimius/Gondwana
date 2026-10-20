@@ -1,19 +1,22 @@
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
-using Gondwana.SkiaSharp;
-using SkiaSharp;
+using Gondwana.Tooling.Assets;
+using Gondwana.Tooling.Tilesheets.Sources;
+using Gondwana.Tooling.WinForms;
 
 namespace Gondwana.Tooling.Animations.Editing;
 
 /// <summary>
-/// A loose GTS definition loaded as an authoring source for GANI frame references.
+/// A loose or packed GTS definition loaded as an authoring source for GANI frame references.
 /// </summary>
 internal sealed class TilesheetSource : IDisposable
 {
     /// <summary>
     /// Gets the file path.
     /// </summary>
-    public string FilePath { get; }
+    public string FilePath => Resource.Path;
+    /// <summary>The complete physical source identity, separate from the logical member name.</summary>
+    public AuthoringResource Resource { get; }
     /// <summary>
     /// Gets the base directory.
     /// </summary>
@@ -32,13 +35,14 @@ internal sealed class TilesheetSource : IDisposable
     public string? PreviewWarning { get; private set; }
 
     private TilesheetSource(
-        string filePath,
-        TilesheetDefinition definition)
+        AuthoringResource resource,
+        TilesheetDefinition definition, AssetPackageCatalog? packages = null)
     {
-        FilePath = filePath;
-        BaseDirectory = Path.GetDirectoryName(filePath)!;
+        Resource = resource;
+        BaseDirectory = resource.BaseDirectory;
         Definition = definition;
-        LoadPreviewImage();
+        using var owned = packages is null ? new AssetPackageCatalog() : null;
+        LoadPreviewImage(packages ?? owned!, resource.ArchivePath);
     }
 
     /// <summary>
@@ -47,15 +51,14 @@ internal sealed class TilesheetSource : IDisposable
     /// <param name="path">The path.</param>
     /// <returns>The resulting tilesheet source.</returns>
     /// <param name="identity">The logical member identity; null requires a singleton.</param>
-    public static TilesheetSource LoadMember(string path, string? identity)
+    /// <param name="packages">Optional shared authoring package catalog.</param>
+    public static TilesheetSource LoadMember(string path, string? identity, AssetPackageCatalog? packages = null)
     {
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("GTS path must be a non-empty string.", nameof(path));
 
         path = Path.GetFullPath(path);
-        return new TilesheetSource(
-            path,
-            TilesheetDefinitionSerializer.Load(path, identity));
+        return LoadResource(new AuthoringResource(path, Gondwana.Assets.AssetTypes.TilesheetDefinition), identity, packages);
     }
 
     /// <summary>
@@ -151,7 +154,7 @@ internal sealed class TilesheetSource : IDisposable
             region.TileSize.Width,
             region.TileSize.Height);
 
-    private void LoadPreviewImage()
+    private void LoadPreviewImage(AssetPackageCatalog packages, string? archivePath)
     {
         var image = Definition.Image;
         if (image is null)
@@ -160,56 +163,9 @@ internal sealed class TilesheetSource : IDisposable
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(image.FilePath))
-        {
-            PreviewWarning = "Packed GTS image sources can be referenced but are not previewed by this editor yet.";
-            return;
-        }
-
         try
         {
-            var path = Path.IsPathRooted(image.FilePath)
-                ? image.FilePath
-                : Path.GetFullPath(image.FilePath, BaseDirectory);
-
-            using var decoded = SKBitmap.Decode(path)
-                ?? throw new InvalidDataException("Unsupported or corrupt image.");
-
-            using var rgba = new SKBitmap(
-                new SKImageInfo(
-                    decoded.Width,
-                    decoded.Height,
-                    SKColorType.Bgra8888,
-                    SKAlphaType.Unpremul));
-
-            using var pixels = decoded.PeekPixels();
-            if (!pixels.ReadPixels(
-                    rgba.Info,
-                    rgba.GetPixels(),
-                    rgba.RowBytes,
-                    0,
-                    0))
-            {
-                throw new InvalidDataException("Could not decode image pixels.");
-            }
-
-            if (Definition.Mask is { } mask)
-            {
-                rgba.ApplyAlphaMask(
-                    new SKColor(
-                        mask.Red,
-                        mask.Green,
-                        mask.Blue,
-                        mask.Alpha),
-                    mask.Tolerance);
-            }
-
-            using var encoded = rgba.Encode(
-                SKEncodedImageFormat.Png,
-                100);
-            using var stream = encoded.AsStream();
-            using var bitmap = new Bitmap(stream);
-            Image = new Bitmap(bitmap);
+            Image = AuthoringPreviewImage.Load(Definition, BaseDirectory, packages, archivePath);
         }
         catch (Exception ex) when (
             ex is IOException or
@@ -241,19 +197,24 @@ internal sealed class TilesheetSource : IDisposable
     /// <summary>Loads every member for authoring source selection.</summary>
     /// <param name="path">The physical document path.</param>
     /// <returns>All logical sources.</returns>
-    public static IReadOnlyList<TilesheetSource> LoadAll(string path) =>
-        TilesheetDefinitionSerializer.LoadAll(path).Select(definition => new TilesheetSource(Path.GetFullPath(path), definition)).ToList();
+    /// <param name="packages">Optional shared authoring package catalog.</param>
+    public static IReadOnlyList<TilesheetSource> LoadAll(string path, AssetPackageCatalog? packages = null) =>
+        TilesheetDefinitionSerializer.LoadAll(path).Select(definition => new TilesheetSource(new AuthoringResource(Path.GetFullPath(path), Gondwana.Assets.AssetTypes.TilesheetDefinition), definition, packages)).ToList();
 
     /// <summary>Loads one logical source from a packed definition document.</summary>
     /// <param name="archivePath">The containing archive path.</param>
     /// <param name="entry">The physical entry name.</param>
     /// <param name="identity">The logical member identity.</param>
     /// <returns>The selected source.</returns>
-    public static TilesheetSource LoadPacked(string archivePath, string entry, string identity)
+    /// <param name="packages">Optional shared authoring package catalog.</param>
+    public static TilesheetSource LoadPacked(string archivePath, string entry, string identity, AssetPackageCatalog? packages = null) =>
+        LoadResource(new AuthoringResource(Path.GetFullPath(archivePath), Gondwana.Assets.AssetTypes.TilesheetDefinition, entry), identity, packages);
+
+    internal static TilesheetSource LoadResource(AuthoringResource resource, string? identity, AssetPackageCatalog? packages = null)
     {
-        archivePath = Path.GetFullPath(archivePath);
-        using var archive = Gondwana.Assets.AssetsFile.LoadOrCreate(archivePath, null, false, register: false);
-        return new(archivePath, TilesheetDefinitionSerializer.Load(archive, entry, identity));
+        using var owned = packages is null ? new AssetPackageCatalog() : null;
+        packages ??= owned!;
+        return new(resource, new AuthoringResourceResolver(packages).LoadTilesheet(resource, identity), packages);
     }
 }
 
