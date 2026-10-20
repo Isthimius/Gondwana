@@ -1,5 +1,6 @@
 using System.Runtime.ExceptionServices;
 using Gondwana.Drawing;
+using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Scenes.Editing;
@@ -42,6 +43,88 @@ public sealed class SceneEditorTests
         Assert.Equal(TileTransform.Rotate90, property.Converter.ConvertFromString("Rotate 90°"));
         buttons.Single(item => item.Text == "Clear tile").PerformClick();
         Assert.Empty(layer.Tiles);
+    });
+
+    /// <summary>
+    /// Assigning GANI persists its first frame as the tile's initial frame.
+    /// Reassignment also replaces a previously selected GTS frame, without
+    /// changing the separate StartAnimation setting.
+    /// </summary>
+    [Fact]
+    public void AssignAnimationSetsFirstFrameWithoutStartingPlayback() => RunSta(() =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "GondwanaGaniFrame-" + Guid.NewGuid());
+        Directory.CreateDirectory(root);
+        try
+        {
+            string path = Path.Combine(root, "water.gani");
+            AnimationDefinitionSerializer.Save(path, new AnimationDefinition
+            {
+                Key = "water.flow",
+                ThrottleTime = 0.1,
+                Frames =
+                [
+                    new() { Tilesheet = "terrain", RegionName = "water", XTile = 2, YTile = 3 },
+                    new() { Tilesheet = "terrain", RegionName = "water", XTile = 4, YTile = 5 }
+                ]
+            });
+
+            var document = SceneDocument.Create(root);
+            var layer = document.AddLayer();
+            using var editor = new SceneEditorControl(document);
+            using var host = new Form { Size = new(1500, 950), Opacity = 0, ShowInTaskbar = false };
+            host.Controls.Add(editor);
+            host.Show();
+            Application.DoEvents();
+
+            var structure = Descendants(editor).OfType<TreeView>()
+                .Single(tree => tree.Nodes.Count > 0 && tree.Nodes[0].Tag is SceneDefinition);
+            structure.SelectedNode = structure.Nodes[0].Nodes.Cast<TreeNode>()
+                .Single(node => ReferenceEquals(node.Tag, layer));
+            editor.AddAnimationSources([path]);
+            Application.DoEvents();
+
+            var animations = Descendants(editor).OfType<ListView>()
+                .Single(list => list.Columns.Count > 0 && list.Columns[0].Text == "Animation key");
+            Assert.Equal("water.flow", Assert.Single(animations.SelectedItems.Cast<ListViewItem>()).Text);
+
+            var assign = Descendants(editor).OfType<ToolStrip>()
+                .SelectMany(bar => bar.Items.Cast<ToolStripItem>())
+                .Single(item => item.Text == "Assign");
+            Assert.Empty(layer.Tiles);
+            assign.PerformClick();
+
+            var tile = Assert.Single(layer.Tiles);
+            Assert.Equal("water.flow", tile.AnimationKey);
+            Assert.NotNull(tile.Frame);
+            Assert.Equal("terrain", tile.Frame.Tilesheet);
+            Assert.Equal("water", tile.Frame.RegionName);
+            Assert.Equal(2, tile.Frame.XTile);
+            Assert.Equal(3, tile.Frame.YTile);
+            Assert.False(tile.StartAnimation);
+
+            // A later assignment replaces a stale frame but does not toggle playback.
+            tile.Frame = new() { Tilesheet = "other", RegionName = "old", XTile = 9, YTile = 9 };
+            tile.StartAnimation = true;
+            assign.PerformClick();
+            Assert.Equal("terrain", tile.Frame!.Tilesheet);
+            Assert.Equal("water", tile.Frame.RegionName);
+            Assert.Equal(2, tile.Frame.XTile);
+            Assert.Equal(3, tile.Frame.YTile);
+            Assert.True(tile.StartAnimation);
+
+            var restored = SceneDefinitionSerializer.FromJson(
+                SceneDefinitionSerializer.ToJson(document.Definition));
+            var stored = Assert.Single(Assert.Single(restored.Layers).Tiles);
+            Assert.Equal("water.flow", stored.AnimationKey);
+            Assert.Equal(2, stored.Frame!.XTile);
+            Assert.Equal(3, stored.Frame.YTile);
+            Assert.True(stored.StartAnimation);
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
     });
 
     /// <summary>
