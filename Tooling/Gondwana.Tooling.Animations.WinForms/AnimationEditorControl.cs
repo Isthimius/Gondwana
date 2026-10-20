@@ -339,6 +339,7 @@ public sealed class AnimationEditorControl : UserControl
     public void ReloadSources()
     {
         _packages.Clear();
+        _preview.ClearSourceFrame();
         foreach (var source in _sources) source.Dispose();
         _sources.Clear();
         LoadDefinitionTilesheetSources();
