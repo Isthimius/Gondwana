@@ -8,10 +8,10 @@ using Gondwana.Tooling.Audio.WinForms;
 using Gondwana.Tooling.Scenes.WinForms;
 using Gondwana.Tooling.Sprites.WinForms;
 using Gondwana.Tooling.Tilesheets.WinForms;
-using WorkspaceSessionStore = studio::Gondwana.Tooling.WinForms.WorkspaceSessionStore;
+using WeifenLuo.WinFormsUI.Docking;
 using WorkspaceSessionController = studio::Gondwana.Tooling.WinForms.WorkspaceSessionController;
 using WorkspaceSessionDocument = studio::Gondwana.Tooling.WinForms.WorkspaceSessionDocument;
-using WeifenLuo.WinFormsUI.Docking;
+using WorkspaceSessionStore = studio::Gondwana.Tooling.WinForms.WorkspaceSessionStore;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
