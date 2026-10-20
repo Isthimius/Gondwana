@@ -2,6 +2,7 @@ extern alias studio;
 
 using System.Collections;
 using System.Reflection;
+using Gondwana.Assets;
 using Gondwana.Tooling.Animations.WinForms;
 using Gondwana.Tooling.Assets.WinForms;
 using Gondwana.Tooling.Audio.WinForms;
@@ -174,10 +175,14 @@ public sealed partial class CompositionTests
     {
         string archive = Path.Combine(directory, "protected.gaf");
         string tiles = Path.Combine(directory, "saved.gts");
+        using (var package = AssetsFile.LoadOrCreate(archive, "secret", true, register: false))
+        {
+            using var payload = new MemoryStream([1, 2, 3]);
+            package.Add(AssetTypes.Misc, "protected-entry", payload);
+            package.Save();
+        }
         using (var studio = Host(directory))
         {
-            var encrypted = studio.NewDocument("gaf", archive, "secret", encrypt: true);
-            Assert.True(AwaitUi(studio.SaveDocument(encrypted, destination: archive)));
             var document = studio.NewDocument("gts");
             Assert.True(AwaitUi(studio.SaveDocument(document, destination: tiles)));
         }
