@@ -10,6 +10,8 @@ internal sealed class MainForm : Form
     private readonly VS2015DarkTheme _theme = new();
     private readonly DockPanel _dock;
     private readonly DockLayoutPersistence _layout;
+    private readonly WorkspaceSessionController _session = new();
+    internal Action<string> ReportSessionError { get; set; }
     private readonly PersistentDockContent _workspace = new("shell.workspace")
     {
         Text = "Project sources",
@@ -28,6 +30,7 @@ internal sealed class MainForm : Form
     /// </summary>
     public MainForm()
     {
+        ReportSessionError = message => WorkspaceSessionController.ShowPersistenceError(this, message);
         Text = "Gondwana Tilesheets — GTS editor";
         Size = new Size(1450, 900);
         MinimumSize = new Size(900, 600);
@@ -142,6 +145,7 @@ internal sealed class MainForm : Form
             resetEditor.Enabled = editor is not null;
         };
 
+        _session.AddMenu(file);
         menu.Items.AddRange([file, view]);
         MainMenuStrip = menu;
 
@@ -156,10 +160,12 @@ internal sealed class MainForm : Form
             _workspace.Show(_dock, DockState.DockLeft);
             _layout.Start();
             _workspaceControl.RefreshDirectory();
+            RestoreSession();
         };
 
         FormClosing += (_, e) =>
         {
+            if (e.Cancel) return;
             foreach (var document in _documents.ToArray())
             {
                 if (!document.ConfirmClose())
@@ -169,10 +175,25 @@ internal sealed class MainForm : Form
                 }
             }
 
+            SaveSession();
             foreach (var document in _documents)
                 document.CloseApproved = true;
         };
     }
+
+    private void RestoreSession()
+    {
+        var messages = new List<string>();
+        _session.Restore(["gts"], path => _workspaceControl.SetWorkingDirectory(path),
+            document => OpenDocument(document.Path),
+            path => _documents.FirstOrDefault(document => string.Equals(document.Document.FilePath, path, StringComparison.OrdinalIgnoreCase))?.Activate(),
+            messages.Add, message => ReportSessionError(message));
+        WorkspaceSessionController.ShowStatus(this, messages);
+    }
+
+    private void SaveSession() => _session.Save(_workspaceControl.WorkingDirectory,
+        WorkspaceSessionController.DocumentOrder(_dock, _documents).Select(document => document.Document.FilePath),
+        ActiveEditor?.Document.FilePath);
 
     private static ToolStripMenuItem Add(
         ToolStripMenuItem menu,
@@ -235,6 +256,7 @@ internal sealed class MainForm : Form
             InvalidOperationException or
             NotSupportedException)
         {
+            if (_session.IsRestoring) throw;
             ShowError(ex);
         }
     }

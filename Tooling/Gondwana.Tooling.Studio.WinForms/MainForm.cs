@@ -29,6 +29,7 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
     private readonly List<DockContent> _tools = [];
     private readonly ToolStripMenuItem _view = new("&View");
     private readonly DockLayoutPersistence _layout;
+    private readonly WorkspaceSessionController _session = new();
     private readonly ProjectFolderStore _projectFolder = new();
     private bool _disposed;
     private bool _shutdownPending;
@@ -91,7 +92,8 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
             AttachPlugins();
         }
         _layout.Start();
-        SetWorkingDirectory(_projectFolder.Read() ?? Environment.CurrentDirectory);
+        SetWorkingDirectory(_session.InitialWorkingDirectory(_projectFolder.Read()));
+        Shown += (_, _) => RestoreSession();
         _output.Log("Gondwana Studio ready.");
     }
 
@@ -113,9 +115,20 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         Add(file, "Save &As…", Keys.Control | Keys.Shift | Keys.S, async () => { if (ActiveDocument is { } doc) await SaveDocument(doc, saveAs: true); });
         Add(file, "&Close", Keys.Control | Keys.W, () => ActiveDocument?.Close());
         Add(file, "E&xit", Keys.Alt | Keys.F4, Close);
+        _session.AddMenu(file);
         menu.Items.AddRange([file, _view, new ToolStripMenuItem("&Plugins") { Name = "PluginsMenu" }]);
         return menu;
     }
+
+    internal void RestoreSession() => _session.Restore(["gaf", "gts", "gani", "gsnd", "gscn", "gspr"],
+        path => { if (!string.Equals(Browser.WorkingDirectory, path, StringComparison.OrdinalIgnoreCase)) SetWorkingDirectory(path); },
+        document => OpenDocument(document.Path),
+        path => _documents.FirstOrDefault(document => string.Equals(document.Document.Path(), path, StringComparison.OrdinalIgnoreCase))?.Activate(),
+        _output.Log, _output.Log);
+
+    private void SaveSession() => _session.Save(Browser.WorkingDirectory,
+        WorkspaceSessionController.DocumentOrder(Workspace, _documents).Select(document => document.Document.Path()),
+        ActiveDocument?.Document.Path());
 
     private void MoveContent()
     {
@@ -381,10 +394,16 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         base.OnFormClosing(e);
-        if (e.Cancel || _shutdownApproved) return;
+        if (e.Cancel) return;
+        if (_shutdownApproved) { SaveSession(); return; }
         if (_shutdownPending) { e.Cancel = true; return; }
         var approval = ApproveShutdown();
-        if (approval.IsCompleted) { e.Cancel = !approval.GetAwaiter().GetResult(); return; }
+        if (approval.IsCompleted)
+        {
+            e.Cancel = !approval.GetAwaiter().GetResult();
+            if (!e.Cancel) SaveSession();
+            return;
+        }
         e.Cancel = true;
         _shutdownPending = true;
         Enabled = false;

@@ -141,3 +141,13 @@ The content model is the same either way.
 - [[Gondwana Studio]]
 - [[External Asset Importing]]
 - [[.gscn Files|GSCN-Files]]
+
+## Workspace sessions
+
+Each standalone authoring editor restores its own working directory, saved file
+tabs, and active document. **File > Restore workspace on startup** controls this
+preference. Use **Start empty on next launch**, hold Shift while launching, or
+pass `--empty-workspace` for an empty startup. Missing or invalid files are skipped
+with a summary; unsaved contents are not recovered. See
+[Gondwana Studio — Workspace sessions](Gondwana-Studio#workspace-sessions) for the
+shared save/close, privacy, and recovery behavior.

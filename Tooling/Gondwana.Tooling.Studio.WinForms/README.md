@@ -140,8 +140,8 @@ Reset does not change document data. Open sibling editors keep their current lay
 the next newly opened editor uses the reset profile until another layout is changed.
 
 These are UI preferences only: no Gondwana content files or EngineState are modified,
-no source-document paths or unsaved content are stored, and documents are never reopened
-on startup. Missing or corrupt preferences fall back to defaults without a dialog.
+the dock XML stores no source-document paths or unsaved content. Document reopening
+is handled by the separate workspace-session preference. Missing or corrupt preferences fall back to defaults without a dialog.
 Available plugin tools in Studio use stable plugin identities; missing plugins are ignored.
 Changes are saved after a short settling interval and flushed on disposal.
 
@@ -152,3 +152,37 @@ the Visual Studio-inspired docking library for .NET WinForms originally created 
 **Weifen Luo** and developed further by its open-source contributors. Many thanks
 to Weifen Luo and the DockPanel Suite contributors for making the library
 available to the .NET community.
+
+## Workspace session restoration
+
+Studio and the six standalone editors remember their own working directory,
+open saved document paths, tab order, and active document. Each application stores
+`workspace-session.json` under its existing per-user preference directory, beside
+`Docking/`. Studio uses its previous project-folder preference as a fallback when
+no session file exists. Dock layouts remain independent.
+
+Use **File > Restore workspace on startup** to turn restoration off. Use
+**File > Start empty on next launch**, hold **Shift** while launching, or pass
+`--empty-workspace` to bypass restoration. The menu's one-time request is consumed
+at the next startup. Preference-write failures are reported in Studio Output or
+a standalone warning dialog, including after startup and during shutdown. Failed
+option writes leave the previous setting selected. For example:
+
+```console
+dotnet run --project Tooling/Gondwana.Tooling.Studio.WinForms -- --empty-workspace
+```
+
+Documents reopen through normal editor loaders using their current disk contents.
+Missing, unreadable, corrupt, or unsupported files are skipped; Studio reports the
+reason in Output and standalones show one summary. Encrypted archives request their
+password again; canceling skips that archive and continues. Restoring never creates
+missing archives or writes source content. A disabled plugin does not prevent the
+built-in editors from reopening.
+
+Only an approved shutdown captures a session, before documents are disposed and
+after save prompts have completed. Canceling exit preserves the previous session;
+Save/Save As adopts the final saved path. Untitled documents and unsaved edits are
+not recovered. Session metadata contains no document contents, passwords, archive
+payloads, runtime EngineState, or editor-local selection/camera state. Packed
+entries remain browsing-only on this branch and are not session documents; open
+GAF containers and loose definitions that reference packed resources are supported.
