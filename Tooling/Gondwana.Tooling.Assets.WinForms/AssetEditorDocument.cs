@@ -9,6 +9,8 @@ namespace Gondwana.Tooling.Assets.WinForms;
 internal sealed class AssetEditorDocument : DockContent
 {
     private readonly AssetsFile _assetsFile;
+    internal bool CloseApproved { get; set; }
+    internal Func<DialogResult> AskSave { get; set; }
 
     /// <summary>
     /// Gets the editor.
@@ -40,6 +42,8 @@ internal sealed class AssetEditorDocument : DockContent
             IsDocumentOpen = isDocumentOpen ??
                 throw new ArgumentNullException(nameof(isDocumentOpen))
         };
+        AskSave = () => MessageBox.Show(this, $"Save changes to {Path.GetFileName(FilePath)}?",
+            "Unsaved changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
         Text = Path.GetFileName(FilePath);
         TabText = Text;
@@ -79,10 +83,30 @@ internal sealed class AssetEditorDocument : DockContent
     /// </summary>
     public void ShowAllPanes() => Editor.ShowAllPanes();
 
-    /// <inheritdoc/>
-    protected override void OnFormClosed(FormClosedEventArgs e)
+    internal bool ConfirmClose()
     {
-        _assetsFile.Dispose();
-        base.OnFormClosed(e);
+        if (!Editor.IsDirty) return true;
+        switch (AskSave())
+        {
+            case DialogResult.No: return true;
+            case DialogResult.Yes:
+                Editor.Save();
+                return !Editor.IsDirty;
+            default: return false;
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override void OnFormClosing(FormClosingEventArgs e)
+    {
+        base.OnFormClosing(e);
+        if (!e.Cancel && !CloseApproved) e.Cancel = !ConfirmClose();
+    }
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        if (disposing) _assetsFile.Dispose();
     }
 }

@@ -46,6 +46,8 @@
         <!-- Exercise XInput state projection without requiring a Windows controller or native call. -->
         <Compile Include="../../Gondwana.WinForms/Input/Gamepad/XInput/XInput.cs" Link="WinFormsInput/XInput.cs" />
         <Compile Include="../../Gondwana.WinForms/Input/Gamepad/XInput/XInputGamepadAdapter.cs" Link="WinFormsInput/XInputGamepadAdapter.cs" />
+        <Compile Include="../../Tooling/Shared/WinForms/DockLayoutStore.cs" Link="Tooling/DockLayoutStore.cs" />
+        <Compile Include="../../Tooling/Shared/WinForms/WorkspaceSessionStore.cs" Link="Tooling/WorkspaceSessionStore.cs" />
         <Compile Include="../../Tooling/Shared/WinForms/DefinitionImport.cs" Link="TilesheetEditing/DefinitionImport.cs" />
         <!-- Keep the standalone editor's document model testable without a Windows UI. -->
         <Compile Include="../../Tooling/Gondwana.Tooling.Tilesheets.WinForms/Editing/*.cs" Link="TilesheetEditing/%(Filename)%(Extension)" />

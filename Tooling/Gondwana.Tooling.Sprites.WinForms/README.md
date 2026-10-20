@@ -36,6 +36,16 @@ Validation distinguishes structural ERROR messages from dependency WARNING messa
 
 Six nested panes are available: Sprites, Sprite preview, GSCN scene/layer sources, GTS frame sources, Properties and Validation. Drag tabs and resize splits to arrange them. Inner panes remain document panes and cannot float. View lists pane visibility, restores hidden panes, and offers Show all sprite panes and Reset active editor layout.
 
-The shell's Working directory pane uses the existing `shell` profile. View > Reset application layout resets the outer shell. Inner layout uses `EditorDockWorkspace("gspr")`; shared DockLayoutStore and DockLayoutPersistence save arrangement and visibility per application. Corrupt/missing preference files fall back to defaults. Preferences never live in GSPR files or beside the executable. Documents are not reopened as a saved session.
+The shell's Working directory pane uses the existing `shell` profile. View > Reset application layout resets the outer shell. Inner layout uses `EditorDockWorkspace("gspr")`; shared DockLayoutStore and DockLayoutPersistence save arrangement and visibility per application. Corrupt/missing preference files fall back to defaults. Preferences never live in GSPR files or beside the executable. Saved documents can be reopened by the separate workspace-session preference.
 
 Studio references and hosts the same public `SpriteEditorControl`; it supplies its own outer shell. Studio and standalone GSPR layouts remain independent because the shared preference store scopes them by entry application.
+
+## Workspace sessions
+
+This standalone application remembers its working directory, saved documents,
+tab order, and active document independently of Studio and the other editors.
+**File > Restore workspace on startup** controls restoration. **Start empty on
+next launch**, holding Shift at launch, or `--empty-workspace` bypasses it.
+Unsaved contents and untitled documents are not recovered. Missing/invalid files
+are skipped with a startup summary. See [workspace session restoration](../Gondwana.Tooling.Studio.WinForms/README.md#workspace-session-restoration)
+for storage, close behavior, encrypted archives, and recovery details.

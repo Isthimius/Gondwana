@@ -39,3 +39,20 @@ View provides **Reset application layout** and **Reset active editor layout**.
 Reset clears the applicable profile and reapplies the current default placements
 to the existing contents. Open documents survive shell reset. Inner panes remain
 document-only and owned by their editor, including while hidden.
+
+## Workspace sessions
+
+`WorkspaceSessionStore` and `WorkspaceSessionRestore` implement the UI-independent,
+versioned JSON preference and recovery policy. `WorkspaceSessionController` adds
+shell menus and delegates opening/activation to the owning shell. The shared files
+are source-linked like the docking helpers; they introduce no runtime dependency.
+Application scoping and AppContext overrides are shared with `DockLayoutStore`.
+
+The shell calls `Save` only after close approval and before document teardown.
+Restore runs once on `Shown`, after the shell, editor adapters, and plugin panes
+exist. The store writes atomically; invalid/missing preferences do not block startup.
+Session identity records include only absolute saved-file paths and format keys.
+Restoration deduplicates canonical paths, validates supported formats and file
+existence, isolates each open failure, and activates only a successfully reopened
+file. See the [Studio README](../../Gondwana.Tooling.Studio.WinForms/README.md#workspace-session-restoration)
+for controls, empty-start recovery, and exclusions.

@@ -188,8 +188,8 @@ Reset does not change document data. Open sibling editors keep their current lay
 the next newly opened editor uses the reset profile until another layout is changed.
 
 These are UI preferences only: no Gondwana content files or EngineState are modified,
-no source-document paths or unsaved content are stored, and documents are never reopened
-on startup. Missing or corrupt preferences fall back to defaults without a dialog.
+the dock XML stores no source-document paths or unsaved content. Document reopening
+is handled by the separate workspace-session preference. Missing or corrupt preferences fall back to defaults without a dialog.
 Available plugin tools in Studio use stable plugin identities; missing plugins are ignored.
 Changes are saved after a short settling interval and flushed on disposal.
 
@@ -214,3 +214,13 @@ as the default for older documents.
 **View Scene**, on the preview toolbar, launches the separate [Scene Viewer](../Gondwana.Tooling.SceneViewer.WinForms/README.md). It loads saved GSCN content and its explicit dependencies into a real Gondwana Scene, with actual Engine rendering, runtime frame transformations, real GANI playback, and camera navigation. New or dirty scenes must be saved first; canceling the save prevents launch.
 
 The command is part of `SceneEditorControl`, so it also works when hosted in Studio. Hosts supply `SaveRequested` to reuse their normal save path. Build the viewer in the same configuration as the editor, or deploy its complete output under `SceneViewer/` beside the editor executable. See the viewer README for all supported layouts, controls, and current GSPR association limitations.
+
+## Workspace sessions
+
+This standalone application remembers its working directory, saved documents,
+tab order, and active document independently of Studio and the other editors.
+**File > Restore workspace on startup** controls restoration. **Start empty on
+next launch**, holding Shift at launch, or `--empty-workspace` bypasses it.
+Unsaved contents and untitled documents are not recovered. Missing/invalid files
+are skipped with a startup summary. See [workspace session restoration](../Gondwana.Tooling.Studio.WinForms/README.md#workspace-session-restoration)
+for storage, close behavior, encrypted archives, and recovery details.

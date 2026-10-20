@@ -10,6 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="../Shared/WinForms/WorkspaceSessionStore.cs" Link="Session/WorkspaceSessionStore.cs" />
+    <Compile Include="../Shared/WinForms/WorkspaceSessionController.cs" Link="Session/WorkspaceSessionController.cs" />
     <InternalsVisibleTo Include="Gondwana.Tooling.Tilesheets.WinForms.Tests" />
     <Compile Include="..\Shared\WinForms\EditorDockWorkspace.cs" Link="Docking\EditorDockWorkspace.cs" />
     <Compile Include="..\Shared\WinForms\DockLayoutStore.cs" Link="Docking\DockLayoutStore.cs" />

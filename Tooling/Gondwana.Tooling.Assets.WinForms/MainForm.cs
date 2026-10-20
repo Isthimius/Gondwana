@@ -12,6 +12,7 @@ public sealed class MainForm : Form
     private readonly VS2015DarkTheme _theme = new();
     private readonly DockPanel _dock;
     private readonly DockLayoutPersistence _layout;
+    private readonly WorkspaceSessionController _session = new();
     private readonly PersistentDockContent _workspace = new("shell.workspace")
     {
         Text = "Asset files",
@@ -129,6 +130,7 @@ public sealed class MainForm : Form
             resetEditor.Enabled = editor is not null;
         };
 
+        _session.AddMenu(file);
         menu.Items.AddRange([file, view]);
         MainMenuStrip = menu;
 
@@ -143,8 +145,32 @@ public sealed class MainForm : Form
             _workspace.Show(_dock, DockState.DockLeft);
             _layout.Start();
             _workspaceControl.RefreshDirectory();
+            RestoreSession();
+        };
+
+        FormClosing += (_, e) =>
+        {
+            if (e.Cancel) return;
+            foreach (var document in _documents.ToArray())
+                if (!document.ConfirmClose()) { e.Cancel = true; return; }
+            SaveSession();
+            foreach (var document in _documents) document.CloseApproved = true;
         };
     }
+
+    private void RestoreSession()
+    {
+        var messages = new List<string>();
+        _session.Restore(["gaf"], path => _workspaceControl.SetWorkingDirectory(path),
+            document => OpenDocument(document.Path),
+            path => _documents.FirstOrDefault(document => string.Equals(document.FilePath, path, StringComparison.OrdinalIgnoreCase))?.Activate(),
+            messages.Add);
+        WorkspaceSessionController.ShowStatus(this, messages);
+    }
+
+    private void SaveSession() => _session.Save(_workspaceControl.WorkingDirectory,
+        WorkspaceSessionController.DocumentOrder(_dock, _documents).Select(document => document.FilePath),
+        ActiveEditor?.FilePath);
 
     private static ToolStripMenuItem Add(
         ToolStripMenuItem menu,
@@ -183,6 +209,7 @@ public sealed class MainForm : Form
     private void OpenDocument(string path)
     {
         path = Path.GetFullPath(path);
+        if (_session.IsRestoring && !File.Exists(path)) throw new FileNotFoundException("Asset file was removed.", path);
 
         var existing = _documents.FirstOrDefault(document =>
             string.Equals(
@@ -213,10 +240,13 @@ public sealed class MainForm : Form
                 var password = InputDialog.Show(
                     this,
                     "Password",
-                    "Enter password for this asset file:");
+                    "Enter password for this asset file:", password: true);
 
                 if (password is null)
+                {
+                    if (_session.IsRestoring) throw new OperationCanceledException("Password entry cancelled.");
                     return;
+                }
 
                 assetsFile = AssetsFile.LoadOrCreate(
                     path,
@@ -231,6 +261,7 @@ public sealed class MainForm : Form
         }
         catch (Exception ex)
         {
+            if (_session.IsRestoring) throw;
             ShowError("Failed to open asset file.", ex);
         }
         finally

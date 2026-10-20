@@ -85,7 +85,7 @@ DockPanelSuite layouts are stored per user under:
 
 Studio keeps separate profiles for the outer shell and for each editor type.
 
-Layout state includes docking positions, tab groups, splits, relative sizes, and hidden-pane visibility. It does not modify Gondwana content files and does not save document data or automatically reopen documents.
+Layout state includes docking positions, tab groups, splits, relative sizes, and hidden-pane visibility. It does not modify Gondwana content files or save document data. A separate workspace-session preference controls document reopening.
 
 Useful recovery commands include:
 
@@ -196,3 +196,27 @@ The hosted Assets editor's **Export** writes one complete entry as a loose copy 
 Add / Import and Replace are unsaved archive edits. Move/Delete are reviewed disk transactions and refresh the current archive/workspace after success. Save As is a copy with outbound rebasing; Studio adopts the new path through its normal Save routing and retains the original file. Replace remains a same-identity byte operation without dependency repair.
 
 See [Reference Relocation](Reference-Relocation#shared-tooling-and-safety) for shared architecture, scan scope, credentials, recovery, and deferred capabilities; [Assets Files](Assets-Files) owns the overall workflow model.
+
+## Workspace sessions
+
+Studio restores its last working directory, open saved files, tab order, and active
+document. The standalone editors maintain independent sessions. Session metadata
+is stored per application in `workspace-session.json` beside the `Docking` folder.
+Existing Studio project-folder preferences serve as a fallback before the first
+session is saved.
+
+Use **File > Restore workspace on startup** to opt out. **File > Start empty on
+next launch**, holding Shift while launching, or passing `--empty-workspace`
+starts without restoration. The menu option applies to one launch.
+
+Files reopen through normal editor loaders using current disk contents. Missing,
+corrupt, or unsupported files are skipped; see Studio's Output or the standalone
+startup summary for the reason and reopen the corrected file with File > Open.
+Encrypted archives request their passwords again; canceling skips that archive.
+Invalid session metadata cannot prevent startup.
+
+Sessions are captured after successful save/close approval and before disposal.
+Canceling exit preserves the prior session. Unsaved edits, untitled documents,
+passwords, archive bytes, EngineState, and editor-local selection/view state are
+not persisted. Packed entries remain browsing-only on this branch; GAF container
+documents and loose files with packed dependencies can be restored.
