@@ -319,7 +319,8 @@ public sealed partial class CompositionTests
 
     private static AnimationDefinition PreviewAnimation(string archive) => new()
     {
-        Key = "water.flow", ThrottleTime = .1,
+        Key = "water.flow",
+        ThrottleTime = .1,
         TilesheetSources = [AnimationTilesheetSourceDefinition.Packed("terrain", archive, "definitions/world.gts")],
         Frames = [new() { Tilesheet = "terrain", RegionName = "default" }]
     };
