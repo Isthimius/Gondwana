@@ -94,7 +94,9 @@ tilesheet registry.
 
 **Add GANI…** loads a loose `.gani` definition and records its logical
 animation key plus authoring path. Double-click an animation, or use **Assign**,
-to set the selected tile's `AnimationKey`.
+to set the selected tile's `AnimationKey` and initial `Frame` to the first frame
+of that animation. This replaces an existing frame assignment; if no GANI frame
+is available, the existing frame is left intact.
 
 Assigning a key does not redundantly force `EnableAnimator`; GSCN runtime
 materialization already treats an `AnimationKey` as sufficient to create the

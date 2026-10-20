@@ -958,6 +958,9 @@ public sealed class SceneEditorControl : UserControl
             (int)_tileY.Value);
 
         tile.AnimationKey = source.Definition.Key;
+        // Persist the same initial frame shown by the editor preview, even when
+        // StartAnimation is false. Keep an existing frame if the source has none.
+        tile.Frame = source.FirstPreviewFrame() ?? tile.Frame;
         Document.MarkChanged();
 
         RefreshTileProperties();
