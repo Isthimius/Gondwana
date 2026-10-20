@@ -13,6 +13,7 @@ public sealed class MainForm : Form
     private readonly DockPanel _dock;
     private readonly DockLayoutPersistence _layout;
     private readonly WorkspaceSessionController _session = new();
+    internal Action<string> ReportSessionError { get; set; }
     private readonly PersistentDockContent _workspace = new("shell.workspace")
     {
         Text = "Asset files",
@@ -37,6 +38,7 @@ public sealed class MainForm : Form
     /// </summary>
     public MainForm()
     {
+        ReportSessionError = message => WorkspaceSessionController.ShowPersistenceError(this, message);
         Text = "Gondwana Assets — GAF editor";
         Size = new Size(1450, 900);
         MinimumSize = new Size(900, 600);
@@ -164,7 +166,7 @@ public sealed class MainForm : Form
         _session.Restore(["gaf"], path => _workspaceControl.SetWorkingDirectory(path),
             document => OpenDocument(document.Path),
             path => _documents.FirstOrDefault(document => string.Equals(document.FilePath, path, StringComparison.OrdinalIgnoreCase))?.Activate(),
-            messages.Add);
+            messages.Add, message => ReportSessionError(message));
         WorkspaceSessionController.ShowStatus(this, messages);
     }
 

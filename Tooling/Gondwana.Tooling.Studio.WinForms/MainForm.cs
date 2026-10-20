@@ -124,7 +124,7 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         path => { if (!string.Equals(Browser.WorkingDirectory, path, StringComparison.OrdinalIgnoreCase)) SetWorkingDirectory(path); },
         document => OpenDocument(document.Path),
         path => _documents.FirstOrDefault(document => string.Equals(document.Document.Path(), path, StringComparison.OrdinalIgnoreCase))?.Activate(),
-        _output.Log);
+        _output.Log, _output.Log);
 
     private void SaveSession() => _session.Save(Browser.WorkingDirectory,
         WorkspaceSessionController.DocumentOrder(Workspace, _documents).Select(document => document.Document.Path()),

@@ -6,18 +6,18 @@ namespace Gondwana.Tooling.WinForms;
 /// <summary>Small shell bridge; hosts retain ownership of opening, validation, and close approval.</summary>
 internal sealed class WorkspaceSessionController
 {
-    private readonly List<string> _messages = [];
+    private readonly List<string> _startupMessages = [];
     private readonly WorkspaceSessionStore _store;
     private readonly bool _hadSession;
     private WorkspaceSession _session;
-    private Action<string>? _report;
+    private Action<string>? _reportPersistenceError;
     private bool _restored;
     internal bool IsRestoring { get; private set; }
     internal bool StartEmpty { get; }
 
     internal WorkspaceSessionController(bool? startEmpty = null)
     {
-        _store = new(Report);
+        _store = new(ReportPersistenceError);
         _hadSession = File.Exists(_store.FilePath);
         _session = _store.Read();
         StartEmpty = (startEmpty ?? (Environment.GetCommandLineArgs().Contains("--empty-workspace", StringComparer.OrdinalIgnoreCase)
@@ -40,22 +40,39 @@ internal sealed class WorkspaceSessionController
     {
         file.DropDownItems.Add(new ToolStripSeparator());
         var restore = new ToolStripMenuItem("Restore workspace on startup") { Checked = _session.RestoreOnStartup, CheckOnClick = true };
-        restore.CheckedChanged += (_, _) => { _session = _session with { RestoreOnStartup = restore.Checked }; _store.Write(_session); };
+        restore.Click += (_, _) =>
+        {
+            var updated = _session with { RestoreOnStartup = restore.Checked };
+            if (_store.Write(updated)) _session = updated;
+            else restore.Checked = _session.RestoreOnStartup;
+        };
         var empty = new ToolStripMenuItem("Start empty on next launch") { CheckOnClick = true };
-        empty.CheckedChanged += (_, _) => { _session = _session with { StartEmptyOnce = empty.Checked }; _store.Write(_session); };
+        empty.Click += (_, _) =>
+        {
+            var updated = _session with { StartEmptyOnce = empty.Checked };
+            if (_store.Write(updated)) _session = updated;
+            else empty.Checked = _session.StartEmptyOnce;
+        };
         file.DropDownItems.AddRange([restore, empty]);
     }
 
     internal void Restore(IReadOnlyCollection<string> formats, Action<string> setDirectory,
-        Action<WorkspaceSessionDocument> open, Action<string> activate, Action<string> report)
+        Action<WorkspaceSessionDocument> open, Action<string> activate, Action<string> reportStartup, Action<string> reportPersistenceError)
     {
         if (_restored) return;
         _restored = true;
-        _report = report;
-        foreach (string message in _messages) report(message);
-        _messages.Clear();
+        _reportPersistenceError = reportPersistenceError;
+        foreach (string message in _startupMessages) reportStartup(message);
+        _startupMessages.Clear();
         IsRestoring = true;
-        try { WorkspaceSessionRestore.Restore(_session, formats, setDirectory, open, activate, Report, StartEmpty); }
+        try
+        {
+            WorkspaceSessionRestore.Restore(_session, formats, setDirectory, open, activate, message =>
+            {
+                Trace.TraceWarning(message);
+                reportStartup(message);
+            }, StartEmpty);
+        }
         finally { IsRestoring = false; }
     }
 
@@ -87,10 +104,13 @@ internal sealed class WorkspaceSessionController
             MessageBox.Show(owner, string.Join(Environment.NewLine, items), "Workspace restoration", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
-    private void Report(string message)
+    internal static void ShowPersistenceError(Form owner, string message) =>
+        MessageBox.Show(owner, message, "Workspace session preferences", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+    private void ReportPersistenceError(string message)
     {
         Trace.TraceWarning(message);
-        if (_report is { } report) report(message);
-        else _messages.Add(message);
+        if (_reportPersistenceError is { } report) report(message);
+        else _startupMessages.Add(message);
     }
 }

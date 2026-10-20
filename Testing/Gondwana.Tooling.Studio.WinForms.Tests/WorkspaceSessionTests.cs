@@ -165,7 +165,7 @@ public sealed partial class CompositionTests
         Assert.True(store.Write(new() { WorkingDirectory = directory, Documents = [WorkspaceSessionDocument.FromPath(path)!] }));
         var controller = new WorkspaceSessionController(startEmpty: true);
         Assert.Equal(Environment.CurrentDirectory, controller.InitialWorkingDirectory(directory));
-        controller.Restore(["gts"], _ => Assert.Fail(), _ => Assert.Fail(), _ => Assert.Fail(), _ => Assert.Fail());
+        controller.Restore(["gts"], _ => Assert.Fail(), _ => Assert.Fail(), _ => Assert.Fail(), _ => Assert.Fail(), _ => Assert.Fail());
         controller.Save(directory, [null, path, path], path);
         Assert.Equal(path, Assert.Single(store.Read().Documents).Path);
     });
@@ -196,6 +196,83 @@ public sealed partial class CompositionTests
         Application.DoEvents();
         Assert.Equal(1, prompts);
         Assert.Equal(tiles, Assert.Single(reopened.Documents).Document.Path());
+    });
+
+    [Fact]
+    public void LaterPersistenceFailuresDoNotReturnToStartupSummaryAndFailedOptionsRollBack() => RunSta(directory =>
+    {
+        var store = new WorkspaceSessionStore(_ => Assert.Fail());
+        var missing = WorkspaceSessionDocument.FromPath(Path.Combine(directory, "missing.gts"))!;
+        Assert.True(store.Write(new() { Documents = [missing] }));
+        var controller = new WorkspaceSessionController(startEmpty: false);
+        using var menu = new ToolStripMenuItem("File");
+        controller.AddMenu(menu);
+        var startup = new List<string>();
+        var errors = new List<string>();
+        bool startupComplete = false;
+        controller.Restore(["gts"], _ => Assert.Fail(), _ => Assert.Fail(), _ => Assert.Fail(),
+            message => { Assert.False(startupComplete); startup.Add(message); }, errors.Add);
+        startupComplete = true;
+        Assert.Single(startup);
+        Assert.Empty(errors);
+
+        // A directory at the destination forces an actual write failure without relying on user permissions.
+        File.Delete(store.FilePath);
+        Directory.CreateDirectory(store.FilePath);
+        var restore = menu.DropDownItems.OfType<ToolStripMenuItem>().Single(item => item.Text == "Restore workspace on startup");
+        restore.PerformClick();
+        Assert.True(restore.Checked);
+        var empty = menu.DropDownItems.OfType<ToolStripMenuItem>().Single(item => item.Text == "Start empty on next launch");
+        empty.PerformClick();
+        Assert.False(empty.Checked);
+        controller.Save(directory, [], null);
+        Assert.Equal(3, errors.Count);
+        Assert.All(errors, message => Assert.Contains("could not be saved", message));
+        Assert.Single(startup);
+
+        Directory.Delete(store.FilePath);
+        restore.PerformClick();
+        empty.PerformClick();
+        Assert.False(store.Read().RestoreOnStartup);
+        Assert.True(store.Read().StartEmptyOnce);
+        Assert.Equal(3, errors.Count);
+    });
+
+    [Theory]
+    [InlineData(typeof(AssetEditorControl))]
+    [InlineData(typeof(TilesheetEditorControl))]
+    [InlineData(typeof(AnimationEditorControl))]
+    [InlineData(typeof(AudioEditorControl))]
+    [InlineData(typeof(SceneEditorControl))]
+    [InlineData(typeof(SpriteEditorControl))]
+    public void StandaloneShellReportsOptionAndShutdownWriteFailuresAfterStartup(Type editorType) => RunSta(directory =>
+    {
+        var store = new WorkspaceSessionStore(_ => Assert.Fail());
+        Assert.True(store.Write(new() { StartEmptyOnce = true }));
+        Type shellType = editorType.Assembly.GetType(editorType.Namespace + ".MainForm", throwOnError: true)!;
+        using var shell = (Form)Activator.CreateInstance(shellType, nonPublic: true)!;
+        var errors = new List<string>();
+        shellType.GetProperty("ReportSessionError", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .SetValue(shell, (Action<string>)errors.Add);
+        shell.Opacity = 0;
+        shell.ShowInTaskbar = false;
+        shell.Show();
+        Application.DoEvents();
+        Assert.Empty(errors);
+
+        File.Delete(store.FilePath);
+        Directory.CreateDirectory(store.FilePath);
+        var restore = SessionMenu(shell, "Restore workspace on startup");
+        restore.PerformClick();
+        Assert.True(restore.Checked);
+        var empty = SessionMenu(shell, "Start empty on next launch");
+        empty.PerformClick();
+        Assert.False(empty.Checked);
+        Assert.Equal(2, errors.Count);
+        shell.Close();
+        Assert.True(shell.IsDisposed);
+        Assert.Equal(3, errors.Count);
+        Assert.All(errors, message => Assert.Contains("could not be saved", message));
     });
 
     private static ToolStripMenuItem SessionMenu(Form shell, string text) =>

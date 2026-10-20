@@ -164,7 +164,9 @@ no session file exists. Dock layouts remain independent.
 Use **File > Restore workspace on startup** to turn restoration off. Use
 **File > Start empty on next launch**, hold **Shift** while launching, or pass
 `--empty-workspace` to bypass restoration. The menu's one-time request is consumed
-at the next startup. For example:
+at the next startup. Preference-write failures are reported in Studio Output or
+a standalone warning dialog, including after startup and during shutdown. Failed
+option writes leave the previous setting selected. For example:
 
 ```console
 dotnet run --project Tooling/Gondwana.Tooling.Studio.WinForms -- --empty-workspace

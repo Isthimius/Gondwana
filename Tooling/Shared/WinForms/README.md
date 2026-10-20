@@ -56,3 +56,8 @@ Restoration deduplicates canonical paths, validates supported formats and file
 existence, isolates each open failure, and activates only a successfully reopened
 file. See the [Studio README](../../Gondwana.Tooling.Studio.WinForms/README.md#workspace-session-restoration)
 for controls, empty-start recovery, and exclusions.
+
+Startup recovery messages use a short-lived summary collector. Preference writes
+use a separate ongoing reporter: Studio logs failures in Output; each standalone
+shows a warning, including for option changes and approved shutdown snapshots.
+A failed option write keeps the previous preference and restores its checkbox.
