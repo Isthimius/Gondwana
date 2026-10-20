@@ -342,11 +342,11 @@ public sealed class AnimationEditorControl : UserControl
         _preview.ClearSourceFrame();
         foreach (var source in _sources) source.Dispose();
         _sources.Clear();
-        LoadDefinitionTilesheetSources();
+        LoadDefinitionTilesheetSources(recoverLegacySources: false);
         RefreshView();
     }
 
-    private void LoadDefinitionTilesheetSources()
+    private void LoadDefinitionTilesheetSources(bool recoverLegacySources = true)
     {
         _sourceDiagnostics.Clear();
 
@@ -375,18 +375,21 @@ public sealed class AnimationEditorControl : UserControl
             }
         }
 
-        foreach (var tilesheet in Definition.Frames
-                     .Select(frame => frame.Tilesheet)
-                     .Where(name => !string.IsNullOrWhiteSpace(name))
-                     .Distinct(StringComparer.Ordinal))
+        if (recoverLegacySources)
         {
-            if (FindSource(tilesheet) is not null ||
-                explicitTilesheets.Contains(tilesheet))
+            foreach (var tilesheet in Definition.Frames
+                         .Select(frame => frame.Tilesheet)
+                         .Where(name => !string.IsNullOrWhiteSpace(name))
+                         .Distinct(StringComparer.Ordinal))
             {
-                continue;
-            }
+                if (FindSource(tilesheet) is not null ||
+                    explicitTilesheets.Contains(tilesheet))
+                {
+                    continue;
+                }
 
-            TryRecoverLegacyLooseSource(tilesheet);
+                TryRecoverLegacyLooseSource(tilesheet);
+            }
         }
     }
 
