@@ -1,10 +1,12 @@
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Scenes.GSCN;
+using Gondwana.Tooling.Assets;
+using Gondwana.Tooling.Tilesheets.Sources;
 
 namespace Gondwana.Tooling.Scenes.Editing;
 
 /// <summary>
-/// Loose GANI definition loaded for GSCN animation assignment and preview.
+/// Loose or packed GANI definition loaded for GSCN animation assignment and preview.
 /// </summary>
 internal sealed class SceneAnimationSource : IDisposable
 {
@@ -13,7 +15,9 @@ internal sealed class SceneAnimationSource : IDisposable
     /// <summary>
     /// Gets the file path.
     /// </summary>
-    public string FilePath { get; }
+    public string FilePath => Resource.Path;
+    /// <summary>The physical source identity, separate from the animation's logical key.</summary>
+    public AuthoringResource Resource { get; }
     /// <summary>
     /// Gets the base directory.
     /// </summary>
@@ -32,12 +36,13 @@ internal sealed class SceneAnimationSource : IDisposable
     public IReadOnlyList<string> Diagnostics => _diagnostics;
     private readonly List<string> _diagnostics = [];
 
-    private SceneAnimationSource(string filePath, AnimationDefinition definition)
+    private SceneAnimationSource(AuthoringResource resource, AnimationDefinition definition, AssetPackageCatalog? packages = null)
     {
-        FilePath = filePath;
-        BaseDirectory = Path.GetDirectoryName(filePath)!;
+        Resource = resource;
+        BaseDirectory = resource.BaseDirectory;
         Definition = definition;
-        LoadTilesheetDependencies();
+        using var owned = packages is null ? new AssetPackageCatalog() : null;
+        LoadTilesheetDependencies(packages ?? owned!);
     }
 
     /// <summary>
@@ -46,11 +51,13 @@ internal sealed class SceneAnimationSource : IDisposable
     /// <param name="path">The path.</param>
     /// <returns>The resulting scene animation source.</returns>
     /// <param name="identity">The logical member identity; null requires a singleton.</param>
-    public static SceneAnimationSource LoadMember(string path, string? identity)
+    /// <param name="packages">Optional shared authoring package catalog.</param>
+    public static SceneAnimationSource LoadMember(string path, string? identity, AssetPackageCatalog? packages = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         path = Path.GetFullPath(path);
-        return new(path, AnimationDefinitionSerializer.Load(path, identity));
+        return new(new AuthoringResource(path, Gondwana.Assets.AssetTypes.AnimationDefinition),
+            AnimationDefinitionSerializer.Load(path, identity), packages);
     }
 
     /// <summary>
@@ -81,26 +88,14 @@ internal sealed class SceneAnimationSource : IDisposable
         _tilesheets.FirstOrDefault(source =>
             string.Equals(source.Definition.Name, logicalName, StringComparison.Ordinal));
 
-    private void LoadTilesheetDependencies()
+    private void LoadTilesheetDependencies(AssetPackageCatalog packages)
     {
         foreach (var source in Definition.TilesheetSources ?? [])
         {
-            if (source.Kind != AnimationTilesheetSourceKind.LooseDefinitionFile ||
-                string.IsNullOrWhiteSpace(source.GtsPath))
-            {
-                _diagnostics.Add(
-                    $"INFO: GANI tilesheet '{source.Tilesheet}' uses a packed source; preview is not available yet.");
-                continue;
-            }
-
             try
             {
-                string path = Path.IsPathRooted(source.GtsPath)
-                    ? Path.GetFullPath(source.GtsPath)
-                    : Path.GetFullPath(source.GtsPath, BaseDirectory);
-
-                // A GTS document can contain multiple tilesheets; select the logical member.
-                var loaded = SceneTilesheetSource.LoadMember(path, source.Tilesheet);
+                var resource = AuthoringResourceResolver.TilesheetSource(source, BaseDirectory);
+                var loaded = SceneTilesheetSource.LoadResource(resource, source.Tilesheet, packages);
                 if (!string.Equals(
                         loaded.Definition.Name,
                         source.Tilesheet,
@@ -111,6 +106,8 @@ internal sealed class SceneAnimationSource : IDisposable
                 }
 
                 _tilesheets.Add(loaded);
+                if (loaded.PreviewWarning is { } warning)
+                    _diagnostics.Add($"WARNING: GANI tilesheet '{source.Tilesheet}': {warning}");
             }
             catch (Exception ex) when (
                 ex is IOException or
@@ -144,18 +141,23 @@ internal sealed class SceneAnimationSource : IDisposable
     /// <summary>Loads every member for authoring source selection.</summary>
     /// <param name="path">The physical document path.</param>
     /// <returns>All logical sources.</returns>
-    public static IReadOnlyList<SceneAnimationSource> LoadAll(string path) =>
-        AnimationDefinitionSerializer.LoadAll(path).Select(definition => new SceneAnimationSource(Path.GetFullPath(path), definition)).ToList();
+    /// <param name="packages">Optional shared authoring package catalog.</param>
+    public static IReadOnlyList<SceneAnimationSource> LoadAll(string path, AssetPackageCatalog? packages = null) =>
+        AnimationDefinitionSerializer.LoadAll(path).Select(definition => new SceneAnimationSource(
+            new AuthoringResource(Path.GetFullPath(path), Gondwana.Assets.AssetTypes.AnimationDefinition), definition, packages)).ToList();
 
     /// <summary>Loads one logical source from a packed definition document.</summary>
     /// <param name="archivePath">The containing archive path.</param>
     /// <param name="entry">The physical entry name.</param>
     /// <param name="identity">The logical member identity.</param>
     /// <returns>The selected source.</returns>
-    public static SceneAnimationSource LoadPacked(string archivePath, string entry, string identity)
+    /// <param name="packages">Optional shared authoring package catalog.</param>
+    public static SceneAnimationSource LoadPacked(string archivePath, string entry, string identity, AssetPackageCatalog? packages = null)
     {
         archivePath = Path.GetFullPath(archivePath);
-        using var archive = Gondwana.Assets.AssetsFile.LoadOrCreate(archivePath, null, false, register: false);
-        return new(archivePath, AnimationDefinitionSerializer.Load(archive, entry, identity));
+        using var owned = packages is null ? new AssetPackageCatalog() : null;
+        packages ??= owned!;
+        var resource = new AuthoringResource(archivePath, Gondwana.Assets.AssetTypes.AnimationDefinition, entry);
+        return new(resource, new AuthoringResourceResolver(packages).LoadAnimation(resource, identity), packages);
     }
 }

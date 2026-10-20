@@ -3,7 +3,9 @@ using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
+using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Sprites.Editing;
+using Gondwana.Tooling.Tilesheets.Sources;
 using Gondwana.Tooling.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -25,6 +27,8 @@ public sealed class SpriteEditorControl : UserControl
     /// Gets the document.
     /// </summary>
     public SpriteDocument Document { get; }
+    private readonly AssetPackageCatalog _packages;
+    private readonly bool _ownsPackages;
     private readonly EditorDockWorkspace _workspace = new("gspr");
     private readonly ListBox _sprites = new() { Dock = DockStyle.Fill, DisplayMember = "Nickname" };
     private readonly TreeView _scenes = new() { Dock = DockStyle.Fill, HideSelection = false };
@@ -36,6 +40,7 @@ public sealed class SpriteEditorControl : UserControl
     private readonly ImageList _thumbnails = new() { ImageSize = new Size(32, 32), ColorDepth = ColorDepth.Depth32Bit };
     private readonly List<SceneDefinition> _sceneDefinitions = [];
     private readonly List<AnimationDefinition> _animationDefinitions = [];
+    private readonly Dictionary<string, List<SpriteTilesheetSource>> _animationTilesheets = new(StringComparer.OrdinalIgnoreCase);
     private readonly ComboBox _animationPicker = new() { Width = 165, DropDownStyle = ComboBoxStyle.DropDownList };
     private bool _syncingAnimationPicker;
     private readonly List<string> _sourceWarnings = [];
@@ -47,12 +52,19 @@ public sealed class SpriteEditorControl : UserControl
     /// </summary>
     public SpriteInstanceDefinition? SelectedSprite => _sprites.SelectedItem as SpriteInstanceDefinition;
 
+    /// <summary>Creates an editor with its own authoring package catalog.</summary>
+    /// <param name="document">The document to edit.</param>
+    public SpriteEditorControl(SpriteDocument document) : this(document, null) { }
+
     /// <summary>
     /// Initializes a new instance of the <c>SpriteEditorControl</c> class.
     /// </summary>
     /// <param name="document">The document displayed or edited by the control.</param>
-    public SpriteEditorControl(SpriteDocument document)
+    /// <param name="packages">Optional shared authoring package catalog.</param>
+    public SpriteEditorControl(SpriteDocument document, AssetPackageCatalog? packages)
     {
+        _packages = packages ?? new AssetPackageCatalog();
+        _ownsPackages = packages is null;
         Document = document;
         _frames.ImageList = _thumbnails;
         Dock = DockStyle.Fill;
@@ -64,6 +76,7 @@ public sealed class SpriteEditorControl : UserControl
             button.Click += (_, _) => action();
             toolbar.Controls.Add(button);
         }
+        Button("Reload sources", ReloadSources);
         Button("Add", () => SelectSprite(Document.AddSprite()));
         Button("Duplicate", () => { if (SelectedSprite is { } entry) SelectSprite(Document.DuplicateSprite(entry)); });
         Button("Remove", () => { if (SelectedSprite is { } entry) { Document.RemoveSprite(entry); RefreshEntries(); } });
@@ -125,6 +138,7 @@ public sealed class SpriteEditorControl : UserControl
             () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, () =>
             {
                 foreach (var source in _sources) source.Dispose();
+                ClearAnimationTilesheets();
                 _sources.Clear(); _sceneDefinitions.Clear(); _animationDefinitions.Clear(); _sourceWarnings.Clear();
                 _loadedScenePaths.Clear(); _loadedTilesheetPaths.Clear(); _loadedAnimationPaths.Clear();
                 _scenes.Nodes.Clear(); _frames.Nodes.Clear();
@@ -151,43 +165,61 @@ public sealed class SpriteEditorControl : UserControl
         return button;
     }
 
+    /// <summary>Reloads dependencies without changing sprite definitions or their references.</summary>
+    public void ReloadSources()
+    {
+        _packages.Clear();
+        foreach (var source in _sources) source.Dispose();
+        ClearAnimationTilesheets();
+        _sources.Clear(); _sceneDefinitions.Clear(); _animationDefinitions.Clear(); _sourceWarnings.Clear();
+        _loadedScenePaths.Clear(); _loadedTilesheetPaths.Clear(); _loadedAnimationPaths.Clear();
+        _scenes.Nodes.Clear(); _frames.Nodes.Clear(); _thumbnails.Images.Clear();
+        LoadSources(); RefreshEntries();
+    }
+
     private void LoadSources()
     {
         foreach (var source in Document.Definition.AnimationSources)
         {
             if (source.Kind == SpriteAnimationSourceKind.LooseDefinitionFile && source.GaniPath is { } path)
                 TryLoad(() => LoadAnimation(Document.ResolveReferencePath(path), source.AnimationKey));
-            else if (source.AssetsFilePath is { } archivePath && source.AssetEntryName is { } entry)
+            else if (source.Kind == SpriteAnimationSourceKind.PackedDefinitionFile && source.AssetsFilePath is { } archivePath && source.AssetEntryName is { } entry)
                 TryLoad(() =>
                 {
-                    using var archive = AssetsFile.LoadOrCreate(Document.ResolveReferencePath(archivePath), null, false, register: false);
-                    AddAnimationDefinition(AnimationDefinitionSerializer.Load(archive, entry, source.AnimationKey));
+                    var resource = new AuthoringResource(Document.ResolveReferencePath(archivePath), AssetTypes.AnimationDefinition, entry);
+                    AddAnimationDefinition(new AuthoringResourceResolver(_packages).LoadAnimation(resource, source.AnimationKey), resource);
                 });
         }
         foreach (var source in Document.Definition.SceneSources)
         {
             if (source.Kind == SpriteSceneSourceKind.LooseDefinitionFile && source.GscnPath is { } path)
                 TryLoad(() => LoadScene(Document.ResolveReferencePath(path), source.SceneId));
-            else if (source.AssetsFilePath is { } archivePath && source.AssetEntryName is { } entry)
+            else if (source.Kind == SpriteSceneSourceKind.PackedDefinitionFile && source.AssetsFilePath is { } archivePath && source.AssetEntryName is { } entry)
                 TryLoad(() =>
                 {
-                    using var archive = AssetsFile.LoadOrCreate(Document.ResolveReferencePath(archivePath), null, false, register: false);
-                    AddSceneDefinition(SceneDefinitionSerializer.Load(archive, entry, source.SceneId));
+                    var resource = new AuthoringResource(Document.ResolveReferencePath(archivePath), AssetTypes.SceneDefinition, entry);
+                    AddSceneDefinition(new AuthoringResourceResolver(_packages).LoadScene(resource, source.SceneId));
                 });
         }
         foreach (var source in Document.Definition.TilesheetSources)
         {
             if (source.Kind == SpriteTilesheetSourceKind.LooseDefinitionFile && source.GtsPath is { } path)
                 TryLoad(() => LoadTilesheet(Document.ResolveReferencePath(path), source.Tilesheet));
-            else if (source.AssetsFilePath is { } archivePath && source.AssetEntryName is { } entry)
-                TryLoad(() => AddTilesheetDefinition(SpriteTilesheetSource.LoadPacked(Document.ResolveReferencePath(archivePath), entry, source.Tilesheet)));
+            else if (source.Kind == SpriteTilesheetSourceKind.PackedDefinitionFile && source.AssetsFilePath is { } archivePath && source.AssetEntryName is { } entry)
+                TryLoad(() => AddTilesheetDefinition(SpriteTilesheetSource.LoadPacked(Document.ResolveReferencePath(archivePath), entry, source.Tilesheet, _packages)));
         }
+    }
+
+    private void ClearAnimationTilesheets()
+    {
+        foreach (var source in _animationTilesheets.Values.SelectMany(sources => sources)) source.Dispose();
+        _animationTilesheets.Clear();
     }
 
     private void TryLoad(Action action)
     {
         try { action(); }
-        catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or UnauthorizedAccessException)
+        catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or UnauthorizedAccessException or InvalidOperationException or NotSupportedException)
         { _sourceWarnings.Add(ex.Message); }
     }
 
@@ -210,10 +242,10 @@ public sealed class SpriteEditorControl : UserControl
         if (_loadedAnimationPaths.Contains(memberPath)) return;
         var definition = AnimationDefinitionSerializer.Load(path, key);
         _loadedAnimationPaths.Add(memberPath);
-        AddAnimationDefinition(definition);
+        AddAnimationDefinition(definition, new AuthoringResource(fullPath, AssetTypes.AnimationDefinition));
     }
 
-    private void AddAnimationDefinition(AnimationDefinition definition)
+    private void AddAnimationDefinition(AnimationDefinition definition, AuthoringResource resource)
     {
         if (_animationDefinitions.Any(existing => string.Equals(existing.Key, definition.Key, StringComparison.OrdinalIgnoreCase)))
         {
@@ -221,6 +253,11 @@ public sealed class SpriteEditorControl : UserControl
             return;
         }
         _animationDefinitions.Add(definition);
+        var sheets = new List<SpriteTilesheetSource>();
+        _animationTilesheets[definition.Key] = sheets;
+        foreach (var reference in definition.TilesheetSources)
+            TryLoad(() => sheets.Add(SpriteTilesheetSource.LoadResource(
+                AuthoringResourceResolver.TilesheetSource(reference, resource.BaseDirectory), reference.Tilesheet, _packages)));
     }
 
     /// <summary>
@@ -261,7 +298,7 @@ public sealed class SpriteEditorControl : UserControl
         var fullPath = Path.GetFullPath(path);
         var memberPath = fullPath + " :: " + identity;
         if (_loadedTilesheetPaths.Contains(memberPath)) return _sources.First(source => source.FilePath.Equals(fullPath, StringComparison.OrdinalIgnoreCase) && source.Definition.Name == identity);
-        var source = SpriteTilesheetSource.LoadMember(path, identity);
+        var source = SpriteTilesheetSource.LoadMember(path, identity, _packages);
         _loadedTilesheetPaths.Add(memberPath);
         AddTilesheetDefinition(source);
         return source;
@@ -333,7 +370,19 @@ public sealed class SpriteEditorControl : UserControl
         var matches = _sources.Where(source => source.Definition.Name == entry?.Frame?.Tilesheet).ToList();
         var scenes = _sceneDefinitions.Where(scene => scene.ID == entry?.SceneId).ToList();
         var layer = scenes.Count == 1 ? scenes[0].Layers.FirstOrDefault(layer => layer.ID == entry?.SceneLayerId) : null;
-        _preview.SetSelection(entry, matches.Count == 1 ? matches[0] : null, layer);
+        SpriteFrameDefinition? previewFrame = entry?.Frame;
+        if (entry?.StartAnimation == true && entry.AnimationKey is { } animationKey)
+        {
+            var animation = _animationDefinitions.FirstOrDefault(item => string.Equals(item.Key, animationKey, StringComparison.OrdinalIgnoreCase));
+            if (animation?.Frames.FirstOrDefault() is { } frame)
+            {
+                previewFrame = new() { Tilesheet = frame.Tilesheet, RegionName = frame.RegionName, XTile = frame.XTile, YTile = frame.YTile };
+                matches = animation.TilesheetSources.Any(source => source.Tilesheet == frame.Tilesheet)
+                    ? _animationTilesheets[animationKey].Where(source => source.Definition.Name == frame.Tilesheet).ToList()
+                    : _sources.Where(source => source.Definition.Name == frame.Tilesheet).ToList();
+            }
+        }
+        _preview.SetSelection(entry, matches.Count == 1 ? matches[0] : null, layer, previewFrame);
         UpdateValidation();
     }
     private void DocumentChanged(object? sender, EventArgs e) => UpdateValidation();
@@ -358,7 +407,7 @@ public sealed class SpriteEditorControl : UserControl
         lines.AddRange(_sourceWarnings.Select(warning => "WARNING: " + warning));
         foreach (var path in _loadedScenePaths.Concat(_loadedTilesheetPaths))
             if (!File.Exists(path)) lines.Add($"WARNING: Loaded authoring source no longer exists: {path}");
-        lines.AddRange(_sources.Where(source => source.PreviewWarning is not null)
+        lines.AddRange(_sources.Concat(_animationTilesheets.Values.SelectMany(sources => sources)).Where(source => source.PreviewWarning is not null)
             .Select(source => $"WARNING: GTS '{source.Definition.Name}': {source.PreviewWarning}"));
         foreach (var entry in Document.Definition.Sprites)
         {
@@ -407,6 +456,8 @@ public sealed class SpriteEditorControl : UserControl
     protected override void Dispose(bool disposing)
     {
         if (disposing) { Document.Changed -= DocumentChanged; foreach (var source in _sources) source.Dispose(); _thumbnails.Dispose(); }
+        if (disposing) ClearAnimationTilesheets();
+        if (disposing && _ownsPackages) _packages.Dispose();
         base.Dispose(disposing);
     }
 }

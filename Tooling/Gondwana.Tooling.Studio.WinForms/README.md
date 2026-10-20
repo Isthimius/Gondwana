@@ -24,8 +24,10 @@ absolute archive path, entry name, and type. Identical loose and packed names,
 including entries from different archives, remain separate.
 
 Packed entries are browsing-only: they have no Open or Open External command and
-double-click does not open them. Packed previews/resolution and document editing
-are deferred to subsequent integration steps. Refresh rereads archive contents;
+double-click does not open them. Opening and editing packed documents remain
+deferred to Step 3. Loose GTS/GANI/GSCN/GSPR documents can preview their explicit
+packed dependencies through the [shared authoring resolver](../Gondwana.Tooling.Assets/README.md)
+without loose copies or reference rewriting. Refresh rereads archive contents;
 subdirectories are scanned only when expanded. Unreadable, corrupt, or protected
 archives are logged and skipped without password prompts. No files are extracted
 or changed. Scans use detached `AssetsFile` instances, disposed after each archive;
@@ -81,7 +83,7 @@ On close, Studio detaches document change handlers and disposes the editor,
 including its inner dock contents and preview resources. Asset documents and
 packed-image previews use detached `AssetsFile` instances, so opening authoring
 files does not register runtime asset packages. Studio owns its shared packed
-image catalog and disposes it at shutdown. The GAF editor owns replacement
+resource catalog and disposes it at shutdown. The GAF editor owns replacement
 packages created by its path-adopting `SaveTo` API; Studio retains ownership of
 the originally supplied package.
 

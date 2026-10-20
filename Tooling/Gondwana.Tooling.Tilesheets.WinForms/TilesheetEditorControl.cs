@@ -1,9 +1,7 @@
 using Gondwana.Drawing.Tilesheets.GTS;
-using Gondwana.SkiaSharp;
 using Gondwana.Tooling.Tilesheets.Editing;
 using Gondwana.Tooling.Tilesheets.Sources;
 using Gondwana.Tooling.WinForms;
-using SkiaSharp;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Tilesheets.WinForms;
@@ -415,18 +413,7 @@ public sealed class TilesheetEditorControl : UserControl
         _previewError = null;
         try
         {
-            // Use the runtime decoder for format parity (including WebP), then GDI+ for
-            // all display and overlays. No runtime tilesheet or engine is instantiated.
-            using var decoded = DecodeImageSource();
-            using var rgba = new SKBitmap(new SKImageInfo(decoded.Width, decoded.Height, SKColorType.Bgra8888, SKAlphaType.Unpremul));
-            using var pixels = decoded.PeekPixels();
-            if (!pixels.ReadPixels(rgba.Info, rgba.GetPixels(), rgba.RowBytes, 0, 0))
-                throw new InvalidDataException("Could not decode image pixels.");
-            if (mask is not null) rgba.ApplyAlphaMask(new SKColor(mask.Red, mask.Green, mask.Blue, mask.Alpha), mask.Tolerance);
-            using var encoded = rgba.Encode(SKEncodedImageFormat.Png, 100);
-            using var stream = encoded.AsStream();
-            using var bitmap = new Bitmap(stream);
-            _viewport.Image = new Bitmap(bitmap);
+            _viewport.Image = AuthoringPreviewImage.Load(model, Document.BaseDirectory, _assetPackages);
         }
         catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or InvalidOperationException or NotSupportedException or UnauthorizedAccessException or System.Runtime.InteropServices.ExternalException)
         {
@@ -434,35 +421,6 @@ public sealed class TilesheetEditorControl : UserControl
             _viewport.Message = _previewError;
         }
         finally { _viewport.UpdateExtent(); }
-    }
-
-    private SKBitmap DecodeImageSource()
-    {
-        if (Document.ResolveImagePath() is { } loosePath)
-        {
-            return SKBitmap.Decode(loosePath)
-                ?? throw new InvalidDataException("Unsupported or corrupt image.");
-        }
-
-        var image = Document.Definition.Image;
-        var assetsFilePath = Document.ResolveAssetsFilePath();
-
-        if (image is null ||
-            assetsFilePath is null ||
-            string.IsNullOrWhiteSpace(image.AssetEntryName))
-        {
-            throw new InvalidDataException(
-                "The tilesheet does not specify a complete loose or packed image source.");
-        }
-
-        using var stream = _assetPackages.OpenImage(
-            new PackedImageSource(
-                assetsFilePath,
-                image.AssetEntryName));
-
-        return SKBitmap.Decode(stream)
-            ?? throw new InvalidDataException(
-                $"Packed image '{image.AssetEntryName}' is unsupported or corrupt.");
     }
 
     /// <summary>

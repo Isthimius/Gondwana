@@ -82,7 +82,7 @@ internal sealed class StudioDocument : IDisposable
             case "gani":
                 {
                     var model = path is null ? AnimationDocument.Create(directory) : AnimationDocument.Open(path);
-                    var editor = new AnimationEditorControl(model);
+                    var editor = new AnimationEditorControl(model, packages);
                     result = new()
                     {
                         Kind = "animation",
@@ -130,7 +130,7 @@ internal sealed class StudioDocument : IDisposable
             case "gscn":
                 {
                     var model = path is null ? SceneDocument.Create(directory) : SceneDocument.Open(path);
-                    var editor = new SceneEditorControl(model);
+                    var editor = new SceneEditorControl(model, packages);
                     result = new()
                     {
                         Kind = "scene",
@@ -154,7 +154,7 @@ internal sealed class StudioDocument : IDisposable
             case "gspr":
                 {
                     var model = path is null ? SpriteDocument.Create(directory) : SpriteDocument.Open(path);
-                    var editor = new SpriteEditorControl(model);
+                    var editor = new SpriteEditorControl(model, packages);
                     result = new()
                     {
                         Kind = "sprite",

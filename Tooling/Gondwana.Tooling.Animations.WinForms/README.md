@@ -59,18 +59,17 @@ possible and are rebased by Save As. The source metadata does not embed the GTS 
 its image, and runtime `ToCycle` materialization still resolves frames only through
 `TilesheetRegistry`.
 
-The dependency metadata is also shaped to represent packed GTS entries
-(`AssetsFilePath` + `AssetEntryName`) for future editor support. Packed references
-are preserved today, but this editor currently previews loose GTS sources only.
+Packed GTS entries (`AssetsFilePath` + `AssetEntryName`) are loaded by exact
+typed entry and logical tilesheet name. Their images may also be packed.
+Explicit packed sources take precedence over loose duplicates and remain unchanged.
 
 The editor refuses to load two GTS files with the same logical
 `TilesheetDefinition.Name` into one document because the resulting GANI references
 would be ambiguous.
 
-Loose GTS image files are decoded with Skia and displayed through WinForms/GDI+.
-Mask metadata is applied for preview parity. Packed image references remain valid
-authoring references but do not have a preview in this first pass; later GAF tooling
-integration can extend that path.
+Loose and packed GTS images use the [shared authoring resolver](../Gondwana.Tooling.Assets/README.md)
+and Skia decoding, with mask metadata applied for preview parity. **Reload sources**
+refreshes definitions, images, thumbnails and playback data without editing the GANI.
 
 ## Studio direction
 

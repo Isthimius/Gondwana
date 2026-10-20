@@ -3,6 +3,7 @@ using Gondwana.Drawing;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Scenes.Editing;
+using Gondwana.Tooling.Tilesheets.Sources;
 using Gondwana.Tooling.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -100,6 +101,8 @@ public sealed class SceneEditorControl : UserControl
     /// Gets the document.
     /// </summary>
     public SceneDocument Document { get; }
+    private readonly AssetPackageCatalog _packages;
+    private readonly bool _ownsPackages;
     /// <summary>
     /// Gets the definition.
     /// </summary>
@@ -108,12 +111,19 @@ public sealed class SceneEditorControl : UserControl
     /// <summary>Uses the containing application's normal save workflow.</summary>
     public Func<bool>? SaveRequested { get; set; }
 
+    /// <summary>Creates an editor with its own authoring package catalog.</summary>
+    /// <param name="document">The document to edit.</param>
+    public SceneEditorControl(SceneDocument document) : this(document, null) { }
+
     /// <summary>
     /// Initializes a new instance of the <c>SceneEditorControl</c> class.
     /// </summary>
     /// <param name="document">The document displayed or edited by the control.</param>
-    public SceneEditorControl(SceneDocument document)
+    /// <param name="packages">Optional shared authoring package catalog.</param>
+    public SceneEditorControl(SceneDocument document, AssetPackageCatalog? packages)
     {
+        _packages = packages ?? new AssetPackageCatalog();
+        _ownsPackages = packages is null;
         Document = document ?? throw new ArgumentNullException(nameof(document));
         Size = new Size(1400, 900);
         Dock = DockStyle.Fill;
@@ -183,7 +193,7 @@ public sealed class SceneEditorControl : UserControl
 
         SceneTilesheetSource? last = null;
         foreach (var path in paths)
-            foreach (var source in SceneTilesheetSource.LoadAll(path))
+            foreach (var source in SceneTilesheetSource.LoadAll(path, _packages))
             {
                 var existing = FindTilesheet(source.Definition.Name);
                 if (existing is not null)
@@ -218,7 +228,7 @@ public sealed class SceneEditorControl : UserControl
 
         SceneAnimationSource? last = null;
         foreach (var path in paths)
-            foreach (var source in SceneAnimationSource.LoadAll(path))
+            foreach (var source in SceneAnimationSource.LoadAll(path, _packages))
             {
                 var existing = FindAnimation(source.Definition.Key);
                 if (existing is not null)
@@ -527,6 +537,7 @@ public sealed class SceneEditorControl : UserControl
     private ToolStrip BuildGtsToolbar()
     {
         var bar = NewToolbar();
+        bar.Items.Add("Reload sources", null, (_, _) => ReloadSources());
         bar.Items.Add("Add GTS…", null, (_, _) => ChooseTilesheetSources());
         bar.Items.Add("Remove", null, (_, _) => RemoveSelectedTilesheetSource());
         bar.Items.Add(new ToolStripSeparator());
@@ -627,6 +638,17 @@ public sealed class SceneEditorControl : UserControl
         }
     }
 
+    /// <summary>Reloads declared sources and previews without rewriting references or dirtying the document.</summary>
+    public void ReloadSources()
+    {
+        _packages.Clear();
+        foreach (var source in _tilesheetSources) source.Dispose();
+        foreach (var source in _animationSources) source.Dispose();
+        _tilesheetSources.Clear(); _animationSources.Clear(); _sourceDiagnostics.Clear();
+        LoadDeclaredSources();
+        RefreshView();
+    }
+
     private void LoadDeclaredSources()
     {
         foreach (var source in Definition.TilesheetSources)
@@ -636,7 +658,7 @@ public sealed class SceneEditorControl : UserControl
             {
                 try
                 {
-                    _tilesheetSources.Add(SceneTilesheetSource.LoadPacked(Document.ResolveReferencePath(source.AssetsFilePath!), source.AssetEntryName!, source.Tilesheet));
+                    _tilesheetSources.Add(SceneTilesheetSource.LoadPacked(Document.ResolveReferencePath(source.AssetsFilePath!), source.AssetEntryName!, source.Tilesheet, _packages));
                 }
                 catch (Exception ex) { _sourceDiagnostics.Add(ex.Message); }
                 continue;
@@ -645,7 +667,7 @@ public sealed class SceneEditorControl : UserControl
             try
             {
                 var loaded = SceneTilesheetSource.LoadMember(
-                    Document.ResolveReferencePath(source.GtsPath), source.Tilesheet);
+                    Document.ResolveReferencePath(source.GtsPath), source.Tilesheet, _packages);
 
                 if (!string.Equals(
                         loaded.Definition.Name,
@@ -672,7 +694,7 @@ public sealed class SceneEditorControl : UserControl
             {
                 try
                 {
-                    _animationSources.Add(SceneAnimationSource.LoadPacked(Document.ResolveReferencePath(source.AssetsFilePath!), source.AssetEntryName!, source.AnimationKey));
+                    _animationSources.Add(SceneAnimationSource.LoadPacked(Document.ResolveReferencePath(source.AssetsFilePath!), source.AssetEntryName!, source.AnimationKey, _packages));
                 }
                 catch (Exception ex) { _sourceDiagnostics.Add(ex.Message); }
                 continue;
@@ -681,7 +703,7 @@ public sealed class SceneEditorControl : UserControl
             try
             {
                 var loaded = SceneAnimationSource.LoadMember(
-                    Document.ResolveReferencePath(source.GaniPath), source.AnimationKey);
+                    Document.ResolveReferencePath(source.GaniPath), source.AnimationKey, _packages);
 
                 if (!string.Equals(
                         loaded.Definition.Key,
@@ -747,7 +769,7 @@ public sealed class SceneEditorControl : UserControl
         {
             try
             {
-                foreach (var loaded in SceneTilesheetSource.LoadAll(path))
+                foreach (var loaded in SceneTilesheetSource.LoadAll(path, _packages))
                 {
                     if (!required.Contains(loaded.Definition.Name))
                     {
@@ -800,7 +822,7 @@ public sealed class SceneEditorControl : UserControl
         {
             try
             {
-                foreach (var loaded in SceneAnimationSource.LoadAll(path))
+                foreach (var loaded in SceneAnimationSource.LoadAll(path, _packages))
                 {
                     if (!required.Contains(loaded.Definition.Key, StringComparer.OrdinalIgnoreCase))
                     {
@@ -1067,7 +1089,8 @@ public sealed class SceneEditorControl : UserControl
                 var animation = tile?.AnimationKey is { } key ? FindAnimation(key) : null;
                 var frame = animation?.FirstPreviewFrame() ?? tile?.Frame;
                 if (frame is null) return (null, null);
-                var source = FindTilesheet(frame.Tilesheet) ?? animation?.FindTilesheet(frame.Tilesheet);
+                var source = animation?.Definition.TilesheetSources.Any(item => item.Tilesheet == frame.Tilesheet) == true
+                    ? animation.FindTilesheet(frame.Tilesheet) : FindTilesheet(frame.Tilesheet) ?? animation?.FindTilesheet(frame.Tilesheet);
                 return (source?.TryResolve(frame, out var region, out _) == true ? region : null, frame);
             });
     }
@@ -1512,6 +1535,7 @@ public sealed class SceneEditorControl : UserControl
             _panes.Clear();
         }
 
+        if (disposing && _ownsPackages) _packages.Dispose();
         base.Dispose(disposing);
     }
 
