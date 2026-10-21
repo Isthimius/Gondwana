@@ -14,6 +14,8 @@ $oldCommits = $env:CHANGELOG_PR_COMMITS
 try {
     New-Item "$fixture/Tooling/scripts" -ItemType Directory -Force | Out-Null
     Copy-Item "$PSScriptRoot/Generate-*-Changelog*.ps1" "$fixture/Tooling/scripts"
+    Copy-Item "$PSScriptRoot/Changelog-Common.ps1" "$fixture/Tooling/scripts"
+    Copy-Item "$PSScriptRoot/Extract-ReleaseNotes.ps1" "$fixture/Tooling/scripts"
     Copy-Item "$PSScriptRoot/../../cliff.toml" $fixture
     Push-Location $fixture
     Invoke-TestGit init --quiet
@@ -34,6 +36,8 @@ try {
     Set-Content Tooling/scripts/Changelog-ProjectGroups.ps1 $metadata
     Invoke-TestGit add .
     Invoke-TestGit commit -qm 'feat: initial fixture'
+    $initialSection = (& ./Tooling/scripts/Generate-Root-Changelog.ps1 -SectionOnly -Tag v1.0.0) -join "`n"
+    Assert ($initialSection.Contains('Initial fixture')) 'First release without earlier tags lost its commits'
     Invoke-TestGit tag v1.0.0
     foreach ($name in @('Both', 'ProjectOnly', 'RootOnly', 'Neither')) {
         Add-Content "$name/code.txt" 'changed'
@@ -83,9 +87,78 @@ try {
     & $projects -Projects @('ProjectOnly') -Tag v2.0.0
     Assert ((Get-Content ProjectOnly/CHANGELOG.md -Raw) -match '# v2.0.0') 'Tagged bootstrap missing version'
     Assert ((Get-Content ProjectOnly/CHANGELOG.md -Raw) -notmatch '\[Unreleased\]') 'Tagged bootstrap retained unreleased'
+    $taggedRoot = Get-Content CHANGELOG.md -Raw
+    $taggedProject = Get-Content Both/CHANGELOG.md -Raw
+    & $root -Tag v2.0.0
+    & $projects -Tag v2.0.0
+    Assert ((Get-Content CHANGELOG.md -Raw) -ceq $taggedRoot) 'Untagged release retry duplicated root notes'
+    Assert ((Get-Content Both/CHANGELOG.md -Raw) -ceq $taggedProject) 'Untagged release retry duplicated project notes'
     Invoke-TestGit add .
     Invoke-TestGit commit -qm 'docs: checkpoint [skip release notes]'
     Invoke-TestGit tag v2.0.0
+    & $root -Tag v2.0.0
+    & $projects -Tag v2.0.0
+    Assert ((Get-Content CHANGELOG.md -Raw) -ceq $taggedRoot) 'Retry with tag at HEAD lost root entries'
+    Assert ((Get-Content Both/CHANGELOG.md -Raw) -ceq $taggedProject) 'Retry with tag at HEAD lost project entries'
+    Remove-Item ProjectOnly/CHANGELOG.md
+    & $projects -Projects @('ProjectOnly') -Tag v2.0.0
+    $bootstrapped = Get-Content ProjectOnly/CHANGELOG.md -Raw
+    Assert ($bootstrapped.Contains('Update ProjectOnly')) 'Bootstrap on an existing release tag lost original changes'
+    Assert ([regex]::Matches($bootstrapped, '(?m)^# v2\.0\.0\b').Count -eq 1) 'Tagged bootstrap duplicated release'
+
+    # Reproduce 2.6.0: an existing tag plus a later fix and duplicate headings.
+    Add-Content Both/code.txt 'retry fix'
+    Invoke-TestGit add .
+    Invoke-TestGit commit -qm 'fix: retry Both (#124)'
+    [IO.File]::WriteAllText("$fixture/CHANGELOG.md", "# Changelog`r`n`r`n# [v2.0.0] - 2000-01-02`r`n`r`n- Retry only`r`n`r`n" + $taggedRoot.Substring($taggedRoot.IndexOf('# [v2.0.0]')))
+    [IO.File]::WriteAllText("$fixture/Both/CHANGELOG.md", "# Changelog`r`n`r`n# [v2.0.0] - 2000-01-02`r`n`r`n- Retry only`r`n`r`n" + $taggedProject.Substring($taggedProject.IndexOf('# v2.0.0')))
+    # A newer tag on unrelated history must not become the compare baseline.
+    $orphan = 'unrelated' | & git commit-tree (& git rev-parse 'HEAD^{tree}')
+    if ($LASTEXITCODE -ne 0) { throw 'Could not create unrelated tag fixture' }
+    Invoke-TestGit tag v99.0.0 $orphan
+    $beforePreview = Get-Content CHANGELOG.md -Raw
+    & $root -Tag v2.0.0 -PreviewOnly
+    & $projects -Tag v2.0.0 -PreviewOnly
+    Assert ((Get-Content CHANGELOG.md -Raw) -ceq $beforePreview) 'Retry preview changed root notes'
+    & $root -Tag v2.0.0
+    & $projects -Tag v2.0.0
+    $retryRoot = Get-Content CHANGELOG.md -Raw
+    $retryProject = Get-Content Both/CHANGELOG.md -Raw
+    foreach ($retry in @($retryRoot, $retryProject)) {
+        Assert ($retry.Contains('Update Both')) 'Retry lost the original release changes'
+        Assert ($retry.Contains('Retry Both')) 'Retry lost the follow-up fix'
+        Assert ([regex]::Matches($retry, '(?m)^# (?:\[v2\.0\.0\]|v2\.0\.0)(?=[ \r\n])').Count -eq 1) 'Retry retained duplicate release sections'
+    }
+    Assert ($retryRoot.EndsWith($rootHistory)) 'Retry changed older root history bytes'
+    Assert ($retryProject.EndsWith($projectHistory)) 'Retry changed older project history bytes'
+    Assert ($retryRoot.Contains('compare/v1.0.0...v2.0.0')) 'Retry chose the wrong previous tag'
+    & $root -Tag v2.0.0
+    & $projects -Tag v2.0.0
+    Assert ((Get-Content CHANGELOG.md -Raw) -ceq $retryRoot) 'Repeated retry changed root notes'
+    Assert ((Get-Content Both/CHANGELOG.md -Raw) -ceq $retryProject) 'Repeated retry changed project notes'
+    Invoke-TestGit tag -d v99.0.0
+
+    $extract = './Tooling/scripts/Extract-ReleaseNotes.ps1'
+    & $extract -Tag v2.0.0
+    $releaseNotes = Get-Content RELEASE_NOTES.md -Raw
+    Assert ($releaseNotes.Contains('Update Both') -and $releaseNotes.Contains('Retry Both')) 'Extraction lost full release entries'
+    Assert (-not $releaseNotes.Contains('Released root text')) 'Extraction included older history'
+    foreach ($badContent in @(
+        $retryRoot.Replace('[v2.0.0]', '[v3.0.0]'),
+        ($retryRoot + "`n# [v2.0.0] - 2000-01-02`n`n- Duplicate`n"),
+        ("# [Unreleased]`n`n- Future change`n`n" + $retryRoot),
+        "# [v2.0.0] - 2000-01-02`n`nNo entries.`n"
+    )) {
+        [IO.File]::WriteAllText("$fixture/CHANGELOG.md", $badContent)
+        $rejected = $false
+        try { & $extract -Tag v2.0.0 } catch { $rejected = $true }
+        Assert $rejected 'Publisher accepted duplicate, mismatched, unreleased, or empty notes'
+        Assert ((Get-Content RELEASE_NOTES.md -Raw) -ceq $releaseNotes) 'Failed extraction overwrote release notes'
+    }
+    [IO.File]::WriteAllText("$fixture/CHANGELOG.md", $retryRoot)
+    Invoke-TestGit add .
+    Invoke-TestGit commit -qm 'docs: checkpoint retry [skip release notes]'
+    Invoke-TestGit tag -f v2.0.0
     # Each excluded-only change must no-op independently, even with stale Unreleased.
     foreach ($name in @('ProjectOnly', 'Neither')) {
         Add-Content "$name/code.txt" 'excluded change'
@@ -100,7 +173,7 @@ try {
         Assert ($section.Count -eq 0) 'Empty root returned release text'
         Assert ([Convert]::ToBase64String([IO.File]::ReadAllBytes("$fixture/CHANGELOG.md")) -ceq $before) 'Empty root changed bytes'
     }
-    Write-Host 'PASS: four configurations, previews, bootstrap, selection, history, idempotence, tags, PR links, excluded-only no-op.'
+    Write-Host 'PASS: configurations, previews, bootstrap, selection, history, retries, duplicate repair, release extraction, PR links, excluded-only no-op.'
 }
 finally {
     if ((Get-Location).Path -eq $fixture) { Pop-Location }

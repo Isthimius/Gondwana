@@ -22,6 +22,18 @@ permissions:
   contents: read
   actions: read
 jobs:
+  changelog-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install git-cliff
+        uses: taiki-e/install-action@d8ae1fa96886bc82c05515b8ac15b41515da2c6d # git-cliff
+      - name: Changelog generation and release retry tests
+        shell: pwsh
+        run: ./Tooling/scripts/Test-ChangelogConfiguration.ps1
+
   winforms-editor-tests:
     runs-on: windows-latest
     steps:

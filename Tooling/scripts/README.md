@@ -139,7 +139,7 @@ PR provenance is handled by the shared `cliff.toml` configuration. Squash-merged
 1. Loads `Changelog-ProjectGroups.ps1` and selects entries with `GenerateChangelog = $true` (optionally narrowed by `-Projects`).
 2. Filters each project's history with `git-cliff --include-path "Project/**/*"`.
 3. If a project has no `CHANGELOG.md` (or it is empty), generates the complete project history: existing Git tags become versioned sections and current untagged commits are included as `[Unreleased]`, unless `-Tag` is supplied.
-4. If a project already has a changelog, replaces any leading `[Unreleased]` section and regenerates the current commits since the latest tag. Without `-Tag`, those commits are prepended under `[Unreleased]`; with `-Tag`, they are prepended under that version.
+4. If a project already has a changelog, replaces any leading `[Unreleased]` section and regenerates the current commits since the latest tag. Without `-Tag`, those commits are prepended under `[Unreleased]`; with `-Tag`, the full range after the previous reachable version is regenerated under that version, replacing any existing sections for the same version.
 5. Writes through a temporary file so a failed `git-cliff` run does not destroy the existing changelog, and reports all project failures at the end.
 
 > A single commit that touches multiple projects will appear in each matching project changelog — correct behaviour for a monorepo.
@@ -178,13 +178,13 @@ PR provenance is handled by the shared `cliff.toml` configuration. Squash-merged
 
 ### `Generate-Root-Changelog.ps1`
 
-Regenerates only the repository-level `CHANGELOG.md`'s leading derived section while preserving all existing released history exactly. Its entries are grouped by project/area in the same format used by release notes. `.github/workflows/changelog-weekly.yml` runs this script alongside `Generate-Project-Changelogs.ps1` against `master` on the weekly schedule or by manual dispatch.
+Regenerates the repository-level `CHANGELOG.md`'s current section. Normal refreshes preserve released history exactly; `-Tag` replaces sections for that version while preserving every other release. Its entries are grouped by project/area in the same format used by release notes. `.github/workflows/changelog-weekly.yml` runs this script alongside `Generate-Project-Changelogs.ps1` against `master` on the weekly schedule or by manual dispatch.
 
 **What it does:**
 1. Loads entries with `IncludeInRootChangelog = $true` from `Changelog-ProjectGroups.ps1`.
 2. Uses `git-cliff` to collect commits since the latest tag from configured paths, independently of whether any project-level `CHANGELOG.md` exists.
 3. Replaces any leading generated or manually edited `[Unreleased]` section when root-visible entries exist. If none exist, succeeds without writing the file, including in tagged mode; `-SectionOnly` returns no section. An existing `[Unreleased]` block is left untouched in this no-op case.
-4. Preserves the file header and every existing versioned section’s contents, only normalizing whitespace around the inserted current section.
+4. Preserves the file header and other versioned sections. A tagged retry replaces all sections for that version and includes both the original changes and subsequent fixes, even when the release tag already exists.
 
 > The canonical root `CHANGELOG.md` must already exist and contain a recognized `[Unreleased]` or versioned release heading. Unlike the project generator, this script deliberately does not bootstrap missing root history.
 
@@ -243,7 +243,7 @@ The single authoritative `$ChangelogProjects` array controls both generators and
 
 Root-only areas such as `Build / Repository` use `Path = $null` and explicit `IncludePaths` globs. They must have `GenerateChangelog = $false`. A commit matching multiple enabled groups appears in each. Existing headings, order, and path filters are preserved.
 
-Disabling project generation leaves any existing project CHANGELOG untouched; it does not delete historical files. `-Projects` is now a selection of configured paths, not an escape hatch for arbitrary folders or disabled generation. Register a new project here first. Root visibility changes apply to newly generated sections only; released history is never rewritten. If no visible entries remain, the root file is left unchanged, so removing a stale derived block after a policy change requires an intentional edit.
+Disabling project generation leaves any existing project CHANGELOG untouched; it does not delete historical files. `-Projects` is now a selection of configured paths, not an escape hatch for arbitrary folders or disabled generation. Register a new project here first. Root visibility changes apply to newly generated sections only; other released versions are never rewritten. If no visible entries remain, the root file is left unchanged, so removing a stale derived block after a policy change requires an intentional edit.
 
 The weekly refresh supports project-only, root-only, both, and no-output configurations. Staging enumerates existing CHANGELOG files and tolerates no project files. Release staging selects enabled project outputs from this metadata. A release with no root-visible changes produces no new root section. `release.ps1` retains its existing guard against publishing empty release notes and stops before committing or tagging; a weekly refresh with no generated changes exits successfully without creating a commit.
 
@@ -253,7 +253,19 @@ Run the isolated integration suite with PowerShell 7 and `git-cliff` on PATH:
 ./Tooling/scripts/Test-ChangelogConfiguration.ps1
 ```
 
-It creates temporary Git history and exercises all four combinations, missing-file bootstrap, preview safety, selection policy, PR links, repeated refreshes, tagged generation, released-history preservation, and excluded-only root no-ops. The weekly workflow runs it before refreshing the real repository changelogs.
+It creates temporary Git history and exercises all four combinations, missing-file bootstrap, preview safety, selection policy, PR links, repeated refreshes, tagged generation, retries before and after tagging, duplicate repair, released-history preservation, and excluded-only root no-ops. CI and the weekly workflow run this suite.
+
+---
+
+### `Extract-ReleaseNotes.ps1`
+
+The release workflow calls this before changing the release branch or publishing packages. It requires exactly one section matching `-Tag`, requires that section to lead the changelog, and rejects notes without release entries. Both bracketed (`# [vX.Y.Z]`) and legacy (`# vX.Y.Z`) headings are supported. This prevents a retry from silently publishing an incomplete or wrong version's notes.
+
+```powershell
+./Tooling/scripts/Extract-ReleaseNotes.ps1 -Tag v2.6.2
+```
+
+`-ChangelogPath` and `-OutputPath` default to `CHANGELOG.md` and `RELEASE_NOTES.md`, relative to the current working directory. `Changelog-Common.ps1` provides shared section parsing and release-range selection for these scripts.
 
 ---
 
