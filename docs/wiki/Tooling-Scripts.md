@@ -467,6 +467,8 @@ This avoids rewriting changelogs on every pull request or every push while still
 
 # `release.ps1`
 
+A retry for the same version regenerates the complete release range after the previous reachable version tag, including the original changes and any follow-up fixes. The root and project generators replace existing sections for that version and preserve other released history. The release workflow validates that its tag matches the package version and that exactly one matching section leads the changelog before it changes the release branch or publishes packages.
+
 `release.ps1` is the local release orchestrator.
 
 It prepares the release and pushes the release tag; it does **not** directly publish NuGet packages itself. Publication is performed by GitHub Actions after the tag reaches GitHub.

@@ -5,9 +5,9 @@
 
 .DESCRIPTION
     Builds the root changelog section as a project-grouped summary of commits
-    since the latest Git tag. Existing released history is preserved exactly.
-    Without -Tag the derived section is [Unreleased]; with -Tag it becomes the
-    supplied versioned release section.
+    since the latest Git tag. Without -Tag the derived section is [Unreleased].
+    With -Tag, regenerates the full range after the previous version and replaces
+    any existing section for that version. Other released history is preserved.
 #>
 param(
     [string]$Tag,
@@ -22,6 +22,8 @@ $ErrorActionPreference = "Stop"
 $repoRoot = (Get-Item (Join-Path $PSScriptRoot '../..')).FullName
 $groupsPath = Join-Path $PSScriptRoot "Changelog-ProjectGroups.ps1"
 . $groupsPath
+. (Join-Path $PSScriptRoot 'Changelog-Common.ps1')
+$release = if ($Tag) { Get-ChangelogRelease -RepoRoot $repoRoot -Tag $Tag }
 
 if (-not [System.IO.Path]::IsPathRooted($ChangelogPath)) {
     $ChangelogPath = Join-Path $repoRoot $ChangelogPath
@@ -41,16 +43,26 @@ if (-not (Get-Command git-cliff -ErrorAction SilentlyContinue)) {
 }
 
 function Get-GeneratedSectionBody {
-    param([Parameter(Mandatory = $true)][string]$GeneratedChangelogPath)
+    param(
+        [Parameter(Mandatory = $true)][string]$GeneratedChangelogPath,
+        [string]$Tag
+    )
 
     $content = Get-Content $GeneratedChangelogPath -Raw
     if ([string]::IsNullOrWhiteSpace($content)) {
         return ""
     }
 
+    $headingPattern = if ($Tag) {
+        $version = [regex]::Escape($Tag.TrimStart('v'))
+        "(?m)^#\s+(?:\[v?$version\]|v?$version)(?=[ \t\r\n]|$).*$"
+    }
+    else {
+        '(?m)^#\s+\[Unreleased\].*$'
+    }
     $heading = [regex]::Match(
         $content,
-        '(?m)^#\s+(?:\[Unreleased\]|\[?v?\d+\.\d+\.\d+\]?).*$'
+        $headingPattern
     )
     if (-not $heading.Success) {
         return ""
@@ -74,17 +86,20 @@ function Get-ProjectBody {
     $arguments = @(
         "--config", $CliffConfigPath,
         "--repository", ".",
-        "--unreleased",
         "--strip", "header"
     )
     if ($Tag) {
-        $arguments += "--tag", $Tag
+        $arguments += $release.SectionArguments
+    }
+    else {
+        $arguments += '--unreleased'
     }
     foreach ($includePath in $ProjectGroup.IncludePaths) {
         # Keep the glob attached to the option so PowerShell cannot expand it.
         $arguments += "--include-path=$includePath"
     }
     $arguments += "--output", $tempPath
+    if ($Tag) { $arguments += $release.RangeArguments }
 
     Push-Location $repoRoot
     try {
@@ -92,7 +107,7 @@ function Get-ProjectBody {
         if ($LASTEXITCODE -ne 0) {
             throw "git-cliff failed for root changelog group '$($ProjectGroup.RootName)'."
         }
-        $body = Get-GeneratedSectionBody -GeneratedChangelogPath $tempPath
+        $body = Get-GeneratedSectionBody -GeneratedChangelogPath $tempPath -Tag $Tag
     }
     finally {
         Pop-Location
@@ -137,9 +152,7 @@ function New-CurrentSection {
     }
 
     if ($Tag) {
-        $previousTag = git -C $repoRoot tag --sort=-version:refname |
-            Where-Object { $_ -ne $Tag } |
-            Select-Object -First 1
+        $previousTag = $release.PreviousTag
         if ($previousTag) {
             $lines += ""
             $lines += "Full Changelog: https://github.com/Isthimius/Gondwana/compare/$previousTag...$Tag"
@@ -155,24 +168,14 @@ function Join-RootChangelog {
         [Parameter(Mandatory = $true)][string]$CurrentSection
     )
 
-    $headingPattern = '(?m)^#\s+\[(?<Version>Unreleased|v?\d+\.\d+\.\d+)\](?:\s|$)'
-    $matches = [regex]::Matches($ExistingContent, $headingPattern)
+    $matches = [regex]::Matches($ExistingContent, $ChangelogHeadingPattern)
     if ($matches.Count -eq 0) {
         throw "No root changelog release heading was found in '$ChangelogPath'."
     }
 
-    $prefix = $ExistingContent.Substring(0, $matches[0].Index)
-    if ($matches[0].Groups['Version'].Value -eq 'Unreleased') {
-        $releasedHistory = if ($matches.Count -gt 1) {
-            $ExistingContent.Substring($matches[1].Index)
-        }
-        else {
-            ""
-        }
-    }
-    else {
-        $releasedHistory = $ExistingContent.Substring($matches[0].Index)
-    }
+    $parts = Split-ChangelogContent -Content $ExistingContent -Tag $Tag
+    $prefix = $parts.Prefix
+    $releasedHistory = $parts.ReleasedHistory
 
     $newLine = if ($ExistingContent.Contains("`r`n")) { "`r`n" } else { "`n" }
     $content = $prefix

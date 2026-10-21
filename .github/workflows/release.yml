@@ -34,6 +34,17 @@ jobs:
       - name: Get version from NBGV
         run: echo "VERSION=$(nbgv get-version -v NuGetPackageVersion)" >> $GITHUB_ENV
 
+      - name: Validate and extract release notes
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          if ("v$env:VERSION" -ne $env:RELEASE_TAG) {
+            throw "Release tag '$env:RELEASE_TAG' does not match package version '$env:VERSION'."
+          }
+          ./Tooling/scripts/Extract-ReleaseNotes.ps1 -Tag $env:RELEASE_TAG
+          Get-Content RELEASE_NOTES.md
+
       - name: Create or overwrite release branch
         run: |
           git config user.name "github-actions"
@@ -146,43 +157,6 @@ jobs:
       # ---------------------------
       # GitHub Release
       # ---------------------------
-      - name: Extract release notes from CHANGELOG.md
-        shell: bash
-        run: |
-          if [ ! -f CHANGELOG.md ]; then
-            echo "CHANGELOG.md was not found. Run release.ps1 so git-cliff can update the changelog before tagging."
-            exit 1
-          fi
-
-          # Pull the newest release section from CHANGELOG.md. The release.ps1
-          # script prepends this section before creating the tag, so the tagged
-          # commit is the source of truth for the GitHub Release body.
-          # Handles both git-cliff format (# [version]) and the legacy repo
-          # format (# vX.Y.Z), while ignoring any "# Changelog" header line.
-          awk '
-            function is_release_heading(line) {
-              return line ~ /^# \[/ || line ~ /^# v/
-            }
-
-            /^# Changelog[[:space:]]*$/ { next }
-
-            {
-              if (is_release_heading($0)) {
-                section++
-                if (section > 1) exit
-              }
-
-              if (section == 1) print
-            }
-          ' CHANGELOG.md > RELEASE_NOTES.md
-
-          if [ ! -s RELEASE_NOTES.md ]; then
-            echo "Could not extract release notes from CHANGELOG.md."
-            exit 1
-          fi
-
-          cat RELEASE_NOTES.md
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:

@@ -17,11 +17,12 @@
       - If the changelog already exists, released history is preserved and any
         leading [Unreleased] section is replaced from commits since the latest
         Git tag.
-      - With -Tag, current unreleased commits are written under that version tag.
+      - With -Tag, the full range after the previous version is written under
+        that tag, replacing any existing section for the same version on retries.
       - Without -Tag, current unreleased commits are written under [Unreleased].
 
 .PARAMETER Tag
-    Version tag to stamp on the current unreleased commits (e.g. "v1.2.3").
+    Stable version tag to generate or retry (e.g. "v1.2.3").
     When omitted, current unreleased commits remain under [Unreleased].
 
 .PARAMETER PreviewOnly
@@ -63,6 +64,7 @@ $ErrorActionPreference = "Stop"
 
 # -Projects selects configured paths; it never overrides generation policy.
 . (Join-Path $PSScriptRoot "Changelog-ProjectGroups.ps1")
+. (Join-Path $PSScriptRoot 'Changelog-Common.ps1')
 if ($Projects) {
     $Projects = @($Projects | ForEach-Object { $_.Replace('\', '/').TrimEnd('/') })
     foreach ($path in $Projects) {
@@ -78,6 +80,7 @@ $Projects = @($ChangelogProjects | Where-Object {
 # Resolve the repo root from the script's location:
 # Tooling/scripts/ -> Tooling/ -> root
 $repoRoot = (Get-Item (Join-Path $PSScriptRoot '../..')).FullName
+$release = if ($Tag) { Get-ChangelogRelease -RepoRoot $repoRoot -Tag $Tag }
 
 if (-not [System.IO.Path]::IsPathRooted($CliffConfigPath)) {
     $CliffConfigPath = Join-Path $repoRoot $CliffConfigPath
@@ -89,45 +92,6 @@ if (-not (Test-Path $CliffConfigPath)) {
 
 if (-not (Get-Command git-cliff -ErrorAction SilentlyContinue)) {
     throw "git-cliff was not found on PATH. Install with: winget install --id orhun.git-cliff"
-}
-
-$releaseHeadingPattern = '(?m)^#\s+(?<Version>\[Unreleased\]|v?\d+\.\d+\.\d+)(?:\s|$)'
-$releaseHeadingRegex = New-Object System.Text.RegularExpressions.Regex($releaseHeadingPattern)
-
-function Split-ExistingChangelog {
-    param(
-        [Parameter(Mandatory = $true)]
-        [AllowEmptyString()]
-        [string]$Content
-    )
-
-    $releaseMatches = $releaseHeadingRegex.Matches($Content)
-    if ($releaseMatches.Count -eq 0) {
-        return [pscustomobject]@{
-            Prefix          = $Content
-            ReleasedHistory = ""
-        }
-    }
-
-    $first = $releaseMatches[0]
-    $prefix = $Content.Substring(0, $first.Index)
-
-    if ($first.Groups["Version"].Value -eq "[Unreleased]") {
-        if ($releaseMatches.Count -gt 1) {
-            $releasedHistory = $Content.Substring($releaseMatches[1].Index)
-        }
-        else {
-            $releasedHistory = ""
-        }
-    }
-    else {
-        $releasedHistory = $Content.Substring($first.Index)
-    }
-
-    return [pscustomobject]@{
-        Prefix          = $prefix
-        ReleasedHistory = $releasedHistory
-    }
 }
 
 function Join-ChangelogContent {
@@ -204,7 +168,9 @@ function Invoke-GitCliffToContent {
         [string[]]$Arguments,
 
         [Parameter(Mandatory = $true)]
-        [string]$Project
+        [string]$Project,
+
+        [string[]]$RangeArguments = @()
     )
 
     $tempChangelog = Join-Path `
@@ -214,7 +180,7 @@ function Invoke-GitCliffToContent {
     Push-Location $repoRoot
     try {
         try {
-            & git-cliff @Arguments "--output" $tempChangelog
+            & git-cliff @Arguments "--output" $tempChangelog @RangeArguments
             if ($LASTEXITCODE -ne 0) {
                 throw "git-cliff failed for project '$Project' (exit $LASTEXITCODE)."
             }
@@ -301,23 +267,27 @@ foreach ($project in $Projects) {
             # full tagged history plus [Unreleased], or the supplied -Tag.
             $cliffArgs = @($baseCliffArgs)
             if ($Tag) {
-                $cliffArgs += "--tag", $Tag
+                $cliffArgs += $release.Arguments
             }
 
             $finalContent = Invoke-GitCliffToContent -Arguments $cliffArgs -Project $project
         }
         else {
-            # Existing released content is immutable. Split away only a leading
-            # [Unreleased] section, generate its replacement without git-cliff's
-            # document header, and put the untouched released history back.
-            $existingParts = Split-ExistingChangelog -Content $existingContent
+            # Replace derived text for this version on a retry; preserve every
+            # other released section, including its original formatting.
+            $existingParts = Split-ChangelogContent -Content $existingContent -Tag $Tag
 
-            $cliffArgs = @($baseCliffArgs) + @("--unreleased", "--strip", "header")
+            $cliffArgs = @($baseCliffArgs) + @("--strip", "header")
+            $rangeArguments = @()
             if ($Tag) {
-                $cliffArgs += "--tag", $Tag
+                $cliffArgs += $release.SectionArguments
+                $rangeArguments = $release.RangeArguments
+            }
+            else {
+                $cliffArgs += '--unreleased'
             }
 
-            $currentSection = Invoke-GitCliffToContent -Arguments $cliffArgs -Project $project
+            $currentSection = Invoke-GitCliffToContent -Arguments $cliffArgs -Project $project -RangeArguments $rangeArguments
             if ([string]::IsNullOrWhiteSpace($currentSection)) {
                 throw "git-cliff did not generate a current changelog section for project '$project'."
             }
