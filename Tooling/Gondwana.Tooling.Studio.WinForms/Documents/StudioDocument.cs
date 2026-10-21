@@ -39,15 +39,21 @@ internal sealed class StudioDocument : IDisposable
 
     internal static AssetTypes TypeFor(string format) => format switch
     {
-        "gts" => AssetTypes.TilesheetDefinition, "gani" => AssetTypes.AnimationDefinition,
-        "gscn" => AssetTypes.SceneDefinition, "gspr" => AssetTypes.SpriteDefinition,
-        "gsnd" => AssetTypes.AudioDefinition, _ => AssetTypes.Misc
+        "gts" => AssetTypes.TilesheetDefinition,
+        "gani" => AssetTypes.AnimationDefinition,
+        "gscn" => AssetTypes.SceneDefinition,
+        "gspr" => AssetTypes.SpriteDefinition,
+        "gsnd" => AssetTypes.AudioDefinition,
+        _ => AssetTypes.Misc
     };
     internal static string? FormatFor(AssetTypes type) => type switch
     {
-        AssetTypes.TilesheetDefinition => "gts", AssetTypes.AnimationDefinition => "gani",
-        AssetTypes.SceneDefinition => "gscn", AssetTypes.SpriteDefinition => "gspr",
-        AssetTypes.AudioDefinition => "gsnd", _ => null
+        AssetTypes.TilesheetDefinition => "gts",
+        AssetTypes.AnimationDefinition => "gani",
+        AssetTypes.SceneDefinition => "gscn",
+        AssetTypes.SpriteDefinition => "gspr",
+        AssetTypes.AudioDefinition => "gsnd",
+        _ => null
     };
     internal required Func<bool> Dirty { get; init; }
     internal required Func<bool> CommitEdits { get; init; }

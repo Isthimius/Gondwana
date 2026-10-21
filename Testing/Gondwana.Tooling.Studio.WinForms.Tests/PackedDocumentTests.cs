@@ -31,18 +31,24 @@ public sealed partial class CompositionTests
         var json = format switch
         {
             "gani" => AnimationDefinitionSerializer.ToDocumentJson(new() { Definitions = [PreviewAnimation("assets.gaf")] }),
-            "gspr" => SpriteDefinitionSerializer.ToDocumentJson(new() { Definitions = [new()
+            "gspr" => SpriteDefinitionSerializer.ToDocumentJson(new()
+            {
+                Definitions = [new()
             {
                 Key = "actors",
                 TilesheetSources = [SpriteTilesheetSourceDefinition.Packed("terrain", "assets.gaf", "definitions/world.gts")],
                 SceneSources = [SpriteSceneSourceDefinition.Packed("island", "assets.gaf", "definitions/island.gscn")],
                 AnimationSources = [SpriteAnimationSourceDefinition.Packed("water.flow", "assets.gaf", "definitions/water.gani")]
-            }] }),
-            _ => AudioDefinitionSerializer.ToDocumentJson(new() { Definitions = [new() { Key = "audio", Resources = [new()
+            }]
+            }),
+            _ => AudioDefinitionSerializer.ToDocumentJson(new()
+            {
+                Definitions = [new() { Key = "audio", Resources = [new()
             {
                 Key = "sound", SourceKind = AudioResourceSourceKind.PackedAsset,
                 AssetsFilePath = "assets.gaf", AssetEntryName = "sound.wav"
-            }] }] })
+            }] }]
+            })
         };
         var entry = "references." + format;
         using (var archive = AssetsFile.LoadOrCreate(path, null, false, register: false))
