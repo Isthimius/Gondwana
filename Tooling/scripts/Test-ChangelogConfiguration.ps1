@@ -159,6 +159,32 @@ try {
     Invoke-TestGit add .
     Invoke-TestGit commit -qm 'docs: checkpoint retry [skip release notes]'
     Invoke-TestGit tag -f v2.0.0
+
+    Add-Content Both/code.txt 'pre-release feature'
+    Add-Content ProjectOnly/code.txt 'pre-release feature'
+    Invoke-TestGit add .
+    Invoke-TestGit commit -qm 'feat: pre-release feature'
+    Invoke-TestGit tag v3.0.0-rc.1
+    Add-Content Both/code.txt 'post pre-release fix'
+    Add-Content ProjectOnly/code.txt 'post pre-release fix'
+    Invoke-TestGit add .
+    Invoke-TestGit commit -qm 'fix: post pre-release fix'
+    & $root -Tag v3.0.0
+    & $projects -Tag v3.0.0
+    $preReleaseRoot = Get-Content CHANGELOG.md -Raw
+    $preReleaseProject = Get-Content Both/CHANGELOG.md -Raw
+    foreach ($section in @($preReleaseRoot, $preReleaseProject)) {
+        Assert ($section.Contains('Pre-release feature')) 'Release section lost changes before an intermediate prerelease tag'
+        Assert ($section.Contains('Post pre-release fix')) 'Release section lost changes after an intermediate prerelease tag'
+        Assert (-not $section.Contains('v3.0.0-rc.1')) 'Release section retained an intermediate prerelease boundary'
+    }
+    Assert ([regex]::Matches($preReleaseProject, '(?m)^# v3\.0\.0\b').Count -eq 1) 'Project release generated multiple sections across a prerelease tag'
+    Assert ([regex]::Matches($preReleaseRoot, '(?m)^# \[v3\.0\.0\]').Count -eq 1) 'Root release generated multiple sections across a prerelease tag'
+    Remove-Item ProjectOnly/CHANGELOG.md
+    & $projects -Projects @('ProjectOnly') -Tag v3.0.0
+    $preReleaseBootstrap = Get-Content ProjectOnly/CHANGELOG.md -Raw
+    Assert ($preReleaseBootstrap.Contains('v3.0.0-rc.1')) 'Full-history bootstrap lost its historical prerelease boundary'
+
     # Each excluded-only change must no-op independently, even with stale Unreleased.
     foreach ($name in @('ProjectOnly', 'Neither')) {
         Add-Content "$name/code.txt" 'excluded change'

@@ -79,7 +79,7 @@ function Get-ProjectBody {
         "--strip", "header"
     )
     if ($Tag) {
-        $arguments += $release.Arguments
+        $arguments += $release.SectionArguments
     }
     else {
         $arguments += '--unreleased'

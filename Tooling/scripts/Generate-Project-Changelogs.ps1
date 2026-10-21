@@ -280,7 +280,7 @@ foreach ($project in $Projects) {
             $cliffArgs = @($baseCliffArgs) + @("--strip", "header")
             $rangeArguments = @()
             if ($Tag) {
-                $cliffArgs += $release.Arguments
+                $cliffArgs += $release.SectionArguments
                 $rangeArguments = $release.RangeArguments
             }
             else {

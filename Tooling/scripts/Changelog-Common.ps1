@@ -19,9 +19,14 @@ function Get-ChangelogRelease {
 
     # Do not let an earlier attempt at this release become its own baseline.
     # An explicit range includes both the original changes and any retry fixes.
+    $targetTagPattern = '^v?' + [regex]::Escape($Tag.TrimStart('v')) + '$'
     [pscustomobject]@{
         PreviousTag = $previousTag
-        Arguments = @('--tag', $Tag, '--ignore-tags', ('^v?' + [regex]::Escape($Tag.TrimStart('v')) + '$'))
+        Arguments = @('--tag', $Tag, '--ignore-tags', $targetTagPattern)
+        SectionArguments = @(
+            '--tag', $Tag,
+            '--ignore-tags', ('(' + $targetTagPattern + '|^v?\d+\.\d+\.\d+-.*$)')
+        )
         RangeArguments = $rangeArguments
     }
 }
