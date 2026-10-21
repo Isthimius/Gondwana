@@ -201,7 +201,7 @@ public sealed partial class AnimationDocument
         var snapshots = _definitions.Select(member =>
         {
             var clone = AnimationDefinitionSerializer.FromJson(AnimationDefinitionSerializer.ToJson(member));
-            clone.Source = PackedLocation is not null ? member.Source : AnimationDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gani"));
+            clone.Source = PackedLocation is { } packed ? AnimationDefinitionSource.PackedDefinitionFile(packed.Path, packed.AssetEntryName!) : AnimationDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gani"));
             return clone;
         }).ToList();
         AnimationDefinitionSerializer.SaveAll(path, snapshots);

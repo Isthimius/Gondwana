@@ -173,7 +173,7 @@ public sealed partial class AudioDocument
         var snapshots = _definitions.Select(member =>
         {
             var clone = AudioDefinitionSerializer.FromJson(AudioDefinitionSerializer.ToJson(member));
-            clone.Source = PackedLocation is not null ? member.Source : AudioDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gsnd"));
+            clone.Source = PackedLocation is { } packed ? AudioDefinitionSource.PackedDefinitionFile(packed.Path, packed.AssetEntryName!) : AudioDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gsnd"));
             return clone;
         }).ToList();
         AudioDefinitionSerializer.SaveAll(path, snapshots);

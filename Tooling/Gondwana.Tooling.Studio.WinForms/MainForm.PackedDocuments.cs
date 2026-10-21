@@ -98,8 +98,9 @@ public sealed partial class MainForm
                 using var copied = StudioArchiveSnapshot.Open(destination, editor.AssetsFile.Password);
                 hash = copied.Hash;
             }
-            using var saved = StudioArchiveSnapshot.Open(destination, editor.AssetsFile.Password);
-            editor.AcceptSavedArchive(saved.Detach());
+            // An empty ZIP has no entries from which to infer its requested encryption policy.
+            editor.AcceptSavedArchive(AssetsFile.LoadOrCreate(destination, editor.AssetsFile.Password,
+                editor.AssetsFile.UseEncryption, register: false));
             model.ArchiveHash = hash;
             model.ArchivePassword = editor.AssetsFile.Password;
         }

@@ -91,9 +91,9 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         {
             path = Path.GetFullPath(path);
             if (_archivePasswords.TryGetValue(path, out var known)) return known;
-            var password = AssetPassword(path);
-            if (password is not null) _archivePasswords[path] = password;
-            return password;
+            // The catalog authenticates this answer and caches successful package loads.
+            // Keep unverified answers out of the session cache so Reload can retry.
+            return AssetPassword(path);
         };
         _packages.PackageAccessed += path => (_loadingDependencies ?? ActiveDocument?.Document.DependencyArchives)?.Add(path);
         MainMenuStrip = BuildMenu();

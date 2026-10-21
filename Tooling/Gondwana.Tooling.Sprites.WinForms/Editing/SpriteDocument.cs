@@ -173,7 +173,7 @@ public sealed partial class SpriteDocument
         var snapshots = _definitions.Select(member =>
         {
             var clone = SpriteDefinitionSerializer.FromJson(SpriteDefinitionSerializer.ToJson(member));
-            clone.Source = PackedLocation is not null ? member.Source : SpriteDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gspr"));
+            clone.Source = PackedLocation is { } packed ? SpriteDefinitionSource.PackedDefinitionFile(packed.Path, packed.AssetEntryName!) : SpriteDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gspr"));
             return clone;
         }).ToList();
         SpriteDefinitionSerializer.SaveAll(path, snapshots);

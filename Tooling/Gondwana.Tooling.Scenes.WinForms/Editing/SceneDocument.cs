@@ -315,7 +315,7 @@ public sealed partial class SceneDocument
         var snapshots = _definitions.Select(member =>
         {
             var clone = SceneDefinitionSerializer.FromJson(SceneDefinitionSerializer.ToJson(member));
-            clone.Source = PackedLocation is not null ? member.Source : SceneDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gscn"));
+            clone.Source = PackedLocation is { } packed ? SceneDefinitionSource.PackedDefinitionFile(packed.Path, packed.AssetEntryName!) : SceneDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gscn"));
             return clone;
         }).ToList();
         SceneDefinitionSerializer.SaveAll(path, snapshots);
