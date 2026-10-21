@@ -184,18 +184,21 @@ try {
     & $projects -Projects @('ProjectOnly') -Tag v3.0.0
     $preReleaseBootstrap = Get-Content ProjectOnly/CHANGELOG.md -Raw
     Assert ($preReleaseBootstrap.Contains('v3.0.0-rc.1')) 'Full-history bootstrap lost its historical prerelease boundary'
+    Invoke-TestGit add CHANGELOG.md Both/CHANGELOG.md ProjectOnly/CHANGELOG.md
+    Invoke-TestGit commit -qm 'docs: checkpoint v3 release [skip release notes]'
+    Invoke-TestGit tag v3.0.0
 
     # Each excluded-only change must no-op independently, even with stale Unreleased.
     foreach ($name in @('ProjectOnly', 'Neither')) {
         Add-Content "$name/code.txt" 'excluded change'
-        Invoke-TestGit add .
+        Invoke-TestGit add "$name/code.txt"
         Invoke-TestGit commit -qm "fix: excluded $name"
         [IO.File]::WriteAllText("$fixture/CHANGELOG.md", "# Changelog`n`n# [Unreleased]`n`nExisting derived text`n`n$rootHistory")
         $before = [Convert]::ToBase64String([IO.File]::ReadAllBytes("$fixture/CHANGELOG.md"))
         & $root
         & $root -PreviewOnly
-        & $root -Tag v3.0.0
-        $section = @(& $root -SectionOnly -Tag v3.0.0)
+        & $root -Tag v4.0.0
+        $section = @(& $root -SectionOnly -Tag v4.0.0)
         Assert ($section.Count -eq 0) 'Empty root returned release text'
         Assert ([Convert]::ToBase64String([IO.File]::ReadAllBytes("$fixture/CHANGELOG.md")) -ceq $before) 'Empty root changed bytes'
     }

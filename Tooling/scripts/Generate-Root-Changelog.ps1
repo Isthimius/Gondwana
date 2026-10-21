@@ -43,16 +43,26 @@ if (-not (Get-Command git-cliff -ErrorAction SilentlyContinue)) {
 }
 
 function Get-GeneratedSectionBody {
-    param([Parameter(Mandatory = $true)][string]$GeneratedChangelogPath)
+    param(
+        [Parameter(Mandatory = $true)][string]$GeneratedChangelogPath,
+        [string]$Tag
+    )
 
     $content = Get-Content $GeneratedChangelogPath -Raw
     if ([string]::IsNullOrWhiteSpace($content)) {
         return ""
     }
 
+    $headingPattern = if ($Tag) {
+        $version = [regex]::Escape($Tag.TrimStart('v'))
+        "(?m)^#\s+(?:\[v?$version\]|v?$version)(?=[ \t\r\n]|$).*$"
+    }
+    else {
+        '(?m)^#\s+\[Unreleased\].*$'
+    }
     $heading = [regex]::Match(
         $content,
-        '(?m)^#\s+(?:\[Unreleased\]|\[?v?\d+\.\d+\.\d+\]?).*$'
+        $headingPattern
     )
     if (-not $heading.Success) {
         return ""
@@ -97,7 +107,7 @@ function Get-ProjectBody {
         if ($LASTEXITCODE -ne 0) {
             throw "git-cliff failed for root changelog group '$($ProjectGroup.RootName)'."
         }
-        $body = Get-GeneratedSectionBody -GeneratedChangelogPath $tempPath
+        $body = Get-GeneratedSectionBody -GeneratedChangelogPath $tempPath -Tag $Tag
     }
     finally {
         Pop-Location
