@@ -100,8 +100,22 @@ public sealed partial class CompositionTests
         };
         var audio = new AudioDefinition
         {
-            Key = "imported", Resources = [new() { Key = "loose", FilePath = "tone.wav" },
-                new() { Key = "packed", SourceKind = AudioResourceSourceKind.PackedAsset, AssetsFilePath = "assets.gaf", AssetEntryName = "tone.wav" }]
+            Key = "imported",
+            Resources =
+            [
+                new()
+                {
+                    Key = "loose",
+                    FilePath = "tone.wav"
+                },
+                new()
+                {
+                    Key = "packed",
+                    SourceKind = AudioResourceSourceKind.PackedAsset,
+                    AssetsFilePath = "assets.gaf",
+                    AssetEntryName = "tone.wav"
+                }
+            ]
         };
         var source = Path.Combine(root, "import." + format);
         File.WriteAllText(source, format switch
