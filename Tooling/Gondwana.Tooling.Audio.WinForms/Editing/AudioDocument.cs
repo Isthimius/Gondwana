@@ -6,7 +6,7 @@ namespace Gondwana.Tooling.Audio.Editing;
 /// <summary>
 /// UI-independent editing session for one GSND audio definition.
 /// </summary>
-public sealed class AudioDocument
+public sealed partial class AudioDocument
 {
     /// <summary>
     /// Gets the definition.
@@ -173,7 +173,7 @@ public sealed class AudioDocument
         var snapshots = _definitions.Select(member =>
         {
             var clone = AudioDefinitionSerializer.FromJson(AudioDefinitionSerializer.ToJson(member));
-            clone.Source = AudioDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gsnd"));
+            clone.Source = PackedLocation is { } packed ? AudioDefinitionSource.PackedDefinitionFile(packed.Path, packed.AssetEntryName!) : AudioDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gsnd"));
             return clone;
         }).ToList();
         AudioDefinitionSerializer.SaveAll(path, snapshots);
@@ -190,6 +190,7 @@ public sealed class AudioDocument
             member.Source = AudioDefinitionSource.LooseDefinitionFile(path);
         }
         FilePath = path;
+        PackedLocation = null;
         BaseDirectory = directory;
         IsDirty = false;
         Changed?.Invoke(this, EventArgs.Empty);

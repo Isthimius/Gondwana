@@ -253,6 +253,9 @@ public sealed class AssetsFile : IDisposable
                 if (!entry.IsFile)
                     continue;
 
+                // Preserve the loaded archive's encryption policy when tooling stages a replacement.
+                if (string.IsNullOrEmpty(FilePath)) UseEncryption |= entry.IsCrypted;
+
                 var key = AssetsFileEntry.FromString(entry.Name);
                 if (key == null)
                 {

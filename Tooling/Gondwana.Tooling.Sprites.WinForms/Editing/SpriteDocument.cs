@@ -4,7 +4,7 @@ using Gondwana.Tooling.Editing;
 namespace Gondwana.Tooling.Sprites.Editing;
 
 /// <summary>UI-independent authoring session. Never creates runtime sprites or scenes.</summary>
-public sealed class SpriteDocument
+public sealed partial class SpriteDocument
 {
     /// <summary>
     /// Gets the definition.
@@ -173,7 +173,7 @@ public sealed class SpriteDocument
         var snapshots = _definitions.Select(member =>
         {
             var clone = SpriteDefinitionSerializer.FromJson(SpriteDefinitionSerializer.ToJson(member));
-            clone.Source = SpriteDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gspr"));
+            clone.Source = PackedLocation is { } packed ? SpriteDefinitionSource.PackedDefinitionFile(packed.Path, packed.AssetEntryName!) : SpriteDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gspr"));
             return clone;
         }).ToList();
         SpriteDefinitionSerializer.SaveAll(path, snapshots);
@@ -200,6 +200,7 @@ public sealed class SpriteDocument
             member.Source = SpriteDefinitionSource.LooseDefinitionFile(path);
         }
         FilePath = path;
+        PackedLocation = null;
         BaseDirectory = directory;
         IsDirty = false;
         Changed?.Invoke(this, EventArgs.Empty);

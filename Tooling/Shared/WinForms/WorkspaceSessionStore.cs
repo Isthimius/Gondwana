@@ -3,8 +3,11 @@ using System.Text.Json;
 namespace Gondwana.Tooling.WinForms;
 
 /// <summary>Only saved document identities belong here, never editor models or content.</summary>
-internal sealed record WorkspaceSessionDocument(string Path, string Format)
+internal sealed record WorkspaceSessionDocument(string Path, string Format, int? AssetType = null, string? EntryName = null)
 {
+    internal bool SameIdentity(WorkspaceSessionDocument other) =>
+        string.Equals(Path, other.Path, StringComparison.OrdinalIgnoreCase) && AssetType == other.AssetType &&
+        string.Equals(EntryName, other.EntryName, StringComparison.OrdinalIgnoreCase);
     internal static WorkspaceSessionDocument? FromPath(string? path)
     {
         if (string.IsNullOrWhiteSpace(path)) return null;
@@ -30,6 +33,7 @@ internal sealed record WorkspaceSession
     public string? WorkingDirectory { get; init; }
     public WorkspaceSessionDocument[] Documents { get; init; } = [];
     public string? ActiveDocument { get; init; }
+    public WorkspaceSessionDocument? ActivePackedDocument { get; init; }
 }
 
 /// <summary>Recoverable, atomic per-application preferences independent of docking and content files.</summary>
@@ -86,7 +90,8 @@ internal static class WorkspaceSessionRestore
 {
     internal static void Restore(WorkspaceSession session, IReadOnlyCollection<string> supportedFormats,
         Action<string> setDirectory, Action<WorkspaceSessionDocument> open,
-        Action<string> activate, Action<string> report, bool startEmpty = false)
+        Action<string> activate, Action<string> report, bool startEmpty = false,
+        Action<WorkspaceSessionDocument>? activatePacked = null)
     {
         if (startEmpty || !session.RestoreOnStartup) return;
         if (session.WorkingDirectory is { } directory)
@@ -99,30 +104,38 @@ internal static class WorkspaceSessionRestore
             catch (Exception ex) { report($"Working directory was not restored: {ex.Message} Choose File > Open working directory."); }
         }
 
-        var opened = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var attempted = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var opened = new List<WorkspaceSessionDocument>();
+        var attempted = new List<WorkspaceSessionDocument>();
         foreach (var document in (session.Documents ?? []).Take(1024))
         {
             try
             {
                 if (document is null) continue;
                 if (!Path.IsPathFullyQualified(document.Path)) throw new InvalidDataException("Expected an absolute document path.");
-                var identity = WorkspaceSessionDocument.FromPath(document.Path);
+                var identity = document.EntryName is null ? WorkspaceSessionDocument.FromPath(document.Path) : document with { Path = Path.GetFullPath(document.Path) };
                 if (identity is null || identity.Format != document.Format || !supportedFormats.Contains(identity.Format))
                     throw new NotSupportedException($"Editor unavailable for {document.Path}.");
-                if (!attempted.Add(identity.Path)) continue;
+                if (identity.EntryName is not null && (identity.AssetType is null || activatePacked is null))
+                    throw new NotSupportedException("Packed document restoration is unavailable in this editor.");
+                if (attempted.Any(item => item.SameIdentity(identity))) continue;
+                attempted.Add(identity);
                 if (!File.Exists(identity.Path)) throw new FileNotFoundException("File was moved or removed.", identity.Path);
                 open(identity);
-                opened.Add(identity.Path);
+                opened.Add(identity);
             }
             catch (Exception ex) { report($"Could not restore {document?.Path}: {ex.Message} Reopen it with File > Open."); }
         }
-        if (session.ActiveDocument is { } active)
+        if (session.ActivePackedDocument is { } packed && opened.Any(item => item.SameIdentity(packed)))
+        {
+            try { activatePacked?.Invoke(packed); }
+            catch (Exception ex) { report($"Active packed document was not restored: {ex.Message}"); }
+        }
+        else if (session.ActiveDocument is { } active)
         {
             try
             {
                 active = Path.GetFullPath(active);
-                if (opened.Contains(active)) activate(active);
+                if (opened.Any(item => item.EntryName is null && string.Equals(item.Path, active, StringComparison.OrdinalIgnoreCase))) activate(active);
             }
             catch (Exception ex) { report($"Active document was not restored: {ex.Message}"); }
         }

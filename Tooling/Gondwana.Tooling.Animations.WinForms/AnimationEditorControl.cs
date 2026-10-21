@@ -375,7 +375,7 @@ public sealed class AnimationEditorControl : UserControl
             }
         }
 
-        if (recoverLegacySources)
+        if (recoverLegacySources && Document.PackedLocation is null)
         {
             foreach (var tilesheet in Definition.Frames
                          .Select(frame => frame.Tilesheet)

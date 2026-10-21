@@ -54,7 +54,8 @@ public sealed partial class CompositionTests
         editor.MarkChanged();
         Assert.Throws<InvalidOperationException>(() => editor.ApplyDeletion(plan, true));
         Assert.True(editor.IsDirty);
-        editor.SaveTo(path);
+        if (hosted) Assert.True(AwaitUi(studio.SaveDocument(document!)));
+        else editor.SaveTo(path);
         plan = AssetDeletionPlan.Create(path, [new(AssetTypes.Image, path, "images/art.png")]);
         changes = refreshes = 0;
         editor.ApplyDeletion(plan, true);

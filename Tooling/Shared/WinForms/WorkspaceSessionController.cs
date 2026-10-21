@@ -57,7 +57,8 @@ internal sealed class WorkspaceSessionController
     }
 
     internal void Restore(IReadOnlyCollection<string> formats, Action<string> setDirectory,
-        Action<WorkspaceSessionDocument> open, Action<string> activate, Action<string> reportStartup, Action<string> reportPersistenceError)
+        Action<WorkspaceSessionDocument> open, Action<string> activate, Action<string> reportStartup, Action<string> reportPersistenceError,
+        Action<WorkspaceSessionDocument>? activatePacked = null)
     {
         if (_restored) return;
         _restored = true;
@@ -71,7 +72,7 @@ internal sealed class WorkspaceSessionController
             {
                 Trace.TraceWarning(message);
                 reportStartup(message);
-            }, StartEmpty);
+            }, StartEmpty, activatePacked);
         }
         finally { IsRestoring = false; }
     }
@@ -81,11 +82,18 @@ internal sealed class WorkspaceSessionController
     {
         var documents = paths.Select(WorkspaceSessionDocument.FromPath).OfType<WorkspaceSessionDocument>()
             .DistinctBy(document => document.Path, StringComparer.OrdinalIgnoreCase).ToArray();
+        SaveDocuments(directory, documents, documents.FirstOrDefault(document => string.Equals(document.Path, activePath, StringComparison.OrdinalIgnoreCase)));
+    }
+
+    internal void SaveDocuments(string directory, IEnumerable<WorkspaceSessionDocument?> identities, WorkspaceSessionDocument? active)
+    {
+        var documents = identities.OfType<WorkspaceSessionDocument>().ToArray();
         _session = _session with
         {
             WorkingDirectory = directory,
             Documents = documents,
-            ActiveDocument = documents.FirstOrDefault(document => string.Equals(document.Path, activePath, StringComparison.OrdinalIgnoreCase))?.Path
+            ActiveDocument = active?.EntryName is null ? active?.Path : null,
+            ActivePackedDocument = active?.EntryName is not null ? active : null
         };
         _store.Write(_session);
     }

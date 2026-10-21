@@ -120,7 +120,8 @@ public sealed partial class CompositionTests
         Assert.True(editor.IsDirty);
         Assert.Equal(0, changes);
         Assert.Single(editor.AssetsFile.GetAllEntries());
-        editor.SaveTo(path);
+        if (hosted) Assert.True(AwaitUi(studio.SaveDocument(document!)));
+        else editor.SaveTo(path);
         document?.Close();
     });
 

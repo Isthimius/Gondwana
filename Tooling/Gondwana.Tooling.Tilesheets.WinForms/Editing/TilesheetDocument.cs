@@ -8,7 +8,7 @@ namespace Gondwana.Tooling.Tilesheets.Editing;
 /// UI-independent editing session. The complete loaded definition remains authoritative;
 /// browsing frames and changing geometry never reconstructs or prunes its metadata.
 /// </summary>
-public sealed class TilesheetDocument
+public sealed partial class TilesheetDocument
 {
     /// <summary>
     /// Gets the definition.
@@ -87,7 +87,8 @@ public sealed class TilesheetDocument
     /// </summary>
     /// <returns>The requested string, or <see langword="null"/> when unavailable.</returns>
     public string? ResolveAssetsFilePath() => string.IsNullOrWhiteSpace(Definition.Image?.AssetsFilePath)
-        ? null : Path.GetFullPath(Definition.Image.AssetsFilePath, BaseDirectory);
+        ? (string.IsNullOrWhiteSpace(Definition.Image?.AssetEntryName) ? null : PackedLocation?.Path)
+        : Path.GetFullPath(Definition.Image.AssetsFilePath, BaseDirectory);
 
     /// <summary>
     /// Sets a loose image file as the tilesheet source.
@@ -149,7 +150,7 @@ public sealed class TilesheetDocument
                 errors.Add("Invalid image path: " + ex.Message);
             }
         }
-        else if (string.IsNullOrWhiteSpace(image.AssetsFilePath) || string.IsNullOrWhiteSpace(image.AssetEntryName))
+        else if (ResolveAssetsFilePath() is null || string.IsNullOrWhiteSpace(image.AssetEntryName))
             errors.Add("Specify a loose image file (or a complete existing packed image source).");
         return errors;
     }
@@ -217,6 +218,9 @@ public sealed class TilesheetDocument
             var clone = TilesheetDefinitionSerializer.FromJson(TilesheetDefinitionSerializer.ToJson(member));
             if (clone.Image is not null)
             {
+                if (PackedLocation is not null &&
+                    string.IsNullOrWhiteSpace(clone.Image.AssetsFilePath) && !string.IsNullOrWhiteSpace(clone.Image.AssetEntryName))
+                    clone.Image.AssetsFilePath = PackedLocation.Path;
                 clone.Image.FilePath = Rebase(clone.Image.FilePath, directory);
                 clone.Image.AssetsFilePath = Rebase(clone.Image.AssetsFilePath, directory);
             }
@@ -239,6 +243,7 @@ public sealed class TilesheetDocument
         }
         FilePath = path;
         BaseDirectory = directory;
+        PackedLocation = null;
         IsDirty = false;
         Changed?.Invoke(this, EventArgs.Empty);
     }

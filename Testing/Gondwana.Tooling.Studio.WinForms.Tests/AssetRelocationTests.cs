@@ -52,7 +52,8 @@ public sealed partial class CompositionTests
         editor.MarkChanged();
         Assert.Throws<InvalidOperationException>(() => editor.ApplyRelocation(plan));
         Assert.Equal(original, File.ReadAllBytes(path));
-        editor.SaveTo(path);
+        if (hosted) Assert.True(AwaitUi(studio.SaveDocument(document!)));
+        else editor.SaveTo(path);
         plan = AssetRelocationPlan.Create(path, [new(new(AssetTypes.Misc, path, "old"), new(AssetTypes.Misc, path, "folder/new"))]);
         int changes = 0;
         editor.Changed += (_, _) => changes++;

@@ -12,6 +12,8 @@ public sealed class DirectoryPanel : UserControl
     private readonly ImageList _images = new() { ImageSize = new Size(16, 16), ColorDepth = ColorDepth.Depth32Bit };
     private readonly ContextMenuStrip _fileMenu = new();
     private string? _menuPath;
+    private PackedAssetNodeIdentity? _menuPacked;
+    internal event Action<PackedAssetNodeIdentity>? PackedFileActivated;
     private CancellationTokenSource _archiveRefresh = new();
     private readonly CancellationTokenSource _lifetime = new();
     private readonly SemaphoreSlim _archiveGate = new(1, 1);
@@ -19,6 +21,8 @@ public sealed class DirectoryPanel : UserControl
     internal Task PendingArchiveLoads { get; private set; } = Task.CompletedTask;
     internal Action<string> OpenExternal { get; set; }
     internal Action<string>? ArchiveOpened { get; set; }
+    // Called only on the UI thread; must return session credentials without prompting.
+    internal Func<string, string?> KnownArchivePassword { get; set; } = _ => null;
 
     // Keep labels and placeholder icons together so artwork can be replaced easily.
     private static readonly (string Key, string Label, string Glyph, Color Color)[] Categories =
@@ -70,6 +74,7 @@ public sealed class DirectoryPanel : UserControl
         Tree.ImageList = _images;
         _fileMenu.Items.Add("Open", null, (_, _) =>
         {
+            if (_menuPacked is { } packed) PackedFileActivated?.Invoke(packed);
             if (_menuPath is { } path) FileActivated?.Invoke(path);
         });
         _fileMenu.Items.Add("Open External", null, (_, _) =>
@@ -100,8 +105,7 @@ public sealed class DirectoryPanel : UserControl
         };
         Tree.NodeMouseDoubleClick += (_, e) =>
         {
-            if (e.Button == MouseButtons.Left && e.Node.Tag is string path && StudioDocument.FormatFor(path) is not null)
-                FileActivated?.Invoke(path);
+            if (e.Button == MouseButtons.Left) ActivateNode(e.Node);
         };
     }
 
@@ -183,7 +187,8 @@ public sealed class DirectoryPanel : UserControl
                 group.Expand();
 
             var scan = FillPackedEntriesAsync(groups,
-                files.Where(file => Path.GetExtension(file).Equals(".gaf", StringComparison.OrdinalIgnoreCase)).ToArray(),
+                files.Where(file => Path.GetExtension(file).Equals(".gaf", StringComparison.OrdinalIgnoreCase))
+                    .Select(file => (Path: file, Password: KnownArchivePassword(file))).ToArray(),
                 _archiveRefresh.Token);
             PendingArchiveLoads = PendingArchiveLoads.IsCompleted ? scan : Task.WhenAll(PendingArchiveLoads, scan);
         }
@@ -195,7 +200,7 @@ public sealed class DirectoryPanel : UserControl
         }
     }
 
-    private async Task FillPackedEntriesAsync(Dictionary<string, TreeNode> groups, string[] archives, CancellationToken cancellationToken)
+    private async Task FillPackedEntriesAsync(Dictionary<string, TreeNode> groups, (string Path, string? Password)[] archives, CancellationToken cancellationToken)
     {
         try
         {
@@ -204,7 +209,7 @@ public sealed class DirectoryPanel : UserControl
             await _archiveGate.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
-                foreach (var archivePath in archives)
+                foreach (var (archivePath, password) in archives)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     try
@@ -215,7 +220,7 @@ public sealed class DirectoryPanel : UserControl
                             // Studio saves use RunWithoutArchiveReadsAsync to drain this handle first.
                             using var stream = new FileStream(archivePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
                             ArchiveOpened?.Invoke(archivePath);
-                            using var archive = AssetsFile.Load(stream, register: false);
+                            using var archive = AssetsFile.Load(stream, password, register: false);
                             return archive.GetAllEntries()
                                 .OrderBy(entry => entry.AssetName, StringComparer.OrdinalIgnoreCase)
                                 .ThenBy(entry => entry.AssetType)
@@ -303,12 +308,29 @@ public sealed class DirectoryPanel : UserControl
     {
         _fileMenu.Close();
         _menuPath = null;
+        _menuPacked = null;
         Tree.SelectedNode = node;
+        if (node.Tag is PackedAssetNodeIdentity packed)
+        {
+            if (StudioDocument.FormatFor(packed.AssetType) is null) return false;
+            _menuPacked = packed;
+            _fileMenu.Items[0].Visible = true;
+            _fileMenu.Items[1].Visible = false;
+            return true;
+        }
         if (node.Tag is not string path) return false;
         _menuPath = path;
         _fileMenu.Items[0].Visible = StudioDocument.FormatFor(path) is not null;
         _fileMenu.Items[1].Visible = !Path.GetExtension(path).Equals(".gaf", StringComparison.OrdinalIgnoreCase);
         return true;
+    }
+
+    internal void ActivateNode(TreeNode node)
+    {
+        if (node.Tag is PackedAssetNodeIdentity packed && StudioDocument.FormatFor(packed.AssetType) is not null)
+            PackedFileActivated?.Invoke(packed);
+        else if (node.Tag is string path && StudioDocument.FormatFor(path) is not null)
+            FileActivated?.Invoke(path);
     }
 
     internal ContextMenuStrip FileMenu => _fileMenu;

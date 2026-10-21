@@ -138,18 +138,20 @@ public sealed class TilesheetEditorControl : UserControl
         RefreshView();
     }
 
+    /// <summary>Reloads the image without modifying the document.</summary>
+    public void ReloadImage()
+    {
+        if (Document.ResolveAssetsFilePath() is { } path) _assetPackages.Invalidate(path);
+        _previewKey = null;
+        RefreshView();
+    }
+
     private ToolStrip BuildPreviewToolbar()
     {
         var bar = new ToolStrip { Dock = DockStyle.Top, GripStyle = ToolStripGripStyle.Hidden };
         bar.Items.Add("Image…", null, (_, _) => ChooseImage());
         bar.Items.Add("GAF image…", null, (_, _) => ChoosePackedImage());
-        bar.Items.Add("Reload image", null, (_, _) =>
-        {
-            if (Document.ResolveAssetsFilePath() is { } assetsFilePath)
-                _assetPackages.Invalidate(assetsFilePath);
-            _previewKey = null;
-            RefreshView();
-        });
+        bar.Items.Add("Reload image", null, (_, _) => ReloadImage());
         bar.Items.Add("−", null, (_, _) => _viewport.ZoomOut());
         var zoom = new ToolStripComboBox
         {
@@ -413,7 +415,7 @@ public sealed class TilesheetEditorControl : UserControl
         _previewError = null;
         try
         {
-            _viewport.Image = AuthoringPreviewImage.Load(model, Document.BaseDirectory, _assetPackages);
+            _viewport.Image = AuthoringPreviewImage.Load(model, Document.BaseDirectory, _assetPackages, Document.PackedLocation?.Path);
         }
         catch (Exception ex) when (ex is IOException or InvalidDataException or ArgumentException or InvalidOperationException or NotSupportedException or UnauthorizedAccessException or System.Runtime.InteropServices.ExternalException)
         {

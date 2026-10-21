@@ -110,6 +110,8 @@ public sealed class SceneEditorControl : UserControl
 
     /// <summary>Uses the containing application's normal save workflow.</summary>
     public Func<bool>? SaveRequested { get; set; }
+    /// <summary>Optional asynchronous save routing for Studio archive coordination.</summary>
+    public Func<Task<bool>>? SaveRequestedAsync { get; set; }
 
     /// <summary>Creates an editor with its own authoring package catalog.</summary>
     /// <param name="document">The document to edit.</param>
@@ -485,12 +487,28 @@ public sealed class SceneEditorControl : UserControl
         return bar;
     }
 
-    private void ViewScene()
+    private async void ViewScene()
     {
         if (!CommitEdits())
             return;
         try
         {
+            if (Document.PackedLocation is not null)
+            {
+                MessageBox.Show(this, "The separate Scene Viewer opens loose documents. Use Save As to adopt a loose copy, or use the built-in scene preview.", "View Scene");
+                return;
+            }
+            if (SaveRequestedAsync is not null)
+            {
+                if (Document.IsDirty || Document.FilePath is null)
+                {
+                    if (MessageBox.Show(this, "Save and view the scene?", "View Scene", MessageBoxButtons.OKCancel) != DialogResult.OK ||
+                        !await SaveRequestedAsync()) return;
+                }
+                if (Document.FilePath is { } savedPath && !Document.IsDirty)
+                    SceneViewerLauncher.Launch(savedPath, Document.SelectedDefinition.ID);
+                return;
+            }
             SceneViewerLauncher.ViewSavedScene(Document, () =>
                 MessageBox.Show(this,
                     "This scene must be saved before viewing. Save and view the scene?",

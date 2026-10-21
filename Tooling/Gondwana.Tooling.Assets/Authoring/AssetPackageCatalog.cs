@@ -8,6 +8,8 @@ namespace Gondwana.Tooling.Tilesheets.Sources;
 /// </summary>
 public sealed class AssetPackageCatalog : IDisposable
 {
+    /// <summary>Reports a physical package dependency so hosts can indicate stale previews after writes.</summary>
+    public event Action<string>? PackageAccessed;
     private readonly Dictionary<string, AssetsFile> _packages =
         new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, (long Length, DateTime Modified)> _stamps = new(StringComparer.OrdinalIgnoreCase);
@@ -50,6 +52,7 @@ public sealed class AssetPackageCatalog : IDisposable
     /// <summary>Opens an exact typed entry. No basename or different-type fallback is permitted.</summary>
     public Stream OpenAsset(string archivePath, AssetTypes type, string entryName)
     {
+        PackageAccessed?.Invoke(Path.GetFullPath(archivePath));
         var fullPath = NormalizeExistingPath(archivePath);
         var package = GetPackage(fullPath);
 

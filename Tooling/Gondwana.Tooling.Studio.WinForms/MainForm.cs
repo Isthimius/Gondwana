@@ -13,7 +13,7 @@ using WeifenLuo.WinFormsUI.Docking;
 namespace Gondwana.Tooling.Studio.WinForms;
 
 /// <summary>Studio owns outer documents and tools; authoring controls own their inner workspaces.</summary>
-public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices
+public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices
 {
     string Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices.CurrentWorkingDirectory => Browser.WorkingDirectory;
     void Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices.Log(string message) => _output.Log(message);
@@ -24,7 +24,7 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
     private readonly StudioPluginHost _plugins;
     private readonly VS2015DarkTheme _theme = new();
     private readonly AssetPackageCatalog _packages = new();
-    private readonly Dictionary<string, StudioDockDocument> _paths = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<AssetLocation, StudioDockDocument> _paths = new(DocumentLocationComparer.Instance);
     private readonly List<StudioDockDocument> _documents = [];
     private readonly List<DockContent> _tools = [];
     private readonly ToolStripMenuItem _view = new("&View");
@@ -69,18 +69,33 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         _layout = new DockLayoutPersistence(Workspace, "shell");
         _plugins = new StudioPluginHost(_output.Log);
         Browser = new DirectoryPanel(_output.Log);
+        Browser.KnownArchivePassword = path => _archivePasswords.GetValueOrDefault(Path.GetFullPath(path));
         Browser.FileActivated += path => TryOpen(path);
+        Browser.PackedFileActivated += packed =>
+        {
+            try { OpenDocument(new AssetLocation(packed.AssetType, packed.ArchivePath, packed.EntryName)); }
+            catch (OperationCanceledException) { }
+            catch (Exception ex) { ReportError(ex); }
+        };
         Browser.ChooseDirectoryRequested += ChooseDirectory;
         AddTool("shell.working-directory", "Working directory", Browser, DockState.DockLeft);
         AddTool("shell.output", "Output", new OutputPanel(_output), DockState.DockBottom);
-        AskSave = document => MessageBox.Show(this, $"Save changes to {Path.GetFileName(document.Path()) ?? "Untitled." + document.Extension}?",
+        AskSave = document => MessageBox.Show(this, $"Save changes to {document.Caption}?",
             "Unsaved changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
         SavePath = ChooseSavePath;
         AllowInvalidSave = _ => MessageBox.Show(this, "This definition has validation errors. See its Validation pane. Save it anyway?",
             "Validation failed", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes;
         ReportError = ex => { _output.Log(ex.Message); MessageBox.Show(this, ex.Message, "Gondwana Studio", MessageBoxButtons.OK, MessageBoxIcon.Error); };
         AssetPassword = path => InputDialog.Show($"Password for {Path.GetFileName(path)}:", "Asset password", owner: this, password: true);
-        _packages.PasswordProvider = path => AssetPassword(path);
+        _packages.PasswordProvider = path =>
+        {
+            path = Path.GetFullPath(path);
+            if (_archivePasswords.TryGetValue(path, out var known)) return known;
+            // The catalog authenticates this answer and caches successful package loads.
+            // Keep unverified answers out of the session cache so Reload can retry.
+            return AssetPassword(path);
+        };
+        _packages.PackageAccessed += path => (_loadingDependencies ?? ActiveDocument?.Document.DependencyArchives)?.Add(path);
         MainMenuStrip = BuildMenu();
         Controls.Add(Workspace);
         Controls.Add(MainMenuStrip);
@@ -113,6 +128,8 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         file.DropDownItems.Add(new ToolStripSeparator());
         Add(file, "&Save", Keys.Control | Keys.S, async () => { if (ActiveDocument is { } doc) await SaveDocument(doc); });
         Add(file, "Save &As…", Keys.Control | Keys.Shift | Keys.S, async () => { if (ActiveDocument is { } doc) await SaveDocument(doc, saveAs: true); });
+        Add(file, "Reload document from disk", Keys.None, () => { if (ActiveDocument is { } doc) ReloadDocument(doc); });
+        Add(file, "Reload dependency previews", Keys.None, () => { if (ActiveDocument is { } doc) ReloadPreviews(doc); });
         Add(file, "&Close", Keys.Control | Keys.W, () => ActiveDocument?.Close());
         Add(file, "E&xit", Keys.Alt | Keys.F4, Close);
         _session.AddMenu(file);
@@ -122,13 +139,25 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
 
     internal void RestoreSession() => _session.Restore(["gaf", "gts", "gani", "gsnd", "gscn", "gspr"],
         path => { if (!string.Equals(Browser.WorkingDirectory, path, StringComparison.OrdinalIgnoreCase)) SetWorkingDirectory(path); },
-        document => OpenDocument(document.Path),
+        document => OpenDocument(SessionLocation(document)),
         path => _documents.FirstOrDefault(document => string.Equals(document.Document.Path(), path, StringComparison.OrdinalIgnoreCase))?.Activate(),
-        _output.Log, _output.Log);
+        _output.Log, _output.Log, document => _paths.GetValueOrDefault(SessionLocation(document))?.Activate());
 
-    private void SaveSession() => _session.Save(Browser.WorkingDirectory,
-        WorkspaceSessionController.DocumentOrder(Workspace, _documents).Select(document => document.Document.Path()),
-        ActiveDocument?.Document.Path());
+    private static AssetLocation SessionLocation(WorkspaceSessionDocument document)
+    {
+        if (document.EntryName is null) return new AssetLocation(AssetTypes.Misc, document.Path);
+        var type = (AssetTypes)(document.AssetType ?? throw new InvalidDataException("Missing packed asset type."));
+        if (StudioDocument.FormatFor(type) != document.Format) throw new InvalidDataException("Packed document type does not match its editor.");
+        return new AssetLocation(type, document.Path, document.EntryName);
+    }
+
+    private static WorkspaceSessionDocument? SessionIdentity(StudioDocument? document) => document?.Location is { } location
+        ? new(location.Path, document.Kind == "asset" ? "gaf" : document.Extension,
+            location.AssetEntryName is null ? null : (int)location.AssetType, location.AssetEntryName) : null;
+
+    private void SaveSession() => _session.SaveDocuments(Browser.WorkingDirectory,
+        WorkspaceSessionController.DocumentOrder(Workspace, _documents).Select(document => SessionIdentity(document.Document)),
+        SessionIdentity(ActiveDocument?.Document));
 
     private void MoveContent()
     {
@@ -234,23 +263,14 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         catch (Exception ex) { ReportError(ex); }
     }
 
-    internal StudioDockDocument OpenDocument(string path, string? password = null)
-    {
-        path = Path.GetFullPath(path);
-        if (_paths.TryGetValue(path, out var existing)) { existing.Activate(); return existing; }
-        if (!File.Exists(path)) throw new FileNotFoundException("Authoring file does not exist.", path);
-        var format = StudioDocument.FormatFor(path) ?? throw new NotSupportedException("Unsupported authoring file: " + path);
-        StudioDocument model;
-        try { model = StudioDocument.Create(format, Browser.WorkingDirectory, path, _packages, password); }
-        catch (Exception) when (format == "gaf" && password is null)
-        {
-            password = AssetPassword(path);
-            if (password is null) throw new OperationCanceledException("Asset file opening cancelled.");
-            model = StudioDocument.Create(format, Browser.WorkingDirectory, path, _packages, password);
-        }
-        return ShowDocument(model);
-    }
+    internal StudioDockDocument OpenDocument(string path, string? password = null) =>
+        OpenDocument(new AssetLocation(AssetTypes.Misc, Path.GetFullPath(path)), password);
 
+    internal StudioDockDocument OpenDocument(AssetLocation location, string? password = null)
+    {
+        if (_paths.TryGetValue(location, out var existing)) { existing.Activate(); return existing; }
+        return ShowDocument(CreateModel(location, password));
+    }
     private async void TryNew(string format)
     {
         try
@@ -270,7 +290,7 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
 
     internal StudioDockDocument NewDocument(string format, string? assetPath = null, string? password = null, bool encrypt = false)
     {
-        if (assetPath is not null && _paths.TryGetValue(Path.GetFullPath(assetPath), out var existing))
+        if (assetPath is not null && _paths.TryGetValue(new AssetLocation(AssetTypes.Misc, Path.GetFullPath(assetPath)), out var existing))
         { existing.Activate(); return existing; }
         return ShowDocument(StudioDocument.Create(format, Browser.WorkingDirectory, assetPath, _packages, password, encrypt));
     }
@@ -279,18 +299,27 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
     {
         var document = new StudioDockDocument(model, ConfirmClose);
         if (model.Editor is Gondwana.Tooling.Scenes.WinForms.SceneEditorControl sceneEditor)
-            // Loose-definition saves complete synchronously; only asset saves await readers.
-            sceneEditor.SaveRequested = () => SaveDocument(document).GetAwaiter().GetResult();
+            sceneEditor.SaveRequestedAsync = () => SaveDocument(document);
         _documents.Add(document);
-        if (model.Path() is { } path) _paths.Add(Path.GetFullPath(path), document);
+        if (model.Location is { } location) _paths.Add(location, document);
         if (model.Editor is AssetEditorControl assets)
         {
             assets.SaveRequested = async saveAs => await SaveDocument(document, saveAs);
-            assets.IsDocumentOpen = path => _paths.ContainsKey(Path.GetFullPath(path));
+            assets.IsDocumentOpen = path => _paths.Keys.Any(location => string.Equals(location.Path, Path.GetFullPath(path), StringComparison.OrdinalIgnoreCase));
             assets.RelocationScope = () => Browser.WorkingDirectory;
             assets.ValidateRelocation = plan => ValidateRelocation(plan, assets.FilePath);
             assets.ValidateDeletion = plan => ValidateDeletion(plan, assets.FilePath);
-            assets.WorkspaceChanged = () => { _packages.Clear(); Browser.RefreshDirectory(); };
+            assets.WorkspaceChanged = () =>
+            {
+                if (!assets.IsDirty && File.Exists(assets.FilePath))
+                {
+                    using var current = StudioArchiveSnapshot.Open(assets.FilePath, assets.AssetsFile.Password);
+                    // Existing relocation/deletion transactions already verify the editor against disk.
+                    model.ArchiveHash = current.Hash;
+                }
+                _packages.Clear();
+                Browser.RefreshDirectory();
+            };
         }
         document.Disposed += (_, _) =>
         {
@@ -300,6 +329,7 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         };
         document.Show(Workspace, DockState.Document);
         document.Activate();
+        if (model.Kind == "asset") Browser.RefreshDirectory(); // authenticated archives can now be browsed without another prompt
         _output.Log($"Opened {model.Path() ?? document.Text}");
         return document;
     }
@@ -316,45 +346,53 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
         {
             var model = document.Document;
             if (!model.CommitEdits()) return false;
-            destination ??= saveAs || model.Path() is null ? SavePath(model) : model.Path();
+            bool packedSave = !saveAs && destination is null && model.PackedLocation() is not null;
+            destination ??= packedSave ? model.PackedLocation()!.Path : saveAs || model.Path() is null ? SavePath(model) : model.Path();
             if (destination is null) return false;
             destination = Path.GetFullPath(destination);
-            if (StudioDocument.FormatFor(destination) != StudioDocument.FormatFor("file." + model.Extension))
+            if (!packedSave && StudioDocument.FormatFor(destination) != StudioDocument.FormatFor("file." + model.Extension))
                 throw new InvalidOperationException("Choose a filename with the document's format extension.");
-            if (_paths.TryGetValue(destination, out var existing) && existing != document)
-                throw new InvalidOperationException("That destination is already open in another document. Close it before overwriting it.");
+            var target = packedSave ? model.PackedLocation()! : new AssetLocation(StudioDocument.TypeFor(model.Extension), destination);
+            void CheckOwner()
+            {
+                if (_paths.TryGetValue(target, out var owner) && owner != document)
+                    throw new InvalidOperationException("That destination is already open in another document. Close it before overwriting it.");
+            }
+            CheckOwner();
             var errors = model.Validate();
             if (errors.Count > 0 && !AllowInvalidSave(errors)) return false;
+            var bytes = packedSave ? model.SerializePacked!() : null;
             void Save()
             {
                 if (document.IsDisposed || IsDisposed) throw new OperationCanceledException();
-                // Another document may have opened this destination while we awaited the reader.
-                if (_paths.TryGetValue(destination, out var owner) && owner != document)
-                    throw new InvalidOperationException("That destination is already open in another document. Close it before overwriting it.");
-                model.Save(destination, errors.Count > 0);
+                CheckOwner();
+                if (packedSave || model.Kind == "asset") SaveArchive(document, destination, bytes);
+                else
+                {
+                    model.Save(destination, errors.Count > 0);
+                    model.ArchiveHash = null;
+                    model.OriginalEntry = null;
+                    model.ContentStale = false;
+                    model.ArchivePassword = null;
+                }
                 foreach (var key in _paths.Where(pair => pair.Value == document).Select(pair => pair.Key).ToArray()) _paths.Remove(key);
-                _paths.Add(Path.GetFullPath(model.Path()!), document);
+                _paths.Add(model.Location!, document);
                 document.UpdateCaption();
                 _packages.Invalidate(destination);
-                _output.Log($"Saved {destination}");
+                _output.Log($"Saved {model.Tooltip}");
             }
-            if (model.Kind == "asset")
+            if (packedSave || model.Kind == "asset")
             {
                 document.Enabled = false;
                 try { await Browser.RunWithoutArchiveReadsAsync(Save); }
                 finally { if (!document.IsDisposed) document.Enabled = true; }
             }
-            else
-            {
-                Save();
-                Browser.RefreshDirectory();
-            }
+            else { Save(); Browser.RefreshDirectory(); }
             return true;
         }
         catch (OperationCanceledException) { return false; }
         catch (Exception ex) { ReportError(ex); return false; }
     }
-
     private string? ChooseSavePath(StudioDocument model)
     {
         using var dialog = new SaveFileDialog
@@ -362,8 +400,8 @@ public sealed class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.
             Filter = model.Kind == "asset" ? "Asset files|*.gaf;*.zip" : $"Gondwana {model.Kind}|*.{model.Extension}",
             DefaultExt = model.Extension,
             AddExtension = true,
-            InitialDirectory = model.Path() is { } path ? Path.GetDirectoryName(path) : Browser.WorkingDirectory,
-            FileName = model.Path() is { } name ? Path.GetFileName(name) : $"Untitled.{model.Extension}"
+            InitialDirectory = model.Location is { } location ? Path.GetDirectoryName(location.Path) : Browser.WorkingDirectory,
+            FileName = model.PackedLocation()?.AssetEntryName is { } entry ? Path.GetFileName(entry) : model.Path() is { } name ? Path.GetFileName(name) : $"Untitled.{model.Extension}"
         };
         return dialog.ShowDialog(this) == DialogResult.OK ? dialog.FileName : null;
     }

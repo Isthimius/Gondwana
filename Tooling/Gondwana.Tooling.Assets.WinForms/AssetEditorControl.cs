@@ -68,7 +68,7 @@ public sealed class AssetEditorControl : UserControl
     /// <summary>
     /// Gets the file path.
     /// </summary>
-    public string FilePath => Path.GetFullPath(_assetsFile.FilePath);
+    public string FilePath => Path.GetFullPath(_assetsFile.SourcePath!);
 
     /// <summary>
     /// Initializes a new instance of the <c>AssetEditorControl</c> class.
@@ -309,6 +309,32 @@ public sealed class AssetEditorControl : UserControl
         Changed?.Invoke(this, EventArgs.Empty);
     }
 
+    /// <summary>Adopts a host-persisted archive snapshot. Ownership transfers to this control.</summary>
+    public void AcceptSavedArchive(AssetsFile replacement)
+    {
+        if (string.Equals(FilePath, replacement.SourcePath, StringComparison.OrdinalIgnoreCase) &&
+            _assetsFile.Password == replacement.Password && _assetsFile.UseEncryption == replacement.UseEncryption)
+        {
+            foreach (var entry in _assetsFile.GetAllEntries()) _assetsFile.Remove(entry.AssetType, entry.AssetName);
+            foreach (var entry in replacement.GetAllEntries())
+            {
+                using var bytes = replacement.Get(entry.AssetType, entry.AssetName)!;
+                _assetsFile.Add(entry.AssetType, entry.AssetName, bytes);
+            }
+            replacement.Dispose();
+        }
+        else
+        {
+            _ownedSavedCopy?.Dispose();
+            _ownedSavedCopy = replacement;
+            _assetsFile = replacement;
+        }
+        IsDirty = false;
+        RefreshEntries();
+        Changed?.Invoke(this, EventArgs.Empty);
+        SetStatus($"Saved: {FilePath}");
+    }
+
     /// <summary>
     /// Saves and adopts a new path for document hosts. Standalone Save As retains
     /// its save-copy behavior. The caller still owns the originally supplied file;
@@ -317,6 +343,8 @@ public sealed class AssetEditorControl : UserControl
     /// <param name="destination">The final archive path. A different path creates a copy and must not exist.</param>
     public void SaveTo(string destination)
     {
+        if (SaveRequested is not null)
+            throw new InvalidOperationException("This editor is hosted. Save through the host's asynchronous save command so archive writes are coordinated.");
         destination = Path.GetFullPath(destination);
         if (string.Equals(destination, FilePath, StringComparison.OrdinalIgnoreCase))
             _assetsFile.Save();

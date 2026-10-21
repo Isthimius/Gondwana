@@ -6,7 +6,7 @@ namespace Gondwana.Tooling.Scenes.Editing;
 /// <summary>
 /// UI-independent editing session for one GSCN scene definition.
 /// </summary>
-public sealed class SceneDocument
+public sealed partial class SceneDocument
 {
     /// <summary>
     /// Gets the definition.
@@ -315,7 +315,7 @@ public sealed class SceneDocument
         var snapshots = _definitions.Select(member =>
         {
             var clone = SceneDefinitionSerializer.FromJson(SceneDefinitionSerializer.ToJson(member));
-            clone.Source = SceneDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gscn"));
+            clone.Source = PackedLocation is { } packed ? SceneDefinitionSource.PackedDefinitionFile(packed.Path, packed.AssetEntryName!) : SceneDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gscn"));
             return clone;
         }).ToList();
         SceneDefinitionSerializer.SaveAll(path, snapshots);
@@ -337,6 +337,7 @@ public sealed class SceneDocument
             member.Source = SceneDefinitionSource.LooseDefinitionFile(path);
         }
         FilePath = path;
+        PackedLocation = null;
         BaseDirectory = directory;
         IsDirty = false;
         Changed?.Invoke(this, EventArgs.Empty);
