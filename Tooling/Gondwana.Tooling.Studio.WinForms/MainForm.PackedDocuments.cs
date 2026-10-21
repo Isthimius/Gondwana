@@ -8,6 +8,7 @@ namespace Gondwana.Tooling.Studio.WinForms;
 public sealed partial class MainForm
 {
     private readonly Dictionary<string, string?> _archivePasswords = new(StringComparer.OrdinalIgnoreCase);
+    private readonly HashSet<string> _failedRestoreArchives = new(StringComparer.OrdinalIgnoreCase);
     private HashSet<string>? _loadingDependencies;
     internal Action? BeforeArchiveInstall { get; set; }
     internal Func<StudioDocument, bool> ConfirmReload { get; set; } = model =>
@@ -15,6 +16,21 @@ public sealed partial class MainForm
             MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes;
 
     private StudioArchiveSnapshot ReadArchive(string path, string? password = null)
+    {
+        path = Path.GetFullPath(path);
+        if (_session.IsRestoring && _failedRestoreArchives.Contains(path))
+            throw new OperationCanceledException($"Archive opening already failed or was cancelled during restoration: {path}. Open it manually to retry.");
+        try { return ReadArchiveCore(path, password); }
+        catch
+        {
+            // Suppress repeated authentication only for this startup restoration.
+            // A missing/invalid definition entry must not suppress its valid siblings.
+            if (_session.IsRestoring) _failedRestoreArchives.Add(path);
+            throw;
+        }
+    }
+
+    private StudioArchiveSnapshot ReadArchiveCore(string path, string? password)
     {
         path = Path.GetFullPath(path);
         if (!File.Exists(path)) throw new FileNotFoundException("Archive not found.", path);

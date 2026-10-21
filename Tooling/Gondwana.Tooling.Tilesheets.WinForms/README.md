@@ -1,5 +1,10 @@
 # Gondwana Tilesheets (WinForms)
 
+The standalone shell opens loose definition documents. To open and save a definition
+inside a GAF, use [Gondwana Studio](../Gondwana.Tooling.Studio.WinForms/README.md#editing-packed-definitions),
+which hosts this same editor. Packed documents retain all logical members and their
+source references; Save updates the typed archive entry, while Save As adopts a loose copy.
+
 Image decoding and package access are shared with the other authoring editors
 through [Gondwana.Tooling.Assets](../Gondwana.Tooling.Assets/README.md).
 **Reload image** refreshes changed packed images without altering their references.

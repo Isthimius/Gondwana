@@ -90,12 +90,14 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         _packages.PasswordProvider = path =>
         {
             path = Path.GetFullPath(path);
-            if (_archivePasswords.TryGetValue(path, out var known)) return known;
-            // The catalog authenticates this answer and caches successful package loads.
+            // Revalidate cached credentials after package invalidation. PasswordAccepted
+            // restores them on success; a changed password must remain retryable.
+            if (_archivePasswords.Remove(path, out var known)) return known;
             // Keep unverified answers out of the session cache so Reload can retry.
             return AssetPassword(path);
         };
         _packages.PackageAccessed += path => (_loadingDependencies ?? ActiveDocument?.Document.DependencyArchives)?.Add(path);
+        _packages.PasswordAccepted += (path, password) => _archivePasswords[path] = password;
         MainMenuStrip = BuildMenu();
         Controls.Add(Workspace);
         Controls.Add(MainMenuStrip);

@@ -12,6 +12,13 @@ dotnet run --project Tooling/Gondwana.Tooling.Assets.WinForms -c Release
 
 This is development tooling, not a runtime dependency for a game.
 
+To edit a native definition inside a GAF, use [Studio's Working Directory](../Gondwana.Tooling.Studio.WinForms/README.md#editing-packed-definitions).
+Studio opens each typed entry in its corresponding editor and saves it back without
+extraction. When the parent GAF and its definitions are open together, save the
+parent's pending changes first. Conflicting entry changes require reload or Save As;
+Studio never silently replaces another editor's unsaved work. The standalone GAF
+editor continues to manage container entries through its import/replace/export tools.
+
 ## Workspace
 
 The editor follows the same WinForms workspace model as the Gondwana Tilesheets editor:
