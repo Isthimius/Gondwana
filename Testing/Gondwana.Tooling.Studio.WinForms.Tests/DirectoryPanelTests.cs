@@ -44,7 +44,7 @@ public sealed partial class CompositionTests
                 Assert.Equal($"Archive: {identity.ArchivePath}\nEntry: {identity.EntryName}\nAsset type: {identity.AssetType}", node.ToolTipText);
                 Assert.Equal(groups[group].ImageKey, node.ImageKey);
                 Assert.Equal(node.ImageKey, node.SelectedImageKey);
-                Assert.False(panel.PrepareFileMenu(node));
+                Assert.Equal(group < 6, panel.PrepareFileMenu(node));
             });
         }
         Assert.Equal(5, groups[1].Nodes.Count);
@@ -129,9 +129,15 @@ public sealed partial class CompositionTests
         Assert.Equal(loose.Tag, activated);
         activated = null;
         var packed = root.Nodes[1].Nodes[1];
-        Assert.False(panel.PrepareFileMenu(packed));
+        PackedAssetNodeIdentity? packedActivated = null;
+        panel.PackedFileActivated += identity => packedActivated = identity;
+        Assert.True(panel.PrepareFileMenu(packed));
+        Assert.False(panel.FileMenu.Items[1].Available);
         panel.FileMenu.Items[0].PerformClick(); // A previous loose-file target must not leak.
+        Assert.Equal(packed.Tag, packedActivated);
+        packedActivated = null;
         DoubleClickNode(panel, packed);
+        Assert.Equal(packed.Tag, packedActivated);
         Assert.Null(activated);
         var archive = root.Nodes[0].Nodes[0];
         Assert.True(panel.PrepareFileMenu(archive));

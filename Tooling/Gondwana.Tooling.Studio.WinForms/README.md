@@ -23,13 +23,16 @@ the full internal entry name followed by `(archive.gaf)`, and tooltips show the
 absolute archive path, entry name, and type. Identical loose and packed names,
 including entries from different archives, remain separate.
 
-Packed entries are browsing-only: they have no Open or Open External command and
-double-click does not open them. Opening and editing packed documents remain
-deferred to Step 3. Loose GTS/GANI/GSCN/GSPR documents can preview their explicit
+Double-click a native packed definition, or choose **Open**, to edit it in a normal
+document tab. All five formats are supported, including multi-definition entries.
+Packed binary entries have no Open command, and Open External is unavailable for
+all packed entries. Loose and packed GTS/GANI/GSCN/GSPR documents can preview their explicit
 packed dependencies through the [shared authoring resolver](../Gondwana.Tooling.Assets/README.md)
 without loose copies or reference rewriting. Refresh rereads archive contents;
 subdirectories are scanned only when expanded. Unreadable, corrupt, or protected
-archives are logged and skipped without password prompts. No files are extracted
+archives are logged and skipped without password prompts. Explicitly opening an
+encrypted GAF asks for its password; after authentication, refresh can list its
+entries using session credentials without prompting again. No files are extracted
 or changed. Scans use detached `AssetsFile` instances, disposed after each archive;
 the existing loader buffers one archive's payloads at a time, so large archives
 may take time to appear. Navigating or refreshing discards stale scan results.
@@ -39,6 +42,46 @@ temporarily disabled, duplicate save requests share the pending save, and
 save-on-close/shutdown waits for success. The UI continues processing messages;
 no synchronous wait or change to GAF serialization is involved. Browsing refreshes
 after the write attempt.
+
+## Editing packed definitions
+
+Tabs identify packed entries as `entry.gts (archive.gaf)`; tooltips include the full
+archive path, stored asset type, and exact entry name. Identity uses `AssetLocation`,
+not the caption. Reopening the same typed entry activates its existing tab, while
+loose duplicates and entries from different archives remain separate documents.
+The existing editor models load all members through the native serializers and
+retain their physical packed origin separately from logical definition identities.
+
+**Save** commits and validates the complete document, then replaces just its typed
+entry in a freshly loaded archive. Studio stages and validates a sibling GAF,
+flushes it, and installs it by atomic file replacement. Unrelated entry payloads,
+encryption, and dependency references are preserved. Failed validation, conflict,
+or persistence leaves the original archive and dirty document intact. Existing
+editor rules still allow explicitly saving incomplete drafts; duplicate logical
+identities remain invalid.
+
+Studio serializes GAF and packed-document saves through the directory browser's
+existing asynchronous scan/save gate. Whole-archive fingerprints detect external
+changes; per-entry baselines detect conflicting changes by another Studio editor.
+Sequential saves to different entries preserve each other's changes. A dirty GAF
+editor must be saved before a child can save. A clean parent refreshes after a
+child saves; unsaved child edits are never replaced. If the parent changes that
+child's entry, the child's save is rejected. Use **File > Reload document from
+disk** to accept the saved contents (with confirmation before discarding edits),
+or **Save As** to preserve the current edits separately.
+
+For a packed definition, **Save As** writes a loose file and adopts it as the tab's
+new editing location. The original GAF entry is unchanged. Relative dependencies
+are rebased from the archive directory to the final loose-file directory, including
+images that implicitly used their containing archive. Save As into another GAF
+entry is not offered.
+
+Successful saves invalidate the shared package catalog. Editors using that archive
+show `[reload]`; **File > Reload dependency previews** refreshes previews without
+discarding edits. A changed document entry requires **Reload document from disk**;
+reloading previews cannot clear that conflict indication. The separate Scene Viewer
+still accepts loose scene files only; packed scenes use Studio's built-in preview,
+or can be adopted as loose files with Save As before launching that viewer.
 
 Right-click a file for **Open** in the built-in editor (except Misc), or
 **Open External** to choose an application using Windows' Open with dialog
@@ -84,7 +127,7 @@ including its inner dock contents and preview resources. Asset documents and
 packed-image previews use detached `AssetsFile` instances, so opening authoring
 files does not register runtime asset packages. Studio owns its shared packed
 resource catalog and disposes it at shutdown. The GAF editor owns replacement
-packages created by its path-adopting `SaveTo` API; Studio retains ownership of
+packages adopted through `AcceptSavedArchive`; Studio retains ownership of
 the originally supplied package.
 
 ## Plugins and scope
@@ -186,5 +229,6 @@ after save prompts have completed. Canceling exit preserves the previous session
 Save/Save As adopts the final saved path. Untitled documents and unsaved edits are
 not recovered. Session metadata contains no document contents, passwords, archive
 payloads, runtime EngineState, or editor-local selection/camera state. Packed
-entries remain browsing-only on this branch and are not session documents; open
-GAF containers and loose definitions that reference packed resources are supported.
+documents record archive path, asset type, and entry name, including the active
+packed tab. Older loose-only session preferences remain compatible. Missing or
+renamed entries are skipped with a diagnostic while unrelated documents restore.

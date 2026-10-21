@@ -7,7 +7,7 @@ namespace Gondwana.Tooling.Animations.Editing;
 /// <summary>
 /// UI-independent editing session for one GANI animation definition.
 /// </summary>
-public sealed class AnimationDocument
+public sealed partial class AnimationDocument
 {
     /// <summary>
     /// Gets the definition.
@@ -201,7 +201,7 @@ public sealed class AnimationDocument
         var snapshots = _definitions.Select(member =>
         {
             var clone = AnimationDefinitionSerializer.FromJson(AnimationDefinitionSerializer.ToJson(member));
-            clone.Source = AnimationDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gani"));
+            clone.Source = PackedLocation is not null ? member.Source : AnimationDefinitionSource.LooseDefinitionFile(FilePath ?? Path.Combine(BaseDirectory, "Untitled.gani"));
             return clone;
         }).ToList();
         AnimationDefinitionSerializer.SaveAll(path, snapshots);
@@ -218,6 +218,7 @@ public sealed class AnimationDocument
             member.Source = AnimationDefinitionSource.LooseDefinitionFile(path);
         }
         FilePath = path;
+        PackedLocation = null;
         BaseDirectory = directory;
         IsDirty = false;
         Changed?.Invoke(this, EventArgs.Empty);

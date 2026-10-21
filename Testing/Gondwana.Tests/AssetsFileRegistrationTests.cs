@@ -8,6 +8,27 @@ namespace Gondwana.Tests;
 [Collection("Global engine state")]
 public sealed class AssetsFileRegistrationTests
 {
+    [Fact]
+    public void StreamLoadRetainsEncryptionForAuthoringWithoutChangingExplicitFileSavePolicy()
+    {
+        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".gaf");
+        try
+        {
+            using (var source = AssetsFile.LoadOrCreate(path, "secret", true, register: false))
+            {
+                using var bytes = new MemoryStream([1, 2, 3]);
+                source.Add(AssetTypes.Misc, "payload", bytes);
+                source.Save();
+            }
+            using var stream = File.OpenRead(path);
+            using var loaded = AssetsFile.Load(stream, "secret", register: false, sourcePath: path);
+            Assert.True(loaded.UseEncryption);
+            Assert.Equal("secret", loaded.Password);
+            using var explicitPolicy = AssetsFile.LoadOrCreate(path, "secret", false, register: false);
+            Assert.False(explicitPolicy.UseEncryption);
+        }
+        finally { File.Delete(path); }
+    }
     /// <summary>
     /// Verifies detached authoring packages do not change runtime registry.
     /// </summary>

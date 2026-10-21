@@ -21,6 +21,34 @@ internal sealed class StudioDocument : IDisposable
     internal required string Kind { get; init; }
     internal required string Extension { get; init; }
     internal required Func<string?> Path { get; init; }
+    internal Func<AssetLocation?> PackedLocation { get; init; } = () => null;
+    internal Func<byte[]>? SerializePacked { get; init; }
+    internal Action? AcceptPackedSave { get; init; }
+    internal byte[]? ArchiveHash { get; set; }
+    internal byte[]? OriginalEntry { get; set; }
+    internal string? ArchivePassword { get; set; }
+    internal bool PreviewStale { get; set; }
+    internal bool ContentStale { get; set; }
+    internal HashSet<string> DependencyArchives { get; } = new(StringComparer.OrdinalIgnoreCase);
+    internal AssetLocation? Location => PackedLocation() ?? (Path() is { } path
+        ? new AssetLocation(TypeFor(Extension), System.IO.Path.GetFullPath(path)) : null);
+    internal string Caption => PackedLocation() is { } packed
+        ? $"{packed.AssetEntryName} ({System.IO.Path.GetFileName(packed.Path)})"
+        : Path() is { } path ? System.IO.Path.GetFileName(path) : $"Untitled.{Extension}";
+    internal string Tooltip => Location?.ToString() ?? $"Unsaved {Kind}";
+
+    internal static AssetTypes TypeFor(string format) => format switch
+    {
+        "gts" => AssetTypes.TilesheetDefinition, "gani" => AssetTypes.AnimationDefinition,
+        "gscn" => AssetTypes.SceneDefinition, "gspr" => AssetTypes.SpriteDefinition,
+        "gsnd" => AssetTypes.AudioDefinition, _ => AssetTypes.Misc
+    };
+    internal static string? FormatFor(AssetTypes type) => type switch
+    {
+        AssetTypes.TilesheetDefinition => "gts", AssetTypes.AnimationDefinition => "gani",
+        AssetTypes.SceneDefinition => "gscn", AssetTypes.SpriteDefinition => "gspr",
+        AssetTypes.AudioDefinition => "gsnd", _ => null
+    };
     internal required Func<bool> Dirty { get; init; }
     internal required Func<bool> CommitEdits { get; init; }
     internal required Func<IReadOnlyList<string>> Validate { get; init; }
@@ -48,14 +76,14 @@ internal sealed class StudioDocument : IDisposable
     };
 
     internal static StudioDocument Create(string format, string directory, string? path = null,
-        AssetPackageCatalog? packages = null, string? password = null, bool encrypt = false)
+        AssetPackageCatalog? packages = null, string? password = null, bool encrypt = false, AssetsFile? archive = null, string? entryName = null)
     {
         StudioDocument result;
         switch (format)
         {
             case "gts":
                 {
-                    var model = path is null ? TilesheetDocument.Create(directory) : TilesheetDocument.Open(path);
+                    var model = archive is not null ? TilesheetDocument.Open(archive, entryName!) : path is null ? TilesheetDocument.Create(directory) : TilesheetDocument.Open(path);
                     var editor = packages is null ? new TilesheetEditorControl(model) : new TilesheetEditorControl(model, packages);
                     if (packages is not null)
                         editor.PackedImagePicker = owner => PackedImagePicker.Pick(owner, packages, directory);
@@ -65,6 +93,9 @@ internal sealed class StudioDocument : IDisposable
                         Extension = "gts",
                         Editor = editor,
                         Path = () => model.FilePath,
+                        PackedLocation = () => model.PackedLocation,
+                        SerializePacked = model.SerializePacked,
+                        AcceptPackedSave = model.AcceptPackedSave,
                         Dirty = () => model.IsDirty,
                         CommitEdits = editor.CommitEdits,
                         Validate = editor.UpdateValidation,
@@ -81,7 +112,7 @@ internal sealed class StudioDocument : IDisposable
                 }
             case "gani":
                 {
-                    var model = path is null ? AnimationDocument.Create(directory) : AnimationDocument.Open(path);
+                    var model = archive is not null ? AnimationDocument.Open(archive, entryName!) : path is null ? AnimationDocument.Create(directory) : AnimationDocument.Open(path);
                     var editor = new AnimationEditorControl(model, packages);
                     result = new()
                     {
@@ -89,6 +120,9 @@ internal sealed class StudioDocument : IDisposable
                         Extension = "gani",
                         Editor = editor,
                         Path = () => model.FilePath,
+                        PackedLocation = () => model.PackedLocation,
+                        SerializePacked = model.SerializePacked,
+                        AcceptPackedSave = model.AcceptPackedSave,
                         Dirty = () => model.IsDirty,
                         CommitEdits = editor.CommitEdits,
                         Validate = editor.UpdateValidation,
@@ -105,7 +139,7 @@ internal sealed class StudioDocument : IDisposable
                 }
             case "gsnd":
                 {
-                    var model = path is null ? AudioDocument.Create(directory) : AudioDocument.Open(path);
+                    var model = archive is not null ? AudioDocument.Open(archive, entryName!) : path is null ? AudioDocument.Create(directory) : AudioDocument.Open(path);
                     var editor = new AudioEditorControl(model);
                     result = new()
                     {
@@ -113,6 +147,9 @@ internal sealed class StudioDocument : IDisposable
                         Extension = "gsnd",
                         Editor = editor,
                         Path = () => model.FilePath,
+                        PackedLocation = () => model.PackedLocation,
+                        SerializePacked = model.SerializePacked,
+                        AcceptPackedSave = model.AcceptPackedSave,
                         Dirty = () => model.IsDirty,
                         CommitEdits = editor.CommitEdits,
                         Validate = editor.UpdateValidation,
@@ -129,7 +166,7 @@ internal sealed class StudioDocument : IDisposable
                 }
             case "gscn":
                 {
-                    var model = path is null ? SceneDocument.Create(directory) : SceneDocument.Open(path);
+                    var model = archive is not null ? SceneDocument.Open(archive, entryName!) : path is null ? SceneDocument.Create(directory) : SceneDocument.Open(path);
                     var editor = new SceneEditorControl(model, packages);
                     result = new()
                     {
@@ -137,6 +174,9 @@ internal sealed class StudioDocument : IDisposable
                         Extension = "gscn",
                         Editor = editor,
                         Path = () => model.FilePath,
+                        PackedLocation = () => model.PackedLocation,
+                        SerializePacked = model.SerializePacked,
+                        AcceptPackedSave = model.AcceptPackedSave,
                         Dirty = () => model.IsDirty,
                         CommitEdits = editor.CommitEdits,
                         Validate = editor.UpdateValidation,
@@ -153,7 +193,7 @@ internal sealed class StudioDocument : IDisposable
                 }
             case "gspr":
                 {
-                    var model = path is null ? SpriteDocument.Create(directory) : SpriteDocument.Open(path);
+                    var model = archive is not null ? SpriteDocument.Open(archive, entryName!) : path is null ? SpriteDocument.Create(directory) : SpriteDocument.Open(path);
                     var editor = new SpriteEditorControl(model, packages);
                     result = new()
                     {
@@ -161,6 +201,9 @@ internal sealed class StudioDocument : IDisposable
                         Extension = "gspr",
                         Editor = editor,
                         Path = () => model.FilePath,
+                        PackedLocation = () => model.PackedLocation,
+                        SerializePacked = model.SerializePacked,
+                        AcceptPackedSave = model.AcceptPackedSave,
                         Dirty = () => model.IsDirty,
                         CommitEdits = editor.CommitEdits,
                         Validate = editor.UpdateValidation,
@@ -178,7 +221,7 @@ internal sealed class StudioDocument : IDisposable
             case "gaf":
                 {
                     if (path is null) throw new ArgumentException("Choose an asset file path first.");
-                    var assets = AssetsFile.LoadOrCreate(path, password, encrypt || !string.IsNullOrEmpty(password), register: false);
+                    var assets = archive ?? AssetsFile.LoadOrCreate(path, password, encrypt || !string.IsNullOrEmpty(password), register: false);
                     try
                     {
                         var editor = new AssetEditorControl(assets);

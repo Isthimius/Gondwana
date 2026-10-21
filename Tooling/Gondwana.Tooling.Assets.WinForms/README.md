@@ -188,8 +188,11 @@ editor. Existing editor-specific model, image, preview, and event cleanup remain
 in each editor. Hosts should dispose the whole editor when closing its document.
 
 Document hosts such as Studio can observe `IsDirty` / `Changed` and route the
-toolbar through `SaveRequested`. `SaveTo(path)` saves and adopts that path while
-preserving encryption; standalone Save As keeps its existing save-copy behavior.
+toolbar through the asynchronous `SaveRequested` callback. When that callback is
+set, direct synchronous `SaveTo(path)` is rejected so it cannot bypass the host's
+archive coordination. Studio stages its saves and calls `AcceptSavedArchive` only
+after persistence succeeds. Without a host callback, `SaveTo(path)` saves and
+adopts that path while preserving encryption; standalone Save As keeps its existing save-copy behavior.
 The caller owns the originally supplied `AssetsFile`; the editor owns and disposes
 replacement packages created by `SaveTo`. Hosts making direct package changes
 should call `MarkChanged`. Authoring hosts can load packages with

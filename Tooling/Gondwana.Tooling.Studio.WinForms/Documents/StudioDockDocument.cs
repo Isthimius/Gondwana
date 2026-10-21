@@ -21,9 +21,9 @@ internal sealed class StudioDockDocument : DockContent
 
     internal void UpdateCaption()
     {
-        Text = (Document.Path() is { } path ? Path.GetFileName(path) : $"Untitled.{Document.Extension}")
-            + (Document.Dirty() ? " *" : "");
-        ToolTipText = Document.Path() ?? $"Unsaved {Document.Kind}";
+        Text = Document.Caption + (Document.Dirty() ? " *" : "") + (Document.ContentStale || Document.PreviewStale ? " [reload]" : "");
+        ToolTipText = Document.Tooltip + (Document.ContentStale ? "\nThis entry changed. Use File > Reload document from disk, or Save As to retain your edits separately." : "")
+            + (Document.PreviewStale ? "\nDependencies changed. Use File > Reload dependency previews." : "");
     }
 
     private void DocumentChanged(object? sender, EventArgs e) => UpdateCaption();
