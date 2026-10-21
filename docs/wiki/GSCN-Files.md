@@ -284,8 +284,10 @@ frames through the registered tilesheet name and animations through the register
 cycle key; it performs no filesystem loading from these collections.
 
 Loose paths are preferably relative to the containing GSCN. The standalone editor
-rebases them on Save As. Packed source metadata is preserved for future/tooling
-use even when that editor cannot preview the packed definition directly.
+rebases them on Save As. The shared scene editor previews packed GTS/GANI sources
+and their packed images, preserving explicit packed provenance even when loose
+duplicates exist. Studio can also open and save the GSCN document itself inside
+a GAF; see [packed definition documents](Gondwana-Studio#packed-definition-documents).
 
 The metadata is optional for runtime compatibility. Older GSCN documents with only
 logical references remain valid.

@@ -19,6 +19,11 @@ That keeps Studio optional without making it a parallel content system.
 
 All of these are development tools. A game does not need Studio or the standalone applications at runtime.
 
+Standalone editor file dialogs open loose definition documents. Studio also opens
+and saves native definitions directly inside GAF archives using the same controls.
+Both hosts share packed dependency previews. See [packed definition documents](Gondwana-Studio#packed-definition-documents)
+for identities, Save As, conflicts, reloads, and the separate Scene Viewer limitation.
+
 ## Authoring formats
 
 Studio and the standalone editors operate on the same native formats consumed by Gondwana:

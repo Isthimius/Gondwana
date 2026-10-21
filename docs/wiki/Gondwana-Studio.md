@@ -54,6 +54,48 @@ A `*` marks a document with unsaved changes. Closing a dirty document or exiting
 
 Each format remains responsible for its own dependency rebasing and validation semantics. Studio does not reinterpret those rules.
 
+## Packed definition documents
+
+The Working Directory lists entries from each `.gaf` after loose files in their
+stored asset-type group. Internal entry paths and an `(archive.gaf)` suffix keep
+duplicates distinguishable; tooltips show the full archive path, type, and entry.
+Subdirectories load lazily. Passive scans skip inaccessible archives without
+requesting passwords; explicitly opening an encrypted GAF authenticates it for
+the session so a refresh can reveal its entries.
+
+Double-click or choose **Open** for a packed GTS, GANI, GSCN, GSPR, or GSND to edit
+it in its normal editor. Reopening the same typed entry activates its existing
+tab. Loose duplicates and identical entries in other archives remain independent.
+Unsupported binary entries have no Open command; packed entries cannot use Open
+External. No extraction is required.
+
+**Save** validates and serializes the complete document, including every logical
+member, and replaces only that typed entry. Studio stages and validates the GAF
+before atomic replacement, preserving unrelated entries and encryption. Save
+failures preserve dirty edits and the original archive. Saves coordinate with
+background scans without blocking the UI while waiting for archive access.
+
+Sequential saves to different entries preserve each other's changes. A dirty
+parent GAF must be saved before a child definition can save. Conflicting changes
+to the same entry or external archive changes reject the save. **Reload document
+from disk** requires confirmation before discarding edits; **Save As** can retain
+the edits separately. For packed native definitions, Save As adopts a loose file
+as the editing location, rebases outbound paths, and leaves the original entry
+unchanged. Saving directly to another typed GAF entry is not offered.
+
+Authoring previews honor explicit packed references even when loose duplicates
+exist. GTS/GANI/GSCN/GSPR previews resolve nested definitions and images without
+running the engine or changing dependency provenance. A saved dependency marks
+affected open documents `[reload]`; **Reload dependency previews** refreshes them
+without discarding unsaved edits. A changed document entry requires a full
+document reload instead.
+
+The separate Scene Viewer still launches loose GSCN files, which may reference
+packed dependencies. **View Scene** on a packed document explains this limitation;
+use Studio's built-in preview or Save As to adopt a loose scene first. The runtime
+Viewer retains its existing content-root precedence; it differs from Studio's
+explicit-source authoring previews.
+
 ## Docking model
 
 Studio uses a two-level docking model:
@@ -218,5 +260,7 @@ Invalid session metadata cannot prevent startup.
 Sessions are captured after successful save/close approval and before disposal.
 Canceling exit preserves the prior session. Unsaved edits, untitled documents,
 passwords, archive bytes, EngineState, and editor-local selection/view state are
-not persisted. Packed entries remain browsing-only on this branch; GAF container
-documents and loose files with packed dependencies can be restored.
+not persisted. Packed documents restore using archive path, stored asset type,
+and exact entry name, including the active packed tab. Missing entries are skipped
+with diagnostics while unrelated documents continue restoring. Existing loose-only
+workspace preferences remain compatible.
