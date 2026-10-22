@@ -1,5 +1,10 @@
 # Gondwana Animations (WinForms)
 
+The standalone shell opens loose definition documents. To open and save a definition
+inside a GAF, use [Gondwana Studio](../Gondwana.Tooling.Studio.WinForms/README.md#editing-packed-definitions),
+which hosts this same editor. Packed documents retain all logical members and their
+source references; Save updates the typed archive entry, while Save As adopts a loose copy.
+
 Standalone .NET 8 Windows editor for Gondwana `.gani` animation definitions.
 
 Run from the repository root:

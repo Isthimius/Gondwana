@@ -232,3 +232,9 @@ payloads, runtime EngineState, or editor-local selection/camera state. Packed
 documents record archive path, asset type, and entry name, including the active
 packed tab. Older loose-only session preferences remain compatible. Missing or
 renamed entries are skipped with a diagnostic while unrelated documents restore.
+
+Passwords verified while loading dependency previews are also reused for document
+opens and preview reloads during the session. During startup restoration, a failed
+or canceled archive authentication skips the remaining documents from that archive
+without repeating the prompt. Other archives and loose documents still restore;
+explicitly opening the failed archive afterward allows another attempt.

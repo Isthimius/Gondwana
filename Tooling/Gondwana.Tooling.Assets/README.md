@@ -28,7 +28,9 @@ reloaded.
 Hosts may supply the existing `PasswordProvider` callback. Failed attempts are
 cached until invalidation or a file change so passive loads do not repeatedly
 prompt. Standalone controls without a provider report inaccessible archives as
-dependency warnings. Passwords are never stored in definitions.
+dependency warnings. `PasswordAccepted` reports only successfully authenticated
+credentials so a host can reuse them across dependency reloads and document opens.
+Passwords are never stored in definitions.
 
 The controls share Skia decoding, masking and owned GDI bitmap conversion through
 `Tooling/Shared/WinForms/AuthoringPreviewImage.cs`. GANI keeps its existing playback
@@ -36,5 +38,8 @@ and timing; scenes use a representative first animation frame. Sprites with a
 starting animation preview its first frame using that animation's own declared
 GTS sources; scene/layer positioning remains unchanged.
 
-This is dependency loading only. Opening packed definitions as editable Studio
-documents and saving them back to GAF remain separate document-lifecycle work.
+This library resolves dependencies. [Studio](../Gondwana.Tooling.Studio.WinForms/README.md#editing-packed-definitions)
+owns opening and editing packed native documents, coordinated transactional GAF
+saves, conflict handling, and session restoration. It uses the same resolver for
+their previews. Standalone editors share the preview controls but retain their
+loose-document file dialogs.

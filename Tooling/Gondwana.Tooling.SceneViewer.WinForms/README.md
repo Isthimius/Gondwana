@@ -86,6 +86,13 @@ This is a Viewer convention; the portable definition schemas and runtime seriali
 
 The reusable GSCN editor's preview toolbar contains **View Scene**. Both the standalone Scene editor and Studio use this command. New or dirty documents require confirmation and a successful save through the host's normal save workflow. Canceling or failing to save never launches stale content.
 
+The launched scene must be a loose `.gscn`; its GTS/GANI dependencies may be packed.
+For a packed GSCN, Studio explains this limitation instead of launching a viewer.
+Use its built-in scene preview, or Save As to adopt a loose scene copy before
+launching. Studio's authoring previews honor explicit packed provenance even when
+loose duplicates exist. The runtime viewer retains its content-root precedence
+described above; packed-document authoring does not change that policy.
+
 Each launch starts an independent process with safe `ProcessStartInfo.ArgumentList` arguments. Closing either application does not close the other. Multiple viewers can run independently. Engine configuration is in memory so unrelated working-directory game configuration/state is not loaded or modified.
 
 Development builds locate the viewer in its sibling tooling project's matching `bin/<configuration>/<framework>[/rid]` directory. Build the viewer in the same configuration as the editor. Published layouts may place the complete viewer output beside the editor, under `SceneViewer/`, under `Gondwana.Tooling.SceneViewer.WinForms/`, or in a sibling directory with that project name. Deploy the entire output, including runtime libraries. Missing installations produce an actionable error.

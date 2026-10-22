@@ -10,6 +10,8 @@ public sealed class AssetPackageCatalog : IDisposable
 {
     /// <summary>Reports a physical package dependency so hosts can indicate stale previews after writes.</summary>
     public event Action<string>? PackageAccessed;
+    /// <summary>Reports a successfully authenticated password for an optional host session cache.</summary>
+    public event Action<string, string>? PasswordAccepted;
     private readonly Dictionary<string, AssetsFile> _packages =
         new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, (long Length, DateTime Modified)> _stamps = new(StringComparer.OrdinalIgnoreCase);
@@ -178,6 +180,7 @@ public sealed class AssetPackageCatalog : IDisposable
                 _failures[fullPath] = ex;
                 throw new InvalidDataException($"Could not open asset package '{fullPath}' with the supplied password: {ex.Message}", ex);
             }
+            PasswordAccepted?.Invoke(fullPath, password);
         }
 
         _packages.Add(fullPath, package);

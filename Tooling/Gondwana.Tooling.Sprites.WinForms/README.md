@@ -1,5 +1,10 @@
 # Gondwana Sprite editor
 
+The standalone shell opens loose definition documents. To open and save a definition
+inside a GAF, use [Gondwana Studio](../Gondwana.Tooling.Studio.WinForms/README.md#editing-packed-definitions),
+which hosts this same editor. Packed documents retain all logical members and their
+source references; Save updates the typed archive entry, while Save As adopts a loose copy.
+
 A Windows WinForms authoring tool for `.gspr` sprite collections. One file may contain a player, several guards, projectiles, or any grouping chosen by the developer. It edits definitions, not running game instances.
 
 ## Launch and documents
