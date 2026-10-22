@@ -88,11 +88,11 @@ See **[Gondwana Studio](Tooling/Gondwana.Tooling.Studio.WinForms)** for details.
 - 📚 **[API Reference — stable](https://isthimius.github.io/Gondwana/api/)** · [Development (`master`)](https://isthimius.github.io/Gondwana/api/latest/) · Historical releases are available in the API version selector.
 - 🤖 **[Using Gondwana with ChatGPT and Codex](https://github.com/Isthimius/Gondwana/wiki/Using-Gondwana-with-ChatGPT-and-Codex)**
 - 🛠️ **[Gondwana Studio](Tooling/Gondwana.Tooling.Studio.WinForms)**
+- ❔ **[Frequently Asked Questions](https://github.com/Isthimius/Gondwana/discussions/360)**
 - 📦 **[NuGet Package](https://www.nuget.org/packages/Gondwana)**
 - 🏷️ **[GitHub Releases](https://github.com/Isthimius/Gondwana/releases)**
 - 📜 **[Release History](https://github.com/Isthimius/Gondwana/blob/master/CHANGELOG.md)**
 - ✅ **[Latest CI Run](https://github.com/Isthimius/Gondwana/actions/workflows/ci-master.yml)**
-- 💬 **[Discussions](https://github.com/Isthimius/Gondwana/discussions)**
 - 📣 **[What’s New in Gondwana 2.6.1](https://github.com/Isthimius/Gondwana/discussions/473)**
 
 ---
