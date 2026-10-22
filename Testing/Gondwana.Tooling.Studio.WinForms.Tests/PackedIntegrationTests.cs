@@ -1,8 +1,12 @@
+extern alias studio;
+
 using Gondwana.Assets;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Tooling.Tilesheets.WinForms;
 using Gondwana.Tooling.Studio.WinForms.Documents;
+using WorkspaceSessionDocument = studio::Gondwana.Tooling.WinForms.WorkspaceSessionDocument;
+using WorkspaceSessionStore = studio::Gondwana.Tooling.WinForms.WorkspaceSessionStore;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
@@ -156,5 +160,40 @@ public sealed partial class CompositionTests
         var retry = restored.OpenDocument(NativeLocation(path, "gts"));
         Assert.Equal(2, prompts);
         Assert.False(retry.Document.Dirty());
+    });
+
+    [Theory]
+    [InlineData(true, null)]
+    [InlineData(true, "wrong")]
+    [InlineData(false, null)]
+    [InlineData(false, "wrong")]
+    public void RestorationSharesFailedAuthenticationAcrossPackedDocumentsAndPreviews(bool packedFirst, string? answer) => RunSta(root =>
+    {
+        var path = CreatePreviewArchive(root, "encrypted.gaf", Color.LimeGreen);
+        using (var encrypted = AssetsFile.LoadOrCreate(path, "secret", true, register: false)) encrypted.Save();
+        var loose = Path.Combine(root, "loose.gani");
+        AnimationDefinitionSerializer.Save(loose, PreviewAnimation("encrypted.gaf"));
+        var packedDocument = new WorkspaceSessionDocument(Path.GetFullPath(path), "gts",
+            (int)AssetTypes.TilesheetDefinition, "definitions/world.gts");
+        var looseDocument = WorkspaceSessionDocument.FromPath(loose)!;
+        var store = new WorkspaceSessionStore(_ => { });
+        Assert.True(store.Write(new()
+        {
+            WorkingDirectory = root,
+            Documents = packedFirst ? [packedDocument, looseDocument] : [looseDocument, packedDocument]
+        }));
+
+        using var restored = new MainForm(loadPlugins: false) { Opacity = 0, ShowInTaskbar = false };
+        int prompts = 0;
+        restored.AssetPassword = _ => { prompts++; return answer; };
+        restored.Show();
+        Application.DoEvents();
+        Assert.Equal(1, prompts);
+        var animation = Assert.Single(restored.Documents, document => document.Document.Path() == loose);
+
+        restored.AssetPassword = _ => { prompts++; return "secret"; };
+        restored.ReloadPreviews(animation);
+        Assert.Equal(2, prompts);
+        AssertSourceImages(Private(animation.Document.Editor, "_sources"), Color.LimeGreen);
     });
 }

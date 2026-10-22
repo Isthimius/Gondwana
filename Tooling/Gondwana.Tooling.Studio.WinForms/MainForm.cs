@@ -90,14 +90,22 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         _packages.PasswordProvider = path =>
         {
             path = Path.GetFullPath(path);
+            if (_session.IsRestoring && _failedRestoreArchives.Contains(path)) return null;
             // Revalidate cached credentials after package invalidation. PasswordAccepted
             // restores them on success; a changed password must remain retryable.
-            if (_archivePasswords.Remove(path, out var known)) return known;
+            string? password;
+            if (_archivePasswords.Remove(path, out var known)) password = known;
             // Keep unverified answers out of the session cache so Reload can retry.
-            return AssetPassword(path);
+            else password = AssetPassword(path);
+            if (_session.IsRestoring) _failedRestoreArchives.Add(path);
+            return password;
         };
         _packages.PackageAccessed += path => (_loadingDependencies ?? ActiveDocument?.Document.DependencyArchives)?.Add(path);
-        _packages.PasswordAccepted += (path, password) => _archivePasswords[path] = password;
+        _packages.PasswordAccepted += (path, password) =>
+        {
+            _archivePasswords[path] = password;
+            if (_session.IsRestoring) _failedRestoreArchives.Remove(path);
+        };
         MainMenuStrip = BuildMenu();
         Controls.Add(Workspace);
         Controls.Add(MainMenuStrip);
@@ -139,11 +147,22 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         return menu;
     }
 
-    internal void RestoreSession() => _session.Restore(["gaf", "gts", "gani", "gsnd", "gscn", "gspr"],
-        path => { if (!string.Equals(Browser.WorkingDirectory, path, StringComparison.OrdinalIgnoreCase)) SetWorkingDirectory(path); },
-        document => OpenDocument(SessionLocation(document)),
-        path => _documents.FirstOrDefault(document => string.Equals(document.Document.Path(), path, StringComparison.OrdinalIgnoreCase))?.Activate(),
-        _output.Log, _output.Log, document => _paths.GetValueOrDefault(SessionLocation(document))?.Activate());
+    internal void RestoreSession()
+    {
+        try
+        {
+            _session.Restore(["gaf", "gts", "gani", "gsnd", "gscn", "gspr"],
+                path => { if (!string.Equals(Browser.WorkingDirectory, path, StringComparison.OrdinalIgnoreCase)) SetWorkingDirectory(path); },
+                document => OpenDocument(SessionLocation(document)),
+                path => _documents.FirstOrDefault(document => string.Equals(document.Document.Path(), path, StringComparison.OrdinalIgnoreCase))?.Activate(),
+                _output.Log, _output.Log, document => _paths.GetValueOrDefault(SessionLocation(document))?.Activate());
+        }
+        finally
+        {
+            foreach (string path in _failedRestoreArchives) _packages.Invalidate(path);
+            _failedRestoreArchives.Clear();
+        }
+    }
 
     private static AssetLocation SessionLocation(WorkspaceSessionDocument document)
     {
