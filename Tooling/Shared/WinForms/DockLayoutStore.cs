@@ -36,8 +36,15 @@ internal sealed class DockLayoutStore
 
     internal byte[]? Read()
     {
-        try { return File.Exists(FilePath) ? File.ReadAllBytes(FilePath) : null; }
-        catch (Exception ex) { Warn(ex); return null; }
+        try
+        {
+            return File.Exists(FilePath) ? File.ReadAllBytes(FilePath) : null;
+        }
+        catch (Exception ex)
+        {
+            Warn(ex);
+            return null;
+        }
     }
 
     internal bool Write(byte[] layout)
@@ -50,18 +57,34 @@ internal sealed class DockLayoutStore
             File.Move(temporary, FilePath, overwrite: true);
             return true;
         }
-        catch (Exception ex) { Warn(ex); return false; }
+        catch (Exception ex)
+        {
+            Warn(ex);
+            return false;
+        }
         finally
         {
-            try { if (File.Exists(temporary)) File.Delete(temporary); }
-            catch (Exception ex) { Warn(ex); }
+            try
+            {
+                if (File.Exists(temporary)) File.Delete(temporary);
+            }
+            catch (Exception ex)
+            {
+                Warn(ex);
+            }
         }
     }
 
     internal void Delete()
     {
-        try { File.Delete(FilePath); }
-        catch (Exception ex) { Warn(ex); }
+        try
+        {
+            File.Delete(FilePath);
+        }
+        catch (Exception ex)
+        {
+            Warn(ex);
+        }
     }
 
     internal static void Warn(Exception exception) =>
