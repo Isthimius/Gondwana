@@ -198,7 +198,7 @@ public sealed partial class CompositionTests
         var parent = studio.OpenDocument(path);
         Assert.Equal(1, prompts);
         WaitForArchives(studio.Browser);
-        var node = Assert.Single(studio.Browser.Tree.Nodes[0].Nodes[1].Nodes.Cast<TreeNode>());
+        var node = Assert.Single(Assert.Single(studio.Browser.Tree.Nodes[0].Nodes[1].Nodes.Cast<TreeNode>()).Nodes.Cast<TreeNode>());
         DoubleClickNode(studio.Browser, node);
         var child = studio.ActiveDocument!;
         Assert.NotSame(parent, child);
@@ -348,6 +348,7 @@ public sealed partial class CompositionTests
         var location = NativeLocation(path, format);
         WaitForArchives(studio.Browser);
         var node = studio.Browser.Tree.Nodes[0].Nodes.Cast<TreeNode>().SelectMany(group => group.Nodes.Cast<TreeNode>())
+            .SelectMany(archive => archive.Nodes.Cast<TreeNode>())
             .Single(node => node.Tag is PackedAssetNodeIdentity packed && packed.ArchivePath == path && packed.AssetType == location.AssetType);
         Assert.True(studio.Browser.PrepareFileMenu(node));
         studio.Browser.FileMenu.Items[0].PerformClick();
