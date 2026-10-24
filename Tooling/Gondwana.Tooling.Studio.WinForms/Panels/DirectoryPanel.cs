@@ -9,7 +9,10 @@ namespace Gondwana.Tooling.Studio.WinForms.Panels;
 public sealed class DirectoryPanel : UserControl
 {
     private readonly Action<string> _log;
-    private readonly ImageList _images = new() { ImageSize = new Size(16, 16), ColorDepth = ColorDepth.Depth32Bit };
+    private ImageList? _images;
+    private Font? _treeFont;
+    private int _presentationDpi;
+    internal DirectoryIconSize IconSize { get; private set; } = DirectoryIconSize.Small;
     private readonly ContextMenuStrip _fileMenu = new();
     private string? _menuPath;
     private PackedAssetNodeIdentity? _menuPacked;
@@ -62,12 +65,9 @@ public sealed class DirectoryPanel : UserControl
         _log = log;
 
         OpenExternal = ShowOpenWithDialog;
-        AddIcon("directory", "D", Color.DarkKhaki);
+        ApplyIconSize(DirectoryIconSize.Small);
+        Tree.DpiChangedAfterParent += (_, _) => ApplyIconSize(IconSize);
 
-        foreach (var category in Categories)
-            AddIcon(category.Key, category.Glyph, category.Color);
-
-        Tree.ImageList = _images;
         _fileMenu.Items.Add("Open", null, (_, _) =>
         {
             if (_menuPacked is { } packed)
@@ -150,6 +150,7 @@ public sealed class DirectoryPanel : UserControl
             _archiveRefresh = new CancellationTokenSource();
             _fileMenu.Close();
             _menuPath = null;
+            _menuPacked = null;
             Tree.Nodes.Clear();
 
             var root = new TreeNode(WorkingDirectory)
@@ -261,9 +262,7 @@ public sealed class DirectoryPanel : UserControl
 
                             try
                             {
-                                foreach (var entry in entries)
-                                {
-                                    var key = entry.AssetType switch
+                                foreach (var group in entries.GroupBy(entry => entry.AssetType switch
                                     {
                                         AssetTypes.TilesheetDefinition => "gts",
                                         AssetTypes.AnimationDefinition => "gani",
@@ -271,17 +270,26 @@ public sealed class DirectoryPanel : UserControl
                                         AssetTypes.SpriteDefinition => "gspr",
                                         AssetTypes.AudioDefinition => "gsnd",
                                         _ => "misc"
-                                    };
-
-                                    groups[key].Nodes.Add(new TreeNode($"{entry.EntryName} ({Path.GetFileName(entry.ArchivePath)})")
+                                    }))
+                                {
+                                    // A grouping node has no file/packed identity: only its children activate.
+                                    var archiveNode = new TreeNode(Path.GetFileName(archivePath))
                                     {
-                                        Tag = entry,
-                                        ToolTipText = $"Archive: {entry.ArchivePath}\nEntry: {entry.EntryName}\nAsset type: {entry.AssetType}",
-                                        ImageKey = key,
-                                        SelectedImageKey = key
-                                    });
+                                        ToolTipText = archivePath,
+                                        ImageKey = "gaf",
+                                        SelectedImageKey = "gaf"
+                                    };
+                                    foreach (var entry in group)
+                                        archiveNode.Nodes.Add(new TreeNode(entry.EntryName)
+                                        {
+                                            Tag = entry,
+                                            ToolTipText = $"Archive: {entry.ArchivePath}\nEntry: {entry.EntryName}\nAsset type: {entry.AssetType}",
+                                            ImageKey = group.Key,
+                                            SelectedImageKey = group.Key
+                                        });
 
-                                    groups[key].Expand();
+                                    groups[group.Key].Nodes.Add(archiveNode);
+                                    groups[group.Key].Expand();
                                 }
                             }
                             finally
@@ -391,20 +399,83 @@ public sealed class DirectoryPanel : UserControl
 
     internal ContextMenuStrip FileMenu => _fileMenu;
 
-    private void AddIcon(string key, string glyph, Color color)
+    // Reuse the nodes and keys: resizing must never start a filesystem/archive scan.
+    internal void ApplyIconSize(DirectoryIconSize size)
     {
-        using var bitmap = new Bitmap(16, 16);
+        if (!Enum.IsDefined(size))
+            throw new ArgumentOutOfRangeException(nameof(size));
+
+        int dpi = Tree.DeviceDpi;
+        if (_images is not null && IconSize == size && _presentationDpi == dpi)
+            return;
+
+        int pixels = Math.Clamp((int)Math.Round((int)size * dpi / 96d), 1, 256);
+        var images = new ImageList { ImageSize = new Size(pixels, pixels), ColorDepth = ColorDepth.Depth32Bit };
+        Font? font = null;
+        try
+        {
+            AddIcon(images, "directory", "D", Color.DarkKhaki);
+            foreach (var category in Categories)
+                AddIcon(images, category.Key, category.Glyph, category.Color);
+            font = new Font("Segoe UI", size switch
+            {
+                DirectoryIconSize.Medium => 11f,
+                DirectoryIconSize.Large => 13f,
+                _ => 9f
+            }, FontStyle.Regular, GraphicsUnit.Point);
+        }
+        catch
+        {
+            images.Dispose();
+            font?.Dispose();
+            throw;
+        }
+
+        var previousImages = _images;
+        var previousFont = _treeFont;
+        var selected = Tree.SelectedNode;
+        var top = Tree.TopNode;
+        Tree.BeginUpdate();
+        try
+        {
+            _images = images;
+            _treeFont = font;
+            IconSize = size;
+            _presentationDpi = dpi;
+            Tree.ImageList = images;
+            Tree.Font = font;
+            Tree.ItemHeight = Math.Max(pixels, (int)Math.Ceiling(font.SizeInPoints * dpi / 72d))
+                + Math.Max(1, (int)Math.Round(2 * dpi / 96d));
+            Tree.SelectedNode = selected;
+            if (top is not null)
+                Tree.TopNode = top;
+        }
+        finally
+        {
+            Tree.EndUpdate();
+            previousImages?.Dispose();
+            previousFont?.Dispose();
+        }
+    }
+
+    private static void AddIcon(ImageList images, string key, string glyph, Color color)
+    {
+        int pixels = images.ImageSize.Width;
+        float scale = pixels / 16f;
+        using var bitmap = new Bitmap(pixels, pixels);
         using var graphics = Graphics.FromImage(bitmap);
         using var background = new SolidBrush(color);
-        using var font = new Font("Segoe UI", 8, FontStyle.Bold, GraphicsUnit.Point);
+        // Pixel units keep the glyph tied to the target bitmap, independent of monitor DPI.
+        using var font = new Font("Segoe UI", 8 * 96f / 72f * scale, FontStyle.Bold, GraphicsUnit.Pixel);
         using var alignment = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
 
-        graphics.FillRectangle(background, 1, 1, 14, 14);
-        graphics.DrawString(glyph, font, Brushes.White, new RectangleF(0, 0, 16, 16), alignment);
-        _images.Images.Add(key, bitmap);
+        graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+        graphics.FillRectangle(background, scale, scale, pixels - 2 * scale, pixels - 2 * scale);
+        graphics.DrawString(glyph, font, Brushes.White, new RectangleF(0, 0, pixels, pixels), alignment);
+        images.Images.Add(key, bitmap);
 
         // Materialize the native copy before disposing the source bitmap.
-        _ = _images.Handle;
+        _ = images.Handle;
     }
 
     private void ShowOpenWithDialog(string path)
@@ -445,7 +516,9 @@ public sealed class DirectoryPanel : UserControl
             _lifetime.Dispose();
             _fileMenu.Dispose();
             Tree.ImageList = null;
-            _images.Dispose();
+            _images?.Dispose();
+            Tree.Font = null;
+            _treeFont?.Dispose();
         }
 
         base.Dispose(disposing);
