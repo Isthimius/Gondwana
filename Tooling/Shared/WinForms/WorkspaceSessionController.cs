@@ -20,8 +20,10 @@ internal sealed class WorkspaceSessionController
         _store = new(ReportPersistenceError);
         _hadSession = File.Exists(_store.FilePath);
         _session = _store.Read();
+
         StartEmpty = (startEmpty ?? (Environment.GetCommandLineArgs().Contains("--empty-workspace", StringComparer.OrdinalIgnoreCase)
             || (Control.ModifierKeys & Keys.Shift) != 0)) || _session.StartEmptyOnce;
+
         if (_session.StartEmptyOnce)
         {
             _session = _session with { StartEmptyOnce = false };
@@ -31,7 +33,9 @@ internal sealed class WorkspaceSessionController
 
     internal string InitialWorkingDirectory(string? legacyDirectory = null)
     {
-        if (StartEmpty || !_session.RestoreOnStartup) return Environment.CurrentDirectory;
+        if (StartEmpty || !_session.RestoreOnStartup)
+            return Environment.CurrentDirectory;
+
         string? directory = _hadSession ? _session.WorkingDirectory : legacyDirectory;
         return directory is not null && Directory.Exists(directory) ? directory : Environment.CurrentDirectory;
     }
@@ -40,32 +44,61 @@ internal sealed class WorkspaceSessionController
     {
         file.DropDownItems.Add(new ToolStripSeparator());
         var restore = new ToolStripMenuItem("Restore workspace on startup") { Checked = _session.RestoreOnStartup, CheckOnClick = true };
+
         restore.Click += (_, _) =>
         {
-            var updated = _session with { RestoreOnStartup = restore.Checked };
-            if (_store.Write(updated)) _session = updated;
-            else restore.Checked = _session.RestoreOnStartup;
+            var updated = _session with
+            {
+                RestoreOnStartup = restore.Checked
+            };
+
+            if (_store.Write(updated))
+                _session = updated;
+            else
+                restore.Checked = _session.RestoreOnStartup;
         };
-        var empty = new ToolStripMenuItem("Start empty on next launch") { CheckOnClick = true };
+
+        var empty = new ToolStripMenuItem("Start empty on next launch")
+        {
+            CheckOnClick = true
+        };
+
         empty.Click += (_, _) =>
         {
-            var updated = _session with { StartEmptyOnce = empty.Checked };
-            if (_store.Write(updated)) _session = updated;
-            else empty.Checked = _session.StartEmptyOnce;
+            var updated = _session with
+            {
+                StartEmptyOnce = empty.Checked
+            };
+
+            if (_store.Write(updated))
+                _session = updated;
+            else
+                empty.Checked = _session.StartEmptyOnce;
         };
+
         file.DropDownItems.AddRange([restore, empty]);
     }
 
-    internal void Restore(IReadOnlyCollection<string> formats, Action<string> setDirectory,
-        Action<WorkspaceSessionDocument> open, Action<string> activate, Action<string> reportStartup, Action<string> reportPersistenceError,
-        Action<WorkspaceSessionDocument>? activatePacked = null)
+    internal void Restore(IReadOnlyCollection<string> formats,
+                          Action<string> setDirectory,
+                          Action<WorkspaceSessionDocument> open,
+                          Action<string> activate,
+                          Action<string> reportStartup,
+                          Action<string> reportPersistenceError,
+                          Action<WorkspaceSessionDocument>? activatePacked = null)
     {
-        if (_restored) return;
+        if (_restored)
+            return;
+
         _restored = true;
         _reportPersistenceError = reportPersistenceError;
-        foreach (string message in _startupMessages) reportStartup(message);
+
+        foreach (string message in _startupMessages)
+            reportStartup(message);
+
         _startupMessages.Clear();
         IsRestoring = true;
+
         try
         {
             WorkspaceSessionRestore.Restore(_session, formats, setDirectory, open, activate, message =>
@@ -74,7 +107,10 @@ internal sealed class WorkspaceSessionController
                 reportStartup(message);
             }, StartEmpty, activatePacked);
         }
-        finally { IsRestoring = false; }
+        finally
+        {
+            IsRestoring = false;
+        }
     }
 
     /// <summary>Call after close approval, before any document is removed or disposed.</summary>
@@ -118,7 +154,10 @@ internal sealed class WorkspaceSessionController
     private void ReportPersistenceError(string message)
     {
         Trace.TraceWarning(message);
-        if (_reportPersistenceError is { } report) report(message);
-        else _startupMessages.Add(message);
+
+        if (_reportPersistenceError is { } report)
+            report(message);
+        else
+            _startupMessages.Add(message);
     }
 }

@@ -20,9 +20,11 @@ internal sealed class DockLayoutStore
     {
         applicationId ??= AppContext.GetData(ApplicationSetting) as string
             ?? Assembly.GetEntryAssembly()?.GetName().Name ?? "Gondwana.Tooling.Host";
+
         settingsRoot ??= AppContext.GetData(RootSetting) as string
             ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "Hidden Worlds Games", "Gondwana", "Tooling");
+
         return Path.Combine(settingsRoot, SafeKey(applicationId));
     }
 
@@ -31,13 +33,21 @@ internal sealed class DockLayoutStore
         if (string.IsNullOrWhiteSpace(key) || key is "." or ".." ||
             key.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
             throw new ArgumentException("A layout key must be a single file name.", nameof(key));
+
         return key;
     }
 
     internal byte[]? Read()
     {
-        try { return File.Exists(FilePath) ? File.ReadAllBytes(FilePath) : null; }
-        catch (Exception ex) { Warn(ex); return null; }
+        try
+        {
+            return File.Exists(FilePath) ? File.ReadAllBytes(FilePath) : null;
+        }
+        catch (Exception ex)
+        {
+            Warn(ex);
+            return null;
+        }
     }
 
     internal bool Write(byte[] layout)
@@ -48,20 +58,38 @@ internal sealed class DockLayoutStore
             Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
             File.WriteAllBytes(temporary, layout);
             File.Move(temporary, FilePath, overwrite: true);
+
             return true;
         }
-        catch (Exception ex) { Warn(ex); return false; }
+        catch (Exception ex)
+        {
+            Warn(ex);
+            return false;
+        }
         finally
         {
-            try { if (File.Exists(temporary)) File.Delete(temporary); }
-            catch (Exception ex) { Warn(ex); }
+            try
+            {
+                if (File.Exists(temporary))
+                    File.Delete(temporary);
+            }
+            catch (Exception ex)
+            {
+                Warn(ex);
+            }
         }
     }
 
     internal void Delete()
     {
-        try { File.Delete(FilePath); }
-        catch (Exception ex) { Warn(ex); }
+        try
+        {
+            File.Delete(FilePath);
+        }
+        catch (Exception ex)
+        {
+            Warn(ex);
+        }
     }
 
     internal static void Warn(Exception exception) =>

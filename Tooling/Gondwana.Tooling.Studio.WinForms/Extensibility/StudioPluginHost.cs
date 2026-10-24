@@ -26,6 +26,7 @@ public sealed class StudioPluginHost : CoreHost
     internal IEnumerable<(string Id, string Name, Control Panel)> GetPersistentPluginPanels()
     {
         var result = new List<(string, string, Control)>();
+
         foreach (var plugin in GetPluginsAs<IStudioPlugin>())
         {
             try
@@ -39,6 +40,7 @@ public sealed class StudioPluginHost : CoreHost
                 Log($"[Plugin] CreatePanel threw for '{plugin.Name}': {ex.Message}");
             }
         }
+
         return result;
     }
 
@@ -49,6 +51,7 @@ public sealed class StudioPluginHost : CoreHost
     public IEnumerable<ToolStripMenuItem> GetPluginMenuItems()
     {
         var result = new List<ToolStripMenuItem>();
+
         foreach (var plugin in GetPluginsAs<IStudioPlugin>())
         {
             try
@@ -62,6 +65,7 @@ public sealed class StudioPluginHost : CoreHost
                 Log($"[Plugin] CreateMenuItem threw for '{plugin.Name}': {ex.Message}");
             }
         }
+
         return result;
     }
 }

@@ -46,6 +46,7 @@ internal sealed class StudioDocument : IDisposable
         "gsnd" => AssetTypes.AudioDefinition,
         _ => AssetTypes.Misc
     };
+
     internal static string? FormatFor(AssetTypes type) => type switch
     {
         AssetTypes.TilesheetDefinition => "gts",
@@ -55,6 +56,7 @@ internal sealed class StudioDocument : IDisposable
         AssetTypes.AudioDefinition => "gsnd",
         _ => null
     };
+
     internal required Func<bool> Dirty { get; init; }
     internal required Func<bool> CommitEdits { get; init; }
     internal required Func<IReadOnlyList<string>> Validate { get; init; }
@@ -82,17 +84,26 @@ internal sealed class StudioDocument : IDisposable
     };
 
     internal static StudioDocument Create(string format, string directory, string? path = null,
-        AssetPackageCatalog? packages = null, string? password = null, bool encrypt = false, AssetsFile? archive = null, string? entryName = null)
+        AssetPackageCatalog? packages = null, string? password = null, bool encrypt = false,
+        AssetsFile? archive = null, string? entryName = null)
     {
         StudioDocument result;
+
         switch (format)
         {
             case "gts":
                 {
-                    var model = archive is not null ? TilesheetDocument.Open(archive, entryName!) : path is null ? TilesheetDocument.Create(directory) : TilesheetDocument.Open(path);
-                    var editor = packages is null ? new TilesheetEditorControl(model) : new TilesheetEditorControl(model, packages);
+                    var model = archive is not null ?
+                                TilesheetDocument.Open(archive, entryName!) :
+                                path is null ? TilesheetDocument.Create(directory) : TilesheetDocument.Open(path);
+
+                    var editor = packages is null ?
+                                 new TilesheetEditorControl(model) :
+                                 new TilesheetEditorControl(model, packages);
+
                     if (packages is not null)
                         editor.PackedImagePicker = owner => PackedImagePicker.Pick(owner, packages, directory);
+
                     result = new()
                     {
                         Kind = "tilesheet",
@@ -112,14 +123,21 @@ internal sealed class StudioDocument : IDisposable
                         ShowAllPanes = editor.ShowAllPanes,
                         ResetLayout = editor.ResetLayout
                     };
+
                     model.Changed += result.OnChanged;
                     result._detach = () => model.Changed -= result.OnChanged;
+
                     return result;
                 }
+
             case "gani":
                 {
-                    var model = archive is not null ? AnimationDocument.Open(archive, entryName!) : path is null ? AnimationDocument.Create(directory) : AnimationDocument.Open(path);
+                    var model = archive is not null ?
+                                AnimationDocument.Open(archive, entryName!) :
+                                path is null ? AnimationDocument.Create(directory) : AnimationDocument.Open(path);
+
                     var editor = new AnimationEditorControl(model, packages);
+
                     result = new()
                     {
                         Kind = "animation",
@@ -139,14 +157,21 @@ internal sealed class StudioDocument : IDisposable
                         ShowAllPanes = editor.ShowAllPanes,
                         ResetLayout = editor.ResetLayout
                     };
+
                     model.Changed += result.OnChanged;
                     result._detach = () => model.Changed -= result.OnChanged;
+
                     return result;
                 }
+
             case "gsnd":
                 {
-                    var model = archive is not null ? AudioDocument.Open(archive, entryName!) : path is null ? AudioDocument.Create(directory) : AudioDocument.Open(path);
+                    var model = archive is not null ?
+                                AudioDocument.Open(archive, entryName!) :
+                                path is null ? AudioDocument.Create(directory) : AudioDocument.Open(path);
+
                     var editor = new AudioEditorControl(model);
+
                     result = new()
                     {
                         Kind = "sound",
@@ -166,14 +191,21 @@ internal sealed class StudioDocument : IDisposable
                         ShowAllPanes = editor.ShowAllPanes,
                         ResetLayout = editor.ResetLayout
                     };
+
                     model.Changed += result.OnChanged;
                     result._detach = () => model.Changed -= result.OnChanged;
+
                     return result;
                 }
+
             case "gscn":
                 {
-                    var model = archive is not null ? SceneDocument.Open(archive, entryName!) : path is null ? SceneDocument.Create(directory) : SceneDocument.Open(path);
+                    var model = archive is not null ?
+                                SceneDocument.Open(archive, entryName!) :
+                                path is null ? SceneDocument.Create(directory) : SceneDocument.Open(path);
+
                     var editor = new SceneEditorControl(model, packages);
+
                     result = new()
                     {
                         Kind = "scene",
@@ -193,14 +225,21 @@ internal sealed class StudioDocument : IDisposable
                         ShowAllPanes = editor.ShowAllPanes,
                         ResetLayout = editor.ResetLayout
                     };
+
                     model.Changed += result.OnChanged;
                     result._detach = () => model.Changed -= result.OnChanged;
+
                     return result;
                 }
+
             case "gspr":
                 {
-                    var model = archive is not null ? SpriteDocument.Open(archive, entryName!) : path is null ? SpriteDocument.Create(directory) : SpriteDocument.Open(path);
+                    var model = archive is not null ?
+                                SpriteDocument.Open(archive, entryName!) :
+                                path is null ? SpriteDocument.Create(directory) : SpriteDocument.Open(path);
+
                     var editor = new SpriteEditorControl(model, packages);
+
                     result = new()
                     {
                         Kind = "sprite",
@@ -220,14 +259,20 @@ internal sealed class StudioDocument : IDisposable
                         ShowAllPanes = editor.ShowAllPanes,
                         ResetLayout = editor.ResetLayout
                     };
+
                     model.Changed += result.OnChanged;
                     result._detach = () => model.Changed -= result.OnChanged;
+
                     return result;
                 }
+
             case "gaf":
                 {
-                    if (path is null) throw new ArgumentException("Choose an asset file path first.");
+                    if (path is null)
+                        throw new ArgumentException("Choose an asset file path first.");
+
                     var assets = archive ?? AssetsFile.LoadOrCreate(path, password, encrypt || !string.IsNullOrEmpty(password), register: false);
+
                     try
                     {
                         var editor = new AssetEditorControl(assets);
@@ -248,12 +293,19 @@ internal sealed class StudioDocument : IDisposable
                             ResetLayout = editor.ResetLayout,
                             _release = assets.Dispose
                         };
+
                         editor.Changed += result.OnChanged;
                         result._detach = () => editor.Changed -= result.OnChanged;
+
                         return result;
                     }
-                    catch { assets.Dispose(); throw; }
+                    catch
+                    {
+                        assets.Dispose();
+                        throw;
+                    }
                 }
+
             default: throw new NotSupportedException($"Unsupported authoring format: {format}");
         }
     }
@@ -267,7 +319,9 @@ internal sealed class StudioDocument : IDisposable
     {
         _detach?.Invoke();
         _detach = null;
+
         Editor.Dispose();
+
         _release?.Invoke();
         _release = null;
     }
