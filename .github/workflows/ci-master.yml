@@ -123,12 +123,6 @@ jobs:
           mkdir -p publish/Gondwana.Widgets
           mkdir -p publish/Gondwana.WinForms
           mkdir -p publish/Gondwana.WinForms.Hosting
-          mkdir -p publish/Tooling/Gondwana.Tooling.Assets.WinForms
-          mkdir -p publish/Tooling/Gondwana.Tooling.Animations.WinForms
-          mkdir -p publish/Tooling/Gondwana.Tooling.Scenes.WinForms
-          mkdir -p publish/Tooling/Gondwana.Tooling.SceneViewer.WinForms
-          mkdir -p publish/Tooling/Gondwana.Tooling.Sprites.WinForms
-          mkdir -p publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms
           mkdir -p publish/Demos/Slider
           mkdir -p publish/Demos/Spot.WinForms
 
@@ -144,14 +138,9 @@ jobs:
           dotnet publish Gondwana.Widgets/Gondwana.Widgets.csproj -c Release -o publish/Gondwana.Widgets --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.WinForms/Gondwana.WinForms.csproj -c Release -o publish/Gondwana.WinForms --nologo /p:EnableWindowsTargeting=true
           dotnet publish Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.csproj -c Release -o publish/Gondwana.WinForms.Hosting --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Tooling/Gondwana.Tooling.Assets.WinForms/Gondwana.Tooling.Assets.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Assets.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Tooling/Gondwana.Tooling.Animations.WinForms/Gondwana.Tooling.Animations.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Animations.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Tooling/Gondwana.Tooling.Audio.WinForms/Gondwana.Tooling.Audio.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Audio.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Tooling/Gondwana.Tooling.Scenes.WinForms/Gondwana.Tooling.Scenes.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Scenes.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Tooling/Gondwana.Tooling.SceneViewer.WinForms/Gondwana.Tooling.SceneViewer.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.SceneViewer.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Tooling/Gondwana.Tooling.Sprites.WinForms/Gondwana.Tooling.Sprites.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Sprites.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Tooling/Gondwana.Tooling.Tilesheets.WinForms/Gondwana.Tooling.Tilesheets.WinForms.csproj -c Release -o publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Demos/Slider/Slider.csproj -c Release -o publish/Demos/Slider -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
+          # Shared self-contained publish plan for Studio, standalones, and Scene Viewer.
+          pwsh -NoProfile -File Tooling/scripts/Publish-WindowsTooling.ps1 -OutputRoot publish/Tooling
+          dotnet publish Demos/Slider/Slider.csproj -c Release -o publish/Demos/Slider -r win-x64 --self-contained true --nologo /p:EnableWindowsTargeting=true
           dotnet publish Demos/Spot.WinForms/Spot.WinForms.csproj -c Release -o publish/Demos/Spot.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
 
       - name: Stage exact downloadable binaries
@@ -173,7 +162,8 @@ jobs:
           cp publish/Gondwana.WinForms/Gondwana.WinForms.dll artifacts/
           cp publish/Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.dll artifacts/
 
-          cp publish/Tooling/Gondwana.Tooling.Assets.WinForms/Gondwana.Tooling.Assets.WinForms.exe artifacts/Tooling/
+          cp -r publish/Tooling/Gondwana.Tooling.Assets.WinForms artifacts/Tooling/
+          cp -r publish/Tooling/Gondwana.Tooling.Studio.WinForms artifacts/Tooling/
           cp -r publish/Tooling/Gondwana.Tooling.Animations.WinForms artifacts/Tooling/
           cp -r publish/Tooling/Gondwana.Tooling.Audio.WinForms artifacts/Tooling/
           cp -r publish/Tooling/Gondwana.Tooling.Scenes.WinForms artifacts/Tooling/
@@ -182,6 +172,10 @@ jobs:
           cp -r publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms artifacts/Tooling/
           cp publish/Demos/Slider/Slider.exe artifacts/Demos/
           cp -r publish/Demos/Spot.WinForms artifacts/Demos/
+
+      - name: Validate packaged Windows tooling
+        shell: pwsh
+        run: ./Tooling/scripts/Test-WindowsToolingBundle.ps1 -ToolingRoot artifacts/Tooling
 
       - name: Zip artifacts
         run: |
