@@ -141,7 +141,7 @@ jobs:
           # Shared self-contained publish plan for Studio, standalones, and Scene Viewer.
           pwsh -NoProfile -File Tooling/scripts/Publish-WindowsTooling.ps1 -OutputRoot publish/Tooling
           dotnet publish Demos/Slider/Slider.csproj -c Release -o publish/Demos/Slider -r win-x64 --self-contained true --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Demos/Spot.WinForms/Spot.WinForms.csproj -c Release -o publish/Demos/Spot.WinForms -r win-x64 --self-contained false --nologo /p:EnableWindowsTargeting=true
+          dotnet publish Demos/Spot.WinForms/Spot.WinForms.csproj -c Release -o publish/Demos/Spot.WinForms -r win-x64 --self-contained true --nologo /p:EnableWindowsTargeting=true
 
       - name: Stage exact downloadable binaries
         shell: bash
