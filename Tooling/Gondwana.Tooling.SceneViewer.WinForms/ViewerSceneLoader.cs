@@ -21,13 +21,14 @@ internal sealed class ViewerSceneLoader
     /// <summary>Loads a scene member and resolves its explicitly identified dependencies.</summary>
     /// <param name="path">The physical scene document path.</param>
     /// <param name="sceneId">The logical scene identity, or null for singleton compatibility.</param>
+    /// <param name="contentRoot">Optional original directory for neighboring GTS/GANI/GSPR discovery.</param>
     /// <returns>The materialized scene.</returns>
-    internal Scene Load(string path, string? sceneId = null)
+    internal Scene Load(string path, string? sceneId = null, string? contentRoot = null)
     {
         var definition = SceneDefinitionSerializer.Load(path, sceneId);
         Validate(SceneDefinitionValidator.Validate(definition), "GSCN");
         var directory = Path.GetDirectoryName(Path.GetFullPath(path))!;
-        _catalog = new ViewerContentCatalog(directory, Archive);
+        _catalog = new ViewerContentCatalog(contentRoot ?? directory, Archive);
 
         foreach (var source in definition.TilesheetSources)
         {

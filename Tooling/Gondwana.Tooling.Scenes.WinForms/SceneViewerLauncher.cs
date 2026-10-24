@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using Gondwana.Scenes.GSCN;
+using Gondwana.Tooling.Scenes.Editing;
 
 namespace Gondwana.Tooling.Scenes.WinForms;
 
@@ -9,18 +11,53 @@ internal static class SceneViewerLauncher
     /// <summary>Opens a saved scene document in the viewer.</summary>
     /// <param name="scenePath">The physical document path.</param>
     /// <param name="sceneId">The logical member identity, or null for a singleton.</param>
-    internal static void Launch(string scenePath, string? sceneId = null)
+    /// <param name="contentRoot">Original content directory when viewing a snapshot.</param>
+    /// <param name="temporaryScene">Whether the viewer should delete the snapshot on exit.</param>
+    internal static void Launch(string scenePath, string? sceneId = null, string? contentRoot = null, bool temporaryScene = false)
     {
-        using var process = Process.Start(CreateStartInfo(Locate(AppContext.BaseDirectory), scenePath, sceneId))
+        using var process = Process.Start(CreateStartInfo(Locate(AppContext.BaseDirectory), scenePath, sceneId, contentRoot, temporaryScene))
             ?? throw new InvalidOperationException("The Scene Viewer process could not be started.");
+    }
+
+    /// <summary>Writes a packed scene's current editor contents to a unique temporary file without adopting or saving them.</summary>
+    /// <param name="document">The packed scene document, including unsaved changes.</param>
+    /// <returns>The temporary filename, whose lifetime belongs to the viewer.</returns>
+    internal static string CreateTemporaryScene(SceneDocument document)
+    {
+        ArgumentNullException.ThrowIfNull(document);
+        var packed = document.PackedLocation ?? throw new InvalidOperationException("Only packed scenes need a temporary viewer snapshot.");
+        var directory = Path.Combine(Path.GetTempPath(), "Gondwana", "SceneViewer");
+        Directory.CreateDirectory(directory);
+        var path = Path.Combine(directory, $"scene-{Guid.NewGuid():N}.gscn");
+
+        // SaveAll rebases references from each member's original packed directory.
+        // Do not mutate the editor document or its packed provenance.
+        var members = document.Definitions.Select(member =>
+        {
+            var copy = SceneDefinitionSerializer.FromJson(SceneDefinitionSerializer.ToJson(member));
+            copy.Source = SceneDefinitionSource.PackedDefinitionFile(packed.Path, packed.AssetEntryName!);
+            return copy;
+        });
+        try
+        {
+            SceneDefinitionSerializer.SaveAll(path, members);
+            return path;
+        }
+        catch
+        {
+            if (File.Exists(path)) File.Delete(path);
+            throw;
+        }
     }
 
     /// <summary>Builds a viewer command with separate document and member arguments.</summary>
     /// <param name="executable">The viewer executable.</param>
     /// <param name="scenePath">The physical document path.</param>
     /// <param name="sceneId">The logical member identity, or null for a singleton.</param>
+    /// <param name="contentRoot">Original content directory when viewing a snapshot.</param>
+    /// <param name="temporaryScene">Whether the viewer should delete the snapshot on exit.</param>
     /// <returns>The process start information.</returns>
-    internal static ProcessStartInfo CreateStartInfo(string executable, string scenePath, string? sceneId = null)
+    internal static ProcessStartInfo CreateStartInfo(string executable, string scenePath, string? sceneId = null, string? contentRoot = null, bool temporaryScene = false)
     {
         var start = new ProcessStartInfo(executable) { UseShellExecute = false };
         start.ArgumentList.Add("--scene");
@@ -30,6 +67,13 @@ internal static class SceneViewerLauncher
             start.ArgumentList.Add("--scene-id");
             start.ArgumentList.Add(sceneId);
         }
+        if (contentRoot is not null)
+        {
+            start.ArgumentList.Add("--content-root");
+            start.ArgumentList.Add(Path.GetFullPath(contentRoot));
+        }
+        if (temporaryScene)
+            start.ArgumentList.Add("--temporary-scene");
         return start;
     }
 
