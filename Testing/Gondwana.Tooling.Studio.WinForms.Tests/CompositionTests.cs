@@ -35,6 +35,22 @@ public sealed partial class CompositionTests
         var document = studio.NewDocument(format, format == "gaf" ? firstPath : null);
         var model = document.Document;
         Assert.IsType(editorType, model.Editor);
+        Assert.True(studio.Workspace.ShowDocumentIcon);
+        Assert.Equal(new Size(16, 16), document.Icon.Size);
+        using (var rendered = document.Icon.ToBitmap())
+        {
+            var expectedColor = format switch
+            {
+                "gaf" => Color.Goldenrod,
+                "gts" => Color.DodgerBlue,
+                "gani" => Color.MediumOrchid,
+                "gsnd" => Color.Teal,
+                "gscn" => Color.SeaGreen,
+                "gspr" => Color.Coral,
+                _ => throw new ArgumentOutOfRangeException(nameof(format))
+            };
+            Assert.Equal(expectedColor.ToArgb(), rendered.GetPixel(2, 2).ToArgb());
+        }
         Assert.True(model.Dirty());
         Assert.EndsWith(" *", document.Text);
         Assert.Same(studio.Workspace, document.DockPanel);
