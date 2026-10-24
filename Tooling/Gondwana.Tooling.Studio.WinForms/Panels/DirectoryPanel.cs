@@ -21,6 +21,7 @@ public sealed class DirectoryPanel : UserControl
     internal Task PendingArchiveLoads { get; private set; } = Task.CompletedTask;
     internal Action<string> OpenExternal { get; set; }
     internal Action<string>? ArchiveOpened { get; set; }
+
     // Called only on the UI thread; must return session credentials without prompting.
     internal Func<string, string?> KnownArchivePassword { get; set; } = _ => null;
 
@@ -67,45 +68,69 @@ public sealed class DirectoryPanel : UserControl
     public DirectoryPanel(Action<string> log)
     {
         _log = log;
+
         OpenExternal = ShowOpenWithDialog;
         AddIcon("directory", "D", Color.DarkKhaki);
+
         foreach (var category in Categories)
             AddIcon(category.Key, category.Glyph, category.Color);
+
         Tree.ImageList = _images;
         _fileMenu.Items.Add("Open", null, (_, _) =>
         {
-            if (_menuPacked is { } packed) PackedFileActivated?.Invoke(packed);
-            if (_menuPath is { } path) FileActivated?.Invoke(path);
+            if (_menuPacked is { } packed)
+                PackedFileActivated?.Invoke(packed);
+
+            if (_menuPath is { } path)
+                FileActivated?.Invoke(path);
         });
+
         _fileMenu.Items.Add("Open External", null, (_, _) =>
         {
-            if (_menuPath is not { } path) return;
-            try { OpenExternal(path); }
+            if (_menuPath is not { } path)
+                return;
+
+            try
+            {
+                OpenExternal(path);
+            }
             catch (Exception ex) when (ex is ExternalException or IOException or UnauthorizedAccessException)
             {
                 _log($"Cannot open {path} externally: {ex.Message}");
                 MessageBox.Show(this, ex.Message, "Open External", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         });
+
         Tree.NodeMouseClick += (_, e) =>
         {
             if (e.Button == MouseButtons.Right && PrepareFileMenu(e.Node))
                 _fileMenu.Show(Tree, e.Location);
         };
+
         Dock = DockStyle.Fill;
-        var tools = new ToolStrip { Dock = DockStyle.Top, GripStyle = ToolStripGripStyle.Hidden };
+
+        var tools = new ToolStrip
+        {
+            Dock = DockStyle.Top,
+            GripStyle = ToolStripGripStyle.Hidden
+        };
+
         tools.Items.Add("Directory…", null, (_, _) => ChooseDirectoryRequested?.Invoke());
         tools.Items.Add("Refresh", null, (_, _) => RefreshDirectory());
+
         Controls.Add(Tree);
         Controls.Add(tools);
+
         Tree.BeforeExpand += (_, e) =>
         {
             if (e.Node?.Tag is DirectoryInfo directory && e.Node.Nodes.Count == 1 && e.Node.Nodes[0].Tag is null)
                 FillDirectory(e.Node, directory.FullName);
         };
+
         Tree.NodeMouseDoubleClick += (_, e) =>
         {
-            if (e.Button == MouseButtons.Left) ActivateNode(e.Node);
+            if (e.Button == MouseButtons.Left)
+                ActivateNode(e.Node);
         };
     }
 
@@ -159,12 +184,18 @@ public sealed class DirectoryPanel : UserControl
         try
         {
             var groups = Categories.ToDictionary(category => category.Key,
-                category => new TreeNode(category.Label) { ImageKey = category.Key, SelectedImageKey = category.Key });
+                category => new TreeNode(category.Label)
+                {
+                    ImageKey = category.Key,
+                    SelectedImageKey = category.Key
+                });
             parent.Nodes.AddRange(Categories.Select(category => groups[category.Key]).ToArray());
 
             foreach (var directory in new DirectoryInfo(path).EnumerateDirectories().OrderBy(item => item.Name))
             {
-                if ((directory.Attributes & FileAttributes.ReparsePoint) != 0) continue;
+                if ((directory.Attributes & FileAttributes.ReparsePoint) != 0)
+                    continue;
+
                 var node = new TreeNode(directory.Name) { Tag = directory, ImageKey = "directory", SelectedImageKey = "directory" };
                 node.Nodes.Add("Expand to load…");
                 parent.Nodes.Add(node);
@@ -190,6 +221,7 @@ public sealed class DirectoryPanel : UserControl
                 files.Where(file => Path.GetExtension(file).Equals(".gaf", StringComparison.OrdinalIgnoreCase))
                     .Select(file => (Path: file, Password: KnownArchivePassword(file))).ToArray(),
                 _archiveRefresh.Token);
+
             PendingArchiveLoads = PendingArchiveLoads.IsCompleted ? scan : Task.WhenAll(PendingArchiveLoads, scan);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -219,17 +251,22 @@ public sealed class DirectoryPanel : UserControl
                             // Sharing flags alone cannot coexist with an exclusive writer on Windows.
                             // Studio saves use RunWithoutArchiveReadsAsync to drain this handle first.
                             using var stream = new FileStream(archivePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+
                             ArchiveOpened?.Invoke(archivePath);
+
                             using var archive = AssetsFile.Load(stream, password, register: false);
+
                             return archive.GetAllEntries()
                                 .OrderBy(entry => entry.AssetName, StringComparer.OrdinalIgnoreCase)
                                 .ThenBy(entry => entry.AssetType)
                                 .Select(entry => new PackedAssetNodeIdentity(Path.GetFullPath(archivePath), entry.AssetType, entry.AssetName))
                                 .ToArray();
                         }, cancellationToken).ConfigureAwait(false);
+
                         await OnUiAsync(() =>
                         {
                             Tree.BeginUpdate();
+
                             try
                             {
                                 foreach (var entry in entries)
@@ -243,6 +280,7 @@ public sealed class DirectoryPanel : UserControl
                                         AssetTypes.AudioDefinition => "gsnd",
                                         _ => "misc"
                                     };
+
                                     groups[key].Nodes.Add(new TreeNode($"{entry.EntryName} ({Path.GetFileName(entry.ArchivePath)})")
                                     {
                                         Tag = entry,
@@ -250,10 +288,14 @@ public sealed class DirectoryPanel : UserControl
                                         ImageKey = key,
                                         SelectedImageKey = key
                                     });
+
                                     groups[key].Expand();
                                 }
                             }
-                            finally { Tree.EndUpdate(); }
+                            finally
+                            {
+                                Tree.EndUpdate();
+                            }
                         }, cancellationToken).ConfigureAwait(false);
                     }
                     catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or SharpZipBaseException)
@@ -263,7 +305,10 @@ public sealed class DirectoryPanel : UserControl
                     }
                 }
             }
-            finally { _archiveGate.Release(); }
+            finally
+            {
+                _archiveGate.Release();
+            }
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
     }
@@ -273,16 +318,23 @@ public sealed class DirectoryPanel : UserControl
         cancellationToken.ThrowIfCancellationRequested();
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         using var registration = cancellationToken.Register(() => completion.TrySetCanceled(cancellationToken));
+
         _uiContext.Post(_ =>
         {
-            if (cancellationToken.IsCancellationRequested) return;
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
             try
             {
                 action();
                 completion.TrySetResult();
             }
-            catch (Exception ex) { completion.TrySetException(ex); }
+            catch (Exception ex)
+            {
+                completion.TrySetException(ex);
+            }
         }, null);
+
         await completion.Task.ConfigureAwait(false);
     }
 
@@ -293,6 +345,7 @@ public sealed class DirectoryPanel : UserControl
         _archiveRefresh.Cancel();
         var cancellationToken = _lifetime.Token;
         await _archiveGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+
         try
         {
             await OnUiAsync(() =>
@@ -301,7 +354,10 @@ public sealed class DirectoryPanel : UserControl
                 finally { RefreshDirectory(); }
             }, cancellationToken).ConfigureAwait(false);
         }
-        finally { _archiveGate.Release(); }
+        finally
+        {
+            _archiveGate.Release();
+        }
     }
 
     internal bool PrepareFileMenu(TreeNode node)
@@ -310,18 +366,26 @@ public sealed class DirectoryPanel : UserControl
         _menuPath = null;
         _menuPacked = null;
         Tree.SelectedNode = node;
+
         if (node.Tag is PackedAssetNodeIdentity packed)
         {
-            if (StudioDocument.FormatFor(packed.AssetType) is null) return false;
+            if (StudioDocument.FormatFor(packed.AssetType) is null)
+                return false;
+
             _menuPacked = packed;
             _fileMenu.Items[0].Visible = true;
             _fileMenu.Items[1].Visible = false;
+
             return true;
         }
-        if (node.Tag is not string path) return false;
+
+        if (node.Tag is not string path)
+            return false;
+
         _menuPath = path;
         _fileMenu.Items[0].Visible = StudioDocument.FormatFor(path) is not null;
         _fileMenu.Items[1].Visible = !Path.GetExtension(path).Equals(".gaf", StringComparison.OrdinalIgnoreCase);
+
         return true;
     }
 
@@ -346,15 +410,19 @@ public sealed class DirectoryPanel : UserControl
         graphics.FillRectangle(background, 1, 1, 14, 14);
         graphics.DrawString(glyph, font, Brushes.White, new RectangleF(0, 0, 16, 16), alignment);
         _images.Images.Add(key, bitmap);
+
         // Materialize the native copy before disposing the source bitmap.
         _ = _images.Handle;
     }
 
     private void ShowOpenWithDialog(string path)
     {
-        if (!File.Exists(path)) throw new FileNotFoundException("The file no longer exists.", path);
+        if (!File.Exists(path))
+            throw new FileNotFoundException("The file no longer exists.", path);
+
         var info = new OpenAsInfo { File = path, Flags = 0x00000004 }; // OAIF_EXEC
         int result = SHOpenWithDialog(Handle, ref info);
+
         if (result != unchecked((int)0x800704C7)) // HRESULT_FROM_WIN32(ERROR_CANCELLED)
             Marshal.ThrowExceptionForHR(result);
     }
@@ -383,6 +451,7 @@ public sealed class DirectoryPanel : UserControl
             Tree.ImageList = null;
             _images.Dispose();
         }
+
         base.Dispose(disposing);
     }
 }

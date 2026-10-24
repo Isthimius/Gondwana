@@ -21,9 +21,13 @@ internal sealed class StudioDockDocument : DockContent
 
     internal void UpdateCaption()
     {
-        Text = Document.Caption + (Document.Dirty() ? " *" : "") + (Document.ContentStale || Document.PreviewStale ? " [reload]" : "");
-        ToolTipText = Document.Tooltip + (Document.ContentStale ? "\nThis entry changed. Use File > Reload document from disk, or Save As to retain your edits separately." : "")
-            + (Document.PreviewStale ? "\nDependencies changed. Use File > Reload dependency previews." : "");
+        Text = Document.Caption
+             + (Document.Dirty() ? " *" : "")
+             + (Document.ContentStale || Document.PreviewStale ? " [reload]" : "");
+
+        ToolTipText = Document.Tooltip
+                    + (Document.ContentStale ? "\nThis entry changed. Use File > Reload document from disk, or Save As to retain your edits separately." : "")
+                    + (Document.PreviewStale ? "\nDependencies changed. Use File > Reload dependency previews." : "");
     }
 
     private void DocumentChanged(object? sender, EventArgs e) => UpdateCaption();
@@ -32,12 +36,26 @@ internal sealed class StudioDockDocument : DockContent
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         base.OnFormClosing(e);
-        if (e.Cancel || CloseApproved) return;
-        if (_closePending) { e.Cancel = true; return; }
+
+        if (e.Cancel || CloseApproved)
+            return;
+
+        if (_closePending)
+        {
+            e.Cancel = true;
+            return;
+        }
+
         var approval = _confirmClose(this);
-        if (approval.IsCompleted) { e.Cancel = !approval.GetAwaiter().GetResult(); return; }
+        if (approval.IsCompleted)
+        {
+            e.Cancel = !approval.GetAwaiter().GetResult();
+            return;
+        }
+
         e.Cancel = true;
         _closePending = true;
+
         FinishCloseAsync(approval);
     }
 
@@ -51,7 +69,10 @@ internal sealed class StudioDockDocument : DockContent
                 Close();
             }
         }
-        finally { _closePending = false; }
+        finally
+        {
+            _closePending = false;
+        }
     }
 
     /// <inheritdoc/>
@@ -62,6 +83,7 @@ internal sealed class StudioDockDocument : DockContent
             Document.Changed -= DocumentChanged;
             Document.Dispose();
         }
+
         base.Dispose(disposing);
     }
 }

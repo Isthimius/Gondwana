@@ -40,7 +40,9 @@ public sealed class OutputPanel : UserControl
 
     private void OnLinesChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        if (IsDisposed || Disposing) return;
+        if (IsDisposed || Disposing)
+            return;
+
         if (_textBox.InvokeRequired)
         {
             _textBox.BeginInvoke(() => OnLinesChanged(sender, e));
@@ -74,6 +76,7 @@ public sealed class OutputPanel : UserControl
     {
         if (disposing)
             _vm.Lines.CollectionChanged -= OnLinesChanged;
+
         base.Dispose(disposing);
     }
 }

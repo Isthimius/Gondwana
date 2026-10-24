@@ -20,9 +20,11 @@ internal sealed class DockLayoutStore
     {
         applicationId ??= AppContext.GetData(ApplicationSetting) as string
             ?? Assembly.GetEntryAssembly()?.GetName().Name ?? "Gondwana.Tooling.Host";
+
         settingsRoot ??= AppContext.GetData(RootSetting) as string
             ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "Hidden Worlds Games", "Gondwana", "Tooling");
+
         return Path.Combine(settingsRoot, SafeKey(applicationId));
     }
 
@@ -31,6 +33,7 @@ internal sealed class DockLayoutStore
         if (string.IsNullOrWhiteSpace(key) || key is "." or ".." ||
             key.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
             throw new ArgumentException("A layout key must be a single file name.", nameof(key));
+
         return key;
     }
 
@@ -55,6 +58,7 @@ internal sealed class DockLayoutStore
             Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
             File.WriteAllBytes(temporary, layout);
             File.Move(temporary, FilePath, overwrite: true);
+
             return true;
         }
         catch (Exception ex)
@@ -66,7 +70,8 @@ internal sealed class DockLayoutStore
         {
             try
             {
-                if (File.Exists(temporary)) File.Delete(temporary);
+                if (File.Exists(temporary))
+                    File.Delete(temporary);
             }
             catch (Exception ex)
             {

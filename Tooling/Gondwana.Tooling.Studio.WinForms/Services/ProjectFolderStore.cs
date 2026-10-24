@@ -18,7 +18,9 @@ internal sealed class ProjectFolderStore
     {
         try
         {
-            if (!File.Exists(FilePath)) return null;
+            if (!File.Exists(FilePath))
+                return null;
+
             string path = File.ReadAllText(FilePath);
             return path.Length > 0 && Directory.Exists(path) ? Path.GetFullPath(path) : null;
         }
@@ -47,7 +49,8 @@ internal sealed class ProjectFolderStore
         {
             try
             {
-                if (File.Exists(temporary)) File.Delete(temporary);
+                if (File.Exists(temporary))
+                    File.Delete(temporary);
             }
             catch (Exception ex)
             {
