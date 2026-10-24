@@ -159,6 +159,23 @@ public sealed class SceneViewerLauncherTests : IDisposable
         Assert.Equal(published, SceneViewerLauncher.Locate(editor));
     }
 
+    /// <summary>Published Studio and the Scene editor discover the shared sibling viewer.</summary>
+    [Fact]
+    public void ResolvesSharedViewerBesidePublishedStudioAndScenes()
+    {
+        string tooling = Path.Combine(_directory, "release", "Tooling");
+        string viewer = Path.Combine(tooling, SceneViewerLauncher.Component, SceneViewerLauncher.Component + ".exe");
+        Directory.CreateDirectory(Path.GetDirectoryName(viewer)!);
+        File.WriteAllText(viewer, "");
+
+        foreach (string host in new[] { "Gondwana.Tooling.Studio.WinForms", "Gondwana.Tooling.Scenes.WinForms" })
+        {
+            string hostDirectory = Path.Combine(tooling, host);
+            Directory.CreateDirectory(hostDirectory);
+            Assert.Equal(viewer, SceneViewerLauncher.Locate(hostDirectory));
+        }
+    }
+
     /// <inheritdoc/>
     public void Dispose() => Directory.Delete(_directory, true);
 }
