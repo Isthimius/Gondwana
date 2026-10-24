@@ -18,6 +18,30 @@ edit those formats rather than introducing Studio-specific equivalents.
 | Pack, inspect, publish, or deploy from the command line | [Gondwana CLI](./Gondwana.Cli/README.md) |
 | Create a new game project | [Project templates](./Gondwana.Templates/README.md) |
 
+## Downloadable Windows tools
+
+Tagged GitHub Releases include `Gondwana-<version>-binaries.zip`. Extract the **entire**
+archive, keeping the application directories under `Tooling/` together:
+
+- `Gondwana.Tooling.Studio.WinForms/Gondwana.Studio.WinForms.exe` — integrated Studio,
+  including the official Project Diagnostics and External Asset Importer plugins under `plugins/`.
+- `Gondwana.Tooling.{Assets,Animations,Audio,Scenes,Sprites,Tilesheets}.WinForms/` —
+  standalone editors, each with its own executable and runtime dependencies.
+- `Gondwana.Tooling.SceneViewer.WinForms/` — GPU-backed scene viewer shared by
+  Studio and the standalone Scene editor.
+
+The Windows x64 applications are published **self-contained**, so they do not
+require a separately installed .NET Desktop Runtime. They are portable folder
+distributions, not single-file executables or installers. Keep the complete
+contents of each application folder. In particular, do not move the Scene Viewer
+away from its sibling folder: **View Scene** locates it relative to the
+application's directory.
+
+The release and CI workflows use the shared
+[`Publish-WindowsTooling.ps1`](./scripts/Publish-WindowsTooling.ps1) publisher and
+[`Test-WindowsToolingBundle.ps1`](./scripts/Test-WindowsToolingBundle.ps1) bundle
+validator to keep the layout consistent.
+
 ## Content authoring
 
 ### Gondwana Studio
