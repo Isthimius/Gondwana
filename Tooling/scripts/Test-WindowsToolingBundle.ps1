@@ -21,7 +21,8 @@ $apps = @(
 
 foreach ($app in $apps) {
     $appFolder = Join-Path $ToolingRoot $app.Folder
-    foreach ($relative in @("$($app.Exe).exe", "$($app.Exe).runtimeconfig.json",
+    foreach ($relative in @("$($app.Exe).exe", "$($app.Exe).dll",
+                            "$($app.Exe).deps.json", "$($app.Exe).runtimeconfig.json",
                             'hostfxr.dll', 'hostpolicy.dll', 'coreclr.dll')) {
         $path = Join-Path $appFolder $relative
         if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
