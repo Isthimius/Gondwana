@@ -28,17 +28,7 @@ public sealed class DirectoryPanel : UserControl
     // Called only on the UI thread; must return session credentials without prompting.
     internal Func<string, string?> KnownArchivePassword { get; set; } = _ => null;
 
-    // Keep labels and placeholder icons together so artwork can be replaced easily.
-    private static readonly (string Key, string Label, string Glyph, Color Color)[] Categories =
-    [
-        ("gaf", "Assets (.gaf)", "A", Color.Goldenrod),
-        ("gts", "Tilesheets (.gts)", "T", Color.DodgerBlue),
-        ("gani", "Animations (.gani)", "▶", Color.MediumOrchid),
-        ("gscn", "Scenes (.gscn)", "S", Color.SeaGreen),
-        ("gspr", "Sprites (.gspr)", "◆", Color.Coral),
-        ("gsnd", "Sound (.gsnd)", "♪", Color.Teal),
-        ("misc", "Misc", "?", Color.SlateGray)
-    ];
+    private static readonly (string Key, string Label, string Glyph, Color Color)[] Categories = StudioFileTypeIcons.Categories;
 
     internal TreeView Tree { get; } = new()
     {
@@ -460,18 +450,7 @@ public sealed class DirectoryPanel : UserControl
 
     private static void AddIcon(ImageList images, string key, string glyph, Color color)
     {
-        int pixels = images.ImageSize.Width;
-        float scale = pixels / 16f;
-        using var bitmap = new Bitmap(pixels, pixels);
-        using var graphics = Graphics.FromImage(bitmap);
-        using var background = new SolidBrush(color);
-        // Pixel units keep the glyph tied to the target bitmap, independent of monitor DPI.
-        using var font = new Font("Segoe UI", 8 * 96f / 72f * scale, FontStyle.Bold, GraphicsUnit.Pixel);
-        using var alignment = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
-
-        graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-        graphics.FillRectangle(background, scale, scale, pixels - 2 * scale, pixels - 2 * scale);
-        graphics.DrawString(glyph, font, Brushes.White, new RectangleF(0, 0, pixels, pixels), alignment);
+        using var bitmap = StudioFileTypeIcons.CreateBitmap(images.ImageSize.Width, glyph, color);
         images.Images.Add(key, bitmap);
 
         // Materialize the native copy before disposing the source bitmap.

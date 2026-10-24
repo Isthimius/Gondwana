@@ -10,7 +10,7 @@ internal sealed class AnimationPreviewControl : Control
 {
     private readonly System.Windows.Forms.Timer _timer = new()
     {
-        Interval = 15
+        Interval = 10
     };
 
     private readonly Stopwatch _clock = new();

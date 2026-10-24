@@ -67,6 +67,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
             Dock = DockStyle.Fill,
             Theme = _theme,
             DocumentStyle = DocumentStyle.DockingWindow,
+            ShowDocumentIcon = true,
             DockLeftPortion = 250,
             DockBottomPortion = 130
         };

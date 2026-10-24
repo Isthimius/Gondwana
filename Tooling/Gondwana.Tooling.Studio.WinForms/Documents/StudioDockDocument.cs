@@ -8,11 +8,14 @@ internal sealed class StudioDockDocument : DockContent
     internal bool CloseApproved { get; set; }
     private readonly Func<StudioDockDocument, Task<bool>> _confirmClose;
     private bool _closePending;
+    private readonly Icon _tabIcon;
 
     internal StudioDockDocument(StudioDocument document, Func<StudioDockDocument, Task<bool>> confirmClose)
     {
         Document = document;
         _confirmClose = confirmClose;
+        _tabIcon = StudioFileTypeIcons.CreateDocumentIcon(document.Extension);
+        Icon = _tabIcon;
         DockAreas = DockAreas.Document | DockAreas.Float;
         Controls.Add(document.Editor);
         document.Changed += DocumentChanged;
@@ -87,5 +90,7 @@ internal sealed class StudioDockDocument : DockContent
         }
 
         base.Dispose(disposing);
+        if (disposing)
+            _tabIcon.Dispose();
     }
 }
