@@ -14,6 +14,21 @@ namespace Gondwana.Tooling.SceneViewer.WinForms.Tests;
 /// </summary>
 public sealed partial class ViewerTests
 {
+    /// <summary>Viewer snapshots find GSPR neighbors in the source directory, not the temporary snapshot directory.</summary>
+    [Fact]
+    public void SnapshotDiscoversSpritesFromOriginalContentRoot()
+    {
+        WriteContent();
+        WriteSprites("actors.gspr", false, Sprite("Hero"));
+        var snapshotDirectory = Path.Combine(_directory, "snapshots");
+        Directory.CreateDirectory(snapshotDirectory);
+        var snapshot = Path.Combine(snapshotDirectory, "preview.gscn");
+        SceneDefinitionSerializer.SaveAll(snapshot, SceneDefinitionSerializer.LoadAll(ScenePath));
+        using var scene = new ViewerSceneLoader().Load(snapshot, contentRoot: _directory);
+        Assert.Equal("viewer-test", scene.ID);
+        Assert.Single(SpriteManager.Instance.AllSprites);
+    }
+
     private void Pack(string file, AssetTypes type, string entry, string json)
     {
         using var archive = AssetsFile.LoadOrCreate(Path.Combine(_directory, file));

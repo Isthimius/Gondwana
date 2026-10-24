@@ -47,6 +47,34 @@ public sealed partial class ViewerTests : IDisposable
         Assert.Throws<ArgumentException>(() => SceneViewerArguments.Parse(["--scene", ScenePath, "--scene-id", ""], _directory));
     }
 
+    /// <summary>Only application-owned temporary filenames may be deleted by the viewer.</summary>
+    [Fact]
+    public void TemporarySceneArgumentsRestrictDeletionToViewerSnapshots()
+    {
+        File.WriteAllText(ScenePath, "{}");
+        var tempDirectory = Path.Combine(Path.GetTempPath(), "Gondwana", "SceneViewer");
+        Directory.CreateDirectory(tempDirectory);
+        var temporary = Path.Combine(tempDirectory, $"scene-{Guid.NewGuid():N}.gscn");
+        File.WriteAllText(temporary, "{}");
+        try
+        {
+            var parsed = SceneViewerArguments.ParseScene([
+                "--scene", temporary, "--scene-id", "island", "--content-root", _directory, "--temporary-scene"
+            ], _directory);
+            Assert.NotNull(parsed);
+            Assert.Equal("island", parsed.SceneId);
+            Assert.Equal(_directory, parsed.ContentRoot);
+            Assert.True(parsed.TemporaryScene);
+            Assert.Throws<ArgumentException>(() => SceneViewerArguments.ParseScene([
+                "--scene", ScenePath, "--content-root", _directory, "--temporary-scene"
+            ], _directory));
+            Assert.Throws<ArgumentException>(() => SceneViewerArguments.ParseScene([
+                "--scene", temporary, "--temporary-scene"
+            ], _directory));
+        }
+        finally { File.Delete(temporary); }
+    }
+
     /// <summary>
     /// Verifies stress arguments parse tile count and projection.
     /// </summary>

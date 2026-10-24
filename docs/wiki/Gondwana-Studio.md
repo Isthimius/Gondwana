@@ -90,11 +90,7 @@ affected open documents `[reload]`; **Reload dependency previews** refreshes the
 without discarding unsaved edits. A changed document entry requires a full
 document reload instead.
 
-The separate Scene Viewer still launches loose GSCN files, which may reference
-packed dependencies. **View Scene** on a packed document explains this limitation;
-use Studio's built-in preview or Save As to adopt a loose scene first. The runtime
-Viewer retains its existing content-root precedence; it differs from Studio's
-explicit-source authoring previews.
+**View Scene** can launch a packed GSCN without Save As: Studio writes a uniquely named temporary loose snapshot with rebased references, and the Viewer uses the original content directory to discover neighboring assets and sprites. The snapshot includes unsaved edits, leaves the packed document and dirty state unchanged, and is deleted by the Viewer on normal exit. The runtime Viewer retains its existing loose-over-packed content-root precedence; Studio's authoring previews use explicit-source resolution.
 
 ## Docking model
 
