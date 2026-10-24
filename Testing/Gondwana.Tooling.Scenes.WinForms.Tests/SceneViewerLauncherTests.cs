@@ -46,8 +46,11 @@ public sealed class SceneViewerLauncherTests : IDisposable
         document.SelectDefinition(document.Definitions[1]);
         document.RenameDefinition("island-edited");
         var snapshot = SceneViewerLauncher.CreateTemporaryScene(document);
+        var secondSnapshot = SceneViewerLauncher.CreateTemporaryScene(document);
         try
         {
+            Assert.NotEqual(snapshot, secondSnapshot);
+            Assert.True(File.Exists(secondSnapshot));
             Assert.EndsWith(".gscn", snapshot);
             Assert.Contains(Path.Combine("Gondwana", "SceneViewer"), snapshot);
             var saved = SceneDefinitionSerializer.LoadAll(snapshot);
@@ -59,7 +62,11 @@ public sealed class SceneViewerLauncherTests : IDisposable
             Assert.Equal(archivePath, document.PackedLocation!.Path);
             Assert.Equal(originalBytes, File.ReadAllBytes(archivePath));
         }
-        finally { File.Delete(snapshot); }
+        finally
+        {
+            File.Delete(snapshot);
+            File.Delete(secondSnapshot);
+        }
     }
 
     /// <summary>

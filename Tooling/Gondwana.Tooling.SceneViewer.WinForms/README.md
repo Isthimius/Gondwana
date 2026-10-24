@@ -84,7 +84,7 @@ This is a Viewer convention; the portable definition schemas and runtime seriali
 
 ## View Scene from tooling
 
-The reusable GSCN editor's preview toolbar contains **View Scene**. Both the standalone Scene editor and Studio use this command. New or dirty documents require confirmation and a successful save through the host's normal save workflow. Canceling or failing to save never launches stale content.
+The reusable GSCN editor's preview toolbar contains **View Scene**. Both the standalone Scene editor and Studio use this command. New or dirty loose documents require confirmation and a successful save through the host's normal save workflow. Canceling or failing to save never launches stale loose content. Packed documents are previewed through temporary snapshots without saving.
 
 For a packed GSCN, **View Scene** creates a uniquely named temporary loose `.gscn` snapshot of all scene members, including unsaved editor changes. This does not save, adopt, or modify the packed entry, and the document keeps its dirty state. The viewer resolves rebased explicit dependencies relative to the snapshot while scanning the original content directory for neighboring loose or packed GTS/GANI/GSPR definitions. On normal exit, the viewer deletes its own snapshot even if Studio was closed first. Crashes may leave files under the user's temporary `Gondwana/SceneViewer` directory.
 
