@@ -498,7 +498,9 @@ public sealed class SceneEditorControl : UserControl
                 var snapshot = SceneViewerLauncher.CreateTemporaryScene(Document);
                 try
                 {
-                    SceneViewerLauncher.Launch(snapshot, Document.SelectedDefinition.ID, Document.BaseDirectory, temporaryScene: true);
+                    SceneViewerLauncher.Launch(snapshot,
+                        string.IsNullOrWhiteSpace(Document.SelectedDefinition.ID) ? null : Document.SelectedDefinition.ID,
+                        Document.BaseDirectory, temporaryScene: true);
                 }
                 catch
                 {
