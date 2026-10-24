@@ -170,7 +170,7 @@ jobs:
           cp -r publish/Tooling/Gondwana.Tooling.SceneViewer.WinForms artifacts/Tooling/
           cp -r publish/Tooling/Gondwana.Tooling.Sprites.WinForms artifacts/Tooling/
           cp -r publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms artifacts/Tooling/
-          cp publish/Demos/Slider/Slider.exe artifacts/Demos/
+          cp -r publish/Demos/Slider artifacts/Demos/
           cp -r publish/Demos/Spot.WinForms artifacts/Demos/
 
       - name: Validate packaged Windows tooling
