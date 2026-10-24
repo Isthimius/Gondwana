@@ -9,6 +9,7 @@ internal static class Program
     {
         ApplicationConfiguration.Initialize();
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
+        SceneViewerSceneOptions? options = null;
         try
         {
             var stress = SceneViewerArguments.ParseStress(args);
@@ -20,7 +21,8 @@ internal static class Program
             }
             else
             {
-                var path = SceneViewerArguments.Parse(args, Environment.CurrentDirectory);
+                options = SceneViewerArguments.ParseScene(args, Environment.CurrentDirectory);
+                var path = options?.ScenePath;
                 if (path is null)
                 {
                     using var dialog = new OpenFileDialog
@@ -35,7 +37,7 @@ internal static class Program
                         Environment.CurrentDirectory);
                 }
 
-                form = new SceneViewerForm(path, args.Length == 4 ? args[3] : null);
+                form = new SceneViewerForm(path, options?.SceneId, options?.ContentRoot);
             }
 
             using (form)
@@ -51,6 +53,13 @@ internal static class Program
         {
             // Also covers a render-control failure before the host was constructed.
             Engine.Instance.Dispose();
+            if (options?.TemporaryScene == true)
+            {
+                // The viewer owns cleanup even if the Studio process exits first.
+                try { File.Delete(options.ScenePath); }
+                catch (IOException) { /* Best effort; abnormal exits may leave snapshots. */ }
+                catch (UnauthorizedAccessException) { /* Best effort; abnormal exits may leave snapshots. */ }
+            }
         }
     }
 

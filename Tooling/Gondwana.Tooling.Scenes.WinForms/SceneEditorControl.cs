@@ -495,7 +495,18 @@ public sealed class SceneEditorControl : UserControl
         {
             if (Document.PackedLocation is not null)
             {
-                MessageBox.Show(this, "The separate Scene Viewer opens loose documents. Use Save As to adopt a loose copy, or use the built-in scene preview.", "View Scene");
+                var snapshot = SceneViewerLauncher.CreateTemporaryScene(Document);
+                try
+                {
+                    SceneViewerLauncher.Launch(snapshot,
+                        string.IsNullOrWhiteSpace(Document.SelectedDefinition.ID) ? null : Document.SelectedDefinition.ID,
+                        Document.BaseDirectory, temporaryScene: true);
+                }
+                catch
+                {
+                    File.Delete(snapshot);
+                    throw;
+                }
                 return;
             }
             if (SaveRequestedAsync is not null)

@@ -84,14 +84,11 @@ This is a Viewer convention; the portable definition schemas and runtime seriali
 
 ## View Scene from tooling
 
-The reusable GSCN editor's preview toolbar contains **View Scene**. Both the standalone Scene editor and Studio use this command. New or dirty documents require confirmation and a successful save through the host's normal save workflow. Canceling or failing to save never launches stale content.
+The reusable GSCN editor's preview toolbar contains **View Scene**. Both the standalone Scene editor and Studio use this command. New or dirty loose documents require confirmation and a successful save through the host's normal save workflow. Canceling or failing to save never launches stale loose content. Packed documents are previewed through temporary snapshots without saving.
 
-The launched scene must be a loose `.gscn`; its GTS/GANI dependencies may be packed.
-For a packed GSCN, Studio explains this limitation instead of launching a viewer.
-Use its built-in scene preview, or Save As to adopt a loose scene copy before
-launching. Studio's authoring previews honor explicit packed provenance even when
-loose duplicates exist. The runtime viewer retains its content-root precedence
-described above; packed-document authoring does not change that policy.
+For a packed GSCN, **View Scene** creates a uniquely named temporary loose `.gscn` snapshot of all scene members, including unsaved editor changes. This does not save, adopt, or modify the packed entry, and the document keeps its dirty state. The viewer resolves rebased explicit dependencies relative to the snapshot while scanning the original content directory for neighboring loose or packed GTS/GANI/GSPR definitions. On normal exit, the viewer deletes its own snapshot even if Studio was closed first. Crashes may leave files under the user's temporary `Gondwana/SceneViewer` directory.
+
+The runtime viewer retains its loose-over-packed content-root precedence; Studio's authoring previews continue to honor explicit packed provenance even when loose duplicates exist.
 
 Each launch starts an independent process with safe `ProcessStartInfo.ArgumentList` arguments. Closing either application does not close the other. Multiple viewers can run independently. Engine configuration is in memory so unrelated working-directory game configuration/state is not loaded or modified.
 

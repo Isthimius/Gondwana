@@ -19,7 +19,8 @@ internal sealed class SceneViewerGameHost(
     WinFormGpuRenderSurfaceControl surface,
     string? scenePath,
     SceneViewerStressOptions? stress = null,
-    string? sceneId = null)
+    string? sceneId = null,
+    string? contentRoot = null)
     : WinFormsGpuGameHost(surface)
 {
     private const int StressTileSize = 16;
@@ -83,7 +84,7 @@ internal sealed class SceneViewerGameHost(
     protected override Scene CreateInitialScene()
     {
         if (stress is null)
-            return new ViewerSceneLoader().Load(scenePath!, sceneId);
+            return new ViewerSceneLoader().Load(scenePath!, sceneId, contentRoot);
 
         if (_stressTilesheet is null)
             throw new InvalidOperationException("Stress tilesheet was not initialized.");
