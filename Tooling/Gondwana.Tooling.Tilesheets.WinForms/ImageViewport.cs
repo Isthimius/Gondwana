@@ -9,46 +9,26 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
 {
     private const float ZoomStepFactor = 1.25f;
     private int _zoomWheelDelta;
-    /// <summary>
-    /// Gets or sets the image.
-    /// </summary>
+    /// <summary>Gets or sets the borrowed preview bitmap; the owner must dispose replaced images.</summary>
     public Bitmap? Image { get; set; }
-    /// <summary>
-    /// Gets or sets the definition.
-    /// </summary>
+    /// <summary>Gets or sets the tilesheet definition supplying regions and overlays, or null when unavailable.</summary>
     public TilesheetDefinition? Definition { get; set; }
-    /// <summary>
-    /// Gets or sets the selected region.
-    /// </summary>
+    /// <summary>Gets or sets the region highlighted and prioritized for hit testing, or null for no region selection.</summary>
     public TilesheetRegionDefinition? SelectedRegion { get; set; }
-    /// <summary>
-    /// Gets or sets the selected frame.
-    /// </summary>
+    /// <summary>Gets or sets the selected frame column and row within the selected region, or null for no frame selection.</summary>
     public Point? SelectedFrame { get; set; }
-    /// <summary>
-    /// Gets the overlays.
-    /// </summary>
+    /// <summary>Gets the mutable set of overlay-kind names enabled for painting.</summary>
     public HashSet<string> Overlays { get; } = Enum.GetNames<OverlayKind>().ToHashSet();
-    /// <summary>
-    /// Gets or sets the colors.
-    /// </summary>
+    /// <summary>Gets or sets the shared color settings used to paint overlays.</summary>
     public OverlaySettings Colors { get; set; } = OverlaySettings.Default;
-    /// <summary>
-    /// Occurs when a frame is selected.
-    /// </summary>
+    /// <summary>Occurs after a frame hit, supplying its region and zero-based column and row.</summary>
     public event Action<TilesheetRegionDefinition, Point>? FrameSelected;
-    /// <summary>
-    /// Gets the zoom.
-    /// </summary>
+    /// <summary>Gets the displayed pixels per source-image pixel.</summary>
     public float Zoom { get; private set; } = 1;
-    /// <summary>
-    /// Gets or sets the message.
-    /// </summary>
+    /// <summary>Gets or sets the placeholder text displayed when no preview image is available.</summary>
     public string Message { get; set; } = "Choose a loose image to preview.";
 
-    /// <summary>
-    /// Initializes a new instance of the <c>ImageViewport</c> class.
-    /// </summary>
+    /// <summary>Creates a scrollable, double-buffered image viewport at one-to-one magnification.</summary>
     public ImageViewport()
     {
         DoubleBuffered = true;
@@ -58,10 +38,8 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
         ResizeRedraw = true;
     }
 
-    /// <summary>
-    /// Sets the preview zoom factor.
-    /// </summary>
-    /// <param name="zoom">The zoom factor.</param>
+    /// <summary>Changes magnification while preserving the viewport center as far as scrolling permits.</summary>
+    /// <param name="zoom">Pixels per source pixel, clamped to the range 0.05 through 16.</param>
     public void SetZoom(float zoom)
     {
         var center = new PointF((ClientSize.Width / 2f - AutoScrollPosition.X) / Zoom,

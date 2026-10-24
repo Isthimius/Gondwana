@@ -47,7 +47,7 @@ public sealed class AssetImportPlan
     /// <param name="sources">Reviewed source types and entry names.</param>
     /// <param name="importDependencies">Whether resolvable physical dependencies should also be copied.</param>
     /// <param name="cancellation">Cancellation token.</param>
-    /// <returns>An immutable prepared plan, or an exception describing a conflict or unresolved dependency.</returns>
+    /// <returns>A prepared plan containing the reviewed additions and reference rewrites.</returns>
     public static AssetImportPlan Create(AssetsFile destination, IEnumerable<AssetImportSource> sources,
         bool importDependencies, CancellationToken cancellation = default)
     {

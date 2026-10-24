@@ -8,16 +8,10 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Animations.WinForms;
 
-/// <summary>
-/// Hostable WinForms surface for editing one GANI animation definition.
-/// The standalone application hosts this control inside a dock document; Studio can
-/// host the same control later without depending on MainForm.
-/// </summary>
+/// <summary>Shared standalone and Studio editor for the logical definitions in a GANI document.</summary>
 public sealed class AnimationEditorControl : UserControl
 {
-    /// <summary>
-    /// Gets the pane names.
-    /// </summary>
+    /// <summary>Gets the pane titles accepted by the pane visibility methods.</summary>
     public static IReadOnlyList<string> PaneNames { get; } =
         Array.AsReadOnly(
         [
@@ -96,35 +90,29 @@ public sealed class AnimationEditorControl : UserControl
     private bool _syncingSourceTreeSelection;
     private EditorDockWorkspace _workspace = null!;
 
-    /// <summary>
-    /// Gets the document.
-    /// </summary>
+    /// <summary>Gets the mutable authoring document displayed by this editor.</summary>
     public AnimationDocument Document { get; }
     private readonly AssetPackageCatalog _packages;
     private readonly bool _ownsPackages;
 
-    /// <summary>
-    /// Gets the definition.
-    /// </summary>
+    /// <summary>Gets the mutable definition currently selected in the document.</summary>
     public AnimationDefinition Definition => Document.Definition;
 
-    /// <summary>
-    /// Initializes a new instance of the <c>AnimationEditorControl</c> class.
-    /// </summary>
+    /// <summary>Creates an editor for a new animation document based in the current working directory.</summary>
     public AnimationEditorControl()
         : this(AnimationDocument.Create(Environment.CurrentDirectory))
     {
     }
 
-    /// <summary>Creates an editor with its own authoring package catalog.</summary>
-    /// <param name="document">The document to edit.</param>
+    /// <summary>Creates an editor with its own asset-package cache.</summary>
+    /// <param name="document">The mutable document to edit.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="document"/> is null.</exception>
     public AnimationEditorControl(AnimationDocument document) : this(document, null) { }
 
-    /// <summary>
-    /// Initializes a new instance of the <c>AnimationEditorControl</c> class.
-    /// </summary>
-    /// <param name="document">The document displayed or edited by the control.</param>
-    /// <param name="packages">Optional shared authoring package catalog.</param>
+    /// <summary>Creates an editor and loads its declared sources for previews.</summary>
+    /// <param name="document">The mutable document to edit.</param>
+    /// <param name="packages">A borrowed package cache, or null to create a cache owned by the control.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="document"/> is null.</exception>
     public AnimationEditorControl(AnimationDocument document, AssetPackageCatalog? packages)
     {
         _packages = packages ?? new AssetPackageCatalog();
@@ -228,10 +216,10 @@ public sealed class AnimationEditorControl : UserControl
         RefreshView();
     }
 
-    /// <summary>
-    /// Adds tilesheet definition files to the document's source list.
-    /// </summary>
-    /// <param name="paths">The paths of the source files to add.</param>
+    /// <summary>Loads every tilesheet member from the supplied loose GTS files and records their sources in the document.</summary>
+    /// <param name="paths">Loose GTS file paths.</param>
+    /// <remarks>Already loaded members from the same file are skipped. Earlier additions remain if a later member fails.</remarks>
+    /// <exception cref="InvalidOperationException">A logical tilesheet name is already loaded from another source.</exception>
     public void AddTilesheetSources(IEnumerable<string> paths)
     {
         bool changed = false;
@@ -248,10 +236,10 @@ public sealed class AnimationEditorControl : UserControl
         }
     }
 
-    /// <summary>
-    /// Adds a tilesheet definition file to the document's source list.
-    /// </summary>
-    /// <param name="path">The path.</param>
+    /// <summary>Loads every tilesheet member from a loose GTS file and records their sources in the document.</summary>
+    /// <param name="path">Loose GTS file path.</param>
+    /// <remarks>Already loaded members from the same file are skipped. Earlier additions remain if a later member fails.</remarks>
+    /// <exception cref="InvalidOperationException">A logical tilesheet name is already loaded from another source.</exception>
     public void AddTilesheetSource(string path)
     {
         if (AddTilesheetSourceCore(path))
@@ -335,7 +323,8 @@ public sealed class AnimationEditorControl : UserControl
         _preview.Invalidate();
     }
 
-    /// <summary>Reloads dependencies and preview images without changing the document.</summary>
+    /// <summary>Clears the package cache, releases loaded previews, and reloads the document's declared sources.</summary>
+    /// <remarks>Also clears a cache supplied by the host. Does not save or change the authoring document.</remarks>
     public void ReloadSources()
     {
         _packages.Clear();
@@ -517,10 +506,8 @@ public sealed class AnimationEditorControl : UserControl
         }
     }
 
-    /// <summary>
-    /// Validates the current document and refreshes the displayed diagnostics.
-    /// </summary>
-    /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
+    /// <summary>Validates the document and refreshes the diagnostics pane.</summary>
+    /// <returns>The document's structural validation errors. Source and preview warnings shown in the pane are not included.</returns>
     public IReadOnlyList<string> UpdateValidation()
     {
         var errors = Document.Validate().ToList();
@@ -586,10 +573,8 @@ public sealed class AnimationEditorControl : UserControl
     public void ShowAllPanes() =>
         _workspace.ShowAllPanes();
 
-    /// <summary>
-    /// Commits pending editor input to the document.
-    /// </summary>
-    /// <returns><see langword="true"/> if the pending edits were committed; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Moves focus out of the property editor and validates pending control input without saving the document.</summary>
+    /// <returns><see langword="true"/> if control validation succeeds and the property editor releases focus; otherwise, <see langword="false"/>.</returns>
     public bool CommitEdits()
     {
         _validation.Focus();

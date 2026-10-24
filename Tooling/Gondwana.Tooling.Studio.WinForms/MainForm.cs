@@ -15,9 +15,13 @@ namespace Gondwana.Tooling.Studio.WinForms;
 /// <summary>Studio owns outer documents and tools; authoring controls own their inner workspaces.</summary>
 public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices
 {
+    /// <inheritdoc/>
     string Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices.CurrentWorkingDirectory => Browser.WorkingDirectory;
+    /// <inheritdoc/>
     void Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices.Log(string message) => _output.Log(message);
+    /// <inheritdoc/>
     void Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices.RefreshWorkingDirectory() => Browser.RefreshDirectory();
+    /// <inheritdoc/>
     void Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices.OpenDocument(string path) => OpenDocument(path);
     internal const string OpenFilter = "Gondwana authoring files|*.gaf;*.zip;*.gts;*.gani;*.gsnd;*.gscn;*.gspr|All files|*.*";
     private readonly OutputViewModel _output = new();
@@ -45,9 +49,8 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
     internal Action<Exception> ReportError { get; set; }
     internal Func<string, string?> AssetPassword { get; set; }
 
-    /// <summary>
-    /// Initializes a new instance of the <c>MainForm</c> class.
-    /// </summary>
+    /// <summary>Creates the Studio workspace, discovers plugins, and selects the saved or fallback working directory.</summary>
+    /// <remarks>Registers workspace restoration for the Shown event and starts layout persistence. Construct on the UI thread.</remarks>
     public MainForm() : this(loadPlugins: true) { }
 
     internal MainForm(bool loadPlugins)
@@ -449,7 +452,8 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         return true;
     }
 
-    /// <inheritdoc/>
+    /// <summary>Requests save or discard approval for open documents and records the session only after approval.</summary>
+    /// <param name="e">Closing event cancelled if approval is denied or still pending.</param>
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         base.OnFormClosing(e);
@@ -514,7 +518,8 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         foreach (Control child in control.Controls) ApplyTheme(child);
     }
 
-    /// <inheritdoc/>
+    /// <summary>Closes plugin project state and disposes layout persistence, documents, tools, package resources, and the theme.</summary>
+    /// <param name="disposing">Whether to release managed shell resources.</param>
     protected override void Dispose(bool disposing)
     {
         if (disposing && !_disposed)
@@ -539,9 +544,7 @@ file sealed class DarkMenuRenderer : ToolStripProfessionalRenderer
     private static readonly System.Drawing.Color DarkBg = System.Drawing.Color.FromArgb(37, 37, 38);
     private static readonly System.Drawing.Color DarkHighlight = System.Drawing.Color.FromArgb(62, 62, 64);
 
-    /// <summary>
-    /// Initializes a new instance of the <c>DarkMenuRenderer</c> class.
-    /// </summary>
+    /// <summary>Creates the Studio menu renderer using the dark color table.</summary>
     public DarkMenuRenderer() : base(new DarkColorTable())
     {
     }

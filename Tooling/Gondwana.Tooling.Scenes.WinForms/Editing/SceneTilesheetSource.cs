@@ -11,27 +11,17 @@ namespace Gondwana.Tooling.Scenes.Editing;
 /// </summary>
 internal sealed class SceneTilesheetSource : IDisposable
 {
-    /// <summary>
-    /// Gets the file path.
-    /// </summary>
+    /// <summary>Gets the full loose document path or containing archive path; use Resource for packed entry identity.</summary>
     public string FilePath => Resource.Path;
     /// <summary>The complete physical source identity, separate from the logical member name.</summary>
     public AuthoringResource Resource { get; }
-    /// <summary>
-    /// Gets the base directory.
-    /// </summary>
+    /// <summary>Gets the full directory containing the document or archive, used to resolve its dependencies.</summary>
     public string BaseDirectory { get; }
-    /// <summary>
-    /// Gets the definition.
-    /// </summary>
+    /// <summary>Gets the selected deserialized GTS member used by the authoring preview.</summary>
     public TilesheetDefinition Definition { get; }
-    /// <summary>
-    /// Gets the image.
-    /// </summary>
+    /// <summary>Gets the source-owned masked preview bitmap, or null if image loading failed or the source was disposed.</summary>
     public Bitmap? Image { get; private set; }
-    /// <summary>
-    /// Gets the preview warning.
-    /// </summary>
+    /// <summary>Gets image-load failure details, or null when no preview problem was recorded.</summary>
     public string? PreviewWarning { get; private set; }
 
     private SceneTilesheetSource(AuthoringResource resource, TilesheetDefinition definition, AssetPackageCatalog? packages = null)
@@ -43,13 +33,11 @@ internal sealed class SceneTilesheetSource : IDisposable
         LoadPreviewImage(packages ?? owned!, resource.ArchivePath);
     }
 
-    /// <summary>
-    /// Loads scene tilesheet source from the supplied source.
-    /// </summary>
-    /// <param name="path">The path.</param>
-    /// <returns>The resulting scene tilesheet source.</returns>
-    /// <param name="identity">The logical member identity; null requires a singleton.</param>
-    /// <param name="packages">Optional shared authoring package catalog.</param>
+    /// <summary>Loads a logical member from a loose GTS file and prepares its authoring preview dependencies.</summary>
+    /// <param name="path">Loose document path, normalized against the process current directory.</param>
+    /// <param name="identity">Logical member identity, or null to require a singleton document.</param>
+    /// <param name="packages">Borrowed package cache, or null to use a temporary cache during loading.</param>
+    /// <returns>A source owned by the caller, which must dispose its preview resources.</returns>
     public static SceneTilesheetSource LoadMember(string path, string? identity, AssetPackageCatalog? packages = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -57,13 +45,11 @@ internal sealed class SceneTilesheetSource : IDisposable
         return LoadResource(new AuthoringResource(path, Gondwana.Assets.AssetTypes.TilesheetDefinition), identity, packages);
     }
 
-    /// <summary>
-    /// Creates a frame definition for the selected tilesheet region and grid coordinates.
-    /// </summary>
-    /// <param name="region">The region.</param>
-    /// <param name="x">The zero-based column in the tile grid.</param>
-    /// <param name="y">The zero-based row in the tile grid.</param>
-    /// <returns>The resulting scene frame definition.</returns>
+    /// <summary>Creates a logical frame reference without modifying the source or validating grid coordinates.</summary>
+    /// <param name="region">Region whose name is stored in the reference.</param>
+    /// <param name="x">Zero-based tile column to store.</param>
+    /// <param name="y">Zero-based tile row to store.</param>
+    /// <returns>A new reference using this tilesheet's logical name and the supplied region and coordinates.</returns>
     public SceneFrameDefinition CreateFrame(
         TilesheetRegionDefinition region,
         int x,
@@ -76,13 +62,11 @@ internal sealed class SceneTilesheetSource : IDisposable
             YTile = y
         };
 
-    /// <summary>
-    /// Attempts to resolve a frame to its tilesheet region and image-pixel bounds.
-    /// </summary>
-    /// <param name="frame">The frame.</param>
-    /// <param name="region">When this method returns, contains the region.</param>
-    /// <param name="bounds">When this method returns, contains the bounds.</param>
-    /// <returns><see langword="true"/> if the operation succeeded; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Resolves a logical frame by exact tilesheet name, case-insensitive region name, and valid grid coordinates.</summary>
+    /// <param name="frame">Frame reference to resolve against this tilesheet.</param>
+    /// <param name="region">Matching region, or null if no region matched; may be non-null when coordinates are invalid.</param>
+    /// <param name="bounds">Image-pixel bounds on success; otherwise Rectangle.Empty.</param>
+    /// <returns>True if the reference and grid coordinates resolve; image availability is not checked.</returns>
     public bool TryResolve(
         SceneFrameDefinition frame,
         out TilesheetRegionDefinition? region,
@@ -112,13 +96,12 @@ internal sealed class SceneTilesheetSource : IDisposable
         return true;
     }
 
-    /// <summary>
-    /// Computes a frame's pixel bounds within the tilesheet image.
-    /// </summary>
-    /// <param name="region">The region.</param>
-    /// <param name="x">The zero-based column in the tile grid.</param>
-    /// <param name="y">The zero-based row in the tile grid.</param>
-    /// <returns>The frame rectangle in tilesheet image pixels.</returns>
+    /// <summary>Computes frame image-pixel bounds using region origin, margins, and per-tile padding.</summary>
+    /// <param name="region">Region supplying frame dimensions and spacing.</param>
+    /// <param name="x">Zero-based tile column; grid bounds are not checked.</param>
+    /// <param name="y">Zero-based tile row; grid bounds are not checked.</param>
+    /// <returns>The untransformed source rectangle in image pixels.</returns>
+    /// <exception cref="OverflowException">Computed coordinates exceed the integer range.</exception>
     public static Rectangle FrameBounds(
         TilesheetRegionDefinition region,
         int x,
@@ -167,33 +150,31 @@ internal sealed class SceneTilesheetSource : IDisposable
         }
     }
 
-    /// <summary>
-    /// Releases the resources owned by this instance.
-    /// </summary>
+    /// <summary>Disposes and clears the owned preview bitmap; borrowed package catalogs are unaffected.</summary>
     public void Dispose()
     {
         Image?.Dispose();
         Image = null;
     }
 
-    /// <summary>Loads a singleton source document.</summary>
-    /// <param name="path">The physical document path.</param>
-    /// <returns>The source.</returns>
+    /// <summary>Loads a singleton loose GTS document with its preview resources.</summary>
+    /// <param name="path">Loose document path.</param>
+    /// <returns>A source owned by the caller, which must dispose it.</returns>
     public static SceneTilesheetSource Load(string path) => LoadMember(path, null);
 
-    /// <summary>Loads every member for authoring source selection.</summary>
-    /// <param name="path">The physical document path.</param>
-    /// <returns>All logical sources.</returns>
-    /// <param name="packages">Optional shared authoring package catalog.</param>
+    /// <summary>Loads all GTS members from a loose file in document order and prepares their previews.</summary>
+    /// <param name="path">Loose document path.</param>
+    /// <param name="packages">Borrowed package cache, or null to create temporary caches during loading.</param>
+    /// <returns>Independent source objects; the caller must dispose every returned source.</returns>
     public static IReadOnlyList<SceneTilesheetSource> LoadAll(string path, AssetPackageCatalog? packages = null) =>
         TilesheetDefinitionSerializer.LoadAll(path).Select(definition => new SceneTilesheetSource(new AuthoringResource(Path.GetFullPath(path), Gondwana.Assets.AssetTypes.TilesheetDefinition), definition, packages)).ToList();
 
-    /// <summary>Loads one logical source from a packed definition document.</summary>
-    /// <param name="archivePath">The containing archive path.</param>
-    /// <param name="entry">The physical entry name.</param>
-    /// <param name="identity">The logical member identity.</param>
-    /// <returns>The selected source.</returns>
-    /// <param name="packages">Optional shared authoring package catalog.</param>
+    /// <summary>Loads one logical member from an exact typed packed GTS entry.</summary>
+    /// <param name="archivePath">Containing archive path, normalized against the process current directory.</param>
+    /// <param name="entry">Exact entry name within the expected definition asset type.</param>
+    /// <param name="identity">Logical member identity within the packed document.</param>
+    /// <param name="packages">Borrowed package cache, or null to use a temporary cache during loading.</param>
+    /// <returns>A source owned by the caller, which must dispose its preview resources.</returns>
     public static SceneTilesheetSource LoadPacked(string archivePath, string entry, string identity, AssetPackageCatalog? packages = null) =>
         LoadResource(new AuthoringResource(Path.GetFullPath(archivePath), Gondwana.Assets.AssetTypes.TilesheetDefinition, entry), identity, packages);
 

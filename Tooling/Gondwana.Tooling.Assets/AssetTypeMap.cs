@@ -65,20 +65,11 @@ internal sealed class AssetTypeMap
         return new AssetTypeMap(map);
     }
 
-    /// <summary>
-    /// Resolves and loads the asset-type map from the first location that exists:
-    /// <list type="number">
-    ///   <item>The explicit <paramref name="explicitPath"/> (if non-null).</item>
-    ///   <item><c>gondwana-asset-types.json</c> in the current working directory.</item>
-    ///   <item><c>gondwana-asset-types.json</c> next to the running executable (the shipped default).</item>
-    ///   <item>Built-in defaults (when no file is found anywhere).</item>
-    /// </list>
-    /// Overlays the selected file on built-in defaults. Returns null and sets the error when
-    /// the selected configuration cannot be read or contains invalid/conflicting mappings.
-    /// </summary>
-    /// <param name="explicitPath">The explicit path.</param>
-    /// <param name="error">When this method returns, contains the error.</param>
-    /// <returns>The resulting asset type map, or <see langword="null"/> when unavailable.</returns>
+    /// <summary>Loads an explicit type map, or the first default map in the current directory or beside this assembly.</summary>
+    /// <param name="explicitPath">Configuration file to require, or null/whitespace to search default locations.</param>
+    /// <param name="error">Read or validation error when loading fails; null on success.</param>
+    /// <returns>The selected map overlaid on built-in defaults, built-in defaults when no default file exists, or null on load failure.</returns>
+    /// <remarks>An explicit missing file is an error, not a fallback. Path normalization errors can propagate before reading.</remarks>
     public static AssetTypeMap? Load(string? explicitPath, out string? error)
     {
         // If the caller explicitly specified a file, it must exist and parse cleanly.
@@ -156,13 +147,10 @@ internal sealed class AssetTypeMap
         }
     }
 
-    /// <summary>
-    /// Returns the <see cref="AssetTypes"/> for the given file, or <paramref name="fallback"/> if
-    /// the extension is not present in the map.
-    /// </summary>
-    /// <param name="filePath">The path of the file to process.</param>
-    /// <param name="fallback">The fallback.</param>
-    /// <returns>The asset type inferred from the file name and configured mappings.</returns>
+    /// <summary>Looks up a filename extension without case, returning the supplied fallback for unmapped extensions.</summary>
+    /// <param name="filePath">Filename or path whose extension is inspected; the file is not read.</param>
+    /// <param name="fallback">Asset type to return when the extension has no mapping.</param>
+    /// <returns>The mapped type or <paramref name="fallback"/>.</returns>
     public AssetTypes Infer(string filePath, AssetTypes fallback)
     {
         var ext = Path.GetExtension(filePath).TrimStart('.').ToLowerInvariant();

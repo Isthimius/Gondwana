@@ -5,14 +5,10 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Audio.WinForms;
 
-/// <summary>
-/// Hostable WinForms editor for one GSND audio definition.
-/// </summary>
+/// <summary>Shared standalone and Studio editor for the logical definitions in a GSND document.</summary>
 public sealed class AudioEditorControl : UserControl
 {
-    /// <summary>
-    /// Gets the pane names.
-    /// </summary>
+    /// <summary>Gets the pane titles accepted by the pane visibility methods.</summary>
     public static IReadOnlyList<string> PaneNames { get; } =
         Array.AsReadOnly(["Audio resources", "Properties", "Validation"]);
 
@@ -42,19 +38,14 @@ public sealed class AudioEditorControl : UserControl
         ScrollBars = ScrollBars.Vertical
     };
 
-    /// <summary>
-    /// Gets the document.
-    /// </summary>
+    /// <summary>Gets the mutable authoring document displayed by this editor.</summary>
     public AudioDocument Document { get; }
-    /// <summary>
-    /// Gets the definition.
-    /// </summary>
+    /// <summary>Gets the mutable definition currently selected in the document.</summary>
     public AudioDefinition Definition => Document.Definition;
 
-    /// <summary>
-    /// Initializes a new instance of the <c>AudioEditorControl</c> class.
-    /// </summary>
-    /// <param name="document">The document displayed or edited by the control.</param>
+    /// <summary>Creates an audio definition editor and subscribes to document changes.</summary>
+    /// <param name="document">The mutable document to edit.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="document"/> is null.</exception>
     public AudioEditorControl(AudioDocument document)
     {
         Document = document ?? throw new ArgumentNullException(nameof(document));
@@ -112,10 +103,8 @@ public sealed class AudioEditorControl : UserControl
             SelectResource(last);
     }
 
-    /// <summary>
-    /// Validates the current document and refreshes the displayed diagnostics.
-    /// </summary>
-    /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
+    /// <summary>Validates the document and refreshes the diagnostics pane.</summary>
+    /// <returns>The document's structural validation errors.</returns>
     public IReadOnlyList<string> UpdateValidation()
     {
         var errors = Document.Validate();
@@ -150,10 +139,8 @@ public sealed class AudioEditorControl : UserControl
     public void ShowAllPanes() =>
         _workspace.ShowAllPanes();
 
-    /// <summary>
-    /// Commits pending editor input to the document.
-    /// </summary>
-    /// <returns><see langword="true"/> if the pending edits were committed; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Moves focus out of the property editor and validates pending control input without saving the document.</summary>
+    /// <returns><see langword="true"/> if control validation succeeds and the property editor releases focus; otherwise, <see langword="false"/>.</returns>
     public bool CommitEdits()
     {
         _validation.Focus();

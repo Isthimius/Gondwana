@@ -2,23 +2,15 @@ namespace Gondwana.Tooling.Animations.WinForms;
 
 internal static class DarkTheme
 {
-    /// <summary>
-    /// The background.
-    /// </summary>
+    /// <summary>Default background color for editor controls.</summary>
     public static readonly Color Background = Color.FromArgb(30, 30, 30);
-    /// <summary>
-    /// The surface.
-    /// </summary>
+    /// <summary>Background color for toolbars, buttons, and property help surfaces.</summary>
     public static readonly Color Surface = Color.FromArgb(45, 45, 48);
-    /// <summary>
-    /// The foreground.
-    /// </summary>
+    /// <summary>Default text color for editor controls.</summary>
     public static readonly Color Foreground = Color.Gainsboro;
 
-    /// <summary>
-    /// Applies the editor color theme to the control and its children.
-    /// </summary>
-    /// <param name="control">The control.</param>
+    /// <summary>Applies the editor theme recursively, including specialized property-grid and toolbar colors.</summary>
+    /// <param name="control">Root control whose appearance and child controls are updated.</param>
     public static void Apply(Control control)
     {
         control.BackColor = Background;

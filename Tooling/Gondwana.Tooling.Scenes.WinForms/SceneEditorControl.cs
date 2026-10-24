@@ -9,16 +9,12 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Scenes.WinForms;
 
-/// <summary>
-/// Hostable WinForms authoring surface for one GSCN scene definition.
-/// </summary>
+/// <summary>Shared standalone and Studio editor for the logical definitions in a GSCN document.</summary>
 public sealed class SceneEditorControl : UserControl
 {
     private const int SourceFrameThumbnailSize = 32;
 
-    /// <summary>
-    /// Gets the pane names.
-    /// </summary>
+    /// <summary>Gets the pane titles accepted by the pane visibility methods.</summary>
     public static IReadOnlyList<string> PaneNames { get; } =
         Array.AsReadOnly(
         [
@@ -97,31 +93,27 @@ public sealed class SceneEditorControl : UserControl
     private bool _syncingTileCoordinates;
     private bool _refreshPending;
 
-    /// <summary>
-    /// Gets the document.
-    /// </summary>
+    /// <summary>Gets the mutable authoring document displayed by this editor.</summary>
     public SceneDocument Document { get; }
     private readonly AssetPackageCatalog _packages;
     private readonly bool _ownsPackages;
-    /// <summary>
-    /// Gets the definition.
-    /// </summary>
+    /// <summary>Gets the mutable definition currently selected in the document.</summary>
     public SceneDefinition Definition => Document.Definition;
 
-    /// <summary>Uses the containing application's normal save workflow.</summary>
+    /// <summary>Gets or sets the optional synchronous save callback used before launching the separate Scene Viewer; true indicates a successful save.</summary>
     public Func<bool>? SaveRequested { get; set; }
-    /// <summary>Optional asynchronous save routing for Studio archive coordination.</summary>
+    /// <summary>Gets or sets the asynchronous save callback used before launching the separate Scene Viewer; takes precedence over the synchronous callback and must return true on success.</summary>
     public Func<Task<bool>>? SaveRequestedAsync { get; set; }
 
-    /// <summary>Creates an editor with its own authoring package catalog.</summary>
-    /// <param name="document">The document to edit.</param>
+    /// <summary>Creates an editor with its own asset-package cache.</summary>
+    /// <param name="document">The mutable document to edit.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="document"/> is null.</exception>
     public SceneEditorControl(SceneDocument document) : this(document, null) { }
 
-    /// <summary>
-    /// Initializes a new instance of the <c>SceneEditorControl</c> class.
-    /// </summary>
-    /// <param name="document">The document displayed or edited by the control.</param>
-    /// <param name="packages">Optional shared authoring package catalog.</param>
+    /// <summary>Creates an editor and loads its declared sources for previews.</summary>
+    /// <param name="document">The mutable document to edit.</param>
+    /// <param name="packages">A borrowed package cache, or null to create a cache owned by the control.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="document"/> is null.</exception>
     public SceneEditorControl(SceneDocument document, AssetPackageCatalog? packages)
     {
         _packages = packages ?? new AssetPackageCatalog();
@@ -185,10 +177,9 @@ public sealed class SceneEditorControl : UserControl
         RefreshView();
     }
 
-    /// <summary>
-    /// Adds tilesheet definition files to the document's source list.
-    /// </summary>
-    /// <param name="paths">The paths of the source files to add.</param>
+    /// <summary>Loads the members of loose tilesheet files for authoring and records their source paths in the document.</summary>
+    /// <param name="paths">Definition files to load; relative paths use the process's current directory.</param>
+    /// <remarks>Earlier additions remain if a later file fails to load.</remarks>
     public void AddTilesheetSources(IEnumerable<string> paths)
     {
         ArgumentNullException.ThrowIfNull(paths);
@@ -220,10 +211,9 @@ public sealed class SceneEditorControl : UserControl
             SelectTilesheetRoot(last);
     }
 
-    /// <summary>
-    /// Adds animation definition files to the document's source list.
-    /// </summary>
-    /// <param name="paths">The paths of the source files to add.</param>
+    /// <summary>Loads the members of loose animation files for authoring and records their source paths in the document.</summary>
+    /// <param name="paths">Definition files to load; relative paths use the process's current directory.</param>
+    /// <remarks>Earlier additions remain if a later file fails to load.</remarks>
     public void AddAnimationSources(IEnumerable<string> paths)
     {
         ArgumentNullException.ThrowIfNull(paths);
@@ -255,10 +245,8 @@ public sealed class SceneEditorControl : UserControl
             SelectAnimation(last);
     }
 
-    /// <summary>
-    /// Validates the current document and refreshes the displayed diagnostics.
-    /// </summary>
-    /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
+    /// <summary>Validates the document and refreshes the diagnostics pane.</summary>
+    /// <returns>The document's structural validation errors. Source and preview warnings shown in the pane are not included.</returns>
     public IReadOnlyList<string> UpdateValidation()
     {
         var errors = Document.Validate();
@@ -320,10 +308,8 @@ public sealed class SceneEditorControl : UserControl
         return errors;
     }
 
-    /// <summary>
-    /// Commits pending editor input to the document.
-    /// </summary>
-    /// <returns><see langword="true"/> if the pending edits were committed; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Moves focus out of the property editor and validates pending control input without saving the document.</summary>
+    /// <returns><see langword="true"/> if control validation succeeds and the property editor releases focus; otherwise, <see langword="false"/>.</returns>
     public bool CommitEdits()
     {
         _validation.Focus();
@@ -656,7 +642,8 @@ public sealed class SceneEditorControl : UserControl
         }
     }
 
-    /// <summary>Reloads declared sources and previews without rewriting references or dirtying the document.</summary>
+    /// <summary>Clears the package cache, releases loaded previews, and reloads the document's declared sources.</summary>
+    /// <remarks>Also clears a cache supplied by the host. Does not save or change the authoring document.</remarks>
     public void ReloadSources()
     {
         _packages.Clear();

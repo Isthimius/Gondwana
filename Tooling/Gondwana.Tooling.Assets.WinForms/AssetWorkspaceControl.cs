@@ -6,9 +6,7 @@ namespace Gondwana.Tooling.Assets.WinForms;
 /// </summary>
 public sealed class AssetWorkspaceControl : UserControl
 {
-    /// <summary>
-    /// The asset file filter.
-    /// </summary>
+    /// <summary>File-dialog filter for GAF and ZIP archives, with an all-files fallback.</summary>
     public const string AssetFileFilter =
         "Asset Files (*.gaf;*.zip)|*.gaf;*.zip|All Files (*.*)|*.*";
 
@@ -25,20 +23,14 @@ public sealed class AssetWorkspaceControl : UserControl
         ShowNodeToolTips = true
     };
 
-    /// <summary>
-    /// Gets the working directory.
-    /// </summary>
+    /// <summary>Gets the full path at the root of the workspace browser.</summary>
     public string WorkingDirectory { get; private set; }
 
-    /// <summary>
-    /// Occurs when open asset file requested.
-    /// </summary>
+    /// <summary>Requests that the host open the full archive path selected in the tree or chosen through the Open context command.</summary>
     public event Action<string>? OpenAssetFileRequested;
 
-    /// <summary>
-    /// Initializes a new instance of the <c>AssetWorkspaceControl</c> class.
-    /// </summary>
-    /// <param name="initialDirectory">The initial directory shown by the picker or workspace.</param>
+    /// <summary>Creates an archive browser and loads the initial directory listing.</summary>
+    /// <param name="initialDirectory">Initial directory, or null for the process's current directory.</param>
     public AssetWorkspaceControl(string? initialDirectory = null)
     {
         WorkingDirectory = Path.GetFullPath(
@@ -130,10 +122,9 @@ public sealed class AssetWorkspaceControl : UserControl
         SetWorkingDirectory(dialog.SelectedPath);
     }
 
-    /// <summary>
-    /// Sets working directory.
-    /// </summary>
-    /// <param name="path">The path.</param>
+    /// <summary>Normalizes the workspace path and rebuilds the directory browser.</summary>
+    /// <param name="path">A nonblank directory path; relative paths use the process's current directory.</param>
+    /// <exception cref="ArgumentException"><paramref name="path"/> is null, empty, or whitespace.</exception>
     public void SetWorkingDirectory(string path)
     {
         if (string.IsNullOrWhiteSpace(path))

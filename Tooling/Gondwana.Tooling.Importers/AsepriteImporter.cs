@@ -6,9 +6,7 @@ using SkiaSharp;
 
 namespace Gondwana.Tooling.Importers;
 
-/// <summary>
-/// Represents aseprite importer.
-/// </summary>
+/// <summary>Converts supported Aseprite frames and tags into a PNG atlas, tilesheet, and animation definitions.</summary>
 public sealed class AsepriteImporter : ExternalAssetImporter
 {
     /// <inheritdoc/>
@@ -72,13 +70,13 @@ public sealed class AsepriteImporter : ExternalAssetImporter
         }
     }
 
-    /// <summary>
-    /// Renders an Aseprite frame to a bitmap.
-    /// </summary>
-    /// <param name="sprite">The sprite.</param>
-    /// <param name="frameIndex">The frame index.</param>
-    /// <param name="token">The token.</param>
-    /// <returns>The rendered frame bitmap. The caller owns and must dispose the bitmap.</returns>
+    /// <summary>Composites visible layers and groups, resolving linked cels and applying cel and layer opacity.</summary>
+    /// <param name="sprite">Parsed sprite with the supported normal-blend image and group layers.</param>
+    /// <param name="frameIndex">Zero-based frame index to render.</param>
+    /// <param name="token">Token checked during layer traversal and pixel conversion.</param>
+    /// <returns>A canvas-sized bitmap owned by the caller, which must dispose it.</returns>
+    /// <exception cref="InvalidDataException">Layer hierarchy or cel links are invalid, cyclic, or missing.</exception>
+    /// <exception cref="OperationCanceledException">Cancellation is observed.</exception>
     public static SKBitmap RenderFrame(AsepriteFile sprite, int frameIndex, CancellationToken token = default)
     {
         var parents = new int[sprite.Layers.Count];

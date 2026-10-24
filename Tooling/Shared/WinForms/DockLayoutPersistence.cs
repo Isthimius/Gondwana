@@ -207,9 +207,7 @@ internal sealed class DockLayoutPersistence : IDisposable
 
     private static bool Equal(byte[] a, byte[]? b) => b is not null && a.AsSpan().SequenceEqual(b);
 
-    /// <summary>
-    /// Releases the resources owned by this instance.
-    /// </summary>
+    /// <summary>Stops the layout timer and saves a changed layout when persistence was started and the dock panel is still available.</summary>
     public void Dispose()
     {
         if (_disposed)

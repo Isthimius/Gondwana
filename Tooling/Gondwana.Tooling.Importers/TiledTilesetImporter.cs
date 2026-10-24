@@ -10,9 +10,7 @@ using SkiaSharp;
 
 namespace Gondwana.Tooling.Importers;
 
-/// <summary>
-/// Represents tiled tileset importer.
-/// </summary>
+/// <summary>Converts single-atlas Tiled TSX tilesets and tile animations into native definitions.</summary>
 public sealed class TiledTilesetImporter : ExternalAssetImporter
 {
     /// <inheritdoc/>

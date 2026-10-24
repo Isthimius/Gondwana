@@ -9,9 +9,7 @@ using static Gondwana.Tooling.Importers.TiledTilesetImporter;
 
 namespace Gondwana.Tooling.Importers;
 
-/// <summary>
-/// Represents tiled map importer.
-/// </summary>
+/// <summary>Converts finite orthogonal or isometric TMX maps and their tilesets into native scene, tilesheet, and animation definitions.</summary>
 public sealed class TiledMapImporter : ExternalAssetImporter
 {
     /// <inheritdoc/>

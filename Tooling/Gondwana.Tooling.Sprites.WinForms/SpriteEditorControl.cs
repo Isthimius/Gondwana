@@ -16,16 +16,14 @@ public sealed class SpriteEditorControl : UserControl
 {
     private sealed record AnimationChoice(string? Key)
     {
+        /// <summary>Returns the animation key, or the no-selection label.</summary>
+        /// <returns>The key or <c>(none)</c>.</returns>
         public override string ToString() => Key ?? "(none)";
     }
 
-    /// <summary>
-    /// Gets the pane names.
-    /// </summary>
+    /// <summary>Gets the pane titles accepted by the pane visibility methods.</summary>
     public static IReadOnlyList<string> PaneNames { get; } = Array.AsReadOnly(new[] { "Sprites", "Sprite preview", "GSCN scene/layer sources", "GTS frame sources", "Properties", "Validation" });
-    /// <summary>
-    /// Gets the document.
-    /// </summary>
+    /// <summary>Gets the mutable authoring document displayed by this editor.</summary>
     public SpriteDocument Document { get; }
     private readonly AssetPackageCatalog _packages;
     private readonly bool _ownsPackages;
@@ -47,20 +45,18 @@ public sealed class SpriteEditorControl : UserControl
     private readonly HashSet<string> _loadedScenePaths = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> _loadedTilesheetPaths = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> _loadedAnimationPaths = new(StringComparer.OrdinalIgnoreCase);
-    /// <summary>
-    /// Gets the selected sprite.
-    /// </summary>
+    /// <summary>Gets the selected sprite instance, or null when no sprite is selected.</summary>
     public SpriteInstanceDefinition? SelectedSprite => _sprites.SelectedItem as SpriteInstanceDefinition;
 
-    /// <summary>Creates an editor with its own authoring package catalog.</summary>
-    /// <param name="document">The document to edit.</param>
+    /// <summary>Creates an editor with its own asset-package cache.</summary>
+    /// <param name="document">The mutable document to edit.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="document"/> is null.</exception>
     public SpriteEditorControl(SpriteDocument document) : this(document, null) { }
 
-    /// <summary>
-    /// Initializes a new instance of the <c>SpriteEditorControl</c> class.
-    /// </summary>
-    /// <param name="document">The document displayed or edited by the control.</param>
-    /// <param name="packages">Optional shared authoring package catalog.</param>
+    /// <summary>Creates an editor and loads its declared sources for previews.</summary>
+    /// <param name="document">The mutable document to edit.</param>
+    /// <param name="packages">A borrowed package cache, or null to create a cache owned by the control.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="document"/> is null.</exception>
     public SpriteEditorControl(SpriteDocument document, AssetPackageCatalog? packages)
     {
         _packages = packages ?? new AssetPackageCatalog();
@@ -165,7 +161,8 @@ public sealed class SpriteEditorControl : UserControl
         return button;
     }
 
-    /// <summary>Reloads dependencies without changing sprite definitions or their references.</summary>
+    /// <summary>Clears the package cache, releases loaded previews, and reloads the document's declared sources.</summary>
+    /// <remarks>Also clears a cache supplied by the host. Does not save or change the authoring document.</remarks>
     public void ReloadSources()
     {
         _packages.Clear();
@@ -223,7 +220,9 @@ public sealed class SpriteEditorControl : UserControl
         { _sourceWarnings.Add(ex.Message); }
     }
 
-    /// <summary>Adds GANI definitions as authoring sources for sprite animation keys.</summary>
+    /// <summary>Loads the members of loose animation files for authoring and records their source paths in the document.</summary>
+    /// <param name="paths">Definition files to load; relative paths use the process's current directory.</param>
+    /// <remarks>Earlier additions remain if a later file fails to load.</remarks>
     public void AddAnimationSources(IEnumerable<string> paths)
     {
         foreach (var path in paths)
@@ -260,10 +259,9 @@ public sealed class SpriteEditorControl : UserControl
                 AuthoringResourceResolver.TilesheetSource(reference, resource.BaseDirectory), reference.Tilesheet, _packages)));
     }
 
-    /// <summary>
-    /// Adds scene definition files to the document's source list.
-    /// </summary>
-    /// <param name="paths">The paths of the source files to add.</param>
+    /// <summary>Loads the members of loose scene files for authoring and records their source paths in the document.</summary>
+    /// <param name="paths">Definition files to load; relative paths use the process's current directory.</param>
+    /// <remarks>Earlier additions remain if a later file fails to load.</remarks>
     public void AddSceneSources(IEnumerable<string> paths)
     {
         foreach (var path in paths) foreach (var member in SceneDefinitionSerializer.LoadAll(path)) { var scene = LoadScene(path, member.ID); Document.SetLooseSceneSource(scene.ID, path); }
@@ -284,10 +282,9 @@ public sealed class SpriteEditorControl : UserControl
         root.Expand();
     }
 
-    /// <summary>
-    /// Adds tilesheet definition files to the document's source list.
-    /// </summary>
-    /// <param name="paths">The paths of the source files to add.</param>
+    /// <summary>Loads the members of loose tilesheet files for authoring and records their source paths in the document.</summary>
+    /// <param name="paths">Definition files to load; relative paths use the process's current directory.</param>
+    /// <remarks>Earlier additions remain if a later file fails to load.</remarks>
     public void AddTilesheetSources(IEnumerable<string> paths)
     {
         foreach (var path in paths) foreach (var member in TilesheetDefinitionSerializer.LoadAll(path)) { var source = LoadTilesheet(path, member.Name); Document.SetLooseTilesheetSource(source.Definition.Name, path); }
@@ -328,10 +325,8 @@ public sealed class SpriteEditorControl : UserControl
         root.Expand();
     }
 
-    /// <summary>
-    /// Selects a sprite and updates the editor selection.
-    /// </summary>
-    /// <param name="sprite">The sprite.</param>
+    /// <summary>Refreshes the sprite list and selects the supplied document instance.</summary>
+    /// <param name="sprite">The sprite instance to select in the refreshed list.</param>
     public void SelectSprite(SpriteInstanceDefinition sprite) { RefreshEntries(); _sprites.SelectedItem = sprite; }
     private void RefreshEntries()
     {
@@ -386,19 +381,15 @@ public sealed class SpriteEditorControl : UserControl
         UpdateValidation();
     }
     private void DocumentChanged(object? sender, EventArgs e) => UpdateValidation();
-    /// <summary>
-    /// Commits pending editor input to the document.
-    /// </summary>
-    /// <returns><see langword="true"/> if the pending edits were committed; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Moves focus out of the property editor and validates pending control input without saving the document.</summary>
+    /// <returns><see langword="true"/> if control validation succeeds and the property editor releases focus; otherwise, <see langword="false"/>.</returns>
     public bool CommitEdits()
     {
         _validation.Focus();
         return !_properties.ContainsFocus && ValidateChildren();
     }
-    /// <summary>
-    /// Validates the current document and refreshes the displayed diagnostics.
-    /// </summary>
-    /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
+    /// <summary>Validates the document and refreshes the diagnostics pane.</summary>
+    /// <returns>The document's structural validation errors. Source and preview warnings shown in the pane are not included.</returns>
     public IReadOnlyList<string> UpdateValidation()
     {
         var errors = Document.Validate();
@@ -432,17 +423,13 @@ public sealed class SpriteEditorControl : UserControl
         _validation.Lines = lines.ToArray();
         return errors;
     }
-    /// <summary>
-    /// Shows the named editor pane.
-    /// </summary>
-    /// <param name="name">The name.</param>
-    /// <returns><see langword="true"/> if the named pane was found; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Shows and activates the named pane.</summary>
+    /// <param name="name">Case-insensitive pane title from <see cref="PaneNames"/>.</param>
+    /// <returns>True if the pane exists and has not been disposed; otherwise false.</returns>
     public bool ShowPane(string name) => _workspace.ShowPane(name);
-    /// <summary>
-    /// Determines whether the named editor pane is visible.
-    /// </summary>
-    /// <param name="name">The name.</param>
-    /// <returns><see langword="true"/> if the pane is visible; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Checks whether the named pane is currently visible.</summary>
+    /// <param name="name">Case-insensitive pane title from <see cref="PaneNames"/>.</param>
+    /// <returns>True if the pane exists, is not disposed, and is not hidden.</returns>
     public bool IsPaneVisible(string name) => _workspace.IsPaneVisible(name);
     /// <summary>
     /// Shows every editor pane.
@@ -452,7 +439,8 @@ public sealed class SpriteEditorControl : UserControl
     /// Restores the default editor pane layout.
     /// </summary>
     public void ResetLayout() => _workspace.ResetLayout();
-    /// <inheritdoc/>
+    /// <summary>Releases previews, unsubscribes document events, and disposes the package cache if this control created it.</summary>
+    /// <param name="disposing">True to release managed resources as well as the base control.</param>
     protected override void Dispose(bool disposing)
     {
         if (disposing) { Document.Changed -= DocumentChanged; foreach (var source in _sources) source.Dispose(); _thumbnails.Dispose(); }

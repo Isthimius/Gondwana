@@ -100,6 +100,7 @@ internal sealed class StudioArchiveSnapshot : IDisposable
         }
     }
 
+    /// <summary>Disposes the snapshot archive unless ownership has been transferred by <see cref="Detach"/>.</summary>
     public void Dispose()
     {
         if (!_detached)

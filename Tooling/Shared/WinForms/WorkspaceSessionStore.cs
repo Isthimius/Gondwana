@@ -31,12 +31,19 @@ internal sealed record WorkspaceSessionDocument(string Path, string Format, int?
 
 internal sealed record WorkspaceSession
 {
+    /// <summary>Gets the persisted session schema version; the reader currently accepts only version 1.</summary>
     public int Version { get; init; } = 1;
+    /// <summary>Gets whether startup may restore the saved working directory and documents.</summary>
     public bool RestoreOnStartup { get; init; } = true;
+    /// <summary>Gets whether to skip restoration on the next launch; the controller consumes and clears this flag.</summary>
     public bool StartEmptyOnce { get; init; }
+    /// <summary>Gets the saved working-directory path, or null when none was captured.</summary>
     public string? WorkingDirectory { get; init; }
+    /// <summary>Gets saved document identities in tab order; unsaved content and passwords are not stored.</summary>
     public WorkspaceSessionDocument[] Documents { get; init; } = [];
+    /// <summary>Gets the active loose document path, or null when no loose document was active.</summary>
     public string? ActiveDocument { get; init; }
+    /// <summary>Gets the active typed archive entry identity, or null when no packed document was active.</summary>
     public WorkspaceSessionDocument? ActivePackedDocument { get; init; }
 }
 

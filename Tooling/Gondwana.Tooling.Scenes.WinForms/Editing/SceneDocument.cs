@@ -3,30 +3,20 @@ using Gondwana.Tooling.Editing;
 
 namespace Gondwana.Tooling.Scenes.Editing;
 
-/// <summary>
-/// UI-independent editing session for one GSCN scene definition.
-/// </summary>
+/// <summary>UI-independent editing session for all logical definitions in one GSCN document.</summary>
 public sealed partial class SceneDocument
 {
-    /// <summary>
-    /// Gets the definition.
-    /// </summary>
+    /// <summary>Gets the selected mutable logical definition; direct edits require <see cref="MarkChanged"/>.</summary>
     public SceneDefinition Definition { get; private set; }
-    /// <summary>
-    /// Gets the file path.
-    /// </summary>
+    /// <summary>Gets the full loose-file path, or null for an unsaved or packed document.</summary>
     public string? FilePath { get; private set; }
-    /// <summary>
-    /// Gets the base directory.
-    /// </summary>
+    /// <summary>Gets the absolute directory used to resolve relative dependencies; for packed documents, the containing archive directory.</summary>
     public string BaseDirectory { get; private set; }
     /// <summary>
     /// Gets whether the document contains unsaved changes.
     /// </summary>
     public bool IsDirty { get; private set; }
-    /// <summary>
-    /// Occurs when the document content changes.
-    /// </summary>
+    /// <summary>Occurs synchronously when content is marked modified, selection changes, or a save is accepted.</summary>
     public event EventHandler? Changed;
 
     private SceneDocument(
@@ -42,11 +32,10 @@ public sealed partial class SceneDocument
         IsDirty = isDirty;
     }
 
-    /// <summary>
-    /// Opens the supplied file for use by the scene document.
-    /// </summary>
-    /// <param name="path">The path.</param>
-    /// <returns>The resulting scene document.</returns>
+    /// <summary>Loads all logical definitions from a loose GSCN file and selects the first member.</summary>
+    /// <param name="path">Source file path, resolved against the process current directory when relative.</param>
+    /// <returns>A clean editing session retaining the file's definition order.</returns>
+    /// <exception cref="InvalidDataException">The loaded document contains no definitions.</exception>
     public static SceneDocument Open(string path)
     {
         path = Path.GetFullPath(path);
@@ -57,11 +46,9 @@ public sealed partial class SceneDocument
         return document;
     }
 
-    /// <summary>
-    /// Creates a new scene document.
-    /// </summary>
-    /// <param name="directory">The directory.</param>
-    /// <returns>The resulting scene document.</returns>
+    /// <summary>Creates an unsaved GSCN document with one default definition and marks it dirty.</summary>
+    /// <param name="directory">Base directory for dependency resolution; no file or directory is created.</param>
+    /// <returns>A new editing session with no loose or packed save location.</returns>
     public static SceneDocument Create(string directory) =>
         new(
             new SceneDefinition
@@ -73,10 +60,8 @@ public sealed partial class SceneDocument
             directory,
             isDirty: true);
 
-    /// <summary>
-    /// Adds a new layer to the scene definition.
-    /// </summary>
-    /// <returns>The new layer definition added to the document.</returns>
+    /// <summary>Adds a uniquely named 10-by-10 layer with 32-pixel tiles to the selected scene and marks the document dirty.</summary>
+    /// <returns>The new layer, with its initial Z order set to the preceding layer count.</returns>
     public SceneLayerDefinition AddLayer()
     {
         var layer = new SceneLayerDefinition
@@ -93,11 +78,9 @@ public sealed partial class SceneDocument
         return layer;
     }
 
-    /// <summary>
-    /// Removes the selected layer from the scene definition.
-    /// </summary>
-    /// <param name="layer">The layer.</param>
-    /// <returns><see langword="true"/> if the entry was found and removed; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Removes a layer from the selected scene and marks the document dirty if found.</summary>
+    /// <param name="layer">Layer instance to remove.</param>
+    /// <returns>True if removed; false if the layer was absent.</returns>
     public bool RemoveLayer(SceneLayerDefinition layer)
     {
         if (!Definition.Layers.Remove(layer))
@@ -106,13 +89,11 @@ public sealed partial class SceneDocument
         return true;
     }
 
-    /// <summary>
-    /// Finds an explicitly stored tile at the requested layer coordinates.
-    /// </summary>
-    /// <param name="layer">The layer.</param>
-    /// <param name="x">The zero-based column in the tile grid.</param>
-    /// <param name="y">The zero-based row in the tile grid.</param>
-    /// <returns>The requested scene layer tile definition, or <see langword="null"/> when unavailable.</returns>
+    /// <summary>Finds the first explicitly stored tile at the requested coordinates without changing the layer.</summary>
+    /// <param name="layer">Layer whose explicit tile overrides are searched.</param>
+    /// <param name="x">Zero-based tile column.</param>
+    /// <param name="y">Zero-based tile row.</param>
+    /// <returns>The stored tile override, or null when the coordinate uses implicit layer defaults.</returns>
     public SceneLayerTileDefinition? FindTile(
         SceneLayerDefinition layer,
         int x,
@@ -121,13 +102,12 @@ public sealed partial class SceneDocument
             tile.X == x &&
             tile.Y == y);
 
-    /// <summary>
-    /// Gets the tile definition at the requested coordinates, creating it if necessary.
-    /// </summary>
-    /// <param name="layer">The layer.</param>
-    /// <param name="x">The zero-based column in the tile grid.</param>
-    /// <param name="y">The zero-based row in the tile grid.</param>
-    /// <returns>The existing tile definition, or a newly added definition at those coordinates.</returns>
+    /// <summary>Gets a stored tile override or adds one at valid layer coordinates and marks the document dirty.</summary>
+    /// <param name="layer">Layer to search and, if necessary, modify.</param>
+    /// <param name="x">Zero-based column within the layer.</param>
+    /// <param name="y">Zero-based row within the layer.</param>
+    /// <returns>The existing or newly added mutable tile override.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Either coordinate lies outside the layer grid.</exception>
     public SceneLayerTileDefinition GetOrCreateTile(
         SceneLayerDefinition layer,
         int x,
@@ -150,13 +130,11 @@ public sealed partial class SceneDocument
         return tile;
     }
 
-    /// <summary>
-    /// Removes the stored tile definition at the requested coordinates.
-    /// </summary>
-    /// <param name="layer">The layer.</param>
-    /// <param name="x">The zero-based column in the tile grid.</param>
-    /// <param name="y">The zero-based row in the tile grid.</param>
-    /// <returns><see langword="true"/> if the entry was found and removed; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Removes all explicit tile overrides at the coordinates, restoring implicit layer defaults there.</summary>
+    /// <param name="layer">Layer whose tile overrides are modified.</param>
+    /// <param name="x">Zero-based tile column.</param>
+    /// <param name="y">Zero-based tile row.</param>
+    /// <returns>True if any overrides were removed and the document was marked dirty; otherwise false.</returns>
     public bool RemoveTile(SceneLayerDefinition layer, int x, int y)
     {
         int removed = layer.Tiles.RemoveAll(tile =>
@@ -168,12 +146,11 @@ public sealed partial class SceneDocument
         return true;
     }
 
-    /// <summary>
-    /// Adds or updates a tilesheet reference to a loose GTS file.
-    /// </summary>
-    /// <param name="tilesheet">The tilesheet.</param>
-    /// <param name="gtsPath">The path to the loose GTS tilesheet definition.</param>
-    /// <returns><see langword="true"/> if the source reference changed; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Replaces the selected definition's matching tilesheet sources with a loose reference and marks it dirty if changed.</summary>
+    /// <param name="tilesheet">Nonempty, case-sensitive logical tilesheet name.</param>
+    /// <param name="gtsPath">Loose GTS path, normalized against the process current directory and stored relative to the document when possible.</param>
+    /// <returns>False if an existing loose source already resolves to that path; otherwise true.</returns>
+    /// <exception cref="ArgumentException">A name or path is null, empty, or whitespace.</exception>
     public bool SetLooseTilesheetSource(string tilesheet, string gtsPath)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(tilesheet);
@@ -203,12 +180,12 @@ public sealed partial class SceneDocument
         return true;
     }
 
-    /// <summary>
-    /// Adds or updates an animation reference to a loose GANI file.
-    /// </summary>
-    /// <param name="animationKey">The lookup key of the animation.</param>
-    /// <param name="ganiPath">The path to the loose GANI animation definition.</param>
-    /// <returns><see langword="true"/> if the source reference changed; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Replaces matching animation sources in the selected scene with a loose reference and marks it dirty if changed.</summary>
+    /// <param name="animationKey">Nonempty logical animation key, matched without case.</param>
+    /// <param name="ganiPath">Loose GANI path, normalized against the process current directory and stored relative to the document when possible.</param>
+    /// <returns>False if an existing loose source already resolves to that path; otherwise true.</returns>
+    /// <exception cref="ArgumentNullException">Either argument is null.</exception>
+    /// <exception cref="ArgumentException">Either argument is empty or whitespace.</exception>
     public bool SetLooseAnimationSource(string animationKey, string ganiPath)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(animationKey);
@@ -238,11 +215,9 @@ public sealed partial class SceneDocument
         return true;
     }
 
-    /// <summary>
-    /// Removes the named tilesheet source from the document.
-    /// </summary>
-    /// <param name="tilesheet">The tilesheet.</param>
-    /// <returns><see langword="true"/> if the entry was found and removed; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Removes all source entries matching a tilesheet name from the selected definition.</summary>
+    /// <param name="tilesheet">Case-sensitive logical tilesheet name.</param>
+    /// <returns>True if any entries were removed and the document was marked dirty; otherwise false.</returns>
     public bool RemoveTilesheetSource(string tilesheet)
     {
         int removed = Definition.TilesheetSources.RemoveAll(source =>
@@ -253,11 +228,9 @@ public sealed partial class SceneDocument
         return true;
     }
 
-    /// <summary>
-    /// Removes the named animation source from the document.
-    /// </summary>
-    /// <param name="animationKey">The lookup key of the animation.</param>
-    /// <returns><see langword="true"/> if the entry was found and removed; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Removes all animation sources matching the key from the selected scene.</summary>
+    /// <param name="animationKey">Logical animation key matched without case.</param>
+    /// <returns>True if entries were removed and the document was marked dirty; otherwise false.</returns>
     public bool RemoveAnimationSource(string animationKey)
     {
         int removed = Definition.AnimationSources.RemoveAll(source =>
@@ -268,11 +241,9 @@ public sealed partial class SceneDocument
         return true;
     }
 
-    /// <summary>
-    /// Resolves a document-relative resource path to an absolute path.
-    /// </summary>
-    /// <param name="path">The path.</param>
-    /// <returns>The absolute path of the referenced resource.</returns>
+    /// <summary>Resolves a document-relative resource path to an absolute path without checking existence.</summary>
+    /// <param name="path">A dependency path, interpreted relative to <see cref="BaseDirectory"/> unless rooted.</param>
+    /// <returns>The normalized absolute resource path.</returns>
     public string ResolveReferencePath(string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -288,18 +259,19 @@ public sealed partial class SceneDocument
         Changed?.Invoke(this, EventArgs.Empty);
     }
 
-    /// <summary>
-    /// Checks the definition and collects validation errors.
-    /// </summary>
+    /// <summary>Validates all logical definitions and their document-level identities without loading runtime resources.</summary>
     /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
     public IReadOnlyList<string> Validate() =>
         SceneDefinitionSerializer.ValidateDocument(new SceneDefinitionDocument { Definitions = _definitions });
 
-    /// <summary>
-    /// Saves the current content to the destination file.
-    /// </summary>
-    /// <param name="path">The path.</param>
-    /// <param name="allowInvalid">Whether to save even when validation reports errors.</param>
+    /// <summary>Saves every logical member to a loose file, rebases dependencies, and adopts that file as the editing location.</summary>
+    /// <param name="path">Destination path; missing parent directories are created and existing files may be overwritten.</param>
+    /// <param name="allowInvalid">Whether to bypass ordinary validation errors; logical identities must still be nonempty and unique.</param>
+    /// <remarks>On success, clears the packed location and dirty flag and raises <see cref="Changed"/>. Saving a packed document leaves its original archive entry unchanged.</remarks>
+    /// <exception cref="ArgumentNullException"><paramref name="path"/> is null.</exception>
+    /// <exception cref="ArgumentException"><paramref name="path"/> is empty or whitespace.</exception>
+    /// <exception cref="InvalidOperationException">Validation fails when <paramref name="allowInvalid"/> is false.</exception>
+    /// <exception cref="InvalidDataException">Logical identities are empty or duplicated.</exception>
     public void Save(string path, bool allowInvalid = false)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -385,8 +357,9 @@ public sealed partial class SceneDocument
     /// <summary>Gets the current logical definition without reconstructing its metadata.</summary>
     public SceneDefinition SelectedDefinition => Definition;
 
-    /// <summary>Selects an existing member without changing the physical document's dirty state.</summary>
-    /// <param name="definition">The member to select.</param>
+    /// <summary>Selects an existing member without changing the physical document's dirty state and raises <see cref="Changed"/>.</summary>
+    /// <param name="definition">The member instance already owned by this document.</param>
+    /// <exception cref="ArgumentException"><paramref name="definition"/> does not belong to this document.</exception>
     public void SelectDefinition(SceneDefinition definition)
     {
         if (!_definitions.Contains(definition)) throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
@@ -419,9 +392,9 @@ public sealed partial class SceneDocument
         return definition;
     }
 
-    /// <summary>Removes a member while retaining at least one editable definition.</summary>
-    /// <param name="definition">The member to remove.</param>
-    /// <returns>Whether the member was removed.</returns>
+    /// <summary>Removes a member, marks the document dirty, and selects the first remaining member if necessary.</summary>
+    /// <param name="definition">The member instance to remove.</param>
+    /// <returns>True if removed; false if it is absent or is the document's only member.</returns>
     public bool RemoveDefinition(SceneDefinition definition)
     {
         if (_definitions.Count == 1 || !_definitions.Remove(definition)) return false;
@@ -430,8 +403,11 @@ public sealed partial class SceneDocument
         return true;
     }
 
-    /// <summary>Renames the selected member, rejecting empty or duplicate identities.</summary>
+    /// <summary>Renames the selected member and marks the document dirty, without rewriting references in other documents.</summary>
     /// <param name="identity">The new case-sensitive logical identity.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="identity"/> is null.</exception>
+    /// <exception cref="ArgumentException"><paramref name="identity"/> is empty or whitespace.</exception>
+    /// <exception cref="InvalidDataException">Another member already uses the identity.</exception>
     public void RenameDefinition(string identity)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(identity);
@@ -441,10 +417,12 @@ public sealed partial class SceneDocument
         MarkChanged();
     }
 
-    /// <summary>Imports selected members without replacing existing definitions or copying resources.</summary>
+    /// <summary>Imports selected GSCN members as independent copies, rebasing dependencies without copying resources.</summary>
     /// <param name="path">A same-format source file; legacy singletons are supported.</param>
-    /// <param name="select">Selects source indices. Omit to import all; return null or an empty list to cancel.</param>
-    /// <returns>The number imported. The first imported member becomes selected.</returns>
+    /// <param name="select">Selects zero-based source indices. Omit to import all; return null or an empty list to cancel.</param>
+    /// <returns>The number imported in source order; zero leaves the document unchanged.</returns>
+    /// <remarks>Conflicting logical identities receive unique suffixes. The first imported member becomes selected and the document is marked dirty.</remarks>
+    /// <exception cref="ArgumentException">The file extension is not .gscn, or selection contains duplicate or out-of-range indices.</exception>
     public int ImportDefinitions(string path, Func<IReadOnlyList<SceneDefinition>, IReadOnlyList<int>?>? select = null)
     {
         path = Path.GetFullPath(path);

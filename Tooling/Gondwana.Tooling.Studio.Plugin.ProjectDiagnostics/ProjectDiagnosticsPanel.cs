@@ -8,11 +8,9 @@ internal sealed class ProjectDiagnosticsPanel : UserControl
     private readonly Label _status = new() { Dock = DockStyle.Bottom, Height = 42, AutoEllipsis = true };
     private readonly System.Windows.Forms.Timer _timer = new() { Interval = 100 };
 
-    /// <summary>
-    /// Initializes a new instance of the <c>ProjectDiagnosticsPanel</c> class.
-    /// </summary>
-    /// <param name="rescan">The rescan.</param>
-    /// <param name="poll">The poll.</param>
+    /// <summary>Creates the results pane and starts its UI polling timer.</summary>
+    /// <param name="rescan">Callback invoked by the Rescan button on the UI thread.</param>
+    /// <param name="poll">Callback invoked by the UI timer to apply completed scan results.</param>
     public ProjectDiagnosticsPanel(Action rescan, Action poll)
     {
         var button = new Button { Text = "Rescan", Dock = DockStyle.Top, Height = 30 };
@@ -30,10 +28,8 @@ internal sealed class ProjectDiagnosticsPanel : UserControl
         Clear("No working directory.");
     }
 
-    /// <summary>
-    /// Clears the stored entries and resets the current state.
-    /// </summary>
-    /// <param name="status">The status.</param>
+    /// <summary>Clears displayed definitions and problems and replaces the status text unless the panel is disposed.</summary>
+    /// <param name="status">Status text to display beneath the results.</param>
     public void Clear(string status)
     {
         if (IsDisposed) return;
@@ -42,10 +38,8 @@ internal sealed class ProjectDiagnosticsPanel : UserControl
         _status.Text = status;
     }
 
-    /// <summary>
-    /// Displays the project scan results.
-    /// </summary>
-    /// <param name="result">The result.</param>
+    /// <summary>Replaces displayed definitions, references, problems, and counts with the completed scan.</summary>
+    /// <param name="result">Scan data to render on the UI thread; no engine models are retained.</param>
     public void ShowResult(ProjectScanResult result)
     {
         if (IsDisposed) return;
@@ -71,7 +65,8 @@ internal sealed class ProjectDiagnosticsPanel : UserControl
         }
     }
 
-    /// <inheritdoc/>
+    /// <summary>Disposes the polling timer and the panel's child controls.</summary>
+    /// <param name="disposing">Whether to dispose the managed polling timer.</param>
     protected override void Dispose(bool disposing)
     {
         if (disposing) _timer.Dispose();

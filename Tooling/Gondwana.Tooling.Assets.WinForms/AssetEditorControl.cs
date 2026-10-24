@@ -12,9 +12,7 @@ namespace Gondwana.Tooling.Assets.WinForms;
 /// </summary>
 public sealed class AssetEditorControl : UserControl
 {
-    /// <summary>
-    /// Gets the pane names.
-    /// </summary>
+    /// <summary>Gets the pane titles accepted by the pane visibility methods.</summary>
     public static IReadOnlyList<string> PaneNames { get; } =
         Array.AsReadOnly(["Assets", "Status"]);
 
@@ -25,12 +23,10 @@ public sealed class AssetEditorControl : UserControl
 
     /// <summary>Dirty state for edits made through this editor.</summary>
     public bool IsDirty { get; private set; }
-    /// <summary>
-    /// Occurs when the document content changes.
-    /// </summary>
+    /// <summary>Occurs synchronously when edits mark the archive dirty or an accepted save clears the dirty state.</summary>
     public event EventHandler? Changed;
 
-    /// <summary>Optional host routing for toolbar Save / Save As commands.</summary>
+    /// <summary>Gets or sets host routing for Save and Save As; the argument is false for Save and true for Save As. Null uses the standalone save flow.</summary>
     public Action<bool>? SaveRequested { get; set; }
 
     /// <summary>Notifies a host that the underlying package or a saved copy changed.</summary>
@@ -61,19 +57,14 @@ public sealed class AssetEditorControl : UserControl
     private readonly ToolStripButton _deleteButton;
     private EditorDockWorkspace _workspace = null!;
 
-    /// <summary>
-    /// Gets the assets file.
-    /// </summary>
+    /// <summary>Gets the mutable archive currently displayed; callers must not dispose it while the editor is using it.</summary>
     public AssetsFile AssetsFile => _assetsFile;
-    /// <summary>
-    /// Gets the file path.
-    /// </summary>
+    /// <summary>Gets the full source path of the currently displayed archive.</summary>
     public string FilePath => Path.GetFullPath(_assetsFile.SourcePath!);
 
-    /// <summary>
-    /// Initializes a new instance of the <c>AssetEditorControl</c> class.
-    /// </summary>
-    /// <param name="assetsFile">The assets file containing the requested entry.</param>
+    /// <summary>Creates an editor for a loaded archive without taking ownership of that initial archive.</summary>
+    /// <param name="assetsFile">The mutable archive to edit, with a source path assigned.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="assetsFile"/> is null.</exception>
     public AssetEditorControl(AssetsFile assetsFile)
     {
         _assetsFile = assetsFile ?? throw new ArgumentNullException(nameof(assetsFile));
@@ -221,9 +212,7 @@ public sealed class AssetEditorControl : UserControl
     public void ShowAllPanes() =>
         _workspace.ShowAllPanes();
 
-    /// <summary>
-    /// Saves the current content to the destination file.
-    /// </summary>
+    /// <summary>Routes Save to the host, or saves to the current path and displays standalone save failures in a dialog.</summary>
     public void Save()
     {
         if (SaveRequested is { } save) { save(false); return; }
@@ -237,9 +226,8 @@ public sealed class AssetEditorControl : UserControl
         }
     }
 
-    /// <summary>
-    /// Saves as.
-    /// </summary>
+    /// <summary>Routes Save As to the host, or prompts for a copy destination and encryption settings without adopting the copy.</summary>
+    /// <remarks>The standalone flow retains the original path and dirty state and reports save failures in a dialog.</remarks>
     public void SaveAs()
     {
         if (SaveRequested is { } save) { save(true); return; }
@@ -309,7 +297,9 @@ public sealed class AssetEditorControl : UserControl
         Changed?.Invoke(this, EventArgs.Empty);
     }
 
-    /// <summary>Adopts a host-persisted archive snapshot. Ownership transfers to this control.</summary>
+    /// <summary>Accepts a host-persisted snapshot, clears the dirty state, refreshes entries, and raises <see cref="Changed"/>.</summary>
+    /// <param name="replacement">A distinct saved archive whose ownership transfers to this control.</param>
+    /// <remarks>When path and encryption match, copies entries into the current archive and disposes the snapshot immediately; otherwise retains it until replacement or disposal.</remarks>
     public void AcceptSavedArchive(AssetsFile replacement)
     {
         if (string.Equals(FilePath, replacement.SourcePath, StringComparison.OrdinalIgnoreCase) &&
@@ -584,9 +574,7 @@ public sealed class AssetEditorControl : UserControl
             new Dictionary<string, string?> { [FilePath] = _assetsFile.Password });
     }
 
-    /// <summary>
-    /// Refreshes entries.
-    /// </summary>
+    /// <summary>Rebuilds the entry list from the in-memory archive using the current type and search filters; does not reload the file from disk.</summary>
     public void RefreshEntries()
     {
         _records.Clear();

@@ -10,10 +10,10 @@ public interface IStudioPlugin
     /// <summary>Gets the display name of the plugin.</summary>
     string Name { get; }
 
-    /// <summary>Notifies the plugin that a project has been opened.</summary>
-    /// <param name="projectPath">The path of the project that was opened.</param>
+    /// <summary>Notifies the plugin that Studio has selected a working directory.</summary>
+    /// <param name="projectPath">The full path to the selected authoring directory, not a project file.</param>
     void OnProjectOpened(string projectPath);
 
-    /// <summary>Notifies the plugin that the current project has been closed.</summary>
+    /// <summary>Notifies the plugin to release working-directory state when Studio switches directories or shuts down.</summary>
     void OnProjectClosed();
 }

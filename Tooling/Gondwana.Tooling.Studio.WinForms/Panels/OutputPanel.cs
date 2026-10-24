@@ -12,10 +12,8 @@ public sealed class OutputPanel : UserControl
     private readonly OutputViewModel _vm;
     private readonly RichTextBox _textBox;
 
-    /// <summary>
-    /// OutputPanel.
-    /// </summary>
-    /// <param name="vm">ViewModel.</param>
+    /// <summary>Displays existing output lines and subscribes to subsequent collection changes.</summary>
+    /// <param name="vm">The borrowed output model; the panel does not clear or dispose it.</param>
     public OutputPanel(OutputViewModel vm)
     {
         _vm = vm;
@@ -68,10 +66,8 @@ public sealed class OutputPanel : UserControl
         _textBox.ScrollToCaret();
     }
 
-    /// <summary>
-    /// Dispose.
-    /// </summary>
-    /// <param name="disposing">disposing.</param>
+    /// <summary>Detaches from the output model and releases the panel's controls.</summary>
+    /// <param name="disposing">Whether to detach managed event subscriptions and release managed resources.</param>
     protected override void Dispose(bool disposing)
     {
         if (disposing)

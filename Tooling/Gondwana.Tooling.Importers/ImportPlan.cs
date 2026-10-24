@@ -7,38 +7,32 @@ using Gondwana.Scenes.GSCN;
 
 namespace Gondwana.Tooling.Importers;
 
-/// <summary>Shared native serialization, validation and conflict analysis.</summary>
-/// <param name="request">The request.</param>
+/// <summary>Collects native definitions and raw outputs for shared serialization, validation, and conflict analysis.</summary>
+/// <param name="request">Source, destination, and overwrite policy retained by the plan.</param>
 public sealed class ImportPlan(ExternalImportRequest request)
 {
     /// <summary>Gets validated output snapshots used by the staging transaction.</summary>
     internal List<(ExternalImportArtifact Artifact, byte[] Content)> Outputs { get; } = [];
     private readonly List<PlannedOutput> _planned = [];
-    /// <summary>
-    /// Gets the dependencies.
-    /// </summary>
+    /// <summary>Gets the mutable source dependency paths checked for existence and protected from output replacement.</summary>
     public List<string> Dependencies { get; } = [];
-    /// <summary>
-    /// Gets the diagnostics.
-    /// </summary>
+    /// <summary>Gets the mutable conversion and validation messages accumulated by the provider and shared pipeline.</summary>
     public List<ExternalImportDiagnostic> Diagnostics { get; } = [];
-    /// <summary>
-    /// Gets the request.
-    /// </summary>
+    /// <summary>Gets the source and output options retained when this plan was constructed.</summary>
     public ExternalImportRequest Request { get; } = request;
 
-    /// <summary>
-    /// Adds a diagnostic to the import plan.
-    /// </summary>
-    /// <param name="severity">The severity.</param>
-    /// <param name="code">The code.</param>
-    /// <param name="message">The message.</param>
+    /// <summary>Appends a diagnostic associated with the request's source path.</summary>
+    /// <param name="severity">Whether the diagnostic informs, warns, or blocks import.</param>
+    /// <param name="code">Machine-readable diagnostic category.</param>
+    /// <param name="message">Human-readable conversion or validation details.</param>
     public void Report(ExternalImportSeverity severity, string code, string message) =>
         Diagnostics.Add(new(severity, code, message, Request.SourcePath));
 
-    /// <summary>Adds a typed member to the document at the provider-chosen filename.</summary>
-    /// <param name="filename">The output filename; matching filenames and types form one document.</param>
-    /// <param name="definition">The generated member. The plan owns it until analysis completes.</param>
+    /// <summary>Adds a tilesheet member to the output document at the provider-chosen filename.</summary>
+    /// <param name="filename">Filename within the output directory; matching names and types form one document.</param>
+    /// <param name="definition">Mutable member retained by the plan; its source is immediately set to Generated.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="definition"/> is null.</exception>
+    /// <exception cref="InvalidDataException"><paramref name="filename"/> is empty, a directory path, or a traversal component.</exception>
     public void Add(string filename, TilesheetDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);
@@ -48,9 +42,11 @@ public sealed class ImportPlan(ExternalImportRequest request)
             members => TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = members }));
     }
 
-    /// <summary>Adds a typed member to the document at the provider-chosen filename.</summary>
-    /// <param name="filename">The output filename; matching filenames and types form one document.</param>
-    /// <param name="definition">The generated member. The plan owns it until analysis completes.</param>
+    /// <summary>Adds an animation member to the output document at the provider-chosen filename.</summary>
+    /// <param name="filename">Filename within the output directory; matching names and types form one document.</param>
+    /// <param name="definition">Mutable member retained by the plan; its source is immediately set to Generated.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="definition"/> is null.</exception>
+    /// <exception cref="InvalidDataException"><paramref name="filename"/> is empty, a directory path, or a traversal component.</exception>
     public void Add(string filename, AnimationDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);
@@ -60,9 +56,11 @@ public sealed class ImportPlan(ExternalImportRequest request)
             members => AnimationDefinitionSerializer.ToDocumentJson(new() { Definitions = members }));
     }
 
-    /// <summary>Adds a typed member to the document at the provider-chosen filename.</summary>
-    /// <param name="filename">The output filename; matching filenames and types form one document.</param>
-    /// <param name="definition">The generated member. The plan owns it until analysis completes.</param>
+    /// <summary>Adds a scene member to the output document at the provider-chosen filename.</summary>
+    /// <param name="filename">Filename within the output directory; matching names and types form one document.</param>
+    /// <param name="definition">Mutable member retained by the plan; its source is immediately set to Generated.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="definition"/> is null.</exception>
+    /// <exception cref="InvalidDataException"><paramref name="filename"/> is empty, a directory path, or a traversal component.</exception>
     public void Add(string filename, SceneDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);
@@ -72,9 +70,11 @@ public sealed class ImportPlan(ExternalImportRequest request)
             members => SceneDefinitionSerializer.ToDocumentJson(new() { Definitions = members }));
     }
 
-    /// <summary>Adds a typed member to the document at the provider-chosen filename.</summary>
-    /// <param name="filename">The output filename; matching filenames and types form one document.</param>
-    /// <param name="definition">The generated member. The plan owns it until analysis completes.</param>
+    /// <summary>Adds a sprite member to the output document at the provider-chosen filename.</summary>
+    /// <param name="filename">Filename within the output directory; matching names and types form one document.</param>
+    /// <param name="definition">Mutable member retained by the plan; its source is immediately set to Generated.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="definition"/> is null.</exception>
+    /// <exception cref="InvalidDataException"><paramref name="filename"/> is empty, a directory path, or a traversal component.</exception>
     public void Add(string filename, SpriteDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);
@@ -84,9 +84,11 @@ public sealed class ImportPlan(ExternalImportRequest request)
             members => SpriteDefinitionSerializer.ToDocumentJson(new() { Definitions = members }));
     }
 
-    /// <summary>Adds a typed member to the document at the provider-chosen filename.</summary>
-    /// <param name="filename">The output filename; matching filenames and types form one document.</param>
-    /// <param name="definition">The generated member. The plan owns it until analysis completes.</param>
+    /// <summary>Adds an audio member to the output document at the provider-chosen filename.</summary>
+    /// <param name="filename">Filename within the output directory; matching names and types form one document.</param>
+    /// <param name="definition">Mutable member retained by the plan; its source is immediately set to Generated.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="definition"/> is null.</exception>
+    /// <exception cref="InvalidDataException"><paramref name="filename"/> is empty, a directory path, or a traversal component.</exception>
     public void Add(string filename, AudioDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);
@@ -96,11 +98,12 @@ public sealed class ImportPlan(ExternalImportRequest request)
             members => AudioDefinitionSerializer.ToDocumentJson(new() { Definitions = members }));
     }
 
-    /// <summary>Adds a raw artifact without native-document grouping or serialization.</summary>
-    /// <param name="filename">The output filename.</param>
-    /// <param name="kind">The artifact kind.</param>
-    /// <param name="key">An optional legacy logical key.</param>
-    /// <param name="content">The raw output bytes.</param>
+    /// <summary>Adds raw bytes without native-document grouping, validation, or serialization.</summary>
+    /// <param name="filename">Filename within the output directory, without directory components.</param>
+    /// <param name="kind">Output format label, such as PNG.</param>
+    /// <param name="key">Optional logical identity; null for an unkeyed artifact.</param>
+    /// <param name="content">Byte array retained without copying; keep its contents stable until import finishes.</param>
+    /// <exception cref="InvalidDataException">The filename is empty, a directory path, or a traversal component.</exception>
     public void Add(string filename, string kind, string? key, byte[] content) =>
         _planned.Add(new RawOutput(OutputPath(filename), kind, key, content));
 
@@ -248,29 +251,19 @@ public sealed class ImportPlan(ExternalImportRequest request)
 public abstract class ExternalAssetImporter : IExternalAssetImporter
 {
     private static readonly SemaphoreSlim WriteGate = new(1, 1);
-    /// <summary>
-    /// Gets the unique identifier.
-    /// </summary>
+    /// <inheritdoc/>
     public abstract string Id { get; }
-    /// <summary>
-    /// Gets the display name.
-    /// </summary>
+    /// <inheritdoc/>
     public abstract string DisplayName { get; }
-    /// <summary>
-    /// Gets the supported extensions.
-    /// </summary>
+    /// <inheritdoc/>
     public abstract IReadOnlyList<string> SupportedExtensions { get; }
-    /// <summary>
-    /// Checks whether the provider supports the requested import source.
-    /// </summary>
-    /// <param name="sourcePath">The path to the external source file.</param>
-    /// <returns><see langword="true"/> if the provider supports the source; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Recognizes a source by case-insensitive filename extension without opening it.</summary>
+    /// <param name="sourcePath">Source filename or path to inspect.</param>
+    /// <returns>True if the extension is listed in <see cref="SupportedExtensions"/>.</returns>
     public virtual bool CanImport(string sourcePath) => SupportedExtensions.Contains(Path.GetExtension(sourcePath), StringComparer.OrdinalIgnoreCase);
-    /// <summary>
-    /// Builds the planned output files and diagnostics for an external import.
-    /// </summary>
-    /// <param name="plan">The plan.</param>
-    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <summary>Reads the source and populates outputs, dependencies, and diagnostics without writing files.</summary>
+    /// <param name="plan">Mutable plan supplied by the pipeline for this conversion.</param>
+    /// <param name="cancellationToken">Token the provider should check during expensive work.</param>
     protected abstract void BuildPlan(ImportPlan plan, CancellationToken cancellationToken);
 
     private (ImportPlan Plan, ExternalImportAnalysis Analysis) Prepare(ExternalImportRequest request, CancellationToken token)
@@ -291,20 +284,20 @@ public abstract class ExternalAssetImporter : IExternalAssetImporter
         return (plan, plan.Analyze(Id, token));
     }
 
-    /// <summary>
-    /// Analyzes the external source and planned import outputs.
-    /// </summary>
-    /// <param name="request">The request.</param>
-    /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>The planned import outputs and diagnostics without writing output files.</returns>
+    /// <summary>Builds and validates a fresh in-memory plan without creating or modifying files.</summary>
+    /// <param name="request">Source file, output directory, and overwrite policy.</param>
+    /// <param name="cancellationToken">Token for cooperative cancellation during planning and validation.</param>
+    /// <returns>Outputs and diagnostics, including handled source errors; no bytes are persisted.</returns>
+    /// <exception cref="OperationCanceledException">Cancellation is observed.</exception>
     public ExternalImportAnalysis Analyze(ExternalImportRequest request, CancellationToken cancellationToken = default) => Prepare(request, cancellationToken).Analysis;
 
-    /// <summary>
-    /// Imports the external source into Gondwana asset definitions.
-    /// </summary>
-    /// <param name="request">The request.</param>
-    /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>The generated output paths and diagnostics from the import.</returns>
+    /// <summary>Rebuilds the plan, stages validated output bytes, and installs generated files under a process-wide write gate.</summary>
+    /// <param name="request">Source file, output directory, and permission to replace existing generated files.</param>
+    /// <param name="cancellationToken">Token honored while waiting, staging, installing, and before successful completion.</param>
+    /// <returns>Fresh analysis and installed paths, or empty paths when analysis reports errors.</returns>
+    /// <remarks>Ordinary installation failures roll back installed files. A failed rollback retains staging recovery files; this is not a crash-atomic multi-file transaction.</remarks>
+    /// <exception cref="OperationCanceledException">Cancellation is observed.</exception>
+    /// <exception cref="IOException">Output I/O fails or rollback cannot complete.</exception>
     public ExternalImportResult Import(ExternalImportRequest request, CancellationToken cancellationToken = default)
     {
         WriteGate.Wait(cancellationToken);

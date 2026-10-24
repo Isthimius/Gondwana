@@ -4,30 +4,20 @@ using Gondwana.Tooling.Editing;
 
 namespace Gondwana.Tooling.Animations.Editing;
 
-/// <summary>
-/// UI-independent editing session for one GANI animation definition.
-/// </summary>
+/// <summary>UI-independent editing session for all logical definitions in one GANI document.</summary>
 public sealed partial class AnimationDocument
 {
-    /// <summary>
-    /// Gets the definition.
-    /// </summary>
+    /// <summary>Gets the selected mutable logical definition; direct edits require <see cref="MarkChanged"/>.</summary>
     public AnimationDefinition Definition { get; private set; }
-    /// <summary>
-    /// Gets the file path.
-    /// </summary>
+    /// <summary>Gets the full loose-file path, or null for an unsaved or packed document.</summary>
     public string? FilePath { get; private set; }
-    /// <summary>
-    /// Gets the base directory.
-    /// </summary>
+    /// <summary>Gets the absolute directory used to resolve relative dependencies; for packed documents, the containing archive directory.</summary>
     public string BaseDirectory { get; private set; }
     /// <summary>
     /// Gets whether the document contains unsaved changes.
     /// </summary>
     public bool IsDirty { get; private set; }
-    /// <summary>
-    /// Occurs when the document content changes.
-    /// </summary>
+    /// <summary>Occurs synchronously when content is marked modified, selection changes, or a save is accepted.</summary>
     public event EventHandler? Changed;
 
     private AnimationDocument(
@@ -43,11 +33,10 @@ public sealed partial class AnimationDocument
         IsDirty = isDirty;
     }
 
-    /// <summary>
-    /// Opens the supplied file for use by the animation document.
-    /// </summary>
-    /// <param name="path">The path.</param>
-    /// <returns>The resulting animation document.</returns>
+    /// <summary>Loads all logical definitions from a loose GANI file and selects the first member.</summary>
+    /// <param name="path">Source file path, resolved against the process current directory when relative.</param>
+    /// <returns>A clean editing session retaining the file's definition order.</returns>
+    /// <exception cref="InvalidDataException">The loaded document contains no definitions.</exception>
     public static AnimationDocument Open(string path)
     {
         path = Path.GetFullPath(path);
@@ -58,11 +47,9 @@ public sealed partial class AnimationDocument
         return document;
     }
 
-    /// <summary>
-    /// Creates a new animation document.
-    /// </summary>
-    /// <param name="directory">The directory.</param>
-    /// <returns>The resulting animation document.</returns>
+    /// <summary>Creates an unsaved GANI document with one default definition and marks it dirty.</summary>
+    /// <param name="directory">Base directory for dependency resolution; no file or directory is created.</param>
+    /// <returns>A new editing session with no loose or packed save location.</returns>
     public static AnimationDocument Create(string directory) =>
         new(
             new AnimationDefinition
@@ -85,19 +72,16 @@ public sealed partial class AnimationDocument
         Changed?.Invoke(this, EventArgs.Empty);
     }
 
-    /// <summary>
-    /// Checks the definition and collects validation errors.
-    /// </summary>
+    /// <summary>Validates all logical definitions and their document-level identities without loading runtime resources.</summary>
     /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
     public IReadOnlyList<string> Validate() =>
         AnimationDefinitionSerializer.ValidateDocument(new AnimationDefinitionDocument { Definitions = _definitions });
 
-    /// <summary>
-    /// Adds or updates a tilesheet reference to a loose GTS file.
-    /// </summary>
-    /// <param name="tilesheet">The tilesheet.</param>
-    /// <param name="gtsPath">The path to the loose GTS tilesheet definition.</param>
-    /// <returns><see langword="true"/> if the source reference changed; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Replaces the selected definition's matching tilesheet sources with a loose reference and marks it dirty if changed.</summary>
+    /// <param name="tilesheet">Nonempty, case-sensitive logical tilesheet name.</param>
+    /// <param name="gtsPath">Loose GTS path, normalized against the process current directory and stored relative to the document when possible.</param>
+    /// <returns>False if an existing loose source already resolves to that path; otherwise true.</returns>
+    /// <exception cref="ArgumentException">A name or path is null, empty, or whitespace.</exception>
     public bool SetLooseTilesheetSource(
         string tilesheet,
         string gtsPath)
@@ -146,11 +130,9 @@ public sealed partial class AnimationDocument
         return true;
     }
 
-    /// <summary>
-    /// Removes the named tilesheet source from the document.
-    /// </summary>
-    /// <param name="tilesheet">The tilesheet.</param>
-    /// <returns><see langword="true"/> if the entry was found and removed; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Removes all source entries matching a tilesheet name from the selected definition.</summary>
+    /// <param name="tilesheet">Case-sensitive logical tilesheet name.</param>
+    /// <returns>True if any entries were removed and the document was marked dirty; otherwise false.</returns>
     public bool RemoveTilesheetSource(string tilesheet)
     {
         int removed = Definition.TilesheetSources.RemoveAll(source =>
@@ -166,11 +148,9 @@ public sealed partial class AnimationDocument
         return true;
     }
 
-    /// <summary>
-    /// Resolves a document-relative resource path to an absolute path.
-    /// </summary>
-    /// <param name="path">The path.</param>
-    /// <returns>The absolute path of the referenced resource.</returns>
+    /// <summary>Resolves a document-relative resource path to an absolute path without checking existence.</summary>
+    /// <param name="path">A dependency path, interpreted relative to <see cref="BaseDirectory"/> unless rooted.</param>
+    /// <returns>The normalized absolute resource path.</returns>
     public string ResolveReferencePath(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -181,11 +161,14 @@ public sealed partial class AnimationDocument
             : Path.GetFullPath(path, BaseDirectory);
     }
 
-    /// <summary>
-    /// Saves the current content to the destination file.
-    /// </summary>
-    /// <param name="path">The path.</param>
-    /// <param name="allowInvalid">Whether to save even when validation reports errors.</param>
+    /// <summary>Saves every logical member to a loose file, rebases dependencies, and adopts that file as the editing location.</summary>
+    /// <param name="path">Destination path; missing parent directories are created and existing files may be overwritten.</param>
+    /// <param name="allowInvalid">Whether to bypass ordinary validation errors; logical identities must still be nonempty and unique.</param>
+    /// <remarks>On success, clears the packed location and dirty flag and raises <see cref="Changed"/>. Saving a packed document leaves its original archive entry unchanged.</remarks>
+    /// <exception cref="ArgumentNullException"><paramref name="path"/> is null.</exception>
+    /// <exception cref="ArgumentException"><paramref name="path"/> is empty or whitespace.</exception>
+    /// <exception cref="InvalidOperationException">Validation fails when <paramref name="allowInvalid"/> is false.</exception>
+    /// <exception cref="InvalidDataException">Logical identities are empty or duplicated.</exception>
     public void Save(string path, bool allowInvalid = false)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -255,8 +238,9 @@ public sealed partial class AnimationDocument
     /// <summary>Gets the current logical definition without reconstructing its metadata.</summary>
     public AnimationDefinition SelectedDefinition => Definition;
 
-    /// <summary>Selects an existing member without changing the physical document's dirty state.</summary>
-    /// <param name="definition">The member to select.</param>
+    /// <summary>Selects an existing member without changing the physical document's dirty state and raises <see cref="Changed"/>.</summary>
+    /// <param name="definition">The member instance already owned by this document.</param>
+    /// <exception cref="ArgumentException"><paramref name="definition"/> does not belong to this document.</exception>
     public void SelectDefinition(AnimationDefinition definition)
     {
         if (!_definitions.Contains(definition)) throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
@@ -289,9 +273,9 @@ public sealed partial class AnimationDocument
         return definition;
     }
 
-    /// <summary>Removes a member while retaining at least one editable definition.</summary>
-    /// <param name="definition">The member to remove.</param>
-    /// <returns>Whether the member was removed.</returns>
+    /// <summary>Removes a member, marks the document dirty, and selects the first remaining member if necessary.</summary>
+    /// <param name="definition">The member instance to remove.</param>
+    /// <returns>True if removed; false if it is absent or is the document's only member.</returns>
     public bool RemoveDefinition(AnimationDefinition definition)
     {
         if (_definitions.Count == 1 || !_definitions.Remove(definition)) return false;
@@ -300,8 +284,11 @@ public sealed partial class AnimationDocument
         return true;
     }
 
-    /// <summary>Renames the selected member, rejecting empty or duplicate identities.</summary>
+    /// <summary>Renames the selected member and marks the document dirty, without rewriting references in other documents.</summary>
     /// <param name="identity">The new case-sensitive logical identity.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="identity"/> is null.</exception>
+    /// <exception cref="ArgumentException"><paramref name="identity"/> is empty or whitespace.</exception>
+    /// <exception cref="InvalidDataException">Another member already uses the identity.</exception>
     public void RenameDefinition(string identity)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(identity);
@@ -311,10 +298,12 @@ public sealed partial class AnimationDocument
         MarkChanged();
     }
 
-    /// <summary>Imports selected members without replacing existing definitions or copying resources.</summary>
+    /// <summary>Imports selected GANI members as independent copies, rebasing dependencies without copying resources.</summary>
     /// <param name="path">A same-format source file; legacy singletons are supported.</param>
-    /// <param name="select">Selects source indices. Omit to import all; return null or an empty list to cancel.</param>
-    /// <returns>The number imported. The first imported member becomes selected.</returns>
+    /// <param name="select">Selects zero-based source indices. Omit to import all; return null or an empty list to cancel.</param>
+    /// <returns>The number imported in source order; zero leaves the document unchanged.</returns>
+    /// <remarks>Conflicting logical identities receive unique suffixes. The first imported member becomes selected and the document is marked dirty.</remarks>
+    /// <exception cref="ArgumentException">The file extension is not .gani, or selection contains duplicate or out-of-range indices.</exception>
     public int ImportDefinitions(string path, Func<IReadOnlyList<AnimationDefinition>, IReadOnlyList<int>?>? select = null)
     {
         path = Path.GetFullPath(path);

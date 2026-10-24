@@ -312,9 +312,7 @@ internal sealed class StudioDocument : IDisposable
 
     private void OnChanged(object? sender, EventArgs e) => Changed?.Invoke(this, EventArgs.Empty);
 
-    /// <summary>
-    /// Releases the resources owned by this instance.
-    /// </summary>
+    /// <summary>Detaches model change handlers, disposes the editor, and releases the owned GAF archive when present.</summary>
     public void Dispose()
     {
         _detach?.Invoke();

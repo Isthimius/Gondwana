@@ -4,31 +4,20 @@ using Gondwana.Tooling.Editing;
 
 namespace Gondwana.Tooling.Tilesheets.Editing;
 
-/// <summary>
-/// UI-independent editing session. The complete loaded definition remains authoritative;
-/// browsing frames and changing geometry never reconstructs or prunes its metadata.
-/// </summary>
+/// <summary>UI-independent editing session for all definitions in a GTS document; browsing frames or changing geometry preserves existing frame metadata until explicitly pruned.</summary>
 public sealed partial class TilesheetDocument
 {
-    /// <summary>
-    /// Gets the definition.
-    /// </summary>
+    /// <summary>Gets the selected mutable logical definition; direct edits require <see cref="MarkChanged"/>.</summary>
     public TilesheetDefinition Definition { get; private set; }
-    /// <summary>
-    /// Gets the file path.
-    /// </summary>
+    /// <summary>Gets the full loose-file path, or null for an unsaved or packed document.</summary>
     public string? FilePath { get; private set; }
-    /// <summary>
-    /// Gets the base directory.
-    /// </summary>
+    /// <summary>Gets the absolute directory used to resolve relative dependencies; for packed documents, the containing archive directory.</summary>
     public string BaseDirectory { get; private set; }
     /// <summary>
     /// Gets whether the document contains unsaved changes.
     /// </summary>
     public bool IsDirty { get; private set; }
-    /// <summary>
-    /// Occurs when the document content changes.
-    /// </summary>
+    /// <summary>Occurs synchronously when content is marked modified, selection changes, or a save is accepted.</summary>
     public event EventHandler? Changed;
 
     private TilesheetDocument(TilesheetDefinition definition, string? path, string baseDirectory)
@@ -40,11 +29,10 @@ public sealed partial class TilesheetDocument
         IsDirty = path is null;
     }
 
-    /// <summary>
-    /// Opens the supplied file for use by the tilesheet document.
-    /// </summary>
-    /// <param name="path">The path.</param>
-    /// <returns>The resulting tilesheet document.</returns>
+    /// <summary>Loads all logical definitions from a loose GTS file and selects the first member.</summary>
+    /// <param name="path">Source file path, resolved against the process current directory when relative.</param>
+    /// <returns>A clean editing session retaining the file's definition order.</returns>
+    /// <exception cref="InvalidDataException">The loaded document contains no definitions.</exception>
     public static TilesheetDocument Open(string path)
     {
         path = Path.GetFullPath(path);
@@ -55,11 +43,9 @@ public sealed partial class TilesheetDocument
         return document;
     }
 
-    /// <summary>
-    /// Creates a new tilesheet document.
-    /// </summary>
-    /// <param name="directory">The directory.</param>
-    /// <returns>The resulting tilesheet document.</returns>
+    /// <summary>Creates an unsaved GTS document with one default definition and marks it dirty.</summary>
+    /// <param name="directory">Base directory for dependency resolution; no file or directory is created.</param>
+    /// <returns>A new editing session with no loose or packed save location.</returns>
     public static TilesheetDocument Create(string directory) => new(new()
     {
         Name = "Untitled",
@@ -75,25 +61,20 @@ public sealed partial class TilesheetDocument
         Changed?.Invoke(this, EventArgs.Empty);
     }
 
-    /// <summary>
-    /// Resolves the tilesheet's loose image path.
-    /// </summary>
-    /// <returns>The requested string, or <see langword="null"/> when unavailable.</returns>
+    /// <summary>Resolves the selected tilesheet's loose image path without checking existence.</summary>
+    /// <returns>The full image path relative to <see cref="BaseDirectory"/>, or null if no loose image path is specified.</returns>
     public string? ResolveImagePath() => string.IsNullOrWhiteSpace(Definition.Image?.FilePath)
         ? null : Path.GetFullPath(Definition.Image.FilePath, BaseDirectory);
 
-    /// <summary>
-    /// Resolves the assets file path for the tilesheet's packed image.
-    /// </summary>
-    /// <returns>The requested string, or <see langword="null"/> when unavailable.</returns>
+    /// <summary>Resolves the selected tilesheet's image archive path without opening it.</summary>
+    /// <returns>The explicit archive path resolved against <see cref="BaseDirectory"/>, the document's own archive for an implicit packed entry, or null if neither applies.</returns>
     public string? ResolveAssetsFilePath() => string.IsNullOrWhiteSpace(Definition.Image?.AssetsFilePath)
         ? (string.IsNullOrWhiteSpace(Definition.Image?.AssetEntryName) ? null : PackedLocation?.Path)
         : Path.GetFullPath(Definition.Image.AssetsFilePath, BaseDirectory);
 
-    /// <summary>
-    /// Sets a loose image file as the tilesheet source.
-    /// </summary>
-    /// <param name="path">The path.</param>
+    /// <summary>Replaces the selected tilesheet's image source with a loose path and marks the document dirty.</summary>
+    /// <param name="path">Image path to store unchanged; relative paths are later resolved against <see cref="BaseDirectory"/>.</param>
+    /// <remarks>Clears any packed image reference without reading the image.</remarks>
     public void SetImage(string path)
     {
         // Changing the source is explicit. Unrelated edits never clear packed fields.
@@ -101,11 +82,11 @@ public sealed partial class TilesheetDocument
         MarkChanged();
     }
 
-    /// <summary>
-    /// Sets an image entry in an assets file as the tilesheet source.
-    /// </summary>
-    /// <param name="assetsFilePath">The path to the assets file.</param>
-    /// <param name="assetEntryName">The entry name inside the assets file.</param>
+    /// <summary>Replaces the selected tilesheet's image source with a packed entry and marks the document dirty.</summary>
+    /// <param name="assetsFilePath">Archive path, normalized against the process current directory.</param>
+    /// <param name="assetEntryName">Nonempty image entry name stored unchanged.</param>
+    /// <remarks>Clears the loose image reference without checking archive or entry existence.</remarks>
+    /// <exception cref="ArgumentException">Either argument is null, empty, or whitespace.</exception>
     public void SetPackedImage(string assetsFilePath, string assetEntryName)
     {
         if (string.IsNullOrWhiteSpace(assetsFilePath))
@@ -121,11 +102,10 @@ public sealed partial class TilesheetDocument
         MarkChanged();
     }
 
-    /// <summary>
-    /// Checks the definition and collects validation errors.
-    /// </summary>
-    /// <param name="imageSize">The source image size used to validate frame bounds, when known.</param>
-    /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
+    /// <summary>Validates all logical definitions plus the selected tilesheet's image source and optional image bounds.</summary>
+    /// <param name="imageSize">Selected source image dimensions, or null to omit image bounds checks.</param>
+    /// <returns>Document, geometry, and selected image-source errors; empty when the performed checks pass.</returns>
+    /// <remarks>Checks selected loose-image existence. A complete packed image reference is not opened or checked for entry existence.</remarks>
     public IReadOnlyList<string> Validate(Size? imageSize = null)
     {
         var errors = TilesheetDefinitionSerializer.ValidateDocument(new TilesheetDefinitionDocument { Definitions = _definitions }).ToList();
@@ -155,23 +135,20 @@ public sealed partial class TilesheetDocument
         return errors;
     }
 
-    /// <summary>
-    /// Finds the stored metadata for a frame in the selected region.
-    /// </summary>
-    /// <param name="region">The region.</param>
-    /// <param name="x">The zero-based column in the tile grid.</param>
-    /// <param name="y">The zero-based row in the tile grid.</param>
-    /// <returns>The requested tilesheet frame definition, or <see langword="null"/> when unavailable.</returns>
+    /// <summary>Finds existing frame metadata without adding it or changing dirty state.</summary>
+    /// <param name="region">Region whose stored frame metadata is searched.</param>
+    /// <param name="x">Zero-based tile column; bounds are not validated.</param>
+    /// <param name="y">Zero-based tile row; bounds are not validated.</param>
+    /// <returns>The first matching metadata object, or null when the frame has no explicit metadata.</returns>
     public TilesheetFrameDefinition? FindFrame(TilesheetRegionDefinition region, int x, int y) =>
         region.Frames.FirstOrDefault(f => f is not null && f.XTile == x && f.YTile == y);
 
-    /// <summary>
-    /// Gets or creates editable metadata for a frame in the selected region.
-    /// </summary>
-    /// <param name="region">The region.</param>
-    /// <param name="x">The zero-based column in the tile grid.</param>
-    /// <param name="y">The zero-based row in the tile grid.</param>
-    /// <returns>The editable frame metadata, created when none was previously stored.</returns>
+    /// <summary>Gets or adds mutable frame metadata without marking the document dirty.</summary>
+    /// <param name="region">Region whose frame metadata is edited.</param>
+    /// <param name="x">Zero-based tile column; bounds are not validated.</param>
+    /// <param name="y">Zero-based tile row; bounds are not validated.</param>
+    /// <returns>The existing metadata object or a new one appended to the region.</returns>
+    /// <remarks>Call <see cref="MarkChanged"/> when committing an edit.</remarks>
     public TilesheetFrameDefinition EditFrame(TilesheetRegionDefinition region, int x, int y)
     {
         var frame = FindFrame(region, x, y);
@@ -181,10 +158,8 @@ public sealed partial class TilesheetDocument
         return frame;
     }
 
-    /// <summary>
-    /// Removes frame metadata whose coordinates fall outside the region grid.
-    /// </summary>
-    /// <param name="region">The region.</param>
+    /// <summary>Removes frame metadata outside the current grid and marks the document dirty if anything was removed.</summary>
+    /// <param name="region">Region whose grid geometry determines valid metadata coordinates.</param>
     /// <returns>The number of frame metadata entries removed.</returns>
     public int RemoveOutOfGridMetadata(TilesheetRegionDefinition region)
     {
@@ -195,12 +170,15 @@ public sealed partial class TilesheetDocument
         return removed;
     }
 
-    /// <summary>
-    /// Saves the current content to the destination file.
-    /// </summary>
-    /// <param name="path">The path.</param>
-    /// <param name="imageSize">The source image size used to validate frame bounds, when known.</param>
-    /// <param name="allowInvalid">Whether to save even when validation reports errors.</param>
+    /// <summary>Saves every logical member to a loose file, rebases dependencies, and adopts that file as the editing location.</summary>
+    /// <param name="path">Destination path; missing parent directories are created and existing files may be overwritten.</param>
+    /// <param name="imageSize">Known image dimensions for validating the selected tilesheet, or null to omit image bounds checks.</param>
+    /// <param name="allowInvalid">Whether to bypass ordinary validation errors; logical identities must still be nonempty and unique.</param>
+    /// <remarks>On success, clears the packed location and dirty flag and raises <see cref="Changed"/>. Saving a packed document leaves its original archive entry unchanged.</remarks>
+    /// <exception cref="ArgumentNullException"><paramref name="path"/> is null.</exception>
+    /// <exception cref="ArgumentException"><paramref name="path"/> is empty or whitespace.</exception>
+    /// <exception cref="InvalidOperationException">Validation fails when <paramref name="allowInvalid"/> is false.</exception>
+    /// <exception cref="InvalidDataException">Logical identities are empty or duplicated.</exception>
     public void Save(string path, Size? imageSize = null, bool allowInvalid = false)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -265,8 +243,9 @@ public sealed partial class TilesheetDocument
     /// <summary>Gets the current logical definition without reconstructing its metadata.</summary>
     public TilesheetDefinition SelectedDefinition => Definition;
 
-    /// <summary>Selects an existing member without changing the physical document's dirty state.</summary>
-    /// <param name="definition">The member to select.</param>
+    /// <summary>Selects an existing member without changing the physical document's dirty state and raises <see cref="Changed"/>.</summary>
+    /// <param name="definition">The member instance already owned by this document.</param>
+    /// <exception cref="ArgumentException"><paramref name="definition"/> does not belong to this document.</exception>
     public void SelectDefinition(TilesheetDefinition definition)
     {
         if (!_definitions.Contains(definition)) throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
@@ -299,9 +278,9 @@ public sealed partial class TilesheetDocument
         return definition;
     }
 
-    /// <summary>Removes a member while retaining at least one editable definition.</summary>
-    /// <param name="definition">The member to remove.</param>
-    /// <returns>Whether the member was removed.</returns>
+    /// <summary>Removes a member, marks the document dirty, and selects the first remaining member if necessary.</summary>
+    /// <param name="definition">The member instance to remove.</param>
+    /// <returns>True if removed; false if it is absent or is the document's only member.</returns>
     public bool RemoveDefinition(TilesheetDefinition definition)
     {
         if (_definitions.Count == 1 || !_definitions.Remove(definition)) return false;
@@ -310,8 +289,11 @@ public sealed partial class TilesheetDocument
         return true;
     }
 
-    /// <summary>Renames the selected member, rejecting empty or duplicate identities.</summary>
+    /// <summary>Renames the selected member and marks the document dirty, without rewriting references in other documents.</summary>
     /// <param name="identity">The new case-sensitive logical identity.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="identity"/> is null.</exception>
+    /// <exception cref="ArgumentException"><paramref name="identity"/> is empty or whitespace.</exception>
+    /// <exception cref="InvalidDataException">Another member already uses the identity.</exception>
     public void RenameDefinition(string identity)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(identity);
@@ -321,10 +303,12 @@ public sealed partial class TilesheetDocument
         MarkChanged();
     }
 
-    /// <summary>Imports selected members without replacing existing definitions or copying resources.</summary>
+    /// <summary>Imports selected GTS members as independent copies, rebasing dependencies without copying resources.</summary>
     /// <param name="path">A same-format source file; legacy singletons are supported.</param>
-    /// <param name="select">Selects source indices. Omit to import all; return null or an empty list to cancel.</param>
-    /// <returns>The number imported. The first imported member becomes selected.</returns>
+    /// <param name="select">Selects zero-based source indices. Omit to import all; return null or an empty list to cancel.</param>
+    /// <returns>The number imported in source order; zero leaves the document unchanged.</returns>
+    /// <remarks>Conflicting logical identities receive unique suffixes. The first imported member becomes selected and the document is marked dirty.</remarks>
+    /// <exception cref="ArgumentException">The file extension is not .gts, or selection contains duplicate or out-of-range indices.</exception>
     public int ImportDefinitions(string path, Func<IReadOnlyList<TilesheetDefinition>, IReadOnlyList<int>?>? select = null)
     {
         path = Path.GetFullPath(path);

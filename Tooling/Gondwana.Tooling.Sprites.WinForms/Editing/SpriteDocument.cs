@@ -6,25 +6,17 @@ namespace Gondwana.Tooling.Sprites.Editing;
 /// <summary>UI-independent authoring session. Never creates runtime sprites or scenes.</summary>
 public sealed partial class SpriteDocument
 {
-    /// <summary>
-    /// Gets the definition.
-    /// </summary>
+    /// <summary>Gets the selected mutable logical definition; direct edits require <see cref="MarkChanged"/>.</summary>
     public SpriteDefinition Definition { get; private set; }
-    /// <summary>
-    /// Gets the file path.
-    /// </summary>
+    /// <summary>Gets the full loose-file path, or null for an unsaved or packed document.</summary>
     public string? FilePath { get; private set; }
-    /// <summary>
-    /// Gets the base directory.
-    /// </summary>
+    /// <summary>Gets the absolute directory used to resolve relative dependencies; for packed documents, the containing archive directory.</summary>
     public string BaseDirectory { get; private set; }
     /// <summary>
     /// Gets whether the document contains unsaved changes.
     /// </summary>
     public bool IsDirty { get; private set; }
-    /// <summary>
-    /// Occurs when the document content changes.
-    /// </summary>
+    /// <summary>Occurs synchronously when content is marked modified, selection changes, or a save is accepted.</summary>
     public event EventHandler? Changed;
 
     private SpriteDocument(SpriteDefinition definition, string directory, string? path, bool dirty)
@@ -37,17 +29,14 @@ public sealed partial class SpriteDocument
         IsDirty = dirty;
     }
 
-    /// <summary>
-    /// Creates a new sprite document.
-    /// </summary>
-    /// <param name="directory">The directory.</param>
-    /// <returns>The resulting sprite document.</returns>
+    /// <summary>Creates an unsaved GSPR document with one default definition and marks it dirty.</summary>
+    /// <param name="directory">Base directory for dependency resolution; no file or directory is created.</param>
+    /// <returns>A new editing session with no loose or packed save location.</returns>
     public static SpriteDocument Create(string directory) => new(new() { Source = SpriteDefinitionSource.Generated() }, directory, null, true);
-    /// <summary>
-    /// Opens the supplied file for use by the sprite document.
-    /// </summary>
-    /// <param name="path">The path.</param>
-    /// <returns>The resulting sprite document.</returns>
+    /// <summary>Loads all logical definitions from a loose GSPR file and selects the first member.</summary>
+    /// <param name="path">Source file path, resolved against the process current directory when relative.</param>
+    /// <returns>A clean editing session retaining the file's definition order.</returns>
+    /// <exception cref="InvalidDataException">The loaded document contains no definitions.</exception>
     public static SpriteDocument Open(string path)
     {
         path = Path.GetFullPath(path);
@@ -58,10 +47,8 @@ public sealed partial class SpriteDocument
         return document;
     }
 
-    /// <summary>
-    /// Adds a new sprite definition to the document.
-    /// </summary>
-    /// <returns>The new sprite definition added to the document.</returns>
+    /// <summary>Adds a sprite instance with a new GUID and unique nickname to the selected definition and marks it dirty.</summary>
+    /// <returns>The new mutable sprite instance definition.</returns>
     public SpriteInstanceDefinition AddSprite()
     {
         var sprite = new SpriteInstanceDefinition { Id = Guid.NewGuid(), Nickname = UniqueName("sprite") };
@@ -70,11 +57,9 @@ public sealed partial class SpriteDocument
         return sprite;
     }
 
-    /// <summary>
-    /// Copies the selected sprite definition into a new document entry.
-    /// </summary>
-    /// <param name="source">The source.</param>
-    /// <returns>The copied sprite definition added to the document.</returns>
+    /// <summary>Deep-copies a sprite instance into the selected definition with a new GUID and unique nickname.</summary>
+    /// <param name="source">Sprite instance to copy through native serialization.</param>
+    /// <returns>The added mutable instance; the document is marked dirty.</returns>
     public SpriteInstanceDefinition DuplicateSprite(SpriteInstanceDefinition source)
     {
         var sprite = SpriteDefinitionSerializer.FromJson(SpriteDefinitionSerializer.ToJson(new() { Sprites = [source] })).Sprites[0];
@@ -85,11 +70,9 @@ public sealed partial class SpriteDocument
         return sprite;
     }
 
-    /// <summary>
-    /// Removes the selected sprite definition from the document.
-    /// </summary>
-    /// <param name="sprite">The sprite.</param>
-    /// <returns><see langword="true"/> if the entry was found and removed; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Removes a sprite instance from the selected definition and marks the document dirty when found.</summary>
+    /// <param name="sprite">The instance definition to remove.</param>
+    /// <returns>True if removed; false if absent.</returns>
     public bool RemoveSprite(SpriteInstanceDefinition sprite)
     {
         if (!Definition.Sprites.Remove(sprite)) return false;
@@ -104,11 +87,10 @@ public sealed partial class SpriteDocument
         return name;
     }
 
-    /// <summary>
-    /// Adds or updates a tilesheet reference to a loose GTS file.
-    /// </summary>
-    /// <param name="name">The name.</param>
-    /// <param name="path">The path.</param>
+    /// <summary>Replaces matching tilesheet source entries in the selected definition and marks the document dirty.</summary>
+    /// <param name="name">Logical tilesheet name, matched using case-sensitive comparison.</param>
+    /// <param name="path">Loose GTS file path; normalized against the process current directory and stored relative to the document.</param>
+    /// <remarks>Does not load the dependency or verify that its logical member exists.</remarks>
     public void SetLooseTilesheetSource(string name, string path)
     {
         Definition.TilesheetSources.RemoveAll(source => source.Tilesheet == name);
@@ -116,11 +98,10 @@ public sealed partial class SpriteDocument
         MarkChanged();
     }
 
-    /// <summary>
-    /// Adds or updates a scene reference to a loose GSCN file.
-    /// </summary>
-    /// <param name="id">The id.</param>
-    /// <param name="path">The path.</param>
+    /// <summary>Replaces matching scene source entries in the selected definition and marks the document dirty.</summary>
+    /// <param name="id">Logical scene ID, matched using case-sensitive comparison.</param>
+    /// <param name="path">Loose GSCN file path; normalized against the process current directory and stored relative to the document.</param>
+    /// <remarks>Does not load the dependency or verify that its logical member exists.</remarks>
     public void SetLooseSceneSource(string id, string path)
     {
         Definition.SceneSources.RemoveAll(source => source.SceneId == id);
@@ -128,7 +109,10 @@ public sealed partial class SpriteDocument
         MarkChanged();
     }
 
-    /// <summary>Adds or updates the authoring source for a registered GANI animation.</summary>
+    /// <summary>Replaces matching animation source entries in the selected definition and marks the document dirty.</summary>
+    /// <param name="key">Logical animation key, matched using case-insensitive comparison.</param>
+    /// <param name="path">Loose GANI file path; normalized against the process current directory and stored relative to the document.</param>
+    /// <remarks>Does not load the dependency or verify that its logical member exists.</remarks>
     public void SetLooseAnimationSource(string key, string path)
     {
         Definition.AnimationSources.RemoveAll(source => string.Equals(source.AnimationKey, key, StringComparison.OrdinalIgnoreCase));
@@ -137,15 +121,11 @@ public sealed partial class SpriteDocument
         MarkChanged();
     }
 
-    /// <summary>
-    /// Resolves a document-relative resource path to an absolute path.
-    /// </summary>
-    /// <param name="path">The path.</param>
-    /// <returns>The absolute path of the referenced resource.</returns>
+    /// <summary>Resolves a document-relative resource path to an absolute path without checking existence.</summary>
+    /// <param name="path">A dependency path, interpreted relative to <see cref="BaseDirectory"/> unless rooted.</param>
+    /// <returns>The normalized absolute resource path.</returns>
     public string ResolveReferencePath(string path) => Path.GetFullPath(path, BaseDirectory);
-    /// <summary>
-    /// Checks the definition and collects validation errors.
-    /// </summary>
+    /// <summary>Validates all logical definitions and their document-level identities without loading runtime resources.</summary>
     /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
     public IReadOnlyList<string> Validate() => SpriteDefinitionSerializer.ValidateDocument(new SpriteDefinitionDocument { Definitions = _definitions });
     /// <summary>
@@ -153,11 +133,14 @@ public sealed partial class SpriteDocument
     /// </summary>
     public void MarkChanged() { IsDirty = true; Changed?.Invoke(this, EventArgs.Empty); }
 
-    /// <summary>
-    /// Saves the current content to the destination file.
-    /// </summary>
-    /// <param name="path">The path.</param>
-    /// <param name="allowInvalid">Whether to save even when validation reports errors.</param>
+    /// <summary>Saves every logical member to a loose file, rebases dependencies, and adopts that file as the editing location.</summary>
+    /// <param name="path">Destination path; missing parent directories are created and existing files may be overwritten.</param>
+    /// <param name="allowInvalid">Whether to bypass ordinary validation errors; logical identities must still be nonempty and unique.</param>
+    /// <remarks>On success, clears the packed location and dirty flag and raises <see cref="Changed"/>. Saving a packed document leaves its original archive entry unchanged.</remarks>
+    /// <exception cref="ArgumentNullException"><paramref name="path"/> is null.</exception>
+    /// <exception cref="ArgumentException"><paramref name="path"/> is empty or whitespace.</exception>
+    /// <exception cref="InvalidDataException">Validation fails when <paramref name="allowInvalid"/> is false.</exception>
+    /// <exception cref="InvalidDataException">Logical identities are empty or duplicated.</exception>
     public void Save(string path, bool allowInvalid = false)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -214,8 +197,9 @@ public sealed partial class SpriteDocument
     /// <summary>Gets the current logical definition without reconstructing its metadata.</summary>
     public SpriteDefinition SelectedDefinition => Definition;
 
-    /// <summary>Selects an existing member without changing the physical document's dirty state.</summary>
-    /// <param name="definition">The member to select.</param>
+    /// <summary>Selects an existing member without changing the physical document's dirty state and raises <see cref="Changed"/>.</summary>
+    /// <param name="definition">The member instance already owned by this document.</param>
+    /// <exception cref="ArgumentException"><paramref name="definition"/> does not belong to this document.</exception>
     public void SelectDefinition(SpriteDefinition definition)
     {
         if (!_definitions.Contains(definition)) throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
@@ -235,8 +219,8 @@ public sealed partial class SpriteDocument
         return definition;
     }
 
-    /// <summary>Duplicates and selects the current definition with a unique identity.</summary>
-    /// <returns>The new independent member.</returns>
+    /// <summary>Duplicates and selects the current definition with a unique identity and marks the document dirty.</summary>
+    /// <returns>The independent copy, with new sprite GUIDs and nonempty nicknames suffixed by the new definition key.</returns>
     public SpriteDefinition DuplicateDefinition()
     {
         var definition = SpriteDefinitionSerializer.FromJson(SpriteDefinitionSerializer.ToJson(Definition));
@@ -249,9 +233,9 @@ public sealed partial class SpriteDocument
         return definition;
     }
 
-    /// <summary>Removes a member while retaining at least one editable definition.</summary>
-    /// <param name="definition">The member to remove.</param>
-    /// <returns>Whether the member was removed.</returns>
+    /// <summary>Removes a member, marks the document dirty, and selects the first remaining member if necessary.</summary>
+    /// <param name="definition">The member instance to remove.</param>
+    /// <returns>True if removed; false if it is absent or is the document's only member.</returns>
     public bool RemoveDefinition(SpriteDefinition definition)
     {
         if (_definitions.Count == 1 || !_definitions.Remove(definition)) return false;
@@ -260,8 +244,11 @@ public sealed partial class SpriteDocument
         return true;
     }
 
-    /// <summary>Renames the selected member, rejecting empty or duplicate identities.</summary>
+    /// <summary>Renames the selected member and marks the document dirty, without rewriting references in other documents.</summary>
     /// <param name="identity">The new case-sensitive logical identity.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="identity"/> is null.</exception>
+    /// <exception cref="ArgumentException"><paramref name="identity"/> is empty or whitespace.</exception>
+    /// <exception cref="InvalidDataException">Another member already uses the identity.</exception>
     public void RenameDefinition(string identity)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(identity);
@@ -271,10 +258,12 @@ public sealed partial class SpriteDocument
         MarkChanged();
     }
 
-    /// <summary>Imports selected members without replacing existing definitions or copying resources.</summary>
+    /// <summary>Imports selected GSPR members as independent copies, rebasing dependencies without copying resources.</summary>
     /// <param name="path">A same-format source file; legacy singletons are supported.</param>
-    /// <param name="select">Selects source indices. Omit to import all; return null or an empty list to cancel.</param>
-    /// <returns>The number imported. The first imported member becomes selected.</returns>
+    /// <param name="select">Selects zero-based source indices. Omit to import all; return null or an empty list to cancel.</param>
+    /// <returns>The number imported in source order; zero leaves the document unchanged.</returns>
+    /// <remarks>Conflicting logical identities receive unique suffixes. The first imported member becomes selected and the document is marked dirty.</remarks>
+    /// <exception cref="ArgumentException">The file extension is not .gspr, or selection contains duplicate or out-of-range indices.</exception>
     public int ImportDefinitions(string path, Func<IReadOnlyList<SpriteDefinition>, IReadOnlyList<int>?>? select = null)
     {
         path = Path.GetFullPath(path);

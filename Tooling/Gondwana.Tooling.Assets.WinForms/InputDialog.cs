@@ -4,17 +4,13 @@ internal sealed class InputDialog : Form
 {
     private readonly TextBox _textBox;
 
-    /// <summary>
-    /// Gets the value.
-    /// </summary>
+    /// <summary>Gets the entered text with leading and trailing whitespace removed.</summary>
     public string Value => _textBox.Text.Trim();
 
-    /// <summary>
-    /// Initializes a new instance of the <c>InputDialog</c> class.
-    /// </summary>
-    /// <param name="title">The title.</param>
-    /// <param name="prompt">The prompt.</param>
-    /// <param name="initialValue">The initial value.</param>
+    /// <summary>Creates a text-entry dialog with OK and Cancel buttons.</summary>
+    /// <param name="title">Dialog window title.</param>
+    /// <param name="prompt">Label describing the requested text.</param>
+    /// <param name="initialValue">Initial text shown in the input box.</param>
     public InputDialog(string title, string prompt, string initialValue = "")
     {
         Text = title;
@@ -70,15 +66,13 @@ internal sealed class InputDialog : Form
         DarkTheme.Apply(this);
     }
 
-    /// <summary>
-    /// Displays the dialog and returns the entered value.
-    /// </summary>
-    /// <param name="owner">The window that owns the dialog.</param>
-    /// <param name="title">The title.</param>
-    /// <param name="prompt">The prompt.</param>
-    /// <param name="initialValue">The initial value.</param>
-    /// <param name="password">Whether to mask credential input.</param>
-    /// <returns>The requested string, or <see langword="null"/> when unavailable.</returns>
+    /// <summary>Shows a modal text-entry dialog and disposes it after closing.</summary>
+    /// <param name="owner">Window owning the dialog.</param>
+    /// <param name="title">Dialog window title.</param>
+    /// <param name="prompt">Label describing the requested text.</param>
+    /// <param name="initialValue">Initial input text.</param>
+    /// <param name="password">Whether the input is masked.</param>
+    /// <returns>Trimmed input on OK, including an empty string; null on cancellation.</returns>
     public static string? Show(IWin32Window owner, string title, string prompt, string initialValue = "", bool password = false)
     {
         using var dialog = new InputDialog(title, prompt, initialValue);

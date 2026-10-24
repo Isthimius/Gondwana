@@ -3,11 +3,7 @@ using Gondwana.Tooling.Tilesheets.Sources;
 
 namespace Gondwana.Tooling.Tilesheets.WinForms;
 
-/// <summary>
-/// Hostable project/source browser used by the standalone GTS tool and, later,
-/// Gondwana Studio. It knows how to browse loose GTS/images and GAF image entries,
-/// but delegates document actions to its host through events.
-/// </summary>
+/// <summary>Browses loose GTS files, images, and packed image entries, delegating document actions to the host through events.</summary>
 public sealed class TilesheetWorkspaceControl : UserControl
 {
     internal const string ImageFilter =
@@ -36,9 +32,7 @@ public sealed class TilesheetWorkspaceControl : UserControl
         ShowNodeToolTips = true
     };
 
-    /// <summary>
-    /// Gets the working directory.
-    /// </summary>
+    /// <summary>Gets the full path at the root of the workspace browser.</summary>
     public string WorkingDirectory { get; private set; }
 
     /// <summary>
@@ -62,11 +56,10 @@ public sealed class TilesheetWorkspaceControl : UserControl
     /// </summary>
     public event Action<PackedImageSource>? UsePackedImageRequested;
 
-    /// <summary>
-    /// Initializes a new instance of the <c>TilesheetWorkspaceControl</c> class.
-    /// </summary>
-    /// <param name="assetPackages">The asset packages.</param>
-    /// <param name="initialDirectory">The initial directory shown by the picker or workspace.</param>
+    /// <summary>Creates a browser and loads the initial directory listing.</summary>
+    /// <param name="assetPackages">Borrowed package cache used to enumerate packed images; the caller owns its lifetime.</param>
+    /// <param name="initialDirectory">Initial directory, or null for the process's current directory.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="assetPackages"/> is null.</exception>
     public TilesheetWorkspaceControl(
         AssetPackageCatalog assetPackages,
         string? initialDirectory = null)
@@ -168,10 +161,9 @@ public sealed class TilesheetWorkspaceControl : UserControl
         SetWorkingDirectory(dialog.SelectedPath);
     }
 
-    /// <summary>
-    /// Sets working directory.
-    /// </summary>
-    /// <param name="path">The path.</param>
+    /// <summary>Normalizes the workspace path and rebuilds the directory browser.</summary>
+    /// <param name="path">A nonblank directory path; relative paths use the process's current directory.</param>
+    /// <exception cref="ArgumentException"><paramref name="path"/> is null, empty, or whitespace.</exception>
     public void SetWorkingDirectory(string path)
     {
         if (string.IsNullOrWhiteSpace(path))

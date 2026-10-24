@@ -5,13 +5,11 @@ namespace Gondwana.Tooling.Tilesheets.WinForms;
 /// <summary>Default packed-image picker shared by standalone and embedded hosts.</summary>
 public static class PackedImagePicker
 {
-    /// <summary>
-    /// Displays the picker and returns the selected packed image.
-    /// </summary>
-    /// <param name="owner">The window that owns the dialog.</param>
-    /// <param name="catalog">The catalog.</param>
-    /// <param name="initialDirectory">The initial directory shown by the picker or workspace.</param>
-    /// <returns>The requested packed image source, or <see langword="null"/> when unavailable.</returns>
+    /// <summary>Prompts for an archive and one of its image entries.</summary>
+    /// <param name="owner">Window owning the dialogs.</param>
+    /// <param name="catalog">Borrowed package cache used to enumerate images.</param>
+    /// <param name="initialDirectory">Initial archive-picker directory.</param>
+    /// <returns>The selected image location, or null on cancellation, an archive-load error, or an archive containing no images.</returns>
     public static PackedImageSource? Pick(
         IWin32Window owner,
         AssetPackageCatalog catalog,

@@ -2,7 +2,7 @@ using Gondwana.Tooling.Studio.WinForms.Extensibility;
 
 namespace Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics;
 
-/// <summary>Reference Studio plugin: lifecycle orchestration, panel and menu contributions.</summary>
+/// <summary>Coordinates background working-directory diagnostics and contributes a result pane and Rescan command.</summary>
 public sealed class ProjectDiagnosticsPlugin : IStudioPlugin
 {
     private readonly ProjectDiagnosticsScanner _scanner = new();
@@ -11,15 +11,11 @@ public sealed class ProjectDiagnosticsPlugin : IStudioPlugin
     private Task<ProjectScanResult>? _scan;
     private string? _projectPath;
 
-    /// <summary>
-    /// Gets the name.
-    /// </summary>
+    /// <summary>Gets the display label used for the diagnostics pane and its Plugins menu entry.</summary>
     public string Name => "Project Diagnostics";
 
-    /// <summary>
-    /// Updates the plugin for the newly opened project.
-    /// </summary>
-    /// <param name="projectPath">The project path.</param>
+    /// <summary>Cancels the previous scan and starts a scan of the selected working directory.</summary>
+    /// <param name="projectPath">The authoring directory to scan recursively.</param>
     public void OnProjectOpened(string projectPath)
     {
         OnProjectClosed();
@@ -27,9 +23,7 @@ public sealed class ProjectDiagnosticsPlugin : IStudioPlugin
         Rescan();
     }
 
-    /// <summary>
-    /// Clears plugin state associated with the closed project.
-    /// </summary>
+    /// <summary>Requests scan cancellation, discards pending results, and clears the working directory and displayed diagnostics.</summary>
     public void OnProjectClosed()
     {
         CancelScan();
@@ -37,10 +31,8 @@ public sealed class ProjectDiagnosticsPlugin : IStudioPlugin
         _panel?.Clear("No working directory.");
     }
 
-    /// <summary>
-    /// Creates the plugin's dockable user interface.
-    /// </summary>
-    /// <returns>The resulting control.</returns>
+    /// <summary>Creates the diagnostics panel once and connects its timer and Rescan button to this plugin.</summary>
+    /// <returns>The cached panel, owned by Studio after hosting; disposing it cancels the current scan.</returns>
     public Control CreatePanel()
     {
         if (_panel is not null) return _panel;
@@ -49,10 +41,8 @@ public sealed class ProjectDiagnosticsPlugin : IStudioPlugin
         return _panel;
     }
 
-    /// <summary>
-    /// Creates the menu item that opens the plugin panel.
-    /// </summary>
-    /// <returns>The resulting tool strip menu item.</returns>
+    /// <summary>Creates a Plugins menu entry containing a Rescan command for the current working directory.</summary>
+    /// <returns>A new menu item for the caller to own and dispose.</returns>
     public ToolStripMenuItem CreateMenuItem()
     {
         var root = new ToolStripMenuItem(Name);
@@ -60,7 +50,8 @@ public sealed class ProjectDiagnosticsPlugin : IStudioPlugin
         return root;
     }
 
-    /// <summary>Replaces the current scan. Called on Studio's UI thread, like lifecycle callbacks.</summary>
+    /// <summary>Cancels the previous scan, clears displayed results, and starts a replacement worker scan.</summary>
+    /// <remarks>Call on the UI thread. No scan starts without a working directory or after the panel is disposed; cancellation does not wait for the previous worker.</remarks>
     public void Rescan()
     {
         CancelScan();

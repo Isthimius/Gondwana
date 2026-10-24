@@ -9,14 +9,12 @@ internal sealed class OverlayLegendRow : UserControl
     private readonly OverlayKind _kind;
     private readonly Panel _swatch;
 
-    /// <summary>
-    /// Initializes a new instance of the <c>OverlayLegendRow</c> class.
-    /// </summary>
-    /// <param name="kind">The kind.</param>
-    /// <param name="label">The label.</param>
-    /// <param name="settings">The settings.</param>
-    /// <param name="visibilityChanged">The visibility changed.</param>
-    /// <param name="chooseColor">The choose color.</param>
+    /// <summary>Creates an initially checked visibility toggle and a color swatch that follows shared settings.</summary>
+    /// <param name="kind">Overlay whose color the swatch displays.</param>
+    /// <param name="label">Text beside the visibility toggle.</param>
+    /// <param name="settings">Borrowed settings observed until this row is disposed.</param>
+    /// <param name="visibilityChanged">Callback receiving the toggle's new checked state.</param>
+    /// <param name="chooseColor">Callback invoked by the color-selection button.</param>
     public OverlayLegendRow(OverlayKind kind, string label, OverlaySettings settings, Action<bool> visibilityChanged, Action chooseColor)
     {
         _kind = kind;

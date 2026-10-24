@@ -6,22 +6,14 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Tilesheets.WinForms;
 
-/// <summary>
-/// Hostable WinForms surface for editing one Gondwana tilesheet definition.
-/// The standalone GTS application hosts this control in a DockContent; Gondwana
-/// Studio can host the same control directly without depending on MainForm.
-/// </summary>
+/// <summary>Hostable editor for the definitions in a tilesheet document, with image, region, frame, and validation panes.</summary>
 public sealed class TilesheetEditorControl : UserControl
 {
-    /// <summary>
-    /// Gets the pane names.
-    /// </summary>
+    /// <summary>Gets the pane titles accepted by the pane visibility methods.</summary>
     public static IReadOnlyList<string> PaneNames { get; } =
         Array.AsReadOnly(["Image", "Definition", "Region", "Frame", "Validation"]);
 
-    /// <summary>
-    /// Gets the document.
-    /// </summary>
+    /// <summary>Gets the mutable authoring document displayed by this editor.</summary>
     public TilesheetDocument Document { get; }
     private readonly OverlaySettings _overlaySettings;
     private readonly AssetPackageCatalog _assetPackages;
@@ -41,32 +33,22 @@ public sealed class TilesheetEditorControl : UserControl
     private bool _refreshPending;
     private EditorDockWorkspace _workspace = null!;
     private TilesheetRegionDefinition? SelectedRegion => _regions.SelectedItem as TilesheetRegionDefinition;
-    /// <summary>
-    /// Gets the image size.
-    /// </summary>
+    /// <summary>Gets the dimensions of the loaded preview image, or null when no preview is available.</summary>
     public Size? ImageSize => _viewport.Image?.Size;
 
-    /// <summary>
-    /// Optional host callback for choosing a packed GAF image. The standalone app
-    /// supplies one; Studio can provide its own project-aware picker.
-    /// </summary>
+    /// <summary>Gets or sets the host picker invoked with the dialog owner to select a packed image; returning null cancels selection.</summary>
     public Func<IWin32Window, PackedImageSource?>? PackedImagePicker { get; set; }
 
-    /// <summary>
-    /// Initializes a new instance of the <c>TilesheetEditorControl</c> class.
-    /// </summary>
-    /// <param name="document">The document displayed or edited by the control.</param>
+    /// <summary>Creates a tilesheet editor with its own package cache.</summary>
+    /// <param name="document">The mutable tilesheet document to edit.</param>
     public TilesheetEditorControl(TilesheetDocument document)
         : this(document, overlaySettings: null, assetPackages: null)
     {
     }
 
-    /// <summary>
-    /// Creates an editor that uses a host-owned asset-package catalog. Studio can
-    /// share one catalog across its workspace and all open tilesheet editors.
-    /// </summary>
-    /// <param name="document">The document displayed or edited by the control.</param>
-    /// <param name="assetPackages">The asset packages.</param>
+    /// <summary>Creates a tilesheet editor using a shared package cache.</summary>
+    /// <param name="document">The mutable tilesheet document to edit.</param>
+    /// <param name="assetPackages">A non-null borrowed cache; the caller remains responsible for disposal.</param>
     public TilesheetEditorControl(TilesheetDocument document, AssetPackageCatalog assetPackages)
         : this(
             document,
@@ -213,10 +195,8 @@ public sealed class TilesheetEditorControl : UserControl
         UpdateValidation();
     }
 
-    /// <summary>
-    /// Selects a loose image as the tilesheet source.
-    /// </summary>
-    /// <param name="path">The path.</param>
+    /// <summary>Sets a loose image source, marks the document dirty, and refreshes the preview.</summary>
+    /// <param name="path">Image path, or null to show a file picker. Cancelling the picker leaves the document unchanged.</param>
     public void ChooseImage(string? path = null)
     {
         if (path is null)
@@ -229,9 +209,8 @@ public sealed class TilesheetEditorControl : UserControl
         RefreshView();
     }
 
-    /// <summary>
-    /// Selects an image from an assets file as the tilesheet source.
-    /// </summary>
+    /// <summary>Invokes the host picker and applies its selected packed image; cancellation leaves the document unchanged.</summary>
+    /// <remarks>Displays an informational message if no picker is configured.</remarks>
     public void ChoosePackedImage()
     {
         if (PackedImagePicker is null)
@@ -250,10 +229,9 @@ public sealed class TilesheetEditorControl : UserControl
             ChoosePackedImage(source);
     }
 
-    /// <summary>
-    /// Selects an image from an assets file as the tilesheet source.
-    /// </summary>
-    /// <param name="source">The source.</param>
+    /// <summary>Sets the packed image source, marks the document dirty, and reloads the preview.</summary>
+    /// <param name="source">The archive entry identifying the image.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="source"/> is null.</exception>
     public void ChoosePackedImage(PackedImageSource source)
     {
         ArgumentNullException.ThrowIfNull(source);
@@ -262,9 +240,7 @@ public sealed class TilesheetEditorControl : UserControl
         RefreshView();
     }
 
-    /// <summary>
-    /// Adds a new region to the tilesheet definition.
-    /// </summary>
+    /// <summary>Adds and selects a uniquely named region covering the preview image, or a 32-by-32 area when no image is loaded, and marks the document dirty.</summary>
     public void AddRegion()
     {
         string name = "default";
@@ -425,10 +401,8 @@ public sealed class TilesheetEditorControl : UserControl
         finally { _viewport.UpdateExtent(); }
     }
 
-    /// <summary>
-    /// Validates the current document and refreshes the displayed diagnostics.
-    /// </summary>
-    /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
+    /// <summary>Refreshes the validation pane using the document and current preview dimensions.</summary>
+    /// <returns>Document validation errors and any preview-load error; informational overlay messages are excluded.</returns>
     public IReadOnlyList<string> UpdateValidation()
     {
         var errors = Document.Validate(ImageSize).ToList();
@@ -475,10 +449,8 @@ public sealed class TilesheetEditorControl : UserControl
     public void ShowAllPanes() =>
         _workspace.ShowAllPanes();
 
-    /// <summary>
-    /// Commits pending editor input to the document.
-    /// </summary>
-    /// <returns><see langword="true"/> if the pending edits were committed; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Moves focus out of the property editor and validates pending control input without saving the document.</summary>
+    /// <returns><see langword="true"/> if control validation succeeds and the property editor releases focus; otherwise, <see langword="false"/>.</returns>
     public bool CommitEdits()
     {
         _validation.Focus();
