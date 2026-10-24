@@ -7,9 +7,7 @@ namespace Gondwana.Tooling.Scenes.WinForms;
 internal sealed class TileTransformConverter : EnumConverter
 {
     private static readonly string[] Labels = ["Identity", "Rotate 90°", "Rotate 180°", "Rotate 270°", "Flip Horizontal", "Flip Vertical", "Flip Diagonal", "Flip Anti-Diagonal"];
-    /// <summary>
-    /// Initializes a new instance of the <c>TileTransformConverter</c> class.
-    /// </summary>
+    /// <summary>Creates a converter between placement transforms and readable property-grid labels.</summary>
     public TileTransformConverter() : base(typeof(TileTransform)) { }
     /// <inheritdoc/>
     public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType) =>

@@ -12,31 +12,21 @@ internal sealed class EditorDocument : DockContent
 {
     private readonly Func<EditorDocument, bool, bool> _save;
 
-    /// <summary>
-    /// Gets the document.
-    /// </summary>
+    /// <summary>Gets the mutable document hosted in this dock tab.</summary>
     public TilesheetDocument Document { get; }
-    /// <summary>
-    /// Gets the editor.
-    /// </summary>
+    /// <summary>Gets the editor control owned and disposed by this dock tab.</summary>
     public TilesheetEditorControl Editor { get; }
-    /// <summary>
-    /// Gets or sets whether close approved is enabled.
-    /// </summary>
+    /// <summary>Gets or sets whether closing bypasses the pending-edit and unsaved-change checks.</summary>
     public bool CloseApproved { get; set; }
-    /// <summary>
-    /// Gets the image size.
-    /// </summary>
+    /// <summary>Gets the loaded preview dimensions, or null when no image preview is available.</summary>
     public Size? ImageSize => Editor.ImageSize;
 
-    /// <summary>
-    /// Initializes a new instance of the <c>EditorDocument</c> class.
-    /// </summary>
-    /// <param name="document">The document displayed or edited by the control.</param>
-    /// <param name="save">The callback that saves the document and reports whether saving succeeded.</param>
-    /// <param name="overlaySettings">The overlay settings.</param>
-    /// <param name="assetPackages">The asset packages.</param>
-    /// <param name="packedImagePicker">The packed image picker.</param>
+    /// <summary>Creates a dock tab hosting a tilesheet editor and tracking document changes.</summary>
+    /// <param name="document">The mutable document to edit.</param>
+    /// <param name="save">Callback receiving this tab and a Save As flag; close confirmation passes false.</param>
+    /// <param name="overlaySettings">Shared preview overlay settings, or null for defaults.</param>
+    /// <param name="assetPackages">Borrowed package cache, or null for an editor-owned cache.</param>
+    /// <param name="packedImagePicker">Optional host image picker; returning null cancels selection.</param>
     public EditorDocument(
         TilesheetDocument document,
         Func<EditorDocument, bool, bool> save,
@@ -65,15 +55,11 @@ internal sealed class EditorDocument : DockContent
         UpdateCaption();
     }
 
-    /// <summary>
-    /// Selects a loose image as the tilesheet source.
-    /// </summary>
-    /// <param name="path">The path.</param>
+    /// <summary>Sets a loose image source and refreshes the editor.</summary>
+    /// <param name="path">Image path, or null to show the file picker.</param>
     public void ChooseImage(string? path = null) => Editor.ChooseImage(path);
-    /// <summary>
-    /// Selects an image from an assets file as the tilesheet source.
-    /// </summary>
-    /// <param name="source">The source.</param>
+    /// <summary>Sets a packed image source and refreshes the editor.</summary>
+    /// <param name="source">The archive entry identifying the image.</param>
     public void ChoosePackedImage(PackedImageSource source) => Editor.ChoosePackedImage(source);
     /// <summary>
     /// Adds a new region to the tilesheet definition.

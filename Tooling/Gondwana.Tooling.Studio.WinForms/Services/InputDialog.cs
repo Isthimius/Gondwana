@@ -5,16 +5,13 @@ namespace Gondwana.Tooling.Studio.WinForms.Services;
 /// </summary>
 internal static class InputDialog
 {
-    /// <summary>
-    /// Shows a modal text-input dialog and returns the entered text, or
-    /// <see langword="null"/> if the user cancelled.
-    /// </summary>
-    /// <param name="message">The message.</param>
-    /// <param name="title">The title.</param>
-    /// <param name="defaultValue">The default value.</param>
-    /// <param name="owner">The window that owns the dialog.</param>
-    /// <param name="password">The password used to open the assets file, if required.</param>
-    /// <returns>The requested string, or <see langword="null"/> when unavailable.</returns>
+    /// <summary>Shows a modal text-entry dialog.</summary>
+    /// <param name="message">Prompt displayed above the text box.</param>
+    /// <param name="title">Dialog window caption.</param>
+    /// <param name="defaultValue">Initial text, or <see langword="null"/> for an empty text box.</param>
+    /// <param name="owner">The owner window, or <see langword="null"/> to use the default owner.</param>
+    /// <param name="password">Whether to mask the entered text with the system password character.</param>
+    /// <returns>The untrimmed text, including an empty string, on OK; otherwise <see langword="null"/>.</returns>
     public static string? Show(string message, string title, string? defaultValue = null, IWin32Window? owner = null, bool password = false)
     {
         using var form = new Form

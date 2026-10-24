@@ -17,17 +17,15 @@ public sealed class AssetPackageCatalog : IDisposable
     private readonly Dictionary<string, (long Length, DateTime Modified)> _stamps = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, Exception> _failures = new(StringComparer.OrdinalIgnoreCase);
 
-    /// <summary>
-    /// Optional host callback used when a package cannot be opened without a password.
-    /// Return null to cancel.
-    /// </summary>
+    /// <summary>Gets or sets a callback receiving the full archive path after an unauthenticated load fails.</summary>
+    /// <remarks>Return a password for one retry, or null to decline. Failures are cached until invalidation or a file length/timestamp change. Invoked synchronously on the caller's thread.</remarks>
     public Func<string, string?>? PasswordProvider { get; set; }
 
-    /// <summary>
-    /// Lists the image entries available in an assets file.
-    /// </summary>
-    /// <param name="assetsFilePath">The path to the assets file.</param>
-    /// <returns>The image entries available in the assets file.</returns>
+    /// <summary>Lists image entries from a cached or newly opened package, sorted by entry name without case.</summary>
+    /// <param name="assetsFilePath">Existing archive path; relative paths use the process current directory.</param>
+    /// <returns>A new list of image identities without extracting their contents.</returns>
+    /// <exception cref="FileNotFoundException">The archive does not exist.</exception>
+    /// <exception cref="InvalidDataException">The archive cannot be loaded, including when authentication is declined or fails.</exception>
     public IReadOnlyList<PackedImageSource> GetImages(string assetsFilePath)
     {
         var fullPath = NormalizeExistingPath(assetsFilePath);
@@ -40,18 +38,24 @@ public sealed class AssetPackageCatalog : IDisposable
             .ToArray();
     }
 
-    /// <summary>
-    /// Opens a readable stream for a packed image.
-    /// </summary>
-    /// <param name="source">The source.</param>
-    /// <returns>A readable stream for the packed image. The caller must dispose the stream.</returns>
+    /// <summary>Opens the exact image entry from the package cache, requesting credentials if needed.</summary>
+    /// <param name="source">Archive path and exact image entry name.</param>
+    /// <returns>A readable stream owned by the caller, which must dispose it.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="source"/> is null.</exception>
+    /// <exception cref="InvalidDataException">The archive cannot be loaded or the exact image entry is unavailable.</exception>
     public Stream OpenImage(PackedImageSource source)
     {
         ArgumentNullException.ThrowIfNull(source);
         return OpenAsset(source.AssetsFilePath, AssetTypes.Image, source.AssetEntryName);
     }
 
-    /// <summary>Opens an exact typed entry. No basename or different-type fallback is permitted.</summary>
+    /// <summary>Opens an exact typed entry without basename or different-type fallback and reports the package dependency.</summary>
+    /// <param name="archivePath">Existing archive path, normalized against the process current directory.</param>
+    /// <param name="type">Required stored asset type.</param>
+    /// <param name="entryName">Full entry name matched without case within that type.</param>
+    /// <returns>A readable entry stream owned by the caller, which must dispose it.</returns>
+    /// <exception cref="FileNotFoundException">The archive does not exist.</exception>
+    /// <exception cref="InvalidDataException">The package cannot be loaded or the exact typed entry cannot be read.</exception>
     public Stream OpenAsset(string archivePath, AssetTypes type, string entryName)
     {
         PackageAccessed?.Invoke(Path.GetFullPath(archivePath));
@@ -79,11 +83,9 @@ public sealed class AssetPackageCatalog : IDisposable
                 $"{type} asset '{entryName}' could not be read from '{fullPath}'.");
     }
 
-    /// <summary>
-    /// Checks whether the specified image exists in its assets file.
-    /// </summary>
-    /// <param name="source">The source.</param>
-    /// <returns><see langword="true"/> if the packed image exists; otherwise, <see langword="false"/>.</returns>
+    /// <summary>Attempts to open and dispose an exact image entry, using the cache and password callback as needed.</summary>
+    /// <param name="source">Archive path and exact image entry name to probe.</param>
+    /// <returns>True if the stream opens; false for handled path, access, load, or entry errors. Image pixels are not decoded.</returns>
     public bool ContainsImage(PackedImageSource source)
     {
         try
@@ -103,10 +105,8 @@ public sealed class AssetPackageCatalog : IDisposable
         }
     }
 
-    /// <summary>
-    /// Removes cached catalog information for the specified assets file.
-    /// </summary>
-    /// <param name="assetsFilePath">The path to the assets file.</param>
+    /// <summary>Disposes the cached package and forgets its file stamp and cached failure.</summary>
+    /// <param name="assetsFilePath">Archive path to invalidate, normalized against the process current directory.</param>
     public void Invalidate(string assetsFilePath)
     {
         var fullPath = Path.GetFullPath(assetsFilePath);
@@ -116,9 +116,7 @@ public sealed class AssetPackageCatalog : IDisposable
         _failures.Remove(fullPath);
     }
 
-    /// <summary>
-    /// Clears the stored entries and resets the current state.
-    /// </summary>
+    /// <summary>Disposes all cached packages and clears file stamps and failures, retaining callbacks and subscribers.</summary>
     public void Clear()
     {
         foreach (var package in _packages.Values)
@@ -203,8 +201,6 @@ public sealed class AssetPackageCatalog : IDisposable
         return fullPath;
     }
 
-    /// <summary>
-    /// Releases the resources owned by this instance.
-    /// </summary>
+    /// <summary>Clears and disposes cached packages; the catalog holds no runtime registrations.</summary>
     public void Dispose() => Clear();
 }

@@ -3,15 +3,11 @@ namespace Gondwana.Tooling.Studio.Core.Extensibility;
 /// <summary>Optional Studio document services. Call only on the host UI thread.</summary>
 public interface IStudioPluginHostServices
 {
-    /// <summary>
-    /// Gets the current working directory.
-    /// </summary>
+    /// <summary>Gets the full path currently displayed by Studio's working-directory browser.</summary>
     string CurrentWorkingDirectory { get; }
 
-    /// <summary>
-    /// Writes a message to the logging destination.
-    /// </summary>
-    /// <param name="message">The message.</param>
+    /// <summary>Appends a timestamped message to Studio's Output pane.</summary>
+    /// <param name="message">The diagnostic text to display.</param>
     void Log(string message);
 
     /// <summary>
@@ -19,9 +15,9 @@ public interface IStudioPluginHostServices
     /// </summary>
     void RefreshWorkingDirectory();
 
-    /// <summary>
-    /// Opens a document in the Studio host.
-    /// </summary>
-    /// <param name="path">The path.</param>
+    /// <summary>Opens a supported loose document or activates its existing Studio tab.</summary>
+    /// <param name="path">The document file path; relative paths use the process's current directory.</param>
+    /// <remarks>Uses the normal editor loader and may prompt for an archive password. Load failures propagate to the caller.</remarks>
+    /// <exception cref="NotSupportedException">The file's authoring format is unsupported.</exception>
     void OpenDocument(string path);
 }

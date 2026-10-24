@@ -6,37 +6,21 @@ namespace Gondwana.Tooling.Tilesheets.Editing;
 
 internal enum OverlayKind
 {
-    /// <summary>
-    /// Specifies regions.
-    /// </summary>
+    /// <summary>Outlines of all tilesheet regions.</summary>
     Regions,
-    /// <summary>
-    /// Specifies selected region.
-    /// </summary>
+    /// <summary>Outline of the selected tilesheet region.</summary>
     SelectedRegion,
-    /// <summary>
-    /// Specifies frames.
-    /// </summary>
+    /// <summary>Frame grid outlines.</summary>
     Frames,
-    /// <summary>
-    /// Specifies selected frame.
-    /// </summary>
+    /// <summary>Outline of the selected frame.</summary>
     SelectedFrame,
-    /// <summary>
-    /// Specifies margin.
-    /// </summary>
+    /// <summary>Region margins around the frame grid.</summary>
     Margin,
-    /// <summary>
-    /// Specifies padding.
-    /// </summary>
+    /// <summary>Padding between frame cells.</summary>
     Padding,
-    /// <summary>
-    /// Specifies overhang.
-    /// </summary>
+    /// <summary>Visual overhang beyond tile bounds.</summary>
     Overhang,
-    /// <summary>
-    /// Specifies collision.
-    /// </summary>
+    /// <summary>Effective collision-area outlines.</summary>
     Collision
 }
 
@@ -45,9 +29,7 @@ internal sealed class OverlaySettings
 {
     private static readonly Lazy<OverlaySettings> Shared = new(() => Load(Path.Combine(
         AppContext.BaseDirectory, "Gondwana.Tooling.Tilesheets.WinForms.settings.json")));
-    /// <summary>
-    /// Gets the default.
-    /// </summary>
+    /// <summary>Gets the shared settings loaded lazily from the application directory.</summary>
     public static OverlaySettings Default => Shared.Value;
     private readonly Dictionary<OverlayKind, Color> _colors = new()
     {
@@ -61,30 +43,20 @@ internal sealed class OverlaySettings
         [OverlayKind.Collision] = Color.Tomato
     };
 
-    /// <summary>
-    /// Gets the file path.
-    /// </summary>
+    /// <summary>Gets the full path used to load and save these application preferences.</summary>
     public string FilePath { get; }
-    /// <summary>
-    /// Gets the warning.
-    /// </summary>
+    /// <summary>Gets a settings-load warning, or null after a successful load or save.</summary>
     public string? Warning { get; private set; }
-    /// <summary>
-    /// Occurs when an overlay color or visibility setting changes.
-    /// </summary>
+    /// <summary>Occurs synchronously after an overlay color is successfully persisted and updated in memory.</summary>
     public event EventHandler? Changed;
     private OverlaySettings(string path) => FilePath = Path.GetFullPath(path);
-    /// <summary>
-    /// Gets the entry at the specified index or coordinates.
-    /// </summary>
-    /// <param name="kind">The kind.</param>
+    /// <summary>Gets the configured color for an overlay.</summary>
+    /// <param name="kind">The overlay whose color is requested.</param>
     public Color this[OverlayKind kind] => _colors[kind];
 
-    /// <summary>
-    /// Loads overlay settings from the supplied source.
-    /// </summary>
-    /// <param name="path">The path.</param>
-    /// <returns>The resulting overlay settings.</returns>
+    /// <summary>Loads recognized overlay colors from JSON, retaining defaults for missing or invalid values.</summary>
+    /// <param name="path">Settings file path; a missing file uses defaults without a warning.</param>
+    /// <returns>Settings with a warning for malformed content or read failures.</returns>
     public static OverlaySettings Load(string path)
     {
         var settings = new OverlaySettings(path);
@@ -110,11 +82,10 @@ internal sealed class OverlaySettings
         return settings;
     }
 
-    /// <summary>
-    /// Sets color.
-    /// </summary>
-    /// <param name="kind">The kind.</param>
-    /// <param name="color">The color to apply.</param>
+    /// <summary>Persists an opaque RGB color before updating memory, clears the warning, and raises the change event.</summary>
+    /// <param name="kind">The overlay to recolor.</param>
+    /// <param name="color">The new color; its alpha component is ignored.</param>
+    /// <remarks>Write failures propagate without changing the in-memory setting.</remarks>
     public void SetColor(OverlayKind kind, Color color)
     {
         // Persist first so failures cannot silently leave the UI claiming a saved preference.
@@ -139,9 +110,7 @@ internal sealed class OverlaySettings
     private static string Hex(Color color) => $"#{color.R:X2}{color.G:X2}{color.B:X2}";
     private sealed class SettingsData
     {
-        /// <summary>
-        /// Gets or sets the overlay colors.
-        /// </summary>
+        /// <summary>Gets or sets the serialized map from overlay-kind names to hexadecimal RGB colors.</summary>
         public Dictionary<string, string>? OverlayColors { get; set; }
     }
 }

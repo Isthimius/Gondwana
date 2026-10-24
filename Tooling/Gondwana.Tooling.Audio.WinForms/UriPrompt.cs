@@ -5,18 +5,12 @@ internal sealed class UriPrompt : Form
     private readonly TextBox _key = new() { Dock = DockStyle.Top };
     private readonly TextBox _uri = new() { Dock = DockStyle.Top };
 
-    /// <summary>
-    /// Gets the resource key.
-    /// </summary>
+    /// <summary>Gets the trimmed audio resource key entered by the user; the dialog does not validate it.</summary>
     public string ResourceKey => _key.Text.Trim();
-    /// <summary>
-    /// Gets the source uri.
-    /// </summary>
+    /// <summary>Gets the trimmed URI text entered by the user; the dialog does not parse it or contact the resource.</summary>
     public string SourceUri => _uri.Text.Trim();
 
-    /// <summary>
-    /// Initializes a new instance of the <c>UriPrompt</c> class.
-    /// </summary>
+    /// <summary>Creates a dialog for entering an audio key and URI without accessing the resource.</summary>
     public UriPrompt()
     {
         Text = "Add URI audio";

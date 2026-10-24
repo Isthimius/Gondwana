@@ -7,14 +7,14 @@ internal interface IPackSettings
     string Source { get; }
     /// <summary>Gets the destination archive.</summary>
     string Output { get; }
-    /// <summary>Gets the archive password.</summary>
+    /// <summary>Gets the archive password, or null when none is supplied.</summary>
     string? Password { get; }
-    /// <summary>Gets the encryption choice.</summary>
+    /// <summary>Gets whether the output archive is to use encryption.</summary>
     bool Encrypt { get; }
-    /// <summary>Gets the external dependency policy.</summary>
+    /// <summary>Gets whether valid dependencies outside the packed inventory may remain external references.</summary>
     bool AllowExternal { get; }
-    /// <summary>Gets the append policy.</summary>
+    /// <summary>Gets whether existing typed archive entries are loaded before incoming entries replace matching identities.</summary>
     bool Append { get; }
-    /// <summary>Gets the directory recursion policy.</summary>
+    /// <summary>Gets whether source enumeration includes subdirectories.</summary>
     bool Recurse { get; }
 }

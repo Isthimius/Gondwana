@@ -12,21 +12,15 @@ internal sealed class AssetEditorDocument : DockContent
     internal bool CloseApproved { get; set; }
     internal Func<DialogResult> AskSave { get; set; }
 
-    /// <summary>
-    /// Gets the editor.
-    /// </summary>
+    /// <summary>Gets the editor control owned by this dock tab.</summary>
     public AssetEditorControl Editor { get; }
-    /// <summary>
-    /// Gets the file path.
-    /// </summary>
+    /// <summary>Gets the full path of the archive currently displayed by the editor.</summary>
     public string FilePath => Editor.FilePath;
 
-    /// <summary>
-    /// Initializes a new instance of the <c>AssetEditorDocument</c> class.
-    /// </summary>
-    /// <param name="assetsFile">The assets file containing the requested entry.</param>
-    /// <param name="workspaceChanged">The workspace changed.</param>
-    /// <param name="isDocumentOpen">The is document open.</param>
+    /// <summary>Creates a dock tab and takes responsibility for disposing its initial archive when the tab is disposed.</summary>
+    /// <param name="assetsFile">The loaded archive to edit.</param>
+    /// <param name="workspaceChanged">Callback invoked when saving changes the workspace's files.</param>
+    /// <param name="isDocumentOpen">Callback testing whether a destination path is already open, to prevent Save As collisions.</param>
     public AssetEditorDocument(
         AssetsFile assetsFile,
         Action workspaceChanged,
@@ -58,13 +52,9 @@ internal sealed class AssetEditorDocument : DockContent
     /// Saves the current content to the destination file.
     /// </summary>
     public void Save() => Editor.Save();
-    /// <summary>
-    /// Saves as.
-    /// </summary>
+    /// <summary>Prompts to save an archive copy without changing the current document path or dirty state.</summary>
     public void SaveAs() => Editor.SaveAs();
-    /// <summary>
-    /// Refreshes entries.
-    /// </summary>
+    /// <summary>Refreshes the filtered entry list from the editor's in-memory archive.</summary>
     public void RefreshEntries() => Editor.RefreshEntries();
     /// <summary>
     /// Shows the named editor pane.

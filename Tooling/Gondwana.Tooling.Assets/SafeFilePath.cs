@@ -23,10 +23,9 @@ internal static class SafeFilePath
         }
     }
 
-    /// <summary>
-    /// Rejects asset entry names that are not safe relative paths.
-    /// </summary>
-    /// <param name="name">The name.</param>
+    /// <summary>Rejects nonportable entry paths, including traversal components and reserved Windows device names.</summary>
+    /// <param name="name">Non-null entry path using either slash style; no filesystem access is performed.</param>
+    /// <exception cref="InvalidDataException">The entry name is rooted, empty, contains traversal, or has unsafe path components.</exception>
     public static void ValidateRelative(string name)
     {
         var normalized = name.Replace('\\', '/');
@@ -41,12 +40,12 @@ internal static class SafeFilePath
         }
     }
 
-    /// <summary>
-    /// Resolves an asset entry beneath the root, rejecting symbolic links and junctions anywhere in its ancestry.
-    /// </summary>
-    /// <param name="root">The root.</param>
-    /// <param name="name">The name.</param>
-    /// <returns>The resolved path beneath the supplied root.</returns>
+    /// <summary>Resolves an entry beneath a root and rejects symbolic links or junctions in existing ancestry.</summary>
+    /// <param name="root">Extraction directory, normalized to a full path.</param>
+    /// <param name="name">Portable relative entry name using either slash style.</param>
+    /// <returns>The full destination path, without creating files or directories.</returns>
+    /// <exception cref="InvalidDataException">The name is unsafe or resolves outside the root.</exception>
+    /// <exception cref="IOException">A symbolic link or junction is encountered.</exception>
     public static string Resolve(string root, string name)
     {
         ValidateRelative(name);

@@ -33,9 +33,7 @@ internal sealed class AnimationPreviewControl : Control
     /// Gets the current frame index.
     /// </summary>
     public int CurrentFrameIndex => _index;
-    /// <summary>
-    /// Gets whether the object is showing source frame.
-    /// </summary>
+    /// <summary>Gets whether a source selection is displayed instead of the animation playback frame.</summary>
     public bool IsShowingSourceFrame => _sourcePreviewActive;
 
     /// <summary>
@@ -43,9 +41,7 @@ internal sealed class AnimationPreviewControl : Control
     /// </summary>
     public event EventHandler? CurrentFrameChanged;
 
-    /// <summary>
-    /// Initializes a new instance of the <c>AnimationPreviewControl</c> class.
-    /// </summary>
+    /// <summary>Creates a double-buffered animation preview with playback initially paused.</summary>
     public AnimationPreviewControl()
     {
         Dock = DockStyle.Fill;
@@ -56,11 +52,9 @@ internal sealed class AnimationPreviewControl : Control
         _timer.Tick += (_, _) => TickPreview();
     }
 
-    /// <summary>
-    /// Configures the preview content and its resource resolvers.
-    /// </summary>
-    /// <param name="definition">The persisted definition to process.</param>
-    /// <param name="resolver">The resolver.</param>
+    /// <summary>Assigns the preview definition and resolver, clamps the current frame index, and requests a repaint.</summary>
+    /// <param name="definition">The mutable definition read during playback.</param>
+    /// <param name="resolver">Resolves a frame to borrowed preview data, or null when unavailable.</param>
     public void Configure(
         AnimationDefinition definition,
         Func<AnimationFrameDefinition, FramePreview?> resolver)
@@ -74,11 +68,9 @@ internal sealed class AnimationPreviewControl : Control
         Invalidate();
     }
 
-    /// <summary>
-    /// Displays the selected source frame in the preview.
-    /// </summary>
-    /// <param name="preview">The preview.</param>
-    /// <param name="caption">The caption.</param>
+    /// <summary>Pauses playback and displays a source frame independently of the animation frame index.</summary>
+    /// <param name="preview">Borrowed preview data, or null for an unavailable frame.</param>
+    /// <param name="caption">Text identifying the source selection.</param>
     public void ShowSourceFrame(
         FramePreview? preview,
         string caption)
@@ -116,9 +108,7 @@ internal sealed class AnimationPreviewControl : Control
             Play();
     }
 
-    /// <summary>
-    /// Starts playback.
-    /// </summary>
+    /// <summary>Starts playback from the current frame, or stays paused when no frames or a valid positive duration are available.</summary>
     public void Play()
     {
         ClearSourceFrame();
@@ -149,9 +139,7 @@ internal sealed class AnimationPreviewControl : Control
         Invalidate();
     }
 
-    /// <summary>
-    /// Restarts animation preview playback from the first frame.
-    /// </summary>
+    /// <summary>Resets to the first frame and forward traversal while preserving whether playback is running or paused.</summary>
     public void Restart()
     {
         ClearSourceFrame();
@@ -169,9 +157,7 @@ internal sealed class AnimationPreviewControl : Control
         }
     }
 
-    /// <summary>
-    /// Advances the animation preview by one frame.
-    /// </summary>
+    /// <summary>Pauses playback and advances once using the configured cycle traversal behavior.</summary>
     public void Step()
     {
         ClearSourceFrame();
@@ -180,10 +166,8 @@ internal sealed class AnimationPreviewControl : Control
         Invalidate();
     }
 
-    /// <summary>
-    /// Sets the preview zoom factor.
-    /// </summary>
-    /// <param name="zoom">The zoom factor.</param>
+    /// <summary>Sets magnification and requests a repaint.</summary>
+    /// <param name="zoom">Explicit scale factor, or null to fit the current preview.</param>
     public void SetZoom(float? zoom)
     {
         _zoom = zoom;

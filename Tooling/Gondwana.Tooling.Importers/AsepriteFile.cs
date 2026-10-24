@@ -4,66 +4,57 @@ using SkiaSharp;
 
 namespace Gondwana.Tooling.Importers;
 
-/// <summary>
-/// Represents aseprite layer.
-/// </summary>
-/// <param name="Flags">The flags.</param>
-/// <param name="Type">The type.</param>
-/// <param name="Level">The level.</param>
-/// <param name="Blend">The blend.</param>
-/// <param name="Opacity">The opacity, from zero (transparent) to one (opaque).</param>
-/// <param name="Name">The name.</param>
+/// <summary>Layer metadata used to composite an Aseprite frame.</summary>
+/// <param name="Flags">Stored flags; bit 0 controls visibility and bit 3 marks a background layer.</param>
+/// <param name="Type">Layer kind: 0 for image, 1 for group in the supported reader.</param>
+/// <param name="Level">Zero-based nesting depth used to reconstruct group ancestry.</param>
+/// <param name="Blend">Blend mode code; the reader currently accepts only Normal (0).</param>
+/// <param name="Opacity">Layer opacity from 0 (transparent) through 255 (opaque).</param>
+/// <param name="Name">Layer label from the file.</param>
 public sealed record AsepriteLayer(int Flags, int Type, int Level, int Blend, byte Opacity, string Name);
-/// <summary>
-/// Represents aseprite cel.
-/// </summary>
-/// <param name="Layer">The layer.</param>
-/// <param name="X">The horizontal coordinate.</param>
-/// <param name="Y">The vertical coordinate.</param>
-/// <param name="Opacity">The opacity, from zero (transparent) to one (opaque).</param>
-/// <param name="Z">The z.</param>
-/// <param name="Width">The width.</param>
-/// <param name="Height">The height.</param>
-/// <param name="Pixels">The pixels.</param>
-/// <param name="LinkedFrame">The linked frame.</param>
+/// <summary>One layer's image placement or linked image in an Aseprite frame.</summary>
+/// <param name="Layer">Zero-based index into the document's layer list.</param>
+/// <param name="X">Horizontal pixel offset in the sprite canvas.</param>
+/// <param name="Y">Vertical pixel offset in the sprite canvas.</param>
+/// <param name="Opacity">Cel opacity from 0 (transparent) through 255 (opaque), combined with layer opacity.</param>
+/// <param name="Z">Signed ordering offset added to the layer index when rendering.</param>
+/// <param name="Width">Decoded image width in pixels; zero for a linked cel before resolution.</param>
+/// <param name="Height">Decoded image height in pixels; zero for a linked cel before resolution.</param>
+/// <param name="Pixels">Uncompressed row-major bytes in the document's color depth; empty for a linked cel.</param>
+/// <param name="LinkedFrame">Frame index whose same-layer image supplies the pixels, or null for an embedded image.</param>
 public sealed record AsepriteCel(int Layer, int X, int Y, byte Opacity, int Z, int Width, int Height, byte[] Pixels, int? LinkedFrame);
-/// <summary>
-/// Represents aseprite frame.
-/// </summary>
-/// <param name="DurationMilliseconds">The duration milliseconds.</param>
-/// <param name="Cels">The cels.</param>
-/// <param name="Palette">The palette.</param>
+/// <summary>Frame timing, layer cels, and the palette effective for that frame.</summary>
+/// <param name="DurationMilliseconds">Positive display duration, using the header speed when the stored frame duration is zero.</param>
+/// <param name="Cels">Image and linked cels in this frame.</param>
+/// <param name="Palette">Snapshot of palette colors used to render indexed pixels.</param>
 public sealed record AsepriteFrame(int DurationMilliseconds, IReadOnlyList<AsepriteCel> Cels, SKColor[] Palette);
-/// <summary>
-/// Represents aseprite tag.
-/// </summary>
-/// <param name="Name">The name.</param>
-/// <param name="From">The from.</param>
-/// <param name="To">The to.</param>
-/// <param name="Direction">The direction.</param>
-/// <param name="Repeat">The repeat.</param>
+/// <summary>A named inclusive frame range and its playback instructions.</summary>
+/// <param name="Name">Tag label used to derive a native animation identity.</param>
+/// <param name="From">First frame index, inclusive.</param>
+/// <param name="To">Last frame index, inclusive.</param>
+/// <param name="Direction">Playback code: 0 forward, 1 reverse, 2 ping-pong, or 3 reverse ping-pong.</param>
+/// <param name="Repeat">Finite repetition count, or zero for repeating playback.</param>
 public sealed record AsepriteTag(string Name, int From, int To, int Direction, int Repeat);
-/// <summary>
-/// Represents aseprite file.
-/// </summary>
-/// <param name="Width">The width.</param>
-/// <param name="Height">The height.</param>
-/// <param name="Depth">The depth.</param>
-/// <param name="Flags">The flags.</param>
-/// <param name="TransparentIndex">The transparent index.</param>
-/// <param name="Layers">The layers.</param>
-/// <param name="Frames">The frames.</param>
-/// <param name="Tags">The tags.</param>
+/// <summary>Parsed Aseprite canvas, layers, frames, and animation tags retained for conversion.</summary>
+/// <param name="Width">Canvas width in pixels.</param>
+/// <param name="Height">Canvas height in pixels.</param>
+/// <param name="Depth">Bits per pixel: 8 indexed, 16 grayscale/alpha, or 32 RGBA.</param>
+/// <param name="Flags">Header flags used by the reader to interpret layer and group opacity.</param>
+/// <param name="TransparentIndex">Transparent palette index for indexed non-background layers.</param>
+/// <param name="Layers">Layers in file order with their group nesting levels.</param>
+/// <param name="Frames">Frames in playback order with decoded cel bytes.</param>
+/// <param name="Tags">Named animation ranges from the file.</param>
 public sealed record AsepriteFile(int Width, int Height, int Depth, uint Flags, byte TransparentIndex,
     IReadOnlyList<AsepriteLayer> Layers, IReadOnlyList<AsepriteFrame> Frames, IReadOnlyList<AsepriteTag> Tags)
 {
-    /// <summary>
-    /// Reads an Aseprite file.
-    /// </summary>
-    /// <param name="stream">The stream supplying the serialized content.</param>
-    /// <param name="report">The report.</param>
-    /// <param name="token">The token.</param>
-    /// <returns>The parsed Aseprite document.</returns>
+    /// <summary>Parses supported Aseprite image data, decompressing cels and preserving per-frame palettes.</summary>
+    /// <param name="stream">Readable, seekable file stream positioned at the header; left open after reading.</param>
+    /// <param name="report">Callback receiving severity, diagnostic code, and details for omitted metadata.</param>
+    /// <param name="token">Token checked between frames, chunks, and payloads.</param>
+    /// <returns>The parsed document with in-memory pixel buffers and no retained stream.</returns>
+    /// <exception cref="InvalidDataException">Structure, dimensions, or supported feature constraints are violated.</exception>
+    /// <exception cref="EndOfStreamException">Required bytes are missing.</exception>
+    /// <exception cref="OperationCanceledException">Cancellation is observed.</exception>
     public static AsepriteFile Read(Stream stream, Action<ExternalImportSeverity, string, string> report, CancellationToken token = default)
     {
         using var reader = new BinaryReader(stream, Encoding.UTF8, true);

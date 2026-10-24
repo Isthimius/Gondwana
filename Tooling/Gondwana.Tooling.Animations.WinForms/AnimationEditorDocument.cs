@@ -7,24 +7,16 @@ internal sealed class AnimationEditorDocument : DockContent
 {
     private readonly Func<AnimationEditorDocument, bool, bool> _save;
 
-    /// <summary>
-    /// Gets the document.
-    /// </summary>
+    /// <summary>Gets the mutable document hosted in this dock tab.</summary>
     public AnimationDocument Document { get; }
-    /// <summary>
-    /// Gets the editor.
-    /// </summary>
+    /// <summary>Gets the editor control owned and disposed by this dock tab.</summary>
     public AnimationEditorControl Editor { get; }
-    /// <summary>
-    /// Gets or sets whether close approved is enabled.
-    /// </summary>
+    /// <summary>Gets or sets whether closing bypasses the pending-edit and unsaved-change checks.</summary>
     public bool CloseApproved { get; set; }
 
-    /// <summary>
-    /// Initializes a new instance of the <c>AnimationEditorDocument</c> class.
-    /// </summary>
-    /// <param name="document">The document displayed or edited by the control.</param>
-    /// <param name="save">The callback that saves the document and reports whether saving succeeded.</param>
+    /// <summary>Creates a dock tab hosting the supplied document and tracking its dirty state in the caption.</summary>
+    /// <param name="document">The mutable authoring document to edit.</param>
+    /// <param name="save">Callback receiving this tab and a Save As flag; close confirmation passes false and closes only when saving succeeds.</param>
     public AnimationEditorDocument(
         AnimationDocument document,
         Func<AnimationEditorDocument, bool, bool> save)

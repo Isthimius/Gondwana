@@ -7,24 +7,16 @@ internal sealed class SceneEditorDocument : DockContent
 {
     private readonly Func<SceneEditorDocument, bool, bool> _save;
 
-    /// <summary>
-    /// Gets the document.
-    /// </summary>
+    /// <summary>Gets the mutable document hosted in this dock tab.</summary>
     public SceneDocument Document { get; }
-    /// <summary>
-    /// Gets the editor.
-    /// </summary>
+    /// <summary>Gets the editor control owned and disposed by this dock tab.</summary>
     public SceneEditorControl Editor { get; }
-    /// <summary>
-    /// Gets or sets whether close approved is enabled.
-    /// </summary>
+    /// <summary>Gets or sets whether closing bypasses the pending-edit and unsaved-change checks.</summary>
     public bool CloseApproved { get; set; }
 
-    /// <summary>
-    /// Initializes a new instance of the <c>SceneEditorDocument</c> class.
-    /// </summary>
-    /// <param name="document">The document displayed or edited by the control.</param>
-    /// <param name="save">The callback that saves the document and reports whether saving succeeded.</param>
+    /// <summary>Creates a dock tab hosting the supplied document and tracking its dirty state in the caption.</summary>
+    /// <param name="document">The mutable authoring document to edit.</param>
+    /// <param name="save">Callback receiving this tab and a Save As flag; close confirmation passes false and closes only when saving succeeds.</param>
     public SceneEditorDocument(
         SceneDocument document,
         Func<SceneEditorDocument, bool, bool> save)

@@ -41,7 +41,7 @@ internal sealed class SceneViewerGameHost(
 
     internal event Action? CloseRequested;
 
-    /// <inheritdoc/>
+    /// <summary>Creates and registers the generated four-frame tilesheet used only in stress mode.</summary>
     protected override void LoadTilesheets()
     {
         if (stress is null)
@@ -80,7 +80,9 @@ internal sealed class SceneViewerGameHost(
         _stressTilesheet.DefaultRegion.TileSize = new Size(StressTileSize, StressTileSize);
     }
 
-    /// <inheritdoc/>
+    /// <summary>Loads the selected saved scene member, or creates the configured stress scene.</summary>
+    /// <returns>The initial runtime scene owned by the game host.</returns>
+    /// <exception cref="InvalidOperationException">Stress mode has no initialized tilesheet.</exception>
     protected override Scene CreateInitialScene()
     {
         if (stress is null)
@@ -119,7 +121,7 @@ internal sealed class SceneViewerGameHost(
         return scene;
     }
 
-    /// <inheritdoc/>
+    /// <summary>Configures a full-window view and camera controller, fitting the stress layer when present.</summary>
     protected override void OnSceneBound()
     {
         RenderSurface.Host.ViewManager.ConfigureSingleFullView();
@@ -163,7 +165,7 @@ internal sealed class SceneViewerGameHost(
             bounds.Top + (bounds.Height - visible.Height) / 2f));
     }
 
-    /// <inheritdoc/>
+    /// <summary>Creates the diagnostics overlay and subscribes to viewport resizing.</summary>
     protected override void CreateDirectDrawings()
     {
         if (_view is null)
@@ -188,7 +190,7 @@ internal sealed class SceneViewerGameHost(
         _view.Viewport.TargetRectChanged += OnViewportTargetRectChanged;
     }
 
-    /// <inheritdoc/>
+    /// <summary>Subscribes to keyboard input and starts monitoring the viewer command keys.</summary>
     protected override void OnKeyboardAdapterInitialized()
     {
         var keyboard = Engine.Input.KeyboardEventPoller!;
@@ -198,7 +200,7 @@ internal sealed class SceneViewerGameHost(
             keyboard.StartMonitoringKey((int)key, key.ToString());
     }
 
-    /// <inheritdoc/>
+    /// <summary>Subscribes to mouse input for viewer camera commands.</summary>
     protected override void OnMouseAdapterInitialized()
     {
         var mouse = Engine.Input.MouseEventPoller!;
@@ -208,14 +210,14 @@ internal sealed class SceneViewerGameHost(
             timeBetweenEvents: 0);
     }
 
-    /// <inheritdoc/>
+    /// <summary>Initializes frame timing and subscribes to camera updates before background tasks.</summary>
     protected override void OnEngineInitialized()
     {
         _lastTick = HighResTimer.GetCurrentTick();
         Engine.BeforeBackgroundTasksExecute += BeforeBackgroundTasksExecute;
     }
 
-    /// <inheritdoc/>
+    /// <summary>Leaves gamepad configuration disabled for the scene viewer.</summary>
     protected override void ConfigureGamepads() { }
 
     /// <inheritdoc/>
@@ -430,7 +432,7 @@ internal sealed class SceneViewerGameHost(
             height);
     }
 
-    /// <inheritdoc/>
+    /// <summary>Releases the stress tilesheet and ensures the engine is disposed even if initialization failed.</summary>
     protected override void OnDisposed()
     {
         _stressTilesheet?.Dispose();
@@ -457,9 +459,9 @@ internal sealed class SceneViewerGameHost(
 
         /// <inheritdoc/>
         public bool AutoSave { get; set; }
-        /// <inheritdoc/>
+        /// <summary>Performs no persistence; viewer configuration remains in memory.</summary>
         public void Save() { }
-        /// <inheritdoc/>
+        /// <summary>Completes configuration-store disposal; this in-memory store owns no disposable resources.</summary>
         public void Dispose() { }
     }
 }

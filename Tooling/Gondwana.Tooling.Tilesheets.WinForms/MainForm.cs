@@ -25,9 +25,7 @@ internal sealed class MainForm : Form
     private EditorDocument? ActiveEditor =>
         _dock.ActiveDocument as EditorDocument;
 
-    /// <summary>
-    /// Initializes a new instance of the <c>MainForm</c> class.
-    /// </summary>
+    /// <summary>Creates the standalone tilesheets editor shell with its workspace browser, document docking, and session restoration.</summary>
     public MainForm()
     {
         ReportSessionError = message => WorkspaceSessionController.ShowPersistenceError(this, message);

@@ -8,18 +8,15 @@ namespace Gondwana.Tooling.Studio.WinForms.Extensibility;
 /// </summary>
 public sealed class StudioPluginHost : CoreHost
 {
-    /// <summary>
-    /// StudioPluginHost.
-    /// </summary>
-    /// <param name="log">Logging callback.</param>
+    /// <summary>Creates a host that shares both Core and WinForms plugin contracts with discovered assemblies.</summary>
+    /// <param name="log">Callback receiving discovery, lifecycle, and UI-contribution diagnostics.</param>
     public StudioPluginHost(Action<string> log) : base(log, typeof(IStudioPlugin).Assembly)
     {
     }
 
-    /// <summary>
-    /// Returns panels contributed by WinForms-compatible plugins.
-    /// </summary>
-    /// <returns>The available plugin panels paired with their plugin names.</returns>
+    /// <summary>Calls each enabled WinForms plugin to obtain its panel, logging and skipping failed or null contributions.</summary>
+    /// <returns>The contributed controls paired with their plugin display names, for the caller to host and dispose.</returns>
+    /// <remarks>Call on the UI thread. Contributions are requested on each call; a contribution failure does not disable the plugin.</remarks>
     public IEnumerable<(string pluginName, Control panel)> GetPluginPanels()
         => GetPersistentPluginPanels().Select(entry => (entry.Name, entry.Panel));
 
@@ -44,10 +41,9 @@ public sealed class StudioPluginHost : CoreHost
         return result;
     }
 
-    /// <summary>
-    /// Returns menu items contributed by WinForms-compatible plugins.
-    /// </summary>
-    /// <returns>The menu items contributed by the loaded plugins.</returns>
+    /// <summary>Calls each enabled WinForms plugin to obtain its menu item, logging and skipping failed or null contributions.</summary>
+    /// <returns>The contributed menu items for the caller to insert and dispose.</returns>
+    /// <remarks>Call on the UI thread. Contributions are requested on each call; a contribution failure does not disable the plugin.</remarks>
     public IEnumerable<ToolStripMenuItem> GetPluginMenuItems()
     {
         var result = new List<ToolStripMenuItem>();

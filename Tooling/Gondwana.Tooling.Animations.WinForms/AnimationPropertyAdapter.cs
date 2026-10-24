@@ -8,15 +8,12 @@ internal sealed class AnimationPropertyAdapter
 {
     private readonly AnimationDocument _document;
 
-    /// <summary>
-    /// Gets or sets the selected frame index.
-    /// </summary>
+    /// <summary>Gets or sets the zero-based frame whose duration is edited; an out-of-range index disables duration changes.</summary>
     [Browsable(false)]
     public int SelectedFrameIndex { get; set; } = -1;
 
-    /// <summary>
-    /// Gets or sets the duration seconds.
-    /// </summary>
+    /// <summary>Gets or sets the selected frame duration in seconds, or null to use the animation throttle. An assignment to a selected frame marks the document dirty.</summary>
+    /// <exception cref="ArgumentOutOfRangeException">A non-null duration is not finite and positive.</exception>
     [Category("Selected frame")]
     [Description("Display duration in seconds. Clear to use Throttle time. Select a frame in the frame list first.")]
     public double? DurationSeconds
@@ -33,18 +30,14 @@ internal sealed class AnimationPropertyAdapter
         }
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <c>AnimationPropertyAdapter</c> class.
-    /// </summary>
-    /// <param name="document">The document displayed or edited by the control.</param>
+    /// <summary>Creates a property-grid adapter that edits the document's currently selected animation.</summary>
+    /// <param name="document">Mutable document receiving edits and dirty-state notifications.</param>
     public AnimationPropertyAdapter(AnimationDocument document)
     {
         _document = document;
     }
 
-    /// <summary>
-    /// Gets or sets the key.
-    /// </summary>
+    /// <summary>Gets or sets the animation lookup key; null is stored as an empty string and a change marks the document dirty.</summary>
     [Category("Animation")]
     [DisplayName("Key")]
     [Description("Global cycle key used by Animator.StartAnimation and SetCurrentCycle.")]
@@ -57,9 +50,7 @@ internal sealed class AnimationPropertyAdapter
             v => _document.Definition.Key = v);
     }
 
-    /// <summary>
-    /// Gets or sets the throttle time.
-    /// </summary>
+    /// <summary>Gets or sets the default interval between animation frames, in seconds; a change marks the document dirty.</summary>
     [Category("Playback")]
     [DisplayName("Throttle time")]
     [Description("Seconds between frame transitions.")]
@@ -72,9 +63,7 @@ internal sealed class AnimationPropertyAdapter
             v => _document.Definition.ThrottleTime = v);
     }
 
-    /// <summary>
-    /// Gets or sets the cycle type.
-    /// </summary>
+    /// <summary>Gets or sets the playback traversal mode; a change marks the document dirty.</summary>
     [Category("Playback")]
     [DisplayName("Cycle type")]
     public CycleType CycleType
@@ -86,9 +75,7 @@ internal sealed class AnimationPropertyAdapter
             v => _document.Definition.CycleType = v);
     }
 
-    /// <summary>
-    /// Gets or sets whether hide tile on cycle end is enabled.
-    /// </summary>
+    /// <summary>Gets or sets whether playback hides the tile at the end of the cycle; a change marks the document dirty.</summary>
     [Category("Playback")]
     [DisplayName("Hide tile on cycle end")]
     public bool HideTileOnCycleEnd
@@ -100,9 +87,7 @@ internal sealed class AnimationPropertyAdapter
             v => _document.Definition.HideTileOnCycleEnd = v);
     }
 
-    /// <summary>
-    /// Gets or sets the next cycle key.
-    /// </summary>
+    /// <summary>Gets or sets the cycle to transition to; blank input clears the key, other input is trimmed, and changes mark the document dirty.</summary>
     [Category("Playback")]
     [DisplayName("Next cycle key")]
     [Description("Optional cycle key to transition to when this cycle completes. Empty means self.")]
@@ -128,9 +113,7 @@ internal sealed class AnimationPropertyAdapter
         }
     }
 
-    /// <summary>
-    /// Gets the source kind.
-    /// </summary>
+    /// <summary>Gets the provenance kind of the selected animation definition as display text.</summary>
     [Category("Source")]
     [DisplayName("Source kind")]
     [ReadOnly(true)]

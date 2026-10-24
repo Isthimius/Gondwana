@@ -9,18 +9,18 @@ namespace Gondwana.Tooling.Tilesheets.WinForms;
 internal enum Inheritance
 {
     /// <summary>
-    /// Specifies inherit region.
+    /// Uses the region default instead of a frame override.
     /// </summary>
     InheritRegion,
     /// <summary>
-    /// Specifies override.
+    /// Uses a frame-specific value instead of the region default.
     /// </summary>
     Override
 }
 internal enum FrameCollisionChoice
 {
     /// <summary>
-    /// Specifies inherit region.
+    /// Uses the region default instead of a frame override.
     /// </summary>
     InheritRegion,
     /// <summary>
@@ -28,11 +28,11 @@ internal enum FrameCollisionChoice
     /// </summary>
     None,
     /// <summary>
-    /// Specifies blocking.
+    /// Treats the frame as a blocking collider.
     /// </summary>
     Blocking,
     /// <summary>
-    /// Specifies trigger.
+    /// Treats the frame as a non-blocking collision trigger.
     /// </summary>
     Trigger
 }
@@ -48,24 +48,20 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     /// <inheritdoc/>
     public override object GetPropertyOwner(PropertyDescriptor? pd) => this;
 
-    /// <summary>
-    /// Adds the supplied entry to the property fields.
-    /// </summary>
-    /// <typeparam name="T">The type of t.</typeparam>
-    /// <param name="name">The name.</param>
-    /// <param name="category">The property-grid category.</param>
-    /// <param name="get">The function that reads the property value.</param>
-    /// <param name="set">The optional action that writes the property value.</param>
-    /// <param name="description">The description shown for the property.</param>
+    /// <summary>Adds a callback-backed property descriptor to the grid.</summary>
+    /// <typeparam name="T">The property's value type.</typeparam>
+    /// <param name="name">Property name displayed in the grid.</param>
+    /// <param name="category">Grid category grouping the property.</param>
+    /// <param name="get">Callback reading the current value.</param>
+    /// <param name="set">Callback assigning a value, or null for a read-only property.</param>
+    /// <param name="description">Help text displayed when the property is selected.</param>
     public void Add<T>(string name, string category, Func<T> get, Action<T>? set = null, string description = "") =>
         _fields.Add(new Field<T>(name, category, get, set, description));
 
-    /// <summary>
-    /// Adds editable property descriptors for the supplied model.
-    /// </summary>
-    /// <param name="model">The model.</param>
-    /// <param name="changed">The callback invoked when a property changes.</param>
-    /// <param name="excluded">The model property names to omit.</param>
+    /// <summary>Adds writable scalar properties and writable integer components of value-type properties using reflection.</summary>
+    /// <param name="model">The original object to read and mutate.</param>
+    /// <param name="changed">Callback invoked after writing a property.</param>
+    /// <param name="excluded">Top-level property names to omit, matched case-sensitively.</param>
     public void AddModel(object model, Action changed, params string[] excluded)
     {
         foreach (var property in model.GetType().GetProperties().Where(p => p.CanWrite && !excluded.Contains(p.Name)))
@@ -127,15 +123,13 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         return fields;
     }
 
-    /// <summary>
-    /// Builds property descriptors for a selected frame.
-    /// </summary>
-    /// <param name="document">The document displayed or edited by the control.</param>
-    /// <param name="region">The region.</param>
-    /// <param name="x">The zero-based column in the tile grid.</param>
-    /// <param name="y">The zero-based row in the tile grid.</param>
-    /// <param name="changed">The callback invoked when a property changes.</param>
-    /// <returns>The property descriptors for the selected frame.</returns>
+    /// <summary>Builds frame property descriptors, creating an override entry only when a value is edited.</summary>
+    /// <param name="document">Document used to find or create the frame override.</param>
+    /// <param name="region">Region providing inherited collision defaults.</param>
+    /// <param name="x">Zero-based frame column.</param>
+    /// <param name="y">Zero-based frame row.</param>
+    /// <param name="changed">Callback responsible for notifying the editor of a mutation.</param>
+    /// <returns>Property descriptors reading the frame override or inherited region values.</returns>
     public static PropertyFields Frame(TilesheetDocument document, TilesheetRegionDefinition region, int x, int y, Action changed)
     {
         var fields = new PropertyFields();

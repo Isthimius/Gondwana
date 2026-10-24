@@ -46,25 +46,17 @@ public sealed class DirectoryPanel : UserControl
         ForeColor = Color.Gainsboro
     };
 
-    /// <summary>
-    /// Gets the working directory.
-    /// </summary>
+    /// <summary>Gets the full path used as the browser root; initially the process current directory.</summary>
     public string WorkingDirectory { get; private set; } = Environment.CurrentDirectory;
 
-    /// <summary>
-    /// Occurs when file activated.
-    /// </summary>
+    /// <summary>Occurs when a supported loose file is double-clicked or opened from its context menu; supplies its full path.</summary>
     public event Action<string>? FileActivated;
 
-    /// <summary>
-    /// Occurs when choose directory requested.
-    /// </summary>
+    /// <summary>Occurs when the Directory button is clicked so the host can choose and set a new browser root.</summary>
     public event Action? ChooseDirectoryRequested;
 
-    /// <summary>
-    /// Initializes a new instance of the <c>DirectoryPanel</c> class.
-    /// </summary>
-    /// <param name="log">The log.</param>
+    /// <summary>Creates the browser controls and file actions without populating the initial directory.</summary>
+    /// <param name="log">Callback for directory, archive, and external-open failures.</param>
     public DirectoryPanel(Action<string> log)
     {
         _log = log;
@@ -134,19 +126,19 @@ public sealed class DirectoryPanel : UserControl
         };
     }
 
-    /// <summary>
-    /// Sets directory.
-    /// </summary>
-    /// <param name="path">The path.</param>
+    /// <summary>Normalizes the browser root and refreshes its contents on the UI thread.</summary>
+    /// <param name="path">Directory path, resolved against the process current directory if relative.</param>
+    /// <remarks>Does not change the process current directory. Unreadable directories are shown as errors and logged.</remarks>
+    /// <exception cref="ArgumentNullException"><paramref name="path"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="path"/> is empty or invalid.</exception>
     public void SetDirectory(string path)
     {
         WorkingDirectory = Path.GetFullPath(path);
         RefreshDirectory();
     }
 
-    /// <summary>
-    /// Refreshes the displayed contents of the working directory.
-    /// </summary>
+    /// <summary>Rebuilds the browser root, clearing selection and cancelling obsolete archive scans.</summary>
+    /// <remarks>Call on the UI thread. Loose files load synchronously; packed entries load asynchronously and subdirectories load when expanded.</remarks>
     public void RefreshDirectory()
     {
         Tree.BeginUpdate();
@@ -430,15 +422,19 @@ public sealed class DirectoryPanel : UserControl
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     private struct OpenAsInfo
     {
+        /// <summary>Full file path passed to the Windows Open With dialog.</summary>
         [MarshalAs(UnmanagedType.LPWStr)] public string File;
+        /// <summary>Optional file-class name for the Windows Open With dialog; null uses the file path.</summary>
         [MarshalAs(UnmanagedType.LPWStr)] public string? Class;
+        /// <summary>Native Open With behavior flags passed to the shell.</summary>
         public uint Flags;
     }
 
     [DllImport("shell32.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
     private static extern int SHOpenWithDialog(IntPtr parent, ref OpenAsInfo info);
 
-    /// <inheritdoc />
+    /// <summary>Cancels pending archive work and releases the browser's menus, images, and child controls.</summary>
+    /// <param name="disposing">Whether to release managed resources as well as native control resources.</param>
     protected override void Dispose(bool disposing)
     {
         if (disposing && !IsDisposed)

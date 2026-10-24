@@ -5,11 +5,10 @@ namespace Gondwana.Tooling.Importers;
 /// <summary>Portable, deterministic names shared by all format providers.</summary>
 public static class ImportNaming
 {
-    /// <summary>
-    /// Converts a name into a safe output file name.
-    /// </summary>
-    /// <param name="name">The name.</param>
-    /// <returns>The sanitized output name.</returns>
+    /// <summary>Produces a lowercase portable filename component with unsafe characters replaced by hyphens.</summary>
+    /// <param name="name">Source label to normalize to Unicode Form C.</param>
+    /// <returns>The sanitized label, asset when empty after trimming, or an asset-prefixed reserved device name.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="name"/> is null.</exception>
     public static string Sanitize(string name)
     {
         ArgumentNullException.ThrowIfNull(name);
@@ -28,12 +27,10 @@ public static class ImportNaming
         return value;
     }
 
-    /// <summary>
-    /// Builds a relative output path for an imported resource.
-    /// </summary>
-    /// <param name="outputDirectory">The directory receiving the generated files.</param>
-    /// <param name="dependencyPath">The dependency path.</param>
-    /// <returns>The relative path used for the imported output.</returns>
+    /// <summary>Expresses a dependency path relative to the output directory without copying or checking the resource.</summary>
+    /// <param name="outputDirectory">Destination document directory, normalized against the process current directory.</param>
+    /// <param name="dependencyPath">Dependency location, normalized against the process current directory.</param>
+    /// <returns>A path using forward slashes; it remains absolute when the locations are on different roots.</returns>
     public static string RelativePath(string outputDirectory, string dependencyPath) =>
         Path.GetRelativePath(Path.GetFullPath(outputDirectory), Path.GetFullPath(dependencyPath)).Replace('\\', '/');
 }

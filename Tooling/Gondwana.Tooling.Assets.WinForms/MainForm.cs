@@ -4,9 +4,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Assets.WinForms;
 
-/// <summary>
-/// Represents main form.
-/// </summary>
+/// <summary>Standalone asset-package editor shell managing document tabs, the workspace browser, and session persistence.</summary>
 public sealed class MainForm : Form
 {
     private readonly VS2015DarkTheme _theme = new();
@@ -33,9 +31,7 @@ public sealed class MainForm : Form
                 path,
                 StringComparison.OrdinalIgnoreCase));
 
-    /// <summary>
-    /// Initializes a new instance of the <c>MainForm</c> class.
-    /// </summary>
+    /// <summary>Creates the standalone assets editor shell with its workspace browser, document docking, and session restoration.</summary>
     public MainForm()
     {
         ReportSessionError = message => WorkspaceSessionController.ShowPersistenceError(this, message);

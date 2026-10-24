@@ -30,9 +30,7 @@ internal sealed class MainForm : Form
     private AnimationEditorDocument? ActiveEditor =>
         _dock.ActiveDocument as AnimationEditorDocument;
 
-    /// <summary>
-    /// Initializes a new instance of the <c>MainForm</c> class.
-    /// </summary>
+    /// <summary>Creates the standalone animations editor shell with its workspace browser, document docking, and session restoration.</summary>
     public MainForm()
     {
         ReportSessionError = message => WorkspaceSessionController.ShowPersistenceError(this, message);

@@ -32,7 +32,8 @@ internal sealed class StudioDockDocument : DockContent
 
     private void DocumentChanged(object? sender, EventArgs e) => UpdateCaption();
 
-    /// <inheritdoc/>
+    /// <summary>Defers closing until the host approves saving or discarding the document's edits.</summary>
+    /// <param name="e">Closing event whose cancellation flag is set while approval is pending or denied.</param>
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         base.OnFormClosing(e);
@@ -75,7 +76,8 @@ internal sealed class StudioDockDocument : DockContent
         }
     }
 
-    /// <inheritdoc/>
+    /// <summary>Unsubscribes from document changes and disposes the owned document and dock content.</summary>
+    /// <param name="disposing">Whether to release the managed document and controls.</param>
     protected override void Dispose(bool disposing)
     {
         if (disposing)

@@ -9,9 +9,7 @@ using SkiaSharp;
 
 namespace Gondwana.Tooling.Importers;
 
-/// <summary>
-/// Represents godot tileset importer.
-/// </summary>
+/// <summary>Converts supported Godot 3.x and 4.x text TileSets into tilesheet and animation definitions.</summary>
 public sealed class GodotTilesetImporter : ExternalAssetImporter
 {
     /// <inheritdoc/>

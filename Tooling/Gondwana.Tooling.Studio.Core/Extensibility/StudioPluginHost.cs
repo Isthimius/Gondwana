@@ -15,27 +15,27 @@ public class StudioPluginHost
     private readonly Action<string> _log;
     private readonly Assembly[] _sharedContracts;
 
-    /// <summary>
-    /// StudioPluginHost.
-    /// </summary>
-    /// <param name="log">Logging callback.</param>
+    /// <summary>Creates a plugin host that shares the framework-neutral plugin contract assembly.</summary>
+    /// <param name="log">Callback receiving discovery messages and plugin failures on the calling thread.</param>
     public StudioPluginHost(Action<string> log) : this(log, []) { }
 
     /// <summary>Creates a host sharing the core contract and the supplied platform contracts.</summary>
-    /// <param name="log">The log.</param>
-    /// <param name="sharedContracts">The shared contracts.</param>
+    /// <param name="log">Callback receiving discovery messages and plugin failures on the calling thread.</param>
+    /// <param name="sharedContracts">Host assemblies to reuse by simple name instead of loading private plugin copies.</param>
     public StudioPluginHost(Action<string> log, params Assembly[] sharedContracts)
     {
         _log = log;
         _sharedContracts = [typeof(IStudioPlugin).Assembly, .. sharedContracts];
     }
 
-    /// <summary>Gets the currently enabled plugins.</summary>
+    /// <summary>Gets a new snapshot of enabled plugin instances in discovery order.</summary>
     public IReadOnlyList<IStudioPlugin> Plugins =>
         _plugins.Where(p => p.Enabled).Select(p => p.Instance).ToArray();
 
-    /// <summary>Attaches optional services to already discovered plugins on the UI thread.</summary>
-    /// <param name="services">The services.</param>
+    /// <summary>Attaches services to enabled plugins implementing <see cref="IStudioPluginHostServicesAware"/>.</summary>
+    /// <param name="services">Borrowed host services supplied to each participating plugin.</param>
+    /// <remarks>Call on the UI thread. A plugin that throws is disabled and its failure is logged.</remarks>
+    /// <exception cref="ArgumentNullException"><paramref name="services"/> is <see langword="null"/>.</exception>
     public void AttachHostServices(IStudioPluginHostServices services)
     {
         ArgumentNullException.ThrowIfNull(services);
@@ -47,12 +47,19 @@ public class StudioPluginHost
         }
     }
 
-    /// <summary>Scans the <c>plugins/</c> directory and loads all valid assemblies.</summary>
+    /// <summary>Discovers plugins in the <c>plugins</c> directory beneath the application base directory.</summary>
+    /// <remarks>Uses the same additive discovery and failure handling as <see cref="DiscoverAndLoad(string)"/>.</remarks>
     public void DiscoverAndLoad()
         => DiscoverAndLoad(Path.Combine(AppContext.BaseDirectory, "plugins"));
 
-    /// <summary>Discovers plugins in an explicit directory, useful for hosts and integration tests.</summary>
-    /// <param name="pluginDir">The plugin dir.</param>
+    /// <summary>Loads DLLs directly in a directory and instantiates their concrete plugin types with parameterless constructors.</summary>
+    /// <param name="pluginDir">Plugin directory; relative paths are resolved against the process's current directory.</param>
+    /// <remarks>
+    /// Missing directories and assembly or constructor failures are logged. Path normalization and directory enumeration
+    /// errors propagate. Repeated calls append instances without deduplication; existing plugins are not unloaded.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException"><paramref name="pluginDir"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="pluginDir"/> is empty or is not a valid path.</exception>
     public void DiscoverAndLoad(string pluginDir)
     {
         pluginDir = Path.GetFullPath(pluginDir);
@@ -67,8 +74,9 @@ public class StudioPluginHost
             LoadAssemblyPlugins(dllPath);
     }
 
-    /// <summary>Notifies all enabled plugins that a project was opened.</summary>
-    /// <param name="projectPath">The project path.</param>
+    /// <summary>Notifies enabled plugins of the selected working directory, disabling and logging plugins that throw.</summary>
+    /// <param name="projectPath">The authoring directory path to pass unchanged to each plugin.</param>
+    /// <remarks>Studio invokes this on its UI thread. This method does not send a preceding close notification.</remarks>
     public void NotifyProjectOpened(string projectPath)
     {
         foreach (var plugin in _plugins.Where(p => p.Enabled))
@@ -84,7 +92,8 @@ public class StudioPluginHost
         }
     }
 
-    /// <summary>Notifies all enabled plugins that the current project was closed.</summary>
+    /// <summary>Notifies enabled plugins that the working directory is closing, disabling and logging plugins that throw.</summary>
+    /// <remarks>Studio invokes this on its UI thread; plugins remain loaded after the notification.</remarks>
     public void NotifyProjectClosed()
     {
         foreach (var plugin in _plugins.Where(p => p.Enabled))
@@ -100,24 +109,20 @@ public class StudioPluginHost
         }
     }
 
-    /// <summary>
-    /// Returns a filtered, safely cast enumerable of enabled plugins that implement
-    /// <typeparamref name="TPlugin"/>. Used by platform-specific subclasses to retrieve
-    /// plugins that provide UI contributions.
-    /// </summary>
-    /// <typeparam name="TPlugin">The type of plugin.</typeparam>
-    /// <returns>The loaded plugins assignable to the requested plugin type.</returns>
+    /// <summary>Filters enabled plugins by a platform-specific or other plugin contract.</summary>
+    /// <typeparam name="TPlugin">The reference type that returned plugin instances must implement or derive from.</typeparam>
+    /// <returns>A deferred sequence of matching instances in discovery order, evaluated when enumerated.</returns>
     protected IEnumerable<TPlugin> GetPluginsAs<TPlugin>() where TPlugin : class
         => _plugins.Where(p => p.Enabled && p.Instance is TPlugin)
                    .Select(p => (TPlugin)p.Instance);
 
     /// <summary>Writes a plugin-related message to the configured log sink.</summary>
-    /// <param name="message">The message.</param>
+    /// <param name="message">The complete diagnostic text to pass to the callback.</param>
     protected void Log(string message) => _log(message);
 
-    /// <summary>Disables a plugin that threw during a lifecycle call.</summary>
-    /// <param name="plugin">The plugin.</param>
-    /// <param name="reason">The reason.</param>
+    /// <summary>Excludes a plugin from future enabled-plugin queries and logs the reason without unloading or disposing it.</summary>
+    /// <param name="plugin">The loaded-plugin record to mark disabled.</param>
+    /// <param name="reason">Failure details included in the log message alongside the plugin name.</param>
     protected void DisablePlugin(LoadedPlugin plugin, string reason)
     {
         plugin.Enabled = false;
@@ -167,11 +172,9 @@ public class StudioPluginHost
         private readonly AssemblyDependencyResolver _resolver;
         private readonly Assembly[] _sharedContracts;
 
-        /// <summary>
-        /// PluginLoadContext.
-        /// </summary>
-        /// <param name="dllPath">dllPath.</param>
-        /// <param name="sharedContracts">Contract assemblies supplied by the host/default load context.</param>
+        /// <summary>Creates an isolated load context that resolves dependencies beside a plugin assembly.</summary>
+        /// <param name="dllPath">The full path to the plugin's main assembly.</param>
+        /// <param name="sharedContracts">Contract assemblies to reuse from the host.</param>
         public PluginLoadContext(string dllPath, Assembly[] sharedContracts)
             : base(name: $"studio-plugin:{Path.GetFileNameWithoutExtension(dllPath)}", isCollectible: true)
         {
@@ -179,9 +182,9 @@ public class StudioPluginHost
             _sharedContracts = sharedContracts;
         }
 
-        /// <summary>Load.</summary>
-        /// <param name="assemblyName">The assembly name.</param>
-        /// <returns>The resulting assembly, or <see langword="null"/> when unavailable.</returns>
+        /// <summary>Reuses a host contract by simple name or loads a managed dependency resolved for this plugin.</summary>
+        /// <param name="assemblyName">The requested dependency identity.</param>
+        /// <returns>The shared or loaded assembly, or <see langword="null"/> to allow normal fallback resolution.</returns>
         protected override Assembly? Load(AssemblyName assemblyName)
         {
             // Contracts must have host identity even when a plugin ships private copies.
@@ -192,9 +195,9 @@ public class StudioPluginHost
             return path is not null ? LoadFromAssemblyPath(path) : null;
         }
 
-        /// <summary>LoadUnmanagedDll.</summary>
-        /// <param name="unmanagedDllName">The unmanaged dll name.</param>
-        /// <returns>The native-library handle, or zero when the library cannot be resolved.</returns>
+        /// <summary>Loads a native dependency from the path resolved for this plugin.</summary>
+        /// <param name="unmanagedDllName">The native library name requested by the plugin.</param>
+        /// <returns>The loaded library handle, or zero to allow normal fallback resolution.</returns>
         protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
         {
             var path = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
@@ -205,10 +208,10 @@ public class StudioPluginHost
     /// <summary>Tracks a loaded plugin with its isolation context.</summary>
     protected sealed class LoadedPlugin
     {
-        /// <summary>LoadedPlugin.</summary>
-        /// <param name="instance">The instance.</param>
-        /// <param name="loadContext">The load context.</param>
-        /// <param name="sourcePath">The path to the external source file.</param>
+        /// <summary>Records a newly enabled plugin and retains its load context and source assembly path.</summary>
+        /// <param name="instance">The constructed plugin instance.</param>
+        /// <param name="loadContext">The assembly load context that owns the plugin's code.</param>
+        /// <param name="sourcePath">The path of the DLL from which the plugin was discovered.</param>
         public LoadedPlugin(IStudioPlugin instance, AssemblyLoadContext loadContext, string sourcePath)
         {
             Instance = instance;
@@ -216,13 +219,13 @@ public class StudioPluginHost
             SourcePath = sourcePath;
         }
 
-        /// <summary>Gets get.</summary>
+        /// <summary>Gets the plugin instance created during discovery.</summary>
         public IStudioPlugin Instance { get; }
-        /// <summary>Gets get.</summary>
+        /// <summary>Gets the retained load context for the plugin assembly and its dependencies.</summary>
         public AssemblyLoadContext LoadContext { get; }
-        /// <summary>Gets get.</summary>
+        /// <summary>Gets the path of the DLL from which the plugin was discovered.</summary>
         public string SourcePath { get; }
-        /// <summary>Gets or sets true.</summary>
+        /// <summary>Gets or sets whether the plugin participates in host queries and lifecycle notifications; initially true.</summary>
         public bool Enabled { get; set; } = true;
     }
 }

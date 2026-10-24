@@ -14,7 +14,8 @@ public sealed record PackedImageSource(
     /// </summary>
     public string FullAssetsFilePath => Path.GetFullPath(AssetsFilePath);
 
-    /// <inheritdoc/>
+    /// <summary>Formats the archive filename and image entry name for display.</summary>
+    /// <returns>The archive filename, a colon separator, and the entry name.</returns>
     public override string ToString() =>
         $"{Path.GetFileName(AssetsFilePath)} : {AssetEntryName}";
 }

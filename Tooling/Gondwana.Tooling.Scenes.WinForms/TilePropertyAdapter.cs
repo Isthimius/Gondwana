@@ -20,15 +20,13 @@ internal sealed class TilePropertyAdapter
     private readonly Action _changed;
     private readonly Func<(TilesheetRegionDefinition? Region, SceneFrameDefinition? Frame)>? _region;
 
-    /// <summary>
-    /// Initializes a new instance of the <c>TilePropertyAdapter</c> class.
-    /// </summary>
-    /// <param name="document">The document displayed or edited by the control.</param>
-    /// <param name="layer">The layer.</param>
-    /// <param name="x">The horizontal coordinate.</param>
-    /// <param name="y">The vertical coordinate.</param>
-    /// <param name="changed">The callback invoked when a property changes.</param>
-    /// <param name="region">The region.</param>
+    /// <summary>Creates a property-grid view of a sparse cell; setters materialize the cell, mark the document dirty, and notify the editor.</summary>
+    /// <param name="document">The scene document containing the cell.</param>
+    /// <param name="layer">The layer whose sparse tile collection is edited.</param>
+    /// <param name="x">Zero-based cell column.</param>
+    /// <param name="y">Zero-based cell row.</param>
+    /// <param name="changed">Callback refreshing the editor after a mutation.</param>
+    /// <param name="region">Optional resolver for the cell's source region and frame, used to display effective geometry.</param>
     public TilePropertyAdapter(
         SceneDocument document,
         SceneLayerDefinition layer,
@@ -67,27 +65,19 @@ internal sealed class TilePropertyAdapter
         _changed();
     }
 
-    /// <summary>
-    /// Gets the x.
-    /// </summary>
+    /// <summary>Gets the zero-based column of the edited scene-layer cell.</summary>
     [Category("Cell"), ReadOnly(true)]
     public int X => _x;
 
-    /// <summary>
-    /// Gets the y.
-    /// </summary>
+    /// <summary>Gets the zero-based row of the edited scene-layer cell.</summary>
     [Category("Cell"), ReadOnly(true)]
     public int Y => _y;
 
-    /// <summary>
-    /// Gets whether the object has explicit definition.
-    /// </summary>
+    /// <summary>Gets whether the sparse layer contains a persisted tile entry for this cell.</summary>
     [Category("Cell"), ReadOnly(true)]
     public bool HasExplicitDefinition => Tile is not null;
 
-    /// <summary>
-    /// Gets or sets the unique identifier.
-    /// </summary>
+    /// <summary>Gets or sets the tile identifier; an unmaterialized cell reads as an empty GUID.</summary>
     [Category("Identity")]
     public Guid Id
     {
@@ -115,18 +105,14 @@ internal sealed class TilePropertyAdapter
         set => Change(tile => tile.Visible = value);
     }
 
-    /// <summary>
-    /// Gets the frame.
-    /// </summary>
+    /// <summary>Gets the assigned tilesheet, region, and grid coordinates as display text, or <c>(none)</c>.</summary>
     [Category("Appearance"), ReadOnly(true)]
     public string Frame =>
         Tile?.Frame is { } frame
             ? $"{frame.Tilesheet}:{frame.RegionName} ({frame.XTile},{frame.YTile})"
             : "(none)";
 
-    /// <summary>
-    /// Gets or sets the transform.
-    /// </summary>
+    /// <summary>Gets or sets the placement orientation without modifying source atlas metadata.</summary>
     [Category("Appearance"), TypeConverter(typeof(TileTransformConverter))]
     [Description("Orientation of this placement. Source atlas metadata remains unchanged.")]
     public TileTransform Transform
@@ -142,9 +128,7 @@ internal sealed class TilePropertyAdapter
     /// </summary>
     [Category("Geometry"), ReadOnly(true)]
     public Size TileSize => _region?.Invoke().Region?.TileSize ?? Size.Empty;
-    /// <summary>
-    /// Gets the effective tile size.
-    /// </summary>
+    /// <summary>Gets the source tile dimensions after applying the placement orientation.</summary>
     [Category("Geometry"), ReadOnly(true)]
     public Size EffectiveTileSize => TileTransformGeometry.TransformSize(TileSize, Transform);
     /// <summary>
@@ -152,19 +136,13 @@ internal sealed class TilePropertyAdapter
     /// </summary>
     [Category("Geometry"), ReadOnly(true)]
     public Spacing Overhang => _region?.Invoke().Region?.Overhang ?? Spacing.None;
-    /// <summary>
-    /// Gets the effective overhang.
-    /// </summary>
+    /// <summary>Gets source overhang edges remapped by the placement orientation.</summary>
     [Category("Geometry"), ReadOnly(true)]
     public Spacing EffectiveOverhang => TileTransformGeometry.TransformSpacing(Overhang, Transform);
-    /// <summary>
-    /// Gets the source tile padding.
-    /// </summary>
+    /// <summary>Gets the source region padding in pixels, or no padding when the region cannot be resolved.</summary>
     [Category("Geometry"), ReadOnly(true)]
     public Spacing SourceTilePadding => _region?.Invoke().Region?.TilePadding ?? Spacing.None;
-    /// <summary>
-    /// Gets the effective tile padding.
-    /// </summary>
+    /// <summary>Gets source padding edges remapped by the placement orientation.</summary>
     [Category("Geometry"), ReadOnly(true)]
     public Spacing EffectiveTilePadding => TileTransformGeometry.TransformSpacing(SourceTilePadding, Transform);
     private CollisionAdjust SourceFrameCollisionAdjust
@@ -179,16 +157,12 @@ internal sealed class TilePropertyAdapter
         }
     }
 
-    /// <summary>
-    /// Gets the effective collision adjust.
-    /// </summary>
+    /// <summary>Gets frame or instance collision adjustments with edges remapped by the placement orientation.</summary>
     [Category("Collision"), ReadOnly(true)]
     public CollisionAdjust EffectiveCollisionAdjust => TileTransformGeometry.TransformCollisionAdjust(
         AdjustCollisionAreaByFrame ? SourceFrameCollisionAdjust : AdjustCollisionArea, Transform);
 
-    /// <summary>
-    /// Gets or sets whether enable animator is enabled.
-    /// </summary>
+    /// <summary>Gets or sets whether the materialized tile has animation enabled.</summary>
     [Category("Animation")]
     public bool EnableAnimator
     {
@@ -206,9 +180,7 @@ internal sealed class TilePropertyAdapter
         set => Change(tile => tile.AnimationKey = string.IsNullOrWhiteSpace(value) ? null : value);
     }
 
-    /// <summary>
-    /// Gets or sets whether start animation is enabled.
-    /// </summary>
+    /// <summary>Gets or sets whether the assigned animation starts when the tile is materialized.</summary>
     [Category("Animation")]
     public bool StartAnimation
     {
@@ -226,9 +198,7 @@ internal sealed class TilePropertyAdapter
         set => Change(tile => tile.EnableFog = value);
     }
 
-    /// <summary>
-    /// Gets or sets whether adjust collision area by frame is enabled.
-    /// </summary>
+    /// <summary>Gets or sets whether collision-area adjustments come from the current frame.</summary>
     [Category("Collision")]
     public bool AdjustCollisionAreaByFrame
     {
@@ -236,9 +206,7 @@ internal sealed class TilePropertyAdapter
         set => Change(tile => tile.AdjustCollisionAreaByFrame = value);
     }
 
-    /// <summary>
-    /// Gets or sets the adjust collision area.
-    /// </summary>
+    /// <summary>Gets or sets instance collision insets in pixels; negative values expand the area.</summary>
     [Category("Collision")]
     public CollisionAdjust AdjustCollisionArea
     {
@@ -246,9 +214,7 @@ internal sealed class TilePropertyAdapter
         set => Change(tile => tile.AdjustCollisionArea = value);
     }
 
-    /// <summary>
-    /// Gets or sets the collision type.
-    /// </summary>
+    /// <summary>Gets or sets the instance collision behavior used when frame collision types are disabled.</summary>
     [Category("Collision")]
     public TileCollisionType CollisionType
     {
@@ -256,9 +222,7 @@ internal sealed class TilePropertyAdapter
         set => Change(tile => tile.CollisionType = value);
     }
 
-    /// <summary>
-    /// Gets or sets whether collision type by frame is enabled.
-    /// </summary>
+    /// <summary>Gets or sets whether collision behavior comes from the current frame.</summary>
     [Category("Collision")]
     public bool CollisionTypeByFrame
     {
@@ -266,9 +230,7 @@ internal sealed class TilePropertyAdapter
         set => Change(tile => tile.CollisionTypeByFrame = value);
     }
 
-    /// <summary>
-    /// Gets or sets the collision profile name.
-    /// </summary>
+    /// <summary>Gets or sets the collision-profile lookup name; blank input clears the name.</summary>
     [Category("Collision")]
     public string? CollisionProfileName
     {

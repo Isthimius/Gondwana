@@ -15,10 +15,18 @@ public sealed class ProjectDiagnosticsScanner
     private static readonly HashSet<string> IgnoredDirectories = new(StringComparer.OrdinalIgnoreCase)
         { "bin", "obj", ".git", ".vs", "node_modules" };
 
-    /// <summary>Scans synchronously on the caller's thread. The plugin runs this on a worker.</summary>
-    /// <param name="projectPath">The project path.</param>
-    /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>The project diagnostics collected by the scan.</returns>
+    /// <summary>Recursively inspects supported authoring files synchronously without changing them or registering runtime assets.</summary>
+    /// <param name="projectPath">Scan root, resolved against the process current directory when relative.</param>
+    /// <param name="cancellationToken">Token checked between discovered entries and inspected file references.</param>
+    /// <returns>Definitions ordered by relative path and collected problems, with no retained open archives.</returns>
+    /// <remarks>
+    /// Skips discovered reparse points and bin, obj, .git, .vs, and node_modules directories. Discovery and inspection
+    /// failures become problems; root-path normalization errors propagate. URI references are recorded without fetching.
+    /// GAF files receive structure validation; packed references are checked for typed entry existence.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException"><paramref name="projectPath"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="projectPath"/> is empty or invalid.</exception>
+    /// <exception cref="OperationCanceledException">Cancellation is observed during the scan.</exception>
     public ProjectScanResult Scan(string projectPath, CancellationToken cancellationToken = default)
     {
         var root = Path.GetFullPath(projectPath);

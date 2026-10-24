@@ -9,6 +9,13 @@ namespace Gondwana.Tooling.WinForms;
 /// <summary>Shared Skia decoding/masking and owned GDI bitmap conversion for authoring controls.</summary>
 internal static class AuthoringPreviewImage
 {
+    /// <summary>Decodes a tilesheet image, applies its alpha mask, and copies it into an independent GDI bitmap.</summary>
+    /// <param name="definition">Tilesheet providing the image reference and optional mask.</param>
+    /// <param name="baseDirectory">Absolute directory for relative dependency paths.</param>
+    /// <param name="packages">Borrowed cache for packed images; not disposed by this method.</param>
+    /// <param name="containingArchive">Fallback archive for an implicit packed image reference, or null if none.</param>
+    /// <returns>A bitmap owned by the caller; no source stream or Skia bitmap remains open.</returns>
+    /// <exception cref="InvalidDataException">The image reference, decoding, or pixel conversion fails.</exception>
     public static Bitmap Load(TilesheetDefinition definition, string baseDirectory,
         AssetPackageCatalog packages, string? containingArchive = null)
     {

@@ -29,23 +29,15 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     private PointF _offset;
     private readonly Dictionary<SceneLayerDefinition, ProjectionCache> _projections = [];
 
-    /// <summary>
-    /// Gets the zoom.
-    /// </summary>
+    /// <summary>Gets displayed pixels per world pixel.</summary>
     public float Zoom { get; private set; } = 1f;
-    /// <summary>
-    /// Gets or sets whether show grid lines is enabled.
-    /// </summary>
+    /// <summary>Gets or sets whether cell outlines are drawn during the next repaint.</summary>
     public bool ShowGridLines { get; set; } = true;
 
-    /// <summary>
-    /// Occurs when a tile is selected.
-    /// </summary>
+    /// <summary>Occurs on a successful cell hit, supplying its layer, zero-based column, and zero-based row.</summary>
     public event Action<SceneLayerDefinition, int, int>? TileSelected;
 
-    /// <summary>
-    /// Initializes a new instance of the <c>ScenePreviewControl</c> class.
-    /// </summary>
+    /// <summary>Creates a scrollable scene preview with a one-to-one initial scale.</summary>
     public ScenePreviewControl()
     {
         DoubleBuffered = true;
@@ -57,12 +49,10 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         Resize += (_, _) => UpdateExtent();
     }
 
-    /// <summary>
-    /// Configures the preview content and its resource resolvers.
-    /// </summary>
-    /// <param name="definition">The persisted definition to process.</param>
-    /// <param name="findTilesheet">The find tilesheet.</param>
-    /// <param name="findAnimation">The find animation.</param>
+    /// <summary>Assigns preview content, releases projections for removed layers, and recalculates the display extent.</summary>
+    /// <param name="definition">The mutable scene definition to preview without runtime scene registration.</param>
+    /// <param name="findTilesheet">Resolves a logical tilesheet name to a borrowed preview source, or null.</param>
+    /// <param name="findAnimation">Resolves an animation key to a borrowed preview source, or null.</param>
     public void Configure(
         SceneDefinition definition,
         Func<string, SceneTilesheetSource?> findTilesheet,
@@ -85,10 +75,8 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         UpdateExtent();
     }
 
-    /// <summary>
-    /// Sets the preview zoom factor.
-    /// </summary>
-    /// <param name="zoom">The zoom factor.</param>
+    /// <summary>Changes magnification while preserving the viewport center as far as scrolling permits.</summary>
+    /// <param name="zoom">Pixels per source pixel, clamped to the range 0.05 through 16.</param>
     public void SetZoom(float zoom)
     {
         PointF? centerWorld = _worldBounds.IsEmpty || Zoom <= 0
@@ -232,12 +220,10 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         Invalidate();
     }
 
-    /// <summary>
-    /// Updates the preview to show the selected content.
-    /// </summary>
-    /// <param name="layer">The layer.</param>
-    /// <param name="x">The horizontal coordinate.</param>
-    /// <param name="y">The vertical coordinate.</param>
+    /// <summary>Updates the highlighted scene cell and requests a repaint.</summary>
+    /// <param name="layer">Layer containing the selected cell, or null to clear the highlight.</param>
+    /// <param name="x">Zero-based cell column.</param>
+    /// <param name="y">Zero-based cell row.</param>
     public void SetSelection(
         SceneLayerDefinition? layer,
         int x,

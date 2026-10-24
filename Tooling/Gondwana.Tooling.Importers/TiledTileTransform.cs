@@ -5,9 +5,9 @@ namespace Gondwana.Tooling.Importers;
 /// <summary>Decodes orthogonal/isometric Tiled GIDs, applying the axis swap before H/V flips.</summary>
 public static class TiledTileTransform
 {
-    /// <summary>Clears all four high bits and returns the native orientation and any retained hex-only flag.</summary>
-    /// <param name="raw">The raw.</param>
-    /// <returns>The tile identifier with flag bits removed, its orientation, and whether hexagonal rotation flags were present.</returns>
+    /// <summary>Decodes diagonal, horizontal, and vertical transforms and clears all four high flag bits.</summary>
+    /// <param name="raw">Unsigned Tiled global tile ID including transform flags.</param>
+    /// <returns>The low 28-bit GID, native orientation, and whether bit 0x10000000 carries a hex-only rotation flag.</returns>
     public static (uint Gid, TileTransform Transform, bool HasHexRotation) Decode(uint raw)
     {
         var transform = (raw & 0x20000000) != 0 ? TileTransform.FlipDiagonal : TileTransform.Identity;

@@ -12,27 +12,17 @@ internal sealed class SceneAnimationSource : IDisposable
 {
     private readonly List<SceneTilesheetSource> _tilesheets = [];
 
-    /// <summary>
-    /// Gets the file path.
-    /// </summary>
+    /// <summary>Gets the full loose document path or containing archive path; use Resource for packed entry identity.</summary>
     public string FilePath => Resource.Path;
     /// <summary>The physical source identity, separate from the animation's logical key.</summary>
     public AuthoringResource Resource { get; }
-    /// <summary>
-    /// Gets the base directory.
-    /// </summary>
+    /// <summary>Gets the full directory containing the document or archive, used to resolve its dependencies.</summary>
     public string BaseDirectory { get; }
-    /// <summary>
-    /// Gets the definition.
-    /// </summary>
+    /// <summary>Gets the selected deserialized GANI member used by the authoring preview.</summary>
     public AnimationDefinition Definition { get; }
-    /// <summary>
-    /// Gets the tilesheets.
-    /// </summary>
+    /// <summary>Gets successfully loaded explicit tilesheet dependencies owned by this animation source.</summary>
     public IReadOnlyList<SceneTilesheetSource> Tilesheets => _tilesheets;
-    /// <summary>
-    /// Gets the diagnostics.
-    /// </summary>
+    /// <summary>Gets dependency-load and preview warnings collected while constructing this source.</summary>
     public IReadOnlyList<string> Diagnostics => _diagnostics;
     private readonly List<string> _diagnostics = [];
 
@@ -45,13 +35,11 @@ internal sealed class SceneAnimationSource : IDisposable
         LoadTilesheetDependencies(packages ?? owned!);
     }
 
-    /// <summary>
-    /// Loads scene animation source from the supplied source.
-    /// </summary>
-    /// <param name="path">The path.</param>
-    /// <returns>The resulting scene animation source.</returns>
-    /// <param name="identity">The logical member identity; null requires a singleton.</param>
-    /// <param name="packages">Optional shared authoring package catalog.</param>
+    /// <summary>Loads a logical member from a loose GANI file and prepares its authoring preview dependencies.</summary>
+    /// <param name="path">Loose document path, normalized against the process current directory.</param>
+    /// <param name="identity">Logical member identity, or null to require a singleton document.</param>
+    /// <param name="packages">Borrowed package cache, or null to use a temporary cache during loading.</param>
+    /// <returns>A source owned by the caller, which must dispose its preview resources.</returns>
     public static SceneAnimationSource LoadMember(string path, string? identity, AssetPackageCatalog? packages = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -60,10 +48,8 @@ internal sealed class SceneAnimationSource : IDisposable
             AnimationDefinitionSerializer.Load(path, identity), packages);
     }
 
-    /// <summary>
-    /// Gets the first resolvable frame for the animation preview.
-    /// </summary>
-    /// <returns>The first resolvable animation frame, or <see langword="null"/> if none is available.</returns>
+    /// <summary>Copies the first animation frame's tilesheet and grid reference without resolving its image.</summary>
+    /// <returns>A new scene frame reference, or null if the animation has no frames.</returns>
     public SceneFrameDefinition? FirstPreviewFrame()
     {
         var frame = Definition.Frames.FirstOrDefault();
@@ -79,11 +65,9 @@ internal sealed class SceneAnimationSource : IDisposable
         };
     }
 
-    /// <summary>
-    /// Finds the tilesheet source registered under the requested logical name.
-    /// </summary>
-    /// <param name="logicalName">The logical name.</param>
-    /// <returns>The requested scene tilesheet source, or <see langword="null"/> when unavailable.</returns>
+    /// <summary>Finds the first loaded tilesheet with an exact case-sensitive logical name.</summary>
+    /// <param name="logicalName">Tilesheet definition name to match.</param>
+    /// <returns>A borrowed source owned by this animation source, or null when absent.</returns>
     public SceneTilesheetSource? FindTilesheet(string logicalName) =>
         _tilesheets.FirstOrDefault(source =>
             string.Equals(source.Definition.Name, logicalName, StringComparison.Ordinal));
@@ -123,9 +107,7 @@ internal sealed class SceneAnimationSource : IDisposable
         }
     }
 
-    /// <summary>
-    /// Releases the resources owned by this instance.
-    /// </summary>
+    /// <summary>Disposes every loaded tilesheet preview and clears the dependency source list.</summary>
     public void Dispose()
     {
         foreach (var tilesheet in _tilesheets)
@@ -133,25 +115,25 @@ internal sealed class SceneAnimationSource : IDisposable
         _tilesheets.Clear();
     }
 
-    /// <summary>Loads a singleton source document.</summary>
-    /// <param name="path">The physical document path.</param>
-    /// <returns>The source.</returns>
+    /// <summary>Loads a singleton loose GANI document with its preview resources.</summary>
+    /// <param name="path">Loose document path.</param>
+    /// <returns>A source owned by the caller, which must dispose it.</returns>
     public static SceneAnimationSource Load(string path) => LoadMember(path, null);
 
-    /// <summary>Loads every member for authoring source selection.</summary>
-    /// <param name="path">The physical document path.</param>
-    /// <returns>All logical sources.</returns>
-    /// <param name="packages">Optional shared authoring package catalog.</param>
+    /// <summary>Loads all GANI members from a loose file in document order and prepares their previews.</summary>
+    /// <param name="path">Loose document path.</param>
+    /// <param name="packages">Borrowed package cache, or null to create temporary caches during loading.</param>
+    /// <returns>Independent source objects; the caller must dispose every returned source.</returns>
     public static IReadOnlyList<SceneAnimationSource> LoadAll(string path, AssetPackageCatalog? packages = null) =>
         AnimationDefinitionSerializer.LoadAll(path).Select(definition => new SceneAnimationSource(
             new AuthoringResource(Path.GetFullPath(path), Gondwana.Assets.AssetTypes.AnimationDefinition), definition, packages)).ToList();
 
-    /// <summary>Loads one logical source from a packed definition document.</summary>
-    /// <param name="archivePath">The containing archive path.</param>
-    /// <param name="entry">The physical entry name.</param>
-    /// <param name="identity">The logical member identity.</param>
-    /// <returns>The selected source.</returns>
-    /// <param name="packages">Optional shared authoring package catalog.</param>
+    /// <summary>Loads one logical member from an exact typed packed GANI entry.</summary>
+    /// <param name="archivePath">Containing archive path, normalized against the process current directory.</param>
+    /// <param name="entry">Exact entry name within the expected definition asset type.</param>
+    /// <param name="identity">Logical member identity within the packed document.</param>
+    /// <param name="packages">Borrowed package cache, or null to use a temporary cache during loading.</param>
+    /// <returns>A source owned by the caller, which must dispose its preview resources.</returns>
     public static SceneAnimationSource LoadPacked(string archivePath, string entry, string identity, AssetPackageCatalog? packages = null)
     {
         archivePath = Path.GetFullPath(archivePath);

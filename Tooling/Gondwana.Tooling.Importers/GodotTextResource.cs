@@ -3,22 +3,20 @@ using System.Text.RegularExpressions;
 
 namespace Gondwana.Tooling.Importers;
 
-/// <summary>Purpose-built text resource reader. Unknown values remain raw text.</summary>
-/// <param name="Kind">The kind.</param>
-/// <param name="Attributes">The attributes.</param>
-/// <param name="Properties">The properties.</param>
+/// <summary>One parsed Godot text-resource section with values retained as raw text.</summary>
+/// <param name="Kind">Section header name, such as resource, ext_resource, or sub_resource.</param>
+/// <param name="Attributes">Case-sensitive header attribute names and unparsed values, including quotes.</param>
+/// <param name="Properties">Mutable, case-sensitive property assignments in the section.</param>
 public sealed record GodotResourceSection(string Kind, IReadOnlyDictionary<string, string> Attributes, Dictionary<string, string> Properties);
 
-/// <summary>
-/// Represents godot text resource.
-/// </summary>
+/// <summary>Parses the section and assignment structure needed by the Godot TileSet importer.</summary>
 public static class GodotTextResource
 {
-    /// <summary>
-    /// Parses a Godot text resource.
-    /// </summary>
-    /// <param name="text">The text to display.</param>
-    /// <returns>The sections parsed from the Godot text resource.</returns>
+    /// <summary>Parses sections and multiline assignments while respecting quoted strings, delimiters, and semicolon comments.</summary>
+    /// <param name="text">Complete text-resource contents to parse.</param>
+    /// <returns>Sections in source order, with values retained as raw text for format-specific interpretation.</returns>
+    /// <exception cref="InvalidDataException">Assignments or delimiters are malformed or unterminated.</exception>
+    /// <exception cref="ArgumentException">An attribute or property name is duplicated within its section.</exception>
     public static IReadOnlyList<GodotResourceSection> Parse(string text)
     {
         var sections = new List<GodotResourceSection>();
