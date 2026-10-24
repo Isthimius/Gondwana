@@ -6,6 +6,7 @@ using Gondwana.Tooling.Audio.WinForms;
 using Gondwana.Tooling.Scenes.WinForms;
 using Gondwana.Tooling.Sprites.WinForms;
 using Gondwana.Tooling.Studio.WinForms.Documents;
+using Gondwana.Tooling.Studio.WinForms.Panels;
 using Gondwana.Tooling.Tilesheets.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -124,6 +125,25 @@ public sealed partial class CompositionTests
         if (reopened.Document.Editor is SpriteEditorControl restoredSprites)
             Assert.Equal(new[] { "player", "guard-01", "guard-02" }, restoredSprites.Document.Definition.Sprites.Select(sprite => sprite.Nickname));
         Assert.Equal(model.PaneNames.Count, Assert.Single(Descendants(reopened.Document.Editor).OfType<DockPanel>()).Contents.Count);
+    });
+
+    /// <summary>Document tabs keep their own 16-pixel artwork when the directory tree is resized.</summary>
+    [Fact]
+    public void DocumentTabIconsAreIndependentOfDirectoryIconSize() => RunSta(directory =>
+    {
+        using var studio = Host(directory);
+        var scene = studio.NewDocument("gscn");
+        using var original = scene.Icon.ToBitmap();
+        studio.Browser.ApplyIconSize(DirectoryIconSize.Large);
+        using var resized = scene.Icon.ToBitmap();
+
+        Assert.Equal(new Size(16, 16), scene.Icon.Size);
+        Assert.Equal(original.GetPixel(2, 2), resized.GetPixel(2, 2));
+
+        // ZIP packages must receive the same assets icon as GAF packages.
+        var archive = studio.NewDocument("gaf", Path.Combine(directory, "package.zip"));
+        using var archiveIcon = archive.Icon.ToBitmap();
+        Assert.Equal(Color.Goldenrod.ToArgb(), archiveIcon.GetPixel(2, 2).ToArgb());
     });
 
     /// <summary>
