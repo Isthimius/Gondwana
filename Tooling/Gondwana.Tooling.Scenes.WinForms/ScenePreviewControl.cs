@@ -19,6 +19,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     private SceneDefinition? _definition;
     private Func<string, SceneTilesheetSource?>? _findTilesheet;
     private Func<string, SceneAnimationSource?>? _findAnimation;
+    private Func<SceneLayerDefinition, bool>? _showLayer;
     private SceneLayerDefinition? _selectedLayer;
     private int _selectedX;
     private int _selectedY;
@@ -53,14 +54,17 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     /// <param name="definition">The mutable scene definition to preview without runtime scene registration.</param>
     /// <param name="findTilesheet">Resolves a logical tilesheet name to a borrowed preview source, or null.</param>
     /// <param name="findAnimation">Resolves an animation key to a borrowed preview source, or null.</param>
+    /// <param name="showLayer">Optional preview-only visibility filter; without one, uses the authored Visible property.</param>
     public void Configure(
         SceneDefinition definition,
         Func<string, SceneTilesheetSource?> findTilesheet,
-        Func<string, SceneAnimationSource?> findAnimation)
+        Func<string, SceneAnimationSource?> findAnimation,
+        Func<SceneLayerDefinition, bool>? showLayer = null)
     {
         _definition = definition;
         _findTilesheet = findTilesheet;
         _findAnimation = findAnimation;
+        _showLayer = showLayer;
 
         var currentLayers = definition.Layers.ToHashSet();
         foreach (var stale in _projections.Keys
@@ -235,6 +239,9 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         Invalidate();
     }
 
+    private bool IsLayerDisplayed(SceneLayerDefinition layer) =>
+        _showLayer?.Invoke(layer) ?? layer.Visible;
+
     /// <inheritdoc/>
     protected override void OnPaint(PaintEventArgs e)
     {
@@ -252,7 +259,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         }
 
         var visibleLayers = _definition.Layers
-            .Where(layer => layer.Visible && layer.Columns > 0 && layer.Rows > 0)
+            .Where(layer => IsLayerDisplayed(layer) && layer.Columns > 0 && layer.Rows > 0)
             .OrderBy(layer => layer.ZOrder)
             .ToList();
 
@@ -289,9 +296,10 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         if (e.Button != MouseButtons.Left || _definition is null)
             return;
 
-        var layer = _selectedLayer ??
-            _definition.Layers
-                .Where(candidate => candidate.Visible)
+        var layer = _selectedLayer is not null && IsLayerDisplayed(_selectedLayer)
+            ? _selectedLayer
+            : _definition.Layers
+                .Where(candidate => IsLayerDisplayed(candidate))
                 .OrderByDescending(candidate => candidate.ZOrder)
                 .FirstOrDefault();
 
@@ -371,7 +379,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
 
         var visibleLayers = _definition.Layers
             .Where(layer =>
-                layer.Visible &&
+                IsLayerDisplayed(layer) &&
                 layer.Columns > 0 &&
                 layer.Rows > 0)
             .OrderBy(layer => layer.ZOrder)
