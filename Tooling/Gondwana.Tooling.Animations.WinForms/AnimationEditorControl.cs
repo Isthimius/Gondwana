@@ -1200,6 +1200,7 @@ public sealed class AnimationEditorControl : UserControl
                 GraphicsUnit.Pixel);
         }
 
+        _ = imageList.Handle;
         imageList.Images.Add(thumbnail);
         thumbnail.Dispose();
         return imageList.Images.Count - 1;
