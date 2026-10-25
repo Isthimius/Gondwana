@@ -104,9 +104,9 @@ to set the selected tile's `AnimationKey` and initial `Frame` to the first frame
 of that animation. This replaces an existing frame assignment; if no GANI frame
 is available, the existing frame is left intact.
 
-Assigning a key does not redundantly force `EnableAnimator`; GSCN runtime
-materialization already treats an `AnimationKey` as sufficient to create the
-animator. `StartAnimation` remains a separate tile property.
+Assigning an animation also sets `EnableAnimator` and `StartAnimation` to
+`true` so the assigned cycle starts when the scene is materialized. Both flags
+can still be changed independently in the tile properties.
 
 The preview uses the first GANI frame as a representative image. It does not run
 the game animation timer.
