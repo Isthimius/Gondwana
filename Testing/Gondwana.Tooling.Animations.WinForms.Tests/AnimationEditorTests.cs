@@ -508,7 +508,7 @@ public sealed class AnimationEditorTests
 
             try
             {
-                string gtsPath = CreateGts(directory);
+                string gtsPath = CreateGts(Path.Combine(directory, "sources"));
                 var document = AnimationDocument.Create(directory);
                 document.Definition.Frames.Add(
                     new AnimationFrameDefinition
