@@ -12,6 +12,7 @@ internal static class PasswordPrompt
     {
         using var dialog = new Form
         {
+            Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon(),
             Text = "Asset package password",
             Size = new Size(480, 160),
             MinimumSize = new Size(400, 160),

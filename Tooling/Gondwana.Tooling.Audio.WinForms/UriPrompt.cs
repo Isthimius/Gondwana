@@ -13,6 +13,7 @@ internal sealed class UriPrompt : Form
     /// <summary>Creates a dialog for entering an audio key and URI without accessing the resource.</summary>
     public UriPrompt()
     {
+        Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon();
         Text = "Add URI audio";
         Width = 520;
         Height = 190;

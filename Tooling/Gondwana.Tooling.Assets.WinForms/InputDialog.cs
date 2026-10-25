@@ -13,6 +13,7 @@ internal sealed class InputDialog : Form
     /// <param name="initialValue">Initial text shown in the input box.</param>
     public InputDialog(string title, string prompt, string initialValue = "")
     {
+        Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon();
         Text = title;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         StartPosition = FormStartPosition.CenterParent;

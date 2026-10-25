@@ -56,6 +56,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
 
     internal MainForm(bool loadPlugins)
     {
+        Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon();
         Text = "Gondwana Studio";
         Size = new Size(1450, 950);
         MinimumSize = new Size(900, 650);

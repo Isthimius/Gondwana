@@ -55,6 +55,7 @@ public static class PackedImagePicker
 
         using var dialog = new Form
         {
+            Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon(),
             Text = "Choose GAF image",
             Size = new Size(620, 450),
             MinimumSize = new Size(420, 300),
