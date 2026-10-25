@@ -196,12 +196,14 @@ public sealed class DirectoryPanel : UserControl
         var segments = relative.Split(Path.DirectorySeparatorChar);
         TreeNode parent = Tree.Nodes[0];
         string parentPath = WorkingDirectory;
+
         for (int i = 0; i < segments.Length - 1; i++)
         {
             parentPath = Path.Combine(parentPath, segments[i]);
             var directory = parent.Nodes.Cast<TreeNode>().FirstOrDefault(node =>
                 node.Tag is DirectoryInfo info &&
                 string.Equals(info.FullName, parentPath, StringComparison.OrdinalIgnoreCase));
+
             if (directory is null)
                 return null;
 
@@ -214,21 +216,29 @@ public sealed class DirectoryPanel : UserControl
         }
 
         foreach (TreeNode group in parent.Nodes)
-        foreach (TreeNode child in group.Nodes)
         {
-            if (location.AssetEntryName is null &&
-                child.Tag is string path &&
-                string.Equals(path, location.Path, StringComparison.OrdinalIgnoreCase))
-                return child;
-
-            if (location.AssetEntryName is not null)
-            foreach (TreeNode entry in child.Nodes)
+            foreach (TreeNode child in group.Nodes)
             {
-                if (entry.Tag is PackedAssetNodeIdentity packed &&
-                    packed.AssetType == location.AssetType &&
-                    string.Equals(packed.ArchivePath, location.Path, StringComparison.OrdinalIgnoreCase) &&
-                    string.Equals(packed.EntryName, location.AssetEntryName, StringComparison.OrdinalIgnoreCase))
-                    return entry;
+                if (location.AssetEntryName is null &&
+                    child.Tag is string path &&
+                    string.Equals(path, location.Path, StringComparison.OrdinalIgnoreCase))
+                {
+                    return child;
+                }
+
+                if (location.AssetEntryName is not null)
+                {
+                    foreach (TreeNode entry in child.Nodes)
+                    {
+                        if (entry.Tag is PackedAssetNodeIdentity packed &&
+                            packed.AssetType == location.AssetType &&
+                            string.Equals(packed.ArchivePath, location.Path, StringComparison.OrdinalIgnoreCase) &&
+                            string.Equals(packed.EntryName, location.AssetEntryName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return entry;
+                        }
+                    }
+                }
             }
         }
 
