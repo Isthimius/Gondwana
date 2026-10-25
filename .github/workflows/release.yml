@@ -6,14 +6,12 @@ on:
       - 'v*'
 
 jobs:
-  release:
+  preflight:
     runs-on: ubuntu-latest
-
     permissions:
-      contents: write
-      packages: write
-      pull-requests: write
-
+      contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout (full history for NBGV)
         uses: actions/checkout@v4
@@ -32,7 +30,11 @@ jobs:
         run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
       - name: Get version from NBGV
-        run: echo "VERSION=$(nbgv get-version -v NuGetPackageVersion)" >> $GITHUB_ENV
+        id: version
+        run: |
+          version="$(nbgv get-version -v NuGetPackageVersion)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "VERSION=$version" >> "$GITHUB_ENV"
 
       - name: Validate and extract release notes
         shell: pwsh
@@ -45,6 +47,59 @@ jobs:
           ./Tooling/scripts/Extract-ReleaseNotes.ps1 -Tag $env:RELEASE_TAG
           Get-Content RELEASE_NOTES.md
 
+
+  packaging:
+    needs: preflight
+    uses: ./.github/workflows/package-binaries.yml
+    with:
+      upload_release_artifacts: true
+    permissions:
+      contents: read
+
+  release:
+    needs: [preflight, packaging]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      pull-requests: write
+    env:
+      VERSION: ${{ needs.preflight.outputs.version }}
+    steps:
+      - name: Checkout tagged commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Extract validated release notes
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: ./Tooling/scripts/Extract-ReleaseNotes.ps1 -Tag $env:RELEASE_TAG
+
+      - name: Download validated binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: Gondwana-binaries
+
+      - name: Download validated NuGet packages
+        uses: actions/download-artifact@v4
+        with:
+          name: Gondwana-nupkgs
+          path: nupkgs
+
+      - name: Verify release artifacts
+        shell: bash
+        run: |
+          test -s Gondwana-binaries.zip
+          test -n "$(find nupkgs -maxdepth 1 -type f -name '*.nupkg' -print -quit)"
+          mv Gondwana-binaries.zip "Gondwana-$VERSION-binaries.zip"
+
       - name: Create or overwrite release branch
         run: |
           git config user.name "github-actions"
@@ -53,99 +108,6 @@ jobs:
           release_branch="release/v${VERSION}"
 
           git push origin HEAD:refs/heads/${release_branch} --force
-
-      - name: Restore
-        run: dotnet restore --nologo /p:Configuration=Release /p:EnableWindowsTargeting=true
-
-      - name: Build
-        run: dotnet build -c Release --no-restore --nologo /p:EnableWindowsTargeting=true
-
-      - name: Pack
-        run: dotnet pack -c Release --no-build -o ./nupkgs --nologo /p:EnableWindowsTargeting=true
-
-      # ---------------------------
-      # Publish
-      # ---------------------------
-      - name: Publish projects
-        run: |
-          mkdir -p publish/Gondwana
-          mkdir -p publish/Gondwana.Audio.Midi
-          mkdir -p publish/Gondwana.Audio.NAudio
-          mkdir -p publish/Gondwana.Blazor
-          mkdir -p publish/Gondwana.Blazor.Hosting
-          mkdir -p publish/Gondwana.Hosting
-          mkdir -p publish/Gondwana.Input.SDL2
-          mkdir -p publish/Gondwana.Video
-          mkdir -p publish/Gondwana.Video.Widgets
-          mkdir -p publish/Gondwana.Widgets
-          mkdir -p publish/Gondwana.WinForms
-          mkdir -p publish/Gondwana.WinForms.Hosting
-          mkdir -p publish/Tooling/Gondwana.Templates
-          mkdir -p publish/Demos/Slider
-          mkdir -p publish/Demos/Spot.WinForms
-
-          dotnet publish Gondwana/Gondwana.csproj -c Release -o publish/Gondwana --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Gondwana.Audio.Midi/Gondwana.Audio.Midi.csproj -c Release -o publish/Gondwana.Audio.Midi --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Gondwana.Audio.NAudio/Gondwana.Audio.NAudio.csproj -c Release -o publish/Gondwana.Audio.NAudio --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Gondwana.Blazor/Gondwana.Blazor.csproj -c Release -o publish/Gondwana.Blazor --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Gondwana.Blazor.Hosting/Gondwana.Blazor.Hosting.csproj -c Release -o publish/Gondwana.Blazor.Hosting --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Gondwana.Hosting/Gondwana.Hosting.csproj -c Release -o publish/Gondwana.Hosting --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Gondwana.Input.SDL2/Gondwana.Input.SDL2.csproj -c Release -o publish/Gondwana.Input.SDL2 --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Gondwana.Video/Gondwana.Video.csproj -c Release -o publish/Gondwana.Video --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Gondwana.Video.Widgets/Gondwana.Video.Widgets.csproj -c Release -o publish/Gondwana.Video.Widgets --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Gondwana.Widgets/Gondwana.Widgets.csproj -c Release -o publish/Gondwana.Widgets --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Gondwana.WinForms/Gondwana.WinForms.csproj -c Release -o publish/Gondwana.WinForms --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.csproj -c Release -o publish/Gondwana.WinForms.Hosting --nologo /p:EnableWindowsTargeting=true
-
-          # Apps/tools (full folders needed for assets)
-          # Shared self-contained publish plan for Studio, standalones, and Scene Viewer.
-          pwsh -NoProfile -File Tooling/scripts/Publish-WindowsTooling.ps1 -OutputRoot publish/Tooling
-          dotnet publish Demos/Slider/Slider.csproj -c Release -o publish/Demos/Slider -r win-x64 --self-contained true --nologo /p:EnableWindowsTargeting=true
-          dotnet publish Demos/Spot.WinForms/Spot.WinForms.csproj -c Release -o publish/Demos/Spot.WinForms -r win-x64 --self-contained true --nologo /p:EnableWindowsTargeting=true
-
-      # ---------------------------
-      # Stage release artifacts
-      # ---------------------------
-      - name: Stage release assets
-        shell: bash
-        run: |
-          mkdir -p release-assets/Tooling
-          mkdir -p release-assets/Demos
-
-          # Engine DLLs (flat)
-          cp publish/Gondwana/Gondwana.dll release-assets/
-          cp publish/Gondwana.Audio.Midi/Gondwana.Audio.Midi.dll release-assets/
-          cp publish/Gondwana.Audio.NAudio/Gondwana.Audio.NAudio.dll release-assets/
-          cp publish/Gondwana.Blazor/Gondwana.Blazor.dll release-assets/
-          cp publish/Gondwana.Blazor.Hosting/Gondwana.Blazor.Hosting.dll release-assets/
-          cp publish/Gondwana.Hosting/Gondwana.Hosting.dll release-assets/
-          cp publish/Gondwana.Input.SDL2/Gondwana.Input.SDL2.dll release-assets/
-          cp publish/Gondwana.Video/Gondwana.Video.dll release-assets/
-          cp publish/Gondwana.Video.Widgets/Gondwana.Video.Widgets.dll release-assets/
-          cp publish/Gondwana.Widgets/Gondwana.Widgets.dll release-assets/
-          cp publish/Gondwana.WinForms/Gondwana.WinForms.dll release-assets/
-          cp publish/Gondwana.WinForms.Hosting/Gondwana.WinForms.Hosting.dll release-assets/
-
-          # Apps/tools (FULL folders for assets/runtime)
-          cp -r publish/Tooling/Gondwana.Tooling.Assets.WinForms release-assets/Tooling/
-          cp -r publish/Tooling/Gondwana.Tooling.Studio.WinForms release-assets/Tooling/
-          cp -r publish/Tooling/Gondwana.Tooling.Animations.WinForms release-assets/Tooling/
-          cp -r publish/Tooling/Gondwana.Tooling.Audio.WinForms release-assets/Tooling/
-          cp -r publish/Tooling/Gondwana.Tooling.Scenes.WinForms release-assets/Tooling/
-          cp -r publish/Tooling/Gondwana.Tooling.SceneViewer.WinForms release-assets/Tooling/
-          cp -r publish/Tooling/Gondwana.Tooling.Sprites.WinForms release-assets/Tooling/
-          cp -r publish/Tooling/Gondwana.Tooling.Tilesheets.WinForms release-assets/Tooling/
-          cp -r publish/Demos/Slider release-assets/Demos/
-          cp -r publish/Demos/Spot.WinForms release-assets/Demos/
-
-      - name: Validate packaged Windows tooling
-        shell: pwsh
-        run: ./Tooling/scripts/Test-WindowsToolingBundle.ps1 -ToolingRoot release-assets/Tooling
-
-      - name: Zip binaries
-        run: |
-          cd release-assets
-          zip -r ../Gondwana-${{ env.VERSION }}-binaries.zip .
 
       # ---------------------------
       # GitHub Release
