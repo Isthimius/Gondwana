@@ -16,6 +16,7 @@ public sealed class DirectoryPanel : UserControl
     private readonly ContextMenuStrip _fileMenu = new();
     private string? _menuPath;
     private PackedAssetNodeIdentity? _menuPacked;
+    private AssetLocation? _activeDocumentLocation;
     internal event Action<PackedAssetNodeIdentity>? PackedFileActivated;
     private CancellationTokenSource _archiveRefresh = new();
     private readonly CancellationTokenSource _lifetime = new();
@@ -127,7 +128,7 @@ public sealed class DirectoryPanel : UserControl
         RefreshDirectory();
     }
 
-    /// <summary>Rebuilds the browser root, clearing selection and cancelling obsolete archive scans.</summary>
+    /// <summary>Rebuilds the browser root, restoring the active document selection when available and cancelling obsolete scans.</summary>
     /// <remarks>Call on the UI thread. Loose files load synchronously; packed entries load asynchronously and subdirectories load when expanded.</remarks>
     public void RefreshDirectory()
     {
@@ -158,6 +159,79 @@ public sealed class DirectoryPanel : UserControl
         {
             Tree.EndUpdate();
         }
+
+        SelectActiveDocumentNode();
+    }
+
+    /// <summary>Selects the active document in the tree without changing editor keyboard focus.</summary>
+    /// <param name="location">Physical location of the active document, or null for an untitled document.</param>
+    /// <remarks>Packed entries may not be selectable until an asynchronous archive scan finishes.</remarks>
+    internal void SelectActiveDocument(AssetLocation? location)
+    {
+        _activeDocumentLocation = location;
+        SelectActiveDocumentNode();
+    }
+
+    private void SelectActiveDocumentNode()
+    {
+        var node = FindActiveDocumentNode();
+        if (!ReferenceEquals(Tree.SelectedNode, node))
+            Tree.SelectedNode = node;
+
+        node?.EnsureVisible();
+    }
+
+    private TreeNode? FindActiveDocumentNode()
+    {
+        if (_activeDocumentLocation is not { } location || Tree.Nodes.Count == 0)
+            return null;
+
+        string relative = Path.GetRelativePath(WorkingDirectory, location.Path);
+        if (relative is "." or ".." ||
+            Path.IsPathRooted(relative) ||
+            relative.StartsWith(".." + Path.DirectorySeparatorChar, StringComparison.Ordinal))
+            return null;
+
+        var segments = relative.Split(Path.DirectorySeparatorChar);
+        TreeNode parent = Tree.Nodes[0];
+        string parentPath = WorkingDirectory;
+        for (int i = 0; i < segments.Length - 1; i++)
+        {
+            parentPath = Path.Combine(parentPath, segments[i]);
+            var directory = parent.Nodes.Cast<TreeNode>().FirstOrDefault(node =>
+                node.Tag is DirectoryInfo info &&
+                string.Equals(info.FullName, parentPath, StringComparison.OrdinalIgnoreCase));
+            if (directory is null)
+                return null;
+
+            // Materialize only ancestors of the selected file, leaving unrelated folders lazy.
+            if (directory.Nodes.Count == 1 && directory.Nodes[0].Tag is null)
+                FillDirectory(directory, parentPath);
+
+            directory.Expand();
+            parent = directory;
+        }
+
+        foreach (TreeNode group in parent.Nodes)
+        foreach (TreeNode child in group.Nodes)
+        {
+            if (location.AssetEntryName is null &&
+                child.Tag is string path &&
+                string.Equals(path, location.Path, StringComparison.OrdinalIgnoreCase))
+                return child;
+
+            if (location.AssetEntryName is not null)
+            foreach (TreeNode entry in child.Nodes)
+            {
+                if (entry.Tag is PackedAssetNodeIdentity packed &&
+                    packed.AssetType == location.AssetType &&
+                    string.Equals(packed.ArchivePath, location.Path, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(packed.EntryName, location.AssetEntryName, StringComparison.OrdinalIgnoreCase))
+                    return entry;
+            }
+        }
+
+        return null;
     }
 
     private void FillDirectory(TreeNode parent, string path)
@@ -286,6 +360,11 @@ public sealed class DirectoryPanel : UserControl
                             {
                                 Tree.EndUpdate();
                             }
+
+                            // A packed tab may have become active before this archive finished loading.
+                            if (_activeDocumentLocation?.AssetEntryName is not null &&
+                                string.Equals(_activeDocumentLocation.Path, archivePath, StringComparison.OrdinalIgnoreCase))
+                                SelectActiveDocumentNode();
                         }, cancellationToken).ConfigureAwait(false);
                     }
                     catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or SharpZipBaseException)
