@@ -498,6 +498,79 @@ public sealed class AnimationEditorTests
     }
 
     /// <summary>
+    /// Verifies GANI sequence thumbnails match GTS thumbnails and track source availability.
+    /// </summary>
+    [Fact]
+    public void AnimationFrameThumbnails_MatchGtsSizeAndRefreshWhenSourcesChange() =>
+        RunSta(() =>
+        {
+            string directory = CreateTempDirectory();
+
+            try
+            {
+                string gtsPath = CreateGts(Path.Combine(directory, "sources"));
+                var document = AnimationDocument.Create(directory);
+                document.Definition.Frames.Add(
+                    new AnimationFrameDefinition
+                    {
+                        Tilesheet = "test-sheet",
+                        RegionName = "walk",
+                        XTile = 1,
+                        YTile = 0
+                    });
+                document.Definition.Frames.Add(
+                    new AnimationFrameDefinition
+                    {
+                        Tilesheet = "test-sheet",
+                        RegionName = "walk",
+                        XTile = 99,
+                        YTile = 0
+                    });
+
+                using var editor = new AnimationEditorControl(document);
+                var frames = Field<ListView>(editor, "_frames");
+                var sourceTree = Field<TreeView>(editor, "_sourceTree");
+
+                Assert.Equal("Frame", frames.Columns[0].Text);
+                Assert.Equal("#", frames.Columns[1].Text);
+                Assert.NotNull(frames.SmallImageList);
+                Assert.Equal(
+                    sourceTree.ImageList!.ImageSize,
+                    frames.SmallImageList.ImageSize);
+                Assert.Equal(new Size(32, 32), frames.SmallImageList.ImageSize);
+                Assert.All(
+                    frames.Items.Cast<ListViewItem>(),
+                    item => Assert.Equal(-1, item.ImageIndex));
+
+                editor.AddTilesheetSource(gtsPath);
+
+                Assert.Equal(2, frames.Items.Count);
+                Assert.Equal("1", frames.Items[0].SubItems[1].Text);
+                Assert.Equal("2", frames.Items[1].SubItems[1].Text);
+                Assert.True(frames.Items[0].ImageIndex >= 0);
+                Assert.Equal(
+                    new Size(32, 32),
+                    frames.SmallImageList.Images[frames.Items[0].ImageIndex].Size);
+                Assert.Equal(-1, frames.Items[1].ImageIndex);
+                Assert.Single(frames.SmallImageList.Images.Cast<Image>());
+
+                sourceTree.SelectedNode = sourceTree.Nodes[0];
+                editor.GetType()
+                    .GetMethod("RemoveSelectedSource", PrivateInstance)!
+                    .Invoke(editor, null);
+
+                Assert.Equal(2, frames.Items.Count);
+                Assert.Equal(-1, frames.Items[0].ImageIndex);
+                Assert.Equal(-1, frames.Items[1].ImageIndex);
+                Assert.Empty(frames.SmallImageList.Images.Cast<Image>());
+            }
+            finally
+            {
+                Directory.Delete(directory, recursive: true);
+            }
+        });
+
+    /// <summary>
     /// Verifies removing gts source removes dependency but preserves animation frames.
     /// </summary>
     [Fact]
