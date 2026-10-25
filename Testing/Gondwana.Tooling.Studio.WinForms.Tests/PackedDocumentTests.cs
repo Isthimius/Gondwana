@@ -290,6 +290,43 @@ public sealed partial class CompositionTests
         Assert.Contains(restored.Documents, doc => doc.Document.Extension == "gsnd");
     });
 
+    /// <summary>Switching packed tabs highlights the correct typed entry rather than a loose duplicate.</summary>
+    [Fact]
+    public void ActivePackedTabsSelectMatchingDirectoryEntry() => RunSta(root =>
+    {
+        string archivePath = NativeArchive(root);
+        string loosePath = Path.Combine(root, "same.gscn");
+        File.WriteAllText(loosePath, NativeJson("gscn"));
+        using var studio = Host(root);
+        WaitForArchives(studio.Browser);
+
+        var packed = studio.OpenDocument(NativeLocation(archivePath, "gscn"));
+        var selected = Assert.IsType<PackedAssetNodeIdentity>(studio.Browser.Tree.SelectedNode?.Tag);
+        Assert.Equal(archivePath, selected.ArchivePath);
+        Assert.Equal(AssetTypes.SceneDefinition, selected.AssetType);
+        Assert.Equal("nested/same.gscn", selected.EntryName);
+
+        var loose = studio.OpenDocument(loosePath);
+        Assert.Equal(loosePath, studio.Browser.Tree.SelectedNode?.Tag);
+
+        packed.Activate();
+        Application.DoEvents();
+        selected = Assert.IsType<PackedAssetNodeIdentity>(studio.Browser.Tree.SelectedNode?.Tag);
+        Assert.Equal(archivePath, selected.ArchivePath);
+        Assert.Equal("nested/same.gscn", selected.EntryName);
+
+        loose.Activate();
+        Application.DoEvents();
+        Assert.Equal(loosePath, studio.Browser.Tree.SelectedNode?.Tag);
+
+        // Save As adopts the loose destination and must rekey the tree selection.
+        packed.Activate();
+        string destination = Path.Combine(root, "copies", "saved.gscn");
+        Assert.True(AwaitUi(studio.SaveDocument(packed, saveAs: true, destination: destination)));
+        Assert.Equal(destination, studio.Browser.Tree.SelectedNode?.Tag);
+        Assert.Same(packed, studio.ActiveDocument);
+    });
+
     private static string NativeJson(string format, string first = "first") => format switch
     {
         "gts" => TilesheetDefinitionSerializer.ToDocumentJson(new() { Definitions = [new() { Name = first }, new() { Name = "sibling" }] }),
