@@ -46,7 +46,8 @@ The working-directory browser shows `.gscn`, `.gts`, and `.gani` files.
 
 Each `SceneEditorControl` owns a nested DockPanelSuite workspace with:
 
-- **Scene structure** — scene/layer navigation and layer add/remove commands.
+- **Scene structure** — scene/layer navigation, layer add/remove commands, and
+  preview-only visibility checkboxes for individual layers or the entire scene.
 - **Scene preview** — definition-driven composition and tile selection.
 - **GTS frame sources** — GTS region/frame browser with thumbnails and frame
   assignment.
@@ -149,6 +150,14 @@ metadata, the editor performs conservative same-directory recovery:
 The preview composes visible layers by `ZOrder`, uses loaded GTS images for
 explicit frame references, and uses the first frame of a loaded GANI for
 animation-key tiles.
+
+Use the checkboxes in **Scene structure** to temporarily show or hide each
+layer. The scene-level checkbox toggles all layers; **Show all** and **Hide all**
+in the structure toolbar work even when only some layers are checked.
+Unchecked layers do not draw, contribute to preview bounds, or accept preview
+tile clicks. The initial check state follows each layer's saved `Visible` value,
+but these preview toggles do **not** modify `Visible`, mark the document dirty,
+or affect a separately launched runtime Scene Viewer.
 
 Clicking the preview chooses a tile in the currently selected SceneLayer. The
 Tile properties pane and X/Y selector follow that selection.

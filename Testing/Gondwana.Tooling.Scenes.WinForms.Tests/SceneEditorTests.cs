@@ -463,6 +463,106 @@ public sealed class SceneEditorTests
             }
         });
 
+    /// <summary>Preview checkboxes filter rendering without mutating authored visibility or dirty state.</summary>
+    [Fact]
+    public void SceneStructureChecksFilterPreviewWithoutChangingDocument() => RunSta(() =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "SceneLayerChecks-" + Guid.NewGuid());
+        Directory.CreateDirectory(root);
+        try
+        {
+            var document = SceneDocument.Create(root);
+            var first = document.AddLayer();
+            first.ID = "near";
+            first.Columns = 5;
+            first.Rows = 5;
+            first.TileWidth = 10;
+            first.TileHeight = 10;
+
+            var second = document.AddLayer();
+            second.ID = "far";
+            second.Columns = 80;
+            second.Rows = 10;
+            second.TileWidth = 10;
+            second.TileHeight = 10;
+
+            document.Save(Path.Combine(root, "layers.gscn"), allowInvalid: true);
+            Assert.False(document.IsDirty);
+            string original = SceneDefinitionSerializer.ToJson(document.Definition);
+
+            using var editor = new SceneEditorControl(document);
+            using var host = new Form { Size = new(1500, 950), Opacity = 0, ShowInTaskbar = false };
+            host.Controls.Add(editor);
+            host.Show();
+            Application.DoEvents();
+
+            var structure = Descendants(editor).OfType<TreeView>()
+                .Single(tree => tree.Nodes.Count > 0 && tree.Nodes[0].Tag is SceneDefinition);
+            var preview = Descendants(editor).OfType<ScenePreviewControl>().Single();
+            var buttons = Descendants(editor).OfType<ToolStrip>()
+                .SelectMany(bar => bar.Items.Cast<ToolStripItem>()).ToArray();
+
+            Assert.True(structure.CheckBoxes);
+            Assert.True(structure.Nodes[0].Checked);
+            var near = structure.Nodes[0].Nodes.Cast<TreeNode>().Single(node => ReferenceEquals(node.Tag, first));
+            var far = structure.Nodes[0].Nodes.Cast<TreeNode>().Single(node => ReferenceEquals(node.Tag, second));
+            Assert.True(near.Checked);
+            Assert.True(far.Checked);
+            int fullWidth = preview.AutoScrollMinSize.Width;
+
+            far.Checked = false;
+            Assert.True(near.Checked);
+            Assert.False(structure.Nodes[0].Checked);
+            Assert.True(preview.AutoScrollMinSize.Width < fullWidth);
+            Assert.False(document.IsDirty);
+
+            buttons.Single(item => item.Text == "Hide all").PerformClick();
+            Assert.False(structure.Nodes[0].Checked);
+            Assert.All(structure.Nodes[0].Nodes.Cast<TreeNode>(), node => Assert.False(node.Checked));
+            Assert.Equal(Size.Empty, preview.AutoScrollMinSize);
+
+            near = structure.Nodes[0].Nodes.Cast<TreeNode>().Single(node => ReferenceEquals(node.Tag, first));
+            near.Checked = true;
+            Assert.True(preview.AutoScrollMinSize.Width > 0);
+            Assert.False(structure.Nodes[0].Checked);
+
+            buttons.Single(item => item.Text == "Show all").PerformClick();
+            Assert.True(structure.Nodes[0].Checked);
+            Assert.All(structure.Nodes[0].Nodes.Cast<TreeNode>(), node => Assert.True(node.Checked));
+            Assert.Equal(fullWidth, preview.AutoScrollMinSize.Width);
+
+            structure.Nodes[0].Checked = false;
+            Assert.Equal(Size.Empty, preview.AutoScrollMinSize);
+            structure.Nodes[0].Checked = true;
+            Assert.Equal(fullWidth, preview.AutoScrollMinSize.Width);
+
+            Assert.True(first.Visible);
+            Assert.True(second.Visible);
+            Assert.Equal(original, SceneDefinitionSerializer.ToJson(document.Definition));
+            Assert.False(document.IsDirty);
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    });
+
+    /// <summary>Preview overrides may show authored-hidden layers without modifying their saved state.</summary>
+    [Fact]
+    public void PreviewVisibilityFilterCanShowAuthoredHiddenLayer() => RunSta(() =>
+    {
+        var hidden = new SceneLayerDefinition { Visible = false, Columns = 10, Rows = 10 };
+        var definition = new SceneDefinition { Layers = [hidden] };
+        using var preview = new ScenePreviewControl { Size = new(240, 240) };
+        preview.Configure(definition, _ => null, _ => null);
+        Assert.Equal(Size.Empty, preview.AutoScrollMinSize);
+        preview.Configure(definition, _ => null, _ => null, _ => true);
+        Assert.True(preview.AutoScrollMinSize.Width > 0);
+        Assert.False(hidden.Visible);
+        preview.Configure(definition, _ => null, _ => null, _ => false);
+        Assert.Equal(Size.Empty, preview.AutoScrollMinSize);
+    });
+
     private static IEnumerable<Control> Descendants(Control parent)
     {
         foreach (Control child in parent.Controls)

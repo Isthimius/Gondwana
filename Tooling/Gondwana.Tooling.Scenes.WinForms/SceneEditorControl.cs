@@ -31,7 +31,8 @@ public sealed class SceneEditorControl : UserControl
     {
         Dock = DockStyle.Fill,
         HideSelection = false,
-        ShowNodeToolTips = true
+        ShowNodeToolTips = true,
+        CheckBoxes = true
     };
 
     private readonly PropertyGrid _properties = new()
@@ -90,6 +91,8 @@ public sealed class SceneEditorControl : UserControl
     private EditorDockWorkspace _workspace = null!;
 
     private SceneLayerDefinition? _selectedLayer;
+    private readonly Dictionary<SceneLayerDefinition, bool> _previewLayerVisibility = [];
+    private bool _syncingStructureChecks;
     private bool _syncingTileCoordinates;
     private bool _refreshPending;
 
@@ -131,6 +134,7 @@ public sealed class SceneEditorControl : UserControl
         };
 
         _structure.AfterSelect += (_, _) => StructureSelectionChanged();
+        _structure.AfterCheck += StructureLayerCheckChanged;
 
         _animationList.Columns.Add("Animation key", 210);
         _animationList.Columns.Add("Source", 260);
@@ -546,6 +550,11 @@ public sealed class SceneEditorControl : UserControl
                 RefreshView();
             }
         });
+        bar.Items.Add(new ToolStripSeparator());
+        bar.Items.Add("Show all", null, (_, _) => SetAllPreviewLayersVisible(true))
+            .ToolTipText = "Show every layer in the editor preview";
+        bar.Items.Add("Hide all", null, (_, _) => SetAllPreviewLayersVisible(false))
+            .ToolTipText = "Hide every layer in the editor preview";
         return bar;
     }
 
@@ -1114,6 +1123,59 @@ public sealed class SceneEditorControl : UserControl
             });
     }
 
+    private bool IsLayerVisibleInPreview(SceneLayerDefinition layer) =>
+        _previewLayerVisibility.TryGetValue(layer, out bool shown) ? shown : layer.Visible;
+
+    private void SetAllPreviewLayersVisible(bool shown)
+    {
+        foreach (var layer in Definition.Layers)
+            _previewLayerVisibility[layer] = shown;
+
+        RefreshStructure();
+        RefreshPreview();
+    }
+
+    private void StructureLayerCheckChanged(object? sender, TreeViewEventArgs e)
+    {
+        if (_syncingStructureChecks)
+            return;
+
+        if (e.Node.Tag is SceneLayerDefinition layer)
+        {
+            _previewLayerVisibility[layer] = e.Node.Checked;
+        }
+        else if (ReferenceEquals(e.Node.Tag, Definition))
+        {
+            // The scene checkbox is a bulk toggle, not an authored Visible property.
+            foreach (var current in Definition.Layers)
+                _previewLayerVisibility[current] = e.Node.Checked;
+        }
+        else
+        {
+            return;
+        }
+
+        _syncingStructureChecks = true;
+        try
+        {
+            foreach (TreeNode node in _structure.Nodes[0].Nodes)
+            {
+                if (node.Tag is SceneLayerDefinition current)
+                    node.Checked = IsLayerVisibleInPreview(current);
+            }
+
+            // A partially visible scene has an unchecked "all layers" box.
+            _structure.Nodes[0].Checked =
+                Definition.Layers.Count > 0 && Definition.Layers.All(IsLayerVisibleInPreview);
+        }
+        finally
+        {
+            _syncingStructureChecks = false;
+        }
+
+        RefreshPreview();
+    }
+
     private void StructureSelectionChanged()
     {
         _properties.SelectedObject = _structure.SelectedNode?.Tag;
@@ -1159,6 +1221,12 @@ public sealed class SceneEditorControl : UserControl
     {
         object? selected = _structure.SelectedNode?.Tag;
 
+        // Discard viewer-only state for deleted layers and removed scene members.
+        var currentLayers = Document.Definitions.SelectMany(definition => definition.Layers).ToHashSet();
+        foreach (var stale in _previewLayerVisibility.Keys.Where(layer => !currentLayers.Contains(layer)).ToArray())
+            _previewLayerVisibility.Remove(stale);
+
+        _syncingStructureChecks = true;
         _structure.BeginUpdate();
         try
         {
@@ -1169,7 +1237,9 @@ public sealed class SceneEditorControl : UserControl
                     ? "(scene)"
                     : Definition.ID)
             {
-                Tag = Definition
+                Tag = Definition,
+                Checked = Definition.Layers.Count > 0 && Definition.Layers.All(IsLayerVisibleInPreview),
+                ToolTipText = "Check to show all layers; uncheck to hide all layers in the preview"
             };
 
             foreach (var layer in Definition.Layers
@@ -1179,7 +1249,9 @@ public sealed class SceneEditorControl : UserControl
                     new TreeNode(
                         $"{LayerLabel(layer)}  [{layer.Columns}×{layer.Rows}]  Z={layer.ZOrder}")
                     {
-                        Tag = layer
+                        Tag = layer,
+                        Checked = IsLayerVisibleInPreview(layer),
+                        ToolTipText = "Toggle this layer in the preview only; does not change the GSCN"
                     });
             }
 
@@ -1189,6 +1261,7 @@ public sealed class SceneEditorControl : UserControl
         finally
         {
             _structure.EndUpdate();
+            _syncingStructureChecks = false;
         }
 
         if (selected is SceneLayerDefinition selectedLayer &&
@@ -1287,7 +1360,8 @@ public sealed class SceneEditorControl : UserControl
         _preview.Configure(
             Definition,
             FindTilesheet,
-            FindAnimation);
+            FindAnimation,
+            IsLayerVisibleInPreview);
 
         _preview.SetSelection(
             _selectedLayer,
