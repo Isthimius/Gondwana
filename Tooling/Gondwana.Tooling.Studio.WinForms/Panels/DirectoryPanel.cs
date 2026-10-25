@@ -183,7 +183,8 @@ public sealed class DirectoryPanel : UserControl
 
     private TreeNode? FindActiveDocumentNode()
     {
-        if (_activeDocumentLocation is not { } location || Tree.Nodes.Count == 0)
+        if (_activeDocumentLocation is not { } location || Tree.Nodes.Count == 0 ||
+            !File.Exists(location.Path))
             return null;
 
         string relative = Path.GetRelativePath(WorkingDirectory, location.Path);
