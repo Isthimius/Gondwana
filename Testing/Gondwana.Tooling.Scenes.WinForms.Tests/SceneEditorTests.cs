@@ -46,12 +46,12 @@ public sealed class SceneEditorTests
     });
 
     /// <summary>
-    /// Assigning GANI persists its first frame as the tile's initial frame.
-    /// Reassignment also replaces a previously selected GTS frame, without
-    /// changing the separate StartAnimation setting.
+    /// Assigning GANI persists its first frame as the tile's initial frame and
+    /// enables playback. Reassignment also replaces a previously selected GTS frame
+    /// and reenables an explicitly disabled animator.
     /// </summary>
     [Fact]
-    public void AssignAnimationSetsFirstFrameWithoutStartingPlayback() => RunSta(() =>
+    public void AssignAnimationSetsFirstFrameAndStartsPlayback() => RunSta(() =>
     {
         string root = Path.Combine(Path.GetTempPath(), "GondwanaGaniFrame-" + Guid.NewGuid());
         Directory.CreateDirectory(root);
@@ -101,16 +101,19 @@ public sealed class SceneEditorTests
             Assert.Equal("water", tile.Frame.RegionName);
             Assert.Equal(2, tile.Frame.XTile);
             Assert.Equal(3, tile.Frame.YTile);
-            Assert.False(tile.StartAnimation);
+            Assert.True(tile.EnableAnimator);
+            Assert.True(tile.StartAnimation);
 
-            // A later assignment replaces a stale frame but does not toggle playback.
+            // A later assignment replaces a stale frame and reenables playback.
             tile.Frame = new() { Tilesheet = "other", RegionName = "old", XTile = 9, YTile = 9 };
-            tile.StartAnimation = true;
+            tile.EnableAnimator = false;
+            tile.StartAnimation = false;
             assign.PerformClick();
             Assert.Equal("terrain", tile.Frame!.Tilesheet);
             Assert.Equal("water", tile.Frame.RegionName);
             Assert.Equal(2, tile.Frame.XTile);
             Assert.Equal(3, tile.Frame.YTile);
+            Assert.True(tile.EnableAnimator);
             Assert.True(tile.StartAnimation);
 
             var restored = SceneDefinitionSerializer.FromJson(
@@ -119,6 +122,7 @@ public sealed class SceneEditorTests
             Assert.Equal("water.flow", stored.AnimationKey);
             Assert.Equal(2, stored.Frame!.XTile);
             Assert.Equal(3, stored.Frame.YTile);
+            Assert.True(stored.EnableAnimator);
             Assert.True(stored.StartAnimation);
         }
         finally
