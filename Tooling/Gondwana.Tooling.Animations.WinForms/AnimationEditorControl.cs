@@ -22,7 +22,7 @@ public sealed class AnimationEditorControl : UserControl
             "Validation"
         ]);
 
-    private const int SourceFrameThumbnailSize = 32;
+    private const int FrameThumbnailSize = 32;
 
     private sealed record RegionTag(
         TilesheetSource Source,
@@ -44,8 +44,17 @@ public sealed class AnimationEditorControl : UserControl
     private readonly ImageList _sourceFrameImages = new()
     {
         ImageSize = new Size(
-            SourceFrameThumbnailSize,
-            SourceFrameThumbnailSize),
+            FrameThumbnailSize,
+            FrameThumbnailSize),
+        ColorDepth = ColorDepth.Depth32Bit,
+        TransparentColor = Color.Transparent
+    };
+
+    private readonly ImageList _animationFrameImages = new()
+    {
+        ImageSize = new Size(
+            FrameThumbnailSize,
+            FrameThumbnailSize),
         ColorDepth = ColorDepth.Depth32Bit,
         TransparentColor = Color.Transparent
     };
@@ -129,7 +138,8 @@ public sealed class AnimationEditorControl : UserControl
         _sourceTree.SelectedImageIndex = -1;
         _sourceTree.ItemHeight = Math.Max(
             _sourceTree.ItemHeight,
-            SourceFrameThumbnailSize + 4);
+            FrameThumbnailSize + 4);
+        _frames.SmallImageList = _animationFrameImages;
 
         BuildLayout();
 
@@ -319,6 +329,7 @@ public sealed class AnimationEditorControl : UserControl
     private void RefreshAfterSourceChange()
     {
         RefreshSourceTree();
+        RefreshFrameList();
         UpdateValidation();
         _preview.Invalidate();
     }
@@ -583,6 +594,7 @@ public sealed class AnimationEditorControl : UserControl
 
     private void BuildLayout()
     {
+        _frames.Columns.Add("Frame", 56);
         _frames.Columns.Add("#", 42, HorizontalAlignment.Right);
         _frames.Columns.Add("Tilesheet", 150);
         _frames.Columns.Add("Region", 130);
@@ -741,9 +753,7 @@ public sealed class AnimationEditorControl : UserControl
         _sources.Remove(source);
         Document.RemoveTilesheetSource(source.Definition.Name);
         source.Dispose();
-        RefreshSourceTree();
-        UpdateValidation();
-        _preview.Invalidate();
+        RefreshAfterSourceChange();
     }
 
     private void AddSelectedSourceFrame()
@@ -823,15 +833,26 @@ public sealed class AnimationEditorControl : UserControl
         try
         {
             _frames.Items.Clear();
+            _animationFrameImages.Images.Clear();
 
             for (int i = 0; i < Definition.Frames.Count; i++)
             {
                 var frame = Definition.Frames[i];
-                var item = new ListViewItem((i + 1).ToString())
+                var item = new ListViewItem(string.Empty)
                 {
                     Tag = frame
                 };
 
+                var preview = ResolveFramePreview(frame);
+                if (preview is { } resolved)
+                {
+                    item.ImageIndex = AddFrameThumbnail(
+                        _animationFrameImages,
+                        resolved.Image,
+                        resolved.SourceBounds);
+                }
+
+                item.SubItems.Add((i + 1).ToString());
                 item.SubItems.Add(frame.Tilesheet);
                 item.SubItems.Add(frame.RegionName);
                 item.SubItems.Add(frame.XTile.ToString());
@@ -1123,11 +1144,17 @@ public sealed class AnimationEditorControl : UserControl
         if (frame.Source.Image is not { } image)
             return -1;
 
-        var sourceBounds = TilesheetSource.FrameBounds(
-            frame.Region,
-            frame.X,
-            frame.Y);
+        return AddFrameThumbnail(
+            _sourceFrameImages,
+            image,
+            TilesheetSource.FrameBounds(frame.Region, frame.X, frame.Y));
+    }
 
+    private static int AddFrameThumbnail(
+        ImageList imageList,
+        Bitmap image,
+        Rectangle sourceBounds)
+    {
         if (sourceBounds.Width <= 0 ||
             sourceBounds.Height <= 0 ||
             sourceBounds.X < 0 ||
@@ -1139,8 +1166,8 @@ public sealed class AnimationEditorControl : UserControl
         }
 
         var thumbnail = new Bitmap(
-            SourceFrameThumbnailSize,
-            SourceFrameThumbnailSize);
+            FrameThumbnailSize,
+            FrameThumbnailSize);
 
         using (var graphics = Graphics.FromImage(thumbnail))
         {
@@ -1150,8 +1177,8 @@ public sealed class AnimationEditorControl : UserControl
             graphics.SmoothingMode = SmoothingMode.None;
 
             float scale = Math.Min(
-                (float)SourceFrameThumbnailSize / sourceBounds.Width,
-                (float)SourceFrameThumbnailSize / sourceBounds.Height);
+                (float)FrameThumbnailSize / sourceBounds.Width,
+                (float)FrameThumbnailSize / sourceBounds.Height);
 
             int width = Math.Max(
                 1,
@@ -1161,8 +1188,8 @@ public sealed class AnimationEditorControl : UserControl
                 (int)Math.Round(sourceBounds.Height * scale));
 
             var destination = new Rectangle(
-                (SourceFrameThumbnailSize - width) / 2,
-                (SourceFrameThumbnailSize - height) / 2,
+                (FrameThumbnailSize - width) / 2,
+                (FrameThumbnailSize - height) / 2,
                 width,
                 height);
 
@@ -1173,9 +1200,9 @@ public sealed class AnimationEditorControl : UserControl
                 GraphicsUnit.Pixel);
         }
 
-        _sourceFrameImages.Images.Add(thumbnail);
+        imageList.Images.Add(thumbnail);
         thumbnail.Dispose();
-        return _sourceFrameImages.Images.Count - 1;
+        return imageList.Images.Count - 1;
     }
 
     private FramePreview? ResolveFramePreview(
@@ -1253,6 +1280,7 @@ public sealed class AnimationEditorControl : UserControl
 
             _sources.Clear();
             _sourceFrameImages.Dispose();
+            _animationFrameImages.Dispose();
         }
 
         if (disposing && _ownsPackages) _packages.Dispose();
