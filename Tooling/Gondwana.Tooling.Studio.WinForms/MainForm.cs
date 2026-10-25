@@ -84,6 +84,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
             catch (Exception ex) { ReportError(ex); }
         };
         Browser.ChooseDirectoryRequested += ChooseDirectory;
+        Workspace.ActiveDocumentChanged += (_, _) => SyncActiveDocumentSelection();
         AddTool("shell.working-directory", "Working directory", Browser, DockState.DockLeft);
         AddTool("shell.output", "Output", new OutputPanel(_output), DockState.DockBottom);
         AskSave = document => MessageBox.Show(this, $"Save changes to {document.Caption}?",
@@ -268,11 +269,15 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         Add(_view, "Reset active editor layout", Keys.None, active.Document.ResetLayout);
     }
 
+    private void SyncActiveDocumentSelection() =>
+        Browser.SelectActiveDocument(ActiveDocument?.Document.Location);
+
     internal void SetWorkingDirectory(string path)
     {
         path = Path.GetFullPath(path);
         if (_workingDirectory is not null) _plugins.NotifyProjectClosed();
         Browser.SetDirectory(path);
+        SyncActiveDocumentSelection();
         _workingDirectory = path;
         _plugins.NotifyProjectOpened(path);
         _output.Log($"Working directory: {path}");
@@ -366,6 +371,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         };
         document.Show(Workspace, DockState.Document);
         document.Activate();
+        SyncActiveDocumentSelection();
         if (model.Kind == "asset") Browser.RefreshDirectory(); // authenticated archives can now be browsed without another prompt
         _output.Log($"Opened {model.Path() ?? document.Text}");
         return document;
@@ -415,6 +421,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
                 foreach (var key in _paths.Where(pair => pair.Value == document).Select(pair => pair.Key).ToArray()) _paths.Remove(key);
                 _paths.Add(model.Location!, document);
                 document.UpdateCaption();
+                SyncActiveDocumentSelection();
                 _packages.Invalidate(destination);
                 _output.Log($"Saved {model.Tooltip}");
             }

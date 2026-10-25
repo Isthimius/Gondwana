@@ -328,6 +328,123 @@ public sealed partial class CompositionTests
         Assert.Empty(Directory.GetFiles(Path.GetDirectoryName(store.FilePath)!, "*.tmp"));
     });
 
+    /// <summary>Opening, activating and closing tabs keeps the browser highlight on the active file.</summary>
+    [Fact]
+    public void ActiveStudioTabsSelectWorkingDirectoryEntry() => RunSta(directory =>
+    {
+        var firstPath = Path.Combine(directory, "beach.gscn");
+        var secondPath = Path.Combine(directory, "mountain.gscn");
+        File.WriteAllText(firstPath, NativeJson("gscn"));
+        File.WriteAllText(secondPath, NativeJson("gscn"));
+        using var studio = Host(directory);
+
+        var beach = studio.OpenDocument(firstPath);
+        Assert.Equal(firstPath, studio.Browser.Tree.SelectedNode?.Tag);
+        var mountain = studio.OpenDocument(secondPath);
+        Assert.Equal(secondPath, studio.Browser.Tree.SelectedNode?.Tag);
+
+        beach.Activate();
+        Application.DoEvents();
+        Assert.Same(beach, studio.ActiveDocument);
+        Assert.Equal(firstPath, studio.Browser.Tree.SelectedNode?.Tag);
+
+        studio.Browser.RefreshDirectory();
+        Assert.Equal(firstPath, studio.Browser.Tree.SelectedNode?.Tag);
+
+        mountain.Activate();
+        Application.DoEvents();
+        Assert.Same(mountain, studio.ActiveDocument);
+        Assert.Equal(secondPath, studio.Browser.Tree.SelectedNode?.Tag);
+
+        var untitled = studio.NewDocument("gscn");
+        Assert.Same(untitled, studio.ActiveDocument);
+        Assert.Null(studio.Browser.Tree.SelectedNode);
+
+        beach.Activate();
+        Application.DoEvents();
+        Assert.Equal(firstPath, studio.Browser.Tree.SelectedNode?.Tag);
+        beach.Close();
+        Application.DoEvents();
+        Assert.Equal(studio.ActiveDocument?.Document.Location?.Path, studio.Browser.Tree.SelectedNode?.Tag);
+    });
+
+    /// <summary>Active loose files are revealed through lazy subfolders and restored after refresh.</summary>
+    [Fact]
+    public void ActiveLooseDocumentSelectionExpandsOnlyItsAncestors() => RunSta(directory =>
+    {
+        string folder = Directory.CreateDirectory(Path.Combine(directory, "levels", "shore")).FullName;
+        string beach = Path.Combine(folder, "beach.gscn");
+        File.WriteAllText(beach, "{}");
+        string unrelated = Directory.CreateDirectory(Path.Combine(directory, "other")).FullName;
+        File.WriteAllText(Path.Combine(unrelated, "other.gscn"), "{}");
+
+        using var panel = new DirectoryPanel(_ => { });
+        using var host = new Form { Size = new(600, 600), Opacity = 0, ShowInTaskbar = false };
+        host.Controls.Add(panel);
+        host.Show();
+        panel.SetDirectory(directory);
+        var untouched = panel.Tree.Nodes[0].Nodes.Cast<TreeNode>()
+            .Single(node => node.Tag is DirectoryInfo info && info.Name == "other");
+        Assert.Null(Assert.Single(untouched.Nodes.Cast<TreeNode>()).Tag);
+
+        panel.SelectActiveDocument(new AssetLocation(AssetTypes.SceneDefinition, beach));
+        Assert.Equal(beach, panel.Tree.SelectedNode?.Tag);
+        Assert.Equal("beach.gscn", panel.Tree.SelectedNode?.Text);
+        Assert.Null(Assert.Single(untouched.Nodes.Cast<TreeNode>()).Tag);
+
+        panel.RefreshDirectory();
+        Assert.Equal(beach, panel.Tree.SelectedNode?.Tag);
+        panel.ApplyIconSize(DirectoryIconSize.Medium);
+        Assert.Equal(beach, panel.Tree.SelectedNode?.Tag);
+
+        // Outside the current root and untitled documents must not leave stale highlights.
+        panel.SelectActiveDocument(new AssetLocation(AssetTypes.SceneDefinition, Path.Combine(Path.GetTempPath(), "outside.gscn")));
+        Assert.Null(panel.Tree.SelectedNode);
+        panel.SelectActiveDocument(null);
+        Assert.Null(panel.Tree.SelectedNode);
+    });
+
+    /// <summary>Packed locations select by physical archive, entry and type, even when loaded asynchronously.</summary>
+    [Fact]
+    public void ActivePackedDocumentSelectionWaitsForArchivePublication() => RunSta(directory =>
+    {
+        string first = Path.Combine(directory, "first.gaf");
+        string second = Path.Combine(directory, "second.gaf");
+        foreach (var path in new[] { first, second })
+        {
+            using var archive = AssetsFile.LoadOrCreate(path, null, false, register: false);
+            archive.Add(AssetTypes.SceneDefinition, "beach.gscn", new MemoryStream([1]));
+            archive.Add(AssetTypes.TilesheetDefinition, "beach.gscn", new MemoryStream([2]));
+            archive.Save();
+        }
+
+        using var panel = new DirectoryPanel(_ => { });
+        using var host = new Form { Size = new(600, 600), Opacity = 0, ShowInTaskbar = false };
+        host.Controls.Add(panel);
+        host.Show();
+        panel.SetDirectory(directory);
+        var selectedLocation = new AssetLocation(AssetTypes.SceneDefinition, second, "beach.gscn");
+        panel.SelectActiveDocument(selectedLocation);
+        WaitForArchives(panel);
+        var selected = Assert.IsType<PackedAssetNodeIdentity>(panel.Tree.SelectedNode?.Tag);
+        Assert.Equal(second, selected.ArchivePath);
+        Assert.Equal(AssetTypes.SceneDefinition, selected.AssetType);
+        Assert.Equal("beach.gscn", selected.EntryName);
+
+        panel.RefreshDirectory();
+        WaitForArchives(panel);
+        selected = Assert.IsType<PackedAssetNodeIdentity>(panel.Tree.SelectedNode?.Tag);
+        Assert.Equal(second, selected.ArchivePath);
+
+        panel.SelectActiveDocument(new AssetLocation(AssetTypes.TilesheetDefinition, first, "beach.gscn"));
+        selected = Assert.IsType<PackedAssetNodeIdentity>(panel.Tree.SelectedNode?.Tag);
+        Assert.Equal(first, selected.ArchivePath);
+        Assert.Equal(AssetTypes.TilesheetDefinition, selected.AssetType);
+
+        panel.SelectActiveDocument(new AssetLocation(AssetTypes.SceneDefinition, first, "missing.gscn"));
+        Assert.Null(panel.Tree.SelectedNode);
+    });
+
     private static void WriteBrowserArchive(string path, string entry)
     {
         using var archive = AssetsFile.LoadOrCreate(path, null, false, register: false);
