@@ -1,5 +1,3 @@
-using System.Drawing;
-
 namespace Gondwana.Tooling.WinForms;
 
 /// <summary>Provides Gondwana's embedded application icon to editor windows and dialogs.</summary>
