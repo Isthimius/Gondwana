@@ -30,6 +30,9 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Restore workloads
+        run: dotnet workload restore Gondwana.sln /p:EnableWindowsTargeting=true
+
       - name: Restore
         run: dotnet restore --nologo /p:Configuration=Release /p:EnableWindowsTargeting=true
 
