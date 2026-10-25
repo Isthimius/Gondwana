@@ -1131,7 +1131,22 @@ public sealed class SceneEditorControl : UserControl
         foreach (var layer in Definition.Layers)
             _previewLayerVisibility[layer] = shown;
 
-        RefreshStructure();
+        _syncingStructureChecks = true;
+        try
+        {
+            foreach (TreeNode node in _structure.Nodes[0].Nodes)
+            {
+                if (node.Tag is SceneLayerDefinition layer)
+                    node.Checked = IsLayerVisibleInPreview(layer);
+            }
+
+            _structure.Nodes[0].Checked =
+                Definition.Layers.Count > 0 && Definition.Layers.All(IsLayerVisibleInPreview);
+        }
+        finally
+        {
+            _syncingStructureChecks = false;
+        }
         RefreshPreview();
     }
 
