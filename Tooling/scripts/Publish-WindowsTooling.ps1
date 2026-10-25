@@ -1,5 +1,5 @@
 # Publish the eight Windows authoring/viewer applications in one consistent layout.
-# Called by CI and tagged releases; keep this list authoritative for both.
+# Called by nightly packaging validation and tagged releases; keep this list authoritative for both.
 [CmdletBinding()]
 param(
     [string]$OutputRoot = "publish/Tooling"
