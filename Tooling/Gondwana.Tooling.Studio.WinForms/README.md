@@ -87,8 +87,14 @@ Right-click a file for **Open** in the built-in editor (except Misc), or
 **Open External** to choose an application using Windows' Open with dialog
 (except `.gaf`). External opening uses the saved file on disk.
 Double-click supported files or use **File > Open…**; opening a path already
-in the workspace activates its existing document. **File > New** offers all six
-formats. GAF creation asks for a destination and optional password protection.
+in the workspace activates its existing document. Selecting a document tab also
+selects and reveals its corresponding entry in **Working directory**, expanding
+only necessary folders. This works for loose files and typed packed GAF entries,
+including entries that finish loading after the tab becomes active. Refresh and
+Save As update the highlight; untitled documents and files outside the working
+directory leave nothing selected. Switching tabs does not move keyboard focus
+from the editor. **File > New** offers all six formats. GAF creation asks for a
+destination and optional password protection.
 
 **Save**, **Save As**, and **Close** operate on the active outer document. A `*`
 marks unsaved changes. Save As adopts the destination and updates open-document
