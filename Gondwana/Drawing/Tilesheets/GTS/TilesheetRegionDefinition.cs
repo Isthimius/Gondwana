@@ -62,5 +62,6 @@ public sealed class TilesheetRegionDefinition
     /// Gets or sets per-frame collision metadata for this region. A missing collision
     /// property on a frame means that frame inherits the corresponding region value.
     /// </summary>
+    [Description("Optional per-frame collision overrides; frames without overrides inherit the region collision settings.")]
     public List<TilesheetFrameDefinition> Frames { get; set; } = [];
 }
