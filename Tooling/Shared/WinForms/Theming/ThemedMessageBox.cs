@@ -100,6 +100,10 @@ public static class ThemedMessageBox
         form.AcceptButton = selected;
         form.CancelButton = choices.FirstOrDefault(button => button.DialogResult == DialogResult.Cancel)
             ?? (buttons == MessageBoxButtons.OK ? choices[0] : null);
+        form.FormClosing += (_, _) =>
+        {
+            if (buttons == MessageBoxButtons.OK) form.DialogResult = DialogResult.OK;
+        };
         form.Shown += (_, _) => selected.Focus();
 
         ToolingAppearance.Apply(form);
