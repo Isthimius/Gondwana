@@ -237,8 +237,15 @@ public static class ToolingAppearance
                     DrawListCell(e.Graphics, e.Bounds, e.Item.Text, list, e.Item.Selected, e.Item);
                     e.DrawFocusRectangle();
                 };
-                list.DrawSubItem += (_, e) => DrawListCell(e.Graphics, e.Bounds, e.SubItem?.Text, list,
-                    e.Item?.Selected == true, e.ColumnIndex == 0 ? e.Item : null);
+                list.DrawSubItem += (_, e) =>
+                {
+                    DrawListCell(e.Graphics, e.Bounds, e.SubItem?.Text, list,
+                        e.Item?.Selected == true, e.ColumnIndex == 0 ? e.Item : null);
+                    if (e.ColumnIndex == 0 && list.Focused && e.Item is { Focused: true } focusedItem)
+                        ControlPaint.DrawFocusRectangle(e.Graphics, e.Bounds,
+                            focusedItem.Selected ? Palette.SelectionForeground : Palette.Foreground,
+                            focusedItem.Selected ? Palette.Selection : Palette.Background);
+                };
                 break;
             case ListBox list when list is not CheckedListBox && list.DrawMode == DrawMode.Normal:
                 list.BorderStyle = BorderStyle.FixedSingle;
