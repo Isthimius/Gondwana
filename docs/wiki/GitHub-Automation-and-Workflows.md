@@ -257,7 +257,7 @@ The workflow runs on a **daily schedule at 12:30 PM America/New_York time**, and
 
 It is also reusable through `workflow_call` and is called by `release.yml` when a `v*` tag is pushed.
 
-The scheduled and manual runs validate current `master`; the release invocation uses the tagged source.
+Scheduled runs validate current `master`; manually dispatched runs validate the selected ref, and release invocations validate the tagged source.
 
 ## What packaging validates
 
@@ -1659,6 +1659,7 @@ Sunday night / Monday UTC
 └── 04:17 UTC → reconcile Wiki drift
 
 v* tag
+├── mirror tag outward
 └── validate version and release notes
     └── run reusable package-binaries.yml
         └── publish validated artifacts
@@ -1666,8 +1667,6 @@ v* tag
             ├── publish NuGet packages
             ├── publish GitHub Packages
             └── publish stable/versioned API docs
-
-The tag is also mirrored outward.
 ```
 
 The changelog path between development and release is:
