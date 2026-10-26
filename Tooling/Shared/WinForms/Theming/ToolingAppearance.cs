@@ -187,7 +187,7 @@ public static class ToolingAppearance
                 button.BackColor = Palette.Surface;
                 button.FlatAppearance.BorderColor = Palette.Border;
                 button.FlatAppearance.MouseOverBackColor = Palette.Hover;
-                button.FlatAppearance.MouseDownBackColor = Palette.Selection;
+                button.FlatAppearance.MouseDownBackColor = Palette.Hover;
                 button.GotFocus += (_, _) => button.FlatAppearance.BorderColor = Palette.Accent;
                 button.LostFocus += (_, _) => button.FlatAppearance.BorderColor = Palette.Border;
                 break;
