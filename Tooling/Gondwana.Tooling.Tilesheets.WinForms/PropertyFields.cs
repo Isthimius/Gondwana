@@ -146,7 +146,7 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         fields.Add("Source.GtsFilePath", "Provenance (read only)", () => model.Source.GtsFilePath ?? "", description: "Original GTS document path, if loaded from a loose file; read-only.");
         fields.Add("Source.AssetsFilePath", "Provenance (read only)", () => model.Source.AssetsFilePath ?? "", description: "Source GAF package path when this definition was loaded from a packed entry; read-only.");
         fields.Add("Source.AssetEntryName", "Provenance (read only)", () => model.Source.AssetEntryName ?? "", description: "Name of this definition inside the source GAF package; read-only.");
-        fields.Add("Mask enabled", "Mask", () => model.Mask is not null, v => { model.Mask = v ? model.Mask ?? new() : null; changed(); }, "Enable color-key masking with the RGBA components and tolerance shown below.");
+        fields.Add("Mask enabled", "Mask", () => model.Mask is not null, v => { model.Mask = v ? model.Mask ?? new() : null; changed(); }, "Enable color-key masking using the RGB components and tolerance shown below. Alpha is stored but ignored when matching colors.");
         if (model.Mask is { } mask)
             foreach (var property in typeof(TilesheetMaskDefinition).GetProperties().Where(p => p.CanWrite))
                 fields.AddReflected(mask, [property], changed, "Mask");
