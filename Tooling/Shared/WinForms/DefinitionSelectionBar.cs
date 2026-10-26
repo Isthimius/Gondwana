@@ -88,6 +88,7 @@ internal sealed class DefinitionSelectionBar<T> : ToolStrip where T : class
         if (definitions.Count <= 1) return Enumerable.Range(0, definitions.Count).ToArray();
         using var dialog = new Form
         {
+            Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon(),
             Text = "Import definitions",
             StartPosition = FormStartPosition.CenterParent,
             ClientSize = new Size(460, 340),

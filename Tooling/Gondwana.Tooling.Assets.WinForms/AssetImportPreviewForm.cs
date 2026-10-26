@@ -7,6 +7,7 @@ internal sealed class AssetImportPreviewForm : Form
     /// <param name="plan">The validated plan.</param>
     internal AssetImportPreviewForm(AssetImportPlan plan)
     {
+        Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon();
         Text = "Import plan";
         Size = new Size(900, 500);
         StartPosition = FormStartPosition.CenterParent;

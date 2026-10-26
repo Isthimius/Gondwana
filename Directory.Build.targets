@@ -12,4 +12,13 @@
 		<RepositoryType>git</RepositoryType>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 	</PropertyGroup>
+
+  <!-- Embed the Gondwana logo as the taskbar/executable icon and as a form resource. -->
+  <PropertyGroup Condition="'$(UseWindowsForms)' == 'true' and '$(OutputType)' == 'WinExe' and $(MSBuildProjectName.StartsWith('Gondwana.Tooling.'))">
+    <ApplicationIcon>$(MSBuildThisFileDirectory)assets/gondwana-logo.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(UseWindowsForms)' == 'true' and '$(OutputType)' == 'WinExe' and $(MSBuildProjectName.StartsWith('Gondwana.Tooling.'))">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)assets/gondwana-logo.ico" LogicalName="Gondwana.Tooling.BrandingIcon" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tooling/Shared/WinForms/ToolingBranding.cs" Link="Branding/ToolingBranding.cs" />
+  </ItemGroup>
 </Project>

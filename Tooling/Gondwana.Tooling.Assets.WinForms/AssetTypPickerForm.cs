@@ -16,6 +16,7 @@ internal sealed class AssetTypePickerForm : Form
     /// <param name="filePaths">Selected loose files.</param>
     public AssetTypePickerForm(IEnumerable<string> filePaths)
     {
+        Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon();
         Text = "Review asset import";
         Size = new Size(850, 430);
         StartPosition = FormStartPosition.CenterParent;

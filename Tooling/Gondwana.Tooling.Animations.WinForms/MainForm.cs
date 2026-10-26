@@ -33,6 +33,7 @@ internal sealed class MainForm : Form
     /// <summary>Creates the standalone animations editor shell with its workspace browser, document docking, and session restoration.</summary>
     public MainForm()
     {
+        Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon();
         ReportSessionError = message => WorkspaceSessionController.ShowPersistenceError(this, message);
         Text = "Gondwana Animations — GANI editor";
         Size = new Size(1450, 900);

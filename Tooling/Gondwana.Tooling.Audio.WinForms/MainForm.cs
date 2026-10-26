@@ -33,6 +33,7 @@ internal sealed class MainForm : Form
     /// <summary>Creates the standalone audio editor shell with its workspace browser, document docking, and session restoration.</summary>
     public MainForm()
     {
+        Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon();
         ReportSessionError = message => WorkspaceSessionController.ShowPersistenceError(this, message);
         Text = "Gondwana Audio — GSND editor";
         Size = new Size(1350, 850);

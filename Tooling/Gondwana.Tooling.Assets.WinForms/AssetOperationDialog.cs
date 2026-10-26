@@ -31,7 +31,7 @@ internal static class AssetOperationDialog
     /// <returns>Whether the user chose the commit button.</returns>
     internal static bool Review(IWin32Window owner, string title, IEnumerable<string> lines, string action)
     {
-        using var preview = new Form { Text = title, Size = new Size(950, 550), StartPosition = FormStartPosition.CenterParent };
+        using var preview = new Form { Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon(), Text = title, Size = new Size(950, 550), StartPosition = FormStartPosition.CenterParent };
         var text = new TextBox { Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Both, WordWrap = false, Text = string.Join(Environment.NewLine, lines) };
         var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 45, FlowDirection = FlowDirection.RightToLeft };
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel };

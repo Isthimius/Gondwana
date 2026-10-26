@@ -33,6 +33,7 @@ internal sealed class SceneViewerForm : Form
 
     private void Initialize()
     {
+        Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon();
         ClientSize = new Size(1024, 768);
         MinimumSize = new Size(320, 240);
         StartPosition = FormStartPosition.CenterScreen;

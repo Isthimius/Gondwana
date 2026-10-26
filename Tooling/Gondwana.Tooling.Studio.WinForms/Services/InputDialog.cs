@@ -16,6 +16,7 @@ internal static class InputDialog
     {
         using var form = new Form
         {
+            Icon = Gondwana.Tooling.WinForms.ToolingBranding.CreateIcon(),
             Text = title,
             Width = 430,
             Height = 175,
