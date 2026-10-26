@@ -139,10 +139,13 @@ public sealed partial class CompositionTests
         first.Disposed += (_, _) => disposed = true;
         using var blue = new Bitmap(32, 32);
         using (var graphics = Graphics.FromImage(blue)) graphics.Clear(Color.Blue);
-        images.Images.Add("blue", blue); // Simulates lazy expansion adding more thumbnails.
+        images.Images.Add(blue); // Lazy frame thumbnails use numeric indices without keys.
         NavigationSizing.RefreshImages(tree);
         Assert.True(disposed);
-        Assert.Equal(new[] { "red", "blue" }, tree.ImageList!.Images.Keys.Cast<string>());
+        Assert.Equal(2, tree.ImageList!.Images.Count);
+        Assert.Equal("red", tree.ImageList.Images.Keys[0]);
+        Assert.True(string.IsNullOrEmpty(tree.ImageList.Images.Keys[1]));
+        using (var pixel = new Bitmap(tree.ImageList.Images[1])) Assert.Equal(Color.Blue.ToArgb(), pixel.GetPixel(20, 20).ToArgb());
         Assert.Equal(new Size(32, 32), images.ImageSize);
         Assert.Same(selected, tree.SelectedNode);
         Assert.Equal("red", selected.ImageKey);

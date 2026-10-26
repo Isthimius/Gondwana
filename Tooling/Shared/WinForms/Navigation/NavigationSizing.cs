@@ -33,7 +33,7 @@ public static class NavigationSizing
             for (int index = 0; index < source.Images.Count; index++)
             {
                 using var image = source.Images[index]; // ImageList returns a new bitmap; the source list remains intact.
-                result.Images.Add(source.Images.Keys[index], image);
+                result.Images.Add(source.Images.Keys[index] ?? string.Empty, image);
                 _ = result.Handle; // Materialize native copies before releasing the source image.
             }
             return result;
