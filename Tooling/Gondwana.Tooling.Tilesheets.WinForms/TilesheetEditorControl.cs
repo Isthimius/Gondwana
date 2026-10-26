@@ -143,13 +143,12 @@ public sealed class TilesheetEditorControl : UserControl
             ForeColor = ToolingAppearance.Palette.Foreground,
             FlatStyle = FlatStyle.Flat
         };
-        zoom.Items.AddRange(["25%", "50%", "100%", "200%", "400%", "Fit"]);
-        zoom.SelectedIndex = 2;
-        zoom.SelectedIndexChanged += (_, _) =>
+        var zoomSelector = new ZoomSelector(zoom.ComboBox, requested =>
         {
-            if (zoom.SelectedIndex == 5) _viewport.Fit();
-            else _viewport.SetZoom(new[] { .25f, .5f, 1, 2, 4 }[zoom.SelectedIndex]);
-        };
+            if (requested is { } value) _viewport.SetZoom(value);
+            else _viewport.Fit();
+        });
+        _viewport.ZoomChanged += () => zoomSelector.Show(_viewport.Zoom, _viewport.IsFit);
         bar.Items.Add(zoom);
         bar.Items.Add("+", null, (_, _) => _viewport.ZoomIn());
         var overlays = new ToolStripDropDownButton("Overlays / legend");
@@ -300,7 +299,7 @@ public sealed class TilesheetEditorControl : UserControl
     {
         Dock = DockStyle.Fill,
         ToolbarVisible = false,
-        HelpVisible = false
+        HelpVisible = true
     };
 
     private void RefreshProperties()

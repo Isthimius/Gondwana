@@ -9,6 +9,7 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
 {
     private const float ZoomStepFactor = 1.25f;
     private int _zoomWheelDelta;
+    private bool _fitSelected;
     /// <summary>Gets or sets the borrowed preview bitmap; the owner must dispose replaced images.</summary>
     public Bitmap? Image { get; set; }
     /// <summary>Gets or sets the tilesheet definition supplying regions and overlays, or null when unavailable.</summary>
@@ -25,6 +26,10 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
     public event Action<TilesheetRegionDefinition, Point>? FrameSelected;
     /// <summary>Gets the displayed pixels per source-image pixel.</summary>
     public float Zoom { get; private set; } = 1;
+    /// <summary>Gets whether Fit is currently selected.</summary>
+    internal bool IsFit => _fitSelected;
+    /// <summary>Occurs when magnification or Fit state changes.</summary>
+    internal event Action? ZoomChanged;
     /// <summary>Gets or sets the placeholder text displayed when no preview image is available.</summary>
     public string Message { get; set; } = "Choose a loose image to preview.";
 
@@ -46,6 +51,7 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
         var center = new PointF((ClientSize.Width / 2f - AutoScrollPosition.X) / Zoom,
             (ClientSize.Height / 2f - AutoScrollPosition.Y) / Zoom);
 
+        _fitSelected = false;
         Zoom = Math.Clamp(zoom, .05f, 16f);
         UpdateExtent();
 
@@ -53,6 +59,7 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
             Math.Max(0, (int)(center.Y * Zoom - ClientSize.Height / 2f)));
 
         Invalidate();
+        ZoomChanged?.Invoke();
     }
 
     internal void ZoomIn() => SetZoom(Zoom * ZoomStepFactor);
@@ -139,6 +146,8 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
 
         SetZoom(Math.Min((ClientSize.Width - 24f) / Image.Width, (ClientSize.Height - 24f) / Image.Height));
         AutoScrollPosition = Point.Empty;
+        _fitSelected = true;
+        ZoomChanged?.Invoke();
     }
 
     /// <summary>

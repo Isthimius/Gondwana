@@ -53,7 +53,7 @@ internal sealed class AnimationPropertyAdapter
     /// <summary>Gets or sets the default interval between animation frames, in seconds; a change marks the document dirty.</summary>
     [Category("Playback")]
     [DisplayName("Throttle time")]
-    [Description("Seconds between frame transitions.")]
+    [Description("Default delay in seconds between animation frames; a frame-specific duration overrides it. Smaller values play faster.")]
     public double ThrottleTime
     {
         get => _document.Definition.ThrottleTime;
@@ -66,6 +66,7 @@ internal sealed class AnimationPropertyAdapter
     /// <summary>Gets or sets the playback traversal mode; a change marks the document dirty.</summary>
     [Category("Playback")]
     [DisplayName("Cycle type")]
+    [Description("Frame traversal pattern for this animation (for example, forward or ping-pong); controls what happens at the ends of the frame sequence.")]
     public CycleType CycleType
     {
         get => _document.Definition.CycleType;
@@ -78,6 +79,7 @@ internal sealed class AnimationPropertyAdapter
     /// <summary>Gets or sets whether playback hides the tile at the end of the cycle; a change marks the document dirty.</summary>
     [Category("Playback")]
     [DisplayName("Hide tile on cycle end")]
+    [Description("Hide the animated tile when this cycle finishes, instead of leaving the last frame displayed.")]
     public bool HideTileOnCycleEnd
     {
         get => _document.Definition.HideTileOnCycleEnd;
@@ -117,6 +119,7 @@ internal sealed class AnimationPropertyAdapter
     [Category("Source")]
     [DisplayName("Source kind")]
     [ReadOnly(true)]
+    [Description("Read-only indication of whether this animation was loaded from a loose GANI file or a packed asset.")]
     public string SourceKind =>
         _document.Definition.Source.Kind.ToString();
 

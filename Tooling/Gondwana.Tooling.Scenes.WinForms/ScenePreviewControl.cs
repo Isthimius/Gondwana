@@ -32,6 +32,10 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
 
     /// <summary>Gets displayed pixels per world pixel.</summary>
     public float Zoom { get; private set; } = 1f;
+    /// <summary>Gets whether automatic fitting is active.</summary>
+    internal bool IsFit => _fitToWindow;
+    /// <summary>Occurs when magnification or Fit state changes.</summary>
+    internal event Action? ZoomChanged;
     /// <summary>Gets or sets whether cell outlines are drawn during the next repaint.</summary>
     public bool ShowGridLines { get; set; } = true;
 
@@ -117,6 +121,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         }
 
         Invalidate();
+        ZoomChanged?.Invoke();
     }
 
     internal void ZoomIn() =>
@@ -133,6 +138,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         _fitToWindow = true;
         AutoScrollPosition = Point.Empty;
         UpdateExtent();
+        ZoomChanged?.Invoke();
     }
 
     internal bool ZoomWithMouseWheel(

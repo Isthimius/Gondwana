@@ -45,6 +45,46 @@ public sealed class SceneEditorTests
         Assert.Empty(layer.Tiles);
     });
 
+    /// <summary>Scene wheel, toolbar, and Fit actions stay synchronized with the zoom selector.</summary>
+    [Fact]
+    public void SceneZoomSelector_TracksWheelToolbarAndFit() => RunSta(() =>
+    {
+        var document = SceneDocument.Create(Path.GetTempPath());
+        var layer = document.AddLayer();
+        layer.Columns = 100;
+        layer.Rows = 100;
+        layer.TileWidth = 16;
+        layer.TileHeight = 16;
+        using var editor = new SceneEditorControl(document);
+        using var host = new Form { Size = new(1500, 950), Opacity = 0, ShowInTaskbar = false };
+        host.Controls.Add(editor);
+        host.Show();
+        Application.DoEvents();
+
+        var preview = Descendants(editor).OfType<ScenePreviewControl>().Single();
+        var bar = Descendants(editor).OfType<ToolStrip>().Single(strip =>
+            strip.Items.OfType<ToolStripComboBox>().Any(combo => combo.Items.Contains("Fit")));
+        var zoom = bar.Items.OfType<ToolStripComboBox>().Single(combo => combo.Items.Contains("Fit"));
+        var point = new Point(20, 20);
+
+        Assert.Equal("100%", zoom.Text);
+        Assert.True(preview.ZoomWithMouseWheel(point, 120, true));
+        Assert.Equal("125%", zoom.Text);
+        bar.Items.Cast<ToolStripItem>().Single(item => item.Text == "−").PerformClick();
+        Assert.Equal("100%", zoom.Text);
+        bar.Items.Cast<ToolStripItem>().Single(item => item.Text == "−").PerformClick();
+        Assert.Equal("80%", zoom.Text);
+        zoom.SelectedItem = "Fit";
+        Assert.Equal("Fit", zoom.Text);
+        Assert.True(preview.ZoomWithMouseWheel(point, 120, true));
+        Assert.NotEqual("Fit", zoom.Text);
+        Assert.EndsWith("%", zoom.Text);
+        zoom.SelectedItem = "50%";
+        Assert.Equal(.5f, preview.Zoom, 3);
+        Assert.Equal("50%", zoom.Text);
+        Assert.Equal(6, zoom.Items.Count);
+    });
+
     /// <summary>
     /// Assigning GANI persists its first frame as the tile's initial frame and
     /// enables playback. Reassignment also replaces a previously selected GTS frame

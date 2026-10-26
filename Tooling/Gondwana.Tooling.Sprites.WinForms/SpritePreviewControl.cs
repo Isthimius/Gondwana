@@ -4,6 +4,7 @@ using Gondwana.Drawing.Sprites.GSPR;
 using Gondwana.Scenes;
 using Gondwana.Scenes.GSCN;
 using Gondwana.Tooling.Sprites.Editing;
+using Gondwana.Tooling.WinForms;
 
 namespace Gondwana.Tooling.Sprites.WinForms;
 
@@ -20,11 +21,14 @@ internal sealed class SpritePreviewControl : UserControl
         var minus = new Button { Text = "−", Width = 32 };
         var plus = new Button { Text = "+", Width = 32 };
         var zoom = new ComboBox { Width = 80, DropDownStyle = ComboBoxStyle.DropDownList };
-        zoom.Items.AddRange(new object[] { "25%", "50%", "100%", "200%", "400%", "Fit" });
-        zoom.SelectedIndex = 2;
+        var zoomSelector = new ZoomSelector(zoom, requested =>
+        {
+            if (requested is { } value) _canvas.SetZoom(value);
+            else _canvas.Fit();
+        });
+        _canvas.ZoomChanged += () => zoomSelector.Show(_canvas.Zoom, _canvas.IsFit);
         minus.Click += (_, _) => _canvas.SetZoom(_canvas.Zoom / 1.25f);
         plus.Click += (_, _) => _canvas.SetZoom(_canvas.Zoom * 1.25f);
-        zoom.SelectedIndexChanged += (_, _) => { if (zoom.SelectedIndex == 5) _canvas.Fit(); else _canvas.SetZoom(new[] { .25f, .5f, 1f, 2f, 4f }[zoom.SelectedIndex]); };
         bar.Controls.AddRange([minus, plus, zoom]);
         Controls.Add(_canvas);
         Controls.Add(bar);
@@ -49,6 +53,10 @@ internal sealed class SpritePreviewControl : UserControl
         private bool _fit;
         /// <summary>Gets displayed pixels per world pixel.</summary>
         public float Zoom { get; private set; } = 1;
+        /// <summary>Gets whether automatic fitting is active.</summary>
+        public bool IsFit => _fit;
+        /// <summary>Occurs when magnification or Fit state changes.</summary>
+        public event Action? ZoomChanged;
         /// <summary>Creates a scrollable sprite canvas that refits on resize when fit mode is active.</summary>
         public PreviewCanvas()
         {
@@ -122,6 +130,7 @@ internal sealed class SpritePreviewControl : UserControl
             Zoom = Math.Clamp(zoom, .05f, 16f);
             AutoScrollMinSize = new Size((int)Math.Ceiling(_extent.Width * Zoom + 80), (int)Math.Ceiling(_extent.Height * Zoom + 80));
             Invalidate();
+            ZoomChanged?.Invoke();
         }
         /// <summary>
         /// Adjusts the preview zoom to fit its content inside the viewport.
@@ -132,6 +141,7 @@ internal sealed class SpritePreviewControl : UserControl
                 Math.Max(1, ClientSize.Height - 80) / Math.Max(1, _extent.Height)));
             _fit = true;
             AutoScrollPosition = Point.Empty;
+            ZoomChanged?.Invoke();
         }
         /// <inheritdoc/>
         protected override void OnMouseWheel(MouseEventArgs e)
