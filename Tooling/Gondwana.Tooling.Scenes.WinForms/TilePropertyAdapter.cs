@@ -198,7 +198,7 @@ internal sealed class TilePropertyAdapter
 
     /// <summary>Gets or sets whether the assigned animation starts when the tile is materialized.</summary>
     [Category("Animation")]
-    [Description("Whether the assigned animation begins automatically when the tile is created; also requires EnableAnimator.")]
+    [Description("Whether the assigned animation begins automatically when the tile is materialized; requires a nonblank AnimationKey, which also enables the animator.")]
     public bool StartAnimation
     {
         get => Tile?.StartAnimation ?? false;
