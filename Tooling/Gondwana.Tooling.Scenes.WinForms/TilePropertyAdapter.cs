@@ -178,7 +178,7 @@ internal sealed class TilePropertyAdapter
 
     /// <summary>Gets or sets whether the materialized tile has animation enabled.</summary>
     [Category("Animation")]
-    [Description("Whether the tile's animation system is active; an assigned cycle alone does not enable animation.")]
+    [Description("Explicitly enable the tile's animation system. A nonblank AnimationKey also enables it when materialized; StartAnimation controls automatic playback.")]
     public bool EnableAnimator
     {
         get => Tile?.EnableAnimator ?? false;
