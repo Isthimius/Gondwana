@@ -103,6 +103,29 @@ public sealed class EditorInteractionTests
         Assert.Equal(6, zoom.Items.Count);
     });
 
+    /// <summary>Help panes and nonempty descriptions are available in all three GTS inspectors.</summary>
+    [Fact]
+    public void PropertyInspectors_DisplayDescriptionHelp() => RunSta(() =>
+    {
+        var document = TilesheetDocument.Open(Path.Combine(AppContext.BaseDirectory, "assets", "forest.gts"));
+        using var editor = Show(document);
+        var grids = new[]
+        {
+            Field<PropertyGrid>(editor.Editor, "_definitionProperties"),
+            Field<PropertyGrid>(editor.Editor, "_regionProperties"),
+            Field<PropertyGrid>(editor.Editor, "_frameProperties")
+        };
+
+        foreach (var grid in grids)
+        {
+            Assert.True(grid.HelpVisible, "A property grid with hidden help cannot display its descriptions.");
+            Assert.NotNull(grid.SelectedObject);
+            Assert.Contains(Items(grid), item =>
+                item.PropertyDescriptor is { } descriptor &&
+                !string.IsNullOrWhiteSpace(descriptor.Description));
+        }
+    });
+
     /// <summary>
     /// Verifies loaded zelda definition click selects frames in other regions.
     /// </summary>

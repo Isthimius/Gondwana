@@ -299,7 +299,7 @@ public sealed class TilesheetEditorControl : UserControl
     {
         Dock = DockStyle.Fill,
         ToolbarVisible = false,
-        HelpVisible = false
+        HelpVisible = true
     };
 
     private void RefreshProperties()
