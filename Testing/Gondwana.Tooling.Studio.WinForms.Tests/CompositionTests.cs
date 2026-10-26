@@ -8,6 +8,7 @@ using Gondwana.Tooling.Sprites.WinForms;
 using Gondwana.Tooling.Studio.WinForms.Documents;
 using Gondwana.Tooling.Studio.WinForms.Panels;
 using Gondwana.Tooling.Tilesheets.WinForms;
+using Gondwana.Tooling.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
@@ -129,12 +130,12 @@ public sealed partial class CompositionTests
 
     /// <summary>Document tabs keep their own 16-pixel artwork when the directory tree is resized.</summary>
     [Fact]
-    public void DocumentTabIconsAreIndependentOfDirectoryIconSize() => RunSta(directory =>
+    public void DocumentTabIconsAreIndependentOfNavigationIconSize() => RunSta(directory =>
     {
         using var studio = Host(directory);
         var scene = studio.NewDocument("gscn");
         using var original = scene.Icon.ToBitmap();
-        studio.Browser.ApplyIconSize(DirectoryIconSize.Large);
+        studio.Browser.ApplyIconSize(NavigationIconSize.Large);
         using var resized = scene.Icon.ToBitmap();
 
         Assert.Equal(new Size(16, 16), scene.Icon.Size);

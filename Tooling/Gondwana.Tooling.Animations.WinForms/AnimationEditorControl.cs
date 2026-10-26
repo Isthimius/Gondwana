@@ -222,6 +222,7 @@ public sealed class AnimationEditorControl : UserControl
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
+        NavigationSizing.Attach(_sourceTree);
         ToolingAppearance.Apply(this);
         RefreshView();
     }
@@ -912,6 +913,7 @@ public sealed class AnimationEditorControl : UserControl
         }
         finally
         {
+            NavigationSizing.RefreshImages(_sourceTree);
             _sourceTree.EndUpdate();
         }
     }
@@ -1071,6 +1073,7 @@ public sealed class AnimationEditorControl : UserControl
 
             case RowTag row:
                 PopulateFrames(node, row);
+                NavigationSizing.RefreshImages(_sourceTree);
                 break;
         }
     }

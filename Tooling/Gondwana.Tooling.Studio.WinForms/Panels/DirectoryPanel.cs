@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using Gondwana.Assets;
 using Gondwana.Tooling.Studio.WinForms.Documents;
+using Gondwana.Tooling.WinForms;
 using ICSharpCode.SharpZipLib;
 
 namespace Gondwana.Tooling.Studio.WinForms.Panels;
@@ -9,10 +10,8 @@ namespace Gondwana.Tooling.Studio.WinForms.Panels;
 public sealed class DirectoryPanel : UserControl
 {
     private readonly Action<string> _log;
-    private ImageList? _images;
-    private Font? _treeFont;
-    private int _presentationDpi;
-    internal DirectoryIconSize IconSize { get; private set; } = DirectoryIconSize.Small;
+    private readonly TreeNavigationSizing _sizing;
+    internal NavigationIconSize IconSize => _sizing.Size ?? NavigationIconSize.Small;
     private readonly ContextMenuStrip _fileMenu = new();
     private string? _menuPath;
     private PackedAssetNodeIdentity? _menuPacked;
@@ -56,8 +55,7 @@ public sealed class DirectoryPanel : UserControl
         _log = log;
 
         OpenExternal = ShowOpenWithDialog;
-        ApplyIconSize(DirectoryIconSize.Small);
-        Tree.DpiChangedAfterParent += (_, _) => ApplyIconSize(IconSize);
+        _sizing = NavigationSizing.Attach(Tree, CreateImages, NavigationIconSize.Small);
 
         _fileMenu.Items.Add("Open", null, (_, _) =>
         {
@@ -479,63 +477,19 @@ public sealed class DirectoryPanel : UserControl
 
     internal ContextMenuStrip FileMenu => _fileMenu;
 
-    // Reuse the nodes and keys: resizing must never start a filesystem/archive scan.
-    internal void ApplyIconSize(DirectoryIconSize size)
+    internal void ApplyIconSize(NavigationIconSize size) => _sizing.Apply(size);
+
+    private static ImageList CreateImages(int pixels)
     {
-        if (!Enum.IsDefined(size))
-            throw new ArgumentOutOfRangeException(nameof(size));
-
-        int dpi = Tree.DeviceDpi;
-        if (_images is not null && IconSize == size && _presentationDpi == dpi)
-            return;
-
-        int pixels = Math.Clamp((int)Math.Round((int)size * dpi / 96d), 1, 256);
         var images = new ImageList { ImageSize = new Size(pixels, pixels), ColorDepth = ColorDepth.Depth32Bit };
-        Font? font = null;
         try
         {
             AddIcon(images, "directory", "D", Color.DarkKhaki);
             foreach (var category in Categories)
                 AddIcon(images, category.Key, category.Glyph, category.Color);
-            font = new Font("Segoe UI", size switch
-            {
-                DirectoryIconSize.Medium => 11f,
-                DirectoryIconSize.Large => 13f,
-                _ => 9f
-            }, FontStyle.Regular, GraphicsUnit.Point);
+            return images;
         }
-        catch
-        {
-            images.Dispose();
-            font?.Dispose();
-            throw;
-        }
-
-        var previousImages = _images;
-        var previousFont = _treeFont;
-        var selected = Tree.SelectedNode;
-        var top = Tree.TopNode;
-        Tree.BeginUpdate();
-        try
-        {
-            _images = images;
-            _treeFont = font;
-            IconSize = size;
-            _presentationDpi = dpi;
-            Tree.ImageList = images;
-            Tree.Font = font;
-            Tree.ItemHeight = Math.Max(pixels, (int)Math.Ceiling(font.SizeInPoints * dpi / 72d))
-                + Math.Max(1, (int)Math.Round(2 * dpi / 96d));
-            Tree.SelectedNode = selected;
-            if (top is not null)
-                Tree.TopNode = top;
-        }
-        finally
-        {
-            Tree.EndUpdate();
-            previousImages?.Dispose();
-            previousFont?.Dispose();
-        }
+        catch { images.Dispose(); throw; }
     }
 
     private static void AddIcon(ImageList images, string key, string glyph, Color color)
@@ -584,10 +538,7 @@ public sealed class DirectoryPanel : UserControl
             _lifetime.Cancel();
             _lifetime.Dispose();
             _fileMenu.Dispose();
-            Tree.ImageList = null;
-            _images?.Dispose();
-            Tree.Font = null;
-            _treeFont?.Dispose();
+            _sizing.Dispose();
         }
 
         base.Dispose(disposing);

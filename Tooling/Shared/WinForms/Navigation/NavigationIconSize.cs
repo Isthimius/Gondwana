@@ -1,7 +1,7 @@
-namespace Gondwana.Tooling.Studio.WinForms.Panels;
+namespace Gondwana.Tooling.WinForms;
 
-/// <summary>Logical icon sizes for the Studio working-directory tree at 96 DPI.</summary>
-internal enum DirectoryIconSize
+/// <summary>Logical navigation icon sizes at 96 DPI, paired with 9, 11, and 13 point fonts.</summary>
+public enum NavigationIconSize
 {
     /// <summary>16-pixel icons and a 9-point font.</summary>
     Small = 16,
