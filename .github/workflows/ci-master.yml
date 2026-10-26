@@ -106,5 +106,3 @@ jobs:
       - name: Browser helper tests
         run: node --test Testing/BlazorPresentationTests.mjs Testing/browser-audio.test.mjs
 
-      - name: Pack (validation only)
-        run: dotnet pack --configuration Release --no-build --nologo /p:EnableWindowsTargeting=true

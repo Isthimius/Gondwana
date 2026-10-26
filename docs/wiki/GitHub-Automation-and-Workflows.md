@@ -2,7 +2,7 @@ Gondwana uses GitHub Actions and repository-level configuration to automate proj
 
 The main automation covers:
 
-- building, testing, packing, and staging binaries
+- validating PR builds/tests separately from scheduled and release packaging
 - maintaining root and per-project changelogs
 - publishing development and release API documentation
 - synchronizing the GitHub Wiki with `docs/wiki`
@@ -28,6 +28,7 @@ Most of the automation lives under:
     ├── mirror-sourceforge.yml
     ├── mirror_bitbucket.yml
     ├── mirror_codeberg.yml
+    ├── package-binaries.yml
     ├── release.yml
     ├── wiki-reconcile-weekly.yml
     └── wiki-sync.yml
@@ -43,6 +44,7 @@ Files such as `.github/labeler.yml` and `.github/release.yml` are **configuratio
 
 - [Workflow overview](#workflow-overview)
 - [CI — ci-master.yml](#ci--ci-masteryml)
+- [Package validation — package-binaries.yml](#package-validation--package-binariesyml)
 - [Changelog maintenance — changelog-weekly.yml](#changelog-maintenance--changelog-weeklyyml)
 - [Wiki synchronization — wiki-sync.yml](#wiki-synchronization--wiki-syncyml)
 - [Weekly Wiki reconciliation — wiki-reconcile-weekly.yml](#weekly-wiki-reconciliation--wiki-reconcile-weeklyyml)
@@ -68,7 +70,7 @@ At a high level, Gondwana's repository automation looks like this:
 flowchart TD
     PR[Pull Request] --> LABEL[Label PR]
     PR --> FORMAT[Normalize PR metadata]
-    PR --> CI[Build + Test + Pack]
+    PR --> CI[Format + Build + Test]
 
     MASTER[Push to master] --> CI
     MASTER --> DOCS[Development API docs when relevant]
@@ -84,23 +86,29 @@ flowchart TD
 
     WIKIWEEKLY[Monday 04:17 UTC] --> RECONCILE[Reconcile Wiki and docs/wiki drift]
 
-    TAG[Push v* tag] --> RELEASE[Release workflow]
-    TAG --> MIRRORS
+    DAILY[Daily 12:30 PM Eastern] --> PKG[Validate NuGet packages + Windows binary bundle]
 
-    CI --> ARTIFACT[CI binary artifact]
+    TAG[Push v* tag] --> RELEASE[Release preflight]
+    TAG --> MIRRORS
+    RELEASE --> SHARED[Run package-binaries.yml for tagged commit]
+    SHARED --> PUB[Publish validated release artifacts]
+    PUB --> GHREL[GitHub Release]
+    PUB --> NUGET[NuGet.org]
+    PUB --> GHPKG[GitHub Packages]
+    PUB --> STABLEAPI[/api/vX.Y.Z/ + /api/]
+
     DOCS --> DEVAPI[/api/latest/]
-    RELEASE --> BUILD[Build + Pack]
-    BUILD --> GHREL[GitHub Release]
-    BUILD --> NUGET[NuGet.org]
-    BUILD --> GHPKG[GitHub Packages]
-    RELEASE --> STABLEAPI[/api/vX.Y.Z/ + /api/]
 ```
 
 The workflows answer different questions.
 
 **CI answers:**
 
-> Does the current code build, test, package, and produce the expected binaries?
+> Does the current code satisfy its formatting, build, and test checks?
+
+**Package validation answers:**
+
+> Can the current source produce NuGet packages and a correctly structured Windows binary release bundle?
 
 **Changelog automation answers:**
 
@@ -180,7 +188,7 @@ Although Gondwana contains Windows-targeting projects, CI builds from Linux usin
 /p:EnableWindowsTargeting=true
 ```
 
-This allows Windows-targeted assemblies to be validated without moving the entire build to a Windows runner.
+This allows Windows-targeted assemblies to be built from Linux. The separate WinForms tooling interaction test job runs on `windows-latest`.
 
 ---
 
@@ -207,67 +215,77 @@ dotnet build \
 
 ---
 
-## Tests
+## Formatting and tests
 
-CI explicitly runs:
+CI checks whitespace and selected style diagnostics, builds the solution in Release configuration, and runs:
 
-```text
-Testing/Gondwana.Tests/Gondwana.Tests.csproj
-```
+- `Testing/Gondwana.Tests/Gondwana.Tests.csproj` unit tests
+- Node.js browser-side tests in `Testing/BlazorPresentationTests.mjs` and `Testing/browser-audio.test.mjs`
+- WinForms tooling tests on `windows-latest` for Tilesheets, Animations, Audio, Scenes, Sprites, Scene Viewer, and Studio
 
-It also runs the browser-side Blazor presentation helper tests with Node.js:
-
-```text
-Testing/BlazorPresentationTests.mjs
-```
-
-Conceptually:
+The Linux build/test job and Windows editor-test job are separate CI jobs. The Linux job's broad sequence is:
 
 ```text
-Restore
+Restore workloads and dependencies
   ↓
-Build
+Verify whitespace and style
+  ↓
+Build (Release)
   ↓
 Gondwana.Tests
   ↓
-Blazor presentation tests
-  ↓
-Pack validation
+Browser helper tests
 ```
+
+**Ordinary PR CI and pushes to `master` do not run `dotnet pack`, publish binaries, or upload a `Gondwana-binaries` artifact.** Packaging is validated separately by the scheduled workflow and again for every tagged release.
 
 ---
 
-## Pack validation
+# Package validation — `package-binaries.yml`
 
-CI runs `dotnet pack`, but it does **not** publish packages.
-
-CI answers:
-
-> Could Gondwana be packaged successfully?
-
-The release workflow answers:
-
-> Should those packages actually be published?
-
-Keeping those responsibilities separate prevents an ordinary pull request or push from becoming a package release.
-
----
-
-## Published CI binaries
-
-After validation, CI publishes selected projects into temporary staging directories and creates:
+File:
 
 ```text
-Gondwana-binaries.zip
+.github/workflows/package-binaries.yml
 ```
 
-GitHub Actions uploads the ZIP as the workflow artifact:
+This workflow owns NuGet/package creation and full Windows release-bundle validation, so those expensive steps do not run on every pull request.
 
-```text
-Gondwana-binaries
-```
+## Schedule and invocation
 
-This provides downloadable build output without performing a formal release.
+The workflow runs on a **daily schedule at 12:30 PM America/New_York time**, and supports manual execution through **Actions → Package binaries → Run workflow**.
+
+It is also reusable through `workflow_call` and is called by `release.yml` when a `v*` tag is pushed.
+
+Scheduled runs validate current `master`; manually dispatched runs validate the selected ref, and release invocations validate the tagged source.
+
+## What packaging validates
+
+The job:
+
+1. checks out the source with full history and sets up .NET 8
+2. restores workloads and dependencies
+3. builds the solution in Release configuration
+4. runs `dotnet pack --no-build` to create NuGet packages in `nupkgs/`
+5. publishes selected engine libraries, Windows tooling (including Studio and the standalones), and demos
+6. stages the expected release directory layout
+7. runs `Test-WindowsToolingBundle.ps1` against the staged tooling
+8. creates `Gondwana-binaries.zip`
+
+This checks **package generation and the distributable bundle**, not just compilation.
+
+## Artifacts and release reuse
+
+Scheduled and manually dispatched validation runs **do not upload persistent binaries or NuGet artifacts**. They validate that the packaging process completes.
+
+When called from `release.yml`, the workflow receives `upload_release_artifacts: true` and uploads:
+
+- `Gondwana-binaries` — the validated ZIP
+- `Gondwana-nupkgs` — the validated NuGet packages
+
+The release publication job then downloads and publishes those outputs. It does **not** rebuild the binaries or packages a second time.
+
+A packaging regression may therefore be detected after a PR merges to `master`, rather than during PR validation. However, a tagged release cannot proceed to publication unless the same packaging validation succeeds.
 
 ---
 
@@ -1033,25 +1051,21 @@ A tag is therefore an executable release event, not merely a label.
 
 ## Release flow
 
-Conceptually:
+The tag workflow performs preflight validation (including matching the tag to the Nerdbank.GitVersioning package version and extracting release notes), invokes the reusable packaging workflow, and only then publishes.
 
 ```mermaid
 flowchart TD
-    TAG[Push v* tag] --> VERSION[Read NBGV version]
-    VERSION --> BRANCH[Create release/vVERSION branch]
-    BRANCH --> RESTORE[Restore]
-    RESTORE --> BUILD[Release build]
-    BUILD --> PACK[Pack NuGet packages]
-    BUILD --> PUBLISH[Publish binaries]
-    PUBLISH --> ZIP[Create release ZIP]
+    TAG[Push v* tag] --> PREFLIGHT[Validate version and release notes]
+    PREFLIGHT --> PKG[Call package-binaries.yml]
+    PKG --> BUNDLE[Build + Pack + Publish + Stage + Validate + ZIP]
+    BUNDLE --> UPLOAD[Upload validated ZIP + NuGet artifacts]
+    UPLOAD --> PUB[Release publication job]
 
-    CHANGELOG[Tagged CHANGELOG.md] --> GHREL[GitHub Release]
-    ZIP --> GHREL
-
-    PACK --> NUGET[NuGet.org]
-    PACK --> GHPKG[GitHub Packages]
-
-    BUILD --> DOXY[Generate stable API docs]
+    PUB --> BRANCH[Create release/vVERSION branch]
+    PUB --> GHREL[GitHub Release with tagged changelog notes]
+    PUB --> NUGET[NuGet.org]
+    PUB --> GHPKG[GitHub Packages]
+    PUB --> DOXY[Generate stable API docs]
     DOXY --> VERSIONED[/api/vX.Y.Z/]
     DOXY --> STABLE[/api/]
 ```
@@ -1060,7 +1074,7 @@ flowchart TD
 
 ## Release branch
 
-After determining the version through NBGV, the workflow creates or overwrites:
+After preflight and packaging succeed, the release publication job creates or overwrites:
 
 ```text
 release/v<version>
@@ -1074,23 +1088,17 @@ The immutable tag remains the actual release identity; the release branch provid
 
 ## Build, packages, and binaries
 
-The release performs its own restore, build, pack, and publish from the tagged source.
+The release calls `package-binaries.yml` on the tagged source. That reusable job restores, builds, packs, publishes, stages, and validates the release outputs **before** uploading artifacts.
 
-It does not depend on artifacts from some prior CI run.
+The release publication job downloads `Gondwana-nupkgs` and `Gondwana-binaries` from that same workflow run. It does not rely on any previous PR CI or scheduled validation run, and does not rebuild the distributable outputs.
 
-Packable projects are written under:
-
-```text
-./nupkgs
-```
-
-Selected library assemblies and application/tool publish output are staged into:
+Packable projects are written under `nupkgs/` in the packaging job. The validated ZIP is renamed for publication as:
 
 ```text
 Gondwana-<version>-binaries.zip
 ```
 
-which becomes an asset on the GitHub Release.
+and attached to the GitHub Release.
 
 ---
 
@@ -1471,6 +1479,16 @@ For unit-test failures, compilation succeeded but behavior no longer satisfies a
 
 For browser-presentation failures, inspect the Node test output separately from the .NET test output.
 
+CI no longer runs `dotnet pack`; check the **Package binaries** workflow for packaging and Windows release-bundle failures.
+
+---
+
+## Packaging validation failures
+
+For `package-binaries.yml`, check the first failing restore, build, pack, publish, staging, or `Test-WindowsToolingBundle.ps1` step. Scheduled runs verify `master` without storing artifacts; tagged-release runs upload the validated ZIP and NuGet packages for publication.
+
+A failed scheduled run does not undo an already-merged PR. A failed packaging job during a tagged release blocks the dependent release publication job.
+
 ---
 
 ## Permission failures
@@ -1601,6 +1619,7 @@ The simplest reference table is:
 | Concern | Source |
 |---|---|
 | Does Gondwana build and test? | `.github/workflows/ci-master.yml` |
+| Can the NuGet packages and Windows release bundle be produced? | `.github/workflows/package-binaries.yml` |
 | Are `[Unreleased]` changelogs current? | `.github/workflows/changelog-weekly.yml` |
 | Do normal Wiki edits sync both ways? | `.github/workflows/wiki-sync.yml` |
 | Is Wiki/repository drift reconciled? | `.github/workflows/wiki-reconcile-weekly.yml` |
@@ -1625,6 +1644,10 @@ master
 ├── publish docs/wiki changes to the GitHub Wiki
 └── mirror canonical history outward
 
+Daily at 12:30 PM Eastern
+└── validate NuGet packages and Windows release bundle
+    └── no uploaded artifacts on scheduled runs
+
 GitHub Wiki edit
 └── import through automation/wiki-sync PR
       └── normal checks/review
@@ -1636,12 +1659,14 @@ Sunday night / Monday UTC
 └── 04:17 UTC → reconcile Wiki drift
 
 v* tag
-└── build release
-    ├── create GitHub Release
-    ├── publish NuGet packages
-    ├── publish GitHub Packages
-    ├── publish stable/versioned API docs
-    └── mirror tag outward
+├── mirror tag outward
+└── validate version and release notes
+    └── run reusable package-binaries.yml
+        └── publish validated artifacts
+            ├── create GitHub Release
+            ├── publish NuGet packages
+            ├── publish GitHub Packages
+            └── publish stable/versioned API docs
 ```
 
 The changelog path between development and release is:
