@@ -52,7 +52,7 @@ public sealed class SceneDefinition
     /// <summary>
     /// Gets or sets provenance metadata describing where this definition came from.
     /// </summary>
-    [Description("Read-only provenance identifying where this scene definition was loaded from.")]
+    [Description("Origin metadata indicating which loose scene file or packed asset contains this scene definition.")]
     public SceneDefinitionSource Source
     {
         get => _source;
