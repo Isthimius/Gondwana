@@ -6,7 +6,6 @@ using Gondwana.Tooling.Audio.WinForms;
 using Gondwana.Tooling.Scenes.WinForms;
 using Gondwana.Tooling.Sprites.WinForms;
 using Gondwana.Tooling.Studio.WinForms.Documents;
-using Gondwana.Tooling.Studio.WinForms.Panels;
 using Gondwana.Tooling.Tilesheets.WinForms;
 using Gondwana.Tooling.WinForms;
 using WeifenLuo.WinFormsUI.Docking;

@@ -92,6 +92,24 @@ public sealed partial class CompositionTests
     });
 
     [Fact]
+    public void AnotherApplicationsPreferenceIsAppliedOnActivationWithoutRestart() => RunSta(directory =>
+    {
+        var store = new NavigationPreferenceStore();
+        Assert.True(store.Write(NavigationIconSize.Small));
+        using var owner = new Form();
+        using var tree = new TreeView();
+        owner.Controls.Add(tree);
+        using var binding = NavigationSizing.Attach(tree);
+        using var menu = NavigationSizing.CreateMenu(owner);
+        Assert.Equal(9f, tree.Font.SizeInPoints);
+        Assert.True(store.Write(NavigationIconSize.Large)); // Another executable updates the same file.
+        typeof(Form).GetMethod("OnActivated", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .Invoke(owner, new object[] { EventArgs.Empty });
+        Assert.Equal(13f, tree.Font.SizeInPoints);
+        Assert.Equal(NavigationIconSize.Large, Assert.Single(menu.DropDownItems.Cast<ToolStripMenuItem>(), i => i.Checked).Tag);
+    });
+
+    [Fact]
     public void NavigationThumbnailRefreshKeepsOriginalKeysPixelsNodesAndSelection() => RunSta(directory =>
     {
         using var owner = new Form { Size = new Size(600, 600), Opacity = 0, ShowInTaskbar = false };
@@ -204,7 +222,9 @@ public sealed partial class CompositionTests
             using var studio = Host(directory);
             Assert.Equal(NavigationIconSize.Large, studio.Browser.IconSize);
             using var reopened = (Form)Activator.CreateInstance(type, nonPublic: true)!;
-            Assert.All(Descendants(reopened).OfType<TreeView>(), tree => Assert.Equal(13f, tree.Font.SizeInPoints));
+            var reopenedTrees = Descendants(reopened).OfType<TreeView>().ToArray();
+            Assert.NotEmpty(reopenedTrees);
+            Assert.All(reopenedTrees, tree => Assert.Equal(13f, tree.Font.SizeInPoints));
         }
         finally { Environment.CurrentDirectory = previousDirectory; }
     });

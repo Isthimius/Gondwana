@@ -2,7 +2,6 @@ using System.Diagnostics;
 using System.Reflection;
 using Gondwana.Assets;
 using Gondwana.Tooling.Studio.WinForms.Panels;
-using Gondwana.Tooling.Studio.WinForms.Services;
 using Gondwana.Tooling.WinForms;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
