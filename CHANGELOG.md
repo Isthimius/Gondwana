@@ -11,16 +11,28 @@ All notable changes to this project will be documented in this file.
 - Persist sprite animation assignments and preserve Cycle clone flags ([#453](https://github.com/Isthimius/Gondwana/pull/453))
 - Support portable reference relocation and atomic persistence ([#455](https://github.com/Isthimius/Gondwana/pull/455))
 - Add semantic asset unpack and selective export ([#458](https://github.com/Isthimius/Gondwana/pull/458))
+- Preserve source provenance for runtime dependencies ([#479](https://github.com/Isthimius/Gondwana/pull/479))
+- Open, edit, and safely save packed definitions (Step 3) ([#485](https://github.com/Isthimius/Gondwana/pull/485))
 
 
 
 ### Fixed
 - Handle touch taps on the game board ([#445](https://github.com/Isthimius/Gondwana/pull/445))
 
+
+
+### Documentation
+- Correct LinearDamping XML documentation ([#478](https://github.com/Isthimius/Gondwana/pull/478))
+
 ## Tooling / Gondwana.Tooling.Studio.Plugin.ProjectDiagnostics
 
 ### Added
 - Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
+
+
+
+### Documentation
+- Clarify XML documentation across Gondwana tooling ([#491](https://github.com/Isthimius/Gondwana/pull/491))
 
 ## Tooling / Gondwana.Cli
 
@@ -48,23 +60,75 @@ All notable changes to this project will be documented in this file.
 - Add semantic asset imports and packing support ([#459](https://github.com/Isthimius/Gondwana/pull/459))
 - Add reference-aware asset moves and renames ([#460](https://github.com/Isthimius/Gondwana/pull/460))
 - Add reference-aware asset deletion ([#461](https://github.com/Isthimius/Gondwana/pull/461))
+- Restore saved authoring workspace sessions ([#481](https://github.com/Isthimius/Gondwana/pull/481))
+- Open, edit, and safely save packed definitions (Step 3) ([#485](https://github.com/Isthimius/Gondwana/pull/485))
+- Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+
+
+
+### Fixed
+- Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
 
 
 
 ### Refactoring
 - Consolidate asset tooling workflows and docs ([#462](https://github.com/Isthimius/Gondwana/pull/462))
 
+
+
+### Documentation
+- Clarify XML documentation across Gondwana tooling ([#491](https://github.com/Isthimius/Gondwana/pull/491))
+
 ## Tooling / Gondwana.Tooling.Animations.WinForms
 
 ### Added
 - Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
 - Support portable reference relocation and atomic persistence ([#455](https://github.com/Isthimius/Gondwana/pull/455))
+- Restore saved authoring workspace sessions ([#481](https://github.com/Isthimius/Gondwana/pull/481))
+- Open, edit, and safely save packed definitions (Step 3) ([#485](https://github.com/Isthimius/Gondwana/pull/485))
+- Show file-type icons on document tabs ([#494](https://github.com/Isthimius/Gondwana/pull/494))
+- Show source-sized animation frame thumbnails ([#499](https://github.com/Isthimius/Gondwana/pull/499))
+- Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+
+
+
+### Fixed
+- Resolve packed assets in authoring previews ([#483](https://github.com/Isthimius/Gondwana/pull/483))
+- Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
+
+
+
+### Documentation
+- Clarify XML documentation across Gondwana tooling ([#491](https://github.com/Isthimius/Gondwana/pull/491))
 
 ## Tooling / Gondwana.Tooling.Audio.WinForms
 
 ### Added
 - Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
 - Support portable reference relocation and atomic persistence ([#455](https://github.com/Isthimius/Gondwana/pull/455))
+- Restore saved authoring workspace sessions ([#481](https://github.com/Isthimius/Gondwana/pull/481))
+- Open, edit, and safely save packed definitions (Step 3) ([#485](https://github.com/Isthimius/Gondwana/pull/485))
+- Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+
+
+
+### Fixed
+- Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
+
+
+
+### Documentation
+- Clarify XML documentation across Gondwana tooling ([#491](https://github.com/Isthimius/Gondwana/pull/491))
+
+## Tooling / Gondwana.Tooling.Studio.Core
+
+### Added
+- Improve document and workspace session handling ([#489](https://github.com/Isthimius/Gondwana/pull/489))
+
+
+
+### Documentation
+- Clarify XML documentation across Gondwana tooling ([#491](https://github.com/Isthimius/Gondwana/pull/491))
 
 ## Tooling / Gondwana.Tooling.Studio.WinForms
 
@@ -72,6 +136,25 @@ All notable changes to this project will be documented in this file.
 - Add reference-aware asset moves and renames ([#460](https://github.com/Isthimius/Gondwana/pull/460))
 - Add reference-aware asset deletion ([#461](https://github.com/Isthimius/Gondwana/pull/461))
 - Group working-directory files and add context menus ([#477](https://github.com/Isthimius/Gondwana/pull/477))
+- Display packed assets in Working Directory (Step 1) ([#480](https://github.com/Isthimius/Gondwana/pull/480))
+- Restore saved authoring workspace sessions ([#481](https://github.com/Isthimius/Gondwana/pull/481))
+- Open, edit, and safely save packed definitions (Step 3) ([#485](https://github.com/Isthimius/Gondwana/pull/485))
+- Improve document and workspace session handling ([#489](https://github.com/Isthimius/Gondwana/pull/489))
+- Group packed assets and persist icon sizing ([#493](https://github.com/Isthimius/Gondwana/pull/493))
+- Show file-type icons on document tabs ([#494](https://github.com/Isthimius/Gondwana/pull/494))
+- Select active document in working directory tree ([#496](https://github.com/Isthimius/Gondwana/pull/496))
+- Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+
+
+
+### Fixed
+- Resolve packed assets in authoring previews ([#483](https://github.com/Isthimius/Gondwana/pull/483))
+- Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
+
+
+
+### Documentation
+- Clarify XML documentation across Gondwana tooling ([#491](https://github.com/Isthimius/Gondwana/pull/491))
 
 ## Tooling / Gondwana.Tooling.Scenes.WinForms
 
@@ -79,17 +162,43 @@ All notable changes to this project will be documented in this file.
 - Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
 - Persist sprite animation assignments and preserve Cycle clone flags ([#453](https://github.com/Isthimius/Gondwana/pull/453))
 - Support portable reference relocation and atomic persistence ([#455](https://github.com/Isthimius/Gondwana/pull/455))
+- Restore saved authoring workspace sessions ([#481](https://github.com/Isthimius/Gondwana/pull/481))
+- Open, edit, and safely save packed definitions (Step 3) ([#485](https://github.com/Isthimius/Gondwana/pull/485))
+- Launch packed scenes from temporary snapshots ([#490](https://github.com/Isthimius/Gondwana/pull/490))
+- Add preview-only per-layer visibility controls ([#495](https://github.com/Isthimius/Gondwana/pull/495))
+- Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
 
 
 
 ### Fixed
 - Resolve GANI preview tilesheets by member identity ([#454](https://github.com/Isthimius/Gondwana/pull/454))
+- Gscn initialize tile frame from assigned animation ([#482](https://github.com/Isthimius/Gondwana/pull/482))
+- Resolve packed assets in authoring previews ([#483](https://github.com/Isthimius/Gondwana/pull/483))
+- Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
+- Start playback after assigning animations ([#497](https://github.com/Isthimius/Gondwana/pull/497))
+
+
+
+### Documentation
+- Clarify XML documentation across Gondwana tooling ([#491](https://github.com/Isthimius/Gondwana/pull/491))
 
 ## Tooling / Gondwana.Tooling.SceneViewer.WinForms
 
 ### Added
 - Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
 - Persist sprite animation assignments and preserve Cycle clone flags ([#453](https://github.com/Isthimius/Gondwana/pull/453))
+- Launch packed scenes from temporary snapshots ([#490](https://github.com/Isthimius/Gondwana/pull/490))
+- Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+
+
+
+### Fixed
+- Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
+
+
+
+### Documentation
+- Clarify XML documentation across Gondwana tooling ([#491](https://github.com/Isthimius/Gondwana/pull/491))
 
 ## Tooling / Gondwana.Tooling.Sprites.WinForms
 
@@ -97,17 +206,47 @@ All notable changes to this project will be documented in this file.
 - Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
 - Persist sprite animation assignments and preserve Cycle clone flags ([#453](https://github.com/Isthimius/Gondwana/pull/453))
 - Support portable reference relocation and atomic persistence ([#455](https://github.com/Isthimius/Gondwana/pull/455))
+- Restore saved authoring workspace sessions ([#481](https://github.com/Isthimius/Gondwana/pull/481))
+- Open, edit, and safely save packed definitions (Step 3) ([#485](https://github.com/Isthimius/Gondwana/pull/485))
+- Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+
+
+
+### Fixed
+- Resolve packed assets in authoring previews ([#483](https://github.com/Isthimius/Gondwana/pull/483))
+- Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
+
+
+
+### Documentation
+- Clarify XML documentation across Gondwana tooling ([#491](https://github.com/Isthimius/Gondwana/pull/491))
 
 ## Tooling / Gondwana.Tooling.Tilesheets.WinForms
 
 ### Added
 - Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
 - Support portable reference relocation and atomic persistence ([#455](https://github.com/Isthimius/Gondwana/pull/455))
+- Restore saved authoring workspace sessions ([#481](https://github.com/Isthimius/Gondwana/pull/481))
+- Open, edit, and safely save packed definitions (Step 3) ([#485](https://github.com/Isthimius/Gondwana/pull/485))
+- Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+
+
+
+### Fixed
+- Resolve packed assets in authoring previews ([#483](https://github.com/Isthimius/Gondwana/pull/483))
+- Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
+
+
+
+### Documentation
+- Clarify XML documentation across Gondwana tooling ([#491](https://github.com/Isthimius/Gondwana/pull/491))
 
 ## Build / Repository
 
 ### Added
 - Add semantic asset imports and packing support ([#459](https://github.com/Isthimius/Gondwana/pull/459))
+- Improve document and workspace session handling ([#489](https://github.com/Isthimius/Gondwana/pull/489))
+- Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
 
 
 
@@ -121,10 +260,21 @@ All notable changes to this project will be documented in this file.
 
 
 
+### Build
+- Publish self-contained tooling bundles ([#492](https://github.com/Isthimius/Gondwana/pull/492))
+
+
+
+### CI
+- Remove redundant PR pack validation step ([#501](https://github.com/Isthimius/Gondwana/pull/501))
+
+
+
 ### Other Changes
 - Revise README for clarity and updated features
 - Update AI integration description in README
 - Update release note link for Gondwana 2.6.1
+- Removed the Discussions, added FAQ link from the README ([#488](https://github.com/Isthimius/Gondwana/pull/488))
 
 # [v2.6.1] - 2026-10-08
 

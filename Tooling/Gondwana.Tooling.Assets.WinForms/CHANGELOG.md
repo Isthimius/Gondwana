@@ -18,11 +18,24 @@ All notable changes to this project will be documented in this file.
 - Add semantic asset imports and packing support ([#459](https://github.com/Isthimius/Gondwana/pull/459))
 - Add reference-aware asset moves and renames ([#460](https://github.com/Isthimius/Gondwana/pull/460))
 - Add reference-aware asset deletion ([#461](https://github.com/Isthimius/Gondwana/pull/461))
+- Restore saved authoring workspace sessions ([#481](https://github.com/Isthimius/Gondwana/pull/481))
+- Open, edit, and safely save packed definitions (Step 3) ([#485](https://github.com/Isthimius/Gondwana/pull/485))
+- Embed gondwana branding in winforms tools ([#500](https://github.com/Isthimius/Gondwana/pull/500))
+
+
+
+## Fixed
+- Stabilize packed authentication and integrations ([#487](https://github.com/Isthimius/Gondwana/pull/487))
 
 
 
 ## Refactoring
 - Consolidate asset tooling workflows and docs ([#462](https://github.com/Isthimius/Gondwana/pull/462))
+
+
+
+## Documentation
+- Clarify XML documentation across Gondwana tooling ([#491](https://github.com/Isthimius/Gondwana/pull/491))
 
 # v2.6.1 - October 08, 2026
 

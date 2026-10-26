@@ -14,6 +14,11 @@ All notable changes to this project will be documented in this file.
 ## Added
 - Support multiple definitions per asset file ([#452](https://github.com/Isthimius/Gondwana/pull/452))
 
+
+
+## Documentation
+- Clarify XML documentation across Gondwana tooling ([#491](https://github.com/Isthimius/Gondwana/pull/491))
+
 # v2.6.1 - October 08, 2026
 
 

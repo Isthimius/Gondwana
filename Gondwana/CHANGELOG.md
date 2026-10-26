@@ -19,11 +19,18 @@ All notable changes to this project will be documented in this file.
 - Persist sprite animation assignments and preserve Cycle clone flags ([#453](https://github.com/Isthimius/Gondwana/pull/453))
 - Support portable reference relocation and atomic persistence ([#455](https://github.com/Isthimius/Gondwana/pull/455))
 - Add semantic asset unpack and selective export ([#458](https://github.com/Isthimius/Gondwana/pull/458))
+- Preserve source provenance for runtime dependencies ([#479](https://github.com/Isthimius/Gondwana/pull/479))
+- Open, edit, and safely save packed definitions (Step 3) ([#485](https://github.com/Isthimius/Gondwana/pull/485))
 
 
 
 ## Fixed
 - Handle touch taps on the game board ([#445](https://github.com/Isthimius/Gondwana/pull/445))
+
+
+
+## Documentation
+- Correct LinearDamping XML documentation ([#478](https://github.com/Isthimius/Gondwana/pull/478))
 
 # v2.6.1 - October 08, 2026
 

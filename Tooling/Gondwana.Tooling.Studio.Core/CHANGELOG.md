@@ -10,6 +10,16 @@ All notable changes to this project will be documented in this file.
 
 # [Unreleased]
 
+
+
+## Added
+- Improve document and workspace session handling ([#489](https://github.com/Isthimius/Gondwana/pull/489))
+
+
+
+## Documentation
+- Clarify XML documentation across Gondwana tooling ([#491](https://github.com/Isthimius/Gondwana/pull/491))
+
 # v2.6.1 - October 08, 2026
 
 
