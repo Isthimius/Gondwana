@@ -225,6 +225,10 @@ public sealed partial class CompositionTests
             using var studio = Host(directory);
             Assert.Equal(NavigationIconSize.Large, studio.Browser.IconSize);
             using var reopened = (Form)Activator.CreateInstance(type, nonPublic: true)!;
+            reopened.Opacity = 0;
+            reopened.ShowInTaskbar = false;
+            reopened.Show(); // DockPanelSuite attaches the workspace controls when the shell is shown.
+            Application.DoEvents();
             var reopenedTrees = Descendants(reopened).OfType<TreeView>().ToArray();
             Assert.NotEmpty(reopenedTrees);
             Assert.All(reopenedTrees, tree => Assert.Equal(13f, tree.Font.SizeInPoints));
