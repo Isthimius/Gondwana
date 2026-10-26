@@ -312,7 +312,8 @@ public static class ToolingAppearance
             using var border = new Pen(Palette.Border);
             e.Graphics.FillRectangle(brush, e.Bounds);
             e.Graphics.DrawRectangle(border, 0, 0, e.Bounds.Width - 1, e.Bounds.Height - 1);
-            TextRenderer.DrawText(e.Graphics, e.ToolTipText, e.Font, Rectangle.Inflate(e.Bounds, -3, -2), Palette.Foreground);
+            TextRenderer.DrawText(e.Graphics, e.ToolTipText, e.Font, Rectangle.Inflate(e.Bounds, -3, -2), Palette.Foreground,
+                TextFormatFlags.NoPrefix);
         };
     }
 
