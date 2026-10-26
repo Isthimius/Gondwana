@@ -170,11 +170,11 @@ public sealed class AssetEditorControl : UserControl
         _workspace.Place(status, () => status.Show(entries.Pane, DockAlignment.Bottom, 55d / 650));
         _workspace.InitializeLayout();
 
-        DarkTheme.Apply(this);
-        _typeComboBox.BackColor = DarkTheme.Surface;
-        _typeComboBox.ForeColor = DarkTheme.Foreground;
-        _searchTextBox.BackColor = DarkTheme.Surface;
-        _searchTextBox.ForeColor = DarkTheme.Foreground;
+        ToolingAppearance.Apply(this);
+        _typeComboBox.BackColor = ToolingAppearance.Palette.Surface;
+        _typeComboBox.ForeColor = ToolingAppearance.Palette.Foreground;
+        _searchTextBox.BackColor = ToolingAppearance.Palette.Surface;
+        _searchTextBox.ForeColor = ToolingAppearance.Palette.Foreground;
 
         RefreshEntries();
     }
@@ -246,7 +246,7 @@ public sealed class AssetEditorControl : UserControl
         var destination = Path.GetFullPath(dialog.FileName);
         if (IsDocumentOpen(destination))
         {
-            MessageBox.Show(
+            ThemedMessageBox.Show(
                 this,
                 "Save As creates a copy. Choose a destination different from any currently open asset file.",
                 "Choose Another Destination",
@@ -257,7 +257,7 @@ public sealed class AssetEditorControl : UserControl
 
         try
         {
-            var encrypt = MessageBox.Show(
+            var encrypt = ThemedMessageBox.Show(
                 this,
                 "Enable password protection for the saved copy?",
                 "Encryption",
@@ -270,7 +270,7 @@ public sealed class AssetEditorControl : UserControl
                 password = InputDialog.Show(this, "Password", "Enter password for the saved copy:");
                 if (string.IsNullOrWhiteSpace(password))
                 {
-                    MessageBox.Show(
+                    ThemedMessageBox.Show(
                         this,
                         "A password is required when encryption is enabled.",
                         "Password Required",
@@ -506,7 +506,7 @@ public sealed class AssetEditorControl : UserControl
         if (selected is null) return;
         if (IsDirty)
         {
-            MessageBox.Show(this, "Save this archive before moving resources.", "Save required");
+            ThemedMessageBox.Show(this, "Save this archive before moving resources.", "Save required");
             return;
         }
         AssetMoveDialog.Show(this, new(selected.AssetType, FilePath, selected.AssetName),
@@ -534,7 +534,7 @@ public sealed class AssetEditorControl : UserControl
 
         if (IsDirty && PackDefinitionDocument.IsNative(selected.AssetType))
         {
-            MessageBox.Show(this, "Save this archive before exporting a definition. Dependencies left packed must resolve from the saved archive.", "Save required");
+            ThemedMessageBox.Show(this, "Save this archive before exporting a definition. Dependencies left packed must resolve from the saved archive.", "Save required");
             return;
         }
 
@@ -566,7 +566,7 @@ public sealed class AssetEditorControl : UserControl
         if (selected is null) return;
         if (IsDirty)
         {
-            MessageBox.Show(this, "Save this archive before deleting resources.", "Save required");
+            ThemedMessageBox.Show(this, "Save this archive before deleting resources.", "Save required");
             return;
         }
         AssetDeleteDialog.Show(this, [new(selected.AssetType, FilePath, selected.AssetName)], [],
@@ -652,7 +652,7 @@ public sealed class AssetEditorControl : UserControl
 
     private void ShowError(string message, Exception ex)
     {
-        MessageBox.Show(
+        ThemedMessageBox.Show(
             this,
             message + Environment.NewLine + Environment.NewLine + ex.Message,
             "AssetFiles Editor",

@@ -177,7 +177,7 @@ public sealed class SceneEditorControl : UserControl
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
-        DarkTheme.Apply(this);
+        ToolingAppearance.Apply(this);
         RefreshView();
     }
 
@@ -432,8 +432,8 @@ public sealed class SceneEditorControl : UserControl
         {
             DropDownStyle = ComboBoxStyle.DropDownList,
             Width = 75,
-            BackColor = DarkTheme.Background,
-            ForeColor = DarkTheme.Foreground,
+            BackColor = ToolingAppearance.Palette.Background,
+            ForeColor = ToolingAppearance.Palette.Foreground,
             FlatStyle = FlatStyle.Flat
         };
 
@@ -503,7 +503,7 @@ public sealed class SceneEditorControl : UserControl
             {
                 if (Document.IsDirty || Document.FilePath is null)
                 {
-                    if (MessageBox.Show(this, "Save and view the scene?", "View Scene", MessageBoxButtons.OKCancel) != DialogResult.OK ||
+                    if (ThemedMessageBox.Show(this, "Save and view the scene?", "View Scene", MessageBoxButtons.OKCancel) != DialogResult.OK ||
                         !await SaveRequestedAsync()) return;
                 }
                 if (Document.FilePath is { } savedPath && !Document.IsDirty)
@@ -511,7 +511,7 @@ public sealed class SceneEditorControl : UserControl
                 return;
             }
             SceneViewerLauncher.ViewSavedScene(Document, () =>
-                MessageBox.Show(this,
+                ThemedMessageBox.Show(this,
                     "This scene must be saved before viewing. Save and view the scene?",
                     "View Scene — saved content", MessageBoxButtons.OKCancel,
                     MessageBoxIcon.Question) == DialogResult.OK,
@@ -520,7 +520,7 @@ public sealed class SceneEditorControl : UserControl
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, ex.Message, "Unable to view scene",
+            ThemedMessageBox.Show(this, ex.Message, "Unable to view scene",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -1619,7 +1619,7 @@ public sealed class SceneEditorControl : UserControl
         NotSupportedException;
 
     private void ShowError(Exception ex) =>
-        MessageBox.Show(
+        ThemedMessageBox.Show(
             this,
             ex.Message,
             "GSCN editor",

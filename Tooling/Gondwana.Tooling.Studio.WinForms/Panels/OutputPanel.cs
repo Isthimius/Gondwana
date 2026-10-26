@@ -22,8 +22,8 @@ public sealed class OutputPanel : UserControl
         {
             Dock = DockStyle.Fill,
             ReadOnly = true,
-            BackColor = System.Drawing.Color.FromArgb(30, 30, 30),
-            ForeColor = System.Drawing.Color.FromArgb(220, 220, 220),
+            BackColor = ToolingAppearance.Palette.Background,
+            ForeColor = ToolingAppearance.Palette.Foreground,
             Font = new System.Drawing.Font("Consolas", 9f),
             ScrollBars = RichTextBoxScrollBars.Vertical,
             WordWrap = false

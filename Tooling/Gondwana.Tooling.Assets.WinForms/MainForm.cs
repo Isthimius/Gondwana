@@ -7,7 +7,7 @@ namespace Gondwana.Tooling.Assets.WinForms;
 /// <summary>Standalone asset-package editor shell managing document tabs, the workspace browser, and session persistence.</summary>
 public sealed class MainForm : Form
 {
-    private readonly VS2015DarkTheme _theme = new();
+    private readonly ThemeBase _theme = ToolingAppearance.CreateDockTheme();
     private readonly DockPanel _dock;
     private readonly DockLayoutPersistence _layout;
     private readonly WorkspaceSessionController _session = new();
@@ -81,6 +81,7 @@ public sealed class MainForm : Form
         Add(file, "E&xit", Keys.Alt | Keys.F4, Close);
 
         var view = new ToolStripMenuItem("&View");
+        view.DropDownItems.Add(ToolingAppearance.CreateThemeMenu(this));
         var outerWorkspaceItem = Add(
             view,
             "Asset files",
@@ -136,8 +137,8 @@ public sealed class MainForm : Form
         Controls.Add(_dock);
         Controls.Add(menu);
 
-        DarkTheme.Apply(this);
-        DarkTheme.Apply(_workspace);
+        ToolingAppearance.Apply(this);
+        ToolingAppearance.Apply(_workspace);
 
         Shown += (_, _) =>
         {
@@ -180,7 +181,7 @@ public sealed class MainForm : Form
         var item = new ToolStripMenuItem(label)
         {
             ShortcutKeys = shortcut,
-            ForeColor = DarkTheme.Foreground
+            ForeColor = ToolingAppearance.Palette.Foreground
         };
 
         item.Click += (_, _) => action();
@@ -296,7 +297,7 @@ public sealed class MainForm : Form
             return;
         }
 
-        var encrypt = MessageBox.Show(
+        var encrypt = ThemedMessageBox.Show(
             this,
             "Enable password protection for this asset file?",
             "Encryption",
@@ -314,7 +315,7 @@ public sealed class MainForm : Form
 
             if (string.IsNullOrWhiteSpace(password))
             {
-                MessageBox.Show(
+                ThemedMessageBox.Show(
                     this,
                     "A password is required when encryption is enabled.",
                     "Password Required",
@@ -379,7 +380,7 @@ public sealed class MainForm : Form
         string message,
         Exception ex)
     {
-        MessageBox.Show(
+        ThemedMessageBox.Show(
             this,
             message + Environment.NewLine + Environment.NewLine + ex.Message,
             "AssetFiles Editor",

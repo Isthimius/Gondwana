@@ -23,7 +23,7 @@ public static class AssetDeleteDialog
         {
             var plan = AssetDeletionPlan.Create(selectedScope, targets, archives, credential);
             if (!AssetOperationDialog.Review(owner, "Delete preview — changes will be saved to disk", plan.Preview, plan.ForceRequired ? "Delete anyway…" : "Delete")) return false;
-            if (plan.ForceRequired && MessageBox.Show(owner,
+            if (plan.ForceRequired && ThemedMessageBox.Show(owner,
                     $"Explicitly break all {plan.BlockingReferences.Count} surviving relationships listed in the preview? Referencing documents remain unchanged. Dependents will NOT be deleted.",
                     "Authorize broken references", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
                 return false;
@@ -31,6 +31,6 @@ public static class AssetDeleteDialog
             return true;
         }
         catch (OperationCanceledException) { return false; }
-        catch (Exception ex) { MessageBox.Show(owner, ex.Message, "Delete not completed", MessageBoxButtons.OK, MessageBoxIcon.Error); return false; }
+        catch (Exception ex) { ThemedMessageBox.Show(owner, ex.Message, "Delete not completed", MessageBoxButtons.OK, MessageBoxIcon.Error); return false; }
     }
 }

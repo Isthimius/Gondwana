@@ -49,7 +49,7 @@ internal sealed class DefinitionSelectionBar<T> : ToolStrip where T : class
                 _refresh();
                 RefreshMembers(this, EventArgs.Empty);
             }
-            catch (Exception ex) { MessageBox.Show(FindForm(), ex.Message, "Import definition", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
+            catch (Exception ex) { ThemedMessageBox.Show(FindForm(), ex.Message, "Import definition", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
         });
         Items.Add("Duplicate definition", null, (_, _) => Execute(duplicate));
         Items.Add("Remove definition", null, (_, _) => Execute(remove));
@@ -111,12 +111,13 @@ internal sealed class DefinitionSelectionBar<T> : ToolStrip where T : class
         dialog.Controls.Add(buttons);
         dialog.AcceptButton = accept;
         dialog.CancelButton = cancel;
+        Gondwana.Tooling.WinForms.Theming.ToolingAppearance.Apply(dialog);
         return dialog.ShowDialog(FindForm()) == DialogResult.OK ? list.CheckedIndices.Cast<int>().ToArray() : null;
     }
 
     private void Execute(Action action)
     {
         try { action(); _refresh(); RefreshMembers(this, EventArgs.Empty); }
-        catch (Exception ex) { MessageBox.Show(FindForm(), ex.Message, "Definition", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
+        catch (Exception ex) { ThemedMessageBox.Show(FindForm(), ex.Message, "Definition", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
     }
 }

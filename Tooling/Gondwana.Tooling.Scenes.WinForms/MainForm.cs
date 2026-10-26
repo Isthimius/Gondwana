@@ -6,7 +6,7 @@ namespace Gondwana.Tooling.Scenes.WinForms;
 
 internal sealed class MainForm : Form
 {
-    private readonly VS2015DarkTheme _theme = new();
+    private readonly ThemeBase _theme = ToolingAppearance.CreateDockTheme();
     private readonly DockPanel _dock;
     private readonly DockLayoutPersistence _layout;
     private readonly WorkspaceSessionController _session = new();
@@ -71,6 +71,7 @@ internal sealed class MainForm : Form
         Add(file, "E&xit", Keys.Alt | Keys.F4, Close);
 
         var view = new ToolStripMenuItem("&View");
+        view.DropDownItems.Add(ToolingAppearance.CreateThemeMenu(this));
         var workingDirectoryItem = Add(
             view,
             "Working directory",
@@ -165,8 +166,8 @@ internal sealed class MainForm : Form
             }
         };
 
-        DarkTheme.Apply(this);
-        DarkTheme.Apply(_workspace);
+        ToolingAppearance.Apply(this);
+        ToolingAppearance.Apply(_workspace);
 
         Shown += (_, _) =>
         {
@@ -218,7 +219,7 @@ internal sealed class MainForm : Form
         var item = new ToolStripMenuItem(label)
         {
             ShortcutKeys = shortcut,
-            ForeColor = DarkTheme.Foreground
+            ForeColor = ToolingAppearance.Palette.Foreground
         };
         item.Click += (_, _) => action();
         menu.DropDownItems.Add(item);
@@ -444,7 +445,7 @@ internal sealed class MainForm : Form
             bool allowInvalid = errors.Count > 0;
 
             if (allowInvalid &&
-                MessageBox.Show(
+                ThemedMessageBox.Show(
                     this,
                     "This definition has validation errors. See the Validation pane. Save this invalid definition anyway?",
                     "Validation failed",
@@ -472,7 +473,7 @@ internal sealed class MainForm : Form
     }
 
     private void ShowError(Exception ex) =>
-        MessageBox.Show(
+        ThemedMessageBox.Show(
             this,
             ex.Message,
             "GSCN editor",

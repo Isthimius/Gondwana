@@ -52,6 +52,8 @@ internal sealed class SpritePreviewControl : UserControl
         /// <summary>Creates a scrollable sprite canvas that refits on resize when fit mode is active.</summary>
         public PreviewCanvas()
         {
+            ToolingAppearance.PreserveColors(this);
+            ForeColor = Color.Gainsboro;
             Dock = DockStyle.Fill;
             DoubleBuffered = true;
             AutoScroll = true;

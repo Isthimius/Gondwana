@@ -11,7 +11,7 @@
     <AssemblyName>Gondwana.Studio.WinForms</AssemblyName>
   </PropertyGroup>
 
-  <!-- The outer shell uses the same DockPanelSuite dark theme as its hosted editors. -->
+  <!-- The outer shell uses the same DockPanelSuite theme family as its hosted editors. -->
   <ItemGroup>
     <Compile Include="../Shared/WinForms/WorkspaceSessionStore.cs" Link="Session/WorkspaceSessionStore.cs" />
     <Compile Include="../Shared/WinForms/WorkspaceSessionController.cs" Link="Session/WorkspaceSessionController.cs" />
@@ -31,4 +31,8 @@
     <ProjectReference Include="..\Gondwana.Tooling.Sprites.WinForms\Gondwana.Tooling.Sprites.WinForms.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../Shared/WinForms/Theming/Gondwana.Tooling.WinForms.Theming.csproj" />
+    <Using Include="Gondwana.Tooling.WinForms.Theming" />
+  </ItemGroup>
 </Project>

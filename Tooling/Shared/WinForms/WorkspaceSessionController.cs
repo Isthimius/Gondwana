@@ -145,11 +145,11 @@ internal sealed class WorkspaceSessionController
     {
         string[] items = messages.ToArray();
         if (items.Length > 0)
-            MessageBox.Show(owner, string.Join(Environment.NewLine, items), "Workspace restoration", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            ThemedMessageBox.Show(owner, string.Join(Environment.NewLine, items), "Workspace restoration", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     internal static void ShowPersistenceError(Form owner, string message) =>
-        MessageBox.Show(owner, message, "Workspace session preferences", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        ThemedMessageBox.Show(owner, message, "Workspace session preferences", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
     private void ReportPersistenceError(string message)
     {

@@ -143,7 +143,7 @@ public sealed class SpriteEditorControl : UserControl
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
-        DarkTheme.Apply(this);
+        ToolingAppearance.Apply(this);
     }
 
     private Control SourceToolbar(string title, string filter, Action<IEnumerable<string>> add)

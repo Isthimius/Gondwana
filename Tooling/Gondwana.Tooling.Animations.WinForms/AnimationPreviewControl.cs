@@ -44,11 +44,12 @@ internal sealed class AnimationPreviewControl : Control
     /// <summary>Creates a double-buffered animation preview with playback initially paused.</summary>
     public AnimationPreviewControl()
     {
+        ToolingAppearance.PreserveColors(this);
         Dock = DockStyle.Fill;
         DoubleBuffered = true;
         ResizeRedraw = true;
-        BackColor = DarkTheme.Background;
-        ForeColor = DarkTheme.Foreground;
+        BackColor = Color.FromArgb(30, 30, 30);
+        ForeColor = Color.Gainsboro;
         _timer.Tick += (_, _) => TickPreview();
     }
 

@@ -97,8 +97,8 @@ public sealed class AssetWorkspaceControl : UserControl
 
         _tree.ContextMenuStrip = context;
 
-        DarkTheme.Apply(this);
-        DarkTheme.Apply(context);
+        ToolingAppearance.Apply(this);
+        ToolingAppearance.Apply(context);
 
         RefreshDirectory();
     }

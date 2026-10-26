@@ -26,7 +26,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
     internal const string OpenFilter = "Gondwana authoring files|*.gaf;*.zip;*.gts;*.gani;*.gsnd;*.gscn;*.gspr|All files|*.*";
     private readonly OutputViewModel _output = new();
     private readonly StudioPluginHost _plugins;
-    private readonly VS2015DarkTheme _theme = new();
+    private readonly ThemeBase _theme = ToolingAppearance.CreateDockTheme();
     private readonly AssetPackageCatalog _packages = new();
     private readonly Dictionary<AssetLocation, StudioDockDocument> _paths = new(DocumentLocationComparer.Instance);
     private readonly List<StudioDockDocument> _documents = [];
@@ -61,8 +61,8 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         Size = new Size(1450, 950);
         MinimumSize = new Size(900, 650);
         StartPosition = FormStartPosition.CenterScreen;
-        BackColor = Color.FromArgb(37, 37, 38);
-        ForeColor = Color.Gainsboro;
+        BackColor = ToolingAppearance.Palette.Surface;
+        ForeColor = ToolingAppearance.Palette.Foreground;
         Workspace = new DockPanel
         {
             Dock = DockStyle.Fill,
@@ -88,12 +88,12 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         Workspace.ActiveDocumentChanged += (_, _) => SyncActiveDocumentSelection();
         AddTool("shell.working-directory", "Working directory", Browser, DockState.DockLeft);
         AddTool("shell.output", "Output", new OutputPanel(_output), DockState.DockBottom);
-        AskSave = document => MessageBox.Show(this, $"Save changes to {document.Caption}?",
+        AskSave = document => ThemedMessageBox.Show(this, $"Save changes to {document.Caption}?",
             "Unsaved changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
         SavePath = ChooseSavePath;
-        AllowInvalidSave = _ => MessageBox.Show(this, "This definition has validation errors. See its Validation pane. Save it anyway?",
+        AllowInvalidSave = _ => ThemedMessageBox.Show(this, "This definition has validation errors. See its Validation pane. Save it anyway?",
             "Validation failed", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes;
-        ReportError = ex => { _output.Log(ex.Message); MessageBox.Show(this, ex.Message, "Gondwana Studio", MessageBoxButtons.OK, MessageBoxIcon.Error); };
+        ReportError = ex => { _output.Log(ex.Message); ThemedMessageBox.Show(this, ex.Message, "Gondwana Studio", MessageBoxButtons.OK, MessageBoxIcon.Error); };
         AssetPassword = path => InputDialog.Show($"Password for {Path.GetFileName(path)}:", "Asset password", owner: this, password: true);
         _packages.PasswordProvider = path =>
         {
@@ -127,12 +127,13 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         _layout.Start();
         SetWorkingDirectory(_session.InitialWorkingDirectory(_projectFolder.Read()));
         Shown += (_, _) => RestoreSession();
+        ToolingAppearance.Apply(this);
         _output.Log("Gondwana Studio ready.");
     }
 
     private MenuStrip BuildMenu()
     {
-        var menu = new MenuStrip { Renderer = new DarkMenuRenderer(), BackColor = BackColor, ForeColor = ForeColor };
+        var menu = new MenuStrip();
         var file = new ToolStripMenuItem("&File");
         var create = new ToolStripMenuItem("&New");
         foreach (var (format, label) in new[] { ("gaf", "Asset file / GAF…"), ("gts", "Tilesheet / GTS"),
@@ -249,6 +250,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
     internal void RebuildViewMenu()
     {
         while (_view.DropDownItems.Count > 0) _view.DropDownItems[0].Dispose();
+        _view.DropDownItems.Add(ToolingAppearance.CreateThemeMenu(this));
         foreach (var tool in _tools)
             Add(_view, tool.Text, Keys.None, () => tool.Show(Workspace)).Checked = !tool.IsHidden;
         var iconSize = new ToolStripMenuItem("Icon Size");
@@ -322,7 +324,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
             using var dialog = new SaveFileDialog { Filter = "Asset files|*.gaf;*.zip", DefaultExt = "gaf", InitialDirectory = Browser.WorkingDirectory };
             if (dialog.ShowDialog(this) != DialogResult.OK) return;
             if (File.Exists(dialog.FileName)) { TryOpen(dialog.FileName); return; }
-            bool encrypt = MessageBox.Show(this, "Enable password protection?", "New asset file", MessageBoxButtons.YesNo) == DialogResult.Yes;
+            bool encrypt = ThemedMessageBox.Show(this, "Enable password protection?", "New asset file", MessageBoxButtons.YesNo) == DialogResult.Yes;
             string? password = encrypt ? InputDialog.Show("Password:", "New asset file", owner: this, password: true) : null;
             if (encrypt && string.IsNullOrWhiteSpace(password)) return;
             var document = NewDocument(format, dialog.FileName, password, encrypt);
@@ -531,13 +533,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
             AddTool(id, name, control, DockState.DockRight);
     }
 
-    private void ApplyTheme(Control control)
-    {
-        control.BackColor = Color.FromArgb(30, 30, 30);
-        control.ForeColor = Color.Gainsboro;
-        if (control is ToolStrip strip) _theme.ApplyTo(strip);
-        foreach (Control child in control.Controls) ApplyTheme(child);
-    }
+    private void ApplyTheme(Control control) => ToolingAppearance.Apply(control);
 
     /// <summary>Closes plugin project state and disposes layout persistence, documents, tools, package resources, and the theme.</summary>
     /// <param name="disposing">Whether to release managed shell resources.</param>
@@ -556,58 +552,4 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         base.Dispose(disposing);
         if (disposing) _theme.Dispose();
     }
-}
-/// <summary>
-/// Custom ToolStrip/MenuStrip renderer that applies dark colors.
-/// </summary>
-file sealed class DarkMenuRenderer : ToolStripProfessionalRenderer
-{
-    private static readonly System.Drawing.Color DarkBg = System.Drawing.Color.FromArgb(37, 37, 38);
-    private static readonly System.Drawing.Color DarkHighlight = System.Drawing.Color.FromArgb(62, 62, 64);
-
-    /// <summary>Creates the Studio menu renderer using the dark color table.</summary>
-    public DarkMenuRenderer() : base(new DarkColorTable())
-    {
-    }
-
-    /// <inheritdoc/>
-    protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
-    {
-        var g = e.Graphics;
-        var bounds = new System.Drawing.Rectangle(0, 0, e.Item.Width, e.Item.Height);
-        using var brush = new System.Drawing.SolidBrush(e.Item.Selected ? DarkHighlight : DarkBg);
-        g.FillRectangle(brush, bounds);
-    }
-
-    /// <inheritdoc/>
-    protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
-    {
-        e.TextColor = System.Drawing.Color.FromArgb(220, 220, 220);
-        base.OnRenderItemText(e);
-    }
-}
-
-/// <summary>
-/// Professional color table for dark menu styling.
-/// </summary>
-file sealed class DarkColorTable : ProfessionalColorTable
-{
-    private static readonly System.Drawing.Color DarkBg = System.Drawing.Color.FromArgb(37, 37, 38);
-
-    /// <inheritdoc/>
-    public override System.Drawing.Color MenuStripGradientBegin => DarkBg;
-    /// <inheritdoc/>
-    public override System.Drawing.Color MenuStripGradientEnd => DarkBg;
-    /// <inheritdoc/>
-    public override System.Drawing.Color ToolStripDropDownBackground => DarkBg;
-    /// <inheritdoc/>
-    public override System.Drawing.Color ImageMarginGradientBegin => DarkBg;
-    /// <inheritdoc/>
-    public override System.Drawing.Color ImageMarginGradientMiddle => DarkBg;
-    /// <inheritdoc/>
-    public override System.Drawing.Color ImageMarginGradientEnd => DarkBg;
-    /// <inheritdoc/>
-    public override System.Drawing.Color MenuBorder => System.Drawing.Color.FromArgb(60, 60, 60);
-    /// <inheritdoc/>
-    public override System.Drawing.Color MenuItemBorder => System.Drawing.Color.FromArgb(60, 60, 60);
 }

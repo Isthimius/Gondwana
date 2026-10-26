@@ -67,7 +67,7 @@ internal static class PasswordPrompt
         dialog.AcceptButton = ok;
         dialog.CancelButton = cancel;
 
-        DarkTheme.Apply(dialog);
+        ToolingAppearance.Apply(dialog);
 
         return dialog.ShowDialog(owner) == DialogResult.OK
             ? input.Text

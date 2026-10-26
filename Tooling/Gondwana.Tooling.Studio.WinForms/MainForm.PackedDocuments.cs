@@ -12,7 +12,7 @@ public sealed partial class MainForm
     private HashSet<string>? _loadingDependencies;
     internal Action? BeforeArchiveInstall { get; set; }
     internal Func<StudioDocument, bool> ConfirmReload { get; set; } = model =>
-        MessageBox.Show($"Discard unsaved changes and reload {model.Caption}?", "Reload document",
+        ThemedMessageBox.Show($"Discard unsaved changes and reload {model.Caption}?", "Reload document",
             MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes;
 
     private StudioArchiveSnapshot ReadArchive(string path, string? password = null)

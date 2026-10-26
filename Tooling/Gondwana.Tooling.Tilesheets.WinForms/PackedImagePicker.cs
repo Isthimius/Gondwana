@@ -33,7 +33,7 @@ public static class PackedImagePicker
         }
         catch (Exception ex)
         {
-            MessageBox.Show(
+            ThemedMessageBox.Show(
                 owner,
                 ex.Message,
                 "GAF image source",
@@ -44,7 +44,7 @@ public static class PackedImagePicker
 
         if (images.Count == 0)
         {
-            MessageBox.Show(
+            ThemedMessageBox.Show(
                 owner,
                 "The selected package does not contain any Image assets.",
                 "GAF image source",
@@ -100,7 +100,7 @@ public static class PackedImagePicker
         dialog.Controls.Add(buttons);
         dialog.AcceptButton = ok;
         dialog.CancelButton = cancel;
-        DarkTheme.Apply(dialog);
+        ToolingAppearance.Apply(dialog);
 
         list.DoubleClick += (_, _) =>
         {

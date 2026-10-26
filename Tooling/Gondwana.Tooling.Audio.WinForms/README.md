@@ -84,3 +84,7 @@ next launch**, holding Shift at launch, or `--empty-workspace` bypasses it.
 Unsaved contents and untitled documents are not recovered. Missing/invalid files
 are skipped with a startup summary. See [workspace session restoration](../Gondwana.Tooling.Studio.WinForms/README.md#workspace-session-restoration)
 for storage, close behavior, encrypted archives, and recovery details.
+
+## Appearance
+
+Choose **View → Theme → Dark, Dark Blue, or Light**. The choice is shared across Studio and all six standalone editors and takes effect on the next launch. Open documents remain untouched; restart normally after saving your work. See [shared tooling themes](../Shared/WinForms/Theming/README.md) for persistence, control coverage, and DockPanel Suite limitations.

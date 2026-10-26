@@ -44,7 +44,7 @@ internal sealed class AssetTypePickerForm : Form
         Controls.Add(description);
         Controls.Add(buttons);
         CancelButton = cancel;
-        DarkTheme.Apply(this);
+        ToolingAppearance.Apply(this);
     }
 
     private void Complete(bool dependencies)

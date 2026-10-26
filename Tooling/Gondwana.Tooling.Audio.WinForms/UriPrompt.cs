@@ -36,6 +36,6 @@ internal sealed class UriPrompt : Form
 
         AcceptButton = ok;
         CancelButton = cancel;
-        DarkTheme.Apply(this);
+        ToolingAppearance.Apply(this);
     }
 }

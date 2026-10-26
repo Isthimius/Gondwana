@@ -36,7 +36,7 @@ internal sealed class SceneEditorDocument : DockContent
                 e.Cancel = !ConfirmClose();
         };
 
-        DarkTheme.Apply(this);
+        ToolingAppearance.Apply(this);
         UpdateCaption();
     }
 
@@ -101,7 +101,7 @@ internal sealed class SceneEditorDocument : DockContent
         if (!Document.IsDirty)
             return true;
 
-        var result = MessageBox.Show(
+        var result = ThemedMessageBox.Show(
             this,
             $"Save changes to {Text.TrimEnd(' ', '*')}?",
             "Unsaved scene definition",

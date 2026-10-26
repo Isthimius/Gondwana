@@ -10,7 +10,7 @@ internal sealed class EditorDockWorkspace : UserControl
 {
     private readonly DockLayoutPersistence _layout;
     private readonly string _profile;
-    private readonly VS2015DarkTheme _theme = new();
+    private readonly ThemeBase _theme = ToolingAppearance.CreateDockTheme();
     private readonly List<DockContent> _contents = [];
     private readonly Dictionary<string, DockContent> _contentsByTitle =
         new(StringComparer.OrdinalIgnoreCase);
@@ -48,6 +48,7 @@ internal sealed class EditorDockWorkspace : UserControl
             DockAreas = DockAreas.Document
         };
         pane.Controls.AddRange(controls);
+        ToolingAppearance.Apply(pane);
         _contents.Add(pane);
         _contentsByTitle.Add(title, pane);
         return pane;
