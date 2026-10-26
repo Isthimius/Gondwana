@@ -139,7 +139,7 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         var fields = new PropertyFields();
         fields.Add("Name", "Definition", () => model.Name, v => { model.Name = v; changed(); }, "Logical tilesheet name referenced by animations, scenes, and sprites.");
         fields.Add("PremultiplyAlpha", "Definition", () => model.PremultiplyAlpha, v => { model.PremultiplyAlpha = v; changed(); },
-            "Stored independently of Mask. Runtime gives Mask precedence when enabled.");
+            "Multiply color channels by alpha when preparing tilesheet imagery for blending. Masking is configured separately and takes precedence at runtime when enabled.");
         fields.Add("Image.FilePath", "Image", () => model.Image?.FilePath ?? "", v => { document.SetImage(v); changed(); },
             "Relative to the GTS directory. Editing this switches to a loose image source.");
         fields.Add("Source.Kind", "Provenance (read only)", () => model.Source.Kind, description: "Read-only origin type for this tilesheet definition (loose or packed).");
