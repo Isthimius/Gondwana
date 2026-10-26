@@ -53,7 +53,7 @@ internal sealed class AnimationPropertyAdapter
     /// <summary>Gets or sets the default interval between animation frames, in seconds; a change marks the document dirty.</summary>
     [Category("Playback")]
     [DisplayName("Throttle time")]
-    [Description("Seconds between frame transitions.")]
+    [Description("Default delay in seconds between animation frames; a frame-specific duration overrides it. Smaller values play faster.")]
     public double ThrottleTime
     {
         get => _document.Definition.ThrottleTime;
