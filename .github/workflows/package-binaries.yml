@@ -3,7 +3,7 @@ name: Package binaries
 # Nightly verification of the exact Windows release layout, also reusable by tagged releases.
 on:
   schedule:
-    - cron: '30 12 * * *'
+    - cron: '30 0 * * *'
       timezone: 'America/New_York'
   workflow_dispatch:
   workflow_call:
