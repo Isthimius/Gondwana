@@ -63,6 +63,46 @@ public sealed class EditorInteractionTests
         Assert.Equal(.8f, viewport.Zoom, 3);
     });
 
+    /// <summary>Wheel, toolbar, and Fit actions stay synchronized with the zoom selector.</summary>
+    [Fact]
+    public void ZoomSelector_TracksWheelToolbarAndFit() => RunSta(() =>
+    {
+        var document = TilesheetDocument.Create(Path.Combine(AppContext.BaseDirectory, "assets"));
+        using var editor = Show(document);
+        using var bitmap = new Bitmap(1000, 1000);
+        var viewport = Field<ImageViewport>(editor.Editor, "_viewport");
+        viewport.Image = bitmap;
+        viewport.UpdateExtent();
+        var zoom = Descendants(editor).OfType<ToolStrip>()
+            .SelectMany(strip => strip.Items.OfType<ToolStripComboBox>())
+            .Single(combo => combo.Items.Contains("Fit"));
+        var buttons = Descendants(editor).OfType<ToolStrip>()
+            .SelectMany(strip => strip.Items.Cast<ToolStripItem>()).ToArray();
+        var point = new Point(20, 20);
+
+        Assert.Equal("100%", zoom.Text);
+        Assert.True(viewport.ZoomWithMouseWheel(point, 120, true));
+        Assert.Equal("125%", zoom.Text);
+        Assert.Equal(1.25f, viewport.Zoom, 3);
+        Assert.True(viewport.ZoomWithMouseWheel(point, -120, true));
+        Assert.Equal("100%", zoom.Text);
+        buttons.Single(item => item.Text == "−").PerformClick();
+        Assert.Equal("80%", zoom.Text);
+        Assert.Equal(.8f, viewport.Zoom, 3);
+        Assert.False(viewport.ZoomWithMouseWheel(point, 120, false));
+        Assert.Equal("80%", zoom.Text);
+
+        zoom.SelectedItem = "Fit";
+        Assert.Equal("Fit", zoom.Text);
+        Assert.True(viewport.ZoomWithMouseWheel(point, 120, true));
+        Assert.NotEqual("Fit", zoom.Text);
+        Assert.EndsWith("%", zoom.Text);
+        zoom.SelectedItem = "200%";
+        Assert.Equal(2f, viewport.Zoom);
+        Assert.Equal("200%", zoom.Text);
+        Assert.Equal(6, zoom.Items.Count);
+    });
+
     /// <summary>
     /// Verifies loaded zelda definition click selects frames in other regions.
     /// </summary>
