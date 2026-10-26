@@ -136,8 +136,8 @@ public sealed class TilesheetWorkspaceControl : UserControl
 
         _tree.ContextMenuStrip = context;
 
-        DarkTheme.Apply(this);
-        DarkTheme.Apply(context);
+        ToolingAppearance.Apply(this);
+        ToolingAppearance.Apply(context);
 
         RefreshDirectory();
     }

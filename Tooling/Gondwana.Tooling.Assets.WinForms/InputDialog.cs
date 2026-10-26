@@ -64,7 +64,7 @@ internal sealed class InputDialog : Form
 
         AcceptButton = okButton;
         CancelButton = cancelButton;
-        DarkTheme.Apply(this);
+        ToolingAppearance.Apply(this);
     }
 
     /// <summary>Shows a modal text-entry dialog and disposes it after closing.</summary>

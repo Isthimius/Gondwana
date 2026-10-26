@@ -100,7 +100,7 @@ public sealed class TilesheetEditorControl : UserControl
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
-        DarkTheme.Apply(this);
+        ToolingAppearance.Apply(this);
         _viewport.FrameSelected += (region, p) =>
         {
             // A GTS can describe disjoint grids. Select the clicked region before
@@ -139,8 +139,8 @@ public sealed class TilesheetEditorControl : UserControl
         {
             DropDownStyle = ComboBoxStyle.DropDownList,
             Width = 75,
-            BackColor = DarkTheme.Background,
-            ForeColor = DarkTheme.Foreground,
+            BackColor = ToolingAppearance.Palette.Background,
+            ForeColor = ToolingAppearance.Palette.Foreground,
             FlatStyle = FlatStyle.Flat
         };
         var zoomSelector = new ZoomSelector(zoom.ComboBox, requested =>
@@ -178,7 +178,7 @@ public sealed class TilesheetEditorControl : UserControl
                     try { _overlaySettings.SetColor(kind, dialog.Color); }
                     catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
                     {
-                        MessageBox.Show(this, $"Could not save overlay colors to {_overlaySettings.FilePath}.\n{ex.Message}",
+                        ThemedMessageBox.Show(this, $"Could not save overlay colors to {_overlaySettings.FilePath}.\n{ex.Message}",
                             "Overlay settings", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 });
@@ -214,7 +214,7 @@ public sealed class TilesheetEditorControl : UserControl
     {
         if (PackedImagePicker is null)
         {
-            MessageBox.Show(
+            ThemedMessageBox.Show(
                 this,
                 "This host has not provided a GAF image picker.",
                 "GAF image source",
@@ -262,7 +262,7 @@ public sealed class TilesheetEditorControl : UserControl
     private void RemoveRegion()
     {
         if (SelectedRegion is not { } region) return;
-        if (MessageBox.Show(this, $"Remove region '{region.Name}' and all its frame metadata?", "Remove region",
+        if (ThemedMessageBox.Show(this, $"Remove region '{region.Name}' and all its frame metadata?", "Remove region",
             MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
         Document.Definition.Regions.Remove(region);
         Document.MarkChanged();
@@ -272,7 +272,7 @@ public sealed class TilesheetEditorControl : UserControl
     private void PruneFrames()
     {
         if (SelectedRegion is not { } region) return;
-        if (MessageBox.Show(this, "Delete metadata outside this region's current grid? Restore the geometry instead to keep it.",
+        if (ThemedMessageBox.Show(this, "Delete metadata outside this region's current grid? Restore the geometry instead to keep it.",
             "Prune invalid frame metadata", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
         Document.RemoveOutOfGridMetadata(region);
         RefreshView();

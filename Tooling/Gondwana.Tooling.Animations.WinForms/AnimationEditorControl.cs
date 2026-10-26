@@ -222,7 +222,7 @@ public sealed class AnimationEditorControl : UserControl
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
-        DarkTheme.Apply(this);
+        ToolingAppearance.Apply(this);
         RefreshView();
     }
 
@@ -683,8 +683,8 @@ public sealed class AnimationEditorControl : UserControl
         {
             Width = 80,
             DropDownStyle = ComboBoxStyle.DropDownList,
-            BackColor = DarkTheme.Background,
-            ForeColor = DarkTheme.Foreground,
+            BackColor = ToolingAppearance.Palette.Background,
+            ForeColor = ToolingAppearance.Palette.Foreground,
             FlatStyle = FlatStyle.Flat
         };
 
@@ -1262,7 +1262,7 @@ public sealed class AnimationEditorControl : UserControl
     }
 
     private void ShowError(Exception ex) =>
-        MessageBox.Show(
+        ThemedMessageBox.Show(
             this,
             ex.Message,
             "GANI editor",

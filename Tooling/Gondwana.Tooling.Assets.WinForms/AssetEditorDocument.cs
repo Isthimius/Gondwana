@@ -36,7 +36,7 @@ internal sealed class AssetEditorDocument : DockContent
             IsDocumentOpen = isDocumentOpen ??
                 throw new ArgumentNullException(nameof(isDocumentOpen))
         };
-        AskSave = () => MessageBox.Show(this, $"Save changes to {Path.GetFileName(FilePath)}?",
+        AskSave = () => ThemedMessageBox.Show(this, $"Save changes to {Path.GetFileName(FilePath)}?",
             "Unsaved changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
         Text = Path.GetFileName(FilePath);
@@ -45,7 +45,7 @@ internal sealed class AssetEditorDocument : DockContent
         DockAreas = DockAreas.Document | DockAreas.Float;
 
         Controls.Add(Editor);
-        DarkTheme.Apply(this);
+        ToolingAppearance.Apply(this);
     }
 
     /// <summary>

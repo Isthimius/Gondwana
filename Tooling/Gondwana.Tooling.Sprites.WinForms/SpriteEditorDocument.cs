@@ -35,7 +35,7 @@ internal sealed class SpriteEditorDocument : DockContent
                 e.Cancel = !ConfirmClose();
         };
 
-        DarkTheme.Apply(this);
+        ToolingAppearance.Apply(this);
         UpdateCaption();
     }
 
@@ -100,7 +100,7 @@ internal sealed class SpriteEditorDocument : DockContent
         if (!Document.IsDirty)
             return true;
 
-        var result = MessageBox.Show(
+        var result = ThemedMessageBox.Show(
             this,
             $"Save changes to {Text.TrimEnd(' ', '*')}?",
             "Unsaved sprite definition",

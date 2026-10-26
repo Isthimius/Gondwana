@@ -82,7 +82,7 @@ public sealed class AudioEditorControl : UserControl
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
-        DarkTheme.Apply(this);
+        ToolingAppearance.Apply(this);
         RefreshView();
     }
 
@@ -297,7 +297,7 @@ public sealed class AudioEditorControl : UserControl
         };
 
     private void ShowError(Exception ex) =>
-        MessageBox.Show(
+        ThemedMessageBox.Show(
             this,
             ex.Message,
             "GSND editor",

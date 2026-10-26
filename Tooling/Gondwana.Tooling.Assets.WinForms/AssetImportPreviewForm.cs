@@ -29,6 +29,6 @@ internal sealed class AssetImportPreviewForm : Form
         Controls.Add(buttons);
         AcceptButton = apply;
         CancelButton = cancel;
-        DarkTheme.Apply(this);
+        ToolingAppearance.Apply(this);
     }
 }

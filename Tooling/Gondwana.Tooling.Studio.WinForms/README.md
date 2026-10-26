@@ -244,3 +244,7 @@ opens and preview reloads during the session. During startup restoration, a fail
 or canceled archive authentication skips the remaining documents from that archive
 without repeating the prompt. Other archives and loose documents still restore;
 explicitly opening the failed archive afterward allows another attempt.
+
+## Appearance
+
+Choose **View → Theme → Dark, Dark Blue, or Light**. The choice is shared across Studio and all six standalone editors and takes effect on the next launch. Open documents remain untouched; restart normally after saving your work. See [shared tooling themes](../Shared/WinForms/Theming/README.md) for persistence, control coverage, and DockPanel Suite limitations.

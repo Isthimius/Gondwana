@@ -36,8 +36,8 @@ public sealed class DirectoryPanel : UserControl
         Dock = DockStyle.Fill,
         HideSelection = false,
         ShowNodeToolTips = true,
-        BackColor = Color.FromArgb(30, 30, 30),
-        ForeColor = Color.Gainsboro
+        BackColor = ToolingAppearance.Palette.Background,
+        ForeColor = ToolingAppearance.Palette.Foreground
     };
 
     /// <summary>Gets the full path used as the browser root; initially the process current directory.</summary>
@@ -80,7 +80,7 @@ public sealed class DirectoryPanel : UserControl
             catch (Exception ex) when (ex is ExternalException or IOException or UnauthorizedAccessException)
             {
                 _log($"Cannot open {path} externally: {ex.Message}");
-                MessageBox.Show(this, ex.Message, "Open External", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ThemedMessageBox.Show(this, ex.Message, "Open External", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         });
 

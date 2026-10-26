@@ -45,6 +45,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     /// <summary>Creates a scrollable scene preview with a one-to-one initial scale.</summary>
     public ScenePreviewControl()
     {
+        ToolingAppearance.PreserveColors(this);
         DoubleBuffered = true;
         AutoScroll = true;
         Dock = DockStyle.Fill;

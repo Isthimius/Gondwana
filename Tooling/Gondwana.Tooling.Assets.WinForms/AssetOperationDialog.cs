@@ -41,7 +41,7 @@ internal static class AssetOperationDialog
         preview.Controls.Add(buttons);
         preview.CancelButton = cancel;
         preview.AcceptButton = cancel;
-        DarkTheme.Apply(preview);
+        ToolingAppearance.Apply(preview);
         return preview.ShowDialog(owner) == DialogResult.OK;
     }
 }

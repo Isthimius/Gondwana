@@ -50,6 +50,7 @@ internal static class InputDialog
 
         form.Controls.AddRange([label, textBox, ok, cancel]);
 
+        ToolingAppearance.Apply(form);
         return form.ShowDialog(owner) == DialogResult.OK ? textBox.Text : null;
     }
 }

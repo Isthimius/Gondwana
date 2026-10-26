@@ -36,10 +36,11 @@ internal sealed class ImageViewport : ScrollableControl, IMessageFilter
     /// <summary>Creates a scrollable, double-buffered image viewport at one-to-one magnification.</summary>
     public ImageViewport()
     {
+        ToolingAppearance.PreserveColors(this);
         DoubleBuffered = true;
         AutoScroll = true;
         Dock = DockStyle.Fill;
-        BackColor = DarkTheme.Background;
+        BackColor = Color.FromArgb(30, 30, 30);
         ResizeRedraw = true;
     }
 

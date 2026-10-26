@@ -51,7 +51,7 @@ internal sealed class EditorDocument : DockContent
                 e.Cancel = !ConfirmClose();
         };
 
-        DarkTheme.Apply(this);
+        ToolingAppearance.Apply(this);
         UpdateCaption();
     }
 
@@ -108,7 +108,7 @@ internal sealed class EditorDocument : DockContent
         if (!Document.IsDirty)
             return true;
 
-        var result = MessageBox.Show(
+        var result = ThemedMessageBox.Show(
             this,
             $"Save changes to {Text.TrimEnd(' ', '*')}?",
             "Unsaved definition",

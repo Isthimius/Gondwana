@@ -29,4 +29,8 @@
   <ItemGroup>
     <Compile Include="../Shared/WinForms/AuthoringPreviewImage.cs" Link="Authoring/AuthoringPreviewImage.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Shared/WinForms/Theming/Gondwana.Tooling.WinForms.Theming.csproj" />
+    <Using Include="Gondwana.Tooling.WinForms.Theming" />
+  </ItemGroup>
 </Project>

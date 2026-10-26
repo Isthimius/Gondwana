@@ -22,4 +22,8 @@
     <Compile Include="../Shared/WinForms/DefinitionImport.cs" Link="Editing/DefinitionImport.cs" />
     <Compile Include="..\Shared\WinForms\DefinitionSelectionBar.cs" Link="Docking\DefinitionSelectionBar.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Shared/WinForms/Theming/Gondwana.Tooling.WinForms.Theming.csproj" />
+    <Using Include="Gondwana.Tooling.WinForms.Theming" />
+  </ItemGroup>
 </Project>

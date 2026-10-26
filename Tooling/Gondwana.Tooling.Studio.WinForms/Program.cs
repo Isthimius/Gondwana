@@ -8,6 +8,7 @@ static class Program
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
         Application.SetHighDpiMode(HighDpiMode.SystemAware);
+        ToolingAppearance.Initialize();
         Application.Run(new MainForm());
     }
 }

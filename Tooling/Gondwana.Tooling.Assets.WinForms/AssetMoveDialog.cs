@@ -38,6 +38,6 @@ public static class AssetMoveDialog
             return true;
         }
         catch (OperationCanceledException) { return false; }
-        catch (Exception ex) { MessageBox.Show(owner, ex.Message, "Move not completed", MessageBoxButtons.OK, MessageBoxIcon.Error); return false; }
+        catch (Exception ex) { ThemedMessageBox.Show(owner, ex.Message, "Move not completed", MessageBoxButtons.OK, MessageBoxIcon.Error); return false; }
     }
 }

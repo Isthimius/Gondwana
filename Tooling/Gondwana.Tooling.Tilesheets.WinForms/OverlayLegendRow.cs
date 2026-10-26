@@ -46,7 +46,7 @@ internal sealed class OverlayLegendRow : UserControl
         layout.Controls.Add(_swatch, 1, 0);
         layout.Controls.Add(button, 2, 0);
         Controls.Add(layout);
-        DarkTheme.Apply(this);
+        ToolingAppearance.Apply(this);
         _settings.Changed += SettingsChanged;
         SettingsChanged(this, EventArgs.Empty);
     }
