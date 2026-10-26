@@ -95,6 +95,36 @@ public sealed class InteractionTests
         Assert.Empty(editor.UpdateValidation());
     });
 
+    /// <summary>Sprite preview canvas zoom, buttons, and Fit synchronize with the selector.</summary>
+    [Fact]
+    public void SpriteZoomSelector_TracksPreviewAndFit() => Sta(_ =>
+    {
+        using var host = new Form { ShowInTaskbar = false, Opacity = 0, Size = new Size(700, 500) };
+        using var preview = new SpritePreviewControl();
+        host.Controls.Add(preview);
+        host.Show();
+        Application.DoEvents();
+
+        var zoom = Descendants(preview).OfType<ComboBox>().Single();
+        var canvas = preview.Controls.OfType<UserControl>().Single();
+        var setZoom = canvas.GetType().GetMethod("SetZoom", BindingFlags.Instance | BindingFlags.Public)!;
+
+        Assert.Equal("100%", zoom.Text);
+        setZoom.Invoke(canvas, [1.25f]); // Ctrl+wheel and toolbar use this same path.
+        Assert.Equal("125%", zoom.Text);
+        Assert.Equal(1.25f, preview.Zoom, 3);
+        Descendants(preview).OfType<Button>().Single(button => button.Text == "−").PerformClick();
+        Assert.Equal("100%", zoom.Text);
+        zoom.SelectedItem = "Fit";
+        Assert.Equal("Fit", zoom.Text);
+        setZoom.Invoke(canvas, [.8f]);
+        Assert.Equal("80%", zoom.Text);
+        zoom.SelectedItem = "200%";
+        Assert.Equal(2f, preview.Zoom);
+        Assert.Equal("200%", zoom.Text);
+        Assert.Equal(6, zoom.Items.Count);
+    });
+
     /// <summary>
     /// Verifies GANI sources and sprite assignments match animation keys without regard to case.
     /// </summary>

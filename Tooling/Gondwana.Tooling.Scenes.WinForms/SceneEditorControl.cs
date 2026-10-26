@@ -437,22 +437,12 @@ public sealed class SceneEditorControl : UserControl
             FlatStyle = FlatStyle.Flat
         };
 
-        zoom.Items.AddRange(
-            ["25%", "50%", "100%", "200%", "400%", "Fit"]);
-        zoom.SelectedIndex = 2;
-        zoom.SelectedIndexChanged += (_, _) =>
+        var zoomSelector = new ZoomSelector(zoom.ComboBox, requested =>
         {
-            if (zoom.SelectedIndex == 5)
-            {
-                _preview.Fit();
-            }
-            else
-            {
-                _preview.SetZoom(
-                    new[] { .25f, .5f, 1f, 2f, 4f }[
-                        zoom.SelectedIndex]);
-            }
-        };
+            if (requested is { } value) _preview.SetZoom(value);
+            else _preview.Fit();
+        });
+        _preview.ZoomChanged += () => zoomSelector.Show(_preview.Zoom, _preview.IsFit);
 
         bar.Items.Add(zoom);
         bar.Items.Add("+", null, (_, _) => _preview.ZoomIn());
