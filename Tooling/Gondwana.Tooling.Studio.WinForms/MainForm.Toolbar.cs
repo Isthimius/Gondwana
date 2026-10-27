@@ -26,12 +26,15 @@ public sealed partial class MainForm
             Dock = DockStyle.Top,
             GripStyle = ToolStripGripStyle.Hidden,
             ImageScalingSize = new Size(24, 24),
-            ShowItemToolTips = true
+            // Enable native ToolStrip tooltips after theme application; the shared theme
+            // otherwise replaces them with mouse-move tooltips on the whole strip.
+            ShowItemToolTips = false
         };
 
         var create = new ToolStripDropDownButton
         {
             Name = "New",
+            AutoToolTip = false,
             AutoSize = false,
             Size = ToolbarButtonSize,
             Image = Glyph("new"),
@@ -90,6 +93,7 @@ public sealed partial class MainForm
         var button = new ToolStripButton
         {
             Name = name,
+            AutoToolTip = false,
             AutoSize = false,
             Size = ToolbarButtonSize,
             Image = Glyph(glyph),
