@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Drawing;
 using System.Reflection;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Physics.Collisions;
@@ -80,7 +81,26 @@ internal sealed class PropertyFields : CustomTypeDescriptor
                 nameof(TilesheetRegionDefinition.CollisionAdjust) or nameof(TilesheetRegionDefinition.CollisionType) => "Collision",
                 _ => null
             } : null;
-            if (property.PropertyType == typeof(string) || property.PropertyType.IsPrimitive || property.PropertyType.IsEnum)
+            if (model is TilesheetRegionDefinition region && property.Name == nameof(TilesheetRegionDefinition.Area))
+            {
+                // The editor exposes the region's origin separately, while Area expands into Width and Height.
+                // Editing a dimension must not reset the source-image position of the rectangle.
+                Add("Area", "Geometry", () => region.Area.Size, size =>
+                {
+                    var area = region.Area;
+                    area.Size = size;
+                    region.Area = area;
+                    changed();
+                }, "Width and height of the region in source-image pixels. Use Area.X and Area.Y to move it.");
+                foreach (var child in property.PropertyType.GetProperties().Where(p => p.Name is nameof(Rectangle.X) or nameof(Rectangle.Y)))
+                    AddReflected(model, [property, child], changed, category);
+            }
+            else if (model is TilesheetRegionDefinition && property.Name == nameof(TilesheetRegionDefinition.TileSize))
+            {
+                // SizeConverter supplies the PropertyGrid's expandable Width and Height children.
+                AddReflected(model, [property], changed, category);
+            }
+            else if (property.PropertyType == typeof(string) || property.PropertyType.IsPrimitive || property.PropertyType.IsEnum)
                 AddReflected(model, [property], changed, category);
             else if (property.PropertyType.IsValueType)
                 foreach (var child in property.PropertyType.GetProperties().Where(p => p.CanWrite && p.PropertyType == typeof(int)))
@@ -217,7 +237,7 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     }
 
     private sealed class ReflectedField(string name, string category, Type type, Func<object?> get, Action<object?> set, string description)
-        : PropertyDescriptor(name, [new CategoryAttribute(category), new DisplayNameAttribute(name.Split('.').Last()), new DescriptionAttribute(description)])
+        : PropertyDescriptor(name, [new CategoryAttribute(category), new DisplayNameAttribute(category == "Geometry" ? name : name.Split('.').Last()), new DescriptionAttribute(description)])
     {
         /// <inheritdoc/>
         public override Type ComponentType => typeof(PropertyFields);
