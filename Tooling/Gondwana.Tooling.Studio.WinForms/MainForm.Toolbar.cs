@@ -6,7 +6,7 @@ namespace Gondwana.Tooling.Studio.WinForms;
 /// <summary>Studio-wide commands only; individual editors retain their specialized toolbars.</summary>
 public sealed partial class MainForm
 {
-    private static readonly Size ToolbarButtonSize = new(64, 64);
+    private static readonly Size ToolbarButtonSize = new(48, 48);
     private readonly List<Image> _toolbarIcons = [];
     private ToolStripMenuItem _saveAllMenuItem = null!;
     private ToolStripButton _saveButton = null!;
