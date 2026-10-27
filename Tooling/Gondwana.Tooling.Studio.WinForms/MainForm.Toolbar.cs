@@ -1,6 +1,5 @@
 using System.Drawing.Drawing2D;
 using Gondwana.Tooling.Scenes.WinForms;
-using Gondwana.Tooling.WinForms.Theming;
 
 namespace Gondwana.Tooling.Studio.WinForms;
 
@@ -107,10 +106,13 @@ public sealed partial class MainForm
         bool hasActive = active is { IsDisposed: false };
         _saveButton.Enabled = hasActive;
         _previewButton.Enabled = hasActive && active!.Document.Editor is SceneEditorControl;
-        _validateButton.Enabled = hasActive;
-        bool hasChanges = _documents.Any(document => !document.IsDisposed && document.Document.Dirty());
-        _saveAllButton.Enabled = !_savingAll && hasChanges;
-        _saveAllMenuItem.Enabled = !_savingAll && hasChanges;
+        // Archive editors have no definition validator or Validation pane.
+        _validateButton.Enabled = hasActive && active!.Document.Kind != "asset";
+        // A focused PropertyGrid can have uncommitted edits while its model still reports clean.
+        // Keep Save All invokable with open documents; its handler commits edits before checking dirty state.
+        bool hasDocuments = _documents.Any(document => !document.IsDisposed);
+        _saveAllButton.Enabled = !_savingAll && hasDocuments;
+        _saveAllMenuItem.Enabled = !_savingAll && hasDocuments;
     }
 
     /// <summary>Saves modified documents sequentially, stopping at the first cancelled or failed save.</summary>
@@ -122,7 +124,10 @@ public sealed partial class MainForm
         UpdateToolbarState();
         try
         {
-            foreach (var document in _documents.ToArray())
+            // The GAF editor owns a buffered snapshot. Saving it before any packed child
+            // lets subsequent entry saves rebase against the updated archive, while
+            // SaveArchive still detects genuine same-entry conflicts.
+            foreach (var document in _documents.ToArray().OrderBy(item => item.Document.Kind == "asset" ? 0 : 1))
             {
                 if (document.IsDisposed) continue;
                 // Commit pending PropertyGrid/text edits before deciding that a document is clean.
@@ -147,7 +152,7 @@ public sealed partial class MainForm
     /// <returns>Validation errors, or null when no active document exists or pending edits cannot be committed.</returns>
     internal IReadOnlyList<string>? ValidateActiveDocument()
     {
-        if (ActiveDocument is not { IsDisposed: false } document) return null;
+        if (ActiveDocument is not { IsDisposed: false } document || document.Document.Kind == "asset") return null;
         try
         {
             if (!document.Document.CommitEdits()) return null;
