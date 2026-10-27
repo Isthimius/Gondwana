@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Reflection;
 using Gondwana.Assets;
 using Gondwana.Tooling.Studio.WinForms.Panels;
-using Gondwana.Tooling.Studio.WinForms.Services;
+using Gondwana.Tooling.WinForms;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
@@ -238,7 +238,7 @@ public sealed partial class CompositionTests
         panel.Tree.TopNode = root;
         var pending = panel.PendingArchiveLoads;
         panel.ArchiveOpened = _ => throw new InvalidOperationException("Resizing must not read archives.");
-        foreach (var size in new[] { DirectoryIconSize.Medium, DirectoryIconSize.Large, DirectoryIconSize.Small })
+        foreach (var size in new[] { NavigationIconSize.Medium, NavigationIconSize.Large, NavigationIconSize.Small })
         {
             var previous = panel.Tree.ImageList!;
             bool disposed = false;
@@ -251,7 +251,7 @@ public sealed partial class CompositionTests
             Assert.Same(root, panel.Tree.TopNode);
             Assert.True(archive.IsExpanded);
             Assert.Equal((int)Math.Round((int)size * panel.Tree.DeviceDpi / 96d), panel.Tree.ImageList!.ImageSize.Width);
-            Assert.Equal(size == DirectoryIconSize.Small ? 9f : size == DirectoryIconSize.Medium ? 11f : 13f, panel.Tree.Font.SizeInPoints);
+            Assert.Equal(size == NavigationIconSize.Small ? 9f : size == NavigationIconSize.Medium ? 11f : 13f, panel.Tree.Font.SizeInPoints);
             Assert.True(panel.Tree.ItemHeight > panel.Tree.ImageList.ImageSize.Height);
             Assert.Equal(8, panel.Tree.ImageList.Images.Count);
             foreach (var key in panel.Tree.ImageList.Images.Keys.Cast<string>())
@@ -262,7 +262,7 @@ public sealed partial class CompositionTests
             }
         }
         archive.Collapse();
-        panel.ApplyIconSize(DirectoryIconSize.Large);
+        panel.ApplyIconSize(NavigationIconSize.Large);
         Assert.False(archive.IsExpanded);
         var images = panel.Tree.ImageList!;
         bool finalDisposed = false;
@@ -270,7 +270,7 @@ public sealed partial class CompositionTests
         panel.Dispose();
         Assert.True(finalDisposed);
         using var invalid = new DirectoryPanel(_ => { });
-        Assert.Throws<ArgumentOutOfRangeException>(() => invalid.ApplyIconSize((DirectoryIconSize)123));
+        Assert.Throws<ArgumentOutOfRangeException>(() => invalid.ApplyIconSize((NavigationIconSize)123));
     });
 
     [Theory]
@@ -279,11 +279,11 @@ public sealed partial class CompositionTests
     [InlineData(64)]
     public void StudioIconMenuPersistsImmediatelyAndSurvivesLayoutReset(int pixels) => RunSta(directory =>
     {
-        var size = (DirectoryIconSize)pixels;
-        var store = new DirectoryPreferenceStore();
+        var size = (NavigationIconSize)pixels;
+        var store = new NavigationPreferenceStore();
         using (var first = Host(directory))
         {
-            Assert.Equal(DirectoryIconSize.Small, first.Browser.IconSize);
+            Assert.Equal(NavigationIconSize.Small, first.Browser.IconSize);
             first.RebuildViewMenu();
             var view = (ToolStripMenuItem)first.MainMenuStrip!.Items[1];
             var menu = view.DropDownItems.OfType<ToolStripMenuItem>().Single(i => i.Text == "Icon Size");
@@ -304,7 +304,7 @@ public sealed partial class CompositionTests
         }
         using var restored = Host(directory);
         Assert.Equal(size, restored.Browser.IconSize);
-        Assert.Equal(DirectoryIconSize.Small, new DirectoryPreferenceStore("another-application").Read());
+        Assert.Equal(size, new NavigationPreferenceStore().Read());
     });
 
     [Theory]
@@ -314,17 +314,18 @@ public sealed partial class CompositionTests
     [InlineData("unreadable")]
     public void StudioFallsBackToSmallForBadIconPreferences(string fault) => RunSta(directory =>
     {
-        var store = new DirectoryPreferenceStore();
+        var store = new NavigationPreferenceStore();
         Directory.CreateDirectory(Path.GetDirectoryName(store.FilePath)!);
         if (fault is "invalid" or "undefined") File.WriteAllText(store.FilePath, fault == "invalid" ? "broken" : "128");
         if (fault == "unreadable") Directory.CreateDirectory(store.FilePath);
         using var studio = Host(directory);
-        Assert.Equal(DirectoryIconSize.Small, studio.Browser.IconSize);
+        Assert.Equal(NavigationIconSize.Small, studio.Browser.IconSize);
         studio.RebuildViewMenu();
         var view = (ToolStripMenuItem)studio.MainMenuStrip!.Items[1];
         var menu = view.DropDownItems.OfType<ToolStripMenuItem>().Single(i => i.Text == "Icon Size");
+        if (fault == "unreadable") Directory.Delete(store.FilePath);
         menu.DropDownItems.Cast<ToolStripMenuItem>().Single(i => i.Text == "Large").PerformClick();
-        Assert.Equal(DirectoryIconSize.Large, studio.Browser.IconSize);
+        Assert.Equal(NavigationIconSize.Large, studio.Browser.IconSize);
         Assert.Empty(Directory.GetFiles(Path.GetDirectoryName(store.FilePath)!, "*.tmp"));
     });
 
@@ -394,7 +395,7 @@ public sealed partial class CompositionTests
 
         panel.RefreshDirectory();
         Assert.Equal(beach, panel.Tree.SelectedNode?.Tag);
-        panel.ApplyIconSize(DirectoryIconSize.Medium);
+        panel.ApplyIconSize(NavigationIconSize.Medium);
         Assert.Equal(beach, panel.Tree.SelectedNode?.Tag);
 
         // Outside the current root and untitled documents must not leave stale highlights.

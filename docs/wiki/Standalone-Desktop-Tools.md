@@ -85,6 +85,24 @@ Editor layout preferences are scoped by entry application, so a standalone edito
 
 These preferences affect only UI layout. They do not alter native definitions or EngineState.
 
+## Navigation sizing
+
+All six standalone editors and Studio provide **View → Icon Size → Small / Medium / Large**.
+Small uses 16-pixel icons and 9-point text; Medium uses 32-pixel icons and 11-point
+text; Large uses 64-pixel icons and 13-point text. Icon dimensions and navigation
+row heights adapt to display DPI.
+
+The choice applies immediately to working-directory and editor navigation trees.
+It preserves tree selection and expanded nodes. Editor canvases, property grids,
+editing grids/lists, toolbars, and document tabs retain their existing sizing.
+Trees without icons remain text-only.
+
+One per-user preference is shared by Studio and all six standalone editors.
+Studio's previous Working Directory choice is migrated automatically. Existing
+defaults remain until a preference is saved. Newly opened tools use that preference;
+already running tools pick up another tool's choice when activated or when opening
+the Icon Size submenu. Resetting a docking layout does not reset this preference.
+
 ## Scene Viewer
 
 `Gondwana.Tooling.SceneViewer.WinForms` is a separate utility rather than another definition editor.

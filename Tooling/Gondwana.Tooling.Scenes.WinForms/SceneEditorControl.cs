@@ -177,6 +177,8 @@ public sealed class SceneEditorControl : UserControl
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
+        NavigationSizing.Attach(_structure);
+        NavigationSizing.Attach(_sourceTree);
         ToolingAppearance.Apply(this);
         RefreshView();
     }
@@ -1324,6 +1326,7 @@ public sealed class SceneEditorControl : UserControl
         }
         finally
         {
+            NavigationSizing.RefreshImages(_sourceTree);
             _sourceTree.EndUpdate();
         }
     }
@@ -1396,6 +1399,7 @@ public sealed class SceneEditorControl : UserControl
 
             case RowTag row:
                 PopulateFrames(node, row);
+                NavigationSizing.RefreshImages(_sourceTree);
                 break;
         }
     }
@@ -1513,6 +1517,7 @@ public sealed class SceneEditorControl : UserControl
                 GraphicsUnit.Pixel);
         }
 
+        _ = _sourceFrameImages.Handle;
         _sourceFrameImages.Images.Add(thumbnail);
         thumbnail.Dispose();
         return _sourceFrameImages.Images.Count - 1;

@@ -72,6 +72,7 @@ internal sealed class MainForm : Form
 
         var view = new ToolStripMenuItem("&View");
         view.DropDownItems.Add(ToolingAppearance.CreateThemeMenu(this));
+        view.DropDownItems.Add(NavigationSizing.CreateMenu(this));
         var outerWorkspaceItem = Add(
             view,
             "Working directory",
@@ -209,6 +210,7 @@ internal sealed class MainForm : Form
 
         _tree.ContextMenuStrip = context;
 
+        NavigationSizing.Attach(_tree);
         ToolingAppearance.Apply(this);
         ToolingAppearance.Apply(_workspace);
         ToolingAppearance.Apply(context);

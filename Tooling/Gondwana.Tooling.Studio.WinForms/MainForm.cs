@@ -35,7 +35,6 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
     private readonly DockLayoutPersistence _layout;
     private readonly WorkspaceSessionController _session = new();
     private readonly ProjectFolderStore _projectFolder = new();
-    private readonly DirectoryPreferenceStore _directoryPreferences = new();
     private bool _disposed;
     private bool _shutdownPending;
     private bool _shutdownApproved;
@@ -75,7 +74,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         _layout = new DockLayoutPersistence(Workspace, "shell");
         _plugins = new StudioPluginHost(_output.Log);
         Browser = new DirectoryPanel(_output.Log);
-        Browser.ApplyIconSize(_directoryPreferences.Read());
+        NavigationSizing.SynchronizeOnActivation(this);
         Browser.KnownArchivePassword = path => _archivePasswords.GetValueOrDefault(Path.GetFullPath(path));
         Browser.FileActivated += path => TryOpen(path);
         Browser.PackedFileActivated += packed =>
@@ -253,16 +252,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         _view.DropDownItems.Add(ToolingAppearance.CreateThemeMenu(this));
         foreach (var tool in _tools)
             Add(_view, tool.Text, Keys.None, () => tool.Show(Workspace)).Checked = !tool.IsHidden;
-        var iconSize = new ToolStripMenuItem("Icon Size");
-        _view.DropDownItems.Add(iconSize);
-        foreach (var size in Enum.GetValues<DirectoryIconSize>())
-            Add(iconSize, size.ToString(), Keys.None, () =>
-            {
-                Browser.ApplyIconSize(size);
-                _directoryPreferences.Write(size);
-                foreach (ToolStripMenuItem item in iconSize.DropDownItems)
-                    item.Checked = item.Text == size.ToString();
-            }).Checked = Browser.IconSize == size;
+        _view.DropDownItems.Add(NavigationSizing.CreateMenu(this));
         Add(_view, "Reset application layout", Keys.None, _layout.Reset);
         if (ActiveDocument is not { } active) return;
         _view.DropDownItems.Add(new ToolStripSeparator());

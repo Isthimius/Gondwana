@@ -1,5 +1,6 @@
 using Gondwana.Tooling.Tilesheets.Editing;
 using Gondwana.Tooling.Tilesheets.Sources;
+using Gondwana.Tooling.WinForms;
 
 namespace Gondwana.Tooling.Tilesheets.WinForms;
 
@@ -136,6 +137,7 @@ public sealed class TilesheetWorkspaceControl : UserControl
 
         _tree.ContextMenuStrip = context;
 
+        NavigationSizing.Attach(_tree);
         ToolingAppearance.Apply(this);
         ToolingAppearance.Apply(context);
 

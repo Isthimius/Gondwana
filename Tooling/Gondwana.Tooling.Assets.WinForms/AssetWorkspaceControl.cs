@@ -1,3 +1,4 @@
+using Gondwana.Tooling.WinForms;
 namespace Gondwana.Tooling.Assets.WinForms;
 
 /// <summary>
@@ -97,6 +98,7 @@ public sealed class AssetWorkspaceControl : UserControl
 
         _tree.ContextMenuStrip = context;
 
+        NavigationSizing.Attach(_tree);
         ToolingAppearance.Apply(this);
         ToolingAppearance.Apply(context);
 

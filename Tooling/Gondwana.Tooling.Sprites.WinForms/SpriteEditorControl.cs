@@ -143,6 +143,8 @@ public sealed class SpriteEditorControl : UserControl
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
+        NavigationSizing.Attach(_scenes);
+        NavigationSizing.Attach(_frames);
         ToolingAppearance.Apply(this);
     }
 
@@ -171,6 +173,7 @@ public sealed class SpriteEditorControl : UserControl
         _sources.Clear(); _sceneDefinitions.Clear(); _animationDefinitions.Clear(); _sourceWarnings.Clear();
         _loadedScenePaths.Clear(); _loadedTilesheetPaths.Clear(); _loadedAnimationPaths.Clear();
         _scenes.Nodes.Clear(); _frames.Nodes.Clear(); _thumbnails.Images.Clear();
+        NavigationSizing.RefreshImages(_frames);
         LoadSources(); RefreshEntries();
     }
 
@@ -316,12 +319,14 @@ public sealed class SpriteEditorControl : UserControl
                         using var thumbnail = new Bitmap(32, 32);
                         using var graphics = Graphics.FromImage(thumbnail);
                         graphics.DrawImage(image, new Rectangle(0, 0, 32, 32), SpriteTilesheetSource.FrameBounds(region, x, y), GraphicsUnit.Pixel);
+                        _ = _thumbnails.Handle;
                         _thumbnails.Images.Add(thumbnail);
                         frameNode.ImageIndex = frameNode.SelectedImageIndex = _thumbnails.Images.Count - 1;
                     }
                     node.Nodes.Add(frameNode);
                 }
         }
+        NavigationSizing.RefreshImages(_frames);
         root.Expand();
     }
 
