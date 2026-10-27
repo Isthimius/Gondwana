@@ -1,5 +1,4 @@
 using System.Drawing.Drawing2D;
-using Gondwana.Tooling.WinForms.Theming;
 
 namespace Gondwana.Tooling.WinForms;
 
