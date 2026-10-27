@@ -1,4 +1,4 @@
-using Gondwana.Tooling.Studio.WinForms.Documents;
+using Gondwana.Tooling.Audio.WinForms;
 
 namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
@@ -63,6 +63,11 @@ public sealed partial class CompositionTests
         Assert.False(saveAll.Enabled);
         Assert.True(AwaitUi(studio.SaveAllDocuments()));
 
+        var editor = Assert.IsType<AudioEditorControl>(sound.Document.Editor);
+        editor.Document.MarkChanged();
+        Assert.True(saveAll.Enabled);
+        Assert.True(AwaitUi(studio.SaveAllDocuments()));
+        Assert.False(saveAll.Enabled);
     });
 
     [Fact]
