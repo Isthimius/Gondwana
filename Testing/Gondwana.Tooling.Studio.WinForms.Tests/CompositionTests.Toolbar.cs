@@ -48,7 +48,7 @@ public sealed partial class CompositionTests
     });
 
     [Fact]
-    public void SaveAllPersistsAllDirtyDocumentsAndDisablesItsCommandWhenClean() => RunSta(directory =>
+    public void SaveAllPersistsDirtyDocumentsAndRemainsAvailableForPendingEdits() => RunSta(directory =>
     {
         using var studio = Host(directory);
         var animation = studio.NewDocument("gani");
