@@ -16,6 +16,11 @@ public sealed partial class CompositionTests
         var bar = studio.StudioToolbar;
         Assert.Equal(DockStyle.Top, bar.Dock);
         Assert.Equal(new Size(24, 24), bar.ImageScalingSize);
+        Assert.All(bar.Items.OfType<ToolStripButton>(), item =>
+        {
+            Assert.False(item.AutoSize);
+            Assert.Equal(new Size(32, 32), item.Size);
+        });
         Assert.Equal(3, bar.Items.OfType<ToolStripSeparator>().Count());
         Assert.Equal(
             new[] { "Open", "Save", "SaveAll", "WorkingDirectory", "Refresh", "Preview", "Validate" },
@@ -23,6 +28,8 @@ public sealed partial class CompositionTests
 
         var create = Assert.Single(bar.Items.OfType<ToolStripDropDownButton>());
         Assert.Equal("New", create.Name);
+        Assert.False(create.AutoSize);
+        Assert.Equal(new Size(32, 32), create.Size);
         Assert.Equal(MainForm.NewFileFormats.Select(format => format.Label),
             create.DropDownItems.OfType<ToolStripMenuItem>().Select(item => item.Text));
 
