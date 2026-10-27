@@ -135,6 +135,8 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         SetWorkingDirectory(_session.InitialWorkingDirectory(_projectFolder.Read()));
         Shown += (_, _) => RestoreSession();
         ToolingAppearance.Apply(this);
+        // Restore the ToolStrip's native hover tooltips after appearance is applied.
+        StudioToolbar.ShowItemToolTips = true;
         _output.Log("Gondwana Studio ready.");
     }
 
