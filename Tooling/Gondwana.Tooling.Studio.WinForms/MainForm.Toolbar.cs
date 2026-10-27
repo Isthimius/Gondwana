@@ -6,6 +6,7 @@ namespace Gondwana.Tooling.Studio.WinForms;
 /// <summary>Studio-wide commands only; individual editors retain their specialized toolbars.</summary>
 public sealed partial class MainForm
 {
+    private static readonly Size ToolbarButtonSize = new(32, 32);
     private readonly List<Image> _toolbarIcons = [];
     private ToolStripMenuItem _saveAllMenuItem = null!;
     private ToolStripButton _saveButton = null!;
@@ -31,6 +32,8 @@ public sealed partial class MainForm
         var create = new ToolStripDropDownButton
         {
             Name = "New",
+            AutoSize = false,
+            Size = ToolbarButtonSize,
             Image = Glyph("new"),
             DisplayStyle = ToolStripItemDisplayStyle.Image,
             ToolTipText = "New document (choose a Gondwana format)",
@@ -87,6 +90,8 @@ public sealed partial class MainForm
         var button = new ToolStripButton
         {
             Name = name,
+            AutoSize = false,
+            Size = ToolbarButtonSize,
             Image = Glyph(glyph),
             DisplayStyle = ToolStripItemDisplayStyle.Image,
             ToolTipText = tooltip,
