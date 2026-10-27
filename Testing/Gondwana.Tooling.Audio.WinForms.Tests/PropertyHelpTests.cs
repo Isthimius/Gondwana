@@ -17,4 +17,19 @@ public sealed class PropertyHelpTests
         }
         Assert.Contains("-1", TypeDescriptor.GetProperties(typeof(AudioResourceDefinition))[nameof(AudioResourceDefinition.Pan)]!.Description);
     }
+
+    [Fact]
+    public void AudioPropertiesAreGroupedByPurpose()
+    {
+        var properties = TypeDescriptor.GetProperties(new AudioResourceDefinition());
+        foreach (PropertyDescriptor property in properties)
+            if (property.IsBrowsable)
+                Assert.NotEqual("Misc", property.Category);
+
+        Assert.Equal("Identity", properties[nameof(AudioResourceDefinition.Key)]!.Category);
+        Assert.Equal("Source", properties[nameof(AudioResourceDefinition.SourceKind)]!.Category);
+        Assert.Equal("Source", properties[nameof(AudioResourceDefinition.AssetEntryName)]!.Category);
+        Assert.Equal("Playback", properties[nameof(AudioResourceDefinition.PlaybackSpeed)]!.Category);
+    }
+
 }

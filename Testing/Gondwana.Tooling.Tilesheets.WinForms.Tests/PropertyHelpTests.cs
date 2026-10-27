@@ -36,4 +36,28 @@ public sealed class PropertyHelpTests
                 $"Tilesheet field {property.Name} needs explanatory help.");
         }
     }
+
+    [Fact]
+    public void RegionAndFramePropertiesUsePurposefulCategories()
+    {
+        var document = TilesheetDocument.Create(Path.GetTempPath());
+        var region = new TilesheetRegionDefinition();
+        var regionFields = new PropertyFields();
+        regionFields.AddModel(region, document.MarkChanged, "Frames");
+        var properties = TypeDescriptor.GetProperties(regionFields);
+        foreach (PropertyDescriptor property in properties)
+            Assert.NotEqual("Misc", property.Category);
+
+        Assert.Equal("Region", properties["Name"]!.Category);
+        Assert.Equal("Geometry", properties["Area.X"]!.Category);
+        Assert.Equal("Geometry", properties["TilePadding.Left"]!.Category);
+        Assert.Equal("Collision", properties["CollisionAdjust.Left"]!.Category);
+        Assert.Equal("Collision", properties["CollisionType"]!.Category);
+
+        var frameFields = PropertyFields.Frame(document, region, 0, 0, document.MarkChanged);
+        var frameProperties = TypeDescriptor.GetProperties(frameFields);
+        Assert.Equal("Collision", frameProperties["CollisionAdjust mode"]!.Category);
+        Assert.Equal("Collision", frameProperties["Left"]!.Category);
+    }
+
 }
