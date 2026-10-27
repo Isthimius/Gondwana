@@ -89,3 +89,11 @@ updates every registered tree in the process immediately, including hosted edito
 new controls read the saved choice. Other running tools read it when activated or
 when opening the size submenu. Layout reset does not change the shared preference.
 Failed writes report a warning and retain the current presentation.
+
+Shell activation synchronization is registered independently of menus, so Studio
+refreshes even before its lazy View menu is opened. Embedding hosts using an isolated
+`NavigationPreferenceStore` pass that source to both `Attach(tree, store: source)`
+and `CreateMenu(form, source)` (or `SynchronizeOnActivation` for a lazy menu).
+Notifications are scoped by the canonical preference path; isolated roots do not
+change the global tools' presentation. Migration publishes only if the shared file
+is still absent and reads the winning value when another writer gets there first.

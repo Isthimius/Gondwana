@@ -7,16 +7,47 @@ namespace Gondwana.Tooling.WinForms;
 public static class NavigationSizing
 {
     private static readonly ConditionalWeakTable<TreeView, TreeNavigationSizing> Trees = new();
-    internal static event Action? PreferenceChanged;
+    private static readonly ConditionalWeakTable<Form, NavigationPreferenceStore> ShellStores = new();
+    internal static event Action<string>? PreferenceChanged;
 
     /// <summary>Registers a tree for immediate size changes and DPI updates, releasing resources when it is disposed.</summary>
     /// <param name="tree">Navigation tree to resize.</param>
     /// <param name="createImages">Optional factory for a new owned image list at the supplied device-pixel size.</param>
     /// <param name="defaultSize">Optional fallback; null leaves existing defaults untouched until a size is saved.</param>
+    /// <param name="store">Preference source; pass the same store to the shell/menu when using an isolated root.</param>
     /// <returns>The tree's presentation binding.</returns>
     public static TreeNavigationSizing Attach(TreeView tree, Func<int, ImageList>? createImages = null,
-        NavigationIconSize? defaultSize = null) =>
-        Trees.GetValue(tree, key => new TreeNavigationSizing(key, createImages, defaultSize));
+        NavigationIconSize? defaultSize = null, NavigationPreferenceStore? store = null)
+    {
+        var binding = Trees.GetValue(tree, key => new TreeNavigationSizing(key, createImages, defaultSize, store));
+        if (store is not null && !binding.UsesStore(store))
+            throw new ArgumentException("The tree is already registered with another preference source.", nameof(store));
+        return binding;
+    }
+
+    /// <summary>Registers activation refresh at shell startup, independently of lazy or rebuilt menus.</summary>
+    /// <param name="owner">Shell whose activation refreshes registered trees using the same preference source.</param>
+    /// <param name="store">Optional isolated preference source, also supplied to its tree bindings.</param>
+    public static void SynchronizeOnActivation(Form owner, NavigationPreferenceStore? store = null) =>
+        GetShellStore(owner, store);
+
+    private static NavigationPreferenceStore GetShellStore(Form owner, NavigationPreferenceStore? store)
+    {
+        var registered = ShellStores.GetValue(owner, _ =>
+        {
+            var source = store ?? new NavigationPreferenceStore();
+            void Refresh(object? sender, EventArgs e) => PreferenceChanged?.Invoke(source.FilePath);
+            owner.Activated += Refresh;
+            owner.Disposed += (_, _) => owner.Activated -= Refresh;
+            return source;
+        });
+        if (store is not null && !SamePreferenceFile(registered, store))
+            throw new ArgumentException("The shell is already registered with another preference source.", nameof(store));
+        return registered;
+    }
+
+    internal static bool SamePreferenceFile(NavigationPreferenceStore first, NavigationPreferenceStore second) =>
+        string.Equals(first.FilePath, second.FilePath, StringComparison.OrdinalIgnoreCase);
 
     /// <summary>Refreshes scaled copies after a tree's original thumbnail list changes, without rebuilding its nodes.</summary>
     public static void RefreshImages(TreeView tree)
@@ -48,7 +79,7 @@ public static class NavigationSizing
     public static ToolStripMenuItem CreateMenu(Form owner, NavigationPreferenceStore? store = null,
         Action<string>? notify = null)
     {
-        store ??= new NavigationPreferenceStore();
+        store = GetShellStore(owner, store);
         notify ??= message => ThemedMessageBox.Show(owner, message, "Icon Size", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         var menu = new ToolStripMenuItem("Icon Size");
         void RefreshChecks()
@@ -58,7 +89,7 @@ public static class NavigationSizing
         }
         void RefreshPreference(object? sender, EventArgs e)
         {
-            PreferenceChanged?.Invoke();
+            PreferenceChanged?.Invoke(store.FilePath);
             RefreshChecks();
         }
         foreach (var size in Enum.GetValues<NavigationIconSize>())
@@ -67,14 +98,15 @@ public static class NavigationSizing
             item.Click += (_, _) =>
             {
                 if (!store.Write(size)) { notify("The icon size preference could not be saved. Check your settings folder permissions."); return; }
-                PreferenceChanged?.Invoke();
+                PreferenceChanged?.Invoke(store.FilePath);
                 RefreshChecks();
             };
             menu.DropDownItems.Add(item);
         }
-        owner.Activated += RefreshPreference;
+        void RefreshMenuChecks(object? sender, EventArgs e) => RefreshChecks();
+        owner.Activated += RefreshMenuChecks;
         menu.DropDownOpening += RefreshPreference;
-        menu.Disposed += (_, _) => owner.Activated -= RefreshPreference;
+        menu.Disposed += (_, _) => owner.Activated -= RefreshMenuChecks;
         RefreshChecks();
         return menu;
     }

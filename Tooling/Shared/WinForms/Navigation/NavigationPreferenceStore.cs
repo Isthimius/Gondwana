@@ -18,7 +18,7 @@ public sealed class NavigationPreferenceStore
         settingsRoot ??= AppContext.GetData("Gondwana.Tooling.SettingsRoot") as string
             ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "Hidden Worlds Games", "Gondwana", "Tooling");
-        FilePath = Path.Combine(settingsRoot, "navigation-icon-size.txt");
+        FilePath = Path.GetFullPath(Path.Combine(settingsRoot, "navigation-icon-size.txt"));
         string legacyApplication = AppContext.GetData("Gondwana.Tooling.ApplicationId") as string
             ?? "Gondwana.Studio.WinForms"; // Studio's assembly name, not its project name.
         _legacyPath = Path.Combine(settingsRoot, legacyApplication, "Studio", "directory-icon-size.txt");
@@ -34,14 +34,20 @@ public sealed class NavigationPreferenceStore
             if (File.Exists(FilePath)) return ReadFile(FilePath);
             if (!File.Exists(_legacyPath)) return null;
             var size = ReadFile(_legacyPath);
-            if (size is { } value) Write(value);
-            return size;
+            return size is { } value ? Migrate(value) : null;
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             _report($"Navigation size preference ignored: {ex.Message}");
             return null;
         }
+    }
+
+    // Keep migration publication separate so another tool's explicit save can win the race.
+    internal NavigationIconSize? Migrate(NavigationIconSize size)
+    {
+        if (Write(size, overwrite: false)) return size;
+        return File.Exists(FilePath) ? ReadFile(FilePath) : size;
     }
 
     private static NavigationIconSize? ReadFile(string path)
@@ -59,7 +65,9 @@ public sealed class NavigationPreferenceStore
     /// <summary>Atomically saves a defined size; failures leave the previous preference intact.</summary>
     /// <param name="size">Size to save.</param>
     /// <returns>True if the preference was saved.</returns>
-    public bool Write(NavigationIconSize size)
+    public bool Write(NavigationIconSize size) => Write(size, overwrite: true);
+
+    private bool Write(NavigationIconSize size, bool overwrite)
     {
         if (!Enum.IsDefined(size)) throw new ArgumentOutOfRangeException(nameof(size));
         string temporary = FilePath + "." + Guid.NewGuid().ToString("N") + ".tmp";
@@ -67,8 +75,12 @@ public sealed class NavigationPreferenceStore
         {
             Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
             File.WriteAllText(temporary, size.ToString());
-            File.Move(temporary, FilePath, overwrite: true);
+            File.Move(temporary, FilePath, overwrite);
             return true;
+        }
+        catch (IOException) when (!overwrite && File.Exists(FilePath))
+        {
+            return false; // Expected when a concurrent migration or explicit save publishes first.
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {

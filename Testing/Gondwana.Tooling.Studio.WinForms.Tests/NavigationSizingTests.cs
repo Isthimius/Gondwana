@@ -48,6 +48,23 @@ public sealed partial class CompositionTests
         Assert.Throws<ArgumentOutOfRangeException>(() => store.Write((NavigationIconSize)128));
     }
 
+    [Fact]
+    public void DelayedMigrationReadsTheWinningExplicitChoiceWithoutOverwritingIt()
+    {
+        var messages = new List<string>();
+        var migrating = new NavigationPreferenceStore(report: messages.Add);
+        Assert.False(File.Exists(migrating.FilePath));
+        // The migration has already read legacy Large, then another application saves Small.
+        var explicitWriter = new NavigationPreferenceStore();
+        Assert.True(explicitWriter.Write(NavigationIconSize.Small));
+        Assert.Equal(NavigationIconSize.Small, migrating.Migrate(NavigationIconSize.Large));
+        Assert.Equal("Small", File.ReadAllText(migrating.FilePath));
+        Assert.Empty(messages); // Losing a migration race is expected, not a persistence error.
+        Assert.Empty(Directory.GetFiles(Path.GetDirectoryName(migrating.FilePath)!, "*.tmp"));
+        Assert.True(explicitWriter.Write(NavigationIconSize.Medium));
+        Assert.Equal(NavigationIconSize.Medium, migrating.Read()); // Explicit changes still replace earlier choices.
+    }
+
     [Theory]
     [InlineData(96, 16, 32, 64)]
     [InlineData(120, 20, 40, 80)]
@@ -107,6 +124,63 @@ public sealed partial class CompositionTests
             .Invoke(owner, new object[] { EventArgs.Empty });
         Assert.Equal(13f, tree.Font.SizeInPoints);
         Assert.Equal(NavigationIconSize.Large, Assert.Single(menu.DropDownItems.Cast<ToolStripMenuItem>(), i => i.Checked).Tag);
+    });
+
+    [Fact]
+    public void StudioActivationRefreshesBeforeViewIsEverOpenedAndAfterMenuRebuilds() => RunSta(directory =>
+    {
+        var store = new NavigationPreferenceStore();
+        Assert.True(store.Write(NavigationIconSize.Small));
+        using var studio = Host(directory);
+        var view = studio.MainMenuStrip!.Items.OfType<ToolStripMenuItem>().Single(i => i.Text == "&View");
+        Assert.Empty(view.DropDownItems.Cast<ToolStripItem>());
+        Assert.True(store.Write(NavigationIconSize.Large));
+        typeof(Form).GetMethod("OnActivated", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .Invoke(studio, new object[] { EventArgs.Empty });
+        Assert.Equal(NavigationIconSize.Large, studio.Browser.IconSize);
+        studio.RebuildViewMenu();
+        studio.RebuildViewMenu();
+        // Menu disposal must not unregister the shell's activation synchronization.
+        foreach (ToolStripItem item in view.DropDownItems.Cast<ToolStripItem>().ToArray()) item.Dispose();
+        Assert.True(store.Write(NavigationIconSize.Medium));
+        typeof(Form).GetMethod("OnActivated", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .Invoke(studio, new object[] { EventArgs.Empty });
+        Assert.Equal(NavigationIconSize.Medium, studio.Browser.IconSize);
+    });
+
+    [Fact]
+    public void IsolatedMenusAndBindingsShareOneSourceWithoutChangingOtherScopes() => RunSta(directory =>
+    {
+        var global = new NavigationPreferenceStore();
+        Assert.True(global.Write(NavigationIconSize.Small));
+        var isolated = new NavigationPreferenceStore(Path.Combine(directory, "isolated-preferences"));
+        Assert.True(isolated.Write(NavigationIconSize.Medium));
+        using var owner = new Form();
+        using var isolatedTree = new TreeView();
+        using var sameScopeTree = new TreeView();
+        using var globalTree = new TreeView();
+        owner.Controls.AddRange(new Control[] { isolatedTree, sameScopeTree });
+        using var binding = NavigationSizing.Attach(isolatedTree, store: isolated);
+        using var sameScopeBinding = NavigationSizing.Attach(sameScopeTree,
+            store: new NavigationPreferenceStore(Path.GetDirectoryName(isolated.FilePath)));
+        using var globalBinding = NavigationSizing.Attach(globalTree);
+        using var menu = NavigationSizing.CreateMenu(owner, isolated);
+        Assert.Equal(11f, isolatedTree.Font.SizeInPoints);
+        menu.DropDownItems.Cast<ToolStripMenuItem>().Single(i => i.Text == "Large").PerformClick();
+        Assert.Equal(NavigationIconSize.Large, isolated.Read());
+        Assert.Equal(13f, isolatedTree.Font.SizeInPoints);
+        Assert.Equal(13f, sameScopeTree.Font.SizeInPoints);
+        Assert.Equal(NavigationIconSize.Large, Assert.Single(menu.DropDownItems.Cast<ToolStripMenuItem>(), i => i.Checked).Tag);
+        Assert.Equal(9f, globalTree.Font.SizeInPoints);
+        Assert.Equal(NavigationIconSize.Small, global.Read());
+        Assert.True(isolated.Write(NavigationIconSize.Small));
+        typeof(Form).GetMethod("OnActivated", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .Invoke(owner, new object[] { EventArgs.Empty });
+        Assert.Equal(9f, isolatedTree.Font.SizeInPoints);
+        Assert.Equal(9f, sameScopeTree.Font.SizeInPoints);
+        Assert.Equal(NavigationIconSize.Small, Assert.Single(menu.DropDownItems.Cast<ToolStripMenuItem>(), i => i.Checked).Tag);
+        Assert.Throws<ArgumentException>(() => NavigationSizing.Attach(isolatedTree, store: global));
+        Assert.Throws<ArgumentException>(() => NavigationSizing.CreateMenu(owner, global));
     });
 
     [Fact]

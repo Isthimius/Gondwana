@@ -4,6 +4,7 @@ namespace Gondwana.Tooling.WinForms;
 public sealed class TreeNavigationSizing : IDisposable
 {
     private readonly TreeView _tree;
+    private readonly NavigationPreferenceStore _store;
     private readonly Func<int, ImageList>? _createImages;
     private readonly NavigationIconSize? _defaultSize;
     private readonly ImageList? _originalImages;
@@ -15,25 +16,34 @@ public sealed class TreeNavigationSizing : IDisposable
     /// <summary>Gets the applied logical size, or null while the original control defaults are in use.</summary>
     public NavigationIconSize? Size { get; private set; }
 
-    internal TreeNavigationSizing(TreeView tree, Func<int, ImageList>? createImages, NavigationIconSize? defaultSize)
+    internal TreeNavigationSizing(TreeView tree, Func<int, ImageList>? createImages, NavigationIconSize? defaultSize,
+        NavigationPreferenceStore? store)
     {
         _tree = tree;
+        _store = store ?? new NavigationPreferenceStore();
         _originalImages = tree.ImageList;
         _originalFont = tree.Font;
         _createImages = createImages ?? (_originalImages is null ? null : pixels => NavigationSizing.CopyImages(_originalImages, pixels));
         _defaultSize = defaultSize;
-        NavigationSizing.PreferenceChanged += ReadPreference;
+        NavigationSizing.PreferenceChanged += PreferenceChanged;
         tree.DpiChangedAfterParent += DpiChanged;
         tree.HandleCreated += DpiChanged;
         tree.Disposed += TreeDisposed;
         ReadPreference();
     }
 
+    internal bool UsesStore(NavigationPreferenceStore store) => NavigationSizing.SamePreferenceFile(_store, store);
+
+    private void PreferenceChanged(string filePath)
+    {
+        if (string.Equals(_store.FilePath, filePath, StringComparison.OrdinalIgnoreCase)) ReadPreference();
+    }
+
     private void ReadPreference()
     {
         if (_disposed) return;
         if (_tree.InvokeRequired) { _tree.BeginInvoke((Action)ReadPreference); return; }
-        if ((new NavigationPreferenceStore().Read() ?? _defaultSize) is { } size) Apply(size);
+        if ((_store.Read() ?? _defaultSize) is { } size) Apply(size);
     }
 
     private void DpiChanged(object? sender, EventArgs e)
@@ -92,7 +102,7 @@ public sealed class TreeNavigationSizing : IDisposable
     {
         if (_disposed) return;
         _disposed = true;
-        NavigationSizing.PreferenceChanged -= ReadPreference;
+        NavigationSizing.PreferenceChanged -= PreferenceChanged;
         _tree.DpiChangedAfterParent -= DpiChanged;
         _tree.HandleCreated -= DpiChanged;
         _tree.Disposed -= TreeDisposed;

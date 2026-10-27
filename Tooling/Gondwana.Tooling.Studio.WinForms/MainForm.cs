@@ -74,6 +74,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         _layout = new DockLayoutPersistence(Workspace, "shell");
         _plugins = new StudioPluginHost(_output.Log);
         Browser = new DirectoryPanel(_output.Log);
+        NavigationSizing.SynchronizeOnActivation(this);
         Browser.KnownArchivePassword = path => _archivePasswords.GetValueOrDefault(Path.GetFullPath(path));
         Browser.FileActivated += path => TryOpen(path);
         Browser.PackedFileActivated += packed =>
