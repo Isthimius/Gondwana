@@ -465,11 +465,12 @@ public sealed class SceneEditorControl : UserControl
 
         bar.Items.Add(grid);
         bar.Items.Add(new ToolStripSeparator());
-        bar.Items.Add("View Scene", null, (_, _) => ViewScene());
+        bar.Items.Add("View Scene", null, async (_, _) => await ViewSceneAsync());
         return bar;
     }
 
-    private async void ViewScene()
+    /// <summary>Launches the existing Scene Viewer workflow for the current definition, including packed-scene snapshots and save prompts.</summary>
+    public async Task ViewSceneAsync()
     {
         if (!CommitEdits())
             return;
