@@ -6,7 +6,6 @@ on:
     paths-ignore:
       - 'docs/**'
       - '.github/workflows/docs.yml'
-      - '.github/workflows/release.yml'
       - 'CHANGELOG.md'
       - '**/CHANGELOG.md'
   pull_request:
@@ -14,7 +13,6 @@ on:
     paths-ignore:
       - 'docs/**'
       - '.github/workflows/docs.yml'
-      - '.github/workflows/release.yml'
       - 'CHANGELOG.md'
       - '**/CHANGELOG.md'
 
@@ -22,7 +20,36 @@ permissions:
   contents: read
   actions: read
 jobs:
+  # Keep changelog integration tests off unrelated PRs and master pushes.
+  # A separate job is necessary because workflow-level path filters affect all CI jobs.
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      changelog: ${{ steps.filter.outputs.changelog }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          base: master
+          filters: |
+            changelog:
+              - 'Tooling/scripts/*Changelog*.ps1'
+              - 'Tooling/scripts/release.ps1'
+              - 'Tooling/scripts/Extract-ReleaseNotes.ps1'
+              - 'cliff.toml'
+              - '.github/workflows/ci-master.yml'
+              - '.github/workflows/changelog-weekly.yml'
+              - '.github/workflows/release.yml'
+
   changelog-tests:
+    needs: changes
+    if: needs.changes.outputs.changelog == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

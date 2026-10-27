@@ -223,6 +223,10 @@ CI checks whitespace and selected style diagnostics, builds the solution in Rele
 - Node.js browser-side tests in `Testing/BlazorPresentationTests.mjs` and `Testing/browser-audio.test.mjs`
 - WinForms tooling tests on `windows-latest` for Tilesheets, Animations, Audio, Scenes, Sprites, Scene Viewer, and Studio
 
+The `changelog-tests` job is conditional. A lightweight `changes` job uses `dorny/paths-filter` to run the changelog integration suite only when a pull request or push to `master` changes the changelog PowerShell scripts, `release.ps1`, `Extract-ReleaseNotes.ps1`, `cliff.toml`, or the CI, weekly changelog, or release workflow YAML files. Otherwise the changelog job is skipped; normal build and editor tests remain unaffected.
+
+The standalone release workflow (`.github/workflows/release.yml`) is not excluded by CI's `paths-ignore` rules, so release workflow changes can trigger these tests. The scheduled `changelog-weekly.yml` workflow still runs the same integration suite before writing changelogs, regardless of which files were changed.
+
 The Linux build/test job and Windows editor-test job are separate CI jobs. The Linux job's broad sequence is:
 
 ```text
