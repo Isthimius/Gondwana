@@ -16,10 +16,14 @@ public sealed partial class CompositionTests
         var bar = studio.StudioToolbar;
         Assert.Equal(DockStyle.Top, bar.Dock);
         Assert.Equal(new Size(24, 24), bar.ImageScalingSize);
+        // Theme application must not replace Studio's native hover tooltips.
+        Assert.True(bar.ShowItemToolTips);
         Assert.All(bar.Items.OfType<ToolStripButton>(), item =>
         {
             Assert.False(item.AutoSize);
             Assert.Equal(new Size(48, 48), item.Size);
+            Assert.False(item.AutoToolTip);
+            Assert.False(string.IsNullOrWhiteSpace(item.ToolTipText));
         });
         Assert.Equal(3, bar.Items.OfType<ToolStripSeparator>().Count());
         Assert.Equal(
@@ -28,12 +32,21 @@ public sealed partial class CompositionTests
 
         var create = Assert.Single(bar.Items.OfType<ToolStripDropDownButton>());
         Assert.Equal("New", create.Name);
+        Assert.False(create.AutoToolTip);
+        Assert.Equal("New document (choose a Gondwana format)", create.ToolTipText);
         Assert.False(create.AutoSize);
         Assert.Equal(new Size(48, 48), create.Size);
         Assert.Equal(MainForm.NewFileFormats.Select(format => format.Label),
             create.DropDownItems.OfType<ToolStripMenuItem>().Select(item => item.Text));
 
         ToolStripButton Get(string name) => bar.Items.OfType<ToolStripButton>().Single(item => item.Name == name);
+        Assert.Equal("Open documents (Ctrl+O)", Get("Open").ToolTipText);
+        Assert.Equal("Save active document (Ctrl+S)", Get("Save").ToolTipText);
+        Assert.Equal("Save all modified documents (Ctrl+Alt+S)", Get("SaveAll").ToolTipText);
+        Assert.Equal("Choose working directory", Get("WorkingDirectory").ToolTipText);
+        Assert.Equal("Refresh working directory", Get("Refresh").ToolTipText);
+        Assert.Equal("View active scene in Scene Viewer", Get("Preview").ToolTipText);
+        Assert.Equal("Validate active document", Get("Validate").ToolTipText);
         Assert.False(Get("Save").Enabled);
         Assert.False(Get("SaveAll").Enabled);
         Assert.False(Get("Preview").Enabled);
