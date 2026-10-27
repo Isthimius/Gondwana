@@ -25,6 +25,12 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
     void Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices.OpenDocument(string path) => OpenDocument(path);
     internal const string OpenFilter = "Gondwana authoring files|*.gaf;*.zip;*.gts;*.gani;*.gsnd;*.gscn;*.gspr|All files|*.*";
     private readonly OutputViewModel _output = new();
+    internal static readonly (string Format, string Label)[] NewFileFormats =
+    [
+        ("gaf", "Asset file / GAF…"), ("gts", "Tilesheet / GTS"),
+        ("gani", "Animation / GANI"), ("gsnd", "Sound / GSND"),
+        ("gscn", "Scene / GSCN"), ("gspr", "Sprite / GSPR")
+    ];
     private readonly StudioPluginHost _plugins;
     private readonly ThemeBase _theme = ToolingAppearance.CreateDockTheme();
     private readonly AssetPackageCatalog _packages = new();
@@ -84,7 +90,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
             catch (Exception ex) { ReportError(ex); }
         };
         Browser.ChooseDirectoryRequested += ChooseDirectory;
-        Workspace.ActiveDocumentChanged += (_, _) => SyncActiveDocumentSelection();
+        Workspace.ActiveDocumentChanged += (_, _) => { SyncActiveDocumentSelection(); UpdateToolbarState(); };
         AddTool("shell.working-directory", "Working directory", Browser, DockState.DockLeft);
         AddTool("shell.output", "Output", new OutputPanel(_output), DockState.DockBottom);
         AskSave = document => ThemedMessageBox.Show(this, $"Save changes to {document.Caption}?",
@@ -114,7 +120,9 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
             if (_session.IsRestoring) _failedRestoreArchives.Remove(path);
         };
         MainMenuStrip = BuildMenu();
+        StudioToolbar = BuildToolbar();
         Controls.Add(Workspace);
+        Controls.Add(StudioToolbar);
         Controls.Add(MainMenuStrip);
         _view.DropDownOpening += (_, _) => RebuildViewMenu();
         if (loadPlugins)
@@ -135,8 +143,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         var menu = new MenuStrip();
         var file = new ToolStripMenuItem("&File");
         var create = new ToolStripMenuItem("&New");
-        foreach (var (format, label) in new[] { ("gaf", "Asset file / GAF…"), ("gts", "Tilesheet / GTS"),
-            ("gani", "Animation / GANI"), ("gsnd", "Sound / GSND"), ("gscn", "Scene / GSCN"), ("gspr", "Sprite / GSPR") })
+        foreach (var (format, label) in NewFileFormats)
             Add(create, label, Keys.None, () => TryNew(format));
         file.DropDownItems.Add(create);
         Add(file, "&Open…", Keys.Control | Keys.O, OpenFiles);
@@ -145,6 +152,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         Add(file, "Delete content…", Keys.None, DeleteContent);
         file.DropDownItems.Add(new ToolStripSeparator());
         Add(file, "&Save", Keys.Control | Keys.S, async () => { if (ActiveDocument is { } doc) await SaveDocument(doc); });
+        _saveAllMenuItem = Add(file, "Save A&ll", Keys.Control | Keys.Alt | Keys.S, async () => await SaveAllDocuments());
         Add(file, "Save &As…", Keys.Control | Keys.Shift | Keys.S, async () => { if (ActiveDocument is { } doc) await SaveDocument(doc, saveAs: true); });
         Add(file, "Reload document from disk", Keys.None, () => { if (ActiveDocument is { } doc) ReloadDocument(doc); });
         Add(file, "Reload dependency previews", Keys.None, () => { if (ActiveDocument is { } doc) ReloadPreviews(doc); });
@@ -336,6 +344,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         if (model.Editor is Gondwana.Tooling.Scenes.WinForms.SceneEditorControl sceneEditor)
             sceneEditor.SaveRequestedAsync = () => SaveDocument(document);
         _documents.Add(document);
+        model.Changed += ToolbarDocumentChanged;
         if (model.Location is { } location) _paths.Add(location, document);
         if (model.Editor is AssetEditorControl assets)
         {
@@ -358,13 +367,16 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         }
         document.Disposed += (_, _) =>
         {
+            model.Changed -= ToolbarDocumentChanged;
             _documents.Remove(document);
             _saves.Remove(document);
             foreach (var key in _paths.Where(pair => pair.Value == document).Select(pair => pair.Key).ToArray()) _paths.Remove(key);
+            UpdateToolbarState();
         };
         document.Show(Workspace, DockState.Document);
         document.Activate();
         SyncActiveDocumentSelection();
+        UpdateToolbarState();
         if (model.Kind == "asset") Browser.RefreshDirectory(); // authenticated archives can now be browsed without another prompt
         _output.Log($"Opened {model.Path() ?? document.Text}");
         return document;
@@ -429,6 +441,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         }
         catch (OperationCanceledException) { return false; }
         catch (Exception ex) { ReportError(ex); return false; }
+        finally { if (!IsDisposed && !_disposed) UpdateToolbarState(); }
     }
     private string? ChooseSavePath(StudioDocument model)
     {
