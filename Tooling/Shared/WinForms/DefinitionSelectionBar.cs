@@ -1,3 +1,5 @@
+using System.Drawing.Drawing2D;
+
 namespace Gondwana.Tooling.WinForms;
 
 /// <summary>A compact shared selector for logical definitions inside one physical editor document.</summary>
@@ -12,6 +14,7 @@ internal sealed class DefinitionSelectionBar<T> : ToolStrip where T : class
     private readonly Action<T> _select;
     private readonly Action _refresh;
     private bool _binding;
+    private readonly List<Bitmap> _icons = [];
 
     /// <summary>Creates the shared member selector and edit commands.</summary>
     /// <param name="definitions">All document members.</param>
@@ -36,10 +39,17 @@ internal sealed class DefinitionSelectionBar<T> : ToolStrip where T : class
         _refresh = refresh;
         Dock = DockStyle.Top;
         GripStyle = ToolStripGripStyle.Hidden;
+        ImageScalingSize = new Size(48, 48);
+        ShowItemToolTips = true;
+        Disposed += (_, _) =>
+        {
+            foreach (var icon in _icons) icon.Dispose();
+            _icons.Clear();
+        };
         Items.Add(new ToolStripLabel("Definition"));
         Items.Add(_members);
-        Items.Add("Add definition", null, (_, _) => Execute(add));
-        Items.Add("Import definition…", null, (_, _) =>
+        AddIconButton("Add definition", "AddDefinition", DefinitionCommand.Add, () => Execute(add));
+        AddIconButton("Import definition…", "ImportDefinition", DefinitionCommand.Import, () =>
         {
             try
             {
@@ -51,11 +61,11 @@ internal sealed class DefinitionSelectionBar<T> : ToolStrip where T : class
             }
             catch (Exception ex) { ThemedMessageBox.Show(FindForm(), ex.Message, "Import definition", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
         });
-        Items.Add("Duplicate definition", null, (_, _) => Execute(duplicate));
-        Items.Add("Remove definition", null, (_, _) => Execute(remove));
+        AddIconButton("Duplicate definition", "DuplicateDefinition", DefinitionCommand.Duplicate, () => Execute(duplicate));
+        AddIconButton("Remove definition", "RemoveDefinition", DefinitionCommand.Remove, () => Execute(remove));
         Items.Add(new ToolStripSeparator());
         Items.Add(_identity);
-        Items.Add("Rename", null, (_, _) => Execute(() => rename(_identity.Text)));
+        AddIconButton("Rename", "RenameDefinition", DefinitionCommand.Rename, () => Execute(() => rename(_identity.Text)));
         _members.SelectedIndexChanged += (_, _) =>
         {
             if (!_binding && _members.SelectedIndex >= 0)
@@ -81,6 +91,82 @@ internal sealed class DefinitionSelectionBar<T> : ToolStrip where T : class
             _identity.Text = _name(_selected());
         }
         finally { _binding = false; }
+    }
+
+
+    private enum DefinitionCommand { Add, Import, Duplicate, Remove, Rename }
+
+    private void AddIconButton(string label, string name, DefinitionCommand command, Action action)
+    {
+        var button = new ToolStripButton
+        {
+            Name = name,
+            Text = label,
+            DisplayStyle = ToolStripItemDisplayStyle.Image,
+            Image = DrawIcon(command),
+            ToolTipText = label,
+            AutoToolTip = false,
+            AccessibleName = label
+        };
+        button.Click += (_, _) => action();
+        Items.Add(button);
+    }
+
+    private Bitmap DrawIcon(DefinitionCommand command)
+    {
+        var image = new Bitmap(48, 48);
+        using (var graphics = Graphics.FromImage(image))
+        using (var pen = new Pen(ToolingAppearance.Palette.Foreground, 3f)
+        {
+            StartCap = LineCap.Round,
+            EndCap = LineCap.Round,
+            LineJoin = LineJoin.Round
+        })
+        using (var accent = new Pen(ToolingAppearance.Palette.Accent, 3.5f)
+        {
+            StartCap = LineCap.Round,
+            EndCap = LineCap.Round,
+            LineJoin = LineJoin.Round
+        })
+        {
+            graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            switch (command)
+            {
+                case DefinitionCommand.Add:
+                    graphics.DrawLines(pen, new PointF[] { new(10, 7), new(27, 7), new(36, 16), new(36, 27) });
+                    graphics.DrawLines(pen, new PointF[] { new(10, 7), new(10, 41), new(25, 41) });
+                    graphics.DrawLines(pen, new PointF[] { new(27, 7), new(27, 16), new(36, 16) });
+                    graphics.DrawLine(accent, 34, 30, 34, 44);
+                    graphics.DrawLine(accent, 27, 37, 41, 37);
+                    break;
+                case DefinitionCommand.Import:
+                    graphics.DrawLines(pen, new PointF[] { new(9, 31), new(9, 41), new(39, 41), new(39, 31) });
+                    graphics.DrawLine(accent, 24, 6, 24, 31);
+                    graphics.DrawLines(accent, new PointF[] { new(14, 22), new(24, 32), new(34, 22) });
+                    break;
+                case DefinitionCommand.Duplicate:
+                    graphics.DrawRectangle(pen, 8, 7, 25, 29);
+                    graphics.DrawRectangle(pen, 16, 15, 25, 29);
+                    break;
+                case DefinitionCommand.Remove:
+                    graphics.DrawLine(pen, 10, 13, 38, 13);
+                    graphics.DrawLine(pen, 18, 8, 30, 8);
+                    graphics.DrawLines(pen, new PointF[] { new(13, 18), new(16, 41), new(32, 41), new(35, 18) });
+                    graphics.DrawLine(pen, 21, 23, 21, 35);
+                    graphics.DrawLine(pen, 27, 23, 27, 35);
+                    break;
+                case DefinitionCommand.Rename:
+                    graphics.DrawLines(pen, new PointF[] { new(9, 8), new(30, 8), new(37, 15), new(37, 23) });
+                    graphics.DrawLines(pen, new PointF[] { new(9, 8), new(9, 41), new(19, 41) });
+                    graphics.DrawLines(pen, new PointF[] { new(30, 8), new(30, 15), new(37, 15) });
+                    graphics.DrawLines(accent, new PointF[] { new(22, 35), new(36, 21), new(42, 27), new(28, 41), new(22, 41), new(22, 35) });
+                    graphics.DrawLine(accent, 33, 24, 39, 30);
+                    break;
+            }
+        }
+
+        _icons.Add(image);
+        return image;
     }
 
     private IReadOnlyList<int>? ChooseMembers(IReadOnlyList<T> definitions)
