@@ -86,6 +86,46 @@ public sealed class SceneEditorTests
     });
 
     /// <summary>
+    /// Wheel scrolling must repaint the whole preview, including its fixed-position
+    /// layer-count overlay, rather than leaving copies of the overlay behind.
+    /// </summary>
+    [Fact]
+    public void ScenePreviewWheelScrollInvalidatesFixedOverlay() => RunSta(() =>
+    {
+        var definition = new SceneDefinition
+        {
+            Layers = [new SceneLayerDefinition
+            {
+                Columns = 8, Rows = 60, TileWidth = 16, TileHeight = 16
+            }]
+        };
+        using var preview = new ScenePreviewControl { Size = new(240, 240) };
+        using var host = new Form { Size = new(300, 300), Opacity = 0, ShowInTaskbar = false };
+        host.Controls.Add(preview);
+        host.Show();
+        preview.Configure(definition, _ => null, _ => null);
+        Application.DoEvents();
+
+        preview.AutoScrollPosition = new Point(0, 300);
+        Application.DoEvents();
+        int before = preview.AutoScrollPosition.Y;
+        Assert.True(before < 0);
+
+        var invalidatedRegions = new List<Rectangle>();
+        preview.Invalidated += (_, e) => invalidatedRegions.Add(e.InvalidRect);
+
+        // Exercise the actual WinForms wheel handler. Wheel input does not
+        // raise OnScroll, unlike using the scrollbar directly.
+        typeof(ScenePreviewControl)
+            .GetMethod("OnMouseWheel",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+            .Invoke(preview, [new MouseEventArgs(MouseButtons.None, 0, 20, 20, 120)]);
+
+        Assert.True(preview.AutoScrollPosition.Y > before);
+        Assert.Contains(preview.ClientRectangle, invalidatedRegions);
+    });
+
+    /// <summary>
     /// Assigning GANI persists its first frame as the tile's initial frame and
     /// enables playback. Reassignment also replaces a previously selected GTS frame
     /// and reenables an explicitly disabled animator.
