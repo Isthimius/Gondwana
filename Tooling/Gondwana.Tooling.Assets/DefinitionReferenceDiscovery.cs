@@ -11,13 +11,38 @@ namespace Gondwana.Tooling.Assets;
 /// <param name="ReferencePath">Format-specific diagnostic path.</param>
 public sealed record DefinitionReference(AssetLocation Document, string Member, AssetLocation Target, string? Selector, string ReferencePath);
 
+/// <summary>An inspection failure; a reference is present when an explicit endpoint was available.</summary>
+public sealed record ReferenceScanProblem(string Source, string Message, DefinitionReference? Reference = null,
+    ReferenceProblemKind Kind = ReferenceProblemKind.Invalid);
+
+/// <summary>Actionable categories for diagnostic inspection failures.</summary>
+public enum ReferenceProblemKind
+{
+    /// <summary>Malformed content, incorrect types, or unsafe entries.</summary>
+    Invalid,
+    /// <summary>A file, typed entry, or selected member was not found.</summary>
+    Missing,
+    /// <summary>More than one definition matches the selector.</summary>
+    Ambiguous,
+    /// <summary>File or directory access failed.</summary>
+    Inaccessible,
+    /// <summary>An archive requires a valid credential.</summary>
+    Authentication
+}
+
+internal sealed class ReferenceInspectionException(ReferenceProblemKind kind, string message, Exception? inner = null)
+    : IOException(message, inner)
+{
+    internal ReferenceProblemKind Kind { get; } = kind;
+}
+
 /// <summary>Discovers validated physical references in an explicit directory or single archive scope.</summary>
 public sealed class DefinitionReferenceDiscovery
 {
     /// <summary>Filesystem path identity for this platform.</summary>
     internal static readonly StringComparer Paths = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
     private static readonly HashSet<string> Excluded = new(StringComparer.OrdinalIgnoreCase) { "bin", "obj", ".git", ".vs", "node_modules" };
-    private readonly Func<string, string?> _credentials;
+    private Func<string, string?> _credentials;
     private readonly CancellationToken _cancellation;
     /// <summary>Original file bytes; null marks a verified absent destination.</summary>
     internal readonly Dictionary<string, byte[]?> Files = new(Paths);
@@ -50,15 +75,55 @@ public sealed class DefinitionReferenceDiscovery
     /// <summary>Gets all discovered references, including every logical member.</summary>
     public IReadOnlyList<DefinitionReference> References => Found.AsReadOnly();
     /// <summary>Gets the files inspected, including dependencies checked outside scope.</summary>
-    public IReadOnlyList<string> InspectedFiles => Files.Keys.ToArray();
+    public IReadOnlyList<string> InspectedFiles => _inspectedFiles ?? Files.Keys.ToArray();
+    private string[]? _inspectedFiles;
+    /// <summary>Gets failures encountered by a diagnostic scan. Strict scans still throw.</summary>
+    public IReadOnlyList<ReferenceScanProblem> Problems => _problems.AsReadOnly();
+    private readonly List<ReferenceScanProblem> _problems = [];
+    private readonly List<(ResourceAddress Source, string Uri)> _externalReferences = [];
+    /// <summary>Gets remote references as authored, without treating their URIs as local files.</summary>
+    public IReadOnlyList<(ResourceAddress Source, string Uri)> ExternalReferences => _externalReferences.AsReadOnly();
+    /// <summary>Gets whether cancellation prevented completion.</summary>
+    public bool IsCancelled { get; private set; }
+    /// <summary>Gets whether the entire declared scope was successfully inspected.</summary>
+    public bool IsComplete => !IsCancelled && _problems.Count == 0;
+    /// <summary>Tests whether a typed endpoint was included, rather than merely validated externally.</summary>
+    public bool Includes(AssetLocation location) => Included.Contains(Key(location));
+    /// <summary>Tests the physical scope boundary, including media not enumerated as definitions.</summary>
+    public bool IsWithinScope(AssetLocation location) => Paths.Equals(location.Path, Scope) ||
+        location.Path.StartsWith(Path.EndsInDirectorySeparator(Scope) ? Scope : Scope + Path.DirectorySeparatorChar,
+            OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 
-    private DefinitionReferenceDiscovery(string scope, Func<string, string?>? credentials, CancellationToken cancellation)
+    internal static ReferenceProblemKind Classify(Exception error) => error switch
+    {
+        ReferenceInspectionException inspection => inspection.Kind,
+        FileNotFoundException or DirectoryNotFoundException => ReferenceProblemKind.Missing,
+        UnauthorizedAccessException => ReferenceProblemKind.Inaccessible,
+        _ when error.InnerException is not null => Classify(error.InnerException),
+        IOException when error is not InvalidDataException => ReferenceProblemKind.Inaccessible,
+        _ => ReferenceProblemKind.Invalid
+    };
+
+    private DefinitionReferenceDiscovery(string scope, Func<string, string?>? credentials, CancellationToken cancellation, bool diagnostic = false)
     {
         Scope = Path.TrimEndingDirectorySeparator(Path.GetFullPath(scope));
         _credentials = credentials ?? (_ => null);
         _cancellation = cancellation;
-        _scopeFiles = Enumerate(Scope).ToArray();
-        foreach (var path in _scopeFiles) Include(path, archive: File.Exists(Scope));
+        var paths = new List<string>();
+        try
+        {
+            foreach (var path in Enumerate(Scope, cancellation))
+            {
+                cancellation.ThrowIfCancellationRequested();
+                paths.Add(path);
+                try { Include(path, archive: File.Exists(Scope)); }
+                catch (Exception ex) when (diagnostic && ex is not OperationCanceledException)
+                { _problems.Add(new(path, ex.Message, Kind: Classify(ex))); }
+            }
+        }
+        catch (OperationCanceledException) when (diagnostic) { IsCancelled = true; }
+        catch (Exception ex) when (diagnostic) { _problems.Add(new(Scope, ex.Message, Kind: Classify(ex))); }
+        _scopeFiles = paths.ToArray();
     }
 
     /// <summary>Scans all relevant resources or fails clearly; inaccessible resources are never skipped.</summary>
@@ -70,6 +135,36 @@ public sealed class DefinitionReferenceDiscovery
     {
         var result = new DefinitionReferenceDiscovery(scope, credentials, cancellation);
         result.Analyze();
+        return result;
+    }
+
+    /// <summary>Uses the same inventory and semantic handlers for read-only exploration, retaining failures and partial results.</summary>
+    /// <remarks>Failures can prevent discovery of later references in the affected document. Never use this partial inventory for mutation planning.</remarks>
+    public static DefinitionReferenceDiscovery Inspect(string scope, Func<string, string?>? credentials = null, CancellationToken cancellation = default)
+    {
+        var result = new DefinitionReferenceDiscovery(scope, credentials, cancellation, diagnostic: true);
+        foreach (var content in result.Included.Select(key => result.Contents[key]).ToArray())
+        {
+            try
+            {
+                cancellation.ThrowIfCancellationRequested();
+                content.Document = SemanticPackPlan.Discover(content.Location, content.Bytes, (location, type, selector) =>
+                {
+                    var target = result.Resolve(location, type, selector);
+                    return (target.Location, target.Bytes);
+                }, result.Found.Add, cancellation, (reference, error) =>
+                    result._problems.Add(new(content.Location.ToString(), error.Message, reference, Classify(error))),
+                    (member, uri, field) => result._externalReferences.Add((new(content.Location, member, field), uri)));
+            }
+            catch (OperationCanceledException) { result.IsCancelled = true; break; }
+            catch (Exception ex) { result._problems.Add(new(content.Location.ToString(), ex.Message, Kind: Classify(ex))); }
+        }
+        // Exploration needs identities and diagnostics, not retained media bytes or passwords.
+        result._inspectedFiles = result.Files.Keys.ToArray();
+        result.Files.Clear();
+        result.Archives.Clear();
+        result.Contents.Clear();
+        result._credentials = _ => null;
         return result;
     }
 
@@ -118,7 +213,7 @@ public sealed class DefinitionReferenceDiscovery
         }
     }
 
-    private static IEnumerable<string> Enumerate(string scope)
+    private static IEnumerable<string> Enumerate(string scope, CancellationToken cancellation = default)
     {
         CheckPath(scope);
         if (File.Exists(scope))
@@ -132,6 +227,7 @@ public sealed class DefinitionReferenceDiscovery
         while (pending.TryPop(out var directory))
             foreach (var path in Directory.EnumerateFileSystemEntries(directory).Order(StringComparer.Ordinal))
             {
+                cancellation.ThrowIfCancellationRequested();
                 if (Excluded.Contains(Path.GetFileName(path))) continue;
                 CheckPath(path); // Reject links rather than silently producing an incomplete inventory.
                 if (Directory.Exists(path)) pending.Push(path);
@@ -178,14 +274,17 @@ public sealed class DefinitionReferenceDiscovery
         var password = _credentials(path);
         try
         {
-            AssetsFile.Validate(path, password);
             using var zip = new ZipFile(new MemoryStream(bytes));
             bool encrypt = zip.Cast<ZipEntry>().Any(entry => entry.AESKeySize > 0);
+            try { AssetsFile.Validate(path, password); }
+            catch (Exception ex) when (zip.Cast<ZipEntry>().Any(entry => entry.IsCrypted))
+            { throw new ReferenceInspectionException(ReferenceProblemKind.Authentication, $"Authentication required or failed for '{path}'. Open the archive with its correct password and rescan.", ex); }
             using var archive = AssetsFile.LoadOrCreate(path, password, encrypt, register: false);
             result = new(password, encrypt, AssetImportPlan.Snapshot(archive));
             Archives.Add(path, result);
             foreach (var pair in result.Entries)
             {
+                _cancellation.ThrowIfCancellationRequested();
                 SafeFilePath.ValidateRelative(pair.Key.AssetName);
                 var location = new AssetLocation(pair.Key.AssetType, path, pair.Key.AssetName);
                 Contents.Add(Key(location), new(location, pair.Value));
@@ -193,7 +292,8 @@ public sealed class DefinitionReferenceDiscovery
             if (!File.ReadAllBytes(path).AsSpan().SequenceEqual(bytes)) throw new IOException($"Archive changed while scanning: {path}.");
             return result;
         }
-        catch (Exception ex) { throw new InvalidDataException($"Cannot inspect archive '{path}'; supply its own correct credential. {ex.Message}", ex); }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        { throw new InvalidDataException($"Cannot inspect archive '{path}'; verify its contents and credential. {ex.Message}", ex); }
     }
 
     /// <summary>Resolves an exact physical reference or an unambiguous logical member.</summary>
@@ -209,14 +309,15 @@ public sealed class DefinitionReferenceDiscovery
             var comparer = type == AssetTypes.AnimationDefinition ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
             var matches = Included.Select(key => Contents[key]).Where(c => c.Location.AssetType == type &&
                 PackDefinitionDocument.Read(type, c.Bytes, c.Location.AssetEntryName ?? c.Location.Path)?.Members().Any(m => comparer.Equals(m.Identity, selector)) == true).ToArray();
-            if (matches.Length != 1) throw new InvalidDataException($"Logical {type} '{selector}' has {matches.Length} matching documents; author an explicit physical source.");
+            if (matches.Length != 1) throw new ReferenceInspectionException(matches.Length == 0 ? ReferenceProblemKind.Missing : ReferenceProblemKind.Ambiguous,
+                $"Logical {type} '{selector}' has {matches.Length} matching documents in scope; author an explicit physical source.");
             return matches[0];
         }
         if (Contents.TryGetValue(Key(location), out var found)) return found;
         if (location.AssetEntryName is not null)
         {
             ReadArchive(location.Path);
-            return Contents.GetValueOrDefault(Key(location)) ?? throw new InvalidDataException($"Missing typed entry {location}.");
+            return Contents.GetValueOrDefault(Key(location)) ?? throw new ReferenceInspectionException(ReferenceProblemKind.Missing, $"Missing typed entry {location}.");
         }
         var inferred = AssetImportPlan.InferType(location.Path);
         if (Native(inferred) && inferred != type) throw new InvalidDataException($"Incompatible dependency type: {location}.");

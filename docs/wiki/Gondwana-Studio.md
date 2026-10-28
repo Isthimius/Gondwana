@@ -92,6 +92,46 @@ document reload instead.
 
 **View Scene** can launch a packed GSCN without Save As: Studio writes a uniquely named temporary loose snapshot with rebased references, and the Viewer uses the original content directory to discover neighboring assets and sprites. The snapshot includes unsaved edits, leaves the packed document and dirty state unchanged, and is deleted by the Viewer on normal exit. The runtime Viewer retains its existing loose-over-packed content-root precedence; Studio's authoring previews use explicit-source resolution.
 
+## Dependency Explorer
+
+Use **File > Find References**, **Show Dependencies**, or **Show Dependents** for
+the selected logical definition. The same actions are available on document tabs
+and working-directory file/packed-entry context menus. **View > Dependency
+Explorer** restores the dockable pane. **Whole document** removes the member
+filter. Inspecting results does not change the active editor; double-click a
+result or choose **Open Referenced Definition** to navigate.
+
+Dependencies and dependents retain the full physical path, expected asset type,
+exact nested GAF entry name, logical member, and available reference field path.
+Identically named entries in different archives remain distinct. Navigation
+activates an existing editor or uses the normal editor factory and authentication
+workflow. It never reloads or saves a dirty editor. When a field cannot be selected,
+Studio selects the nearest supported member and displays the reference path.
+
+The scan covers saved GTS, GANI, GSCN, GSPR, and GSND content in the current working
+directory, including packed definitions. It reuses the asset tooling's discovery
+rules, exclusions, and safety checks. Background scans are cancelled on workspace
+changes or shutdown; stale results cannot overwrite a newer scan. Completed
+results are reused until invalidated by saves or reviewed asset operations.
+Use **Refresh / Rescan** after these operations or external changes.
+
+Results describe saved content; a warning identifies unsaved editor changes that
+are not represented. Missing, ambiguous, invalid, inaccessible, and encrypted
+resources produce diagnostics and an incomplete-scan warning. A failure may
+prevent inspection of remaining references in that member or scope. Empty partial
+results are not evidence that a resource is unused. Open encrypted archives with
+their correct passwords, then rescan. Outside-scope targets are identified, and
+inbound queries cover only inspected sources. References without a logical selector
+are grouped separately rather than attributed to a guessed member. Remote audio
+URIs are displayed without fetching or opening them as local documents. Arbitrary
+C# references are not discovered.
+
+The pane is built into Studio and does not require Project Diagnostics. That
+optional plugin continues to report validation problems; Dependency Explorer
+focuses on relationships and navigation. The shared identity, query, and navigation
+contracts are independent of the pane. No drag-and-drop or cross-document editing
+is included.
+
 ## Docking model
 
 Studio uses a two-level docking model:

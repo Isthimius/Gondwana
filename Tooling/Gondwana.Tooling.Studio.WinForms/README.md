@@ -248,3 +248,39 @@ explicitly opening the failed archive afterward allows another attempt.
 ## Appearance
 
 Choose **View → Theme → Dark, Dark Blue, or Light**. The choice is shared across Studio and all six standalone editors and takes effect on the next launch. Open documents remain untouched; restart normally after saving your work. See [shared tooling themes](../Shared/WinForms/Theming/README.md) for persistence, control coverage, and DockPanel Suite limitations.
+## Dependency Explorer
+
+Use **File > Find References**, **Show Dependencies**, or **Show Dependents**, or
+the equivalent document-tab and working-directory context menus. **View >
+Dependency Explorer** restores the dockable pane. Double-click a result or choose
+**Open Referenced Definition** to activate its editor and select its logical
+member. Inspection alone does not navigate. **Whole document** removes the member
+filter; **Refresh / Rescan** rebuilds the saved-content snapshot.
+
+Results show full physical paths, typed GAF entry names (including nested paths),
+logical identities, and reference field paths. Already-open editors are activated
+without reload, including dirty editors. Unsupported field selection falls back
+to the logical member and reports the exact reference path. Non-definition media
+and remote URIs are displayed but do not have native definition editors.
+
+The scope is the current working directory, with the shared scanner's exclusions
+and link safety checks. Scanning runs off the UI thread and completed results are
+reused across selections. Saves, reviewed asset operations, and workspace changes
+invalidate results; use Refresh / Rescan afterward. Obsolete scans are cancelled
+and cannot replace newer results. There is no filesystem watcher.
+
+Discovery uses saved native GTS/GANI/GSCN/GSPR/GSND content, not unsaved editor
+models or arbitrary C# code. The pane warns when editors have unsaved changes.
+Failures are shown as incomplete results with missing, ambiguous, inaccessible,
+invalid, or authentication diagnostics. A failed member may have undiscovered
+references; an empty partial result does not establish that there are no users.
+Open an encrypted archive with its correct password, then rescan. Targets outside
+scope are identified explicitly; inbound results cover only inspected sources.
+Physical references without selectors are never presented as exact member matches.
+
+Core navigation is independent of optional plugins. Project Diagnostics retains
+its separate validation scanner; the explorer uses `DefinitionReferenceDiscovery`
+and its semantic handlers rather than repeating that plugin's parser. Shared
+`ResourceAddress`, `DefinitionReferenceQuery`, and `IResourceNavigator` contracts
+live in `Gondwana.Tooling.Assets` and have no WinForms dependency. They can also
+serve later authoring workflows; this feature does not implement drag-and-drop.

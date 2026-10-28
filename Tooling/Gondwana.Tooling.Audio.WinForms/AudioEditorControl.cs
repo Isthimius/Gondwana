@@ -251,6 +251,14 @@ public sealed class AudioEditorControl : UserControl
         RefreshView();
     }
 
+    /// <summary>Selects an owned definition and refreshes visible resource bindings without reloading or saving the document.</summary>
+    public void SelectDefinition(AudioDefinition definition)
+    {
+        if (ReferenceEquals(Document.SelectedDefinition, definition)) return;
+        Document.SelectDefinition(definition);
+        RefreshView();
+    }
+
     private void RefreshView()
     {
         RefreshResourceList();

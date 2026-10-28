@@ -199,13 +199,8 @@ public sealed class SceneEditorControl : UserControl
         var definitionBar = new DefinitionSelectionBar<SceneDefinition>(
             () => Document.Definitions, () => Document.SelectedDefinition, definition => definition.ID,
             Document.SelectDefinition, () => Document.AddDefinition(), () => Document.DuplicateDefinition(),
-            () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, () =>
-            {
-                foreach (var source in _tilesheetSources) source.Dispose();
-                foreach (var source in _animationSources) source.Dispose();
-                _tilesheetSources.Clear(); _animationSources.Clear(); _sourceDiagnostics.Clear();
-                LoadDeclaredSources(); RefreshView();
-            }, "gscn", (path, select) => Document.ImportDefinitions(path, select));
+            () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, RefreshSelectedDefinition,
+            "gscn", (path, select) => Document.ImportDefinitions(path, select));
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
@@ -1233,6 +1228,22 @@ public sealed class SceneEditorControl : UserControl
         }
 
         RefreshPreview();
+    }
+
+    /// <summary>Selects an owned definition and refreshes its source previews and controls without reloading or saving the document.</summary>
+    public void SelectDefinition(SceneDefinition definition)
+    {
+        if (ReferenceEquals(Document.SelectedDefinition, definition)) return;
+        Document.SelectDefinition(definition);
+        RefreshSelectedDefinition();
+    }
+
+    private void RefreshSelectedDefinition()
+    {
+        foreach (var source in _tilesheetSources) source.Dispose();
+        foreach (var source in _animationSources) source.Dispose();
+        _tilesheetSources.Clear(); _animationSources.Clear(); _sourceDiagnostics.Clear();
+        LoadDeclaredSources(); RefreshView();
     }
 
     private void RefreshView()

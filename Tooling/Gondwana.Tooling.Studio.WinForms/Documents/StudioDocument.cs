@@ -1,6 +1,7 @@
 using Gondwana.Assets;
 using Gondwana.Tooling.Animations.Editing;
 using Gondwana.Tooling.Animations.WinForms;
+using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Assets.WinForms;
 using Gondwana.Tooling.Audio.Editing;
 using Gondwana.Tooling.Audio.WinForms;
@@ -69,6 +70,37 @@ internal sealed class StudioDocument : IDisposable
     private Action? _detach;
     private Action? _release;
     internal event EventHandler? Changed;
+
+    internal string? SelectedMember => Editor switch
+    {
+        TilesheetEditorControl e => e.Document.Definition.Name,
+        AnimationEditorControl e => e.Document.Definition.Key,
+        SceneEditorControl e => e.Document.Definition.ID,
+        SpriteEditorControl e => e.Document.Definition.Key,
+        AudioEditorControl e => e.Document.Definition.Key,
+        _ => null
+    };
+
+    internal bool SelectMember(string identity)
+    {
+        return Editor switch
+        {
+            TilesheetEditorControl e => Select(e.Document.Definitions, x => x.Name, e.SelectDefinition),
+            AnimationEditorControl e => Select(e.Document.Definitions, x => x.Key, e.SelectDefinition),
+            SceneEditorControl e => Select(e.Document.Definitions, x => x.ID, e.SelectDefinition),
+            SpriteEditorControl e => Select(e.Document.Definitions, x => x.Key, e.SelectDefinition),
+            AudioEditorControl e => Select(e.Document.Definitions, x => x.Key, e.SelectDefinition),
+            _ => false
+        };
+
+        bool Select<T>(IReadOnlyList<T> members, Func<T, string> key, Action<T> select)
+        {
+            var matches = members.Where(x => DefinitionReferenceQuery.MembersEqual(TypeFor(Extension), key(x), identity)).ToArray();
+            if (matches.Length != 1) return false;
+            select(matches[0]);
+            return true;
+        }
+    }
 
     /// <summary>Identifies the authoring format using shared package recognition.</summary>
     /// <param name="path">Physical document path.</param>

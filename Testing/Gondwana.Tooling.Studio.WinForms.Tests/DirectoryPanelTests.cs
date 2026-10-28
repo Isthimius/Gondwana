@@ -60,7 +60,8 @@ public sealed partial class CompositionTests
                 Assert.Equal($"Archive: {identity.ArchivePath}\nEntry: {identity.EntryName}\nAsset type: {identity.AssetType}", node.ToolTipText);
                 Assert.Equal(groups[group].ImageKey, node.ImageKey);
                 Assert.Equal(node.ImageKey, node.SelectedImageKey);
-                Assert.Equal(group < 6, panel.PrepareFileMenu(node));
+                Assert.True(panel.PrepareFileMenu(node)); // All packed resources support Find References.
+                Assert.Equal(group < 6, panel.FileMenu.Items[0].Available);
             });
         }
         Assert.Equal(4, groups[1].Nodes.Count);

@@ -133,15 +133,8 @@ public sealed class SpriteEditorControl : UserControl
         var definitionBar = new DefinitionSelectionBar<SpriteDefinition>(
             () => Document.Definitions, () => Document.SelectedDefinition, definition => definition.Key,
             Document.SelectDefinition, () => Document.AddDefinition(), () => Document.DuplicateDefinition(),
-            () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, () =>
-            {
-                foreach (var source in _sources) source.Dispose();
-                ClearAnimationTilesheets();
-                _sources.Clear(); _sceneDefinitions.Clear(); _animationDefinitions.Clear(); _sourceWarnings.Clear();
-                _loadedScenePaths.Clear(); _loadedTilesheetPaths.Clear(); _loadedAnimationPaths.Clear();
-                _scenes.Nodes.Clear(); _frames.Nodes.Clear();
-                LoadSources(); RefreshEntries();
-            }, "gspr", (path, select) => Document.ImportDefinitions(path, select));
+            () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, RefreshSelectedDefinition,
+            "gspr", (path, select) => Document.ImportDefinitions(path, select));
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
@@ -183,6 +176,24 @@ public sealed class SpriteEditorControl : UserControl
         _loadedScenePaths.Clear(); _loadedTilesheetPaths.Clear(); _loadedAnimationPaths.Clear();
         _scenes.Nodes.Clear(); _frames.Nodes.Clear(); _thumbnails.Images.Clear();
         NavigationSizing.RefreshImages(_frames);
+        LoadSources(); RefreshEntries();
+    }
+
+    /// <summary>Selects an owned definition and refreshes its source previews and controls without reloading or saving the document.</summary>
+    public void SelectDefinition(SpriteDefinition definition)
+    {
+        if (ReferenceEquals(Document.SelectedDefinition, definition)) return;
+        Document.SelectDefinition(definition);
+        RefreshSelectedDefinition();
+    }
+
+    private void RefreshSelectedDefinition()
+    {
+        foreach (var source in _sources) source.Dispose();
+        ClearAnimationTilesheets();
+        _sources.Clear(); _sceneDefinitions.Clear(); _animationDefinitions.Clear(); _sourceWarnings.Clear();
+        _loadedScenePaths.Clear(); _loadedTilesheetPaths.Clear(); _loadedAnimationPaths.Clear();
+        _scenes.Nodes.Clear(); _frames.Nodes.Clear();
         LoadSources(); RefreshEntries();
     }
 

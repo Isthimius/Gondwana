@@ -55,7 +55,7 @@ public sealed partial class CompositionTests
         Assert.True(model.Dirty());
         Assert.EndsWith(" *", document.Text);
         Assert.Same(studio.Workspace, document.DockPanel);
-        Assert.Equal(3, studio.Workspace.Contents.Count);
+        Assert.Equal(4, studio.Workspace.Contents.Count); // Document plus the three built-in tools.
         var inner = Assert.Single(Descendants(model.Editor).OfType<DockPanel>());
         var contents = inner.Contents.Cast<DockContent>().ToArray();
         Assert.Equal(model.PaneNames.Count, contents.Length);
@@ -156,7 +156,7 @@ public sealed partial class CompositionTests
         foreach (var format in new[] { "gts", "gani", "gsnd", "gscn", "gspr", "gaf" })
             studio.NewDocument(format, format == "gaf" ? Path.Combine(directory, "assets.gaf") : null);
         Assert.Equal(6, studio.Documents.Count);
-        Assert.Equal(8, studio.Workspace.Contents.Count);
+        Assert.Equal(9, studio.Workspace.Contents.Count); // Six documents and three built-in tool panes.
         var documents = studio.Documents.ToArray();
         int prompts = 0;
         studio.AskSave = _ => ++prompts == 2 ? DialogResult.Cancel : DialogResult.No;

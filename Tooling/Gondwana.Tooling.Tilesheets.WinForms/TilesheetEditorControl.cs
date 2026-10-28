@@ -396,6 +396,14 @@ public sealed class TilesheetEditorControl : UserControl
         UpdateValidation();
     }
 
+    /// <summary>Selects an owned definition and refreshes its regions, properties, and image without reloading or saving the document.</summary>
+    public void SelectDefinition(TilesheetDefinition definition)
+    {
+        if (ReferenceEquals(Document.SelectedDefinition, definition)) return;
+        Document.SelectDefinition(definition);
+        RefreshView();
+    }
+
     private void LoadPreview()
     {
         var model = Document.Definition;
