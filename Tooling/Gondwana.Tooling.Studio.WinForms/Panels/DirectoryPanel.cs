@@ -48,6 +48,9 @@ public sealed class DirectoryPanel : UserControl
     /// <summary>Occurs when the Directory button is clicked so the host can choose and set a new browser root.</summary>
     public event Action? ChooseDirectoryRequested;
 
+    /// <summary>Requests relationship inspection for an exact loose or packed resource without opening it.</summary>
+    public event Action<Gondwana.Assets.AssetLocation>? ReferencesRequested;
+
     /// <summary>Creates the browser controls and file actions without populating the initial directory.</summary>
     /// <param name="log">Callback for directory, archive, and external-open failures.</param>
     public DirectoryPanel(Action<string> log)
@@ -81,6 +84,15 @@ public sealed class DirectoryPanel : UserControl
                 ThemedMessageBox.Show(this, ex.Message, "Open External", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         });
+
+        foreach (var title in new[] { "Find References", "Show Dependencies", "Show Dependents" })
+            _fileMenu.Items.Add(title, null, (_, _) =>
+            {
+                if (_menuPacked is { } packed)
+                    ReferencesRequested?.Invoke(new(packed.AssetType, packed.ArchivePath, packed.EntryName));
+                else if (_menuPath is { } path)
+                    ReferencesRequested?.Invoke(new(Gondwana.Tooling.Assets.AssetImportPlan.InferType(path), Path.GetFullPath(path)));
+            });
 
         Tree.NodeMouseClick += (_, e) =>
         {
@@ -447,11 +459,8 @@ public sealed class DirectoryPanel : UserControl
 
         if (node.Tag is PackedAssetNodeIdentity packed)
         {
-            if (StudioDocument.FormatFor(packed.AssetType) is null)
-                return false;
-
             _menuPacked = packed;
-            _fileMenu.Items[0].Visible = true;
+            _fileMenu.Items[0].Visible = StudioDocument.FormatFor(packed.AssetType) is not null;
             _fileMenu.Items[1].Visible = false;
 
             return true;

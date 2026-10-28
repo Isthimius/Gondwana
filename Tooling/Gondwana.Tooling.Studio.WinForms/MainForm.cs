@@ -93,6 +93,8 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         Workspace.ActiveDocumentChanged += (_, _) => { SyncActiveDocumentSelection(); UpdateToolbarState(); };
         AddTool("shell.working-directory", "Working directory", Browser, DockState.DockLeft);
         AddTool("shell.output", "Output", new OutputPanel(_output), DockState.DockBottom);
+        InitializeDependencies();
+        Workspace.ActiveDocumentChanged += DependencySelectionChanged;
         AskSave = document => ThemedMessageBox.Show(this, $"Save changes to {document.Caption}?",
             "Unsaved changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
         SavePath = ChooseSavePath;
@@ -158,6 +160,9 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         Add(file, "Save &As…", Keys.Control | Keys.Shift | Keys.S, async () => { if (ActiveDocument is { } doc) await SaveDocument(doc, saveAs: true); });
         Add(file, "Reload document from disk", Keys.None, () => { if (ActiveDocument is { } doc) ReloadDocument(doc); });
         Add(file, "Reload dependency previews", Keys.None, () => { if (ActiveDocument is { } doc) ReloadPreviews(doc); });
+        Add(file, "Find References", Keys.None, () => ShowDependencies(dependents: true));
+        Add(file, "Show Dependencies", Keys.None, () => ShowDependencies(dependents: false));
+        Add(file, "Show Dependents", Keys.None, () => ShowDependencies(dependents: true));
         Add(file, "&Close", Keys.Control | Keys.W, () => ActiveDocument?.Close());
         Add(file, "E&xit", Keys.Alt | Keys.F4, Close);
         _session.AddMenu(file);
@@ -208,6 +213,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         {
             ValidateRelocation(plan, null);
             plan.Commit();
+            InvalidateDependencies();
             _packages.Clear();
             Browser.RefreshDirectory();
             _output.Log("Move committed within scope: " + plan.Scope);
@@ -225,6 +231,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         {
             ValidateDeletion(plan, null);
             plan.Commit(force);
+            InvalidateDependencies();
             _packages.Clear();
             Browser.RefreshDirectory();
             _output.Log("Deletion committed within scope: " + plan.Scope);
@@ -277,6 +284,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
 
     internal void SetWorkingDirectory(string path)
     {
+        InvalidateDependencies();
         path = Path.GetFullPath(path);
         if (_workingDirectory is not null) _plugins.NotifyProjectClosed();
         Browser.SetDirectory(path);
@@ -347,6 +355,13 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
             sceneEditor.SaveRequestedAsync = () => SaveDocument(document);
         _documents.Add(document);
         model.Changed += ToolbarDocumentChanged;
+        model.Changed += DependencySelectionChanged;
+        var referencesMenu = new ContextMenuStrip();
+        foreach (var title in new[] { "Find References", "Show Dependencies", "Show Dependents" })
+            referencesMenu.Items.Add(title, null, (_, _) => ShowDependencies(
+                model.Location is { } endpoint ? new ResourceAddress(endpoint, model.SelectedMember) : null,
+                dependents: title != "Show Dependencies"));
+        document.TabPageContextMenuStrip = referencesMenu;
         if (model.Location is { } location) _paths.Add(location, document);
         if (model.Editor is AssetEditorControl assets)
         {
@@ -357,6 +372,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
             assets.ValidateDeletion = plan => ValidateDeletion(plan, assets.FilePath);
             assets.WorkspaceChanged = () =>
             {
+                InvalidateDependencies();
                 if (!assets.IsDirty && File.Exists(assets.FilePath))
                 {
                     using var current = StudioArchiveSnapshot.Open(assets.FilePath, assets.AssetsFile.Password);
@@ -370,6 +386,8 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         document.Disposed += (_, _) =>
         {
             model.Changed -= ToolbarDocumentChanged;
+            model.Changed -= DependencySelectionChanged;
+            referencesMenu.Dispose();
             _documents.Remove(document);
             _saves.Remove(document);
             foreach (var key in _paths.Where(pair => pair.Value == document).Select(pair => pair.Key).ToArray()) _paths.Remove(key);
@@ -431,6 +449,8 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
                 SyncActiveDocumentSelection();
                 _packages.Invalidate(destination);
                 _output.Log($"Saved {model.Tooltip}");
+                InvalidateDependencies();
+                if (_followDependencySelection) _dependencyTarget = ActiveAddress();
             }
             if (packedSave || model.Kind == "asset")
             {
@@ -547,6 +567,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         if (disposing && !_disposed)
         {
             _disposed = true;
+            InvalidateDependencies();
             _layout.Dispose();
             if (_workingDirectory is not null) _plugins.NotifyProjectClosed();
             foreach (var document in _documents.ToArray()) document.Dispose();
