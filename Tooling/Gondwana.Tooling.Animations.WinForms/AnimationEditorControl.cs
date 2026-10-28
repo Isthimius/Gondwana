@@ -1,7 +1,9 @@
 using System.Drawing.Drawing2D;
+using Gondwana.Assets;
 using Gondwana.Drawing.Animation.GANI;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Animations.Editing;
+using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Tilesheets.Sources;
 using Gondwana.Tooling.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
@@ -11,6 +13,18 @@ namespace Gondwana.Tooling.Animations.WinForms;
 /// <summary>Shared standalone and Studio editor for the logical definitions in a GANI document.</summary>
 public sealed class AnimationEditorControl : UserControl
 {
+    /// <summary>Validates and adds one packed GTS member with its exact entry identity and preview.</summary>
+    public void AddPackedTilesheetSource(PackedResourceSelection selection)
+    {
+        selection.Validate(_packages, AssetTypes.TilesheetDefinition);
+        var resource = selection.Resource;
+        var source = TilesheetSource.LoadPacked(resource.Path, resource.EntryName!, selection.Member!, _packages);
+        try { Document.AddPackedTilesheetSource(selection.Member!, resource.Path, resource.EntryName!); }
+        catch { source.Dispose(); throw; }
+        _sources.Add(source);
+        RefreshAfterSourceChange();
+    }
+
     /// <summary>Gets the pane titles accepted by the pane visibility methods.</summary>
     public static IReadOnlyList<string> PaneNames { get; } =
         Array.AsReadOnly(
@@ -124,7 +138,7 @@ public sealed class AnimationEditorControl : UserControl
     /// <exception cref="ArgumentNullException"><paramref name="document"/> is null.</exception>
     public AnimationEditorControl(AnimationDocument document, AssetPackageCatalog? packages)
     {
-        _packages = packages ?? new AssetPackageCatalog();
+        _packages = packages ?? PackedResourcePicker.CreateCatalog(this);
         _ownsPackages = packages is null;
         Document = document ?? throw new ArgumentNullException(nameof(document));
         _propertyAdapter = new AnimationPropertyAdapter(Document);
@@ -629,6 +643,8 @@ public sealed class AnimationEditorControl : UserControl
 
         bar.Items.Add("Reload sources", null, (_, _) => ReloadSources());
         bar.Items.Add("Add GTS…", null, (_, _) => ChooseTilesheetSources());
+        bar.Items.Add("Add from GAF…", null, (_, _) => PackedResourcePicker.PickAndApply(
+            this, _packages, Document.BaseDirectory, AssetTypes.TilesheetDefinition, AddPackedTilesheetSource));
         bar.Items.Add("Remove", null, (_, _) => RemoveSelectedSource());
         return bar;
     }

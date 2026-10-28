@@ -282,7 +282,7 @@ public sealed class AnimationEditorTests
                         .Any(item => item.Text == "Add GTS…"));
 
                 Assert.Equal(
-                    ["Reload sources", "Add GTS…", "Remove"],
+                    ["Reload sources", "Add GTS…", "Add from GAF…", "Remove"],
                     sourceToolbar.Items
                         .Cast<ToolStripItem>()
                         .Select(item => item.Text)

@@ -31,7 +31,10 @@ Gondwana Studio host can reuse the same editor surface without depending on
 - **File → Open GANI** opens one or more `.gani` documents.
 - **File → Add GTS source** loads one or more loose `.gts` definitions as authoring
   sources for the active animation and records those dependencies in the GANI definition.
-- Reopening a GANI automatically reloads its recorded loose GTS sources. Legacy GANI
+- **Add from GAF…** in GTS frame sources selects an exact typed GTS entry and an
+  individual logical member. Packed images, including images in that same archive,
+  feed the existing frame tree and previews. Conflicting logical source names are rejected.
+- Reopening a GANI automatically reloads its recorded loose or packed GTS sources. Legacy GANI
   files without source metadata can recover exactly one matching sibling GTS by logical
   tilesheet name and are then marked dirty so the dependency is persisted on save.
 - The left source browser shows tilesheets, regions, rows and frames lazily. Expand

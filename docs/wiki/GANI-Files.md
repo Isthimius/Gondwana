@@ -567,9 +567,9 @@ Animation
 
 The editor can validate and save the definition without needing to serialize a live `Animator`.
 
-The WinForms GANI editor persists loose GTS dependencies in `TilesheetSources` and reloads them automatically when a GANI document is reopened. For older GANI files that do not yet contain source metadata, the editor performs a deliberately narrow migration check: it looks only beside the GANI file for a GTS definition whose logical `Name` matches the frame's `Tilesheet`. If exactly one match exists, it is loaded and the document is marked dirty so the recovered dependency is written on the next save. The editor does not recursively search the filesystem.
+The WinForms GANI editor persists loose and packed GTS dependencies in `TilesheetSources` and reloads them automatically when a GANI document is reopened. **Add from GAF…** in the GTS frame sources pane selects an exact typed entry and logical member; its packed images feed the existing frame tree and previews, including images in the same archive. The shared picker supports password prompts and **Reload / retry**, and rejects conflicting logical source names. For older GANI files that do not yet contain source metadata, the editor performs a deliberately narrow migration check: it looks only beside the GANI file for a GTS definition whose logical `Name` matches the frame's `Tilesheet`. If exactly one match exists, it is loaded and the document is marked dirty so the recovered dependency is written on the next save. The editor does not recursively search the filesystem.
 
-Saving or **Save As** rebases loose dependency paths relative to the new GANI location when both files are on the same filesystem root.
+Saving or **Save As** rebases loose dependency and archive paths relative to the new GANI location when both files are on the same filesystem root, preserving exact entry and logical member identities.
 
 That same separation makes GANI suitable for both a standalone WinForms animation tool and, later, an embedded Gondwana Studio editor.
 

@@ -32,6 +32,11 @@ GTS data and images belong to the editor. They are not registered with Tilesheet
 Explicit packed GTS, GSCN and GANI sources use the [shared authoring resolver](../Gondwana.Tooling.Assets/README.md),
 including packed GTS images and GANI tilesheet dependencies. Packed entries and
 logical members are selected exactly, without substituting loose duplicates.
+
+Use **Add from GAF…** in the GTS and GSCN source panes, or **GANI from GAF…**
+beside the animation controls, to choose a typed entry and logical member.
+Selections are validated before adding references; conflicting logical names
+are rejected. These actions use the same picker in Studio and the standalone editor.
 Sprites with a starting animation display its first frame from that animation's
 declared sources. **Reload sources** refreshes dependencies without changing the
 sprite definitions, assignments, or dirty state.

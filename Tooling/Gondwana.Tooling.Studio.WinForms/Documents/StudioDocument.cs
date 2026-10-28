@@ -170,7 +170,7 @@ internal sealed class StudioDocument : IDisposable
                                 AudioDocument.Open(archive, entryName!) :
                                 path is null ? AudioDocument.Create(directory) : AudioDocument.Open(path);
 
-                    var editor = new AudioEditorControl(model);
+                    var editor = new AudioEditorControl(model, packages);
 
                     result = new()
                     {

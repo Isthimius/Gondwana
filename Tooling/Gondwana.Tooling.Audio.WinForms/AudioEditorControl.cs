@@ -1,5 +1,8 @@
+using Gondwana.Assets;
 using Gondwana.Audio.GSND;
+using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Audio.Editing;
+using Gondwana.Tooling.Tilesheets.Sources;
 using Gondwana.Tooling.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -8,6 +11,8 @@ namespace Gondwana.Tooling.Audio.WinForms;
 /// <summary>Shared standalone and Studio editor for the logical definitions in a GSND document.</summary>
 public sealed class AudioEditorControl : UserControl
 {
+    private readonly AssetPackageCatalog _packages;
+    private readonly bool _ownsPackages;
     /// <summary>Gets the pane titles accepted by the pane visibility methods.</summary>
     public static IReadOnlyList<string> PaneNames { get; } =
         Array.AsReadOnly(["Audio resources", "Properties", "Validation"]);
@@ -46,8 +51,13 @@ public sealed class AudioEditorControl : UserControl
     /// <summary>Creates an audio definition editor and subscribes to document changes.</summary>
     /// <param name="document">The mutable document to edit.</param>
     /// <exception cref="ArgumentNullException"><paramref name="document"/> is null.</exception>
-    public AudioEditorControl(AudioDocument document)
+    public AudioEditorControl(AudioDocument document) : this(document, null) { }
+
+    /// <summary>Creates an editor using a borrowed catalog, or an owned standalone catalog when null.</summary>
+    public AudioEditorControl(AudioDocument document, AssetPackageCatalog? packages)
     {
+        _packages = packages ?? PackedResourcePicker.CreateCatalog(this);
+        _ownsPackages = packages is null;
         Document = document ?? throw new ArgumentNullException(nameof(document));
         Size = new Size(1050, 700);
         Dock = DockStyle.Fill;
@@ -156,6 +166,8 @@ public sealed class AudioEditorControl : UserControl
         };
 
         bar.Items.Add("Add file…", null, (_, _) => ChooseLooseFiles());
+        bar.Items.Add("Add from GAF…", null, (_, _) => PackedResourcePicker.PickAndApply(
+            this, _packages, Document.BaseDirectory, AssetTypes.Audio, AddPackedAudio));
         bar.Items.Add("Add URI…", null, (_, _) => AddUri());
         bar.Items.Add(new ToolStripSeparator());
         bar.Items.Add("Remove", null, (_, _) => RemoveSelected());
@@ -187,6 +199,22 @@ public sealed class AudioEditorControl : UserControl
         {
             ShowError(ex);
         }
+    }
+
+    /// <summary>Validates an exact packed audio entry before adding a persistent reference.</summary>
+    public void AddPackedAudio(PackedResourceSelection selection)
+    {
+        selection.Validate(_packages, AssetTypes.Audio);
+        var resource = Document.AddPackedAudio(selection.Resource.Path, selection.Resource.EntryName!, selection.SourceExtension);
+        RefreshView();
+        SelectResource(resource);
+    }
+
+    /// <inheritdoc />
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing && _ownsPackages) _packages.Dispose();
+        base.Dispose(disposing);
     }
 
     private void AddUri()
