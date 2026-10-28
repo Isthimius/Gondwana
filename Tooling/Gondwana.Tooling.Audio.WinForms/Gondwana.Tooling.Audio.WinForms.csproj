@@ -1,4 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <Compile Include="../Shared/WinForms/PackedResourcePicker.cs" Link="Authoring/PackedResourcePicker.cs" />
+  </ItemGroup>
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
@@ -23,6 +26,7 @@
     <Compile Include="..\Shared\WinForms\DefinitionSelectionBar.cs" Link="Docking\DefinitionSelectionBar.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="../Gondwana.Tooling.Assets/Gondwana.Tooling.Assets.csproj" />
     <ProjectReference Include="../Shared/WinForms/Theming/Gondwana.Tooling.WinForms.Theming.csproj" />
     <Using Include="Gondwana.Tooling.WinForms.Theming" />
   </ItemGroup>

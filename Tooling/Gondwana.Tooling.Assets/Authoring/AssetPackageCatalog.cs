@@ -21,6 +21,18 @@ public sealed class AssetPackageCatalog : IDisposable
     /// <remarks>Return a password for one retry, or null to decline. Failures are cached until invalidation or a file length/timestamp change. Invoked synchronously on the caller's thread.</remarks>
     public Func<string, string?>? PasswordProvider { get; set; }
 
+    /// <summary>Lists exact entry identities of the requested stored type without extracting files.</summary>
+    public IReadOnlyList<Gondwana.Tooling.Assets.AuthoringResource> GetResources(string archivePath, AssetTypes type)
+    {
+        var fullPath = NormalizeExistingPath(archivePath);
+        PackageAccessed?.Invoke(fullPath);
+        return GetPackage(fullPath).GetAllEntries()
+            .Where(entry => entry.AssetType == type)
+            .OrderBy(entry => entry.AssetName, StringComparer.OrdinalIgnoreCase)
+            .Select(entry => new Gondwana.Tooling.Assets.AuthoringResource(fullPath, type, entry.AssetName))
+            .ToArray();
+    }
+
     /// <summary>Lists image entries from a cached or newly opened package, sorted by entry name without case.</summary>
     /// <param name="assetsFilePath">Existing archive path; relative paths use the process current directory.</param>
     /// <returns>A new list of image identities without extracting their contents.</returns>

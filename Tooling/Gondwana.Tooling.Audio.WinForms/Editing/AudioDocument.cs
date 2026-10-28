@@ -204,6 +204,26 @@ public sealed partial class AudioDocument
         return candidate;
     }
 
+    /// <summary>Adds a packed audio reference with a unique resource key; the caller verifies the entry first.</summary>
+    public AudioResourceDefinition AddPackedAudio(string archivePath, string entryName, string? sourceExtension = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(archivePath);
+        ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
+        var extension = string.IsNullOrWhiteSpace(sourceExtension) ? Path.GetExtension(entryName) : sourceExtension;
+        if (string.IsNullOrWhiteSpace(extension)) throw new InvalidDataException("Packed audio requires a source extension.");
+        var resource = new AudioResourceDefinition
+        {
+            Key = UniqueKey(Path.GetFileNameWithoutExtension(entryName)),
+            SourceKind = AudioResourceSourceKind.PackedAsset,
+            AssetsFilePath = MakeReferencePath(archivePath, BaseDirectory),
+            AssetEntryName = entryName,
+            SourceExtension = extension
+        };
+        Definition.Resources.Add(resource);
+        MarkChanged();
+        return resource;
+    }
+
     private static string MakeReferencePath(string path, string baseDirectory)
     {
         var fullPath = Path.GetFullPath(path);

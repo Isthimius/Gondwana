@@ -6,6 +6,32 @@ namespace Gondwana.Tooling.Scenes.Editing;
 /// <summary>UI-independent editing session for all logical definitions in one GSCN document.</summary>
 public sealed partial class SceneDocument
 {
+    /// <summary>Adds a validated packed tilesheet dependency; rejects conflicting logical identities.</summary>
+    public void AddPackedTilesheetSource(string tilesheet, string archivePath, string entryName)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(tilesheet);
+        ArgumentException.ThrowIfNullOrWhiteSpace(archivePath);
+        ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
+        if (Definition.TilesheetSources.Any(source => string.Equals(source.Tilesheet, tilesheet, StringComparison.Ordinal)))
+            throw new InvalidOperationException($"A tilesheet source named '{tilesheet}' already exists. Remove the existing source before adding another.");
+        Definition.TilesheetSources.Add(SceneTilesheetSourceDefinition.Packed(tilesheet,
+            Path.GetRelativePath(BaseDirectory, Path.GetFullPath(archivePath)), entryName));
+        MarkChanged();
+    }
+
+    /// <summary>Adds a validated packed animation dependency; rejects conflicting logical identities.</summary>
+    public void AddPackedAnimationSource(string key, string archivePath, string entryName)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+        ArgumentException.ThrowIfNullOrWhiteSpace(archivePath);
+        ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
+        if (Definition.AnimationSources.Any(source => string.Equals(source.AnimationKey, key, StringComparison.OrdinalIgnoreCase)))
+            throw new InvalidOperationException($"An animation source named '{key}' already exists. Remove the existing source before adding another.");
+        Definition.AnimationSources.Add(SceneAnimationSourceDefinition.Packed(key,
+            Path.GetRelativePath(BaseDirectory, Path.GetFullPath(archivePath)), entryName));
+        MarkChanged();
+    }
+
     /// <summary>Gets the selected mutable logical definition; direct edits require <see cref="MarkChanged"/>.</summary>
     public SceneDefinition Definition { get; private set; }
     /// <summary>Gets the full loose-file path, or null for an unsaved or packed document.</summary>

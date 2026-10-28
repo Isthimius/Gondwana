@@ -144,6 +144,12 @@ The new option is appended to the existing signature. Compression and partial se
 
 The standalone `Gondwana.Tooling.Sprites.WinForms` application edits multiple GSPR documents. Its SpriteEditorControl is also hosted directly by Gondwana Studio. Add, duplicate, remove and select entries, load GSCN/GTS sources, double-click a layer or frame to assign it, edit properties, and inspect the preview and validation panes.
 
+**Add from GAF…** in the GTS/GSCN source panes and **GANI from GAF…** beside
+the animation controls select exact typed entries and individual logical members.
+The shared picker validates selections, rejects conflicting logical names, and
+supports encrypted archives with **Reload / retry**. Packed sources feed the
+existing frame, scene/layer, and representative animation previews.
+
 Preview uses engine projection math without a game host, live loop, or registered preview sprites/scenes/tilesheets. Structural errors are distinct from missing-source warnings. The shared docking infrastructure restores pane arrangement and visibility per application; standalone and Studio preferences are independent. View restores hidden panes and resets the active editor layout. No document session or zoom state is stored in GSPR or dock preferences.
 
 ## Preserving definition origins in EngineState

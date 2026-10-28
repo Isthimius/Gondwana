@@ -79,6 +79,11 @@ This keeps large mostly-empty layers compact.
 
 ## GTS frame sources
 
+**Add from GAF…** in either source pane selects an exact typed GTS or GANI entry
+and a logical member from a GAF/ZIP package. It validates the selected definition
+and rejects conflicting logical source names. Existing frame previews and
+representative animation frames use the selected packed dependencies.
+
 **Add GTS…** loads a loose `.gts` definition for authoring. Its logical
 tilesheet name is stored separately from its source path.
 

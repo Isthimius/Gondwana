@@ -7,6 +7,19 @@ namespace Gondwana.Tooling.Animations.Editing;
 /// <summary>UI-independent editing session for all logical definitions in one GANI document.</summary>
 public sealed partial class AnimationDocument
 {
+    /// <summary>Adds a validated packed tilesheet dependency; rejects conflicting logical identities.</summary>
+    public void AddPackedTilesheetSource(string tilesheet, string archivePath, string entryName)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(tilesheet);
+        ArgumentException.ThrowIfNullOrWhiteSpace(archivePath);
+        ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
+        if (Definition.TilesheetSources.Any(source => string.Equals(source.Tilesheet, tilesheet, StringComparison.Ordinal)))
+            throw new InvalidOperationException($"A tilesheet source named '{tilesheet}' already exists. Remove the existing source before adding another.");
+        Definition.TilesheetSources.Add(AnimationTilesheetSourceDefinition.Packed(tilesheet,
+            Path.GetRelativePath(BaseDirectory, Path.GetFullPath(archivePath)), entryName));
+        MarkChanged();
+    }
+
     /// <summary>Gets the selected mutable logical definition; direct edits require <see cref="MarkChanged"/>.</summary>
     public AnimationDefinition Definition { get; private set; }
     /// <summary>Gets the full loose-file path, or null for an unsaved or packed document.</summary>

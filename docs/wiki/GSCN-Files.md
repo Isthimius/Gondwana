@@ -289,6 +289,11 @@ and their packed images, preserving explicit packed provenance even when loose
 duplicates exist. Studio can also open and save the GSCN document itself inside
 a GAF; see [packed definition documents](Gondwana-Studio#packed-definition-documents).
 
+In either GTS or GANI source pane, **Add from GAF…** selects an exact typed entry
+and a logical member from a GAF/ZIP package. The shared picker validates the
+selection, supports encrypted packages and **Reload / retry**, and rejects
+conflicting logical names. Studio and standalone editors use the same controls.
+
 The metadata is optional for runtime compatibility. Older GSCN documents with only
 logical references remain valid.
 

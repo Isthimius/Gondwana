@@ -27,10 +27,19 @@ reloaded.
 
 Hosts may supply the existing `PasswordProvider` callback. Failed attempts are
 cached until invalidation or a file change so passive loads do not repeatedly
-prompt. Standalone controls without a provider report inaccessible archives as
-dependency warnings. `PasswordAccepted` reports only successfully authenticated
+prompt. GANI/GSCN/GSPR/GSND standalone controls create a shared password-prompt
+implementation with in-memory credential reuse when no host catalog is supplied.
+`PasswordAccepted` reports only successfully authenticated
 credentials so a host can reuse them across dependency reloads and document opens.
 Passwords are never stored in definitions.
+
+`GetResources` lists exact physical entry identities filtered by stored `AssetTypes`.
+`PackedResourceSelection` keeps the logical member separate, enumerates members
+through existing serializers, and validates the selected member before application.
+The single linked `Tooling/Shared/WinForms/PackedResourcePicker.cs` supplies the
+GANI/GSCN/GSPR/GSND dependency UI, including **Reload / retry** for cached failures
+or changed packages. Browsing never extracts or rewrites archives. Conflicting
+logical names are rejected instead of silently switching an existing dependency.
 
 The controls share Skia decoding, masking and owned GDI bitmap conversion through
 `Tooling/Shared/WinForms/AuthoringPreviewImage.cs`. GANI keeps its existing playback

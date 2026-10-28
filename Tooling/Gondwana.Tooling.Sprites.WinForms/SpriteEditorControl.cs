@@ -59,7 +59,7 @@ public sealed class SpriteEditorControl : UserControl
     /// <exception cref="ArgumentNullException"><paramref name="document"/> is null.</exception>
     public SpriteEditorControl(SpriteDocument document, AssetPackageCatalog? packages)
     {
-        _packages = packages ?? new AssetPackageCatalog();
+        _packages = packages ?? PackedResourcePicker.CreateCatalog(this);
         _ownsPackages = packages is null;
         Document = document;
         _frames.ImageList = _thumbnails;
@@ -85,6 +85,8 @@ public sealed class SpriteEditorControl : UserControl
                 UpdateValidation();
             }
         });
+        Button("GANI from GAF…", () => PackedResourcePicker.PickAndApply(
+            this, _packages, Document.BaseDirectory, AssetTypes.AnimationDefinition, AddPackedAnimationSource));
         toolbar.AutoSize = true;
         toolbar.AutoSizeMode = AutoSizeMode.GrowAndShrink;
         toolbar.Controls.Add(new Label { Text = "Animation:", AutoSize = true, Margin = new Padding(8, 8, 4, 0) });
@@ -102,8 +104,8 @@ public sealed class SpriteEditorControl : UserControl
         };
         var sprites = _workspace.AddPane("sprites", PaneNames[0], _sprites, toolbar);
         var preview = _workspace.AddPane("sprite-preview", PaneNames[1], _preview);
-        var scenes = _workspace.AddPane("scene-sources", PaneNames[2], _scenes, SourceToolbar("Add GSCN…", "GSCN|*.gscn", AddSceneSources));
-        var frames = _workspace.AddPane("gts-sources", PaneNames[3], _frames, SourceToolbar("Add GTS…", "GTS|*.gts", AddTilesheetSources));
+        var scenes = _workspace.AddPane("scene-sources", PaneNames[2], _scenes, SourceToolbar("Add GSCN…", "GSCN|*.gscn", AddSceneSources, AssetTypes.SceneDefinition, AddPackedSceneSource));
+        var frames = _workspace.AddPane("gts-sources", PaneNames[3], _frames, SourceToolbar("Add GTS…", "GTS|*.gts", AddTilesheetSources, AssetTypes.TilesheetDefinition, AddPackedTilesheetSource));
         var properties = _workspace.AddPane("properties", PaneNames[4], _properties);
         var validation = _workspace.AddPane("validation", PaneNames[5], _validation);
         _workspace.Place(sprites, () => sprites.Show(_workspace.DockPanel, DockState.Document));
@@ -148,7 +150,8 @@ public sealed class SpriteEditorControl : UserControl
         ToolingAppearance.Apply(this);
     }
 
-    private Control SourceToolbar(string title, string filter, Action<IEnumerable<string>> add)
+    private Control SourceToolbar(string title, string filter, Action<IEnumerable<string>> add,
+        AssetTypes type, Action<PackedResourceSelection> addPacked)
     {
         var button = new Button { Text = title, Dock = DockStyle.Top, Height = 30 };
         button.Click += (_, _) =>
@@ -160,7 +163,13 @@ public sealed class SpriteEditorControl : UserControl
                 UpdateValidation();
             }
         };
-        return button;
+        var packed = new Button { Text = "Add from GAF…", AutoSize = true };
+        packed.Click += (_, _) => PackedResourcePicker.PickAndApply(this, _packages, Document.BaseDirectory, type, addPacked);
+        var bar = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true };
+        button.Dock = DockStyle.None;
+        button.AutoSize = true;
+        bar.Controls.AddRange([button, packed]);
+        return bar;
     }
 
     /// <summary>Clears the package cache, releases loaded previews, and reloads the document's declared sources.</summary>
@@ -214,6 +223,40 @@ public sealed class SpriteEditorControl : UserControl
     {
         foreach (var source in _animationTilesheets.Values.SelectMany(sources => sources)) source.Dispose();
         _animationTilesheets.Clear();
+    }
+
+    /// <summary>Validates and adds one packed tilesheet member and its frame thumbnails.</summary>
+    public void AddPackedTilesheetSource(PackedResourceSelection selection)
+    {
+        selection.Validate(_packages, AssetTypes.TilesheetDefinition);
+        var resource = selection.Resource;
+        var source = SpriteTilesheetSource.LoadPacked(resource.Path, resource.EntryName!, selection.Member!, _packages);
+        try { Document.AddPackedTilesheetSource(selection.Member!, resource.Path, resource.EntryName!); }
+        catch { source.Dispose(); throw; }
+        AddTilesheetDefinition(source);
+        RefreshSelection();
+    }
+
+    /// <summary>Validates and adds one packed animation member using its own dependencies for previews.</summary>
+    public void AddPackedAnimationSource(PackedResourceSelection selection)
+    {
+        selection.Validate(_packages, AssetTypes.AnimationDefinition);
+        var resource = selection.Resource;
+        var definition = new AuthoringResourceResolver(_packages).LoadAnimation(resource, selection.Member);
+        Document.AddPackedAnimationSource(selection.Member!, resource.Path, resource.EntryName!);
+        AddAnimationDefinition(definition, resource);
+        RefreshSelection();
+    }
+
+    /// <summary>Validates and adds one packed scene member to the scene/layer tree.</summary>
+    public void AddPackedSceneSource(PackedResourceSelection selection)
+    {
+        selection.Validate(_packages, AssetTypes.SceneDefinition);
+        var resource = selection.Resource;
+        var definition = new AuthoringResourceResolver(_packages).LoadScene(resource, selection.Member);
+        Document.AddPackedSceneSource(selection.Member!, resource.Path, resource.EntryName!);
+        AddSceneDefinition(definition);
+        RefreshSelection();
     }
 
     private void TryLoad(Action action)

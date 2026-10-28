@@ -34,10 +34,13 @@ can host the same control later without copying editor logic.
 - **Ctrl+S**, **Ctrl+Shift+S**, and **Ctrl+W** save, save as, and close.
 - Loose file and GAF references are rebased relative to the GSND file when possible.
 
-The GSND core model also supports packed GAF audio references
-(`AssetsFilePath` + `AssetEntryName`). These can be edited directly in the
-property pane; a dedicated packed-audio picker is intentionally outside this
-initial small editor pass.
+**Add from GAF…** browses GAF/ZIP packages for entries stored as `AssetTypes.Audio`.
+Select the exact entry, including its internal path. Extensionless entries require
+their source extension (for example `.wav`). The picker validates the entry before
+adding `AssetsFilePath`, `AssetEntryName`, and `SourceExtension`; Save As rebases
+the archive path. The shared picker supports password prompts and **Reload / retry**.
+Studio supplies its shared catalog and credentials; standalone credentials remain
+in memory for the editor session. Loose files and URI sources remain available.
 
 ## Editor-local docking
 

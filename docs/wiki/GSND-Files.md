@@ -335,6 +335,13 @@ dotnet run --project Tooling/Gondwana.Tooling.Audio.WinForms -c Release
 The editor is definition-driven and does not start a `GameHost` or require an
 audio backend just to edit a file.
 
+**Add from GAF…** selects an exact entry stored as `AssetTypes.Audio` in a GAF/ZIP
+archive, validates it, and records `AssetsFilePath`, `AssetEntryName`, and the
+source extension. For an extensionless entry, supply its original extension
+(for example `.wav`). Save As rebases the archive path. The same picker is used
+in Studio and standalone controls, with password prompts and **Reload / retry**;
+Studio reuses its session credentials. **Add file** and **Add URI** remain available.
+
 Its hostable `AudioEditorControl` contains editor-local dockable panes for:
 
 - Audio resources
