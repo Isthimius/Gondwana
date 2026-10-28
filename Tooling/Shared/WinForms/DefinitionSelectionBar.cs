@@ -14,6 +14,8 @@ internal sealed class DefinitionSelectionBar<T> : ToolStrip where T : class
     private readonly Action<T> _select;
     private readonly Action _refresh;
     private bool _binding;
+    private const int IconSize = 32;
+    private const float IconScale = IconSize / 48f;
     private readonly List<Bitmap> _icons = [];
 
     /// <summary>Creates the shared member selector and edit commands.</summary>
@@ -39,8 +41,10 @@ internal sealed class DefinitionSelectionBar<T> : ToolStrip where T : class
         _refresh = refresh;
         Dock = DockStyle.Top;
         GripStyle = ToolStripGripStyle.Hidden;
-        ImageScalingSize = new Size(48, 48);
-        ShowItemToolTips = true;
+        ImageScalingSize = new Size(IconSize, IconSize);
+        // Apply the shared appearance before enabling native ToolStrip hover tooltips.
+        // Otherwise it substitutes mouse-move tooltips for the whole strip.
+        ShowItemToolTips = false;
         Disposed += (_, _) =>
         {
             foreach (var icon in _icons) icon.Dispose();
@@ -72,6 +76,8 @@ internal sealed class DefinitionSelectionBar<T> : ToolStrip where T : class
                 Execute(() => _select(_definitions()[_members.SelectedIndex]));
         };
         RefreshMembers(this, EventArgs.Empty);
+        ToolingAppearance.Apply(this);
+        ShowItemToolTips = true;
     }
 
     /// <summary>Refreshes displayed identities without changing selection or document dirty state.</summary>
@@ -102,6 +108,8 @@ internal sealed class DefinitionSelectionBar<T> : ToolStrip where T : class
         {
             Name = name,
             Text = label,
+            AutoSize = false,
+            Size = new Size(IconSize, IconSize),
             DisplayStyle = ToolStripItemDisplayStyle.Image,
             Image = DrawIcon(command),
             ToolTipText = label,
@@ -114,7 +122,7 @@ internal sealed class DefinitionSelectionBar<T> : ToolStrip where T : class
 
     private Bitmap DrawIcon(DefinitionCommand command)
     {
-        var image = new Bitmap(48, 48);
+        var image = new Bitmap(IconSize, IconSize);
         using (var graphics = Graphics.FromImage(image))
         using (var pen = new Pen(ToolingAppearance.Palette.Foreground, 3f)
         {
@@ -130,6 +138,7 @@ internal sealed class DefinitionSelectionBar<T> : ToolStrip where T : class
         })
         {
             graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            graphics.ScaleTransform(IconScale, IconScale);
             switch (command)
             {
                 case DefinitionCommand.Add:
