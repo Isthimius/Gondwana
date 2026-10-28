@@ -15,6 +15,7 @@ public sealed partial class MainForm : IResourceNavigator
     private DefinitionReferenceDiscovery? _dependencyScan;
     private ResourceAddress? _dependencyTarget;
     private bool _followDependencySelection;
+    private bool _dependencyWholeDocument;
     internal DefinitionReferenceDiscovery? DependencyScan => _dependencyScan;
     internal DependencyExplorerPanel DependencyPanel => _dependencies;
     internal Task DependencyRefresh { get; private set; } = Task.CompletedTask;
@@ -49,12 +50,12 @@ public sealed partial class MainForm : IResourceNavigator
     {
         _dependencyTool = AddTool("shell.dependencies", "Dependency Explorer", _dependencies, DockState.DockRight);
         _dependencies.RefreshRequested += () => { InvalidateDependencies(); _ = RefreshDependenciesAsync(); };
-        _dependencies.PhysicalRequested += () =>
+        _dependencies.ScopeRequested += wholeDocument =>
         {
-            if (_dependencyTarget is null) return;
-            _followDependencySelection = false;
-            _dependencyTarget = new(_dependencyTarget.Location);
-            _ = RefreshDependenciesAsync();
+            if (_dependencyTarget is null || (!wholeDocument && _dependencyTarget.Member is null)) return;
+            _dependencyWholeDocument = wholeDocument;
+            UpdateDependencyScopeControls();
+            _ = RefreshDependenciesAsync(); // Requery the existing scan, never rescan just to switch scope.
         };
         _dependencies.NavigateRequested += address =>
         {
@@ -70,6 +71,8 @@ public sealed partial class MainForm : IResourceNavigator
     {
         _followDependencySelection = follow;
         _dependencyTarget = address ?? ActiveAddress();
+        _dependencyWholeDocument = _dependencyTarget?.Member is null;
+        UpdateDependencyScopeControls();
         _dependencies.RequestedSection = dependents;
         _dependencyTool?.Show(Workspace);
         DependencyRefresh = RefreshDependenciesAsync();
@@ -78,10 +81,15 @@ public sealed partial class MainForm : IResourceNavigator
     private ResourceAddress? ActiveAddress() => ActiveDocument?.Document is { Location: { } location } document
         ? new(location, document.SelectedMember) : null;
 
+    private void UpdateDependencyScopeControls() =>
+        _dependencies.SetScope(_dependencyWholeDocument || _dependencyTarget?.Member is null,
+            _dependencyTarget?.Member is not null, _dependencyTarget is not null);
+
     private void DependencySelectionChanged(object? sender = null, EventArgs? e = null)
     {
         if (!_followDependencySelection || _disposed) return;
         _dependencyTarget = ActiveAddress();
+        UpdateDependencyScopeControls();
         _ = RefreshDependenciesAsync();
     }
 
@@ -98,7 +106,12 @@ public sealed partial class MainForm : IResourceNavigator
     internal async Task RefreshDependenciesAsync()
     {
         if (_disposed) return;
-        if (_dependencyTarget is null) { _dependencies.SetStatus("Select a saved document or use Find References in the working directory."); return; }
+        if (_dependencyTarget is null)
+        {
+            UpdateDependencyScopeControls();
+            _dependencies.SetStatus("Select a saved document or use Find References in the working directory.");
+            return;
+        }
         if (_dependencyScan is null)
         {
             if (_dependencyCancellation is not null) return;
@@ -146,7 +159,8 @@ public sealed partial class MainForm : IResourceNavigator
     private void PresentDependencies()
     {
         if (_dependencyTarget is not null && _dependencyScan is not null && !_disposed)
-            _dependencies.ShowResults(_dependencyTarget, _dependencyScan, _documents.Any(d => d.Document.Dirty()));
+            _dependencies.ShowResults(_dependencyWholeDocument ? new ResourceAddress(_dependencyTarget.Location) : _dependencyTarget,
+                _dependencyScan, _documents.Any(d => d.Document.Dirty()));
     }
 
     private async Task OnDependencyUiAsync(Action action, CancellationToken token)
