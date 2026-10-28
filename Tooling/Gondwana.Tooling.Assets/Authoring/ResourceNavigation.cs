@@ -66,6 +66,11 @@ public sealed class DefinitionReferenceQuery(DefinitionReferenceDiscovery scan)
 
     private IEnumerable<DefinitionReference> Unresolved() => scan.Problems.Where(p => p.Reference is not null).Select(p => p.Reference!);
 
+    /// <summary>Gets authored remote references for a document, logical member, or whole archive without fetching them.</summary>
+    public IReadOnlyList<(ResourceAddress Source, string Uri)> ExternalDependencies(ResourceAddress source) => scan.ExternalReferences.Where(r =>
+        Matches(r.Source.Location, source.Location) && (source.Member is null ||
+        r.Source.Member is not null && MembersEqual(r.Source.Location.AssetType, r.Source.Member, source.Member))).ToArray();
+
     /// <summary>Uses the native definition matching convention; animation keys are case insensitive.</summary>
     public static bool MembersEqual(AssetTypes type, string left, string right) =>
         (type == AssetTypes.AnimationDefinition ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal).Equals(left, right);

@@ -62,7 +62,7 @@ public sealed partial class MainForm : IResourceNavigator
             _output.Log(result.Message);
             if (!result.Exact) _dependencies.SetStatus(result.Message);
         };
-        Browser.ReferencesRequested += location => ShowDependencies(new(location), follow: false);
+        Browser.ReferencesRequested += (location, dependents) => ShowDependencies(new(location), follow: false, dependents);
         _dependencies.InspectRequested += (address, dependents) => ShowDependencies(address, follow: false, dependents);
     }
 
@@ -111,7 +111,8 @@ public sealed partial class MainForm : IResourceNavigator
             _dependencies.SetStatus($"Scanning saved content in {scope}…");
             try
             {
-                var scan = await InspectDependencies(scope, path => credentials.GetValueOrDefault(path), token).ConfigureAwait(false);
+                var scan = await Browser.RunArchiveReadAsync(
+                    () => InspectDependencies(scope, path => credentials.GetValueOrDefault(path), token), token).ConfigureAwait(false);
                 await OnDependencyUiAsync(() =>
                 {
                     if (_disposed || generation != _dependencyGeneration || token.IsCancellationRequested) return;

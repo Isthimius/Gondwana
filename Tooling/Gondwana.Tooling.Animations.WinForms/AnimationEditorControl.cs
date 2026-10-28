@@ -226,13 +226,8 @@ public sealed class AnimationEditorControl : UserControl
         var definitionBar = new DefinitionSelectionBar<AnimationDefinition>(
             () => Document.Definitions, () => Document.SelectedDefinition, definition => definition.Key,
             Document.SelectDefinition, () => Document.AddDefinition(), () => Document.DuplicateDefinition(),
-            () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, () =>
-            {
-                foreach (var source in _sources) source.Dispose();
-                _sources.Clear();
-                LoadDefinitionTilesheetSources();
-                RefreshView();
-            }, "gani", (path, select) => Document.ImportDefinitions(path, select));
+            () => Document.RemoveDefinition(Document.SelectedDefinition), Document.RenameDefinition, RefreshSelectedDefinition,
+            "gani", (path, select) => Document.ImportDefinitions(path, select));
         Controls.Add(definitionBar);
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
@@ -829,6 +824,22 @@ public sealed class AnimationEditorControl : UserControl
         _frames.Items[index].Selected = true;
         _frames.Items[index].Focused = true;
         _frames.Items[index].EnsureVisible();
+    }
+
+    /// <summary>Selects an owned definition and refreshes its source previews and controls without reloading or saving the document.</summary>
+    public void SelectDefinition(AnimationDefinition definition)
+    {
+        if (ReferenceEquals(Document.SelectedDefinition, definition)) return;
+        Document.SelectDefinition(definition);
+        RefreshSelectedDefinition();
+    }
+
+    private void RefreshSelectedDefinition()
+    {
+        foreach (var source in _sources) source.Dispose();
+        _sources.Clear();
+        LoadDefinitionTilesheetSources();
+        RefreshView();
     }
 
     private void RefreshView()

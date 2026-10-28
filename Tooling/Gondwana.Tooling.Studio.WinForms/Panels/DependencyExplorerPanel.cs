@@ -67,8 +67,7 @@ internal sealed class DependencyExplorerPanel : UserControl
             var unknown = query.UnspecifiedDependents(target);
             if (unknown.Count > 0) Add("Physical references — logical member unspecified", unknown, outbound: false);
             var remote = _tree.Nodes.Add("External URI references (not fetched or navigable)");
-            foreach (var item in scan.ExternalReferences.Where(item => new ResourceAddress(item.Source.Location) == new ResourceAddress(target.Location) &&
-                (target.Member is null || DefinitionReferenceQuery.MembersEqual(target.Location.AssetType, item.Source.Member!, target.Member))))
+            foreach (var item in query.ExternalDependencies(target))
                 remote.Nodes.Add($"{item.Uri} — {item.Source}");
             var problems = _tree.Nodes.Add($"Scan diagnostics ({scan.Problems.Count})");
             foreach (var problem in scan.Problems)

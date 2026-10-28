@@ -85,11 +85,11 @@ internal sealed class StudioDocument : IDisposable
     {
         return Editor switch
         {
-            TilesheetEditorControl e => Select(e.Document.Definitions, x => x.Name, e.Document.SelectDefinition),
-            AnimationEditorControl e => Select(e.Document.Definitions, x => x.Key, e.Document.SelectDefinition),
-            SceneEditorControl e => Select(e.Document.Definitions, x => x.ID, e.Document.SelectDefinition),
-            SpriteEditorControl e => Select(e.Document.Definitions, x => x.Key, e.Document.SelectDefinition),
-            AudioEditorControl e => Select(e.Document.Definitions, x => x.Key, e.Document.SelectDefinition),
+            TilesheetEditorControl e => Select(e.Document.Definitions, x => x.Name, e.SelectDefinition),
+            AnimationEditorControl e => Select(e.Document.Definitions, x => x.Key, e.SelectDefinition),
+            SceneEditorControl e => Select(e.Document.Definitions, x => x.ID, e.SelectDefinition),
+            SpriteEditorControl e => Select(e.Document.Definitions, x => x.Key, e.SelectDefinition),
+            AudioEditorControl e => Select(e.Document.Definitions, x => x.Key, e.SelectDefinition),
             _ => false
         };
 

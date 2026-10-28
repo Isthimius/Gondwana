@@ -454,6 +454,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
             }
             if (packedSave || model.Kind == "asset")
             {
+                InvalidateDependencies(); // Cancel readers before asynchronously draining their archive handles.
                 document.Enabled = false;
                 try { await Browser.RunWithoutArchiveReadsAsync(Save); }
                 finally { if (!document.IsDisposed) document.Enabled = true; }

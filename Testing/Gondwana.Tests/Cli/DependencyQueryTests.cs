@@ -36,6 +36,18 @@ public sealed partial class SemanticAssetPackTests
         Assert.Equal("remote", remote.Source.Member);
         Assert.Equal("Resources[0].SourceUri", remote.Source.FieldPath);
         Assert.Equal("https://example.org/audio.ogg", remote.Uri);
+        var archivePath = Path.Combine(Source, "remote.gaf");
+        using (var archive = AssetsFile.LoadOrCreate(archivePath, null, false, register: false))
+        {
+            archive.Add(AssetTypes.AudioDefinition, path, "nested/remote.gsnd");
+            archive.Save();
+        }
+        var query = new DefinitionReferenceQuery(DefinitionReferenceDiscovery.Inspect(Source));
+        Assert.Single(query.ExternalDependencies(new(new AssetLocation(AssetTypes.Misc, archivePath))));
+        var packed = new AssetLocation(AssetTypes.AudioDefinition, archivePath, "nested/remote.gsnd");
+        Assert.Single(query.ExternalDependencies(new(packed, "remote")));
+        Assert.Empty(query.ExternalDependencies(new(packed, "other")));
+        Assert.Empty(query.ExternalDependencies(new(new AssetLocation(AssetTypes.Misc, Path.Combine(Source, "other.gaf")))));
     }
 
     [Fact]
