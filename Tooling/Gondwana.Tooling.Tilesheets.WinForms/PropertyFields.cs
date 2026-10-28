@@ -3,6 +3,7 @@ using System.Reflection;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Physics.Collisions;
 using Gondwana.Tooling.Tilesheets.Editing;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace Gondwana.Tooling.Tilesheets.WinForms;
 
@@ -70,11 +71,40 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     {
         foreach (var property in model.GetType().GetProperties().Where(p => p.CanWrite && !excluded.Contains(p.Name)))
         {
-            if (property.PropertyType == typeof(string) || property.PropertyType.IsPrimitive || property.PropertyType.IsEnum)
-                AddReflected(model, [property], changed);
+            // Group the region's metadata by purpose instead of giving each field its own heading.
+            string? category = model is TilesheetRegionDefinition ? property.Name switch
+            {
+                nameof(TilesheetRegionDefinition.Name) => "Region",
+                nameof(TilesheetRegionDefinition.Area) or nameof(TilesheetRegionDefinition.TileSize)
+                    or nameof(TilesheetRegionDefinition.TilePadding) or nameof(TilesheetRegionDefinition.RegionMargin)
+                    or nameof(TilesheetRegionDefinition.Overhang) => "Geometry",
+                nameof(TilesheetRegionDefinition.CollisionAdjust) or nameof(TilesheetRegionDefinition.CollisionType) => "Collision",
+                _ => null
+            } : null;
+            if (model is TilesheetRegionDefinition region && property.Name == nameof(TilesheetRegionDefinition.Area))
+            {
+                // The editor exposes the region's origin separately, while Area expands into Width and Height.
+                // Editing a dimension must not reset the source-image position of the rectangle.
+                Add("Area", "Geometry", () => region.Area.Size, size =>
+                {
+                    var area = region.Area;
+                    area.Size = size;
+                    region.Area = area;
+                    changed();
+                }, "Width and height of the region in source-image pixels. Use Area.X and Area.Y to move it.");
+                foreach (var child in property.PropertyType.GetProperties().Where(p => p.Name is nameof(Rectangle.X) or nameof(Rectangle.Y)))
+                    AddReflected(model, [property, child], changed, category);
+            }
+            else if (model is TilesheetRegionDefinition && property.Name == nameof(TilesheetRegionDefinition.TileSize))
+            {
+                // SizeConverter supplies the PropertyGrid's expandable Width and Height children.
+                AddReflected(model, [property], changed, category);
+            }
+            else if (property.PropertyType == typeof(string) || property.PropertyType.IsPrimitive || property.PropertyType.IsEnum)
+                AddReflected(model, [property], changed, category);
             else if (property.PropertyType.IsValueType)
                 foreach (var child in property.PropertyType.GetProperties().Where(p => p.CanWrite && p.PropertyType == typeof(int)))
-                    AddReflected(model, [property, child], changed);
+                    AddReflected(model, [property, child], changed, category);
         }
     }
 
@@ -173,7 +203,7 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         foreach (var property in typeof(CollisionAdjust).GetProperties().Where(p => p.CanWrite))
         {
             bool inherited = Current()?.CollisionAdjust is null;
-            fields.Add(property.Name, "CollisionAdjust", () => (int)property.GetValue(Current()?.CollisionAdjust ?? region.CollisionAdjust)!,
+            fields.Add(property.Name, "Collision", () => (int)property.GetValue(Current()?.CollisionAdjust ?? region.CollisionAdjust)!,
                 inherited ? null : v =>
                 {
                     object boxed = Current()!.CollisionAdjust!.Value;
@@ -207,7 +237,7 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     }
 
     private sealed class ReflectedField(string name, string category, Type type, Func<object?> get, Action<object?> set, string description)
-        : PropertyDescriptor(name, [new CategoryAttribute(category), new DisplayNameAttribute(name.Split('.').Last()), new DescriptionAttribute(description)])
+        : PropertyDescriptor(name, [new CategoryAttribute(category), new DisplayNameAttribute(category == "Geometry" ? name : name.Split('.').Last()), new DescriptionAttribute(description)])
     {
         /// <inheritdoc/>
         public override Type ComponentType => typeof(PropertyFields);

@@ -32,4 +32,35 @@ public sealed class PropertyHelpTests
                     $"{model.GetType().Name}.{property.Name} must have property-grid help.");
         }
     }
+
+    [Fact]
+    public void SceneAndLayerPropertiesAreGroupedByPurpose()
+    {
+        var scene = TypeDescriptor.GetProperties(new SceneDefinition());
+        var layer = TypeDescriptor.GetProperties(new SceneLayerDefinition());
+        AssertNotMisc(scene);
+        AssertNotMisc(layer);
+
+        Assert.Equal("Identity", scene[nameof(SceneDefinition.ID)]!.Category);
+        Assert.Equal("Collision", scene[nameof(SceneDefinition.CollisionProfiles)]!.Category);
+        Assert.Equal("Sources", scene[nameof(SceneDefinition.AnimationSources)]!.Category);
+        Assert.Equal("Structure", scene[nameof(SceneDefinition.Layers)]!.Category);
+        Assert.Equal("Provenance", scene[nameof(SceneDefinition.Source)]!.Category);
+
+        Assert.Equal("Identity", layer[nameof(SceneLayerDefinition.ID)]!.Category);
+        Assert.Equal("Grid", layer[nameof(SceneLayerDefinition.TileWidth)]!.Category);
+        Assert.Equal("Grid", layer[nameof(SceneLayerDefinition.OriginPx)]!.Category);
+        Assert.Equal("Rendering", layer[nameof(SceneLayerDefinition.Parallax)]!.Category);
+        Assert.Equal("Debugging", layer[nameof(SceneLayerDefinition.ShowGridLines)]!.Category);
+        Assert.Equal("Collision", layer[nameof(SceneLayerDefinition.DefaultTileCollisionProfile)]!.Category);
+        Assert.Equal("Content", layer[nameof(SceneLayerDefinition.Tiles)]!.Category);
+    }
+
+    private static void AssertNotMisc(PropertyDescriptorCollection properties)
+    {
+        foreach (PropertyDescriptor property in properties)
+            if (property.IsBrowsable)
+                Assert.NotEqual("Misc", property.Category);
+    }
+
 }

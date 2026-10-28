@@ -320,17 +320,36 @@ public sealed class TilesheetEditorControl : UserControl
 
     private static void BindProperties(PropertyGrid grid, PropertyFields? fields)
     {
-        string? selectedProperty = grid.SelectedGridItem?.PropertyDescriptor?.Name;
-        var collapsedCategories = GridItems(grid).Where(item => item.GridItemType == GridItemType.Category && !item.Expanded)
+        // Nested Size properties can both have a child named Width (or Height).
+        // Preserve the entire property path, not just the final descriptor name.
+        string? selectedPath = grid.SelectedGridItem is { } selected ? GridItemPath(selected) : null;
+        var oldItems = GridItems(grid).ToArray();
+        var collapsedCategories = oldItems.Where(item => item.GridItemType == GridItemType.Category && !item.Expanded)
             .Select(item => item.Label).ToHashSet();
+        var expandedProperties = oldItems.Where(item => item.GridItemType == GridItemType.Property && item.Expandable && item.Expanded)
+            .Select(GridItemPath).ToHashSet();
         grid.SelectedObject = fields;
         grid.Enabled = fields is not null;
         foreach (var item in GridItems(grid))
         {
-            if (item.GridItemType == GridItemType.Category && collapsedCategories.Contains(item.Label)) item.Expanded = false;
-            if (selectedProperty is not null && item.PropertyDescriptor?.Name == selectedProperty)
+            if (item.GridItemType == GridItemType.Category && collapsedCategories.Contains(item.Label))
+                item.Expanded = false;
+            if (item.GridItemType == GridItemType.Property && expandedProperties.Contains(GridItemPath(item)))
+                item.Expanded = true;
+            if (selectedPath is not null && GridItemPath(item) == selectedPath)
                 grid.SelectedGridItem = item;
         }
+    }
+
+    private static string GridItemPath(GridItem item)
+    {
+        var segments = new Stack<string>();
+        while (item.Parent is not null)
+        {
+            segments.Push(item.PropertyDescriptor?.Name ?? item.Label);
+            item = item.Parent;
+        }
+        return string.Join("/", segments);
     }
 
     private static IEnumerable<GridItem> GridItems(PropertyGrid grid)
