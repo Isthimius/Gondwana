@@ -52,9 +52,14 @@ public sealed record PackedResourceSelection(AuthoringResource Resource, string?
             case AssetTypes.Audio:
             case AssetTypes.Image:
                 if (Member is not null) throw new InvalidDataException("Media entries have no logical definition member.");
-                if (expectedType == AssetTypes.Audio && string.IsNullOrWhiteSpace(Path.GetExtension(Resource.EntryName)) &&
-                    string.IsNullOrWhiteSpace(SourceExtension))
-                    throw new InvalidDataException("This audio entry has no extension. Supply its source extension (for example .wav).");
+                if (expectedType == AssetTypes.Audio)
+                {
+                    var extension = string.IsNullOrWhiteSpace(SourceExtension)
+                        ? Path.GetExtension(Resource.EntryName)
+                        : SourceExtension;
+                    if (string.IsNullOrWhiteSpace(Path.GetExtension(extension)))
+                        throw new InvalidDataException("Supply an audio source extension including its leading dot (for example .wav).");
+                }
                 using (var stream = packages.OpenAsset(Resource.Path, expectedType, Resource.EntryName!))
                     if (stream.ReadByte() < 0) throw new InvalidDataException("The selected media entry is empty.");
                 return;
