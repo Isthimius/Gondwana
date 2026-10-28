@@ -8,10 +8,20 @@ internal sealed class DependencyExplorerPanel : UserControl
     private readonly TreeView _tree = new() { Dock = DockStyle.Fill, HideSelection = false, ShowNodeToolTips = true };
     private readonly ToolTip _tips = new();
     private readonly ContextMenuStrip _menu = new();
+    private readonly ToolStripButton _memberScope = new("Selected Member")
+    {
+        Name = "DependencyScopeMember",
+        ToolTipText = "Show references for the selected logical definition."
+    };
+    private readonly ToolStripButton _documentScope = new("Whole Document")
+    {
+        Name = "DependencyScopeDocument",
+        ToolTipText = "Show references for every logical definition in this document."
+    };
     internal event Action? RefreshRequested;
+    internal event Action<bool>? ScopeRequested;
     internal event Action<ResourceAddress>? NavigateRequested;
     internal event Action<ResourceAddress, bool>? InspectRequested;
-    internal event Action? PhysicalRequested;
     internal bool? RequestedSection { get; set; }
     internal string Status => _status.Text;
 
@@ -19,7 +29,13 @@ internal sealed class DependencyExplorerPanel : UserControl
     {
         var bar = new ToolStrip { Dock = DockStyle.Top, GripStyle = ToolStripGripStyle.Hidden };
         bar.Items.Add("Refresh / Rescan", null, (_, _) => RefreshRequested?.Invoke());
-        bar.Items.Add("Whole document", null, (_, _) => PhysicalRequested?.Invoke());
+        bar.Items.Add(new ToolStripSeparator());
+        bar.Items.Add(new ToolStripLabel("Query:"));
+        bar.Items.Add(_memberScope);
+        bar.Items.Add(_documentScope);
+        _memberScope.Click += (_, _) => ScopeRequested?.Invoke(false);
+        _documentScope.Click += (_, _) => ScopeRequested?.Invoke(true);
+        SetScope(wholeDocument: true, memberAvailable: false, hasTarget: false);
         _menu.Items.Add("Open Referenced Definition", null, (_, _) => OpenSelection());
         foreach (var title in new[] { "Find References", "Show Dependencies", "Show Dependents" })
             _menu.Items.Add(title, null, (_, _) =>
@@ -37,6 +53,15 @@ internal sealed class DependencyExplorerPanel : UserControl
         Controls.Add(bar);
         ToolingAppearance.Apply(this);
         SetStatus("Select a saved document or use Find References in the working directory.");
+    }
+
+    /// <summary>Updates the mutually exclusive query choices without issuing another query.</summary>
+    internal void SetScope(bool wholeDocument, bool memberAvailable, bool hasTarget)
+    {
+        _memberScope.Enabled = hasTarget && memberAvailable;
+        _documentScope.Enabled = hasTarget;
+        _memberScope.Checked = hasTarget && memberAvailable && !wholeDocument;
+        _documentScope.Checked = hasTarget && (wholeDocument || !memberAvailable);
     }
 
     private void OpenSelection()
@@ -84,7 +109,8 @@ internal sealed class DependencyExplorerPanel : UserControl
                 _tree.SelectedNode.EnsureVisible();
                 RequestedSection = null;
             }
-            SetStatus($"{target}\nScope: {scan.Scope}\n" +
+            SetStatus($"Query: {(target.Member is null ? "Whole document" : $"Selected member '{target.Member}'")}\n" +
+                $"Target: {target.Location}\nScan scope: {scan.Scope}\n" +
                 (scan.IsCancelled ? "Cancelled — partial results." : scan.IsComplete ? "Completed scan." : "Incomplete scan — see diagnostics; absence is not proof of no references.") +
                 " Saved content only; arbitrary C# references are not discovered. Remote URIs are not fetched." +
                 (!scan.IsWithinScope(target.Location) ? " Query target is outside this scope; its outbound references were not inspected." : "") +
