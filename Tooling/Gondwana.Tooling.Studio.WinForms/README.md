@@ -259,8 +259,9 @@ Document** query selector switches between one logical definition and every
 member in its physical document, using the same completed scan. The selected
 member remains available when switching back; when inspection starts from a
 working-directory file or packed entry without a member, only **Whole Document**
-is available until a specific member is selected in an editor. **Refresh /
-Rescan** rebuilds the saved-content snapshot, independently of query scope.
+is available until a member-scoped query is started from an editor using **Find
+References**, **Show Dependencies**, or **Show Dependents**. **Refresh / Rescan**
+rebuilds the saved-content snapshot, independently of query scope.
 
 Results show full physical paths, typed GAF entry names (including nested paths),
 logical identities, and reference field paths. Already-open editors are activated
