@@ -231,6 +231,21 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         Invalidate();
     }
 
+    /// <inheritdoc/>
+    protected override void OnMouseWheel(MouseEventArgs e)
+    {
+        // ScrollableControl moves the painted pixels for wheel input without
+        // raising OnScroll. The fixed-position overlay must be repainted too,
+        // or its old pixels remain visible in the scrolled scene.
+        var previousPosition = AutoScrollPosition;
+        base.OnMouseWheel(e);
+        if (AutoScrollPosition != previousPosition)
+        {
+            UpdateOffset();
+            Invalidate();
+        }
+    }
+
     /// <summary>Updates the highlighted scene cell and requests a repaint.</summary>
     /// <param name="layer">Layer containing the selected cell, or null to clear the highlight.</param>
     /// <param name="x">Zero-based cell column.</param>
