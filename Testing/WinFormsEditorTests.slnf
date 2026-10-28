@@ -1,0 +1,15 @@
+{
+  "solution": {
+    "path": "../Gondwana.sln",
+    "projects": [
+      "Testing\\Gondwana.Tooling.Tilesheets.WinForms.Tests\\Gondwana.Tooling.Tilesheets.WinForms.Tests.csproj",
+      "Testing\\Gondwana.Tooling.Animations.WinForms.Tests\\Gondwana.Tooling.Animations.WinForms.Tests.csproj",
+      "Testing\\Gondwana.Tooling.Audio.WinForms.Tests\\Gondwana.Tooling.Audio.WinForms.Tests.csproj",
+      "Testing\\Gondwana.Tooling.Scenes.WinForms.Tests\\Gondwana.Tooling.Scenes.WinForms.Tests.csproj",
+      "Testing\\Gondwana.Tooling.Sprites.WinForms.Tests\\Gondwana.Tooling.Sprites.WinForms.Tests.csproj",
+      "Testing\\Gondwana.Tooling.SceneViewer.WinForms.Tests\\Gondwana.Tooling.SceneViewer.WinForms.Tests.csproj",
+      "Testing\\Gondwana.Tooling.Studio.WinForms.Tests\\Gondwana.Tooling.Studio.WinForms.Tests.csproj",
+      "Testing\\Gondwana.Tooling.Importers.Tests\\Gondwana.Tooling.Importers.Tests.csproj"
+    ]
+  }
+}

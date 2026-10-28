@@ -70,26 +70,34 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+      # Compile all tooling test projects and shared dependencies once.
+      - name: Restore tooling test projects
+        run: dotnet restore Testing/WinFormsEditorTests.slnf --nologo -p:Configuration=Release
+      - name: Build tooling test projects
+        run: dotnet build Testing/WinFormsEditorTests.slnf --configuration Release --no-restore --nologo
       - name: Tilesheet WinForms editor interaction tests
-        run: dotnet test Testing/Gondwana.Tooling.Tilesheets.WinForms.Tests/Gondwana.Tooling.Tilesheets.WinForms.Tests.csproj --configuration Release --nologo
+        run: dotnet test Testing/Gondwana.Tooling.Tilesheets.WinForms.Tests/Gondwana.Tooling.Tilesheets.WinForms.Tests.csproj --configuration Release --no-build --no-restore --nologo
 
       - name: Animation WinForms editor interaction tests
-        run: dotnet test Testing/Gondwana.Tooling.Animations.WinForms.Tests/Gondwana.Tooling.Animations.WinForms.Tests.csproj --configuration Release --nologo
+        run: dotnet test Testing/Gondwana.Tooling.Animations.WinForms.Tests/Gondwana.Tooling.Animations.WinForms.Tests.csproj --configuration Release --no-build --no-restore --nologo
 
       - name: Audio WinForms editor interaction tests
-        run: dotnet test Testing/Gondwana.Tooling.Audio.WinForms.Tests/Gondwana.Tooling.Audio.WinForms.Tests.csproj --configuration Release --nologo
+        run: dotnet test Testing/Gondwana.Tooling.Audio.WinForms.Tests/Gondwana.Tooling.Audio.WinForms.Tests.csproj --configuration Release --no-build --no-restore --nologo
 
       - name: Scene WinForms editor interaction tests
-        run: dotnet test Testing/Gondwana.Tooling.Scenes.WinForms.Tests/Gondwana.Tooling.Scenes.WinForms.Tests.csproj --configuration Release --nologo
+        run: dotnet test Testing/Gondwana.Tooling.Scenes.WinForms.Tests/Gondwana.Tooling.Scenes.WinForms.Tests.csproj --configuration Release --no-build --no-restore --nologo
 
       - name: Sprite WinForms editor interaction tests
-        run: dotnet test Testing/Gondwana.Tooling.Sprites.WinForms.Tests/Gondwana.Tooling.Sprites.WinForms.Tests.csproj --configuration Release --nologo
+        run: dotnet test Testing/Gondwana.Tooling.Sprites.WinForms.Tests/Gondwana.Tooling.Sprites.WinForms.Tests.csproj --configuration Release --no-build --no-restore --nologo
 
       - name: Scene Viewer runtime loading and camera tests
-        run: dotnet test Testing/Gondwana.Tooling.SceneViewer.WinForms.Tests/Gondwana.Tooling.SceneViewer.WinForms.Tests.csproj --configuration Release --nologo
+        run: dotnet test Testing/Gondwana.Tooling.SceneViewer.WinForms.Tests/Gondwana.Tooling.SceneViewer.WinForms.Tests.csproj --configuration Release --no-build --no-restore --nologo
 
       - name: Studio WinForms composition tests
-        run: dotnet test Testing/Gondwana.Tooling.Studio.WinForms.Tests/Gondwana.Tooling.Studio.WinForms.Tests.csproj --configuration Release --nologo
+        run: dotnet test Testing/Gondwana.Tooling.Studio.WinForms.Tests/Gondwana.Tooling.Studio.WinForms.Tests.csproj --configuration Release --no-build --no-restore --nologo
+
+      - name: Tooling importer tests
+        run: dotnet test Testing/Gondwana.Tooling.Importers.Tests/Gondwana.Tooling.Importers.Tests.csproj --configuration Release --no-build --no-restore --nologo
 
   build:
     runs-on: ubuntu-latest
