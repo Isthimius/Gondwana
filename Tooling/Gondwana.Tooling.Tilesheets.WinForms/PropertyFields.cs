@@ -1,9 +1,9 @@
 using System.ComponentModel;
-using System.Drawing;
 using System.Reflection;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Physics.Collisions;
 using Gondwana.Tooling.Tilesheets.Editing;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace Gondwana.Tooling.Tilesheets.WinForms;
 
