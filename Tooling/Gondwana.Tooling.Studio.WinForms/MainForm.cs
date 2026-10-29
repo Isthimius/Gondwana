@@ -107,7 +107,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         SavePath = ChooseSavePath;
         AllowInvalidSave = _ => ThemedMessageBox.Show(this, "This definition has validation errors. See its Validation pane. Save it anyway?",
             "Validation failed", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes;
-        ReportError = ex => { _output.Log(ex.Message); ThemedMessageBox.Show(this, ex.Message, "Gondwana Studio", MessageBoxButtons.OK, MessageBoxIcon.Error); };
+        ReportError = ex => { _output.Log($"Error: {ex.Message}"); ThemedMessageBox.Show(this, ex.Message, "Gondwana Studio", MessageBoxButtons.OK, MessageBoxIcon.Error); };
         AssetPassword = path => InputDialog.Show($"Password for {Path.GetFileName(path)}:", "Asset password", owner: this, password: true);
         _packages.PasswordProvider = path =>
         {
@@ -302,7 +302,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         SyncActiveDocumentSelection();
         _workingDirectory = path;
         _plugins.NotifyProjectOpened(path);
-        _output.Log($"Working directory: {path}");
+        _output.Log($"Info: Working directory: {path}");
         if (Directory.Exists(path)) _projectFolder.Write(path);
     }
     private string? _workingDirectory;

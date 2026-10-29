@@ -86,7 +86,7 @@ public sealed class DirectoryPanel : UserControl
             }
             catch (Exception ex) when (ex is ExternalException or IOException or UnauthorizedAccessException)
             {
-                _log($"Cannot open {path} externally: {ex.Message}");
+                _log($"Error: Cannot open {path} externally: {ex.Message}");
                 ThemedMessageBox.Show(this, ex.Message, "Open External", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         });
@@ -324,7 +324,7 @@ public sealed class DirectoryPanel : UserControl
         {
             parent.Nodes.Clear();
             parent.Nodes.Add("Cannot read directory: " + ex.Message);
-            _log($"Cannot read {path}: {ex.Message}");
+            _log($"Warning: Cannot read {path}: {ex.Message}");
         }
     }
 
@@ -409,7 +409,7 @@ public sealed class DirectoryPanel : UserControl
                     catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or SharpZipBaseException)
                     {
                         if (!cancellationToken.IsCancellationRequested)
-                            await OnUiAsync(() => _log($"Cannot browse archive {archivePath}: {ex.Message}"), cancellationToken).ConfigureAwait(false);
+                            await OnUiAsync(() => _log($"Warning: Cannot browse archive {archivePath}: {ex.Message}"), cancellationToken).ConfigureAwait(false);
                     }
                 }
             }
