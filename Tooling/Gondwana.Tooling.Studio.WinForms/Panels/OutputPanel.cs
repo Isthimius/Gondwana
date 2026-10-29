@@ -1,4 +1,5 @@
 using System.Collections.Specialized;
+using System.Globalization;
 using Gondwana.Tooling.Studio.ViewModels;
 
 namespace Gondwana.Tooling.Studio.WinForms.Panels;
@@ -46,7 +47,13 @@ public sealed class OutputPanel : UserControl
 
         if (_textBox.InvokeRequired)
         {
-            _textBox.BeginInvoke(() => OnLinesChanged(sender, e));
+            // Queued notifications can be overtaken by later collection changes.
+            // Replaying their stale indices could append an already rendered line twice.
+            _textBox.BeginInvoke(() =>
+            {
+                if (!IsDisposed && !Disposing)
+                    RebuildLines();
+            });
             return;
         }
 
@@ -59,10 +66,15 @@ public sealed class OutputPanel : UserControl
         else
         {
             // Non-append edits need a full redraw so text and colors stay in the same order.
-            _textBox.Clear();
-            foreach (var line in _vm.Lines)
-                AppendLine(line);
+            RebuildLines();
         }
+    }
+
+    private void RebuildLines()
+    {
+        _textBox.Clear();
+        foreach (var line in _vm.Lines)
+            AppendLine(line);
     }
 
     private void AppendLine(string line)
@@ -75,17 +87,19 @@ public sealed class OutputPanel : UserControl
     }
 
     /// <summary>
-    /// Recognizes explicit severity markers after the standard HH:mm:ss timestamp.
+    /// Recognizes explicit severity markers after the culture-formatted HH:mm:ss timestamp.
     /// Unmarked text stays neutral; incidental words such as a filename containing "error" do not imply severity.
     /// </summary>
     internal static OutputSeverity Classify(string line)
     {
         ReadOnlySpan<char> message = line.AsSpan().TrimStart();
-        if (message.Length > 9 && char.IsDigit(message[0]) && char.IsDigit(message[1]) &&
-            message[2] == ':' && char.IsDigit(message[3]) && char.IsDigit(message[4]) &&
-            message[5] == ':' && char.IsDigit(message[6]) && char.IsDigit(message[7]) &&
-            message[8] == ' ')
-            message = message[9..].TrimStart();
+        int timestampEnd = message.IndexOf(' ');
+        if (timestampEnd > 0 &&
+            (DateTime.TryParseExact(message[..timestampEnd], "HH:mm:ss", CultureInfo.CurrentCulture,
+                DateTimeStyles.None, out _) ||
+             DateTime.TryParseExact(message[..timestampEnd], "HH:mm:ss", CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out _)))
+            message = message[(timestampEnd + 1)..].TrimStart();
 
         if (Marked(message, "Error") || Marked(message, "Critical") || Marked(message, "Fatal"))
             return OutputSeverity.Error;
