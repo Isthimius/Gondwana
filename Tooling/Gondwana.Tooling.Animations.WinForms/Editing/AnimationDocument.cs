@@ -15,9 +15,10 @@ public sealed partial class AnimationDocument
         ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
         if (Definition.TilesheetSources.Any(source => string.Equals(source.Tilesheet, tilesheet, StringComparison.Ordinal)))
             throw new InvalidOperationException($"A tilesheet source named '{tilesheet}' already exists. Remove the existing source before adding another.");
+        var before = new ModelSnapshot(Definition.TilesheetSources);
         Definition.TilesheetSources.Add(AnimationTilesheetSourceDefinition.Packed(tilesheet,
             Path.GetRelativePath(BaseDirectory, Path.GetFullPath(archivePath)), entryName));
-        MarkChanged();
+        before.Record(History, "Change tilesheet sources");
     }
 
     /// <summary>Gets the selected mutable logical definition; direct edits require <see cref="MarkChanged"/>.</summary>
@@ -29,7 +30,9 @@ public sealed partial class AnimationDocument
     /// <summary>
     /// Gets whether the document contains unsaved changes.
     /// </summary>
-    public bool IsDirty { get; private set; }
+    public bool IsDirty => History.IsDirty;
+    /// <summary>Document-local reversible edits and saved checkpoints.</summary>
+    public EditHistory History { get; }
     /// <summary>Occurs synchronously when content is marked modified, selection changes, or a save is accepted.</summary>
     public event EventHandler? Changed;
 
@@ -43,7 +46,9 @@ public sealed partial class AnimationDocument
         Definition = definition ?? throw new ArgumentNullException(nameof(definition));
         FilePath = filePath;
         BaseDirectory = Path.GetFullPath(baseDirectory);
-        IsDirty = isDirty;
+        History = new(initiallySaved: !isDirty);
+        History.Changed += HistoryChanged;
+        RememberReferenceOrigins();
     }
 
     /// <summary>Loads all logical definitions from a loose GANI file and selects the first member.</summary>
@@ -57,6 +62,7 @@ public sealed partial class AnimationDocument
         if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
         var document = new AnimationDocument(definitions[0], path, Path.GetDirectoryName(path)!, false);
         document._definitions = definitions;
+        document.RememberReferenceOrigins();
         return document;
     }
 
@@ -77,12 +83,11 @@ public sealed partial class AnimationDocument
             isDirty: true);
 
     /// <summary>
-    /// Marks the document as modified and notifies listeners.
+    /// Marks an untracked external mutation dirty and discards history. Use history-aware operations for authoring edits.
     /// </summary>
     public void MarkChanged()
     {
-        IsDirty = true;
-        Changed?.Invoke(this, EventArgs.Empty);
+        History.MarkUntracked();
     }
 
     /// <summary>Validates all logical definitions and their document-level identities without loading runtime resources.</summary>
@@ -128,6 +133,7 @@ public sealed partial class AnimationDocument
             }
         }
 
+        var before = new ModelSnapshot(Definition.TilesheetSources);
         Definition.TilesheetSources.RemoveAll(source =>
             string.Equals(
                 source.Tilesheet,
@@ -139,7 +145,7 @@ public sealed partial class AnimationDocument
                 tilesheet,
                 persistedPath));
 
-        MarkChanged();
+        before.Record(History, "Change tilesheet sources");
         return true;
     }
 
@@ -148,6 +154,7 @@ public sealed partial class AnimationDocument
     /// <returns>True if any entries were removed and the document was marked dirty; otherwise false.</returns>
     public bool RemoveTilesheetSource(string tilesheet)
     {
+        var before = new ModelSnapshot(Definition.TilesheetSources);
         int removed = Definition.TilesheetSources.RemoveAll(source =>
             string.Equals(
                 source.Tilesheet,
@@ -157,7 +164,7 @@ public sealed partial class AnimationDocument
         if (removed == 0)
             return false;
 
-        MarkChanged();
+        before.Record(History, "Change tilesheet sources");
         return true;
     }
 
@@ -216,8 +223,8 @@ public sealed partial class AnimationDocument
         FilePath = path;
         PackedLocation = null;
         BaseDirectory = directory;
-        IsDirty = false;
-        Changed?.Invoke(this, EventArgs.Empty);
+        RememberReferenceOrigins();
+        History.MarkSaved();
     }
 
     private static string MakeReferencePath(
@@ -267,9 +274,7 @@ public sealed partial class AnimationDocument
     {
         var definition = Create(BaseDirectory).Definition;
         definition.Key = UniqueDefinitionIdentity("animation");
-        _definitions.Add(definition);
-        Definition = definition;
-        MarkChanged();
+        AddMembers([definition], "Add animation definition");
         return definition;
     }
 
@@ -280,9 +285,7 @@ public sealed partial class AnimationDocument
         var definition = AnimationDefinitionSerializer.FromJson(AnimationDefinitionSerializer.ToJson(Definition));
         definition.Source = Definition.Source;
         definition.Key = UniqueDefinitionIdentity(Definition.Key + "-copy");
-        _definitions.Add(definition);
-        Definition = definition;
-        MarkChanged();
+        AddMembers([definition], "Duplicate animation definition");
         return definition;
     }
 
@@ -291,9 +294,14 @@ public sealed partial class AnimationDocument
     /// <returns>True if removed; false if it is absent or is the document's only member.</returns>
     public bool RemoveDefinition(AnimationDefinition definition)
     {
-        if (_definitions.Count == 1 || !_definitions.Remove(definition)) return false;
-        if (ReferenceEquals(Definition, definition)) Definition = _definitions[0];
-        MarkChanged();
+        int index = _definitions.IndexOf(definition);
+        if (_definitions.Count == 1 || index < 0) return false;
+        var selected = Definition;
+        History.Execute("Remove definition", () =>
+        {
+            _definitions.RemoveAt(index);
+            if (ReferenceEquals(Definition, definition)) Definition = _definitions[0];
+        }, () => { _definitions.Insert(index, definition); Definition = selected; });
         return true;
     }
 
@@ -307,8 +315,8 @@ public sealed partial class AnimationDocument
         ArgumentException.ThrowIfNullOrWhiteSpace(identity);
         if (_definitions.Any(member => !ReferenceEquals(member, Definition) && member.Key == identity))
             throw new InvalidDataException($"Duplicate definition identity '{identity}'.");
-        Definition.Key = identity;
-        MarkChanged();
+        var member = Definition;
+        History.Set("Rename animation definition", () => member.Key, value => member.Key = value, identity);
     }
 
     /// <summary>Imports selected GANI members as independent copies, rebasing dependencies without copying resources.</summary>
@@ -335,9 +343,7 @@ public sealed partial class AnimationDocument
             return clone;
         }, member => member.Key, (member, identity) => member.Key = identity, "animation");
         if (imported.Count == 0) return 0;
-        _definitions.AddRange(imported);
-        Definition = imported[0];
-        MarkChanged();
+        AddMembers(imported, "Import animation definitions");
         return imported.Count;
     }
 

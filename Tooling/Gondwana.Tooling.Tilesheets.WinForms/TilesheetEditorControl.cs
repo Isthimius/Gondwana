@@ -63,6 +63,8 @@ public sealed class TilesheetEditorControl : UserControl
         AssetPackageCatalog? assetPackages)
     {
         Document = document ?? throw new ArgumentNullException(nameof(document));
+        var shortcuts = UndoRedoMenu.Route(this, () => Document.History, CommitEdits);
+        Disposed += (_, _) => shortcuts.Dispose();
         _overlaySettings = overlaySettings ?? OverlaySettings.Default;
         _assetPackages = assetPackages ?? new AssetPackageCatalog();
         _ownsAssetPackages = assetPackages is null;

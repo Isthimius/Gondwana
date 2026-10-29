@@ -8,6 +8,9 @@ public sealed partial class CompositionTests
     [Theory]
     [InlineData("gts")]
     [InlineData("gscn")]
+    [InlineData("gani")]
+    [InlineData("gspr")]
+    [InlineData("gsnd")]
     public void PendingPackedSaveBlocksMenuAndShortcutHistoryReplay(string format) => RunSta(root =>
     {
         var archive = NativeArchive(root);
@@ -16,8 +19,7 @@ public sealed partial class CompositionTests
         var child = studio.OpenDocument(NativeLocation(archive, format));
         void Rename(string name)
         {
-            if (child.Document.Editor is TilesheetEditorControl gts) gts.Document.RenameDefinition(name);
-            else ((SceneEditorControl)child.Document.Editor).Document.RenameDefinition(name);
+            AuthoringModel(child.Document.Editor).RenameDefinition(name);
         }
         Rename("state to save"); Rename("redo state"); child.Document.History!.Undo();
         var expected = child.Document.SerializePacked!();
@@ -58,14 +60,16 @@ public sealed partial class CompositionTests
     [Theory]
     [InlineData("gts")]
     [InlineData("gscn")]
+    [InlineData("gani")]
+    [InlineData("gspr")]
+    [InlineData("gsnd")]
     public void PackedUndoSurvivesSaveAndSaveAsWithoutChangingDocumentIdentity(string format) => RunSta(root =>
     {
         var archive = NativeArchive(root);
         using var studio = Host(root);
         var child = studio.OpenDocument(NativeLocation(archive, format));
         string? original = child.Document.SelectedMember;
-        if (child.Document.Editor is TilesheetEditorControl gts) gts.Document.RenameDefinition("renamed");
-        else ((SceneEditorControl)child.Document.Editor).Document.RenameDefinition("renamed");
+        AuthoringModel(child.Document.Editor).RenameDefinition("renamed");
         Assert.True(AwaitUi(studio.SaveDocument(child)));
         child.Document.History!.Undo(); Assert.Equal(original, child.Document.SelectedMember); Assert.True(child.Document.Dirty());
         child.Document.History.Redo(); Assert.False(child.Document.Dirty());

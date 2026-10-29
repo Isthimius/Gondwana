@@ -14,9 +14,10 @@ public sealed partial class SpriteDocument
         ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
         if (Definition.TilesheetSources.Any(source => string.Equals(source.Tilesheet, tilesheet, StringComparison.Ordinal)))
             throw new InvalidOperationException($"A tilesheet source named '{tilesheet}' already exists. Remove the existing source before adding another.");
+        var before = new ModelSnapshot(Definition.TilesheetSources);
         Definition.TilesheetSources.Add(SpriteTilesheetSourceDefinition.Packed(tilesheet,
             Path.GetRelativePath(BaseDirectory, Path.GetFullPath(archivePath)), entryName));
-        MarkChanged();
+        before.Record(History, "Change tilesheet sources");
     }
 
     /// <summary>Adds a validated packed animation dependency; rejects conflicting logical identities.</summary>
@@ -27,9 +28,10 @@ public sealed partial class SpriteDocument
         ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
         if (Definition.AnimationSources.Any(source => string.Equals(source.AnimationKey, key, StringComparison.OrdinalIgnoreCase)))
             throw new InvalidOperationException($"An animation source named '{key}' already exists. Remove the existing source before adding another.");
+        var before = new ModelSnapshot(Definition.AnimationSources);
         Definition.AnimationSources.Add(SpriteAnimationSourceDefinition.Packed(key,
             Path.GetRelativePath(BaseDirectory, Path.GetFullPath(archivePath)), entryName));
-        MarkChanged();
+        before.Record(History, "Change animation sources");
     }
 
     /// <summary>Adds a validated packed scene dependency; rejects conflicting logical identities.</summary>
@@ -40,9 +42,10 @@ public sealed partial class SpriteDocument
         ArgumentException.ThrowIfNullOrWhiteSpace(entryName);
         if (Definition.SceneSources.Any(source => string.Equals(source.SceneId, id, StringComparison.Ordinal)))
             throw new InvalidOperationException($"A scene source named '{id}' already exists. Remove the existing source before adding another.");
+        var before = new ModelSnapshot(Definition.SceneSources);
         Definition.SceneSources.Add(SpriteSceneSourceDefinition.Packed(id,
             Path.GetRelativePath(BaseDirectory, Path.GetFullPath(archivePath)), entryName));
-        MarkChanged();
+        before.Record(History, "Change scene sources");
     }
 
     /// <summary>Gets the selected mutable logical definition; direct edits require <see cref="MarkChanged"/>.</summary>
@@ -54,7 +57,9 @@ public sealed partial class SpriteDocument
     /// <summary>
     /// Gets whether the document contains unsaved changes.
     /// </summary>
-    public bool IsDirty { get; private set; }
+    public bool IsDirty => History.IsDirty;
+    /// <summary>Document-local reversible edits and saved checkpoints.</summary>
+    public EditHistory History { get; }
     /// <summary>Occurs synchronously when content is marked modified, selection changes, or a save is accepted.</summary>
     public event EventHandler? Changed;
 
@@ -65,7 +70,9 @@ public sealed partial class SpriteDocument
         BaseDirectory = Path.GetFullPath(directory);
         if (string.IsNullOrWhiteSpace(definition.Key)) definition.Key = "sprite";
         FilePath = path;
-        IsDirty = dirty;
+        History = new(initiallySaved: !dirty);
+        History.Changed += HistoryChanged;
+        RememberReferenceOrigins();
     }
 
     /// <summary>Creates an unsaved GSPR document with one default definition and marks it dirty.</summary>
@@ -83,6 +90,7 @@ public sealed partial class SpriteDocument
         if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
         var document = new SpriteDocument(definitions[0], Path.GetDirectoryName(path)!, path, false);
         document._definitions = definitions;
+        document.RememberReferenceOrigins();
         return document;
     }
 
@@ -91,8 +99,7 @@ public sealed partial class SpriteDocument
     public SpriteInstanceDefinition AddSprite()
     {
         var sprite = new SpriteInstanceDefinition { Id = Guid.NewGuid(), Nickname = UniqueName("sprite") };
-        Definition.Sprites.Add(sprite);
-        MarkChanged();
+        History.Insert("Add sprite instance", Definition.Sprites, Definition.Sprites.Count, sprite);
         return sprite;
     }
 
@@ -104,8 +111,7 @@ public sealed partial class SpriteDocument
         var sprite = SpriteDefinitionSerializer.FromJson(SpriteDefinitionSerializer.ToJson(new() { Sprites = [source] })).Sprites[0];
         sprite.Id = Guid.NewGuid();
         sprite.Nickname = UniqueName(source.Nickname ?? "sprite");
-        Definition.Sprites.Add(sprite);
-        MarkChanged();
+        History.Insert("Add sprite instance", Definition.Sprites, Definition.Sprites.Count, sprite);
         return sprite;
     }
 
@@ -114,9 +120,7 @@ public sealed partial class SpriteDocument
     /// <returns>True if removed; false if absent.</returns>
     public bool RemoveSprite(SpriteInstanceDefinition sprite)
     {
-        if (!Definition.Sprites.Remove(sprite)) return false;
-        MarkChanged();
-        return true;
+        return History.Remove("Remove sprite instance", Definition.Sprites, sprite);
     }
 
     private string UniqueName(string basis)
@@ -132,9 +136,13 @@ public sealed partial class SpriteDocument
     /// <remarks>Does not load the dependency or verify that its logical member exists.</remarks>
     public void SetLooseTilesheetSource(string name, string path)
     {
+        path = Path.GetFullPath(path);
+        if (Definition.TilesheetSources.Any(source => source.Tilesheet == name && source.Kind == SpriteTilesheetSourceKind.LooseDefinitionFile &&
+            !string.IsNullOrWhiteSpace(source.GtsPath) && string.Equals(ResolveReferencePath(source.GtsPath), path, StringComparison.OrdinalIgnoreCase))) return;
+        var before = new ModelSnapshot(Definition.TilesheetSources);
         Definition.TilesheetSources.RemoveAll(source => source.Tilesheet == name);
         Definition.TilesheetSources.Add(SpriteTilesheetSourceDefinition.Loose(name, Path.GetRelativePath(BaseDirectory, Path.GetFullPath(path))));
-        MarkChanged();
+        before.Record(History, "Change tilesheet sources");
     }
 
     /// <summary>Replaces matching scene source entries in the selected definition and marks the document dirty.</summary>
@@ -143,9 +151,13 @@ public sealed partial class SpriteDocument
     /// <remarks>Does not load the dependency or verify that its logical member exists.</remarks>
     public void SetLooseSceneSource(string id, string path)
     {
+        path = Path.GetFullPath(path);
+        if (Definition.SceneSources.Any(source => source.SceneId == id && source.Kind == SpriteSceneSourceKind.LooseDefinitionFile &&
+            !string.IsNullOrWhiteSpace(source.GscnPath) && string.Equals(ResolveReferencePath(source.GscnPath), path, StringComparison.OrdinalIgnoreCase))) return;
+        var before = new ModelSnapshot(Definition.SceneSources);
         Definition.SceneSources.RemoveAll(source => source.SceneId == id);
         Definition.SceneSources.Add(SpriteSceneSourceDefinition.Loose(id, Path.GetRelativePath(BaseDirectory, Path.GetFullPath(path))));
-        MarkChanged();
+        before.Record(History, "Change scene sources");
     }
 
     /// <summary>Replaces matching animation source entries in the selected definition and marks the document dirty.</summary>
@@ -154,10 +166,15 @@ public sealed partial class SpriteDocument
     /// <remarks>Does not load the dependency or verify that its logical member exists.</remarks>
     public void SetLooseAnimationSource(string key, string path)
     {
+        path = Path.GetFullPath(path);
+        if (Definition.AnimationSources.Any(source => string.Equals(source.AnimationKey, key, StringComparison.OrdinalIgnoreCase) &&
+            source.Kind == SpriteAnimationSourceKind.LooseDefinitionFile && !string.IsNullOrWhiteSpace(source.GaniPath) &&
+            string.Equals(ResolveReferencePath(source.GaniPath), path, StringComparison.OrdinalIgnoreCase))) return;
+        var before = new ModelSnapshot(Definition.AnimationSources);
         Definition.AnimationSources.RemoveAll(source => string.Equals(source.AnimationKey, key, StringComparison.OrdinalIgnoreCase));
         Definition.AnimationSources.Add(SpriteAnimationSourceDefinition.Loose(
             key, Path.GetRelativePath(BaseDirectory, Path.GetFullPath(path))));
-        MarkChanged();
+        before.Record(History, "Change animation sources");
     }
 
     /// <summary>Resolves a document-relative resource path to an absolute path without checking existence.</summary>
@@ -168,9 +185,9 @@ public sealed partial class SpriteDocument
     /// <returns>The validation errors; an empty collection indicates that validation passed.</returns>
     public IReadOnlyList<string> Validate() => SpriteDefinitionSerializer.ValidateDocument(new SpriteDefinitionDocument { Definitions = _definitions });
     /// <summary>
-    /// Marks the document as modified and notifies listeners.
+    /// Marks an untracked external mutation dirty and discards history. Use history-aware operations for authoring edits.
     /// </summary>
-    public void MarkChanged() { IsDirty = true; Changed?.Invoke(this, EventArgs.Empty); }
+    public void MarkChanged() => History.MarkUntracked();
 
     /// <summary>Saves every logical member to a loose file, rebases dependencies, and adopts that file as the editing location.</summary>
     /// <param name="path">Destination path; missing parent directories are created and existing files may be overwritten.</param>
@@ -224,8 +241,8 @@ public sealed partial class SpriteDocument
         FilePath = path;
         PackedLocation = null;
         BaseDirectory = directory;
-        IsDirty = false;
-        Changed?.Invoke(this, EventArgs.Empty);
+        RememberReferenceOrigins();
+        History.MarkSaved();
     }
 
     private List<SpriteDefinition> _definitions;
@@ -252,9 +269,7 @@ public sealed partial class SpriteDocument
     {
         var definition = Create(BaseDirectory).Definition;
         definition.Key = UniqueDefinitionIdentity("sprite");
-        _definitions.Add(definition);
-        Definition = definition;
-        MarkChanged();
+        AddMembers([definition], "Add sprite definition");
         return definition;
     }
 
@@ -266,9 +281,7 @@ public sealed partial class SpriteDocument
         definition.Source = Definition.Source;
         definition.Key = UniqueDefinitionIdentity(Definition.Key + "-copy");
         foreach (var sprite in definition.Sprites) { sprite.Id = Guid.NewGuid(); if (!string.IsNullOrWhiteSpace(sprite.Nickname)) sprite.Nickname += "-" + definition.Key; }
-        _definitions.Add(definition);
-        Definition = definition;
-        MarkChanged();
+        AddMembers([definition], "Duplicate sprite definition");
         return definition;
     }
 
@@ -277,9 +290,14 @@ public sealed partial class SpriteDocument
     /// <returns>True if removed; false if it is absent or is the document's only member.</returns>
     public bool RemoveDefinition(SpriteDefinition definition)
     {
-        if (_definitions.Count == 1 || !_definitions.Remove(definition)) return false;
-        if (ReferenceEquals(Definition, definition)) Definition = _definitions[0];
-        MarkChanged();
+        int index = _definitions.IndexOf(definition);
+        if (_definitions.Count == 1 || index < 0) return false;
+        var selected = Definition;
+        History.Execute("Remove definition", () =>
+        {
+            _definitions.RemoveAt(index);
+            if (ReferenceEquals(Definition, definition)) Definition = _definitions[0];
+        }, () => { _definitions.Insert(index, definition); Definition = selected; });
         return true;
     }
 
@@ -293,8 +311,8 @@ public sealed partial class SpriteDocument
         ArgumentException.ThrowIfNullOrWhiteSpace(identity);
         if (_definitions.Any(member => !ReferenceEquals(member, Definition) && member.Key == identity))
             throw new InvalidDataException($"Duplicate definition identity '{identity}'.");
-        Definition.Key = identity;
-        MarkChanged();
+        var member = Definition;
+        History.Set("Rename sprite definition", () => member.Key, value => member.Key = value, identity);
     }
 
     /// <summary>Imports selected GSPR members as independent copies, rebasing dependencies without copying resources.</summary>
@@ -331,9 +349,7 @@ public sealed partial class SpriteDocument
             return clone;
         }, member => member.Key, (member, identity) => member.Key = identity, "sprites");
         if (imported.Count == 0) return 0;
-        _definitions.AddRange(imported);
-        Definition = imported[0];
-        MarkChanged();
+        AddMembers(imported, "Import sprite definitions");
         return imported.Count;
     }
 

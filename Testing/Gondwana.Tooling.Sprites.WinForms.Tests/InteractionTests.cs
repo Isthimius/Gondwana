@@ -53,9 +53,17 @@ public sealed class InteractionTests
         DoubleClick(frameTree, frameTree.Nodes[0].Nodes[0].Nodes[1]);
         Assert.Equal(1, entry.Frame!.XTile);
         Assert.Equal("actors", entry.Frame.Tilesheet);
+        var assigned = entry.Frame;
+        document.History.Undo(); Application.DoEvents(); Assert.Null(entry.Frame);
+        document.History.Undo(); Application.DoEvents(); Assert.Equal("", entry.SceneId); Assert.Equal("", entry.SceneLayerId);
+        document.History.Redo(); document.History.Redo(); Application.DoEvents(); Assert.Same(assigned, entry.Frame);
         var grid = Descendants(editor).OfType<PropertyGrid>().Single();
         var properties = Assert.IsType<SpriteProperties>(grid.SelectedObject);
         properties.NudgeX = 9; properties.CollisionLeft = 2;
+        Assert.Equal(9, entry.NudgeX); Assert.Equal(2, entry.AdjustCollisionArea.Left);
+        document.History.Undo(); document.History.Undo(); Application.DoEvents();
+        Assert.Equal(0, entry.NudgeX); Assert.Equal(0, entry.AdjustCollisionArea.Left);
+        document.History.Redo(); document.History.Redo(); Application.DoEvents();
         Assert.Equal(9, entry.NudgeX); Assert.Equal(2, entry.AdjustCollisionArea.Left);
         var preview = Descendants(editor).OfType<SpritePreviewControl>().Single();
         var canvas = preview.Controls.OfType<UserControl>().Single();
@@ -233,6 +241,35 @@ public sealed class InteractionTests
         var fourth = Open(); Assert.True(fourth.Editor.IsPaneVisible("Validation")); fourth.Host.Dispose();
     });
 
+    [Fact]
+    public void SourceReplayReplacesThumbnailsInsteadOfAccumulatingThem() => Sta(directory =>
+    {
+        using (var bitmap = new Bitmap(32, 16)) bitmap.Save(Path.Combine(directory, "tiles.png"));
+        var path = Path.Combine(directory, "tiles.gts");
+        TilesheetDefinitionSerializer.Save(path, new TilesheetDefinition
+        {
+            Name = "tiles",
+            Image = new() { FilePath = "tiles.png" },
+            Regions = [new() { Name = "frames", Area = new Rectangle(0, 0, 32, 16), TileSize = new Size(16, 16) }]
+        });
+        using var document = SpriteDocument.Create(directory);
+        using var host = new Form { Opacity = 0, ShowInTaskbar = false, Size = new Size(1200, 800) };
+        using var editor = new SpriteEditorControl(document);
+        host.Controls.Add(editor); host.Show(); Application.DoEvents();
+        editor.AddTilesheetSources([path]); Application.DoEvents();
+        var tree = Descendants(editor).OfType<TreeView>().Single(t => t.Nodes.Count > 0 && t.Nodes[0].Text == "tiles");
+        Assert.Equal(2, tree.ImageList!.Images.Count);
+        for (int replay = 0; replay < 4; replay++)
+        {
+            document.History.Undo(); Application.DoEvents();
+            Assert.Empty(tree.Nodes); Assert.Equal(0, tree.ImageList.Images.Count);
+            document.History.Redo(); Application.DoEvents();
+            Assert.Equal(2, tree.ImageList.Images.Count);
+            var frames = tree.Nodes[0].Nodes[0].Nodes.Cast<TreeNode>().ToArray();
+            Assert.Equal(new[] { 0, 1 }, frames.Select(frame => frame.ImageIndex));
+            Assert.All(frames, frame => Assert.Equal(frame.ImageIndex, frame.SelectedImageIndex));
+        }
+    });
     private static IEnumerable<Control> Descendants(Control control)
     {
         foreach (Control child in control.Controls) { yield return child; foreach (var nested in Descendants(child)) yield return nested; }

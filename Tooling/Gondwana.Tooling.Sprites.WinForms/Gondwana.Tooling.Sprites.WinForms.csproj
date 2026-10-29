@@ -36,4 +36,7 @@
     <ProjectReference Include="../Shared/WinForms/Theming/Gondwana.Tooling.WinForms.Theming.csproj" />
     <Using Include="Gondwana.Tooling.WinForms.Theming" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../Shared/WinForms/UndoRedoMenu.cs" Link="Editing/UndoRedoMenu.cs" />
+  </ItemGroup>
 </Project>

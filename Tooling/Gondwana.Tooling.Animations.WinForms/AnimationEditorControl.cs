@@ -141,6 +141,8 @@ public sealed class AnimationEditorControl : UserControl
         _packages = packages ?? PackedResourcePicker.CreateCatalog(this);
         _ownsPackages = packages is null;
         Document = document ?? throw new ArgumentNullException(nameof(document));
+        var shortcuts = UndoRedoMenu.Route(this, () => Document.History, CommitEdits);
+        Disposed += (_, _) => shortcuts.Dispose();
         _propertyAdapter = new AnimationPropertyAdapter(Document);
 
         // Start with the existing editor proportions; the host may resize it.
@@ -219,7 +221,8 @@ public sealed class AnimationEditorControl : UserControl
             }
         };
 
-        LoadDefinitionTilesheetSources();
+        // Legacy inference is an initial-load migration, never a member refresh.
+        LoadDefinitionTilesheetSources(recoverLegacySources: true);
 
         Document.Changed += DocumentChanged;
 
@@ -242,18 +245,24 @@ public sealed class AnimationEditorControl : UserControl
     /// <exception cref="InvalidOperationException">A logical tilesheet name is already loaded from another source.</exception>
     public void AddTilesheetSources(IEnumerable<string> paths)
     {
-        bool changed = false;
-
+        using var transaction = Document.History.BeginTransaction("Add tilesheet sources");
         try
         {
-            foreach (var path in paths)
-                changed |= AddTilesheetSourceCore(path);
+            bool changed = false;
+
+            try
+            {
+                foreach (var path in paths)
+                    changed |= AddTilesheetSourceCore(path);
+            }
+            finally
+            {
+                if (changed)
+                    RefreshAfterSourceChange();
+            }
+
         }
-        finally
-        {
-            if (changed)
-                RefreshAfterSourceChange();
-        }
+        finally { transaction.Commit(); }
     }
 
     /// <summary>Loads every tilesheet member from a loose GTS file and records their sources in the document.</summary>
@@ -262,8 +271,14 @@ public sealed class AnimationEditorControl : UserControl
     /// <exception cref="InvalidOperationException">A logical tilesheet name is already loaded from another source.</exception>
     public void AddTilesheetSource(string path)
     {
-        if (AddTilesheetSourceCore(path))
-            RefreshAfterSourceChange();
+        using var transaction = Document.History.BeginTransaction("Add tilesheet sources");
+        try
+        {
+            if (AddTilesheetSourceCore(path))
+                RefreshAfterSourceChange();
+
+        }
+        finally { transaction.Commit(); }
     }
 
     private bool AddTilesheetSourceCore(
@@ -338,6 +353,8 @@ public sealed class AnimationEditorControl : UserControl
 
     private void RefreshAfterSourceChange()
     {
+        _historyDefinition = Definition;
+        _historySources = Definition.TilesheetSources.Cast<object>().ToArray();
         RefreshSourceTree();
         RefreshFrameList();
         UpdateValidation();
@@ -356,7 +373,7 @@ public sealed class AnimationEditorControl : UserControl
         RefreshView();
     }
 
-    private void LoadDefinitionTilesheetSources(bool recoverLegacySources = true)
+    private void LoadDefinitionTilesheetSources(bool recoverLegacySources = false)
     {
         _sourceDiagnostics.Clear();
 
@@ -506,7 +523,7 @@ public sealed class AnimationEditorControl : UserControl
                     persistReference: false,
                     expectedTilesheet: tilesheet))
             {
-                Document.SetLooseTilesheetSource(
+                Document.RecoverLooseTilesheetSource(
                     tilesheet,
                     path);
 
@@ -773,13 +790,12 @@ public sealed class AnimationEditorControl : UserControl
         if (_sourceTree.SelectedNode?.Tag is not FrameTag frame)
             return;
 
-        Definition.Frames.Add(
+        Document.AddFrame(
             frame.Source.CreateFrame(
                 frame.Region,
                 frame.X,
                 frame.Y));
 
-        Document.MarkChanged();
         SelectFrame(Definition.Frames.Count - 1);
     }
 
@@ -789,8 +805,7 @@ public sealed class AnimationEditorControl : UserControl
             return;
 
         int index = _frames.SelectedIndices[0];
-        Definition.Frames.RemoveAt(index);
-        Document.MarkChanged();
+        Document.RemoveFrame(Definition.Frames[index]);
 
         if (Definition.Frames.Count > 0)
             SelectFrame(Math.Min(index, Definition.Frames.Count - 1));
@@ -807,10 +822,7 @@ public sealed class AnimationEditorControl : UserControl
         if (target < 0 || target >= Definition.Frames.Count)
             return;
 
-        var frame = Definition.Frames[index];
-        Definition.Frames.RemoveAt(index);
-        Definition.Frames.Insert(target, frame);
-        Document.MarkChanged();
+        Document.MoveFrame(index, offset);
         SelectFrame(target);
     }
 
@@ -839,6 +851,8 @@ public sealed class AnimationEditorControl : UserControl
         foreach (var source in _sources) source.Dispose();
         _sources.Clear();
         LoadDefinitionTilesheetSources();
+        _historyDefinition = Definition;
+        _historySources = Definition.TilesheetSources.Cast<object>().ToArray();
         RefreshView();
     }
 
@@ -1263,6 +1277,10 @@ public sealed class AnimationEditorControl : UserControl
                 logicalName,
                 StringComparison.Ordinal));
 
+    private object[] _historySources = [];
+    private AnimationFrameDefinition[] _historyFrames = [];
+    private AnimationDefinition? _historyDefinition;
+
     private void DocumentChanged(object? sender, EventArgs e)
     {
         if (_refreshPending || !IsHandleCreated)
@@ -1283,9 +1301,25 @@ public sealed class AnimationEditorControl : UserControl
                             StringComparison.Ordinal));
                 }
 
+                var sources = Definition.TilesheetSources.Cast<object>().ToArray();
+                if (!ReferenceEquals(_historyDefinition, Definition) || !_historySources.SequenceEqual(sources))
+                {
+                    _preview.ClearSourceFrame();
+                    RefreshSelectedDefinition();
+                    _historyDefinition = Definition;
+                    _historySources = sources;
+                }
+                var frames = Definition.Frames.ToArray();
+                if (!_historyFrames.SequenceEqual(frames)) _preview.ClearSourceFrame();
+                _historyFrames = frames;
                 _properties.Refresh();
                 RefreshFrameList();
                 _preview.Configure(Definition, ResolveFramePreview);
+                if (Definition.Frames.Count == 0)
+                {
+                    _preview.Pause();
+                    _playButton.Text = "Play";
+                }
                 UpdateValidation();
             }
         });
@@ -1317,4 +1351,7 @@ public sealed class AnimationEditorControl : UserControl
         if (disposing && _ownsPackages) _packages.Dispose();
         base.Dispose(disposing);
     }
+    /// <inheritdoc/>
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
+        UndoRedoMenu.TryShortcut(this, keyData, Document.History, CommitEdits) || base.ProcessCmdKey(ref msg, keyData);
 }

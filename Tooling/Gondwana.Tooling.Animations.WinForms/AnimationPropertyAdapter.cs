@@ -25,8 +25,8 @@ internal sealed class AnimationPropertyAdapter
             if (SelectedFrameIndex < 0 || SelectedFrameIndex >= _document.Definition.Frames.Count) return;
             if (value is { } duration && (!double.IsFinite(duration) || duration <= 0))
                 throw new ArgumentOutOfRangeException(nameof(value), "Duration must be finite and positive.");
-            _document.Definition.Frames[SelectedFrameIndex].DurationSeconds = value;
-            _document.MarkChanged();
+            var frame = _document.Definition.Frames[SelectedFrameIndex];
+            _document.Edit(frame, "Change frame duration", () => frame.DurationSeconds = value);
         }
     }
 
@@ -44,10 +44,7 @@ internal sealed class AnimationPropertyAdapter
     public string Key
     {
         get => _document.Definition.Key;
-        set => Set(
-            _document.Definition.Key,
-            value ?? string.Empty,
-            v => _document.Definition.Key = v);
+        set => Set(_document.Definition.Key, value ?? string.Empty, v => _document.Definition.Key = v);
     }
 
     /// <summary>Gets or sets the default interval between animation frames, in seconds; a change marks the document dirty.</summary>
@@ -110,8 +107,7 @@ internal sealed class AnimationPropertyAdapter
                 return;
             }
 
-            _document.Definition.NextCycleKey = normalized;
-            _document.MarkChanged();
+            _document.Edit(_document.Definition, "Change next cycle key", () => _document.Definition.NextCycleKey = normalized);
         }
     }
 
@@ -126,12 +122,12 @@ internal sealed class AnimationPropertyAdapter
     private void Set<T>(
         T current,
         T value,
-        Action<T> assign)
+        Action<T> assign,
+        [System.Runtime.CompilerServices.CallerMemberName] string property = "")
     {
         if (EqualityComparer<T>.Default.Equals(current, value))
             return;
 
-        assign(value);
-        _document.MarkChanged();
+        _document.Edit(_document.Definition, "Change animation " + property, () => assign(value));
     }
 }

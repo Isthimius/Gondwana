@@ -59,6 +59,8 @@ public sealed class AudioEditorControl : UserControl
         _packages = packages ?? PackedResourcePicker.CreateCatalog(this);
         _ownsPackages = packages is null;
         Document = document ?? throw new ArgumentNullException(nameof(document));
+        var shortcuts = UndoRedoMenu.Route(this, () => Document.History, CommitEdits);
+        Disposed += (_, _) => shortcuts.Dispose();
         Size = new Size(1050, 700);
         Dock = DockStyle.Fill;
 
@@ -68,7 +70,6 @@ public sealed class AudioEditorControl : UserControl
         _resources.SelectedIndexChanged += (_, _) => BindSelectedResource();
         _properties.PropertyValueChanged += (_, _) =>
         {
-            Document.MarkChanged();
             RefreshResourceList();
             UpdateValidation();
         };
@@ -93,6 +94,7 @@ public sealed class AudioEditorControl : UserControl
         Document.Changed += definitionBar.RefreshMembers;
         definitionBar.Disposed += (_, _) => Document.Changed -= definitionBar.RefreshMembers;
         ToolingAppearance.Apply(this);
+        Document.Changed += DocumentChanged;
         RefreshView();
     }
 
@@ -104,9 +106,11 @@ public sealed class AudioEditorControl : UserControl
     {
         ArgumentNullException.ThrowIfNull(paths);
 
+        using var transaction = Document.History.BeginTransaction("Add audio resources");
         AudioResourceDefinition? last = null;
         foreach (var path in paths)
             last = Document.AddLooseFile(path);
+        transaction.Commit();
 
         RefreshView();
         if (last is not null)
@@ -213,6 +217,7 @@ public sealed class AudioEditorControl : UserControl
     /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
+        if (disposing) Document.Changed -= DocumentChanged;
         if (disposing && _ownsPackages) _packages.Dispose();
         base.Dispose(disposing);
     }
@@ -302,7 +307,7 @@ public sealed class AudioEditorControl : UserControl
     {
         _properties.SelectedObject =
             _resources.SelectedItems.Count == 1
-                ? _resources.SelectedItems[0].Tag
+                ? new AudioResourceProperties(Document, (AudioResourceDefinition)_resources.SelectedItems[0].Tag!)
                 : null;
     }
 
@@ -339,4 +344,18 @@ public sealed class AudioEditorControl : UserControl
             "GSND editor",
             MessageBoxButtons.OK,
             MessageBoxIcon.Error);
+    /// <inheritdoc/>
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
+        UndoRedoMenu.TryShortcut(this, keyData, Document.History, CommitEdits) || base.ProcessCmdKey(ref msg, keyData);
+    private bool _historyRefreshPending;
+    private void DocumentChanged(object? sender, EventArgs e)
+    {
+        if (_historyRefreshPending || !IsHandleCreated) return;
+        _historyRefreshPending = true;
+        BeginInvoke(() =>
+        {
+            _historyRefreshPending = false;
+            if (!IsDisposed) RefreshView();
+        });
+    }
 }

@@ -25,12 +25,14 @@ public sealed partial class AudioDocument
         var directory = Path.GetDirectoryName(path)!;
         var definitions = AudioDefinitionSerializer.LoadAll(archive, entryName).ToList();
         if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
-        return new AudioDocument(definitions[0], null, directory, false)
+        var document = new AudioDocument(definitions[0], null, directory, false)
         {
             _definitions = definitions,
-            PackedLocation = new(AssetTypes.AudioDefinition, path, entryName),
-            IsDirty = false
+            PackedLocation = new(AssetTypes.AudioDefinition, path, entryName)
         };
+        document.RememberReferenceOrigins();
+        document.History.MarkSaved();
+        return document;
     }
 
     /// <summary>Serializes all members without rebasing or changing document state. The host validates before persistence.</summary>
@@ -44,7 +46,7 @@ public sealed partial class AudioDocument
     public void AcceptPackedSave()
     {
         if (PackedLocation is null) throw new InvalidOperationException("This document is not packed.");
-        IsDirty = false;
-        Changed?.Invoke(this, EventArgs.Empty);
+        RememberReferenceOrigins();
+        History.MarkSaved();
     }
 }

@@ -77,6 +77,9 @@ internal sealed class StudioDocument : IDisposable
     {
         TilesheetEditorControl e => e.Document.History,
         SceneEditorControl e => e.Document.History,
+        AnimationEditorControl e => e.Document.History,
+        SpriteEditorControl e => e.Document.History,
+        AudioEditorControl e => e.Document.History,
         _ => null
     };
 

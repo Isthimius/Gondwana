@@ -55,7 +55,7 @@ loose-document file dialogs.
 
 ## Document editing history
 
-`Gondwana.Tooling.Editing.EditHistory` is UI- and format-independent. GTS and GSCN
+`Gondwana.Tooling.Editing.EditHistory` is UI- and format-independent. GTS, GSCN, GANI, GSPR, and GSND
 own separate histories; other editors do not yet participate. `IEditCommand`
 provides a description, `Execute`, and `Undo`; delegate commands and `Set` cover
 simple assignments. Commands must touch only their owning model and retain model
