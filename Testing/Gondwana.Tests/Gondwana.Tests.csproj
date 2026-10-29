@@ -53,6 +53,8 @@
         <!-- Keep the standalone editor's document model testable without a Windows UI. -->
         <Compile Include="../../Tooling/Gondwana.Tooling.Tilesheets.WinForms/Editing/*.cs" Link="TilesheetEditing/%(Filename)%(Extension)" />
         <Compile Include="../../Tooling/Gondwana.Tooling.Tilesheets.WinForms/PropertyFields.cs" Link="TilesheetEditing/PropertyFields.cs" />
+        <Compile Include="../../Tooling/Gondwana.Tooling.Tilesheets.WinForms/SpacingConverter.cs" Link="TilesheetEditing/SpacingConverter.cs" />
+        <Compile Include="../../Tooling/Gondwana.Tooling.Tilesheets.WinForms/RegionAreaConverter.cs" Link="TilesheetEditing/RegionAreaConverter.cs" />
     </ItemGroup>
 
 	<ItemGroup>

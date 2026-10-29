@@ -3,7 +3,7 @@ using System.ComponentModel;
 namespace Gondwana.Tooling.Tilesheets.WinForms;
 
 /// <summary>Shows only the editable X, Y, Width, and Height components of a GTS region area.</summary>
-public sealed class RegionAreaConverter : RectangleConverter
+public sealed class RegionAreaConverter : System.Drawing.RectangleConverter
 {
     /// <inheritdoc/>
     public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext? context, object? value, Attribute[]? attributes)
@@ -11,7 +11,7 @@ public sealed class RegionAreaConverter : RectangleConverter
         var properties = base.GetProperties(context, value, attributes);
         return new PropertyDescriptorCollection(
             new[] { "X", "Y", "Width", "Height" }.Select(name =>
-                TypeDescriptor.CreateProperty(typeof(Rectangle), properties[name]!,
+                TypeDescriptor.CreateProperty(typeof(System.Drawing.Rectangle), properties[name]!,
                     new DescriptionAttribute(name switch
                     {
                         "X" => "Horizontal position of the region's left edge in source-image pixels.",
