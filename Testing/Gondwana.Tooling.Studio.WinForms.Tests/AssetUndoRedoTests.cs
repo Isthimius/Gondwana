@@ -73,7 +73,12 @@ public sealed partial class CompositionTests
     public void GafStudioSaveAsUndoUsesAdoptedArchiveAndFailedSaveKeepsHistory() => RunSta(root =>
     {
         var path = Path.Combine(root, "source.gaf");
-        using (var archive = AssetsFile.LoadOrCreate(path, "secret", true, register: false)) archive.Save();
+        using (var archive = AssetsFile.LoadOrCreate(path, "secret", true, register: false))
+        {
+            using var seed = new MemoryStream(new byte[] { 7 });
+            archive.Add(AssetTypes.Misc, "seed", seed);
+            archive.Save();
+        }
         using var studio = Host(root); studio.AssetPassword = _ => "secret";
         var document = studio.OpenDocument(path);
         var editor = (AssetEditorControl)document.Document.Editor;
@@ -91,7 +96,7 @@ public sealed partial class CompositionTests
         failure = null;
         Assert.True(AwaitUi(studio.SaveDocument(document, saveAs: true, destination: target)), failure?.ToString());
         Assert.Equal(target, editor.FilePath); Assert.False(editor.IsDirty);
-        editor.History.Undo(); Assert.Empty(editor.AssetsFile.GetAllEntries()); Assert.True(editor.IsDirty);
+        editor.History.Undo(); Assert.Equal("seed", Assert.Single(editor.AssetsFile.GetAllEntries()).AssetName); Assert.True(editor.IsDirty);
         Assert.Equal(target, document.Document.Path()); Assert.Same(document, studio.OpenDocument(target));
         Assert.Equal(original, File.ReadAllBytes(path));
         editor.History.Redo(); Assert.False(editor.IsDirty); Assert.True(editor.AssetsFile.UseEncryption);
