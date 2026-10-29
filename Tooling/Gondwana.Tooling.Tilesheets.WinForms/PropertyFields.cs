@@ -257,6 +257,8 @@ internal sealed class PropertyFields : CustomTypeDescriptor
             ];
             if (type == typeof(Spacing))
                 attributes.Add(new TypeConverterAttribute(typeof(SpacingConverter)));
+            else if (type == typeof(System.Drawing.Rectangle))
+                attributes.Add(new TypeConverterAttribute(typeof(RegionAreaConverter)));
             return [.. attributes];
         }
 
