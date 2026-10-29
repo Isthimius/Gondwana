@@ -21,7 +21,23 @@ public sealed class SpacingConverter : ExpandableObjectConverter
     {
         // Exclude the calculated IsEmpty property: only the four editable edges belong here.
         var properties = TypeDescriptor.GetProperties(typeof(Spacing), attributes ?? []);
-        return new PropertyDescriptorCollection(Edges.Select(edge => properties[edge]!).ToArray(), readOnly: true);
+        string parentName = context?.PropertyDescriptor?.Name ?? "";
+        return new PropertyDescriptorCollection(Edges.Select(edge =>
+            TypeDescriptor.CreateProperty(typeof(Spacing), properties[edge]!,
+                new DescriptionAttribute(DescribeEdge(parentName, edge)),
+                NotifyParentPropertyAttribute.Yes)).ToArray(), readOnly: true);
+    }
+
+    private static string DescribeEdge(string parentName, string edge)
+    {
+        string side = edge.ToLowerInvariant();
+        return parentName switch
+        {
+            "TilePadding" => $"Unused {side}-edge padding around each frame, in source-image pixels.",
+            "RegionMargin" => $"Unused {side}-edge margin between the region boundary and its frame grid, in pixels.",
+            "Overhang" => $"Artwork extending beyond the tile's logical {side} edge, in pixels.",
+            _ => $"Pixel spacing on the {side} edge."
+        };
     }
 
     /// <inheritdoc/>
