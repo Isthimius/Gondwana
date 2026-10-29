@@ -21,12 +21,20 @@ public sealed class AssetEditorControl : UserControl
 
     private AssetsFile _assetsFile;
     private AssetsFile? _ownedSavedCopy;
+    private bool _refreshFailed;
 
     /// <summary>Dirty state for edits made through this editor.</summary>
     public bool IsDirty => History.IsDirty;
     private readonly AssetEditSession _edits;
     /// <summary>Document-local entry history.</summary>
     public EditHistory History => _edits.History;
+    /// <summary>Whether the current archive is usable for persistence; a failed post-commit refresh requires reopening.</summary>
+    public bool CommitEdits() => !_refreshFailed;
+
+    private void RequireUsableArchive()
+    {
+        if (_refreshFailed) throw new InvalidOperationException("The disk transaction committed but archive refresh failed. Close and reopen this document before editing or saving.");
+    }
     /// <summary>Occurs synchronously when edits mark the archive dirty or an accepted save clears the dirty state.</summary>
     public event EventHandler? Changed;
 
@@ -312,6 +320,7 @@ public sealed class AssetEditorControl : UserControl
     /// <summary>Saves a standalone copy without changing source identity, history, or checkpoint.</summary>
     public void SaveCopyTo(string destination, string? password, bool encrypt)
     {
+        RequireUsableArchive();
         if (History.IsExecuting || History.InTransaction) throw new InvalidOperationException("Archive history is busy.");
         destination = Path.GetFullPath(destination);
         if (IsDocumentOpen(destination)) throw new InvalidOperationException("The copy destination is already open.");
@@ -376,6 +385,7 @@ public sealed class AssetEditorControl : UserControl
     /// <param name="destination">The final archive path. A different path creates a copy and must not exist.</param>
     public void SaveTo(string destination)
     {
+        RequireUsableArchive();
         if (History.IsExecuting || History.InTransaction) throw new InvalidOperationException("Archive history is busy.");
         if (SaveRequested is not null)
             throw new InvalidOperationException("This editor is hosted. Save through the host's asynchronous save command so archive writes are coordinated.");
@@ -417,6 +427,7 @@ public sealed class AssetEditorControl : UserControl
     /// <returns>The number of new entries.</returns>
     public int ApplyImport(AssetImportPlan plan, CancellationToken cancellation = default)
     {
+        RequireUsableArchive();
         int count = _edits.Import(plan, ConfirmNonUndoable, cancellation);
         if (count > 0) SetStatus(History.CanUndo ? $"Imported {count} asset(s). Undo available; Save to persist." :
             $"Imported {count} asset(s) without Undo (history budget). Earlier history cleared; Save to persist.");
@@ -427,6 +438,7 @@ public sealed class AssetEditorControl : UserControl
     /// <summary>Replaces an existing exact typed entry; suppresses identical payloads.</summary>
     public bool ReplaceAsset(AssetTypes type, string name, byte[] replacement)
     {
+        RequireUsableArchive();
         bool changed = _edits.Replace(type, name, replacement, ConfirmNonUndoable);
         SetStatus(!changed ? "Replacement identical; archive and history unchanged." : History.CanUndo ?
             $"Replaced: {name}. Undo available; Save to persist." : $"Replaced: {name} without Undo (history budget). Earlier history cleared; Save to persist.");
@@ -514,6 +526,8 @@ public sealed class AssetEditorControl : UserControl
 
     private void ValidateDiskOperation(IReadOnlyList<string> affectedFiles, IReadOnlyList<string> retiredFiles)
     {
+        RequireUsableArchive();
+        if (History.IsExecuting || History.InTransaction) throw new InvalidOperationException("Archive history is busy.");
         if (IsDirty) throw new InvalidOperationException("Save this archive before modifying resources.");
         if (retiredFiles.Contains(FilePath, StringComparer.OrdinalIgnoreCase))
             throw new InvalidOperationException("Close this archive and use the workspace or CLI to remove or move the whole GAF.");
@@ -531,14 +545,26 @@ public sealed class AssetEditorControl : UserControl
 
     private void RefreshAfterDiskOperation(string status)
     {
-        using (var disk = AssetsFile.LoadOrCreate(FilePath, _assetsFile.Password, _assetsFile.UseEncryption, register: false))
+        try
         {
+            using var disk = AssetsFile.LoadOrCreate(FilePath, _assetsFile.Password, _assetsFile.UseEncryption, register: false);
+            var contents = AssetImportPlan.Snapshot(disk); // read successfully before touching the borrowed instance
             foreach (var key in _assetsFile.GetAllEntries().ToArray()) _assetsFile.Remove(key.AssetType, key.AssetName);
-            foreach (var pair in AssetImportPlan.Snapshot(disk))
+            foreach (var pair in contents)
             {
                 using var stream = new MemoryStream(pair.Value, writable: false);
                 _assetsFile.Add(pair.Key.AssetType, pair.Key.AssetName, stream);
             }
+        }
+        catch (Exception ex)
+        {
+            // The transaction already committed. Old commands must never target its retired state,
+            // even when loading the refreshed archive fails. Prevent persisting stale buffers.
+            _refreshFailed = true;
+            Enabled = false;
+            History.MarkUntracked();
+            WorkspaceChanged();
+            throw new IOException("Disk transaction committed, but archive refresh failed. It is not undoable. Close and reopen this document before editing or saving.", ex);
         }
         History.ResetSaved();
         WorkspaceChanged();

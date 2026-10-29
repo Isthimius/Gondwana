@@ -86,7 +86,8 @@ public sealed class AssetEditSession : IDisposable
             using var current = Archive.Get(type, entry.AssetName);
             using var check = new MemoryStream();
             current?.CopyTo(check);
-            if (current is null || !check.ToArray().AsSpan().SequenceEqual(before))
+            if (!Archive.GetAllEntries().Any(e => e.AssetType == type && string.Equals(e.AssetName, entry.AssetName, StringComparison.OrdinalIgnoreCase)) ||
+                current is null || !check.ToArray().AsSpan().SequenceEqual(before))
                 throw new InvalidOperationException("Entry changed while confirming replacement. Retry the operation.");
         }, default, write);
         return true;

@@ -170,6 +170,29 @@ public sealed partial class CompositionTests
     });
 
     [Fact]
+    public void CommittedDiskRefreshFailureInvalidatesHistoryAndBlocksStaleSaves() => RunSta(root =>
+    {
+        var path = Path.Combine(root, "refresh.gaf");
+        using var archive = AssetsFile.LoadOrCreate(path, null, false, register: false);
+        using (var bytes = new MemoryStream(new byte[] { 1 })) archive.Add(AssetTypes.Misc, "entry", bytes);
+        archive.Save();
+        using var editor = new AssetEditorControl(archive);
+        editor.ReplaceAsset(AssetTypes.Misc, "entry", [2]); editor.SaveTo(path);
+        Assert.True(editor.History.CanUndo);
+        var plan = AssetDeletionPlan.Create(path, [new(AssetTypes.Misc, path, "entry")]);
+        plan.Commit(); // committed disk changes are never compensated by document history
+        File.WriteAllText(path, "invalid zip after commit"); // simulate failed refresh read
+        var failure = Assert.Throws<System.Reflection.TargetInvocationException>(() =>
+            editor.GetType().GetMethod("RefreshAfterDiskOperation", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
+                .Invoke(editor, ["Deletion committed."]));
+        Assert.IsType<IOException>(failure.InnerException);
+        Assert.False(editor.History.CanUndo); Assert.False(editor.History.CanRedo);
+        Assert.False(editor.CommitEdits()); Assert.False(editor.Enabled);
+        Assert.Throws<InvalidOperationException>(() => editor.SaveTo(path));
+        Assert.Equal("invalid zip after commit", File.ReadAllText(path));
+    });
+
+    [Fact]
     public void GafUnsavedArchiveAndDisposedControlReleaseHistory() => RunSta(root =>
     {
         var path = Path.Combine(root, "unsaved.gaf");

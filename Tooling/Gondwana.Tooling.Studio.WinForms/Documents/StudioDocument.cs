@@ -328,7 +328,7 @@ internal sealed class StudioDocument : IDisposable
                             Editor = editor,
                             Path = () => editor.FilePath,
                             Dirty = () => editor.IsDirty || !File.Exists(editor.FilePath),
-                            CommitEdits = () => true,
+                            CommitEdits = editor.CommitEdits,
                             Validate = () => [],
                             Save = (destination, _) => editor.SaveTo(destination),
                             PaneNames = AssetEditorControl.PaneNames,
