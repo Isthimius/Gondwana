@@ -77,6 +77,70 @@ public sealed partial class CompositionTests
         foreach (var file in before) Assert.Equal(file.Value, File.ReadAllBytes(file.Key));
     });
 
+    [Theory]
+    [InlineData("gaf", "Add New Asset File")]
+    [InlineData("gts", "Add New Tilesheet")]
+    [InlineData("gani", "Add New Animation")]
+    [InlineData("gscn", "Add New Scene")]
+    [InlineData("gspr", "Add New Sprite")]
+    [InlineData("gsnd", "Add New Sound")]
+    public void BrowserTypeGroupsOfferScopedAddNewCommands(string format, string caption) => RunSta(directory =>
+    {
+        var nested = Directory.CreateDirectory(Path.Combine(directory, "nested")).FullName;
+        using var panel = new DirectoryPanel(_ => { });
+        var requests = new List<(string Format, string Directory)>();
+        panel.NewFileRequested += (requestedFormat, requestedDirectory) =>
+            requests.Add((requestedFormat, requestedDirectory));
+        panel.SetDirectory(directory);
+
+        var root = panel.Tree.Nodes[0];
+        var category = root.Nodes.Cast<TreeNode>().Single(node => node.ImageKey == format && node.Tag is null);
+        Assert.True(panel.PrepareCategoryMenu(category));
+        Assert.Same(category, panel.Tree.SelectedNode);
+        Assert.Equal(caption, panel.CategoryMenu.Items[0].Text);
+        panel.CategoryMenu.Items[0].PerformClick();
+        Assert.Equal((format, directory), Assert.Single(requests));
+
+        requests.Clear();
+        var folder = root.Nodes.Cast<TreeNode>().Single(node => node.Tag is DirectoryInfo);
+        _ = panel.Tree.Handle;
+        folder.Expand();
+        var nestedCategory = folder.Nodes.Cast<TreeNode>().Single(node => node.ImageKey == format && node.Tag is null);
+        Assert.True(panel.PrepareCategoryMenu(nestedCategory));
+        panel.CategoryMenu.Items[0].PerformClick();
+        Assert.Equal((format, nested), Assert.Single(requests));
+
+        Assert.False(panel.PrepareCategoryMenu(root));
+        Assert.False(panel.PrepareCategoryMenu(root.Nodes.Cast<TreeNode>().Single(node => node.Text == "Misc")));
+        Assert.False(panel.PrepareCategoryMenu(new TreeNode(caption) { ImageKey = format }));
+        Assert.Empty(Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories));
+    });
+
+    [Fact]
+    public void StudioTypeFolderCreationOpensExistingEditorAndPreservesSaveFolder() => RunSta(directory =>
+    {
+        var nested = Directory.CreateDirectory(Path.Combine(directory, "nested")).FullName;
+        using var studio = Host(directory);
+        var browser = studio.Browser;
+        var folder = browser.Tree.Nodes[0].Nodes.Cast<TreeNode>().Single(node => node.Tag is DirectoryInfo);
+        _ = browser.Tree.Handle;
+        folder.Expand();
+
+        foreach (var format in new[] { "gts", "gani", "gscn", "gspr", "gsnd" })
+        {
+            var category = folder.Nodes.Cast<TreeNode>().Single(node => node.ImageKey == format && node.Tag is null);
+            Assert.True(browser.PrepareCategoryMenu(category));
+            browser.CategoryMenu.Items[0].PerformClick();
+            var document = studio.Documents.Last().Document;
+            Assert.Equal(format, document.Extension);
+            Assert.Null(document.Path());
+            Assert.Equal(nested, document.SaveDirectoryHint);
+        }
+
+        Assert.Equal(5, studio.Documents.Count);
+        Assert.Empty(Directory.EnumerateFiles(nested));
+    });
+
     [Fact]
     public void BrowserRefreshRereadsArchivesAndSkipsFailuresWithoutLocks() => RunSta(directory =>
     {

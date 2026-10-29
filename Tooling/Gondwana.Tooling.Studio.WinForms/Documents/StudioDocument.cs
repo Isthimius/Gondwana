@@ -21,6 +21,7 @@ internal sealed class StudioDocument : IDisposable
     internal required UserControl Editor { get; init; }
     internal required string Kind { get; init; }
     internal required string Extension { get; init; }
+    internal string? SaveDirectoryHint { get; set; }
     internal required Func<string?> Path { get; init; }
     internal Func<AssetLocation?> PackedLocation { get; init; } = () => null;
     internal Func<byte[]>? SerializePacked { get; init; }

@@ -33,7 +33,13 @@ Choose **File > Open working directory…** to select an authoring directory. Di
 
 Double-click a supported file, or use **File > Open…**, to open it as a Studio document. Opening a path that is already open activates the existing document.
 
-**File > New** supports all six built-in formats.
+**File > New** supports all six built-in formats. Right-click a Working Directory
+type group (Assets, Tilesheets, Animations, Scenes, Sprites, or Sound) and choose
+**Add New [type]** to start the same workflow. For nested folders, the Save dialog
+defaults to that folder; new documents are not written until saved. The Misc group
+has no creation command. On individual loose files and packed entries,
+**Show Dependencies** and **Show Dependents** use the same Dependency Explorer
+commands as the File menu.
 
 ## Documents and saving
 
