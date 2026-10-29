@@ -93,8 +93,12 @@ only necessary folders. This works for loose files and typed packed GAF entries,
 including entries that finish loading after the tab becomes active. Refresh and
 Save As update the highlight; untitled documents and files outside the working
 directory leave nothing selected. Switching tabs does not move keyboard focus
-from the editor. **File > New** offers all six formats. GAF creation asks for a
-destination and optional password protection.
+from the editor. **File > New** offers all six formats. Right-click a type group
+in **Working directory** (including a nested folder) to use **Add New Sprite**,
+**Add New Scene**, etc. These invoke the same new-document workflow; Save defaults
+to the chosen folder. GAF creation asks for a destination and optional password
+protection. Right-click a loose file or packed entry for **Show Dependencies** or
+**Show Dependents** to inspect that exact resource in Dependency Explorer.
 
 **Save**, **Save As**, and **Close** operate on the active outer document. A `*`
 marks unsaved changes. Save As adopts the destination and updates open-document
