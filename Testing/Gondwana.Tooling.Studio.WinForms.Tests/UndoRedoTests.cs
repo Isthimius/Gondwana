@@ -8,6 +8,56 @@ public sealed partial class CompositionTests
     [Theory]
     [InlineData("gts")]
     [InlineData("gscn")]
+    public void PendingPackedSaveBlocksMenuAndShortcutHistoryReplay(string format) => RunSta(root =>
+    {
+        var archive = NativeArchive(root);
+        using var studio = Host(root);
+        WaitForArchives(studio.Browser);
+        var child = studio.OpenDocument(NativeLocation(archive, format));
+        void Rename(string name)
+        {
+            if (child.Document.Editor is TilesheetEditorControl gts) gts.Document.RenameDefinition(name);
+            else ((SceneEditorControl)child.Document.Editor).Document.RenameDefinition(name);
+        }
+        Rename("state to save"); Rename("redo state"); child.Document.History!.Undo();
+        var expected = child.Document.SerializePacked!();
+        using var opened = new ManualResetEventSlim();
+        using var release = new ManualResetEventSlim();
+        studio.Browser.ArchiveOpened = _ => { opened.Set(); Assert.True(release.Wait(TimeSpan.FromSeconds(15))); };
+        studio.Browser.RefreshDirectory();
+        Assert.True(opened.Wait(TimeSpan.FromSeconds(10)));
+        Task<bool>? save = null;
+        try
+        {
+            save = studio.SaveDocument(child);
+            Assert.False(save.IsCompleted); Assert.False(child.Enabled);
+            var menu = studio.MainMenuStrip!.Items.OfType<ToolStripMenuItem>().Single(item => item.Text == "&Edit");
+            Assert.False(menu.DropDownItems[0].Enabled); Assert.False(menu.DropDownItems[1].Enabled);
+            foreach (var item in menu.DropDownItems.Cast<ToolStripItem>())
+            {
+                item.PerformClick(); Assert.Equal("state to save", child.Document.SelectedMember);
+            }
+            foreach (var target in new Control[] { studio, child.Document.Editor })
+                foreach (var key in new[] { Keys.Control | Keys.Z, Keys.Control | Keys.Y, Keys.Control | Keys.Shift | Keys.Z })
+                {
+                    target.GetType().GetMethod("ProcessCmdKey", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+                        .Invoke(target, [new Message(), key]);
+                    Assert.Equal("state to save", child.Document.SelectedMember);
+                }
+            Assert.True(child.Document.Dirty());
+        }
+        finally { release.Set(); if (save is not null) Assert.True(AwaitUi(save)); }
+        Assert.True(AwaitUi(save!));
+        Assert.False(child.Document.Dirty()); Assert.Equal(expected, child.Document.SerializePacked!());
+        Assert.Equal(expected, child.Document.OriginalEntry);
+        var edit = studio.MainMenuStrip!.Items.OfType<ToolStripMenuItem>().Single(item => item.Text == "&Edit");
+        Assert.True(edit.DropDownItems[0].Enabled); Assert.True(edit.DropDownItems[1].Enabled);
+        edit.DropDownItems[0].PerformClick(); Assert.True(child.Document.Dirty());
+    });
+
+    [Theory]
+    [InlineData("gts")]
+    [InlineData("gscn")]
     public void PackedUndoSurvivesSaveAndSaveAsWithoutChangingDocumentIdentity(string format) => RunSta(root =>
     {
         var archive = NativeArchive(root);

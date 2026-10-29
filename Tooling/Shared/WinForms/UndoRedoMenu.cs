@@ -41,6 +41,7 @@ internal sealed class UndoRedoMenu : IDisposable
 
     internal static bool TryShortcut(Control owner, Keys keys, EditHistory? history, Func<bool> commit)
     {
+        if (!owner.Enabled) return false;
         bool redo = keys == (Keys.Control | Keys.Y) || keys == (Keys.Control | Keys.Shift | Keys.Z);
         if (!redo && keys != (Keys.Control | Keys.Z)) return false;
         var focus = owner.FindForm() as Control ?? owner;

@@ -173,6 +173,34 @@ public sealed class AuthoringHistoryTests : IDisposable
     }
 
     [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void RemovedEditedCollectionSourcesRebaseOnlyOnceAfterSaveAs(bool animation)
+    {
+        using var d = SceneDocument.Create(_root);
+        var originalPath = Path.Combine(_root, animation ? "original.gani" : "original.gts");
+        if (animation) d.SetLooseAnimationSource("walk", originalPath);
+        else d.SetLooseTilesheetSource("terrain", originalPath);
+        d.Save(Path.Combine(_root, "original.gscn"));
+        object source = animation ? d.Definition.AnimationSources.Single() : d.Definition.TilesheetSources.Single();
+        var snapshot = new ModelSnapshot(animation ? (object)d.Definition.AnimationSources : d.Definition.TilesheetSources);
+        if (animation) { d.Definition.AnimationSources[0].GaniPath = "edited.gani"; d.Definition.AnimationSources.Clear(); }
+        else { d.Definition.TilesheetSources[0].GtsPath = "edited.gts"; d.Definition.TilesheetSources.Clear(); }
+        d.RecordCollectionEdit(snapshot, "Edit then remove source");
+        d.Save(Path.Combine(_root, "nested", "saved.gscn"));
+        for (int replay = 0; replay < 3; replay++)
+        {
+            d.History.Undo();
+            var restored = animation ? (object)d.Definition.AnimationSources.Single() : d.Definition.TilesheetSources.Single();
+            Assert.Same(source, restored);
+            var path = animation ? d.Definition.AnimationSources[0].GaniPath : d.Definition.TilesheetSources[0].GtsPath;
+            Assert.Equal(originalPath, d.ResolveReferencePath(path!)); Assert.True(d.IsDirty);
+            d.History.Redo();
+            Assert.Empty(d.Definition.AnimationSources); Assert.Empty(d.Definition.TilesheetSources); Assert.False(d.IsDirty);
+        }
+    }
+
+    [Theory]
     [InlineData("gts")]
     [InlineData("gscn")]
     public void PackedCheckpointsAndPackedToLooseSaveAsRetainHistory(string format)

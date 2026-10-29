@@ -16,6 +16,10 @@ namespace Gondwana.Tooling.Studio.WinForms;
 public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices
 {
     private UndoRedoMenu _undoRedo = null!;
+    // Packed saves disable the document while serialized bytes await archive readers.
+    // Host commands must honor the same editing boundary as the disabled editor.
+    private Gondwana.Tooling.Editing.EditHistory? ActiveHistory =>
+        ActiveDocument is { Enabled: true } active ? active.Document.History : null;
 
     /// <inheritdoc/>
     string Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices.CurrentWorkingDirectory => Browser.WorkingDirectory;
@@ -148,7 +152,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
     {
         var menu = new MenuStrip();
         Disposed += (_, _) => _undoRedo?.Dispose();
-        _undoRedo = new(() => ActiveDocument?.Document.History, () => ActiveDocument?.Document.CommitEdits() == true);
+        _undoRedo = new(() => ActiveHistory, () => ActiveDocument?.Document.CommitEdits() == true);
         Workspace.ActiveDocumentChanged += (_, _) => _undoRedo.Refresh();
         var file = new ToolStripMenuItem("&File");
         var create = new ToolStripMenuItem("&New");
@@ -462,8 +466,13 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
             {
                 InvalidateDependencies(); // Cancel readers before asynchronously draining their archive handles.
                 document.Enabled = false;
+                _undoRedo.Refresh();
                 try { await Browser.RunWithoutArchiveReadsAsync(Save); }
-                finally { if (!document.IsDisposed) document.Enabled = true; }
+                finally
+                {
+                    if (!document.IsDisposed) document.Enabled = true;
+                    if (!IsDisposed && !_disposed) _undoRedo.Refresh();
+                }
             }
             else { Save(); Browser.RefreshDirectory(); }
             return true;
@@ -586,6 +595,6 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         if (disposing) _theme.Dispose();
     }
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
-        UndoRedoMenu.TryShortcut(this, keyData, ActiveDocument?.Document.History, () => ActiveDocument?.Document.CommitEdits() == true) || base.ProcessCmdKey(ref msg, keyData);
+        UndoRedoMenu.TryShortcut(this, keyData, ActiveHistory, () => ActiveDocument?.Document.CommitEdits() == true) || base.ProcessCmdKey(ref msg, keyData);
 
 }

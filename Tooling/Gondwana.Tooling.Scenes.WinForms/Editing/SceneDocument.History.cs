@@ -49,6 +49,10 @@ public sealed partial class SceneDocument : IDisposable
         string? archive = PackedLocation?.Path;
         snapshot.Record(History, description, (target, property, value) =>
         {
+            // Adapted values are interpreted against the current save location, even
+            // when the instance was removed and missed Save As's live-source rebasing.
+            if (target is SceneTilesheetSourceDefinition or SceneAnimationSourceDefinition)
+                _origins.Remember(target, BaseDirectory, PackedLocation?.Path);
             bool packed = target is SceneTilesheetSourceDefinition { Kind: SceneTilesheetSourceKind.PackedDefinitionFile } or
                 SceneAnimationSourceDefinition { Kind: SceneAnimationSourceKind.PackedDefinitionFile };
             if (property == "AssetsFilePath" && packed && value is null or "" && archive is not null && PackedLocation?.Path != archive)
