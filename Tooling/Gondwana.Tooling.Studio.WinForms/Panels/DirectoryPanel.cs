@@ -13,6 +13,9 @@ public sealed class DirectoryPanel : UserControl
     private readonly TreeNavigationSizing _sizing;
     internal NavigationIconSize IconSize => _sizing.Size ?? NavigationIconSize.Small;
     private readonly ContextMenuStrip _fileMenu = new();
+    private readonly ContextMenuStrip _categoryMenu = new();
+    private string? _menuCategoryFormat;
+    private string? _menuCategoryDirectory;
     private string? _menuPath;
     private PackedAssetNodeIdentity? _menuPacked;
     private AssetLocation? _activeDocumentLocation;
@@ -50,6 +53,9 @@ public sealed class DirectoryPanel : UserControl
 
     /// <summary>Requests relationship inspection for an exact loose or packed resource without opening it.</summary>
     public event Action<Gondwana.Assets.AssetLocation, bool>? ReferencesRequested;
+
+    /// <summary>Requests a new Studio document of the specified format in the selected directory.</summary>
+    public event Action<string, string>? NewFileRequested;
 
     /// <summary>Creates the browser controls and file actions without populating the initial directory.</summary>
     /// <param name="log">Callback for directory, archive, and external-open failures.</param>
@@ -94,9 +100,18 @@ public sealed class DirectoryPanel : UserControl
                     ReferencesRequested?.Invoke(new(Gondwana.Tooling.Assets.AssetImportPlan.InferType(path), Path.GetFullPath(path)), title != "Show Dependencies");
             });
 
+        _categoryMenu.Items.Add("Add New", null, (_, _) =>
+        {
+            if (_menuCategoryFormat is { } format && _menuCategoryDirectory is { } directory)
+                NewFileRequested?.Invoke(format, directory);
+        });
+
         Tree.NodeMouseClick += (_, e) =>
         {
-            if (e.Button == MouseButtons.Right && PrepareFileMenu(e.Node))
+            if (e.Button != MouseButtons.Right) return;
+            if (PrepareCategoryMenu(e.Node))
+                _categoryMenu.Show(Tree, e.Location);
+            else if (PrepareFileMenu(e.Node))
                 _fileMenu.Show(Tree, e.Location);
         };
 
@@ -150,8 +165,11 @@ public sealed class DirectoryPanel : UserControl
             _archiveRefresh.Dispose();
             _archiveRefresh = new CancellationTokenSource();
             _fileMenu.Close();
+            _categoryMenu.Close();
             _menuPath = null;
             _menuPacked = null;
+            _menuCategoryFormat = null;
+            _menuCategoryDirectory = null;
             Tree.Nodes.Clear();
 
             var root = new TreeNode(WorkingDirectory)
@@ -457,8 +475,47 @@ public sealed class DirectoryPanel : UserControl
         }
     }
 
+    /// <summary>Offers creation only for real type groups directly beneath a directory node.</summary>
+    internal bool PrepareCategoryMenu(TreeNode node)
+    {
+        _categoryMenu.Close();
+        _menuCategoryFormat = null;
+        _menuCategoryDirectory = null;
+
+        if (node.Tag is not null || node.Parent?.Tag is not DirectoryInfo directory)
+            return false;
+
+        var category = Categories.FirstOrDefault(item => item.Key == node.ImageKey);
+        if (category.Key is null || !string.Equals(category.Label, node.Text, StringComparison.Ordinal))
+            return false;
+
+        string? label = category.Key switch
+        {
+            "gaf" => "Asset File",
+            "gts" => "Tilesheet",
+            "gani" => "Animation",
+            "gscn" => "Scene",
+            "gspr" => "Sprite",
+            "gsnd" => "Sound",
+            _ => null
+        };
+        if (label is null) return false;
+
+        _fileMenu.Close();
+        _menuPath = null;
+        _menuPacked = null;
+        _menuCategoryFormat = category.Key;
+        _menuCategoryDirectory = directory.FullName;
+        _categoryMenu.Items[0].Text = "Add New " + label;
+        Tree.SelectedNode = node;
+        return true;
+    }
+
     internal bool PrepareFileMenu(TreeNode node)
     {
+        _categoryMenu.Close();
+        _menuCategoryFormat = null;
+        _menuCategoryDirectory = null;
         _fileMenu.Close();
         _menuPath = null;
         _menuPacked = null;
@@ -492,6 +549,7 @@ public sealed class DirectoryPanel : UserControl
     }
 
     internal ContextMenuStrip FileMenu => _fileMenu;
+    internal ContextMenuStrip CategoryMenu => _categoryMenu;
 
     internal void ApplyIconSize(NavigationIconSize size) => _sizing.Apply(size);
 
@@ -554,6 +612,7 @@ public sealed class DirectoryPanel : UserControl
             _lifetime.Cancel();
             _lifetime.Dispose();
             _fileMenu.Dispose();
+            _categoryMenu.Dispose();
             _sizing.Dispose();
         }
 
