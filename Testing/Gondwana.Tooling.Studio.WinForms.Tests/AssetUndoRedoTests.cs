@@ -1,0 +1,185 @@
+using Gondwana.Assets;
+using Gondwana.Tooling.Assets;
+using Gondwana.Tooling.Assets.WinForms;
+using Gondwana.Tooling.Tilesheets.WinForms;
+
+namespace Gondwana.Tooling.Studio.WinForms.Tests;
+
+public sealed partial class CompositionTests
+{
+    private static AssetImportPlan HistoryImport(AssetEditorControl editor, string root, string name = "nested/new.bin")
+    {
+        var source = Path.Combine(root, "history-input.bin");
+        File.WriteAllBytes(source, [1, 2, 3]);
+        return AssetImportPlan.Create(editor.AssetsFile, [new(source, AssetTypes.Misc, name)], false);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void GafKeyboardMenuGridFiltersAndNativeSearchUndo(bool standalone) => RunSta(root =>
+    {
+        var path = Path.Combine(root, "keys.gaf");
+        using (var initial = AssetsFile.LoadOrCreate(path, null, false, register: false)) initial.Save();
+        using var studio = standalone ? null : Host(root);
+        using var shell = standalone ? new Gondwana.Tooling.Assets.WinForms.MainForm() : null;
+        AssetEditorControl editor;
+        if (shell is not null)
+        {
+            shell.Show(); Application.DoEvents();
+            shell.GetType().GetMethod("OpenDocument", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!.Invoke(shell, [path]);
+            Application.DoEvents(); editor = Descendants(shell).OfType<AssetEditorControl>().Single();
+        }
+        else editor = (AssetEditorControl)studio!.OpenDocument(path).Document.Editor;
+        var host = (Form?)shell ?? studio!;
+        var menu = host.MainMenuStrip!.Items.OfType<ToolStripMenuItem>().Single(i => i.Text == "&Edit");
+        var grid = Descendants(editor).OfType<DataGridView>().Single();
+        var strip = Descendants(editor).OfType<ToolStrip>().Single(t => t.Items.OfType<ToolStripTextBox>().Any());
+        var search = strip.Items.OfType<ToolStripTextBox>().Single();
+        var types = strip.Items.OfType<ToolStripComboBox>().Single();
+        Assert.False(menu.DropDownItems[0].Enabled);
+        editor.ApplyImport(HistoryImport(editor, root));
+        Assert.Contains("Import 1 asset(s)", menu.DropDownItems[0].Text);
+        Assert.Single(grid.Rows.Cast<DataGridViewRow>());
+        Application.DoEvents(); Assert.True(grid.Focus());
+        RouteKey(Keys.Control | Keys.Z); Assert.Empty(grid.Rows.Cast<DataGridViewRow>()); Assert.False(editor.IsDirty);
+        RouteKey(Keys.Control | Keys.Y); Assert.Single(grid.Rows.Cast<DataGridViewRow>()); Assert.True(editor.IsDirty);
+        RouteKey(Keys.Control | Keys.Z); RouteKey(Keys.Control | Keys.Shift | Keys.Z);
+        Assert.Single(grid.Rows.Cast<DataGridViewRow>());
+        types.SelectedItem = AssetTypes.Misc;
+        Assert.True(types.ComboBox.Focus());
+        RouteKey(Keys.Control | Keys.Z); Assert.Empty(grid.Rows.Cast<DataGridViewRow>());
+        RouteKey(Keys.Control | Keys.Y); Assert.Single(grid.Rows.Cast<DataGridViewRow>());
+        editor.ReplaceAsset(AssetTypes.Misc, "nested/new.bin", [4]);
+        Assert.Contains("Replace nested/new.bin", menu.DropDownItems[0].Text);
+        // Exactly one execution even though both editor and shell route commands.
+        Assert.True(grid.Focus()); RouteKey(Keys.Control | Keys.Z);
+        Assert.Single(editor.AssetsFile.GetAllEntries()); Assert.True(editor.History.CanUndo);
+        menu.DropDownItems[1].PerformClick();
+        search.Text = "nested"; search.TextBox.Focus(); search.TextBox.SelectAll();
+        ReplaceText(search.TextBox.Handle, 0xC2, 1, "other");
+        Assert.True(search.TextBox.CanUndo); Assert.Empty(grid.Rows.Cast<DataGridViewRow>());
+        RouteKey(Keys.Control | Keys.Z);
+        Assert.Equal("nested", search.Text); Assert.Contains("Replace", editor.History.UndoDescription);
+        Assert.Single(grid.Rows.Cast<DataGridViewRow>());
+        menu.DropDownItems[0].PerformClick(); // menu still targets document while search has focus
+        Assert.Equal("nested", search.Text); Assert.Equal(AssetTypes.Misc, types.SelectedItem);
+        Assert.Single(grid.Rows.Cast<DataGridViewRow>());
+        if (studio is not null) Assert.True(AwaitUi(studio.SaveDocument(studio.Documents.Single())));
+        else editor.SaveTo(path);
+    });
+
+    [Fact]
+    public void GafStudioSaveAsUndoUsesAdoptedArchiveAndFailedSaveKeepsHistory() => RunSta(root =>
+    {
+        var path = Path.Combine(root, "source.gaf");
+        using (var archive = AssetsFile.LoadOrCreate(path, "secret", true, register: false)) archive.Save();
+        using var studio = Host(root); studio.AssetPassword = _ => "secret";
+        var document = studio.OpenDocument(path);
+        var editor = (AssetEditorControl)document.Document.Editor;
+        editor.ApplyImport(HistoryImport(editor, root));
+        var original = File.ReadAllBytes(path);
+        Exception? failure = null; studio.ReportError = ex => failure = ex;
+        studio.BeforeArchiveInstall = () => throw new IOException("injected before install");
+        Assert.False(AwaitUi(studio.SaveDocument(document)));
+        Assert.NotNull(failure); Assert.True(editor.IsDirty); Assert.True(editor.History.CanUndo);
+        Assert.Equal(original, File.ReadAllBytes(path));
+        editor.History.Undo(); Assert.False(editor.IsDirty); editor.History.Redo();
+        studio.BeforeArchiveInstall = null;
+        var target = Path.Combine(root, "copies", "adopted.gaf");
+        Assert.True(AwaitUi(studio.SaveDocument(document, saveAs: true, destination: target)));
+        Assert.Equal(target, editor.FilePath); Assert.False(editor.IsDirty);
+        editor.History.Undo(); Assert.Empty(editor.AssetsFile.GetAllEntries()); Assert.True(editor.IsDirty);
+        Assert.Equal(target, document.Document.Path()); Assert.Same(document, studio.OpenDocument(target));
+        Assert.Equal(original, File.ReadAllBytes(path));
+        editor.History.Redo(); Assert.False(editor.IsDirty); Assert.True(editor.AssetsFile.UseEncryption);
+        editor.ReplaceAsset(AssetTypes.Misc, "nested/new.bin", [9]);
+        failure = null;
+        Assert.False(AwaitUi(studio.SaveDocument(document, saveAs: true, destination: path)));
+        Assert.NotNull(failure); Assert.Equal(target, editor.FilePath); Assert.True(editor.IsDirty);
+        editor.History.Undo(); Assert.False(editor.IsDirty);
+    });
+
+    [Fact]
+    public void GafStandaloneSaveCopyAndFailedSaveKeepCheckpoint() => RunSta(root =>
+    {
+        var path = Path.Combine(root, "source.gaf");
+        using var archive = AssetsFile.LoadOrCreate(path, null, false, register: false); archive.Save();
+        using var editor = new AssetEditorControl(archive);
+        editor.ApplyImport(HistoryImport(editor, root));
+        var copy = Path.Combine(root, "copy.gaf");
+        editor.SaveCopyTo(copy, "secret", true);
+        Assert.Equal(path, editor.FilePath); Assert.True(editor.IsDirty); Assert.True(editor.History.CanUndo);
+        using (var saved = AssetsFile.LoadOrCreate(copy, "secret", true, register: false)) Assert.Single(saved.GetAllEntries());
+        Assert.Throws<IOException>(() => editor.SaveTo(copy));
+        Assert.True(editor.IsDirty); editor.History.Undo(); Assert.False(editor.IsDirty); editor.History.Redo();
+        editor.SaveTo(path); Assert.False(editor.IsDirty);
+        editor.History.Undo(); Assert.True(editor.IsDirty); editor.History.Redo(); Assert.False(editor.IsDirty);
+        editor.MarkChanged(); Assert.True(editor.IsDirty); Assert.False(editor.History.CanUndo); Assert.False(editor.History.CanRedo);
+    });
+
+    [Fact]
+    public void GafAndPackedChildHistoriesRemainIndependentAcrossSavesAndTabSwitches() => RunSta(root =>
+    {
+        var path = NativeArchive(root);
+        using var studio = Host(root);
+        var parent = studio.OpenDocument(path);
+        var editor = (AssetEditorControl)parent.Document.Editor;
+        var child = studio.OpenDocument(NativeLocation(path, "gts"));
+        var tiles = ((TilesheetEditorControl)child.Document.Editor).Document;
+        var original = tiles.Definition.Name;
+        tiles.RenameDefinition("child edit");
+        editor.ApplyImport(HistoryImport(editor, root));
+        parent.Activate(); Application.DoEvents();
+        var menu = studio.MainMenuStrip!.Items.OfType<ToolStripMenuItem>().Single(i => i.Text == "&Edit");
+        menu.DropDownItems[0].PerformClick(); Assert.False(editor.IsDirty); Assert.True(tiles.IsDirty);
+        Assert.Equal("child edit", tiles.Definition.Name);
+        child.Activate(); Application.DoEvents(); menu.DropDownItems[0].PerformClick();
+        Assert.Equal(original, tiles.Definition.Name); Assert.False(tiles.IsDirty); Assert.True(editor.History.CanRedo);
+        // A persisted child save is an external parent refresh: its own history survives,
+        // the parent's now-obsolete redo branch cannot overwrite the new disk baseline.
+        tiles.RenameDefinition("persisted child");
+        Assert.True(AwaitUi(studio.SaveDocument(child)));
+        Assert.True(tiles.History.CanUndo); Assert.False(editor.History.CanRedo); Assert.False(editor.History.CanUndo); Assert.False(editor.IsDirty);
+        tiles.History.Undo(); Assert.True(tiles.IsDirty); Assert.False(editor.IsDirty);
+    });
+
+    [Fact]
+    public void PendingGafSaveBlocksMenuAndQueuedShortcutReplay() => RunSta(root =>
+    {
+        var path = NativeArchive(root);
+        using var studio = Host(root); WaitForArchives(studio.Browser);
+        var document = studio.OpenDocument(path);
+        var editor = (AssetEditorControl)document.Document.Editor;
+        editor.ApplyImport(HistoryImport(editor, root));
+        using var opened = new ManualResetEventSlim(); using var release = new ManualResetEventSlim();
+        studio.Browser.ArchiveOpened = _ => { opened.Set(); Assert.True(release.Wait(TimeSpan.FromSeconds(15))); };
+        studio.Browser.RefreshDirectory(); Assert.True(opened.Wait(TimeSpan.FromSeconds(10)));
+        Task<bool>? save = null;
+        try
+        {
+            save = studio.SaveDocument(document); Assert.False(save.IsCompleted); Assert.False(document.Enabled);
+            var menu = studio.MainMenuStrip!.Items.OfType<ToolStripMenuItem>().Single(i => i.Text == "&Edit");
+            Assert.False(menu.DropDownItems[0].Enabled); menu.DropDownItems[0].PerformClick();
+            studio.Focus(); RouteKey(Keys.Control | Keys.Z); RouteKey(Keys.Control | Keys.Y);
+            Assert.Contains(editor.AssetsFile.GetAllEntries(), e => e.AssetName == "nested/new.bin");
+            Assert.True(editor.IsDirty);
+        }
+        finally { release.Set(); if (save is not null) Assert.True(AwaitUi(save)); }
+        Assert.False(editor.IsDirty); editor.History.Undo(); Assert.True(editor.IsDirty);
+    });
+
+    [Fact]
+    public void GafUnsavedArchiveAndDisposedControlReleaseHistory() => RunSta(root =>
+    {
+        var path = Path.Combine(root, "unsaved.gaf");
+        using var archive = AssetsFile.LoadOrCreate(path, null, false, register: false);
+        var editor = new AssetEditorControl(archive);
+        Assert.True(editor.IsDirty);
+        editor.ApplyImport(HistoryImport(editor, root)); editor.History.Undo(); Assert.True(editor.IsDirty);
+        editor.History.Redo(); Assert.True(editor.History.RetainedBytes > 0);
+        var history = editor.History;
+        editor.Dispose(); Assert.Equal(0, history.RetainedBytes); Assert.False(history.CanUndo);
+        Assert.Single(archive.GetAllEntries());
+    });
+}

@@ -80,6 +80,7 @@ internal sealed class StudioDocument : IDisposable
         AnimationEditorControl e => e.Document.History,
         SpriteEditorControl e => e.Document.History,
         AudioEditorControl e => e.Document.History,
+        AssetEditorControl e => e.History,
         _ => null
     };
 

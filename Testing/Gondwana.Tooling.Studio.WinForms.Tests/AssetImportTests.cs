@@ -16,6 +16,7 @@ public sealed partial class CompositionTests
         File.WriteAllText(source, "same bytes");
         using var archive = AssetsFile.LoadOrCreate(path, null, false, register: false);
         archive.Add(AssetTypes.Misc, source, "existing.txt");
+        archive.Save();
         using var editor = new AssetEditorControl(archive);
         int changes = 0;
         editor.Changed += (_, _) => changes++;

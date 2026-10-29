@@ -29,6 +29,8 @@ public sealed class AssetImportPlan
     /// <summary>Gets additions, reused entries, rewritten references, and remaining external dependencies.</summary>
     public IReadOnlyList<string> Preview { get; }
 
+    internal IReadOnlyDictionary<AssetsFileEntry, byte[]> Additions => _additions;
+
     /// <summary>Gets the number of new physical entries; existing entries are never replaced.</summary>
     public int AdditionCount => _additions.Count;
 
@@ -72,10 +74,7 @@ public sealed class AssetImportPlan
     internal int ApplyCore(Action<AssetsFileEntry, byte[]>? write, CancellationToken cancellation)
     {
         cancellation.ThrowIfCancellationRequested();
-        var current = Snapshot(_destination);
-        if (_path != _destination.SourcePath || current.Count != _before.Count ||
-            _before.Any(pair => !current.TryGetValue(pair.Key, out var bytes) || !bytes.AsSpan().SequenceEqual(pair.Value)))
-            throw new InvalidOperationException("The archive changed after preview. Prepare a new import plan.");
+        ValidateCurrent();
         var attempted = new List<AssetsFileEntry>();
         try
         {
@@ -98,6 +97,14 @@ public sealed class AssetImportPlan
             throw;
         }
         return _additions.Count;
+    }
+
+    internal void ValidateCurrent()
+    {
+        var current = Snapshot(_destination);
+        if (_path != _destination.SourcePath || current.Count != _before.Count ||
+            _before.Any(pair => !current.TryGetValue(pair.Key, out var bytes) || !bytes.AsSpan().SequenceEqual(pair.Value)))
+            throw new InvalidOperationException("The archive changed after preview. Prepare a new import plan.");
     }
 
     /// <summary>Copies current in-memory entry bytes without saving or assuming disk contents match.</summary>

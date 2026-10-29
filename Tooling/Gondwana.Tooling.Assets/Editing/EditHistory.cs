@@ -7,6 +7,8 @@ public interface IEditCommand
     bool HasChanges => true;
     /// <summary>User-facing operation name.</summary>
     string Description { get; }
+    /// <summary>Bytes retained by this command; binary editors use a byte quota in addition to the count limit.</summary>
+    long RetainedBytes => 0;
     /// <summary>Applies the new state without recording another command.</summary>
     void Execute();
     /// <summary>Restores the previous state without recording another command.</summary>
@@ -26,6 +28,7 @@ public sealed class EditHistory : IDisposable
     private long? _saved;
     private bool _busy, _disposed;
     private int _limit;
+    private long _byteLimit = long.MaxValue;
 
     /// <summary>Creates a history retaining at most the specified number of committed operations.</summary>
     public EditHistory(bool initiallySaved = true, int limit = 200)
@@ -56,6 +59,15 @@ public sealed class EditHistory : IDisposable
     {
         get => _limit;
         set { RequireIdle(); if (value < 1) throw new ArgumentOutOfRangeException(nameof(value)); _limit = value; Trim(); Notify(); }
+    }
+
+    /// <summary>Bytes retained by committed undo and redo entries.</summary>
+    public long RetainedBytes => _entries.Sum(e => e.Command.RetainedBytes);
+    /// <summary>Maximum retained payload bytes. Oldest applied commands, then furthest redo entries, are pruned.</summary>
+    public long ByteLimit
+    {
+        get => _byteLimit;
+        set { RequireIdle(); if (value < 0) throw new ArgumentOutOfRangeException(nameof(value)); _byteLimit = value; Trim(); Notify(); }
     }
 
     internal void RequireIdle(bool allowTransaction = false)
@@ -176,6 +188,11 @@ public sealed class EditHistory : IDisposable
         int remove = Math.Min(_position, Math.Max(0, _entries.Count - _limit));
         _entries.RemoveRange(0, remove); _position -= remove;
         if (_entries.Count > _limit) _entries.RemoveRange(_limit, _entries.Count - _limit);
+        while (RetainedBytes > _byteLimit && _entries.Count > 0)
+        {
+            if (_position > 0) { _entries.RemoveAt(0); _position--; }
+            else _entries.RemoveAt(_entries.Count - 1);
+        }
     }
 
     /// <summary>Begins a nested, LIFO transaction. Dispose without Commit cancels and restores its edits.</summary>
@@ -222,6 +239,9 @@ public sealed class EditHistory : IDisposable
         RequireIdle(); _entries.Clear(); _position = 0; _state = ++_nextState; Notify();
     }
 
+    /// <summary>Discards obsolete local commands after a committed external refresh and establishes a clean baseline.</summary>
+    public void ResetSaved() { RequireIdle(); _entries.Clear(); _position = 0; _state = ++_nextState; _saved = _state; Notify(); }
+
     /// <summary>Releases retained commands without changing dirty-state semantics.</summary>
     public void Clear() { RequireIdle(); _entries.Clear(); _position = 0; Notify(); }
     private void Notify() => Changed?.Invoke(this, EventArgs.Empty);
@@ -248,6 +268,7 @@ public sealed class EditHistory : IDisposable
 
     private sealed record GroupCommand(string Description, IEditCommand[] Commands) : IEditCommand
     {
+        public long RetainedBytes => Commands.Sum(c => c.RetainedBytes);
         public void Execute() => Apply(this, undo: false);
         public void Undo() => Apply(this, undo: true);
     }

@@ -7,6 +7,7 @@ namespace Gondwana.Tooling.Assets.WinForms;
 /// <summary>Standalone asset-package editor shell managing document tabs, the workspace browser, and session persistence.</summary>
 public sealed class MainForm : Form
 {
+    private readonly UndoRedoMenu _undoRedo;
     private readonly ThemeBase _theme = ToolingAppearance.CreateDockTheme();
     private readonly DockPanel _dock;
     private readonly DockLayoutPersistence _layout;
@@ -132,7 +133,9 @@ public sealed class MainForm : Form
         };
 
         _session.AddMenu(file);
-        menu.Items.AddRange([file, view]);
+        _undoRedo = new(() => ActiveEditor?.Editor.History, () => ActiveEditor?.Editor.Enabled == true);
+        _dock.ActiveDocumentChanged += (_, _) => _undoRedo.Refresh();
+        menu.Items.AddRange([file, _undoRedo.Menu, view]);
         MainMenuStrip = menu;
 
         Controls.Add(_dock);
@@ -377,6 +380,10 @@ public sealed class MainForm : Form
         return editor;
     }
 
+    /// <inheritdoc/>
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
+        UndoRedoMenu.TryShortcut(this, keyData, ActiveEditor?.Editor.History, () => ActiveEditor?.Editor.Enabled == true) || base.ProcessCmdKey(ref msg, keyData);
+
     private void ShowError(
         string message,
         Exception ex)
@@ -394,6 +401,7 @@ public sealed class MainForm : Form
     {
         if (disposing)
         {
+            _undoRedo.Dispose();
             _layout.Dispose();
             foreach (var document in _documents.ToArray()) document.Dispose();
             _workspace.Dispose();

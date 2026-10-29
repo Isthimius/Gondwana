@@ -133,7 +133,7 @@ public sealed partial class MainForm
                 if (other != document && candidate.Editor is AssetEditorControl parent && !candidate.Dirty())
                 {
                     using var saved = StudioArchiveSnapshot.Open(destination, model.ArchivePassword);
-                    parent.AcceptSavedArchive(saved.Detach());
+                    parent.AcceptSavedArchive(saved.Detach(), externalRefresh: true);
                 }
                 else if (other != document && candidate.PackedLocation() is { } packed)
                 {

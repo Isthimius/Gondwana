@@ -55,8 +55,8 @@ loose-document file dialogs.
 
 ## Document editing history
 
-`Gondwana.Tooling.Editing.EditHistory` is UI- and format-independent. GTS, GSCN, GANI, GSPR, and GSND
-own separate histories; other editors do not yet participate. `IEditCommand`
+`Gondwana.Tooling.Editing.EditHistory` is UI- and format-independent. GAF/ZIP, GTS, GSCN, GANI, GSPR, and GSND
+own separate histories. `IEditCommand`
 provides a description, `Execute`, and `Undo`; delegate commands and `Set` cover
 simple assignments. Commands must touch only their owning model and retain model
 objects, never controls. `Undo` must also compensate a partially failed `Execute`,
@@ -80,7 +80,9 @@ only after persistence succeeds. Saves are not allowed during an open transactio
 paths use reversible operations instead.
 
 The configurable `Limit` defaults to 200 committed operations (a group counts as
-one). It is a command-count bound, not a byte quota: a large collection edit retains
+one). Binary commands additionally report `IEditCommand.RetainedBytes`; `ByteLimit`
+prunes by retained payload weight, including grouped commands and redo entries.
+Definition-object commands use the count bound; a large collection edit retains
 its affected objects. Pruning, divergent edits, `Clear`, and `Dispose` release
 retained command references. History is owned and used on the editor thread.
 
@@ -93,3 +95,46 @@ changed fields and membership. Neither mechanism serializes a whole document.
 retained by undo across Save As. Logical instances and the current save location
 are preserved during replay. These operations are suitable for future grouped
 scene painting; no painting or cross-document history is implemented here.
+
+
+### GAF entry history
+
+`AssetEditSession` is a stable accessor over the editor's current `AssetsFile`, not
+a second archive model or history engine. Import retains only the approved typed
+additions, never the planner's whole-archive stale-plan snapshot. One approved
+import is one command; reused entries are excluded. Redo uses retained bytes,
+without reopening input files or rediscovering dependencies. Replace retains only
+the exact typed name and before/after bytes, suppressing byte-identical changes.
+Raw native-definition replacement remains opaque; it does not discover logical
+members or update inbound references. Initial imports retain existing stale-plan,
+cancellation, and failure-compensation protections.
+
+The default binary history budget is **64 MiB per document**, across both undo and
+redo, plus the shared 200-command limit. Weight is the sum of affected payload
+lengths (including both sides of replacements); object/array overhead and the
+archive's own buffers are additional. No complete archive is retained by commands.
+Oldest applied commands are pruned first, then furthest redo. Pruning, branch
+discard, clear, and disposal release command references for garbage collection.
+No plaintext history spill files are created, including for encrypted archives.
+
+An individually oversized operation requires an explicit confirmation callback.
+Without it the operation is rejected before mutation; declining cancels it. The
+WinForms prompt explains that proceeding is non-undoable and clears earlier
+Undo/Redo **after success**. Ordinary failure rolls back affected entries and
+preserves history/checkpoints. This permits legitimate large edits without
+silently advertising Undo. Temporary input/planning/replay buffers are outside
+the retention quota; this is not a general archive-streaming redesign.
+
+Normal Save marks a checkpoint after persistence. Studio Save As adopts the new
+archive and keeps history: commands resolve the current archive and relocate
+native payload references from their captured origin when paths differ.
+Standalone Save As saves a separate copy without adopting it or advancing the
+source checkpoint. Save/Save As is never a command.
+
+Reviewed physical Move/Delete remains outside history. Successful external
+refreshes use `ResetSaved` to discard obsolete deltas and establish a clean
+baseline; failed/cancelled transactions leave local history intact. Direct
+borrowed-archive mutations must call `MarkChanged`/`MarkUntracked`. Packed-child
+saves invalidate clean-parent GAF history while preserving independent child
+history. All six editors share `UndoRedoMenu.Route` and Ctrl+Z/Ctrl+Y/Ctrl+Shift+Z;
+search and pending text edits keep native Undo.

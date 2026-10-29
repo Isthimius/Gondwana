@@ -39,13 +39,19 @@ internal sealed class AssetEditorDocument : DockContent
         AskSave = () => ThemedMessageBox.Show(this, $"Save changes to {Path.GetFileName(FilePath)}?",
             "Unsaved changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
-        Text = Path.GetFileName(FilePath);
-        TabText = Text;
-        ToolTipText = FilePath;
+        Editor.Changed += (_, _) => UpdateCaption();
+        UpdateCaption();
         DockAreas = DockAreas.Document | DockAreas.Float;
 
         Controls.Add(Editor);
         ToolingAppearance.Apply(this);
+    }
+
+    private void UpdateCaption()
+    {
+        Text = Path.GetFileName(FilePath) + (Editor.IsDirty ? " *" : "");
+        TabText = Text;
+        ToolTipText = FilePath;
     }
 
     /// <summary>
