@@ -11,7 +11,16 @@ public sealed class RegionAreaConverter : RectangleConverter
     {
         var properties = base.GetProperties(context, value, attributes);
         return new PropertyDescriptorCollection(
-            new[] { "X", "Y", "Width", "Height" }.Select(name => properties[name]!).ToArray(),
+            new[] { "X", "Y", "Width", "Height" }.Select(name =>
+                TypeDescriptor.CreateProperty(typeof(Rectangle), properties[name]!,
+                    new DescriptionAttribute(name switch
+                    {
+                        "X" => "Horizontal position of the region's left edge in source-image pixels.",
+                        "Y" => "Vertical position of the region's top edge in source-image pixels.",
+                        "Width" => "Width of the region in source-image pixels.",
+                        _ => "Height of the region in source-image pixels."
+                    }),
+                    NotifyParentPropertyAttribute.Yes)).ToArray(),
             readOnly: true);
     }
 }
