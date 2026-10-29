@@ -236,11 +236,11 @@ public sealed class AssetEditSessionTests : IDisposable
         Assert.Equal(destination, edits.Archive.SourcePath);
     }
 
-    private static byte[] SheetBytes(string image, bool invalidGeometry = false) => System.Text.Encoding.UTF8.GetBytes(
+    private static byte[] SheetBytes(string image, bool invalidGeometry = false, string? archive = null) => System.Text.Encoding.UTF8.GetBytes(
         TilesheetDefinitionSerializer.ToJson(new TilesheetDefinition
         {
             Name = "tiles",
-            Image = new() { AssetEntryName = image },
+            Image = new() { AssetEntryName = image, AssetsFilePath = archive },
             Regions = [new() { Name = "default", Area = new Rectangle(0, 0, invalidGeometry ? -1 : 1, 1), TileSize = new Size(1, 1) }]
         }));
 
@@ -302,19 +302,43 @@ public sealed class AssetEditSessionTests : IDisposable
     {
         using var source = Archive("Game.gaf");
         Add(source, AssetTypes.Image, "art.png", [1]);
+        Add(source, AssetTypes.Image, "other.png", [2]);
         Add(source, AssetTypes.TilesheetDefinition, "tiles.gts", SheetBytes("art.png"));
         using var edits = new AssetEditSession(source, true);
-        edits.Replace(AssetTypes.TilesheetDefinition, "tiles.gts", SheetBytes("other.png"));
-        Add(source, AssetTypes.Image, "other.png", [2]);
-        // Construct independent in-memory archives: no filesystem case-collision policy is involved.
+        edits.Replace(AssetTypes.TilesheetDefinition, "tiles.gts", SheetBytes("other.png", archive: source.SourcePath));
+        // Construct semantic copies in memory: the filesystem's separate case-collision policy is not under test.
         using var adopted = Archive("game.gaf");
-        foreach (var pair in AssetImportPlan.Snapshot(source)) Add(adopted, pair.Key.AssetType, pair.Key.AssetName, pair.Value);
+        var mappings = source.GetAllEntries().Select(e => new ReferenceRelocation(
+            new(e.AssetType, source.SourcePath!, e.AssetName), new(e.AssetType, adopted.SourcePath!, e.AssetName))).ToArray();
+        foreach (var pair in AssetImportPlan.Snapshot(source))
+        {
+            var bytes = PackDefinitionDocument.Read(pair.Key.AssetType, pair.Value, pair.Key.AssetName)?.Relocate(
+                new(pair.Key.AssetType, source.SourcePath!, pair.Key.AssetName), new(pair.Key.AssetType, adopted.SourcePath!, pair.Key.AssetName), mappings, false) ?? pair.Value;
+            Add(adopted, pair.Key.AssetType, pair.Key.AssetName, bytes);
+        }
+        var saved = Bytes(adopted, AssetTypes.TilesheetDefinition, "tiles.gts");
         edits.AcceptSavedArchive(adopted);
         edits.History.Undo(); edits.History.Redo();
         var definition = TilesheetDefinitionSerializer.Load(adopted, "tiles.gts");
-        var resolved = Path.GetFullPath(definition.Image.AssetsFilePath ?? Path.GetFileName(adopted.SourcePath)!, _root);
+        var resolved = Path.GetFullPath(definition.Image.AssetsFilePath!, _root);
         Assert.True(DefinitionReferenceDiscovery.Paths.Equals(adopted.SourcePath, resolved));
-        if (!OperatingSystem.IsWindows()) Assert.NotEqual(source.SourcePath, resolved);
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.NotEqual(source.SourcePath, resolved);
+            Assert.Equal(saved, Bytes(adopted, AssetTypes.TilesheetDefinition, "tiles.gts"));
+        }
+    }
+
+    [Fact]
+    public void RelativeArchiveOriginsAreNormalizedBeforeCapturingPayloads()
+    {
+        var path = Path.Combine(_root, "relative.gaf");
+        using var archive = AssetsFile.LoadOrCreate(Path.GetRelativePath(Environment.CurrentDirectory, path), null, false, register: false);
+        Add(archive, AssetTypes.Misc, "entry", [1]);
+        using var edits = new AssetEditSession(archive, true);
+        edits.Replace(AssetTypes.Misc, "entry", [2]);
+        edits.History.Undo(); Assert.Equal(new byte[] { 1 }, Bytes(archive, AssetTypes.Misc, "entry"));
+        edits.History.Redo(); Assert.Equal(new byte[] { 2 }, Bytes(archive, AssetTypes.Misc, "entry"));
     }
 
     [Fact]
