@@ -181,7 +181,6 @@ public sealed class SceneEditorControl : UserControl
 
         _properties.PropertyValueChanged += (_, _) =>
         {
-            Document.MarkChanged();
             ClampTileSelection();
             RefreshStructure();
             RefreshPreview();
@@ -208,14 +207,19 @@ public sealed class SceneEditorControl : UserControl
         NavigationSizing.Attach(_sourceTree);
         ToolingAppearance.Apply(this);
         RefreshView();
+        _displayedDefinition = Definition; _displayedSources = SourceSignature();
     }
 
     /// <summary>Loads the members of loose tilesheet files for authoring and records their source paths in the document.</summary>
     /// <param name="paths">Definition files to load; relative paths use the process's current directory.</param>
-    /// <remarks>Earlier additions remain if a later file fails to load.</remarks>
+    /// <remarks>All source-reference changes form one transaction; a load failure cancels the group.</remarks>
     public void AddTilesheetSources(IEnumerable<string> paths)
     {
         ArgumentNullException.ThrowIfNull(paths);
+        using var transaction = Document.History.BeginTransaction("Add tilesheet sources");
+        // Source previews are derived state; rebuild them if loading or cancellation changes the group.
+        _displayedSources = null;
+
 
         SceneTilesheetSource? last = null;
         foreach (var path in paths)
@@ -242,14 +246,19 @@ public sealed class SceneEditorControl : UserControl
 
         if (last is not null)
             SelectTilesheetRoot(last);
+        transaction.Commit();
     }
 
     /// <summary>Loads the members of loose animation files for authoring and records their source paths in the document.</summary>
     /// <param name="paths">Definition files to load; relative paths use the process's current directory.</param>
-    /// <remarks>Earlier additions remain if a later file fails to load.</remarks>
+    /// <remarks>All source-reference changes form one transaction; a load failure cancels the group.</remarks>
     public void AddAnimationSources(IEnumerable<string> paths)
     {
         ArgumentNullException.ThrowIfNull(paths);
+        using var transaction = Document.History.BeginTransaction("Add animation sources");
+        // Source previews are derived state; rebuild them if loading or cancellation changes the group.
+        _displayedSources = null;
+
 
         SceneAnimationSource? last = null;
         foreach (var path in paths)
@@ -276,6 +285,7 @@ public sealed class SceneEditorControl : UserControl
 
         if (last is not null)
             SelectAnimation(last);
+        transaction.Commit();
     }
 
     /// <summary>Validates the document and refreshes the diagnostics pane.</summary>
@@ -956,17 +966,8 @@ public sealed class SceneEditorControl : UserControl
         if (_selectedLayer is null)
             return;
 
-        var tile = Document.GetOrCreateTile(
-            _selectedLayer,
-            (int)_tileX.Value,
-            (int)_tileY.Value);
-
-        tile.Frame = frame.Source.CreateFrame(
-            frame.Region,
-            frame.X,
-            frame.Y);
-
-        Document.MarkChanged();
+        Document.EditTile(_selectedLayer, (int)_tileX.Value, (int)_tileY.Value, "Assign frame",
+            tile => tile.Frame = frame.Source.CreateFrame(frame.Region, frame.X, frame.Y));
         RefreshTileProperties();
         RefreshPreview();
         UpdateValidation();
@@ -985,8 +986,7 @@ public sealed class SceneEditorControl : UserControl
         if (tile?.Frame is null)
             return;
 
-        tile.Frame = null;
-        Document.MarkChanged();
+        Document.Edit(tile, "Clear frame", () => tile.Frame = null);
         RefreshTileProperties();
         RefreshPreview();
         UpdateValidation();
@@ -1001,18 +1001,13 @@ public sealed class SceneEditorControl : UserControl
             return;
         }
 
-        var tile = Document.GetOrCreateTile(
-            _selectedLayer,
-            (int)_tileX.Value,
-            (int)_tileY.Value);
-
-        tile.AnimationKey = source.Definition.Key;
-        tile.EnableAnimator = true;
-        tile.StartAnimation = true;
-        // Persist the same initial frame shown by the editor preview.
-        // Keep an existing frame if the source has none.
-        tile.Frame = source.FirstPreviewFrame() ?? tile.Frame;
-        Document.MarkChanged();
+        Document.EditTile(_selectedLayer, (int)_tileX.Value, (int)_tileY.Value, "Assign animation", tile =>
+        {
+            tile.AnimationKey = source.Definition.Key;
+            tile.EnableAnimator = true;
+            tile.StartAnimation = true;
+            tile.Frame = source.FirstPreviewFrame() ?? tile.Frame;
+        });
 
         RefreshTileProperties();
         RefreshPreview();
@@ -1035,9 +1030,7 @@ public sealed class SceneEditorControl : UserControl
             return;
         }
 
-        tile.AnimationKey = null;
-        tile.StartAnimation = false;
-        Document.MarkChanged();
+        Document.Edit(tile, "Clear animation", () => { tile.AnimationKey = null; tile.StartAnimation = false; });
 
         RefreshTileProperties();
         RefreshPreview();
@@ -1219,7 +1212,8 @@ public sealed class SceneEditorControl : UserControl
 
     private void StructureSelectionChanged()
     {
-        _properties.SelectedObject = _structure.SelectedNode?.Tag;
+        if (_refreshingStructure) return;
+        _properties.SelectedObject = _structure.SelectedNode?.Tag is { } target ? new ScenePropertyView(Document, target) : null;
 
         if (_structure.SelectedNode?.Tag is SceneLayerDefinition layer)
         {
@@ -1244,6 +1238,7 @@ public sealed class SceneEditorControl : UserControl
         foreach (var source in _animationSources) source.Dispose();
         _tilesheetSources.Clear(); _animationSources.Clear(); _sourceDiagnostics.Clear();
         LoadDeclaredSources(); RefreshView();
+        _displayedDefinition = Definition; _displayedSources = SourceSignature();
     }
 
     private void RefreshView()
@@ -1265,7 +1260,7 @@ public sealed class SceneEditorControl : UserControl
         }
         else
         {
-            _properties.SelectedObject = Definition;
+            _properties.SelectedObject = new ScenePropertyView(Document, Definition);
             _tileProperties.SelectedObject = null;
             _preview.SetSelection(null, 0, 0);
         }
@@ -1276,60 +1271,66 @@ public sealed class SceneEditorControl : UserControl
 
     private void RefreshStructure()
     {
-        object? selected = _structure.SelectedNode?.Tag;
-
-        // Discard viewer-only state for deleted layers and removed scene members.
-        var currentLayers = Document.Definitions.SelectMany(definition => definition.Layers).ToHashSet();
-        foreach (var stale in _previewLayerVisibility.Keys.Where(layer => !currentLayers.Contains(layer)).ToArray())
-            _previewLayerVisibility.Remove(stale);
-
-        _syncingStructureChecks = true;
-        _structure.BeginUpdate();
+        _refreshingStructure = true;
         try
         {
-            _structure.Nodes.Clear();
+            object? selected = _structure.SelectedNode?.Tag;
 
-            var root = new TreeNode(
-                string.IsNullOrWhiteSpace(Definition.ID)
-                    ? "(scene)"
-                    : Definition.ID)
-            {
-                Tag = Definition,
-                Checked = Definition.Layers.Count > 0 && Definition.Layers.All(IsLayerVisibleInPreview),
-                ToolTipText = "Check to show all layers; uncheck to hide all layers in the preview"
-            };
+            // Discard viewer-only state for deleted layers and removed scene members.
+            var currentLayers = Document.Definitions.SelectMany(definition => definition.Layers).ToHashSet();
+            foreach (var stale in _previewLayerVisibility.Keys.Where(layer => !currentLayers.Contains(layer)).ToArray())
+                _previewLayerVisibility.Remove(stale);
 
-            foreach (var layer in Definition.Layers
-                         .OrderBy(layer => layer.ZOrder))
+            _syncingStructureChecks = true;
+            _structure.BeginUpdate();
+            try
             {
-                root.Nodes.Add(
-                    new TreeNode(
-                        $"{LayerLabel(layer)}  [{layer.Columns}×{layer.Rows}]  Z={layer.ZOrder}")
-                    {
-                        Tag = layer,
-                        Checked = IsLayerVisibleInPreview(layer),
-                        ToolTipText = "Toggle this layer in the preview only; does not change the GSCN"
-                    });
+                _structure.Nodes.Clear();
+
+                var root = new TreeNode(
+                    string.IsNullOrWhiteSpace(Definition.ID)
+                        ? "(scene)"
+                        : Definition.ID)
+                {
+                    Tag = Definition,
+                    Checked = Definition.Layers.Count > 0 && Definition.Layers.All(IsLayerVisibleInPreview),
+                    ToolTipText = "Check to show all layers; uncheck to hide all layers in the preview"
+                };
+
+                foreach (var layer in Definition.Layers
+                             .OrderBy(layer => layer.ZOrder))
+                {
+                    root.Nodes.Add(
+                        new TreeNode(
+                            $"{LayerLabel(layer)}  [{layer.Columns}×{layer.Rows}]  Z={layer.ZOrder}")
+                        {
+                            Tag = layer,
+                            Checked = IsLayerVisibleInPreview(layer),
+                            ToolTipText = "Toggle this layer in the preview only; does not change the GSCN"
+                        });
+                }
+
+                _structure.Nodes.Add(root);
+                root.Expand();
+            }
+            finally
+            {
+                _structure.EndUpdate();
+                _syncingStructureChecks = false;
             }
 
-            _structure.Nodes.Add(root);
-            root.Expand();
+            if (selected is SceneLayerDefinition selectedLayer &&
+                Definition.Layers.Contains(selectedLayer))
+            {
+                SelectLayerNode(selectedLayer);
+            }
+            else if (_structure.Nodes.Count > 0)
+            {
+                _structure.SelectedNode = _structure.Nodes[0];
+            }
+            _properties.SelectedObject = _structure.SelectedNode?.Tag is { } target ? new ScenePropertyView(Document, target) : null;
         }
-        finally
-        {
-            _structure.EndUpdate();
-            _syncingStructureChecks = false;
-        }
-
-        if (selected is SceneLayerDefinition selectedLayer &&
-            Definition.Layers.Contains(selectedLayer))
-        {
-            SelectLayerNode(selectedLayer);
-        }
-        else if (_structure.Nodes.Count > 0)
-        {
-            _structure.SelectedNode = _structure.Nodes[0];
-        }
+        finally { _refreshingStructure = false; }
     }
 
     private void RefreshSourceTree()
@@ -1628,6 +1629,12 @@ public sealed class SceneEditorControl : UserControl
         }
     }
 
+    private SceneDefinition? _displayedDefinition;
+    private string? _displayedSources;
+    private bool _refreshingStructure;
+
+    private string SourceSignature() => Newtonsoft.Json.JsonConvert.SerializeObject(new { Definition.TilesheetSources, Definition.AnimationSources });
+
     private void DocumentChanged(object? sender, EventArgs e)
     {
         if (_refreshPending || !IsHandleCreated)
@@ -1639,9 +1646,28 @@ public sealed class SceneEditorControl : UserControl
             _refreshPending = false;
             if (!IsDisposed)
             {
-                _properties.Refresh();
-                _tileProperties.Refresh();
+                string sources = SourceSignature();
+                if (!ReferenceEquals(_displayedDefinition, Definition) || _displayedSources != sources)
+                {
+                    var selectedSourceNode = _sourceTree.SelectedNode;
+                    while (selectedSourceNode?.Parent is { } parent) selectedSourceNode = parent;
+                    string? selectedTilesheet = (selectedSourceNode?.Tag as SceneTilesheetSource)?.Definition.Name;
+                    string? selectedAnimation = _animationList.SelectedItems.Cast<ListViewItem>().Select(item => (item.Tag as SceneAnimationSource)?.Definition.Key).FirstOrDefault();
+                    foreach (var source in _tilesheetSources) source.Dispose();
+                    foreach (var source in _animationSources) source.Dispose();
+                    _tilesheetSources.Clear(); _animationSources.Clear(); _sourceDiagnostics.Clear();
+                    LoadDeclaredSources(); RefreshSourceTree(); RefreshAnimationList();
+                    if (selectedTilesheet is not null && FindTilesheet(selectedTilesheet) is { } selectedTilesheetSource)
+                        SelectTilesheetRoot(selectedTilesheetSource);
+                    if (selectedAnimation is not null && _animationSources.FirstOrDefault(source => source.Definition.Key == selectedAnimation) is { } selectedSource)
+                        SelectAnimation(selectedSource);
+                    _displayedDefinition = Definition; _displayedSources = sources;
+                }
+                if (_selectedLayer is null || !Definition.Layers.Contains(_selectedLayer)) _selectedLayer = Definition.Layers.FirstOrDefault();
                 RefreshStructure();
+                ClampTileSelection();
+                RefreshTileProperties();
+                _properties.Refresh();
                 RefreshPreview();
                 UpdateValidation();
             }
@@ -1706,4 +1732,8 @@ public sealed class SceneEditorControl : UserControl
         TilesheetRegionDefinition Region,
         int X,
         int Y);
+    /// <inheritdoc/>
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
+        UndoRedoMenu.TryShortcut(this, keyData, Document.History, CommitEdits) || base.ProcessCmdKey(ref msg, keyData);
+
 }

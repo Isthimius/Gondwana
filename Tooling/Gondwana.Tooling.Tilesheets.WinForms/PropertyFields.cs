@@ -42,6 +42,14 @@ internal enum FrameCollisionChoice
 internal sealed class PropertyFields : CustomTypeDescriptor
 {
     private readonly List<PropertyDescriptor> _fields = [];
+    private readonly TilesheetDocument? _document;
+    public PropertyFields(TilesheetDocument? document = null) => _document = document;
+
+    private void Edit(object model, string name, Action change, Action changed)
+    {
+        if (_document is not null) _document.Edit(model, "Change " + name, change);
+        else { change(); changed(); }
+    }
     /// <inheritdoc/>
     public override PropertyDescriptorCollection GetProperties() => new(_fields.ToArray());
     /// <inheritdoc/>
@@ -87,10 +95,12 @@ internal sealed class PropertyFields : CustomTypeDescriptor
                 // Editing a dimension must not reset the source-image position of the rectangle.
                 Add("Area", "Geometry", () => region.Area.Size, size =>
                 {
-                    var area = region.Area;
-                    area.Size = size;
-                    region.Area = area;
-                    changed();
+                    Edit(region, "region bounds", () =>
+                    {
+                        var area = region.Area;
+                        area.Size = size;
+                        region.Area = area;
+                    }, changed);
                 }, "Width and height of the region in source-image pixels. Use Area.X and Area.Y to move it.");
                 foreach (var child in property.PropertyType.GetProperties().Where(p => p.Name is nameof(Rectangle.X) or nameof(Rectangle.Y)))
                     AddReflected(model, [property, child], changed, category);
@@ -119,14 +129,16 @@ internal sealed class PropertyFields : CustomTypeDescriptor
         }
         void Write(object? value)
         {
-            if (path.Length == 1) leaf.SetValue(model, value);
-            else
+            Edit(model, string.Join(".", path.Select(p => p.Name)), () =>
             {
-                var boxed = path[0].GetValue(model)!;
-                leaf.SetValue(boxed, value);
-                path[0].SetValue(model, boxed);
-            }
-            changed();
+                if (path.Length == 1) leaf.SetValue(model, value);
+                else
+                {
+                    var boxed = path[0].GetValue(model)!;
+                    leaf.SetValue(boxed, value);
+                    path[0].SetValue(model, boxed);
+                }
+            }, changed);
         }
         _fields.Add(new ReflectedField(string.Join(".", path.Select(p => p.Name)), category ?? path[0].Name, leaf.PropertyType, Read, Write, DescribeReflected(path)));
     }
@@ -166,17 +178,17 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     public static PropertyFields Definition(TilesheetDocument document, Action changed)
     {
         var model = document.Definition;
-        var fields = new PropertyFields();
-        fields.Add("Name", "Definition", () => model.Name, v => { model.Name = v; changed(); }, "Logical tilesheet name referenced by animations, scenes, and sprites.");
-        fields.Add("PremultiplyAlpha", "Definition", () => model.PremultiplyAlpha, v => { model.PremultiplyAlpha = v; changed(); },
+        var fields = new PropertyFields(document);
+        fields.Add("Name", "Definition", () => model.Name, v => document.Edit(model, "Rename tilesheet", () => model.Name = v), "Logical tilesheet name referenced by animations, scenes, and sprites.");
+        fields.Add("PremultiplyAlpha", "Definition", () => model.PremultiplyAlpha, v => document.Edit(model, "Change alpha premultiplication", () => model.PremultiplyAlpha = v),
             "Multiply color channels by alpha when preparing tilesheet imagery for blending. Masking is configured separately and takes precedence at runtime when enabled.");
-        fields.Add("Image.FilePath", "Image", () => model.Image?.FilePath ?? "", v => { document.SetImage(v); changed(); },
+        fields.Add("Image.FilePath", "Image", () => model.Image?.FilePath ?? "", v => document.SetImage(v),
             "Relative to the GTS directory. Editing this switches to a loose image source.");
         fields.Add("Source.Kind", "Provenance (read only)", () => model.Source.Kind, description: "Read-only origin type for this tilesheet definition (loose or packed).");
         fields.Add("Source.GtsFilePath", "Provenance (read only)", () => model.Source.GtsFilePath ?? "", description: "Original GTS document path, if loaded from a loose file; read-only.");
         fields.Add("Source.AssetsFilePath", "Provenance (read only)", () => model.Source.AssetsFilePath ?? "", description: "Source GAF package path when this definition was loaded from a packed entry; read-only.");
         fields.Add("Source.AssetEntryName", "Provenance (read only)", () => model.Source.AssetEntryName ?? "", description: "Name of this definition inside the source GAF package; read-only.");
-        fields.Add("Mask enabled", "Mask", () => model.Mask is not null, v => { model.Mask = v ? model.Mask ?? new() : null; changed(); }, "Enable color-key masking using the RGB components and tolerance shown below. Alpha is stored but ignored when matching colors.");
+        fields.Add("Mask enabled", "Mask", () => model.Mask is not null, v => document.Edit(model, "Change masking", () => model.Mask = v ? model.Mask ?? new() : null), "Enable color-key masking using the RGB components and tolerance shown below. Alpha is stored but ignored when matching colors.");
         if (model.Mask is { } mask)
             foreach (var property in typeof(TilesheetMaskDefinition).GetProperties().Where(p => p.CanWrite))
                 fields.AddReflected(mask, [property], changed, "Mask");
@@ -192,14 +204,14 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     /// <returns>Property descriptors reading the frame override or inherited region values.</returns>
     public static PropertyFields Frame(TilesheetDocument document, TilesheetRegionDefinition region, int x, int y, Action changed)
     {
-        var fields = new PropertyFields();
+        var fields = new PropertyFields(document);
         TilesheetFrameDefinition? Current() => document.FindFrame(region, x, y);
         fields.Add("XTile", "Coordinates (read only)", () => x, description: "Zero-based frame column within this region; read-only.");
         fields.Add("YTile", "Coordinates (read only)", () => y, description: "Zero-based frame row within this region; read-only.");
         fields.Add("CollisionAdjust mode", "Collision", () => Current()?.CollisionAdjust is null ? Inheritance.InheritRegion : Inheritance.Override,
-            v => { document.EditFrame(region, x, y).CollisionAdjust = v == Inheritance.InheritRegion ? null : Current()?.CollisionAdjust ?? region.CollisionAdjust; changed(); }, "InheritRegion uses the region collision insets. Override stores separate insets for this frame.");
+            v => document.EditFrame(region, x, y, "Change frame collision insets", frame => frame.CollisionAdjust = v == Inheritance.InheritRegion ? null : frame.CollisionAdjust ?? region.CollisionAdjust), "InheritRegion uses the region collision insets. Override stores separate insets for this frame.");
         fields.Add("CollisionType", "Collision", () => Current()?.CollisionType is { } t ? Enum.Parse<FrameCollisionChoice>(t.ToString()) : FrameCollisionChoice.InheritRegion,
-            v => { document.EditFrame(region, x, y).CollisionType = v == FrameCollisionChoice.InheritRegion ? null : Enum.Parse<TileCollisionType>(v.ToString()); changed(); }, "Choose inherited region behavior, None for no collider, Blocking, or Trigger for non-blocking contact.");
+            v => document.EditFrame(region, x, y, "Change frame collision type", frame => frame.CollisionType = v == FrameCollisionChoice.InheritRegion ? null : Enum.Parse<TileCollisionType>(v.ToString())), "Choose inherited region behavior, None for no collider, Blocking, or Trigger for non-blocking contact.");
         foreach (var property in typeof(CollisionAdjust).GetProperties().Where(p => p.CanWrite))
         {
             bool inherited = Current()?.CollisionAdjust is null;
@@ -208,8 +220,7 @@ internal sealed class PropertyFields : CustomTypeDescriptor
                 {
                     object boxed = Current()!.CollisionAdjust!.Value;
                     property.SetValue(boxed, v);
-                    document.EditFrame(region, x, y).CollisionAdjust = (CollisionAdjust)boxed;
-                    changed();
+                    document.EditFrame(region, x, y, "Change frame collision inset", frame => frame.CollisionAdjust = (CollisionAdjust)boxed);
                 }, inherited ? $"Collision inset on the {property.Name.ToLowerInvariant()} side; inherited from the region. Select Override to edit." : $"Collision inset on the {property.Name.ToLowerInvariant()} side. Positive shrinks the box; negative expands it.");
         }
         return fields;

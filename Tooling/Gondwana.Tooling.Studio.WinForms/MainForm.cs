@@ -15,6 +15,8 @@ namespace Gondwana.Tooling.Studio.WinForms;
 /// <summary>Studio owns outer documents and tools; authoring controls own their inner workspaces.</summary>
 public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices
 {
+    private UndoRedoMenu _undoRedo = null!;
+
     /// <inheritdoc/>
     string Gondwana.Tooling.Studio.Core.Extensibility.IStudioPluginHostServices.CurrentWorkingDirectory => Browser.WorkingDirectory;
     /// <inheritdoc/>
@@ -145,6 +147,9 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
     private MenuStrip BuildMenu()
     {
         var menu = new MenuStrip();
+        Disposed += (_, _) => _undoRedo?.Dispose();
+        _undoRedo = new(() => ActiveDocument?.Document.History, () => ActiveDocument?.Document.CommitEdits() == true);
+        Workspace.ActiveDocumentChanged += (_, _) => _undoRedo.Refresh();
         var file = new ToolStripMenuItem("&File");
         var create = new ToolStripMenuItem("&New");
         foreach (var (format, label) in NewFileFormats)
@@ -167,6 +172,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         Add(file, "E&xit", Keys.Alt | Keys.F4, Close);
         _session.AddMenu(file);
         menu.Items.AddRange([file, _view, new ToolStripMenuItem("&Plugins") { Name = "PluginsMenu" }]);
+        menu.Items.Add(_undoRedo.Menu);
         return menu;
     }
 
@@ -579,4 +585,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         base.Dispose(disposing);
         if (disposing) _theme.Dispose();
     }
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
+        UndoRedoMenu.TryShortcut(this, keyData, ActiveDocument?.Document.History, () => ActiveDocument?.Document.CommitEdits() == true) || base.ProcessCmdKey(ref msg, keyData);
+
 }

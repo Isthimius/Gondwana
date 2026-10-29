@@ -11,7 +11,7 @@ namespace Gondwana.Tooling.Scenes.WinForms.Tests;
 /// <summary>
 /// Contains regression tests for scene editor.
 /// </summary>
-public sealed class SceneEditorTests
+public sealed partial class SceneEditorTests
 {
     /// <summary>
     /// Verifies transform properties and toolbar compose and clear sparse tile.
@@ -143,6 +143,9 @@ public sealed class SceneEditorTests
             Assert.Equal(3, tile.Frame.YTile);
             Assert.True(tile.EnableAnimator);
             Assert.True(tile.StartAnimation);
+            document.History.Undo(); Assert.Empty(layer.Tiles);
+            document.History.Redo(); Assert.Same(tile, Assert.Single(layer.Tiles));
+            Assert.Equal("water.flow", tile.AnimationKey); Assert.True(tile.StartAnimation);
 
             // A later assignment replaces a stale frame and reenables playback.
             tile.Frame = new() { Tilesheet = "other", RegionName = "old", XTile = 9, YTile = 9 };

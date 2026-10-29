@@ -52,3 +52,44 @@ owns opening and editing packed native documents, coordinated transactional GAF
 saves, conflict handling, and session restoration. It uses the same resolver for
 their previews. Standalone editors share the preview controls but retain their
 loose-document file dialogs.
+
+## Document editing history
+
+`Gondwana.Tooling.Editing.EditHistory` is UI- and format-independent. GTS and GSCN
+own separate histories; other editors do not yet participate. `IEditCommand`
+provides a description, `Execute`, and `Undo`; delegate commands and `Set` cover
+simple assignments. Commands must touch only their owning model and retain model
+objects, never controls. `Undo` must also compensate a partially failed `Execute`,
+and the inverse applies when restoring a failed undo. Recording during execution
+is rejected. An unrecoverable compensation error discards history and leaves the
+document dirty rather than claiming an exact state.
+
+```csharp
+using var edit = document.History.BeginTransaction("Change cells");
+document.EditTile(layer, 0, 0, "Set animation", tile => tile.AnimationKey = "water");
+document.EditTile(layer, 1, 0, "Set animation", tile => tile.AnimationKey = "water");
+edit.Commit(); // Dispose without Commit rolls back; nested groups close in LIFO order.
+```
+
+Commands run immediately inside a transaction; the outer commit/cancel raises one
+`Changed` event. Empty groups and unchanged property assignments create no undo
+entry. `MarkSaved` records a stable state identity without clearing commands;
+branching and pruning cannot accidentally reuse a saved identity. Hosts call it
+only after persistence succeeds. Saves are not allowed during an open transaction.
+`MarkUntracked` invalidates legacy history after direct mutations; supported editor
+paths use reversible operations instead.
+
+The configurable `Limit` defaults to 200 committed operations (a group counts as
+one). It is a command-count bound, not a byte quota: a large collection edit retains
+its affected objects. Pruning, divergent edits, `Clear`, and `Dispose` release
+retained command references. History is owned and used on the editor thread.
+
+`ModelEdits` captures scalar/replaced properties on one affected object, retaining
+only changed fields. Callers must not mutate child collections through that API.
+`ModelSnapshot` is reserved for affected modal collection editors, whose objects
+can change in place: it temporarily captures that collection and records only
+changed fields and membership. Neither mechanism serializes a whole document.
+`ReferenceOrigins` uses weak keys to preserve the path base of dormant references
+retained by undo across Save As. Logical instances and the current save location
+are preserved during replay. These operations are suitable for future grouped
+scene painting; no painting or cross-document history is implemented here.

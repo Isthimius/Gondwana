@@ -16,6 +16,30 @@ Visual Studio, or run from the repository root:
 dotnet run --project Tooling/Gondwana.Tooling.Tilesheets.WinForms -c Release
 ```
 
+## Undo and redo (Phase 1)
+
+**Edit > Undo** / **Ctrl+Z** and **Edit > Redo** / **Ctrl+Y** operate on the
+active GTS or GSCN document in both Studio and the standalone editors.
+Ctrl+Shift+Z also redoes. Textboxes and property-grid edit fields retain local
+text-editing shortcuts; commit the value before using document history.
+Selection, zoom, and preview-only visibility are not document edits.
+
+Undoing back to the last successful save clears the dirty marker; undoing past
+that save makes it dirty again. Save and Save As retain history and establish a
+checkpoint only after success. New unsaved documents remain dirty. Editing after
+Undo discards the redo branch. Each document retains up to 200 committed operations
+by default; evicting history never makes an unreachable saved state clean.
+
+History includes in-memory edits to loose and GAF-backed GTS/GSCN definitions.
+It cannot reverse committed archive relocation, file deletion, or cross-file
+reference rewrites. GANI, GSPR, GSND, and general GAF history are deferred to
+later phases. Scene painting and fill tools are not included in this phase.
+
+GTS history covers definition add/duplicate/remove/rename/import, image references,
+mask and scalar properties, region geometry and removal, collision overrides, and
+frame-metadata pruning. Undo restores existing instances and sparse-frame absence.
+
+
 ## Workflow
 
 - **File → Open working directory** selects the workspace; **F5** refreshes it.

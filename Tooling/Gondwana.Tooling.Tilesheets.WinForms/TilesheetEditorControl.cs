@@ -252,8 +252,7 @@ public sealed class TilesheetEditorControl : UserControl
             Area = new Rectangle(Point.Empty, size),
             TileSize = new Size(Math.Min(32, size.Width), Math.Min(32, size.Height))
         };
-        Document.Definition.Regions.Add(region);
-        Document.MarkChanged();
+        Document.AddRegion(region);
         RefreshView();
         _regions.SelectedItem = region;
         RefreshProperties();
@@ -264,8 +263,7 @@ public sealed class TilesheetEditorControl : UserControl
         if (SelectedRegion is not { } region) return;
         if (ThemedMessageBox.Show(this, $"Remove region '{region.Name}' and all its frame metadata?", "Remove region",
             MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
-        Document.Definition.Regions.Remove(region);
-        Document.MarkChanged();
+        Document.RemoveRegion(region);
         RefreshView();
     }
 
@@ -309,7 +307,7 @@ public sealed class TilesheetEditorControl : UserControl
         PropertyFields? frameFields = null;
         if (SelectedRegion is { } region)
         {
-            regionFields = new PropertyFields();
+            regionFields = new PropertyFields(Document);
             regionFields.AddModel(region, Document.MarkChanged, "Frames");
             if (_column.Enabled)
                 frameFields = PropertyFields.Frame(Document, region, (int)_column.Value, (int)_row.Value, Document.MarkChanged);
@@ -497,4 +495,8 @@ public sealed class TilesheetEditorControl : UserControl
         }
         base.Dispose(disposing);
     }
+    /// <inheritdoc/>
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
+        UndoRedoMenu.TryShortcut(this, keyData, Document.History, CommitEdits) || base.ProcessCmdKey(ref msg, keyData);
+
 }

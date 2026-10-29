@@ -45,22 +45,9 @@ internal sealed class TilePropertyAdapter
     private SceneLayerTileDefinition? Tile =>
         _document.FindTile(_layer, _x, _y);
 
-    private SceneLayerTileDefinition Mutable()
-    {
-        var tile = _document.GetOrCreateTile(_layer, _x, _y);
-        return tile;
-    }
-
     private void Change(Action<SceneLayerTileDefinition> change)
     {
-        bool existed = Tile is not null;
-        var tile = Mutable();
-        change(tile);
-
-        // GetOrCreateTile marks a newly materialized sparse cell dirty.
-        // Existing cells still need an explicit notification after mutation.
-        if (existed)
-            _document.MarkChanged();
+        _document.EditTile(_layer, _x, _y, "Change tile properties", change);
 
         _changed();
     }

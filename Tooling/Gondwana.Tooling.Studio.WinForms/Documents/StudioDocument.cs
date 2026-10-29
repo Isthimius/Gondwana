@@ -5,6 +5,7 @@ using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Assets.WinForms;
 using Gondwana.Tooling.Audio.Editing;
 using Gondwana.Tooling.Audio.WinForms;
+using Gondwana.Tooling.Editing;
 using Gondwana.Tooling.Scenes.Editing;
 using Gondwana.Tooling.Scenes.WinForms;
 using Gondwana.Tooling.Sprites.Editing;
@@ -70,6 +71,13 @@ internal sealed class StudioDocument : IDisposable
     private Action? _detach;
     private Action? _release;
     internal event EventHandler? Changed;
+
+    internal EditHistory? History => Editor switch
+    {
+        TilesheetEditorControl e => e.Document.History,
+        SceneEditorControl e => e.Document.History,
+        _ => null
+    };
 
     internal string? SelectedMember => Editor switch
     {
@@ -351,6 +359,7 @@ internal sealed class StudioDocument : IDisposable
         _detach = null;
 
         Editor.Dispose();
+        History?.Dispose();
 
         _release?.Invoke();
         _release = null;
