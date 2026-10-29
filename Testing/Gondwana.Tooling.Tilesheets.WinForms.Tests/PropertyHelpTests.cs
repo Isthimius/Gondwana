@@ -140,6 +140,9 @@ public sealed class PropertyHelpTests
         var children = parent.Converter.GetProperties(parent.GetValue(fields)!)!;
         Assert.Equal(expected.OrderBy(name => name),
             children.Cast<PropertyDescriptor>().Select(child => child.Name).OrderBy(name => name));
+        if (parent.Name != "TileSize")
+            Assert.All(children.Cast<PropertyDescriptor>(),
+                child => Assert.False(string.IsNullOrWhiteSpace(child.Description)));
     }
 
     private static object WithComponent(PropertyDescriptor parent, PropertyFields fields, string component, int value)
