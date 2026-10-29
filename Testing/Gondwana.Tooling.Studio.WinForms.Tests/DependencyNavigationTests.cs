@@ -1,6 +1,7 @@
 using Gondwana.Assets;
 using Gondwana.Audio.GSND;
 using Gondwana.Drawing.Sprites.GSPR;
+using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Assets;
 using Gondwana.Tooling.Audio.WinForms;
 using Gondwana.Tooling.Sprites.WinForms;
@@ -11,6 +12,90 @@ namespace Gondwana.Tooling.Studio.WinForms.Tests;
 
 public sealed partial class CompositionTests
 {
+    [Fact]
+    public void DependencyScopeSelectorSwitchesWithoutRescanningAndFollowsSelectedMember() => RunSta(root =>
+    {
+        var file = Path.Combine(root, "terrain.gts");
+        foreach (var imageName in new[] { "one.png", "two.png" })
+        {
+            using var image = new Bitmap(16, 16);
+            image.Save(Path.Combine(root, imageName), System.Drawing.Imaging.ImageFormat.Png);
+        }
+        File.WriteAllText(file, TilesheetDefinitionSerializer.ToDocumentJson(new()
+        {
+            Definitions =
+            [
+                new() { Name = "first", Image = new() { FilePath = "one.png" } },
+                new() { Name = "sibling", Image = new() { FilePath = "two.png" } }
+            ]
+        }));
+        using var studio = Host(root);
+        studio.OpenDocument(file);
+        int scans = 0;
+        studio.InspectDependencies = (scope, credentials, token) => Task.Run(() =>
+        {
+            Interlocked.Increment(ref scans);
+            return DefinitionReferenceDiscovery.Inspect(scope, credentials, token);
+        });
+
+        studio.ShowDependencies();
+        Assert.True(AwaitUi(CompleteDependencyTask(studio.DependencyRefresh)));
+        var snapshot = Assert.IsType<DefinitionReferenceDiscovery>(studio.DependencyScan);
+        var tree = studio.DependencyPanel.Controls.OfType<TreeView>().Single();
+        var toolbar = studio.DependencyPanel.Controls.OfType<ToolStrip>().Single();
+        var member = toolbar.Items.OfType<ToolStripButton>().Single(item => item.Name == "DependencyScopeMember");
+        var whole = toolbar.Items.OfType<ToolStripButton>().Single(item => item.Name == "DependencyScopeDocument");
+
+        Assert.True(member.Enabled);
+        Assert.True(member.Checked);
+        Assert.False(whole.Checked);
+        Assert.Equal("Dependencies / Used By This Resource (1)", tree.Nodes[0].Text);
+        Assert.Contains("Selected member 'first'", studio.DependencyPanel.Status);
+
+        whole.PerformClick();
+        Assert.False(member.Checked);
+        Assert.True(whole.Checked);
+        Assert.Equal("Dependencies / Used By This Resource (2)", tree.Nodes[0].Text);
+        Assert.Contains("Query: Whole document", studio.DependencyPanel.Status);
+        Assert.Same(snapshot, studio.DependencyScan);
+        Assert.Equal(1, Volatile.Read(ref scans));
+
+        // Whole-document inspection must not forget the member chosen by the editor.
+        Assert.True(studio.Navigate(new(new AssetLocation(AssetTypes.TilesheetDefinition, file), "sibling")).Exact);
+        Assert.True(whole.Checked);
+        Assert.Equal("Dependencies / Used By This Resource (2)", tree.Nodes[0].Text);
+        member.PerformClick();
+        Assert.True(member.Checked);
+        Assert.False(whole.Checked);
+        Assert.Equal("Dependencies / Used By This Resource (1)", tree.Nodes[0].Text);
+        Assert.Contains("Selected member 'sibling'", studio.DependencyPanel.Status);
+        Assert.Same(snapshot, studio.DependencyScan);
+        Assert.Equal(1, Volatile.Read(ref scans));
+    });
+
+    [Fact]
+    public void DependencyScopeSelectorDisablesMemberModeForPhysicalFileQueries() => RunSta(root =>
+    {
+        var file = Path.Combine(root, "loose.gts");
+        File.WriteAllText(file, NativeJson("gts"));
+        using var studio = Host(root);
+        studio.ShowDependencies(new(new AssetLocation(AssetTypes.TilesheetDefinition, file)), follow: false);
+        Assert.True(AwaitUi(CompleteDependencyTask(studio.DependencyRefresh)));
+        var toolbar = studio.DependencyPanel.Controls.OfType<ToolStrip>().Single();
+        var member = toolbar.Items.OfType<ToolStripButton>().Single(item => item.Name == "DependencyScopeMember");
+        var whole = toolbar.Items.OfType<ToolStripButton>().Single(item => item.Name == "DependencyScopeDocument");
+        Assert.False(member.Enabled);
+        Assert.True(whole.Checked);
+        Assert.Contains("Query: Whole document", studio.DependencyPanel.Status);
+
+        studio.OpenDocument(file);
+        studio.ShowDependencies();
+        Assert.True(AwaitUi(CompleteDependencyTask(studio.DependencyRefresh)));
+        Assert.True(member.Enabled);
+        Assert.True(member.Checked);
+        Assert.False(whole.Checked);
+    });
+
     [Theory]
     [InlineData("gts")]
     [InlineData("gani")]

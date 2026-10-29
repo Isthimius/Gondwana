@@ -97,9 +97,14 @@ document reload instead.
 Use **File > Find References**, **Show Dependencies**, or **Show Dependents** for
 the selected logical definition. The same actions are available on document tabs
 and working-directory file/packed-entry context menus. **View > Dependency
-Explorer** restores the dockable pane. **Whole document** removes the member
-filter. Inspecting results does not change the active editor; double-click a
-result or choose **Open Referenced Definition** to navigate.
+Explorer** restores the dockable pane. Its **Selected Member / Whole Document**
+selector switches between the selected logical definition and all members of
+its physical document, without rescanning. Switching back restores the current
+member selection; when opening a query directly from a file/packed entry with
+no member selected, **Selected Member** is disabled. **Refresh / Rescan**
+rebuilds the saved-content snapshot and is independent of this query selector.
+Inspecting results does not change the active editor; double-click a result or
+choose **Open Referenced Definition** to navigate.
 
 Dependencies and dependents retain the full physical path, expected asset type,
 exact nested GAF entry name, logical member, and available reference field path.

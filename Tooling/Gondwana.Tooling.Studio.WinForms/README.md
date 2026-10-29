@@ -254,8 +254,14 @@ Use **File > Find References**, **Show Dependencies**, or **Show Dependents**, o
 the equivalent document-tab and working-directory context menus. **View >
 Dependency Explorer** restores the dockable pane. Double-click a result or choose
 **Open Referenced Definition** to activate its editor and select its logical
-member. Inspection alone does not navigate. **Whole document** removes the member
-filter; **Refresh / Rescan** rebuilds the saved-content snapshot.
+member. Inspection alone does not navigate. The **Selected Member / Whole
+Document** query selector switches between one logical definition and every
+member in its physical document, using the same completed scan. The selected
+member remains available when switching back; when inspection starts from a
+working-directory file or packed entry without a member, only **Whole Document**
+is available until a member-scoped query is started from an editor using **Find
+References**, **Show Dependencies**, or **Show Dependents**. **Refresh / Rescan**
+rebuilds the saved-content snapshot, independently of query scope.
 
 Results show full physical paths, typed GAF entry names (including nested paths),
 logical identities, and reference field paths. Already-open editors are activated
