@@ -4,7 +4,7 @@ namespace Gondwana.Tooling.Studio.WinForms.Panels;
 
 internal sealed class DependencyExplorerPanel : UserControl
 {
-    private readonly Label _status = new() { Dock = DockStyle.Top, Height = 84, AutoEllipsis = true };
+    private readonly Label _status = new() { Dock = DockStyle.Top };
     private readonly TreeView _tree = new() { Dock = DockStyle.Fill, HideSelection = false, ShowNodeToolTips = true };
     private readonly ToolTip _tips = new();
     private readonly ContextMenuStrip _menu = new();
@@ -51,6 +51,9 @@ internal sealed class DependencyExplorerPanel : UserControl
         Controls.Add(_tree);
         Controls.Add(_status);
         Controls.Add(bar);
+        // The scan summary can span more lines as the pane narrows or DPI/font size grows.
+        _status.SizeChanged += (_, _) => UpdateStatusHeight();
+        _status.FontChanged += (_, _) => UpdateStatusHeight();
         ToolingAppearance.Apply(this);
         SetStatus("Select a saved document or use Find References in the working directory.");
     }
@@ -73,6 +76,16 @@ internal sealed class DependencyExplorerPanel : UserControl
     {
         _status.Text = text;
         _tips.SetToolTip(_status, text);
+        UpdateStatusHeight();
+    }
+
+    private void UpdateStatusHeight()
+    {
+        if (_status.ClientSize.Width <= 0) return;
+
+        // Measure at the actual docked width so wrapped lines stay above the results tree.
+        var height = _status.GetPreferredSize(new Size(_status.ClientSize.Width, 0)).Height + 2;
+        if (_status.Height != height) _status.Height = height;
     }
 
     internal void ShowResults(ResourceAddress target, DefinitionReferenceDiscovery scan, bool dirty)
