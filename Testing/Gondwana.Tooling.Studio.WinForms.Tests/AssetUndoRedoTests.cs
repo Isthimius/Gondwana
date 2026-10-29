@@ -248,7 +248,8 @@ public sealed partial class CompositionTests
     [InlineData("shutdown")]
     public void StudioFailedRefreshCanBeDiscardedClosedReloadedOrShutDown(string action) => RunSta(root =>
     {
-        var path = NativeArchive(root);
+        var path = Path.Combine(root, "recovery.gaf");
+        using (var initial = AssetsFile.LoadOrCreate(path, null, false, register: false)) initial.Save();
         using var studio = Host(root);
         var document = studio.OpenDocument(path);
         var editor = (AssetEditorControl)document.Document.Editor;
