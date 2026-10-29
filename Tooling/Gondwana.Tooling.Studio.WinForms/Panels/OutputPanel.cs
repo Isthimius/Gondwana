@@ -1,7 +1,5 @@
 using System.Collections.Specialized;
-using System.Drawing;
 using Gondwana.Tooling.Studio.ViewModels;
-using Gondwana.Tooling.WinForms.Theming;
 
 namespace Gondwana.Tooling.Studio.WinForms.Panels;
 
