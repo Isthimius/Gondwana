@@ -13,6 +13,27 @@ namespace Gondwana.Tooling.Studio.WinForms.Tests;
 public sealed partial class CompositionTests
 {
     [Fact]
+    public void DependencyExplorerStatusFitsWrappedScanSummaryWhenResized() => RunSta(root =>
+    {
+        using var panel = new DependencyExplorerPanel { Size = new Size(440, 560) };
+        panel.CreateControl();
+        var status = panel.Controls.OfType<Label>().Single();
+        var tree = panel.Controls.OfType<TreeView>().Single();
+        panel.SetStatus($"Query: Whole document\nTarget: AnimationDefinition: {Path.Combine(root, "beach_tileset-tile-259.gani")}\n" +
+            $"Scan scope: {root}\nCompleted scan. Saved content only; arbitrary C# references are not discovered. Remote URIs are not fetched.");
+
+        Assert.True(status.Height > 84); // Fixed-height label previously clipped the fourth line.
+        Assert.True(status.Height >= status.GetPreferredSize(new Size(status.ClientSize.Width, 0)).Height);
+        Assert.True(tree.Top >= status.Bottom);
+
+        var wideHeight = status.Height;
+        panel.Width = 260;
+        Assert.True(status.Height >= wideHeight);
+        Assert.True(status.Height >= status.GetPreferredSize(new Size(status.ClientSize.Width, 0)).Height);
+        Assert.True(tree.Top >= status.Bottom);
+    });
+
+    [Fact]
     public void DependencyScopeSelectorSwitchesWithoutRescanningAndFollowsSelectedMember() => RunSta(root =>
     {
         var file = Path.Combine(root, "terrain.gts");
