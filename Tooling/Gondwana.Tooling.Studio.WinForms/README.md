@@ -285,8 +285,9 @@ Studio marks exceptions, validation failures, plugin loading errors, and
 unreadable browsing entries with appropriate severities; successful validation
 and working-directory changes use the blue informational marker. Plugins can
 use the same markers via their existing `Log(string)` host service. This is
-presentation-only: the Output model and its combined plain-text contents are
-unchanged. Resetting or editing the line collection reapplies the colors.
+presentation-only in the pane: the Output model remains a plain-text collection,
+and messages tagged at their source retain those markers in copied text.
+Resetting or editing the line collection reapplies the colors.
 
 ## Appearance
 
