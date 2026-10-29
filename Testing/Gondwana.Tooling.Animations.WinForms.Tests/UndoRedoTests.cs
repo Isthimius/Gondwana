@@ -40,4 +40,52 @@ public sealed partial class AnimationEditorTests
         }
         finally { Directory.Delete(directory, recursive: true); }
     });
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void MemberRefreshDoesNotRecoverRemovedSourceOrDiscardHistory(bool rename) => RunSta(() =>
+    {
+        string directory = CreateTempDirectory();
+        try
+        {
+            CreateGts(directory);
+            using var document = AnimationDocument.Create(directory);
+            var original = document.Definition;
+            document.AddFrame(new() { Tilesheet = "test-sheet", RegionName = "walk" });
+            document.AddDefinition();
+            document.SelectDefinition(original);
+            using var host = new Form { Opacity = 0, ShowInTaskbar = false, Size = new Size(1200, 800) };
+            using var editor = new AnimationEditorControl(document);
+            host.Controls.Add(editor); host.Show(); Application.DoEvents();
+            var source = Assert.Single(original.TilesheetSources);
+            Assert.False(document.History.CanUndo);
+            document.History.MarkSaved();
+            Assert.True(document.RemoveTilesheetSource("test-sheet"));
+            Application.DoEvents();
+            var bar = editor.Controls.OfType<ToolStrip>().Single(strip => strip.Items.Find("RenameDefinition", false).Length != 0);
+            if (rename)
+            {
+                bar.Items.OfType<ToolStripTextBox>().Single().Text = "renamed";
+                bar.Items.Find("RenameDefinition", false).Single().PerformClick();
+            }
+            else
+            {
+                var members = bar.Items.OfType<ToolStripComboBox>().Single();
+                members.SelectedIndex = 1;
+                members.SelectedIndex = 0;
+            }
+            Application.DoEvents();
+            Assert.Same(original, document.Definition);
+            Assert.Empty(original.TilesheetSources);
+            Assert.True(document.History.CanUndo);
+            Assert.True(document.IsDirty);
+            if (rename) document.History.Undo();
+            document.History.Undo(); Application.DoEvents();
+            Assert.Same(source, Assert.Single(original.TilesheetSources));
+            Assert.False(document.IsDirty);
+            document.History.Redo(); Application.DoEvents();
+            Assert.Empty(original.TilesheetSources);
+        }
+        finally { Directory.Delete(directory, recursive: true); }
+    });
 }

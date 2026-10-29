@@ -221,7 +221,8 @@ public sealed class AnimationEditorControl : UserControl
             }
         };
 
-        LoadDefinitionTilesheetSources();
+        // Legacy inference is an initial-load migration, never a member refresh.
+        LoadDefinitionTilesheetSources(recoverLegacySources: true);
 
         Document.Changed += DocumentChanged;
 
@@ -372,7 +373,7 @@ public sealed class AnimationEditorControl : UserControl
         RefreshView();
     }
 
-    private void LoadDefinitionTilesheetSources(bool recoverLegacySources = true)
+    private void LoadDefinitionTilesheetSources(bool recoverLegacySources = false)
     {
         _sourceDiagnostics.Clear();
 
@@ -845,13 +846,11 @@ public sealed class AnimationEditorControl : UserControl
         RefreshSelectedDefinition();
     }
 
-    private void RefreshSelectedDefinition() => RefreshSelectedDefinition(recoverLegacySources: true);
-
-    private void RefreshSelectedDefinition(bool recoverLegacySources)
+    private void RefreshSelectedDefinition()
     {
         foreach (var source in _sources) source.Dispose();
         _sources.Clear();
-        LoadDefinitionTilesheetSources(recoverLegacySources);
+        LoadDefinitionTilesheetSources();
         _historyDefinition = Definition;
         _historySources = Definition.TilesheetSources.Cast<object>().ToArray();
         RefreshView();
@@ -1306,7 +1305,7 @@ public sealed class AnimationEditorControl : UserControl
                 if (!ReferenceEquals(_historyDefinition, Definition) || !_historySources.SequenceEqual(sources))
                 {
                     _preview.ClearSourceFrame();
-                    RefreshSelectedDefinition(recoverLegacySources: false);
+                    RefreshSelectedDefinition();
                     _historyDefinition = Definition;
                     _historySources = sources;
                 }

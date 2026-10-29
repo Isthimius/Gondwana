@@ -197,7 +197,8 @@ public sealed class SpriteEditorControl : UserControl
         ClearAnimationTilesheets();
         _sources.Clear(); _sceneDefinitions.Clear(); _animationDefinitions.Clear(); _sourceWarnings.Clear();
         _loadedScenePaths.Clear(); _loadedTilesheetPaths.Clear(); _loadedAnimationPaths.Clear();
-        _scenes.Nodes.Clear(); _frames.Nodes.Clear();
+        _scenes.Nodes.Clear(); _frames.Nodes.Clear(); _thumbnails.Images.Clear();
+        NavigationSizing.RefreshImages(_frames);
         LoadSources(); RefreshEntries();
     }
 
