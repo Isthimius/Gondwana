@@ -9,20 +9,20 @@ namespace Gondwana.Tooling.Studio.WinForms.Tests;
 public sealed class OutputPanelTests
 {
     [Theory]
-    [InlineData("13:14:15 Error: Cannot save.", OutputSeverity.Error)]
-    [InlineData("13:14:15 [ERROR] Cannot save.", OutputSeverity.Error)]
-    [InlineData("13:14:15 Fatal: Cannot load.", OutputSeverity.Error)]
-    [InlineData("13:14:15 CRITICAL: Cannot load.", OutputSeverity.Error)]
-    [InlineData("13:14:15 Warning: Missing reference.", OutputSeverity.Warning)]
-    [InlineData("13:14:15 [WARN] Missing reference.", OutputSeverity.Warning)]
-    [InlineData("13:14:15   warn: Indented warning.", OutputSeverity.Warning)]
-    [InlineData("13:14:15 Info: Validation passed.", OutputSeverity.Important)]
-    [InlineData("13:14:15 [IMPORTANT] Working directory changed.", OutputSeverity.Important)]
-    [InlineData("13:14:15 Opened errors.gscn", OutputSeverity.Normal)]
-    [InlineData("13:14:15 Imported warning-texture.png", OutputSeverity.Normal)]
-    [InlineData("13:14:15 Validation passed.", OutputSeverity.Normal)]
-    public void RecognizesOnlyLeadingSeverityMarkers(string line, OutputSeverity expected) =>
-        Assert.Equal(expected, OutputPanel.Classify(line));
+    [InlineData("13:14:15 Error: Cannot save.", "Error")]
+    [InlineData("13:14:15 [ERROR] Cannot save.", "Error")]
+    [InlineData("13:14:15 Fatal: Cannot load.", "Error")]
+    [InlineData("13:14:15 CRITICAL: Cannot load.", "Error")]
+    [InlineData("13:14:15 Warning: Missing reference.", "Warning")]
+    [InlineData("13:14:15 [WARN] Missing reference.", "Warning")]
+    [InlineData("13:14:15   warn: Indented warning.", "Warning")]
+    [InlineData("13:14:15 Info: Validation passed.", "Important")]
+    [InlineData("13:14:15 [IMPORTANT] Working directory changed.", "Important")]
+    [InlineData("13:14:15 Opened errors.gscn", "Normal")]
+    [InlineData("13:14:15 Imported warning-texture.png", "Normal")]
+    [InlineData("13:14:15 Validation passed.", "Normal")]
+    public void RecognizesOnlyLeadingSeverityMarkers(string line, string expected) =>
+        Assert.Equal(expected, OutputPanel.Classify(line).ToString());
 
     [Theory]
     [InlineData(ToolingTheme.Dark)]
