@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Drawing;
 
 namespace Gondwana.Tooling.Tilesheets.WinForms;
 
