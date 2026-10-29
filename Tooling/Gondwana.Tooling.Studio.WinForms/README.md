@@ -5,12 +5,14 @@ containers, `.gts` tilesheets, `.gani` animations, `.gsnd` sounds, `.gspr` sprit
 scenes. It hosts the same public editor controls as the standalone utilities.
 It does not require a GameHost or a running game loop.
 
-## Undo and redo (Phase 1)
+## Undo and redo
 
 **Edit > Undo** / **Ctrl+Z** and **Edit > Redo** / **Ctrl+Y** operate on the
-active GTS or GSCN document in both Studio and the standalone editors.
-Ctrl+Shift+Z also redoes. Textboxes and property-grid edit fields retain local
-text-editing shortcuts; commit the value before using document history.
+active GTS, GSCN, GANI, GSPR, or GSND document in both Studio and the standalone editors.
+Ctrl+Shift+Z also redoes. Textboxes and property-grid fields with pending text edits retain local
+text undo. Commit the value before using keyboard document history; menu commands
+commit valid pending property edits first. Non-editing grid values, trees, lists,
+canvases, and drop-down-only selectors route to the document.
 Selection, zoom, and preview-only visibility are not document edits.
 
 Undoing back to the last successful save clears the dirty marker; undoing past
@@ -19,10 +21,11 @@ checkpoint only after success. New unsaved documents remain dirty. Editing after
 Undo discards the redo branch. Each document retains up to 200 committed operations
 by default; evicting history never makes an unreachable saved state clean.
 
-History includes in-memory edits to loose and GAF-backed GTS/GSCN definitions.
+History includes in-memory edits to loose and GAF-backed GTS/GSCN/GANI/GSPR/GSND definitions.
 It cannot reverse committed archive relocation, file deletion, or cross-file
-reference rewrites. GANI, GSPR, GSND, and general GAF history are deferred to
-later phases. Scene painting and fill tools are not included in this phase.
+reference rewrites. General GAF history and final integration hardening remain
+Phase 3 work. Scene painting and fill tools are not included. Audio history changes
+GSND metadata; it never deletes media, downloads URIs, or rewrites an audio archive.
 
 
 ## Running

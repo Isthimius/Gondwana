@@ -53,9 +53,17 @@ public sealed class InteractionTests
         DoubleClick(frameTree, frameTree.Nodes[0].Nodes[0].Nodes[1]);
         Assert.Equal(1, entry.Frame!.XTile);
         Assert.Equal("actors", entry.Frame.Tilesheet);
+        var assigned = entry.Frame;
+        document.History.Undo(); Application.DoEvents(); Assert.Null(entry.Frame);
+        document.History.Undo(); Application.DoEvents(); Assert.Equal("", entry.SceneId); Assert.Equal("", entry.SceneLayerId);
+        document.History.Redo(); document.History.Redo(); Application.DoEvents(); Assert.Same(assigned, entry.Frame);
         var grid = Descendants(editor).OfType<PropertyGrid>().Single();
         var properties = Assert.IsType<SpriteProperties>(grid.SelectedObject);
         properties.NudgeX = 9; properties.CollisionLeft = 2;
+        Assert.Equal(9, entry.NudgeX); Assert.Equal(2, entry.AdjustCollisionArea.Left);
+        document.History.Undo(); document.History.Undo(); Application.DoEvents();
+        Assert.Equal(0, entry.NudgeX); Assert.Equal(0, entry.AdjustCollisionArea.Left);
+        document.History.Redo(); document.History.Redo(); Application.DoEvents();
         Assert.Equal(9, entry.NudgeX); Assert.Equal(2, entry.AdjustCollisionArea.Left);
         var preview = Descendants(editor).OfType<SpritePreviewControl>().Single();
         var canvas = preview.Controls.OfType<UserControl>().Single();

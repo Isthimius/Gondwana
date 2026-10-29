@@ -11,7 +11,7 @@ namespace Gondwana.Tooling.Animations.WinForms.Tests;
 /// <summary>
 /// Contains regression tests for animation editor.
 /// </summary>
-public sealed class AnimationEditorTests
+public sealed partial class AnimationEditorTests
 {
     private const BindingFlags PrivateInstance =
         BindingFlags.Instance |

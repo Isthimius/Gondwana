@@ -91,3 +91,25 @@ for storage, close behavior, encrypted archives, and recovery details.
 ## Appearance
 
 Choose **View → Theme → Dark, Dark Blue, or Light**. The choice is shared across Studio and all six standalone editors and takes effect on the next launch. Open documents remain untouched; restart normally after saving your work. See [shared tooling themes](../Shared/WinForms/Theming/README.md) for persistence, control coverage, and DockPanel Suite limitations.
+
+## Undo and redo
+
+**Edit > Undo** (**Ctrl+Z**) and **Edit > Redo** (**Ctrl+Y** or **Ctrl+Shift+Z**)
+use the active document's shared history in both this application and Studio.
+Trees, lists, canvases, non-editing property values, and drop-down-only selectors
+support these shortcuts. Textboxes and property-grid fields with pending text
+edits retain native text undo. Commit text before using keyboard document undo;
+menu commands commit valid pending property edits first.
+
+Definition/member edits, authoring properties, and resource/source-reference
+changes are reversible. A grouped action is one step; selection, navigation,
+playback, and previews are not edits. Each document retains 200 committed actions
+by default. Undoing back to the last successful save clears its dirty marker;
+undoing past that checkpoint makes it dirty again. New unsaved documents stay
+dirty. Editing after undo discards the redo branch. Failed saves do not move the
+checkpoint. Save and Save As preserve history and reference targets, including
+GAF-backed definitions opened through Studio.
+
+History edits authoring metadata. It does not modify external media, download URI
+sources, undo committed archive/file operations, or alter other documents.
+General GAF editor history remains Phase 3 work.

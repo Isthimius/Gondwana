@@ -154,6 +154,8 @@ public sealed class SceneEditorControl : UserControl
         _packages = packages ?? PackedResourcePicker.CreateCatalog(this);
         _ownsPackages = packages is null;
         Document = document ?? throw new ArgumentNullException(nameof(document));
+        var shortcuts = UndoRedoMenu.Route(this, () => Document.History, CommitEdits);
+        Disposed += (_, _) => shortcuts.Dispose();
         Size = new Size(1400, 900);
         Dock = DockStyle.Fill;
 

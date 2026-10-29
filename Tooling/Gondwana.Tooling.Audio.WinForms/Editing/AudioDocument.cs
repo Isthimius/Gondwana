@@ -15,7 +15,9 @@ public sealed partial class AudioDocument
     /// <summary>
     /// Gets whether the document contains unsaved changes.
     /// </summary>
-    public bool IsDirty { get; private set; }
+    public bool IsDirty => History.IsDirty;
+    /// <summary>Document-local reversible edits and saved checkpoints.</summary>
+    public EditHistory History { get; }
     /// <summary>Occurs synchronously when content is marked modified, selection changes, or a save is accepted.</summary>
     public event EventHandler? Changed;
 
@@ -30,7 +32,9 @@ public sealed partial class AudioDocument
         if (string.IsNullOrWhiteSpace(definition.Key)) definition.Key = "audio";
         FilePath = filePath;
         BaseDirectory = Path.GetFullPath(baseDirectory);
-        IsDirty = isDirty;
+        History = new(initiallySaved: !isDirty);
+        History.Changed += HistoryChanged;
+        RememberReferenceOrigins();
     }
 
     /// <summary>Loads all logical definitions from a loose GSND file and selects the first member.</summary>
@@ -44,6 +48,7 @@ public sealed partial class AudioDocument
         if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
         var document = new AudioDocument(definitions[0], path, Path.GetDirectoryName(path)!, false);
         document._definitions = definitions;
+        document.RememberReferenceOrigins();
         return document;
     }
 
@@ -82,8 +87,7 @@ public sealed partial class AudioDocument
             SourceExtension = Path.GetExtension(fullPath)
         };
 
-        Definition.Resources.Add(resource);
-        MarkChanged();
+        History.Insert("Add audio resource", Definition.Resources, Definition.Resources.Count, resource);
         return resource;
     }
 
@@ -106,8 +110,7 @@ public sealed partial class AudioDocument
             SourceExtension = Path.GetExtension(uri)
         };
 
-        Definition.Resources.Add(resource);
-        MarkChanged();
+        History.Insert("Add audio resource", Definition.Resources, Definition.Resources.Count, resource);
         return resource;
     }
 
@@ -116,20 +119,15 @@ public sealed partial class AudioDocument
     /// <returns>True if removed; false if the resource was absent.</returns>
     public bool Remove(AudioResourceDefinition resource)
     {
-        if (!Definition.Resources.Remove(resource))
-            return false;
-
-        MarkChanged();
-        return true;
+        return History.Remove("Remove audio resource", Definition.Resources, resource);
     }
 
     /// <summary>
-    /// Marks the document as modified and notifies listeners.
+    /// Marks an untracked external mutation dirty and discards history. Use history-aware operations for authoring edits.
     /// </summary>
     public void MarkChanged()
     {
-        IsDirty = true;
-        Changed?.Invoke(this, EventArgs.Empty);
+        History.MarkUntracked();
     }
 
     /// <summary>Validates all logical definitions and their document-level identities without loading runtime resources.</summary>
@@ -179,8 +177,8 @@ public sealed partial class AudioDocument
         FilePath = path;
         PackedLocation = null;
         BaseDirectory = directory;
-        IsDirty = false;
-        Changed?.Invoke(this, EventArgs.Empty);
+        RememberReferenceOrigins();
+        History.MarkSaved();
     }
 
     private string UniqueKey(string proposed)
@@ -219,8 +217,7 @@ public sealed partial class AudioDocument
             AssetEntryName = entryName,
             SourceExtension = extension
         };
-        Definition.Resources.Add(resource);
-        MarkChanged();
+        History.Insert("Add audio resource", Definition.Resources, Definition.Resources.Count, resource);
         return resource;
     }
 
@@ -263,9 +260,7 @@ public sealed partial class AudioDocument
     {
         var definition = Create(BaseDirectory).Definition;
         definition.Key = UniqueDefinitionIdentity("audio");
-        _definitions.Add(definition);
-        Definition = definition;
-        MarkChanged();
+        AddMembers([definition], "Add audio definition");
         return definition;
     }
 
@@ -276,9 +271,7 @@ public sealed partial class AudioDocument
         var definition = AudioDefinitionSerializer.FromJson(AudioDefinitionSerializer.ToJson(Definition));
         definition.Source = Definition.Source;
         definition.Key = UniqueDefinitionIdentity(Definition.Key + "-copy");
-        _definitions.Add(definition);
-        Definition = definition;
-        MarkChanged();
+        AddMembers([definition], "Duplicate audio definition");
         return definition;
     }
 
@@ -287,9 +280,14 @@ public sealed partial class AudioDocument
     /// <returns>True if removed; false if it is absent or is the document's only member.</returns>
     public bool RemoveDefinition(AudioDefinition definition)
     {
-        if (_definitions.Count == 1 || !_definitions.Remove(definition)) return false;
-        if (ReferenceEquals(Definition, definition)) Definition = _definitions[0];
-        MarkChanged();
+        int index = _definitions.IndexOf(definition);
+        if (_definitions.Count == 1 || index < 0) return false;
+        var selected = Definition;
+        History.Execute("Remove definition", () =>
+        {
+            _definitions.RemoveAt(index);
+            if (ReferenceEquals(Definition, definition)) Definition = _definitions[0];
+        }, () => { _definitions.Insert(index, definition); Definition = selected; });
         return true;
     }
 
@@ -303,8 +301,8 @@ public sealed partial class AudioDocument
         ArgumentException.ThrowIfNullOrWhiteSpace(identity);
         if (_definitions.Any(member => !ReferenceEquals(member, Definition) && member.Key == identity))
             throw new InvalidDataException($"Duplicate definition identity '{identity}'.");
-        Definition.Key = identity;
-        MarkChanged();
+        var member = Definition;
+        History.Set("Rename audio definition", () => member.Key, value => member.Key = value, identity);
     }
 
     /// <summary>Imports selected GSND members as independent copies, rebasing dependencies without copying resources.</summary>
@@ -331,9 +329,7 @@ public sealed partial class AudioDocument
             return clone;
         }, member => member.Key, (member, identity) => member.Key = identity, "audio");
         if (imported.Count == 0) return 0;
-        _definitions.AddRange(imported);
-        Definition = imported[0];
-        MarkChanged();
+        AddMembers(imported, "Import audio definitions");
         return imported.Count;
     }
 

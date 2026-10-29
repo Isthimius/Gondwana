@@ -62,6 +62,8 @@ public sealed class SpriteEditorControl : UserControl
         _packages = packages ?? PackedResourcePicker.CreateCatalog(this);
         _ownsPackages = packages is null;
         Document = document;
+        var shortcuts = UndoRedoMenu.Route(this, () => Document.History, CommitEdits);
+        Disposed += (_, _) => shortcuts.Dispose();
         _frames.ImageList = _thumbnails;
         Dock = DockStyle.Fill;
         Controls.Add(_workspace);
@@ -97,9 +99,11 @@ public sealed class SpriteEditorControl : UserControl
                 _animationPicker.SelectedItem is not AnimationChoice selected) return;
             string? key = selected.Key;
             if (entry.AnimationKey == key) return;
-            entry.AnimationKey = key;
-            if (key is null) entry.StartAnimation = false;
-            Document.MarkChanged();
+            Document.Edit(entry, "Change sprite animation", () =>
+            {
+                entry.AnimationKey = key;
+                if (key is null) entry.StartAnimation = false;
+            });
             RefreshSelection();
         };
         var sprites = _workspace.AddPane("sprites", PaneNames[0], _sprites, toolbar);
@@ -116,16 +120,16 @@ public sealed class SpriteEditorControl : UserControl
         _workspace.Place(validation, () => validation.Show(properties.Pane, DockAlignment.Bottom, 0.4));
         _workspace.InitializeLayout();
         _sprites.SelectedIndexChanged += (_, _) => RefreshSelection();
-        _properties.PropertyValueChanged += (_, _) => { Document.MarkChanged(); RefreshEntries(); };
+        _properties.PropertyValueChanged += (_, _) => RefreshEntries();
         _scenes.NodeMouseDoubleClick += (_, e) =>
         {
             if (SelectedSprite is { } entry && e.Node.Tag is ValueTuple<SceneDefinition, SceneLayerDefinition> selected)
-            { entry.SceneId = selected.Item1.ID; entry.SceneLayerId = selected.Item2.ID; Document.MarkChanged(); RefreshSelection(); }
+            { Document.Edit(entry, "Assign sprite scene layer", () => { entry.SceneId = selected.Item1.ID; entry.SceneLayerId = selected.Item2.ID; }); RefreshSelection(); }
         };
         _frames.NodeMouseDoubleClick += (_, e) =>
         {
             if (SelectedSprite is { } entry && e.Node.Tag is SpriteFrameDefinition frame)
-            { entry.Frame = frame; Document.MarkChanged(); RefreshSelection(); }
+            { Document.AssignFrame(entry, frame); RefreshSelection(); }
         };
         Document.Changed += DocumentChanged;
         LoadSources();
@@ -282,13 +286,19 @@ public sealed class SpriteEditorControl : UserControl
     /// <remarks>Earlier additions remain if a later file fails to load.</remarks>
     public void AddAnimationSources(IEnumerable<string> paths)
     {
-        foreach (var path in paths)
-            foreach (var member in AnimationDefinitionSerializer.LoadAll(path))
-            {
-                LoadAnimation(path, member.Key);
-                Document.SetLooseAnimationSource(member.Key, path);
-            }
-        RefreshSelection();
+        using var transaction = Document.History.BeginTransaction("Add sources");
+        try
+        {
+            foreach (var path in paths)
+                foreach (var member in AnimationDefinitionSerializer.LoadAll(path))
+                {
+                    LoadAnimation(path, member.Key);
+                    Document.SetLooseAnimationSource(member.Key, path);
+                }
+            RefreshSelection();
+
+        }
+        finally { transaction.Commit(); }
     }
 
     private void LoadAnimation(string path, string key)
@@ -321,8 +331,14 @@ public sealed class SpriteEditorControl : UserControl
     /// <remarks>Earlier additions remain if a later file fails to load.</remarks>
     public void AddSceneSources(IEnumerable<string> paths)
     {
-        foreach (var path in paths) foreach (var member in SceneDefinitionSerializer.LoadAll(path)) { var scene = LoadScene(path, member.ID); Document.SetLooseSceneSource(scene.ID, path); }
-        RefreshSelection();
+        using var transaction = Document.History.BeginTransaction("Add sources");
+        try
+        {
+            foreach (var path in paths) foreach (var member in SceneDefinitionSerializer.LoadAll(path)) { var scene = LoadScene(path, member.ID); Document.SetLooseSceneSource(scene.ID, path); }
+            RefreshSelection();
+
+        }
+        finally { transaction.Commit(); }
     }
     private SceneDefinition LoadScene(string path, string? identity = null)
     {
@@ -344,8 +360,14 @@ public sealed class SpriteEditorControl : UserControl
     /// <remarks>Earlier additions remain if a later file fails to load.</remarks>
     public void AddTilesheetSources(IEnumerable<string> paths)
     {
-        foreach (var path in paths) foreach (var member in TilesheetDefinitionSerializer.LoadAll(path)) { var source = LoadTilesheet(path, member.Name); Document.SetLooseTilesheetSource(source.Definition.Name, path); }
-        RefreshSelection();
+        using var transaction = Document.History.BeginTransaction("Add sources");
+        try
+        {
+            foreach (var path in paths) foreach (var member in TilesheetDefinitionSerializer.LoadAll(path)) { var source = LoadTilesheet(path, member.Name); Document.SetLooseTilesheetSource(source.Definition.Name, path); }
+            RefreshSelection();
+
+        }
+        finally { transaction.Commit(); }
     }
     private SpriteTilesheetSource LoadTilesheet(string path, string? identity = null)
     {
@@ -419,7 +441,7 @@ public sealed class SpriteEditorControl : UserControl
             _animationPicker.SelectedItem = selectedChoice;
         }
         finally { _syncingAnimationPicker = false; }
-        _properties.SelectedObject = SelectedSprite is { } selected ? new SpriteProperties(selected) : null;
+        _properties.SelectedObject = SelectedSprite is { } selected ? new SpriteProperties(selected, Document) : null;
         var entry = SelectedSprite;
         var matches = _sources.Where(source => source.Definition.Name == entry?.Frame?.Tilesheet).ToList();
         var scenes = _sceneDefinitions.Where(scene => scene.ID == entry?.SceneId).ToList();
@@ -439,7 +461,26 @@ public sealed class SpriteEditorControl : UserControl
         _preview.SetSelection(entry, matches.Count == 1 ? matches[0] : null, layer, previewFrame);
         UpdateValidation();
     }
-    private void DocumentChanged(object? sender, EventArgs e) => UpdateValidation();
+    private bool _historyRefreshPending;
+    private object[] _historySources = [];
+    private SpriteDefinition? _historyDefinition;
+
+    private void DocumentChanged(object? sender, EventArgs e)
+    {
+        if (_historyRefreshPending || !IsHandleCreated) return;
+        _historyRefreshPending = true;
+        BeginInvoke(() =>
+        {
+            _historyRefreshPending = false;
+            if (IsDisposed) return;
+            var sources = Document.Definition.TilesheetSources.Cast<object>().Concat(Document.Definition.AnimationSources).Concat(Document.Definition.SceneSources).ToArray();
+            if (!ReferenceEquals(_historyDefinition, Document.Definition) || !_historySources.SequenceEqual(sources))
+                RefreshSelectedDefinition();
+            else RefreshEntries();
+            _historyDefinition = Document.Definition;
+            _historySources = sources;
+        });
+    }
     /// <summary>Moves focus out of the property editor and validates pending control input without saving the document.</summary>
     /// <returns><see langword="true"/> if control validation succeeds and the property editor releases focus; otherwise, <see langword="false"/>.</returns>
     public bool CommitEdits()
@@ -507,4 +548,7 @@ public sealed class SpriteEditorControl : UserControl
         if (disposing && _ownsPackages) _packages.Dispose();
         base.Dispose(disposing);
     }
+    /// <inheritdoc/>
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
+        UndoRedoMenu.TryShortcut(this, keyData, Document.History, CommitEdits) || base.ProcessCmdKey(ref msg, keyData);
 }

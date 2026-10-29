@@ -8,7 +8,7 @@ namespace Gondwana.Tooling.Audio.WinForms.Tests;
 /// <summary>
 /// Contains regression tests for audio editor.
 /// </summary>
-public sealed class AudioEditorTests
+public sealed partial class AudioEditorTests
 {
     /// <summary>
     /// Verifies document save as rebases loose audio references.

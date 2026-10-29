@@ -25,12 +25,14 @@ public sealed partial class SpriteDocument
         var directory = Path.GetDirectoryName(path)!;
         var definitions = SpriteDefinitionSerializer.LoadAll(archive, entryName).ToList();
         if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
-        return new SpriteDocument(definitions[0], directory, null, false)
+        var document = new SpriteDocument(definitions[0], directory, null, false)
         {
             _definitions = definitions,
-            PackedLocation = new(AssetTypes.SpriteDefinition, path, entryName),
-            IsDirty = false
+            PackedLocation = new(AssetTypes.SpriteDefinition, path, entryName)
         };
+        document.RememberReferenceOrigins();
+        document.History.MarkSaved();
+        return document;
     }
 
     /// <summary>Serializes all members without rebasing or changing document state. The host validates before persistence.</summary>
@@ -44,7 +46,7 @@ public sealed partial class SpriteDocument
     public void AcceptPackedSave()
     {
         if (PackedLocation is null) throw new InvalidOperationException("This document is not packed.");
-        IsDirty = false;
-        Changed?.Invoke(this, EventArgs.Empty);
+        RememberReferenceOrigins();
+        History.MarkSaved();
     }
 }

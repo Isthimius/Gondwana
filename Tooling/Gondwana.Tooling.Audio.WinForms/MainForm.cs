@@ -6,6 +6,8 @@ namespace Gondwana.Tooling.Audio.WinForms;
 
 internal sealed class MainForm : Form
 {
+    private readonly UndoRedoMenu _undoRedo;
+
     private readonly ThemeBase _theme = ToolingAppearance.CreateDockTheme();
     private readonly DockPanel _dock;
     private readonly DockLayoutPersistence _layout;
@@ -51,6 +53,9 @@ internal sealed class MainForm : Form
         _layout.Register(_workspace, () => _workspace.Show(_dock, DockState.DockLeft));
 
         var menu = new MenuStrip();
+        _undoRedo = new(() => ActiveEditor?.Document.History, () => ActiveEditor?.CommitEdits() == true);
+        Disposed += (_, _) => _undoRedo.Dispose();
+        _dock.ActiveDocumentChanged += (_, _) => _undoRedo.Refresh();
         var file = new ToolStripMenuItem("&File");
         Add(file, "&New", Keys.Control | Keys.N, NewDocument);
         Add(file, "&Open GSND…", Keys.Control | Keys.O, OpenFiles);
@@ -117,7 +122,7 @@ internal sealed class MainForm : Form
         };
 
         _session.AddMenu(file);
-        menu.Items.AddRange([file, view]);
+        menu.Items.AddRange([file, _undoRedo.Menu, view]);
         MainMenuStrip = menu;
         Controls.Add(_dock);
         Controls.Add(menu);
@@ -473,4 +478,6 @@ internal sealed class MainForm : Form
 
         base.Dispose(disposing);
     }
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
+        UndoRedoMenu.TryShortcut(this, keyData, ActiveEditor?.Document.History, () => ActiveEditor?.CommitEdits() == true) || base.ProcessCmdKey(ref msg, keyData);
 }
