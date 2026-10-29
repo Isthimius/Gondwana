@@ -269,6 +269,25 @@ or canceled archive authentication skips the remaining documents from that archi
 without repeating the prompt. Other archives and loose documents still restore;
 explicitly opening the failed archive afterward allows another attempt.
 
+## Output severity colors
+
+The bottom **Output** tool pane keeps timestamps and messages as plain text,
+but colors each complete line according to a leading severity marker (after the
+timestamp, case-insensitive):
+
+- `Error:`, `Critical:`, `Fatal:`, `[ERROR]` — red.
+- `Warning:`, `Warn:`, `[WARNING]`, `[WARN]` — yellow/amber.
+- `Important:`, `Info:`, `[IMPORTANT]`, `[INFO]` — blue.
+- Unmarked lines — the active theme's normal foreground color.
+
+Colors have separate shades for **Dark**, **Dark Blue**, and **Light** themes.
+Studio marks exceptions, validation failures, plugin loading errors, and
+unreadable browsing entries with appropriate severities; successful validation
+and working-directory changes use the blue informational marker. Plugins can
+use the same markers via their existing `Log(string)` host service. This is
+presentation-only: the Output model and its combined plain-text contents are
+unchanged. Resetting or editing the line collection reapplies the colors.
+
 ## Appearance
 
 Choose **View → Theme → Dark, Dark Blue, or Light**. The choice is shared across Studio and all six standalone editors and takes effect on the next launch. Open documents remain untouched; restart normally after saving your work. See [shared tooling themes](../Shared/WinForms/Theming/README.md) for persistence, control coverage, and DockPanel Suite limitations.
