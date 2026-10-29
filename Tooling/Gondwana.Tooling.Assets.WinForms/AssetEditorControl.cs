@@ -312,6 +312,7 @@ public sealed class AssetEditorControl : UserControl
     /// <summary>Saves a standalone copy without changing source identity, history, or checkpoint.</summary>
     public void SaveCopyTo(string destination, string? password, bool encrypt)
     {
+        if (History.IsExecuting || History.InTransaction) throw new InvalidOperationException("Archive history is busy.");
         destination = Path.GetFullPath(destination);
         if (IsDocumentOpen(destination)) throw new InvalidOperationException("The copy destination is already open.");
         AssetArchiveCopy.Save(_assetsFile, destination, password, encrypt);
@@ -325,6 +326,7 @@ public sealed class AssetEditorControl : UserControl
 
     /// <summary>Accepts a host-persisted snapshot, clears the dirty state, refreshes entries, and raises <see cref="Changed"/>.</summary>
     /// <param name="replacement">A distinct saved archive whose ownership transfers to this control.</param>
+    /// <param name="externalRefresh">Whether persisted external edits make earlier local history obsolete.</param>
     /// <remarks>Preserves the borrowed instance for same-path saves; owns snapshots adopted at new paths. External refreshes discard obsolete local history; ordinary saves preserve it.</remarks>
     public void AcceptSavedArchive(AssetsFile replacement, bool externalRefresh = false)
     {
@@ -374,6 +376,7 @@ public sealed class AssetEditorControl : UserControl
     /// <param name="destination">The final archive path. A different path creates a copy and must not exist.</param>
     public void SaveTo(string destination)
     {
+        if (History.IsExecuting || History.InTransaction) throw new InvalidOperationException("Archive history is busy.");
         if (SaveRequested is not null)
             throw new InvalidOperationException("This editor is hosted. Save through the host's asynchronous save command so archive writes are coordinated.");
         destination = Path.GetFullPath(destination);

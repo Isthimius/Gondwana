@@ -64,7 +64,8 @@ public sealed class AssetEditSessionTests : IDisposable
         var sheetPath = Path.Combine(_root, "tiles.gts");
         TilesheetDefinitionSerializer.Save(sheetPath, new TilesheetDefinition
         {
-            Name = "terrain", Image = new() { FilePath = "art.png" },
+            Name = "terrain",
+            Image = new() { FilePath = "art.png" },
             Regions = [new() { Name = "default", Area = new Rectangle(0, 0, 1, 1), TileSize = new Size(1, 1) }]
         });
         using var edits = new AssetEditSession(archive, true);
@@ -130,6 +131,33 @@ public sealed class AssetEditSessionTests : IDisposable
         var noOp = Plan(archive, (AssetTypes.Misc, "existing", [5]));
         description = edits.History.UndoDescription;
         Assert.Equal(0, edits.Import(noOp)); Assert.Equal(description, edits.History.UndoDescription);
+    }
+
+    [Fact]
+    public void FailedReplacementRestoresOriginalAndCheckpoint()
+    {
+        using var archive = Archive(); Add(archive, AssetTypes.Misc, "nested/entry", [1, 2]);
+        using var edits = new AssetEditSession(archive, true);
+        Assert.Throws<IOException>(() => edits.ReplaceCore(AssetTypes.Misc, "nested/entry", [3, 4], null, (entry, bytes) =>
+        {
+            Add(archive, entry.AssetType, entry.AssetName, bytes); throw new IOException("after replacement");
+        }));
+        Assert.Equal(new byte[] { 1, 2 }, Bytes(archive, AssetTypes.Misc, "nested/entry"));
+        Assert.False(edits.History.CanUndo); Assert.False(edits.History.IsDirty);
+    }
+
+    [Fact]
+    public void OversizedConfirmationRechecksAdoptedArchiveAndPreservesOtherDocument()
+    {
+        using var archive = Archive(); using var adopted = Archive("adopted.gaf");
+        using var edits = new AssetEditSession(archive, true, byteLimit: 1);
+        var plan = Plan(archive, (AssetTypes.Misc, "large", [1, 2]));
+        Assert.Throws<InvalidOperationException>(() => edits.Import(plan, _ =>
+        {
+            edits.AcceptSavedArchive(adopted); return true;
+        }));
+        Assert.Empty(archive.GetAllEntries()); Assert.Empty(adopted.GetAllEntries());
+        Assert.False(edits.History.CanUndo); Assert.False(edits.History.IsDirty);
     }
 
     [Fact]

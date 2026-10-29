@@ -50,12 +50,21 @@ public sealed class AssetEditSession : IDisposable
         if (plan.AdditionCount == 0) return 0;
         var command = new EntryCommand(this, $"Import {plan.AdditionCount} asset(s)",
             plan.Additions.Select(p => new Delta(p.Key.AssetType, p.Key.AssetName, null, p.Value, Archive.SourcePath!)).ToArray());
-        Execute(command, confirmNonUndoable, () => { cancellation.ThrowIfCancellationRequested(); plan.ValidateCurrent(); }, cancellation, write);
+        Execute(command, confirmNonUndoable, () =>
+        {
+            cancellation.ThrowIfCancellationRequested();
+            if (!plan.Targets(Archive)) throw new InvalidOperationException("The archive changed after preview. Prepare a new import plan.");
+            plan.ValidateCurrent();
+        }, cancellation, write);
         return plan.AdditionCount;
     }
 
     /// <summary>Replaces only an existing typed entry. Identical bytes are a no-op; native definitions retain raw-replacement limitations.</summary>
-    public bool Replace(AssetTypes type, string name, byte[] replacement, Func<long, bool>? confirmNonUndoable = null)
+    public bool Replace(AssetTypes type, string name, byte[] replacement, Func<long, bool>? confirmNonUndoable = null) =>
+        ReplaceCore(type, name, replacement, confirmNonUndoable, null);
+
+    internal bool ReplaceCore(AssetTypes type, string name, byte[] replacement, Func<long, bool>? confirmNonUndoable,
+        Action<AssetsFileEntry, byte[]>? write)
     {
         ArgumentNullException.ThrowIfNull(replacement);
         History.RequireIdle();
@@ -79,7 +88,7 @@ public sealed class AssetEditSession : IDisposable
             current?.CopyTo(check);
             if (current is null || !check.ToArray().AsSpan().SequenceEqual(before))
                 throw new InvalidOperationException("Entry changed while confirming replacement. Retry the operation.");
-        }, default, null);
+        }, default, write);
         return true;
     }
 

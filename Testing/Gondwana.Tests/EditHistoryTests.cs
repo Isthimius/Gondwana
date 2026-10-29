@@ -165,4 +165,37 @@ public class EditHistoryTests
         Assert.Equal(0, value); Assert.False(h.CanUndo); Assert.False(other.IsDirty);
         Assert.Throws<ObjectDisposedException>(() => h.MarkSaved());
     }
+    [Fact]
+    public void ByteQuotaIncludesGroupsAndPrunesRedoWithoutInventingCleanState()
+    {
+        using var history = new EditHistory { ByteLimit = 4 };
+        int value = 0;
+        using (var group = history.BeginTransaction("binary group"))
+        {
+            history.Execute(new WeightedCommand(() => value = 1, () => value = 0, 2));
+            history.Execute(new WeightedCommand(() => value = 2, () => value = 1, 2));
+            group.Commit();
+        }
+        Assert.Equal(4, history.RetainedBytes); history.MarkSaved();
+        history.Undo(); Assert.Equal(0, value); Assert.True(history.CanRedo);
+        history.ByteLimit = 3;
+        Assert.Equal(0, history.RetainedBytes); Assert.False(history.CanRedo); Assert.True(history.IsDirty);
+        history.ResetSaved(); Assert.False(history.IsDirty);
+        history.Execute(new WeightedCommand(() => value = 3, () => value = 0, 2));
+        history.Undo();
+        history.Execute(new WeightedCommand(() => value = 4, () => value = 0, 1));
+        Assert.Equal(1, history.RetainedBytes); Assert.False(history.CanRedo);
+        history.Limit = 1;
+        history.Execute(new WeightedCommand(() => value = 5, () => value = 4, 1));
+        Assert.Equal(1, history.RetainedBytes);
+        history.Undo(); Assert.Equal(4, value); Assert.False(history.CanUndo);
+    }
+
+    private sealed record WeightedCommand(Action Apply, Action Restore, long RetainedBytes) : IEditCommand
+    {
+        public string Description => "binary edit";
+        public void Execute() => Apply();
+        public void Undo() => Restore();
+    }
+
 }
