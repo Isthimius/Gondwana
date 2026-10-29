@@ -126,7 +126,7 @@ public class StudioPluginHost
     protected void DisablePlugin(LoadedPlugin plugin, string reason)
     {
         plugin.Enabled = false;
-        _log($"[Plugin] Disabled '{plugin.Instance.Name}': {reason}");
+        _log($"Warning: [Plugin] Disabled '{plugin.Instance.Name}': {reason}");
     }
 
     private void LoadAssemblyPlugins(string dllPath)
@@ -151,19 +151,19 @@ public class StudioPluginHost
                 }
                 catch (Exception ex)
                 {
-                    _log($"[Plugin] Failed to instantiate {type.FullName}: {ex.Message}");
+                    _log($"Error: [Plugin] Failed to instantiate {type.FullName}: {ex.Message}");
                 }
             }
         }
         catch (ReflectionTypeLoadException ex)
         {
-            _log($"[Plugin] Failed loading {Path.GetFileName(dllPath)}: {ex.Message}");
+            _log($"Error: [Plugin] Failed loading {Path.GetFileName(dllPath)}: {ex.Message}");
             foreach (var loaderEx in ex.LoaderExceptions)
-                _log($"[Plugin] Loader error: {loaderEx?.Message}");
+                _log($"Error: [Plugin] Loader error: {loaderEx?.Message}");
         }
         catch (Exception ex)
         {
-            _log($"[Plugin] Failed loading {Path.GetFileName(dllPath)}: {ex.Message}");
+            _log($"Error: [Plugin] Failed loading {Path.GetFileName(dllPath)}: {ex.Message}");
         }
     }
 
