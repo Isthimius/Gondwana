@@ -118,11 +118,11 @@ public sealed class AssetEditSessionTests : IDisposable
         using var cancelled = new CancellationTokenSource(); cancelled.Cancel();
         Assert.Throws<OperationCanceledException>(() => edits.Import(plan, cancellation: cancelled.Token));
         int writes = 0;
-        Assert.Throws<IOException>(() => edits.ImportCore(plan, null, default, (entry, bytes) =>
+        Assert.Throws<IOException>(() => edits.ImportCore(plan, null, (entry, bytes) =>
         {
             Add(archive, entry.AssetType, entry.AssetName, bytes);
             if (++writes == 2) throw new IOException("after partial write");
-        }));
+        }, default));
         Assert.Single(archive.GetAllEntries()); Assert.Equal(description, edits.History.UndoDescription);
         Assert.Equal(new byte[] { 2 }, Bytes(archive, AssetTypes.Misc, "existing"));
         edits.Replace(AssetTypes.Misc, "existing", [5]);
@@ -209,10 +209,10 @@ public sealed class AssetEditSessionTests : IDisposable
         using var edits = new AssetEditSession(archive, true, byteLimit: 2);
         edits.Import(Plan(archive, (AssetTypes.Misc, "a", [1]))); edits.History.MarkSaved();
         var huge = Plan(archive, (AssetTypes.Misc, "large", [2, 3, 4]));
-        Assert.Throws<IOException>(() => edits.ImportCore(huge, _ => true, default, (entry, bytes) =>
+        Assert.Throws<IOException>(() => edits.ImportCore(huge, _ => true, (entry, bytes) =>
         {
             Add(archive, entry.AssetType, entry.AssetName, bytes); throw new IOException("partial");
-        }));
+        }, default));
         Assert.Single(archive.GetAllEntries()); Assert.True(edits.History.CanUndo); Assert.False(edits.History.IsDirty);
     }
 

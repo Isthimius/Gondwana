@@ -39,10 +39,10 @@ public sealed class AssetEditSession : IDisposable
     /// <param name="cancellation">Cancellation during the initial import only.</param>
     /// <returns>Number of additions, excluding reused entries.</returns>
     public int Import(AssetImportPlan plan, Func<long, bool>? confirmNonUndoable = null, CancellationToken cancellation = default) =>
-        ImportCore(plan, confirmNonUndoable, cancellation, null);
+        ImportCore(plan, confirmNonUndoable, null, cancellation);
 
-    internal int ImportCore(AssetImportPlan plan, Func<long, bool>? confirmNonUndoable, CancellationToken cancellation,
-        Action<AssetsFileEntry, byte[]>? write)
+    internal int ImportCore(AssetImportPlan plan, Func<long, bool>? confirmNonUndoable,
+        Action<AssetsFileEntry, byte[]>? write, CancellationToken cancellation)
     {
         ArgumentNullException.ThrowIfNull(plan);
         History.RequireIdle();
@@ -57,7 +57,7 @@ public sealed class AssetEditSession : IDisposable
             cancellation.ThrowIfCancellationRequested();
             if (!plan.Targets(Archive)) throw new InvalidOperationException("The archive changed after preview. Prepare a new import plan.");
             plan.ValidateCurrent();
-        }, cancellation, write);
+        }, write, cancellation);
         return plan.AdditionCount;
     }
 
@@ -91,12 +91,12 @@ public sealed class AssetEditSession : IDisposable
             if (!Archive.GetAllEntries().Any(e => e.AssetType == type && string.Equals(e.AssetName, entry.AssetName, StringComparison.OrdinalIgnoreCase)) ||
                 current is null || !check.ToArray().AsSpan().SequenceEqual(before))
                 throw new InvalidOperationException("Entry changed while confirming replacement. Retry the operation.");
-        }, default, write);
+        }, write, default);
         return true;
     }
 
     private void Execute(EntryCommand command, Func<long, bool>? confirm, Action revalidate,
-        CancellationToken cancellation, Action<AssetsFileEntry, byte[]>? write)
+        Action<AssetsFileEntry, byte[]>? write, CancellationToken cancellation)
     {
         bool oversized = command.RetainedBytes > History.ByteLimit;
         if (oversized)
