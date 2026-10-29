@@ -90,6 +90,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
             catch (Exception ex) { ReportError(ex); }
         };
         Browser.ChooseDirectoryRequested += ChooseDirectory;
+        Browser.NewFileRequested += (format, directory) => TryNew(format, directory);
         Workspace.ActiveDocumentChanged += (_, _) => { SyncActiveDocumentSelection(); UpdateToolbarState(); };
         AddTool("shell.working-directory", "Working directory", Browser, DockState.DockLeft);
         AddTool("shell.output", "Output", new OutputPanel(_output), DockState.DockBottom);
@@ -324,28 +325,32 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         if (_paths.TryGetValue(location, out var existing)) { existing.Activate(); return existing; }
         return ShowDocument(CreateModel(location, password));
     }
-    private async void TryNew(string format)
+    private async void TryNew(string format, string? directory = null)
     {
         try
         {
-            if (format != "gaf") { NewDocument(format); return; }
-            using var dialog = new SaveFileDialog { Filter = "Asset files|*.gaf;*.zip", DefaultExt = "gaf", InitialDirectory = Browser.WorkingDirectory };
+            if (format != "gaf") { NewDocument(format, directory: directory); return; }
+            using var dialog = new SaveFileDialog { Filter = "Asset files|*.gaf;*.zip", DefaultExt = "gaf", InitialDirectory = directory ?? Browser.WorkingDirectory };
             if (dialog.ShowDialog(this) != DialogResult.OK) return;
             if (File.Exists(dialog.FileName)) { TryOpen(dialog.FileName); return; }
             bool encrypt = ThemedMessageBox.Show(this, "Enable password protection?", "New asset file", MessageBoxButtons.YesNo) == DialogResult.Yes;
             string? password = encrypt ? InputDialog.Show("Password:", "New asset file", owner: this, password: true) : null;
             if (encrypt && string.IsNullOrWhiteSpace(password)) return;
-            var document = NewDocument(format, dialog.FileName, password, encrypt);
+            var document = NewDocument(format, dialog.FileName, password, encrypt,
+                directory: Path.GetDirectoryName(dialog.FileName));
             await SaveDocument(document);
         }
         catch (Exception ex) { ReportError(ex); }
     }
 
-    internal StudioDockDocument NewDocument(string format, string? assetPath = null, string? password = null, bool encrypt = false)
+    internal StudioDockDocument NewDocument(string format, string? assetPath = null, string? password = null,
+        bool encrypt = false, string? directory = null)
     {
         if (assetPath is not null && _paths.TryGetValue(new AssetLocation(AssetTypes.Misc, Path.GetFullPath(assetPath)), out var existing))
         { existing.Activate(); return existing; }
-        return ShowDocument(StudioDocument.Create(format, Browser.WorkingDirectory, assetPath, _packages, password, encrypt));
+        var model = StudioDocument.Create(format, directory ?? Browser.WorkingDirectory, assetPath, _packages, password, encrypt);
+        model.SaveDirectoryHint = directory;
+        return ShowDocument(model);
     }
 
     private StudioDockDocument ShowDocument(StudioDocument model)
@@ -473,7 +478,8 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
             Filter = model.Kind == "asset" ? "Asset files|*.gaf;*.zip" : $"Gondwana {model.Kind}|*.{model.Extension}",
             DefaultExt = model.Extension,
             AddExtension = true,
-            InitialDirectory = model.Location is { } location ? Path.GetDirectoryName(location.Path) : Browser.WorkingDirectory,
+            InitialDirectory = model.Location is { } location ? Path.GetDirectoryName(location.Path)
+                : model.SaveDirectoryHint ?? Browser.WorkingDirectory,
             FileName = model.PackedLocation()?.AssetEntryName is { } entry ? Path.GetFileName(entry) : model.Path() is { } name ? Path.GetFileName(name) : $"Untitled.{model.Extension}"
         };
         return dialog.ShowDialog(this) == DialogResult.OK ? dialog.FileName : null;
