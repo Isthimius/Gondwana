@@ -280,3 +280,52 @@ for storage, close behavior, encrypted archives, and recovery details.
 ## Appearance
 
 Choose **View → Theme → Dark, Dark Blue, or Light**. The choice is shared across Studio and all six standalone editors and takes effect on the next launch. Open documents remain untouched; restart normally after saving your work. See [shared tooling themes](../Shared/WinForms/Theming/README.md) for persistence, control coverage, and DockPanel Suite limitations.
+
+
+## GAF document undo and redo
+
+**Edit → Undo** (Ctrl+Z) and **Edit → Redo** (Ctrl+Y or Ctrl+Shift+Z) target the
+active archive. Add/Import, including approved dependencies, is one step; reused
+entries survive Undo. Replace restores exact bytes for the same typed nested
+entry name. Identical replacement and zero-addition import create no step. Raw
+native-definition replacement does not discover logical members or rewrite
+inbound references. The asset grid, type selector, and toolbar route document
+shortcuts; Search keeps native text Undo. Filters, selection where possible,
+scroll position, and docking layout survive replay.
+
+Save establishes a checkpoint only after success. Undo back to it clears the
+dirty marker; undo past it is dirty. New unsaved archives remain dirty. Studio
+Save As adopts its new path; Undo then targets that archive, and retained native
+references rebase from their capture origin. Standalone Save As creates a copy
+and leaves the source path and checkpoint unchanged. Failed saves retain history.
+
+Binary history retains only affected entry payloads, limited to **64 MiB per
+document across Undo and Redo**, plus 200 operations. Oldest applied commands
+are pruned first, then furthest redo. An individually oversized edit prompts
+before mutation: approval performs it without Undo and clears previous history
+only after success; cancellation or ordinary failure preserves earlier history.
+Pruning, discarded redo, and document close release retained payload references.
+The quota bounds retained history payloads, not temporary planning buffers or
+the archive's own storage. There are no plaintext spill files for encrypted data.
+
+Reviewed Rename/Move/Delete, persisted cross-file rewrites, Export, and Save are
+not Undo steps. Successful committed disk transactions reset obsolete history
+and establish a clean refreshed baseline. Failed/cancelled transactions retain
+valid history. External callers mutating the borrowed `AssetsFile` must call
+`MarkChanged()`, which invalidates history and marks the document dirty. A
+packed-child save externally refreshes the clean parent GAF and clears its old
+history; the child's history stays independent. Studio blocks replay during
+pending coordinated archive saves and keeps its existing conflict checks.
+
+
+GAF persistence and replay safeguards: normal standalone Save uses the same
+version-checked, encrypted sibling staging as Studio; it never invalidates the
+live archive buffer on a failed write. Retained native payloads track only their
+own physical dependencies. Save As updates those targets from the copied
+inventory at adoption, independently of the current Undo position; replay does
+not build archive-wide relocation maps. Filesystem path comparisons follow the
+platform's case sensitivity, while typed entry names remain case-insensitive.
+Malformed or unsupported raw native replacements remain opaque and replay their
+exact bytes after Save As; those opaque versions cannot promise reference rebasing.
+A failed post-commit refresh blocks saving stale buffers, but discard/close,
+shutdown, and confirmed Reload document remain available.

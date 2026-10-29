@@ -62,6 +62,7 @@ internal sealed class StudioDocument : IDisposable
 
     internal required Func<bool> Dirty { get; init; }
     internal required Func<bool> CommitEdits { get; init; }
+    internal Func<bool> CanSave { get; init; } = () => true;
     internal required Func<IReadOnlyList<string>> Validate { get; init; }
     internal required Action<string, bool> Save { get; init; }
     internal required IReadOnlyList<string> PaneNames { get; init; }
@@ -80,6 +81,7 @@ internal sealed class StudioDocument : IDisposable
         AnimationEditorControl e => e.Document.History,
         SpriteEditorControl e => e.Document.History,
         AudioEditorControl e => e.Document.History,
+        AssetEditorControl e => e.History,
         _ => null
     };
 
@@ -327,7 +329,8 @@ internal sealed class StudioDocument : IDisposable
                             Editor = editor,
                             Path = () => editor.FilePath,
                             Dirty = () => editor.IsDirty || !File.Exists(editor.FilePath),
-                            CommitEdits = () => true,
+                            CommitEdits = editor.CommitEdits,
+                            CanSave = () => editor.CanSave,
                             Validate = () => [],
                             Save = (destination, _) => editor.SaveTo(destination),
                             PaneNames = AssetEditorControl.PaneNames,

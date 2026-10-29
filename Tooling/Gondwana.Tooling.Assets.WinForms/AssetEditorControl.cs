@@ -1,5 +1,7 @@
 using System.ComponentModel;
+using System.Security.Cryptography;
 using Gondwana.Assets;
+using Gondwana.Tooling.Editing;
 using Gondwana.Tooling.WinForms;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -20,9 +22,22 @@ public sealed class AssetEditorControl : UserControl
 
     private AssetsFile _assetsFile;
     private AssetsFile? _ownedSavedCopy;
+    private bool _refreshFailed;
 
     /// <summary>Dirty state for edits made through this editor.</summary>
-    public bool IsDirty { get; private set; }
+    public bool IsDirty => History.IsDirty;
+    private readonly AssetEditSession _edits;
+    /// <summary>Document-local entry history.</summary>
+    public EditHistory History => _edits.History;
+    /// <summary>Whether current buffers can be safely persisted; a failed post-commit refresh requires reopening.</summary>
+    public bool CanSave => !_refreshFailed;
+    /// <summary>Commits pending editor fields. A failed refresh still permits discard, close, and reload.</summary>
+    public bool CommitEdits() => true;
+
+    private void RequireUsableArchive()
+    {
+        if (_refreshFailed) throw new InvalidOperationException("The disk transaction committed but archive refresh failed. Close and reopen this document before editing or saving.");
+    }
     /// <summary>Occurs synchronously when edits mark the archive dirty or an accepted save clears the dirty state.</summary>
     public event EventHandler? Changed;
 
@@ -68,6 +83,9 @@ public sealed class AssetEditorControl : UserControl
     public AssetEditorControl(AssetsFile assetsFile)
     {
         _assetsFile = assetsFile ?? throw new ArgumentNullException(nameof(assetsFile));
+        _edits = new(assetsFile, initiallySaved: File.Exists(assetsFile.SourcePath));
+        var shortcuts = UndoRedoMenu.Route(this, () => Enabled ? History : null, () => Enabled);
+        Disposed += (_, _) => shortcuts.Dispose();
         Size = new Size(1000, 650);
         Dock = DockStyle.Fill;
 
@@ -176,8 +194,20 @@ public sealed class AssetEditorControl : UserControl
         _searchTextBox.BackColor = ToolingAppearance.Palette.Surface;
         _searchTextBox.ForeColor = ToolingAppearance.Palette.Foreground;
 
+        History.Changed += HistoryChanged;
         RefreshEntries();
     }
+
+    private void HistoryChanged(object? sender, EventArgs e)
+    {
+        RefreshEntries();
+        Changed?.Invoke(this, EventArgs.Empty);
+    }
+
+    private bool ConfirmNonUndoable(long bytes) => ThemedMessageBox.Show(this,
+        $"This edit needs {bytes / (1024d * 1024):F1} MiB of history, exceeding the {History.ByteLimit / (1024d * 1024):F1} MiB budget. " +
+        "Continue without Undo? All existing Undo and Redo for this archive will be cleared after success. Cancel leaves the archive and history unchanged.",
+        "Edit exceeds Undo budget", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes;
 
     private static ToolStripButton AddButton(ToolStrip strip, string text, EventHandler onClick)
     {
@@ -280,7 +310,7 @@ public sealed class AssetEditorControl : UserControl
                 }
             }
 
-            AssetArchiveCopy.Save(_assetsFile, destination, password, encrypt);
+            SaveCopyTo(destination, password, encrypt);
             WorkspaceChanged();
             SetStatus($"Saved copy: {destination}");
         }
@@ -290,38 +320,64 @@ public sealed class AssetEditorControl : UserControl
         }
     }
 
+    /// <summary>Saves a standalone copy without changing source identity, history, or checkpoint.</summary>
+    public void SaveCopyTo(string destination, string? password, bool encrypt)
+    {
+        RequireUsableArchive();
+        if (History.IsExecuting || History.InTransaction) throw new InvalidOperationException("Archive history is busy.");
+        destination = Path.GetFullPath(destination);
+        if (IsDocumentOpen(destination)) throw new InvalidOperationException("The copy destination is already open.");
+        AssetArchiveCopy.Save(_assetsFile, destination, password, encrypt);
+    }
+
     /// <summary>Notify the editor after a host edits its borrowed AssetsFile directly.</summary>
     public void MarkChanged()
     {
-        IsDirty = true;
-        Changed?.Invoke(this, EventArgs.Empty);
+        History.MarkUntracked();
     }
 
     /// <summary>Accepts a host-persisted snapshot, clears the dirty state, refreshes entries, and raises <see cref="Changed"/>.</summary>
     /// <param name="replacement">A distinct saved archive whose ownership transfers to this control.</param>
-    /// <remarks>When path and encryption match, copies entries into the current archive and disposes the snapshot immediately; otherwise retains it until replacement or disposal.</remarks>
-    public void AcceptSavedArchive(AssetsFile replacement)
+    /// <param name="externalRefresh">Whether persisted external edits make earlier local history obsolete.</param>
+    /// <remarks>Preserves the borrowed instance for same-path saves; owns snapshots adopted at new paths. External refreshes discard obsolete local history; ordinary saves preserve it.</remarks>
+    public void AcceptSavedArchive(AssetsFile replacement, bool externalRefresh = false)
     {
-        if (string.Equals(FilePath, replacement.SourcePath, StringComparison.OrdinalIgnoreCase) &&
+        ArgumentNullException.ThrowIfNull(replacement);
+        _ = replacement.GetAllEntries().ToArray(); // validate before transferring ownership or advancing the checkpoint
+        if (History.IsExecuting || History.InTransaction) throw new InvalidOperationException("Archive history is busy.");
+        if (ReferenceEquals(_assetsFile, replacement))
+        {
+            _edits.AcceptSavedArchive(_assetsFile, externalRefresh);
+        }
+        else if (string.Equals(FilePath, replacement.SourcePath, StringComparison.OrdinalIgnoreCase) &&
             _assetsFile.Password == replacement.Password && _assetsFile.UseEncryption == replacement.UseEncryption)
         {
-            foreach (var entry in _assetsFile.GetAllEntries()) _assetsFile.Remove(entry.AssetType, entry.AssetName);
-            foreach (var entry in replacement.GetAllEntries())
+            // Preserve borrowed-instance compatibility for same-path refreshes. Read everything
+            // before mutation and compensate if copying fails; never advance a failed checkpoint.
+            var before = AssetImportPlan.Snapshot(_assetsFile);
+            var after = AssetImportPlan.Snapshot(replacement);
+            void Copy(IReadOnlyDictionary<AssetsFileEntry, byte[]> contents)
             {
-                using var bytes = replacement.Get(entry.AssetType, entry.AssetName)!;
-                _assetsFile.Add(entry.AssetType, entry.AssetName, bytes);
+                foreach (var entry in _assetsFile.GetAllEntries().ToArray()) _assetsFile.Remove(entry.AssetType, entry.AssetName);
+                foreach (var pair in contents)
+                {
+                    using var bytes = new MemoryStream(pair.Value, writable: false);
+                    _assetsFile.Add(pair.Key.AssetType, pair.Key.AssetName, bytes);
+                }
             }
+            try { Copy(after); }
+            catch { Copy(before); throw; }
             replacement.Dispose();
+            _edits.AcceptSavedArchive(_assetsFile, externalRefresh);
         }
         else
         {
-            _ownedSavedCopy?.Dispose();
+            var previous = _ownedSavedCopy;
             _ownedSavedCopy = replacement;
             _assetsFile = replacement;
+            _edits.AcceptSavedArchive(replacement, externalRefresh);
+            previous?.Dispose();
         }
-        IsDirty = false;
-        RefreshEntries();
-        Changed?.Invoke(this, EventArgs.Empty);
         SetStatus($"Saved: {FilePath}");
     }
 
@@ -333,11 +389,17 @@ public sealed class AssetEditorControl : UserControl
     /// <param name="destination">The final archive path. A different path creates a copy and must not exist.</param>
     public void SaveTo(string destination)
     {
+        RequireUsableArchive();
+        if (History.IsExecuting || History.InTransaction) throw new InvalidOperationException("Archive history is busy.");
         if (SaveRequested is not null)
             throw new InvalidOperationException("This editor is hosted. Save through the host's asynchronous save command so archive writes are coordinated.");
         destination = Path.GetFullPath(destination);
         if (string.Equals(destination, FilePath, StringComparison.OrdinalIgnoreCase))
-            _assetsFile.Save();
+        {
+            // Never call Save on the live archive: a failed Save can invalidate its loaded buffer.
+            var expected = File.Exists(destination) ? SHA256.HashData(File.ReadAllBytes(destination)) : null;
+            AssetArchivePersistence.Commit(_assetsFile, destination, expected);
+        }
         else
         {
             AssetArchiveCopy.Save(_assetsFile, destination, _assetsFile.Password, _assetsFile.UseEncryption);
@@ -348,9 +410,7 @@ public sealed class AssetEditorControl : UserControl
             _assetsFile = replacement;
         }
 
-        IsDirty = false;
-        RefreshEntries();
-        Changed?.Invoke(this, EventArgs.Empty);
+        _edits.AcceptSavedArchive(_assetsFile);
         WorkspaceChanged();
         SetStatus($"Saved: {FilePath}");
     }
@@ -361,6 +421,8 @@ public sealed class AssetEditorControl : UserControl
         if (disposing)
         {
             SaveRequested = null;
+            History.Changed -= HistoryChanged;
+            _edits.Dispose();
             _ownedSavedCopy?.Dispose();
             _ownedSavedCopy = null;
         }
@@ -373,15 +435,22 @@ public sealed class AssetEditorControl : UserControl
     /// <returns>The number of new entries.</returns>
     public int ApplyImport(AssetImportPlan plan, CancellationToken cancellation = default)
     {
-        ArgumentNullException.ThrowIfNull(plan);
-        if (!plan.Targets(_assetsFile)) throw new InvalidOperationException("The import plan belongs to another archive.");
-        int count = plan.Apply(cancellation);
-        if (count > 0)
-        {
-            MarkChanged();
-            RefreshEntries();
-        }
+        RequireUsableArchive();
+        int count = _edits.Import(plan, ConfirmNonUndoable, cancellation);
+        if (count > 0) SetStatus(History.CanUndo ? $"Imported {count} asset(s). Undo available; Save to persist." :
+            $"Imported {count} asset(s) without Undo (history budget). Earlier history cleared; Save to persist.");
+        else SetStatus("No new entries imported; archive and history unchanged.");
         return count;
+    }
+
+    /// <summary>Replaces an existing exact typed entry; suppresses identical payloads.</summary>
+    public bool ReplaceAsset(AssetTypes type, string name, byte[] replacement)
+    {
+        RequireUsableArchive();
+        bool changed = _edits.Replace(type, name, replacement, ConfirmNonUndoable);
+        SetStatus(!changed ? "Replacement identical; archive and history unchanged." : History.CanUndo ?
+            $"Replaced: {name}. Undo available; Save to persist." : $"Replaced: {name} without Undo (history budget). Earlier history cleared; Save to persist.");
+        return changed;
     }
 
     private void AddAsset()
@@ -405,9 +474,9 @@ public sealed class AssetEditorControl : UserControl
             var plan = AssetImportPlan.Create(_assetsFile, typePicker.Sources, typePicker.ImportDependencies);
             using var preview = new AssetImportPreviewForm(plan);
             if (preview.ShowDialog(this) != DialogResult.OK) return;
-            var imported = ApplyImport(plan);
-            SetStatus($"Imported {imported} asset(s). Save to persist the changes.");
+            ApplyImport(plan);
         }
+        catch (OperationCanceledException) { SetStatus("Import cancelled; archive and history unchanged."); }
         catch (Exception ex)
         {
             ShowError("Failed to import one or more assets.", ex);
@@ -431,12 +500,9 @@ public sealed class AssetEditorControl : UserControl
 
         try
         {
-            using var stream = File.OpenRead(dialog.FileName);
-            _assetsFile.Add(selected.AssetType, selected.AssetName, stream);
-            MarkChanged();
-            RefreshEntries();
-            SetStatus($"Replaced: {selected.AssetName}");
+            ReplaceAsset(selected.AssetType, selected.AssetName, File.ReadAllBytes(dialog.FileName));
         }
+        catch (OperationCanceledException) { SetStatus("Replacement cancelled; archive and history unchanged."); }
         catch (Exception ex)
         {
             ShowError("Failed to replace asset.", ex);
@@ -468,6 +534,8 @@ public sealed class AssetEditorControl : UserControl
 
     private void ValidateDiskOperation(IReadOnlyList<string> affectedFiles, IReadOnlyList<string> retiredFiles)
     {
+        RequireUsableArchive();
+        if (History.IsExecuting || History.InTransaction) throw new InvalidOperationException("Archive history is busy.");
         if (IsDirty) throw new InvalidOperationException("Save this archive before modifying resources.");
         if (retiredFiles.Contains(FilePath, StringComparer.OrdinalIgnoreCase))
             throw new InvalidOperationException("Close this archive and use the workspace or CLI to remove or move the whole GAF.");
@@ -485,19 +553,30 @@ public sealed class AssetEditorControl : UserControl
 
     private void RefreshAfterDiskOperation(string status)
     {
-        using (var disk = AssetsFile.LoadOrCreate(FilePath, _assetsFile.Password, _assetsFile.UseEncryption, register: false))
+        try
         {
+            using var disk = AssetsFile.LoadOrCreate(FilePath, _assetsFile.Password, _assetsFile.UseEncryption, register: false);
+            var contents = AssetImportPlan.Snapshot(disk); // read successfully before touching the borrowed instance
             foreach (var key in _assetsFile.GetAllEntries().ToArray()) _assetsFile.Remove(key.AssetType, key.AssetName);
-            foreach (var pair in AssetImportPlan.Snapshot(disk))
+            foreach (var pair in contents)
             {
                 using var stream = new MemoryStream(pair.Value, writable: false);
                 _assetsFile.Add(pair.Key.AssetType, pair.Key.AssetName, stream);
             }
         }
-        RefreshEntries();
-        Changed?.Invoke(this, EventArgs.Empty);
+        catch (Exception ex)
+        {
+            // The transaction already committed. Old commands must never target its retired state,
+            // even when loading the refreshed archive fails. Prevent persisting stale buffers.
+            _refreshFailed = true;
+            Enabled = false;
+            History.MarkUntracked();
+            WorkspaceChanged();
+            throw new IOException("Disk transaction committed, but archive refresh failed. It is not undoable. Close and reopen this document before editing or saving.", ex);
+        }
+        History.ResetSaved();
         WorkspaceChanged();
-        SetStatus(status);
+        SetStatus(status + " Committed disk operation; not locally undoable. Earlier history cleared.");
     }
 
     private void RenameSelectedAsset()
@@ -577,6 +656,9 @@ public sealed class AssetEditorControl : UserControl
     /// <summary>Rebuilds the entry list from the in-memory archive using the current type and search filters; does not reload the file from disk.</summary>
     public void RefreshEntries()
     {
+        var selected = GetSelectedRecord();
+        int oldRow = _grid.CurrentRow?.Index ?? 0;
+        int scroll = _grid.FirstDisplayedScrollingRowIndex;
         _records.Clear();
 
         try
@@ -625,6 +707,12 @@ public sealed class AssetEditorControl : UserControl
             ShowError("Failed to load asset entries.", ex);
         }
 
+        if (_grid.Rows.Count > 0)
+        {
+            int index = _records.ToList().FindIndex(r => r.AssetType == selected?.AssetType && r.AssetName == selected.AssetName);
+            _grid.CurrentCell = _grid.Rows[index >= 0 ? index : Math.Min(oldRow, _grid.Rows.Count - 1)].Cells[0];
+            if (scroll >= 0) _grid.FirstDisplayedScrollingRowIndex = Math.Min(scroll, _grid.Rows.Count - 1);
+        }
         UpdateUiState();
     }
 
@@ -644,6 +732,10 @@ public sealed class AssetEditorControl : UserControl
         _exportButton.Enabled = hasSelection;
         _deleteButton.Enabled = hasSelection;
     }
+
+    /// <inheritdoc/>
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
+        UndoRedoMenu.TryShortcut(this, keyData, Enabled ? History : null, () => Enabled) || base.ProcessCmdKey(ref msg, keyData);
 
     private void SetStatus(string message)
     {

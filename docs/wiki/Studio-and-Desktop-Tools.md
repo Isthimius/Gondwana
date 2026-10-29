@@ -11,7 +11,7 @@ That keeps Studio optional without making it a parallel content system.
 ## Undo and redo
 
 **Edit > Undo** / **Ctrl+Z** and **Edit > Redo** / **Ctrl+Y** operate on the
-active GTS, GSCN, GANI, GSPR, or GSND document in both Studio and the standalone editors.
+active GAF/ZIP, GTS, GSCN, GANI, GSPR, or GSND document in both Studio and the standalone editors.
 Ctrl+Shift+Z also redoes. Textboxes and property-grid fields with pending text edits retain local
 text undo. Commit the value before using keyboard document history; menu commands
 commit valid pending property edits first. Non-editing grid values, trees, lists,
@@ -26,9 +26,30 @@ by default; evicting history never makes an unreachable saved state clean.
 
 History includes in-memory edits to loose and GAF-backed GTS/GSCN/GANI/GSPR/GSND definitions.
 It cannot reverse committed archive relocation, file deletion, or cross-file
-reference rewrites. General GAF history and final integration hardening remain
-Phase 3 work. Scene painting and fill tools are not included. Audio history changes
+reference rewrites. GAF Add/Import (including dependencies) is one step per approved
+import; Replace retains the exact typed entry and payload. Identical replacements
+and zero-addition imports create no step. Scene painting and fill tools are not included. Audio history changes
 GSND metadata; it never deletes media, downloads URIs, or rewrites an audio archive.
+
+GAF histories retain only affected entry bytes, capped at 64 MiB across Undo and
+Redo as well as 200 operations. Oldest applied entries, then furthest redo entries,
+are pruned. An edit larger than the budget prompts before committing: approval
+performs it without Undo and clears earlier history only after success. Cancel or
+ordinary failure preserves earlier history. No plaintext history spill files are used.
+Closing, pruning, or abandoning redo releases retained payload references.
+
+Studio GAF Save As adopts the new path and establishes a checkpoint; retained
+native payload references rebase from their capture origin during replay. Undo
+changes the adopted archive. Standalone GAF Save As creates a separate copy, keeps
+the source active, and does **not** advance its checkpoint. Normal Save does.
+Failed persistence leaves checkpoints unchanged. Search retains native text Undo.
+
+Successful reviewed Rename/Move/Delete commits are **not locally undoable** and
+reset the refreshed archive to a clean baseline. Failed or cancelled transactions
+retain history. Callers mutating a borrowed `AssetsFile` must call `MarkChanged()`,
+which discards stale history and marks the archive dirty. A packed-child save is
+an external refresh for a clean parent GAF, so its obsolete history is cleared;
+the child keeps its own independent history. Pending archive saves block replay.
 
 Grouped model edits form one undo step. An empty group creates no step;
 cancelling a group restores its original state. Scene tile commands preserve
@@ -184,3 +205,16 @@ There is no Studio project format required by the engine, and EngineState projec
 - [[.gsnd Files|GSND-Files]]
 - [[.gscn Files|GSCN-Files]]
 - [[.gspr Files|GSPR-Files]]
+
+
+GAF persistence and replay safeguards: normal standalone Save uses the same
+version-checked, encrypted sibling staging as Studio; it never invalidates the
+live archive buffer on a failed write. Retained native payloads track only their
+own physical dependencies. Save As updates those targets from the copied
+inventory at adoption, independently of the current Undo position; replay does
+not build archive-wide relocation maps. Filesystem path comparisons follow the
+platform's case sensitivity, while typed entry names remain case-insensitive.
+Malformed or unsupported raw native replacements remain opaque and replay their
+exact bytes after Save As; those opaque versions cannot promise reference rebasing.
+A failed post-commit refresh blocks saving stale buffers, but discard/close,
+shutdown, and confirmed Reload document remain available.

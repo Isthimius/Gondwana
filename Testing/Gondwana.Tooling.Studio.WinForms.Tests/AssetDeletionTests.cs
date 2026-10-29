@@ -35,6 +35,10 @@ public sealed partial class CompositionTests
         using var standalone = hosted ? null : new AssetEditorControl(borrowed);
         var editor = hosted ? Assert.IsType<AssetEditorControl>(document!.Document.Editor) : standalone!;
         var instance = editor.AssetsFile;
+        editor.ReplaceAsset(AssetTypes.Image, "images/art.png", [8, 9]);
+        if (hosted) Assert.True(AwaitUi(studio.SaveDocument(document!)));
+        else editor.SaveTo(path);
+        Assert.True(editor.History.CanUndo);
         var originalEntries = AssetImportPlan.Snapshot(instance);
         var plan = AssetDeletionPlan.Create(path, [new(AssetTypes.Image, path, "images/art.png")]);
         int changes = 0;
@@ -47,6 +51,7 @@ public sealed partial class CompositionTests
         canceled.Cancel();
         Assert.Throws<OperationCanceledException>(() => editor.ApplyDeletion(plan, true, canceled.Token));
         Assert.Throws<InvalidOperationException>(() => editor.ApplyDeletion(plan));
+        Assert.True(editor.History.CanUndo);
         Assert.Equal(0, changes);
         Assert.Equal(0, refreshes);
         Assert.False(editor.IsDirty);
@@ -56,11 +61,17 @@ public sealed partial class CompositionTests
         Assert.True(editor.IsDirty);
         if (hosted) Assert.True(AwaitUi(studio.SaveDocument(document!)));
         else editor.SaveTo(path);
+        editor.ReplaceAsset(AssetTypes.Image, "images/art.png", [1, 2]);
+        if (hosted) Assert.True(AwaitUi(studio.SaveDocument(document!)));
+        else editor.SaveTo(path);
+        Assert.True(editor.History.CanUndo);
         plan = AssetDeletionPlan.Create(path, [new(AssetTypes.Image, path, "images/art.png")]);
         changes = refreshes = 0;
         editor.ApplyDeletion(plan, true);
         Assert.Same(instance, editor.AssetsFile);
         Assert.False(editor.IsDirty);
+        Assert.False(editor.History.CanUndo); Assert.False(editor.History.CanRedo);
+        Assert.Equal(0, editor.History.RetainedBytes);
         Assert.Equal(1, changes);
         Assert.Equal(1, refreshes);
         var remaining = AssetImportPlan.Snapshot(instance);
