@@ -26,7 +26,9 @@ public sealed class AssetEditSession : IDisposable
     public void AcceptSavedArchive(AssetsFile archive, bool externalRefresh = false)
     {
         History.RequireIdle();
-        _archive = archive ?? throw new ArgumentNullException(nameof(archive));
+        ArgumentNullException.ThrowIfNull(archive);
+        _ = archive.GetAllEntries().ToArray();
+        _archive = archive;
         if (externalRefresh) History.ResetSaved();
         else History.MarkSaved();
     }

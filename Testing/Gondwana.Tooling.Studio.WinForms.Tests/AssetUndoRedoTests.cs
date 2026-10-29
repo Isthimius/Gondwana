@@ -87,7 +87,9 @@ public sealed partial class CompositionTests
         editor.History.Undo(); Assert.False(editor.IsDirty); editor.History.Redo();
         studio.BeforeArchiveInstall = null;
         var target = Path.Combine(root, "copies", "adopted.gaf");
-        Assert.True(AwaitUi(studio.SaveDocument(document, saveAs: true, destination: target)));
+        Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+        failure = null;
+        Assert.True(AwaitUi(studio.SaveDocument(document, saveAs: true, destination: target)), failure?.ToString());
         Assert.Equal(target, editor.FilePath); Assert.False(editor.IsDirty);
         editor.History.Undo(); Assert.Empty(editor.AssetsFile.GetAllEntries()); Assert.True(editor.IsDirty);
         Assert.Equal(target, document.Document.Path()); Assert.Same(document, studio.OpenDocument(target));
@@ -190,6 +192,22 @@ public sealed partial class CompositionTests
         Assert.False(editor.CommitEdits()); Assert.False(editor.Enabled);
         Assert.Throws<InvalidOperationException>(() => editor.SaveTo(path));
         Assert.Equal("invalid zip after commit", File.ReadAllText(path));
+    });
+
+    [Fact]
+    public void FailedArchiveAdoptionPreservesCheckpointAndCommands() => RunSta(root =>
+    {
+        var path = Path.Combine(root, "source.gaf");
+        using var archive = AssetsFile.LoadOrCreate(path, null, false, register: false); archive.Save();
+        using var editor = new AssetEditorControl(archive);
+        editor.ApplyImport(HistoryImport(editor, root));
+        var replacementPath = Path.Combine(root, "broken.gaf");
+        using var replacement = AssetsFile.LoadOrCreate(replacementPath, null, false, register: false);
+        replacement.Save(); replacement.Dispose(); File.WriteAllText(replacementPath, "broken zip");
+        Assert.ThrowsAny<Exception>(() => editor.AcceptSavedArchive(replacement));
+        Assert.Same(archive, editor.AssetsFile); Assert.Equal(path, editor.FilePath);
+        Assert.True(editor.IsDirty); Assert.True(editor.History.CanUndo);
+        editor.History.Undo(); Assert.False(editor.IsDirty);
     });
 
     [Fact]

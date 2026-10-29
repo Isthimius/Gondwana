@@ -340,6 +340,7 @@ public sealed class AssetEditorControl : UserControl
     public void AcceptSavedArchive(AssetsFile replacement, bool externalRefresh = false)
     {
         ArgumentNullException.ThrowIfNull(replacement);
+        _ = replacement.GetAllEntries().ToArray(); // validate before transferring ownership or advancing the checkpoint
         if (History.IsExecuting || History.InTransaction) throw new InvalidOperationException("Archive history is busy.");
         if (ReferenceEquals(_assetsFile, replacement))
         {
