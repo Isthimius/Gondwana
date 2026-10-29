@@ -140,5 +140,6 @@ internal sealed class EditorDocument : DockContent
             Document.Changed -= DocumentChanged;
 
         base.Dispose(disposing);
+        if (disposing) Document.Dispose();
     }
 }

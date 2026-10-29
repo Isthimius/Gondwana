@@ -8,7 +8,7 @@ namespace Gondwana.Tooling.Tilesheets.WinForms.Tests;
 
 /// <summary>Exercise real Windows controls; descriptor-only tests cannot verify editing or focus.</summary>
 [Collection("WinForms interaction")]
-public sealed class EditorInteractionTests
+public sealed partial class EditorInteractionTests
 {
     private const BindingFlags PrivateInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
@@ -191,6 +191,10 @@ public sealed class EditorInteractionTests
         Assert.Equal("CollisionAdjust.Left", grid.SelectedGridItem?.PropertyDescriptor?.Name);
         Edit(grid, "CollisionAdjust.Left", "-4", enter: false);
         Assert.Equal(-4, region.CollisionAdjust.Left);
+        document.History.Undo(); Application.DoEvents();
+        Assert.Equal(-3, region.CollisionAdjust.Left);
+        Assert.Equal(-3, Items(grid).Single(item => item.PropertyDescriptor?.Name == "CollisionAdjust.Left").Value);
+        document.History.Redo(); Application.DoEvents(); Assert.Equal(-4, region.CollisionAdjust.Left);
         Edit(grid, "Overhang.Top", "2");
         Assert.Equal(2, region.Overhang.Top);
 

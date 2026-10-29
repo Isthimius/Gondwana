@@ -4,6 +4,32 @@ Gondwana Studio is the integrated Windows authoring shell for Gondwana's native 
 
 Studio is optional development tooling. It does not replace Gondwana's code-first runtime model, and games do not depend on Studio.
 
+## Undo and redo (Phase 1)
+
+**Edit > Undo** / **Ctrl+Z** and **Edit > Redo** / **Ctrl+Y** operate on the
+active GTS or GSCN document in both Studio and the standalone editors.
+Ctrl+Shift+Z also redoes. Textboxes and property-grid edit fields retain local
+text-editing shortcuts; commit the value before using document history.
+Selection, zoom, and preview-only visibility are not document edits.
+
+Undoing back to the last successful save clears the dirty marker; undoing past
+that save makes it dirty again. Save and Save As retain history and establish a
+checkpoint only after success. New unsaved documents remain dirty. Editing after
+Undo discards the redo branch. Each document retains up to 200 committed operations
+by default; evicting history never makes an unreachable saved state clean.
+
+History includes in-memory edits to loose and GAF-backed GTS/GSCN definitions.
+It cannot reverse committed archive relocation, file deletion, or cross-file
+reference rewrites. GANI, GSPR, GSND, and general GAF history are deferred to
+later phases. Scene painting and fill tools are not included in this phase.
+
+Grouped model edits form one undo step. An empty group creates no step;
+cancelling a group restores its original state. Scene tile commands preserve
+sparse cells and can be composed into future painting transactions without
+adding painting tools now. Save As keeps reference targets meaningful when
+older source-reference edits are undone.
+
+
 ## Supported content
 
 Studio currently hosts six built-in editors:

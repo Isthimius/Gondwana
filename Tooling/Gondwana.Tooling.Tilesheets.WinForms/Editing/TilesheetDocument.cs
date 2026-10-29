@@ -16,7 +16,9 @@ public sealed partial class TilesheetDocument
     /// <summary>
     /// Gets whether the document contains unsaved changes.
     /// </summary>
-    public bool IsDirty { get; private set; }
+    public bool IsDirty => History.IsDirty;
+    /// <summary>Document-local reversible edits and save checkpoints.</summary>
+    public EditHistory History { get; }
     /// <summary>Occurs synchronously when content is marked modified, selection changes, or a save is accepted.</summary>
     public event EventHandler? Changed;
 
@@ -26,7 +28,9 @@ public sealed partial class TilesheetDocument
         Definition = definition;
         FilePath = path;
         BaseDirectory = Path.GetFullPath(baseDirectory);
-        IsDirty = path is null;
+        History = new(initiallySaved: path is not null);
+        History.Changed += HistoryChanged;
+        RememberReferenceOrigins();
     }
 
     /// <summary>Loads all logical definitions from a loose GTS file and selects the first member.</summary>
@@ -40,6 +44,7 @@ public sealed partial class TilesheetDocument
         if (definitions.Count == 0) throw new InvalidDataException("Document contains no definitions.");
         var document = new TilesheetDocument(definitions[0], path, Path.GetDirectoryName(path)!);
         document._definitions = definitions;
+        document.RememberReferenceOrigins();
         return document;
     }
 
@@ -53,12 +58,12 @@ public sealed partial class TilesheetDocument
     }, null, directory);
 
     /// <summary>
-    /// Marks the document as modified and notifies listeners.
+    /// Marks an untracked legacy mutation dirty and discards history to prevent an incorrect clean state.
+    /// Use history-aware operations for reversible editor changes.
     /// </summary>
     public void MarkChanged()
     {
-        IsDirty = true;
-        Changed?.Invoke(this, EventArgs.Empty);
+        History.MarkUntracked();
     }
 
     /// <summary>Resolves the selected tilesheet's loose image path without checking existence.</summary>
@@ -78,8 +83,9 @@ public sealed partial class TilesheetDocument
     public void SetImage(string path)
     {
         // Changing the source is explicit. Unrelated edits never clear packed fields.
-        Definition.Image = new() { FilePath = path };
-        MarkChanged();
+        var member = Definition;
+        if (member.Image?.FilePath == path && string.IsNullOrEmpty(member.Image.AssetsFilePath) && string.IsNullOrEmpty(member.Image.AssetEntryName)) return;
+        History.Set("Change image source", () => member.Image, value => member.Image = value!, new TilesheetImageDefinition { FilePath = path });
     }
 
     /// <summary>Replaces the selected tilesheet's image source with a packed entry and marks the document dirty.</summary>
@@ -94,12 +100,14 @@ public sealed partial class TilesheetDocument
         if (string.IsNullOrWhiteSpace(assetEntryName))
             throw new ArgumentException("Asset entry name must be a non-empty string.", nameof(assetEntryName));
 
-        Definition.Image = new()
+        var member = Definition;
+        var image = new TilesheetImageDefinition
         {
             AssetsFilePath = Path.GetFullPath(assetsFilePath),
             AssetEntryName = assetEntryName
         };
-        MarkChanged();
+        if (member.Image?.AssetsFilePath == image.AssetsFilePath && member.Image.AssetEntryName == image.AssetEntryName && string.IsNullOrEmpty(member.Image.FilePath)) return;
+        History.Set("Change image source", () => member.Image, value => member.Image = value!, image);
     }
 
     /// <summary>Validates all logical definitions plus the selected tilesheet's image source and optional image bounds.</summary>
@@ -163,11 +171,10 @@ public sealed partial class TilesheetDocument
     /// <returns>The number of frame metadata entries removed.</returns>
     public int RemoveOutOfGridMetadata(TilesheetRegionDefinition region)
     {
+        if (!Owns(region)) throw new ArgumentException("Region does not belong to this document.", nameof(region));
         var (columns, rows) = TilesheetDefinitionValidator.GridSize(region);
-        int removed = region.Frames.RemoveAll(f => f is not null &&
+        return History.RemoveWhere("Prune frame metadata", region.Frames, f => f is not null &&
             (f.XTile < 0 || f.YTile < 0 || f.XTile >= columns || f.YTile >= rows));
-        if (removed > 0) MarkChanged();
-        return removed;
     }
 
     /// <summary>Saves every logical member to a loose file, rebases dependencies, and adopts that file as the editing location.</summary>
@@ -181,6 +188,7 @@ public sealed partial class TilesheetDocument
     /// <exception cref="InvalidDataException">Logical identities are empty or duplicated.</exception>
     public void Save(string path, Size? imageSize = null, bool allowInvalid = false)
     {
+        if (History.InTransaction || History.IsExecuting) throw new InvalidOperationException("Finish the current edit before saving.");
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         var errors = Validate(imageSize);
         if (!allowInvalid && errors.Count > 0) throw new InvalidOperationException(string.Join(Environment.NewLine, errors));
@@ -222,8 +230,8 @@ public sealed partial class TilesheetDocument
         FilePath = path;
         BaseDirectory = directory;
         PackedLocation = null;
-        IsDirty = false;
-        Changed?.Invoke(this, EventArgs.Empty);
+        RememberReferenceOrigins();
+        History.MarkSaved();
     }
 
     private string? Rebase(string? path, string directory)
@@ -259,9 +267,7 @@ public sealed partial class TilesheetDocument
     {
         var definition = Create(BaseDirectory).Definition;
         definition.Name = UniqueDefinitionIdentity("tilesheet");
-        _definitions.Add(definition);
-        Definition = definition;
-        MarkChanged();
+        AddMembers([definition], "Add definition");
         return definition;
     }
 
@@ -272,9 +278,7 @@ public sealed partial class TilesheetDocument
         var definition = TilesheetDefinitionSerializer.FromJson(TilesheetDefinitionSerializer.ToJson(Definition));
         definition.Source = Definition.Source;
         definition.Name = UniqueDefinitionIdentity(Definition.Name + "-copy");
-        _definitions.Add(definition);
-        Definition = definition;
-        MarkChanged();
+        AddMembers([definition], "Add definition");
         return definition;
     }
 
@@ -283,9 +287,18 @@ public sealed partial class TilesheetDocument
     /// <returns>True if removed; false if it is absent or is the document's only member.</returns>
     public bool RemoveDefinition(TilesheetDefinition definition)
     {
-        if (_definitions.Count == 1 || !_definitions.Remove(definition)) return false;
-        if (ReferenceEquals(Definition, definition)) Definition = _definitions[0];
-        MarkChanged();
+        if (_definitions.Count == 1 || !_definitions.Contains(definition)) return false;
+        var selected = Definition;
+        int index = _definitions.IndexOf(definition);
+        History.Execute("Remove definition", () =>
+        {
+            _definitions.Remove(definition);
+            if (ReferenceEquals(Definition, definition)) Definition = _definitions[0];
+        }, () =>
+        {
+            if (!_definitions.Contains(definition)) _definitions.Insert(index, definition);
+            Definition = selected;
+        });
         return true;
     }
 
@@ -299,8 +312,8 @@ public sealed partial class TilesheetDocument
         ArgumentException.ThrowIfNullOrWhiteSpace(identity);
         if (_definitions.Any(member => !ReferenceEquals(member, Definition) && member.Name == identity))
             throw new InvalidDataException($"Duplicate definition identity '{identity}'.");
-        Definition.Name = identity;
-        MarkChanged();
+        var member = Definition;
+        History.Set("Rename definition", () => member.Name, value => member.Name = value, identity);
     }
 
     /// <summary>Imports selected GTS members as independent copies, rebasing dependencies without copying resources.</summary>
@@ -327,9 +340,7 @@ public sealed partial class TilesheetDocument
             return clone;
         }, member => member.Name, (member, identity) => member.Name = identity, "tilesheet");
         if (imported.Count == 0) return 0;
-        _definitions.AddRange(imported);
-        Definition = imported[0];
-        MarkChanged();
+        AddMembers(imported, "Import definitions");
         return imported.Count;
     }
 
