@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Runtime.ExceptionServices;
 using Gondwana.Tooling.Studio.ViewModels;
 using Gondwana.Tooling.Studio.WinForms.Panels;
@@ -23,6 +24,31 @@ public sealed class OutputPanelTests
     [InlineData("13:14:15 Validation passed.", "Normal")]
     public void RecognizesOnlyLeadingSeverityMarkers(string line, string expected) =>
         Assert.Equal(expected, OutputPanel.Classify(line).ToString());
+
+    [Theory]
+    [InlineData(".")]
+    [InlineData("::")]
+    public void RecognizesTimestampsUsingCurrentCultureSeparator(string separator)
+    {
+        var previousCulture = CultureInfo.CurrentCulture;
+        var culture = (CultureInfo)CultureInfo.InvariantCulture.Clone();
+        culture.DateTimeFormat.TimeSeparator = separator;
+        try
+        {
+            CultureInfo.CurrentCulture = culture;
+            var vm = new OutputViewModel();
+            vm.Log("Error: Unable to save");
+            var line = Assert.Single(vm.Lines);
+            Assert.StartsWith(DateTimeOffset.Now.ToString("HH:mm:ss", culture) + " Error:", line);
+            Assert.Equal(OutputSeverity.Error, OutputPanel.Classify(line));
+            // Previously logged colon-based lines remain recognizable even after changing culture.
+            Assert.Equal(OutputSeverity.Warning, OutputPanel.Classify("13:14:15 Warning: Missing reference."));
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+        }
+    }
 
     [Theory]
     [InlineData(ToolingTheme.Dark)]
@@ -76,6 +102,38 @@ public sealed class OutputPanelTests
             box.Select(index, needle.Length);
             Assert.Equal(OutputPanel.ColorFor(severity, ToolingAppearance.Current), box.SelectionColor);
         }
+    });
+
+    [Fact]
+    public void MultipleQueuedWorkerAddsDoNotDuplicateRenderedLines() => Sta(() =>
+    {
+        var vm = new OutputViewModel();
+        using var panel = new OutputPanel(vm);
+        var box = Assert.IsType<RichTextBox>(Assert.Single(panel.Controls));
+        _ = box.Handle; // Force a UI-thread handle before posting from another thread.
+        vm.Log("Info: Existing line");
+
+        // Block the UI thread until both callbacks have been posted, then pump them together.
+        Task.Run(() =>
+        {
+            vm.Log("Warning: First queued line");
+            vm.Log("Error: Second queued line");
+        }).GetAwaiter().GetResult();
+        Application.DoEvents();
+
+        // Compare entire line sequences, not just occurrence counts: stale callbacks used
+        // to append the second line twice after the first callback rebuilt the full view.
+        var displayed = box.Text.Replace("\r\n", "\n", StringComparison.Ordinal)
+            .TrimEnd('\n').Split('\n');
+        Assert.Equal(vm.Lines, displayed);
+        int warning = box.Text.IndexOf("Warning:", StringComparison.Ordinal);
+        int error = box.Text.IndexOf("Error:", StringComparison.Ordinal);
+        Assert.True(warning >= 0);
+        Assert.True(error > warning);
+        box.Select(warning, "Warning:".Length);
+        Assert.Equal(OutputPanel.ColorFor(OutputSeverity.Warning, ToolingAppearance.Current), box.SelectionColor);
+        box.Select(error, "Error:".Length);
+        Assert.Equal(OutputPanel.ColorFor(OutputSeverity.Error, ToolingAppearance.Current), box.SelectionColor);
     });
 
     private static double Contrast(Color a, Color b)
