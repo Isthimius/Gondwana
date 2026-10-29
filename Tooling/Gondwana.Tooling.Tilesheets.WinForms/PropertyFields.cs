@@ -1,9 +1,9 @@
 using System.ComponentModel;
 using System.Reflection;
+using Gondwana.Drawing;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Physics.Collisions;
 using Gondwana.Tooling.Tilesheets.Editing;
-using Rectangle = System.Drawing.Rectangle;
 
 namespace Gondwana.Tooling.Tilesheets.WinForms;
 
@@ -89,25 +89,16 @@ internal sealed class PropertyFields : CustomTypeDescriptor
                 nameof(TilesheetRegionDefinition.CollisionAdjust) or nameof(TilesheetRegionDefinition.CollisionType) => "Collision",
                 _ => null
             } : null;
-            if (model is TilesheetRegionDefinition region && property.Name == nameof(TilesheetRegionDefinition.Area))
+            if (model is TilesheetRegionDefinition && property.Name is
+                nameof(TilesheetRegionDefinition.Area) or
+                nameof(TilesheetRegionDefinition.TileSize) or
+                nameof(TilesheetRegionDefinition.TilePadding) or
+                nameof(TilesheetRegionDefinition.RegionMargin) or
+                nameof(TilesheetRegionDefinition.Overhang))
             {
-                // The editor exposes the region's origin separately, while Area expands into Width and Height.
-                // Editing a dimension must not reset the source-image position of the rectangle.
-                Add("Area", "Geometry", () => region.Area.Size, size =>
-                {
-                    Edit(region, "region bounds", () =>
-                    {
-                        var area = region.Area;
-                        area.Size = size;
-                        region.Area = area;
-                    }, changed);
-                }, "Width and height of the region in source-image pixels. Use Area.X and Area.Y to move it.");
-                foreach (var child in property.PropertyType.GetProperties().Where(p => p.Name is nameof(Rectangle.X) or nameof(Rectangle.Y)))
-                    AddReflected(model, [property, child], changed, category);
-            }
-            else if (model is TilesheetRegionDefinition && property.Name == nameof(TilesheetRegionDefinition.TileSize))
-            {
-                // SizeConverter supplies the PropertyGrid's expandable Width and Height children.
+                // Use editable, expandable parent values so related components stay together.
+                // The reflected setter writes the complete value type back to the model,
+                // preserving document history and property-grid child edits.
                 AddReflected(model, [property], changed, category);
             }
             else if (property.PropertyType == typeof(string) || property.PropertyType.IsPrimitive || property.PropertyType.IsEnum)
@@ -248,8 +239,27 @@ internal sealed class PropertyFields : CustomTypeDescriptor
     }
 
     private sealed class ReflectedField(string name, string category, Type type, Func<object?> get, Action<object?> set, string description)
-        : PropertyDescriptor(name, [new CategoryAttribute(category), new DisplayNameAttribute(category == "Geometry" ? name : name.Split('.').Last()), new DescriptionAttribute(description)])
+        : PropertyDescriptor(name, AttributesFor(name, category, type, description))
     {
+        private static Attribute[] AttributesFor(string name, string category, Type type, string description)
+        {
+            string displayName = name switch
+            {
+                nameof(TilesheetRegionDefinition.RegionMargin) => "Margin",
+                nameof(TilesheetRegionDefinition.TilePadding) => "Padding",
+                _ => category == "Geometry" ? name : name.Split('.').Last()
+            };
+            List<Attribute> attributes =
+            [
+                new CategoryAttribute(category),
+                new DisplayNameAttribute(displayName),
+                new DescriptionAttribute(description)
+            ];
+            if (type == typeof(Spacing))
+                attributes.Add(new TypeConverterAttribute(typeof(SpacingConverter)));
+            return [.. attributes];
+        }
+
         /// <inheritdoc/>
         public override Type ComponentType => typeof(PropertyFields);
         /// <inheritdoc/>
