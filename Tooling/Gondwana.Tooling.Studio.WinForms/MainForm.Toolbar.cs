@@ -167,12 +167,12 @@ public sealed partial class MainForm
             if (!document.Document.CommitEdits()) return null;
             var errors = document.Document.Validate();
             if (errors.Count == 0)
-                _output.Log($"Validation passed: {document.Document.Caption}");
+                _output.Log($"Info: Validation passed: {document.Document.Caption}");
             else
             {
                 document.Document.ShowPane("Validation");
-                _output.Log($"Validation found {errors.Count} error(s): {document.Document.Caption}");
-                foreach (var error in errors) _output.Log("  " + error);
+                _output.Log($"Error: Validation found {errors.Count} error(s): {document.Document.Caption}");
+                foreach (var error in errors) _output.Log("  Error: " + error);
             }
             return errors;
         }
