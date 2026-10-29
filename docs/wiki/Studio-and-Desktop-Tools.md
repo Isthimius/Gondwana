@@ -205,3 +205,16 @@ There is no Studio project format required by the engine, and EngineState projec
 - [[.gsnd Files|GSND-Files]]
 - [[.gscn Files|GSCN-Files]]
 - [[.gspr Files|GSPR-Files]]
+
+
+GAF persistence and replay safeguards: normal standalone Save uses the same
+version-checked, encrypted sibling staging as Studio; it never invalidates the
+live archive buffer on a failed write. Retained native payloads track only their
+own physical dependencies. Save As updates those targets from the copied
+inventory at adoption, independently of the current Undo position; replay does
+not build archive-wide relocation maps. Filesystem path comparisons follow the
+platform's case sensitivity, while typed entry names remain case-insensitive.
+Malformed or unsupported raw native replacements remain opaque and replay their
+exact bytes after Save As; those opaque versions cannot promise reference rebasing.
+A failed post-commit refresh blocks saving stale buffers, but discard/close,
+shutdown, and confirmed Reload document remain available.

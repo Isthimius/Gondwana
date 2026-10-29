@@ -236,6 +236,114 @@ public sealed class AssetEditSessionTests : IDisposable
         Assert.Equal(destination, edits.Archive.SourcePath);
     }
 
+    private static byte[] SheetBytes(string image, bool invalidGeometry = false) => System.Text.Encoding.UTF8.GetBytes(
+        TilesheetDefinitionSerializer.ToJson(new TilesheetDefinition
+        {
+            Name = "tiles",
+            Image = new() { AssetEntryName = image },
+            Regions = [new() { Name = "default", Area = new Rectangle(0, 0, invalidGeometry ? -1 : 1, 1), TileSize = new Size(1, 1) }]
+        }));
+
+    [Fact]
+    public void SavedNativeReferencesDoNotDependOnUndoPositionOrLaterImports()
+    {
+        using var source = Archive();
+        Add(source, AssetTypes.Image, "old.png", [1]);
+        Add(source, AssetTypes.TilesheetDefinition, "tiles.gts", SheetBytes("old.png"));
+        using var edits = new AssetEditSession(source, true);
+        edits.Replace(AssetTypes.TilesheetDefinition, "tiles.gts", SheetBytes("later.png"));
+        edits.Import(Plan(source, (AssetTypes.Image, "later.png", [2])));
+        var copyPath = Path.Combine(_root, "copy.gaf");
+        AssetArchiveCopy.Save(source, copyPath, null, false);
+        using var saved = AssetsFile.LoadOrCreate(copyPath, null, false, register: false);
+        edits.AcceptSavedArchive(saved);
+        var checkpoint = AssetImportPlan.Snapshot(saved);
+        edits.History.Undo(); edits.History.Undo();
+        edits.History.Redo(); // image is still absent, but its saved target must remain the adopted archive
+        var definition = TilesheetDefinitionSerializer.Load(saved, "tiles.gts");
+        Assert.Equal(saved.SourcePath, Path.GetFullPath(definition.Image.AssetsFilePath!, _root));
+        Assert.Null(saved.Get(AssetTypes.Image, "later.png"));
+        edits.History.Redo(); Assert.False(edits.History.IsDirty);
+        foreach (var pair in checkpoint) Assert.Equal(pair.Value, Bytes(saved, pair.Key.AssetType, pair.Key.AssetName));
+        // A second adoption composes the saved targets without accumulating archive-wide mappings.
+        var lastPath = Path.Combine(_root, "last.gaf");
+        AssetArchiveCopy.Save(saved, lastPath, null, false);
+        using var last = AssetsFile.LoadOrCreate(lastPath, null, false, register: false);
+        edits.AcceptSavedArchive(last); var lastCheckpoint = AssetImportPlan.Snapshot(last);
+        edits.History.Undo(); edits.History.Undo(); edits.History.Redo(); edits.History.Redo();
+        Assert.False(edits.History.IsDirty);
+        foreach (var pair in lastCheckpoint) Assert.Equal(pair.Value, Bytes(last, pair.Key.AssetType, pair.Key.AssetName));
+    }
+
+    [Theory]
+    [InlineData("invalid json")]
+    [InlineData("invalid geometry")]
+    public void OpaqueNativeReplacementRemainsByteExactAfterAdoption(string kind)
+    {
+        using var source = Archive();
+        Add(source, AssetTypes.Image, "art.png", [1]);
+        Add(source, AssetTypes.TilesheetDefinition, "tiles.gts", SheetBytes("art.png"));
+        using var edits = new AssetEditSession(source, true);
+        var raw = kind == "invalid json" ? new byte[] { 0, 255, 1 } : SheetBytes("art.png", invalidGeometry: true);
+        edits.Replace(AssetTypes.TilesheetDefinition, "tiles.gts", raw);
+        edits.History.Undo();
+        var copy = Path.Combine(_root, "copy.gaf"); AssetArchiveCopy.Save(source, copy, null, false);
+        using var adopted = AssetsFile.LoadOrCreate(copy, null, false, register: false);
+        edits.AcceptSavedArchive(adopted);
+        var valid = Bytes(adopted, AssetTypes.TilesheetDefinition, "tiles.gts");
+        edits.History.Redo(); Assert.Equal(raw, Bytes(adopted, AssetTypes.TilesheetDefinition, "tiles.gts"));
+        Assert.True(edits.History.IsDirty);
+        edits.History.Undo(); Assert.Equal(valid, Bytes(adopted, AssetTypes.TilesheetDefinition, "tiles.gts"));
+        Assert.False(edits.History.IsDirty);
+    }
+
+    [Fact]
+    public void CaseOnlyArchivePathsUsePlatformIdentityDuringAdoption()
+    {
+        using var source = Archive("Game.gaf");
+        Add(source, AssetTypes.Image, "art.png", [1]);
+        Add(source, AssetTypes.TilesheetDefinition, "tiles.gts", SheetBytes("art.png"));
+        using var edits = new AssetEditSession(source, true);
+        edits.Replace(AssetTypes.TilesheetDefinition, "tiles.gts", SheetBytes("other.png"));
+        Add(source, AssetTypes.Image, "other.png", [2]);
+        // Construct independent in-memory archives: no filesystem case-collision policy is involved.
+        using var adopted = Archive("game.gaf");
+        foreach (var pair in AssetImportPlan.Snapshot(source)) Add(adopted, pair.Key.AssetType, pair.Key.AssetName, pair.Value);
+        edits.AcceptSavedArchive(adopted);
+        edits.History.Undo(); edits.History.Redo();
+        var definition = TilesheetDefinitionSerializer.Load(adopted, "tiles.gts");
+        var resolved = Path.GetFullPath(definition.Image.AssetsFilePath ?? Path.GetFileName(adopted.SourcePath)!, _root);
+        Assert.True(DefinitionReferenceDiscovery.Paths.Equals(adopted.SourcePath, resolved));
+        if (!OperatingSystem.IsWindows()) Assert.NotEqual(source.SourcePath, resolved);
+    }
+
+    [Fact]
+    public void LargeInventoriesRetainOnlyNativeDependenciesAndNoBinaryMappings()
+    {
+        using var source = Archive();
+        for (int i = 0; i < 10000; i++) Add(source, AssetTypes.Misc, $"entry/{i}", [1]);
+        Add(source, AssetTypes.Image, "art.png", [2]);
+        Add(source, AssetTypes.TilesheetDefinition, "tiles.gts", SheetBytes("art.png"));
+        using var edits = new AssetEditSession(source, true);
+        edits.Replace(AssetTypes.TilesheetDefinition, "tiles.gts", SheetBytes("other.png"));
+        Assert.Equal(2, edits.RetainedReferenceCount); // before/after each retain one dependency, not 10,000 archive mappings
+        using var adopted = Archive("copy.gaf");
+        foreach (var pair in AssetImportPlan.Snapshot(source)) Add(adopted, pair.Key.AssetType, pair.Key.AssetName, pair.Value);
+        edits.AcceptSavedArchive(adopted);
+        edits.History.Undo(); edits.History.Redo();
+        Assert.Equal(2, edits.RetainedReferenceCount);
+        edits.History.Clear();
+        using var binarySource = Archive("binaries.gaf");
+        using var binaries = new AssetEditSession(binarySource, true);
+        var additions = Enumerable.Range(0, 500).Select(i => (AssetTypes.Misc, $"new/{i}", new byte[] { 3 })).ToArray();
+        binaries.Import(Plan(binarySource, additions));
+        using var binaryCopy = Archive("binary-copy.gaf");
+        foreach (var pair in AssetImportPlan.Snapshot(binarySource)) Add(binaryCopy, pair.Key.AssetType, pair.Key.AssetName, pair.Value);
+        binaries.AcceptSavedArchive(binaryCopy);
+        binaries.History.Undo(); binaries.History.Redo();
+        Assert.Equal(500, binaryCopy.GetAllEntries().Count()); Assert.Equal(0, binaries.RetainedReferenceCount);
+    }
+
     [Fact]
     public void DisposalAndPruningReleaseRetainedPayloads()
     {

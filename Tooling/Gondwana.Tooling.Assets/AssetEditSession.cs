@@ -9,6 +9,9 @@ public sealed class AssetEditSession : IDisposable
     /// <summary>Default per-document retained binary payload quota (64 MiB), including undo and redo.</summary>
     public const long DefaultByteLimit = 64L * 1024 * 1024;
     private AssetsFile? _archive;
+    // Weak registrations let retained payloads follow adoption without keeping pruned bytes alive.
+    private readonly List<WeakReference<Payload>> _payloads = [];
+    internal int RetainedReferenceCount => _payloads.Sum(w => w.TryGetTarget(out var p) ? p.ReferenceCount : 0);
     /// <summary>The archive currently adopted by the document.</summary>
     public AssetsFile Archive => _archive ?? throw new ObjectDisposedException(nameof(AssetEditSession));
     /// <summary>Shared history, bounded by both command count and payload bytes.</summary>
@@ -27,7 +30,17 @@ public sealed class AssetEditSession : IDisposable
     {
         History.RequireIdle();
         ArgumentNullException.ThrowIfNull(archive);
-        _ = archive.GetAllEntries().ToArray();
+        var entries = archive.GetAllEntries().ToHashSet();
+        var previousPath = Archive.SourcePath!;
+        if (!externalRefresh && !DefinitionReferenceDiscovery.Paths.Equals(previousPath, archive.SourcePath))
+        {
+            var updates = new List<(Payload Payload, ReferenceRelocation[] References)>();
+            _payloads.RemoveAll(w => !w.TryGetTarget(out _));
+            foreach (var weak in _payloads)
+                if (weak.TryGetTarget(out var payload)) updates.Add((payload, payload.PrepareAdoption(previousPath, archive.SourcePath!, entries)));
+            foreach (var update in updates) update.Payload.AcceptAdoption(update.References);
+        }
+        if (externalRefresh) _payloads.Clear();
         _archive = archive;
         if (externalRefresh) History.ResetSaved();
         else History.MarkSaved();
@@ -51,7 +64,7 @@ public sealed class AssetEditSession : IDisposable
         plan.ValidateCurrent();
         if (plan.AdditionCount == 0) return 0;
         var command = new EntryCommand(this, $"Import {plan.AdditionCount} asset(s)",
-            plan.Additions.Select(p => new Delta(p.Key.AssetType, p.Key.AssetName, null, p.Value, Archive.SourcePath!)).ToArray());
+            plan.Additions.Select(p => new Delta(p.Key.AssetType, p.Key.AssetName, null, Capture(p.Key.AssetType, p.Key.AssetName, p.Value, raw: false))).ToArray());
         Execute(command, confirmNonUndoable, () =>
         {
             cancellation.ThrowIfCancellationRequested();
@@ -78,7 +91,7 @@ public sealed class AssetEditSession : IDisposable
         var before = buffer.ToArray();
         if (before.AsSpan().SequenceEqual(replacement)) return false;
         var command = new EntryCommand(this, $"Replace {entry.AssetName}",
-            [new(type, entry.AssetName, before, replacement.ToArray(), Archive.SourcePath!)]);
+            [new(type, entry.AssetName, Capture(type, entry.AssetName, before, raw: true), Capture(type, entry.AssetName, replacement.ToArray(), raw: true))]);
         var capturedArchive = Archive;
         var capturedPath = Archive.SourcePath;
         Execute(command, confirmNonUndoable, () =>
@@ -127,12 +140,74 @@ public sealed class AssetEditSession : IDisposable
         finally { command.InitialCancellation = default; command.InitialWriter = null; }
     }
 
-    private sealed record Delta(AssetTypes Type, string Name, byte[]? Before, byte[] After, string Origin);
+    private Payload Capture(AssetTypes type, string name, byte[] bytes, bool raw)
+    {
+        var payload = new Payload(type, name, bytes, Archive.SourcePath!, raw);
+        if (payload.IsNative)
+        {
+            _payloads.RemoveAll(w => !w.TryGetTarget(out _));
+            _payloads.Add(new(payload));
+        }
+        return payload;
+    }
+
+    private sealed class Payload
+    {
+        internal byte[] Bytes { get; }
+        private readonly AssetLocation _origin;
+        private readonly bool _raw;
+        private ReferenceRelocation[]? _references;
+        internal bool IsNative => _references is not null;
+        internal int ReferenceCount => _references?.Length ?? 0;
+
+        internal Payload(AssetTypes type, string name, byte[] bytes, string origin, bool raw)
+        {
+            Bytes = bytes;
+            _origin = new(type, origin, name);
+            _raw = raw;
+            if (!PackDefinitionDocument.IsNative(type)) return;
+            try
+            {
+                var definition = PackDefinitionDocument.Read(type, bytes, name)!;
+                definition.Validate(_origin.ToString());
+                _references = definition.References(_origin).DistinctBy(DefinitionReferenceDiscovery.Key)
+                    .Select(location => new ReferenceRelocation(location, location)).ToArray();
+                // Validate physical source kinds as well, without touching any external resource.
+                definition.Relocate(_origin, _origin, _references, false);
+            }
+            catch (Exception ex) when (raw && IsOpaqueFailure(ex)) { _references = null; }
+        }
+
+        private static bool IsOpaqueFailure(Exception ex) => ex is Newtonsoft.Json.JsonException or InvalidDataException or ArgumentException or NotSupportedException or FormatException or OverflowException;
+
+        internal ReferenceRelocation[] PrepareAdoption(string previous, string destination, HashSet<AssetsFileEntry> entries) =>
+            _references!.Select(mapping => mapping.Destination.AssetEntryName is { } entry &&
+                DefinitionReferenceDiscovery.Paths.Equals(mapping.Destination.Path, previous) &&
+                entries.Contains(new() { AssetType = mapping.Destination.AssetType, AssetName = entry })
+                    ? new ReferenceRelocation(mapping.Source, new(mapping.Destination.AssetType, destination, entry)) : mapping).ToArray();
+
+        internal void AcceptAdoption(ReferenceRelocation[] references) => _references = references;
+
+        internal byte[] Materialize(string path)
+        {
+            // Opaque binaries/raw unsupported definitions never enter the relocation pipeline.
+            if (_references is null || DefinitionReferenceDiscovery.Paths.Equals(path, _origin.Path) &&
+                _references.All(m => DefinitionReferenceDiscovery.Same(m.Source, m.Destination))) return Bytes;
+            try
+            {
+                return PackDefinitionDocument.Read(_origin.AssetType, Bytes, _origin.AssetEntryName!)!.Relocate(
+                    _origin, new(_origin.AssetType, path, _origin.AssetEntryName), _references, false);
+            }
+            catch (Exception ex) when (_raw && IsOpaqueFailure(ex)) { return Bytes; }
+        }
+    }
+
+    private sealed record Delta(AssetTypes Type, string Name, Payload? Before, Payload After);
 
     private sealed class EntryCommand(AssetEditSession document, string description, Delta[] deltas) : IEditCommand
     {
         public string Description => description;
-        public long RetainedBytes => deltas.Sum(d => (long)(d.Before?.Length ?? 0) + d.After.Length);
+        public long RetainedBytes => deltas.Sum(d => (long)(d.Before?.Bytes.Length ?? 0) + d.After.Bytes.Length);
         internal CancellationToken InitialCancellation;
         internal Action<AssetsFileEntry, byte[]>? InitialWriter;
         public void Execute() => Apply(undo: false);
@@ -142,20 +217,9 @@ public sealed class AssetEditSession : IDisposable
         {
             var archive = document.Archive;
             var path = archive.SourcePath!;
-            // Rebase native payloads from their capture location, including entries absent
-            // during Save As. Binary entries remain byte-exact. Do not mutate retained bytes.
-            var names = archive.GetAllEntries().Concat(deltas.Select(d => new AssetsFileEntry { AssetType = d.Type, AssetName = d.Name })).Distinct().ToArray();
-            var prepared = deltas.Select(d =>
-            {
-                byte[]? bytes = undo ? d.Before : d.After;
-                if (bytes is not null && !string.Equals(path, d.Origin, StringComparison.OrdinalIgnoreCase))
-                {
-                    var mappings = names.Select(n => new ReferenceRelocation(new(n.AssetType, d.Origin, n.AssetName), new(n.AssetType, path, n.AssetName))).ToArray();
-                    bytes = PackDefinitionDocument.Read(d.Type, bytes, d.Name)?.Relocate(
-                        new(d.Type, d.Origin, d.Name), new(d.Type, path, d.Name), mappings, false) ?? bytes;
-                }
-                return (Delta: d, Bytes: bytes);
-            }).ToArray();
+            // Captured reference targets follow successful adoptions, independently of undo position.
+            // Each native payload has only its own dependency mappings; binaries have none.
+            var prepared = deltas.Select(d => (Delta: d, Bytes: (undo ? d.Before : d.After)?.Materialize(path))).ToArray();
             foreach (var item in prepared)
             {
                 if (!undo) InitialCancellation.ThrowIfCancellationRequested();
@@ -173,5 +237,5 @@ public sealed class AssetEditSession : IDisposable
     }
 
     /// <summary>Releases retained commands and the current borrowed archive reference; does not dispose the archive.</summary>
-    public void Dispose() { History.Dispose(); _archive = null; }
+    public void Dispose() { History.Dispose(); _payloads.Clear(); _archive = null; }
 }

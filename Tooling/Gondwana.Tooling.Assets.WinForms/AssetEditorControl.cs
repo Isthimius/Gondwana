@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Security.Cryptography;
 using Gondwana.Assets;
 using Gondwana.Tooling.Editing;
 using Gondwana.Tooling.WinForms;
@@ -28,8 +29,10 @@ public sealed class AssetEditorControl : UserControl
     private readonly AssetEditSession _edits;
     /// <summary>Document-local entry history.</summary>
     public EditHistory History => _edits.History;
-    /// <summary>Whether the current archive is usable for persistence; a failed post-commit refresh requires reopening.</summary>
-    public bool CommitEdits() => !_refreshFailed;
+    /// <summary>Whether current buffers can be safely persisted; a failed post-commit refresh requires reopening.</summary>
+    public bool CanSave => !_refreshFailed;
+    /// <summary>Commits pending editor fields. A failed refresh still permits discard, close, and reload.</summary>
+    public bool CommitEdits() => true;
 
     private void RequireUsableArchive()
     {
@@ -392,7 +395,11 @@ public sealed class AssetEditorControl : UserControl
             throw new InvalidOperationException("This editor is hosted. Save through the host's asynchronous save command so archive writes are coordinated.");
         destination = Path.GetFullPath(destination);
         if (string.Equals(destination, FilePath, StringComparison.OrdinalIgnoreCase))
-            _assetsFile.Save();
+        {
+            // Never call Save on the live archive: a failed Save can invalidate its loaded buffer.
+            var expected = File.Exists(destination) ? SHA256.HashData(File.ReadAllBytes(destination)) : null;
+            AssetArchivePersistence.Commit(_assetsFile, destination, expected);
+        }
         else
         {
             AssetArchiveCopy.Save(_assetsFile, destination, _assetsFile.Password, _assetsFile.UseEncryption);

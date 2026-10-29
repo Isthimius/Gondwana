@@ -53,6 +53,51 @@ internal sealed class PackDefinitionDocument
         _ => throw new InvalidOperationException("Unknown native document.")
     };
 
+    /// <summary>Enumerates only this document's explicit physical dependencies, without opening or resolving them.</summary>
+    internal IEnumerable<AssetLocation> References(AssetLocation owner)
+    {
+        AssetLocation Physical(AssetTypes type, string? file, string? archive, string? entry)
+        {
+            if (string.IsNullOrWhiteSpace(file) && string.IsNullOrWhiteSpace(archive) && !string.IsNullOrWhiteSpace(entry)) archive = owner.Path;
+            bool loose = !string.IsNullOrWhiteSpace(file);
+            bool packed = !string.IsNullOrWhiteSpace(archive) && !string.IsNullOrWhiteSpace(entry);
+            if (loose == packed || loose && (!string.IsNullOrWhiteSpace(archive) || !string.IsNullOrWhiteSpace(entry)))
+                throw new InvalidDataException("Missing or conflicting physical dependency source.");
+            return new(type, Path.GetFullPath(loose ? file! : archive!, Path.GetDirectoryName(owner.Path)!), packed ? entry : null);
+        }
+        foreach (var (_, member) in Members())
+        {
+            switch (member)
+            {
+                case TilesheetDefinition sheet:
+                    yield return Physical(AssetTypes.Image, sheet.Image.FilePath, sheet.Image.AssetsFilePath, sheet.Image.AssetEntryName);
+                    break;
+                case AnimationDefinition animation:
+                    foreach (var source in animation.TilesheetSources)
+                        yield return Physical(AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName);
+                    break;
+                case SceneDefinition scene:
+                    foreach (var source in scene.TilesheetSources)
+                        yield return Physical(AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName);
+                    foreach (var source in scene.AnimationSources)
+                        yield return Physical(AssetTypes.AnimationDefinition, source.GaniPath, source.AssetsFilePath, source.AssetEntryName);
+                    break;
+                case SpriteDefinition sprites:
+                    foreach (var source in sprites.TilesheetSources)
+                        yield return Physical(AssetTypes.TilesheetDefinition, source.GtsPath, source.AssetsFilePath, source.AssetEntryName);
+                    foreach (var source in sprites.AnimationSources)
+                        yield return Physical(AssetTypes.AnimationDefinition, source.GaniPath, source.AssetsFilePath, source.AssetEntryName);
+                    foreach (var source in sprites.SceneSources)
+                        yield return Physical(AssetTypes.SceneDefinition, source.GscnPath, source.AssetsFilePath, source.AssetEntryName);
+                    break;
+                case AudioDefinition audio:
+                    foreach (var resource in audio.Resources.Where(r => r.SourceKind != AudioResourceSourceKind.Uri))
+                        yield return Physical(AssetTypes.Audio, resource.FilePath, resource.AssetsFilePath, resource.AssetEntryName);
+                    break;
+            }
+        }
+    }
+
     /// <summary>Runs Core document and member validation before any archive write.</summary>
     /// <param name="label">Physical document diagnostic context.</param>
     internal void Validate(string label)

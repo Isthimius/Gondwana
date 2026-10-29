@@ -428,7 +428,7 @@ public sealed partial class MainForm : Form, Gondwana.Tooling.Studio.Core.Extens
         try
         {
             var model = document.Document;
-            if (!model.CommitEdits()) return false;
+            if (!model.CommitEdits() || !model.CanSave()) return false;
             bool packedSave = !saveAs && destination is null && model.PackedLocation() is not null;
             destination ??= packedSave ? model.PackedLocation()!.Path : saveAs || model.Path() is null ? SavePath(model) : model.Path();
             if (destination is null) return false;

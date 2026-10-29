@@ -194,7 +194,7 @@ public sealed partial class CompositionTests
                 .Invoke(editor, ["Deletion committed."]));
         Assert.IsType<IOException>(failure.InnerException);
         Assert.False(editor.History.CanUndo); Assert.False(editor.History.CanRedo);
-        Assert.False(editor.CommitEdits()); Assert.False(editor.Enabled);
+        Assert.False(editor.CanSave); Assert.True(editor.CommitEdits()); Assert.False(editor.Enabled);
         Assert.Throws<InvalidOperationException>(() => editor.SaveTo(path));
         Assert.Equal("invalid zip after commit", File.ReadAllText(path));
     });
@@ -213,6 +213,81 @@ public sealed partial class CompositionTests
         Assert.Same(archive, editor.AssetsFile); Assert.Equal(path, editor.FilePath);
         Assert.True(editor.IsDirty); Assert.True(editor.History.CanUndo);
         editor.History.Undo(); Assert.False(editor.IsDirty);
+    });
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void FailedStandaloneSamePathSaveKeepsBothImportsAndSavedBaseline(bool encrypted) => RunSta(root =>
+    {
+        var path = Path.Combine(root, "locked.gaf");
+        using var archive = AssetsFile.LoadOrCreate(path, encrypted ? "secret" : null, encrypted, register: false);
+        archive.Save();
+        using var editor = new AssetEditorControl(archive);
+        editor.ApplyImport(HistoryImport(editor, root, "first.bin"));
+        editor.ApplyImport(HistoryImport(editor, root, "second.bin"));
+        var disk = File.ReadAllBytes(path);
+        // Read-sharing permits version checks, but denies in-place writes and atomic installation.
+        using (var locked = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+            Assert.ThrowsAny<IOException>(() => editor.SaveTo(path));
+        Assert.Equal(disk, File.ReadAllBytes(path)); Assert.Same(archive, editor.AssetsFile);
+        editor.History.Undo();
+        Assert.Equal("first.bin", Assert.Single(archive.GetAllEntries()).AssetName);
+        Assert.True(editor.IsDirty); Assert.True(editor.History.CanUndo);
+        editor.History.Undo(); Assert.Empty(archive.GetAllEntries()); Assert.False(editor.IsDirty);
+        editor.History.Redo(); editor.History.Redo(); Assert.Equal(2, archive.GetAllEntries().Count());
+        editor.SaveTo(path); Assert.False(editor.IsDirty);
+        using var persisted = AssetsFile.LoadOrCreate(path, encrypted ? "secret" : null, encrypted, register: false);
+        Assert.Equal(2, persisted.GetAllEntries().Count()); Assert.Equal(encrypted, persisted.UseEncryption);
+        Assert.Empty(Directory.GetFiles(root, ".gondwana-save-*"));
+    });
+
+    [Theory]
+    [InlineData("close")]
+    [InlineData("reload")]
+    [InlineData("shutdown")]
+    public void StudioFailedRefreshCanBeDiscardedClosedReloadedOrShutDown(string action) => RunSta(root =>
+    {
+        var path = NativeArchive(root);
+        using var studio = Host(root);
+        var document = studio.OpenDocument(path);
+        var editor = (AssetEditorControl)document.Document.Editor;
+        editor.ApplyImport(HistoryImport(editor, root));
+        Assert.True(AwaitUi(studio.SaveDocument(document)));
+        AssetDeletionPlan.Create(path, [new(AssetTypes.Misc, path, "nested/new.bin")]).Commit();
+        var committed = File.ReadAllBytes(path);
+        File.WriteAllText(path, "refresh read failure");
+        var failure = Assert.Throws<System.Reflection.TargetInvocationException>(() =>
+            editor.GetType().GetMethod("RefreshAfterDiskOperation", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
+                .Invoke(editor, ["Deletion committed."]));
+        Assert.IsType<IOException>(failure.InnerException);
+        File.WriteAllBytes(path, committed); // a subsequent reload can read the committed archive
+        Assert.False(editor.CanSave);
+        Assert.False(AwaitUi(studio.SaveDocument(document))); Assert.Equal(committed, File.ReadAllBytes(path));
+        studio.AskSave = _ => DialogResult.Cancel;
+        Assert.False(AwaitUi(studio.ConfirmClose(document))); // retain the existing discard confirmation
+        studio.AskSave = _ => DialogResult.Yes;
+        Assert.False(AwaitUi(studio.ConfirmClose(document))); // stale buffers cannot be saved through Close
+        studio.AskSave = _ => DialogResult.No;
+        if (action == "reload")
+        {
+            studio.ConfirmReload = _ => true;
+            Assert.True(studio.ReloadDocument(document));
+            var reloaded = studio.OpenDocument(path);
+            Assert.NotSame(document, reloaded);
+            Assert.True(((AssetEditorControl)reloaded.Document.Editor).CanSave);
+            Assert.False(reloaded.Document.Dirty());
+        }
+        else if (action == "shutdown")
+        {
+            Assert.True(AwaitUi(studio.ApproveShutdown()));
+            studio.Close(); Application.DoEvents(); Assert.True(studio.IsDisposed);
+        }
+        else
+        {
+            document.Close(); Application.DoEvents();
+            Assert.True(document.IsDisposed); Assert.Empty(studio.Documents);
+        }
     });
 
     [Fact]
