@@ -39,7 +39,9 @@ public sealed class OutputPanelTests
             var vm = new OutputViewModel();
             vm.Log("Error: Unable to save");
             var line = Assert.Single(vm.Lines);
-            Assert.StartsWith(DateTimeOffset.Now.ToString("HH:mm:ss", culture) + " Error:", line);
+            var timestamp = line[..line.IndexOf(' ')];
+            Assert.Equal(3, timestamp.Split(separator, StringSplitOptions.None).Length);
+            Assert.EndsWith(" Error: Unable to save", line);
             Assert.Equal(OutputSeverity.Error, OutputPanel.Classify(line));
             // Previously logged colon-based lines remain recognizable even after changing culture.
             Assert.Equal(OutputSeverity.Warning, OutputPanel.Classify("13:14:15 Warning: Missing reference."));
