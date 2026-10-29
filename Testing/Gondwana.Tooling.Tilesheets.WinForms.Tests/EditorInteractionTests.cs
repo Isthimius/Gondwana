@@ -389,7 +389,18 @@ public sealed partial class EditorInteractionTests
 
     private static void Edit(PropertyGrid grid, string property, string text, bool enter = true)
     {
-        var item = Items(grid).Single(i => i.PropertyDescriptor?.Name == property);
+        var item = Items(grid).SingleOrDefault(i => i.PropertyDescriptor?.Name == property);
+        if (item is null)
+        {
+            // Composite geometry fields expose leaf editors beneath their parent, not
+            // flattened properties with a dotted descriptor name.
+            var parts = property.Split('.');
+            Assert.Equal(2, parts.Length);
+            var parent = Items(grid).Single(i => i.PropertyDescriptor?.Name == parts[0]);
+            parent.Expanded = true;
+            Application.DoEvents();
+            item = parent.GridItems.Cast<GridItem>().Single(i => i.PropertyDescriptor?.Name == parts[1]);
+        }
         Assert.False(item.PropertyDescriptor!.IsReadOnly);
         grid.SelectedGridItem = item;
         grid.Focus();

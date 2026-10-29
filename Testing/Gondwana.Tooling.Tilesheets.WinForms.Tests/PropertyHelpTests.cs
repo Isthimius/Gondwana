@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Gondwana.Drawing;
 using Gondwana.Drawing.Tilesheets.GTS;
 using Gondwana.Tooling.Tilesheets.Editing;
 
@@ -18,7 +19,7 @@ public sealed class PropertyHelpTests
         var regionFields = new PropertyFields();
         regionFields.AddModel(region, document.MarkChanged, "Frames");
         AssertHelp(regionFields);
-        Assert.Contains("source-image", TypeDescriptor.GetProperties(regionFields)["Area.X"]!.Description);
+        Assert.Contains("source-image", TypeDescriptor.GetProperties(regionFields)["Area"]!.Description);
 
         var maskFields = new PropertyFields();
         maskFields.AddModel(new TilesheetMaskDefinition(), document.MarkChanged);
@@ -51,8 +52,8 @@ public sealed class PropertyHelpTests
         Assert.Equal("Region", properties["Name"]!.Category);
         Assert.Equal("Geometry", properties["Area"]!.Category);
         Assert.Equal("Geometry", properties["TileSize"]!.Category);
-        Assert.Equal("Geometry", properties["Area.X"]!.Category);
-        Assert.Equal("Geometry", properties["TilePadding.Left"]!.Category);
+        Assert.Equal("Geometry", properties["RegionMargin"]!.Category);
+        Assert.Equal("Geometry", properties["TilePadding"]!.Category);
         Assert.Equal("Collision", properties["CollisionAdjust.Left"]!.Category);
         Assert.Equal("Collision", properties["CollisionType"]!.Category);
 
@@ -64,7 +65,7 @@ public sealed class PropertyHelpTests
 
 
     [Fact]
-    public void AreaAndTileSizeExpandIntoEditableWidthAndHeight()
+    public void AreaAndTileSizeExpandIntoEditableGeometryComponents()
     {
         var region = new TilesheetRegionDefinition
         {
@@ -78,32 +79,79 @@ public sealed class PropertyHelpTests
 
         var area = properties["Area"]!;
         var tileSize = properties["TileSize"]!;
-        Assert.Equal(typeof(Size), area.PropertyType);
+        Assert.Equal(typeof(Rectangle), area.PropertyType);
         Assert.Equal(typeof(Size), tileSize.PropertyType);
-        foreach (var parent in new[] { area, tileSize })
+        AssertChildren(area, fields, "X", "Y", "Width", "Height");
+        AssertChildren(tileSize, fields, "Width", "Height");
+
+        area.SetValue(fields, WithComponent(area, fields, "Width", 64));
+        area.SetValue(fields, WithComponent(area, fields, "X", 19));
+        area.SetValue(fields, WithComponent(area, fields, "Y", 23));
+        Assert.Equal(new Rectangle(19, 23, 64, 28), region.Area);
+
+        tileSize.SetValue(fields, WithComponent(tileSize, fields, "Height", 24));
+        Assert.Equal(new Size(16, 24), region.TileSize);
+        Assert.Equal(4, changes);
+        Assert.Null(properties["Area.X"]);
+        Assert.Null(properties["Area.Y"]);
+    }
+
+    [Fact]
+    public void MarginPaddingAndOverhangExpandIntoFourEditableEdges()
+    {
+        var region = new TilesheetRegionDefinition
         {
-            Assert.False(parent.IsReadOnly);
-            Assert.True(parent.Converter.GetPropertiesSupported());
-            var children = parent.Converter.GetProperties(parent.GetValue(fields)!)!;
-            Assert.Equal(new[] { "Height", "Width" },
-                children.Cast<PropertyDescriptor>().Select(child => child.Name).OrderBy(name => name).ToArray());
+            TilePadding = new Spacing(1, 2, 3, 4),
+            RegionMargin = new Spacing(5, 6, 7, 8),
+            Overhang = new Spacing(9, 10, 11, 12)
+        };
+        int changes = 0;
+        var fields = new PropertyFields();
+        fields.AddModel(region, () => changes++, "Frames");
+        var properties = TypeDescriptor.GetProperties(fields);
+
+        foreach (string name in new[] { "TilePadding", "RegionMargin", "Overhang" })
+        {
+            var property = properties[name]!;
+            Assert.Equal(typeof(Spacing), property.PropertyType);
+            AssertChildren(property, fields, "Left", "Top", "Right", "Bottom");
+            Assert.Null(properties[name + ".Left"]);
         }
 
-        object dimensions = area.GetValue(fields)!;
-        area.Converter.GetProperties(dimensions)!["Width"]!.SetValue(dimensions, 64);
-        area.SetValue(fields, dimensions);
-        Assert.Equal(new Rectangle(7, 11, 64, 28), region.Area);
+        properties["TilePadding"]!.SetValue(fields, WithComponent(properties["TilePadding"]!, fields, "Left", 21));
+        properties["RegionMargin"]!.SetValue(fields, WithComponent(properties["RegionMargin"]!, fields, "Top", 22));
+        properties["Overhang"]!.SetValue(fields, WithComponent(properties["Overhang"]!, fields, "Right", 23));
+        Assert.Equal(new Spacing(21, 2, 3, 4), region.TilePadding);
+        Assert.Equal(new Spacing(5, 22, 7, 8), region.RegionMargin);
+        Assert.Equal(new Spacing(9, 10, 23, 12), region.Overhang);
+        Assert.Equal(3, changes);
 
-        dimensions = tileSize.GetValue(fields)!;
-        tileSize.Converter.GetProperties(dimensions)!["Height"]!.SetValue(dimensions, 24);
-        tileSize.SetValue(fields, dimensions);
-        Assert.Equal(new Size(16, 24), region.TileSize);
+        var converter = properties["Overhang"]!.Converter;
+        Assert.Equal(new Spacing(1, 2, 3, 4), converter.ConvertFromInvariantString("1, 2, 3, 4"));
+        Assert.Equal("9, 10, 23, 12", converter.ConvertToInvariantString(region.Overhang));
+        Assert.Throws<FormatException>(() => converter.ConvertFromInvariantString("1, 2, 3"));
+    }
 
-        // The original region X/Y editors remain available and still update the original Rectangle.
-        properties["Area.X"]!.SetValue(fields, 19);
-        properties["Area.Y"]!.SetValue(fields, 23);
-        Assert.Equal(new Rectangle(19, 23, 64, 28), region.Area);
-        Assert.Equal(4, changes);
+    private static void AssertChildren(PropertyDescriptor parent, PropertyFields fields, params string[] expected)
+    {
+        Assert.False(parent.IsReadOnly);
+        Assert.True(parent.Converter.GetPropertiesSupported());
+        Assert.True(parent.Converter.GetCreateInstanceSupported());
+        var children = parent.Converter.GetProperties(parent.GetValue(fields)!)!;
+        Assert.Equal(expected.OrderBy(name => name),
+            children.Cast<PropertyDescriptor>().Select(child => child.Name).OrderBy(name => name));
+        if (parent.Name != "TileSize")
+            Assert.All(children.Cast<PropertyDescriptor>(),
+                child => Assert.False(string.IsNullOrWhiteSpace(child.Description)));
+    }
+
+    private static object WithComponent(PropertyDescriptor parent, PropertyFields fields, string component, int value)
+    {
+        object original = parent.GetValue(fields)!;
+        var values = parent.Converter.GetProperties(original)!.Cast<PropertyDescriptor>()
+            .ToDictionary(child => child.Name, child => child.GetValue(original)!);
+        values[component] = value;
+        return parent.Converter.CreateInstance(null, values)!;
     }
 
     [Fact]
@@ -117,9 +165,9 @@ public sealed class PropertyHelpTests
         var properties = TypeDescriptor.GetProperties(fields).Cast<PropertyDescriptor>().ToArray();
         foreach (var group in properties.GroupBy(property => property.Category))
             Assert.Equal(group.Count(), group.Select(property => property.DisplayName).Distinct().Count());
-        Assert.Equal("TilePadding.Left", properties.Single(property => property.Name == "TilePadding.Left").DisplayName);
-        Assert.Equal("RegionMargin.Left", properties.Single(property => property.Name == "RegionMargin.Left").DisplayName);
-        Assert.Equal("Overhang.Left", properties.Single(property => property.Name == "Overhang.Left").DisplayName);
+        Assert.Equal("Padding", properties.Single(property => property.Name == "TilePadding").DisplayName);
+        Assert.Equal("Margin", properties.Single(property => property.Name == "RegionMargin").DisplayName);
+        Assert.Equal("Overhang", properties.Single(property => property.Name == "Overhang").DisplayName);
     }
 
 }

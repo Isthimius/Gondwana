@@ -136,7 +136,12 @@ public sealed class TilesheetEditorDocumentTests : IDisposable
         var region = document.Definition.Regions[0];
         var regionFields = new PropertyFields();
         regionFields.AddModel(region, document.MarkChanged, "Frames");
-        regionFields.GetProperties()["TilePadding.Left"]!.SetValue(regionFields, 7);
+        var padding = regionFields.GetProperties()["TilePadding"]!;
+        object original = padding.GetValue(regionFields)!;
+        var edges = padding.Converter.GetProperties(original)!.Cast<System.ComponentModel.PropertyDescriptor>()
+            .ToDictionary(edge => edge.Name, edge => edge.GetValue(original)!);
+        edges["Left"] = 7;
+        padding.SetValue(regionFields, padding.Converter.CreateInstance(null, edges));
         Assert.Equal(7, region.TilePadding.Left);
         Assert.Equal(3, region.TilePadding.Top);
         var fields = PropertyFields.Frame(document, region, 0, 0, document.MarkChanged);

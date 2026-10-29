@@ -48,7 +48,7 @@ public sealed class AuthoringHistoryTests : IDisposable
         document.Save(Path.Combine(_root, "tiles.gts"), allowInvalid: true);
         var fields = new PropertyFields(document);
         fields.AddModel(region, document.MarkChanged, "Frames");
-        fields.GetProperties()["Area"]!.SetValue(fields, new Size(64, 48));
+        fields.GetProperties()["Area"]!.SetValue(fields, new Rectangle(3, 4, 64, 48));
         Assert.Equal(new Rectangle(3, 4, 64, 48), region.Area);
         document.History.Undo(); Assert.Equal(new Rectangle(3, 4, 32, 32), region.Area); Assert.False(document.IsDirty);
         document.History.Redo(); Assert.Equal(64, region.Area.Width);
