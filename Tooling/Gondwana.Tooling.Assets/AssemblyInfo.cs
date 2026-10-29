@@ -3,4 +3,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Gondwana.Tooling.Assets.WinForms")]
 [assembly: InternalsVisibleTo("Gondwana.Tests")]
 [assembly: InternalsVisibleTo("Gondwana.Tooling.Studio.WinForms.Tests")]
-[assembly: InternalsVisibleTo("Gondwana.Tooling.Studio.WinForms")]
+[assembly: InternalsVisibleTo("Gondwana.Studio.WinForms")]
