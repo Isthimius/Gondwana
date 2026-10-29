@@ -31,13 +31,14 @@ public sealed class AssetEditSession : IDisposable
         History.RequireIdle();
         ArgumentNullException.ThrowIfNull(archive);
         var entries = archive.GetAllEntries().ToHashSet();
-        var previousPath = Archive.SourcePath!;
-        if (!externalRefresh && !DefinitionReferenceDiscovery.Paths.Equals(previousPath, archive.SourcePath))
+        var previousPath = Path.GetFullPath(Archive.SourcePath!);
+        var destinationPath = Path.GetFullPath(archive.SourcePath!);
+        if (!externalRefresh && !DefinitionReferenceDiscovery.Paths.Equals(previousPath, destinationPath))
         {
             var updates = new List<(Payload Payload, ReferenceRelocation[] References)>();
             _payloads.RemoveAll(w => !w.TryGetTarget(out _));
             foreach (var weak in _payloads)
-                if (weak.TryGetTarget(out var payload)) updates.Add((payload, payload.PrepareAdoption(previousPath, archive.SourcePath!, entries)));
+                if (weak.TryGetTarget(out var payload)) updates.Add((payload, payload.PrepareAdoption(previousPath, destinationPath, entries)));
             foreach (var update in updates) update.Payload.AcceptAdoption(update.References);
         }
         if (externalRefresh) _payloads.Clear();
@@ -142,7 +143,7 @@ public sealed class AssetEditSession : IDisposable
 
     private Payload Capture(AssetTypes type, string name, byte[] bytes, bool raw)
     {
-        var payload = new Payload(type, name, bytes, Archive.SourcePath!, raw);
+        var payload = new Payload(type, name, bytes, Path.GetFullPath(Archive.SourcePath!), raw);
         if (payload.IsNative)
         {
             _payloads.RemoveAll(w => !w.TryGetTarget(out _));
@@ -216,7 +217,7 @@ public sealed class AssetEditSession : IDisposable
         private void Apply(bool undo)
         {
             var archive = document.Archive;
-            var path = archive.SourcePath!;
+            var path = Path.GetFullPath(archive.SourcePath!);
             // Captured reference targets follow successful adoptions, independently of undo position.
             // Each native payload has only its own dependency mappings; binaries have none.
             var prepared = deltas.Select(d => (Delta: d, Bytes: (undo ? d.Before : d.After)?.Materialize(path))).ToArray();
