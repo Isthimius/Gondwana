@@ -52,7 +52,7 @@ public sealed class PropertyHelpTests
         Assert.Equal("Region", properties["Name"]!.Category);
         Assert.Equal("Geometry", properties["Area"]!.Category);
         Assert.Equal("Geometry", properties["TileSize"]!.Category);
-        Assert.Equal("Geometry", properties["Area"]!.Category);
+        Assert.Equal("Geometry", properties["RegionMargin"]!.Category);
         Assert.Equal("Geometry", properties["TilePadding"]!.Category);
         Assert.Equal("Collision", properties["CollisionAdjust.Left"]!.Category);
         Assert.Equal("Collision", properties["CollisionType"]!.Category);
