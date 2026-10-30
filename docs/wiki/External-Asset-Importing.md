@@ -32,8 +32,8 @@ normal activation behavior; import does not discard unsaved editor changes.
 
 | Source | Supported conversion | Explicit limitations |
 | --- | --- | --- |
-| Godot 3.x TileSet (`format=2`) | Text .tres resources, single tiles, atlas tiles, underlying autotile atlas geometry, multiple tile IDs/textures, region offsets, tile sizes and spacing → GTS | No binary .res or .tscn scenes. Autotile bitmask/priority/fallback/icon-selection semantics are not preserved. Collision, navigation, occlusion, materials, normal maps, modulation, offsets, z-index and unfamiliar metadata are diagnosed and omitted. No GANI is generated; AnimatedTexture traversal is unsupported. |
-| Godot 4 `.tres` TileSet | Text atlas sources, multiple images, margins/separation, 1×1 grid tiles, sparse atlas diagnostics, animation layout/speed/per-frame durations → GTS/GANI | No `.res`, scenes, scene collections or multi-cell tiles. Alternatives, TileData, terrain, polygons, navigation, proxies and custom metadata are diagnosed and omitted. Random animation starts warn. |
+| Godot 3.x TileSet (`format=2`) | Text .tres resources, single tiles, atlas tiles, underlying autotile atlas geometry, multiple tile IDs/textures, region offsets, tile sizes and spacing → grouped GTS | No binary .res or .tscn scenes. Autotile bitmask/priority/fallback/icon-selection semantics are not preserved. Collision, navigation, occlusion, materials, normal maps, modulation, offsets, z-index and unfamiliar metadata are diagnosed and omitted. No GANI is generated; AnimatedTexture traversal is unsupported. |
+| Godot 4 `.tres` TileSet | Text atlas sources, multiple images, margins/separation, single- and multi-cell atlas tiles, sparse atlas diagnostics, animation layout/speed/per-frame durations → grouped GTS/GANI | No `.res`, scenes or scene collections. Multi-cell tiles become named regions containing their full atlas rectangles; animation frames have distinct regions when needed. Alternatives, TileData, terrain, polygons, navigation, proxies and custom metadata are diagnosed and omitted. Random animation starts warn. |
 | Tiled `.tsx` | Single image atlas, margin/spacing, exact RGB mask, looping tile animations with millisecond timing → GTS/GANI | No image collections, embedded image bytes, nonzero tile offsets or per-tile subrectangles. Wang/terrain, properties, collision objects and transformation metadata warn and are omitted. |
 | Tiled `.tmx` | Finite orthogonal/isometric maps, external/embedded atlas tilesets, multiple tilesets in one layer, sparse empty cells, visibility/order, integer pixel offsets, equal-axis parallax, animation references, all eight H/V/diagonal tile orientations → GSCN plus GTS/GANI | No infinite, staggered, hexagonal or oblique maps. H/V/diagonal flags become native TileTransform placements. The retained hex-only 120-degree bit is cleared with a warning on supported maps. Frame dimensions must match map cells. Object/image layers are omitted with warnings; opacity/tint/blend modes are omitted with warnings. Unequal-axis parallax warns and defaults to 1. |
 | Aseprite `.ase` / `.aseprite` | RGBA, grayscale, indexed palettes/transparency, raw/zlib/linked cels, visibility, Normal blending, opacity, groups, cel z-order, tags and mixed timing → PNG/GTS/GANI | No tilemaps, reference layers, non-Normal blends, precise/scaled cel bounds, non-square pixel aspect ratios, external dependencies, ICC or custom gamma. Other metadata chunks are diagnosed and omitted. |
@@ -55,13 +55,15 @@ Analysis also checks logical keys in other native files directly in the output
 directory. Files that cannot be inspected produce a warning; it does not search
 unrelated directories or asset archives for global name collisions.
 
-For Godot 4, single-source `terrain.tres` produces `terrain.gts`; multiple sources produce
-`terrain-source-0.gts`, `terrain-source-2.gts`, with logical names
-`terrain.source.0`, `terrain.source.2`. Godot animation keys append `.tile.X.Y`.
+For Godot 4, `terrain.tres` produces one `terrain.gts` document regardless of
+the number of atlas sources. A single source uses the logical name `terrain`;
+multiple sources become members named `terrain.source.0`, `terrain.source.2`,
+etc. Godot animation keys append `.tile.X.Y` to the source's logical name,
+and every generated GANI references the shared `terrain.gts` document.
 For Godot 3, one tile ID produces `terrain.gts` with logical name `terrain`.
-Multiple IDs produce `terrain-tile-0.gts`, `terrain-tile-3.gts`, with logical names
-`terrain.tile.0`, `terrain.tile.3`. The serialized tile display name does not
-override these deterministic names.
+Multiple tile IDs share that document with member names `terrain.tile.0`,
+`terrain.tile.3`, etc., even when they use different image textures. The
+serialized tile display name does not override these deterministic names.
 
 TSX uses its sanitized tileset name as the logical name and source basename for
 files; animated tiles share `terrain-animations.gani`, with keys such as `terrain.tile.17`.
@@ -71,17 +73,31 @@ Definition dependencies use paths relative to the output directory whenever
 possible, with `/` separators. Existing atlas images remain source dependencies;
 keep or copy those images when moving imported content. No staging paths are
 serialized. Godot `res://` paths resolve from the nearest ancestor containing
-`project.godot`; an absent project root produces an actionable error.
+`project.godot` when available. Standalone TileSets without a project file
+resolve `res://` relative to the source `.tres` directory instead; place referenced
+textures at those relative paths. Missing textures remain errors, but creating a
+dummy Godot project file is not required.
 
 ## Generated documents and grouping
 
 A physical native output file contains a `Definitions` document. Each member has its own logical identity (`Name` for GTS, `Key` for GANI/GSPR/GSND, and `ID` for GSCN). The Studio preview lists all identities beside the single output path. The shared pipeline collects typed members, validates complete documents using the core serializers, and serializes each document once before transactional staging.
 
-Grouping is chosen by each provider's output filenames. Aseprite groups tags from a sprite into one GANI document. Tiled groups tile animations from a tileset into `<tileset-basename>-animations.gani`; TMX scene references retain each animation key while sharing that path. Godot 4 groups animations per atlas source into `<source-basename>-animations.gani`. Existing GTS outputs remain per atlas/texture or Godot tile/source, and TMX produces one GSCN per map. The pipeline also accepts grouped GSPR, GSND, and scene or tilesheet collections from providers; the current external converters do not invent sprite, audio, or scene-collection features.
+Grouping is chosen by each provider's output filenames. Aseprite groups tags from a sprite into one GANI document. Tiled groups tile animations from a tileset into `<tileset-basename>-animations.gani`; TMX scene references retain each animation key while sharing that path. Godot 4 groups animations per atlas source into `<source-basename>-animations.gani`. Godot 3 and 4 group all GTS members from the same source TileSet into one physical GTS document, and TMX produces one GSCN per map. The pipeline also accepts grouped GSPR, GSND, and scene or tilesheet collections from providers; the current external converters do not invent sprite, audio, or scene-collection features.
 
 The plan assigns generated-source provenance to all native members and retains each serializer's existing persistence rules (GSPR and GSND load provenance is not serialized). Cross-definition references retain logical selectors and output-relative paths. Duplicate identities within or across generated documents of the same type are errors, as are conflicts with any member of other native documents directly in the output directory.
 
 External conversion creates complete output documents. Overwrite replaces a destination file in full; it never appends to an existing `Definitions` collection. Use an editor's **Import definition…** command to combine existing native definitions interactively. External conversion does not relocate existing referenced resources or change GAF packaging.
+
+## Godot multi-cell regions
+
+Godot 4 `size_in_atlas` values larger than one cell are represented as named
+GTS regions (for example, `tile-0-0`). Their image rectangle includes the
+texture-region cells and any inter-cell separation pixels. Animated multi-cell
+tiles use per-frame regions such as `tile-0-0-frame-1`; GANI frames reference
+those regions at local frame coordinate (0, 0). The default atlas grid remains
+available for normal-size tiles. This preserves visual slicing geometry without
+claiming to preserve Godot terrain rules or collision metadata. Unsupported or
+out-of-bounds spans are diagnosed with atlas source, tile coordinate and frame.
 
 ## Aseprite layout and playback
 
