@@ -56,7 +56,7 @@ public sealed class GodotImportTests : IDisposable
         var request = new ExternalImportRequest(source, Path.Combine(directory, "output"));
         var result = new GodotTilesetImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
-        Assert.Equal(multiple ? 4 : 2, result.WrittenFiles.Count);
+        Assert.Equal(multiple ? 3 : 2, result.WrittenFiles.Count);
         string file = multiple ? "terrain-source-2-animations.gani" : "terrain-animations.gani";
         var members = AnimationDefinitionSerializer.LoadAll(Path.Combine(request.OutputDirectory, file));
         Assert.Equal(2, members.Count);
@@ -65,7 +65,9 @@ public sealed class GodotImportTests : IDisposable
         Assert.Equal(new double?[] { 0.5, 1.5 }, gani.Frames.Select(f => f.DurationSeconds));
         Assert.Equal(new[] { 0, 1 }, gani.Frames.Select(f => f.XTile));
         Assert.Empty(AnimationDefinitionValidator.Validate(gani));
-        var gts = TilesheetDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, multiple ? "terrain-source-2.gts" : "terrain.gts"));
+        var gts = TilesheetDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain.gts"), multiple ? "terrain.source.2" : "terrain");
+        Assert.Equal("terrain.gts", Assert.Single(gani.TilesheetSources).GtsPath);
+        Assert.Equal(multiple ? 2 : 1, TilesheetDefinitionSerializer.LoadAll(Path.Combine(request.OutputDirectory, "terrain.gts")).Count);
         Assert.Empty(TilesheetDefinitionValidator.Validate(gts, 10, 4));
         Assert.Equal((3L, 1L), TilesheetDefinitionValidator.GridSize(gts.Regions[0]));
         Assert.Equal(-1, gts.Regions[0].RegionMargin.Right);
@@ -92,7 +94,7 @@ public sealed class GodotImportTests : IDisposable
     /// <param name="canImport">The can import value for this test case.</param>
     [Theory]
     [InlineData("0:0/1 = 1", "godot.alternative", true)]
-    [InlineData("0:0/size_in_atlas = Vector2i(2, 1)", "godot.multicell", false)]
+    [InlineData("0:0/size_in_atlas = Vector2i(0, 1)", "godot.multicell", false)]
     public void UnsupportedTilesAreExplicitlyDiagnosed(string property, string code, bool canImport)
     {
         ConvertsAtlasSourcesAndMixedAnimationTiming(false);
@@ -107,7 +109,7 @@ public sealed class GodotImportTests : IDisposable
     /// Verifies uniform animation and missing project root.
     /// </summary>
     [Fact]
-    public void UniformAnimationAndMissingProjectRoot()
+    public void UniformAnimationAndStandaloneResourcePaths()
     {
         ConvertsAtlasSourcesAndMixedAnimationTiming(false);
         string source = Path.Combine(directory, "terrain.tres");
@@ -117,8 +119,8 @@ public sealed class GodotImportTests : IDisposable
         Assert.All(AnimationDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain-animations.gani"), "terrain.tile.0.0").Frames, f => Assert.Equal(0.5, f.DurationSeconds));
         File.Delete(Path.Combine(directory, "project.godot"));
         var analysis = new GodotTilesetImporter().Analyze(request);
-        Assert.False(analysis.CanImport);
-        Assert.Contains(analysis.Diagnostics, d => d.Message.Contains("project.godot"));
+        Assert.True(analysis.CanImport, string.Join(";", analysis.Diagnostics));
+        Assert.Contains(analysis.Artifacts, a => Path.GetFileName(a.OutputPath) == "terrain.gts");
     }
 
     private ExternalImportRequest Godot3Fixture(string properties, string texturePath = "atlas.png", string extraResources = "")
@@ -216,20 +218,22 @@ public sealed class GodotImportTests : IDisposable
         File.Copy(Path.Combine(directory, "atlas.png"), Path.Combine(directory, "second.png"));
         var result = new GodotTilesetImporter().Import(request);
         Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
-        Assert.Equal(new[] { "terrain-tile-0.gts", "terrain-tile-3.gts" }, result.WrittenFiles.Select(Path.GetFileName));
-        var definitions = result.WrittenFiles.Select(f => TilesheetDefinitionSerializer.Load(f)).ToArray();
+        Assert.Equal("terrain.gts", Path.GetFileName(Assert.Single(result.WrittenFiles)));
+        var definitions = TilesheetDefinitionSerializer.LoadAll(result.WrittenFiles.Single()).ToArray();
+        Assert.Equal(definitions.Select(d => d.Name),
+            result.Analysis.Artifacts.Single().LogicalKeys);
         Assert.Equal(new[] { "terrain.tile.0", "terrain.tile.3" }, definitions.Select(d => d.Name));
         Assert.Equal(new[] { "../atlas.png", "../second.png" }, definitions.Select(d => d.Image.FilePath));
     }
 
     /// <summary>
-    /// Verifies godot3 res paths use nearest project and fail without one.
+    /// Verifies godot3 res paths use the source directory without a project and prefer the nearest project root when present.
     /// </summary>
     [Fact]
-    public void Godot3ResPathsUseNearestProjectAndFailWithoutOne()
+    public void Godot3ResPathsUseNearestProjectOrSourceDirectory()
     {
         var request = Godot3Fixture(SingleTile, "res://atlas.png");
-        Assert.Contains(new GodotTilesetImporter().Analyze(request).Diagnostics, d => d.Message.Contains("project.godot"));
+        Assert.True(new GodotTilesetImporter().Analyze(request).CanImport);
         File.WriteAllText(Path.Combine(directory, "project.godot"), "");
         string nested = Path.Combine(directory, "nested");
         string resources = Path.Combine(nested, "resources");
@@ -372,6 +376,98 @@ public sealed class GodotImportTests : IDisposable
         foreach (string code in new[] { "collision", "navigation", "occlusion", "rendering", "metadata" })
             Assert.Single(result.Analysis.Diagnostics, d => d.Code == "godot." + code);
         Assert.Equal(new System.Drawing.Rectangle(3, 4, 8, 6), TilesheetDefinitionSerializer.Load(result.WrittenFiles.Single()).Regions[0].Area);
+    }
+
+    /// <summary>
+    /// Creates a standalone Godot 4 atlas with pixel gaps, without any project.godot file.
+    /// </summary>
+    private ExternalImportRequest Godot4MultiCellFixture(string tiles)
+    {
+        using var image = new SKBitmap(16, 16);
+        image.Erase(SKColors.Green);
+        using var png = image.Encode(SKEncodedImageFormat.Png, 100);
+        File.WriteAllBytes(Path.Combine(directory, "atlas.png"), png.ToArray());
+        string text = """
+            [gd_resource type="TileSet" format=3]
+            [ext_resource type="Texture2D" path="res://atlas.png" id="1"]
+            [sub_resource type="TileSetAtlasSource" id="a"]
+            texture = ExtResource("1")
+            texture_region_size = Vector2i(2, 2)
+            margins = Vector2i(1, 1)
+            separation = Vector2i(1, 1)
+            """ + "\n" + tiles + "\n[resource]\ntile_size = Vector2i(2, 2)\nsources/0 = SubResource(\"a\")\n";
+        string source = Path.Combine(directory, "terrain.tres");
+        File.WriteAllText(source, text);
+        return new(source, Path.Combine(directory, "output"));
+    }
+
+    /// <summary>
+    /// Verifies Godot 4 multi-cell static and animated tiles preserve exact image geometry,
+    /// frame timing, and logical references without requiring a project file.
+    /// </summary>
+    [Fact]
+    public void Godot4MultiCellTilesPreserveGeometryAndAnimation()
+    {
+        var request = Godot4MultiCellFixture("""
+            0:0/0 = 0
+            0:0/size_in_atlas = Vector2i(2, 2)
+            0:0/animation_frames_count = 3
+            0:0/animation_columns = 2
+            0:0/animation_frame_0/duration = 1.0
+            0:0/animation_frame_1/duration = 2.0
+            0:0/animation_frame_2/duration = 3.0
+            4:0/0 = 0
+            4:0/size_in_atlas = Vector2i(1, 2)
+            """);
+        Assert.False(File.Exists(Path.Combine(directory, "project.godot")));
+        var result = new GodotTilesetImporter().Import(request);
+        Assert.True(result.Analysis.CanImport, string.Join(";", result.Analysis.Diagnostics));
+        Assert.Equal(new[] { "terrain-animations.gani", "terrain.gts" }.Order(),
+            result.WrittenFiles.Select(Path.GetFileName).Order());
+        var gts = TilesheetDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain.gts"));
+        Assert.Equal(5, gts.Regions.Count); // Default atlas, three animation frames, one static tile.
+        Assert.Equal(new System.Drawing.Rectangle(1, 1, 5, 5),
+            gts.Regions.Single(r => r.Name == "tile-0-0-frame-0").Area);
+        Assert.Equal(new System.Drawing.Rectangle(7, 1, 5, 5),
+            gts.Regions.Single(r => r.Name == "tile-0-0-frame-1").Area);
+        Assert.Equal(new System.Drawing.Rectangle(1, 7, 5, 5),
+            gts.Regions.Single(r => r.Name == "tile-0-0-frame-2").Area);
+        var tall = gts.Regions.Single(r => r.Name == "tile-4-0");
+        Assert.Equal(new System.Drawing.Rectangle(13, 1, 2, 5), tall.Area);
+        Assert.Equal(new System.Drawing.Size(2, 5), tall.TileSize);
+        Assert.Empty(TilesheetDefinitionValidator.Validate(gts, 16, 16));
+
+        var animation = AnimationDefinitionSerializer.Load(Path.Combine(request.OutputDirectory, "terrain-animations.gani"));
+        Assert.Equal("terrain.gts", Assert.Single(animation.TilesheetSources).GtsPath);
+        Assert.Equal(new double?[] { 1, 2, 3 }, animation.Frames.Select(f => f.DurationSeconds));
+        Assert.Equal(new[] { "tile-0-0-frame-0", "tile-0-0-frame-1", "tile-0-0-frame-2" },
+            animation.Frames.Select(f => f.RegionName));
+        Assert.All(animation.Frames, frame =>
+        {
+            Assert.Equal("terrain", frame.Tilesheet);
+            Assert.Equal(0, frame.XTile);
+            Assert.Equal(0, frame.YTile);
+        });
+        Assert.Contains(result.Analysis.Diagnostics, d => d.Code == "godot.multicell"
+            && d.Message.Contains("source 0") && d.Message.Contains("0:0"));
+    }
+
+    /// <summary>
+    /// Rejects multi-cell placements that exceed the atlas and identifies their source.
+    /// </summary>
+    [Fact]
+    public void Godot4MultiCellOutOfBoundsHasActionableDiagnostics()
+    {
+        var request = Godot4MultiCellFixture("""
+            4:0/0 = 0
+            4:0/size_in_atlas = Vector2i(2, 2)
+            """);
+        var result = new GodotTilesetImporter().Import(request);
+        Assert.False(result.Analysis.CanImport);
+        Assert.Empty(result.WrittenFiles);
+        Assert.Contains(result.Analysis.Diagnostics, d => d.Code == "godot.atlas.bounds"
+            && d.Message.Contains("source 0") && d.Message.Contains("tile 4:0")
+            && d.Message.Contains("frame 0"));
     }
 
     /// <summary>
