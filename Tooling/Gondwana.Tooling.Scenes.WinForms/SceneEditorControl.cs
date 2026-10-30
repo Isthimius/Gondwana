@@ -13,11 +13,12 @@ using WeifenLuo.WinFormsUI.Docking;
 namespace Gondwana.Tooling.Scenes.WinForms;
 
 /// <summary>Shared standalone and Studio editor for the logical definitions in a GSCN document.</summary>
-public sealed class SceneEditorControl : UserControl
+public sealed partial class SceneEditorControl : UserControl
 {
     /// <summary>Validates and adds one packed GTS member with its exact entry identity and preview.</summary>
     public void AddPackedTilesheetSource(PackedResourceSelection selection)
     {
+        _preview.CancelGesture();
         selection.Validate(_packages, AssetTypes.TilesheetDefinition);
         var resource = selection.Resource;
         var source = SceneTilesheetSource.LoadPacked(resource.Path, resource.EntryName!, selection.Member!, _packages);
@@ -33,6 +34,7 @@ public sealed class SceneEditorControl : UserControl
     /// <summary>Validates and adds one packed GANI member and its representative frames.</summary>
     public void AddPackedAnimationSource(PackedResourceSelection selection)
     {
+        _preview.CancelGesture();
         selection.Validate(_packages, AssetTypes.AnimationDefinition);
         var resource = selection.Resource;
         var source = SceneAnimationSource.LoadPacked(resource.Path, resource.EntryName!, selection.Member!, _packages);
@@ -212,7 +214,10 @@ public sealed class SceneEditorControl : UserControl
         _animationList.Columns.Add("Frames", 60, HorizontalAlignment.Right);
         _animationList.ItemActivate += (_, _) => AssignSelectedAnimation();
 
+        _preview.GestureStarting += BeginPreviewGesture;
         _preview.TileSelected += PreviewCellClicked;
+        _preview.GestureEnded += EndPreviewGesture;
+        Document.EditingContextChanging += EditingContextChanging;
 
         _properties.PropertyValueChanged += (_, _) =>
         {
@@ -250,6 +255,7 @@ public sealed class SceneEditorControl : UserControl
     /// <remarks>All source-reference changes form one transaction; a load failure cancels the group.</remarks>
     public void AddTilesheetSources(IEnumerable<string> paths)
     {
+        _preview.CancelGesture();
         ArgumentNullException.ThrowIfNull(paths);
         using var transaction = Document.History.BeginTransaction("Add tilesheet sources");
         // Source previews are derived state; rebuild them if loading or cancellation changes the group.
@@ -289,6 +295,7 @@ public sealed class SceneEditorControl : UserControl
     /// <remarks>All source-reference changes form one transaction; a load failure cancels the group.</remarks>
     public void AddAnimationSources(IEnumerable<string> paths)
     {
+        _preview.CancelGesture();
         ArgumentNullException.ThrowIfNull(paths);
         using var transaction = Document.History.BeginTransaction("Add animation sources");
         // Source previews are derived state; rebuild them if loading or cancellation changes the group.
@@ -390,6 +397,7 @@ public sealed class SceneEditorControl : UserControl
     /// <returns><see langword="true"/> if control validation succeeds and the property editor releases focus; otherwise, <see langword="false"/>.</returns>
     public bool CommitEdits()
     {
+        _preview.CancelGesture();
         _validation.Focus();
         return !_properties.ContainsFocus &&
                !_tileProperties.ContainsFocus &&
@@ -506,13 +514,15 @@ public sealed class SceneEditorControl : UserControl
                 Checked = tool == ActiveTool,
                 ToolTipText = tool switch
                 {
-                    SceneEditorTool.Select => "Select a cell without editing it",
-                    SceneEditorTool.Paint => "Click to assign the last-selected GTS frame or GANI animation",
-                    _ => "Click to remove the complete explicit tile definition"
+                    SceneEditorTool.Select => "Click a cell or drag to select a grid rectangle",
+                    SceneEditorTool.Paint => "Drag to paint with the last-selected GTS frame or GANI animation",
+                    _ => "Drag to erase complete explicit tile definitions"
                 }
             };
             button.Click += (_, _) =>
             {
+                _preview.CancelGesture();
+                ClearMultiSelection();
                 ActiveTool = tool;
                 _preview.RequireSelectedLayer = tool != SceneEditorTool.Select;
                 foreach (var (mode, item) in _toolButtons) item.Checked = mode == tool;
@@ -702,6 +712,12 @@ public sealed class SceneEditorControl : UserControl
             button.ToolTipText = label;
         }
         bar.Items.Add("Clear tile", null, (_, _) => ClearSelectedTile());
+        bar.Items.Add(new ToolStripSeparator());
+        bar.Items.Add("Apply to selection", null, (_, _) => EditSelectedCells(erase: false))
+            .ToolTipText = "Assign the selected source to all selected cells as one undo operation";
+        bar.Items.Add("Erase selection", null, (_, _) => EditSelectedCells(erase: true))
+            .ToolTipText = "Remove explicit tiles in the selection as one undo operation";
+        bar.Items.Add(_selectionLabel);
         return bar;
     }
 
@@ -760,6 +776,8 @@ public sealed class SceneEditorControl : UserControl
     /// <remarks>Also clears a cache supplied by the host. Does not save or change the authoring document.</remarks>
     public void ReloadSources()
     {
+        _preview.CancelGesture();
+        ClearMultiSelection();
         _packages.Clear();
         foreach (var source in _tilesheetSources) source.Dispose();
         foreach (var source in _animationSources) source.Dispose();
@@ -985,6 +1003,7 @@ public sealed class SceneEditorControl : UserControl
 
     private void RemoveSelectedTilesheetSource()
     {
+        _preview.CancelGesture();
         var node = _sourceTree.SelectedNode;
         if (node is null)
             return;
@@ -1006,6 +1025,7 @@ public sealed class SceneEditorControl : UserControl
 
     private void RemoveSelectedAnimationSource()
     {
+        _preview.CancelGesture();
         if (_animationList.SelectedItems.Count != 1 ||
             _animationList.SelectedItems[0].Tag is not SceneAnimationSource source)
         {
@@ -1051,37 +1071,13 @@ public sealed class SceneEditorControl : UserControl
             "\nPaint uses the last-selected source pane. Select a frame or animation there to change the source.";
     }
 
-    private void PreviewCellClicked(SceneLayerDefinition layer, int x, int y)
-    {
-        if (!Definition.Layers.Contains(layer) || x < 0 || y < 0 || x >= layer.Columns || y >= layer.Rows)
-            return;
-        if (ActiveTool != SceneEditorTool.Select &&
-            (!ReferenceEquals(layer, _selectedLayer) || !IsLayerVisibleInPreview(layer))) return;
-
-        SelectLayerNode(layer);
-        SetSelectedTile(layer, x, y);
-        switch (ActiveTool)
-        {
-            case SceneEditorTool.Paint:
-                UpdatePaintSourceLabel();
-                if (_paintSourceKind == PaintSourceKind.Frame && SelectedPaintFrame() is { } frame)
-                    AssignFrame(frame);
-                else if (_paintSourceKind == PaintSourceKind.Animation && SelectedPaintAnimation() is not null)
-                    AssignSelectedAnimation();
-                break;
-            case SceneEditorTool.Erase:
-                ClearSelectedTile();
-                break;
-        }
-    }
-
     private void AssignFrame(FrameTag frame)
     {
         if (_selectedLayer is null)
             return;
 
         Document.EditTile(_selectedLayer, (int)_tileX.Value, (int)_tileY.Value, "Assign frame",
-            tile => tile.Frame = frame.Source.CreateFrame(frame.Region, frame.X, frame.Y));
+            FrameAssignment(frame));
         RefreshTileProperties();
         RefreshPreview();
         UpdateValidation();
@@ -1115,13 +1111,7 @@ public sealed class SceneEditorControl : UserControl
             return;
         }
 
-        Document.EditTile(_selectedLayer, (int)_tileX.Value, (int)_tileY.Value, "Assign animation", tile =>
-        {
-            tile.AnimationKey = source.Definition.Key;
-            tile.EnableAnimator = true;
-            tile.StartAnimation = true;
-            tile.Frame = source.FirstPreviewFrame() ?? tile.Frame;
-        });
+        Document.EditTile(_selectedLayer, (int)_tileX.Value, (int)_tileY.Value, "Assign animation", AnimationAssignment(source));
 
         RefreshTileProperties();
         RefreshPreview();
@@ -1181,8 +1171,14 @@ public sealed class SceneEditorControl : UserControl
     private void SetSelectedTile(
         SceneLayerDefinition layer,
         int x,
-        int y)
+        int y,
+        bool preserveSelection = false)
     {
+        if (!ReferenceEquals(_selectedLayer, layer))
+        {
+            _preview.CancelGesture();
+            preserveSelection = false;
+        }
         _selectedLayer = layer;
 
         _syncingTileCoordinates = true;
@@ -1198,6 +1194,10 @@ public sealed class SceneEditorControl : UserControl
             _syncingTileCoordinates = false;
         }
 
+        if (!preserveSelection || _selectedCells.IsEmpty)
+            _selectedCells = new Rectangle((int)_tileX.Value, (int)_tileY.Value, 1, 1);
+        _selectedCells.Intersect(new Rectangle(0, 0, layer.Columns, layer.Rows));
+        UpdateSelectionDisplay();
         RefreshTileProperties();
         _preview.SetSelection(
             layer,
@@ -1212,6 +1212,8 @@ public sealed class SceneEditorControl : UserControl
 
         if (_selectedLayer.Columns <= 0 || _selectedLayer.Rows <= 0)
         {
+            _selectedCells = Rectangle.Empty;
+            UpdateSelectionDisplay();
             _tileProperties.SelectedObject = null;
             _preview.SetSelection(_selectedLayer, 0, 0);
             return;
@@ -1220,7 +1222,7 @@ public sealed class SceneEditorControl : UserControl
         SetSelectedTile(
             _selectedLayer,
             Math.Min((int)_tileX.Value, _selectedLayer.Columns - 1),
-            Math.Min((int)_tileY.Value, _selectedLayer.Rows - 1));
+            Math.Min((int)_tileY.Value, _selectedLayer.Rows - 1), preserveSelection: true);
     }
 
     private void RefreshTileProperties()
@@ -1331,7 +1333,7 @@ public sealed class SceneEditorControl : UserControl
 
         if (_structure.SelectedNode?.Tag is SceneLayerDefinition layer)
         {
-            _selectedLayer = layer;
+            if (!ReferenceEquals(_selectedLayer, layer)) _preview.CancelGesture();
             SetSelectedTile(layer, 0, 0);
         }
 
@@ -1348,6 +1350,8 @@ public sealed class SceneEditorControl : UserControl
 
     private void RefreshSelectedDefinition()
     {
+        _preview.CancelGesture();
+        ClearMultiSelection();
         foreach (var source in _tilesheetSources) source.Dispose();
         foreach (var source in _animationSources) source.Dispose();
         _tilesheetSources.Clear(); _animationSources.Clear(); _sourceDiagnostics.Clear();
@@ -1374,6 +1378,8 @@ public sealed class SceneEditorControl : UserControl
         }
         else
         {
+            _selectedCells = Rectangle.Empty;
+            UpdateSelectionDisplay();
             _properties.SelectedObject = new ScenePropertyView(Document, Definition);
             _tileProperties.SelectedObject = null;
             _preview.SetSelection(null, 0, 0);
@@ -1532,6 +1538,7 @@ public sealed class SceneEditorControl : UserControl
 
     private void RefreshPreview()
     {
+        UpdateSelectionDisplay();
         _preview.Configure(
             Definition,
             FindTilesheet,
@@ -1753,6 +1760,7 @@ public sealed class SceneEditorControl : UserControl
 
     private void DocumentChanged(object? sender, EventArgs e)
     {
+        if (_gestureLayer is not null && !GestureTargetIsValid()) _preview.CancelGesture();
         if (_refreshPending || !IsHandleCreated)
             return;
 
@@ -1789,7 +1797,11 @@ public sealed class SceneEditorControl : UserControl
                         UpdatePaintSourceLabel();
                     }
                 }
-                if (_selectedLayer is null || !Definition.Layers.Contains(_selectedLayer)) _selectedLayer = Definition.Layers.FirstOrDefault();
+                if (_selectedLayer is null || !Definition.Layers.Contains(_selectedLayer))
+                {
+                    _selectedLayer = Definition.Layers.FirstOrDefault();
+                    _selectedCells = Rectangle.Empty;
+                }
                 RefreshStructure();
                 ClampTileSelection();
                 RefreshTileProperties();
@@ -1826,6 +1838,8 @@ public sealed class SceneEditorControl : UserControl
     {
         if (disposing)
         {
+            _preview.CancelGesture();
+            Document.EditingContextChanging -= EditingContextChanging;
             Document.Changed -= DocumentChanged;
 
             foreach (var source in _tilesheetSources)
@@ -1859,7 +1873,10 @@ public sealed class SceneEditorControl : UserControl
         int X,
         int Y);
     /// <inheritdoc/>
-    protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
-        UndoRedoMenu.TryShortcut(this, keyData, Document.History, CommitEdits) || base.ProcessCmdKey(ref msg, keyData);
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+        if (keyData == Keys.Escape && _preview.HasGesture) { _preview.CancelGesture(); return true; }
+        return UndoRedoMenu.TryShortcut(this, keyData, Document.History, CommitEdits) || base.ProcessCmdKey(ref msg, keyData);
+    }
 
 }

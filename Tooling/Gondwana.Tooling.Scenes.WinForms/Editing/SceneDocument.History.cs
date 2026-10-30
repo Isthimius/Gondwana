@@ -9,6 +9,7 @@ public sealed partial class SceneDocument : IDisposable
 
     private void AddMembers(IReadOnlyList<SceneDefinition> members, string description)
     {
+        EditingContextChanging?.Invoke();
         var selected = Definition;
         History.Execute(description, () =>
         {
@@ -37,6 +38,8 @@ public sealed partial class SceneDocument : IDisposable
     /// <summary>Releases retained history and document listeners.</summary>
     public void Dispose()
     {
+        EditingContextChanging?.Invoke();
+        EditingContextChanging = null;
         History.Changed -= HistoryChanged;
         History.Dispose();
         Changed = null;

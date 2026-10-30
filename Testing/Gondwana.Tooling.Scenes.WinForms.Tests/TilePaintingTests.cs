@@ -300,7 +300,10 @@ public sealed partial class SceneEditorTests
         tree.Focus();
     }
 
-    private static void ClickCell(ScenePreviewControl preview, SceneLayerDefinition layer, int x, int y)
+    private static void ClickCell(ScenePreviewControl preview, SceneLayerDefinition layer, int x, int y) =>
+        ClickPreview(preview, PreviewCellPoint(preview, layer, x, y));
+
+    private static Point PreviewCellPoint(ScenePreviewControl preview, SceneLayerDefinition layer, int x, int y)
     {
         var projection = (SceneLayer)typeof(ScenePreviewControl).GetMethod("GetProjection", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(preview, [layer])!;
         var outline = projection[x, y]!.OutlinePointsWorld;
@@ -312,12 +315,15 @@ public sealed partial class SceneEditorTests
         using var bitmap = new Bitmap(preview.Width, preview.Height);
         preview.DrawToBitmap(bitmap, preview.ClientRectangle);
         var offset = (PointF)typeof(ScenePreviewControl).GetField("_offset", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(preview)!;
-        ClickPreview(preview, new((int)Math.Round(world.X * preview.Zoom + offset.X), (int)Math.Round(world.Y * preview.Zoom + offset.Y)));
+        return new((int)Math.Round(world.X * preview.Zoom + offset.X), (int)Math.Round(world.Y * preview.Zoom + offset.Y));
     }
 
-    private static void ClickPreview(ScenePreviewControl preview, Point point) =>
-        typeof(ScenePreviewControl).GetMethod("OnMouseDown", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .Invoke(preview, [new MouseEventArgs(MouseButtons.Left, 1, point.X, point.Y, 0)]);
+    private static void ClickPreview(ScenePreviewControl preview, Point point)
+    {
+        foreach (var method in new[] { "OnMouseDown", "OnMouseUp" })
+            typeof(ScenePreviewControl).GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic)!
+                .Invoke(preview, [new MouseEventArgs(MouseButtons.Left, 1, point.X, point.Y, 0)]);
+    }
 
     private static void WithPaintingEditor(Action<SceneEditorControl, ScenePreviewControl, TreeView, string> test) => RunSta(() =>
     {

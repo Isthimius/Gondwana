@@ -16,6 +16,22 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
 {
     internal bool RequireSelectedLayer { get; set; }
 
+    internal event Func<SceneLayerDefinition, int, int, bool>? GestureStarting;
+    internal event Action<bool>? GestureEnded;
+    private SceneLayerDefinition? _gestureLayer;
+    private PointF _previousWorld;
+    private Rectangle _selectedCells;
+    private Point? _lastGestureCell;
+    internal bool HasGesture => _gestureLayer is not null;
+
+    internal void SetSelectedCells(Rectangle cells)
+    {
+        _selectedCells = cells;
+        Invalidate();
+    }
+
+    internal void CancelGesture() => FinishGesture(cancel: true);
+
     private const float ZoomStepFactor = 1.25f;
     private const float PreviewMargin = 28f;
     private SceneDefinition? _definition;
@@ -68,6 +84,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         Func<string, SceneAnimationSource?> findAnimation,
         Func<SceneLayerDefinition, bool>? showLayer = null)
     {
+        if (HasGesture) CancelGesture();
         _definition = definition;
         _findTilesheet = findTilesheet;
         _findAnimation = findAnimation;
@@ -90,6 +107,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     /// <param name="zoom">Pixels per source pixel, clamped to the range 0.05 through 16.</param>
     public void SetZoom(float zoom)
     {
+        CancelGesture();
         PointF? centerWorld = _worldBounds.IsEmpty || Zoom <= 0
             ? null
             : new PointF(
@@ -137,6 +155,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     /// </summary>
     public void Fit()
     {
+        CancelGesture();
         _fitToWindow = true;
         AutoScrollPosition = Point.Empty;
         UpdateExtent();
@@ -306,7 +325,8 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
 
         using var labelBrush = new SolidBrush(ForeColor);
         e.Graphics.DrawString(
-            $"{visibleLayers.Count} visible layer(s) — click the selected layer to use the active tool",
+            $"Active layer: {_selectedLayer?.ID ?? "(none)"} - {visibleLayers.Count} visible layer(s)\n" +
+            $"{(long)_selectedCells.Width * _selectedCells.Height} cell(s) selected - Tile Properties edits active cell ({_selectedX},{_selectedY}) only",
             Font,
             labelBrush,
             new PointF(8, 8));
@@ -339,23 +359,107 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
             return;
         }
 
-        float worldX = (e.X - _offset.X) / Zoom;
-        float worldY = (e.Y - _offset.Y) / Zoom;
+        CancelGesture();
+        Focus();
+        var world = ScreenToWorld(e.Location);
+        if (!TryHitCell(layer, world, out var cell)) return;
+        if (GestureStarting is not null && !GestureStarting(layer, cell.X, cell.Y)) return;
 
-        var projection = GetProjection(layer);
-        PointF grid = projection.WorldPxToGrid(new PointF(worldX, worldY));
+        _gestureLayer = layer;
+        _lastGestureCell = null;
+        _previousWorld = world;
+        try
+        {
+            Capture = true;
+            if (!Capture) { CancelGesture(); return; }
+            VisitCell(layer, cell);
+        }
+        catch { CancelGesture(); throw; }
+    }
 
-        int x = (int)Math.Floor(grid.X + 0.0001f);
-        int y = (int)Math.Floor(grid.Y + 0.0001f);
+    private PointF ScreenToWorld(Point point) => new((point.X - _offset.X) / Zoom, (point.Y - _offset.Y) / Zoom);
 
-        if (x < 0 || y < 0 || x >= layer.Columns || y >= layer.Rows)
-            return;
+    private bool TryHitCell(SceneLayerDefinition layer, PointF world, out Point cell)
+    {
+        var grid = GetProjection(layer).WorldPxToGrid(world);
+        cell = new((int)Math.Floor(grid.X + .0001f), (int)Math.Floor(grid.Y + .0001f));
+        return cell.X >= 0 && cell.Y >= 0 && cell.X < layer.Columns && cell.Y < layer.Rows;
+    }
 
+    private void VisitCell(SceneLayerDefinition layer, Point cell)
+    {
+        if (_lastGestureCell == cell) return;
+        _lastGestureCell = cell;
         _selectedLayer = layer;
-        _selectedX = x;
-        _selectedY = y;
-        TileSelected?.Invoke(layer, x, y);
+        _selectedX = cell.X;
+        _selectedY = cell.Y;
+        TileSelected?.Invoke(layer, cell.X, cell.Y);
         Invalidate();
+    }
+
+    private void ContinueGesture(Point location)
+    {
+        if (_gestureLayer is not { } layer) return;
+        if (_definition?.Layers.Contains(layer) != true || !IsLayerDisplayed(layer))
+        {
+            CancelGesture();
+            return;
+        }
+        UpdateOffset();
+        var world = ScreenToWorld(location);
+        float dx = world.X - _previousWorld.X, dy = world.Y - _previousWorld.Y;
+        // Sample in world pixels, then ask the same projection used by click hit-testing.
+        // Sub-cell steps follow staggered hex polygons as well as affine grid projections.
+        float step = Math.Clamp(Math.Min(layer.TileWidth, layer.TileHeight) / 16f, .0625f, .25f);
+        int samples = Math.Max(1, (int)Math.Ceiling(Math.Max(Math.Abs(dx), Math.Abs(dy)) / step));
+        var start = _previousWorld;
+        _previousWorld = world;
+        for (int i = 1; i <= samples && ReferenceEquals(_gestureLayer, layer); i++)
+        {
+            var sample = new PointF(start.X + dx * i / samples, start.Y + dy * i / samples);
+            if (TryHitCell(layer, sample, out var cell)) VisitCell(layer, cell);
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override void OnMouseMove(MouseEventArgs e)
+    {
+        base.OnMouseMove(e);
+        if (!HasGesture) return;
+        if ((e.Button & MouseButtons.Left) == 0) { CancelGesture(); return; }
+        try { ContinueGesture(e.Location); }
+        catch { CancelGesture(); throw; }
+    }
+
+    /// <inheritdoc/>
+    protected override void OnMouseUp(MouseEventArgs e)
+    {
+        base.OnMouseUp(e);
+        if (e.Button != MouseButtons.Left || !HasGesture) return;
+        try { ContinueGesture(e.Location); FinishGesture(cancel: false); }
+        catch { CancelGesture(); throw; }
+    }
+
+    private void FinishGesture(bool cancel)
+    {
+        if (!HasGesture) return;
+        _gestureLayer = null;
+        try { GestureEnded?.Invoke(cancel); }
+        finally { Capture = false; Invalidate(); }
+    }
+
+    /// <inheritdoc/>
+    protected override void OnMouseCaptureChanged(EventArgs e)
+    {
+        base.OnMouseCaptureChanged(e);
+        if (!Capture) CancelGesture();
+    }
+
+    /// <inheritdoc/>
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+        if (keyData == Keys.Escape && HasGesture) { CancelGesture(); return true; }
+        return base.ProcessCmdKey(ref msg, keyData);
     }
 
     private RectangleF CalculateWorldBounds(
@@ -563,32 +667,29 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
                 }
         }
 
-        if (ReferenceEquals(layer, _selectedLayer) &&
-            _selectedX >= 0 &&
-            _selectedY >= 0 &&
-            _selectedX < layer.Columns &&
-            _selectedY < layer.Rows)
+        if (ReferenceEquals(layer, _selectedLayer))
         {
+            var cells = _selectedCells.IsEmpty ? new Rectangle(_selectedX, _selectedY, 1, 1) : _selectedCells;
+            cells.Intersect(new Rectangle(0, 0, layer.Columns, layer.Rows));
+            var corners = new[] { Point.Empty, new Point(ClientSize.Width, 0),
+                new Point(0, ClientSize.Height), new Point(ClientSize.Width, ClientSize.Height) }
+                .Select(point => projection.WorldPxToGrid(ScreenToWorld(point))).ToArray();
+            // Cull off-screen selection cells using the existing inverse projection.
+            cells.Intersect(Rectangle.FromLTRB((int)Math.Floor(corners.Min(point => point.X)) - 2,
+                (int)Math.Floor(corners.Min(point => point.Y)) - 2, (int)Math.Ceiling(corners.Max(point => point.X)) + 3,
+                (int)Math.Ceiling(corners.Max(point => point.Y)) + 3));
             using var selectedPen = new Pen(Color.Gold, 2f);
-            var points = TileOutline(
-                    projection,
-                    layer,
-                    _selectedX,
-                    _selectedY)
-                .Select(ToScreen)
-                .ToArray();
 
-            if (points.Length >= 3)
-                graphics.DrawPolygon(selectedPen, points);
-            else
-                graphics.DrawRectangle(
-                    selectedPen,
-                    Rectangle.Round(ToScreen(
-                        TileBounds(
-                            projection,
-                            layer,
-                            _selectedX,
-                            _selectedY))));
+            for (int y = cells.Top; y < cells.Bottom; y++)
+                for (int x = cells.Left; x < cells.Right; x++)
+                {
+                    var points = TileOutline(projection, layer, x, y).Select(ToScreen).ToArray();
+                    if (points.Length >= 3)
+                    {
+
+                        graphics.DrawPolygon(selectedPen, points);
+                    }
+                }
         }
     }
 
@@ -725,6 +826,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     {
         if (disposing)
         {
+            CancelGesture();
             foreach (var cached in _projections.Values)
                 cached.Layer.Dispose();
             _projections.Clear();
