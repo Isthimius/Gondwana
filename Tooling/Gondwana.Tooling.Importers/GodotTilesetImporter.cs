@@ -64,6 +64,8 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                 ?? throw new InvalidDataException($"Unresolved texture {textureId} for atlas source {id}.");
             string path = ResolvePath(plan.Request.SourcePath, GodotTextResource.String(texture.Attributes["path"]));
             plan.Dependencies.Add(path);
+            if (!File.Exists(path))
+                throw new InvalidDataException($"Atlas source {id}: missing Godot texture: {path}");
             using var image = SKBitmap.Decode(path) ?? throw new InvalidDataException($"Cannot decode Godot atlas for source {id}: {path}");
             var size = Vector(Get(p, "texture_region_size", "Vector2i(16, 16)"));
             var margin = Vector(Get(p, "margins", "Vector2i(0, 0)"));
@@ -88,6 +90,9 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                 Image = new() { FilePath = ImportNaming.RelativePath(plan.Request.OutputDirectory, path) },
                 Regions = [defaultRegion]
             };
+            // ImportPlan retains the mutable definition, so adding it now keeps the
+            // shared GTS first in the output list while regions are added below.
+            plan.Add(gtsFile, definition);
             var coords = p.Keys.Where(k => Regex.IsMatch(k, @"^\d+:\d+/0$")).Select(k => k[..^2]).OrderBy(k => k, StringComparer.Ordinal).ToArray();
             if (coords.Length < grid.Columns * grid.Rows)
                 plan.Report(ExternalImportSeverity.Info, "godot.sparse", $"Atlas source {id}: GTS exposes all atlas grid cells; generated animation references use only declared tile animation frames.");
@@ -189,7 +194,6 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                     plan.Add($"{animationFile}-animations.gani", gani);
                 }
             }
-            plan.Add(gtsFile, definition);
         }
     }
 
