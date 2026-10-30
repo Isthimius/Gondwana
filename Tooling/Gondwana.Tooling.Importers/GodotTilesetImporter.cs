@@ -46,6 +46,7 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
         var sources = root.Properties.Where(p => Regex.IsMatch(p.Key, @"^sources/\d+$")).OrderBy(p => int.Parse(p.Key[8..], CultureInfo.InvariantCulture)).ToArray();
         if (sources.Length == 0) throw new InvalidDataException("No atlas sources found.");
         string basename = ImportNaming.Sanitize(Path.GetFileNameWithoutExtension(plan.Request.SourcePath));
+        string gtsFile = basename + ".gts";
         foreach (var property in root.Properties.Keys.Where(k => k != "tile_size" && !k.StartsWith("sources/", StringComparison.Ordinal)))
             plan.Report(ExternalImportSeverity.Warning, "godot.metadata", $"TileSet property '{property}' is omitted (terrain, physics, navigation, proxies and custom data have no import mapping).");
         foreach (var source in sources)
@@ -54,79 +55,141 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
             string id = source.Key[8..];
             string resourceId = Reference(source.Value, "SubResource");
             var atlas = sections.SingleOrDefault(s => s.Kind == "sub_resource" && s.Attributes.TryGetValue("id", out var v) && ResourceId(v) == resourceId)
-                ?? throw new InvalidDataException($"Unresolved atlas subresource {resourceId}.");
+                ?? throw new InvalidDataException($"Unresolved atlas subresource {resourceId} for source {id}.");
             if (!atlas.Attributes.TryGetValue("type", out var atlasType) || GodotTextResource.String(atlasType) != "TileSetAtlasSource")
-                throw new InvalidDataException("Only TileSetAtlasSource is supported; scene collection sources are unsupported.");
+                throw new InvalidDataException($"Atlas source {id}: only TileSetAtlasSource is supported; scene collection sources are unsupported.");
             var p = atlas.Properties;
             string textureId = Reference(Get(p, "texture"), "ExtResource");
             var texture = sections.SingleOrDefault(s => s.Kind == "ext_resource" && s.Attributes.TryGetValue("id", out var v) && ResourceId(v) == textureId)
-                ?? throw new InvalidDataException($"Unresolved texture {textureId}.");
+                ?? throw new InvalidDataException($"Unresolved texture {textureId} for atlas source {id}.");
             string path = ResolvePath(plan.Request.SourcePath, GodotTextResource.String(texture.Attributes["path"]));
             plan.Dependencies.Add(path);
-            using var image = SKBitmap.Decode(path) ?? throw new InvalidDataException($"Cannot decode Godot atlas: {path}");
+            using var image = SKBitmap.Decode(path) ?? throw new InvalidDataException($"Cannot decode Godot atlas for source {id}: {path}");
             var size = Vector(Get(p, "texture_region_size", "Vector2i(16, 16)"));
             var margin = Vector(Get(p, "margins", "Vector2i(0, 0)"));
             var gap = Vector(Get(p, "separation", "Vector2i(0, 0)"));
             if (size.X <= 0 || size.Y <= 0 || margin.X < 0 || margin.Y < 0 || gap.X < 0 || gap.Y < 0)
-                throw new InvalidDataException("Invalid atlas dimensions/margins/separation.");
-            string file = sources.Length == 1 ? basename : $"{basename}-source-{id}";
+                throw new InvalidDataException($"Atlas source {id}: invalid dimensions, margins or separation.");
             string name = sources.Length == 1 ? basename : $"{basename}.source.{id}";
-            var region = new TilesheetRegionDefinition
+            string animationFile = sources.Length == 1 ? basename : $"{basename}-source-{id}";
+            var defaultRegion = new TilesheetRegionDefinition
             {
                 Area = new Rectangle(0, 0, image.Width, image.Height),
                 TileSize = new Size(size.X, size.Y),
                 TilePadding = new Spacing { Right = gap.X, Bottom = gap.Y },
                 RegionMargin = new Spacing { Left = margin.X, Top = margin.Y, Right = -gap.X, Bottom = -gap.Y }
             };
-            var grid = TilesheetDefinitionValidator.GridSize(region);
+            var grid = TilesheetDefinitionValidator.GridSize(defaultRegion);
             if (Vector(Get(root.Properties, "tile_size", "Vector2i(16, 16)")) != size)
-                plan.Report(ExternalImportSeverity.Info, "godot.cellsize", "Preserving atlas texture-region frame size; TileSet logical map cell size differs.");
-            var definition = new TilesheetDefinition { Name = name, Image = new() { FilePath = ImportNaming.RelativePath(plan.Request.OutputDirectory, path) }, Regions = [region] };
-            plan.Add(file + ".gts", definition);
+                plan.Report(ExternalImportSeverity.Info, "godot.cellsize", $"Atlas source {id}: preserving texture-region frame size; the TileSet logical map cell size differs.");
+            var definition = new TilesheetDefinition
+            {
+                Name = name,
+                Image = new() { FilePath = ImportNaming.RelativePath(plan.Request.OutputDirectory, path) },
+                Regions = [defaultRegion]
+            };
             var coords = p.Keys.Where(k => Regex.IsMatch(k, @"^\d+:\d+/0$")).Select(k => k[..^2]).OrderBy(k => k, StringComparer.Ordinal).ToArray();
             if (coords.Length < grid.Columns * grid.Rows)
-                plan.Report(ExternalImportSeverity.Info, "godot.sparse", "GTS exposes all atlas grid cells; generated animation references use only declared tile animation frames.");
+                plan.Report(ExternalImportSeverity.Info, "godot.sparse", $"Atlas source {id}: GTS exposes all atlas grid cells; generated animation references use only declared tile animation frames.");
             foreach (var property in p.Keys)
             {
                 if (Regex.IsMatch(property, @"^\d+:\d+/[1-9]\d*(/|$)"))
-                    plan.Report(ExternalImportSeverity.Warning, "godot.alternative", $"Alternative tile '{property}' is not imported.");
+                    plan.Report(ExternalImportSeverity.Warning, "godot.alternative", $"Atlas source {id}: alternative tile '{property}' is not imported.");
                 else if (Regex.IsMatch(property, @"^\d+:\d+/0/"))
-                    plan.Report(ExternalImportSeverity.Warning, "godot.tiledata", $"TileData '{property}' is omitted; polygons are not converted to collision rectangles.");
+                    plan.Report(ExternalImportSeverity.Warning, "godot.tiledata", $"Atlas source {id}: TileData '{property}' is omitted; polygons are not converted to collision rectangles.");
                 else if (!Regex.IsMatch(property, @"^\d+:\d+/") && property is not ("texture" or "margins" or "separation" or "texture_region_size"))
-                    plan.Report(ExternalImportSeverity.Info, "godot.metadata", $"Atlas metadata '{property}' is omitted.");
+                    plan.Report(ExternalImportSeverity.Info, "godot.metadata", $"Atlas source {id}: metadata '{property}' is omitted.");
             }
             foreach (string coord in coords)
             {
                 token.ThrowIfCancellationRequested();
                 var xy = coord.Split(':').Select(s => int.Parse(s, CultureInfo.InvariantCulture)).ToArray();
-                if (xy[0] >= grid.Columns || xy[1] >= grid.Rows) throw new InvalidDataException($"Tile {coord} is outside atlas.");
-                if (Vector(Get(p, coord + "/size_in_atlas", "Vector2i(1, 1)")) != new Point(1, 1))
-                { plan.Report(ExternalImportSeverity.Error, "godot.multicell", $"Tile {coord} spans multiple atlas cells and is unsupported."); continue; }
+                var span = Vector(Get(p, coord + "/size_in_atlas", "Vector2i(1, 1)"));
+                if (span.X <= 0 || span.Y <= 0)
+                {
+                    plan.Report(ExternalImportSeverity.Error, "godot.multicell", $"Atlas source {id}, tile {coord}: size_in_atlas must have positive dimensions (found {span.X}x{span.Y}).");
+                    continue;
+                }
+                bool multiCell = span != new Point(1, 1);
                 var durationKeys = p.Keys.Select(k => Regex.Match(k, "^" + Regex.Escape(coord) + @"/animation_frame_(\d+)/duration$")).Where(m => m.Success).ToArray();
                 int count = durationKeys.Length == 0 ? 1 : durationKeys.Max(m => int.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture)) + 1;
                 count = checked((int)Number(Get(p, coord + "/animation_frames_count", count.ToString(CultureInfo.InvariantCulture))));
-                if (count <= 0 || count > 100000) throw new InvalidDataException("Invalid animation frame count.");
-                if (count == 1) continue;
-                int columns = checked((int)Number(Get(p, coord + "/animation_columns", "0")));
-                var separation = Vector(Get(p, coord + "/animation_separation", "Vector2i(0, 0)"));
-                double speed = Number(Get(p, coord + "/animation_speed", "1"));
-                if (columns < 0 || separation.X < 0 || separation.Y < 0 || speed <= 0) throw new InvalidDataException("Invalid Godot animation layout/speed.");
-                if (Get(p, coord + "/animation_mode", "0") != "0") plan.Report(ExternalImportSeverity.Warning, "godot.randomstart", "Random animation start times are not represented.");
-                var gani = new AnimationDefinition
-                {
-                    Key = $"{name}.tile.{xy[0]}.{xy[1]}",
-                    CycleType = CycleType.Repeating,
-                    TilesheetSources = [AnimationTilesheetSourceDefinition.Loose(name, file + ".gts")]
-                };
+                if (count <= 0 || count > 100000) throw new InvalidDataException($"Atlas source {id}, tile {coord}: invalid animation frame count.");
+                int columns = count > 1 ? checked((int)Number(Get(p, coord + "/animation_columns", "0"))) : 0;
+                var separation = count > 1 ? Vector(Get(p, coord + "/animation_separation", "Vector2i(0, 0)")) : Point.Empty;
+                double speed = count > 1 ? Number(Get(p, coord + "/animation_speed", "1")) : 1;
+                if (columns < 0 || separation.X < 0 || separation.Y < 0 || speed <= 0)
+                    throw new InvalidDataException($"Atlas source {id}, tile {coord}: invalid animation layout or speed.");
+                if (count > 1 && Get(p, coord + "/animation_mode", "0") != "0")
+                    plan.Report(ExternalImportSeverity.Warning, "godot.randomstart", $"Atlas source {id}, tile {coord}: random animation start times are not represented.");
+
+                var frames = new List<AnimationFrameDefinition>();
+                bool invalidFrame = false;
                 for (int frame = 0; frame < count; frame++)
                 {
-                    int x = checked(xy[0] + (1 + separation.X) * (columns > 0 ? frame % columns : frame));
-                    int y = checked(xy[1] + (1 + separation.Y) * (columns > 0 ? frame / columns : 0));
-                    if (x >= grid.Columns || y >= grid.Rows) throw new InvalidDataException($"Animation frame {frame} of {coord} cannot map to the GTS grid.");
-                    gani.Frames.Add(new() { Tilesheet = name, XTile = x, YTile = y, DurationSeconds = Number(Get(p, $"{coord}/animation_frame_{frame}/duration", "1")) / speed });
+                    token.ThrowIfCancellationRequested();
+                    int x = checked((int)((long)xy[0] + ((long)span.X + separation.X) * (columns > 0 ? frame % columns : frame)));
+                    int y = checked((int)((long)xy[1] + ((long)span.Y + separation.Y) * (columns > 0 ? frame / columns : 0)));
+                    if (x < 0 || y < 0 || (long)x + span.X > grid.Columns || (long)y + span.Y > grid.Rows)
+                    {
+                        plan.Report(ExternalImportSeverity.Error, "godot.atlas.bounds",
+                            $"Atlas source {id}, tile {coord}, frame {frame}: {span.X}x{span.Y} atlas-cell rectangle at ({x},{y}) exceeds the {grid.Columns}x{grid.Rows} atlas grid.");
+                        invalidFrame = true;
+                        continue;
+                    }
+
+                    string regionName = defaultRegion.Name;
+                    int frameX = x, frameY = y;
+                    if (multiCell)
+                    {
+                        long left = margin.X + (long)x * (size.X + (long)gap.X);
+                        long top = margin.Y + (long)y * (size.Y + (long)gap.Y);
+                        long width = (long)span.X * size.X + ((long)span.X - 1) * gap.X;
+                        long height = (long)span.Y * size.Y + ((long)span.Y - 1) * gap.Y;
+                        if (left < 0 || top < 0 || width <= 0 || height <= 0 ||
+                            left + width > image.Width || top + height > image.Height)
+                        {
+                            plan.Report(ExternalImportSeverity.Error, "godot.atlas.bounds",
+                                $"Atlas source {id}, tile {coord}, frame {frame}: multi-cell rectangle ({left},{top},{width},{height}) exceeds texture {image.Width}x{image.Height}.");
+                            invalidFrame = true;
+                            continue;
+                        }
+                        regionName = $"tile-{xy[0]}-{xy[1]}" + (count > 1 ? $"-frame-{frame}" : "");
+                        definition.Regions.Add(new TilesheetRegionDefinition
+                        {
+                            Name = regionName,
+                            Area = new Rectangle((int)left, (int)top, (int)width, (int)height),
+                            TileSize = new Size((int)width, (int)height)
+                        });
+                        frameX = 0;
+                        frameY = 0;
+                    }
+                    if (count > 1)
+                        frames.Add(new AnimationFrameDefinition
+                        {
+                            Tilesheet = name,
+                            RegionName = regionName,
+                            XTile = frameX,
+                            YTile = frameY,
+                            DurationSeconds = Number(Get(p, $"{coord}/animation_frame_{frame}/duration", "1")) / speed
+                        });
                 }
-                plan.Add($"{file}-animations.gani", gani);
+                if (multiCell && !invalidFrame)
+                    plan.Report(ExternalImportSeverity.Info, "godot.multicell",
+                        $"Atlas source {id}, tile {coord}: {span.X}x{span.Y} atlas cells retained as named GTS region{(count > 1 ? "s" : "")}.");
+                if (count > 1 && !invalidFrame)
+                {
+                    var gani = new AnimationDefinition
+                    {
+                        Key = $"{name}.tile.{xy[0]}.{xy[1]}",
+                        CycleType = CycleType.Repeating,
+                        TilesheetSources = [AnimationTilesheetSourceDefinition.Loose(name, gtsFile)]
+                    };
+                    gani.Frames.AddRange(frames);
+                    plan.Add($"{animationFile}-animations.gani", gani);
+                }
             }
+            plan.Add(gtsFile, definition);
         }
     }
 
@@ -188,9 +251,8 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
                 RegionMargin = new Spacing { Right = -spacing, Bottom = -spacing }
             };
             string suffix = id.ToString(CultureInfo.InvariantCulture);
-            string file = tiles.Count == 1 ? basename : $"{basename}-tile-{suffix}";
             string name = tiles.Count == 1 ? basename : $"{basename}.tile.{suffix}";
-            plan.Add(file + ".gts", new TilesheetDefinition
+            plan.Add(basename + ".gts", new TilesheetDefinition
             {
                 Name = name,
                 Image = new() { FilePath = ImportNaming.RelativePath(plan.Request.OutputDirectory, path) },
@@ -283,9 +345,10 @@ public sealed class GodotTilesetImporter : ExternalAssetImporter
     {
         string directory = Path.GetDirectoryName(Path.GetFullPath(source))!;
         if (!dependency.StartsWith("res://", StringComparison.Ordinal)) return Path.GetFullPath(dependency, directory);
-        var root = new DirectoryInfo(directory);
+        DirectoryInfo? root = new DirectoryInfo(directory);
         while (root is not null && !File.Exists(Path.Combine(root.FullName, "project.godot"))) root = root.Parent;
-        if (root is null) throw new InvalidDataException("Cannot resolve res:// texture: put this resource under a Godot project containing project.godot.");
-        return Path.GetFullPath(dependency[6..], root.FullName);
+        // A standalone TileSet does not require a Godot project. When there is no
+        // project.godot ancestor, resolve res:// from the TileSet's own directory.
+        return Path.GetFullPath(dependency[6..], root?.FullName ?? directory);
     }
 }
