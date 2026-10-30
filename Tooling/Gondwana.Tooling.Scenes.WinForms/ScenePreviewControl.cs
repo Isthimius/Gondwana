@@ -16,6 +16,22 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
 {
     internal bool RequireSelectedLayer { get; set; }
 
+    internal event Func<SceneLayerDefinition, int, int, bool>? GestureStarting;
+    internal event Action<bool>? GestureEnded;
+    private SceneLayerDefinition? _gestureLayer;
+    private PointF _previousWorld;
+    private Rectangle _selectedCells;
+    private Point? _lastGestureCell;
+    internal bool HasGesture => _gestureLayer is not null;
+
+    internal void SetSelectedCells(Rectangle cells)
+    {
+        _selectedCells = cells;
+        Invalidate();
+    }
+
+    internal void CancelGesture() => FinishGesture(cancel: true);
+
     private const float ZoomStepFactor = 1.25f;
     private const float PreviewMargin = 28f;
     private SceneDefinition? _definition;
@@ -68,6 +84,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         Func<string, SceneAnimationSource?> findAnimation,
         Func<SceneLayerDefinition, bool>? showLayer = null)
     {
+        if (HasGesture) CancelGesture();
         _definition = definition;
         _findTilesheet = findTilesheet;
         _findAnimation = findAnimation;
@@ -90,6 +107,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     /// <param name="zoom">Pixels per source pixel, clamped to the range 0.05 through 16.</param>
     public void SetZoom(float zoom)
     {
+        CancelGesture();
         PointF? centerWorld = _worldBounds.IsEmpty || Zoom <= 0
             ? null
             : new PointF(
@@ -137,6 +155,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     /// </summary>
     public void Fit()
     {
+        CancelGesture();
         _fitToWindow = true;
         AutoScrollPosition = Point.Empty;
         UpdateExtent();
@@ -306,7 +325,8 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
 
         using var labelBrush = new SolidBrush(ForeColor);
         e.Graphics.DrawString(
-            $"{visibleLayers.Count} visible layer(s) — click the selected layer to use the active tool",
+            $"Active layer: {_selectedLayer?.ID ?? "(none)"} - {visibleLayers.Count} visible layer(s)\n" +
+            $"{(long)_selectedCells.Width * _selectedCells.Height} cell(s) selected - Tile Properties edits active cell ({_selectedX},{_selectedY}) only",
             Font,
             labelBrush,
             new PointF(8, 8));
@@ -339,23 +359,243 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
             return;
         }
 
-        float worldX = (e.X - _offset.X) / Zoom;
-        float worldY = (e.Y - _offset.Y) / Zoom;
+        CancelGesture();
+        Focus();
+        var world = ScreenToWorld(e.Location);
+        if (!TryHitCell(layer, world, out var cell)) return;
+        if (GestureStarting is not null && !GestureStarting(layer, cell.X, cell.Y)) return;
 
-        var projection = GetProjection(layer);
-        PointF grid = projection.WorldPxToGrid(new PointF(worldX, worldY));
+        _gestureLayer = layer;
+        _lastGestureCell = null;
+        _previousWorld = world;
+        try
+        {
+            Capture = true;
+            if (!Capture) { CancelGesture(); return; }
+            VisitCell(layer, cell);
+        }
+        catch { CancelGesture(); throw; }
+    }
 
-        int x = (int)Math.Floor(grid.X + 0.0001f);
-        int y = (int)Math.Floor(grid.Y + 0.0001f);
+    private PointF ScreenToWorld(Point point) => new((point.X - _offset.X) / Zoom, (point.Y - _offset.Y) / Zoom);
 
-        if (x < 0 || y < 0 || x >= layer.Columns || y >= layer.Rows)
-            return;
+    private bool TryHitCell(SceneLayerDefinition layer, PointF world, out Point cell)
+    {
+        var grid = GetProjection(layer).WorldPxToGrid(world);
+        cell = new((int)Math.Floor(grid.X + .0001f), (int)Math.Floor(grid.Y + .0001f));
+        return cell.X >= 0 && cell.Y >= 0 && cell.X < layer.Columns && cell.Y < layer.Rows;
+    }
 
+    private void VisitCell(SceneLayerDefinition layer, Point cell)
+    {
+        if (_lastGestureCell == cell) return;
+        _lastGestureCell = cell;
         _selectedLayer = layer;
-        _selectedX = x;
-        _selectedY = y;
-        TileSelected?.Invoke(layer, x, y);
+        _selectedX = cell.X;
+        _selectedY = cell.Y;
+        TileSelected?.Invoke(layer, cell.X, cell.Y);
         Invalidate();
+    }
+
+    private void ContinueGesture(Point location)
+    {
+        if (_gestureLayer is not { } layer) return;
+        if (_definition?.Layers.Contains(layer) != true || !IsLayerDisplayed(layer))
+        {
+            CancelGesture();
+            return;
+        }
+        UpdateOffset();
+        var world = ScreenToWorld(location);
+        var start = _previousWorld;
+        _previousWorld = world;
+        foreach (var cell in CellsAlongSegment(layer, start, world))
+        {
+            if (!ReferenceEquals(_gestureLayer, layer)) break;
+            VisitCell(layer, cell);
+        }
+    }
+
+    internal IEnumerable<Point> CellsAlongSegment(SceneLayerDefinition layer, PointF start, PointF end)
+    {
+        bool hex = layer.CoordinateSystemType is CoordinateSystemTypes.HexAxialFlatTop or CoordinateSystemTypes.HexAxialPointedTop;
+        var projection = GetProjection(layer);
+        double previous = 0;
+        Point first = CellAt(0);
+        Point? yielded = null;
+        foreach (var cell in Trace())
+        {
+            if (cell.X < 0 || cell.Y < 0 || cell.X >= layer.Columns || cell.Y >= layer.Rows || yielded == cell) continue;
+            yielded = cell;
+            yield return cell;
+        }
+
+        IEnumerable<Point> Trace()
+        {
+            yield return first;
+            foreach (double stop in SegmentBoundaries(layer, start, end))
+            {
+                Point last = CellAt(stop);
+                if (hex)
+                {
+                    // Boundary points can belong to a different rounded pixel or search
+                    // neighborhood than the open interval. Inspect both interior sides.
+                    double left = Interior(previous, stop), right = Interior(stop, previous);
+                    Point insideLeft = CellAt(left), insideRight = CellAt(right);
+                    foreach (var cell in Refine(previous, left, first, insideLeft)) yield return cell;
+                    foreach (var cell in Refine(left, right, insideLeft, insideRight)) yield return cell;
+                    foreach (var cell in Refine(right, stop, insideRight, last)) yield return cell;
+                }
+                else
+                {
+                    yield return CellAt((previous + stop) / 2);
+                    yield return last;
+                }
+                previous = stop;
+                first = last;
+            }
+        }
+
+        IEnumerable<Point> Refine(double from, double to, Point left, Point right)
+        {
+            // Within a fixed rounded pixel and candidate neighborhood, polygon choice is
+            // constant; nearest-center fallback has convex cells. Refine differing cells
+            // to representable parameter precision, including endpoint rounding transitions.
+            double middle = (from + to) / 2;
+            if (middle == from || middle == to) { yield return right; yield break; }
+            Point center = CellAt(middle);
+            if (left == right && center == left) { yield return right; yield break; }
+            foreach (var cell in Refine(from, middle, left, center)) yield return cell;
+            foreach (var cell in Refine(middle, to, center, right)) yield return cell;
+        }
+
+        double Interior(double boundary, double toward)
+        {
+            var point = WorldAt(boundary);
+            double direction = Math.Sign(toward - boundary);
+            double dx = end.X - start.X, dy = end.Y - start.Y;
+            double inset = 0;
+            if (dx != 0) inset = Math.Max(inset, ParameterStep(point.X, dx));
+            if (dy != 0) inset = Math.Max(inset, ParameterStep(point.Y, dy));
+            // Move off a float-rounded boundary without stepping over a narrow interval.
+            return boundary + direction * Math.Min(inset * 2, Math.Abs(toward - boundary) / 4);
+
+            double ParameterStep(float value, double delta)
+            {
+                float next = delta * direction > 0 ? MathF.BitIncrement(value) : MathF.BitDecrement(value);
+                return Math.Abs((next - value) / delta);
+            }
+        }
+
+        PointF WorldAt(double t) => new((float)(start.X + (end.X - start.X) * t),
+            (float)(start.Y + (end.Y - start.Y) * t));
+
+        Point CellAt(double t)
+        {
+            var grid = projection.WorldPxToGrid(WorldAt(t));
+            return new((int)Math.Floor(grid.X + .0001f), (int)Math.Floor(grid.Y + .0001f));
+        }
+    }
+
+    private SortedSet<double> SegmentBoundaries(SceneLayerDefinition layer, PointF start, PointF end)
+    {
+        var stops = new SortedSet<double> { 1 };
+        var projection = GetProjection(layer);
+        int width = projection.TileWidth, height = projection.TileHeight;
+        if (layer.CoordinateSystemType is CoordinateSystemTypes.HexAxialFlatTop or CoordinateSystemTypes.HexAxialPointedTop)
+        {
+            // Hex lookup has two kinds of discontinuity: rounded polygon pixels and
+            // changes to its coarse candidate search. Partition both before refining the
+            // continuous nearest-center fallback. WorldPxToGrid remains the cell selector.
+            var bounds = projection.GetLayerBoundsPx();
+            bounds.Inflate(width, height);
+            AddBoundaries(stops, start.X + .5, end.X + .5, bounds.Left + .5, bounds.Right + .5);
+            AddBoundaries(stops, start.Y + .5, end.Y + .5, bounds.Top + .5, bounds.Bottom + .5);
+            if (layer.CoordinateSystemType == CoordinateSystemTypes.HexAxialFlatTop)
+            {
+                // See HexAxialFlatTopCoordinates.GetSceneLayerCoordinatesAtPixel.
+                SearchX(width * .75, -projection.OriginPx.X + width * .875);
+                SearchY(height * .5, -projection.OriginPx.Y);
+            }
+            else
+            {
+                // See HexAxialPointedTop.GetSceneLayerCoordinatesAtPixel. Candidate columns
+                // have a separate rounding boundary for each row parity (including odd widths).
+                SearchY(height * .75, -projection.OriginPx.Y + height * .375);
+                SearchX(width, -projection.OriginPx.X + width * .5);
+                SearchX(width, -projection.OriginPx.X + width / 2 + width * .5);
+            }
+
+            void SearchX(double spacing, double origin) => AddBoundaries(stops,
+                (start.X - origin) / spacing, (end.X - origin) / spacing,
+                (bounds.Left - origin) / spacing, (bounds.Right - origin) / spacing);
+            void SearchY(double spacing, double origin) => AddBoundaries(stops,
+                (start.Y - origin) / spacing, (end.Y - origin) / spacing,
+                (bounds.Top - origin) / spacing, (bounds.Bottom - origin) / spacing);
+        }
+        else
+        {
+            // The five affine projections return continuous grid coordinates. Intersect the
+            // segment with grid boundaries using that inverse, including click hit-test tolerance.
+            var first = projection.WorldPxToGrid(start);
+            var last = projection.WorldPxToGrid(end);
+            AddBoundaries(stops, first.X + .0001f, last.X + .0001f, 0, layer.Columns);
+            AddBoundaries(stops, first.Y + .0001f, last.Y + .0001f, 0, layer.Rows);
+        }
+        return stops;
+    }
+
+    private static void AddBoundaries(SortedSet<double> stops, double start, double end, double minimum, double maximum)
+    {
+        if (start == end) return;
+        double first = Math.Ceiling(Math.Max(Math.Min(start, end), minimum));
+        double last = Math.Floor(Math.Min(Math.Max(start, end), maximum));
+        for (double boundary = first; boundary <= last; boundary++)
+        {
+            double t = (boundary - start) / (end - start);
+            if (t > 0 && t < 1) stops.Add(t);
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override void OnMouseMove(MouseEventArgs e)
+    {
+        base.OnMouseMove(e);
+        if (!HasGesture) return;
+        if ((e.Button & MouseButtons.Left) == 0) { CancelGesture(); return; }
+        try { ContinueGesture(e.Location); }
+        catch { CancelGesture(); throw; }
+    }
+
+    /// <inheritdoc/>
+    protected override void OnMouseUp(MouseEventArgs e)
+    {
+        base.OnMouseUp(e);
+        if (e.Button != MouseButtons.Left || !HasGesture) return;
+        try { ContinueGesture(e.Location); FinishGesture(cancel: false); }
+        catch { CancelGesture(); throw; }
+    }
+
+    private void FinishGesture(bool cancel)
+    {
+        if (!HasGesture) return;
+        _gestureLayer = null;
+        try { GestureEnded?.Invoke(cancel); }
+        finally { Capture = false; Invalidate(); }
+    }
+
+    /// <inheritdoc/>
+    protected override void OnMouseCaptureChanged(EventArgs e)
+    {
+        base.OnMouseCaptureChanged(e);
+        if (!Capture) CancelGesture();
+    }
+
+    /// <inheritdoc/>
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+        if (keyData == Keys.Escape && HasGesture) { CancelGesture(); return true; }
+        return base.ProcessCmdKey(ref msg, keyData);
     }
 
     private RectangleF CalculateWorldBounds(
@@ -563,32 +803,29 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
                 }
         }
 
-        if (ReferenceEquals(layer, _selectedLayer) &&
-            _selectedX >= 0 &&
-            _selectedY >= 0 &&
-            _selectedX < layer.Columns &&
-            _selectedY < layer.Rows)
+        if (ReferenceEquals(layer, _selectedLayer))
         {
+            var cells = _selectedCells.IsEmpty ? new Rectangle(_selectedX, _selectedY, 1, 1) : _selectedCells;
+            cells.Intersect(new Rectangle(0, 0, layer.Columns, layer.Rows));
+            var corners = new[] { Point.Empty, new Point(ClientSize.Width, 0),
+                new Point(0, ClientSize.Height), new Point(ClientSize.Width, ClientSize.Height) }
+                .Select(point => projection.WorldPxToGrid(ScreenToWorld(point))).ToArray();
+            // Cull off-screen selection cells using the existing inverse projection.
+            cells.Intersect(Rectangle.FromLTRB((int)Math.Floor(corners.Min(point => point.X)) - 2,
+                (int)Math.Floor(corners.Min(point => point.Y)) - 2, (int)Math.Ceiling(corners.Max(point => point.X)) + 3,
+                (int)Math.Ceiling(corners.Max(point => point.Y)) + 3));
             using var selectedPen = new Pen(Color.Gold, 2f);
-            var points = TileOutline(
-                    projection,
-                    layer,
-                    _selectedX,
-                    _selectedY)
-                .Select(ToScreen)
-                .ToArray();
 
-            if (points.Length >= 3)
-                graphics.DrawPolygon(selectedPen, points);
-            else
-                graphics.DrawRectangle(
-                    selectedPen,
-                    Rectangle.Round(ToScreen(
-                        TileBounds(
-                            projection,
-                            layer,
-                            _selectedX,
-                            _selectedY))));
+            for (int y = cells.Top; y < cells.Bottom; y++)
+                for (int x = cells.Left; x < cells.Right; x++)
+                {
+                    var points = TileOutline(projection, layer, x, y).Select(ToScreen).ToArray();
+                    if (points.Length >= 3)
+                    {
+
+                        graphics.DrawPolygon(selectedPen, points);
+                    }
+                }
         }
     }
 
@@ -725,6 +962,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     {
         if (disposing)
         {
+            CancelGesture();
             foreach (var cached in _projections.Values)
                 cached.Layer.Dispose();
             _projections.Clear();

@@ -38,9 +38,13 @@ public sealed partial class CompositionTests
         preview.GetType().GetMethod("UpdateOffset", flags)!.Invoke(preview, null);
         var offset = (PointF)preview.GetType().GetField("_offset", flags)!.GetValue(preview)!;
         float zoom = (float)preview.GetType().GetProperty("Zoom")!.GetValue(preview)!;
-        void Click() => preview.GetType().GetMethod("OnMouseDown", flags)!.Invoke(preview,
-            [new MouseEventArgs(MouseButtons.Left, 1, (int)(offset.X + layer.TileWidth * 1.5f * zoom),
-                (int)(offset.Y + layer.TileHeight * 1.5f * zoom), 0)]);
+        void Click()
+        {
+            foreach (var method in new[] { "OnMouseDown", "OnMouseUp" })
+                preview.GetType().GetMethod(method, flags)!.Invoke(preview,
+                    [new MouseEventArgs(MouseButtons.Left, 1, (int)(offset.X + layer.TileWidth * 1.5f * zoom),
+                        (int)(offset.Y + layer.TileHeight * 1.5f * zoom), 0)]);
+        }
         Click(); Application.DoEvents();
         var tile = Assert.Single(layer.Tiles);
         Assert.Equal("terrain", tile.Frame!.Tilesheet);
@@ -55,5 +59,29 @@ public sealed partial class CompositionTests
         Assert.Equal("original", Assert.Single(layer.Tiles).Nickname);
         edit.DropDownItems[1].PerformClick(); Application.DoEvents();
         Assert.Empty(layer.Tiles);
+
+        // The same shared canvas supports rectangle commands and grouped drag strokes in Studio.
+        Point Cell(int x, int y) => new((int)(offset.X + layer.TileWidth * (x + .5f) * zoom),
+            (int)(offset.Y + layer.TileHeight * (y + .5f) * zoom));
+        void Pointer(string method, Point point) => preview.GetType().GetMethod(method, flags)!.Invoke(preview,
+            [new MouseEventArgs(MouseButtons.Left, 1, point.X, point.Y, 0)]);
+        void Command(string text) => Descendants(editor).OfType<ToolStrip>().SelectMany(bar => bar.Items.Cast<ToolStripItem>())
+            .Single(item => item.Text == text).PerformClick();
+        Tool("Select").PerformClick();
+        Pointer("OnMouseDown", Cell(1, 1)); Pointer("OnMouseMove", Cell(3, 2)); Pointer("OnMouseUp", Cell(3, 2));
+        Command("Apply to selection"); Application.DoEvents();
+        Assert.Equal(6, layer.Tiles.Count);
+        edit.DropDownItems[0].PerformClick(); Application.DoEvents(); Assert.Empty(layer.Tiles);
+        edit.DropDownItems[1].PerformClick(); Application.DoEvents(); Assert.Equal(6, layer.Tiles.Count);
+        Command("Erase selection"); Application.DoEvents(); Assert.Empty(layer.Tiles);
+        edit.DropDownItems[0].PerformClick(); Application.DoEvents(); Assert.Equal(6, layer.Tiles.Count);
+        edit.DropDownItems[1].PerformClick(); Application.DoEvents(); Assert.Empty(layer.Tiles);
+        Tool("Paint").PerformClick();
+        Pointer("OnMouseDown", Cell(1, 1)); Pointer("OnMouseMove", Cell(5, 1)); Pointer("OnMouseUp", Cell(5, 1));
+        Application.DoEvents(); Assert.Equal(5, layer.Tiles.Count);
+        Assert.Equal("Paint stroke", document.History.UndoDescription);
+        Assert.False(document.History.InTransaction);
+        edit.DropDownItems[0].PerformClick(); Application.DoEvents(); Assert.Empty(layer.Tiles);
+        edit.DropDownItems[1].PerformClick(); Application.DoEvents(); Assert.Equal(5, layer.Tiles.Count);
     });
 }

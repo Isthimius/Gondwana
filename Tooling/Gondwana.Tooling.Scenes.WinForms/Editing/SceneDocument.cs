@@ -44,6 +44,7 @@ public sealed partial class SceneDocument
     public EditHistory History { get; }
     /// <summary>Occurs synchronously when content is marked modified, selection changes, or a save is accepted.</summary>
     public event EventHandler? Changed;
+    internal event Action? EditingContextChanging;
 
     private SceneDocument(
         SceneDefinition definition,
@@ -93,6 +94,7 @@ public sealed partial class SceneDocument
     /// <returns>The new layer, with its initial Z order set to the preceding layer count.</returns>
     public SceneLayerDefinition AddLayer()
     {
+        EditingContextChanging?.Invoke();
         var layer = new SceneLayerDefinition
         {
             ID = UniqueLayerId(),
@@ -111,6 +113,7 @@ public sealed partial class SceneDocument
     /// <returns>True if removed; false if the layer was absent.</returns>
     public bool RemoveLayer(SceneLayerDefinition layer)
     {
+        EditingContextChanging?.Invoke();
         return History.Remove("Remove layer", Definition.Layers, layer);
     }
 
@@ -377,6 +380,7 @@ public sealed partial class SceneDocument
     /// <exception cref="ArgumentException"><paramref name="definition"/> does not belong to this document.</exception>
     public void SelectDefinition(SceneDefinition definition)
     {
+        EditingContextChanging?.Invoke();
         if (!_definitions.Contains(definition)) throw new ArgumentException("Definition does not belong to this document.", nameof(definition));
         Definition = definition;
         Changed?.Invoke(this, EventArgs.Empty);
@@ -396,6 +400,7 @@ public sealed partial class SceneDocument
     /// <returns>The new independent member.</returns>
     public SceneDefinition DuplicateDefinition()
     {
+        EditingContextChanging?.Invoke();
         var definition = SceneDefinitionSerializer.FromJson(SceneDefinitionSerializer.ToJson(Definition));
         definition.Source = Definition.Source;
         definition.ID = UniqueDefinitionIdentity(Definition.ID + "-copy");
@@ -408,6 +413,7 @@ public sealed partial class SceneDocument
     /// <returns>True if removed; false if it is absent or is the document's only member.</returns>
     public bool RemoveDefinition(SceneDefinition definition)
     {
+        EditingContextChanging?.Invoke();
         if (_definitions.Count == 1 || !_definitions.Contains(definition)) return false;
         var selected = Definition;
         int index = _definitions.IndexOf(definition);
