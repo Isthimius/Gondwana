@@ -471,6 +471,21 @@ public sealed class GodotImportTests : IDisposable
     }
 
     /// <summary>
+    /// Confirms missing standalone Godot 4 res:// dependencies report the resolved file path.
+    /// </summary>
+    [Fact]
+    public void Godot4StandaloneMissingTextureHasUsefulError()
+    {
+        var request = Godot4MultiCellFixture("0:0/0 = 0");
+        File.Delete(Path.Combine(directory, "atlas.png"));
+        var analysis = new GodotTilesetImporter().Analyze(request);
+        Assert.False(analysis.CanImport);
+        Assert.Contains(analysis.Diagnostics, d => d.Message.Contains("source 0")
+            && d.Message.Contains("missing Godot texture")
+            && d.Message.Contains(Path.Combine(directory, "atlas.png")));
+    }
+
+    /// <summary>
     /// Verifies parser preserves both godot dialects.
     /// </summary>
     /// <param name="value">The value value for this test case.</param>
