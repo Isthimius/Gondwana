@@ -508,4 +508,45 @@ public sealed partial class SceneEditorTests
             }
         });
 
+    [Theory]
+    [InlineData(-.5f, -.5f)]
+    [InlineData(-.5f, 0f)]
+    [InlineData(-.5f, .5f)]
+    [InlineData(0f, -.5f)]
+    [InlineData(0f, 0f)]
+    [InlineData(0f, .5f)]
+    [InlineData(.5f, -.5f)]
+    [InlineData(.5f, 0f)]
+    [InlineData(.5f, .5f)]
+    public void PointedHexTrial17RetainsCellsAtHalfPixelOffsets(float shiftX, float shiftY) => RunSta(() =>
+    {
+        var layer = new SceneLayerDefinition
+        {
+            Columns = 10,
+            Rows = 10,
+            TileWidth = 32,
+            TileHeight = 32,
+            CoordinateSystemType = CoordinateSystemTypes.HexAxialPointedTop
+        };
+        using var preview = new ScenePreviewControl();
+        preview.Configure(new SceneDefinition { Layers = [layer] }, _ => null, _ => null);
+        var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+        var projection = (Gondwana.Scenes.SceneLayer)typeof(ScenePreviewControl).GetMethod("GetProjection", flags)!.Invoke(preview, [layer])!;
+        var start = new PointF(192 + shiftX, 136 + shiftY);
+        var end = new PointF(71 + shiftX, 33 + shiftY);
+        var actual = preview.CellsAlongSegment(layer, start, end).ToHashSet();
+        if (shiftX == shiftY) Assert.Contains(new Point(4, 4), actual);
+        Point Hit(PointF world)
+        {
+            var grid = projection.WorldPxToGrid(world);
+            return new((int)Math.Floor(grid.X + .0001f), (int)Math.Floor(grid.Y + .0001f));
+        }
+        for (int i = 0; i <= 10000; i++)
+        {
+            var world = new PointF(start.X + (end.X - start.X) * i / 10000f, start.Y + (end.Y - start.Y) * i / 10000f);
+            var hit = Hit(world);
+            Assert.True(actual.Contains(hit), $"shift ({shiftX},{shiftY}): missed {hit} at {world}, sample {i}");
+        }
+    });
+
 }

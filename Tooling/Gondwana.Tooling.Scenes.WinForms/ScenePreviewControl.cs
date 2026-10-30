@@ -409,22 +409,91 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         var world = ScreenToWorld(location);
         var start = _previousWorld;
         _previousWorld = world;
-        double previous = 0;
-        foreach (double stop in SegmentBoundaries(layer, start, world))
+        foreach (var cell in CellsAlongSegment(layer, start, world))
         {
             if (!ReferenceEquals(_gestureLayer, layer)) break;
-            // Visit every open interval, however briefly the segment occupies a cell.
-            VisitAt((previous + stop) / 2);
-            if (!ReferenceEquals(_gestureLayer, layer)) break;
-            VisitAt(stop);
-            previous = stop;
+            VisitCell(layer, cell);
+        }
+    }
+
+    internal IEnumerable<Point> CellsAlongSegment(SceneLayerDefinition layer, PointF start, PointF end)
+    {
+        bool hex = layer.CoordinateSystemType is CoordinateSystemTypes.HexAxialFlatTop or CoordinateSystemTypes.HexAxialPointedTop;
+        var projection = GetProjection(layer);
+        double previous = 0;
+        Point first = CellAt(0);
+        Point? yielded = null;
+        foreach (var cell in Trace())
+        {
+            if (cell.X < 0 || cell.Y < 0 || cell.X >= layer.Columns || cell.Y >= layer.Rows || yielded == cell) continue;
+            yielded = cell;
+            yield return cell;
         }
 
-        void VisitAt(double t)
+        IEnumerable<Point> Trace()
         {
-            var sample = new PointF((float)(start.X + (world.X - start.X) * t),
-                (float)(start.Y + (world.Y - start.Y) * t));
-            if (TryHitCell(layer, sample, out var cell)) VisitCell(layer, cell);
+            yield return first;
+            foreach (double stop in SegmentBoundaries(layer, start, end))
+            {
+                Point last = CellAt(stop);
+                if (hex)
+                {
+                    // Boundary points can belong to a different rounded pixel or search
+                    // neighborhood than the open interval. Inspect both interior sides.
+                    double left = Interior(previous, stop), right = Interior(stop, previous);
+                    Point insideLeft = CellAt(left), insideRight = CellAt(right);
+                    foreach (var cell in Refine(previous, left, first, insideLeft)) yield return cell;
+                    foreach (var cell in Refine(left, right, insideLeft, insideRight)) yield return cell;
+                    foreach (var cell in Refine(right, stop, insideRight, last)) yield return cell;
+                }
+                else
+                {
+                    yield return CellAt((previous + stop) / 2);
+                    yield return last;
+                }
+                previous = stop;
+                first = last;
+            }
+        }
+
+        IEnumerable<Point> Refine(double from, double to, Point left, Point right)
+        {
+            // Within a fixed rounded pixel and candidate neighborhood, polygon choice is
+            // constant; nearest-center fallback has convex cells. Refine differing cells
+            // to representable parameter precision, including endpoint rounding transitions.
+            double middle = (from + to) / 2;
+            if (middle == from || middle == to) { yield return right; yield break; }
+            Point center = CellAt(middle);
+            if (left == right && center == left) { yield return right; yield break; }
+            foreach (var cell in Refine(from, middle, left, center)) yield return cell;
+            foreach (var cell in Refine(middle, to, center, right)) yield return cell;
+        }
+
+        double Interior(double boundary, double toward)
+        {
+            var point = WorldAt(boundary);
+            double direction = Math.Sign(toward - boundary);
+            double dx = end.X - start.X, dy = end.Y - start.Y;
+            double inset = 0;
+            if (dx != 0) inset = Math.Max(inset, ParameterStep(point.X, dx));
+            if (dy != 0) inset = Math.Max(inset, ParameterStep(point.Y, dy));
+            // Move off a float-rounded boundary without stepping over a narrow interval.
+            return boundary + direction * Math.Min(inset * 2, Math.Abs(toward - boundary) / 4);
+
+            double ParameterStep(float value, double delta)
+            {
+                float next = delta * direction > 0 ? MathF.BitIncrement(value) : MathF.BitDecrement(value);
+                return Math.Abs((next - value) / delta);
+            }
+        }
+
+        PointF WorldAt(double t) => new((float)(start.X + (end.X - start.X) * t),
+            (float)(start.Y + (end.Y - start.Y) * t));
+
+        Point CellAt(double t)
+        {
+            var grid = projection.WorldPxToGrid(WorldAt(t));
+            return new((int)Math.Floor(grid.X + .0001f), (int)Math.Floor(grid.Y + .0001f));
         }
     }
 
@@ -432,14 +501,37 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
     {
         var stops = new SortedSet<double> { 1 };
         var projection = GetProjection(layer);
+        int width = projection.TileWidth, height = projection.TileHeight;
         if (layer.CoordinateSystemType is CoordinateSystemTypes.HexAxialFlatTop or CoordinateSystemTypes.HexAxialPointedTop)
         {
-            // Hex polygon hit-testing rounds world pixels. Split at each rounding boundary,
-            // then let WorldPxToGrid choose the actual staggered cell in each interval.
+            // Hex lookup has two kinds of discontinuity: rounded polygon pixels and
+            // changes to its coarse candidate search. Partition both before refining the
+            // continuous nearest-center fallback. WorldPxToGrid remains the cell selector.
             var bounds = projection.GetLayerBoundsPx();
-            bounds.Inflate(layer.TileWidth, layer.TileHeight);
+            bounds.Inflate(width, height);
             AddBoundaries(stops, start.X + .5, end.X + .5, bounds.Left + .5, bounds.Right + .5);
             AddBoundaries(stops, start.Y + .5, end.Y + .5, bounds.Top + .5, bounds.Bottom + .5);
+            if (layer.CoordinateSystemType == CoordinateSystemTypes.HexAxialFlatTop)
+            {
+                // See HexAxialFlatTopCoordinates.GetSceneLayerCoordinatesAtPixel.
+                SearchX(width * .75, -projection.OriginPx.X + width * .875);
+                SearchY(height * .5, -projection.OriginPx.Y);
+            }
+            else
+            {
+                // See HexAxialPointedTop.GetSceneLayerCoordinatesAtPixel. Candidate columns
+                // have a separate rounding boundary for each row parity (including odd widths).
+                SearchY(height * .75, -projection.OriginPx.Y + height * .375);
+                SearchX(width, -projection.OriginPx.X + width * .5);
+                SearchX(width, -projection.OriginPx.X + width / 2 + width * .5);
+            }
+
+            void SearchX(double spacing, double origin) => AddBoundaries(stops,
+                (start.X - origin) / spacing, (end.X - origin) / spacing,
+                (bounds.Left - origin) / spacing, (bounds.Right - origin) / spacing);
+            void SearchY(double spacing, double origin) => AddBoundaries(stops,
+                (start.Y - origin) / spacing, (end.Y - origin) / spacing,
+                (bounds.Top - origin) / spacing, (bounds.Bottom - origin) / spacing);
         }
         else
         {
