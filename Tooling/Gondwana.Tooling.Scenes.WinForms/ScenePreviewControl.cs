@@ -14,6 +14,8 @@ namespace Gondwana.Tooling.Scenes.WinForms;
 /// </summary>
 internal sealed class ScenePreviewControl : UserControl, IMessageFilter
 {
+    internal bool RequireSelectedLayer { get; set; }
+
     private const float ZoomStepFactor = 1.25f;
     private const float PreviewMargin = 28f;
     private SceneDefinition? _definition;
@@ -304,7 +306,7 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
 
         using var labelBrush = new SolidBrush(ForeColor);
         e.Graphics.DrawString(
-            $"{visibleLayers.Count} visible layer(s) — click the selected layer to choose a tile",
+            $"{visibleLayers.Count} visible layer(s) — click the selected layer to use the active tool",
             Font,
             labelBrush,
             new PointF(8, 8));
@@ -318,7 +320,11 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         if (e.Button != MouseButtons.Left || _definition is null)
             return;
 
-        var layer = _selectedLayer is not null && IsLayerDisplayed(_selectedLayer)
+        UpdateOffset();
+        if (RequireSelectedLayer && (_selectedLayer is null ||
+            !_definition.Layers.Contains(_selectedLayer) || !IsLayerDisplayed(_selectedLayer))) return;
+
+        var layer = _selectedLayer is not null && _definition.Layers.Contains(_selectedLayer) && IsLayerDisplayed(_selectedLayer)
             ? _selectedLayer
             : _definition.Layers
                 .Where(candidate => IsLayerDisplayed(candidate))
