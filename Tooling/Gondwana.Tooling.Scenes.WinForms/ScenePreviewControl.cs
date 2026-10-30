@@ -407,17 +407,61 @@ internal sealed class ScenePreviewControl : UserControl, IMessageFilter
         }
         UpdateOffset();
         var world = ScreenToWorld(location);
-        float dx = world.X - _previousWorld.X, dy = world.Y - _previousWorld.Y;
-        // Sample in world pixels, then ask the same projection used by click hit-testing.
-        // Sub-cell steps follow staggered hex polygons as well as affine grid projections.
-        float step = Math.Clamp(Math.Min(layer.TileWidth, layer.TileHeight) / 16f, .0625f, .25f);
-        int samples = Math.Max(1, (int)Math.Ceiling(Math.Max(Math.Abs(dx), Math.Abs(dy)) / step));
         var start = _previousWorld;
         _previousWorld = world;
-        for (int i = 1; i <= samples && ReferenceEquals(_gestureLayer, layer); i++)
+        double previous = 0;
+        foreach (double stop in SegmentBoundaries(layer, start, world))
         {
-            var sample = new PointF(start.X + dx * i / samples, start.Y + dy * i / samples);
+            if (!ReferenceEquals(_gestureLayer, layer)) break;
+            // Visit every open interval, however briefly the segment occupies a cell.
+            VisitAt((previous + stop) / 2);
+            if (!ReferenceEquals(_gestureLayer, layer)) break;
+            VisitAt(stop);
+            previous = stop;
+        }
+
+        void VisitAt(double t)
+        {
+            var sample = new PointF((float)(start.X + (world.X - start.X) * t),
+                (float)(start.Y + (world.Y - start.Y) * t));
             if (TryHitCell(layer, sample, out var cell)) VisitCell(layer, cell);
+        }
+    }
+
+    private SortedSet<double> SegmentBoundaries(SceneLayerDefinition layer, PointF start, PointF end)
+    {
+        var stops = new SortedSet<double> { 1 };
+        var projection = GetProjection(layer);
+        if (layer.CoordinateSystemType is CoordinateSystemTypes.HexAxialFlatTop or CoordinateSystemTypes.HexAxialPointedTop)
+        {
+            // Hex polygon hit-testing rounds world pixels. Split at each rounding boundary,
+            // then let WorldPxToGrid choose the actual staggered cell in each interval.
+            var bounds = projection.GetLayerBoundsPx();
+            bounds.Inflate(layer.TileWidth, layer.TileHeight);
+            AddBoundaries(stops, start.X + .5, end.X + .5, bounds.Left + .5, bounds.Right + .5);
+            AddBoundaries(stops, start.Y + .5, end.Y + .5, bounds.Top + .5, bounds.Bottom + .5);
+        }
+        else
+        {
+            // The five affine projections return continuous grid coordinates. Intersect the
+            // segment with grid boundaries using that inverse, including click hit-test tolerance.
+            var first = projection.WorldPxToGrid(start);
+            var last = projection.WorldPxToGrid(end);
+            AddBoundaries(stops, first.X + .0001f, last.X + .0001f, 0, layer.Columns);
+            AddBoundaries(stops, first.Y + .0001f, last.Y + .0001f, 0, layer.Rows);
+        }
+        return stops;
+    }
+
+    private static void AddBoundaries(SortedSet<double> stops, double start, double end, double minimum, double maximum)
+    {
+        if (start == end) return;
+        double first = Math.Ceiling(Math.Max(Math.Min(start, end), minimum));
+        double last = Math.Floor(Math.Min(Math.Max(start, end), maximum));
+        for (double boundary = first; boundary <= last; boundary++)
+        {
+            double t = (boundary - start) / (end - start);
+            if (t > 0 && t < 1) stops.Add(t);
         }
     }
 

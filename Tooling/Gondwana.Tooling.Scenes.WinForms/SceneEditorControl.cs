@@ -1194,9 +1194,12 @@ public sealed partial class SceneEditorControl : UserControl
             _syncingTileCoordinates = false;
         }
 
-        if (!preserveSelection || _selectedCells.IsEmpty)
+        if (!preserveSelection)
             _selectedCells = new Rectangle((int)_tileX.Value, (int)_tileY.Value, 1, 1);
         _selectedCells.Intersect(new Rectangle(0, 0, layer.Columns, layer.Rows));
+        if (_selectedCells.Width <= 0 || _selectedCells.Height <= 0)
+            _selectedCells = layer.Columns > 0 && layer.Rows > 0
+                ? new Rectangle((int)_tileX.Value, (int)_tileY.Value, 1, 1) : Rectangle.Empty;
         UpdateSelectionDisplay();
         RefreshTileProperties();
         _preview.SetSelection(

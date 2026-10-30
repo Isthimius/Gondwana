@@ -81,6 +81,7 @@ public sealed partial class SceneEditorTests
     [InlineData("Layer")]
     [InlineData("Member")]
     [InlineData("RemoveLayer")]
+    [InlineData("AddLayer")]
     [InlineData("Reload")]
     [InlineData("EditorDispose")]
     [InlineData("DocumentDispose")]
@@ -109,6 +110,17 @@ public sealed partial class SceneEditorTests
                     break;
                 case "Member": editor.SelectDefinition(other); break;
                 case "RemoveLayer": document.RemoveLayer(layer); break;
+                case "AddLayer":
+                    var added = document.AddLayer();
+                    Assert.Contains(added, document.Definition.Layers);
+                    Assert.False(document.History.InTransaction);
+                    Assert.Equal("Add layer", document.History.UndoDescription);
+                    document.History.Undo();
+                    Assert.DoesNotContain(added, document.Definition.Layers);
+                    document.History.Redo();
+                    Assert.Contains(added, document.Definition.Layers);
+                    Assert.Empty(added.Tiles);
+                    break;
                 case "Reload": editor.ReloadSources(); break;
                 case "EditorDispose": editor.Dispose(); break;
                 case "DocumentDispose": document.Dispose(); break;
@@ -408,5 +420,92 @@ public sealed partial class SceneEditorTests
         tree.Nodes[0].Nodes[0].Checked = false;
         apply.PerformClick(); Assert.Empty(layer.Tiles); Assert.False(document.IsDirty); Assert.False(document.History.InTransaction);
     });
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void ShrinkingLayerRestoresSelectionToClampedActiveCell(bool columns) =>
+        WithPaintingEditor((editor, preview, source, root) =>
+        {
+            var document = editor.Document; var layer = editor.Definition.Layers[0];
+            SelectPaintFrame(source); SaveGestureBaseline(editor, root);
+            var start = PreviewCellPoint(preview, layer, columns ? 8 : 2, columns ? 2 : 8);
+            var end = PreviewCellPoint(preview, layer, columns ? 9 : 3, columns ? 3 : 9);
+            Pointer(preview, "OnMouseDown", start); Pointer(preview, "OnMouseUp", end);
+            document.Edit(layer, "Resize layer", () => { if (columns) layer.Columns = 8; else layer.Rows = 8; });
+            Application.DoEvents();
+            int x = columns ? 7 : 3, y = columns ? 3 : 7;
+            Assert.Equal(new Rectangle(x, y, 1, 1), editor.SelectedCells);
+            var commands = Descendants(editor).OfType<ToolStrip>().SelectMany(bar => bar.Items.Cast<ToolStripItem>()).ToArray();
+            commands.Single(item => item.Text == "Apply to selection").PerformClick();
+            var tile = Assert.Single(layer.Tiles); Assert.Equal((x, y), (tile.X, tile.Y));
+            commands.Single(item => item.Text == "Erase selection").PerformClick(); Assert.Empty(layer.Tiles);
+        });
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void NearCornerDragVisitsBrieflyCrossedCellAndGroupsUndo(bool erase) =>
+        WithPaintingEditor((editor, preview, source, root) =>
+        {
+            var document = editor.Document; var layer = editor.Definition.Layers[0];
+            layer.TileWidth = layer.TileHeight = 32;
+            if (erase) document.EditTile(layer, 4, 3, "Seed corner", tile => tile.Nickname = "restore");
+            SelectPaintFrame(source); SaveGestureBaseline(editor, root);
+            Tool(editor, erase ? "Erase" : "Paint").PerformClick();
+            preview.Dock = DockStyle.None;
+            preview.Size = new Size(800, 600);
+            preview.SetZoom(1);
+            using var image = new Bitmap(preview.Width, preview.Height); preview.DrawToBitmap(image, preview.ClientRectangle);
+            var offset = (PointF)typeof(ScenePreviewControl).GetField("_offset", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(preview)!;
+            Assert.Equal(Math.Round(offset.X), offset.X); Assert.Equal(Math.Round(offset.Y), offset.Y);
+            // Exercise the exact world segment from the review, independent of the viewport offset.
+            Pointer(preview, "OnMouseDown", new((int)Math.Round(16 + offset.X), (int)Math.Round(16 + offset.Y)));
+            Pointer(preview, "OnMouseUp", new((int)Math.Round(311 + offset.X), (int)Math.Round(180 + offset.Y)));
+            if (erase) Assert.Empty(layer.Tiles);
+            else Assert.NotNull(document.FindTile(layer, 4, 3));
+            Assert.False(document.History.InTransaction);
+            document.History.Undo();
+            if (erase) Assert.Equal("restore", Assert.Single(layer.Tiles).Nickname);
+            else Assert.Empty(layer.Tiles);
+            Assert.False(document.History.CanUndo);
+        });
+
+    [Theory]
+    [InlineData(CoordinateSystemTypes.HexAxialFlatTop, 32, 32)]
+    [InlineData(CoordinateSystemTypes.HexAxialPointedTop, 32, 32)]
+    [InlineData(CoordinateSystemTypes.HexAxialFlatTop, 31, 29)]
+    [InlineData(CoordinateSystemTypes.HexAxialPointedTop, 31, 29)]
+    public void HexBoundaryTraversalDoesNotSkipDenseReferenceCells(CoordinateSystemTypes coordinateSystem, int width, int height) =>
+        WithPaintingEditor((editor, preview, source, root) =>
+        {
+            var document = editor.Document; var layer = editor.Definition.Layers[0];
+            layer.TileWidth = width; layer.TileHeight = height; layer.CoordinateSystemType = coordinateSystem;
+            SelectPaintFrame(source); SaveGestureBaseline(editor, root);
+            Tool(editor, "Paint").PerformClick(); preview.SetZoom(1);
+            var projection = (Gondwana.Scenes.SceneLayer)typeof(ScenePreviewControl)
+                .GetMethod("GetProjection", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(preview, [layer])!;
+            var random = new Random(464);
+            for (int trial = 0; trial < 20; trial++)
+            {
+                var start = PreviewCellPoint(preview, layer, random.Next(1, 9), random.Next(1, 9));
+                var end = PreviewCellPoint(preview, layer, random.Next(1, 9), random.Next(1, 9));
+                end.Offset(random.Next(-7, 8), random.Next(-7, 8));
+                var offset = (PointF)typeof(ScenePreviewControl).GetField("_offset", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(preview)!;
+                var expected = new HashSet<Point>();
+                for (int i = 0; i <= 10000; i++)
+                {
+                    var world = new PointF(start.X + (end.X - start.X) * i / 10000f - offset.X,
+                        start.Y + (end.Y - start.Y) * i / 10000f - offset.Y);
+                    var grid = projection.WorldPxToGrid(world);
+                    var cell = new Point((int)Math.Floor(grid.X + .0001f), (int)Math.Floor(grid.Y + .0001f));
+                    if (cell.X >= 0 && cell.Y >= 0 && cell.X < layer.Columns && cell.Y < layer.Rows) expected.Add(cell);
+                }
+                Pointer(preview, "OnMouseDown", start); Pointer(preview, "OnMouseUp", end);
+                var actual = layer.Tiles.Select(tile => new Point(tile.X, tile.Y)).ToHashSet();
+                Assert.True(expected.IsSubsetOf(actual), $"{coordinateSystem} {width}x{height}, trial {trial}, missed {string.Join(';', expected.Except(actual))}");
+                document.History.Undo(); Application.DoEvents(); Assert.Empty(layer.Tiles);
+            }
+        });
 
 }

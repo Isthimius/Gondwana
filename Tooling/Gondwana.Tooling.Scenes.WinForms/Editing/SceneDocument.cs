@@ -94,6 +94,7 @@ public sealed partial class SceneDocument
     /// <returns>The new layer, with its initial Z order set to the preceding layer count.</returns>
     public SceneLayerDefinition AddLayer()
     {
+        EditingContextChanging?.Invoke();
         var layer = new SceneLayerDefinition
         {
             ID = UniqueLayerId(),
